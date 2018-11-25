@@ -40,7 +40,7 @@
 #if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 #include "windrag.h"
 #elif defined(XWIN)
 #include "xdrag.h"
@@ -114,7 +114,7 @@ using std::toupper;
 using std::string;
 using std::vector;
 
-#if SDL_VERSION_ATLEAST(2, 0, 0) && (defined(WIN32) || (defined(MACOSX) && defined(USE_EXULTSTUDIO)))
+#if SDL_VERSION_ATLEAST(2, 0, 0) && (defined(_WIN32) || (defined(MACOSX) && defined(USE_EXULTSTUDIO)))
 
 static int SDLCALL SDL_putenv(const char *_var) {
     char *ptr = NULL;
@@ -206,7 +206,7 @@ static class Xdnd *xdnd = 0;
 #  pragma GCC diagnostic pop
 #  endif  // __GNUC__
 
-#elif defined(WIN32)
+#elif defined(_WIN32)
 static HWND hgwin;
 static class Windnd *windnd = 0;
 #endif
@@ -323,14 +323,14 @@ int main(
 	parameters.declare("--edit", &arg_edit_mode, true);
 	parameters.declare("--write-xml", &arg_write_xml, true);
 	parameters.declare("--reset-video", &arg_reset_video, true);
-#if defined WIN32
+#if defined _WIN32
 	bool portable = false;
 	parameters.declare("-p", &portable, true);
 #endif
 	// Process the args
 	parameters.process(argc, argv);
 	add_system_path("<alt_cfg>", arg_configfile);
-#if defined WIN32
+#if defined _WIN32
 	if (portable)
 		add_system_path("<HOME>", ".");
 	setup_program_paths();
@@ -365,7 +365,7 @@ int main(
 		     << "\t\t(for multimap games or mods) whose map is desired" << endl
 		     << "--nocrc\t\tDon't check crc's of .flx files" << endl
 		     << "--edit\t\tStart in map-edit mode" << endl
-#if defined WIN32
+#if defined _WIN32
 		     << " -p\t\tMakes the home path the Exult directory (old Windows way)" << endl
 #endif
 		     << "--write-xml\tWrite 'patch/exultgame.xml'" << endl
@@ -552,7 +552,7 @@ int exult_main(const char *runpath) {
 	// output version info
 	getVersionInfo(cout);
 
-#ifndef WIN32
+#ifndef _WIN32
 	setup_program_paths();
 #endif
 	// Read in configuration file
@@ -718,7 +718,7 @@ int exult_main(const char *runpath) {
 	//  main menu and select another scenario". Becaule DnD isn't registered until
 	//  you really enter the game, we remove it here to prevent possible bugs
 	//  invilved with registering DnD a second time over an old variable.
-#if defined(WIN32)
+#if defined(_WIN32)
 	RevokeDragDrop(hgwin);
 	delete windnd;
 #else
@@ -791,7 +791,7 @@ static void Init(
 #ifdef NO_SDL_PARACHUTE
 	init_flags |= SDL_INIT_NOPARACHUTE;
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 	// Due to the new menu size, the window can sometimes
 	// be partially offscreen in Windows. SDL currently
 	// offers no better way of doing this, so...
@@ -1005,7 +1005,7 @@ static void Init(
 	gwin->setup_game(arg_edit_mode);    // This will start the scene.
 	// Get scale factor for mouse.
 #ifdef USE_EXULTSTUDIO
-#ifndef WIN32
+#ifndef _WIN32
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_GetWindowWMInfo(gwin->get_win()->get_screen_window(), &info);
 #else
@@ -1234,7 +1234,7 @@ static void Handle_events(
 
 		// Get current time.
 		uint32 ticks = SDL_GetTicks();
-#if defined(WIN32) && defined(USE_EXULTSTUDIO)
+#if defined(_WIN32) && defined(USE_EXULTSTUDIO)
 		if (ticks - Game::get_ticks() < 10) {
 			// Reducing processor usage with a slight delay.
 			SDL_Delay(10 - (ticks - Game::get_ticks()));
@@ -1712,7 +1712,7 @@ static void Handle_event(
 			keybinder->HandleEvent(event);
 		break;
 #ifdef USE_EXULTSTUDIO
-#ifndef WIN32
+#ifndef _WIN32
 	case SDL_SYSWMEVENT: {
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 		XEvent &ev = event.syswm.msg->msg.x11.event;
@@ -1728,7 +1728,7 @@ static void Handle_event(
 #endif
 #endif
 #if 0
-//#ifdef WIN32
+//#ifdef _WIN32
 	case SDL_SYSWMEVENT:
 //		printf("SYSWMEVENT received, %x\n", event.syswm.msg->msg);
 		if (event.syswm.msg->msg == MM_MCINOTIFY) {

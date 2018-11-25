@@ -974,7 +974,7 @@ void Combo_chooser::drag_data_get(
 	                           foot.x + foot.w - 1 - hot->tx,
 	                           foot.y + foot.h - 1 - hot->ty, cnt, ents);
 	assert(len <= buflen);
-#ifdef WIN32
+#ifdef _WIN32
 	windragdata *wdata = (windragdata *)seldata;
 	wdata->assign(info, len, buf);
 #else
@@ -1140,7 +1140,7 @@ Combo_chooser::Combo_chooser(
 	// Mouse motion.
 	gtk_signal_connect(GTK_OBJECT(draw), "drag_begin",
 	                   GTK_SIGNAL_FUNC(drag_begin), this);
-#ifdef WIN32
+#ifdef _WIN32
 // required to override GTK+ Drag and Drop
 	gtk_signal_connect(GTK_OBJECT(draw), "motion_notify_event",
 	                   GTK_SIGNAL_FUNC(win32_drag_motion), this);
@@ -1325,7 +1325,7 @@ gint Combo_chooser::expose(
 	return (TRUE);
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 
 /*
  *  Dragging in win32.
@@ -1409,7 +1409,7 @@ gint Combo_chooser::mouse_press(
 		            static_cast<int>(event->x), static_cast<int>(event->y))) {
 			// Found the box?
 			// Indicate we can drag.
-#ifdef WIN32
+#ifdef _WIN32
 // Here, we have to override GTK+'s Drag and Drop, which is non-OLE and
 // usually stucks outside the program window. I think it's because
 // the dragged shape only receives mouse motion events when the new mouse pointer

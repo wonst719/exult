@@ -60,7 +60,7 @@ static void Gen_shadow(
 
 #define USE_WIN32_FONTGEN
 
-#if defined(WIN32) && defined(USE_WIN32_FONTGEN)
+#if defined(_WIN32) && defined(USE_WIN32_FONTGEN)
 
 #undef NOGDI
 #ifdef _WIN32_WINNT
@@ -290,14 +290,14 @@ bool Gen_font_shape(
 		FT_Done_FreeType(library);
 
 		// Try to get windows to load it for us
-#if defined(WIN32) && defined(USE_WIN32_FONTGEN)
+#if defined(_WIN32) && defined(USE_WIN32_FONTGEN)
 		return Gen_font_shape_win32(shape, fontfile, 0, nframes, pixels_ht, fg, bg, shadow);
 #else
 		return false;
 #endif
 	}
 
-#if defined(WIN32) && defined(USE_WIN32_FONTGEN)
+#if defined(_WIN32) && defined(USE_WIN32_FONTGEN)
 	static HANDLE(WINAPI * AddFontResourceExA)(LPCSTR, DWORD, PVOID);
 	if (AddFontResourceExA == 0) {
 		AddFontResourceExA = (HANDLE(WINAPI *)(LPCSTR, DWORD, PVOID))

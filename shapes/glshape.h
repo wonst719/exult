@@ -29,7 +29,7 @@
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <GL/glext.h>
 #endif
 #endif

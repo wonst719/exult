@@ -1,7 +1,7 @@
 #ifndef INCL_WINDRAG
 #define INCL_WINDRAG
 
-#if defined(WIN32) && defined(USE_EXULTSTUDIO)
+#if defined(_WIN32) && defined(USE_EXULTSTUDIO)
 
 #include "u7drag.h"
 #include <ole2.h>
