@@ -277,10 +277,11 @@ void sigchld_handler(int sig) {
 
 #endif
 
-#if defined(_WIN32) && defined(main) && defined(_MSC_VER)
-#undef main
+#if defined _WIN32
+void do_cleanup_output() {
+	cleanup_output("std");
+}
 #endif
-
 
 /*
  *  Main program.
@@ -335,6 +336,7 @@ int main(
 		add_system_path("<HOME>", ".");
 	setup_program_paths();
 	redirect_output("std");
+	std::atexit(do_cleanup_output);
 #endif
 
 	if (needhelp) {
@@ -432,116 +434,6 @@ int main(
 
 	return result;
 }
-
-#ifdef _WIN32
-#include <windows.h>
-#include <cstdio>
-// From Pentagram:
-PCHAR *CommandLineToArgvA(
-    PCHAR CmdLine,
-    int *_argc
-) {
-	PCHAR *argv;
-	PCHAR  _argv;
-	ULONG   len;
-	ULONG   argc;
-	CHAR   a;
-	ULONG   i, j;
-
-	BOOLEAN  in_QM;
-	BOOLEAN  in_TEXT;
-	BOOLEAN  in_SPACE;
-
-	len = strlen(CmdLine);
-	i = ((len + 2) / 2) * sizeof(PVOID) + sizeof(PVOID);
-
-	argv = reinterpret_cast<PCHAR *>(GlobalAlloc(GMEM_FIXED, i + (len + 2) * sizeof(CHAR)));
-
-	_argv = reinterpret_cast<PCHAR>(reinterpret_cast<PUCHAR>(argv) + i);
-
-	argc = 0;
-	argv[argc] = _argv;
-	in_QM = FALSE;
-	in_TEXT = FALSE;
-	in_SPACE = TRUE;
-	i = 0;
-	j = 0;
-
-	while ((a = CmdLine[i]) != 0) {
-		if (in_QM) {
-			if (a == '\"')
-				in_QM = FALSE;
-			else {
-				_argv[j] = a;
-				j++;
-			}
-		} else {
-			switch (a) {
-			case '\"':
-				in_QM = TRUE;
-				in_TEXT = TRUE;
-				if (in_SPACE) {
-					argv[argc] = _argv + j;
-					argc++;
-				}
-				in_SPACE = FALSE;
-				break;
-			case ' ':
-			case '\t':
-			case '\n':
-			case '\r':
-				if (in_TEXT) {
-					_argv[j] = '\0';
-					j++;
-				}
-				in_TEXT = FALSE;
-				in_SPACE = TRUE;
-				break;
-			default:
-				in_TEXT = TRUE;
-				if (in_SPACE) {
-					argv[argc] = _argv + j;
-					argc++;
-				}
-				_argv[j] = a;
-				j++;
-				in_SPACE = FALSE;
-				break;
-			}
-		}
-		i++;
-	}
-	_argv[j] = '\0';
-	argv[argc] = NULL;
-
-	(*_argc) = argc;
-	return argv;
-}
-
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-	/* Pulled from SDL_win32_main.c; this comment is also theirs:
-	   Start up DDHELP.EXE before opening any files, so DDHELP doesn't
-	   keep them open.  This is a hack.. hopefully it will be fixed
-	   someday.  DDHELP.EXE starts up the first time DDRAW.DLL is loaded.
-	 */
-	HMODULE hLib = LoadLibrary(TEXT("DDRAW.DLL"));
-	if (hLib != NULL)
-		FreeLibrary(hLib);
-
-	int argc;
-	char **argv = CommandLineToArgvA(GetCommandLineA(), &argc);
-
-	int res = main(argc, argv);
-
-	cleanup_output("std");
-
-	GlobalFree(reinterpret_cast<HGLOBAL>(argv));
-	ignore_unused_variable_warning(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
-
-	return  res;
-}
-#endif
 
 /*
  *  Main program.
