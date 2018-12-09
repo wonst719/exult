@@ -83,7 +83,7 @@ public:
 /*
  * The 'IDropTarget' implementation
  */
-class FAR Windnd final : protected IDropTarget {
+class FAR Windnd : public IDropTarget {
 private:
 	HWND gamewin;
 
@@ -159,7 +159,7 @@ public:
  * The IDropSource implementation
  */
 
-class FAR Windropsource final : protected IDropSource {
+class FAR Windropsource :  public IDropSource {
 private:
 	DWORD m_cRef;
 
@@ -183,7 +183,7 @@ public:
 /*
  * The IDataObject implementation
  */
-class FAR Winstudioobj final : protected IDataObject {
+class FAR Winstudioobj :  public IDataObject {
 private:
 	DWORD m_cRef;
 
