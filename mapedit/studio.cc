@@ -88,6 +88,12 @@ using std::vector;
 using std::ofstream;
 using std::ifstream;
 
+#if defined _WIN32
+static void do_cleanup_output() {
+	cleanup_output("studio_");
+}
+#endif
+
 ExultStudio *ExultStudio::self = 0;
 Configuration *config = 0;
 GameManager *gamemanager = 0;
@@ -570,6 +576,7 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(0), static_path(0),
 	setup_program_paths();
 #ifdef _WIN32
 	redirect_output("studio_");
+	std::atexit(do_cleanup_output);
 #endif
 	config = new Configuration;
 	if (!alt_cfg.empty())
