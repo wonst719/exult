@@ -101,7 +101,7 @@ USECODE_INTRINSIC(get_random) {
 		Usecode_value u(0);
 		return(u);
 	}
-	Usecode_value u = (1 + (rand() % range));
+	Usecode_value u(1 + (rand() % range));
 	return(u);
 }
 
@@ -2833,7 +2833,7 @@ USECODE_INTRINSIC(error_message) {
 		if (parms[i].is_int()) std::cout << parms[i].get_int_value() ;
 		else if (parms[i].is_ptr()) std::cout << parms[i].get_ptr_value();
 		else if (!parms[i].is_array()) std::cout << parms[i].get_str_value();
-		else for (int j = 0; j < parms[i].get_array_size(); j++) {
+		else for (size_t j = 0; j < parms[i].get_array_size(); j++) {
 				if (parms[i].get_elem(j).is_int()) std::cout << parms[i].get_elem(j).get_int_value() ;
 				else if (parms[i].get_elem(j).is_ptr()) std::cout << parms[i].get_elem(j).get_ptr_value();
 				else if (!parms[i].get_elem(j).is_array()) std::cout << parms[i].get_elem(j).get_str_value();
