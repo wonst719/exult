@@ -3057,6 +3057,8 @@ void Lab_schedule::now_what(
 		if (!ntables)
 			break;
 		Game_object_shared table = (tables[rand() % ntables]).lock();
+		if (!table)
+		    break;
 		Rectangle r = table->get_footprint();
 		Perimeter p(r);     // Find spot adjacent to table.
 		Tile_coord spot;    // Also get closest spot on table.
