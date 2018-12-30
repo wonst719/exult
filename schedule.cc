@@ -931,8 +931,8 @@ void Preach_schedule::now_what(
 			scr->add(Ucscript::delay_ticks, 3);
 			scr->add(Ucscript::face_dir, member->get_dir_facing());
 			scr->add(Ucscript::npc_frame + Actor::standing);
-			scr->add(Ucscript::say, get_text_msg(first_amen +
-			                                  rand() % (last_amen - first_amen + 1)));
+			scr->add(Ucscript::say, std::string(get_text_msg(first_amen +
+			                           rand() % (last_amen - first_amen + 1))));
 			scr->add(Ucscript::delay_ticks, 2);
 			scr->add(Ucscript::npc_frame + Actor::sit_frame);
 			scr->start();   // Start next tick.
