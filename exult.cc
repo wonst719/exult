@@ -99,10 +99,6 @@
 #include "ignore_unused_variable_warning.h"
 using namespace Pentagram;
 
-#ifdef __IPHONEOS__
-#  include "iphone_gumps.h"
-#endif
-
 using std::atof;
 using std::cerr;
 using std::cout;
@@ -154,10 +150,6 @@ bool combat_trace = false; // show combat messages?
 int save_compression = 1;
 bool ignore_crc = false;
 
-#ifdef __IPHONEOS__
-KeyboardButton_gump *gkeybb;
-SDL_Joystick *sdl_joy;
-#endif
 bool g_waiting_for_click = false;
 ShortcutBar_gump *g_shortcutBar = nullptr;
 
@@ -562,10 +554,6 @@ int exult_main(const char *runpath) {
 #endif
 
 	cheat.init();
-
-#ifdef __IPHONEOS__
-	gkeybb = new KeyboardButton_gump();
-#endif
 	Init();             // Create main window.
 
 	cheat.finish_init();
@@ -575,10 +563,6 @@ int exult_main(const char *runpath) {
 
 	Mouse::mouse = new Mouse(gwin);
 	Mouse::mouse->set_shape(Mouse::hand);
-
-#ifdef __IPHONEOS__
-	gkeybb->autopaint = true;
-#endif
 
 	int result = Play();        // start game
 
@@ -603,8 +587,8 @@ namespace ExultIcon {
 #include "exulticon.h"
 }
 
-#ifndef MACOSX      // Don't set icon on OS X; the external icon is *much* nicer
 static void SetIcon() {
+#ifndef MACOSX      // Don't set icon on OS X; the external icon is *much* nicer
 	SDL_Color iconpal[256];
 	for (int i = 0; i < 256; ++i) {
 		iconpal[i].r = ExultIcon::header_data_cmap[i][0];
@@ -636,8 +620,8 @@ static void SetIcon() {
 			iconpal[0].r, iconpal[0].g, iconpal[0].b));
 	SDL_SetWindowIcon(gwin->get_win()->get_screen_window(), iconsurface);
 	SDL_FreeSurface(iconsurface);
-}
 #endif
+}
 
 /*
  *  Initialize and create main window.
@@ -665,23 +649,11 @@ static void Init(
 	// SDL to use X11. Hence, we force the issue.
 	SDL_putenv(const_cast<char *>("SDL_VIDEODRIVER=x11"));
 #endif
-#ifdef __IPHONEOS__
-	init_flags |= SDL_INIT_JOYSTICK;
-#endif
 	if (SDL_Init(init_flags) < 0) {
 		cerr << "Unable to initialize SDL: " << SDL_GetError() << endl;
 		exit(-1);
 	}
 	std::atexit(SDL_Quit);
-
-#ifdef __IPHONEOS__
-	std::cout << "There are " << SDL_NumJoysticks() << " joystick(s) available" << std::endl;
-	std::cout << "Default joystick (index 0) is " << SDL_JoystickName(0) << std::endl;
-	sdl_joy = SDL_JoystickOpen(0);
-	if (sdl_joy == nullptr)
-		std::cout << "Error: could not open joystick" << std::endl;
-	std::cout << "joystick number of axis: " << SDL_JoystickNumAxes(sdl_joy) << ", number of hats: " << SDL_JoystickNumHats(sdl_joy) << ", number of balls: " << SDL_JoystickNumBalls(sdl_joy) << ", number of buttons: " << SDL_JoystickNumButtons(sdl_joy) << std::endl;
-#endif
 
 	SDL_SysWMinfo info;     // Get system info.
 #ifdef USE_EXULTSTUDIO
@@ -733,12 +705,8 @@ static void Init(
 		config->value("config/video/disable_fades", disable_fades, false);
 
 		setup_video(fullscreen, VIDEO_INIT);
-#ifndef MACOSX      // Don't set icon on OS X; the external icon is *much* nicer
-	SetIcon();
-#endif
-
+		SetIcon();
 		Audio::Init();
-
 		gwin->get_pal()->set_fades_enabled(!disable_fades);
 		gwin->set_in_exult_menu(false);
 	}
@@ -1230,13 +1198,6 @@ static void Handle_event(
 	static uint32 last_b1_click = 0;
 	static uint32 last_b3_click = 0;
 	//cout << "Event " << (int) event.type << " received"<<endl;
-#ifdef __IPHONEOS__
-#define JOY_LEFT_VAL -1400
-#define JOY_RIGHT_VAL 1400
-#define JOY_UP_VAL -200
-#define JOY_DOWN_VAL -3000
-	float ax, ay;
-#endif
 	switch (event.type) {
 	case SDL_USEREVENT: {
 		if (!dragged) {
@@ -1256,10 +1217,6 @@ static void Handle_event(
 	case SDL_MOUSEBUTTONDOWN: {
 		if (dont_move_mode)
 			break;
-#ifdef __IPHONEOS__
-		if (gkeybb->handle_event(&event))
-			break;
-#endif
 		if (g_shortcutBar && g_shortcutBar->handle_event(&event))
 			break;
 		int x;
@@ -1529,28 +1486,7 @@ static void Handle_event(
 	case SDL_QUIT:
 		gwin->get_gump_man()->okay_to_quit();
 		break;
-#ifdef __IPHONEOS__
-	case SDL_JOYAXISMOTION:
-		ax = SDL_JoystickGetAxis(sdl_joy, 0);
-		ay = SDL_JoystickGetAxis(sdl_joy, 1);
-		//std::cout << "joystick  ax: " << ax << ", ay: " << ay << std::endl;
-		event.type = SDL_KEYDOWN;
-		event.key.type = SDL_KEYDOWN;
-		event.key.state = SDL_PRESSED;
-		event.key.keysym.mod = KMOD_NONE;
-		if (ax >= JOY_RIGHT_VAL) {
-			event.key.keysym.sym = SDLK_RIGHT;
-		} else if (ax <= JOY_LEFT_VAL) {
-			event.key.keysym.sym = SDLK_LEFT;
-		} else if (ay >= JOY_UP_VAL) {
-			event.key.keysym.sym = SDLK_UP;
-		} else if (ay <= JOY_DOWN_VAL) {
-			event.key.keysym.sym = SDLK_DOWN;
-		} else {
-			break;
-		}
-		// Should continue on to the SDL_KEY* cases
-#endif
+
 	case SDL_KEYDOWN:       // Keystroke.
 	case SDL_KEYUP:
 		if (!dragging &&    // ESC while dragging causes crashes.
@@ -1632,10 +1568,6 @@ static bool Get_click(
 		while (SDL_PollEvent(&event))
 			switch (event.type) {
 			case SDL_MOUSEBUTTONDOWN:
-#ifdef __IPHONEOS__
-				if (gkeybb->handle_event(&event))
-					break;
-#endif
 				if (g_shortcutBar && g_shortcutBar->handle_event(&event))
 					break;
 				if (event.button.button == 3)
@@ -1647,10 +1579,6 @@ static bool Get_click(
 				}
 				break;
 			case SDL_MOUSEBUTTONUP:
-#ifdef __IPHONEOS__
-				if (gkeybb->handle_event(&event))
-					break;
-#endif
 				if (g_shortcutBar && g_shortcutBar->handle_event(&event))
 					break;
 				if (event.button.button == 1) {

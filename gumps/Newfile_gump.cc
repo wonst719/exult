@@ -771,9 +771,6 @@ void Newfile_gump::text_input(int chr, int unicode) {
 		}
 		update_details = true;
 		break;
-#ifdef __IPHONEOS__
-	case SDLK_DELETE:
-#endif
 	case SDLK_BACKSPACE:
 		if (BackspacePressed()) {
 			// Can't restore/delete now.
@@ -790,7 +787,6 @@ void Newfile_gump::text_input(int chr, int unicode) {
 		}
 		break;
 
-#ifndef __IPHONEOS__
 	case SDLK_DELETE:
 		if (DeletePressed()) {
 			// Can't restore/delete now.
@@ -806,7 +802,7 @@ void Newfile_gump::text_input(int chr, int unicode) {
 			update_details = true;
 		}
 		break;
-#endif
+
 	case SDLK_LEFT:
 		repaint = MoveCursor(-1);
 		break;

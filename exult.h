@@ -94,8 +94,5 @@ extern GameManager *gamemanager;
 extern quitting_time_enum quitting_time;
 
 extern class ShortcutBar_gump *g_shortcutBar;
-#ifdef __IPHONEOS__
-extern class KeyboardButton_gump *gkeybb;
-#endif
 
 #endif

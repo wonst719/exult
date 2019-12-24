@@ -158,10 +158,6 @@
 #define BUNDLE_EXULT_SI_FLX "<BUNDLE>/exult_si.flx"
 #define BUNDLE_EXULT_GAM_FLX "<BUNDLE>/exult_%s.flx"
 
-#ifdef __IPHONEOS__
-#define IPHONE_FLX "<DATA>/exult_iphone.flx"
-#endif
-
 #define AUTONOTES   "autonotes.txt"
 #define PATCH_AUTONOTES "<PATCH>/autonotes.txt"
 

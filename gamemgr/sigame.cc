@@ -49,11 +49,6 @@ using std::rand;
 using std::strlen;
 using std::unique_ptr;
 using std::make_unique;
-#ifdef __IPHONEOS__
-#include "data/exult_iphone_flx.h"
-#include "exult.h"
-#include "iphone_gumps.h"
-#endif
 
 SI_Game::SI_Game() {
 	if (!read_game_xml()) {
@@ -1227,9 +1222,6 @@ bool SI_Game::new_game(Vga_file &shapes) {
 	Skin_data *skindata =
 	    Shapeinfo_lookup::GetSkinInfoSafe(
 	        defskin->default_skin, defskin->default_female, true);
-#ifdef __IPHONEOS__
-	gkeybb->autopaint = false;
-#endif
 	do {
 		Delay();
 		if (redraw) {
@@ -1248,17 +1240,10 @@ bool SI_Game::new_game(Vga_file &shapes) {
 			else
 				snprintf(disp_name, max_len + 2, "%s", npc_name);
 			font->draw_text(ibuf, topx + 60, menuy + 10, disp_name);
-#ifdef __IPHONEOS__
-			gkeybb->paint();
-#endif
 			gwin->get_win()->show();
 			redraw = false;
 		}
 		while (SDL_PollEvent(&event)) {
-#ifdef __IPHONEOS__
-			if (gkeybb->handle_event(&event))
-				redraw = true;
-#endif
 			Uint16 keysym_unicode = 0;
 			bool isTextInput = false;
 			if (event.type == SDL_TEXTINPUT) {
@@ -1318,9 +1303,6 @@ bool SI_Game::new_game(Vga_file &shapes) {
 					} else
 						editing = ok = false;
 					break;
-#ifdef __IPHONEOS__
-				case SDLK_DELETE:
-#endif
 				case SDLK_BACKSPACE:
 					if (selected == 0 && strlen(npc_name) > 0)
 						npc_name[strlen(npc_name) - 1] = 0;
@@ -1351,9 +1333,6 @@ bool SI_Game::new_game(Vga_file &shapes) {
 	if (ok) {
 #ifdef DEBUG
 		std::cout << "Skin is: " << skindata->skin_id << " Sex is: " << skindata->is_female << std::endl;
-#endif
-#ifdef __IPHONEOS__
-		gkeybb->autopaint = true;
 #endif
 		set_avskin(skindata->skin_id);
 		set_avname(npc_name);

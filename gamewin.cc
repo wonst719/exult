@@ -382,11 +382,7 @@ Game_window::Game_window(
 	config->set("config/gameplay/scroll_with_mouse",
 	            scroll_with_mouse ? "yes" : "no", false);
 	// ShortcutBar
-#ifdef __IPHONEOS__
-	config->value("config/shortcutbar/use_shortcutbar", str, "translucent");
-#else
 	config->value("config/shortcutbar/use_shortcutbar", str, "no");
-#endif
 	if(str == "no") {
 		use_shortcutbar = 0;
 	} else if(str == "yes") {
@@ -396,12 +392,7 @@ Game_window::Game_window(
 		use_shortcutbar = 1;
 	}
 	config->set("config/shortcutbar/use_shortcutbar", str, false);
-
-#ifdef __IPHONEOS__
-	config->value("config/shortcutbar/use_outline_color", str, "black");
-#else
 	config->value("config/shortcutbar/use_outline_color", str, "no");
-#endif
 
 	if(str == "no") {
 		outline_color = NPIXCOLORS;
@@ -1980,32 +1971,6 @@ Game_object *Game_window::find_object(
 	return best;
 }
 
-#ifdef __IPHONEOS__
-void Game_window::find_nearby_objects(Game_object_map_xy *mobjxy, int x, int y, Gump *gump) {
-	Game_object *iobj;
-	// Find object at each pixel
-	for (int iy = y - 10; iy < (y + 10); iy++) {
-		for (int ix = x - 10; ix < (x + 10); ix++) {
-			if (gump) {
-				iobj = gump->find_object(ix, iy);
-			} else {
-				iobj = find_object(ix, iy);
-			}
-
-			if (iobj) {
-				int *arrXY = new int[2];
-				arrXY[0] = ix;
-				arrXY[1] = iy;
-				std::pair<Game_object_map_xy::iterator, bool> ret;
-
-				ret = mobjxy->insert(std::pair<Game_object *, int *>(iobj, arrXY));
-				if (ret.second == false)
-					delete [] arrXY;
-			}
-		}
-	}
-}
-#endif
 static inline string Get_object_name(const Game_object *obj) {
 	if (obj == Game_window::get_instance()->get_main_actor()) {
 		if (GAME_BG)
@@ -2035,17 +2000,6 @@ void Game_window::show_items(
 	} else {            // Search rest of world.
 		obj = find_object(x, y);
 	}
-#ifdef __IPHONEOS__
-	Game_object_map_xy mobjxy;
-	find_nearby_objects(&mobjxy, x, y, gump);
-	if (mobjxy.size() > 0) {
-		Itemmenu_gump *itemgump = new Itemmenu_gump(&mobjxy, x, y);
-		Game_window::get_instance()->get_gump_man()->do_modal_gump(itemgump, Mouse::hand);
-		itemgump->postCloseActions();
-		delete itemgump;
-		obj = nullptr;
-	}
-#endif
 	// Map-editing?
 	if (obj && cheat.in_map_editor()) {
 		if (ctrl)       // Control?  Toggle.

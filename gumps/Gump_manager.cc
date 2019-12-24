@@ -417,9 +417,6 @@ void Gump_manager::update_gumps() {
 void Gump_manager::paint(bool modal) {
 	for (Gump_list *gmp = open_gumps; gmp; gmp = gmp->next)
 		if (gmp->gump->is_modal() == modal) gmp->gump->paint();
-#ifdef __IPHONEOS__
-	gkeybb->paint();
-#endif
 }
 
 
@@ -456,10 +453,6 @@ bool Gump_manager::handle_modal_gump_event(
 		cout << "(x,y) rel. to gump is (" << (gx - gump->get_x())
 		     << ", " << (gy - gump->get_y()) << ")" << endl;
 #endif
-#ifdef __IPHONEOS__
-		if (gkeybb->handle_event(&event))
-			break;
-#endif
 		if (g_shortcutBar && g_shortcutBar->handle_event(&event))
 			break;
 		if (event.button.button == 1) {
@@ -478,10 +471,6 @@ bool Gump_manager::handle_modal_gump_event(
 		break;
 	case SDL_MOUSEBUTTONUP:
 		gwin->get_win()->screen_to_game(event.button.x, event.button.y, gwin->get_fastmouse(), gx, gy);
-#ifdef __IPHONEOS__
-		if (gkeybb->handle_event(&event))
-			break;
-#endif
 		if (g_shortcutBar && g_shortcutBar->handle_event(&event))
 			break;
 		if (event.button.button != 3)
@@ -663,9 +652,6 @@ bool Gump_manager::do_modal_gump(
 		paint->paint();
 	Mouse::mouse->show();
 	gwin->show();
-#ifdef __IPHONEOS__
-	gkeybb->paint();
-#endif
 	do {
 		Delay();        // Wait a fraction of a second.
 		Mouse::mouse->hide();       // Turn off mouse.
@@ -683,9 +669,6 @@ bool Gump_manager::do_modal_gump(
 		if (!gwin->show() &&    // Blit to screen if necessary.
 		        Mouse::mouse_update)    // If not, did mouse change?
 			Mouse::mouse->blit_dirty();
-#ifdef __IPHONEOS__
-		gkeybb->paint();
-#endif
 	} while (!gump->is_done() && !escaped);
 	Mouse::mouse->hide();
 	remove_gump(gump);

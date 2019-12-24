@@ -242,11 +242,6 @@ void Shape_manager::load(
 	fonts = new Fonts_vga_file();
 	fonts->init();
 
-#ifdef __IPHONEOS__
-	files[SF_IPHONE_FLX].load(IPHONE_FLX);
-#endif
-
-
 	// Get translucency tables.
 	unsigned char *blends = nullptr;
 	unique_ptr<unsigned char[]> ptr; // We will delete THIS at the end, not blends!

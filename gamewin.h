@@ -41,10 +41,6 @@
 #define CYCLE_RED_PLASMA()
 #endif
 
-#ifdef __IPHONEOS__
-#include "objs/objs.h"
-#endif
-
 #ifndef ATTR_PRINTF
 #ifdef __GNUC__
 #define ATTR_PRINTF(x,y) __attribute__((format(printf, (x), (y))))
@@ -633,10 +629,6 @@ public:
 	                   int qual = c_any_qual); // Activate item in party.
 	// Find object (x, y) is in.
 	Game_object *find_object(int x, int y);
-#ifdef __IPHONEOS__
-	using Game_object_map_xy = std::map<Game_object *, int *>;
-	void find_nearby_objects(Game_object_map_xy *mobjxy, int x, int y, Gump *gump = nullptr);
-#endif
 
 	// Show names of items clicked on.
 	void show_items(int x, int y, bool ctrl = false);
