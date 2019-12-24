@@ -468,7 +468,7 @@ int U7mkdir(
     int mode
 ) {
 	string name = get_system_path(dirname);
-#if defined(MACOSX)
+#ifdef MACOSX
 	// remove any trailing slashes
 	string::size_type pos = name.find_last_not_of('/');
 	if (pos != string::npos)
@@ -744,11 +744,7 @@ void setup_program_paths() {
 	string savehome_dir(home_dir);
 	string gamehome_dir(".");
 
-#if defined(__IPHONEOS__)
-	config_dir = "../Library/Preferences";
-	savehome_dir = "../Documents/save";
-	gamehome_dir = "game";
-#elif defined(MACOSX)
+#ifdef MACOSX
 	config_dir += "/Library/Preferences";
 	savehome_dir += "/Library/Application Support/Exult";
 	gamehome_dir = "/Library/Application Support/Exult";
