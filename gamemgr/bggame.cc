@@ -413,18 +413,21 @@ void BG_Game::scene_lord_british() {
 	 *  Eric Wasylishen, Jun. 19, 2006.
 	 */
 
-	WAITDELAY(1500); // - give a little space between exult title music
-	//     and LB presents screen
+	try {
+		WAITDELAY(1500); // - give a little space between exult title music
+		//     and LB presents screen
 
 
-	// Lord British presents...  (sh. 0x11)
-	pal->load(INTROPAL_DAT, PATCH_INTROPAL, 3);
-	sman->paint_shape(topx, topy, shapes.get_shape(lord_british_shp, 0));
+		// Lord British presents...  (sh. 0x11)
+		pal->load(INTROPAL_DAT, PATCH_INTROPAL, 3);
+		sman->paint_shape(topx, topy, shapes.get_shape(lord_british_shp, 0));
 
-	pal->fade_in(c_fade_in_time);
-	if (1 == wait_delay(2000))
-		throw UserBreakException();
-	pal->fade_out(c_fade_out_time);
+		pal->fade_in(c_fade_in_time);
+		if (1 == wait_delay(2000))
+			throw UserBreakException();
+		pal->fade_out(c_fade_out_time);
+	} catch (const UserSkipException &/*x*/) {
+	}
 	gwin->clear_screen(true);
 }
 
