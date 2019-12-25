@@ -44,29 +44,29 @@ public:
 	void			reset();
 
 	sint32			playSample(AudioSample *sample, int loop, int priority, bool paused=false, uint32 pitch_shift=AUDIO_DEF_PITCH, int lvol=AUDIO_MAX_VOLUME, int rvol=AUDIO_MAX_VOLUME);
-	bool			isPlaying(sint32 instance_id);
-	bool			isPlaying(AudioSample *sample);
+	bool			isPlaying(sint32 instance_id) const;
+	bool			isPlaying(AudioSample *sample) const;
 	void			stopSample(sint32 instance_id);
 	void			stopSample(AudioSample *sample);
 	
 	void			setPaused(sint32 instance_id, bool paused);
-	bool			isPaused(sint32 instance_id);
+	bool			isPaused(sint32 instance_id) const;
 
 	void			setPausedAll(bool paused);
 
 	void			setVolume(sint32 instance_id, int lvol, int rvol);
-	void			getVolume(sint32 instance_id, int &lvol, int &rvol);
+	void			getVolume(sint32 instance_id, int &lvol, int &rvol) const;
 
 	bool			set2DPosition(sint32 instance_id, int distance, int angle);
-	void			get2DPosition(sint32 instance_id, int &distance, int &angle);
+	void			get2DPosition(sint32 instance_id, int &distance, int &angle) const;
 
 	void			openMidiOutput();
 	void			closeMidiOutput();
 
-	MyMidiPlayer	*getMidiPlayer() { return midi; }
+	MyMidiPlayer	*getMidiPlayer() const { return midi; }
 
-	uint32			getSampleRate() { return sample_rate; }
-	bool			getStereo() { return stereo; }
+	uint32			getSampleRate() const { return sample_rate; }
+	bool			getStereo() const { return stereo; }
 
 private:
 	bool			audio_ok;
@@ -75,7 +75,6 @@ private:
 	MyMidiPlayer	*midi;
 	int				midi_volume;
 
-	int				num_channels;
 	std::vector<AudioChannel>	channels;
 	sint32			id_counter;
 
@@ -86,8 +85,8 @@ private:
 
 	static AudioMixer* the_audio_mixer;
 
-	void			Lock();
-	void			Unlock();
+	void			Lock() const;
+	void			Unlock() const;
 };
 
 }

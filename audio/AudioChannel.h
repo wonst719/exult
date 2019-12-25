@@ -72,7 +72,7 @@ public:
 	void playSample(AudioSample *sample, int loop, int priority, bool paused, uint32 pitch_shift, int lvol, int rvol, sint32 instance_id);
 	void resampleAndMix(sint16 *stream, uint32 bytes);
 
-	bool isPlaying() { return sample != nullptr; }
+	bool isPlaying() const { return sample != nullptr; }
 
 	void setPitchShift(int pitch_shift_) { pitch_shift = pitch_shift_; }
 	uint32 getPitchShift() const { return pitch_shift; }
@@ -94,9 +94,9 @@ public:
 
 	void calculate2DVolume(int &lvol, int &rvol);
 
-	AudioSample *getSample() { return sample; }
+	AudioSample *getSample() const { return sample; }
 
-	sint32 getInstanceId() { return instance_id; }
+	sint32 getInstanceId() const { return instance_id; }
 private:
 
 	//

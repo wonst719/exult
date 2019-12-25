@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <SDL.h>
 
+#include <algorithm>
 #include <iostream>
 
 #include "Midi.h"
@@ -38,7 +39,7 @@ AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_) :
 audio_ok(false), 
 sample_rate(sample_rate_), stereo(stereo_),
 midi(nullptr), midi_volume(255),
-num_channels(num_channels_), id_counter(0)
+id_counter(0)
 {
 	the_audio_mixer = this;
 
@@ -72,9 +73,7 @@ num_channels(num_channels_), id_counter(0)
 			sample_rate = obtained.freq;
 			stereo = obtained.channels == 2;
 
-			channels.clear();
-			channels.reserve(num_channels);
-			for (int i=0;i<num_channels;i++)
+			for (int i = 0; i < num_channels_; i++)
 				channels.emplace_back(sample_rate, stereo);
 
 		}
@@ -96,12 +95,12 @@ AudioMixer::~AudioMixer()
 	the_audio_mixer = nullptr;
 }
 
-void AudioMixer::Lock()
+void AudioMixer::Lock() const
 {
 	SDL_LockAudio();
 }
 
-void AudioMixer::Unlock()
+void AudioMixer::Unlock() const
 {
 	SDL_UnlockAudio();
 }
@@ -130,70 +129,54 @@ sint32 AudioMixer::playSample(AudioSample *sample, int loop, int priority, bool 
 
 	Lock();
 	{
-
-		int i;
-		for (i=0;i<num_channels;i++)
-		{
-			if (!channels[i].isPlaying()) {
-				lowest = i;
-				break;
-			}
-			else if (channels[i].getPriority() < priority) {
-				lowprior = channels[i].getPriority();
-				lowest = i;
-			}
+		auto it = std::find_if(channels.begin(), channels.end(), [](auto& channel) {
+			return !channel.isPlaying();
+		});
+		if (it == channels.end()) {
+			it = std::min_element(channels.begin(), channels.end(), [](auto& c1, auto& c2) {
+				return c1.getPriority() < c2.getPriority();
+			});
 		}
-
-		if (i != num_channels || lowprior < priority)
-		{
+		if (it != channels.end() && (!it->isPlaying() || it->getPriority() < priority)) {
 			if (++id_counter < 0) id_counter = 0;
-			channels[lowest].playSample(sample,loop,priority,paused,pitch_shift_,lvol,rvol,id_counter);
-		}
-		else 
+			it->playSample(sample, loop, priority, paused, pitch_shift_, lvol, rvol, id_counter);
+		} else {
 			lowest = -1;
-
+		}
 	}
 	Unlock();
 
 	return lowest!=-1?id_counter:-1;
 }
 
-bool AudioMixer::isPlaying(sint32 instance_id)
+bool AudioMixer::isPlaying(sint32 instance_id) const
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return false;
 
 	bool playing = false;
 	Lock();
 	{
-		for (int chan = 0; chan < num_channels; chan++)
-		{
-			if (channels[chan].getInstanceId() == instance_id)
-			{
-				playing = channels[chan].isPlaying();
-				break;
-			}			
-		}
+		auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
+			return channel.getInstanceId() == instance_id;
+		});
+		playing = it != channels.end() && it->isPlaying();
 	}
 	Unlock();
 
 	return playing;
 }
 
-bool AudioMixer::isPlaying(AudioSample *sample)
+bool AudioMixer::isPlaying(AudioSample *sample) const
 {
 	if (!sample || channels.empty() || !audio_ok) return false;
 
 	bool playing = false;
 	Lock();
 	{
-		for (int chan = 0; chan < num_channels; chan++)
-		{
-			if (channels[chan].getSample() == sample)
-			{
-				playing = true;
-				break;
-			}
-		}
+		auto it = std::find_if(channels.cbegin(), channels.cend(), [sample](auto& channel) {
+			return channel.getSample() == sample;
+		});
+		playing = it != channels.end();
 	}
 	Unlock();
 
@@ -206,13 +189,11 @@ void AudioMixer::stopSample(sint32 instance_id)
 
 	Lock();
 	{
-		for (int chan = 0; chan < num_channels; chan++)
-		{
-			if (channels[chan].getInstanceId() == instance_id)
-			{
-				channels[chan].stop();
-				break;
-			}
+		auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
+			return channel.getInstanceId() == instance_id;
+		});
+		if (it != channels.end()) {
+			it->stop();
 		}
 	}
 	Unlock();
@@ -239,19 +220,17 @@ void AudioMixer::setPaused(sint32 instance_id, bool paused)
 
 	Lock();
 	{
-		for (int chan = 0; chan < num_channels; chan++)
-		{
-			if (channels[chan].getInstanceId() == instance_id)
-			{
-				channels[chan].setPaused(paused);
-				break;
-			}
+		auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
+			return channel.getInstanceId() == instance_id;
+		});
+		if (it != channels.end()) {
+			it->setPaused(paused);
 		}
 	}
 	Unlock();
 }
 
-bool AudioMixer::isPaused(sint32 instance_id)
+bool AudioMixer::isPaused(sint32 instance_id) const
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return false;
 
@@ -259,15 +238,10 @@ bool AudioMixer::isPaused(sint32 instance_id)
 
 	Lock();
 	{	
-		for (int chan = 0; chan < num_channels; chan++)
-		{
-			if (channels[chan].getInstanceId() == instance_id)
-			{
-				ret = channels[chan].isPaused();
-				break;
-			}
-		}
-
+		auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
+			return channel.getInstanceId() == instance_id;
+		});
+		ret = it != channels.end() && it->isPaused();
 	}
 	Unlock();
 
@@ -280,10 +254,8 @@ void AudioMixer::setPausedAll(bool paused)
 
 	Lock();
 	{
-
 		for (auto& channel : channels)
 			channel.setPaused(paused);
-
 	}
 	Unlock();
 }
@@ -294,31 +266,27 @@ void AudioMixer::setVolume(sint32 instance_id, int lvol, int rvol)
 
 	Lock();
 	{
-		for (int chan = 0; chan < num_channels; chan++)
-		{
-			if (channels[chan].getInstanceId() == instance_id)
-			{
-				channels[chan].setVolume(lvol,rvol);
-				break;
-			}
+		auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
+			return channel.getInstanceId() == instance_id;
+		});
+		if (it != channels.end()) {
+			it->setVolume(lvol, rvol);
 		}
 	}
 	Unlock();
 }
 
-void AudioMixer::getVolume(sint32 instance_id, int &lvol, int &rvol)
+void AudioMixer::getVolume(sint32 instance_id, int &lvol, int &rvol) const
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return;
 
 	Lock();
 	{
-		for (int chan = 0; chan < num_channels; chan++)
-		{
-			if (channels[chan].getInstanceId() == instance_id)
-			{
-				channels[chan].getVolume(lvol,rvol);
-				break;
-			}
+		auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
+			return channel.getInstanceId() == instance_id;
+		});
+		if (it != channels.end()) {
+			it->getVolume(lvol, rvol);
 		}
 	}
 	Unlock();
@@ -332,33 +300,29 @@ bool AudioMixer::set2DPosition(sint32 instance_id, int distance, int angle)
 
 	Lock();
 	{
-		for (int chan = 0; chan < num_channels; chan++)
-		{
-			if (channels[chan].getInstanceId() == instance_id)
-			{
-				channels[chan].set2DPosition(distance,angle);
-				playing = channels[chan].isPlaying();
-				break;
-			}
+		auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
+			return channel.getInstanceId() == instance_id;
+		});
+		if (it != channels.end()) {
+			it->set2DPosition(distance, angle);
+			playing = it->isPlaying();
 		}
 	}
 	Unlock();
 	return playing;
 }
 
-void AudioMixer::get2DPosition(sint32 instance_id, int &distance, int &angle)
+void AudioMixer::get2DPosition(sint32 instance_id, int &distance, int &angle) const
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return;
 
 	Lock();
 	{
-		for (int chan = 0; chan < num_channels; chan++)
-		{
-			if (channels[chan].getInstanceId() == instance_id)
-			{
-				channels[chan].get2DPosition(distance,angle);
-				break;
-			}
+		auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
+			return channel.getInstanceId() == instance_id;
+		});
+		if (it != channels.end()) {
+			it->get2DPosition(distance, angle);
 		}
 	}
 	Unlock();
