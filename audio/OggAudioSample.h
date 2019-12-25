@@ -36,7 +36,6 @@ public:
 
 	void initDecompressor(void *DecompData) const override;
 	uint32 decompressFrame(void *DecompData, void *samples) const override;
-	void rewind(void *DecompData) const override;
 	void freeDecompressor(void *DecompData) const override;
 
 	static ov_callbacks callbacks;
@@ -59,7 +58,7 @@ protected:
 	};
 
 	std::unique_ptr<IDataSource> oggdata;
-	bool locked;
+	mutable bool locked;
 };
 
 }

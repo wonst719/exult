@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 #include "VocAudioSample.h"
+#include <new>
 
 #define	TRAILING_VOC_SLOP 32
 #define	LEADING_VOC_SLOP 32
@@ -153,12 +154,13 @@ VocAudioSample::VocAudioSample(std::unique_ptr<uint8[]> buffer_, uint32 size_)
 	bits = 8;
 	stereo = false;
 	decompressor_size = sizeof(VocDecompData);
+	decompressor_align = alignof(VocDecompData);
 	length = size_;
 }
 
 void VocAudioSample::initDecompressor(void *DecompData) const
 {
-	VocDecompData *decomp = static_cast<VocDecompData *>(DecompData);
+	VocDecompData *decomp = new (DecompData) VocDecompData;
 	decomp->pos = 0x1a;
 	decomp->compression = 0;
 	decomp->adpcm_reference = -1;
@@ -167,9 +169,10 @@ void VocAudioSample::initDecompressor(void *DecompData) const
 	decomp->cur_type = 0;
 }
 
-void VocAudioSample::rewind(void *DecompData) const
+void VocAudioSample::freeDecompressor(void *DecompData) const
 {
-	initDecompressor(DecompData);
+	VocDecompData *decomp = static_cast<VocDecompData *>(DecompData);
+	decomp->~VocDecompData();
 }
 
 //

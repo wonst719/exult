@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "RawAudioSample.h"
 #include "databuf.h"
+#include <new>
 
 namespace Pentagram {
 
@@ -32,6 +33,7 @@ RawAudioSample::RawAudioSample(std::unique_ptr<uint8[]> buffer_, uint32 size_, u
 	stereo = stereo_;
 	frame_size = 512;
 	decompressor_size = sizeof(RawDecompData);
+	decompressor_align = alignof(RawDecompData);
 	length = size_;
 	start_pos = 0;
 	byte_swap = false;
@@ -39,13 +41,14 @@ RawAudioSample::RawAudioSample(std::unique_ptr<uint8[]> buffer_, uint32 size_, u
 
 void RawAudioSample::initDecompressor(void *DecompData) const
 {
-	RawDecompData *decomp = static_cast<RawDecompData *>(DecompData);
+	RawDecompData *decomp = new (DecompData) RawDecompData;
 	decomp->pos = start_pos;
 }
 
-void RawAudioSample::rewind(void *DecompData) const
+void RawAudioSample::freeDecompressor(void *DecompData) const
 {
-	initDecompressor(DecompData);
+	RawDecompData *decomp = static_cast<RawDecompData *>(DecompData);
+	decomp->~RawDecompData();
 }
 
 uint32 RawAudioSample::decompressFrame(void *DecompData, void *samples) const

@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "headers/exceptions.h"
 #include "databuf.h"
 #include <SDL.h>
+#include <new>
 
 namespace Pentagram {
 
@@ -36,10 +37,9 @@ OggAudioSample::OggAudioSample(std::unique_ptr<IDataSource> oggdata_)
 {
 	frame_size = 4096;
 	decompressor_size = sizeof(OggDecompData);
+	decompressor_align = alignof(OggDecompData);
 	bits = 16;
 	locked = false;
-
-
 }
 
 OggAudioSample::OggAudioSample(std::unique_ptr<uint8[]> buffer, uint32 size)
@@ -47,6 +47,7 @@ OggAudioSample::OggAudioSample(std::unique_ptr<uint8[]> buffer, uint32 size)
 {
 	frame_size = 4096;
 	decompressor_size = sizeof(OggDecompData);
+	decompressor_align = alignof(OggDecompData);
 	bits = 16;
 	locked = false;
 }
@@ -97,14 +98,14 @@ bool OggAudioSample::isThis(IDataSource *oggdata)
 
 void OggAudioSample::initDecompressor(void *DecompData) const
 {
-	OggDecompData *decomp = static_cast<OggDecompData *>(DecompData);
+	OggDecompData *decomp = new (DecompData) OggDecompData;
 
 	if (locked)
 		throw exult_exception("Attempted to play OggAudioSample on more than one channel at the same time.");
 
 	if (this->oggdata)
 	{
-		*const_cast<bool*>(&locked) = true;
+		locked = true;
 		decomp->datasource = this->oggdata.get();
 	}
 	else
@@ -122,12 +123,6 @@ void OggAudioSample::initDecompressor(void *DecompData) const
 	decomp->freed = false;
 }
 
-void OggAudioSample::rewind(void *DecompData) const
-{
-	freeDecompressor(DecompData);
-	initDecompressor(DecompData);
-}
-
 void OggAudioSample::freeDecompressor(void *DecompData) const
 {
 	OggDecompData *decomp = static_cast<OggDecompData *>(DecompData);
@@ -136,10 +131,11 @@ void OggAudioSample::freeDecompressor(void *DecompData) const
 	decomp->freed = true;
 	ov_clear(&decomp->ov);
 
-	if (this->oggdata) *const_cast<bool*>(&locked) = false;
+	if (this->oggdata) locked = false;
 	else delete decomp->datasource;
 
 	decomp->datasource = nullptr;
+	decomp->~OggDecompData();
 }
 
 uint32 OggAudioSample::decompressFrame(void *DecompData, void *samples) const

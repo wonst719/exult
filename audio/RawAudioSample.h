@@ -30,7 +30,7 @@ public:
 				   uint32 rate, bool signeddata, bool stereo);
 	void initDecompressor(void *DecompData) const override;
 	uint32 decompressFrame(void *DecompData, void *samples) const override;
-	void rewind(void *DecompData) const override;
+	void freeDecompressor(void *DecompData) const override;
 
 protected:
 

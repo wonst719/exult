@@ -29,41 +29,45 @@ class AudioChannel
 	// We have:
 	// 1x decompressor size
 	// 2x frame size
-	uint8			*playdata;			//
-	uint32			playdata_size;
-	uint32			decompressor_size;	// Persistent data for the decompressor
-	uint32			frame_size;			// 
+	std::unique_ptr<uint8[]> playdata;
+	void			*decomp = nullptr;
+	uint8			*frames[2]{};
+	uint32			playdata_size = 0;
 
 	uint32			sample_rate;
 	bool			stereo;
 
-	sint32			loop;
-	AudioSample		*sample;
+	sint32			loop = 0;
+	AudioSample		*sample = nullptr;
 
 	// Info for sampling
-	uint32			frame_evenodd;	// which buffer is 'frame0'
-	uint32			frame0_size;	// Size of the frame0 buffer in samples
-	uint32			frame1_size;	// Size of the frame1 buffer in samples
-	uint32			position;		// Position in frame0 buffer
+	uint32			frame_evenodd = 0;	// which buffer is 'frame0'
+	uint32			frame0_size = 0;	// Size of the frame0 buffer in samples
+	uint32			frame1_size = 0;	// Size of the frame1 buffer in samples
+	uint32			position = 0;		// Position in frame0 buffer
 	int				lvol, rvol;		// 0-256
 	int				distance;		// 0 - 256
 	int				balance;		// -256 - 256
 	uint32			pitch_shift;	// 0x10000 = no shift
 	int				priority;		// anything. 
-	bool			paused;			// true/false
+	bool			paused = false;		// true/false
 
-	sint32			instance_id;	// Unique id for this channel
+	sint32			instance_id = -1;	// Unique id for this channel
 
 public:
 	AudioChannel(uint32 sample_rate, bool stereo);
 	~AudioChannel();
+	AudioChannel(const AudioChannel&) = delete;
+	AudioChannel(AudioChannel&&) = default;
+	AudioChannel& operator=(const AudioChannel&) = delete;
+	AudioChannel& operator=(AudioChannel&&) = default;
 
 	void stop()
 	{
 		if (sample)
 		{
 			if (playdata)
-				sample->freeDecompressor(playdata);
+				sample->freeDecompressor(decomp);
 			sample->Release();
 			sample = nullptr;
 		}
@@ -97,8 +101,8 @@ public:
 	AudioSample *getSample() const { return sample; }
 
 	sint32 getInstanceId() const { return instance_id; }
-private:
 
+private:
 	//
 	void DecompressNextFrame();
 
@@ -190,8 +194,8 @@ private:
 	// Resampler stuff
 	CubicInterpolator	interp_l;
 	CubicInterpolator	interp_r;
-	int					fp_pos;
-	int					fp_speed;
+	int					fp_pos = 0;
+	int					fp_speed = 0;
 
 	void resampleFrameM8toS(sint16 *&stream, uint32 &bytes);
 	void resampleFrameM8toM(sint16 *&stream, uint32 &bytes);
@@ -201,9 +205,6 @@ private:
 	void resampleFrameM16toM(sint16 *&stream, uint32 &bytes);
 	void resampleFrameS16toM(sint16 *&stream, uint32 &bytes);
 	void resampleFrameS16toS(sint16 *&stream, uint32 &bytes);
-
-
-
 };
 
 }
