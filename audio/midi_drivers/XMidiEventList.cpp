@@ -216,6 +216,6 @@ void XMidiEventList::decrementCounter()
 	if (--counter < 0) {
 		events->FreeThis();
 		events = nullptr;
-		XMidiEvent::Free(this);
+		delete this;
 	}
 }

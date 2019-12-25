@@ -101,47 +101,6 @@ struct XMidiEvent
 
 	XMidiEvent		*next_patch_bank;		// next patch or bank change event
 
-
-	// Here's a bit of joy: WIN32 isn't SMP safe if we use operator new and 
-	// delete. On the other hand, nothing else is thread-safe if we use 
-	// malloc()/free(). So, we wrap the implementations and use 
-	// malloc()/calloc()/free() for WIN32, and the C++ thread-safe allocator 
-	// for other platforms.
-
-	template<class T>
-	static inline T* Malloc(std::size_t num=1)
-	{
-	#ifdef _WIN32
-		return static_cast<T*>(std::malloc(num));
-	#else
-		return static_cast<T*>(::operator new(num));
-	#endif
-	}
-
-	template<class T>
-	static inline T* Calloc(std::size_t num=1,std::size_t sz=0)
-	{
-		if(!sz)
-			sz=sizeof(T);
-	#ifdef _WIN32
-		return static_cast<T*>(std::calloc(num,sz));
-	#else
-		std::size_t	total=sz*num;
-		T *tmp=Malloc<T>(total);
-		std::memset(tmp,0,total);
-		return tmp;
-	#endif
-	}
-
-	static inline void	Free(void *ptr)
-	{
-	#ifdef _WIN32
-		std::free(ptr);
-	#else
-		::operator delete(ptr);
-	#endif
-	}
-
 	void FreeThis() 
 	{
 		// Free all our children first. Using a loop instead of recursive 
@@ -154,8 +113,8 @@ struct XMidiEvent
 		}
 
 		// We only do this with sysex
-		if ((status>>4) == 0xF && ex.sysex_data.buffer) Free (ex.sysex_data.buffer);
-		Free (this);
+		if ((status>>4) == 0xF && ex.sysex_data.buffer) delete [] ex.sysex_data.buffer;
+		delete this;
 	}
 
 };

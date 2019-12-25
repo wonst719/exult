@@ -122,6 +122,9 @@ private:
 	int ExtractTracksFromU7V (IDataSource *source);
 	int ExtractTracksFromXMIDIMT (IDataSource *source);
 	void InsertDisplayEvents();
+
+	void CreateEventList();
+	void DestroyEventList();
 };
 
 #endif //XMIDIFILE_H_INCLUDED
