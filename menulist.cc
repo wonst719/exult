@@ -375,7 +375,7 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 				default: {
 					// let key be processed by selected menu-item
 					if (selected) {
-						entries[selection]->handle_event(event);
+						exit_loop = entries[selection]->handle_event(event);
 					}
 				}
 				break;
