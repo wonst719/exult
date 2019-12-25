@@ -32,6 +32,7 @@ class MyMidiPlayer;
 namespace Pentagram {
 class AudioChannel;
 class AudioSample;
+class SDLAudioDevice;
 
 class AudioMixer
 {
@@ -78,15 +79,14 @@ private:
 	std::vector<AudioChannel>	channels;
 	sint32			id_counter;
 
+	SDLAudioDevice	*device;
+
 	void			init_midi();
 	static void		sdlAudioCallback(void *userdata, uint8 *stream, int len);
 
 	void			MixAudio(sint16 *stream, uint32 bytes);
 
 	static AudioMixer* the_audio_mixer;
-
-	void			Lock() const;
-	void			Unlock() const;
 };
 
 }
