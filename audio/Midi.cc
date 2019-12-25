@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <fstream>
 #include <climits>
 
+#include <vorbis/codec.h>
+
 #include "fnames.h"
 #include "exult.h"
 #include "game.h"

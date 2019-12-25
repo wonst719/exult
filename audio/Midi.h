@@ -22,8 +22,6 @@
 #include <vector>
 #include <string>
 
-#include <vorbis/codec.h>
-
 #include "common_types.h"
 #include "exult_constants.h"
 #include "exceptions.h"
