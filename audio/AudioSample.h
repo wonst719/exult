@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "common_types.h"
 #include "ignore_unused_variable_warning.h"
 
+#include <memory>
+
 class IDataSource;
 
 namespace Pentagram {
@@ -37,13 +39,13 @@ protected:
 	uint32	length;
 
 	uint32	buffer_size;
-	uint8	*buffer;
+	std::unique_ptr<uint8[]> buffer;
 
 	uint32	refcount;
 
 public:
-	AudioSample(uint8 *buffer, uint32 size);
-	virtual ~AudioSample();
+	AudioSample(std::unique_ptr<uint8[]> buffer, uint32 size);
+	virtual ~AudioSample() = default;
 
 	inline uint32 getRate() const { return sample_rate; }
 	inline uint32 getBits() const { return bits; }
@@ -68,7 +70,7 @@ public:
 	}
 	uint32			getRefCount() { return refcount; }
 
-	static AudioSample *createAudioSample(uint8 *data, uint32 size);
+	static AudioSample *createAudioSample(std::unique_ptr<uint8[]> data, uint32 size);
 };
 
 }

@@ -32,7 +32,7 @@ class OggAudioSample : public AudioSample
 {
 public:
 	OggAudioSample(std::unique_ptr<IDataSource> oggdata);
-	OggAudioSample(uint8 *buffer, uint32 size);
+	OggAudioSample(std::unique_ptr<uint8[]> buffer, uint32 size);
 
 	void initDecompressor(void *DecompData) const override;
 	uint32 decompressFrame(void *DecompData, void *samples) const override;

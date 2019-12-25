@@ -42,8 +42,8 @@ OggAudioSample::OggAudioSample(std::unique_ptr<IDataSource> oggdata_)
 
 }
 
-OggAudioSample::OggAudioSample(uint8 *buffer, uint32 size)
-	: AudioSample(buffer, size), oggdata(nullptr)
+OggAudioSample::OggAudioSample(std::unique_ptr<uint8[]> buffer, uint32 size)
+	: AudioSample(std::move(buffer), size), oggdata(nullptr)
 {
 	frame_size = 4096;
 	decompressor_size = sizeof(OggDecompData);
@@ -109,7 +109,7 @@ void OggAudioSample::initDecompressor(void *DecompData) const
 	}
 	else
 	{
-		decomp->datasource = new IBufferDataView(buffer,buffer_size);
+		decomp->datasource = new IBufferDataView(buffer, buffer_size);
 	}
 
 	decomp->datasource->seek(0);

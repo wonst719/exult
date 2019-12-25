@@ -113,7 +113,7 @@ AudioSample *SFX_cache_manager::request(Flex *sfx_file, int id)
 
 		size_t wavlen;			// Read .wav file.
 		auto wavbuf = sfx_file->retrieve(id, wavlen);
-		loaded->second = AudioSample::createAudioSample(wavbuf.release(), wavlen);
+		loaded->second = AudioSample::createAudioSample(std::move(wavbuf), wavlen);
 	}
 
 	if (!loaded->second) return nullptr;
@@ -411,20 +411,19 @@ Audio::~Audio()
 
 void Audio::copy_and_play(const uint8 *sound_data, uint32 len, bool wait)
 {
-	uint8 *new_sound_data = new uint8[len];
-	std::memcpy(new_sound_data, sound_data, len);
-	play(new_sound_data, len, wait);
+	auto new_sound_data = std::make_unique<uint8[]>(len);
+	std::memcpy(new_sound_data.get(), sound_data, len);
+	play(std::move(new_sound_data), len, wait);
 }
 
-void Audio::play(uint8 *sound_data, uint32 len, bool wait)
+void Audio::play(std::unique_ptr<uint8[]> sound_data, uint32 len, bool wait)
 {
 	ignore_unused_variable_warning(wait);
 	if (!audio_enabled || !speech_enabled || !len) {
-		delete [] sound_data;
 		return;
 	}
 
-	AudioSample *audio_sample = AudioSample::createAudioSample(sound_data, len);
+	AudioSample *audio_sample = AudioSample::createAudioSample(std::move(sound_data), len);
 
 	if (audio_sample) {
 		mixer->playSample(audio_sample,0,128);
@@ -475,7 +474,7 @@ void Audio::playfile(const char *fname, const char *fpatch, bool wait)
 		return;
 	}
 
-	play(buf.release(), len, wait);
+	play(std::move(buf), len, wait);
 }
 
 
@@ -577,7 +576,7 @@ bool Audio::start_speech(int num, bool wait)
 		return false;
 	}
 
-	play(buf.release(), len, wait);
+	play(std::move(buf), len, wait);
 	return true;
 }
 

@@ -148,8 +148,6 @@ void	MyMidiPlayer::start_music(int num,bool repeat,std::string flex)
 		else if (flex == MAINSHP_FLX) num--;
 	}
 
-	IDataSource *mid_data = nullptr;
-
 	// Try in patch dir first.
 	string pflex("<PATCH>/");
 	size_t prefix_len = 0;
@@ -163,24 +161,22 @@ void	MyMidiPlayer::start_music(int num,bool repeat,std::string flex)
 	}
 
 	pflex += flex.c_str() + prefix_len;
+	std::unique_ptr<IDataSource> mid_data;
 	if (is_system_path_defined("<BUNDLE>")) {
 		string bflex("<BUNDLE>/");
 		bflex += flex.c_str() + prefix_len;
-		mid_data = new IExultDataSource(flex, bflex, pflex, num);
+		mid_data = std::make_unique<IExultDataSource>(flex, bflex, pflex, num);
 	} else {
-		mid_data = new IExultDataSource(flex, pflex, num);
+		mid_data = std::make_unique<IExultDataSource>(flex, pflex, num);
 	}
 
 	// Extra safety.
 	if (!mid_data->getSize())
 	{
-		delete mid_data;
 		return;
 	}
 
-	XMidiFile midfile(mid_data, setup_timbre_for_track(flex));
-
-	delete mid_data;
+	XMidiFile midfile(mid_data.get(), setup_timbre_for_track(flex));
 
 	// Now give the xmidi object to the midi device
 
@@ -698,24 +694,21 @@ void    MyMidiPlayer::start_sound_effect(int num)
 	// Only support SFX on devices with 2 or more sequences
 	if (midi_driver->maxSequences() < 2) return;
 
-	IExultDataSource *mid_data;
+	std::unique_ptr<IExultDataSource> mid_data;
 	if (is_system_path_defined("<BUNDLE>")) {
-		mid_data = new IExultDataSource("<DATA>/midisfx.flx",
+		mid_data = std::make_unique<IExultDataSource>("<DATA>/midisfx.flx",
 		                                "<BUNDLE>/midisfx.flx", real_num);
 	} else {
-		mid_data = new IExultDataSource("<DATA>/midisfx.flx", real_num);
+		mid_data = std::make_unique<IExultDataSource>("<DATA>/midisfx.flx", real_num);
 	}
 
 	if (!mid_data->good()) {
-		delete mid_data;
 		return;
 	}
 
 	// Read the data into the XMIDI class
 	// It's already GM, so dont convert
-	XMidiFile midfile(mid_data, effects_conversion);
-
-	delete mid_data;
+	XMidiFile midfile(mid_data.get(), effects_conversion);
 
 	// Now give the xmidi object to the midi device
 	XMidiEventList *eventlist = midfile.GetEventList(0);

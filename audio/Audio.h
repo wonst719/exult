@@ -131,7 +131,7 @@ public:
 	void    resume_audio();
 
 	void	copy_and_play(const uint8 *sound_data,uint32 len,bool);
-	void	play(uint8 *sound_data,uint32 len,bool);
+	void	play(std::unique_ptr<uint8[]> sound_data,uint32 len,bool);
 	void	playfile(const char *,const char *,bool);
 	bool	playing();
 	void	start_music(int num,bool continuous=false,const std::string& flex=MAINMUS);

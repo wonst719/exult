@@ -32,8 +32,8 @@ using std::max;
 
 namespace Pentagram {
 
-VocAudioSample::VocAudioSample(uint8* buffer_, uint32 size_)
-	: AudioSample(buffer_, size_)
+VocAudioSample::VocAudioSample(std::unique_ptr<uint8[]> buffer_, uint32 size_)
+	: AudioSample(std::move(buffer_), size_)
 {
 	bool	last_chunk=false;
 
@@ -313,13 +313,13 @@ uint32 VocAudioSample::decompressFrame(void *DecompData, void *samples) const
 	else if (decomp->compression == 0)
 	{
 		bytes_used = num_samples;
-		std::memcpy(samples, buffer+decomp->pos, num_samples);
+		std::memcpy(samples, buffer.get()+decomp->pos, num_samples);
 	}
 	else if (decomp->compression == 1)
 	{
 		bytes_used = num_samples/2;
 		if (decomp->adpcm_reference == -1) bytes_used++;
-		decode_ADPCM_4(buffer+decomp->pos, bytes_used, static_cast<uint8*>(samples), decomp->adpcm_reference, decomp->adpcm_scale);
+		decode_ADPCM_4(buffer.get()+decomp->pos, bytes_used, static_cast<uint8*>(samples), decomp->adpcm_reference, decomp->adpcm_scale);
 	}
 	else
 	{

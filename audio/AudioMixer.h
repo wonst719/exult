@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "common_types.h"
 
+#include <memory>
+#include <vector>
+
 class MyMidiPlayer;
 
 #define AUDIO_MAX_VOLUME 256
@@ -73,7 +76,7 @@ private:
 	int				midi_volume;
 
 	int				num_channels;
-	AudioChannel	**channels;
+	std::vector<AudioChannel>	channels;
 	sint32			id_counter;
 
 	void			init_midi();

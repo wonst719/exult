@@ -23,9 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace Pentagram {
 
-RawAudioSample::RawAudioSample(uint8* buffer_, uint32 size_, uint32 rate_,
+RawAudioSample::RawAudioSample(std::unique_ptr<uint8[]> buffer_, uint32 size_, uint32 rate_,
 							   bool signeddata_, bool stereo_)
-	: AudioSample(buffer_, size_), signeddata(signeddata_)
+	: AudioSample(std::move(buffer_), size_), signeddata(signeddata_)
 {
 	sample_rate = rate_;
 	bits = 8;
@@ -64,12 +64,12 @@ uint32 RawAudioSample::decompressFrame(void *DecompData, void *samples) const
 
 	// 8 bit unsigned, or 16 Bit signed
 	if ((!signeddata && bits==8) || (signeddata && bits==16 && !byte_swap)) {	
-		std::memcpy(samples, buffer+decomp->pos, count);
+		std::memcpy(samples, buffer.get()+decomp->pos, count);
 	// 8 bit signed
 	} else if (bits == 8) {
 		uint8 *dest = static_cast<uint8*>(samples);
 		uint8 *end =  static_cast<uint8*>(samples)+count;
-		const uint8 *src = buffer + decomp->pos;
+		const uint8 *src = buffer.get() + decomp->pos;
 		while (dest != end) {
 			*dest++ = *src++ + 128;
 		}
@@ -78,7 +78,7 @@ uint32 RawAudioSample::decompressFrame(void *DecompData, void *samples) const
 	else if (signeddata && bits==16 && byte_swap) {
 		sint16 *dest = static_cast<sint16*>(samples);
 		sint16 *end =  static_cast<sint16*>(samples)+count/2;
-		const uint8 *src = buffer + decomp->pos;
+		const uint8 *src = buffer.get() + decomp->pos;
 		while (dest != end) {
 			sint16 s;
 			reinterpret_cast<uint8*>(&s)[1] = *src++;
@@ -90,7 +90,7 @@ uint32 RawAudioSample::decompressFrame(void *DecompData, void *samples) const
 	else if (!signeddata && bits==16 && !byte_swap) {
 		sint16 *dest = static_cast<sint16*>(samples);
 		sint16 *end =  static_cast<sint16*>(samples)+count/2;
-		const uint16 *src = reinterpret_cast<const uint16 *>(buffer + decomp->pos);
+		const uint16 *src = reinterpret_cast<const uint16 *>(buffer.get() + decomp->pos);
 		while (dest != end) {
 			*dest++ = *src++ - 32768;
 		}
@@ -99,7 +99,7 @@ uint32 RawAudioSample::decompressFrame(void *DecompData, void *samples) const
 	else if (!signeddata && bits==16 && byte_swap) {
 		sint16 *dest = static_cast<sint16*>(samples);
 		sint16 *end =  static_cast<sint16*>(samples)+count/2;
-		const uint8 *src = buffer + decomp->pos;
+		const uint8 *src = buffer.get() + decomp->pos;
 		while (dest != end) {
 			uint16 s;
 			reinterpret_cast<uint8*>(&s)[1] = *src++;
