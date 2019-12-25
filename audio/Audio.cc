@@ -464,7 +464,7 @@ void Audio::playfile(const char *fname, const char *fpatch, bool wait)
 	if (!audio_enabled)
 		return;
 
-	U7multiobject sample(fname, fpatch, 1);
+	U7multiobject sample(fname, fpatch, 0);
 
 	size_t len;
 	auto buf = sample.retrieve(len);

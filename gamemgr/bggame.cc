@@ -916,7 +916,7 @@ void BG_Game::scene_guardian() {
 					EraseAndDraw(backup2.get(), s2, guardian_eyes_shp, eye_frame, Eyes_Dist);
 					// Erase and redraw mouth
 					EraseAndDraw(backup.get(), s, guardian_mouth_shp, mouth_frame, 0);
-					if (text_index > 0) {
+					if (text_index > 0 && text_index < text_num_frames) {
 						// Draw text
 						font->center_text(win->get_ib8(), centerx, txt_ypos, txt_ptr);
 					}
@@ -953,18 +953,21 @@ void BG_Game::scene_guardian() {
 				}
 				// start speech
 				while (time < 47537) {
+					bool need_redraw = false;
 					if (next_code && lipsync.have_events() && time >= next_time) {
 						lipsync.translate_code(next_code, mouth_frame, eye_frame, last_eye_frame);
 						lipsync.get_event(next_time, next_code);
-						DrawSpeech();
+						need_redraw = true;
 					}
 
 					if (text_index < text_num_frames && time >= text_times[text_index]) {
 						text_index++;
 						AdvanceTextPointer();
+						need_redraw = true;
+					}
+					if (need_redraw) {
 						DrawSpeech();
 					}
-
 					win->show();
 					WAITDELAYCYCLE6(15);
 					win->show();
