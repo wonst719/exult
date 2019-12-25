@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <algorithm>
 #include <iostream>
+#include <limits>
 
 #include "Midi.h"
 
@@ -124,8 +125,7 @@ sint32 AudioMixer::playSample(AudioSample *sample, int loop, int priority, bool 
 {
 	if (!audio_ok || channels.empty()) return -1;
 
-	int lowest = -1;
-	int lowprior = 65536;
+	int retval = -1;
 
 	Lock();
 	{
@@ -138,15 +138,18 @@ sint32 AudioMixer::playSample(AudioSample *sample, int loop, int priority, bool 
 			});
 		}
 		if (it != channels.end() && (!it->isPlaying() || it->getPriority() < priority)) {
-			if (++id_counter < 0) id_counter = 0;
+			if (id_counter == std::numeric_limits<decltype(id_counter)>::max()) {
+				id_counter = 0;
+			} else {
+				++id_counter;
+			}
 			it->playSample(sample, loop, priority, paused, pitch_shift_, lvol, rvol, id_counter);
-		} else {
-			lowest = -1;
+			retval = id_counter;
 		}
 	}
 	Unlock();
 
-	return lowest!=-1?id_counter:-1;
+	return retval;
 }
 
 bool AudioMixer::isPlaying(sint32 instance_id) const
