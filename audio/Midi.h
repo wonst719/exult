@@ -39,15 +39,13 @@ namespace Pentagram {
 class	MyMidiPlayer
 {
 public:
-
-	enum TimberLibrary {
+	enum TimbreLibrary {
 		TIMBRE_LIB_GM		= 0,	// General Midi/GS output mode
 		TIMBRE_LIB_INTRO	= 1,	// Intro
 		TIMBRE_LIB_MAINMENU	= 2,	// Main Menu
 		TIMBRE_LIB_GAME		= 3,	// In Game
 		TIMBRE_LIB_ENDGAME	= 4		// Endgame
 	};
-
 
 	MyMidiPlayer();
 	~MyMidiPlayer();
@@ -64,8 +62,8 @@ public:
 	int				get_current_track();
 	bool			is_repeating() { return repeating; }
 	
-	void			set_timbre_lib(TimberLibrary lib);
-	TimberLibrary	get_timbre_lib() { return timbre_lib; }
+	void			set_timbre_lib(TimbreLibrary lib);
+	TimbreLibrary	get_timbre_lib() { return timbre_lib; }
 	
 	void			set_midi_driver(const std::string& desired_driver, bool use_oggs);
 	std::string		get_midi_driver() { return midi_driver_name; }
@@ -96,8 +94,7 @@ private:
 	bool			initialized = false;
 	bool			init_device(bool timbre_load = false);
 
-
-	TimberLibrary	timbre_lib = TIMBRE_LIB_GM;
+	TimbreLibrary	timbre_lib = TIMBRE_LIB_GM;
 	std::string		timbre_lib_filename;
 	int				timbre_lib_index = 0;
 	int				timbre_lib_game = NONE;
@@ -114,9 +111,6 @@ private:
 	void				ogg_stop_track();
 
 	void				ogg_mix(sint16 *stream, uint32 bytes);
-
-
-
 };
 
 #endif

@@ -243,7 +243,7 @@ void	MyMidiPlayer::start_music(std::string fname,int num,bool repeat)
 	}
 }
 
-void MyMidiPlayer::set_timbre_lib(TimberLibrary lib)
+void MyMidiPlayer::set_timbre_lib(TimbreLibrary lib)
 {
 	// Fixme?? - This can be VERY SLOW
 	if (lib != timbre_lib)
@@ -256,7 +256,7 @@ void MyMidiPlayer::set_timbre_lib(TimberLibrary lib)
 int MyMidiPlayer::setup_timbre_for_track(std::string &str)
 {
 	// Default to GM
-	TimberLibrary lib = TIMBRE_LIB_GM;
+	TimbreLibrary lib = TIMBRE_LIB_GM;
 
 	// Both Games
 	if (str == MAINMUS) lib = TIMBRE_LIB_GAME;
