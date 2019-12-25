@@ -193,12 +193,18 @@ protected:
 	std::size_t size;
 
 public:
-	IBufferDataView(const void *data, size_t len) {
+	IBufferDataView(const void *data, size_t len)
+		: buf(static_cast<const unsigned char *>(data)), buf_ptr(buf),
+		  size(len) {
 		// data can be nullptr if len is also 0
 		assert(data != nullptr || len == 0);
-		buf_ptr = buf = static_cast<const unsigned char *>(data);
-		size = len;
 	}
+	IBufferDataView(const std::unique_ptr<unsigned char[]>& data_, size_t len)
+		: IBufferDataView(data_.get(), len) {
+	}
+
+	// Prevent use after free.
+	IBufferDataView(std::unique_ptr<unsigned char[]>&& data_, size_t len) = delete;
 
 	uint32 peek() final {
 		return *buf_ptr;
@@ -274,18 +280,10 @@ protected:
 
 public:
 	IBufferDataSource(void *data_, size_t len)
-		: IBufferDataView(nullptr, 0), data(static_cast<unsigned char*>(data_)) {
-		// data can be nullptr if len is also 0
-		assert(data != nullptr || len == 0);
-		buf_ptr = buf = data.get();
-		size = len;
+		: IBufferDataView(data_, len), data(static_cast<unsigned char*>(data_)) {
 	}
 	IBufferDataSource(std::unique_ptr<unsigned char[]> data_, size_t len)
-		: IBufferDataView(nullptr, 0), data(std::move(data_)) {
-		// data can be nullptr if len is also 0
-		assert(data != nullptr || len == 0);
-		buf_ptr = buf = data.get();
-		size = len;
+		: IBufferDataView(data_, len), data(std::move(data_)) {
 	}
 };
 
@@ -456,12 +454,18 @@ protected:
 	std::size_t size;
 
 public:
-	OBufferDataSpan(void *data, size_t len) {
+	OBufferDataSpan(void *data, size_t len)
+		: buf(static_cast<unsigned char *>(data)), buf_ptr(buf), size(len) {
 		// data can be nullptr if len is also 0
 		assert(data != nullptr || len == 0);
-		buf_ptr = buf = static_cast<unsigned char *>(data);
-		size = len;
 	}
+
+	OBufferDataSpan(const std::unique_ptr<unsigned char[]>& data_, size_t len)
+		: OBufferDataSpan(data_.get(), len) {
+	}
+
+	// Prevent use after free.
+	OBufferDataSpan(std::unique_ptr<unsigned char[]>&& data_, size_t len) = delete;
 
 	void write1(uint32 val) final {
 		Write1(buf_ptr, val);
@@ -527,10 +531,7 @@ public:
 		size = len;
 	}
 	OBufferDataSource(std::unique_ptr<unsigned char[]> data_, size_t len)
-		: OBufferDataSpan(nullptr, 0), data(std::move(data_)) {
-		assert(data != nullptr || len == 0);
-		buf_ptr = buf = data.get();
-		size = len;
+		: OBufferDataSpan(data_, len), data(std::move(data_)) {
 	}
 	OBufferDataSource(void *data_, size_t len)
 		: OBufferDataSpan(data_, len), data(static_cast<unsigned char*>(data_)) {}
