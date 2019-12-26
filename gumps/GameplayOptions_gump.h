@@ -20,6 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GAMEPLAYOPTIONS_GUMP_H
 
 #include "Modal_gump.h"
+
+#include <array>
+#include <memory>
 #include <string>
 
 class Gump_button;
@@ -62,11 +65,10 @@ private:
 	    id_paperdolls,
 	    id_count
 	};
-	Gump_button *buttons[id_count];
+	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
 
 public:
 	GameplayOptions_gump();
-	~GameplayOptions_gump() override;
 
 	// Paint it and its contents.
 	void paint() override;
