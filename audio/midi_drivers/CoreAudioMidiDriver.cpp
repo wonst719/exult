@@ -82,7 +82,7 @@ const MidiDriver::MidiDriverDesc CoreAudioMidiDriver::desc =
     MidiDriver::MidiDriverDesc("CoreAudio", createInstance);
 
 CoreAudioMidiDriver::CoreAudioMidiDriver() :
-	_auGraph(0) {
+	_auGraph(nullptr) {
 }
 
 int CoreAudioMidiDriver::open() {
@@ -165,6 +165,9 @@ int CoreAudioMidiDriver::open() {
 					CFRelease(url);
 				} else {
 					std::cout << "Failed to allocate CFURLRef from '" << soundfont << "'" << std::endl;
+					// after trying and failing to load a soundfont it's better
+					// to fail initializing the CoreAudio driver or it might crash
+					return 1;
 				}
 #endif
 				if (!err) {
@@ -191,7 +194,7 @@ int CoreAudioMidiDriver::open() {
 		if (_auGraph) {
 			AUGraphStop(_auGraph);
 			DisposeAUGraph(_auGraph);
-			_auGraph = 0;
+			_auGraph = nullptr;
 		}
 	}
 	return 0;
@@ -202,7 +205,7 @@ void CoreAudioMidiDriver::close() {
 	if (_auGraph) {
 		AUGraphStop(_auGraph);
 		DisposeAUGraph(_auGraph);
-		_auGraph = 0;
+		_auGraph = nullptr;
 	}
 }
 

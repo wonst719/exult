@@ -52,7 +52,6 @@ private:
 	XMidiEvent			*list;
 	XMidiEvent			*branches;
 	XMidiEvent			*current;
-	XMidiEvent			*notes_on;
 	XMidiEvent			*x_patch_bank_cur;
 	XMidiEvent			*x_patch_bank_first;
 	

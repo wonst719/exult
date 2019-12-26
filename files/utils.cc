@@ -681,7 +681,7 @@ void setup_data_dir(
 	if (fileUrl) {
 		unsigned char buf[MAXPATHLEN];
 		if (CFURLGetFileSystemRepresentation(fileUrl, true, buf, sizeof(buf))) {
-			string path((const char *)buf);
+			string path(reinterpret_cast<const char *>(buf));
 			path += "/data";
 			add_system_path("<BUNDLE>", path.c_str());
 			if (!U7exists(BUNDLE_EXULT_FLX))

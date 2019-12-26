@@ -411,7 +411,7 @@ bool KeyBinder::DoAction(ActionType const &a, bool press) const {
 			scroll->paint();
 			do {
 				int x, y;
-				Get_click(x, y, Mouse::hand, 0, false, scroll);
+				Get_click(x, y, Mouse::hand, nullptr, false, scroll);
 			} while (scroll->show_next_page());
 			Game_window::get_instance()->paint();
 			delete scroll;
@@ -446,7 +446,7 @@ KeyMap::const_iterator KeyBinder::TranslateEvent(SDL_Event const &ev) const {
 #ifdef MACOSX
 	// map Meta to Alt on OS X
 	if (ev.key.keysym.mod & KMOD_GUI)
-		key.mod = (SDL_Keymod)(key.mod | KMOD_ALT);
+		key.mod = static_cast<SDL_Keymod>(key.mod | KMOD_ALT);
 #else
 	if (ev.key.keysym.mod & KMOD_ALT)
 		key.mod = static_cast<SDL_Keymod>(key.mod | KMOD_ALT);
