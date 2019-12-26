@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MISCOPTIONS_GUMP_H
 
 #include "Modal_gump.h"
+#include <array>
+#include <memory>
 #include <string>
 
 class Gump_button;
@@ -61,11 +63,10 @@ private:
 	    id_charmDiff,
 	    id_count
 	};
-	Gump_button *buttons[id_count];
+	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
 
 public:
 	MiscOptions_gump();
-	~MiscOptions_gump() override;
 
 	// Paint it and its contents.
 	void paint() override;
