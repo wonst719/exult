@@ -219,8 +219,8 @@ void AudioOptions_gump::rebuild_buttons() {
 }
 
 void AudioOptions_gump::rebuild_midi_buttons() {
-	for (auto& btn : buttons) {
-		btn.reset();
+	for (int i = id_music_looping; i < id_sfx_enabled; i++) {
+		buttons[i].reset();
 	}
 
 	if (!midi_enabled) return;
@@ -278,10 +278,6 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 }
 
 void AudioOptions_gump::rebuild_mididriveroption_buttons() {
-	buttons[id_midi_conv].reset();
-	buttons[id_midi_effects].reset();
-
-
 	std::string s = "Default";
 	if (midi_driver != MidiDriver::getDriverCount()) s = MidiDriver::getDriverName(midi_driver);
 
@@ -306,6 +302,8 @@ void AudioOptions_gump::rebuild_mididriveroption_buttons() {
 		buttons[id_midi_conv] = std::make_unique<AudioTextToggle>(this, midi_conversiontext,
 		        colx[2] - 7, rowy[7], 66,
 		        midi_conversion, string_size);
+	} else {
+		buttons[id_midi_conv].reset();
 	}
 
 	if (s != "FMOpl" && s != "Disabled") {
@@ -319,6 +317,8 @@ void AudioOptions_gump::rebuild_mididriveroption_buttons() {
 		buttons[id_midi_effects] = std::make_unique<AudioTextToggle>(this, midi_reverbchorustext,
 		        colx[2], rowy[8], 59,
 		        midi_reverb_chorus, 4);
+	} else {
+		buttons[id_midi_effects].reset();
 	}
 }
 
