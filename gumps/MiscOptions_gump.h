@@ -75,11 +75,57 @@ public:
 	bool mouse_down(int mx, int my, int button) override;
 	bool mouse_up(int mx, int my, int button) override;
 
-	void toggle(Gump_button *btn, int state);
-
 	void load_settings();
 	void save_settings();
 	void cancel();
+
+	void toggle_scroll_mouse(int state) {
+		scroll_mouse = state;
+	}
+
+	void toggle_menu_intro(int state) {
+		menu_intro = state;
+	}
+
+	void toggle_usecode_intro(int state) {
+		usecode_intro = state;
+	}
+
+	void toggle_sc_enabled(int state) {
+		sc_enabled = state;
+	}
+
+	void toggle_sc_outline(int state) {
+		sc_outline = state;
+	}
+
+	void toggle_sb_hide_missing(int state) {
+		sb_hide_missing = state;
+	}
+
+	void toggle_difficulty(int state) {
+		difficulty = state;
+	}
+
+	void toggle_show_hits(int state) {
+		show_hits = state;
+	}
+
+	void toggle_mode(int state) {
+		mode = state;
+	}
+
+	void toggle_charmDiff(int state) {
+		charmDiff = state;
+	}
+
+	void toggle_alternate_drop(int state) {
+		alternate_drop = state;
+	}
+
+	void toggle_allow_autonotes(int state) {
+		allow_autonotes = state;
+	}
 };
 
 #endif

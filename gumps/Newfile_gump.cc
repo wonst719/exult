@@ -127,61 +127,12 @@ static const char *canceltext = "CANCEL";
 /*
  *  One of our buttons.
  */
-class Newfile_button : public Gump_button {
-public:
-	Newfile_button(Gump *par, int px, int py, int shapenum)
-		: Gump_button(par, shapenum, px, py, SF_EXULT_FLX)
-	{ }
-	// What to do when 'clicked':
-	bool activate(int button = 1) override;
-};
-
-class Newfile_Textbutton : public Text_button {
-public:
-	Newfile_Textbutton(Gump *par, const string& text, int px, int py, int width)
-		: Text_button(par, text, px, py, width)
-	{ }
-
-	bool activate(int button = 1) override;
-};
-
-/*
- *  Clicked a 'load' or 'save' button.
- */
-
-bool Newfile_button::activate(
-    int button
-) {
-	if (button != 1) return false;
-	int shapenum = get_shapenum();
-	if (shapenum == EXULT_FLX_SAV_DOWNDOWN_SHP)
-		static_cast<Newfile_gump *>(parent)->scroll_page(1);
-	else if (shapenum == EXULT_FLX_SAV_DOWN_SHP)
-		static_cast<Newfile_gump *>(parent)->scroll_line(1);
-	else if (shapenum == EXULT_FLX_SAV_UP_SHP)
-		static_cast<Newfile_gump *>(parent)->scroll_line(-1);
-	else if (shapenum == EXULT_FLX_SAV_UPUP_SHP)
-		static_cast<Newfile_gump *>(parent)->scroll_page(-1);
-	return true;
-}
-
-bool Newfile_Textbutton::activate(int button) {
-	if (button != 1) return false;
-	if (text == loadtext)
-		static_cast<Newfile_gump *>(parent)->load();
-	else if (text == savetext)
-		static_cast<Newfile_gump *>(parent)->save();
-	else if (text == deletetext)
-		static_cast<Newfile_gump *>(parent)->delete_file();
-	else if (text == canceltext)
-		parent->close();
-	return true;
-}
+using Newfile_button = CallbackButton<Newfile_gump>;
+using Newfile_Textbutton = CallbackTextButton<Newfile_gump>;
 
 /*
  *  Create the load/save box.
  */
-
 
 Newfile_gump::Newfile_gump(
 ) : Modal_gump(nullptr, gwin->get_width() / 2 - 160,
@@ -200,14 +151,18 @@ Newfile_gump::Newfile_gump(
 	buttons[0] = buttons[1] = buttons[2] = nullptr;
 
 	// Cancel
-	buttons[3] = new Newfile_Textbutton(this, canceltext,
-	                                    btn_cols[3], btn_rows[0], 59);
+	buttons[3] = new Newfile_Textbutton(this, &Newfile_gump::close,
+	        canceltext, btn_cols[3], btn_rows[0], 59);
 
 	// Scrollers.
-	buttons[4] = new Newfile_button(this, btn_cols[4], btn_rows[1], EXULT_FLX_SAV_UPUP_SHP);
-	buttons[5] = new Newfile_button(this, btn_cols[4], btn_rows[2], EXULT_FLX_SAV_UP_SHP);
-	buttons[6] = new Newfile_button(this, btn_cols[4], btn_rows[3], EXULT_FLX_SAV_DOWN_SHP);
-	buttons[7] = new Newfile_button(this, btn_cols[4], btn_rows[4], EXULT_FLX_SAV_DOWNDOWN_SHP);
+	buttons[4] = new Newfile_button(this, &Newfile_gump::page_up,
+	        EXULT_FLX_SAV_UPUP_SHP, btn_cols[4], btn_rows[1], SF_EXULT_FLX);
+	buttons[5] = new Newfile_button(this, &Newfile_gump::line_up,
+	        EXULT_FLX_SAV_UP_SHP, btn_cols[4], btn_rows[2], SF_EXULT_FLX);
+	buttons[6] = new Newfile_button(this, &Newfile_gump::line_down,
+	        EXULT_FLX_SAV_DOWN_SHP, btn_cols[4], btn_rows[3], SF_EXULT_FLX);
+	buttons[7] = new Newfile_button(this, &Newfile_gump::page_down,
+	        EXULT_FLX_SAV_DOWNDOWN_SHP, btn_cols[4], btn_rows[4], SF_EXULT_FLX);
 
 	LoadSaveGameDetails();
 }
@@ -641,24 +596,24 @@ bool Newfile_gump::mouse_down(
 	}
 
 	if (!buttons[0] && want_load)
-		buttons[0] = new Newfile_Textbutton(this, loadtext,
-		                                    btn_cols[1], btn_rows[0], 39);
+		buttons[0] = new Newfile_Textbutton(this, &Newfile_gump::load,
+		        loadtext, btn_cols[1], btn_rows[0], 39);
 	else if (buttons[0] && !want_load) {
 		delete buttons[0];
 		buttons[0] = nullptr;
 	}
 
 	if (!buttons[1] && want_save)
-		buttons[1] = new Newfile_Textbutton(this, savetext,
-		                                    btn_cols[0], btn_rows[0], 40);
+		buttons[1] = new Newfile_Textbutton(this, &Newfile_gump::save,
+		        savetext, btn_cols[0], btn_rows[0], 40);
 	else if (buttons[1] && !want_save) {
 		delete buttons[1];
 		buttons[1] = nullptr;
 	}
 
 	if (!buttons[2] && want_delete)
-		buttons[2] = new Newfile_Textbutton(this, deletetext,
-		                                    btn_cols[2], btn_rows[0], 59);
+		buttons[2] = new Newfile_Textbutton(this, &Newfile_gump::delete_file,
+		        deletetext, btn_cols[2], btn_rows[0], 59);
 	else if (buttons[2] && !want_delete) {
 		delete buttons[2];
 		buttons[2] = nullptr;
@@ -828,9 +783,8 @@ void Newfile_gump::text_input(int chr, int unicode) {
 			if (AddCharacter(chr)) {
 				// Added first character?  Need 'Save' button.
 				if (newname[0] && !buttons[1]) {
-					buttons[1] = new Newfile_Textbutton(this, savetext,
-					                                    btn_cols[0],
-					                                    btn_rows[0], 40);
+					buttons[1] = new Newfile_Textbutton(this, &Newfile_gump::save,
+					        savetext, btn_cols[0], btn_rows[0], 40);
 					buttons[1]->paint();
 				}
 

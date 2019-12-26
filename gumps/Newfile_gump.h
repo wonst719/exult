@@ -188,6 +188,22 @@ public:
 	void scroll_line(int dir);  // Scroll Line Button Pressed
 	void scroll_page(int dir);  // Scroll Page Button Pressed.
 
+	void line_up() {
+		scroll_line(-1);
+	}
+
+	void line_down() {
+		scroll_line(1);
+	}
+
+	void page_up() {
+		scroll_page(-1);
+	}
+
+	void page_down() {
+		scroll_page(1);
+	}
+
 	int restored_game() {   // 1 if user restored.
 		return restored;
 	}

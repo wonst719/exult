@@ -43,6 +43,12 @@ public:
 	bool mouse_up(int mx, int my, int button) override;
 
 	void quit(bool return_to_menu = false);
+	void quit_exult() {
+		quit(false);
+	}
+	void quit_to_menu() {
+		quit(true);
+	}
 	void loadsave();
 	void video_options();
 	void audio_options();

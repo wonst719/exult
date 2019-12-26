@@ -44,4 +44,7 @@ public:
 
 };
 
+template <typename Parent>
+using CallbackTextButton = CallbackButtonBase<Parent, Text_button>;
+
 #endif

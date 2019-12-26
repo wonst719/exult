@@ -81,5 +81,24 @@ private:
 	std::string *selections;
 };
 
+template <typename Parent>
+class CallbackToggleTextButton : public Gump_ToggleTextButton {
+public:
+	using CallbackType = void (Parent::*)(int state);
+
+	template <typename... Ts>
+	CallbackToggleTextButton(Parent* par, CallbackType&& callback, Ts&&... args)
+		: Gump_ToggleTextButton(par, std::forward<Ts>(args)...),
+		  parent(par), on_toggle(std::forward<CallbackType>(callback)) {}
+
+	void toggle(int state) override {
+		(parent->*on_toggle)(state);
+		parent->paint();
+	}
+
+private:
+	Parent* parent;
+	CallbackType on_toggle;
+};
 
 #endif

@@ -45,4 +45,24 @@ protected:
 	static const char *selections[];
 };
 
+template <typename Parent>
+class CallbackEnabledButton : public Enabled_button {
+public:
+	using CallbackType = void (Parent::*)(int state);
+
+	template <typename... Ts>
+	CallbackEnabledButton(Parent* par, CallbackType&& callback, Ts&&... args)
+		: Enabled_button(par, std::forward<Ts>(args)...),
+		  parent(par), on_toggle(std::forward<CallbackType>(callback)) {}
+
+	void toggle(int state) override {
+		(parent->*on_toggle)(state);
+		parent->paint();
+	}
+
+private:
+	Parent* parent;
+	CallbackType on_toggle;
+};
+
 #endif

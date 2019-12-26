@@ -48,49 +48,9 @@ static const int colx[] = { 35, 50, 120, 170, 192, 211 };
 static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
 
-class MiscOptions_button : public Text_button {
-public:
-	MiscOptions_button(Gump *par, const string& text, int px, int py)
-		: Text_button(par, text, px, py, 59, 11)
-	{ }
-	// What to do when 'clicked':
-	bool activate(int button) override {
-		if (button != 1) return false;
-
-		if (text == canceltext) {
-			static_cast<MiscOptions_gump *>(parent)->cancel();
-		} else if (text == oktext) {
-			static_cast<MiscOptions_gump *>(parent)->close();
-		}
-		return true;
-	}
-};
-
-class MiscTextToggle : public Gump_ToggleTextButton {
-public:
-	MiscTextToggle(Gump *par, std::string *s, int px, int py, int width,
-	               int selectionnum, int numsel)
-		: Gump_ToggleTextButton(par, s, selectionnum, numsel, px, py, width)
-	{ }
-
-	friend class MiscOptions_gump;
-	void toggle(int state) override {
-		static_cast<MiscOptions_gump *>(parent)->toggle(this, state);
-	}
-};
-
-class MiscEnabledToggle : public Enabled_button {
-public:
-	MiscEnabledToggle(Gump *par, int px, int py, int width,
-	                  int selectionnum)
-		: Enabled_button(par, selectionnum, px, py, width)
-	{ }
-
-	friend class MiscOptions_gump;
-	void toggle(int state) override {
-		static_cast<MiscOptions_gump *>(parent)->toggle(this, state);
-	}
-};
+using MiscOptions_button = CallbackTextButton<MiscOptions_gump>;
+using MiscTextToggle = CallbackToggleTextButton<MiscOptions_gump>;
+using MiscEnabledToggle = CallbackEnabledButton<MiscOptions_gump>;
 
 void MiscOptions_gump::close() {
 	save_settings();
@@ -99,33 +59,6 @@ void MiscOptions_gump::close() {
 
 void MiscOptions_gump::cancel() {
 	done = true;
-}
-
-void MiscOptions_gump::toggle(Gump_button *btn, int state) {
-	if (btn == buttons[id_scroll_mouse])
-		scroll_mouse = state;
-	else if (btn == buttons[id_menu_intro])
-		menu_intro = state;
-	else if (btn == buttons[id_usecode_intro])
-		usecode_intro = state;
-	else if (btn == buttons[id_sc_enabled])
-		sc_enabled = state;
-	else if (btn == buttons[id_sc_outline])
-		sc_outline = state;
-	else if (btn == buttons[id_sb_hide_missing])
-		sb_hide_missing = state;
-	else if (btn == buttons[id_difficulty])
-		difficulty = state;
-	else if (btn == buttons[id_show_hits])
-		show_hits = state;
-	else if (btn == buttons[id_mode])
-		mode = state;
-	else if (btn == buttons[id_charmDiff])
-		charmDiff = state;
-	else if (btn == buttons[id_alternate_drop])
-		alternate_drop = state;
-	else if (btn == buttons[id_allow_autonotes])
-		allow_autonotes = state;
 }
 
 void MiscOptions_gump::build_buttons() {
@@ -175,42 +108,44 @@ void MiscOptions_gump::build_buttons() {
 	int y_index = 0;
 	int small_size = 44;
 	int large_size = 85;
-	buttons[id_scroll_mouse] = new MiscTextToggle(this, yesNo1, colx[5], rowy[y_index],
-	        small_size, scroll_mouse, 2);
-	buttons[id_menu_intro] = new MiscTextToggle(this, yesNo2, colx[5], rowy[++y_index],
-	        small_size, menu_intro, 2);
-	buttons[id_usecode_intro] = new MiscTextToggle(this, yesNo3, colx[5], rowy[++y_index],
-	        small_size, usecode_intro, 2);
-	buttons[id_alternate_drop] = new MiscTextToggle(this, stacks_text, colx[5], rowy[++y_index],
-	        small_size, alternate_drop, 2);
-	buttons[id_allow_autonotes] = new MiscTextToggle(this, autonotes_text, colx[5], rowy[++y_index],
-	        small_size, allow_autonotes, 2);
-	buttons[id_sc_enabled] = new MiscTextToggle(this, sc_enabled_txt, colx[3], rowy[++y_index],
-	        large_size, sc_enabled, 3);
-	buttons[id_sc_outline] = new MiscTextToggle(this, sc_outline_txt, colx[5], rowy[++y_index],
-	        small_size, sc_outline, 8);
-	buttons[id_sb_hide_missing] = new MiscTextToggle(this, yesNo4, colx[5], rowy[++y_index],
-	        small_size, sb_hide_missing, 2);
+	buttons[id_scroll_mouse] = new MiscTextToggle(this, &MiscOptions_gump::toggle_scroll_mouse,
+	        yesNo1, scroll_mouse, 2, colx[5], rowy[y_index], small_size);
+	buttons[id_menu_intro] = new MiscTextToggle(this, &MiscOptions_gump::toggle_menu_intro,
+	        yesNo2, menu_intro, 2, colx[5], rowy[++y_index], small_size);
+	buttons[id_usecode_intro] = new MiscTextToggle(this, &MiscOptions_gump::toggle_usecode_intro,
+	        yesNo3, usecode_intro, 2, colx[5], rowy[++y_index], small_size);
+	buttons[id_alternate_drop] = new MiscTextToggle(this, &MiscOptions_gump::toggle_alternate_drop,
+	        stacks_text, alternate_drop, 2, colx[5], rowy[++y_index], small_size);
+	buttons[id_allow_autonotes] = new MiscTextToggle(this, &MiscOptions_gump::toggle_allow_autonotes,
+	        autonotes_text, allow_autonotes, 2, colx[5], rowy[++y_index], small_size);
+	buttons[id_sc_enabled] = new MiscTextToggle(this, &MiscOptions_gump::toggle_sc_enabled,
+	        sc_enabled_txt, sc_enabled, 3, colx[3], rowy[++y_index], large_size);
+	buttons[id_sc_outline] = new MiscTextToggle(this, &MiscOptions_gump::toggle_sc_outline,
+	        sc_outline_txt, sc_outline, 8, colx[5], rowy[++y_index], small_size);
+	buttons[id_sb_hide_missing] = new MiscTextToggle(this, &MiscOptions_gump::toggle_sb_hide_missing,
+	        yesNo4, sb_hide_missing, 2, colx[5], rowy[++y_index], small_size);
 	// two row gap
-	buttons[id_difficulty] = new MiscTextToggle(this, diffs, colx[3], rowy[y_index+=3],
-	        large_size, difficulty, 7);
-	buttons[id_show_hits] = new MiscEnabledToggle(this, colx[3], rowy[++y_index],
-	        large_size, show_hits);
+	buttons[id_difficulty] = new MiscTextToggle(this, &MiscOptions_gump::toggle_difficulty,
+	        diffs, difficulty, 7, colx[3], rowy[y_index+=3], large_size);
+	buttons[id_show_hits] = new MiscEnabledToggle(this, &MiscOptions_gump::toggle_show_hits,
+	        show_hits, colx[3], rowy[++y_index], large_size);
 
 	std::string *modes = new std::string[2];
 	modes[0] = "Original";
 	modes[1] = "Space pauses";
-	buttons[id_mode] = new MiscTextToggle(this, modes, colx[3], rowy[++y_index],
-	                                      large_size, mode, 2);
+	buttons[id_mode] = new MiscTextToggle(this, &MiscOptions_gump::toggle_mode,
+	        modes, mode, 2, colx[3], rowy[++y_index], large_size);
 	std::string *charmedDiff = new std::string[2];
 	charmedDiff[0] = "Normal";
 	charmedDiff[1] = "Hard";
-	buttons[id_charmDiff] = new MiscTextToggle(this, charmedDiff, colx[3], rowy[++y_index],
-	        large_size, charmDiff, 2);
+	buttons[id_charmDiff] = new MiscTextToggle(this, &MiscOptions_gump::toggle_charmDiff,
+	        charmedDiff, charmDiff, 2, colx[3], rowy[++y_index], large_size);
 	// Ok
-	buttons[id_ok] = new MiscOptions_button(this, oktext, colx[0], rowy[++y_index]);
+	buttons[id_ok] = new MiscOptions_button(this, &MiscOptions_gump::close,
+	        oktext, colx[0], rowy[++y_index]);
 	// Cancel
-	buttons[id_cancel] = new MiscOptions_button(this, canceltext, colx[4], rowy[y_index]);
+	buttons[id_cancel] = new MiscOptions_button(this, &MiscOptions_gump::cancel,
+	        canceltext, colx[4], rowy[y_index]);
 }
 
 void MiscOptions_gump::load_settings() {

@@ -65,4 +65,28 @@ public:
 
 };
 
+template <typename Parent, typename Base>
+class CallbackButtonBase : public Base {
+public:
+	using CallbackType = void (Parent::*)();
+
+	template <typename... Ts>
+	CallbackButtonBase(Parent* par, CallbackType&& callback, Ts&&... args)
+		: Base(par, std::forward<Ts>(args)...),
+		  parent(par), on_click(std::forward<CallbackType>(callback)) {}
+
+	bool activate(int button) override {
+		if (button != 1) return false;
+		(parent->*on_click)();
+		return true;
+	}
+
+private:
+	Parent* parent;
+	CallbackType on_click;
+};
+
+template <typename Parent>
+using CallbackButton = CallbackButtonBase<Parent, Gump_button>;
+
 #endif

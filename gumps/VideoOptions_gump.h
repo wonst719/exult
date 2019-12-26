@@ -121,6 +121,61 @@ public:
 	void set_fill_mode(Image_window::FillMode f_mode) {
 		fill_mode = f_mode;
 	}
+
+	void toggle_resolution(int state) {
+		if (fullscreen) resolution = resolutions[state];
+		else resolution = win_resolutions[state];
+	}
+
+	void toggle_scaling(int state) {
+		scaling = state;
+	}
+
+	void toggle_scaler(int state) {
+		scaler = state;
+		rebuild_dynamic_buttons();
+	}
+
+	void toggle_fullscreen(int state) {
+		if (share_settings)
+			fullscreen = state;
+		else {
+			load_settings(state); // overwrites old settings
+			rebuild_buttons();
+		}
+	}
+
+	void toggle_game_resolution(int state) {
+		game_resolution = state;
+	}
+
+	void toggle_fill_scaler(int state) {
+		fill_scaler = state;
+	}
+
+	void toggle_fill_mode(int state) {
+		if (state == 0) {
+			fill_mode = Image_window::Fill;
+		} else if (state == 3) {
+			fill_mode = startup_fill_mode;
+		} else {
+			fill_mode = static_cast<Image_window::FillMode>((state << 1) | (has_ac ? 1 : 0));
+		}
+		rebuild_dynamic_buttons();
+	}
+
+	void toggle_aspect_correction(int state) {
+		has_ac = state != 0;
+		fill_mode = static_cast<Image_window::FillMode>((fill_mode&~1) | (has_ac ? 1 : 0));
+	}
+
+	void toggle_share_settings(int state) {
+		share_settings = state;
+	}
+
+	void toggle_high_dpi(int state) {
+		highdpi = state;
+	}
 };
 
 #endif

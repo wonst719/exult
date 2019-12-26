@@ -76,12 +76,59 @@ public:
 	bool mouse_down(int mx, int my, int button) override;
 	bool mouse_up(int mx, int my, int button) override;
 
-	void toggle(Gump_button *btn, int state);
 	void build_buttons();
 
 	void load_settings();
 	void save_settings();
 	void cancel();
+
+	void toggle_facestats(int state) {
+		facestats = state;
+	}
+
+	void toggle_fastmouse(int state) {
+		fastmouse = state;
+	}
+
+	void toggle_mouse3rd(int state) {
+		mouse3rd = state;
+	}
+
+	void toggle_doubleclick(int state) {
+		doubleclick = state;
+	}
+
+	void toggle_cheats(int state) {
+		cheats = state;
+	}
+
+	void toggle_paperdolls(int state) {
+		paperdolls = state;
+	}
+
+	void toggle_text_bg(int state) {
+		text_bg = state;
+	}
+
+	void toggle_frames(int state) {
+		frames = state;
+	}
+
+	void toggle_rightclick_close(int state) {
+		rightclick_close = state;
+	}
+
+	void toggle_right_pathfind(int state) {
+		right_pathfind = state;
+	}
+
+	void toggle_gumps_pause(int state) {
+		gumps_pause = state;
+	}
+
+	void toggle_smooth_scrolling(int state) {
+		smooth_scrolling = state;
+	}
 };
 
 #endif

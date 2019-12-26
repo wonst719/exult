@@ -65,35 +65,9 @@ static string resolutionstring(int w, int h) {
 	return buf;
 }
 
+using VideoOptions_button = CallbackTextButton<VideoOptions_gump>;
+using VideoTextToggle = CallbackToggleTextButton<VideoOptions_gump>;
 
-class VideoOptions_button : public Text_button {
-public:
-	VideoOptions_button(Gump *par, const string& text, int px, int py, int width = 59)
-		: Text_button(par, text, px, py, width, 11)
-	{  }
-	// What to do when 'clicked':
-	bool activate(int button = 1) override;
-};
-
-bool VideoOptions_button::activate(int button) {
-	if (button != 1) return false;
-	if (text == applytext) {
-		static_cast<VideoOptions_gump *>(parent)->save_settings();
-	}
-	return true;
-}
-
-class VideoTextToggle : public Gump_ToggleTextButton {
-public:
-	VideoTextToggle(Gump *par, std::string *s, int px, int py, int width,
-	                int selectionnum, int numsel)
-		: Gump_ToggleTextButton(par, s, selectionnum, numsel, px, py, width) {}
-
-	friend class VideoOptions_gump;
-	void toggle(int state) override {
-		static_cast<VideoOptions_gump *>(parent)->toggle(this, state);
-	}
-};
 void VideoOptions_gump::close() {
 	//save_settings();
 
@@ -104,42 +78,6 @@ void VideoOptions_gump::close() {
 
 void VideoOptions_gump::cancel() {
 	done = true;
-}
-
-void VideoOptions_gump::toggle(Gump_button *btn, int state) {
-	if (btn == buttons[id_resolution].get()) {
-		if (fullscreen) resolution = resolutions[state];
-		else resolution = win_resolutions[state];
-	} else if (btn == buttons[id_scaling].get())
-		scaling = state;
-	else if (btn == buttons[id_scaler].get()) {
-		scaler = state;
-		rebuild_dynamic_buttons();
-	} else if (btn == buttons[id_fullscreen].get()) {
-		if (share_settings)
-			fullscreen = state;
-		else {
-			load_settings(state); // overwrites old settings
-			rebuild_buttons();
-		}
-	} else if (btn == buttons[id_game_resolution].get())
-		game_resolution = state;
-	else if (btn == buttons[id_fill_scaler].get())
-		fill_scaler = state;
-	else if (btn == buttons[id_fill_mode].get()) {
-		if (state == 0) fill_mode = Image_window::Fill;
-		else if (state == 3) fill_mode = startup_fill_mode;
-		else fill_mode = static_cast<Image_window::FillMode>((state << 1) | (has_ac ? 1 : 0));
-		rebuild_dynamic_buttons();
-	} else if (btn == buttons[id_has_ac].get()) {
-		has_ac = state != 0;
-		fill_mode = static_cast<Image_window::FillMode>((fill_mode&~1) | (has_ac ? 1 : 0));
-	} else if (btn == buttons[id_share_settings].get())
-		share_settings = state;
-	else if (btn == buttons[id_high_dpi].get())
-		highdpi = state;
-
-	paint();
 }
 
 void VideoOptions_gump::rebuild_buttons() {
@@ -154,22 +92,22 @@ void VideoOptions_gump::rebuild_buttons() {
 	for (int i = 0; i < Image_window::NumScalers; i++)
 		scalers[i] = Image_window::get_name_for_scaler(i);
 
-	buttons[id_scaler] = std::make_unique<VideoTextToggle>(this, scalers, colx[2], rowy[3], 74,
-	        scaler, Image_window::NumScalers);
+	buttons[id_scaler] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_scaler,
+	        scalers, scaler, Image_window::NumScalers, colx[2], rowy[3], 74);
 
 	std::string *game_restext = new std::string[3];
 	game_restext[0] = "Auto";
 	game_restext[1] = "320x200";
 	game_restext[2] = resolutionstring(game_resolutions[2] >> 16, game_resolutions[2] & 0xFFFF);
 
-	buttons[id_game_resolution] = std::make_unique<VideoTextToggle>(this, game_restext, colx[2], rowy[6], 74,
-	        game_resolution, num_game_resolutions);
+	buttons[id_game_resolution] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_game_resolution,
+	        game_restext, game_resolution, num_game_resolutions, colx[2], rowy[6], 74);
 
 	std::string *fill_scaler_text = new std::string[2];
 	fill_scaler_text[0] = "Point";
 	fill_scaler_text[1] = "Bilinear";
-	buttons[id_fill_scaler] = std::make_unique<VideoTextToggle>(this, fill_scaler_text , colx[2], rowy[7], 74,
-	        fill_scaler, 2);
+	buttons[id_fill_scaler] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_fill_scaler,
+	        fill_scaler_text, fill_scaler, 2 , colx[2], rowy[7], 74);
 
 	int sel_fill_mode;
 	has_ac = false;
@@ -198,7 +136,8 @@ void VideoOptions_gump::rebuild_buttons() {
 	fill_mode_text[2] = "Centre";
 	fill_mode_text[3] = "Custom";
 
-	buttons[id_fill_mode] = std::make_unique<VideoTextToggle>(this, fill_mode_text, colx[2], rowy[8], 74, sel_fill_mode, num_fill_modes);
+	buttons[id_fill_mode] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_fill_mode,
+	        fill_mode_text, sel_fill_mode, num_fill_modes, colx[2], rowy[8], 74);
 
 	rebuild_dynamic_buttons();
 }
@@ -246,8 +185,8 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 
 	resolution = resolutions[selected_res];
 
-	buttons[id_resolution] = std::make_unique<VideoTextToggle>(this, restext, colx[2], rowy[1], 74,
-	        selected_res, num_resolutions);
+	buttons[id_resolution] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_resolution,
+	        restext, selected_res, num_resolutions, colx[2], rowy[1], 74);
 
 	const int max_scales = scaling > 8 && scaling <= 16 ? scaling : 8;
 	const int num_scales = (scaler == Image_window::point ||
@@ -261,8 +200,8 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 			snprintf(buf, sizeof(buf), "x%d", i + 1);
 			scalingtext[i] = buf;
 		}
-		buttons[id_scaling] = std::make_unique<VideoTextToggle>(this, scalingtext, colx[2], rowy[4],
-		        74, scaling, num_scales);
+		buttons[id_scaling] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_scaling,
+		        scalingtext, scaling, num_scales, colx[2], rowy[4], 74);
 	} else if (scaler == Image_window::Hq3x || scaler == Image_window::_3xBR)
 		scaling = 2;
 	else if (scaler == Image_window::Hq4x || scaler == Image_window::_4xBR)
@@ -274,7 +213,8 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 		std::string *ac_text = new std::string[2];
 		ac_text[0] = "Disabled";
 		ac_text[1] = "Enabled";
-		buttons[id_has_ac] = std::make_unique<VideoTextToggle>(this, ac_text, colx[3], rowy[9], 62, has_ac ? 1 : 0, 2);
+		buttons[id_has_ac] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_aspect_correction,
+		        ac_text, has_ac ? 1 : 0, 2, colx[3], rowy[9], 62);
 	}
 }
 
@@ -351,23 +291,24 @@ VideoOptions_gump::VideoOptions_gump() : Modal_gump(nullptr, EXULT_FLX_VIDEOOPTI
 	std::string *enabledtext = new std::string[2];
 	enabledtext[0] = "Disabled";
 	enabledtext[1] = "Enabled";
-	buttons[id_fullscreen] = std::make_unique<VideoTextToggle>(this, enabledtext, colx[2], rowy[0], 74,
-	        fullscreen, 2);
+	buttons[id_fullscreen] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_fullscreen,
+	        enabledtext, fullscreen, 2, colx[2], rowy[0], 74);
 	config->value("config/video/highdpi", highdpi, false);
 	std::string *hdpi_text = new std::string[2];
 	hdpi_text[0] = "Disabled";
 	hdpi_text[1] = "Enabled";
-	buttons[id_high_dpi] = std::make_unique<VideoTextToggle>(this, hdpi_text, colx[2], rowy[2], 74,
-	        highdpi, 2);
+	buttons[id_high_dpi] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_high_dpi,
+	        hdpi_text, highdpi, 2, colx[2], rowy[2], 74);
 	config->value("config/video/share_video_settings", share_settings, false);
 	std::string *yesNO = new std::string[2];
 	yesNO[0] = "No";
 	yesNO[1] = "Yes";
-	buttons[id_share_settings] = std::make_unique<VideoTextToggle>(this, yesNO , colx[5], rowy[11], 40,
-	        share_settings, 2);
+	buttons[id_share_settings] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_share_settings,
+	        yesNO, share_settings, 2, colx[5], rowy[11], 40);
 	o_share_settings = share_settings;
 
-	buttons[id_apply] = std::make_unique<VideoOptions_button>(this, applytext, colx[4], rowy[12], 59);
+	buttons[id_apply] = std::make_unique<VideoOptions_button>(this, &VideoOptions_gump::save_settings,
+	        applytext, colx[4], rowy[12], 59);
 
 	load_settings(fullscreen);
 

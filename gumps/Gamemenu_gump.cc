@@ -54,35 +54,7 @@ static const char *misctext = "Misc Options";
 static const char *quitmenutext = "Quit to Menu";
 static const char *quittext = "Quit";
 
-class Gamemenu_button : public Text_button {
-public:
-	Gamemenu_button(Gump *par, const string& text, int px, int py)
-		: Text_button(par, text, px, py, 108, 11)
-	{  }
-	// What to do when 'clicked':
-	bool activate(int button) override;
-};
-
-bool Gamemenu_button::activate(int button) {
-	if (button != 1) return false;
-
-	if (text == loadsavetext) {
-		static_cast<Gamemenu_gump *>(parent)->loadsave();
-	} else if (text == videoopttext) {
-		static_cast<Gamemenu_gump *>(parent)->video_options();
-	} else if (text == audioopttext) {
-		static_cast<Gamemenu_gump *>(parent)->audio_options();
-	} else if (text == gameopttext) {
-		static_cast<Gamemenu_gump *>(parent)->gameplay_options();
-	} else if (text == misctext) {
-		static_cast<Gamemenu_gump *>(parent)->misc_options();
-	} else if (text == quitmenutext) {
-		static_cast<Gamemenu_gump *>(parent)->quit(true);
-	} else if (text == quittext) {
-		static_cast<Gamemenu_gump *>(parent)->quit(false);
-	}
-	return true;
-}
+using Gamemenu_button = CallbackTextButton<Gamemenu_gump>;
 
 Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, EXULT_FLX_GAMEMENU_SHP, SF_EXULT_FLX) {
 	set_object_area(Rectangle(0, 0, 0, 0), 8, 82); //+++++ ???
@@ -91,12 +63,20 @@ Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, EXULT_FLX_GAMEMENU_SHP, SF_
 
 	std::memset(buttons, 0, sizeof(buttons));
 
-	if (!gwin->is_in_exult_menu()) buttons[0] = new Gamemenu_button(this, loadsavetext, colx, rowy[y++]);
-	buttons[1] = new Gamemenu_button(this, videoopttext, colx, rowy[y++]);
-	buttons[2] = new Gamemenu_button(this, audioopttext, colx, rowy[y++]);
-	buttons[3] = new Gamemenu_button(this, gameopttext, colx, rowy[y++]);
-	buttons[4] = new Gamemenu_button(this, misctext, colx, rowy[y++]);
-	if (!gwin->is_in_exult_menu()) buttons[5] = new Gamemenu_button(this, quittext, colx, rowy[y++]);
+	if (!gwin->is_in_exult_menu())
+		buttons[0] = new Gamemenu_button(this, &Gamemenu_gump::loadsave,
+		        loadsavetext, colx, rowy[y++], 108, 11);
+	buttons[1] = new Gamemenu_button(this, &Gamemenu_gump::video_options,
+	        videoopttext, colx, rowy[y++], 108, 11);
+	buttons[2] = new Gamemenu_button(this, &Gamemenu_gump::audio_options,
+	        audioopttext, colx, rowy[y++], 108, 11);
+	buttons[3] = new Gamemenu_button(this, &Gamemenu_gump::gameplay_options,
+	        gameopttext, colx, rowy[y++], 108, 11);
+	buttons[4] = new Gamemenu_button(this, &Gamemenu_gump::misc_options,
+	        misctext, colx, rowy[y++], 108, 11);
+	if (!gwin->is_in_exult_menu())
+		buttons[5] = new Gamemenu_button(this, &Gamemenu_gump::quit_exult,
+		        quittext, colx, rowy[y++], 108, 11);
 }
 
 Gamemenu_gump::~Gamemenu_gump() {
