@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define NEWFILE_GUMP_H
 
 #include "Modal_gump.h"
+#include <array>
 #include <memory>
 
 class Shape_file;
@@ -105,7 +106,20 @@ public:
 	};
 
 protected:
-	Gump_button *buttons[8];    // 2 sets of 4 buttons
+	enum button_ids {
+		id_first = 0,
+		id_load = id_first,
+		id_save,
+		id_delete,
+		id_close,
+		id_page_up,
+		id_line_up,
+		id_line_down,
+		id_page_down,
+		id_count
+	};
+	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
+
 	static const short btn_cols[5]; // x-coord of each button.
 	static const short btn_rows[5]; // y-coord of each button.
 

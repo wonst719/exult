@@ -147,21 +147,18 @@ Newfile_gump::Newfile_gump(
 	back = gwin->get_win()->create_buffer(gwin->get_width(), gwin->get_height());
 	gwin->get_win()->get(back, 0, 0);
 
-	// Load/Save/Delete
-	buttons[0] = buttons[1] = buttons[2] = nullptr;
-
 	// Cancel
-	buttons[3] = new Newfile_Textbutton(this, &Newfile_gump::close,
+	buttons[id_close] = std::make_unique<Newfile_Textbutton>(this, &Newfile_gump::close,
 	        canceltext, btn_cols[3], btn_rows[0], 59);
 
 	// Scrollers.
-	buttons[4] = new Newfile_button(this, &Newfile_gump::page_up,
+	buttons[id_page_up] = std::make_unique<Newfile_button>(this, &Newfile_gump::page_up,
 	        EXULT_FLX_SAV_UPUP_SHP, btn_cols[4], btn_rows[1], SF_EXULT_FLX);
-	buttons[5] = new Newfile_button(this, &Newfile_gump::line_up,
+	buttons[id_line_up] = std::make_unique<Newfile_button>(this, &Newfile_gump::line_up,
 	        EXULT_FLX_SAV_UP_SHP, btn_cols[4], btn_rows[2], SF_EXULT_FLX);
-	buttons[6] = new Newfile_button(this, &Newfile_gump::line_down,
+	buttons[id_line_down] = std::make_unique<Newfile_button>(this, &Newfile_gump::line_down,
 	        EXULT_FLX_SAV_DOWN_SHP, btn_cols[4], btn_rows[3], SF_EXULT_FLX);
-	buttons[7] = new Newfile_button(this, &Newfile_gump::page_down,
+	buttons[id_page_down] = std::make_unique<Newfile_button>(this, &Newfile_gump::page_down,
 	        EXULT_FLX_SAV_DOWNDOWN_SHP, btn_cols[4], btn_rows[4], SF_EXULT_FLX);
 
 	LoadSaveGameDetails();
@@ -174,12 +171,7 @@ Newfile_gump::Newfile_gump(
 Newfile_gump::~Newfile_gump(
 ) {
 	gwin->get_tqueue()->resume(SDL_GetTicks());
-	size_t i;
-	for (i = 0; i < array_size(buttons); i++)
-		delete buttons[i];
-
 	FreeSaveGameDetails();
-
 	delete back;
 }
 
@@ -206,12 +198,9 @@ void Newfile_gump::load() {
 	// Reset Selection
 	selected = -3;
 
-	delete buttons[0];
-	buttons[0] = nullptr;
-	delete buttons[1];
-	buttons[1] = nullptr;
-	delete buttons[2];
-	buttons[2] = nullptr;
+	buttons[id_load].reset();
+	buttons[id_save].reset();
+	buttons[id_delete].reset();
 
 	//Reread save game details (quick save gets overwritten)
 	//FreeSaveGameDetails();
@@ -246,12 +235,9 @@ void Newfile_gump::save() {
 	// Reset everything
 	selected = -3;
 
-	delete buttons[0];
-	buttons[0] = nullptr;
-	delete buttons[1];
-	buttons[1] = nullptr;
-	delete buttons[2];
-	buttons[2] = nullptr;
+	buttons[id_load].reset();
+	buttons[id_save].reset();
+	buttons[id_delete].reset();
 
 	FreeSaveGameDetails();
 	LoadSaveGameDetails();
@@ -283,12 +269,9 @@ void Newfile_gump::delete_file() {
 	// Reset everything
 	selected = -3;
 
-	delete buttons[0];
-	buttons[0] = nullptr;
-	delete buttons[1];
-	buttons[1] = nullptr;
-	delete buttons[2];
-	buttons[2] = nullptr;
+	buttons[id_load].reset();
+	buttons[id_save].reset();
+	buttons[id_delete].reset();
 
 	FreeSaveGameDetails();
 	LoadSaveGameDetails();
@@ -337,7 +320,7 @@ void Newfile_gump::PaintSaveName(int line) {
 		text = "Quick Save";
 	else if (actual_game == -2 && selected != -2)
 		text = "Empty Slot";
-	else if (actual_game != selected || buttons[0])
+	else if (actual_game != selected || buttons[id_load])
 		text = games[actual_game].savename;
 	else
 		text = newname;
@@ -379,8 +362,9 @@ void Newfile_gump::paint(
 		PaintSaveName(i);
 
 	// Paint Buttons
-	for (i = 0; i < 8; i++) if (buttons[i])
-			buttons[i]->paint();
+	for (auto& btn : buttons)
+		if (btn)
+			btn->paint();
 
 	// Paint scroller
 
@@ -496,9 +480,10 @@ bool Newfile_gump::mouse_down(
 
 	pushed = Gump::on_button(mx, my);
 	// Try buttons at bottom.
-	if (!pushed) for (size_t i = 0; i < array_size(buttons); i++)
-			if (buttons[i] && buttons[i]->on_button(mx, my)) {
-				pushed = buttons[i];
+	if (!pushed)
+		for (auto& btn : buttons)
+			if (btn && btn->on_button(mx, my)) {
+				pushed = btn.get();
 				break;
 			}
 
@@ -595,28 +580,25 @@ bool Newfile_gump::mouse_down(
 		filename = games[selected].filename;
 	}
 
-	if (!buttons[0] && want_load)
-		buttons[0] = new Newfile_Textbutton(this, &Newfile_gump::load,
+	if (!buttons[id_load] && want_load)
+		buttons[id_load] = std::make_unique<Newfile_Textbutton>(this, &Newfile_gump::load,
 		        loadtext, btn_cols[1], btn_rows[0], 39);
-	else if (buttons[0] && !want_load) {
-		delete buttons[0];
-		buttons[0] = nullptr;
+	else if (buttons[id_load] && !want_load) {
+		buttons[id_load].reset();
 	}
 
-	if (!buttons[1] && want_save)
-		buttons[1] = new Newfile_Textbutton(this, &Newfile_gump::save,
+	if (!buttons[id_save] && want_save)
+		buttons[id_save] = std::make_unique<Newfile_Textbutton>(this, &Newfile_gump::save,
 		        savetext, btn_cols[0], btn_rows[0], 40);
-	else if (buttons[1] && !want_save) {
-		delete buttons[1];
-		buttons[1] = nullptr;
+	else if (buttons[id_save] && !want_save) {
+		buttons[id_save].reset();
 	}
 
-	if (!buttons[2] && want_delete)
-		buttons[2] = new Newfile_Textbutton(this, &Newfile_gump::delete_file,
+	if (!buttons[id_delete] && want_delete)
+		buttons[id_delete] = std::make_unique<Newfile_Textbutton>(this, &Newfile_gump::delete_file,
 		        deletetext, btn_cols[2], btn_rows[0], 59);
-	else if (buttons[2] && !want_delete) {
-		delete buttons[2];
-		buttons[2] = nullptr;
+	else if (buttons[id_delete] && !want_delete) {
+		buttons[id_delete].reset();
 	}
 
 	paint();            // Repaint.
@@ -716,12 +698,12 @@ void Newfile_gump::text_input(int chr, int unicode) {
 
 	case SDLK_RETURN:       // If only 'Save', do it.
 	case SDLK_KP_ENTER:
-		if (!buttons[0] && buttons[1]) {
-			if (buttons[1]->push(1)) {
+		if (!buttons[id_load] && buttons[id_save]) {
+			if (buttons[id_save]->push(1)) {
 				gwin->show(true);
-				buttons[1]->unpush(1);
+				buttons[id_save]->unpush(1);
 				gwin->show(true);
-				buttons[1]->activate(1);
+				buttons[id_save]->activate(1);
 			}
 		}
 		update_details = true;
@@ -729,14 +711,12 @@ void Newfile_gump::text_input(int chr, int unicode) {
 	case SDLK_BACKSPACE:
 		if (BackspacePressed()) {
 			// Can't restore/delete now.
-			delete buttons[0];
-			delete buttons[2];
-			buttons[0] = buttons[2] = nullptr;
+			buttons[id_load].reset();
+			buttons[id_delete].reset();
 
 			// If no chars cant save either
 			if (!newname[0]) {
-				delete buttons[1];
-				buttons[1] = nullptr;
+				buttons[id_save].reset();
 			}
 			update_details = true;
 		}
@@ -745,14 +725,12 @@ void Newfile_gump::text_input(int chr, int unicode) {
 	case SDLK_DELETE:
 		if (DeletePressed()) {
 			// Can't restore/delete now.
-			delete buttons[0];
-			delete buttons[2];
-			buttons[0] = buttons[2] = nullptr;
+			buttons[id_load].reset();
+			buttons[id_delete].reset();
 
 			// If no chars cant save either
 			if (!newname[0]) {
-				delete buttons[1];
-				buttons[1] = nullptr;
+				buttons[id_save].reset();
 			}
 			update_details = true;
 		}
@@ -782,17 +760,16 @@ void Newfile_gump::text_input(int chr, int unicode) {
 		if (chr < 256 && isascii(chr)) {
 			if (AddCharacter(chr)) {
 				// Added first character?  Need 'Save' button.
-				if (newname[0] && !buttons[1]) {
-					buttons[1] = new Newfile_Textbutton(this, &Newfile_gump::save,
+				if (newname[0] && !buttons[id_save]) {
+					buttons[id_save] = std::make_unique<Newfile_Textbutton>(this, &Newfile_gump::save,
 					        savetext, btn_cols[0], btn_rows[0], 40);
-					buttons[1]->paint();
+					buttons[id_save]->paint();
 				}
 
 				// Remove Load and Delete Button
-				if (buttons[0] || buttons[2]) {
-					delete buttons[0];
-					delete buttons[2];
-					buttons[0] = buttons[2] = nullptr;
+				if (buttons[id_load] || buttons[id_delete]) {
+					buttons[id_load].reset();
+					buttons[id_delete].reset();
 				}
 				update_details = true;
 			}
