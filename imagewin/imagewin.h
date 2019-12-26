@@ -30,8 +30,9 @@ Boston, MA  02111-1307, USA.
 #include "imagebuf.h"
 #include "common_types.h"
 #include <string>
-#include <vector>
 #include <map>
+#include <memory>
+#include <vector>
 
 #include "SDL_video.h"
 #include "ignore_unused_variable_warning.h"
@@ -416,7 +417,7 @@ public:
 		return fullscreen;
 	}
 	// Create a compatible image buffer.
-	Image_buffer *create_buffer(int w, int h);
+	std::unique_ptr<Image_buffer> create_buffer(int w, int h);
 	// Resize event occurred.
 	void resized(unsigned int neww, unsigned int newh, bool newfs, unsigned int newgw, unsigned int newgh, int newsc, int newscaler = point, FillMode fmode = AspectCorrectCentre, int fillsclr = point);
 	void show() {       // Repaint entire window.

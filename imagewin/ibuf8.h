@@ -41,8 +41,8 @@ public:
 	/*
 	 *  Depth-independent methods:
 	 */
-	Image_buffer *create_another(int w, int h) override {
-		return new Image_buffer8(w, h);
+	std::unique_ptr<Image_buffer> create_another(int w, int h) override {
+		return std::make_unique<Image_buffer8>(w, h);
 	}
 	// Copy within itself.
 	void copy(int srcx, int srcy, int srcw, int srch,

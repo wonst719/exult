@@ -154,7 +154,7 @@ protected:
 
 	unsigned char restored = 0;     // Set to 1 if we restored a game.
 
-	Image_buffer    *back = nullptr;
+	std::unique_ptr<Image_buffer> back;
 
 	SaveInfo    *games = nullptr;     // The list of savegames
 	int     num_games = 0;  // Number of save games

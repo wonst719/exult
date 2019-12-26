@@ -35,7 +35,7 @@ protected:
 	Shape_file pointers;        // Pointers from 'pointers.shp'.
 	Game_window *gwin;      // Where to draw.
 	Image_window8 *iwin;        // From gwin.
-	Image_buffer *backup;       // Stores image below mouse shape.
+	std::unique_ptr<Image_buffer> backup;       // Stores image below mouse shape.
 	Rectangle box;          // Area backed up.
 	Rectangle dirty;        // Dirty area from mouse move.
 	int mousex, mousey;     // Last place where mouse was.
@@ -97,13 +97,12 @@ public:
 
 	Mouse(Game_window *gw);
 	Mouse(Game_window *gw, IDataSource &shapes);
-	~Mouse();
 
 	void show();            // Paint it.
 	void hide() {       // Restore area under mouse.
 		if (onscreen) {
 			onscreen = false;
-			iwin->put(backup, box.x, box.y);
+			iwin->put(backup.get(), box.x, box.y);
 			dirty = box;    // Init. dirty to box.
 		}
 	}

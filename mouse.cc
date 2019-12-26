@@ -57,7 +57,7 @@ bool Mouse::mouse_update = false;
 
 Mouse::Mouse(
     Game_window *gw         // Where to draw.
-) : gwin(gw), iwin(gwin->get_win()), backup(nullptr), box(0, 0, 0, 0), dirty(0, 0, 0, 0), cur_framenum(0), cur(nullptr), avatar_speed(100 * gwin->get_std_delay() / slow_speed_factor) {
+) : gwin(gw), iwin(gwin->get_win()), box(0, 0, 0, 0), dirty(0, 0, 0, 0), cur_framenum(0), cur(nullptr), avatar_speed(100 * gwin->get_std_delay() / slow_speed_factor) {
 	SDL_GetMouseState(&mousex, &mousey);
 	iwin->screen_to_game(mousex, mousey, gwin->get_fastmouse(), mousex, mousey);
 	if (is_system_path_defined("<PATCH>") && U7exists(PATCH_POINTERS))
@@ -71,7 +71,7 @@ Mouse::Mouse(
 Mouse::Mouse(
     Game_window *gw,        // Where to draw.
     IDataSource &shapes
-) : gwin(gw), iwin(gwin->get_win()), backup(nullptr), box(0, 0, 0, 0), dirty(0, 0, 0, 0), cur_framenum(0), cur(nullptr), avatar_speed(100 * gwin->get_std_delay() / slow_speed_factor) {
+) : gwin(gw), iwin(gwin->get_win()), box(0, 0, 0, 0), dirty(0, 0, 0, 0), cur_framenum(0), cur(nullptr), avatar_speed(100 * gwin->get_std_delay() / slow_speed_factor) {
 	SDL_GetMouseState(&mousex, &mousey);
 	iwin->screen_to_game(mousex, mousey, gwin->get_fastmouse(), mousex, mousey);
 	pointers.load(&shapes);
@@ -112,15 +112,6 @@ void Mouse::Init() {
 }
 
 /*
- *  Delete.
- */
-
-Mouse::~Mouse(
-) {
-	delete backup;
-}
-
-/*
  *  Show the mouse.
  */
 
@@ -129,7 +120,7 @@ void Mouse::show(
 	if (!onscreen) {
 		onscreen = true;
 		// Save background.
-		iwin->get(backup, box.x, box.y);
+		iwin->get(backup.get(), box.x, box.y);
 		// Paint new location.
 //		cur->paint_rle(iwin->get_ib8(), mousex, mousey);
 		cur->paint_rle(mousex, mousey);

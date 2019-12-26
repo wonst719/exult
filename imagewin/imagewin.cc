@@ -747,11 +747,10 @@ void Image_window::free_surface() {
 *   Create a compatible buffer.
 */
 
-Image_buffer *Image_window::create_buffer(
+std::unique_ptr<Image_buffer> Image_window::create_buffer(
     int w, int h            // Dimensions.
 ) {
-	Image_buffer *newbuf = ibuf->create_another(w, h);
-	return newbuf;
+	return ibuf->create_another(w, h);
 }
 
 /*

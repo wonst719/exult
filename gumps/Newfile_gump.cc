@@ -145,7 +145,7 @@ Newfile_gump::Newfile_gump(
 
 	gwin->get_tqueue()->pause(SDL_GetTicks());
 	back = gwin->get_win()->create_buffer(gwin->get_width(), gwin->get_height());
-	gwin->get_win()->get(back, 0, 0);
+	gwin->get_win()->get(back.get(), 0, 0);
 
 	// Cancel
 	buttons[id_close] = std::make_unique<Newfile_Textbutton>(this, &Newfile_gump::close,
@@ -172,7 +172,6 @@ Newfile_gump::~Newfile_gump(
 ) {
 	gwin->get_tqueue()->resume(SDL_GetTicks());
 	FreeSaveGameDetails();
-	delete back;
 }
 
 /*
@@ -844,7 +843,7 @@ void Newfile_gump::LoadSaveGameDetails() {
 	cur_details = new SaveGame_Details;
 	memset(cur_details, 0, sizeof(SaveGame_Details));
 
-	gwin->get_win()->put(back, 0, 0);
+	gwin->get_win()->put(back.get(), 0, 0);
 
 	if (gd_details) cur_details->save_count = gd_details->save_count;
 	else cur_details->save_count = 0;

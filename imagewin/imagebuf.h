@@ -28,6 +28,8 @@ Boston, MA  02111-1307, USA.
 
 #include "ignore_unused_variable_warning.h"
 
+#include <memory>
+
 // Table for translating palette vals.:
 //using Xform_palette = unsigned char *; // Should be 256-bytes.
 
@@ -204,7 +206,7 @@ public:
 	/*
 	 *  Depth-independent methods:
 	 */
-	virtual Image_buffer *create_another(int w, int h) = 0;
+	virtual std::unique_ptr<Image_buffer> create_another(int w, int h) = 0;
 	// Copy within itself.
 	virtual void copy(int srcx, int srcy, int srcw, int srch,
 	                  int destx, int desty) = 0;
