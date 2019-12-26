@@ -21,17 +21,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Modal_gump.h"
 
+#include <array>
+#include <memory>
+
 class Gump_button;
 
 class Gamemenu_gump : public Modal_gump {
 	UNREPLICATABLE_CLASS(Gamemenu_gump)
 
 private:
-	Gump_button *buttons[6];
+	enum button_ids {
+	    id_first = 0,
+	    id_load_save = id_first,
+	    id_video_options,
+	    id_audio_options,
+	    id_gameplay_options,
+	    id_misc_options,
+	    id_quit,
+	    id_count
+	};
+	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
 
 public:
 	Gamemenu_gump();
-	~Gamemenu_gump() override;
 
 	// Paint it and its contents.
 	void paint() override;

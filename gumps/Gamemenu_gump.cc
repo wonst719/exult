@@ -60,28 +60,20 @@ Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, EXULT_FLX_GAMEMENU_SHP, SF_
 	set_object_area(Rectangle(0, 0, 0, 0), 8, 82); //+++++ ???
 
 	int y = 0;
-
-	std::memset(buttons, 0, sizeof(buttons));
-
 	if (!gwin->is_in_exult_menu())
-		buttons[0] = new Gamemenu_button(this, &Gamemenu_gump::loadsave,
+		buttons[id_load_save] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::loadsave,
 		        loadsavetext, colx, rowy[y++], 108, 11);
-	buttons[1] = new Gamemenu_button(this, &Gamemenu_gump::video_options,
+	buttons[id_video_options] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::video_options,
 	        videoopttext, colx, rowy[y++], 108, 11);
-	buttons[2] = new Gamemenu_button(this, &Gamemenu_gump::audio_options,
+	buttons[id_audio_options] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::audio_options,
 	        audioopttext, colx, rowy[y++], 108, 11);
-	buttons[3] = new Gamemenu_button(this, &Gamemenu_gump::gameplay_options,
+	buttons[id_gameplay_options] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::gameplay_options,
 	        gameopttext, colx, rowy[y++], 108, 11);
-	buttons[4] = new Gamemenu_button(this, &Gamemenu_gump::misc_options,
+	buttons[id_misc_options] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::misc_options,
 	        misctext, colx, rowy[y++], 108, 11);
 	if (!gwin->is_in_exult_menu())
-		buttons[5] = new Gamemenu_button(this, &Gamemenu_gump::quit_exult,
+		buttons[id_quit] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::quit_exult,
 		        quittext, colx, rowy[y++], 108, 11);
-}
-
-Gamemenu_gump::~Gamemenu_gump() {
-	for (int i = 0; i < 6; i++)
-		delete buttons[i];
 }
 
 //++++++ IMPLEMENT RETURN_TO_MENU!
@@ -138,9 +130,9 @@ void Gamemenu_gump::misc_options() {
 
 void Gamemenu_gump::paint() {
 	Gump::paint();
-	for (int i = 0; i < 6; i++)
-		if (buttons[i])
-			buttons[i]->paint();
+	for (auto& btn : buttons)
+		if (btn)
+			btn->paint();
 	gwin->set_painted();
 }
 
@@ -151,9 +143,9 @@ bool Gamemenu_gump::mouse_down(int mx, int my, int button) {
 	// First try checkmark.
 	// Try buttons at bottom.
 	if (!pushed)
-		for (int i = 0; i < 6; i++)
-			if (buttons[i] && buttons[i]->on_button(mx, my)) {
-				pushed = buttons[i];
+		for (auto& btn : buttons)
+			if (btn && btn->on_button(mx, my)) {
+				pushed = btn.get();
 				break;
 			}
 
