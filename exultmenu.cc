@@ -490,4 +490,3 @@ BaseGameInfo *ExultMenu::run() {
 	return sel_game;
 }
 
-#endif
