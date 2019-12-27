@@ -81,13 +81,7 @@ static bool U7open2(
 	try {
 		U7open(in, fname);
 	} catch (const file_exception & /*f*/) {
-#if 0
-		if (editing)
-			return false;
-		throw f;
-#else   /* This is preferable. */
 		return false;
-#endif
 	}
 	return true;
 }

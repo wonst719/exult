@@ -543,46 +543,6 @@ gint Chunk_chooser::drag_begin(
 	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(data);
 	if (chooser->selected < 0)
 		return FALSE;       // ++++Display a halt bitmap.
-#if 0
-	// Get ->chunk.
-	Chunk_info &shinfo = chooser->info[chooser->selected];
-	Chunk_frame *chunk = chooser->ifile->get_chunk(shinfo.chunknum,
-	                     shinfo.framenum);
-	if (!chunk)
-		return FALSE;
-	int w = chunk->get_width(), h = chunk->get_height(),
-	    xright = chunk->get_xright(), ybelow = chunk->get_ybelow();
-	Image_buffer8 tbuf(w, h);   // Create buffer to render to.
-	tbuf.fill8(0xff);       // Fill with 'transparent' pixel.
-	unsigned char *tbits = tbuf.get_bits();
-	chunk->paint(&tbuf, w - 1 - xright, h - 1 - ybelow);
-	// Put chunk on a pixmap.
-	GdkPixmap *pixmap = gdk_pixmap_new(widget->window, w, h, -1);
-	gdk_draw_indexed_image(pixmap, chooser->drawgc, 0, 0, w, h,
-	                       GDK_RGB_DITHER_NORMAL, tbits,
-	                       tbuf.get_line_width(), chooser->palette);
-	int mask_stride = (w + 7) / 8;  // Round up to nearest byte.
-	char *mdata = new char[mask_stride * h];
-	for (int y = 0; y < h; y++) // Do each row.
-		// Do each byte.
-		for (int b = 0; b < mask_stride; b++) {
-			char bits = 0;
-			unsigned char *vals = tbits + y * w + b * 8;
-			for (int i = 0; i < 8; i++)
-				if (vals[i] != 0xff)
-					bits |= (1 << i);
-			mdata[y * mask_stride + b] = bits;
-		}
-	GdkBitmap *mask = gdk_bitmap_create_from_data(widget->window,
-	                  mdata, w, h);
-	delete mdata;
-	// This will be the chunk dragged.
-	gtk_drag_set_icon_pixmap(context,
-	                         gdk_window_get_colormap(widget->window), pixmap, mask,
-	                         w - 2 - xright, h - 2 - ybelow);
-	gdk_pixmap_unref(pixmap);
-	gdk_bitmap_unref(mask);
-#endif
 	return TRUE;
 }
 
@@ -844,11 +804,6 @@ Chunk_chooser::Chunk_chooser(
 	                       num_chunks, 1,
 	                       4, 1.0);
 	vscroll = gtk_vscrollbar_new(GTK_ADJUSTMENT(chunk_adj));
-#if 0
-	// Update window when it stops.
-	gtk_range_set_update_policy(GTK_RANGE(vscroll),
-	                            GTK_UPDATE_DELAYED);
-#endif
 	gtk_box_pack_start(GTK_BOX(hbox), vscroll, FALSE, TRUE, 0);
 	// Set scrollbar handler.
 	gtk_signal_connect(GTK_OBJECT(chunk_adj), "value_changed",

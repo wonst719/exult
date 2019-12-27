@@ -661,14 +661,8 @@ void CheatScreen::NormalMenu() {
 	// Teleport
 	font->paint_text_fixedwidth(ibuf, "[T]eleport", 160, maxy - 81, 8);
 
-#if 0
-	// Create Item
-	font->paint_text_fixedwidth(ibuf, "[C]reate Item", 160, maxy - 72, 8);
-#endif
-
 	// eXit
 	font->paint_text_fixedwidth(ibuf, "[X]it", 160, maxy - 36, 8);
-
 }
 
 void CheatScreen::NormalActivate(char *input, int &command, Cheat_Prompt &mode) {
@@ -733,13 +727,6 @@ void CheatScreen::NormalActivate(char *input, int &command, Cheat_Prompt &mode) 
 		else if (!input[0]) NPCLoop(-1);
 		else mode = NPCLoop(npc);
 		break;
-
-#if 0
-		// Create
-	case 'c':
-		mode = CP_NotAvail;
-		break;
-#endif
 
 		// Global Flag Editor
 	case 'f':
@@ -1173,11 +1160,6 @@ void CheatScreen::NPCMenu(Actor *actor, int &num) {
 	ignore_unused_variable_warning(num);
 	// Left Column
 
-#if 0
-	// Attack Mode
-	if (actor) font->paint_text_fixedwidth(ibuf, "[A]ttack Mode", 0, maxy - 99, 8);
-#endif
-
 	// Business Activity
 	if (actor) font->paint_text_fixedwidth(ibuf, "[B]usiness Activity", 0, maxy - 99, 8);
 
@@ -1193,11 +1175,6 @@ void CheatScreen::NPCMenu(Actor *actor, int &num) {
 	// Name
 	if (actor) font->paint_text_fixedwidth(ibuf, "[1] Name", 0, maxy - 63, 8);
 
-#if 0
-	// draw Weapon
-	if (actor) font->paint_text_fixedwidth(ibuf, "[D]raw Weapon", 0, maxy - 45, 8);
-#endif
-
 	// eXit
 	font->paint_text_fixedwidth(ibuf, "[X]it", 0, maxy - 36, 8);
 
@@ -1206,11 +1183,6 @@ void CheatScreen::NPCMenu(Actor *actor, int &num) {
 
 	// Stats
 	if (actor) font->paint_text_fixedwidth(ibuf, "[S]tats", 160, maxy - 99, 8);
-
-#if 0
-	// Target
-	if (actor) font->paint_text_fixedwidth(ibuf, "[Z] Target", 160, maxy - 90, 8);
-#endif
 
 	// Training Points
 	if (actor) font->paint_text_fixedwidth(ibuf, "[2] Training Points", 160, maxy - 90, 8);
@@ -1248,12 +1220,6 @@ void CheatScreen::NPCActivate(char *input, int &command, Cheat_Prompt &mode, Act
 		else if (i == -1) mode = CP_Canceled;
 		else if (input[0]) num = i;
 	} else if (actor) switch (command) {
-#if 0
-		case 'a':   // Attack mode
-			mode = CP_NotAvail;
-			break;
-#endif
-
 		case 'b':   // Business
 			BusinessLoop(actor);
 			break;
@@ -1262,27 +1228,14 @@ void CheatScreen::NPCActivate(char *input, int &command, Cheat_Prompt &mode, Act
 			FlagLoop(actor);
 			break;
 
-#if 0
-		case 'd':   // draw weapon
-			mode = CP_NotAvail;
-			break;
-#endif
-
 		case 's':   // stats
 			StatLoop(actor);
 			break;
-
-#if 0
-		case 'z':   // Target
-			mode = CP_NotAvail;
-			break;
-#endif
 
 		case 't':   // Teleport
 			Game_window::get_instance()->teleport_party(actor->get_tile(),
 			        false, actor->get_map_num());
 			break;
-
 
 		case 'e':   // Experience
 			if (i < 0) mode = CP_Canceled;

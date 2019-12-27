@@ -187,15 +187,6 @@ void Notebook_gump::initialize(
 ) {
 	initialized = true;
 	read();
-#if 0
-	// ++++TESTING:
-	notes.push_back(new One_note(1, 1, 10, 10, 10,
-	                             "Note  #1\nHello"));
-	notes.push_back(new One_note(2, 2, 20, 20, 20,
-	                                 "Note  #2\nworld.\n\nHow are you?"));
-	notes.push_back(new One_note(3, 3, 30, 30, 30,
-	                                 "Note #3"));
-#endif
 }
 
 /*
@@ -224,10 +215,6 @@ void Notebook_gump::add_new(
 ) {
 	Game_clock *clk = gwin->get_clock();
 	Tile_coord t = gwin->get_main_actor()->get_tile();
-#if 0
-	int lat = (t.tx - 0x3a5) / 10,  // +++++(May have these switched.)
-	    lng = (t.ty - 0x46e) / 10;
-#endif
 	One_note *note = new One_note(clk->get_day(), clk->get_hour(),
 	                              clk->get_minute(), t.tx, t.ty, text, gflag);
 	note->is_new = true;
@@ -742,10 +729,6 @@ void Notebook_gump::read(
 	for (Configuration::KeyTypeList::iterator it = note_nds.begin();
 	        it != note_nds.end(); ++it) {
 		Configuration::KeyType notend = *it;
-#if 0
-		cout << note_pair.first << ": " << endl;
-		cout << note_pair.second << endl;
-#endif
 		if (notend.first == "note") {
 			note = new One_note();
 			notes.push_back(note);

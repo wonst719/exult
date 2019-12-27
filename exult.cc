@@ -1470,19 +1470,7 @@ static void Handle_event(
 			gwin->get_focus();
 		else if (LostFocus(event))
 			gwin->lose_focus();
-#if 0
-		if (event.active.state & SDL_APPACTIVE)
-			// Became active.
-			if (event.active.gain)
-				gwin->init_actors();
-#endif
 		break;
-#if 0
-	case ConfigureNotify:       // Resize.
-		gwin->resized(event.xconfigure.window,
-		              event.xconfigure.width, event.xconfigure.height);
-		break;
-#endif
 	case SDL_QUIT:
 		gwin->get_gump_man()->okay_to_quit();
 		break;
@@ -1504,19 +1492,6 @@ static void Handle_event(
 		break;
 	}
 #endif
-#endif
-#if 0
-//#ifdef _WIN32
-	case SDL_SYSWMEVENT:
-//		printf("SYSWMEVENT received, %x\n", event.syswm.msg->msg);
-		if (event.syswm.msg->msg == MM_MCINOTIFY) {
-#if DEBUG
-			cerr << "MM_MCINOTIFY message received" << endl;
-#endif
-			((Windows_MCI *)(Audio::get_ptr()->get_midi()))->callback(event.syswm.msg->wParam,
-			        event.syswm.msg->hwnd);
-		}
-		break;
 #endif
 	}
 }

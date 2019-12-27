@@ -525,10 +525,8 @@ public:
 		if (a == camera_actor) return scroll_if_needed(t);
 		else return false;
 	}
-#if 1
 	// Show abs. location of mouse.
 	void show_game_location(int x, int y);
-#endif
 	// Get screen area of shape at pt.
 	Rectangle get_shape_rect(const Shape_frame *s, int x, int y) const {
 		return Rectangle(x - s->get_xleft(), y - s->get_yabove(),

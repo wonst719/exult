@@ -245,14 +245,6 @@ void Mouse::set_speed_cursor() {
 		case Cheat::paint_chunks:
 			cursor = med_combat_arrows[0];
 			break;   // Med. N red arrow.
-#if 0
-		case Cheat::select:
-			cursor = short_arrows[7];
-			break;        // Short NW green.
-		case Cheat::hide:
-			cursor = redx;
-			break;
-#endif
 		case Cheat::combo_pick:
 			cursor = greenselect;
 			break;

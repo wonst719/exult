@@ -443,13 +443,9 @@ void Actor::read(
 	set_invalid();          // Not in world yet.
 	if (olist && !is_dead() &&  // Valid & alive?  Put into chunk list.
 	        !unused) {
-#if 1
 		move((scx + cx)*c_tiles_per_chunk + tilex,
 		     (scy + cy)*c_tiles_per_chunk + tiley,
 		     get_lift(), map_num);
-#else
-		olist->add(this);
-#endif
 		if (this == gwin->get_main_actor())
 			gwin->set_map(map_num);
 	}

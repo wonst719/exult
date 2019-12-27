@@ -562,26 +562,6 @@ case 0x20:	 am,vib,ksr,eg type,mul
 
 void FMOplMidiDriver::midi_fm_instrument(int voice, unsigned char *inst)
 {
-#if 0
-	/* Just gotta make sure this happens because who knows when it'll be reset otherwise.... */
-#endif
-
-
-#if 0 && defined(LUCAS_MODE)
-	midi_write_adlib(OPL_REG_KSLTL_C + adlib_opadd[voice], 0x3f);
-	if ((inst[INDEX_FB_C] & 1) == 0)
-		midi_write_adlib(OPL_REG_KSLTL_M + adlib_opadd[voice], inst[INDEX_KSLTL_M]);
-	else
-		midi_write_adlib(OPL_REG_KSLTL_M + adlib_opadd[voice], 0x3f);
-#elif 0
-	midi_write_adlib(OPL_REG_KSLTL_M + adlib_opadd[voice], inst[INDEX_KSLTL_M]);
-	if ((inst[INDEX_FB_C] & 1) == 0)
-		midi_write_adlib(OPL_REG_KSLTL_C + adlib_opadd[voice], inst[INDEX_KSLTL_C]);
-	else
-		midi_write_adlib(OPL_REG_KSLTL_C + adlib_opadd[voice], 0);
-#else
-#endif
-
 	midi_write_adlib(OPL_REG_AVEKM_M + adlib_opadd[voice], inst[INDEX_AVEKM_M]);
 	midi_write_adlib(OPL_REG_KSLTL_M + adlib_opadd[voice], inst[INDEX_KSLTL_M]);
 	midi_write_adlib(OPL_REG_AD_M + adlib_opadd[voice], inst[INDEX_AD_M]);

@@ -283,14 +283,7 @@ Game_object_shared Monster_actor::create(
 
 void Monster_actor::delete_all(
 ) {
-#if 0
-	while (in_world) {
-	    Monster_actor *m = static_cast<Monster_actor *>(in_world.get());
-		m->link_out();         // Remove from chain.
-	}
-#else
     in_world = nullptr;
-#endif
 }
 
 /*

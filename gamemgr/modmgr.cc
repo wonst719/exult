@@ -45,10 +45,6 @@ using std::endl;
 using std::string;
 using std::vector;
 
-#if 0
-#define DEBUG_PATHS 1
-#endif
-
 // BaseGameInfo: Generic information and functions common to mods and games
 void BaseGameInfo::setup_game_paths() {
 	// Make aliases to the current game's paths.

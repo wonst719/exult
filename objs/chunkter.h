@@ -71,10 +71,6 @@ public:
 	inline void set_modified(bool tf = true) {
 		modified = tf;
 	}
-#if 0
-	// Less-than c2 (for STL Map)?
-	bool operator<(const Chunk_terrain &c2) const;
-#endif
 	// Get tile's shape ID.
 	inline ShapeID get_flat(int tilex, int tiley) const {
 		return shapes[16 * tiley + tilex];

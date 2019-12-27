@@ -481,16 +481,6 @@ on_npc_draw_key_press(GtkEntry   *entry,
                       gpointer    user_data) {
 	ignore_unused_variable_warning(entry, event, user_data);
 	//Npc_chooser *chooser = static_cast<Npc_chooser *>(user_data);
-#if 0
-	switch (event->keyval) {
-	case GDK_Delete:
-		chooser->del_frame();
-		return TRUE;
-	case GDK_Insert:
-		chooser->new_frame();
-		return TRUE;
-	}
-#endif
 	return FALSE;           // Let parent handle it.
 }
 

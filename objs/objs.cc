@@ -1355,14 +1355,11 @@ int Game_object::compare(
 			return TRACE_COMPARE(xcmp);
 		else if (xcmp == zcmp)      // See if X and Z dirs. agree.
 			return TRACE_COMPARE(xcmp);
-#if 1 /* Woohoo!  Seems to work without messing up N. Trinsic gate. */
-		// Experiment:  Fixes Trinsic mayor
-		//   statue-through-roof.
+		// Fixes Trinsic mayor statue-through-roof.
 		else if (inf1.ztop / 5 < inf2.zbot / 5 && inf2.info.occludes())
 			return TRACE_COMPARE(-1);   // A floor above/below.
 		else if (inf2.ztop / 5 < inf1.zbot / 5 && inf1.info.occludes())
 			return TRACE_COMPARE(1);
-#endif
 		else
 			return TRACE_COMPARE(0);
 	} else if (xover) {     // X's overlap.
@@ -1381,13 +1378,10 @@ int Game_object::compare(
 	} else if (ycmp == 1) { // o1 Y after o2 Y?
 		if (zover || zcmp >= 0)
 			return TRACE_COMPARE(1);
-#if 1   /* So far, this seems to work without causing problems: */
-		// Experiment:  Fixes Brit. museum
-		//   statue-through-roof.
+		// Fixes Brit. museum statue-through-roof.
 		else if (inf1.ztop / 5 < inf2.zbot / 5)
 			return TRACE_COMPARE(-1);   // A floor above.
 		else
-#endif
 			return TRACE_COMPARE(0);
 	}
 	return TRACE_COMPARE(0);

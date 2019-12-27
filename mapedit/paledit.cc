@@ -406,24 +406,6 @@ void Palette_edit::drag_data_get(
 ) {
 	ignore_unused_variable_warning(widget, context, seldata, info, time, data);
 	cout << "In DRAG_DATA_GET" << endl;
-#if 0
-	Palette_edit *paled = static_cast<Palette_edit *>(data);
-	if (paled->selected < 0 || info != U7_TARGET_SHAPEID)
-		return;         // Not sure about this.
-	guchar buf[30];
-	int file = U7_SHAPE_SHAPES; // +++++For now.
-	const Shape_info &shinfo = paled->info[paled->selected];
-	int len = Store_u7_shapeid(buf, file, shinfo.shapenum,
-	                           shinfo.framenum);
-	cout << "Setting selection data (" << shinfo.shapenum <<
-	     '/' << shinfo.framenum << ')' << endl;
-	// Make us owner of xdndselection.
-	//gtk_selection_owner_set(widget, gdk_atom_intern("XdndSelection", 0),
-	//                          time);
-	// Set data.
-	gtk_selection_data_set(seldata,
-	                       gdk_atom_intern(U7_TARGET_SHAPEID_NAME, 0), 8, buf, len);
-#endif
 }
 
 /*

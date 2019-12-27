@@ -486,24 +486,6 @@ bool Game_window::is_bg_track(int num) { // ripped out of Background_noise
 			num == Audio::game_music(8) || num == Audio::game_music(52);
 }
 
-#if 0
-#define BLEND(alpha, newc, oldc) ((newc*255L) - (oldc*(255L-alpha)))/alpha
-void Analyze_xform(unsigned char *xform, int alpha, Palette *pal) {
-	long br = 0, bg = 0, bb = 0;    // Trying to figure out blend color.
-	for (int i = 0; i < 256; i++) {
-		int xi = xform[i];  // Index of color mapped to.
-		br += BLEND(alpha, pal->get_red(xi), pal->get_red(i));
-		bg += BLEND(alpha, pal->get_green(xi), pal->get_green(i));
-		bb += BLEND(alpha, pal->get_blue(xi), pal->get_blue(i));
-	}
-	br /= 256;          // Take average.
-	bg /= 256;
-	bb /= 256;
-	cout << "Blend (r,g,b) = " << br << ',' << bg << ',' << bb << endl;
-}
-#endif
-
-
 void Game_window::init_files(bool cycle) {
 #ifdef RED_PLASMA
 	// Display red plasma during load...
@@ -2212,16 +2194,6 @@ ShapeID Game_window::get_flat(
 void Game_window::double_clicked(
     int x, int y            // Coords in window.
 ) {
-#if 0
-//++++++++++++TESTING
-	static int ncnt = 0;
-	cout << "Showing xform for ncnt = " << ncnt << endl;
-	std::size_t nxforms = array_size(xforms);
-	pal->load(PALETTES_FLX, PATCH_PALETTES, 0, XFORMTBL, nxforms - 1 - ncnt);
-	pal->apply(false);
-	ncnt = (ncnt + 1) % nxforms;
-//^^^^^^^^^^^^TESTING
-#endif
 	// Animation in progress?
 	if (main_actor_dont_move())
 		return;
@@ -2653,13 +2625,6 @@ void Game_window::lose_focus(
 void Game_window::setup_game(
     bool map_editing
 ) {
-#if 0
-	// Was not working as intended; in a new game,
-	// only map 0 was being loaded.
-	for (vector<Game_map *>::iterator it = maps.begin();
-	        it != maps.end(); ++it)
-		(*it)->init();
-#else
 	// Map 0 always exists.
 	get_map(0)->init();
 	if (is_system_path_defined("<PATCH>"))
@@ -2669,7 +2634,6 @@ void Game_window::setup_game(
 			if (U7exists(Get_mapped_name(PATCH_U7MAP, i, fname)))
 				get_map(i)->init();
 		}
-#endif
 	// Init. current 'tick'.
 	Game::set_ticks(SDL_GetTicks());
 	Face_stats::RemoveGump(); // it tries to update when reading actors so delete it until finished loading

@@ -278,33 +278,9 @@ bool Windnd::is_valid(IDataObject *pDataObject) {
 
 Windropsource::Windropsource(HBITMAP pdrag_bitmap, int x0, int y0)
 	: drag_bitmap(pdrag_bitmap) {
+	ignore_unused_variable_warning(x0, y0);
 	m_cRef = 1;
 	drag_shape = nullptr;
-
-#if 0
-	// doesn't work yet
-	SIZE bsize;
-	GetBitmapDimensionEx(drag_bitmap, &bsize);
-	bsize.cx = 32;
-	bsize.cy = 32;
-	int shw = bsize.cx, shh = bsize.cy;
-	drag_shape = CreateWindowEx(WS_EX_TRANSPARENT,
-	                            "STATIC",
-	                            nullptr,
-	                            WS_POPUP, // | SS_OWNERDRAW, /*SS_OWNERDRAW,*/
-	                            x0, y0,
-	                            shw, shh,
-	                            GetForegroundWindow(), // TODO: owner window
-	                            nullptr,
-	                            (HINSTANCE)GetWindowLong(GetForegroundWindow(), GWL_HINSTANCE),
-	                            nullptr);
-
-	if (FAILED(drag_shape)) {
-		g_warning("Create Window FAILED !");
-	}
-#else
-	ignore_unused_variable_warning(x0, y0);
-#endif
 }
 
 Windropsource::~Windropsource() {
@@ -342,17 +318,6 @@ Windropsource::QueryContinueDrag(
     BOOL fEscapePressed,
     DWORD grfKeyState
 ) {
-#if 0
-	// doesn't work yet
-	POINT pnt;
-	GetCursorPos(&pnt);
-
-	MoveWindow(drag_shape,
-	           pnt.x, pnt.y,
-	           shw, shh,
-	           true);
-#endif
-
 	if (fEscapePressed)
 		return DRAGDROP_S_CANCEL;
 	else if (!(grfKeyState & MK_LBUTTON))

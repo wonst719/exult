@@ -107,11 +107,6 @@ void Scale_Hq3x(
 	int w[10];
 	int c[10];
 	int yuv[10];
-#if 0
-	srcx = srcy = 0;
-	srcw = sline_pixels;
-	srch = sheight; //++++TESTING
-#endif
 	int stopy = srcy + srch;
 	int stopx = srcx + srcw;
 	unsigned char *from = source + srcy * sline_pixels + srcx;

@@ -123,7 +123,6 @@ bool Actor_gump::add(
     bool combine            // True to try to combine obj.  MAY
     //   cause obj to be deleted.
 )
-#if 1
 {
 	ignore_unused_variable_warning(sx, sy);
 	Game_object *cont = find_object(mx, my);
@@ -141,27 +140,6 @@ bool Actor_gump::add(
 
 	return false;
 }
-#else
-{
-	ignore_unused_variable_warning(sx, sy);
-	// Find index of closest spot.
-	int index = find_closest(mx, my);
-	if (!container->add_readied(obj, index)) {
-		// Can't add it there?
-		// Try again for an empty spot.
-		index = find_closest(mx, my, 1);
-		if (index < 0 || !container->add_readied(obj, index))
-			// Just try to add it.
-			if (!container->add(obj))
-				return 0;
-	}
-	// In case it went in another obj:
-	index = container->find_readied(obj);
-	if (index >= 0)
-		set_to_spot(obj, index);// Set obj. coords.
-	return 1;
-}
-#endif
 
 /*
  *  Set object's coords. to given spot.

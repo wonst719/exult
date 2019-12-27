@@ -57,10 +57,8 @@ using std::make_unique;
 
 Image_buffer8 *Shape_frame::scrwin = nullptr;
 
-#if 1   /* For debugging. */
 #include <iomanip>
 #include "items.h"
-#endif
 
 /*
  *  +++++Debugging

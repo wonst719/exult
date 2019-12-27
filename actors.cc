@@ -2123,13 +2123,6 @@ bool Actor::figure_weapon_pos(
 		if (myframe & 32)
 			swap(weapon_x, weapon_y);
 		// Combat frames are already done.
-#if 0   /* +++++Philanderer's Wand looks strange. */
-		// Watch for valid frame.
-		int nframes = gwin->get_shape_num_frames(
-		                  weapon->get_shapenum());
-		if ((weapon_frame & 31) >= nframes)
-			weapon_frame = (nframes - 1) | (weapon_frame & 32);
-#endif
 		return true;
 	} else
 		return false;
@@ -2437,13 +2430,8 @@ void Actor::set_property(
 		break;
 	}
 	case food_level:
-#if 0
-		if (val > 36)       // Looks like max. in usecode.
-			val = 36;       // ++++Never seems to get this high, though (marzo)
-#else
 		if (val > 31)       // Never seems to get above this.
 			val = 31;
-#endif
 		else if (val < 0)
 			val = 0;
 		properties[prop] = val;
@@ -2784,13 +2772,10 @@ int Actor::reduce_health(
 	const int blood = 912;      // ++++TAG for future de-hard-coding.
 	// Bleed only for normal damage.
 	if (type == Weapon_data::normal_damage && !minf->cant_bleed()
-#if 0
-	        delta >= 3 && rand() % 2
-#else   // Trying something new. Seems to match originals better, but
+	        // Trying something new. Seems to match originals better, but
 	        // it is hard to judge accurately (although 10 or more hits
 	        // *always* cause bleeding).
 	        && rand() % 10 < delta
-#endif
 	        && find_nearby(vec, blood, 1, 0) < 2) {
 		// Create blood where actor stands.
 		Game_object_shared bobj = gmap->create_ireg_object(blood, 0);
@@ -3743,12 +3728,6 @@ bool Actor::can_speak() const {
 }
 
 bool Actor::is_sentient() const {
-#if 0
-	// +++++Check for intelligence; guessing how to do it.
-	if (get_info().get_shape_class() == Shape_info::human ||
-	        get_effective_prop(Actor::intelligence) >= 6)
-		return true;
-#endif
 	// Try based on average monster intelligence (prevents some random animals
 	// from opening doors or assisting in battle).
 	const Monster_info *minf = get_info().get_monster_info_safe();
@@ -3776,20 +3755,6 @@ const Weapon_info *Actor::get_weapon(
 			return winf;
 		}
 	}
-#if 0   /* (jsf: 17july2005) I don't think we should look at right hand. */
-	// Try right hand.
-	weapon = spots[static_cast<int>(rhand)];
-	if (weapon) {
-		const Weapon_info *rwinf = weapon->get_info().get_weapon_info();
-		int rpoints;
-		if (rwinf && (rpoints = rwinf->get_damage()) > points) {
-			winf = rwinf;
-			points = rpoints;
-			shape = weapon->get_shapenum();
-			obj = weapon;
-		}
-	}
-#endif
 	return winf;
 }
 
@@ -4124,10 +4089,6 @@ void Actor::die(
 	//properties[static_cast<int>(health)] = -50;
 	const Shape_info &info = get_info();
 	const Monster_info *minfo = info.get_monster_info();
-#if 0   // ++++ Trying new thing.
-	remove_this(1);         // Remove (but don't delete this).
-	set_invalid();
-#else
 	bool frost_serp = GAME_SI && get_shapenum() == 832;
 	if ((frost_serp && (get_framenum() & 0xf) == Actor::sit_frame)
 	        || (get_framenum() & 0xf) == Actor::sleep_frame) {
@@ -4136,7 +4097,6 @@ void Actor::die(
 		scr->start();
 	} else  // Laying down to die.
 		lay_down(true);
-#endif
 
 	std::shared_ptr<Dead_body> body_keep;
 	Dead_body *body;        // See if we need a body.
@@ -4146,10 +4106,6 @@ void Actor::die(
 		int frnum = info.get_body_frame();  // Default 3.
 		// Reflect if NPC reflected.
 		frnum |= (get_framenum() & 32);
-#if 0   // ++++ Trying new thing.
-		body = new Dead_body(shnum, frnum, 0, 0, 0,
-		                     npc_num > 0 ? npc_num : -1);
-#else
 		body_keep = std::make_shared<Dead_body>(shnum, 0, 0, 0, 0,
 		                     npc_num > 0 ? npc_num : -1);
 		body = body_keep.get();
@@ -4162,7 +4118,6 @@ void Actor::die(
 			scr->start();
 		} else
 			body->set_frame(frnum);
-#endif
 		if (npc_num > 0) {
 			// Originals would use body->set_quality(2) instead
 			// for bodies of dead monsters. What we must do for
@@ -4210,11 +4165,7 @@ void Actor::die(
 	    Game_object_shared item_keep = shared_from_obj(item);
 		remove(item);
 		item->set_invalid();
-#if 1       // Guessing it is spells that get deleted.
 		if (item->get_info().is_spell())
-#else
-		if (!item->is_dragable())
-#endif
 		{
 			tooheavy.push_back(item_keep);
 			continue;
@@ -4711,10 +4662,6 @@ void Actor::set_polymorph_default() {
 
 int Actor::get_shape_real(
 ) const {
-#if 0   /* Messes up start of BG after earthquake if you use an SI shape */
-	if (Game::get_game_type() == BLACK_GATE)
-		return get_shapenum();
-#endif
 	if (npc_num != 0)       // Not the avatar?
 		return shape_save != -1 ? shape_save : get_shapenum();
 	// Taking guess (6/18/01):
@@ -4989,22 +4936,6 @@ void Npc_actor::activate(
 		return;
 	// Converse, etc.
 	Actor::activate(event);
-#if 0   /* +++Sometimes causes former companions to wander off. */
-	//++++++ This might no longer be needed.  Need to test.++++++ (jsf)
-	// Want to get BG actors from start
-	//   to their regular schedules:
-	int i;              // Past 6:00pm first day?
-	if (gclock->get_total_hours() >= 18 ||
-	        Game::get_game_type() == SERPENT_ISLE ||
-	        // Or no schedule change.
-	        (i = find_schedule_change(gclock->get_hour() / 3)) < 0 ||
-	        // Or schedule is already correct?
-	        schedules[i].get_type() == schedule_type)
-		return;
-	cout << "Setting '" << get_name() << "' to 1st schedule" << endl;
-	// Maybe a delay here?  Okay for now.
-	update_schedule(gclock->get_hour() / 3);
-#endif
 }
 
 /*

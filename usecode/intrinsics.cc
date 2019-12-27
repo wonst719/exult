@@ -794,14 +794,8 @@ USECODE_INTRINSIC(npc_nearby2) {
 
 	Game_object *npc = get_item(parms[0]);
 	bool is_near = (npc != nullptr &&
-#if 1
 	               // Guessing; being asleep, paralyzed or dead doesn't seem to affect this.
 	               npc->distance(gwin->get_main_actor()) < 40);
-#else
-	               npc->distance(gwin->get_main_actor()) < 40 &&
-	               // FALSE if asleep.
-	               !npc->get_flag(Obj_flags::asleep));
-#endif
 	Usecode_value u(is_near);
 	return u;
 }

@@ -34,7 +34,7 @@
 
 #include "ops.h"
 
-#if 0
+#ifdef DEBUG_UCXT
 #define DEBUG_INDENT
 #define DEBUG_PARSE
 #define DEBUG_PARSE2
@@ -50,10 +50,6 @@
 #undef DEBUG_PRINT
 #define DEBUG_READ_PAIR(X, Y)
 #endif
-
-//#define DEBUG_PARSE2
-//#define DEBUG_PARSE2a
-//#define DEBUG_PRINT
 
 using std::ostream;
 using std::ifstream;
@@ -1228,12 +1224,6 @@ void readbin_U7UCFunc(
 		f.seekg(pos, ios::beg); // paranoia
 		f.seekg(ucf._datasize, ios::cur); // paranoia
 	}
-
-#if 0
-	if (ucf._funcid == _search_func)
-		for (map<unsigned int, string>::iterator i = ucf._data.begin(); i != ucf._data.end(); ++i)
-			cout << i->first << "\t" << i->second << endl;
-#endif
 
 	// process code segment
 	{

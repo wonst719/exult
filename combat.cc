@@ -249,13 +249,6 @@ bool Combat_schedule::teleport(
 
 bool Combat_schedule::summon(
 ) {
-#if 0   // ++++Testing
-	unsigned int curtime = SDL_GetTicks();
-	if (curtime < summon_time)
-		return false;
-	// Not again for 30-40 seconds.
-	summon_time = curtime + 30000 + rand() % 10000;
-#endif
 	ucmachine->call_usecode(SummonSpellUsecode,
 	                        npc, Usecode_machine::double_click);
 	npc->start_std();       // Back into queue.
@@ -268,15 +261,6 @@ bool Combat_schedule::summon(
 
 bool Combat_schedule::be_invisible(
 ) {
-#if 0   // ++++ Testing.
-	unsigned int curtime = SDL_GetTicks();
-	if (curtime < invisible_time)
-		return false;
-	// Not again for 40-60 seconds.
-	invisible_time = curtime + 40000 + rand() % 20000;
-	if (npc->get_flag(Obj_flags::invisible))
-		return false;   // Also don't to it again for a while.
-#endif
 	Object_sfx::Play(npc, Audio::game_sfx(44));
 	gwin->get_effects()->add_effect(
 	    new Sprites_effect(12, npc, 0, 0, 0, 0, 0, -1));
@@ -1211,19 +1195,7 @@ void Combat_schedule::set_weapon(
 		else    // Don't do this if using spellbook.
 			set_hand_to_hand();
 	} else {
-#if 0   /* NO GOOD.  The original doesn't seem to use this flag. */
-		ammo_shape = info->get_ammo_consumed();
-		no_blocking = info->no_blocking();
-		if (ammo_shape) {
-			const Ammo_info *ainfo =
-			    ShapeID::get_info(ammo_shape).get_ammo_info();
-			if (ainfo)
-				no_blocking =
-				    no_blocking || ainfo->no_blocking();
-		}
-#else
 		no_blocking = false;
-#endif
 	}
 	if (state == strike || state == fire)
 		state = approach;   // Got to restart attack.
@@ -1356,10 +1328,6 @@ void Combat_schedule::now_what(
 			else
 				start_strike();
 		} else {
-#if 0
-			cout << npc->get_name() << " only has " <<
-			     dex_points << " dex. points" << endl;
-#endif
 			dex_points += npc->get_property(Actor::dexterity);
 			npc->start_std();
 		}

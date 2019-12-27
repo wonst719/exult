@@ -252,7 +252,6 @@ public:
 		best = open.size(); // Best is past end.
 	}
 	~A_star_queue() {
-#if 1
 		/*
 		This _should_ work, but might hang some hash_set implementations.
 		The problem is that on deleting the Search_node, the hash_set can
@@ -265,7 +264,6 @@ public:
 			++X;
 			delete sn; // only delete this _after_ iterating
 		}
-#endif
 		lookup.clear();     // Remove all nodes.
 	}
 	void add_open(int pri, Search_node *nd) {

@@ -102,13 +102,6 @@ int main(
 	}
 	Uc_location::set_cur(src, 0);
 	Uc_function::set_intrinsic_type(ty);
-#if 0
-//++++TESTING
-	int tok;
-	extern int yylex();
-	while ((tok = yylex()) != EOF)
-		printf("%d\n", tok);
-#endif
 	yyparse();
 	if (yyin != stdin) fclose(yyin);
 	int errs = Uc_location::get_num_errors();

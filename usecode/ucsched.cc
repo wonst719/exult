@@ -315,12 +315,6 @@ void Usecode_script::handle_event(
 		Usecode_internal::gwin->get_tqueue()->add(curtime + delay, this, udata);
 		return;
 	}
-#if 0   /* ++++Might need this for Test of Love!! */
-	if (count == 1 &&       // Last one?  GUESSING:
-	        objpos.tx != -1) {      // And valid pos.
-		usecode->activate_cached(objpos);
-	}
-#endif
 	if (act && act->get_casting_mode() == Actor::show_casting_frames)
 		act->end_casting_mode(delay);
 #ifdef DEBUG
@@ -404,14 +398,6 @@ int Usecode_script::exec(
 			Usecode_value &cntval = code->get_elem(i + 2);
 			Usecode_value &origval = code->get_elem(i + 3);
 			int cnt = cntval.get_int_value();
-#if 0
-			int orig = origval.get_int_value();
-			// Doesn't seem to happen in the originals.
-			if (cnt > orig) { // ++++ First pass? Set 1to orig or not?
-				cntval = origval;
-				cnt = orig;
-			}
-#endif
 			if (cnt <= 0) {
 				// Done.
 				i += 3;
@@ -470,12 +456,6 @@ int Usecode_script::exec(
 			delay = delay * 60 * ticks_per_minute * delayval.get_int_value();
 			break;
 		}
-#if 0
-		case finish:        // Quit if there's already scheduled
-			//   code for item?
-			// Or supersede the existing one?
-			break;
-#endif
 		case Ucscript::remove:  // Remove obj.
 			usecode->remove_item(optr.get());
 			break;
@@ -586,10 +566,6 @@ int Usecode_script::exec(
 			Usecode_internal::Usecode_events ev =
 			    Usecode_internal::internal_exec;
 			if (optr && optr->is_egg()
-#if 0
-			        //removed 20011226, breaks serpent gates in SI without SS -wjp
-			        && ((Egg_object *)optr)->get_type() == Egg_object::usecode
-#endif
 			        //Fixes the Blacksword's 'Fire' power in BG:
 			        && optr->as_egg()->get_type() < Egg_object::fire_field
 			   )

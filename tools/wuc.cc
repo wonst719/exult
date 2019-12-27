@@ -418,15 +418,6 @@ int main(int argc,char *argv[]) {
 								break;
 							case op_sloop:
 							case op_static_sloop:
-#if 0
-								emit_byte(0x2E);
-								if (pass == 0) {
-									sscanf(curlabel, "%x:", &word);
-									sprintf(token, "%04X:", word + 1);
-									printf("adding sloop label %s (curlabel=%s)\n", token, curlabel);
-									add_label();
-								}
-#endif
 								emit_byte(0x02);
 								read_token(fi);
 								sscanf(token, "[%x]", &word);
@@ -450,15 +441,6 @@ int main(int argc,char *argv[]) {
 									emit_word(-1);
 								break;
 							case op_sloop32:
-#if 0
-								emit_byte(0xAE);
-								if (pass == 0) {
-									sscanf(curlabel, "%x:", &word);
-									sprintf(token, "%04X:", word + 1);
-									printf("adding sloop label %s (curlabel=%s)\n", token, curlabel);
-									add_label();
-								}
-#endif
 								emit_byte(0x82);
 								read_token(fi);
 								sscanf(token, "[%x]", &word);

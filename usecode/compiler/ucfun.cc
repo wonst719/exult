@@ -69,16 +69,6 @@ Uc_function::Uc_function(
 	num_locals(0), num_statics(0), text_data(nullptr), text_data_size(0),
 	statement(nullptr) {
 	add_global_function_symbol(proto, parent);// Add prototype to globals.
-#if 0
-	const char *nm = proto->get_name();
-	if (!globals.search(nm))
-		globals.add(proto);
-	else {
-		char buf[100];
-		sprintf(buf, "Name '%s' already defined", nm);
-		Uc_location::yyerror(buf);
-	}
-#endif
 	const std::vector<Uc_var_symbol *> &parms = proto->get_parms();
 	// Add backwards.
 	for (std::vector<Uc_var_symbol *>::const_reverse_iterator it = parms.rbegin();
@@ -671,21 +661,6 @@ static int Set_32bit_jump_flags(
 			if (is_sint_32bit(Compute_jump_distance(block, locs))) {
 				nchanged++;
 				block->set_32bit_jump();
-#if 0
-				// Doing this not only is unneccessary, but it also
-				// slows UCC down to a crawl for large functions
-				// with lots of blocks. In the absence of this block,
-				// most cases will work correctly with one iteraction.
-				// The only problematic cases are borderline jumps
-				// with offsets very close to requiring 32-bit integers
-				// and which might be pushed over the edge by the
-				// increased block lengths. These cases are dealt with
-				// by the multiple passes.
-				if (block->get_jump_size())
-					// Adjust positions of all that follow.
-					for (int j = i + 1; j < blocks.size(); j++)
-						locs[j] += 2;
-#endif
 			}
 		}
 		if (!nchanged)

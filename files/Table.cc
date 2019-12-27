@@ -50,15 +50,6 @@ void Table::index_file() {
 			break;
 		}
 		f.offset = data->read4();
-
-#if 0
-		// We already guarded against this above.
-		if (f.size > file_size || f.offset > file_size)
-			throw wrong_file_type_exception(filename, "TABLE");
-#endif
-#if 0
-		cout << "Item " << i << ": " << f.size << " @ " << f.offset << endl;
-#endif
 		object_list.push_back(f);
 		i++;
 	}

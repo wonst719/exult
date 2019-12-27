@@ -184,10 +184,6 @@ static gint ucbrowser_compare_func(
 			ret = (name1 == nullptr) ? -1 : 1;
 	} else
 		ret = g_utf8_collate(name1, name2);
-#if 0   /* This was in the example, but it causes crashes. */
-	g_free(name1);
-	g_free(name2);
-#endif
 	return ret;
 }
 

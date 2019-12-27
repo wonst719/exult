@@ -144,14 +144,6 @@ static void init_linkedlist(linkedlist_data *ll) {
 	ll->first_block = ll->last_block = nullptr;
 }
 
-/* Currently not being used */
-#if 0
-static void free_linkedlist(linkedlist_data *ll) {
-	free_datablock(ll->first_block);
-	ll->first_block = ll->last_block = nullptr;
-}
-#endif
-
 static int add_data_in_datablock(linkedlist_data *ll, const void *buf, uLong len) {
 	linkedlist_datablock_internal *ldi;
 	const unsigned char *from_copy;
@@ -198,22 +190,6 @@ static int add_data_in_datablock(linkedlist_data *ll, const void *buf, uLong len
 	}
 	return ZIP_OK;
 }
-
-
-/* Currently not being used */
-#if 0
-static int write_datablock(FILE *fout, linkedlist_data *ll) {
-	linkedlist_datablock_internal *ldi;
-	ldi = ll->first_block;
-	while (ldi != nullptr) {
-		if (ldi->filled_in_this_block > 0)
-			if (fwrite(ldi->data, ldi->filled_in_this_block, 1, fout) != 1)
-				return ZIP_ERRNO;
-		ldi = ldi->next_datablock;
-	}
-	return ZIP_OK;
-}
-#endif
 
 /****************************************************************************/
 

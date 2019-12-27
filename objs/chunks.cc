@@ -43,12 +43,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "miscinf.h"
 #include "ignore_unused_variable_warning.h"
 
-#if 0
-#include <iostream>
-using std::cout;
-using std::endl;
-#endif
-
 using std::memset;
 using std::rand;
 using std::vector;
@@ -1434,16 +1428,6 @@ void Map_chunk::gravity(
 			        obj->get_info().get_3d_height());
 		}
 	}
-#if 0
-	for (it = dropped.begin(); it != dropped.end(); ++it) {
-		// Recurse on each one.
-		Game_object *obj = *it;
-		// Get footprint.
-		Rectangle foot = obj->get_footprint();
-		gravity(foot, obj->get_lift() +
-		        obj->get_info().get_3d_height());
-	}
-#endif
 }
 
 /*
@@ -1457,11 +1441,7 @@ void Map_chunk::gravity(
  *
  */
 int Map_chunk::is_roof(int tx, int ty, int lift) {
-#if 1       /* Might be lying on bed at lift==2. */
 	int height = get_lowest_blocked(lift + 4, tx, ty);
-#else       /* But this is even worse! */
-	int height = get_lowest_blocked(lift + 2, tx, ty);
-#endif
 	if (height == -1) return 255;
 	return height;
 }

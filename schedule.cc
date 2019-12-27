@@ -611,12 +611,6 @@ void Follow_avatar_schedule::now_what(
 		speed = gwin->get_std_delay();
 	if (pos.distance(goal) <= 3)
 		return;         // Already close enough!
-#if 0
-#ifdef DEBUG
-	cout << npc->get_name() << " at distance " << dist2lead
-	     << " trying to catch up." << endl;
-#endif
-#endif
 	// Succeed if within 3 tiles of goal.
 	if (npc->walk_path_to_tile(goal, speed - speed / 4, 0, 3, 1))
 		return;         // Success.
@@ -1030,18 +1024,6 @@ void Patrol_schedule::now_what(
 		Game_object_vector nearby;
 		npc->find_nearby(nearby, PATH_SHAPE, 25, 0x10, c_any_qual, c_any_framenum);
 		gotpath = !nearby.empty();
-#if 0 // will make the automaton (160) not open the door in the first place unless the closest is 0
-		if (gotpath) {
-			// Start at nearest (to prevent NPCs from going all the way back to
-			// the start of the path in case of saving then reloading, which can
-			// cause issues in Freedom).
-			Game_object *path = find_nearest(npc, nearby);
-			pathnum = path->get_framenum();
-			paths.resize(pathnum + 1);
-			paths[pathnum] = path;
-			pathnum--;
-		}
-#endif
 	}
 	// FALLTHROUGH
 	case 0: { // Find next path.
@@ -2870,20 +2852,6 @@ public:
 	}
 	// Get i'th tile.
 	void get(int i, Tile_coord &ptile, Tile_coord &atile);
-#if 0
-	static void test() {
-		Rectangle r(10, 10, 3, 4);
-		Perimeter p(r);
-		int cnt = p.size();
-		for (int i = 0; i < cnt; i++) {
-			Tile_coord pt, at;
-			p.get(i, pt, at);
-			cout << "pt.tx = " << pt.tx << ", pt.ty = " << pt.ty
-			     << ", at.tx = " << at.tx << ", at.ty = " <<
-			     at.ty << endl;
-		}
-	}
-#endif
 };
 
 /*
@@ -3441,10 +3409,6 @@ static Game_object *Find_customer_plate(Actor *customer)
 	Game_object_vector::const_iterator it;
 
 	(void) customer->find_nearby(plates, 717, 1, 0);
-#if 0 /* Causes customer to not get served if their neighbor has. */
-	if (!cnt)
-		cnt = customer->find_nearby(plates, 717, 2, 0);
-#endif
 	int floor = customer->get_lift() / 5; // Make sure it's on same floor.
 	for (it = plates.begin(); it != plates.end(); ++it) {
 		plate = *it;
@@ -4778,12 +4742,6 @@ void Forge_schedule::now_what(
 		break;
 	}
 	case get_tongs: {
-#if 0
-		if (!tongs) {
-			tongs = npc->find_closest(994);
-			//TODO: go and get it...
-		}
-#endif
 		Game_object_shared tongs_obj = tongs.lock();
 		if (!tongs_obj) {
 			tongs_obj = std::make_shared<Ireg_game_object>(994, 0, 0, 0);
@@ -4838,12 +4796,6 @@ void Forge_schedule::now_what(
 		break;
 	}
 	case get_hammer: {
-#if 0
-		if (!hammer) {
-			hammer = npc->find_closest(623);
-			//TODO: go and get it...
-		}
-#endif
 		Game_object_shared hammer_obj = hammer.lock();
 		if (!hammer_obj) {
 			hammer_obj = std::make_shared<Ireg_game_object>(623, 0, 0, 0);
@@ -4944,12 +4896,6 @@ void Forge_schedule::now_what(
 		break;
 	}
 	case get_tongs2: {
-#if 0
-		if (!tongs) {
-			tongs = npc->find_closest(994);
-			//TODO: go and get it...
-		}
-#endif
 		Game_object_shared tongs_obj = tongs.lock();
 		if (!tongs_obj) {
 			tongs_obj = std::make_shared<Ireg_game_object>(994, 0, 0, 0);

@@ -1488,9 +1488,6 @@ void ExultStudio::setup_file_list() {
 	add_to_tree(model, "Palette Files", "*.pal,palettes.flx",
 	            PaletteFile, 0);
 
-#if 0   /* Skip this until we can do something with these files. */
-	add_to_tree(model, "FLEX Files", "*.flx", FlexArchive, 0);
-#endif
 	// Expand all entries.
 	gtk_tree_view_expand_all(GTK_TREE_VIEW(file_list));
 	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(file_list), TRUE);
@@ -2258,19 +2255,10 @@ GtkWidget *Create_arrow_button(
     GtkSignalFunc clicked,      // Call this when clicked.
     gpointer func_data      // Passed to 'clicked'.
 ) {
-#if 1
 	GtkWidget *btn = gtk_button_new_from_stock(
 	                     dir == GTK_ARROW_UP ? GTK_STOCK_GO_UP
 	                     : GTK_STOCK_GO_DOWN);
 	gtk_widget_show(btn);
-#else
-	GtkWidget *btn = gtk_button_new();
-	gtk_widget_show(btn);
-	GTK_WIDGET_SET_FLAGS(btn, GTK_CAN_DEFAULT);
-	GtkWidget *arrow = gtk_arrow_new(dir, GTK_SHADOW_OUT);
-	gtk_widget_show(arrow);
-	gtk_container_add(GTK_CONTAINER(btn), arrow);
-#endif
 	gtk_signal_connect(GTK_OBJECT(btn), "clicked", clicked, func_data);
 	return btn;
 }

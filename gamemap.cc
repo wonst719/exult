@@ -837,13 +837,6 @@ void Read_special_ireg(
 		Usecode_script *scr = Usecode_script::restore(obj, &nbuf);
 		if (scr) {
 			scr->start(scr->get_delay());
-#if 0
-			COUT("Restored script for '" <<
-			     get_item_name(obj->get_shapenum())
-			     << "'" << endl);
-			scr->print(cout);
-			cout << endl;
-#endif
 		}
 	} else if (type == IREG_ATTS) // Attribute/value pairs?
 		obj->read_attributes(buf, len);

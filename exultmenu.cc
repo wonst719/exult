@@ -49,13 +49,6 @@
 using std::unique_ptr;
 using std::make_unique;
 
-#if 0
-static bool get_play_intro();
-static void set_play_intro(bool);
-static bool get_play_1st_scene();
-static void set_play_1st_scene(bool);
-#endif
-
 #define MAX_GAMES 100
 
 static inline bool handle_menu_click(
@@ -185,84 +178,6 @@ void ExultMenu::setup() {
 	gpal->load(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX), EXULT_FLX_EXULT0_PAL);
 	gpal->apply();
 
-#if 0
-	Palette *gpal = gwin->get_pal();
-	Font *font = fontManager.get_font("CREDITS_FONT");
-	Font *fonton = fontManager.get_font("HOT_FONT");
-	MenuList menu;
-
-	int menuypos = centery - 44;
-
-	MenuTextChoice *palfades = new MenuTextChoice(fonton, font, "PALETTE FADES",
-	        centerx, menuypos);
-	palfades->add_choice("Off");
-	palfades->add_choice("On");
-	palfades->set_choice(gwin->get_pal()->get_fades_enabled() ? 1 : 0);
-	menu.add_entry(palfades);
-	menuypos += 11;
-
-	MenuTextChoice *playintro = new MenuTextChoice(fonton, font, "PLAY INTRODUCTION",
-	        centerx, menuypos);
-	playintro->add_choice("Off");
-	playintro->add_choice("On");
-	playintro->set_choice(get_play_intro() ? 1 : 0);
-	menu.add_entry(playintro);
-	menuypos += 11;
-
-
-	MenuTextChoice *playscene = new MenuTextChoice(fonton, font, "PLAY FIRST SCENE",
-	        centerx, menuypos);
-	playscene->add_choice("Off");
-	playscene->add_choice("On");
-	playscene->set_choice(get_play_1st_scene() ? 1 : 0);
-	menu.add_entry(playscene);
-	menuypos += 11;
-
-	MenuTextChoice *cheating = new MenuTextChoice(fonton, font, "CHEATING",
-	        centerx, menuypos);
-	cheating->add_choice("Off");
-	cheating->add_choice("On");
-	cheating->set_choice(cheat() ? 1 : 0);
-	menu.add_entry(cheating);
-	menuypos += 11;
-
-	MenuTextEntry *ok = new MenuTextEntry(fonton, font, "OK",
-	                                      centerx - 64, centery + 55);
-	int ok_button = menu.add_entry(ok);
-
-	MenuTextEntry *cancel = new MenuTextEntry(fonton, font, "CANCEL",
-	        centerx + 64, centery + 55);
-	int cancel_button = menu.add_entry(cancel);
-
-	menu.set_selection(0);
-	gwin->clear_screen(true);
-	while (1) {
-		gpal->apply();
-		int entry = menu.handle_events(gwin, menu_mouse);
-		if (entry == ok_button) {
-			gpal->fade_out(c_fade_out_time);
-			gwin->clear_screen(true);
-			// Scaling Method
-			// Palette fades
-			gpal->set_fades_enabled(palfades->get_choice() == 1);
-			config->set("config/video/disable_fades",
-			            gpal->get_fades_enabled() ? "no" : "yes", true);
-
-			// Play Intro
-			set_play_intro(playintro->get_choice() == 1);
-			// Play 1st scene
-			set_play_1st_scene(playscene->get_choice() == 1);
-			// Cheating
-			cheat.set_enabled(cheating->get_choice() == 1);
-			calc_win();
-			break;
-		} else if (entry == cancel_button) {
-			gpal->fade_out(c_fade_out_time);
-			gwin->clear_screen(true);
-			break;
-		}
-	}
-#endif
 }
 
 MenuList *ExultMenu::create_main_menu(int first) {
@@ -575,26 +490,4 @@ BaseGameInfo *ExultMenu::run() {
 	return sel_game;
 }
 
-#if 0
-bool get_play_intro() {
-	std::string yn;
-	config->value("config/gameplay/skip_splash", yn, "no");
-	return yn == "no";
-}
-
-void set_play_intro(bool play) {
-	ignore_unused_variable_warning(play);
-	config->set("config/gameplay/skip_splash", play ? "no" : "yes", true);
-}
-
-bool get_play_1st_scene() {
-	std::string yn;
-	config->value("config/gameplay/skip_intro", yn, "no");
-	return yn == "no";
-}
-
-void set_play_1st_scene(bool play) {
-	ignore_unused_variable_warning(play);
-	config->set("config/gameplay/skip_intro", play ? "no" : "yes", true);
-}
 #endif

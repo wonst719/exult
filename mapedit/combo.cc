@@ -1317,10 +1317,6 @@ gint Combo_chooser::configure(
 	adj->page_increment = page_size;
 	adj->page_size = page_size;
 	gtk_signal_emit_by_name(GTK_OBJECT(adj), "changed");
-#if 0   /* ++++++Later */
-	if (chooser->group)     // Filtering?
-		chooser->enable_drop(); // Can drop combos here.
-#endif
 	return TRUE;
 }
 

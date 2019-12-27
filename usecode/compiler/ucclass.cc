@@ -134,28 +134,6 @@ Uc_var_symbol *Uc_class::add_alias(
 	return alias;
 }
 
-#if 0   // ++++ Not yet.
-/*
- *  Add alias to class variable.
- *
- *  Output: New sym, or 0 if already declared.
- */
-
-Uc_var_symbol *Uc_class::add_alias(
-    char *nm,
-    Uc_var_symbol *v,
-    Uc_class *c
-) {
-	if (scope.is_dup(nm))
-		return 0;
-	// Create & assign slot.
-	Uc_var_symbol *var = dynamic_cast<Uc_var_symbol *>(v->get_sym());
-	Uc_alias_symbol *alias = new Uc_class_alias_symbol(nm, var, c);
-	scope.add(alias);
-	return alias;
-}
-#endif
-
 /*
  *  Add method.
  */

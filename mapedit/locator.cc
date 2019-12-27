@@ -240,10 +240,6 @@ void Locator::render(
 	gdk_draw_rectangle(draw->window, drawgc, TRUE, area->x, area->y,
 	                   area->width, area->height);
 	// Show superchunks with dotted lines.
-#if 0
-	gdk_gc_set_line_attributes(drawgc, 1, GDK_LINE_ON_OFF_DASH,
-	                           GDK_CAP_BUTT, GDK_JOIN_BEVEL);
-#endif
 	// Paint in light grey.
 	gdk_rgb_gc_set_foreground(drawgc, 0xc0c0c0);
 	int i;
@@ -274,11 +270,6 @@ void Locator::render(
 			              cur + 1, drawh);
 		}
 	}
-#if 0
-	// Back to solid lines for loc. box.
-	gdk_gc_set_line_attributes(drawgc, 1, GDK_LINE_SOLID,
-	                           GDK_CAP_BUTT, GDK_JOIN_BEVEL);
-#endif
 	// Figure where to draw box.
 	int cx = tx / c_tiles_per_chunk;
 	int cy = ty / c_tiles_per_chunk;

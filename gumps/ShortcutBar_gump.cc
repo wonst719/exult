@@ -314,13 +314,6 @@ int ShortcutBar_gump::handle_event(SDL_Event *event) {
 		int y;
 		gwin->get_win()->screen_to_game(event->button.x, event->button.y,
 		                                gwin->get_fastmouse(), x, y);
-
-#if 0
-		std::cout << "clicks:" << static_cast<int>(event->button.clicks) << ", x,y: "
-			<< x << "," << y << " locx,locy: " << locx << "," << locy
-			<< " widthXheight: " << width << "X" << height << std::endl;
-#endif
-
 		if (x >= startx && x <= (locx + width) && y >= starty && y <= (starty + height)) {
 			if (event->type == SDL_MOUSEBUTTONDOWN) {
 				mouse_down(event, x, y);

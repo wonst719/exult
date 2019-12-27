@@ -314,17 +314,11 @@ Usecode_value& Usecode_value::operator+=(const Usecode_value &v2) {
 		if (v2.get_type() == Usecode_value::int_type) {
 			v1.intval += v2.intval;
 		} else if (v2.get_type() == Usecode_value::string_type) {
-#if 0
-			// This seems to be how addition of int + string was done in the
-			// original, but I won't do it here.
-			sum = v1.intval + v2.need_int_value();
-#else
 			// Note: this actually seems wrong compared to the originals,
 			// but I am leaving this the way it is unless it causes a bug.
 			string ret(std::to_string(v1.intval));
 			ret += v2.strval;
 			v1 = std::move(ret);
-#endif
 		}
 		return v1;
 	} else if (v1.get_type() == Usecode_value::string_type) {

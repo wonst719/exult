@@ -646,14 +646,6 @@ void XMidiFile::ApplyFirstState(first_state &fs, int chan_mask)
 
 		// Got no patch change, return and don't try fixing it
 		if (!patch || !(chan_mask & 1 << channel)) continue;
-#if 0
-		std::cout << "Channel: " << channel+1 << std::endl;
-		std::cout << "Patch: " << (unsigned int) patch->data[0] << " @ " << patch->time << std::endl;
-		if (bank) std::cout << " Bank: " << (unsigned int) bank->data[1] << " @ " << bank->time << std::endl;
-		if (vol) std::cout << "  Vol: " << (unsigned int) vol->data[1] << " @ " << vol->time << std::endl;
-		if (pan) std::cout << "  Pan: " << ((signed int) pan->data[1])-64 << " @ " << pan->time << std::endl;
-		std::cout << std::endl;
-#endif
 
 		// Copy Patch Change Event
 		temp = patch;

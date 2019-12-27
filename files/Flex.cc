@@ -137,12 +137,6 @@ size_t Flex::get_entry_info(uint32 objnum, size_t &len) {
 		len = 0;
 		return 0;
 	}
-#if 0
-	// Trying to avoid exceptions.
-	if (objnum >= object_list.size()) {
-		throw exult_exception("objnum too large in Flex::get_entry_info()");
-	}
-#endif
 	len = object_list[objnum].size;
 	return object_list[objnum].offset;
 }

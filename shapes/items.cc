@@ -263,10 +263,6 @@ static void Setup_item_names(
 			                       i - num_item_names - num_text_msgs,
 			                       sibeta)] = newitem;
 		delete [] newitem;
-#if 0
-		cout << dec << i << " 0x" << hex << i << dec
-		     << "\t" << item_names[i] << endl;
-#endif
 	}
 	for (i = first_msg; i < total_msgs; i++)
 		text_msgs[i] = msglist[i + 0x400];

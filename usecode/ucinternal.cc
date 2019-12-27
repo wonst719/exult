@@ -527,14 +527,6 @@ Game_object *Usecode_internal::get_item(
 		if (val < 0x400 && !itemref.is_array() &&
 		        caller_item && ((GAME_BG && val == 0x269) || val == caller_item->get_shapenum()))
 			obj = caller_item.get();
-#if 0
-		// NO! BAD! Causes weird bug with Celia & slain wolf (and maybe others).
-		else if (val < gwin->get_num_npcs() &&  // Try as NPC.
-		         (val < 356 || val > 359)) { // Avoid these special cases.
-			obj = gwin->get_npc(val);
-			CERR("Warning: interpreting positive integer as NPCnum");
-		}
-#endif
 		else
 			return nullptr;
 	}
@@ -855,15 +847,7 @@ void Usecode_internal::set_item_frame(
 void Usecode_internal::add_dirty(
     Game_object *obj
 ) {
-#if 0   /* ++++ 1/31/04 (jsf) This shouldn't be needed anymore. */
-	if (obj->get_owner()) {     // Inside a container?
-		// Paint gump if open.
-		Gump *gump = gumpman->find_gump(obj);
-		if (gump)
-			gwin->add_dirty(gump->get_shape_rect(obj));
-	} else
-#endif
-		gwin->add_dirty(obj);
+	gwin->add_dirty(obj);
 }
 
 /*
@@ -1573,15 +1557,6 @@ static  void    Usecode_TraceReturn(Usecode_value &v) {
 	cout << dec << endl;
 }
 
-#if 0   /* Not used at the moment. */
-static void Unhandled(
-    int intrinsic,
-    int num_parms,
-    Usecode_value parms[12]
-) {
-	Usecode_Trace("UNKNOWN", intrinsic, num_parms, parms);
-}
-#endif
 #endif
 
 Usecode_value no_ret;
