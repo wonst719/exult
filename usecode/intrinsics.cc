@@ -3396,13 +3396,13 @@ USECODE_INTRINSIC(create_barge_object) {
 	if (num_parms < 2)
 		return Usecode_value(0);
 
-	Barge_object *b = new Barge_object(961, 0, 0, 0, 0,
+	auto b = std::make_shared<Barge_object>(961, 0, 0, 0, 0,
 	                                   parms[0].get_int_value(), parms[1].get_int_value(),
 	                                   num_parms >= 3 ? ((parms[2].get_int_value() >> 1) & 3) : 0);
 
 	b->set_invalid();       // Not in world yet.
 	b->set_flag(Obj_flags::okay_to_take);
-	last_created.push_back(b->shared_from_this());
+	last_created.push_back(b);
 
 	Usecode_value u(b);
 	return u;
