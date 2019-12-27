@@ -406,9 +406,9 @@ char *Game_map::get_schunk_file_name(
 ) {
 	get_mapped_name(prefix, fname);
 	int len = strlen(fname);
-	fname[len] = '0' + schunk / 16;
-	int lb = schunk % 16;
-	fname[len + 1] = lb < 10 ? ('0' + lb) : ('a' + (lb - 10));
+	constexpr static const char hexLUT[] = "0123456789abcdef";
+	fname[len] = hexLUT[schunk / 16];
+	fname[len + 1] = hexLUT[schunk % 16];
 	fname[len + 2] = 0;
 	return fname;
 }

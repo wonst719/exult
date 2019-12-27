@@ -15,6 +15,7 @@
 
 #ifdef HAVE_ZIP_SUPPORT
 
+#include <cctype>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -190,12 +191,8 @@ static int unzlocal_getLong(FILE *fin, uLong *pX) {
 /* My own strcmpi / strcasecmp */
 static int strcmpcasenosensitive_internal(const char *fileName1, const char *fileName2) {
 	for (;;) {
-		char c1 = *(fileName1++);
-		char c2 = *(fileName2++);
-		if ((c1 >= 'a') && (c1 <= 'z'))
-			c1 -= 0x20;
-		if ((c2 >= 'a') && (c2 <= 'z'))
-			c2 -= 0x20;
+		auto c1 = std::toupper(static_cast<unsigned char>(*(fileName1++)));
+		auto c2 = std::toupper(static_cast<unsigned char>(*(fileName2++)));
 		if (c1 == '\0')
 			return (c2 == '\0') ? 0 : -1;
 		if (c2 == '\0')

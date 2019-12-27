@@ -385,6 +385,33 @@ void CheatScreen::SharedPrompt(char *input, const Cheat_Prompt &mode) {
 	}
 }
 
+static int SDLScanCodeToInt(SDL_Keycode sym) {
+	switch (sym) {
+	case SDLK_KP_0:
+		return 0;
+	case SDLK_KP_1:
+		return 1;
+	case SDLK_KP_2:
+		return 2;
+	case SDLK_KP_3:
+		return 3;
+	case SDLK_KP_4:
+		return 4;
+	case SDLK_KP_5:
+		return 5;
+	case SDLK_KP_6:
+		return 6;
+	case SDLK_KP_7:
+		return 7;
+	case SDLK_KP_8:
+		return 8;
+	case SDLK_KP_9:
+		return 9;
+	default:
+		return -1;
+	}
+}
+
 bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &mode, bool &activate) {
 	SDL_Event event;
 
@@ -416,16 +443,16 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 					activate = true;
 				} else if ((key.sym == '-' || key.sym == SDLK_KP_MINUS) && !input[0]) {
 					input[0] = '-';
-				} else if ((key.sym >= '0' && key.sym <= 'f')) {
+				} else if (std::isxdigit(key.sym)) {
 					int curlen = std::strlen(input);
 					if (curlen < (len - 1)) {
-						input[curlen] = key.sym;
+						input[curlen] = std::tolower(key.sym);
 						input[curlen + 1] = 0;
 					}
 				} else if ((key.sym >= SDLK_KP_1 && key.sym <= SDLK_KP_9) || key.sym == SDLK_KP_0) {
 					int curlen = std::strlen(input);
 					if (curlen < (len - 1)) {
-						int sym = key.sym == SDLK_KP_0 ? '0' : (key.sym - SDLK_KP_1 + '1');
+						int sym = SDLScanCodeToInt(key.sym);
 						input[curlen] = sym;
 						input[curlen + 1] = 0;
 					}
@@ -436,15 +463,11 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 			} else if (mode >= CP_Name) {      // Want Text input (len chars)
 				if (key.sym == SDLK_RETURN || key.sym == SDLK_KP_ENTER) {
 					activate = true;
-				} else if ((key.sym >= '0' && key.sym <= 'z') || key.sym == ' ') {
+				} else if (std::isalnum(key.sym) || key.sym == ' ') {
 					int curlen = std::strlen(input);
 					char chr = key.sym;
 					if (key.mod & KMOD_SHIFT) {
-#if (defined(OPENBSD) || defined(CYGWIN))
-						if ((chr >= 'a') && (chr <= 'z')) chr -= 32;
-#else
-						chr = std::toupper(chr);
-#endif
+						chr = static_cast<char>(std::toupper(static_cast<unsigned char>(chr)));
 					}
 					if (curlen < (len - 1)) {
 						input[curlen] = chr;
@@ -467,7 +490,7 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 					activate = true;
 				} else if ((key.sym == '-' || key.sym == SDLK_KP_MINUS) && !input[0]) {
 					input[0] = '-';
-				} else if ((key.sym >= '0' && key.sym <= '9')) {
+				} else if (std::isdigit(key.sym)) {
 					int curlen = std::strlen(input);
 					if (curlen < (len - 1)) {
 						input[curlen] = key.sym;
@@ -476,7 +499,7 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 				} else if ((key.sym >= SDLK_KP_1 && key.sym <= SDLK_KP_9) || key.sym == SDLK_KP_0) {
 					int curlen = std::strlen(input);
 					if (curlen < (len - 1)) {
-						int sym = key.sym == SDLK_KP_0 ? '0' : (key.sym - SDLK_KP_1 + '1');
+						int sym = SDLScanCodeToInt(key.sym);
 						input[curlen] = sym;
 						input[curlen + 1] = 0;
 					}
@@ -2199,7 +2222,6 @@ bool CheatScreen::BusinessCheck(char *input, int &command, Cheat_Prompt &mode, b
 		input[0] = 0;
 		mode = CP_Activity;
 		break;
-
 
 		// X and Escape leave
 	case SDLK_ESCAPE:

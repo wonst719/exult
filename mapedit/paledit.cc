@@ -957,7 +957,7 @@ void Palette_edit::import_palette(
 		in.getline(buf, sizeof(buf));
 		char *ptr = &buf[0];
 		// Skip spaces.
-		while (ptr < buf + sizeof(buf) && *ptr && isspace(*ptr))
+		while (ptr < buf + sizeof(buf) && *ptr && isspace(static_cast<unsigned char>(*ptr)))
 			ptr++;
 		if (*ptr == '#')
 			continue;   // Comment.

@@ -623,7 +623,7 @@ void KeyBinder::ParseLine(char *line) {
 	to_uppercase(u);
 
 	// get key
-	while (s.length() && !isspace(s[0])) {
+	while (s.length() && !isspace(static_cast<unsigned char>(s[0]))) {
 		// check modifiers
 		//    if (u.compare("ALT-",0,4) == 0) {
 		if (u.substr(0, 4) == "ALT-") {
@@ -641,7 +641,6 @@ void KeyBinder::ParseLine(char *line) {
 			s.erase(0, 6);
 			u.erase(0, 6);
 		} else {
-
 			i = s.find_first_of(chardata.whitespace);
 
 			keycode = s.substr(0, i);
@@ -654,10 +653,9 @@ void KeyBinder::ParseLine(char *line) {
 				return;
 			} else if (t.length() == 1) {
 				// translate 1-letter keys straight to SDL_Keycode
-				char c = t[0];
-				if (c >= 33 && c <= 122 && c != 37) {
-					if (c >= 'A' && c <= 'Z')
-						c += 32; // need lowercase
+				auto c = static_cast<unsigned char>(t[0]);
+				if (std::isgraph(c) && c != '%' && c != '{' && c != '|' && c != '}' && c != '~') {
+					c = std::tolower(c);	// need lowercase
 					k.sym = static_cast<SDL_Keycode>(c);
 				} else {
 					cerr << "Keybinder: unsupported key: " << keycode << endl;

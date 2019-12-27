@@ -1029,9 +1029,9 @@ static bool Begin_level2(zipFile zipfile, int mapnum) {
 		oname[7] = 0;
 	} else {
 		strcpy(oname, "map");
-		oname[3] = '0' + mapnum / 16;
-		int lb = mapnum % 16;
-		oname[4] = lb < 10 ? ('0' + lb) : ('a' + (lb - 10));
+		constexpr static const char hexLUT[] = "0123456789abcdef";
+		oname[3] = hexLUT[mapnum / 16];
+		oname[4] = hexLUT[mapnum % 16];
 		oname[5] = 0;
 	}
 	return zipOpenNewFileInZip(zipfile, oname, nullptr, nullptr, 0,

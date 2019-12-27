@@ -178,7 +178,7 @@ static int read_config_file(const char *name)
 			bank=tonebank[i];
 		}
 		else {
-			if ((w.size() < 2) || (*w[0] < '0' || *w[0] > '9'))
+			if ((w.size() < 2) || !std::isdigit(static_cast<unsigned char>(*w[0])))
 			{
 				ctl->cmsg(CMSG_ERROR, VERB_NORMAL,
 				          "%s: line %d: syntax error\n", name, line);
@@ -224,7 +224,7 @@ static int read_config_file(const char *name)
 				if (!strcmp(w[j], "amp"))
 				{
 					int k=atoi(cp);
-					if ((k<0 || k>MAX_AMPLIFICATION) || (*cp < '0' || *cp > '9'))
+					if ((k<0 || k>MAX_AMPLIFICATION) || !std::isdigit(static_cast<unsigned char>(*cp)))
 					{
 						ctl->cmsg(CMSG_ERROR, VERB_NORMAL,
 						          "%s: line %d: amplification must be between "
@@ -237,7 +237,7 @@ static int read_config_file(const char *name)
 				else if (!strcmp(w[j], "note"))
 				{
 					int k=atoi(cp);
-					if ((k<0 || k>127) || (*cp < '0' || *cp > '9'))
+					if ((k<0 || k>127) || !std::isdigit(static_cast<unsigned char>(*cp)))
 					{
 						ctl->cmsg(CMSG_ERROR, VERB_NORMAL,
 						          "%s: line %d: note must be between 0 and 127\n",
@@ -259,7 +259,7 @@ static int read_config_file(const char *name)
 					else
 						k=((atoi(cp)+100) * 100) / 157;
 					if ((k<0 || k>127) ||
-					    (k==0 && *cp!='-' && (*cp < '0' || *cp > '9')))
+					    (k==0 && *cp!='-' && !std::isdigit(static_cast<unsigned char>(*cp))))
 					{
 						ctl->cmsg(CMSG_ERROR, VERB_NORMAL,
 						          "%s: line %d: panning must be left, right, "

@@ -37,12 +37,15 @@ bool Object_browser::search_name(
     const char *nm,
     const char *srch
 ) {
-	char first = tolower(*srch);
+	auto safe_tolower = [](const char ch) {
+		return static_cast<char>(tolower(static_cast<unsigned char>(ch)));
+	};
+	char first = safe_tolower(*srch);
 	while (*nm) {
-		if (tolower(*nm) == first) {
+		if (safe_tolower(*nm) == first) {
 			const char *np = nm + 1;
 			const char *sp = srch + 1;
-			while (*sp && tolower(*np) == tolower(*sp)) {
+			while (*sp && safe_tolower(*np) == safe_tolower(*sp)) {
 				sp++;
 				np++;
 			}

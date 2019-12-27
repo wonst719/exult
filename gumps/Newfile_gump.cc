@@ -979,9 +979,9 @@ Newfile_gump::SaveInfo::~SaveInfo() {
 void Newfile_gump::SaveInfo::SetSeqNumber() {
 	int i;
 
-	for (i = strlen(filename) - 1; !isdigit(filename[i]); i--)
+	for (i = strlen(filename) - 1; !isdigit(static_cast<unsigned char>(filename[i])); i--)
 		;
-	for (; isdigit(filename[i]); i--)
+	for (; isdigit(static_cast<unsigned char>(filename[i])); i--)
 		;
 
 	num = atoi(filename + i + 1);

@@ -84,32 +84,25 @@ void Sign_gump::add_text(
 	Main_actor *avatar = gwin->get_main_actor();
 
 	if (!serpentine && avatar->get_flag(Obj_flags::read)) {
-		for (unsigned i = 0; i < txt.size(); i++) {
-			if (txt[i] == 40) {
-				lines[line] += 'T';
-				lines[line] += 'H';
-			} else if (txt[i] == 41) {
-				lines[line] += 'E';
-				lines[line] += 'E';
-			} else if (txt[i] == 42) {
-				lines[line] += 'N';
-				lines[line] += 'G';
-			} else if (txt[i] == 43) {
-				lines[line] += 'E';
-				lines[line] += 'A';
-			} else if (txt[i] == 44) {
-				lines[line] += 'S';
-				lines[line] += 'T';
-			} else if (txt[i] == '|') {
+		for (const auto& ch : txt) {
+			if (ch == '(') {
+				lines[line] += "TH";
+			} else if (ch == ')') {
+				lines[line] += "EE";
+			} else if (ch == '*') {
+				lines[line] += "NG";
+			} else if (ch == '+') {
+				lines[line] += "EA";
+			} else if (ch == ',') {
+				lines[line] += "ST";
+			} else if (ch == '|') {
 				lines[line] += ' ';
-			} else if (txt[i] >= 'a')
-				lines[line] += txt[i] - 32;
-			else
-				lines[line] += txt[i];
+			} else {
+				lines[line] += static_cast<char>(std::toupper(static_cast<unsigned char>(ch)));
+			}
 		}
 	} else {
 		lines[line] = txt;
-
 	}
 }
 

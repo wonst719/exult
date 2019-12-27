@@ -203,12 +203,8 @@ string get_system_path(const string &path) {
  */
 
 void to_uppercase(string &str) {
-	for (string::iterator X = str.begin(); X != str.end(); ++X) {
-#if (defined(OPENBSD) || defined(CYGWIN))
-		if ((*X >= 'a') && (*X <= 'z')) *X -= 32;
-#else
-		*X = static_cast<char>(std::toupper(*X));
-#endif
+	for (auto& chr : str) {
+		chr = static_cast<char>(std::toupper(static_cast<unsigned char>(chr)));
 	}
 }
 
@@ -236,11 +232,7 @@ static bool base_to_uppercase(string &str, int count) {
 		if (todo <= 0)
 			break;
 
-#if (defined(OPENBSD) || defined(CYGWIN))
-		if ((*X >= 'a') && (*X <= 'z')) *X -= 32;
-#else
-		*X = static_cast<char>(std::toupper(*X));
-#endif
+		*X = static_cast<char>(std::toupper(static_cast<unsigned char>(*X)));
 	}
 	if (X == str.rend())
 		todo--; // start of pathname counts as separator too
@@ -886,9 +878,9 @@ char *Get_mapped_name(
 		memcpy(to, from, len);  // Copy dir.
 		strcpy(to + len, MULTIMAP_DIR);
 		len = strlen(to);
-		to[len] = static_cast<char>('0' + num / 16);
-		int lb = num % 16;
-		to[len + 1] = static_cast<char>(lb < 10 ? ('0' + lb) : ('a' + (lb - 10)));
+		constexpr static const char hexLUT[] = "0123456789abcdef";
+		to[len] = hexLUT[num / 16];
+		to[len + 1] = hexLUT[num % 16];
 		strcpy(to + len + 2, sep);
 	}
 	return to;

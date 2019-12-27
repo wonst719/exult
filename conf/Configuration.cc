@@ -42,13 +42,7 @@ using std::perror;
 #ifdef _WIN32
 using std::cerr;
 #endif
-
-// isspace could be a macro
-#ifndef isspace
-#if defined(_MSC_VER) && (_MSC_VER > 1400)
 using std::isspace;
-#endif
-#endif
 
 #define TRACE_CONF 0
 
@@ -132,7 +126,7 @@ void    Configuration::remove(const string &key, bool write_out) {
 bool    Configuration::read_config_string(const string &s) {
 	const string&  sbuf(s);
 	size_t  nn = 0;
-	while (isspace(s[nn])) ++nn;
+	while (isspace(static_cast<char>(s[nn]))) ++nn;
 
 	assert(s[nn] == '<');
 	++nn;

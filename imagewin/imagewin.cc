@@ -1051,7 +1051,7 @@ Image_window::FillMode Image_window::string_to_fillmode(const char *str) {
 		if (*str != 'X' && *str != 'x') return static_cast<FillMode>(0);
 
 		++str;
-		if (*str < '0' || *str > '9') return static_cast<FillMode>(0);
+		if (!std::isdigit(static_cast<unsigned char>(*str))) return static_cast<FillMode>(0);
 
 		char *end;
 		unsigned long f = std::strtoul(str, &end, 10);
@@ -1065,7 +1065,7 @@ Image_window::FillMode Image_window::string_to_fillmode(const char *str) {
 		if (*str != 'X' && *str != 'x') return static_cast<FillMode>(0);
 
 		++str;
-		if (*str < '0' || *str > '9') return static_cast<FillMode>(0);
+		if (!std::isdigit(static_cast<unsigned char>(*str))) return static_cast<FillMode>(0);
 
 		char *end;
 		unsigned long f = std::strtoul(str, &end, 10);
@@ -1075,7 +1075,7 @@ Image_window::FillMode Image_window::string_to_fillmode(const char *str) {
 
 		return static_cast<FillMode>(AspectCorrectCentre + f * 2);
 	} else {
-		if (*str < '0' || *str > '9') return static_cast<FillMode>(0);
+		if (!std::isdigit(static_cast<unsigned char>(*str))) return static_cast<FillMode>(0);
 
 		char *end;
 		unsigned long fx = std::strtoul(str, &end, 10);
@@ -1084,7 +1084,7 @@ Image_window::FillMode Image_window::string_to_fillmode(const char *str) {
 		if (fx > 65535 || (*str != 'X' && *str != 'x')) return static_cast<FillMode>(0);
 
 		++str;
-		if (*str < '0' || *str > '9') return static_cast<FillMode>(0);
+		if (!std::isdigit(static_cast<unsigned char>(*str))) return static_cast<FillMode>(0);
 
 		unsigned long fy = std::strtoul(str, &end, 10);
 		str += (end - str);
