@@ -216,7 +216,7 @@ std::vector<std::string> str2vec(const std::string &s) {
 	for (unsigned int i = 0; i < s.size(); i++) {
 		if (s[i] == '"')
 			indquote = !indquote;
-		else if (isspace(s[i]) && (!indquote)) {
+		else if (isspace(static_cast<unsigned char>(s[i])) && (!indquote)) {
 			if (lasti != i) {
 				if ((s[lasti] == '"') && (s[i - 1] == '"')) {
 					if ((lasti + 1) != (lasti - 1))

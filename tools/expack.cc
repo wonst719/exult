@@ -93,8 +93,8 @@ void make_header_name(string &filename) {
 
 // Makes a name uppercase
 void make_uppercase(string &name) {
-	for (size_t ii = 0; ii < name.size(); ii++)
-		name[ii] = std::toupper(name[ii]);
+	for (auto& chr : name)
+		chr = static_cast<char>(std::toupper(static_cast<unsigned char>(chr)));
 }
 
 // strips a path from a filename

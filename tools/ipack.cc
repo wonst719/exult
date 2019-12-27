@@ -123,7 +123,7 @@ static void Get_all_shapes(
 static char *Skip_space(
     char *ptr
 ) {
-	while (isspace(*ptr))
+	while (isspace(static_cast<unsigned char>(*ptr)))
 		ptr++;
 	return ptr;
 }
@@ -135,7 +135,7 @@ static char *Skip_space(
 static char *Find_space(
     char *ptr
 ) {
-	while (*ptr && !isspace(*ptr))
+	while (*ptr && !isspace(static_cast<unsigned char>(*ptr)))
 		ptr++;
 	return ptr;
 }
@@ -148,7 +148,7 @@ static char *Pass_file_spec(
     char *ptr
 ) {
 	int paren_depth = 0;
-	while (*ptr && (paren_depth > 0 || !isspace(*ptr))) {
+	while (*ptr && (paren_depth > 0 || !isspace(static_cast<unsigned char>(*ptr)))) {
 		if (*ptr == '(')
 			paren_depth++;
 		else if (*ptr == ')')
