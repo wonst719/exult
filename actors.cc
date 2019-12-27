@@ -4106,18 +4106,18 @@ void Actor::die(
 		int frnum = info.get_body_frame();  // Default 3.
 		// Reflect if NPC reflected.
 		frnum |= (get_framenum() & 32);
-		body_keep = std::make_shared<Dead_body>(shnum, 0, 0, 0, 0,
+		body_keep = std::make_shared<Dead_body>(shnum, frnum, 0, 0, 0,
 		                     npc_num > 0 ? npc_num : -1);
 		body = body_keep.get();
 		Shape_frame *shp;
-		if ((shp = body->get_shape()) != nullptr && shp->is_empty()) {
+		bool have_body_shape = (shp = body->get_shape()) != nullptr && shp->is_empty();
+		if (have_body_shape) {
 			// Note: only do this if target shape is an actual
-			// body shape.
+			// body shape (frame 0 empty).
 			Usecode_script *scr = new Usecode_script(body);
 			(*scr) << Ucscript::delay_ticks << 4 << Ucscript::frame << frnum;
 			scr->start();
-		} else
-			body->set_frame(frnum);
+		}
 		if (npc_num > 0) {
 			// Originals would use body->set_quality(2) instead
 			// for bodies of dead monsters. What we must do for
@@ -4132,8 +4132,6 @@ void Actor::die(
 		// from colliding with it.
 		Game_object_shared keep_this;
 		Game_object::remove_this(&keep_this);
-		int old_body_frame = body->get_framenum();	// Fix for #1925
-		body->set_frame(frnum);			// Fix for #1925
 		const Shape_info &binf = body->get_info();
 		int dx = binf.get_3d_xtiles(frnum) - info.get_3d_xtiles(get_framenum());
 		int dy = binf.get_3d_ytiles(frnum) - info.get_3d_ytiles(get_framenum());
@@ -4146,17 +4144,15 @@ void Actor::die(
 			bp = Map_chunk::find_spot(pos + Tile_coord(0, dy, 0), 0, shnum, frnum, 0);
 		if (bp.tx == -1)
 			bp = Map_chunk::find_spot(pos + Tile_coord(dx, dy, 0), 0, shnum, frnum, 0);
-		// Try to find a spot within 1 tile.
-		// ++++ Places MoF automaton in odd places.
-		//if (bp.tx == -1)
-		//  bp = Map_chunk::find_spot(pos, 1, shnum, frnum, 2);
 		// If still no spot, force to NPC pos, even if blocked.
 		if (bp.tx == -1)
 			bp = pos;
 		// Add NPC back.
 		Game_object::move(pos);
 		body->move(bp);
-		body->set_frame(old_body_frame); // Fix for #1925
+		if (have_body_shape) {
+			body->set_frame(0); // Make body invisible
+		}
 	} else
 		body = nullptr;
 	Game_object *item;      // Move/remove all the items.
