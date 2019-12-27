@@ -38,6 +38,11 @@
 #include "databuf.h"
 #include "crc.h"
 
+#ifdef HAVE_ZIP_SUPPORT
+#include "files/zip/unzip.h"
+#include "files/zip/zip.h"
+#endif
+
 using std::ifstream;
 using std::cout;
 using std::cerr;
@@ -231,11 +236,6 @@ ModInfo::ModInfo(
 	     << " source directory to: " << get_system_path(sourcedir) << endl;
 #endif
 }
-
-#ifdef HAVE_ZIP_SUPPORT
-#include "files/zip/unzip.h"
-#include "files/zip/zip.h"
-#endif
 
 /*
  *  Return string from IDENTITY in a savegame.
