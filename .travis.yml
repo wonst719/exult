@@ -140,8 +140,11 @@ install:
 script: if [ "$TRAVIS_BRANCH" != "coverity_scan" ]; then .travis/script.sh; elif [ -e cov-int/scm_log.txt ] ; then cat cov-int/scm_log.txt; fi
 
 notifications:
-  email: false
-  irc: "chat.freenode.net/#exult"
-  on_success: change
-  on_failure: always
-
+  email:
+    on_failure: always
+    on_success: change
+  irc:
+    channels:
+      - "chat.freenode.net/#exult"
+    on_failure: always
+    on_success: change
