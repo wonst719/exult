@@ -1103,7 +1103,7 @@ void BG_Game::scene_desk() {
 		// draw arm hitting pc (sh. 0x0C)
 		{
 			Shape_frame *s = shapes.get_shape(0x0C, 0);
-			auto backup = unique_ptr<Image_buffer>(win->create_buffer(s->get_width(), s->get_height()));
+			auto backup = win->create_buffer(s->get_width(), s->get_height());
 
 			// TODO: add stuff on screen while hitting (static, butterfly scene, black)
 
