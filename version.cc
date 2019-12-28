@@ -45,7 +45,6 @@ void getVersionInfo(std::ostream &out) {
 	 * 2. Build time
 	 */
 
-
 #if (defined(__TIME__) || defined(__DATE__))
 	out << "Built at: ";
 #ifdef __DATE__
@@ -106,24 +105,6 @@ void getVersionInfo(std::ostream &out) {
 	out << "USECODE_DEBUGGER";
 #endif
 
-#ifdef WANT_ALTERNATE_ALLOCATOR
-	if (!firstoption) out << ", ";
-	firstoption = false;
-	out << "WANT_ALTERNATE_ALLOCATOR";
-#endif
-
-#ifdef INITIALISE_ALLOCATED_BLOCKS
-	if (!firstoption) out << ", ";
-	firstoption = false;
-	out << "INITIALISE_ALLOCATED_BLOCKS";
-#endif
-
-#ifdef POISON_ALLOCATED_BLOCKS
-	if (!firstoption) out << ", ";
-	firstoption = false;
-	out << "POISON_ALLOCATED_BLOCKS";
-#endif
-
 #ifdef NO_SDL_PARACHUTE
 	if (!firstoption) out << ", ";
 	firstoption = false;
@@ -144,44 +125,34 @@ void getVersionInfo(std::ostream &out) {
 
 	out << std::endl;
 
-
 	/*
 	 * 4. Compiler used to create this binary
 	 */
 
 	out << "Compiler: ";
-	// GCC
-#if (defined(__GNUC__))
-	out << "gcc";
-#  if defined(__VERSION__)
-	out << ", version: " << __VERSION__;
-#  elif (defined(__GNUC_MINOR__))
-	out << ", version " << __GNUC__ << "." << __GNUC_MINOR__;
-#    if (defined(__GNUC_PATCHLEVEL__))
-	out << "." << __GNUC_PATCHLEVEL__;
-#    endif
-#  endif
-
-	// Microsoft C/C++ Compiler (used by MSVC)
-#elif (defined(_MSC_FULL_VER))
-	out << "Microsoft C/C++ Compiler, version: " << (_MSC_FULL_VER / 1000000) << "."
-	    << ((_MSC_FULL_VER / 10000) % 100) << "."
-	    << (_MSC_FULL_VER % 10000);
-#elif (defined(_MSC_VER))
-	out << "Microsoft C/C++ Compiler, version: " << (_MSC_VER / 100) << "." << (_MSC_VER % 100);
-
-	// Metrowerks CodeWarrior
-#elif (defined(__MWERKS__))
-	out << "Metrowerks CodeWarrior, version: ";
-	out << ((__MWERKS__ & 0xf000) >> 12) << ".";
-	out << ((__MWERKS__ & 0x0f00) >> 8) << ".";
-	out << (__MWERKS__ & 0xff);
+#ifdef __INTEL_COMPILER
+#	define COMPILER __VERSION__
+#elif defined(__clang__)
+#	if __clang_major__ < 9
+#		define COMPILER "GCC " __VERSION__
+#	else
+#		define COMPILER __VERSION__
+#	endif
+#elif defined(__GNUC__)
+#	define COMPILER "GCC " __VERSION__
+#elif defined(_MSC_FULL_VER)
+#	define COMPILER "Microsoft C/C++ Compiler " \
+                    << (_MSC_FULL_VER / 10'000'000) << '.' \
+                    << ((_MSC_FULL_VER / 100'000) % 100) << '.'   \
+                    << ((_MSC_FULL_VER % 100'000))
 #else
-	out << "Unknown";
+#	define COMPILER "unknown compiler"
 #endif
 
-	out << std::endl;
+	std::cout << COMPILER;
+#undef COMPILER
 
+	out << std::endl;
 
 	/*
 	 * 5. Platform
@@ -254,5 +225,4 @@ void getVersionInfo(std::ostream &out) {
 #endif
 
 	out << std::endl;
-
 }
