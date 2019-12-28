@@ -126,14 +126,14 @@ char *transform(int index) {
 	        g_variables.image_out->format->palette->colors[index].b\
 	       );
 
-	if (action_table[index] != NULL) {
+	cursor = action_table[index];
+	if (cursor != NULL) {
 		// there is some apply functions to take care of
-		cursor = action_table[index];
-		while (cursor != NULL) {
+		do {
 			tmp_func = cursor->plugin_apply;
 			tmp = (*tmp_func)(ret, &g_variables);
 			cursor = cursor->next;
-		}
+		} while (cursor != NULL);
 		return tmp;
 	} else {
 		return ret;

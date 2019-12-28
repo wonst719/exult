@@ -1136,6 +1136,7 @@ int Actor::get_attack_frames(
 			cnt = sizeof(fast_swing_attack_frames1);
 			break;
 		case Weapon_info::slow_swing:
+		default:
 			which = slow_swing_attack_frames;
 			cnt = sizeof(slow_swing_attack_frames1);
 			break;
