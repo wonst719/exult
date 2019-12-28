@@ -91,7 +91,7 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 	bool dont_show = false;
 
 	if (!fli_buf) {
-		fli_buf = std::unique_ptr<Image_buffer>(win->create_buffer(fli_width, fli_height));
+		fli_buf = win->create_buffer(fli_width, fli_height);
 	}
 
 	// Set up last frame
