@@ -195,6 +195,10 @@ void getVersionInfo(std::ostream &out) {
 			else if (info.dwMajorVersion == 5 && info.dwMinorVersion == 2) out << 2003;
 			else if (info.dwMajorVersion == 6 && info.dwMinorVersion == 0) out << "Vista";
 			else if (info.dwMajorVersion == 6 && info.dwMinorVersion == 1) out << "7";
+			else if (info.dwMajorVersion == 6 && info.dwMinorVersion == 2) out << "8";
+			// Note: Without the proper manifest file, GetVersionEx will lie about these.
+			else if (info.dwMajorVersion == 6 && info.dwMinorVersion == 3) out << "8.1";
+			else if (info.dwMajorVersion == 10 && info.dwMinorVersion == 0) out << "10";
 			else out << "Unknown NT";
 
 			if (info.szCSDVersion[0]) out << " " << info.szCSDVersion;
