@@ -136,14 +136,12 @@ FILE *open_file(const char *name, int decompress, int noise_mode)
 	if ((fp=try_to_open(current_filename, decompress, noise_mode)))
 		return fp;
 
-#ifdef ENOENT
 	if (noise_mode && (errno != ENOENT))
 	{
 		ctl->cmsg(CMSG_ERROR, VERB_NORMAL, "%s: %s",
 		          current_filename, strerror(errno));
 		return nullptr;
 	}
-#endif
 
 #ifndef __WIN32__
 	if (name[0] != PATH_SEP)
@@ -168,14 +166,12 @@ FILE *open_file(const char *name, int decompress, int noise_mode)
 			ctl->cmsg(CMSG_INFO, VERB_DEBUG, "Trying to open %s", current_filename);
 			if ((fp=try_to_open(current_filename, decompress, noise_mode)))
 				return fp;
-#ifdef ENOENT
 			if (noise_mode && (errno != ENOENT))
 			{
 				ctl->cmsg(CMSG_ERROR, VERB_NORMAL, "%s: %s",
 					      current_filename, strerror(errno));
 				return nullptr;
 			}
-#endif
 			plp=plp->next;
 		}
 
