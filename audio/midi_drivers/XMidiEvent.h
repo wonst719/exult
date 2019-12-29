@@ -58,12 +58,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define XMIDI_CONTROLLER_CALLBACK_TRIG		0x77	// Callback Trigger
 #define XMIDI_CONTROLLER_SEQ_BRANCH_INDEX	0x78	// Sequence Branch Index
 
-#ifdef _WIN32
-#include <cstdlib>
-#endif
-
-#include <cstring>
-
 #include "common_types.h"
 
 // Maximum number of for loops we'll allow (used by LowLevelMidiDriver)
