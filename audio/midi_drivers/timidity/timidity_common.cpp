@@ -28,16 +28,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-
-#ifndef _WIN32_WCE
 #include <cerrno>
-#else
-static int errno = 0;
-static char *strerror(int _errno)
-{
-	return "";
-}
-#endif
+
 #include "timidity.h"
 #include "timidity_common.h"
 #include "timidity_output.h"

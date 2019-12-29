@@ -203,11 +203,6 @@ void getVersionInfo(std::ostream &out) {
 
 			if (info.szCSDVersion[0]) out << " " << info.szCSDVersion;
 		}
-#ifdef VER_PLATFORM_WIN32_CE
-		else if (info.dwPlatformId == VER_PLATFORM_WIN32_CE) {
-			out << "CE";
-		}
-#endif
 		else if (info.dwMajorVersion == 4 && info.dwMinorVersion == 0) {
 			out << 95;
 			if (info.szCSDVersion[1] != ' ') out << info.szCSDVersion;
