@@ -528,9 +528,6 @@ void Game_window::paint_dirty() {
 	if (box.w > 0 && box.h > 0)
 		paint(box); // (Could create new dirty rects.)
 	clear_dirty();
-#ifdef __IPHONEOS_
-	gkeybb->paint();
-#endif
 }
 
 /*
