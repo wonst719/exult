@@ -93,11 +93,6 @@ int listen_socket = -1;         // Listen here for map-editor.
 int client_socket = -1;         // Socket to the map-editor.
 int highest_fd = -1;            // Largest fd + 1.
 
-#ifdef __sun__
-// Solaris doesn't know PF_LOCAL
-#define PF_LOCAL PF_UNIX
-#endif
-
 /*
  *  Set the 'highest_fd' value to 1 + <largest fd>.
  */
@@ -141,7 +136,7 @@ void Server_init(
 	listen_socket = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
 #else
 	// Deprecated
-	listen_socket = socket(PF_LOCAL, SOCK_STREAM, 0);
+	listen_socket = socket(PF_UNIX, SOCK_STREAM, 0);
 #endif
 	if (listen_socket < 0)
 		perror("Failed to open map-editor socket");
