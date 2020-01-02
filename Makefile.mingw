@@ -283,7 +283,7 @@ include Makefile.common
 
 OBJECTS=$(OBJS) $(TOOL_OBJS) $(ES_OBJS) mapedit/u7shp.o
 
-exultico.o: win32/exultico.rc win32/exult.ico
+exultico.o: win32/exultico.rc win32/exult.ico win32/exult.exe.manifest
 	windres --include-dir win32 win32/exultico.rc exultico.o
 
 exconfig_rc.o: win32/exconfig.rc
@@ -298,7 +298,7 @@ exult_studio$(EXEEXT): $(BG_PAPERDOLL) $(FLEXES) $(ES_OBJS) $(EXP_FILE)
 $(EXP_FILE): $(ES_OBJS)
 	dlltool --output-exp $@ $(ES_OBJS) -D exult_studio$(EXEEXT)
 
-exultstudioico.o: $(SRC)/win32/exultstudioico.rc $(SRC)/win32/exultstudio.ico
+exultstudioico.o: $(SRC)/win32/exultstudioico.rc $(SRC)/win32/exultstudio.ico win32/exult_studio.exe.manifest
 	windres --include-dir $(SRC)/win32 $(SRC)/win32/exultstudioico.rc $@
 
 u7shp$(EXEEXT) : mapedit/u7shp.o
