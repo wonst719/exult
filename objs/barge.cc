@@ -906,7 +906,7 @@ void Barge_object::write_ireg(
 	//   dicate barge mode.
 	*ptr++ = (dir << 1) | ((gwin->get_moving_barge() == this) ? (1 << 3) : 0);
 	*ptr++ = 0;         // (Quantity).
-	*ptr++ = (get_lift() & 15) << 4;
+	*ptr++ = nibble_swap(get_lift());
 	*ptr++ = 0;         // Data2.
 	*ptr++ = 0;         //
 	out->write(reinterpret_cast<char *>(buf), ptr - buf);

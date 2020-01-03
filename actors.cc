@@ -5180,7 +5180,7 @@ void Dead_body::write_ireg(
 	int npc = get_live_npc_num();   // If body, get source.
 	// Here, store NPC # more simply.
 	Write2(ptr, npc);   // Allowing larger range of NPC bodies.
-	*ptr++ = (get_lift() & 15) << 4; // Lift
+	*ptr++ = nibble_swap(get_lift()); // Lift
 	*ptr++ = static_cast<unsigned char>(get_obj_hp());      // Resistance.
 	// Flags:  B0=invis. B3=okay_to_take.
 	*ptr++ = (get_flag(Obj_flags::invisible) ? 1 : 0) +

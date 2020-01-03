@@ -134,6 +134,9 @@ unsigned char *Ireg_game_object::write_common_ireg(
 		buf[5] = framenum;
 		endptr = buf + 6;
 	} else {
+		if (get_lift() > 15) {
+			*buf++ = IREG_EXTENDED2;
+		}
 		buf[3] = shapenum & 0xff;
 		buf[4] = ((shapenum >> 8) & 3) | (framenum << 2);
 		endptr = buf + 5;
@@ -159,7 +162,7 @@ void Ireg_game_object::write_ireg(
 ) {
 	unsigned char buf[20];      // 10-byte entry;
 	uint8 *ptr = write_common_ireg(10, buf);
-	*ptr++ = (get_lift() & 15) << 4;
+	*ptr++ = nibble_swap(get_lift());
 	*ptr = get_quality();
 	const Shape_info &info = get_info();
 	if (info.has_quality_flags()) {

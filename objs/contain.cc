@@ -624,7 +624,7 @@ void Container_game_object::write_ireg(
 	*ptr++ = 0;         // Unknown.
 	*ptr++ = get_quality();
 	*ptr++ = 0;     // "Quantity".
-	*ptr++ = (get_lift() & 15) << 4; // Lift
+	*ptr++ = nibble_swap(get_lift()); // Lift
 	*ptr++ = static_cast<unsigned char>(resistance);        // Resistance.
 	// Flags:  B0=invis. B3=okay_to_take.
 	*ptr++ = (get_flag(Obj_flags::invisible) ? 1 : 0) +

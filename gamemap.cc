@@ -901,6 +901,7 @@ void Game_map::read_ireg_objects(
 	// Go through entries.
 	while (((entlen = ireg->read1(), !ireg->eof()))) {
 		int extended = 0;   // 1 for 2-byte shape #'s.
+		bool extended_lift = false;
 
 		// Skip 0's & ends of containers.
 
@@ -917,8 +918,11 @@ void Game_map::read_ireg_objects(
 		} else if (entlen == IREG_SPECIAL) {
 			Read_special_ireg(ireg, last_obj);
 			continue;
-		} else if (entlen == IREG_EXTENDED) {
-			extended = 1;
+		} else if (entlen == IREG_EXTENDED || entlen == IREG_EXTENDED2) {
+			if (entlen == IREG_EXTENDED) {
+				extended = 1;
+			}
+			extended_lift = true;
 			entlen = ireg->read1();
 		}
 		// Get copy of flags.
@@ -957,9 +961,7 @@ void Game_map::read_ireg_objects(
 			frnum = entry[3] >> 2;
 		}
 		const Shape_info &info = ShapeID::get_info(shnum);
-		unsigned int lift;
 		unsigned int quality;
-		unsigned int type;
 		Ireg_game_object_shared obj;
 		int is_egg = 0;     // Fields are eggs.
 
@@ -969,18 +971,24 @@ void Game_map::read_ireg_objects(
 			if (entry[6] & 1) oflags |= 1 << Obj_flags::is_temporary;
 		}
 
+		auto read_lift = [extended_lift](unsigned char val) {
+			unsigned int lift = nibble_swap(val);
+			if (extended_lift) {
+				return lift;
+			}
+			return lift & 0xfU;
+		};
 		// An "egg"?
 		if (info.get_shape_class() == Shape_info::hatchable) {
 			bool anim = info.is_animated() || info.has_sfx();
-			lift = entry[9] >> 4;
+			const unsigned int lift = read_lift(entry[9]);
 			Egg_object_shared egg = Egg_object::create_egg(entry, entlen,
 			                  anim, shnum, frnum, tilex, tiley, lift);
 			get_chunk(scx + cx, scy + cy)->add_egg(egg.get());
 			last_obj = egg.get();
 			continue;
 		} else if (testlen == 6 || testlen == 10) { // Simple entry?
-			type = 0;
-			lift = entry[4] >> 4;
+			const unsigned int lift = read_lift(entry[4]);
 			quality = entry[5];
 			obj = create_ireg_object(info, shnum, frnum,
 			                         tilex, tiley, lift);
@@ -1001,8 +1009,8 @@ void Game_map::read_ireg_objects(
 		} else if (info.is_body_shape()) {
 			// NPC's body.
 			int extbody = testlen == 13 ? 1 : 0;
-			type = entry[4] + 256 * entry[5];
-			lift = entry[9 + extbody] >> 4;
+			const unsigned int type = entry[4] + 256 * entry[5];
+			const unsigned int lift = read_lift(entry[9 + extbody]);
 			quality = entry[7];
 			oflags =    // Override flags (I think).
 			    Get_quality_flags(entry[11 + extbody]);
@@ -1027,8 +1035,8 @@ void Game_map::read_ireg_objects(
 				obj->elements_read();
 			}
 		} else if (testlen == 12) { // Container?
-			type = entry[4] + 256 * entry[5];
-			lift = entry[9] >> 4;
+			unsigned int type = entry[4] + 256 * entry[5];
+			const unsigned int lift = read_lift(entry[9]);
 			quality = entry[7];
 			oflags =    // Override flags (I think).
 			    Get_quality_flags(entry[11]);
@@ -1072,7 +1080,7 @@ void Game_map::read_ireg_objects(
 			quality = 0;
 			unsigned char circles[9];
 			memcpy(&circles[0], &entry[4], 5);
-			lift = entry[9] >> 4;
+			const unsigned int lift = read_lift(entry[9]);
 			memcpy(&circles[5], &entry[10], 4);
 			uint8 *ptr = &entry[14];
 			// 3 unknowns, then bookmark.
@@ -1086,7 +1094,8 @@ void Game_map::read_ireg_objects(
 			boost::io::ios_flags_saver sflags(cerr);
 			boost::io::ios_fill_saver sfill(cerr);
 			std::cerr << "Error: Invalid IREG entry on chunk (" << scx << ", "
-			          << scy << "): extended = " << extended << ", entlen = "
+			          << scy << "): extended = " << extended
+			          << ", extended_lift = " << extended_lift << ", entlen = "
 			          << entlen << ", shnum = " << shnum << ", frnum = "
 			          << frnum << std::endl;
 			std::cerr << "Entry data:" << std::hex;

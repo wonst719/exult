@@ -49,6 +49,7 @@ using Ireg_game_object_shared = std::shared_ptr<Ireg_game_object>;
 using Ifix_game_object_shared = std::shared_ptr<Ifix_game_object>;
 
 #define IREG_EXTENDED   254     // For shape #'s > 1023.
+#define IREG_EXTENDED2  253     // For lift > 15.
 
 /*
  *  The game map:

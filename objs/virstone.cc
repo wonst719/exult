@@ -69,7 +69,7 @@ void Virtue_stone_object::write_ireg(
 	*ptr++ = sy * 12 + sx;      // Write superchunk #.
 	*ptr++ = static_cast<unsigned char>(pos.tz);        // Finally, lift in entry[7].??Guess+++
 	*ptr++ = 0;         // Entry[8] unknown.
-	*ptr++ = (get_lift() & 15) << 4; // Stone's lift in entry[9].
+	*ptr++ = nibble_swap(get_lift()); // Stone's lift in entry[9].
 	*ptr++ = map;       // Entry[10].  Unknown; using to store map.
 	*ptr++ = 0;         // Entry[11].  Unknown.
 	out->write(reinterpret_cast<char *>(buf), ptr - buf);

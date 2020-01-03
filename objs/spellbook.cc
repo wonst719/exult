@@ -313,7 +313,7 @@ void Spellbook_object::write_ireg(
 	uint8 *ptr = write_common_ireg(18, buf);
 	memcpy(ptr, &circles[0], 5);    // Store the way U7 does it.
 	ptr += 5;
-	*ptr++ = (get_lift() & 15) << 4; // Low bits?++++++
+	*ptr++ = nibble_swap(get_lift());
 	memcpy(ptr, &circles[5], 4);    // Rest of spell circles.
 	ptr += 4;
 	*ptr++ = 0;         // 3 unknowns.

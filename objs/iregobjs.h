@@ -25,6 +25,12 @@
 #include "common_types.h"
 #include "objs.h"
 
+inline uint8_t nibble_swap(uint8_t val) {
+	constexpr const size_t shift = 4;
+	constexpr const size_t mask = (CHAR_BIT * sizeof(uint8_t) - 1);
+	return (val << shift) | (val>>( (-shift) & mask));
+}
+
 /*
  *  A moveable game object (from 'ireg' files):
  */
@@ -97,8 +103,13 @@ public:
 	// Write common IREG data.
 	unsigned char *write_common_ireg(int norm_len, unsigned char *buf);
 	int get_common_ireg_size() const {
-		return (get_shapenum() >= 1024 || get_framenum() >= 64)
-		       ? 7 : 5;
+		if (get_shapenum() >= 1024 || get_framenum() >= 64) {
+			return 7;
+		}
+		if (get_lift() > 15) {
+			return 6;
+		}
+		return 5;
 	}
 	// Write out to IREG file.
 	void write_ireg(ODataSource *out) override;
