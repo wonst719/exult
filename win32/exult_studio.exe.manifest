@@ -5,9 +5,8 @@
 	xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
 	<assemblyIdentity
 		type="win32"
-		name="Exult.Exult.Exult-Studio"
-		version="1.5.0.0"
-		processorArchitecture="*" />
+		name="Exult.Exult.ExultStudio"
+		version="1.5.0.0" />
 	<compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
 		<application>
 			<!-- Windows 10 -->
@@ -23,16 +22,16 @@
 		</application>
 	</compatibility>
 	<asmv3:application>
-		<windowsSettings>
+		<asmv3:windowsSettings>
 			<dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">
-				True/PM
+				true/PM
 			</dpiAware>
 			<highResolutionScrollingAware xmlns="https://schemas.microsoft.com/SMI/2013/WindowsSettings">
 				true
 			</highResolutionScrollingAware>
 			<dpiAwareness xmlns="https://schemas.microsoft.com/SMI/2016/WindowsSettings">
-				PerMonitorV2, unaware
+				PerMonitorV2, PerMonitor
 			</dpiAwareness>
-		</windowsSettings>
+		</asmv3:windowsSettings>
 	</asmv3:application>
 </assembly>
