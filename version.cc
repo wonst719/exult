@@ -133,11 +133,7 @@ void getVersionInfo(std::ostream &out) {
 #ifdef __INTEL_COMPILER
 #	define COMPILER __VERSION__
 #elif defined(__clang__)
-#	if __clang_major__ < 9
-#		define COMPILER "GCC " __VERSION__
-#	else
-#		define COMPILER __VERSION__
-#	endif
+#	define COMPILER "GCC " __VERSION__
 #elif defined(__GNUC__)
 #	define COMPILER "GCC " __VERSION__
 #elif defined(_MSC_FULL_VER)
@@ -149,10 +145,8 @@ void getVersionInfo(std::ostream &out) {
 #	define COMPILER "unknown compiler"
 #endif
 
-	std::cout << COMPILER;
+	out << COMPILER << std::endl;
 #undef COMPILER
-
-	out << std::endl;
 
 	/*
 	 * 5. Platform
