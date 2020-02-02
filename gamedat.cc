@@ -276,41 +276,6 @@ static const char *sisavefiles[] = {
 };
 static const int sinumsavefiles = array_size(sisavefiles);
 
-/*
- *  Save a single file into an IFF repository.
- *
- *  Output: Length of data saved.
- *      Errors reported.
- */
-
-static size_t Savefile(
-    OStreamDataSource& out,           // Write here.
-    const char *fname           // Name of file to save.
-) {
-	IFileDataSource in(fname);
-	if (!in.good()) {
-		if (Game::is_editing())
-			return 0;   // Newly developed game.
-		throw file_read_exception(fname);
-	}
-	size_t len = in.getSize();
-	in.seek(0);
-	char namebuf[13];       // First write 13-byte name.
-	memset(namebuf, 0, sizeof(namebuf));
-	const char *base = strrchr(fname, '/');// Want the base name.
-	if (!base)
-		base = strrchr(fname, '\\');
-	if (base)
-		base++;
-	else
-		base = fname;
-	strncpy(namebuf, base, sizeof(namebuf));
-	out.write(namebuf, sizeof(namebuf));
-	auto buf = in.readN(len);
-	out.write(buf.get(), len);
-	return len + 13;        // Include filename.
-}
-
 static size_t SavefileFromDataSource(
     OStreamDataSource& out,       // write here
     IDataSource &source, // read from here
@@ -331,6 +296,26 @@ static size_t SavefileFromDataSource(
 	auto buf = source.readN(len);
 	out.write(buf.get(), len);
 	return len + 13;
+}
+
+/*
+ *  Save a single file into an IFF repository.
+ *
+ *  Output: Length of data saved.
+ *      Errors reported.
+ */
+
+static size_t Savefile(
+    OStreamDataSource& out,           // Write here.
+    const char *fname           // Name of file to save.
+) {
+	IFileDataSource source(fname);
+	if (!source.good()) {
+		if (Game::is_editing())
+			return 0;   // Newly developed game.
+		throw file_read_exception(fname);
+	}
+	return SavefileFromDataSource(out, source, fname);
 }
 
 inline static void save_gamedat_chunks(
