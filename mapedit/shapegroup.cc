@@ -213,6 +213,19 @@ void Shape_group::add(
 }
 
 /*
+ *  Save shape group to a file.
+ */
+void Shape_group::write(
+    ODataSource& out
+) {
+	// Name, #entries, entries(2-bytes).
+	out.write(name.c_str(), name.size() + 1);
+	out.write2(size());    // # entries.
+	for (auto elem : *this)
+		out.write2(elem);
+}
+
+/*
  *  Init. and read in (if it exists) a groups file.
  */
 
@@ -363,20 +376,10 @@ void Shape_group_file::write(
 	std::string patchname = "<PATCH>/" + name;
 	try {
 		OFileDataSource out(patchname.c_str());
-		int cnt = groups.size();    // # groups.
-		Flex_writer gfile(out, "ExultStudio shape groups", cnt);
+		Flex_writer gfile(out, "ExultStudio shape groups", groups.size());
 		// Write each group.
-		for (int i = 0; i < cnt; i++) {
-			Shape_group *grp = groups[i];
-			const char *nm = grp->get_name();
-			// Name, #entries, entries(2-bytes).
-			out.write(nm, strlen(nm) + 1);
-			int sz = grp->size();
-			out.write2(sz);    // # entries.
-			for (vector<int>::iterator it = grp->begin();
-					it != grp->end(); ++it)
-				out.write2(*it);
-			gfile.mark_section_done();
+		for (auto grp : groups) {
+			gfile.write_object(grp);
 		}
 	} catch (exult_exception &e) {
 		Alert("Error writing '%s'", patchname.c_str());

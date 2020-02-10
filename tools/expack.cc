@@ -341,25 +341,23 @@ int main(int argc, char **argv)
 
 			// The files
 			for (unsigned int i = 0; i < file_names.size(); i++) {
-				if (!file_names[i].empty()) {
-					size_t fsize = get_file_size(file_names[i]);
-					if (fsize) {
-						IFileDataSource ifs(file_names[i].c_str(), is_text_file(file_names[i]));
-						if (!ifs.good()) {
-							cerr << "Error reading from file " << file_names[i] << endl;
-							exit(1);
-						}
-						auto buf = ifs.readN(fsize);
-						flex.write(buf.get(), fsize);
-
-						string hline = file_names[i];
-						strip_path(hline);
-						make_header_name(hline);
-						make_uppercase(hline);
-						header << "#define\t" << hprefix << "_" << hline << "\t\t" << i << std::endl;
+				size_t fsize = file_names[i].empty() ? 0 : get_file_size(file_names[i]);
+				if (!file_names[i].empty() && fsize > 0) {
+					IFileDataSource ifs(file_names[i].c_str(), is_text_file(file_names[i]));
+					if (!ifs.good()) {
+						cerr << "Error reading from file " << file_names[i] << endl;
+						exit(1);
 					}
+					writer.write_object(ifs);
+
+					string hline = file_names[i];
+					strip_path(hline);
+					make_header_name(hline);
+					make_uppercase(hline);
+					header << "#define\t" << hprefix << "_" << hline << "\t\t" << i << std::endl;
+				} else {
+					writer.empty_object();
 				}
-				writer.mark_section_done();
 			}
 			writer.flush();
 

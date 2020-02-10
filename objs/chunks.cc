@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gamemap.h"
 #include "shapeinf.h"
 #include "citerate.h"
+#include "databuf.h"
 #include "egg.h"
 #include "objiter.h"
 #include "objs.h"
@@ -1486,4 +1487,12 @@ int Map_chunk::get_obj_actors(vector<Game_object *> &removes,
 	}
 
 	return failed ? -1 : buf_size;
+}
+
+void Map_chunk::write(ODataSource& out, bool v2) {
+	// Restore original order (sort of).
+	Object_iterator_backwards next(this);
+	Game_object *obj;
+	while ((obj = next.get_next()) != nullptr)
+		obj->write_ifix(&out, v2);
 }

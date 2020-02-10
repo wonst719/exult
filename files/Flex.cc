@@ -192,7 +192,7 @@ void Flex_writer::flush(
  *  Call this when done writing out a section.
  */
 
-void Flex_writer::mark_section_done(
+void Flex_writer::finish_object(
 ) {
 	// Location past end of section.
 	size_t pos = dout.getPos();

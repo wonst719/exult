@@ -488,56 +488,45 @@ void Write_palettes(
 	// Entry 0 (DAY):
 	char const *palptr = reinterpret_cast<const char *>(palbuf);
 	Convert_palette63(palette, &palbuf[0], palsize);
-	out.write(palptr, sizeof(palbuf));
-	writer.mark_section_done();
+	writer.write_object(palptr, sizeof(palbuf));
 	// Entry 1 (DUSK):
 	Modify_palette(palette, palbuf, palsize, 0, 0, 0, -64, -64, -64);
 	Convert_palette63(palbuf, palbuf, palsize);
-	out.write(palptr, sizeof(palbuf));
-	writer.mark_section_done();
+	writer.write_object(palptr, sizeof(palbuf));
 	// Entry 2 (NIGHT):
 	Modify_palette(palette, palbuf, palsize, 0, 0, 0, -128, -128, -128);
 	Convert_palette63(palbuf, palbuf, palsize);
-	out.write(palptr, sizeof(palbuf));
-	writer.mark_section_done();
+	writer.write_object(palptr, sizeof(palbuf));
 	// Entry 3 (INVISIBLE):
 	Greyify_palette(palette, palbuf, palsize);
 	Convert_palette63(palbuf, palbuf, palsize);
-	out.write(palptr, sizeof(palbuf));
-	writer.mark_section_done();
+	writer.write_object(palptr, sizeof(palbuf));
 	// Entry 4 (unknown):
 	Convert_palette63(palette, palbuf, palsize);
-	out.write(palptr, sizeof(palbuf));
-	writer.mark_section_done();
+	writer.write_object(palptr, sizeof(palbuf));
 	// Entry 5 (HAZE):
 	Modify_palette(palette, palbuf, palsize, 184, 184, 184, -32, -32, -32);
 	Convert_palette63(palbuf, palbuf, palsize);
-	out.write(palptr, sizeof(palbuf));
-	writer.mark_section_done();
+	writer.write_object(palptr, sizeof(palbuf));
 	// Entry 6 (a bit brighter than 2):
 	Modify_palette(palette, palbuf, palsize, 0, 0, 0, -96, -96, -96);
 	Convert_palette63(palbuf, palbuf, palsize);
-	out.write(palptr, sizeof(palbuf));
-	writer.mark_section_done();
+	writer.write_object(palptr, sizeof(palbuf));
 	// Entry 7 (a bit warmer):
 	Modify_palette(palette, palbuf, palsize, 30, 0, 0, -96, -96, -96);
 	Convert_palette63(palbuf, palbuf, palsize);
-	out.write(palptr, sizeof(palbuf));
-	writer.mark_section_done();
+	writer.write_object(palptr, sizeof(palbuf));
 	// Entry 8 (hit in combat):
 	Modify_palette(palette, palbuf, palsize, 64, 0, 0, 384, -20, -20);
 	Convert_palette63(palbuf, palbuf, palsize);
-	out.write(palptr, sizeof(palbuf));
-	writer.mark_section_done();
+	writer.write_object(palptr, sizeof(palbuf));
 	// Entry 9 (unknown):
 	Convert_palette63(palette, palbuf, palsize);
-	out.write(palptr, sizeof(palbuf));
-	writer.mark_section_done();
+	writer.write_object(palptr, sizeof(palbuf));
 	// Entry 10 (LIGHTNING):
 	Modify_palette(palette, palbuf, palsize, 32, 32, 0, 256, 256, -20);
 	Convert_palette63(palbuf, palbuf, palsize);
-	out.write(palptr, sizeof(palbuf));
-	writer.mark_section_done();
+	writer.write_object(palptr, sizeof(palbuf));
 	// Write out in Gimp format.
 	Write_text_palette(palname, palette, palsize);
 }
@@ -547,7 +536,7 @@ void Write_palettes(
  */
 
 static void Write_exult_from_tiles(
-    OFileDataSource& out,           // What to write to.
+    Flex_writer& writer,           // What to write to.
     char *filename,         // Filename to read.
     int nframes,            // # frames.
     bool bycol,         // If true, go down each column first,
@@ -586,23 +575,25 @@ static void Write_exult_from_tiles(
 		     needw << 'x' << needh << " required" << endl;
 		exit(1);
 	}
-	for (int frnum = 0; frnum < nframes; frnum++) {
-		int x;
-		int y;
-		if (bycol) {
-			y = frnum % dim0_cnt;
-			x = frnum / dim0_cnt;
-		} else {
-			x = frnum % dim0_cnt;
-			y = frnum / dim0_cnt;
+	writer.write_object([&](ODataSource& out) {
+		for (int frnum = 0; frnum < nframes; frnum++) {
+			int x;
+			int y;
+			if (bycol) {
+				y = frnum % dim0_cnt;
+				x = frnum / dim0_cnt;
+			} else {
+				x = frnum % dim0_cnt;
+				y = frnum / dim0_cnt;
+			}
+			unsigned char *src = pixels + w * 8 * y + 8 * x;
+			for (int row = 0; row < 8; row++) {
+				// Write it out.
+				out.write(src, 8);
+				src += w;
+			}
 		}
-		unsigned char *src = pixels + w * 8 * y + 8 * x;
-		for (int row = 0; row < 8; row++) {
-			// Write it out.
-			out.write(src, 8);
-			src += w;
-		}
-	}
+	});
 	delete [] pixels;
 	if (palname)
 		Write_palettes(palname, palette, palsize);
@@ -614,7 +605,7 @@ static void Write_exult_from_tiles(
  */
 
 static void Write_exult(
-    OFileDataSource& out,           // What to write to.
+    Flex_writer& out,           // What to write to.
     char *basename,         // Base filename for files to read.
     int nframes,            // # frames.
     bool flat,          // Store as 8x8 flats.
@@ -660,7 +651,7 @@ static void Write_exult(
 		}
 		delete [] palette;
 	}
-	shape.write(out);       // Write them out.
+	out.write_object(shape);
 	delete [] fullname;
 }
 
@@ -687,15 +678,16 @@ static void Create(
 		if (basename) {     // Not empty?
 			int dim0_cnt = (*it).dim0_tiles;
 			if (dim0_cnt > 0)
-				Write_exult_from_tiles(out, basename,
+				Write_exult_from_tiles(writer, basename,
 				                       (*it).nframes, (*it).bycol,
 				                       (*it).dim0_tiles, palname);
 			else
-				Write_exult(out, basename, (*it).nframes,
+				Write_exult(writer, basename, (*it).nframes,
 				            (*it).flat, palname);
 			palname = nullptr;    // Only write 1st palette.
+		} else {
+			writer.empty_object();
 		}
-		writer.mark_section_done();
 	}
 }
 
@@ -735,14 +727,15 @@ static void Update(
 	for (i = 0; i < newcnt; i++) {  // Write out new entries.
 		// New entry for this shape?
 		if (i < specs.size() && specs[i].filename != nullptr) {
-			Write_exult(out, specs[i].filename,
+			Write_exult(writer, specs[i].filename,
 			            specs[i].nframes, specs[i].flat, palname);
 			palname = nullptr;    // Only write 1st palette.
 		}
 		// Write old entry.
 		else if (i < oldcnt && data[i])
-			out.write(data[i].get(), lengths[i]);
-		writer.mark_section_done();
+			writer.write_object(data[i].get(), lengths[i]);
+		else
+			writer.empty_object();
 	}
 }
 

@@ -82,13 +82,11 @@ static void Write_flex(
 ) {
 	OFileDataSource out(filename);      // May throw exception.
 	Flex_writer writer(out, title, strings.size());
-	for (vector<string>::const_iterator it = strings.begin();
-	        it != strings.end(); ++it) {
-		const string &str = *it;
+	for (auto& str : strings) {
 		if (!str.empty())
-			out.write(str);
-		out.write1(0); // 0-delimit.
-		writer.mark_section_done();
+			writer.write_object(str.c_str(), str.size() + 1);
+		else
+			writer.empty_object();
 	}
 }
 

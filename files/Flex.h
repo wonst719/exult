@@ -115,6 +115,7 @@ class Flex_writer {
 	size_t cur_start;         // Start of cur. entry being written.
 	std::unique_ptr<uint8[]> table;           // Table of offsets & lengths.
 	uint8 *tptr;            // ->into table.
+	void finish_object();   // Finished writing out a section.
 
 public:
 	Flex_writer(OStreamDataSource& o, const char *title, size_t cnt,
@@ -124,7 +125,58 @@ public:
 	Flex_writer(Flex_writer&&) noexcept = default;
 	Flex_writer& operator=(Flex_writer&&) noexcept = delete;
 	~Flex_writer();
-	void mark_section_done();   // Finished writing out a section.
+	std::string base_name(std::string fullname) {
+		// Remove trailing (back)slash, if any
+		if (fullname.back() == '/' || fullname.back() == '\\') {
+			fullname.pop_back();
+		}
+		// Get actual basename
+		auto pos = fullname.find_last_of("/\\");
+		if (pos == std::string::npos) {
+			return fullname;
+		}
+		return fullname.substr(pos + 1);
+	}
+	void write_name(const std::string& fullname) {
+		std::string name = base_name(fullname);
+		name.resize(8+1+3, 0);	// DOS filename
+		dout.write(name);
+	}
+	void write_object(const File_spec &spec) {
+		IFileDataSource ds(spec);
+		write_object(ds);
+	}
+	void write_object(IDataSource& ds) {
+		ds.copy_to(dout);
+		finish_object();
+	}
+	void write_object(const void* data, size_t len) {
+		dout.write(data, len);
+		finish_object();
+	}
+	template <typename Object, typename... Ts>
+	auto write_object(Object& obj, Ts&&... ts) -> decltype(obj.write(dout, std::forward<Ts>(ts)...), std::declval<void>()) {
+		obj.write(dout, std::forward<Ts>(ts)...);
+		finish_object();
+	}
+	template <typename Object, typename... Ts>
+	auto write_object(Object* obj, Ts&&... ts) -> decltype(obj->write(dout, std::forward<Ts>(ts)...), std::declval<void>()) {
+		obj->write(dout, std::forward<Ts>(ts)...);
+		finish_object();
+	}
+	template <typename Writer, typename... Ts>
+	auto write_object(Writer&& write, Ts&&... ts) -> decltype(write(dout, std::forward<Ts>(ts)...), std::declval<void>()) {
+		std::forward<Writer>(write)(dout, std::forward<Ts>(ts)...);
+		finish_object();
+	}
+	template <typename... Ts>
+	void write_file(const File_spec &spec, Ts&&... ts) {
+		write_name(spec.name);
+		write_object(std::forward<Ts>(ts)...);
+	}
+	void empty_object() {
+		finish_object();
+	}
 	void flush();
 };
 

@@ -42,6 +42,7 @@ class Actor;
 class Npc_actor;
 class Image_buffer8;
 class Chunk_terrain;
+class ODataSource;
 
 /*
  *  Data cached for a chunk to speed up processing, but which doesn't need
@@ -308,6 +309,7 @@ public:
 	int get_obj_actors(std::vector<Game_object *> &removes,
 	                   std::vector<Actor *> &actors);
 
+	void write(ODataSource& out, bool v2);
 };
 
 #endif

@@ -276,61 +276,43 @@ static const char *sisavefiles[] = {
 };
 static const int sinumsavefiles = array_size(sisavefiles);
 
-static size_t SavefileFromDataSource(
-    OStreamDataSource& out,       // write here
+static void SavefileFromDataSource(
+    Flex_writer &flex,
     IDataSource &source, // read from here
     const char *fname   // store data using this filename
 ) {
-	size_t len = source.getSize();
-	char namebuf[13];
-	memset(namebuf, 0, sizeof(namebuf));
-	const char *base = strrchr(fname, '/');// Want the base name.
-	if (!base)
-		base = strrchr(fname, '\\');
-	if (base)
-		base++;
-	else
-		base = fname;
-	strncpy(namebuf, base, sizeof(namebuf));
-	out.write(namebuf, sizeof(namebuf));
-	auto buf = source.readN(len);
-	out.write(buf.get(), len);
-	return len + 13;
+	flex.write_file(fname, source);
 }
 
 /*
  *  Save a single file into an IFF repository.
- *
- *  Output: Length of data saved.
- *      Errors reported.
  */
 
-static size_t Savefile(
-    OStreamDataSource& out,           // Write here.
+static void Savefile(
+    Flex_writer &flex,
     const char *fname           // Name of file to save.
 ) {
 	IFileDataSource source(fname);
 	if (!source.good()) {
 		if (Game::is_editing())
-			return 0;   // Newly developed game.
+			return;   // Newly developed game.
 		throw file_read_exception(fname);
 	}
-	return SavefileFromDataSource(out, source, fname);
+	SavefileFromDataSource(flex, source, fname);
 }
 
 inline static void save_gamedat_chunks(
     Game_map *map,
-    OStreamDataSource& out,
     Flex_writer &flex) {
 	for (int schunk = 0; schunk < 12 * 12; schunk++) {
 		char iname[128];
 		//Check to see if the ireg exists before trying to
 		//save it; prevents crash when creating new maps
 		//for existing games
-		if (U7exists(map->get_schunk_file_name(U7IREG,
-		                                       schunk, iname)))
-			Savefile(out, iname);
-		flex.mark_section_done();
+		if (U7exists(map->get_schunk_file_name(U7IREG, schunk, iname)))
+			Savefile(flex, iname);
+		else
+			flex.empty_object();	// TODO: Get rid of this by making it redundant.
 	}
 }
 
@@ -369,8 +351,7 @@ void Game_window::save_gamedat(
 	Flex_writer flex(out, savename, count);
 	int i;              // Start with listed files.
 	for (i = 0; i < numsavefiles; i++) {
-		Savefile(out, savefiles[i]);
-		flex.mark_section_done();
+		Savefile(flex, savefiles[i]);
 	}
 	// Now the Ireg's.
 	for (it = maps.begin(); it != maps.end(); ++it) {
@@ -378,7 +359,7 @@ void Game_window::save_gamedat(
 			continue;
 		if (!(*it)->get_num())
 			// Map 0 is a special case.
-			save_gamedat_chunks(*it, out, flex);
+			save_gamedat_chunks(*it, flex);
 		else {
 			// Multimap directory entries. Each map is stored in their
 			// own flex file contained inside the general gamedat flex.
@@ -390,15 +371,11 @@ void Game_window::save_gamedat(
 				Flex_writer flexbuf(outds,
 			                        (*it)->get_mapped_name(GAMEDAT, dname), 12 * 12);
 				// Save chunks to memory flex
-				save_gamedat_chunks(*it, outds, flexbuf);
+				save_gamedat_chunks(*it, flexbuf);
 			}
 			outbuf.seekg(0);
 			IStreamDataSource inds(&outbuf);
-			int len = strlen(dname);
-			if (dname[len - 1] == '/' || dname[len - 1] == '\\')
-				dname[len - 1] = 0; // Should always be the case.
-			SavefileFromDataSource(out, inds, dname);
-			flex.mark_section_done();
+			SavefileFromDataSource(flex, inds, dname);
 		}
 	}
 }

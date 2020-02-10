@@ -173,8 +173,9 @@ void Image_file_info::write_file(
 	// Write all out.
 	for (int shnum = 0; shnum < nshapes; shnum++) {
 		if (shapes[shnum]->get_modified() || shapes[shnum]->get_from_patch())
-			shapes[shnum]->write(out);
-		writer.mark_section_done();
+			writer.write_object(shapes[shnum]);
+		else
+			writer.empty_object();
 	}
 }
 
@@ -462,8 +463,7 @@ void Flex_file_info::flush(
 	Flex_writer writer(ds, "Written by ExultStudio", cnt);
 	// Write all out.
 	for (int i = 0; i < cnt; i++) {
-		ds.write(entries[i].get(), lengths[i]);
-		writer.mark_section_done();
+		writer.write_object(entries[i].get(), lengths[i]);
 	}
 }
 

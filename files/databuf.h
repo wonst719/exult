@@ -29,6 +29,8 @@
 #include "U7obj.h"
 #include "utils.h"
 
+class ODataSource;
+
 /**
  * Abstract input base class.
  */
@@ -66,6 +68,8 @@ public:
 		return true;
 	}
 	virtual void clear_error() { }
+
+	virtual void copy_to(ODataSource& dest);
 
 	void readline(std::string &str) {
 		str.erase();
@@ -269,6 +273,8 @@ public:
 	bool good() final {
 		return (buf != nullptr) && (size != 0U);
 	}
+
+	void copy_to(ODataSource& dest) final;
 };
 
 /**
@@ -315,20 +321,6 @@ public:
 		buf = buf_ptr = data.get();
 	}
 };
-
-inline std::unique_ptr<IDataSource> IStreamDataSource::makeSource(size_t len) {
-	return std::make_unique<IBufferDataSource>(readN(len), len);
-}
-
-inline std::unique_ptr<IDataSource> IBufferDataView::makeSource(size_t len) {
-	size_t avail = getSize() - getPos();
-	if (avail < len) {
-		len = avail;
-	}
-	const unsigned char *ptr = getPtr();
-	skip(len);
-	return std::make_unique<IBufferDataView>(ptr, len);
-}
 
 /**
  * Abstract output base class.
@@ -536,5 +528,31 @@ public:
 	OBufferDataSource(void *data_, size_t len)
 		: OBufferDataSpan(data_, len), data(static_cast<unsigned char*>(data_)) {}
 };
+
+inline void IDataSource::copy_to(ODataSource& dest) {
+	size_t len = getSize();
+	auto data = readN(len);
+	dest.write(data.get(), len);
+}
+
+inline std::unique_ptr<IDataSource> IStreamDataSource::makeSource(size_t len) {
+	return std::make_unique<IBufferDataSource>(readN(len), len);
+}
+
+inline std::unique_ptr<IDataSource> IBufferDataView::makeSource(size_t len) {
+	size_t avail = getSize() - getPos();
+	if (avail < len) {
+		len = avail;
+	}
+	const unsigned char *ptr = getPtr();
+	skip(len);
+	return std::make_unique<IBufferDataView>(ptr, len);
+}
+
+inline void IBufferDataView::copy_to(ODataSource& dest) {
+	size_t len = getSize() - getPos();
+	dest.write(getPtr(), len);
+	skip(len);
+}
 
 #endif

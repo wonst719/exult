@@ -525,14 +525,7 @@ void Game_map::write_ifix_objects(
 	// Go through chunks.
 	for (int cy = 0; cy < 16; cy++) {
 		for (int cx = 0; cx < 16; cx++) {
-			Map_chunk *chunk = get_chunk(scx + cx,
-			                             scy + cy);
-			// Restore original order (sort of).
-			Object_iterator_backwards next(chunk);
-			Game_object *obj;
-			while ((obj = next.get_next()) != nullptr)
-				obj->write_ifix(&ifix, v2);
-			writer.mark_section_done();
+			writer.write_object(get_chunk(scx + cx, scy + cy), v2);
 		}
 	}
 	schunk_modified[schunk] = false;
@@ -1704,8 +1697,7 @@ bool Game_map::write_minimap() {
 	}
 	OFileDataSource mfile(PATCH_MINIMAPS);  // May throw exception.
 	Flex_writer writer(mfile, "Written by Exult", 1);
-	shape.write(mfile);
-	writer.mark_section_done();
+	writer.write_object(shape);
 	gwin->set_all_dirty();
 	return true;
 }
