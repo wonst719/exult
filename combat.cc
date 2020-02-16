@@ -455,16 +455,14 @@ Game_object *Combat_schedule::find_foe(
 	bool charmed_avatar = Combat::charmed_more_difficult &&
 	                      avatar->get_effective_alignment() !=  Actor::good;
 	// Remove any that died.
-	for (list<Game_object_weak>::iterator it = opponents.begin();
-	        it != opponents.end();) {
-	    Actor_shared actor = std::static_pointer_cast<Actor>((*it).lock());
-		if (!actor || actor->is_dead() ||
-		        (npc == avatar && !charmed_avatar &&
-				 actor->get_flag(Obj_flags::asleep)))
-			it = opponents.erase(it);
-		else
-			++it;
-	}
+	opponents.erase(std::remove_if(opponents.begin(), opponents.end(),
+		[this, avatar, charmed_avatar](Game_object_weak curr) {
+			Actor_shared actor = std::static_pointer_cast<Actor>(curr.lock());
+			return !actor || actor->is_dead() ||
+			       (npc == avatar && !charmed_avatar &&
+			        actor->get_flag(Obj_flags::asleep));
+		}
+		), opponents.end());
 	if (opponents.empty()) { // No more from last scan?
 		find_opponents();   // Find all nearby.
 		if (practice_target)    // For dueling.

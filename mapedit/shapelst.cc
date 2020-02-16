@@ -955,13 +955,11 @@ gint Shape_chooser::check_editing_files_cb(
 gint Shape_chooser::check_editing_files(
 ) {
 	bool modified = false;
-	for (std::vector<std::unique_ptr<Editing_file>>::iterator it = editing_files.begin();
-	        it != editing_files.end(); ++it) {
-		std::unique_ptr<Editing_file>& ed = *it;
+	for (auto& ed : editing_files) {
 		struct stat fs;     // Check mod. time of file.
 		if (stat(ed->pathname.c_str(), &fs) != 0) {
 			// Gone?
-			it = editing_files.erase(it);
+			ed.reset();
 			continue;
 		}
 		if (fs.st_mtime <= ed->mtime)
@@ -970,6 +968,10 @@ gint Shape_chooser::check_editing_files(
 		read_back_edited(ed.get());
 		modified = true;    // Did one.
 	}
+	editing_files.erase(std::remove_if(editing_files.begin(), editing_files.end(),
+		[](const auto& ed) {
+			return ed == nullptr;
+		}), editing_files.end());
 	if (modified) {         // Repaint if modified.
 		ExultStudio *studio = ExultStudio::get_instance();
 		Object_browser *browser = studio->get_browser();

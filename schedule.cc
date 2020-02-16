@@ -2614,12 +2614,12 @@ void Desk_schedule::find_tables(
  */
 bool Desk_schedule::walk_to_table() {
 	while (!tables.empty()) {
-	    int ind = rand() % tables.size();
-	    table = tables[ind];
+		int ind = rand() % tables.size();
+		table = tables[ind];
 		Game_object_shared table_keep = table.lock();
 		if (!table_keep) {
-		    tables.erase(tables.begin() + ind);
-		    continue;
+			tables.erase(tables.begin() + ind);
+			continue;
 		}
 		table = table_keep;
 		// This will find a random spot around the table:
@@ -2641,14 +2641,12 @@ int Desk_schedule::find_items(Game_object_vector &vec, int dist)
 {
 	npc->find_nearby(vec, 675, dist, 0);
 	int floor = npc->get_lift() / 5; // Make sure it's on same floor.
-	for (Game_object_vector::iterator it = vec.begin(); it != vec.end();) {
-		Game_object *item = *it;
-		if (item->get_lift() / 5 != floor ||
-		    memchr(desk_frames, item->get_framenum(), DESK_FRAMES_CNT) == nullptr)
-			it = vec.erase(it);
-		else
-			++it;
-	}
+	vec.erase(std::remove_if(vec.begin(), vec.end(),
+		[floor](Game_object *item) {
+			return item->get_lift() / 5 != floor ||
+			       memchr(desk_frames, item->get_framenum(), DESK_FRAMES_CNT) == nullptr;
+		}
+		), vec.end());
 	return vec.size();
 }
 
@@ -3199,13 +3197,11 @@ int Waiter_schedule::find_items(Game_object_vector &vec, int dist)
 			npc->find_nearby(vec, waiter_shapes[i], dist, 0);
 	}
 	int floor = npc->get_lift() / 5; // Make sure it's on same floor.
-	for (Game_object_vector::iterator it = vec.begin(); it != vec.end();) {
-		Game_object *item = *it;
-		if (item->get_lift() / 5 != floor)
-			it = vec.erase(it);
-		else
-			++it;
-	}
+	vec.erase(std::remove_if(vec.begin(), vec.end(),
+		[floor](Game_object *item) {
+			return item->get_lift() / 5 != floor;
+		}
+		), vec.end());
 	return vec.size();
 }
 

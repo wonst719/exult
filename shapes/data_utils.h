@@ -88,10 +88,11 @@ void invalidate_vector(std::vector<T> &vec) {
 
 template <typename T>
 void clean_vector(std::vector<T> &vec) {
-	typename std::vector<T>::iterator it;
-	for (it = vec.begin(); it != vec.end(); ++it)
-		if (it->is_invalid() && !it->have_static())
-			it = vec.erase(it);
+	vec.erase(std::remove_if(vec.begin(), vec.end(),
+		[](T& elem) {
+			return elem.is_invalid() || !elem.have_static();
+		}
+		), vec.end());
 }
 
 template <class T, typename U>
