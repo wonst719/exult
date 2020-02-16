@@ -86,7 +86,7 @@ using EStudio::Prompt;
 using EStudio::Alert;
 using EStudio::Add_menu_item;
 
-std::vector<Editing_file *> Shape_chooser::editing_files;
+std::vector<std::unique_ptr<Editing_file>> Shape_chooser::editing_files;
 int Shape_chooser::check_editing_timer = -1;
 
 #define IS_FLAT(shnum)  ((shnum) < c_first_obj_shape)
@@ -884,13 +884,13 @@ void Shape_chooser::edit_shape(
 		if (!mtime)
 			return;
 		// Store info. about file.
-		editing_files.push_back(new Editing_file(
+		editing_files.push_back(std::make_unique<Editing_file>(
 		                            file_info->get_basename(), fname, mtime, shnum, frnum));
 	} else {
 		mtime = export_tiled_png(fname, tiles, bycols);
 		if (!mtime)
 			return;
-		editing_files.push_back(new Editing_file(
+		editing_files.push_back(std::make_unique<Editing_file>(
 		                            file_info->get_basename(), fname, mtime, shnum,
 		                            tiles, bycols));
 	}
@@ -955,20 +955,19 @@ gint Shape_chooser::check_editing_files_cb(
 gint Shape_chooser::check_editing_files(
 ) {
 	bool modified = false;
-	for (std::vector<Editing_file *>::iterator it = editing_files.begin();
+	for (std::vector<std::unique_ptr<Editing_file>>::iterator it = editing_files.begin();
 	        it != editing_files.end(); ++it) {
-		Editing_file *ed = *it;
+		std::unique_ptr<Editing_file>& ed = *it;
 		struct stat fs;     // Check mod. time of file.
 		if (stat(ed->pathname.c_str(), &fs) != 0) {
 			// Gone?
-			delete ed;
 			it = editing_files.erase(it);
 			continue;
 		}
 		if (fs.st_mtime <= ed->mtime)
 			continue;   // Still not changed.
 		ed->mtime = fs.st_mtime;
-		read_back_edited(ed);
+		read_back_edited(ed.get());
 		modified = true;    // Did one.
 	}
 	if (modified) {         // Repaint if modified.
@@ -1210,12 +1209,10 @@ void Shape_chooser::read_back_edited(
 void Shape_chooser::clear_editing_files(
 ) {
 	check_editing_files();      // Import any that changed.
-	while (!editing_files.empty()) {
-		Editing_file *ed = editing_files.back();
-		editing_files.pop_back();
+	for (auto& ed : editing_files) {
 		unlink(ed->pathname.c_str());
-		delete ed;
 	}
+	editing_files.clear();
 	if (check_editing_timer != -1)
 		gtk_timeout_remove(check_editing_timer);
 	check_editing_timer = -1;

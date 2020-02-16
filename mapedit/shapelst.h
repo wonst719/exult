@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "objbrowse.h"
 #include "shapedraw.h"
 #include "rect.h"
+#include <memory>
 #include <vector>
 #include <ctime>
 
@@ -85,7 +86,7 @@ class Shape_chooser: public Object_browser, public Shape_draw {
 	void (*sel_changed)();      // Called when selection changes.
 	// List of files being edited by an
 	//   external program (Gimp, etc.)
-	static std::vector<Editing_file *> editing_files;
+	static std::vector<std::unique_ptr<Editing_file>> editing_files;
 	static int check_editing_timer; // For monitoring files being edited.
 	// Blit onto screen.
 	void show(int x, int y, int w, int h) override;
