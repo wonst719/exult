@@ -599,15 +599,15 @@ public:
 	void read_saveinfo(IDataSource *in,
 	                   SaveGame_Details *&details,
 	                   SaveGame_Party  *&party);
-#ifdef HAVE_ZIP_SUPPORT
 private:
+#ifdef HAVE_ZIP_SUPPORT
 	bool get_saveinfo_zip(const char *fname, char *&name,
 	                      std::unique_ptr<Shape_file> &map,
 	                      SaveGame_Details *&details,
 	                      SaveGame_Party  *&party);
+#endif
 	void restore_flex_files(IDataSource &in, const char *basepath);
 public:
-#endif
 	void write_saveinfo();      // Write the save info to gamedat
 	inline char *get_save_name(int i) const { // Get ->saved-game name.
 		return save_names[i];
