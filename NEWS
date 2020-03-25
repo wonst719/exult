@@ -1,3 +1,23 @@
+??/??/20	v1.6
+
+		Shortcut bar with important shortcuts right on top of the screen (thanks Litchie)
+		switch to SDL2 - important for up to date OS
+		NxBR and HQ3x/HQ4x scalers
+		option to drop stacks of items without confirmation
+		some more combat options to make charmed combat more difficult.
+		schedules got a workover and are more closer to the original but not yet perfect
+		NPCs using beds are sleeping better now
+		portable option for Windows
+		seperate settings for fullscreen and windowed mode possible
+		HighDPI mode available on macOS
+		better pathfinding when the party boards a barge
+		fixed most inexplicable crashes
+		Serpent Isle Beta version works
+		fixed tons of bugs
+		cleaned up the code in many places and fixed many compiler warnings
+		Papederdoll support of wearing diapers
+
+
 10/21/10	v1.4.9rc1
 		
 		Compatible with the stricter permissions of Windows Vista and Windows 7
