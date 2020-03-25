@@ -1,21 +1,34 @@
 ??/??/20	v1.6
 
 		Shortcut bar with important shortcuts right on top of the screen (thanks Litchie)
-		switch to SDL2 - important for up to date OS
+		Switch to SDL2 - important for up to date OS
 		NxBR and HQ3x/HQ4x scalers
-		option to drop stacks of items without confirmation
-		some more combat options to make charmed combat more difficult.
-		schedules got a workover and are more closer to the original but not yet perfect
+		Option to drop stacks of items without confirmation
+		Some more combat options to make charmed combat more difficult.
+		Schedules got a workover and are more closer to the original but not yet perfect
 		NPCs using beds are sleeping better now
-		portable option for Windows
-		seperate settings for fullscreen and windowed mode possible
-		HighDPI mode available on macOS
-		better pathfinding when the party boards a barge
-		fixed most inexplicable crashes
-		Serpent Isle Beta version works
-		fixed tons of bugs
-		cleaned up the code in many places and fixed many compiler warnings
 		Papederdoll support of wearing diapers
+		Portable option for Windows
+		Seperate settings for fullscreen and windowed mode possible
+		HighDPI mode available on macOS
+		Better pathfinding when the party boards a barge
+		Fixed most inexplicable crashes
+		Serpent Isle Beta version works
+		Sixed tons of bugs
+		Cleaned up the code in many places and fixed many compiler warnings
+		
+		
+		Known issues:
+		
+		Some crashes due to some cached out objects, we are working on this in another branch which will be the main snapshots after the release
+		Antimagic rain caused by the cube generator is not dissipating as fast as it should
+		Exult does not show the "you have beaten Ultima VII in n days" message
+		Exult does not return to the game menu after beating the game
+		The BG intro does not have the proper sound effects
+		Fire Elemenatals cannot walk across lava
+		Some schedules need more detailed love
+		Several bugs that need more in depth looking at but no plot stopping bugs
+			
 
 
 10/21/10	v1.4.9rc1
