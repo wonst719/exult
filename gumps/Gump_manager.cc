@@ -640,6 +640,7 @@ void Gump_manager::translate_numpad(SDL_Keycode& code, uint16& unicode, uint16 m
 	case SDLK_KP_8:
 		if (numlock_active) {
 			code = SDLK_8;
+			unicode = '8';
 		} else {
 			code = SDLK_UP;
 		}
