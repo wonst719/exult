@@ -436,8 +436,8 @@ void VideoOptions_gump::paint() {
 	font->paint_text(iwin->get_ib8(), "Game Area:", x + colx[0], y + rowy[6] + 1);
 	font->paint_text(iwin->get_ib8(), "Fill Quality:", x + colx[0], y + rowy[7] + 1);
 	font->paint_text(iwin->get_ib8(), "Fill Mode:", x + colx[0], y + rowy[8] + 1);
-#ifndef __IPHONEOS__
 	if (buttons[id_has_ac] != nullptr) font->paint_text(iwin->get_ib8(), "AR Correction:", x + colx[0], y + rowy[9] + 1);
+#ifndef __IPHONEOS__
 	font->paint_text(iwin->get_ib8(), "Same settings for window", x + colx[0], y + rowy[10] + 1);
 	font->paint_text(iwin->get_ib8(), "    and fullscreen:", x + colx[0], y + rowy[11] + 1);
 #endif
