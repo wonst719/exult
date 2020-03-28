@@ -2138,7 +2138,8 @@ void BuildGameMap(BaseGameInfo *game, int mapnum) {
 		int sc;
 		int sclr;
 		h = w = c_tilesize * c_tiles_per_schunk;
-		sc = 1, sclr = Image_window::point;
+		sc = 1;
+		sclr = Image_window::point;
 		Image_window8::set_gamma(1, 1, 1);
 		Image_window::FillMode fillmode = Image_window::Fit;
 
@@ -2241,7 +2242,8 @@ void setup_video(bool fullscreen, int setup_video_type, int resx, int resy,
 			} else
 				resy = h;
 		} else {
-			resx = w, resy = h;
+			resx = w;
+			resy = h;
 		}
 		config->value(vidStr + "/scale_method", sclr, default_scaler.c_str());
 		config->value(vidStr + "/scale", scaleval, sc);

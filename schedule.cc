@@ -4575,9 +4575,11 @@ void Bake_schedule::now_what() {
 		int offX = +1;
 		int offY = 0;
 		int offZ = 0;
-		if (stove) // hide dough
-			offX = -3, offY = 0, offZ = -2;
-
+		if (stove) { // hide dough
+			offX = -3;
+			offY = 0;
+			offZ = -2;
+		}
 		Rectangle foot = oven_obj->get_footprint();
 		const Shape_info &info = oven_obj->get_info();
 		Tile_coord cpos(foot.x + offX, foot.y + offY,

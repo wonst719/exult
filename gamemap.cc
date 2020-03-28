@@ -892,7 +892,7 @@ void Game_map::read_ireg_objects(
 	Game_object *last_obj = nullptr;  // Last one read in this call.
 	Game_window *gwin = Game_window::get_instance();
 	// Go through entries.
-	while (((entlen = ireg->read1(), !ireg->eof()))) {
+	for (entlen = ireg->read1(); !ireg->eof(); entlen = ireg->read1()) {
 		int extended = 0;   // 1 for 2-byte shape #'s.
 		bool extended_lift = false;
 

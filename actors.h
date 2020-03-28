@@ -682,7 +682,8 @@ public:
 		ignore_unused_variable_warning(time);
 	}
 	virtual void get_schedules(Schedule_change *&list, int &cnt) {
-		list = nullptr, cnt = 0;
+		list = nullptr;
+		cnt = 0;
 	}
 	virtual int find_schedule_at_time(int hour3) {
 		ignore_unused_variable_warning(hour3);

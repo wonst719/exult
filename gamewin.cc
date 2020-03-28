@@ -2134,7 +2134,8 @@ void Game_window::show_items(
 	int shnum;
 	int frnum;
 	if (obj) {
-		shnum = obj->get_shapenum(), frnum = obj->get_framenum();
+		shnum = obj->get_shapenum();
+		frnum = obj->get_framenum();
 		const Shape_info &info = obj->get_info();
 		cout << "Object " << shnum << ':' << frnum <<
 		     " has 3d tiles (x, y, z): " <<

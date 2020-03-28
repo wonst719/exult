@@ -141,7 +141,7 @@ void Gump::get_shape_location(
     const Game_object *obj,
     int &ox, int &oy
 ) const {
-	ox = x + object_area.x + obj->get_tx(),
+	ox = x + object_area.x + obj->get_tx();
 	oy = y + object_area.y + obj->get_ty();
 }
 
