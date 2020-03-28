@@ -39,6 +39,7 @@
 #include "Enabled_button.h"
 #include "font.h"
 #include "gamewin.h"
+#include "touchui.h"
 
 using std::string;
 

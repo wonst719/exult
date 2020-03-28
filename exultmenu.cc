@@ -45,6 +45,7 @@
 #include "shapeid.h"
 #include "ignore_unused_variable_warning.h"
 #include "array_size.h"
+#include "ios_utils.h"
 #include <memory>
 using std::unique_ptr;
 using std::make_unique;
