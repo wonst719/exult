@@ -397,7 +397,6 @@ Audio::~Audio()
 { 
 	if (!initialized)
 	{
-		self = nullptr;
 		//SDL_open = false;
 		return;
 	}
@@ -406,7 +405,6 @@ Audio::~Audio()
 	stop_music();
 
 	CERR("~Audio:  about to quit subsystem");
-	self = nullptr;
 }
 
 void Audio::copy_and_play(const uint8 *sound_data, uint32 len, bool wait)
@@ -546,7 +544,7 @@ void	Audio::stop_music()
 	if (!audio_enabled) return;
 
 	if(mixer && mixer->getMidiPlayer())
-		mixer->getMidiPlayer()->stop_music();
+		mixer->getMidiPlayer()->stop_music(true);
 }
 
 bool Audio::start_speech(int num, bool wait)

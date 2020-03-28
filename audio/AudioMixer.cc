@@ -330,7 +330,7 @@ void AudioMixer::closeMidiOutput()
 	if (!midi) return;
 	std::cout << "Destroying MidiDriver..." << std::endl;
 
-	midi->stop_music();
+	midi->stop_music(true);
 	midi->destroyMidiDriver();
 
 	std::lock_guard<SDLAudioDevice> lock(*device);

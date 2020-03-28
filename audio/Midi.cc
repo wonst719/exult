@@ -395,9 +395,9 @@ void MyMidiPlayer::load_timbres()
 	midi_driver->loadTimbreLibrary(ds.get(), type);
 }
 
-void MyMidiPlayer::stop_music()
+void MyMidiPlayer::stop_music(bool quitting)
 {
-	if(!ogg_enabled && !midi_driver && !init_device(false))
+	if(!ogg_enabled && !midi_driver && !quitting && !init_device(false))
 		return;
 
 	current_track = -1;

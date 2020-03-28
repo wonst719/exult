@@ -56,7 +56,7 @@ public:
 
 	void			start_music(int num,bool repeat=false,std::string flex=MAINMUS);
 	void			start_music(std::string fname,int num,bool repeat=false);
-	void			stop_music();
+	void			stop_music(bool quitting = false);
 
 	bool			is_track_playing(int num);
 	int				get_current_track();
