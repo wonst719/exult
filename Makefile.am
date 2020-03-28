@@ -95,6 +95,8 @@ exult_SOURCES =	\
 	shapeid.cc	\
 	shapeid.h	\
 	singles.h	\
+	touchui.cc	\
+	touchui.h	\
 	tiles.h		\
 	tqueue.cc	\
 	tqueue.h	\

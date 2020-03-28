@@ -1159,28 +1159,26 @@ void Image_window::UpdateRect(SDL_Surface *surf, int x, int y, int w, int h)
 int Image_window::VideoModeOK(int width, int height, int bpp, Uint32 flags)
 {
 	ignore_unused_variable_warning(bpp, flags);
-	int nbpp;
-	Uint32 Rmask;
-	Uint32 Gmask;
-	Uint32 Bmask;
-	Uint32 Amask;
- 	for (int j = 0; j < SDL_GetNumDisplayModes(0); j++)
-	{
+	if (height > width) {
+		// Reject portrait modes.
+		return 0;
+	}
+	const int num_dysplay_modes = SDL_GetNumDisplayModes(0);
+	for (int j = 0; j < num_dysplay_modes; j++) {
 		SDL_DisplayMode dispmode;
-#ifdef __IPHONEOS__
-		//only get the landscape resolutions
-		if (SDL_GetCurrentDisplayMode(0, &dispmode) == 0
-#else
+		int nbpp;
+		Uint32 Rmask;
+		Uint32 Gmask;
+		Uint32 Bmask;
+		Uint32 Amask;
 		if (SDL_GetDisplayMode(0, j, &dispmode) == 0
-#endif
-		
-			&& SDL_PixelFormatEnumToMasks(dispmode.format, &nbpp, &Rmask, &Gmask, &Bmask, &Amask) == SDL_TRUE
-			&& dispmode.w == width
-			&& dispmode.h == height)
-		{
+		        && SDL_PixelFormatEnumToMasks(dispmode.format, &nbpp, &Rmask, &Gmask, &Bmask, &Amask) == SDL_TRUE
+		        && dispmode.w == width
+		        && dispmode.h == height) {
 			return nbpp;
 		}
 	}
 	return 0;
 }
+
 SDL_DisplayMode Image_window::desktop_displaymode;

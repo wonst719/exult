@@ -309,10 +309,8 @@
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 /* #undef size_t */
 
-
 #ifdef ALPHA_LINUX_CXX
 #include "alpha_kludges.h"
 #endif
- 
-#define USE_FMOPL_MIDI
 
+#define USE_FMOPL_MIDI

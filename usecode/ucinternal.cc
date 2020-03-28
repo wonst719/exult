@@ -70,6 +70,7 @@
 #include "usefuns.h"
 #include "opcodes.h"
 #include "ios_state.hpp"
+#include "touchui.h"
 
 #if (defined(USE_EXULTSTUDIO) && defined(USECODE_DEBUGGER))
 #include "server.h"
@@ -1674,13 +1675,13 @@ void Usecode_internal::click_to_continue(
 void Usecode_internal::set_book(
     Text_gump *b            // Book/scroll.
 ) {
-#ifdef __IPHONEOS__
-	Gump_manager *gumpman = gwin->get_gump_man();
-	if ((book && !b) && !gumpman->gump_mode())
-		touchui->showGameControls();
-	else if (!book && b)
-		touchui->hideGameControls();
-#endif
+	if (touchui != nullptr) {
+		Gump_manager *gumpman = gwin->get_gump_man();
+		if ((book && !b) && !gumpman->gump_mode())
+			touchui->showGameControls();
+		else if (!book && b)
+			touchui->hideGameControls();
+	}
 	delete book;
 	book = b;
 }

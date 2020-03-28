@@ -35,7 +35,7 @@
 #include <unistd.h>
 
 #ifdef __IPHONEOS__
-#   include "ios_utils.h"
+#  include "ios_utils.h"
 #endif
 
 #ifdef _WIN32
@@ -52,8 +52,8 @@
 #include "ignore_unused_variable_warning.h"
 
 #if defined(MACOSX) || defined(__IPHONEOS__)
-#include <CoreFoundation/CoreFoundation.h>
-#include <sys/param.h> // for MAXPATHLEN
+#  include <CoreFoundation/CoreFoundation.h>
+#  include <sys/param.h> // for MAXPATHLEN
 #endif
 
 using std::cerr;
@@ -464,12 +464,10 @@ int U7mkdir(
     int mode
 ) {
 	string name = get_system_path(dirname);
-#if (defined(MACOSX) || (__IPHONEOS__))
 	// remove any trailing slashes
 	string::size_type pos = name.find_last_not_of('/');
 	if (pos != string::npos)
 		name.resize(pos + 1);
-#endif
 #if defined(_WIN32) && defined(UNICODE)
 	const char *n = name.c_str();
 	int nLen = std::strlen(n) + 1;

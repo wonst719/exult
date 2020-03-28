@@ -41,9 +41,14 @@
 using std::max;
 #endif
 
+static inline bool should_hide_frame(int frame) {
 #ifdef __IPHONEOS__
-#define SHOULD_HIDE_ON_IOS(a) ((a) == 0 || ((a)>=8 && (a)<= 47))
+	return frame == 0 || (frame >=8 && frame <= 47);
+#else
+	ignore_unused_variable_warning(frame);
+	return false;
 #endif
+}
 
 short Mouse::short_arrows[8] = {8, 9, 10, 11, 12, 13, 14, 15};
 short Mouse::med_arrows[8] = {16, 17, 18, 19, 20, 21, 22, 23};
@@ -121,12 +126,10 @@ void Mouse::Init() {
 
 void Mouse::show(
 ) {
-#ifdef __IPHONEOS__
-	if (SHOULD_HIDE_ON_IOS(cur_framenum)) {
+	if (should_hide_frame(cur_framenum)) {
 		hide();
 		return;
 	}
-#endif
 	if (!onscreen) {
 		onscreen = true;
 		// Save background.
@@ -184,10 +187,8 @@ void Mouse::set_shape0(
 	box.x = mousex - cur->get_xleft();
 	box.y = mousey - cur->get_yabove();
 	dirty = dirty.add(box);     // Update dirty area.
-#ifdef __IPHONEOS__
-	if (SHOULD_HIDE_ON_IOS(cur_framenum))
+	if (should_hide_frame(cur_framenum))
 		hide();
-#endif
 }
 
 /*

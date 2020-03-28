@@ -55,7 +55,7 @@ uint32 *VideoOptions_gump::win_resolutions = nullptr;
 int VideoOptions_gump::num_win_resolutions = 0;
 
 #ifdef  __IPHONEOS__
-uint32 VideoOptions_gump::game_resolutions[5] = {0, 0, 0};
+uint32 VideoOptions_gump::game_resolutions[5] = {0, 0, 0, 0, 0};
 #else
 uint32 VideoOptions_gump::game_resolutions[3] = {0, 0, 0};
 #endif
@@ -289,8 +289,8 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 		game_resolutions[2] = (400 << 16) | 250;
 		game_resolutions[3] = (480 << 16) | 300;
 		game_resolutions[4] = (gw << 16) | gh;
-		num_game_resolutions = (game_resolutions[0] != game_resolutions[4] 
-							&& game_resolutions[1] != game_resolutions[4] 
+		num_game_resolutions = (game_resolutions[0] != game_resolutions[4]
+							&& game_resolutions[1] != game_resolutions[4]
 							&& game_resolutions[2] != game_resolutions[4]
 							&& game_resolutions[3] != game_resolutions[4]) ? 5 : 4;
 #else

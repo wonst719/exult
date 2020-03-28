@@ -381,17 +381,36 @@ Game_window::Game_window(
 	config->set("config/gameplay/allow_autonotes", allow_autonotes ? "yes" : "no", false);
 	config->value("config/gameplay/scroll_with_mouse", str, "no");
 #ifdef __IPHONEOS__
-	scroll_with_mouse = str == "no";
+	string default_scroll_with_mouse = "no";
 #else
-	scroll_with_mouse = str == "yes";
+	string default_scroll_with_mouse = "yes";
 #endif
+	scroll_with_mouse = str == default_scroll_with_mouse;
 	config->set("config/gameplay/scroll_with_mouse",
 	            scroll_with_mouse ? "yes" : "no", false);
 #ifdef __IPHONEOS__
-	config->value("config/iphoneos/item_menu", str, "yes");
+	const string default_item_menu = "yes";
+	const string default_dpad_location = "right";
+	const string default_shortcutbar = "translucent";
+	const string default_touch_pathfind = "yes";
+	const string default_outline = "black";
+#else
+	const string default_item_menu = "no";
+	const string default_dpad_location = "no";
+	const string default_shortcutbar = "no";
+	const string default_touch_pathfind = "no";
+	const string default_outline = "no";
+#endif
+
+#ifdef __IPHONEOS__
+	// Item menu
+	config->value("config/iphoneos/item_menu", str, default_item_menu);
 	item_menu = str == "yes";
 	config->set("config/iphoneos/item_menu", item_menu ? "yes" : "no", false);
-	config->value("config/iphoneos/dpad_location", str, "right");
+#endif
+
+	// DPad location
+	config->value("config/iphoneos/dpad_location", str, default_dpad_location);
 	if (str == "no")
 		dpad_location = 0;
 	else if (str == "left")
@@ -401,14 +420,14 @@ Game_window::Game_window(
 		dpad_location = 2;
 	}
 	config->set("config/iphoneos/dpad_location", str, false);
-	config->value("config/shortcutbar/use_shortcutbar", str, "translucent");
-	config->value("config/iphoneos/touch_pathfind", str, "yes");
+
+	// Touch pathfind
+	config->value("config/iphoneos/touch_pathfind", str, default_touch_pathfind);
 	touch_pathfind = str == "yes";
 	config->set("config/iphoneos/touch_pathfind", touch_pathfind ? "yes" : "no", false);
-#else
-	// ShortcutBar
-	config->value("config/shortcutbar/use_shortcutbar", str, "no");
-#endif
+
+	// Shortcut bar
+	config->value("config/shortcutbar/use_shortcutbar", str, default_shortcutbar);
 	if(str == "no") {
 		use_shortcutbar = 0;
 	} else if(str == "yes") {
@@ -419,12 +438,7 @@ Game_window::Game_window(
 	}
 	config->set("config/shortcutbar/use_shortcutbar", str, false);
 
-#ifdef __IPHONEOS__
-	config->value("config/shortcutbar/use_outline_color", str, "black");
-#else
-	config->value("config/shortcutbar/use_outline_color", str, "no");
-#endif
-
+	config->value("config/shortcutbar/use_outline_color", str, default_outline);
 	if(str == "no") {
 		outline_color = NPIXCOLORS;
 	} else if(str == "green") {
@@ -1793,15 +1807,11 @@ void Game_window::start_actor_along_path(
 	                get_scrollty() + (winy + liftpixels) / c_tilesize, lift);
 	if (!main_actor->walk_path_to_tile(dest, speed)) {
 		cout << "Couldn't find path for Avatar." << endl;
-#ifdef __IPHONEOS__
 		if (touch_pathfind)
 			Mouse::mouse->flash_shape(Mouse::blocked);
-#endif
 	} else {
-#ifdef __IPHONEOS__	
-		if (touch_pathfind)	
+		if (touch_pathfind)
 			get_effects()->add_effect(new Sprites_effect(18, dest, 0, 0, 0, 0));
-#endif
 		main_actor->get_followers();
 	}
 }
@@ -2059,7 +2069,7 @@ void Game_window::show_items(
 		int top = h - (int)mobjxy.size()*25;
 		if (left > x) left = x;
 		if (top > y) top = y;
-		
+
 		Itemmenu_gump *itemgump = new Itemmenu_gump(&mobjxy, left, top);
 		Game_window::get_instance()->get_gump_man()->do_modal_gump(itemgump, Mouse::hand);
 		itemgump->postCloseActions();

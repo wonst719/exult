@@ -42,7 +42,7 @@ private:
 	    id_cancel,
 	    id_item_menu,
 	    id_dpad_location,
-		id_touch_pathfind,
+	    id_touch_pathfind,
 	    id_count
 	};
 	Gump_button *buttons[id_count];

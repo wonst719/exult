@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2015-2020 Litchie
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA  02111-1307, USA.
+ */
+
 #include "ios_utils.h"
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -61,12 +80,12 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 	alertWindow.rootViewController = [UIViewController new];
 	[alertWindow makeKeyAndVisible];
 
-	UIAlertController *alert = [UIAlertController 
-										alertControllerWithTitle:@"" 
-										message:@"" 
+	UIAlertController *alert = [UIAlertController
+										alertControllerWithTitle:@""
+										message:@""
 										preferredStyle:UIAlertControllerStyleAlert
 	];
-	UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault 
+	UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
 										handler:^(UIAlertAction *action) {
 											UITextField *textField = alert.textFields.firstObject;
 											TouchUI::onTextInput(textField.text.UTF8String);
@@ -155,7 +174,7 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 
 	dpad.frame = [self calcRectForDPad];
 	[controller.view addSubview:dpad];
-	
+
 	dpad.alpha = 1;
 }
 

@@ -117,15 +117,15 @@ void iphoneOptions_gump::build_buttons() {
 	string *yesNo1 = new string[2]; // TODO:need to make this like enabled
 	yesNo1[0] = "No";              // if I am going to add much more
 	yesNo1[1] = "Yes";
-	
+
 	string *yesNo2 = new string[2];
 	yesNo2[0] = "No";
 	yesNo2[1] = "Yes";
-	
+
 	string *yesNo3 = new string[2];
 	yesNo3[0] = "No";
 	yesNo3[1] = "Yes";
-	
+
 	string *dpad_text = new string[3];
 	dpad_text[0] = "Disabled";
 	dpad_text[1] = "Left";

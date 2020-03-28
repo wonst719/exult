@@ -33,6 +33,7 @@ MAIN_OBJS=actions.o \
 	readnpcs.o \
 	schedule.o \
 	shapeid.o \
+	touchui.o \
 	tqueue.o \
 	txtscroll.o \
 	version.o \

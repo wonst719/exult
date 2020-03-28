@@ -41,10 +41,6 @@
 #define CYCLE_RED_PLASMA()
 #endif
 
-#ifdef __IPHONEOS__
-#include "objs/objs.h"
-#endif
-
 #ifndef ATTR_PRINTF
 #ifdef __GNUC__
 #define ATTR_PRINTF(x,y) __attribute__((format(printf, (x), (y))))
@@ -150,12 +146,12 @@ class Game_window {
 	uint8 use_shortcutbar; // 0 = no, 1 = trans, 2 = yes
 	Pixel_colors outline_color;
 	bool sb_hide_missing;
-#ifdef __IPHONEOS__
-	//iphoneOS Options
+
+	// Touch Options
 	bool item_menu;
 	int dpad_location;
 	bool touch_pathfind;
-#endif
+
 	// Private methods:
 	void set_scrolls(Tile_coord cent);
 	void clear_world(bool restoremapedit);      // Clear out world's contents.
@@ -323,9 +319,9 @@ public:
 	void set_sb_hide_missing_items(bool s) {
 		sb_hide_missing = s;
 	}
-#ifdef __IPHONEOS__
+
 	/*
-	 *  iphoneOS options:
+	 * Touch options:
  	*/
 	bool get_item_menu() const {
 		return item_menu;
@@ -345,7 +341,7 @@ public:
 	void set_touch_pathfind(bool s) {
 		touch_pathfind = s;
 	}
-#endif
+
 	/*
 	 *  Game components:
 	 */

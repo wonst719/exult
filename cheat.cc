@@ -49,6 +49,7 @@ using std::setfill;
 #include "chunks.h"
 #include "objiter.h"
 #include "miscinf.h"
+#include "touchui.h"
 
 #ifdef USE_EXULTSTUDIO  /* Only needed for exult studio. */
 #include "server.h"
@@ -829,19 +830,18 @@ public:
 
 void Cheat::map_teleport() const {
 	if (!enabled) return;
-#ifdef __IPHONEOS__
 	Gump_manager *gumpman = gwin->get_gump_man();
-	touchui->hideGameControls();
-#endif
+	if (touchui != nullptr) {
+		touchui->hideGameControls();
+	}
 	Cheat_map map(gwin->get_map()->get_num());
 	int xx;
 	int yy;
 	if (!Get_click(xx, yy, Mouse::greenselect, nullptr, false, &map)) {
 		gwin->paint();
-#ifdef __IPHONEOS__	
-	if (!gumpman->gump_mode())
-		touchui->showGameControls();
-#endif
+		if (touchui != nullptr && !gumpman->gump_mode()) {
+			touchui->showGameControls();
+		}
 		return;
 	}
 
@@ -856,10 +856,9 @@ void Cheat::map_teleport() const {
 	t.ty = (t.ty + c_num_tiles) % c_num_tiles;
 	cout << "Teleporting to " << t.tx << "," << t.ty << "!" << endl;
 	t.tz = 0;
-#ifdef __IPHONEOS__	
-	if (!gumpman->gump_mode())
+	if (!gumpman->gump_mode() && touchui != nullptr) {
 		touchui->showGameControls();
-#endif
+	}
 	gwin->teleport_party(t);
 	eman->center_text("Teleport!!!");
 }

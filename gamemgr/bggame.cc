@@ -49,6 +49,7 @@
 #include "gump_utils.h"
 #include "AudioMixer.h"
 #include "mappatch.h"
+#include "touchui.h"
 
 #include "imagewin/imagewin.h"
 #include "imagewin/ArbScaler.h"
@@ -60,11 +61,6 @@ using std::abs;
 using std::rand;
 using std::strchr;
 using std::strlen;
-
-#ifdef __IPHONEOS__
-#include "iphone_gumps.h"
-#endif
-
 using std::unique_ptr;
 using std::make_unique;
 
@@ -1791,9 +1787,7 @@ bool BG_Game::new_game(Vga_file &shapes) {
 	npc_name[0] = 0;
 
 	int selected = 0;
-#ifndef __IPHONEOS__
 	int num_choices = 4;
-#endif
 	SDL_Event event;
 	bool editing = true;
 	bool redraw = true;
@@ -1846,12 +1840,10 @@ bool BG_Game::new_game(Vga_file &shapes) {
 			gwin->get_win()->show();
 			redraw = false;
 		}
-		while (SDL_PollEvent(&event)) {
 
-#ifdef __IPHONEOS__
-			/* Use touch based control instead of navigation with keyboard.
-			 * Also there is no direction keys on native iPhone keyboard.
-			 */
+		while (SDL_PollEvent(&event)) {
+			Uint16 keysym_unicode = 0;
+			bool isTextInput = false;
 			if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
 				SDL_Rect rectName   = { topx + 10,    menuy + 10, 130,  16 };
 				SDL_Rect rectSex    = { topx + 10,    menuy + 25, 130,  16 };
@@ -1859,23 +1851,20 @@ bool BG_Game::new_game(Vga_file &shapes) {
 				SDL_Rect rectReturn = { centerx + 10, topy + 180, 130,  16 };
 				SDL_Point point;
 				gwin->get_win()->screen_to_game(event.button.x, event.button.y, gwin->get_fastmouse(), point.x, point.y);
-#if DEBUG
-				std::cout << "x: " << point.x << " y:" << point.y << std::endl;
-#endif
 				if (SDL_EnclosePoints(&point, 1, &rectName, NULL)) {
 					if (event.type == SDL_MOUSEBUTTONDOWN) {
 						selected = 0;
-					} else if (selected == 0) {
+					} else if (selected == 0 && touchui != nullptr) {
 						touchui->promptForName(npc_name);
 					}
-					redraw = true;				
+					redraw = true;
 				} else if (SDL_EnclosePoints(&point, 1, &rectSex, NULL)) {
 					if (event.type == SDL_MOUSEBUTTONDOWN) {
 						selected = 1;
 					} else if (selected == 1) {
 						skindata = Shapeinfo_lookup::GetNextSelSkin(skindata, si_installed, true);
 					}
-					redraw = true;				
+					redraw = true;
 				} else if (SDL_EnclosePoints(&point, 1, &rectOnward, NULL)) {
 					if (event.type == SDL_MOUSEBUTTONDOWN) {
 						selected = 2;
@@ -1883,7 +1872,7 @@ bool BG_Game::new_game(Vga_file &shapes) {
 						editing = false;
 						ok = true;
 					}
-					redraw = true;				
+					redraw = true;
 				} else if (SDL_EnclosePoints(&point, 1, &rectReturn, NULL)) {
 					if (event.type == SDL_MOUSEBUTTONDOWN) {
 						selected = 3;
@@ -1891,22 +1880,16 @@ bool BG_Game::new_game(Vga_file &shapes) {
 						editing = false;
 						ok = false;
 					}
-					redraw = true;				
+					redraw = true;
 				}
 			} else if (event.type == TouchUI::eventType) {
 				if (event.user.code == TouchUI::EVENT_CODE_TEXT_INPUT) {
 					if (selected == 0 && event.user.data1 != NULL) {
-						strcpy(npc_name, (char*)event.user.data1);
+						strcpy(npc_name, static_cast<char*>(event.user.data1));
 						redraw = true;
 					}
 				}
-			}
-			
-#else // __IPHONEOS__
-			
-			Uint16 keysym_unicode = 0;
-			bool isTextInput = false;
-			if (event.type == SDL_TEXTINPUT) {
+			} else if (event.type == SDL_TEXTINPUT) {
 				isTextInput = true;
 				event.type = SDL_KEYDOWN;
 				event.key.keysym.sym = SDLK_UNKNOWN;
@@ -1985,7 +1968,6 @@ bool BG_Game::new_game(Vga_file &shapes) {
 				break;
 				}
 			}
-#endif // __IPHONEOS__
 		}
 	} while (editing);
 

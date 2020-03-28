@@ -30,6 +30,7 @@
 #include "miscinf.h"
 #include "data/exult_bg_flx.h"
 #include "array_size.h"
+#include "touchui.h"
 
 using std::size_t;
 using std::strcpy;
@@ -129,9 +130,9 @@ void Conversation::init_faces() {
 		if (face_info[i])
 			delete face_info[i];
 		face_info[i] = nullptr;
-#ifdef __IPHONEOS__
-		touchui->showGameControls();
-#endif
+		if (touchui != nullptr) {
+			touchui->showGameControls();
+		}
 	}
 	num_faces = 0;
 	last_face_shown = -1;
@@ -243,9 +244,9 @@ void Conversation::show_face(int shape, int frame, int slot) {
 	}
 	gwin->get_win()->set_clip(0, 0, screenw, screenh);
 	paint_faces();          // Paint all faces.
-#ifdef __IPHONEOS__
-	touchui->hideGameControls();
-#endif
+	if (touchui != nullptr) {
+		touchui->hideGameControls();
+	}
 	gwin->get_win()->clear_clip();
 }
 
@@ -328,10 +329,9 @@ void Conversation::remove_slot_face(
 			if (face_info[j])
 				break;
 		last_face_shown = j;
-#ifdef __IPHONEOS__	
-		if (num_faces == 0)
+		if (touchui != nullptr && num_faces == 0) {
 			touchui->showGameControls();
-#endif
+		}
 	}
 }
 

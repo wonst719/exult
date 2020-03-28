@@ -64,7 +64,7 @@ typedef enum
     GamePadButtonStyleRoundedRectangle,
     GamePadButtonStyleCircle,
 } GamePadButtonStyle;
-    
+
 @class GamePadButton;
 
 @protocol GamePadButtonDelegate

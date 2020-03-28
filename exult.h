@@ -29,6 +29,8 @@ class KeyBinder;
 class Tile_coord;
 class Paintable;
 class GameManager;
+class ShortcutBar_gump;
+class TouchUI;
 
 /*
  *  Get a click, or, optionally, a keyboard char.
@@ -46,10 +48,6 @@ extern bool Get_click(
     Paintable *paint = nullptr,       // Paint over everything else.
     bool rotate_colors = false      // If the palette colors should rotate.
 );
-
-#ifdef __IPHONEOS__
-static int last_b1down_click;
-#endif
 
 /*
  *  Make a screenshot of the current screen display
@@ -97,10 +95,7 @@ extern GameManager *gamemanager;
 
 extern quitting_time_enum quitting_time;
 
-extern class ShortcutBar_gump *g_shortcutBar;
-#ifdef __IPHONEOS__
-#include "ios_utils.h"
-extern class TouchUI *touchui;
-#endif
+extern ShortcutBar_gump *g_shortcutBar;
+extern TouchUI *touchui;
 
 #endif

@@ -165,9 +165,7 @@ protected:
 	SaveGame_Party *cur_party = nullptr;      // Party of current game
 
 	// Gamedat is being used as a 'quicksave'
-#ifdef __IPHONEOS__
 	int last_selected;      // keeping track of the selected line for iOS
-#endif
 	std::unique_ptr<Shape_file> gd_shot;      // Screenshot in Gamedat
 	SaveGame_Details *gd_details = nullptr;   // Details in Gamedat
 	SaveGame_Party *gd_party = nullptr;       // Parts in Gamedat
@@ -230,11 +228,7 @@ public:
 		done = true;
 	}
 	// Handle events:
-/* // not needed because of function in Modal_gump.h?
-#ifdef __IPHONEOS__
-	virtual void text_input(const char *text); // Character typed.
-#endif
-*/
+	void text_input(const char *text) override; // Character typed.
 	bool mouse_down(int mx, int my, int button) override;
 	bool mouse_up(int mx, int my, int button) override;
 	void mouse_drag(int mx, int my) override;

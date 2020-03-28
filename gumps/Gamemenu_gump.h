@@ -39,7 +39,7 @@ private:
 	    id_misc_options,
 	    id_quit,
 #ifdef __IPHONEOS__
-		id_ios,
+	    id_ios,
 #endif
 	    id_count
 	};

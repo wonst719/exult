@@ -370,12 +370,13 @@ BaseGameInfo *ExultMenu::run() {
 		                  centerx, topy + 40, "Could not find the static data for either");
 		font->center_text(gwin->get_win()->get_ib8(),
 		                  centerx, topy + 50, "\"The Black Gate\" or \"Serpent Isle\".");
-		font->center_text(gwin->get_win()->get_ib8(),
 #ifndef __IPHONEOS__
-		                  centerx, topy + 60, "Please edit the configuration file");
+		const char games_missing_msg[] = "Please edit the configuration file";
 #else
-		                  centerx, topy + 60, "Please add the games in iTunes File Sharing");
+		const char games_missing_msg[] = "Please add the games in iTunes File Sharing";
 #endif
+		font->center_text(gwin->get_win()->get_ib8(),
+		                  centerx, topy + 60, games_missing_msg);
 		font->center_text(gwin->get_win()->get_ib8(),
 		                  centerx, topy + 70, "and restart Exult.");
 #ifdef __IPHONEOS__
@@ -383,16 +384,16 @@ BaseGameInfo *ExultMenu::run() {
 		                  centerx, topy + 100, "Touch screen for help!");
 #endif
 		gpal->apply();
+		while (!wait_delay(200)) {
+		}
 #ifndef __IPHONEOS__
-		while (!wait_delay(200))
-			;
 		throw quit_exception(1);
 #else
-		// Never quits because Apple doesn't allow you
-		while (!wait_delay(200))
-			;
+		// Never quits because Apple doesn't allow you to.
 		ios_open_url("http://exult.sourceforge.net/docs.php#ios_games");
-		while (1) wait_delay(1000);
+		while (1) {
+			wait_delay(1000);
+		}
 #endif
 	}
 	IExultDataSource mouse_data(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX),

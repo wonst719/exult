@@ -62,10 +62,9 @@ public:
 	virtual void text_input(int chr, int unicode) { // Character typed (unicode)
 		ignore_unused_variable_warning(chr, unicode);
 	}
-#ifdef __IPHONEOS__
-	virtual void text_input(const char *text) // complete string input
-	{ }
-#endif
+	virtual void text_input(const char *text) { // complete string input
+		ignore_unused_variable_warning(text);
+	}
 	bool is_modal() const override {
 		return true;
 	}

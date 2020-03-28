@@ -8,9 +8,9 @@
 
 #define CHOP(x) \
 if ((x) > 1.0) { \
-    (x) = 1.0; \
+	(x) = 1.0; \
 } else if ((x) < -1.0) { \
-    (x) = -1.0; \
+	(x) = -1.0; \
 } else {}
 
 /** DPadView */
@@ -46,7 +46,7 @@ if ((x) > 1.0) { \
 	}
 }
 
-- (void)drawRect:(CGRect)rect 
+- (void)drawRect:(CGRect)rect
 {
 	UIImage *image;
 	if (backgroundImage)
@@ -75,7 +75,7 @@ if ((x) > 1.0) { \
 		DPadDirectionRight, DPadDirectionRight, DPadDirectionUp,    DPadDirectionUp,
 		DPadDirectionUp,    DPadDirectionUp,    DPadDirectionLeft,  DPadDirectionLeft
 	};
-    
+
 	CGPoint ptCenter = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
 	double angle = atan2(ptCenter.y - pt.y, pt.x - ptCenter.x);
 	int index = (unsigned)((angle+M_PI) / (M_PI/8)) % 16;
@@ -96,66 +96,66 @@ if ((x) > 1.0) { \
 - (void)setCurrentDirection:(DPadDirection)dir
 {
 	if (dir != currentDirection) {
-        switch (currentDirection)
-        {
-            case DPadDirectionLeft:
-                [self sendKey:SDL_SCANCODE_LEFT  pressed:dir & 4];
-                break;
-            case DPadDirectionRight:
-                [self sendKey:SDL_SCANCODE_RIGHT  pressed:dir & 1];
-                break;
-            case DPadDirectionUp:
-                [self sendKey:SDL_SCANCODE_UP  pressed:dir & 2];
-                break;
-            case DPadDirectionDown:
-                [self sendKey:SDL_SCANCODE_DOWN  pressed:dir & 8];
-                break;
-            case DPadDirectionLeftUp:
-                [self sendKey:SDL_SCANCODE_KP_7  pressed:dir & 6];
-                break;
-            case DPadDirectionLeftDown:
-                [self sendKey:SDL_SCANCODE_KP_1  pressed:dir & 12];
-                break;
-            case DPadDirectionRightUp:
-                [self sendKey:SDL_SCANCODE_KP_9  pressed:dir & 3];
-                break;
-            case DPadDirectionRightDown:
-                [self sendKey:SDL_SCANCODE_KP_3  pressed:dir & 9];
-                break;
-            default:
-                break;
-        }            
-        
-        switch (dir)
-        {
-            case DPadDirectionLeft:
-                [self sendKey:SDL_SCANCODE_LEFT  pressed:dir & 4];
-                break;
-            case DPadDirectionRight:
-                [self sendKey:SDL_SCANCODE_RIGHT  pressed:dir & 1];
-                break;
-            case DPadDirectionUp:
-                [self sendKey:SDL_SCANCODE_UP  pressed:dir & 2];
-                break;
-            case DPadDirectionDown:
-                [self sendKey:SDL_SCANCODE_DOWN  pressed:dir & 8];
-                break;
-            case DPadDirectionLeftUp:
-                [self sendKey:SDL_SCANCODE_KP_7  pressed:dir & 6];
-                break;
-            case DPadDirectionLeftDown:
-                [self sendKey:SDL_SCANCODE_KP_1  pressed:dir & 12];
-                break;
-            case DPadDirectionRightUp:
-                [self sendKey:SDL_SCANCODE_KP_9  pressed:dir & 3];
-                break;
-            case DPadDirectionRightDown:
-                [self sendKey:SDL_SCANCODE_KP_3  pressed:dir & 9];
-                break;
-            default:
-                break;
-        }
-		currentDirection = dir;        
+		switch (currentDirection)
+		{
+			case DPadDirectionLeft:
+				[self sendKey:SDL_SCANCODE_LEFT  pressed:dir & 4];
+				break;
+			case DPadDirectionRight:
+				[self sendKey:SDL_SCANCODE_RIGHT  pressed:dir & 1];
+				break;
+			case DPadDirectionUp:
+				[self sendKey:SDL_SCANCODE_UP  pressed:dir & 2];
+				break;
+			case DPadDirectionDown:
+				[self sendKey:SDL_SCANCODE_DOWN  pressed:dir & 8];
+				break;
+			case DPadDirectionLeftUp:
+				[self sendKey:SDL_SCANCODE_KP_7  pressed:dir & 6];
+				break;
+			case DPadDirectionLeftDown:
+				[self sendKey:SDL_SCANCODE_KP_1  pressed:dir & 12];
+				break;
+			case DPadDirectionRightUp:
+				[self sendKey:SDL_SCANCODE_KP_9  pressed:dir & 3];
+				break;
+			case DPadDirectionRightDown:
+				[self sendKey:SDL_SCANCODE_KP_3  pressed:dir & 9];
+				break;
+			default:
+				break;
+		}
+
+		switch (dir)
+		{
+			case DPadDirectionLeft:
+				[self sendKey:SDL_SCANCODE_LEFT  pressed:dir & 4];
+				break;
+			case DPadDirectionRight:
+				[self sendKey:SDL_SCANCODE_RIGHT  pressed:dir & 1];
+				break;
+			case DPadDirectionUp:
+				[self sendKey:SDL_SCANCODE_UP  pressed:dir & 2];
+				break;
+			case DPadDirectionDown:
+				[self sendKey:SDL_SCANCODE_DOWN  pressed:dir & 8];
+				break;
+			case DPadDirectionLeftUp:
+				[self sendKey:SDL_SCANCODE_KP_7  pressed:dir & 6];
+				break;
+			case DPadDirectionLeftDown:
+				[self sendKey:SDL_SCANCODE_KP_1  pressed:dir & 12];
+				break;
+			case DPadDirectionRightUp:
+				[self sendKey:SDL_SCANCODE_KP_9  pressed:dir & 3];
+				break;
+			case DPadDirectionRightDown:
+				[self sendKey:SDL_SCANCODE_KP_3  pressed:dir & 9];
+				break;
+			default:
+				break;
+		}
+		currentDirection = dir;
 		[self setNeedsDisplay];
 	}
 }
@@ -165,9 +165,9 @@ if ((x) > 1.0) { \
 {
 	DPadDirection dir = DPadDirectionNone;
 	CGPoint ptCenter = CENTER_OF_RECT(self.bounds);
-	if (DISTANCE_BETWEEN(pt, ptCenter) > minDistance) 
+	if (DISTANCE_BETWEEN(pt, ptCenter) > minDistance)
 		dir = [self directionOfPoint:pt];
-	if (dir != currentDirection) 
+	if (dir != currentDirection)
 		[self setCurrentDirection:dir];
 }
 
@@ -231,7 +231,7 @@ if ((x) > 1.0) { \
 	if (pressed != b) {
 		pressed = b;
 		if (delegate) {
-			if (b) 
+			if (b)
 				[delegate buttonDown:self];
 			else
 				[delegate buttonUp:self];
@@ -271,11 +271,11 @@ if ((x) > 1.0) { \
 //	[[self superview] touchesMoved:touches withEvent:event];
 }
 
-- (void)drawRect:(CGRect)rect 
+- (void)drawRect:(CGRect)rect
 {
 	int bkgIndex;
 	UIColor *color = nil;
-    
+
 	if (!pressed) {
 		color = [textColor colorWithAlphaComponent:0.3];
 		bkgIndex = 0;
@@ -283,22 +283,22 @@ if ((x) > 1.0) { \
 		color = [textColor colorWithAlphaComponent:0.8];
 		bkgIndex = 1;
 	}
-    
+
 	if ([images count] > bkgIndex) {
 		UIImage *image = [images objectAtIndex:bkgIndex];
 		[image drawInRect:rect];
 	}
-    
+
 	if (title) {
 		float fontSize = MIN(14, rect.size.height/4);
 		UIFont *fnt = [UIFont systemFontOfSize:fontSize];
 		CGSize size = [title sizeWithAttributes:@{NSFontAttributeName:fnt}];
-		CGRect rc = CGRectMake((rect.size.width-size.width)/2, 
+		CGRect rc = CGRectMake((rect.size.width-size.width)/2,
 					(rect.size.height-size.height)/2,
 					size.width, size.height);
 		[color setFill];
-		[title drawInRect:rc withAttributes:@{NSFontAttributeName:fnt, 
-                                              NSForegroundColorAttributeName: color}];
+		[title drawInRect:rc withAttributes:@{NSFontAttributeName:fnt,
+		                                      NSForegroundColorAttributeName: color}];
 	}
 }
 

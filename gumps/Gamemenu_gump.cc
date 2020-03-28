@@ -86,7 +86,6 @@ Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, EXULT_FLX_GAMEMENU_SHP, SF_
 	buttons[id_ios] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::iphone_options,
 	        iphonetext, colx, rowy[y++], 108, 11);
 #endif
-	
 }
 
 //++++++ IMPLEMENT RETURN_TO_MENU!
@@ -143,11 +142,11 @@ void Gamemenu_gump::misc_options() {
 
 #ifdef __IPHONEOS__
 void Gamemenu_gump::iphone_options() {
-	iphoneOptions_gump *ios_opts = new iphoneOptions_gump();
-	gumpman->do_modal_gump(ios_opts, Mouse::hand);
-	delete ios_opts;
+	iphoneOptions_gump ios_opts;
+	gumpman->do_modal_gump(&ios_opts, Mouse::hand);
 }
 #endif
+
 void Gamemenu_gump::paint() {
 	Gump::paint();
 	for (auto& btn : buttons)

@@ -16,8 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
-
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -238,7 +236,7 @@ void Itemmenu_gump::postCloseActions() {
 		int top = h - 100;
 		if (left > x) left = x;
 		if (top > y) top = y;
-	
+
 		// This will draw a selection menu for the object
 		itemgump = new Itemmenu_gump(objectSelected, objectSelectedClickXY[0], objectSelectedClickXY[1], left, top);
 		Game_window::get_instance()->get_gump_man()->do_modal_gump(itemgump, Mouse::hand);
@@ -246,7 +244,7 @@ void Itemmenu_gump::postCloseActions() {
 		delete itemgump;
 		break;
 	}
-	
+
 	case ITEMMENU_ACTION_MENU:
 		break;
 	}

@@ -43,9 +43,8 @@
 #include "miscinf.h"
 #include "gump_utils.h"
 #include "ignore_unused_variable_warning.h"
-#ifdef __IPHONEOS__	
-	#include "Gump_manager.h"
-#endif
+#include "touchui.h"
+#include "Gump_manager.h"
 
 const char *CheatScreen::schedules[33] = {
 	"Combat",
@@ -182,10 +181,10 @@ void CheatScreen::show_screen() {
 	maxy = gwin->get_height();
 	centerx = maxx / 2;
 	centery = maxy / 2;
-#ifdef __IPHONEOS__
-	touchui->hideGameControls();
-	SDL_StartTextInput();
-#endif
+	if (touchui != nullptr) {
+		touchui->hideGameControls();
+		SDL_StartTextInput();
+	}
 
 	// Pause the game
 	gwin->get_tqueue()->pause(SDL_GetTicks());
@@ -204,13 +203,15 @@ void CheatScreen::show_screen() {
 	// Reset the palette
 	clock->reset();
 	clock->set_palette();
-#ifdef __IPHONEOS__	
-    Gump_manager *gumpman = gwin->get_gump_man();
-	if (!gumpman->gump_mode())
-		touchui->showGameControls();
-	if (SDL_IsTextInputActive())
-		SDL_StopTextInput();
-#endif
+	if (touchui != nullptr) {
+		Gump_manager *gumpman = gwin->get_gump_man();
+		if (!gumpman->gump_mode()) {
+			touchui->showGameControls();
+		}
+		if (SDL_IsTextInputActive()) {
+			SDL_StopTextInput();
+		}
+	}
 }
 
 
@@ -226,11 +227,13 @@ void CheatScreen::SharedPrompt(char *input, const Cheat_Prompt &mode) {
 	char buf[512];
 
 #ifdef __IPHONEOS__
-	int prompt = 81;
-	int promptmes = 90;
+	const int prompt = 81;
+	const int promptmes = 90;
+	const int offsetx = 15;
 #else
-	char prompt = maxy - 18;
-	char promptmes = maxy - 9;
+	const int prompt = maxy - 18;
+	const int promptmes = maxy - 9;
+	const int offsetx = 0;
 #endif
 	font->paint_text_fixedwidth(ibuf, "Select->", offsetx, prompt, 8);
 
@@ -409,25 +412,25 @@ void CheatScreen::SharedPrompt(char *input, const Cheat_Prompt &mode) {
 static int SDLScanCodeToInt(SDL_Keycode sym) {
 	switch (sym) {
 	case SDLK_KP_0:
-		return 0;
+		return '0';
 	case SDLK_KP_1:
-		return 1;
+		return '1';
 	case SDLK_KP_2:
-		return 2;
+		return '2';
 	case SDLK_KP_3:
-		return 3;
+		return '3';
 	case SDLK_KP_4:
-		return 4;
+		return '4';
 	case SDLK_KP_5:
-		return 5;
+		return '5';
 	case SDLK_KP_6:
-		return 6;
+		return '6';
 	case SDLK_KP_7:
-		return 7;
+		return '7';
 	case SDLK_KP_8:
-		return 8;
+		return '8';
 	case SDLK_KP_9:
-		return 9;
+		return '9';
 	default:
 		return -1;
 	}
@@ -439,7 +442,6 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 	while (true) {
 		Delay();
 		while (SDL_PollEvent(&event)) {
-#ifdef __IPHONEOS__
 			// Touch on the cheat screen will bring up the keyboard
 			if (event.type == SDL_MOUSEBUTTONDOWN) {
 				if (SDL_IsTextInputActive())
@@ -447,8 +449,7 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 				else
 					SDL_StartTextInput();
 			}
-#endif
-		
+
 			if (event.type != SDL_KEYDOWN)
 				continue;
 			SDL_Keysym &key = event.key.keysym;
@@ -599,8 +600,15 @@ void CheatScreen::NormalLoop() {
 void CheatScreen::NormalDisplay() {
 	char    buf[512];
 #ifdef __IPHONEOS__
-	int offsety1 = 108;
-	int offsety2 = 54;
+	const int offsetx = 15;
+	const int offsety1 = 108;
+	const int offsety2 = 54;
+	const int offsety3 = 0;
+#else
+	const int offsetx = 0;
+	const int offsety1 = 0;
+	const int offsety2 = 0;
+	const int offsety3 = 45;
 #endif
 	int curmap = gwin->get_map()->get_num(); 
 	Tile_coord t = gwin->get_main_actor()->get_tile();
@@ -625,11 +633,7 @@ void CheatScreen::NormalDisplay() {
 	         clock->get_minute(),
 	         clock->get_hour() < 12 ? "AM" : "PM",
 	         clock->get_day());
-#ifdef __IPHONEOS__
-	font->paint_text_fixedwidth(ibuf, buf, offsetx, 0, 8);
-#else
-	font->paint_text_fixedwidth(ibuf, buf, offsetx, 45, 8);
-#endif
+	font->paint_text_fixedwidth(ibuf, buf, offsetx, offsety3, 8);
 
 	int longi = ((t.tx - 0x3A5) / 10);
 	int lati = ((t.ty - 0x46E) / 10);
@@ -650,8 +654,19 @@ void CheatScreen::NormalDisplay() {
 void CheatScreen::NormalMenu() {
 	char    buf[512];
 #ifdef __IPHONEOS__
-	int offsety1 = 73;
-	int offsety2 = 55;
+	const int offsetx = 15;
+	const int offsety1 = 73;
+	const int offsety2 = 55;
+	const int offsetx1 = 160;
+	const int offsety4 = 36;
+	const int offsety5 = 72;
+#else
+	const int offsetx = 0;
+	const int offsety1 = 0;
+	const int offsety2 = 0;
+	const int offsetx1 = 0;
+	const int offsety4 = maxy - 45;
+	const int offsety5 = maxy - 36;
 #endif
 
 	// Left Column
@@ -688,12 +703,7 @@ void CheatScreen::NormalMenu() {
 	font->paint_text_fixedwidth(ibuf, buf, offsetx, maxy - offsety1 - 54, 8);
 
 	// Set Time
-#ifdef __IPHONEOS__
-	// for iOS we want to cram everything on the top, so we begin right column here
-	font->paint_text_fixedwidth(ibuf, "[S]et Time", offsetx + 160, 36, 8);
-#else
-	font->paint_text_fixedwidth(ibuf, "[S]et Time", offsetx, maxy - 45, 8);
-#endif
+	font->paint_text_fixedwidth(ibuf, "[S]et Time", offsetx + offsetx1, offsety4, 8);
 
 #ifndef __IPHONEOS__
 	// for iOS taking the liberty of leaving that out
@@ -715,11 +725,7 @@ void CheatScreen::NormalMenu() {
 	font->paint_text_fixedwidth(ibuf, "[T]eleport", offsetx + 160, maxy - offsety2 - 81, 8);
 
 	// eXit
-#ifdef __IPHONEOS__
-	font->paint_text_fixedwidth(ibuf, "[X]it", offsetx + 160, 72, 8);
-#else
-	font->paint_text_fixedwidth(ibuf, "[X]it", offsetx + 160, maxy - 36, 8);
-#endif
+	font->paint_text_fixedwidth(ibuf, "[X]it", offsetx + 160, offsety5, 8);
 }
 
 void CheatScreen::NormalActivate(char *input, int &command, Cheat_Prompt &mode) {
@@ -880,12 +886,13 @@ bool CheatScreen::NormalCheck(char *input, int &command, Cheat_Prompt &mode, boo
 
 void CheatScreen::ActivityDisplay() {
 	char    buf[512];
-	int i;
 #ifdef __IPHONEOS__
-	int offsety1 = 99;
+	const int offsety1 = 99;
+#else
+	const int offsety1 = 0;
 #endif
 
-	for (i = 0; i < 11; i++) {
+	for (int i = 0; i < 11; i++) {
 		snprintf(buf, 512, "%2i %s", i, schedules[i]);
 		font->paint_text_fixedwidth(ibuf, buf, 0, i * 9 + offsety1, 8);
 
@@ -981,7 +988,13 @@ CheatScreen::Cheat_Prompt CheatScreen::TimeSetLoop() {
 CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 	bool looping = true;
 #ifdef __IPHONEOS__
-	int offsety1 = 83;
+	const int offsetx = 15;
+	const int offsety1 = 83;
+	const int offsety2 = 72;
+#else
+	const int offsetx = 0;
+	const int offsety1 = 0;
+	const int offsety2 = maxy - 36;
 #endif
 
 	// This is for the prompt message
@@ -1025,11 +1038,7 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 		if (num > 0 && num < c_last_gflag) font->paint_text_fixedwidth(ibuf, "[+-] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
 		else if (num == 0) font->paint_text_fixedwidth(ibuf, "[+] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
 		else font->paint_text_fixedwidth(ibuf, "[-] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
-#ifdef __IPHONEOS__
-		font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, 72, 8);
-#else
-		font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, maxy - 36, 8);
-#endif
+		font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, offsety2, 8);
 
 		// Finally the Prompt...
 		SharedPrompt(input, mode);
@@ -1170,7 +1179,11 @@ CheatScreen::Cheat_Prompt CheatScreen::NPCLoop(int num) {
 void CheatScreen::NPCDisplay(Actor *actor, int &num) {
 	char    buf[512];
 #ifdef __IPHONEOS__
-	int offsety1 = 73;
+	const int offsetx = 15;
+	const int offsety1 = 73;
+#else
+	const int offsetx = 0;
+	const int offsety1 = 0;
 #endif
 	if (actor) {
 		Tile_coord t = actor->get_tile();
@@ -1232,7 +1245,21 @@ void CheatScreen::NPCDisplay(Actor *actor, int &num) {
 void CheatScreen::NPCMenu(Actor *actor, int &num) {
 	ignore_unused_variable_warning(num);
 #ifdef __IPHONEOS__
-	int offsety1 = 74;
+	const int offsetx = 15;
+	const int offsety1 = 74;
+	const int offsetx2 = 15;
+	const int offsety2 = 72;
+	const int offsetx3 = 175;
+	const int offsety3 = 63;
+	const int offsety4 = 72;
+#else
+	const int offsetx = 0;
+	const int offsety1 = 0;
+	const int offsetx2 = 0;
+	const int offsety2 = maxy - 36;
+	const int offsetx3 = offsetx + 160;
+	const int offsety3 = maxy - 45;
+	const int offsety4 = maxy - 36;
 #endif
 	// Left Column
 
@@ -1252,12 +1279,7 @@ void CheatScreen::NPCMenu(Actor *actor, int &num) {
 	if (actor) font->paint_text_fixedwidth(ibuf, "[1] Name", offsetx, maxy - offsety1 - 63, 8);
 
 	// eXit
-#ifdef __IPHONEOS__
-	font->paint_text_fixedwidth(ibuf, "[X]it", 15, 72, 8);
-#else
-	font->paint_text_fixedwidth(ibuf, "[X]it", 0, maxy - 36, 8);
-#endif
-
+	font->paint_text_fixedwidth(ibuf, "[X]it", offsetx2, offsety2, 8);
 
 	// Right Column
 
@@ -1271,19 +1293,10 @@ void CheatScreen::NPCMenu(Actor *actor, int &num) {
 	if (actor) font->paint_text_fixedwidth(ibuf, "[T]eleport", offsetx + 160, maxy - offsety1 - 81, 8);
 
 	// Change NPC
-#ifdef __IPHONEOS__
-	font->paint_text_fixedwidth(ibuf, "[*] Change NPC", 175, 63, 8);
-#else
-	font->paint_text_fixedwidth(ibuf, "[*] Change NPC", offsetx + 160, maxy - 45, 8);
-#endif
+	font->paint_text_fixedwidth(ibuf, "[*] Change NPC", offsetx3, offsety3, 8);
 
 	// Change NPC
-#ifdef __IPHONEOS__
-	font->paint_text_fixedwidth(ibuf, "[+-] Scroll NPCs", 175, 72, 8);
-#else
-	font->paint_text_fixedwidth(ibuf, "[+-] Scroll NPCs", offsetx + 160, maxy - 36, 8);
-#endif
-
+	font->paint_text_fixedwidth(ibuf, "[+-] Scroll NPCs", offsetx3, offsety4, 8);
 }
 
 void CheatScreen::NPCActivate(char *input, int &command, Cheat_Prompt &mode, Actor *actor, int &num) {
@@ -1453,7 +1466,7 @@ bool CheatScreen::NPCCheck(char *input, int &command, Cheat_Prompt &mode, bool &
 
 void CheatScreen::FlagLoop(Actor *actor) {
 #ifndef __IPHONEOS__
-    int num = actor->get_npc_num();
+	int num = actor->get_npc_num();
 #endif
 	bool looping = true;
 
@@ -1500,11 +1513,13 @@ void CheatScreen::FlagLoop(Actor *actor) {
 void CheatScreen::FlagMenu(Actor *actor) {
 	char    buf[512];
 #ifdef __IPHONEOS__
-    int offsetx = 10;
-	int offsetx1 = 6;
-	int offsety1 = 92;
+	const int offsetx = 10;
+	const int offsetx1 = 6;
+	const int offsety1 = 92;
 #else
-    int offsetx1 = 0;
+	const int offsetx = 0;
+	const int offsetx1 = 0;
+	const int offsety1 = 0;
 #endif
 
 	// Left Column
@@ -2074,8 +2089,15 @@ void CheatScreen::BusinessDisplay(Actor *actor) {
 	char    buf[512];
 	Tile_coord t = actor->get_tile();
 #ifdef __IPHONEOS__
-	int offsetx = 10;
-	int offsety1 = 20;
+	const int offsetx = 10;
+	const int offsety1 = 20;
+	const int offsetx2 = 161;
+	const int offsety2 = 8;
+#else
+	const int offsetx = 0;
+	const int offsety1 = 0;
+	const int offsetx2 = offsetx;
+	const int offsety2 = 16;
 #endif
 
 	// Now the info
@@ -2087,12 +2109,12 @@ void CheatScreen::BusinessDisplay(Actor *actor) {
 	font->paint_text_fixedwidth(ibuf, buf, 0, 8, 8);
 
 #ifdef __IPHONEOS__
-	snprintf(buf, 512, "-Act: %2i %s", actor->get_schedule_type(), schedules[actor->get_schedule_type()]);
-	font->paint_text_fixedwidth(ibuf, buf, 161, 8, 8);
+	const char activity_msg[] = "-Act: %2i %s";
 #else
-	snprintf(buf, 512, "Current Activity:  %2i - %s", actor->get_schedule_type(), schedules[actor->get_schedule_type()]);
-	font->paint_text_fixedwidth(ibuf, buf, offsetx, 16, 8);
+	const char activity_msg[] = "Current Activity:  %2i - %s";
 #endif
+	snprintf(buf, 512, activity_msg, actor->get_schedule_type(), schedules[actor->get_schedule_type()]);
+	font->paint_text_fixedwidth(ibuf, buf, offsetx2, offsety2, 8);
 
 
 	// Avatar can't have schedules
@@ -2139,7 +2161,9 @@ void CheatScreen::BusinessDisplay(Actor *actor) {
 void CheatScreen::BusinessMenu(Actor *actor) {
 	// Left Column
 #ifdef __IPHONEOS__
-	int offsetx = 10;
+	const int offsetx = 10;
+#else
+	const int offsetx = 0;
 #endif
 	// Might break on monster npcs?
 	if (actor->get_npc_num() > 0) {
@@ -2357,9 +2381,13 @@ void CheatScreen::StatLoop(Actor *actor) {
 void CheatScreen::StatMenu(Actor *actor) {
 	char    buf[512];
 #ifdef __IPHONEOS__
-	int offsety1 = 92;
+	const int offsetx = 15;
+	const int offsety1 = 92;
+#else
+	const int offsetx = 0;
+	const int offsety1 = 0;
 #endif
-	
+
 	// Left Column
 
 	// Dexterity
@@ -2501,9 +2529,14 @@ bool CheatScreen::StatCheck(char *input, int &command, Cheat_Prompt &mode, bool 
 
 CheatScreen::Cheat_Prompt CheatScreen::AdvancedFlagLoop(int num, Actor *actor) {
 #ifdef __IPHONEOS__
-	int offsety1 = 83;
+	const int offsetx = 15;
+	const int offsety1 = 83;
+	const int offsety2 = 72;
 #else
 	int npc_num = actor->get_npc_num();
+	const int offsetx = 0;
+	const int offsety1 = 0;
+	const int offsety2 = maxy - 36;
 #endif
 	bool looping = true;
 	// This is for the prompt message
@@ -2522,7 +2555,7 @@ CheatScreen::Cheat_Prompt CheatScreen::AdvancedFlagLoop(int num, Actor *actor) {
 		gwin->clear_screen();
 
 #ifndef __IPHONEOS__
-		NPCDisplay(actor, num);
+		NPCDisplay(actor, npc_num);
 #endif
 
 		if (num < 0) num = 0;
@@ -2549,11 +2582,7 @@ CheatScreen::Cheat_Prompt CheatScreen::AdvancedFlagLoop(int num, Actor *actor) {
 		else if (num == 0) font->paint_text_fixedwidth(ibuf, "[+] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
 		else font->paint_text_fixedwidth(ibuf, "[-] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
 
-#ifdef __IPHONEOS__
-		font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, 72, 8);
-#else
-		font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, maxy - 36, 8);
-#endif
+		font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, offsety2, 8);
 
 		// Finally the Prompt...
 		SharedPrompt(input, mode);
@@ -2699,7 +2728,11 @@ void CheatScreen::TeleportDisplay() {
 	int curmap = gwin->get_map()->get_num();
 	int highest = Find_highest_map();
 #ifdef __IPHONEOS__
-	int offsety1 = 54;
+	const int offsetx = 15;
+	const int offsety1 = 54;
+#else
+	const int offsetx = 0;
+	const int offsety1 = 0;
 #endif
 
 #ifdef __IPHONEOS__
@@ -2713,14 +2746,12 @@ void CheatScreen::TeleportDisplay() {
 	int lati = ((t.ty - 0x46E) / 10);
 #ifdef __IPHONEOS__
 	snprintf(buf, 512, "Coords %d %s %d %s, Map #%d of %d",
-#else
-	snprintf(buf, 512, "Coordinates   %d %s %d %s",
-#endif
 		abs(lati), (lati < 0 ? "North" : "South"),
-#ifdef __IPHONEOS__
-		abs(longi), (longi < 0 ? "West" : "East"),curmap, highest);
+		abs(longi), (longi < 0 ? "West" : "East"), curmap, highest);
 	font->paint_text_fixedwidth(ibuf, buf, offsetx, 9, 8);
 #else
+	snprintf(buf, 512, "Coordinates   %d %s %d %s",
+		abs(lati), (lati < 0 ? "North" : "South"),
 		abs(longi), (longi < 0 ? "West" : "East"));
 	font->paint_text_fixedwidth(ibuf, buf, offsetx, 63, 8);
 #endif
@@ -2744,7 +2775,17 @@ void CheatScreen::TeleportDisplay() {
 void CheatScreen::TeleportMenu() {
 
 #ifdef __IPHONEOS__
-	int offsety1 = 64;
+	const int offsetx = 15;
+	const int offsety1 = 64;
+	const int offsetx2 = 175;
+	const int offsety2 = 63;
+	const int offsety3 = 72;
+#else
+	const int offsetx = 0;
+	const int offsety1 = 0;
+	const int offsetx2 = offsetx;
+	const int offsety2 = maxy - 63;
+	const int offsety3 = maxy - 36;
 #endif
 
 	// Left Column
@@ -2762,18 +2803,10 @@ void CheatScreen::TeleportMenu() {
 	font->paint_text_fixedwidth(ibuf, "[N]PC Number", offsetx, maxy - offsety1 - 72, 8);
 
 	// Map
-#ifdef __IPHONEOS__
-	font->paint_text_fixedwidth(ibuf, "[M]ap Number", 175, 63, 8);
-#else
-	font->paint_text_fixedwidth(ibuf, "[M]ap Number", offsetx, maxy - 63, 8);
-#endif
+	font->paint_text_fixedwidth(ibuf, "[M]ap Number", offsetx2, offsety2, 8);
 
 	// eXit
-#ifdef __IPHONEOS__
-	font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, 72, 8);
-#else
-	font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, maxy - 36, 8);
-#endif
+	font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, offsety3, 8);
 }
 
 void CheatScreen::TeleportActivate(char *input, int &command, Cheat_Prompt &mode, int &prev) {
