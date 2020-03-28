@@ -34,6 +34,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#ifdef __IPHONEOS__
+#   include "ios_utils.h"
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 #include <shlobj.h>
@@ -47,7 +51,7 @@
 #include "fnames.h"
 #include "ignore_unused_variable_warning.h"
 
-#ifdef MACOSX
+#if defined(MACOSX) || defined(__IPHONEOS__)
 #include <CoreFoundation/CoreFoundation.h>
 #include <sys/param.h> // for MAXPATHLEN
 #endif
@@ -460,7 +464,7 @@ int U7mkdir(
     int mode
 ) {
 	string name = get_system_path(dirname);
-#ifdef MACOSX
+#if (defined(MACOSX) || (__IPHONEOS__))
 	// remove any trailing slashes
 	string::size_type pos = name.find_last_not_of('/');
 	if (pos != string::npos)
@@ -667,7 +671,7 @@ void setup_data_dir(
     const std::string &data_path,
     const char *runpath
 ) {
-#ifdef MACOSX
+#if defined(MACOSX) || defined(__IPHONEOS__)
 	// Can we try from the bundle?
 	CFURLRef fileUrl = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
 	if (fileUrl) {
@@ -679,6 +683,16 @@ void setup_data_dir(
 			if (!U7exists(BUNDLE_EXULT_FLX))
 				clear_system_path("<BUNDLE>");
 		}
+	}
+#endif
+#ifdef __IPHONEOS__
+	if (is_system_path_defined("<BUNDLE>")) {
+		// We have the flxfiles in the bundle, so lets use it.
+		// But lets use <DATA> in the iTunes file sharing.
+		string path(ios_get_documents_dir());
+		path += "/data";
+		add_system_path("<DATA>", path.c_str());
+		return;
 	}
 #endif
 
@@ -736,7 +750,11 @@ void setup_program_paths() {
 	string savehome_dir(home_dir);
 	string gamehome_dir(".");
 
-#ifdef MACOSX
+#ifdef __IPHONEOS__
+	config_dir = ios_get_documents_dir();
+	savehome_dir = config_dir + "/save";
+	gamehome_dir = config_dir + "/game";
+#elif defined(MACOSX)
 	config_dir += "/Library/Preferences";
 	savehome_dir += "/Library/Application Support/Exult";
 	gamehome_dir = "/Library/Application Support/Exult";

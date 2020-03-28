@@ -306,7 +306,12 @@ void ShortcutBar_gump::paint() {
 int ShortcutBar_gump::handle_event(SDL_Event *event) {
 	Game_window *gwin = Game_window::get_instance();
 	// When the Save/Load menu is open, don't handle events
-	if (gumpman->modal_gump_mode() || gwin->get_usecode()->in_usecode() || g_waiting_for_click)
+	if (gumpman->modal_gump_mode() || gwin->get_usecode()->in_usecode() || g_waiting_for_click 
+#ifdef __IPHONEOS__
+		// also when the Notebook on iOS is open
+		|| Notebook_gump::get_instance()
+#endif
+		)
 		return 0;
 
 	if (event->type == SDL_MOUSEBUTTONDOWN || event->type == SDL_MOUSEBUTTONUP) {

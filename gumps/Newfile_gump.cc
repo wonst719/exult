@@ -41,6 +41,9 @@
 #include "Text_button.h"
 #include "miscinf.h"
 #include "array_size.h"
+#ifdef __IPHONEOS__
+#	include "Gump_manager.h"
+#endif
 
 using std::atoi;
 using std::cout;
@@ -58,6 +61,9 @@ using std::tm;
 using std::localtime;
 using std::time;
 
+#ifdef __IPHONEOS__
+#   include "touchui.h"
+#endif
 /*
  *  Macros:
  */
@@ -162,6 +168,10 @@ Newfile_gump::Newfile_gump(
 	        EXULT_FLX_SAV_DOWNDOWN_SHP, btn_cols[4], btn_rows[4], SF_EXULT_FLX);
 
 	LoadSaveGameDetails();
+#ifdef __IPHONEOS__
+	touchui->hideGameControls();
+	touchui->hideButtonControls();
+#endif
 }
 
 /*
@@ -172,6 +182,11 @@ Newfile_gump::~Newfile_gump(
 ) {
 	gwin->get_tqueue()->resume(SDL_GetTicks());
 	FreeSaveGameDetails();
+#ifdef __IPHONEOS__
+	touchui->showButtonControls();
+	if (!gumpman->gump_mode() || (!gumpman->modal_gump_mode() && gumpman->gumps_dont_pause_game()))
+		touchui->showGameControls(); 
+#endif
 }
 
 /*
@@ -538,6 +553,9 @@ bool Newfile_gump::mouse_down(
 
 	if (hit == -1) return true;
 
+#ifdef __IPHONEOS__
+	last_selected = selected;
+#endif
 	if (hit + list_position >= num_games || hit + list_position < -2 || selected == hit + list_position) return true;
 
 #ifdef DEBUG
@@ -574,7 +592,11 @@ bool Newfile_gump::mouse_down(
 		details = games[selected].details;
 		party = games[selected].party;
 		strcpy(newname, games[selected].savename);
+#ifdef __IPHONEOS__
+		cursor = (int)strlen(newname);
+#else
 		cursor = strlen(newname);
+#endif
 		is_readable = want_load = games[selected].readable;
 		filename = games[selected].filename;
 	}
@@ -623,6 +645,13 @@ bool Newfile_gump::mouse_up(
 			pushed->activate(button);
 		pushed = nullptr;
 	}
+#ifdef __IPHONEOS__
+	if ((selected == -2 && last_selected != -4) || (selected >= 0 && selected == last_selected)) {
+		touchui->promptForName(newname);
+	}
+	//reset so the prompt doesn't pop up on closing
+	last_selected = -4;
+#endif
 
 	return true;
 }
@@ -681,6 +710,43 @@ void Newfile_gump::mouse_drag(
 	}
 }
 
+#if 0
+// this needs a rewrite for new gump code
+#ifdef __IPHONEOS__
+void Newfile_gump::text_input(const char *text)
+{
+	if (cursor == -1 || strlen(text) >= MAX_SAVEGAME_NAME_LEN - 1)
+		return;
+	if (strcmp(text, newname) == 0) /* No Changed */
+		return;
+	
+	strcpy(newname, text);
+	cursor = (int)strlen(text);
+	
+	if (newname[0] && !buttons[1]) {
+		buttons[1] = new Newfile_Textbutton(this, savetext,
+											btn_cols[0],
+											btn_rows[0], 40);
+		buttons[1]->paint();
+	}
+
+	// Remove Load and Delete Button
+	if (buttons[0] || buttons[2]) {
+		delete buttons[0];
+		delete buttons[2];
+		buttons[0] = buttons[2] = 0;
+	}
+
+	screenshot = cur_shot;
+	details = cur_details;
+	party = cur_party;
+	
+	paint();
+	gwin->set_painted();
+	
+}
+#endif
+#endif
 /*
  *  Handle character that was typed.
  */
@@ -707,6 +773,9 @@ void Newfile_gump::text_input(int chr, int unicode) {
 		}
 		update_details = true;
 		break;
+#ifdef __IPHONEOS__
+	case SDLK_DELETE:
+#endif
 	case SDLK_BACKSPACE:
 		if (BackspacePressed()) {
 			// Can't restore/delete now.
@@ -721,6 +790,7 @@ void Newfile_gump::text_input(int chr, int unicode) {
 		}
 		break;
 
+#ifndef __IPHONEOS__
 	case SDLK_DELETE:
 		if (DeletePressed()) {
 			// Can't restore/delete now.
@@ -734,6 +804,7 @@ void Newfile_gump::text_input(int chr, int unicode) {
 			update_details = true;
 		}
 		break;
+#endif
 
 	case SDLK_LEFT:
 		repaint = MoveCursor(-1);

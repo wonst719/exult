@@ -32,6 +32,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <cstring>
 
+#ifdef __IPHONEOS__
+#   include "exult.h"
+#   include "touchui.h"
+#endif
+
 /*
  *  Statics:
  */
@@ -96,6 +101,9 @@ void Yesno_gump::paint(
 	// Paint text.
 	fontManager.get_font(fontname)->paint_text_box(gwin->get_win()->get_ib8(), text.c_str(),
 	        x + object_area.x, y + object_area.y, object_area.w, object_area.h, 2);
+#ifdef __IPHONEOS__
+	touchui->showButtonControls(); 
+#endif
 	gwin->set_painted();
 }
 
@@ -158,6 +166,10 @@ bool Yesno_gump::ask(
 		answer = false;
 	else
 		answer = dlg.get_answer();
+#ifdef __IPHONEOS__
+	if (gumpman->gump_mode())
+		touchui->hideButtonControls();
+#endif
 	return answer;
 }
 
@@ -191,5 +203,9 @@ bool Countdown_gump::ask(const char *txt, int timeout, const char *font) {
 		answer = false;
 	else
 		answer = dlg.get_answer();
+#ifdef __IPHONEOS__
+	if (gumpman->gump_mode())
+		touchui->hideButtonControls();
+#endif
 	return answer;
 }

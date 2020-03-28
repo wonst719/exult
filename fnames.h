@@ -26,6 +26,11 @@
 // depending on the OS
 #define USER_CONFIGURATION_FILE "exult.cfg"
 
+// without that define utils.cc errors with a "use of undeclared identifier EXULT_DATADIR"
+#if (defined(MACOSX) || defined(__IPHONEOS__)) && !defined(EXULT_DATADIR)
+#define EXULT_DATADIR   "data"
+#endif
+
 /*
  *  Here are the files we use:
  */

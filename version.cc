@@ -211,6 +211,8 @@ void getVersionInfo(std::ostream &out) {
 	}
 #elif (defined(MACOSX))
 	out << "Mac OS X";
+#elif (defined(__IPHONEOS__))
+	out << "iOS";
 #elif (defined(NETBSD))
 	out << "NetBSD";
 #else

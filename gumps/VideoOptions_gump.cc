@@ -54,7 +54,11 @@ int VideoOptions_gump::num_resolutions = 0;
 uint32 *VideoOptions_gump::win_resolutions = nullptr;
 int VideoOptions_gump::num_win_resolutions = 0;
 
+#ifdef  __IPHONEOS__
+uint32 VideoOptions_gump::game_resolutions[5] = {0, 0, 0};
+#else
 uint32 VideoOptions_gump::game_resolutions[3] = {0, 0, 0};
+#endif
 int VideoOptions_gump::num_game_resolutions = 0;
 
 Image_window::FillMode VideoOptions_gump::startup_fill_mode = static_cast<Image_window::FillMode>(0);
@@ -95,10 +99,23 @@ void VideoOptions_gump::rebuild_buttons() {
 	buttons[id_scaler] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_scaler,
 	        scalers, scaler, Image_window::NumScalers, colx[2], rowy[3], 74);
 
+#ifdef __IPHONEOS__
+	//more Game Area modes on iOS devices
+	// because editing the cfg is not as easy
+	// !!!FIXME!!! maybe we could add some for every Exult port?
+	std::string *game_restext = new std::string[5];
+#else
 	std::string *game_restext = new std::string[3];
+#endif
 	game_restext[0] = "Auto";
 	game_restext[1] = "320x200";
+#ifdef __IPHONEOS__
+	game_restext[2] = "400x250";
+	game_restext[3] = "480x300";
+	game_restext[4] = resolutionstring(game_resolutions[2] >> 16, game_resolutions[2] & 0xFFFF);
+#else
 	game_restext[2] = resolutionstring(game_resolutions[2] >> 16, game_resolutions[2] & 0xFFFF);
+#endif
 
 	buttons[id_game_resolution] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_game_resolution,
 	        game_restext, game_resolution, num_game_resolutions, colx[2], rowy[6], 74);
@@ -268,8 +285,18 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 	if (num_game_resolutions == 0) {
 		game_resolutions[0] = 0;
 		game_resolutions[1] = (320 << 16) | 200;
+#ifdef  __IPHONEOS__
+		game_resolutions[2] = (400 << 16) | 250;
+		game_resolutions[3] = (480 << 16) | 300;
+		game_resolutions[4] = (gw << 16) | gh;
+		num_game_resolutions = (game_resolutions[0] != game_resolutions[4] 
+							&& game_resolutions[1] != game_resolutions[4] 
+							&& game_resolutions[2] != game_resolutions[4]
+							&& game_resolutions[3] != game_resolutions[4]) ? 5 : 4;
+#else
 		game_resolutions[2] = (gw << 16) | gh;
 		num_game_resolutions = (game_resolutions[0] != game_resolutions[2] && game_resolutions[1] != game_resolutions[2]) ? 3 : 2;
+#endif
 	}
 	gclock->reset();
 	gclock->set_palette();
@@ -291,8 +318,10 @@ VideoOptions_gump::VideoOptions_gump() : Modal_gump(nullptr, EXULT_FLX_VIDEOOPTI
 	std::string *enabledtext = new std::string[2];
 	enabledtext[0] = "Disabled";
 	enabledtext[1] = "Enabled";
+#ifndef __IPHONEOS__
 	buttons[id_fullscreen] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_fullscreen,
 	        enabledtext, fullscreen, 2, colx[2], rowy[0], 74);
+#endif
 	config->value("config/video/highdpi", highdpi, false);
 	std::string *hdpi_text = new std::string[2];
 	hdpi_text[0] = "Disabled";
@@ -303,8 +332,10 @@ VideoOptions_gump::VideoOptions_gump() : Modal_gump(nullptr, EXULT_FLX_VIDEOOPTI
 	std::string *yesNO = new std::string[2];
 	yesNO[0] = "No";
 	yesNO[1] = "Yes";
+#ifndef __IPHONEOS__
 	buttons[id_share_settings] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_share_settings,
 	        yesNO, share_settings, 2, colx[5], rowy[11], 40);
+#endif
 	o_share_settings = share_settings;
 
 	buttons[id_apply] = std::make_unique<VideoOptions_button>(this, &VideoOptions_gump::save_settings,
@@ -392,18 +423,24 @@ void VideoOptions_gump::paint() {
 
 	Font *font = fontManager.get_font("SMALL_BLACK_FONT");
 	Image_window8 *iwin = gwin->get_win();
+#ifndef __IPHONEOS__
 	font->paint_text(iwin->get_ib8(), "Full Screen:", x + colx[0], y + rowy[0] + 1);
 	if (fullscreen) font->paint_text(iwin->get_ib8(), "Display Mode:", x + colx[0], y + rowy[1] + 1);
 	else font->paint_text(iwin->get_ib8(), "Window Size:", x + colx[0], y + rowy[1] + 1);
+#else
+	font->paint_text(iwin->get_ib8(), "Resolution:", x + colx[0], y + rowy[1] + 1);
+#endif
 	font->paint_text(iwin->get_ib8(), "HighDPI:", x + colx[0], y + rowy[2] + 1);
 	font->paint_text(iwin->get_ib8(), "Scaler:", x + colx[0], y + rowy[3] + 1);
 	if (buttons[id_scaling] != nullptr) font->paint_text(iwin->get_ib8(), "Scaling:", x + colx[0], y + rowy[4] + 1);
 	font->paint_text(iwin->get_ib8(), "Game Area:", x + colx[0], y + rowy[6] + 1);
 	font->paint_text(iwin->get_ib8(), "Fill Quality:", x + colx[0], y + rowy[7] + 1);
 	font->paint_text(iwin->get_ib8(), "Fill Mode:", x + colx[0], y + rowy[8] + 1);
+#ifndef __IPHONEOS__
 	if (buttons[id_has_ac] != nullptr) font->paint_text(iwin->get_ib8(), "AR Correction:", x + colx[0], y + rowy[9] + 1);
 	font->paint_text(iwin->get_ib8(), "Same settings for window", x + colx[0], y + rowy[10] + 1);
 	font->paint_text(iwin->get_ib8(), "    and fullscreen:", x + colx[0], y + rowy[11] + 1);
+#endif
 	gwin->set_painted();
 }
 

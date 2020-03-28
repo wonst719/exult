@@ -222,7 +222,11 @@ MenuList *ExultMenu::create_main_menu(int first) {
 		"SETUP",
 		"CREDITS",
 		"QUOTES",
+#ifdef __IPHONEOS__
+		"HELP"
+#else
 		"EXIT"
+#endif
 	};
 	int num_entries = array_size(menuchoices);
 	int max_width = maximum_size(font, menuchoices, num_entries, centerx);
@@ -367,14 +371,29 @@ BaseGameInfo *ExultMenu::run() {
 		font->center_text(gwin->get_win()->get_ib8(),
 		                  centerx, topy + 50, "\"The Black Gate\" or \"Serpent Isle\".");
 		font->center_text(gwin->get_win()->get_ib8(),
+#ifndef __IPHONEOS__
 		                  centerx, topy + 60, "Please edit the configuration file");
+#else
+		                  centerx, topy + 60, "Please add the games in iTunes File Sharing");
+#endif
 		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 70, "and restart Exult");
+		                  centerx, topy + 70, "and restart Exult.");
+#ifdef __IPHONEOS__
+		font->center_text(gwin->get_win()->get_ib8(),
+		                  centerx, topy + 100, "Touch screen for help!");
+#endif
 		gpal->apply();
+#ifndef __IPHONEOS__
 		while (!wait_delay(200))
 			;
 		throw quit_exception(1);
-
+#else
+		// Never quits because Apple doesn't allow you
+		while (!wait_delay(200))
+			;
+		ios_open_url("http://exult.sourceforge.net/docs.php#ios_games");
+		while (1) wait_delay(1000);
+#endif
 	}
 	IExultDataSource mouse_data(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX),
 	                           EXULT_FLX_POINTERS_SHP);
@@ -458,11 +477,16 @@ BaseGameInfo *ExultMenu::run() {
 		}
 		break;
 		case -1: // Exit
+#ifdef __IPHONEOS__
+			ios_open_url("http://exult.sourceforge.net/docs.php#iOS%20Guide");
+			break;
+#else
 			gpal->fade_out(c_fade_out_time);
 			Audio::get_ptr()->stop_music();
 			delete menu;
 			delete menu_mouse;
 			throw quit_exception();
+#endif
 		default:
 			if (choice >= 0 && choice < MAX_GAMES) {
 				// Load the game:

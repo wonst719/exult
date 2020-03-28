@@ -47,6 +47,10 @@ extern bool Get_click(
     bool rotate_colors = false      // If the palette colors should rotate.
 );
 
+#ifdef __IPHONEOS__
+static int last_b1down_click;
+#endif
+
 /*
  *  Make a screenshot of the current screen display
  */
@@ -94,5 +98,9 @@ extern GameManager *gamemanager;
 extern quitting_time_enum quitting_time;
 
 extern class ShortcutBar_gump *g_shortcutBar;
+#ifdef __IPHONEOS__
+#include "ios_utils.h"
+extern class TouchUI *touchui;
+#endif
 
 #endif

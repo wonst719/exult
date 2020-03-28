@@ -455,8 +455,10 @@ void Image_window::static_init() {
 		}
 	}
 
+#ifndef __IPHONEOS__
 	if (windowed_16 == 0 && windowed_32 == 0)
 		cerr << "SDL Reports 640x400 16 bpp and 32 bpp windowed surfaces are not OK. Windowed scalers may not work properly." << endl;
+#endif
 
 	if (!ok_pal && !ok_rgb)
 		cerr << "SDL Reports no usable fullscreen resolutions." << endl;
@@ -1165,7 +1167,13 @@ int Image_window::VideoModeOK(int width, int height, int bpp, Uint32 flags)
  	for (int j = 0; j < SDL_GetNumDisplayModes(0); j++)
 	{
 		SDL_DisplayMode dispmode;
+#ifdef __IPHONEOS__
+		//only get the landscape resolutions
+		if (SDL_GetCurrentDisplayMode(0, &dispmode) == 0
+#else
 		if (SDL_GetDisplayMode(0, j, &dispmode) == 0
+#endif
+		
 			&& SDL_PixelFormatEnumToMasks(dispmode.format, &nbpp, &Rmask, &Gmask, &Bmask, &Amask) == SDL_TRUE
 			&& dispmode.w == width
 			&& dispmode.h == height)

@@ -48,6 +48,9 @@
 #include "jawbone.h"
 #include "spellbook.h"
 
+#ifdef __IPHONEOS__
+#   include "touchui.h"
+#endif
 using std::cout;
 using std::endl;
 
@@ -179,6 +182,10 @@ bool Gump_manager::close_gump(Gump *gump) {
 	if (dragged == gump)
 		gwin->stop_dragging();
 	delete gump;
+#ifdef __IPHONEOS__
+	if (non_persistent_count == 0)
+		touchui->showGameControls();
+#endif
 	return ret;
 }
 
@@ -303,6 +310,10 @@ void Gump_manager::add_gump(
 
 	// Paint new one last.
 	add_gump(new_gump);
+#ifdef __IPHONEOS__
+	if (!gumps_dont_pause_game())
+		touchui->hideGameControls();
+#endif
 	if (++cnt == 8)
 		cnt = 0;
 	int sfx = Audio::game_sfx(14);
@@ -343,6 +354,10 @@ void Gump_manager::close_all_gumps(
 	set_kbd_focus(nullptr);
 	gwin->get_npc_prox()->wait(4);      // Delay "barking" for 4 secs.
 	if (removed) gwin->paint();
+#ifdef __IPHONEOS__	
+	if (!modal_gump_count && non_persistent_count == 0 && !gwin->is_in_exult_menu())
+		touchui->showGameControls();
+#endif
 }
 
 /*
@@ -481,6 +496,24 @@ bool Gump_manager::handle_modal_gump_event(
 			        gumpman->can_right_click_close()) return false;
 		}
 		break;
+#ifdef __IPHONEOS__
+	case SDL_FINGERMOTION: {
+		static int numFingers = 0;
+		SDL_Finger* finger0 = SDL_GetTouchFinger(event.tfinger.touchId, 0);
+		if (finger0) {
+			numFingers = SDL_GetNumTouchFingers(event.tfinger.touchId);
+		}
+		if (numFingers > 1) {
+			if(event.tfinger.dy < 0) {
+				if (!gump->mouse_down(gx, gy, event.button.button)) gump->mousewheel_up();
+			}
+			else if(event.tfinger.dy > 0) {
+				if (!gump->mouse_down(gx, gy, event.button.button)) gump->mousewheel_down();
+			}
+		}
+		break;
+	}
+#endif
 	// Mousewheel scrolling with SDL2.
 	case SDL_MOUSEWHEEL: {
 		gwin->get_win()->screen_to_game(event.button.x, event.button.y, gwin->get_fastmouse(), gx, gy);
@@ -530,6 +563,19 @@ bool Gump_manager::handle_modal_gump_event(
 
 		break;
 	}
+	
+	default:
+#ifdef __IPHONEOS__
+		if (event.type == TouchUI::eventType) {
+			if (event.user.code == TouchUI::EVENT_CODE_TEXT_INPUT) {
+				if (event.user.data1 != NULL) {
+					char *text = (char*)event.user.data1;
+					if (text) gump->text_input(text);
+				}
+			}
+		}
+#endif
+		break;
 	}
 	return true;
 }
@@ -652,6 +698,9 @@ bool Gump_manager::do_modal_gump(
 		paint->paint();
 	Mouse::mouse->show();
 	gwin->show();
+#ifdef __IPHONEOS__
+	touchui->hideGameControls();
+#endif
 	do {
 		Delay();        // Wait a fraction of a second.
 		Mouse::mouse->hide();       // Turn off mouse.
@@ -680,6 +729,12 @@ bool Gump_manager::do_modal_gump(
 	gwin->get_tqueue()->resume(SDL_GetTicks());
 
 	modal_gump_count--;
+#ifdef __IPHONEOS__
+	if (!gwin->is_in_exult_menu())
+		touchui->showButtonControls();
+	if ((non_persistent_count == 0 || gumpman->gumps_dont_pause_game()) && !modal_gump_count && !gwin->is_in_exult_menu())
+		touchui->showGameControls();
+#endif
 	return !escaped;
 }
 

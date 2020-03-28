@@ -99,6 +99,12 @@
 #include "ignore_unused_variable_warning.h"
 using namespace Pentagram;
 
+#ifdef __IPHONEOS__
+#  include "iphone_gumps.h"
+#  include "touchui.h"
+#  include "ios_utils.h"
+#endif
+
 using std::atof;
 using std::cerr;
 using std::cout;
@@ -150,6 +156,10 @@ bool combat_trace = false; // show combat messages?
 int save_compression = 1;
 bool ignore_crc = false;
 
+#ifdef __IPHONEOS__
+SDL_Joystick *sdl_joy;
+TouchUI *touchui;
+#endif
 bool g_waiting_for_click = false;
 ShortcutBar_gump *g_shortcutBar = nullptr;
 
@@ -469,6 +479,9 @@ int exult_main(const char *runpath) {
 	add_system_path("<MODS>", "mods");
 
 	std::cout << "Exult path settings:" << std::endl;
+#ifdef __IPHONEOS__
+	std::cout << "Bundle        : " << get_system_path("<BUNDLE>") << std::endl;
+#endif
 	std::cout << "Data          : " << get_system_path("<DATA>") << std::endl;
 	std::cout << "Digital music : " << get_system_path("<MUSIC>") << std::endl;
 	std::cout << std::endl;
@@ -554,6 +567,10 @@ int exult_main(const char *runpath) {
 #endif
 
 	cheat.init();
+
+#ifdef __IPHONEOS__
+	touchui = new TouchUI_iOS();
+#endif
 	Init();             // Create main window.
 
 	cheat.finish_init();
@@ -563,6 +580,15 @@ int exult_main(const char *runpath) {
 
 	Mouse::mouse = new Mouse(gwin);
 	Mouse::mouse->set_shape(Mouse::hand);
+
+#ifdef __IPHONEOS__
+	touchui->showButtonControls();
+	Usecode_machine *usecode = Game_window::get_instance()->get_usecode();
+	if (!usecode->get_global_flag(Usecode_machine::did_first_scene) && GAME_BG)
+		touchui->hideGameControls();
+	else
+		touchui->showGameControls();
+#endif
 
 	int result = Play();        // start game
 
@@ -649,12 +675,28 @@ static void Init(
 	// SDL to use X11. Hence, we force the issue.
 	SDL_putenv(const_cast<char *>("SDL_VIDEODRIVER=x11"));
 #endif
+#ifdef __IPHONEOS__
+	init_flags |= SDL_INIT_JOYSTICK;
+	SDL_SetHint(SDL_HINT_ORIENTATIONS, "Landscape");
+	SDL_SetHint(SDL_HINT_IOS_HIDE_HOME_INDICATOR, "2");
+#endif
 	if (SDL_Init(init_flags) < 0) {
 		cerr << "Unable to initialize SDL: " << SDL_GetError() << endl;
 		exit(-1);
 	}
 	std::atexit(SDL_Quit);
 
+#ifdef __IPHONEOS__
+
+#if 0 // FIXME: temporarily disabled
+	std::cout << "There are " << SDL_NumJoysticks() << " joystick(s) available" << std::endl;
+	std::cout << "Default joystick (index 0) is " << SDL_JoystickName(0) << std::endl;
+	sdl_joy = SDL_JoystickOpen(0);
+	if (sdl_joy == NULL)
+		std::cout << "Error: could not open joystick" << std::endl;
+	std::cout << "joystick number of axis: " << SDL_JoystickNumAxes(sdl_joy) << ", number of hats: " << SDL_JoystickNumHats(sdl_joy) << ", number of balls: " << SDL_JoystickNumBalls(sdl_joy) << ", number of buttons: " << SDL_JoystickNumButtons(sdl_joy) << std::endl;
+#endif
+#endif
 	SDL_SysWMinfo info;     // Get system info.
 #ifdef USE_EXULTSTUDIO
 	// Want drag-and-drop events.
@@ -1198,7 +1240,28 @@ static void Handle_event(
 	static uint32 last_b1_click = 0;
 	static uint32 last_b3_click = 0;
 	//cout << "Event " << (int) event.type << " received"<<endl;
+#ifdef __IPHONEOS__
+#define JOY_LEFT_VAL -1400
+#define JOY_RIGHT_VAL 1400
+#define JOY_UP_VAL -200
+#define JOY_DOWN_VAL -3000
+	float ax, ay;
+#endif
 	switch (event.type) {
+	
+#ifdef __IPHONEOS__
+	//Quick saving to make sure no game progress gets lost 
+	//when the app goes into background
+	case SDL_APP_WILLENTERBACKGROUND: {
+		Game_window *gwin = Game_window::get_instance();
+		try {
+			gwin->write();
+		} catch (exult_exception &/*e*/) {
+			break;
+		}
+		break;
+	}
+#endif
 	case SDL_USEREVENT: {
 		if (!dragged) {
 			switch (event.user.code) {
@@ -1217,6 +1280,10 @@ static void Handle_event(
 	case SDL_MOUSEBUTTONDOWN: {
 		if (dont_move_mode)
 			break;
+#ifdef __IPHONEOS__
+		uint32 curtime = SDL_GetTicks();
+		last_b1down_click = curtime;
+#endif
 		if (g_shortcutBar && g_shortcutBar->handle_event(&event))
 			break;
 		int x;
@@ -1285,9 +1352,33 @@ static void Handle_event(
 				gwin->start_actor(x, y,
 				                  Mouse::mouse->avatar_speed);
 			}
+        }}
+#ifdef __IPHONEOS__
+	// two-finger scrolling of view port with SDL2.
+	case SDL_FINGERMOTION: {
+		if (!cheat() || !gwin->can_scroll_with_mouse()) break;
+		static int numFingers = 0;
+		SDL_Finger* finger0 = SDL_GetTouchFinger(event.tfinger.touchId, 0);
+		if (finger0) {
+			numFingers = SDL_GetNumTouchFingers(event.tfinger.touchId);
+		}
+		if (numFingers > 1) {
+			if(event.tfinger.dy < 0) {
+				ActionScrollUp(nullptr);
+			}
+			else if(event.tfinger.dy > 0) {
+				ActionScrollDown(nullptr);
+			}
+			if(event.tfinger.dx > 0) {
+				ActionScrollRight(nullptr);
+			}
+			else if(event.tfinger.dx < 0) {
+				ActionScrollLeft(nullptr);
+			}
 		}
 		break;
 	}
+#endif
 	// Mousewheel scrolling of view port with SDL2.
 	case SDL_MOUSEWHEEL: {
 		if (!cheat() || !gwin->can_scroll_with_mouse()) break;
@@ -1372,6 +1463,17 @@ static void Handle_event(
 			}
 			if (!dragging || !dragged)
 				last_b1_click = curtime;
+
+#ifdef __IPHONEOS__
+		    if (gwin->get_touch_pathfind() && !click_handled && 
+			        (curtime - last_b1down_click > 500) && avatar_can_act && 
+			        gwin->main_actor_can_act_charmed() && !dragging && 
+			        !(gump = gump_man->find_gump(x, y, false))) {
+				gwin->start_actor_along_path(x, y, Mouse::mouse->avatar_speed);
+				dragging = dragged = false;
+				break;
+			}
+#endif
 
 			if (!click_handled && avatar_can_act &&
 			        left_down_x - 1 <= x && x <= left_down_x + 1 &&
@@ -1474,7 +1576,28 @@ static void Handle_event(
 	case SDL_QUIT:
 		gwin->get_gump_man()->okay_to_quit();
 		break;
-
+#ifdef __IPHONEOS__
+	case SDL_JOYAXISMOTION:
+		ax = SDL_JoystickGetAxis(sdl_joy, 0);
+		ay = SDL_JoystickGetAxis(sdl_joy, 1);
+		//std::cout << "joystick  ax: " << ax << ", ay: " << ay << std::endl;
+		event.type = SDL_KEYDOWN;
+		event.key.type = SDL_KEYDOWN;
+		event.key.state = SDL_PRESSED;
+		event.key.keysym.mod = KMOD_NONE;
+		if (ax >= JOY_RIGHT_VAL) {
+			event.key.keysym.sym = SDLK_RIGHT;
+		} else if (ax <= JOY_LEFT_VAL) {
+			event.key.keysym.sym = SDLK_LEFT;
+		} else if (ay >= JOY_UP_VAL) {
+			event.key.keysym.sym = SDLK_UP;
+		} else if (ay <= JOY_DOWN_VAL) {
+			event.key.keysym.sym = SDLK_DOWN;
+		} else {
+			break;
+		}
+		// Should continue on to the SDL_KEY* cases
+#endif
 	case SDL_KEYDOWN:       // Keystroke.
 	case SDL_KEYUP:
 		if (!dragging &&    // ESC while dragging causes crashes.
@@ -1784,10 +1907,30 @@ void Wizard_eye(
 
 		Mouse::mouse->hide();       // Turn off mouse.
 		Mouse::mouse_update = false;
+#ifdef __IPHONEOS__
+		touchui->hideGameControls();
+#endif
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 			switch (event.type) {
+#ifdef __IPHONEOS__
+			case SDL_FINGERMOTION: {
+				if(event.tfinger.dy > 0) {
+					gwin->view_down();
+				}
+				else if(event.tfinger.dy < 0) {
+					gwin->view_up();
+				}
+				if(event.tfinger.dx > 0) {
+					gwin->view_right();
+				}
+				else if(event.tfinger.dx < 0) {
+					gwin->view_left();
+				}
+				break;
+			}
+#endif
 			case SDL_MOUSEMOTION: {
 				int mx;
 				int my;
@@ -1854,6 +1997,9 @@ void Wizard_eye(
 		if (!gwin->show() &&    // Blit to screen if necessary.
 		        Mouse::mouse_update)    // If not, did mouse change?
 			Mouse::mouse->blit_dirty();
+#ifdef __IPHONEOS__
+		touchui->showGameControls();
+#endif
 	}
 
 	if (!os)
@@ -2068,12 +2214,25 @@ void setup_video(bool fullscreen, int setup_video_type, int resx, int resy,
 #ifdef DEBUG
 		cout << "Reading video menu adjustable configuration options" << endl;
 #endif
+#ifdef __IPHONEOS__
+		int w, h, sc;
+		string default_scaler, fill_scaler_str;
+		SDL_DisplayMode dispmode;
+		if (SDL_GetDesktopDisplayMode(0, &dispmode) == 0) {
+			w = dispmode.w, h = dispmode.h,	sc = 1;
+		}
+		else
+			w = 320, h = 240, sc = 1;
+		default_scaler = "point";
+        fullscreen = 1;
+#else
 		// Default resolution is now 320x240 with 2x scaling
 		int w = 320;
 		int h = 240;
 		int sc = 2;
 		string default_scaler = "2xSaI";
 		string fill_scaler_str;
+#endif
 		if (video_init) {
 			// Convert from old video dims to new
 			if (config->key_exists("config/video/width")) {
@@ -2109,11 +2268,19 @@ void setup_video(bool fullscreen, int setup_video_type, int resx, int resy,
 		config->value(vidStr + "/game/width", gw, 320);
 		config->value(vidStr + "/game/height", gh, 200);
 		SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, high_dpi ? "0" : "1");
+#ifdef __IPHONEOS__
+		config->value(vidStr + "/fill_mode", fmode_string, "Fill");
+#else
 		config->value(vidStr + "/fill_mode", fmode_string, "Centre");
+#endif
 		fillmode = Image_window::string_to_fillmode(fmode_string.c_str());
 		if (fillmode == 0)
 			fillmode = Image_window::AspectCorrectCentre;
+#ifdef __IPHONEOS__
+		config->value(vidStr + "/fill_scaler", fill_scaler_str, "point");
+#else
 		config->value(vidStr + "/fill_scaler", fill_scaler_str, "bilinear");
+#endif
 		fill_scaler = Image_window::get_scaler_for_name(fill_scaler_str.c_str());
 		if (fill_scaler == Image_window::NoScaler)
 			fill_scaler = Image_window::bilinear;

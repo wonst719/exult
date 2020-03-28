@@ -38,6 +38,9 @@ private:
 	    id_gameplay_options,
 	    id_misc_options,
 	    id_quit,
+#ifdef __IPHONEOS__
+		id_ios,
+#endif
 	    id_count
 	};
 	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
@@ -66,6 +69,9 @@ public:
 	void audio_options();
 	void gameplay_options();
 	void misc_options();
+#ifdef __IPHONEOS__
+	void iphone_options();
+#endif
 
 	static void do_exult_menu();
 };

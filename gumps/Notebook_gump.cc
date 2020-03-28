@@ -34,6 +34,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "fnames.h"
 #include "cheat.h"
 #include "U7file.h"
+#ifdef __IPHONEOS__
+#include "Gump_manager.h"
+#include "exult.h"
+#endif
 
 using std::ofstream;
 using std::ifstream;
@@ -58,7 +62,11 @@ vector<string> Notebook_gump::auto_text;
 
 const int font = 4;         // Small black.
 const int vlead = 1;            // Extra inter-line spacing.
-const int pagey = 10;           // Top of text area of page.
+#ifdef __IPHONEOS__
+	const int pagey = 7;           // Top of text area of page.
+#else
+	const int pagey = 10;           // Top of text area of page.
+#endif
 const int lpagex = 36, rpagex = 174;    // X-coord. of text area of page.
 
 class One_note {
@@ -226,7 +234,12 @@ void Notebook_gump::add_new(
  */
 
 Notebook_gump::Notebook_gump(
-) : Gump(nullptr, EXULT_FLX_NOTEBOOK_SHP, SF_EXULT_FLX) {
+) : Gump(nullptr,
+#ifdef __IPHONEOS__
+//on iOS the Notebook gump needs to be aligned with the top
+5, -2,
+#endif
+EXULT_FLX_NOTEBOOK_SHP, SF_EXULT_FLX) {
 	handles_kbd = true;
 	cursor.offset = 0;
 	cursor.x = cursor.y = -1;
@@ -248,8 +261,14 @@ Notebook_gump *Notebook_gump::create(
 ) {
 	if (!initialized)
 		initialize();
-	if (!instance)
+	if (!instance) {
 		instance = new Notebook_gump;
+#ifdef __IPHONEOS__
+		touchui->hideGameControls();
+		if (!SDL_IsTextInputActive())
+			SDL_StartTextInput();
+#endif
+	}
 	return instance;
 }
 
@@ -271,6 +290,13 @@ Notebook_gump::~Notebook_gump(
 	delete rightpage;
 	if (this == instance)
 		instance = nullptr;
+#ifdef __IPHONEOS__	
+	Gump_manager *gumpman = gwin->get_gump_man();
+	if (!gumpman->gump_mode())
+		touchui->showGameControls();
+	if (SDL_IsTextInputActive())
+		SDL_StopTextInput();
+#endif
 }
 
 /*
@@ -297,12 +323,23 @@ bool Notebook_gump::paint_page(
 		}
 		snprintf(buf, sizeof(buf), "Day %d, %02d:%02d%s",
 		         note->day, h ? h : 12, note->minute, ampm);
-		sman->paint_text(2, buf, x + box.x, y + pagey);
+		sman->paint_text(
+#ifdef __IPHONEOS__
+		4,
+#else
+		2,
+#endif
+		buf, x + box.x, y + pagey);
 		//when cheating show location of entry (in dec - could use sextant postions)
 		if (cheat()) {
 			snprintf(buf, sizeof(buf), "%d, %d",
 			         note->tx, note->ty);
-			sman->paint_text(4, buf, x + box.x + 80, y + pagey - 4);
+			sman->paint_text(4, buf, x + box.x + 80, 
+#ifdef __IPHONEOS__
+			y + pagey);
+#else
+			y + pagey - 4);
+#endif
 		}
 		// Use bright green for automatic text.
 		gwin->get_win()->fill8(sman->get_special_pixel(
@@ -388,6 +425,10 @@ Gump_button *Notebook_gump::on_button(
 		cursor.offset = offset + coff;
 		paint();
 		updnx = cursor.x - x - lpagex;
+#ifdef __IPHONEOS__
+		if (!SDL_IsTextInputActive())
+			SDL_StartTextInput();
+#endif
 	} else {
 		offset += -coff;        // New offset.
 		if (offset >= static_cast<int>(note->text.length())) {
@@ -408,6 +449,10 @@ Gump_button *Notebook_gump::on_button(
 			cursor.offset = offset + coff;
 			paint();
 			updnx = cursor.x - x - rpagex;
+#ifdef __IPHONEOS__
+			if (!SDL_IsTextInputActive())
+				SDL_StartTextInput();
+#endif
 		}
 	}
 	return nullptr;

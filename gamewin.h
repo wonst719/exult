@@ -41,6 +41,10 @@
 #define CYCLE_RED_PLASMA()
 #endif
 
+#ifdef __IPHONEOS__
+#include "objs/objs.h"
+#endif
+
 #ifndef ATTR_PRINTF
 #ifdef __GNUC__
 #define ATTR_PRINTF(x,y) __attribute__((format(printf, (x), (y))))
@@ -146,6 +150,12 @@ class Game_window {
 	uint8 use_shortcutbar; // 0 = no, 1 = trans, 2 = yes
 	Pixel_colors outline_color;
 	bool sb_hide_missing;
+#ifdef __IPHONEOS__
+	//iphoneOS Options
+	bool item_menu;
+	int dpad_location;
+	bool touch_pathfind;
+#endif
 	// Private methods:
 	void set_scrolls(Tile_coord cent);
 	void clear_world(bool restoremapedit);      // Clear out world's contents.
@@ -313,6 +323,29 @@ public:
 	void set_sb_hide_missing_items(bool s) {
 		sb_hide_missing = s;
 	}
+#ifdef __IPHONEOS__
+	/*
+	 *  iphoneOS options:
+ 	*/
+	bool get_item_menu() const {
+		return item_menu;
+	}
+	void set_item_menu(bool s) {
+		item_menu = s;
+	}
+	inline void set_dpad_location(int a) {
+		dpad_location = a;
+	}
+	inline int get_dpad_location() {
+		return dpad_location;
+	}
+	bool get_touch_pathfind() const {
+		return touch_pathfind;
+	}
+	void set_touch_pathfind(bool s) {
+		touch_pathfind = s;
+	}
+#endif
 	/*
 	 *  Game components:
 	 */
@@ -627,6 +660,10 @@ public:
 	                   int qual = c_any_qual); // Activate item in party.
 	// Find object (x, y) is in.
 	Game_object *find_object(int x, int y);
+#ifdef __IPHONEOS__
+	typedef std::map<Game_object *, int *> Game_object_map_xy;
+	void find_nearby_objects(Game_object_map_xy *mobjxy, int x, int y, Gump *gump = NULL);
+#endif
 
 	// Show names of items clicked on.
 	void show_items(int x, int y, bool ctrl = false);

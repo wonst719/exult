@@ -91,7 +91,9 @@
 #include "server.h"
 #include "servemsg.h"
 #endif
-
+#ifdef __IPHONEOS__
+#include "iphone_gumps.h"
+#endif
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -378,11 +380,35 @@ Game_window::Game_window(
 	allow_autonotes = str == "yes";
 	config->set("config/gameplay/allow_autonotes", allow_autonotes ? "yes" : "no", false);
 	config->value("config/gameplay/scroll_with_mouse", str, "no");
+#ifdef __IPHONEOS__
+	scroll_with_mouse = str == "no";
+#else
 	scroll_with_mouse = str == "yes";
+#endif
 	config->set("config/gameplay/scroll_with_mouse",
 	            scroll_with_mouse ? "yes" : "no", false);
+#ifdef __IPHONEOS__
+	config->value("config/iphoneos/item_menu", str, "yes");
+	item_menu = str == "yes";
+	config->set("config/iphoneos/item_menu", item_menu ? "yes" : "no", false);
+	config->value("config/iphoneos/dpad_location", str, "right");
+	if (str == "no")
+		dpad_location = 0;
+	else if (str == "left")
+		dpad_location = 1;
+	else {
+		str = "right";
+		dpad_location = 2;
+	}
+	config->set("config/iphoneos/dpad_location", str, false);
+	config->value("config/shortcutbar/use_shortcutbar", str, "translucent");
+	config->value("config/iphoneos/touch_pathfind", str, "yes");
+	touch_pathfind = str == "yes";
+	config->set("config/iphoneos/touch_pathfind", touch_pathfind ? "yes" : "no", false);
+#else
 	// ShortcutBar
 	config->value("config/shortcutbar/use_shortcutbar", str, "no");
+#endif
 	if(str == "no") {
 		use_shortcutbar = 0;
 	} else if(str == "yes") {
@@ -392,7 +418,12 @@ Game_window::Game_window(
 		use_shortcutbar = 1;
 	}
 	config->set("config/shortcutbar/use_shortcutbar", str, false);
+
+#ifdef __IPHONEOS__
+	config->value("config/shortcutbar/use_outline_color", str, "black");
+#else
 	config->value("config/shortcutbar/use_outline_color", str, "no");
+#endif
 
 	if(str == "no") {
 		outline_color = NPIXCOLORS;
@@ -1760,10 +1791,19 @@ void Game_window::start_actor_along_path(
 	int liftpixels = 4 * lift;  // Figure abs. tile.
 	Tile_coord dest(get_scrolltx() + (winx + liftpixels) / c_tilesize,
 	                get_scrollty() + (winy + liftpixels) / c_tilesize, lift);
-	if (!main_actor->walk_path_to_tile(dest, speed))
+	if (!main_actor->walk_path_to_tile(dest, speed)) {
 		cout << "Couldn't find path for Avatar." << endl;
-	else
+#ifdef __IPHONEOS__
+		if (touch_pathfind)
+			Mouse::mouse->flash_shape(Mouse::blocked);
+#endif
+	} else {
+#ifdef __IPHONEOS__	
+		if (touch_pathfind)	
+			get_effects()->add_effect(new Sprites_effect(18, dest, 0, 0, 0, 0));
+#endif
 		main_actor->get_followers();
+	}
 }
 
 /*
@@ -1953,6 +1993,32 @@ Game_object *Game_window::find_object(
 	return best;
 }
 
+#ifdef __IPHONEOS__
+void Game_window::find_nearby_objects(Game_object_map_xy *mobjxy, int x, int y, Gump *gump) {
+	Game_object *iobj;
+	// Find object at each pixel
+	for (int iy = y - 10; iy < (y + 10); iy++) {
+		for (int ix = x - 10; ix < (x + 10); ix++) {
+			if (gump) {
+				iobj = gump->find_object(ix, iy);
+			} else {
+				iobj = find_object(ix, iy);
+			}
+
+			if (iobj) {
+				int *arrXY = new int[2];
+				arrXY[0] = ix;
+				arrXY[1] = iy;
+				std::pair<Game_object_map_xy::iterator, bool> ret;
+
+				ret = mobjxy->insert(std::pair<Game_object *, int *>(iobj, arrXY));
+				if (ret.second == false)
+					delete [] arrXY;
+			}
+		}
+	}
+}
+#endif
 static inline string Get_object_name(const Game_object *obj) {
 	if (obj == Game_window::get_instance()->get_main_actor()) {
 		if (GAME_BG)
@@ -1982,6 +2048,25 @@ void Game_window::show_items(
 	} else {            // Search rest of world.
 		obj = find_object(x, y);
 	}
+#ifdef __IPHONEOS__
+	Game_object_map_xy mobjxy;
+	find_nearby_objects(&mobjxy, x, y, gump);
+	if ((mobjxy.size() > 0) && (item_menu) && !Notebook_gump::get_instance()) {
+		// Make sure menu is visible on the screen
+		int w = Game_window::get_instance()->get_width();
+		int h = Game_window::get_instance()->get_height();
+		int left = w - 100;
+		int top = h - (int)mobjxy.size()*25;
+		if (left > x) left = x;
+		if (top > y) top = y;
+		
+		Itemmenu_gump *itemgump = new Itemmenu_gump(&mobjxy, left, top);
+		Game_window::get_instance()->get_gump_man()->do_modal_gump(itemgump, Mouse::hand);
+		itemgump->postCloseActions();
+		delete itemgump;
+		obj = NULL;
+	}
+#endif
 	// Map-editing?
 	if (obj && cheat.in_map_editor()) {
 		if (ctrl)       // Control?  Toggle.
