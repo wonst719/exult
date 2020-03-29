@@ -53,9 +53,6 @@ endif
 # If this doesn't work, insert output of `pkg-config --libs fluidsynth` manually
 FLUIDSYNTH_LIBS:=$(shell pkg-config --libs fluidsynth)
 FLUIDSYNTH_CFLAGS:=-DUSE_FLUIDSYNTH_MIDI
-FLUIDSYNTH_DLLS:=libfluidsynth-2.dll libgmodule-2.0-0.dll libglib-2.0-0.dll libintl-8.dll \
-	libiconv-2.dll libpcre-1.dll libportaudio-2.dll libreadline8.dll libtermcap-0.dll \
-	libsndfile-1.dll libFLAC-8.dll libspeex-1.dll libvorbisenc-2.dll
 
 ### GTK+ libs and includes, for Exult Studio.
 # If this doesn't work, insert output of `pkg-config --cflags gtk+-win32-2.0` manually
@@ -257,27 +254,13 @@ MISC_OBJS=exultstudioico.o windrag.o
 ES_OBJS=$(MAPEDIT_OBJS) $(ES_FILES_OBJS) $(ES_GAMEMGR_OBJS) $(ES_IMAGEWIN_OBJS) $(ES_SHAPES_OBJS) \
 	$(ES_SERVER_OBJS) $(CONF_OBJS) $(MISC_OBJS) $(ZIP_OBJS)
 
-EXULT_DLLS:= $(EH_LIB) $(FLUIDSYNTH_DLLS) libvorbisfile-3.dll libogg-0.dll libvorbis-0.dll \
-	libstdc++-6.dll libwinpthread-1.dll zlib1.dll SDL2.dll
-
 TOOL_EXES:=expack$(EXEEXT) cmanip$(EXEEXT) ipack$(EXEEXT) mklink$(EXEEXT) mockup$(EXEEXT) rip$(EXEEXT) \
 	shp2pcx$(EXEEXT) smooth$(EXEEXT) splitshp$(EXEEXT) textpack$(EXEEXT) wuc$(EXEEXT) u7voice2syx$(EXEEXT) \
 	ucc$(EXEEXT) libsmooth_randomize$(LIBEXT) libsmooth_smooth$(LIBEXT) libsmooth_stream$(LIBEXT)
 
-TOOL_DLLS:=$(EH_LIB) libjpeg-8.dll liblzma-5.dll libpng16-16.dll libstdc++-6.dll libtiff-5.dll libwebp-7.dll \
-	libwinpthread-1.dll libzstd.dll zlib1.dll SDL2.dll SDL2_image.dll
-
-UCXT_DLLS:=$(EH_LIB) libstdc++-6.dll libwinpthread-1.dll zlib1.dll
-
-PLUGIN_DLLS:=$(EH_LIB) libstdc++-6.dll libwinpthread-1.dll
-
-STUDIO_DLLS:=libatk-1.0-0.dll libbz2-1.dll libcairo-2.dll libdatrie-1.dll libexpat-1.dll libffi-6.dll \
-	libfontconfig-1.dll libfreetype-6.dll libfribidi-0.dll $(EH_LIB) libgdk_pixbuf-2.0-0.dll \
-	libgdk-win32-2.0-0.dll libgio-2.0-0.dll libglade-2.0-0.dll libglib-2.0-0.dll libgmodule-2.0-0.dll \
-	libgobject-2.0-0.dll libgraphite2.dll libgtk-win32-2.0-0.dll libharfbuzz-0.dll libiconv-2.dll \
-	libintl-8.dll liblzma-5.dll libpango-1.0-0.dll libpangocairo-1.0-0.dll libpangoft2-1.0-0.dll \
-	libpangowin32-1.0-0.dll libpcre-1.dll libpixman-1-0.dll libpng16-16.dll libstdc++-6.dll libthai-0.dll \
-	libwinpthread-1.dll libxml2-2.dll zlib1.dll
+define copy_dlls_for_exe
+	for ff in $$(ldd $(1) | grep -o '$(MSYSTEM_PREFIX)/.\+\.dll' | sort -u); do cp $$ff $(2)/$$(basename $$ff); done
+endef
 
 include Makefile.common
 
@@ -307,7 +290,7 @@ u7shp$(EXEEXT) : mapedit/u7shp.o
 install: $(EXEC)
 	mkdir -p $(U7PATH)
 	strip $(EXEC) -o $(U7PATH)/$(EXEC)
-	for ff in $(EXULT_DLLS); do cp $(MSYSTEM_PREFIX)/bin/$$ff $(U7PATH)/$$ff; done
+	$(call copy_dlls_for_exe, $(EXEC), $(U7PATH))
 	mkdir -p $(U7PATH)/data
 	cp data/exult.flx $(U7PATH)/data
 	cp data/exult_bg.flx $(U7PATH)/data
@@ -316,7 +299,7 @@ install: $(EXEC)
 debug: $(EXEC)
 	mkdir -p $(U7PATH)
 	cp $(EXEC) $(U7PATH)
-	for ff in $(EXULT_DLLS); do cp $(MSYSTEM_PREFIX)/bin/$$ff $(U7PATH); done
+	$(call copy_dlls_for_exe, $(EXEC), $(U7PATH))
 	mkdir -p $(U7PATH)/data
 	cp data/exult.flx $(U7PATH)/data
 	cp data/exult_bg.flx $(U7PATH)/data
@@ -348,8 +331,8 @@ toolsinstall: tools
 	mkdir -p $(U7PATH)/tools
 	strip ucxt$(EXEEXT) -o $(U7PATH)/ucxt$(EXEEXT)
 	for ff in $(TOOL_EXES); do strip $$ff -o $(U7PATH)/tools/$$ff; done
-	for ff in $(UCXT_DLLS); do strip $(MSYSTEM_PREFIX)/bin/$$ff -o $(U7PATH)/$$ff; done
-	for ff in $(TOOL_DLLS); do strip $(MSYSTEM_PREFIX)/bin/$$ff -o $(U7PATH)/tools/$$ff; done
+	$(call copy_dlls_for_exe, ucxt$(EXEEXT), $(U7PATH))
+	$(call copy_dlls_for_exe, $(TOOL_EXES), $(U7PATH)/tools)
 	mkdir -p $(U7PATH)/data
 	cp usecode/ucxt/data/events.data $(U7PATH)/data
 	cp usecode/ucxt/data/flags.data $(U7PATH)/data
@@ -381,7 +364,7 @@ studioclean:
 studioinstall: exult_studio$(EXEEXT)
 	mkdir -p $(U7PATH)
 	strip exult_studio$(EXEEXT) -o $(U7PATH)/exult_studio$(EXEEXT)
-	for ff in $(STUDIO_DLLS); do strip $(MSYSTEM_PREFIX)/bin/$$ff -o $(U7PATH)/$$ff; done
+	$(call copy_dlls_for_exe, exult_studio$(EXEEXT), $(U7PATH))
 	mkdir -p $(U7PATH)/data
 	cp mapedit/exult_studio.glade $(U7PATH)/data
 	mkdir -p $(U7PATH)/data/estudio
@@ -409,7 +392,7 @@ plugin: u7shp$(EXEEXT)
 plugininstall: plugin
 	mkdir -p $(GIMPPATH)
 	strip u7shp$(EXEEXT) -o $(GIMPPATH)/u7shp$(EXEEXT)
-	for ff in $(PLUGIN_DLLS); do strip $(MSYSTEM_PREFIX)/bin/$$ff -o $(GIMPPATH)/$$ff; done
+	$(call copy_dlls_for_exe, u7shp$(EXEEXT), $(GIMPPATH))
 
 plugindist: GIMPPATH:=$(U7PATH)/GimpPlugin
 plugindist: plugin plugininstall
