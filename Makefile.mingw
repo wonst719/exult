@@ -11,10 +11,8 @@ SRC=.
 
 ifneq (,$(findstring /mingw64,$(MSYSTEM_PREFIX)))
 	ARCHFLAGS=-m64
-	EH_LIB=libgcc_s_seh-1.dll
 else
 	ARCHFLAGS=-m32
-	EH_LIB=libgcc_s_dw2-1.dll
 endif
 
 ifdef USE_CONSOLE
