@@ -810,15 +810,12 @@ static void Init(
 			// Prevent game from being reloaded in case the player
 			// tries to return to the main menu:
 			arg_gamename = "default";
-		} else {
+		}
+		if (!newgame) {
 			ExultMenu exult_menu(gwin);
 			newgame = exult_menu.run();
 		}
-		if (!newgame) {
-			// Should never happen... maybe display the exult menu instead?
-			cerr << "Could not find any games to run; leaving." << endl;
-			exit(1);
-		}
+		assert(newgame != nullptr);
 
 		if (arg_buildmap >= 0) {
 			BuildGameMap(newgame, arg_mapnum);
@@ -853,7 +850,7 @@ static void Init(
 			else
 				midi->set_timbre_lib(MyMidiPlayer::TIMBRE_LIB_MAINMENU);
 		}
-	} while (!game->show_menu(arg_nomenu));
+	} while (!game || !game->show_menu(arg_nomenu));
 
 	// Should not be needed anymore:
 	delete gamemanager;
