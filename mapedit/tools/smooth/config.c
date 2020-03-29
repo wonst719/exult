@@ -82,7 +82,7 @@ int read_config(FILE *f) {
 				pluginname = (char *)malloc((13 + line_length) * sizeof(char));
 				strncpy(line, line + 1, line_length - 3); // what's between the '[' and the ']'
 				line[line_length - 3] = '\0'; // and add a \0 at the end
-#ifdef WIN32
+#ifdef _WIN32
 				sprintf(pluginname, "libsmooth_%s.dll", line);
 #else
 				sprintf(pluginname, "libsmooth_%s.so", line);
