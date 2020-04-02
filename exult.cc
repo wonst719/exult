@@ -799,6 +799,9 @@ static void Init(
 	// so I leave it Windows-specific for now.
 	// Maybe it would be best to use SDL_putenv instead?
 	SDL_putenv(const_cast<char *>("SDL_VIDEO_CENTERED=center"));
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	SDL_putenv(const_cast<char *>("SDL_AUDIODRIVER=DirectSound"));
+#endif
 	// Yes, SDL_putenv is GOOD.  putenv does NOT work with wince. -PTG 2007/06/11
 #elif defined(MACOSX) && defined(USE_EXULTSTUDIO)
 	// Just in case:
