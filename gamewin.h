@@ -84,6 +84,12 @@ class Game_render;
 class Effects_manager;
 using Game_object_shared = std::shared_ptr<Game_object>;
 
+struct Position2d {
+	int x;
+	int y;
+};
+using Game_object_map_xy = std::map<Game_object*, Position2d>;
+
 /*
  *  The main game window:
  */
@@ -656,10 +662,7 @@ public:
 	                   int qual = c_any_qual); // Activate item in party.
 	// Find object (x, y) is in.
 	Game_object *find_object(int x, int y);
-#ifdef __IPHONEOS__
-	typedef std::map<Game_object *, int *> Game_object_map_xy;
-	void find_nearby_objects(Game_object_map_xy *mobjxy, int x, int y, Gump *gump = NULL);
-#endif
+	void find_nearby_objects(Game_object_map_xy& mobjxy, int x, int y, Gump *gump = nullptr);
 
 	// Show names of items clicked on.
 	void show_items(int x, int y, bool ctrl = false);

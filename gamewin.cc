@@ -91,9 +91,8 @@
 #include "server.h"
 #include "servemsg.h"
 #endif
-#ifdef __IPHONEOS__
-#include "iphone_gumps.h"
-#endif
+#include "ItemMenu_gump.h"
+
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -402,15 +401,13 @@ Game_window::Game_window(
 	const string default_outline = "no";
 #endif
 
-#ifdef __IPHONEOS__
 	// Item menu
-	config->value("config/iphoneos/item_menu", str, default_item_menu);
+	config->value("config/touch/item_menu", str, default_item_menu);
 	item_menu = str == "yes";
-	config->set("config/iphoneos/item_menu", item_menu ? "yes" : "no", false);
-#endif
+	config->set("config/touch/item_menu", item_menu ? "yes" : "no", false);
 
 	// DPad location
-	config->value("config/iphoneos/dpad_location", str, default_dpad_location);
+	config->value("config/touch/dpad_location", str, default_dpad_location);
 	if (str == "no")
 		dpad_location = 0;
 	else if (str == "left")
@@ -419,12 +416,12 @@ Game_window::Game_window(
 		str = "right";
 		dpad_location = 2;
 	}
-	config->set("config/iphoneos/dpad_location", str, false);
+	config->set("config/touch/dpad_location", str, false);
 
 	// Touch pathfind
-	config->value("config/iphoneos/touch_pathfind", str, default_touch_pathfind);
+	config->value("config/touch/touch_pathfind", str, default_touch_pathfind);
 	touch_pathfind = str == "yes";
-	config->set("config/iphoneos/touch_pathfind", touch_pathfind ? "yes" : "no", false);
+	config->set("config/touch/touch_pathfind", touch_pathfind ? "yes" : "no", false);
 
 	// Shortcut bar
 	config->value("config/shortcutbar/use_shortcutbar", str, default_shortcutbar);
@@ -2003,12 +2000,11 @@ Game_object *Game_window::find_object(
 	return best;
 }
 
-#ifdef __IPHONEOS__
-void Game_window::find_nearby_objects(Game_object_map_xy *mobjxy, int x, int y, Gump *gump) {
-	Game_object *iobj;
+void Game_window::find_nearby_objects(Game_object_map_xy& mobjxy, int x, int y, Gump *gump) {
 	// Find object at each pixel
 	for (int iy = y - 10; iy < (y + 10); iy++) {
 		for (int ix = x - 10; ix < (x + 10); ix++) {
+			Game_object *iobj;
 			if (gump) {
 				iobj = gump->find_object(ix, iy);
 			} else {
@@ -2016,19 +2012,12 @@ void Game_window::find_nearby_objects(Game_object_map_xy *mobjxy, int x, int y, 
 			}
 
 			if (iobj) {
-				int *arrXY = new int[2];
-				arrXY[0] = ix;
-				arrXY[1] = iy;
-				std::pair<Game_object_map_xy::iterator, bool> ret;
-
-				ret = mobjxy->insert(std::pair<Game_object *, int *>(iobj, arrXY));
-				if (ret.second == false)
-					delete [] arrXY;
+				mobjxy[iobj] = Position2d{ix, iy};
 			}
 		}
 	}
 }
-#endif
+
 static inline string Get_object_name(const Game_object *obj) {
 	if (obj == Game_window::get_instance()->get_main_actor()) {
 		if (GAME_BG)
@@ -2058,25 +2047,18 @@ void Game_window::show_items(
 	} else {            // Search rest of world.
 		obj = find_object(x, y);
 	}
-#ifdef __IPHONEOS__
-	Game_object_map_xy mobjxy;
-	find_nearby_objects(&mobjxy, x, y, gump);
-	if ((mobjxy.size() > 0) && (item_menu) && !Notebook_gump::get_instance()) {
-		// Make sure menu is visible on the screen
-		int w = Game_window::get_instance()->get_width();
-		int h = Game_window::get_instance()->get_height();
-		int left = w - 100;
-		int top = h - (int)mobjxy.size()*25;
-		if (left > x) left = x;
-		if (top > y) top = y;
 
-		Itemmenu_gump *itemgump = new Itemmenu_gump(&mobjxy, left, top);
-		Game_window::get_instance()->get_gump_man()->do_modal_gump(itemgump, Mouse::hand);
-		itemgump->postCloseActions();
-		delete itemgump;
-		obj = NULL;
+	if (item_menu){
+		Game_object_map_xy mobjxy;
+		find_nearby_objects(mobjxy, x, y, gump);
+		if (mobjxy.size() > 0 && Notebook_gump::get_instance() == nullptr) {
+			// Make sure menu is visible on the screen
+			Itemmenu_gump itemgump(&mobjxy, x, y);
+			Game_window::get_instance()->get_gump_man()->do_modal_gump(&itemgump, Mouse::hand);
+			obj = nullptr;
+		}
 	}
-#endif
+
 	// Map-editing?
 	if (obj && cheat.in_map_editor()) {
 		if (ctrl)       // Control?  Toggle.

@@ -166,6 +166,7 @@ GUMPS_OBJS= \
 	gumps/Gump_widget.o \
 	gumps/Gump_ToggleButton.o \
 	gumps/ShortcutBar_gump.o \
+	gumps/ItemMenu_gump.o \
 	gumps/Jawbone_gump.o \
 	gumps/misc_buttons.o \
 	gumps/Newfile_gump.o \

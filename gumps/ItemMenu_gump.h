@@ -16,51 +16,69 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef _IPHONE_GUMPS_H
-#define _IPHONE_GUMPS_H
-
-#ifdef __IPHONEOS__
-
-#include "gamewin.h"
-#include "../objs/objs.h"
+#ifndef ITEMMENU_GUMP_H
+#define ITEMMENU_GUMP_H
 
 #include "Modal_gump.h"
-#include <string>
-#include <array>
-#include <memory>
 
-using std::string;
+#include "gamewin.h"
+
+#include <memory>
+#include <vector>
 
 class Gump_button;
-typedef std::vector<Gump_button *> Gump_button_vector;
-typedef std::map<Game_object *, int *> Game_object_map_xy;
+class Game_object;
 
-
-enum ITEMMENU_ACTIONS { ITEMMENU_ACTION_NONE, ITEMMENU_ACTION_MENU, ITEMMENU_ACTION_USE, ITEMMENU_ACTION_PICKUP, ITEMMENU_ACTION_MOVE, ITEMMENU_ACTION_COUNT };
 class Itemmenu_gump : public Modal_gump {
 	UNREPLICATABLE_CLASS(Itemmenu_gump)
+	enum Actions {
+		no_action,
+		item_menu,
+		use_item,
+		pickup_item,
+		move_item
+	};
 public:
-	Gump_button_vector buttons;
-	Game_object_map_xy objects;
-	Game_object *objectSelected;
-	int objectSelectedClickXY[2];
-	int objectAction;
-
 	Itemmenu_gump(Game_object_map_xy *mobjxy, int cx, int cy);
 	Itemmenu_gump(Game_object *obj, int ox, int oy, int cx, int cy);
-	virtual ~Itemmenu_gump();
+	~Itemmenu_gump() override;
 
 	// Paint it and its contents.
-	virtual void paint();
-	virtual void close() {
-		done = 1;
+	void paint() override;
+	void close() override {
+		done = true;
 	}
 	// Handle events:
-	virtual bool mouse_down(int mx, int my, int button);
-	virtual bool mouse_up(int mx, int my, int button);
+	bool mouse_down(int mx, int my, int button) override;
+	bool mouse_up(int mx, int my, int button) override;
 
+	void select_object(Game_object* obj);
+	void set_use() {
+		objectAction = use_item;
+		close();
+	}
+	void set_pickup() {
+		objectAction = pickup_item;
+		close();
+	}
+	void set_move() {
+		objectAction = move_item;
+		close();
+	}
+	void cancel_menu() {
+		objectSelected = nullptr;
+		objectSelectedClickXY = {-1, -1};
+		close();
+	}
 	void postCloseActions();
 
+private:
+	void fix_position(int num_elements);
+	constexpr static const int button_spacing_y = 22;
+	std::vector<std::unique_ptr<Gump_button>> buttons;
+	Game_object_map_xy objects;
+	Game_object *objectSelected;
+	Position2d objectSelectedClickXY;
+	Actions objectAction;
 };
-#endif
 #endif

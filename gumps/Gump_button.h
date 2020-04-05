@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Gump_widget.h"
 
+#include <tuple>
+#include <type_traits>
+
 /*
  *  A pushable button on a gump:
  */
@@ -65,10 +68,43 @@ public:
 
 };
 
-template <typename Parent, typename Base>
+template <class Callable, class Tuple, size_t... Is>
+inline auto call(Callable&& func, Tuple&& args,
+                       std::index_sequence<Is...>) {
+	return func(std::get<Is>(args)...);
+}
+
+template <typename Parent, typename Base, typename... Args>
 class CallbackButtonBase : public Base {
 public:
+	using CallbackType = void (Parent::*)(Args...);
+	using CallbackParams = std::tuple<Args...>;
+
+	template <typename... Ts>
+	CallbackButtonBase(Parent* par, CallbackType&& callback, CallbackParams&& params, Ts&&... args)
+		: Base(par, std::forward<Ts>(args)...),
+		  parent(par), on_click(std::forward<CallbackType>(callback)),
+		  parameters(std::forward<CallbackParams>(params)) {}
+
+	bool activate(int button) override {
+		if (button != 1) return false;
+		call([this](Args... args) {
+				(parent->*on_click)(args...);
+			}, parameters, std::make_index_sequence<sizeof...(Args)>{});
+		return true;
+	}
+
+private:
+	Parent* parent;
+	CallbackType on_click;
+	CallbackParams parameters;
+};
+
+template <typename Parent, typename Base>
+class CallbackButtonBase<Parent, Base> : public Base {
+public:
 	using CallbackType = void (Parent::*)();
+	using CallbackParams = std::tuple<>;
 
 	template <typename... Ts>
 	CallbackButtonBase(Parent* par, CallbackType&& callback, Ts&&... args)
@@ -86,7 +122,7 @@ private:
 	CallbackType on_click;
 };
 
-template <typename Parent>
-using CallbackButton = CallbackButtonBase<Parent, Gump_button>;
+template <typename Parent, typename... Args>
+using CallbackButton = CallbackButtonBase<Parent, Gump_button, Args...>;
 
 #endif

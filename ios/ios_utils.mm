@@ -118,7 +118,7 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 
 	std::string str;
 	float left = rcScreen.size.width - sizeDpad.width - margin;
-	config->value("config/iphoneos/dpad_location", str, "right");
+	config->value("config/touch/dpad_location", str, "right");
 	if (str == "no") {
 		return CGRectZero;
 	} else if (str == "left") {

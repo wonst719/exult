@@ -172,14 +172,14 @@ iphoneOptions_gump::~iphoneOptions_gump() {
 
 void iphoneOptions_gump::save_settings() {
 	gwin->set_item_menu(item_menu != 0);
-	config->set("config/iphoneos/item_menu",
+	config->set("config/touch/item_menu",
 	            item_menu ? "yes" : "no", false);
 
 	gwin->set_dpad_location(dpad_location);
-	config->set("config/iphoneos/dpad_location", dpad_texts[dpad_location], false);
+	config->set("config/touch/dpad_location", dpad_texts[dpad_location], false);
 
 	gwin->set_touch_pathfind(touch_pathfind != 0);
-	config->set("config/iphoneos/touch_pathfind",
+	config->set("config/touch/touch_pathfind",
 	            touch_pathfind ? "yes" : "no", false);
 
 	config->write_back();
