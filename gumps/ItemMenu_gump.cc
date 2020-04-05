@@ -77,9 +77,9 @@ Itemmenu_gump::Itemmenu_gump(Game_object_map_xy *mobjxy, int cx, int cy)
 		Game_object *o = it->first;
 		objects[o] = it->second;
 		buttons.push_back(std::make_unique<Itemmenu_object>(this, &Itemmenu_gump::select_object,
-		                                                    ObjectParams{o}, o->get_name().c_str(), 10, btop));
+		                                                    ObjectParams{o}, o->get_name().c_str(), 10, btop, 59, 20));
 	}
-	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::cancel_menu, "Cancel", 10, btop));
+	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::cancel_menu, "Cancel", 10, btop, 59, 20));
 	fix_position(buttons.size());
 }
 
@@ -89,13 +89,13 @@ Itemmenu_gump::Itemmenu_gump(Game_object *obj, int ox, int oy, int cx, int cy)
 	objectAction = item_menu;
 	objectSelectedClickXY = {ox, oy};
 	int btop = 0;
-	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_use, "Use", 10, btop));
+	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_use, "Use", 10, btop, 59, 20));
 	btop += button_spacing_y;
-	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_pickup, "Pickup", 10, btop));
+	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_pickup, "Pickup", 10, btop, 59, 20));
 	btop += button_spacing_y;
-	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_move, "Move", 10, btop));
+	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_move, "Move", 10, btop, 59, 20));
 	btop += button_spacing_y;
-	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::cancel_menu, "Cancel", 10, btop));
+	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::cancel_menu, "Cancel", 10, btop, 59, 20));
 	fix_position(buttons.size());
 }
 

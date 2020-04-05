@@ -20,8 +20,6 @@
 #  include <config.h>
 #endif
 
-#ifdef __IPHONEOS__
-
 #include <iostream>
 #include <cstring>
 
@@ -31,7 +29,7 @@
 #include "Configuration.h"
 #include "Gump_button.h"
 #include "Gump_ToggleButton.h"
-#include "iphoneOptions_gump.h"
+#include "InputOptions_gump.h"
 #include "exult.h"
 #include "exult_flx.h"
 #include "gamewin.h"
@@ -50,71 +48,21 @@ static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
 
 static const char *dpad_texts[3] = {"no", "left", "right"};
-static int num_dpad_texts = 3;
 
-class iphoneOptions_button : public Text_button {
-public:
-	iphoneOptions_button(Gump *par, string text, int px, int py)
-		: Text_button(par, text, px, py, 59, 11)
-	{ }
-	// What to do when 'clicked':
-	virtual bool activate(int button) {
-		if (button != 1) return false;
+using InputOptions_button = CallbackTextButton<InputOptions_gump>;
+using InputTextToggle = CallbackToggleTextButton<InputOptions_gump>;
+using InputEnabledToggle = CallbackEnabledButton<InputOptions_gump>;
 
-		if (text == canceltext) {
-			reinterpret_cast<iphoneOptions_gump *>(parent)->cancel();
-		} else if (text == oktext) {
-			reinterpret_cast<iphoneOptions_gump *>(parent)->close();
-		}
-		return true;
-	}
-};
-
-class iphoneTextToggle : public Gump_ToggleTextButton {
-public:
-	iphoneTextToggle(Gump *par, std::string *s, int px, int py, int width,
-	               int selectionnum, int numsel)
-		: Gump_ToggleTextButton(par, s, selectionnum, numsel, px, py, width)
-	{ }
-
-	friend class iphoneOptions_gump;
-	virtual void toggle(int state) {
-		reinterpret_cast<iphoneOptions_gump *>(parent)->toggle(this, state);
-	}
-};
-
-class iphoneEnabledToggle : public Enabled_button {
-public:
-	iphoneEnabledToggle(Gump *par, int px, int py, int width,
-	                  int selectionnum)
-		: Enabled_button(par, selectionnum, px, py, width)
-	{ }
-
-	friend class iphoneOptions_gump;
-	virtual void toggle(int state) {
-		reinterpret_cast<iphoneOptions_gump *>(parent)->toggle(this, state);
-	}
-};
-
-void iphoneOptions_gump::close() {
+void InputOptions_gump::close() {
 	save_settings();
-	done = 1;
+	done = true;
 }
 
-void iphoneOptions_gump::cancel() {
-	done = 1;
+void InputOptions_gump::cancel() {
+	done = true;
 }
 
-void iphoneOptions_gump::toggle(Gump_button *btn, int state) {
-	if (btn == buttons[id_item_menu])
-		item_menu = state;
-	else if (btn == buttons[id_dpad_location])
-		dpad_location = state;
-	else if (btn == buttons[id_touch_pathfind])
-		touch_pathfind = state;
-}
-
-void iphoneOptions_gump::build_buttons() {
+void InputOptions_gump::build_buttons() {
 	string *yesNo1 = new string[2]; // TODO:need to make this like enabled
 	yesNo1[0] = "No";              // if I am going to add much more
 	yesNo1[1] = "Yes";
@@ -127,50 +75,52 @@ void iphoneOptions_gump::build_buttons() {
 	yesNo3[0] = "No";
 	yesNo3[1] = "Yes";
 
-	string *dpad_text = new string[3];
-	dpad_text[0] = "Disabled";
-	dpad_text[1] = "Left";
-	dpad_text[2] = "Right";
+	string *dpad_text;
+	int num_dpads;
+	if (touchui != nullptr) {
+		num_dpads = 3;
+		dpad_text = new string[num_dpads];
+		dpad_text[0] = "Disabled";
+		dpad_text[1] = "Left";
+		dpad_text[2] = "Right";
+	} else {
+		num_dpads = 1;
+		dpad_text = new string[num_dpads];
+		dpad_text[0] = "Disabled";
+	}
 
-	buttons[id_item_menu] = new iphoneEnabledToggle(this, colx[4], rowy[0],
-	        59, item_menu);
+	buttons[id_item_menu] = std::make_unique<InputEnabledToggle>(this, &InputOptions_gump::toggle_item_menu,
+	        item_menu, colx[4], rowy[0], 59);
 
-	buttons[id_dpad_location] = new iphoneTextToggle(this, dpad_text, colx[4], rowy[1],
-		59, dpad_location, num_dpad_texts);
+	buttons[id_dpad_location] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_dpad_location,
+	        dpad_text, dpad_location, num_dpads, colx[4], rowy[1], 59);
 
-	buttons[id_touch_pathfind] = new iphoneEnabledToggle(this, colx[4], rowy[2],
-		59, touch_pathfind);
+	buttons[id_touch_pathfind] = std::make_unique<InputEnabledToggle>(this, &InputOptions_gump::toggle_touch_pathfind,
+	        touch_pathfind, colx[4], rowy[2], 59);
 	// Ok
-	buttons[id_ok] = new iphoneOptions_button(this, oktext, colx[0], rowy[12]);
+	buttons[id_ok] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::close,
+	        oktext, colx[0], rowy[12], 59, 11);
 	// Cancel
-	buttons[id_cancel] = new iphoneOptions_button(this, canceltext, colx[4], rowy[12]);
+	buttons[id_cancel] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::cancel,
+	        canceltext, colx[4], rowy[12], 59, 11);
 }
 
-void iphoneOptions_gump::load_settings() {
+void InputOptions_gump::load_settings() {
 	//string yn;
 	item_menu = gwin->get_item_menu();
 	dpad_location = gwin->get_dpad_location();
 	touch_pathfind = gwin->get_touch_pathfind();
 }
 
-iphoneOptions_gump::iphoneOptions_gump()
-	: Modal_gump(0, EXULT_FLX_GAMEPLAYOPTIONS_SHP, SF_EXULT_FLX) {
+InputOptions_gump::InputOptions_gump()
+	: Modal_gump(nullptr, EXULT_FLX_GAMEPLAYOPTIONS_SHP, SF_EXULT_FLX) {
 	set_object_area(Rectangle(0, 0, 0, 0), 8, 162);//++++++ ???
-
-	for (int i = id_first; i < id_count; i++)
-		buttons[i] = 0;
 
 	load_settings();
 	build_buttons();
 }
 
-iphoneOptions_gump::~iphoneOptions_gump() {
-	for (int i = id_first; i < id_count; i++)
-		if (buttons[i])
-			delete buttons[i];
-}
-
-void iphoneOptions_gump::save_settings() {
+void InputOptions_gump::save_settings() {
 	gwin->set_item_menu(item_menu != 0);
 	config->set("config/touch/item_menu",
 	            item_menu ? "yes" : "no", false);
@@ -184,14 +134,18 @@ void iphoneOptions_gump::save_settings() {
 
 	config->write_back();
 
-	touchui->onDpadLocationChanged();
+	if (touchui != nullptr) {
+		touchui->onDpadLocationChanged();
+	}
 }
 
-void iphoneOptions_gump::paint() {
+void InputOptions_gump::paint() {
 	Gump::paint();
-	for (int i = id_first; i < id_count; i++)
-		if (buttons[i])
-			buttons[i]->paint();
+	for (auto& btn : buttons) {
+		if (btn) {
+			btn->paint();
+		}
+	}
 	Font *font = fontManager.get_font("SMALL_BLACK_FONT");
 	Image_window8 *iwin = gwin->get_win();
 	font->paint_text(iwin->get_ib8(), "Item helper menu:", x + colx[0], y + rowy[0] + 1);
@@ -201,43 +155,52 @@ void iphoneOptions_gump::paint() {
 	gwin->set_painted();
 }
 
-bool iphoneOptions_gump::mouse_down(int mx, int my, int button) {
+bool InputOptions_gump::mouse_down(int mx, int my, int button) {
 	// Only left and right buttons
-	if (button != 1 && button != 3) return false;
+	if (button != 1 && button != 3) {
+		return false;
+	}
 
 	// We'll eat the mouse down if we've already got a button down
-	if (pushed) return true;
+	if (pushed) {
+		return true;
+	}
 
 	// First try checkmark
 	pushed = Gump::on_button(mx, my);
 
 	// Try buttons at bottom.
 	if (!pushed) {
-		for (int i = id_first; i < id_count; i++) {
-			if (buttons[i] && buttons[i]->on_button(mx, my)) {
-				pushed = buttons[i];
+		for (auto& btn : buttons) {
+			if (btn && btn->on_button(mx, my)) {
+				pushed = btn.get();
 				break;
 			}
 		}
 	}
 
-	if (pushed && !pushed->push(button))            // On a button?
-		pushed = 0;
-
-	return button == 1 || pushed != 0;
+	// On a button?
+	if (pushed && !pushed->push(button)) {
+		pushed = nullptr;
+	}
+	return button == 1 || pushed != nullptr;
 }
 
-bool iphoneOptions_gump::mouse_up(int mx, int my, int button) {
+bool InputOptions_gump::mouse_up(int mx, int my, int button) {
 	// Not Pushing a button?
-	if (!pushed) return false;
+	if (!pushed) {
+		return false;
+	}
 
-	if (pushed->get_pushed() != button) return button == 1;
+	if (pushed->get_pushed() != button) {
+		return button == 1;
+	}
 
 	bool res = false;
 	pushed->unpush(button);
-	if (pushed->on_button(mx, my))
+	if (pushed->on_button(mx, my)) {
 		res = pushed->activate(button);
-	pushed = 0;
+	}
+	pushed = nullptr;
 	return res;
 }
-#endif

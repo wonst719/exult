@@ -16,10 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef _IPHONEOPTIONS_GUMP_H
-#define _IPHONEOPTIONS_GUMP_H
-
-#ifdef __IPHONEOS__
+#ifndef INPUTOPTIONS_GUMP_H
+#define INPUTOPTIONS_GUMP_H
 
 #include "Modal_gump.h"
 #include <string>
@@ -28,14 +26,38 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Gump_button;
 
-class iphoneOptions_gump : public Modal_gump {
-	UNREPLICATABLE_CLASS(iphoneOptions_gump);
+class InputOptions_gump : public Modal_gump {
+public:
+	UNREPLICATABLE_CLASS(InputOptions_gump)
+	InputOptions_gump();
+
+	// Paint it and its contents.
+	void paint() override;
+	void close() override;
+
+	// Handle events:
+	bool mouse_down(int mx, int my, int button) override;
+	bool mouse_up(int mx, int my, int button) override;
+
+	void build_buttons();
+
+	void load_settings();
+	void save_settings();
+	void cancel();
+
+	void toggle_item_menu(int state) {
+		item_menu = state;
+	}
+
+	void toggle_dpad_location(int state) {
+		dpad_location = state;
+	}
+
+	void toggle_touch_pathfind(int state) {
+		touch_pathfind = state;
+	}
 
 private:
-	bool item_menu;
-	int dpad_location;
-	bool touch_pathfind;
-
 	enum button_ids {
 	    id_first = 0,
 	    id_ok = id_first,
@@ -45,27 +67,11 @@ private:
 	    id_touch_pathfind,
 	    id_count
 	};
-	Gump_button *buttons[id_count];
+	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
 
-public:
-	iphoneOptions_gump();
-	virtual ~iphoneOptions_gump();
-
-	// Paint it and its contents.
-	virtual void paint();
-	virtual void close();
-
-	// Handle events:
-	virtual bool mouse_down(int mx, int my, int button);
-	virtual bool mouse_up(int mx, int my, int button);
-
-	void toggle(Gump_button *btn, int state);
-	void build_buttons();
-
-	void load_settings();
-	void save_settings();
-	void cancel();
+	bool item_menu;
+	int dpad_location;
+	bool touch_pathfind;
 };
 
-#endif
 #endif
