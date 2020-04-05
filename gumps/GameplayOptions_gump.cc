@@ -64,7 +64,6 @@ static string framestring(int fr) {
 
 #ifndef __IPHONEOS__
 static const char *pathfind_texts[3] = {"no", "single", "double"};
-static int num_pathfind_texts = 3;
 #endif
 
 using GameplayOptions_button = CallbackTextButton<GameplayOptions_gump>;
@@ -81,48 +80,19 @@ void GameplayOptions_gump::cancel() {
 }
 
 void GameplayOptions_gump::build_buttons() {
-	std::string *stats = new std::string[4];
-	stats[0] = "Disabled";
-	stats[1] = "Left";
-	stats[2] = "Middle";
-	stats[3] = "Right";
-
-	std::string *textbgcolor = new std::string[18];
-	textbgcolor[0] = "Disabled";
-	textbgcolor[1] = "Solid Light Gray";
-	textbgcolor[2] = "Dark Purple";
-	textbgcolor[3] = "Bright Yellow";
-	textbgcolor[4] = "Light Blue";
-	textbgcolor[5] = "Dark Green";
-	textbgcolor[6] = "Dark Red";
-	textbgcolor[7] = "Purple";
-	textbgcolor[8] = "Orange";
-	textbgcolor[9] = "Light Gray";
-	textbgcolor[10] = "Green";
-	textbgcolor[11] = "Yellow";
-	textbgcolor[12] = "Pale Blue";
-	textbgcolor[13] = "Dark Green";
-	textbgcolor[14] = "Red";
-	textbgcolor[15] = "Bright White";
-	textbgcolor[16] = "Dark gray";
-	textbgcolor[17] = "White";
-
-	std::string *smooth_text = new std::string[5];
-	smooth_text[0] = "Disabled";
-	smooth_text[1] = "25%";
-	smooth_text[2] = "50%";
-	smooth_text[3] = "75%";
-	smooth_text[4] = "100%";
-
-	std::string *pathfind_text = new std::string[3];
-	pathfind_text[0] = "Disabled";
-	pathfind_text[1] = "Single";
-	pathfind_text[2] = "Double";
-
+	std::vector<std::string> stats = {"Disabled", "Left", "Middle", "Right"};
 	buttons[id_facestats] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_facestats,
-	        stats, facestats, 4, colx[3], rowy[0], 59);
+	        std::move(stats), facestats, colx[3], rowy[0], 59);
+
+	std::vector<std::string> textbgcolor = {
+		"Disabled",
+		"Solid Light Gray", "Dark Purple", "Bright Yellow", "Light Blue",
+		"Dark Green", "Dark Red", "Purple", "Orange", "Light Gray", "Green",
+		"Yellow", "Pale Blue", "Dark Green", "Red", "Bright White",
+		"Dark gray", "White"
+	};
 	buttons[id_text_bg] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_text_bg,
-	        textbgcolor, text_bg, 18, colx[3] - 41, rowy[1], 100);
+	        std::move(textbgcolor), text_bg, colx[3] - 41, rowy[1], 100);
 	if (sman->can_use_paperdolls() && (GAME_BG ||
 	                                   Game::get_game_type() == EXULT_DEVEL_GAME))
 		buttons[id_paperdolls] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_paperdolls,
@@ -138,17 +108,21 @@ void GameplayOptions_gump::build_buttons() {
 #ifndef __IPHONEOS__
 	buttons[id_rightclick_close] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_rightclick_close,
 	        rightclick_close, colx[3], rowy[6], 59);
+
+	std::vector<std::string> pathfind_text = {"Disabled", "Single", "Double"};
 	buttons[id_right_pathfind] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_right_pathfind,
-	        pathfind_text, right_pathfind, num_pathfind_texts, colx[3], rowy[7], 59);
+	        std::move(pathfind_text), right_pathfind, colx[3], rowy[7], 59);
 #endif
 	buttons[id_gumps_pause] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_gumps_pause,
 	        gumps_pause, colx[3], rowy[8], 59);
 	buttons[id_cheats] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_cheats,
 	        cheats, colx[3], rowy[9], 59);
 	buttons[id_frames] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_frames,
-	        frametext, frames, num_framerates, colx[3], rowy[10], 59);
+	        frametext, frames, colx[3], rowy[10], 59);
+
+	std::vector<std::string> smooth_text = {"Disabled", "25%", "50%", "75%", "100%"};
 	buttons[id_smooth_scrolling] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_smooth_scrolling,
-	        smooth_text, smooth_scrolling, 5, colx[3], rowy[2], 59);
+	        std::move(smooth_text), smooth_scrolling, colx[3], rowy[2], 59);
 }
 
 void GameplayOptions_gump::load_settings() {
@@ -170,25 +144,24 @@ void GameplayOptions_gump::load_settings() {
 	text_bg = gwin->get_text_bg() + 1;
 	gumps_pause = !gumpman->gumps_dont_pause_game();
 	int realframes = 1000 / gwin->get_std_delay();
-	int i;
 
 	frames = -1;
 	framerates[num_default_rates] = realframes;
-	for (i = 0; i < num_default_rates; i++) {
+	for (int i = 0; i < num_default_rates; i++) {
 		if (realframes == framerates[i]) {
 			frames = i;
 			break;
 		}
 	}
 
-	num_framerates = num_default_rates;
+	int num_framerates = num_default_rates;
 	if (frames == -1) {
 		num_framerates++;
 		frames = num_default_rates;
 	}
-	frametext = new string[num_framerates];
-	for (i = 0; i < num_framerates; i++) {
-		frametext[i] = framestring(framerates[i]);
+	frametext.clear();
+	for (int i = 0; i < num_framerates; i++) {
+		frametext.emplace_back(framestring(framerates[i]));
 	}
 	smooth_scrolling = gwin->is_lerping_enabled() / 25;
 }

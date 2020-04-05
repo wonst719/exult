@@ -43,8 +43,7 @@ private:
 	int right_pathfind;
 	int gumps_pause;
 
-	std::string *frametext;
-	int num_framerates;
+	std::vector<std::string> frametext;
 	int smooth_scrolling;
 
 	enum button_ids {

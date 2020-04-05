@@ -100,21 +100,17 @@ void AudioOptions_gump::rebuild_buttons() {
 
 	if (!audio_enabled) return;
 
-	std::string *sampleRates = new std::string[5];
-	sampleRates[0] = "11025";
-	sampleRates[1] = "22050";
-	sampleRates[2] = "44100";
-	sampleRates[3] = "48000";
-	sampleRates[4] = sample_rate_str;
+	std::vector<std::string> sampleRates = {"11025", "22050", "44100", "48000"};
+	if (std::find(sampleRates.cbegin(), sampleRates.cend(), sample_rate_str) != sampleRates.cend()) {
+		sampleRates.push_back(sample_rate_str);
+	}
 
 	buttons[id_sample_rate] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_sample_rate,
-	        sampleRates, sample_rate, num_sample_rates, colx[2], rowy[1], 59);
+	        std::move(sampleRates), sample_rate, colx[2], rowy[1], 59);
 
-	std::string *speaker_types = new std::string[2];
-	speaker_types[0] = "Mono";
-	speaker_types[1] = "Stereo";
+	std::vector<std::string> speaker_types = {"Mono", "Stereo"};
 	buttons[id_speaker_type] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_speaker_type,
-	        speaker_types, speaker_type, 2, colx[2], rowy[2], 59);
+	        std::move(speaker_types), speaker_type, colx[2], rowy[2], 59);
 
 	// music on/off
 	buttons[id_music_enabled] = std::make_unique<AudioEnabledToggle>(this, &AudioOptions_gump::toggle_music_enabled,
@@ -123,22 +119,17 @@ void AudioOptions_gump::rebuild_buttons() {
 		rebuild_midi_buttons();
 
 	// sfx on/off
-	std::string *sfx_options = new std::string[nsfxopts];
-	sfx_options[0] = "Disabled";
-	int i = 1;
-	if (have_digital_sfx())
-#ifndef ENABLE_MIDISFX
-		sfx_options[i++] = "Enabled";
-#else
-		sfx_options[i++] = "Digital";
+	std::vector<std::string> sfx_options = {"Disabled", "Digital"};
+#ifdef ENABLE_MIDISFX
 	midi_state = -1;
 	if (have_midi_pack) {
-		sfx_options[i++] = "Midi";
+		sfx_options.emplace_back("Midi");
 		midi_state = i - 1;
 	}
 #endif
+
 	buttons[id_sfx_enabled] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_sfx_enabled,
-	        sfx_options, sfx_enabled, nsfxopts, colx[2], rowy[10], 59);
+	        std::move(sfx_options), sfx_enabled, colx[2], rowy[10], 59);
 	if (sfx_enabled)
 		rebuild_sfx_buttons();
 
@@ -159,15 +150,14 @@ void AudioOptions_gump::rebuild_midi_buttons() {
 	        midi_ogg_enabled, colx[2], rowy[5], 59);
 
 	unsigned int num_midi_drivers = MidiDriver::getDriverCount();
-	std::string *midi_drivertext = new std::string[num_midi_drivers + 1];
-	unsigned int i;
-	for (i = 0; i < num_midi_drivers; i++)
-		midi_drivertext[i] = MidiDriver::getDriverName(i);
-	midi_drivertext[i] = "Default";
+	std::vector<std::string> midi_drivertext;
+	for (unsigned int i = 0; i < num_midi_drivers; i++)
+		midi_drivertext.emplace_back(MidiDriver::getDriverName(i));
+	midi_drivertext.emplace_back("Default");
 
 	// midi driver
 	buttons[id_midi_driver] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_midi_driver,
-	        midi_drivertext, midi_driver, num_midi_drivers + 1, colx[2] - 15, rowy[6], 74);
+	        std::move(midi_drivertext), midi_driver, colx[2] - 15, rowy[6], 74);
 
 	// looping on/off
 	buttons[id_music_looping] = std::make_unique<AudioEnabledToggle>(this, &AudioOptions_gump::toggle_music_looping,
@@ -184,26 +174,23 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 	if (!sfx_enabled)
 		return;
 	else if (sfx_enabled == 1 && have_digital_sfx() && !gwin->is_in_exult_menu()) {
-		std::string *sfx_digitalpacks = new std::string[nsfxpacks];
-		int i = 0;
+		std::vector<std::string> sfx_digitalpacks;
 		if (have_roland_pack)
-			sfx_digitalpacks[i++] = "Roland MT-32";
+			sfx_digitalpacks.emplace_back("Roland MT-32");
 		if (have_blaster_pack)
-			sfx_digitalpacks[i++] = "Sound Blaster";
+			sfx_digitalpacks.emplace_back("Sound Blaster");
 		if (have_custom_pack)
-			sfx_digitalpacks[i++] = "Custom";
+			sfx_digitalpacks.emplace_back("Custom");
 		buttons[id_sfx_pack] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_sfx_pack,
-		        sfx_digitalpacks, sfx_package, nsfxpacks, colx[2] - 33, rowy[11], 92);
+		        std::move(sfx_digitalpacks), sfx_package, colx[2] - 33, rowy[11], 92);
 	}
 #ifdef ENABLE_MIDISFX
 	else if (sfx_enabled == midi_state) {
-		std::string *sfx_conversiontext = new std::string[2];
-		sfx_conversiontext[0] = "None";
-		sfx_conversiontext[1] = "GS";
+		std::vector<std::string> sfx_conversiontext = {"None", "GS"};
 
 		// sfx conversion
 		buttons[id_sfx_pack] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_sfx_pack,
-		        sfx_conversiontext, sfx_conversion == 5 ? 1 : 0, 2, colx[2], rowy[11], 59);
+		        std::move(sfx_conversiontext), sfx_conversion == 5 ? 1 : 0, colx[2], rowy[11], 59);
 	}
 #endif
 }
@@ -221,31 +208,24 @@ void AudioOptions_gump::rebuild_mididriveroption_buttons() {
 			string_size = 4;
 		}
 #endif
-		std::string *midi_conversiontext = new std::string[string_size];
-		midi_conversiontext[0] = std::string("Fake MT32");
-		midi_conversiontext[1] = std::string("GM");
-		midi_conversiontext[2] = std::string("GS");
-		midi_conversiontext[3] = std::string("GS127");
-		if (string_size == 5)
-			midi_conversiontext[4] = std::string("MT32");
+		std::vector<std::string> midi_conversiontext = {"Fake MT32", "GM", "GS", "GS127"};
+		if (string_size == 5) {
+			midi_conversiontext.emplace_back("MT32");
+		}
 
 		// midi conversion
 		buttons[id_midi_conv] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_midi_conv,
-		        midi_conversiontext, midi_conversion, string_size, colx[2] - 7, rowy[7], 66);
+		        std::move(midi_conversiontext), midi_conversion, colx[2] - 7, rowy[7], 66);
 	} else {
 		buttons[id_midi_conv].reset();
 	}
 
 	if (s != "FMOpl" && s != "Disabled") {
-		std::string *midi_reverbchorustext = new std::string[4];
-		midi_reverbchorustext[0] = std::string("Disabled");
-		midi_reverbchorustext[1] = std::string("Reverb");
-		midi_reverbchorustext[2] = std::string("Chorus");
-		midi_reverbchorustext[3] = std::string("Both");
+		std::vector<std::string> midi_reverbchorustext = {"Disabled", "Reverb", "Chorus", "Both"};
 
 		// reverb/chorus combo
 		buttons[id_midi_effects] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_midi_effects,
-		        midi_reverbchorustext, midi_reverb_chorus, 4, colx[2], rowy[8], 59);
+		        std::move(midi_reverbchorustext), midi_reverb_chorus, colx[2], rowy[8], 59);
 	} else {
 		buttons[id_midi_effects].reset();
 	}

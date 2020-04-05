@@ -63,37 +63,17 @@ void InputOptions_gump::cancel() {
 }
 
 void InputOptions_gump::build_buttons() {
-	string *yesNo1 = new string[2]; // TODO:need to make this like enabled
-	yesNo1[0] = "No";              // if I am going to add much more
-	yesNo1[1] = "Yes";
-
-	string *yesNo2 = new string[2];
-	yesNo2[0] = "No";
-	yesNo2[1] = "Yes";
-
-	string *yesNo3 = new string[2];
-	yesNo3[0] = "No";
-	yesNo3[1] = "Yes";
-
-	string *dpad_text;
-	int num_dpads;
+	std::vector<string> dpad_text = {"Disabled"};
 	if (touchui != nullptr) {
-		num_dpads = 3;
-		dpad_text = new string[num_dpads];
-		dpad_text[0] = "Disabled";
-		dpad_text[1] = "Left";
-		dpad_text[2] = "Right";
-	} else {
-		num_dpads = 1;
-		dpad_text = new string[num_dpads];
-		dpad_text[0] = "Disabled";
+		dpad_text.emplace_back("Left");
+		dpad_text.emplace_back("Right");
 	}
 
 	buttons[id_item_menu] = std::make_unique<InputEnabledToggle>(this, &InputOptions_gump::toggle_item_menu,
 	        item_menu, colx[4], rowy[0], 59);
 
 	buttons[id_dpad_location] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_dpad_location,
-	        dpad_text, dpad_location, num_dpads, colx[4], rowy[1], 59);
+	        dpad_text, dpad_location, colx[4], rowy[1], 59);
 
 	buttons[id_touch_pathfind] = std::make_unique<InputEnabledToggle>(this, &InputOptions_gump::toggle_touch_pathfind,
 	        touch_pathfind, colx[4], rowy[2], 59);

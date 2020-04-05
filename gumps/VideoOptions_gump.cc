@@ -63,10 +63,26 @@ int VideoOptions_gump::num_game_resolutions = 0;
 
 Image_window::FillMode VideoOptions_gump::startup_fill_mode = static_cast<Image_window::FillMode>(0);
 
+static inline uint32 make_resolution(uint16 width, uint16 height) {
+	return (uint32(width) << 16) | uint32(height);
+}
+
+static inline uint16 get_width(uint32 resolution) {
+	return resolution >> 16;
+}
+
+static inline uint16 get_height(uint32 resolution) {
+	return (resolution & 0xffffu);
+}
+
 static string resolutionstring(int w, int h) {
 	char buf[100];
 	sprintf(buf, "%ix%i", w, h);
 	return buf;
+}
+
+static string resolutionstring(uint32 resolution) {
+	return resolutionstring(get_width(resolution), get_height(resolution));
 }
 
 using VideoOptions_button = CallbackTextButton<VideoOptions_gump>;
@@ -92,69 +108,52 @@ void VideoOptions_gump::rebuild_buttons() {
 
 	// the text arrays are freed by the destructors of the buttons
 
-	std::string *scalers = new std::string[Image_window::NumScalers];
-	for (int i = 0; i < Image_window::NumScalers; i++)
-		scalers[i] = Image_window::get_name_for_scaler(i);
-
+	std::vector<std::string> scalers;
+	for (int i = 0; i < Image_window::NumScalers; i++) {
+		scalers.emplace_back(Image_window::get_name_for_scaler(i));
+	}
 	buttons[id_scaler] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_scaler,
-	        scalers, scaler, Image_window::NumScalers, colx[2], rowy[3], 74);
+	        std::move(scalers), scaler, colx[2], rowy[3], 74);
 
+	std::vector<std::string> game_restext = {"Auto", "320x200"};
 #ifdef __IPHONEOS__
-	//more Game Area modes on iOS devices
-	// because editing the cfg is not as easy
-	// !!!FIXME!!! maybe we could add some for every Exult port?
-	std::string *game_restext = new std::string[5];
-#else
-	std::string *game_restext = new std::string[3];
+	game_restext.emplace_back("400x250");
+	game_restext.emplace_back("480x300");
 #endif
-	game_restext[0] = "Auto";
-	game_restext[1] = "320x200";
-#ifdef __IPHONEOS__
-	game_restext[2] = "400x250";
-	game_restext[3] = "480x300";
-	game_restext[4] = resolutionstring(game_resolutions[2] >> 16, game_resolutions[2] & 0xFFFF);
-#else
-	game_restext[2] = resolutionstring(game_resolutions[2] >> 16, game_resolutions[2] & 0xFFFF);
-#endif
+	game_restext.emplace_back(resolutionstring(game_resolutions[2]));
 
 	buttons[id_game_resolution] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_game_resolution,
-	        game_restext, game_resolution, num_game_resolutions, colx[2], rowy[6], 74);
+	        std::move(game_restext), game_resolution, colx[2], rowy[6], 74);
 
-	std::string *fill_scaler_text = new std::string[2];
-	fill_scaler_text[0] = "Point";
-	fill_scaler_text[1] = "Bilinear";
+	std::vector<std::string> fill_scaler_text = {"Point", "Bilinear"};
 	buttons[id_fill_scaler] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_fill_scaler,
-	        fill_scaler_text, fill_scaler, 2 , colx[2], rowy[7], 74);
+	        std::move(fill_scaler_text), fill_scaler, colx[2], rowy[7], 74);
 
 	int sel_fill_mode;
 	has_ac = false;
 
-	if (fill_mode == Image_window::Fill)
+	if (fill_mode == Image_window::Fill) {
 		sel_fill_mode = 0;
-	else if (fill_mode == Image_window::Fit)
+	} else if (fill_mode == Image_window::Fit) {
 		sel_fill_mode = 1;
-	else if (fill_mode == Image_window::AspectCorrectFit) {
+	} else if (fill_mode == Image_window::AspectCorrectFit) {
 		sel_fill_mode = 1;
 		has_ac = true;
-	} else if (fill_mode == Image_window::Centre)
+	} else if (fill_mode == Image_window::Centre) {
 		sel_fill_mode = 2;
-	else if (fill_mode == Image_window::AspectCorrectCentre) {
+	} else if (fill_mode == Image_window::AspectCorrectCentre) {
 		sel_fill_mode = 2;
 		has_ac = true;
-	} else
+	} else {
 		sel_fill_mode = 3;
-
-	int num_fill_modes = 3;
-	if (startup_fill_mode > Image_window::AspectCorrectCentre) num_fill_modes = 4;
-
-	std::string *fill_mode_text = new std::string[4];
-	fill_mode_text[0] = "Fill";
-	fill_mode_text[1] = "Fit";
-	fill_mode_text[2] = "Centre";
-	fill_mode_text[3] = "Custom";
+	}
+	std::vector<std::string> fill_mode_text = {"Fill", "Fit", "Centre"};
+	if (startup_fill_mode > Image_window::AspectCorrectCentre) {
+		fill_mode_text.emplace_back("Custom");
+	}
 
 	buttons[id_fill_mode] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_fill_mode,
-	        fill_mode_text, sel_fill_mode, num_fill_modes, colx[2], rowy[8], 74);
+	        std::move(fill_mode_text), sel_fill_mode, colx[2], rowy[8], 74);
 
 	rebuild_dynamic_buttons();
 }
@@ -172,25 +171,26 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 		num_resolutions = VideoOptions_gump::num_resolutions;
 		resolutions = VideoOptions_gump::resolutions;
 		if (!gwin->get_win()->is_fullscreen())
-			current_res = (gwin->get_win()->get_display_width() << 16) | (gwin->get_win()->get_display_height());
+			current_res = make_resolution(gwin->get_win()->get_display_width(), gwin->get_win()->get_display_height());
 	} else {
 		num_resolutions = VideoOptions_gump::num_win_resolutions;
 		resolutions = VideoOptions_gump::win_resolutions;
-		current_res = (gwin->get_win()->get_display_width() << 16) | (gwin->get_win()->get_display_height());
+		current_res = make_resolution(gwin->get_win()->get_display_width(), gwin->get_win()->get_display_height());
 	}
 
 	int selected_res = 0;
-	std::string *restext = new std::string[num_resolutions + 1];
+	std::vector<std::string> restext;
 	for (int i = 0; i < num_resolutions; i++) {
-		int rw = resolutions[i] >> 16;
-		int rh = resolutions[i] & 0xFFFF;
-		restext[i] = resolutionstring(rw, rh);
-		if (resolutions[i] <= resolution && resolutions[selected_res] < resolutions[i])
+		restext.emplace_back(resolutionstring(resolutions[i]));
+		if (resolutions[i] <= resolution && resolutions[selected_res] < resolutions[i]) {
 			selected_res = i;
-		if (resolutions[i] == current_res) current_res = 0;
+		}
+		if (resolutions[i] == current_res) {
+			current_res = 0;
+		}
 	}
-	if (current_res) {
-		restext[num_resolutions] = resolutionstring(current_res >> 16, current_res & 0xFFFF);
+	if (current_res != 0) {
+		restext.emplace_back(resolutionstring(current_res));
 
 		if (resolutions[num_resolutions] <= resolution && resolutions[selected_res] < resolutions[num_resolutions]) {
 			selected_res = num_resolutions;
@@ -203,7 +203,7 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 	resolution = resolutions[selected_res];
 
 	buttons[id_resolution] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_resolution,
-	        restext, selected_res, num_resolutions, colx[2], rowy[1], 74);
+	        std::move(restext), selected_res, colx[2], rowy[1], 74);
 
 	const int max_scales = scaling > 8 && scaling <= 16 ? scaling : 8;
 	const int num_scales = (scaler == Image_window::point ||
@@ -211,14 +211,14 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 	                        scaler == Image_window::bilinear) ? max_scales : 1;
 	if (num_scales > 1) {
 		// the text arrays is freed by the destructor of the button
-		std::string *scalingtext = new std::string[num_scales];
+		std::vector<std::string> scalingtext;
 		for (int i = 0; i < num_scales; i++) {
 			char buf[10];
 			snprintf(buf, sizeof(buf), "x%d", i + 1);
-			scalingtext[i] = buf;
+			scalingtext.emplace_back(buf);
 		}
 		buttons[id_scaling] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_scaling,
-		        scalingtext, scaling, num_scales, colx[2], rowy[4], 74);
+		        std::move(scalingtext), scaling, colx[2], rowy[4], 74);
 	} else if (scaler == Image_window::Hq3x || scaler == Image_window::_3xBR)
 		scaling = 2;
 	else if (scaler == Image_window::Hq4x || scaler == Image_window::_4xBR)
@@ -227,11 +227,9 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 		scaling = 1;
 
 	if (fill_mode == Image_window::Fit || fill_mode == Image_window::AspectCorrectFit || fill_mode == Image_window::Centre || fill_mode == Image_window::AspectCorrectCentre) {
-		std::string *ac_text = new std::string[2];
-		ac_text[0] = "Disabled";
-		ac_text[1] = "Enabled";
+		std::vector<std::string> ac_text = {"Disabled", "Enabled"};
 		buttons[id_has_ac] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_aspect_correction,
-		        ac_text, has_ac ? 1 : 0, 2, colx[3], rowy[9], 62);
+		        std::move(ac_text), has_ac ? 1 : 0, colx[3], rowy[9], 62);
 	}
 }
 
@@ -239,12 +237,12 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 	fullscreen = Fullscreen;
 	int i;
 	setup_video(fullscreen, MENU_INIT);
-	int w = resolution >> 16;
-	int h = resolution & 0xFFFF;
+	int w = get_width(resolution);
+	int h = get_height(resolution);
 	if (resolutions == nullptr) {
 		fullscreen = gwin->get_win()->is_fullscreen() ? 1 : 0;
 		std::map<uint32, Image_window::Resolution> Resolutions = Image_window::Resolutions;
-		if (fullscreen) Resolutions[(w << 16) | h] = Image_window::Resolution();
+		if (fullscreen) Resolutions[make_resolution(w, h)] = Image_window::Resolution();
 
 		num_resolutions = Resolutions.size();
 		resolutions = new uint32[num_resolutions + 1];
@@ -254,15 +252,17 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 			resolutions[i++] = it->first;
 
 		// Add in useful window resolutions
-		Resolutions[(320 << 16) | 200] = Image_window::Resolution();
-		Resolutions[(320 << 16) | 240] = Image_window::Resolution();
-		Resolutions[(400 << 16) | 300] = Image_window::Resolution();
-		Resolutions[(512 << 16) | 384] = Image_window::Resolution();
-		Resolutions[(640 << 16) | 400] = Image_window::Resolution();
-		Resolutions[(640 << 16) | 480] = Image_window::Resolution();
-		Resolutions[(960 << 16) | 600] = Image_window::Resolution();
-		Resolutions[(960 << 16) | 720] = Image_window::Resolution();
-		if (!fullscreen)Resolutions[(w << 16) | h] = Image_window::Resolution();
+		Resolutions[make_resolution(320, 200)] = Image_window::Resolution();
+		Resolutions[make_resolution(320, 240)] = Image_window::Resolution();
+		Resolutions[make_resolution(400, 300)] = Image_window::Resolution();
+		Resolutions[make_resolution(512, 384)] = Image_window::Resolution();
+		Resolutions[make_resolution(640, 400)] = Image_window::Resolution();
+		Resolutions[make_resolution(640, 480)] = Image_window::Resolution();
+		Resolutions[make_resolution(960, 600)] = Image_window::Resolution();
+		Resolutions[make_resolution(960, 720)] = Image_window::Resolution();
+		if (!fullscreen) {
+			Resolutions[make_resolution(w, h)] = Image_window::Resolution();
+		}
 		num_win_resolutions = Resolutions.size();
 		win_resolutions = new uint32[num_win_resolutions + 1];
 
@@ -273,8 +273,8 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 	if (startup_fill_mode == 0)
 		startup_fill_mode = fill_mode;
 	has_ac = false;
-	int gw = game_resolution >> 16;
-	int gh = game_resolution & 0xFFFF;
+	int gw = get_width(game_resolution);
+	int gh = get_height(game_resolution);
 	if (gw == 0 && gh == 0)
 		game_resolution = 0;
 	else if (gw == 320 && gh == 200)
@@ -284,17 +284,17 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 
 	if (num_game_resolutions == 0) {
 		game_resolutions[0] = 0;
-		game_resolutions[1] = (320 << 16) | 200;
+		game_resolutions[1] = make_resolution(320, 200);
 #ifdef  __IPHONEOS__
-		game_resolutions[2] = (400 << 16) | 250;
-		game_resolutions[3] = (480 << 16) | 300;
-		game_resolutions[4] = (gw << 16) | gh;
+		game_resolutions[2] = make_resolution(400, 250);
+		game_resolutions[3] = make_resolution(480, 300);
+		game_resolutions[4] = make_resolution(gw, gh);
 		num_game_resolutions = (game_resolutions[0] != game_resolutions[4]
 							&& game_resolutions[1] != game_resolutions[4]
 							&& game_resolutions[2] != game_resolutions[4]
 							&& game_resolutions[3] != game_resolutions[4]) ? 5 : 4;
 #else
-		game_resolutions[2] = (gw << 16) | gh;
+		game_resolutions[2] = make_resolution(gw, gh);
 		num_game_resolutions = (game_resolutions[0] != game_resolutions[2] && game_resolutions[1] != game_resolutions[2]) ? 3 : 2;
 #endif
 	}
@@ -314,27 +314,22 @@ VideoOptions_gump::VideoOptions_gump() : Modal_gump(nullptr, EXULT_FLX_VIDEOOPTI
 	video_options_gump = this;
 	set_object_area(Rectangle(0, 0, 0, 0), 8, 170);
 
+	const std::vector<std::string> enabledtext = {"Disabled", "Enabled"};
+
 	fullscreen = gwin->get_win()->is_fullscreen();
-	std::string *enabledtext = new std::string[2];
-	enabledtext[0] = "Disabled";
-	enabledtext[1] = "Enabled";
 #ifndef __IPHONEOS__
 	buttons[id_fullscreen] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_fullscreen,
-	        enabledtext, fullscreen, 2, colx[2], rowy[0], 74);
+	        enabledtext, fullscreen, colx[2], rowy[0], 74);
 #endif
 	config->value("config/video/highdpi", highdpi, false);
-	std::string *hdpi_text = new std::string[2];
-	hdpi_text[0] = "Disabled";
-	hdpi_text[1] = "Enabled";
 	buttons[id_high_dpi] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_high_dpi,
-	        hdpi_text, highdpi, 2, colx[2], rowy[2], 74);
+	        enabledtext, highdpi, colx[2], rowy[2], 74);
 	config->value("config/video/share_video_settings", share_settings, false);
-	std::string *yesNO = new std::string[2];
-	yesNO[0] = "No";
-	yesNO[1] = "Yes";
+	
+	std::vector<std::string> yesNO = {"No", "Yes"};
 #ifndef __IPHONEOS__
 	buttons[id_share_settings] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_share_settings,
-	        yesNO, share_settings, 2, colx[5], rowy[11], 40);
+	        std::move(yesNO), share_settings, colx[5], rowy[11], 40);
 #endif
 	o_share_settings = share_settings;
 
@@ -354,10 +349,10 @@ VideoOptions_gump::~VideoOptions_gump() {
 }
 
 void VideoOptions_gump::save_settings() {
-	int resx = resolution >> 16;
-	int resy = resolution & 0xFFFF;
-	int gw = game_resolutions[game_resolution] >> 16;
-	int gh = game_resolutions[game_resolution] & 0xFFFF;
+	int resx = get_width(resolution);
+	int resy = get_height(resolution);
+	int gw = get_width(game_resolutions[game_resolution]);
+	int gh = get_height(game_resolutions[game_resolution]);
 
 	int tgw = gw;
 	int tgh = gh;
@@ -380,10 +375,10 @@ void VideoOptions_gump::save_settings() {
 	gwin->set_all_dirty();
 
 	if (!Countdown_gump::ask("Settings applied.\nKeep?", 20)) {
-		resx = o_resolution >> 16;
-		resy = o_resolution & 0xFFFF;
-		gw = game_resolutions[o_game_resolution] >> 16;
-		gh = game_resolutions[o_game_resolution] & 0xFFFF;
+		resx = get_width(o_resolution);
+		resy = get_height(o_resolution);
+		gw = get_width(game_resolutions[o_game_resolution]);
+		gh = get_height(game_resolutions[o_game_resolution]);
 		bool o_fullscreen;
 		config->value("config/video/fullscreen", o_fullscreen, true);
 		if (fullscreen != o_fullscreen) // use old settings from the config

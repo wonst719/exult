@@ -43,7 +43,7 @@ private:
 	int sc_enabled;
 	int sc_outline;
 	bool sb_hide_missing;
-	std::string *sc_outline_txt;
+	std::vector<std::string> sc_outline_txt;
 
 	enum button_ids {
 	    id_first = 0,

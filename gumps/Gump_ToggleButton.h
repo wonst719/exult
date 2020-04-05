@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Gump_button.h"
 #include "Text_button.h"
 
+#include <string>
+#include <vector>
+
 /*
  * A button that toggles shape when pushed
  */
@@ -54,17 +57,21 @@ private:
 
 class Gump_ToggleTextButton : public Text_button {
 public:
-	Gump_ToggleTextButton(Gump *par, std::string *s,  int selectionnum, int numsel,
+	Gump_ToggleTextButton(Gump *par, const std::vector<std::string>& s,  int selectionnum,
 	                      int px, int py, int width, int height = 0)
 		: Text_button(par, "", px, py, width, height),
-		  numselections(numsel), selections(s) {
+		  selections(s) {
 		set_frame(selectionnum);
 		text = selections[selectionnum];
 		init();
 	}
-
-	~Gump_ToggleTextButton() override {
-		delete [] selections;
+	Gump_ToggleTextButton(Gump *par, std::vector<std::string>&& s,  int selectionnum,
+	                      int px, int py, int width, int height = 0)
+		: Text_button(par, "", px, py, width, height),
+		  selections(std::move(s)) {
+		set_frame(selectionnum);
+		text = selections[selectionnum];
+		init();
 	}
 
 	bool push(int button) override;
@@ -77,8 +84,7 @@ public:
 	virtual void toggle(int state) = 0;
 
 private:
-	int numselections;
-	std::string *selections;
+	std::vector<std::string> selections;
 };
 
 template <typename Parent>
