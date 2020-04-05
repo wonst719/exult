@@ -75,6 +75,8 @@ libgumps_la_SOURCES = \
 	ShortcutBar_gump.cc \
 	ShortcutBar_gump.h \
 	ItemMenu_gump.cc \
-	ItemMenu_gump.h
+	ItemMenu_gump.h	\
+	InputOptions_gump.cc	\
+	InputOptions_gump.h
 
 CLEANFILES = *~

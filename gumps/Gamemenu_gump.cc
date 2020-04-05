@@ -27,9 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "VideoOptions_gump.h"
 #include "GameplayOptions_gump.h"
 #include "MiscOptions_gump.h"
-#ifdef __IPHONEOS__
-#include "iphoneOptions_gump.h"
-#endif
+#include "InputOptions_gump.h"
 #include "Gump_button.h"
 #include "Yesno_gump.h"
 #include "gamewin.h"
@@ -54,17 +52,16 @@ static const char *videoopttext = "Video Options";
 static const char *audioopttext = "Audio Options";
 static const char *gameopttext = "Gameplay Options";
 static const char *misctext = "Misc Options";
+static const char *touchtext = "Touch Options";
 #ifndef __IPHONEOS__
 static const char *quitmenutext = "Quit to Menu";
 static const char *quittext = "Quit";
-#else
-static const char *iphonetext = "iOS Options";
 #endif
 
 using Gamemenu_button = CallbackTextButton<Gamemenu_gump>;
 
 Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, EXULT_FLX_GAMEMENU_SHP, SF_EXULT_FLX) {
-	set_object_area(Rectangle(0, 0, 0, 0), 8, 82); //+++++ ???
+	set_object_area(Rectangle(0, 0, 0, 0), 8, 95);
 
 	int y = 0;
 	if (!gwin->is_in_exult_menu())
@@ -78,13 +75,12 @@ Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, EXULT_FLX_GAMEMENU_SHP, SF_
 	        gameopttext, colx, rowy[y++], 108, 11);
 	buttons[id_misc_options] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::misc_options,
 	        misctext, colx, rowy[y++], 108, 11);
+	buttons[id_touch] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::touch_options,
+	        touchtext, colx, rowy[y++], 108, 11);
 #ifndef __IPHONEOS__
 	if (!gwin->is_in_exult_menu())
 		buttons[id_quit] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::quit_exult,
 		        quittext, colx, rowy[y++], 108, 11);
-#else
-	buttons[id_ios] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::iphone_options,
-	        iphonetext, colx, rowy[y++], 108, 11);
 #endif
 }
 
@@ -140,12 +136,10 @@ void Gamemenu_gump::misc_options() {
 	delete cbt_opts;
 }
 
-#ifdef __IPHONEOS__
-void Gamemenu_gump::iphone_options() {
-	iphoneOptions_gump ios_opts;
-	gumpman->do_modal_gump(&ios_opts, Mouse::hand);
+void Gamemenu_gump::touch_options() {
+	InputOptions_gump touch_opts;
+	gumpman->do_modal_gump(&touch_opts, Mouse::hand);
 }
-#endif
 
 void Gamemenu_gump::paint() {
 	Gump::paint();

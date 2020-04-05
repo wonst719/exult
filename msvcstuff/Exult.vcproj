@@ -1458,6 +1458,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\gumps\InputOptions_gump.cc"
+					>
+				</File>
+				<File
+					RelativePath="..\gumps\InputOptions_gump.h"
+					>
+				</File>
+				<File
 					RelativePath="..\gumps\VideoOptions_gump.cc"
 					>
 				</File>
