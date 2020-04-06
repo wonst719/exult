@@ -52,7 +52,7 @@ static const char *videoopttext = "Video Options";
 static const char *audioopttext = "Audio Options";
 static const char *gameopttext = "Gameplay Options";
 static const char *misctext = "Misc Options";
-static const char *touchtext = "Touch Options";
+static const char *inputtext = "Input Options";
 #ifndef __IPHONEOS__
 static const char *quitmenutext = "Quit to Menu";
 static const char *quittext = "Quit";
@@ -75,8 +75,8 @@ Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, EXULT_FLX_GAMEMENU_SHP, SF_
 	        gameopttext, colx, rowy[y++], 108, 11);
 	buttons[id_misc_options] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::misc_options,
 	        misctext, colx, rowy[y++], 108, 11);
-	buttons[id_touch] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::touch_options,
-	        touchtext, colx, rowy[y++], 108, 11);
+	buttons[id_input] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::input_options,
+	        inputtext, colx, rowy[y++], 108, 11);
 #ifndef __IPHONEOS__
 	if (!gwin->is_in_exult_menu())
 		buttons[id_quit] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::quit_exult,
@@ -136,9 +136,9 @@ void Gamemenu_gump::misc_options() {
 	delete cbt_opts;
 }
 
-void Gamemenu_gump::touch_options() {
-	InputOptions_gump touch_opts;
-	gumpman->do_modal_gump(&touch_opts, Mouse::hand);
+void Gamemenu_gump::input_options() {
+	InputOptions_gump input_opts;
+	gumpman->do_modal_gump(&input_opts, Mouse::hand);
 }
 
 void Gamemenu_gump::paint() {

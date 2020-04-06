@@ -37,7 +37,7 @@ private:
 	    id_audio_options,
 	    id_gameplay_options,
 	    id_misc_options,
-	    id_touch,
+	    id_input,
 	    id_quit,
 	    id_count
 	};
@@ -67,7 +67,7 @@ public:
 	void audio_options();
 	void gameplay_options();
 	void misc_options();
-	void touch_options();
+	void input_options();
 
 	static void do_exult_menu();
 };
