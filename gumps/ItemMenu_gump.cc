@@ -99,14 +99,24 @@ Itemmenu_gump::Itemmenu_gump(Game_object *obj, int ox, int oy, int cx, int cy)
 	int btop = 0;
 	const Shape_info& info = objectSelected->get_info();
 	const Shape_info::Shape_class cls = info.get_shape_class();
-	if ((cls == Shape_info::container && !info.is_container_locked()) || objectSelected->usecode_exists()) {
+	const bool is_npc_or_monster = cls == Shape_info::human || cls == Shape_info::monster;
+	const bool in_party = objectSelected->get_flag(Obj_flags::in_party);
+	if (in_party || (is_npc_or_monster && cheat.in_pickpocket())) {
+		buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_inventory, "Show Inventory", 10, btop, 59, 20));
+		btop += button_spacing_y;
+	}
+	const bool is_avatar = objectSelected == gwin->get_main_actor();
+	if (!is_avatar
+	        && ((is_npc_or_monster && !cheat.in_pickpocket())
+	            || (cls == Shape_info::container && !info.is_container_locked())
+	            || objectSelected->usecode_exists())) {
 		std::string useText;
-		if (cls == Shape_info::human || cls == Shape_info::monster) {
-			useText = "Talk";
+		if (is_npc_or_monster) {
+			useText = "Talk to";
 		} else if (cls == Shape_info::container) {
-			useText = "Open";
+			useText = "Show Contents";
 		} else {
-			useText = "Use";
+			useText = "Interact with";
 		}
 		buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_use, useText, 10, btop, 59, 20));
 		btop += button_spacing_y;
@@ -114,10 +124,10 @@ Itemmenu_gump::Itemmenu_gump(Game_object *obj, int ox, int oy, int cx, int cy)
 	if (cheat.in_hack_mover() || objectSelected->is_dragable()) {
 		buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_pickup, "Pickup", 10, btop, 59, 20));
 		btop += button_spacing_y;
-		buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_move, "Move", 10, btop, 59, 20));
+		buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_move, "Move to", 10, btop, 59, 20));
 		btop += button_spacing_y;
 	}
-	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::cancel_menu, "Cancel", 10, btop, 59, 20));
+	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::cancel_menu, "Do nothing", 10, btop, 59, 20));
 	fix_position(buttons.size());
 }
 
@@ -190,6 +200,13 @@ void Itemmenu_gump::postCloseActions() {
 	}
 	Game_window *gwin = Game_window::get_instance();
 	switch (objectAction) {
+	case show_inventory: {
+		auto act = dynamic_cast<Actor*>(objectSelected);
+		if (act != nullptr) {
+			act->show_inventory();
+		}
+		break;
+	}
 	case use_item:
 		objectSelected->activate();
 		break;

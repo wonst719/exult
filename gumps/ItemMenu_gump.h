@@ -35,7 +35,8 @@ class Itemmenu_gump : public Modal_gump {
 		item_menu,
 		use_item,
 		pickup_item,
-		move_item
+		move_item,
+		show_inventory
 	};
 
 public:
@@ -64,6 +65,10 @@ public:
 	}
 	void set_move() {
 		objectAction = move_item;
+		close();
+	}
+	void set_inventory() {
+		objectAction = show_inventory;
 		close();
 	}
 	void cancel_menu() {
