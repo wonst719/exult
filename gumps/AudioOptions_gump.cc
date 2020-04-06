@@ -119,12 +119,16 @@ void AudioOptions_gump::rebuild_buttons() {
 		rebuild_midi_buttons();
 
 	// sfx on/off
-	std::vector<std::string> sfx_options = {"Disabled", "Digital"};
+	std::vector<std::string> sfx_options = {"Disabled"};
+	if (have_digital_sfx()) {
+		sfx_options.emplace_back("Digital");
+	}
 #ifdef ENABLE_MIDISFX
-	midi_state = -1;
 	if (have_midi_pack) {
+		midi_state = sfx_options.size();
 		sfx_options.emplace_back("Midi");
-		midi_state = i - 1;
+	} else {
+		midi_state = -1;
 	}
 #endif
 
