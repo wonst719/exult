@@ -88,6 +88,10 @@ int Game_object::get_usecode() const {
 	return ucmachine->get_shape_fun(get_shapenum());
 }
 
+bool Game_object::usecode_exists() const {
+	return ucmachine->function_exists(get_usecode());
+}
+
 // Offset to each neighbor, dir=0-7.
 short Tile_coord::neighbors[16] = {0, -1, 1, -1, 1, 0, 1, 1, 0, 1,
                                    -1, 1, -1, 0, -1, -1

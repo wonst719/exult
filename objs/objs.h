@@ -450,6 +450,7 @@ public:
 	virtual int get_usecode() const;
 	// Default:  Can't set it.
 	virtual bool set_usecode(int ui, const char *nm = nullptr);
+	bool usecode_exists() const;
 };
 
 inline Game_object_weak weak_from_obj(Game_object *obj) {

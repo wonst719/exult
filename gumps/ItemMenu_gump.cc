@@ -32,6 +32,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "exult_flx.h"
 #include "gamewin.h"
 #include "Text_button.h"
+#include "cheat.h"
+#include "shapeinf.h"
 
 using Itemmenu_button = CallbackTextButton<Itemmenu_gump>;
 using Itemmenu_object = CallbackTextButton<Itemmenu_gump, Game_object*>;
@@ -73,11 +75,17 @@ Itemmenu_gump::Itemmenu_gump(Game_object_map_xy *mobjxy, int cx, int cy)
 	int btop = 0;
 	int maxh = Game_window::get_instance()->get_height() - 2 * button_spacing_y;
 	for (Game_object_map_xy::const_iterator it = mobjxy->begin();
-	        it != mobjxy->end() && btop < maxh; it++, btop += button_spacing_y) {
+	        it != mobjxy->end() && btop < maxh; it++) {
 		Game_object *o = it->first;
+		std::string name = o->get_name();
+		// Skip objects with no name.
+		if (name.empty()) {
+			continue;
+		}
 		objects[o] = it->second;
 		buttons.push_back(std::make_unique<Itemmenu_object>(this, &Itemmenu_gump::select_object,
-		                                                    ObjectParams{o}, o->get_name().c_str(), 10, btop, 59, 20));
+		                                                    ObjectParams{o}, name, 10, btop, 59, 20));
+		btop += button_spacing_y;
 	}
 	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::cancel_menu, "Cancel", 10, btop, 59, 20));
 	fix_position(buttons.size());
@@ -89,12 +97,26 @@ Itemmenu_gump::Itemmenu_gump(Game_object *obj, int ox, int oy, int cx, int cy)
 	objectAction = item_menu;
 	objectSelectedClickXY = {ox, oy};
 	int btop = 0;
-	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_use, "Use", 10, btop, 59, 20));
-	btop += button_spacing_y;
-	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_pickup, "Pickup", 10, btop, 59, 20));
-	btop += button_spacing_y;
-	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_move, "Move", 10, btop, 59, 20));
-	btop += button_spacing_y;
+	const Shape_info& info = objectSelected->get_info();
+	const Shape_info::Shape_class cls = info.get_shape_class();
+	if ((cls == Shape_info::container && !info.is_container_locked()) || objectSelected->usecode_exists()) {
+		std::string useText;
+		if (cls == Shape_info::human || cls == Shape_info::monster) {
+			useText = "Talk";
+		} else if (cls == Shape_info::container) {
+			useText = "Open";
+		} else {
+			useText = "Use";
+		}
+		buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_use, useText, 10, btop, 59, 20));
+		btop += button_spacing_y;
+	}
+	if (cheat.in_hack_mover() || objectSelected->is_dragable()) {
+		buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_pickup, "Pickup", 10, btop, 59, 20));
+		btop += button_spacing_y;
+		buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::set_move, "Move", 10, btop, 59, 20));
+		btop += button_spacing_y;
+	}
 	buttons.push_back(std::make_unique<Itemmenu_button>(this, &Itemmenu_gump::cancel_menu, "Cancel", 10, btop, 59, 20));
 	fix_position(buttons.size());
 }
@@ -182,7 +204,8 @@ void Itemmenu_gump::postCloseActions() {
 		break;
 	}
 	case move_item: {
-		int tmpX, tmpY;
+		int tmpX;
+		int tmpY;
 		if (Get_click(tmpX, tmpY, Mouse::greenselect, nullptr, true)
 		        && gwin->start_dragging(objectSelectedClickXY.x, objectSelectedClickXY.y)
 		        && gwin->drag(tmpX, tmpY)) {

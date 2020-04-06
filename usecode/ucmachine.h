@@ -112,6 +112,7 @@ public:
 	virtual void save_intercept(Game_object *&obj, Tile_coord *&t) = 0;
 	virtual void restore_intercept(Game_object *obj, Tile_coord *t) = 0;
 
+	virtual bool function_exists(int funcid) = 0;
 };
 
 #endif  /* INCL_USECODE */

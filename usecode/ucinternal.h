@@ -523,6 +523,11 @@ public:
 		delete intercept_tile;
 		intercept_tile = t;
 	}
+
+	bool function_exists(int funcid) override {
+		Usecode_function *fun = find_function(funcid);
+		return fun != nullptr;
+	}
 };
 
 #endif

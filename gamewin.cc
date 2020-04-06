@@ -2012,6 +2012,18 @@ void Game_window::find_nearby_objects(Game_object_map_xy& mobjxy, int x, int y, 
 			}
 
 			if (iobj) {
+				const Shape_info &info = iobj->get_info();
+				auto cl = info.get_shape_class();
+				// Filter list a bit.
+				if (cl == Shape_info::unusable || cl == Shape_info::building) {
+					continue;
+				}
+				if ((cl == Shape_info::hatchable || cl == Shape_info::barge || info.is_barge_part()) && !cheat.in_map_editor()) {
+					continue;
+				}
+				if (info.is_transparent()) {
+					continue;
+				}
 				mobjxy[iobj] = Position2d{ix, iy};
 			}
 		}
