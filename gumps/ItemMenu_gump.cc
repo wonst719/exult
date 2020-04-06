@@ -126,6 +126,13 @@ Itemmenu_gump::~Itemmenu_gump() {
 }
 
 void Itemmenu_gump::paint() {
+	for (auto& objPos : objects) {
+		auto& obj = objPos.first;
+		obj->paint_outline(CHARMED_PIXEL);
+	}
+	if (objectSelected) {
+		objectSelected->paint_outline(PROTECT_PIXEL);
+	}
 	Gump::paint();
 	for (auto& btn : buttons) {
 		btn->paint();
