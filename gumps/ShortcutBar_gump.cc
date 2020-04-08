@@ -467,7 +467,7 @@ void ShortcutBar_gump::onItemClicked(int index, bool doubleClicked) {
 			if (doubleClicked && cheat())
 				cheat.map_teleport(); // map_teleport
 			else if (!doubleClicked)
-				gwin->activate_item(178); // useitem 178
+				gwin->activate_item(178, 0); // useitem 178, frame 0
 			break;
 		} case SB_ITEM_TOGGLE_COMBAT: {
 			ActionCombat(NULL); // toggle_combat
