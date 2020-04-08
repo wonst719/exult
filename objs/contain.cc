@@ -65,7 +65,7 @@ static inline bool Can_be_added(
 	return !(cont->get_shapenum() == shapenum   // Shape can't be inside itself.
 	         || (!allow_locked && continfo.is_container_locked())   // Locked container.
 	         || !continfo.is_shape_accepted(shapenum)  // Shape can't be inside.
-	         || add_info.is_on_fire());	// Object is on fire, and can't be inside others
+	         || (!add_info.is_spell() && add_info.is_on_fire()));	// Object is on fire, and can't be inside others
 }
 
 // Max. we'll hold.  (Guessing).
@@ -128,7 +128,7 @@ bool Container_game_object::add(
 	if (!info.is_shape_accepted(obj->get_shapenum()))   // Shape can't be inside.
 		return false;
 	const Shape_info &add_info = obj->get_info();
-	if (!dont_check && !cheat.in_map_editor() && !cheat.in_hack_mover() && add_info.is_on_fire())
+	if (!dont_check && !cheat.in_map_editor() && !cheat.in_hack_mover() && (!add_info.is_spell() && add_info.is_on_fire()))
 		return false;
 
 	// Always check this. ALWAYS!
