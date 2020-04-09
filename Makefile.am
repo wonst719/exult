@@ -285,7 +285,7 @@ osxdmg: bundle
 	SetFile -t ttro -c ttxt ./Exult-snapshot/License
 	SetFile -t ttro -c ttxt ./Exult-snapshot/News
 	SetFile -t ttro -c ttxt ./Exult-snapshot/ReadMe.MacOSX
-	CpMac -r $(bundle_name) ./Exult-snapshot/
+	cp -r $(bundle_name) ./Exult-snapshot/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 					-srcfolder Exult-snapshot \
 					-volname "Exult Git snapshot$(REVISION)" \
