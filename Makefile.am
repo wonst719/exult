@@ -268,8 +268,8 @@ install-exec-local: bundle
 	cp -r $(bundle_name) $(DESTDIR)/Applications/
 
 osxdmg: bundle
-	mkdir Exult-snapshot
-	mkdir ./Exult-snapshot/images
+	mkdir -p Exult-snapshot
+	mkdir -p ./Exult-snapshot/images
 	cp $(srcdir)/AUTHORS ./Exult-snapshot/Authors
 	cp $(srcdir)/COPYING ./Exult-snapshot/License
 	cp $(srcdir)/NEWS ./Exult-snapshot/News
@@ -285,7 +285,7 @@ osxdmg: bundle
 	SetFile -t ttro -c ttxt ./Exult-snapshot/License
 	SetFile -t ttro -c ttxt ./Exult-snapshot/News
 	SetFile -t ttro -c ttxt ./Exult-snapshot/ReadMe.MacOSX
-	cp -r $(bundle_name) ./Exult-snapshot/
+	cp -R $(bundle_name) ./Exult-snapshot/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 					-srcfolder Exult-snapshot \
 					-volname "Exult Git snapshot$(REVISION)" \
