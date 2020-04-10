@@ -160,6 +160,17 @@ void Game_clock::set_time_palette(
 		return;
 	}
 
+	if (gwin->is_special_light() || (gwin->is_special_light() && cheat.in_infravision())) {
+		if (transition) {
+			delete transition;
+			transition = nullptr;
+		}
+		gwin->get_pal()->set(old_palette);
+		if (!gwin->get_pal()->is_faded_out())
+			gwin->get_pal()->apply(true);
+		return;
+	}
+
 	was_overcast = cloudy;
 	was_foggy = foggy;
 	old_light_level = light_source_level;
