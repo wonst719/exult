@@ -157,10 +157,6 @@ bool ignore_crc = false;
 
 TouchUI *touchui = nullptr;
 
-#if 0
-SDL_Joystick *sdl_joy;
-#endif
-
 bool g_waiting_for_click = false;
 ShortcutBar_gump *g_shortcutBar = nullptr;
 
@@ -690,15 +686,6 @@ static void Init(
 		exit(-1);
 	}
 	std::atexit(SDL_Quit);
-
-#if 0 // FIXME: temporarily disabled
-	std::cout << "There are " << SDL_NumJoysticks() << " joystick(s) available" << std::endl;
-	std::cout << "Default joystick (index 0) is " << SDL_JoystickName(0) << std::endl;
-	sdl_joy = SDL_JoystickOpen(0);
-	if (sdl_joy == nullptr)
-		std::cout << "Error: could not open joystick" << std::endl;
-	std::cout << "joystick number of axis: " << SDL_JoystickNumAxes(sdl_joy) << ", number of hats: " << SDL_JoystickNumHats(sdl_joy) << ", number of balls: " << SDL_JoystickNumBalls(sdl_joy) << ", number of buttons: " << SDL_JoystickNumButtons(sdl_joy) << std::endl;
-#endif
 
 	SDL_SysWMinfo info;     // Get system info.
 #ifdef USE_EXULTSTUDIO
@@ -1565,34 +1552,6 @@ static void Handle_event(
 	case SDL_QUIT:
 		gwin->get_gump_man()->okay_to_quit();
 		break;
-#if 0
-	case SDL_JOYAXISMOTION: {
-		constexpr const float JOY_LEFT_VAL = -1400;
-		constexpr const float JOY_RIGHT_VAL = 1400;
-		constexpr const float JOY_UP_VAL = -200;
-		constexpr const float JOY_DOWN_VAL = -3000;
-		float ax = SDL_JoystickGetAxis(sdl_joy, 0);
-		float ay = SDL_JoystickGetAxis(sdl_joy, 1);
-		//std::cout << "joystick  ax: " << ax << ", ay: " << ay << std::endl;
-		event.type = SDL_KEYDOWN;
-		event.key.type = SDL_KEYDOWN;
-		event.key.state = SDL_PRESSED;
-		event.key.keysym.mod = KMOD_NONE;
-		if (ax >= JOY_RIGHT_VAL) {
-			event.key.keysym.sym = SDLK_RIGHT;
-		} else if (ax <= JOY_LEFT_VAL) {
-			event.key.keysym.sym = SDLK_LEFT;
-		} else if (ay >= JOY_UP_VAL) {
-			event.key.keysym.sym = SDLK_UP;
-		} else if (ay <= JOY_DOWN_VAL) {
-			event.key.keysym.sym = SDLK_DOWN;
-		} else {
-			break;
-		}
-	}
-	// Should continue on to the SDL_KEY* cases
-	// FALLTHROUGH
-#endif
 	case SDL_KEYDOWN:       // Keystroke.
 	case SDL_KEYUP:
 		if (!dragging &&    // ESC while dragging causes crashes.
