@@ -2611,12 +2611,16 @@ USECODE_INTRINSIC(set_camera) {
 	if (actor) {
 		gwin->set_camera_actor(actor);
 		activate_cached(actor->get_tile()); // Mar-10-01 - For Test of Love.
+		gclock->reset();
+		gclock->set_palette();
 	} else {
 		Game_object *obj = get_item(parms[0]);
 		if (obj) {
 			Tile_coord t = obj->get_tile();
 			gwin->center_view(t);
 			activate_cached(t); // Mar-10-01 - For Test of Love.
+			gclock->reset();
+			gclock->set_palette();
 		}
 	}
 
@@ -3204,7 +3208,7 @@ USECODE_INTRINSIC(ambient_light) {
 	ignore_unused_variable_warning(num_parms);
 	// ambient_light(onoff)
 	// E.g., the cutscene with Batlin and Cantra.
-	gwin->toggle_ambient_light(parms[0].get_int_value() != 0);
+	gwin->toggle_ambient_light(parms[0].get_int_value() == 0);
 	gclock->set_palette();
 	return no_ret;
 }
