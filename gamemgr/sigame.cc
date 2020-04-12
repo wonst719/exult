@@ -1290,6 +1290,7 @@ bool SI_Game::new_game(Vga_file &shapes) {
 				if (event.user.code == TouchUI::EVENT_CODE_TEXT_INPUT) {
 					if (selected == 0 && event.user.data1 != nullptr) {
 						strcpy(npc_name, static_cast<char*>(event.user.data1));
+						free(event.user.data1);
 						redraw = true;
 					}
 				}
