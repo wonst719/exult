@@ -140,6 +140,9 @@ void	MyMidiPlayer::start_music(int num,bool repeat,std::string flex)
 		if (!midi_driver || (!is_mt32() && Game_window::get_instance()->is_bg_track(num) && flex == MAINMUS)) return;
 	}
 
+	if (!midi_driver)
+		return;
+
 	// Handle FM Synth
 	if (midi_driver->isFMSynth())  {
 		// use the fmsynth music, which is bank 3
@@ -213,10 +216,10 @@ void	MyMidiPlayer::start_music(std::string fname,int num,bool repeat)
 		// If we failed to play the track, call stop to clean up and put us back into
 		// midi synth mode
 		ogg_stop_track();
-
-		// No midi driver so don't fall through
-		if (!midi_driver) return;
 	}
+
+	if (!midi_driver)
+		return;
 
 	// Handle FMSynth Stuff here
 	if (midi_driver->isFMSynth()) {
