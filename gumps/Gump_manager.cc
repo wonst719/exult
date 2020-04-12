@@ -565,7 +565,7 @@ bool Gump_manager::handle_modal_gump_event(
 				if (event.user.data1 != nullptr) {
 					const char *text = static_cast<const char*>(event.user.data1);
 					if (text) gump->text_input(text);
-					free(text);
+					free(event.user.data1);
 				}
 			}
 		}

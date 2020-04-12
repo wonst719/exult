@@ -1289,7 +1289,8 @@ bool SI_Game::new_game(Vga_file &shapes) {
 			} else if (event.type == TouchUI::eventType) {
 				if (event.user.code == TouchUI::EVENT_CODE_TEXT_INPUT) {
 					if (selected == 0 && event.user.data1 != nullptr) {
-						strcpy(npc_name, static_cast<char*>(event.user.data1));
+						strncpy(npc_name, static_cast<char*>(event.user.data1), max_len);
+						npc_name[max_len] = '\0';
 						free(event.user.data1);
 						redraw = true;
 					}
