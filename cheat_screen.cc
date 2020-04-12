@@ -2949,8 +2949,8 @@ void CheatScreen::TeleportActivate(char *input, int &command, Cheat_Prompt &mode
 		break;
 
 	case 'm':   // map
-		if ((i < 0 || i > 255) || i > highest) mode = CP_InvalidValue;
-		else if (i == -1) mode = CP_Canceled;
+		if (i == -1) mode = CP_Canceled;
+		else if ((i < 0 || i > 255) || i > highest) mode = CP_InvalidValue;
 		else
 			gwin->teleport_party(gwin->get_main_actor()->get_tile(), true, i);
 		break;
