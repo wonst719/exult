@@ -1,6 +1,6 @@
 04/13/20	v1.6
 
-		Shortcut bar with important shortcuts right on top of the screen (thanks Litchie)
+		A Shortcut bar with important shortcuts right on top of the screen (thanks Litchie)
 		Switch to SDL2 - important for up to date OS
 		NxBR and HQ3x/HQ4x scalers
 		Option to drop stacks of items without confirmation
@@ -14,7 +14,7 @@
 		Better pathfinding when the party boards a barge
 		Fixed most inexplicable crashes
 		Serpent Isle Beta version works
-		Sixed tons of bugs
+		fixed tons of bugs
 		Cleaned up the code in many places and fixed many compiler warnings
 		
 		
