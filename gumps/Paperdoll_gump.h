@@ -38,61 +38,54 @@ private:
 	UNREPLICATABLE_CLASS(Paperdoll_gump)
 
 protected:
+	struct Position {
+		short x;
+		short y;
+	};
 
 	// Statics
-	static short coords[36];        // Coords. of where to draw things,
-	static short coords_blue[36];       // indexed by spot # (0-17).
-	static short shapes_blue[36];
-	static short coords_hot[36];        // Hot spots
+	static Position coords[18];        // Coords. of where to draw things,
+	static Position coords_blue[18];   // indexed by spot # (0-17).
+	static Position shapes_blue[18];
+	static Position coords_hot[18];    // Hot spots
 
-	static short diskx, disky;      // Where to show 'diskette' button.
-	static short heartx, hearty;        // Where to show 'stats' button.
-	static short combatx, combaty;      // Combat button.
-	static short cstatx, cstaty;        // Combat mode.
-	static short halox, haloy;  // "Protected" halo.
-	static short cmodex, cmodey;    // Combat mode.
+	static Position disk;         // Where to show 'diskette' button.
+	static Position heart;        // Where to show 'stats' button.
+	static Position combat;       // Combat button.
+	static Position cstat;        // Combat mode.
+	static Position halo;         // "Protected" halo.
+	static Position cmode;        // Combat mode.
 
-	static short bodyx, bodyy;      // Body
-	static short headx, heady;      // Head
-	static short beltfx, beltfy;        // Female Belt
-	static short neckfx, neckfy;        // Female Neck
-	static short beltmx, beltmy;        // Male Belt
-	static short neckmx, neckmy;        // Male Neck
-	static short legsx, legsy;      // Legs
-	static short feetx, feety;      // Feet
-	static short handsx, handsy;        // Hands
-	static short lhandx, lhandy;        // Left Hand
-	static short rhandx, rhandy;        // Right Hand
-	static short ahandx, ahandy;        // Ammo in Left Hand
-	static short ammox, ammoy;      // Quiver
+	static Position body;         // Body
+	static Position headp;        // Head
+	static Position beltf;        // Female Belt
+	static Position neckf;        // Female Neck
+	static Position beltm;        // Male Belt
+	static Position neckm;        // Male Neck
+	static Position legsp;        // Legs
+	static Position feetp;        // Feet
+	static Position hands;        // Hands
+	static Position lhandp;       // Left Hand
+	static Position rhandp;       // Right Hand
+	static Position ahand;        // Ammo in Left Hand
+	static Position ammo;         // Quiver
 
-	static short backfx, backfy;        // Female Back
-	static short backmx, backmy;        // Male Back
-	static short back2fx, back2fy;      // Female Back Weapon
-	static short back2mx, back2my;      // Male Back Weapon
-	static short shieldfx, shieldfy;    // Female Back Shield
-	static short shieldmx, shieldmy;    // Male Back Shield
+	static Position backf;        // Female Back
+	static Position backm;        // Male Back
+	static Position back2f;       // Female Back Weapon
+	static Position back2m;       // Male Back Weapon
+	static Position shieldf;      // Female Back Shield
+	static Position shieldm;      // Male Back Shield
 
 
 	// Non Statics
 
-	Heart_button *heart_button;     // For bringing up stats.
-	Disk_button *disk_button;       // For bringing up 'save' box. (Avatar Only)
+	Heart_button *heart_button;         // For bringing up stats.
+	Disk_button *disk_button;           // For bringing up 'save' box. (Avatar Only)
 	Combat_button *combat_button;       // Combat Toggle (Avatar Only)
 	Cstats_button *cstats_button;       // Combat Stats (Not BG)
-	Halo_button *halo_button;       // Halo (protection) (BG Only)
+	Halo_button *halo_button;           // Halo (protection) (BG Only)
 	Combat_mode_button *cmode_button;   // Combat Modes (BG Only)
-
-
-	// Statics
-
-	// Get the X and Y from a spot
-	static int spotx(int i) {
-		return coords[2 * i];
-	}
-	static int spoty(int i) {
-		return coords[2 * i + 1];
-	}
 
 	// Non Statics
 

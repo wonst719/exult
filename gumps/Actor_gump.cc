@@ -40,11 +40,11 @@ using std::size_t;
  *  Statics:
  */
 
-short Actor_gump::diskx = 124, Actor_gump::disky = 115;
-short Actor_gump::heartx = 124, Actor_gump::hearty = 132;
-short Actor_gump::combatx = 52, Actor_gump::combaty = 100;
-short Actor_gump::halox = 47, Actor_gump::haloy = 110;
-short Actor_gump::cmodex = 48, Actor_gump::cmodey = 132;
+Actor_gump::Position Actor_gump::disk   = {124, 115};
+Actor_gump::Position Actor_gump::heart  = {124, 132};
+Actor_gump::Position Actor_gump::combat = {52, 100};
+Actor_gump::Position Actor_gump::halo   = {47, 110};
+Actor_gump::Position Actor_gump::cmode  = {48, 132};
 Actor_gump::Position Actor_gump::coords[12] = {
 	{114, 10},    /* head */      {115, 24},    /* back */
 	{115, 37},    /* belt */      {115, 55},    /* lhand */
@@ -94,13 +94,13 @@ Actor_gump::Actor_gump(
 ) : Gump(cont, initx, inity, shnum) {
 	set_object_area(Rectangle(26, 0, 104, 132), 6, 136);
 	Actor *npc = cont->as_actor();
-	add_elem(new Heart_button(this, heartx, hearty));
+	add_elem(new Heart_button(this, heart.x, heart.y));
 	if (npc->get_npc_num() == 0) {
-		add_elem(new Disk_button(this, diskx, disky));
-		add_elem(new Combat_button(this, combatx, combaty));
+		add_elem(new Disk_button(this, disk.x, disk.y));
+		add_elem(new Combat_button(this, combat.x, combat.y));
 	}
-	add_elem(new Halo_button(this, halox, haloy, npc));
-	add_elem(new Combat_mode_button(this, cmodex, cmodey, npc));
+	add_elem(new Halo_button(this, halo.x, halo.y, npc));
+	add_elem(new Combat_mode_button(this, cmode.x, cmode.y, npc));
 
 	for (size_t i = 0; i < array_size(coords); i++) {
 		// Set object coords.

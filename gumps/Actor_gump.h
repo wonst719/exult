@@ -42,11 +42,11 @@ protected:
 	// Find index of closest spot.
 	int find_closest(int mx, int my, int only_empty = 0);
 	void set_to_spot(Game_object *obj, int index);
-	static short diskx, disky;  // Where to show 'diskette' button.
-	static short heartx, hearty;    // Where to show 'stats' button.
-	static short combatx, combaty;  // Combat button.
-	static short halox, haloy;  // "Protected" halo.
-	static short cmodex, cmodey;    // Combat mode.
+	static Position disk;  // Where to show 'diskette' button.
+	static Position heart;    // Where to show 'stats' button.
+	static Position combat;  // Combat button.
+	static Position halo;  // "Protected" halo.
+	static Position cmode;    // Combat mode.
 
 public:
 	Actor_gump(Container_game_object *cont, int initx, int inity,
