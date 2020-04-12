@@ -34,13 +34,13 @@ class Container_game_object : public Ireg_game_object {
 protected:
 	Object_list objects = nullptr;        // ->first object.
 	int get_max_volume() const;
-	int  gumpX;
-	int  gumpY;
+	int  gumpX = 0;
+	int  gumpY = 0;
 	bool gumpInit = false;
 public:
-	void setGumpXY(int x, int y) { 
-		gumpX = x; 
-		gumpY = y;	
+	void setGumpXY(int x, int y) {
+		gumpX = x;
+		gumpY = y;
 		gumpInit = true;
 	}
 	int  getGumpX() {

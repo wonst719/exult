@@ -43,7 +43,7 @@ protected:
 	Gump() = default;
 	Container_game_object *container;// What this gump shows.
 	int x, y;           // Location on screen.
-	Rectangle object_area;      // Area to paint objects in, rel. to
+	Rectangle object_area{};      // Area to paint objects in, rel. to
 	using Gump_elems = std::vector<Gump_widget *>;
 	Gump_elems elems;       // Includes 'checkmark'.
 	bool handles_kbd;       // Kbd can be handled by gump.

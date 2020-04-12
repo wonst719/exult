@@ -165,7 +165,7 @@ protected:
 	SaveGame_Party *cur_party = nullptr;      // Party of current game
 
 	// Gamedat is being used as a 'quicksave'
-	int last_selected;      // keeping track of the selected line for iOS
+	int last_selected = -4;      // keeping track of the selected line for iOS
 	std::unique_ptr<Shape_file> gd_shot;      // Screenshot in Gamedat
 	SaveGame_Details *gd_details = nullptr;   // Details in Gamedat
 	SaveGame_Party *gd_party = nullptr;       // Parts in Gamedat
