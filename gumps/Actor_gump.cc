@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Actor_gump.h"
 #include "actors.h"
+#include "array_size.h"
 #include "gamewin.h"
 #include "misc_buttons.h"
 #include "ignore_unused_variable_warning.h"
@@ -44,13 +45,13 @@ short Actor_gump::heartx = 124, Actor_gump::hearty = 132;
 short Actor_gump::combatx = 52, Actor_gump::combaty = 100;
 short Actor_gump::halox = 47, Actor_gump::haloy = 110;
 short Actor_gump::cmodex = 48, Actor_gump::cmodey = 132;
-short Actor_gump::coords[24] = {
-	114, 10,    /* head */  115, 24,    /* back */
-	115, 37,    /* belt */  115, 55,    /* lhand */
-	115, 71,    /* lfinger */   114, 85,    /* legs */
-	76, 98,     /* feet */  35, 70,     /* rfinger */
-	37, 56,     /* rhand */ 37, 37,     /* torso */
-	37, 24,     /* neck */  37, 11      /* ammo */
+Actor_gump::Position Actor_gump::coords[12] = {
+	{114, 10},    /* head */      {115, 24},    /* back */
+	{115, 37},    /* belt */      {115, 55},    /* lhand */
+	{115, 71},    /* lfinger */   {114, 85},    /* legs */
+	{76, 98},     /* feet */      {35, 70},     /* rfinger */
+	{37, 56},     /* rhand */     {37, 37},     /* torso */
+	{37, 24},     /* neck */      {37, 11}      /* ammo */
 };
 
 /*
@@ -67,9 +68,9 @@ int Actor_gump::find_closest(
 	my -= y;       // Get point rel. to us.
 	long closest_squared = 1000000; // Best distance squared.
 	int closest = -1;       // Best index.
-	for (size_t i = 0; i < sizeof(coords) / (2 * sizeof(coords[0])); i++) {
-		int dx = mx - spotx(i);
-		int dy = my - spoty(i);
+	for (size_t i = 0; i < array_size(coords); i++) {
+		int dx = mx - coords[i].x;
+		int dy = my - coords[i].y;
 		long dsquared = dx * dx + dy * dy;
 		// Better than prev.?
 		if (dsquared < closest_squared && (!only_empty ||
@@ -101,7 +102,7 @@ Actor_gump::Actor_gump(
 	add_elem(new Halo_button(this, halox, haloy, npc));
 	add_elem(new Combat_mode_button(this, cmodex, cmodey, npc));
 
-	for (size_t i = 0; i < sizeof(coords) / 2 * sizeof(coords[0]); i++) {
+	for (size_t i = 0; i < array_size(coords); i++) {
 		// Set object coords.
 		Game_object *obj = container->get_readied(i);
 		if (obj)
@@ -157,8 +158,8 @@ void Actor_gump::set_to_spot(
 	int h = shape->get_height();
 	// Set object's position.
 	obj->set_shape_pos(
-	    spotx(index) + shape->get_xleft() - w / 2 - object_area.x,
-	    spoty(index) + shape->get_yabove() - h / 2 - object_area.y);
+	    coords[index].x + shape->get_xleft() - w / 2 - object_area.x,
+	    coords[index].y + shape->get_yabove() - h / 2 - object_area.y);
 	// Shift if necessary.
 	int x0 = obj->get_tx() - shape->get_xleft();
 	int y0 = obj->get_ty() - shape->get_yabove();
@@ -184,7 +185,7 @@ void Actor_gump::set_to_spot(
 void Actor_gump::paint(
 ) {
 	// Watch for any newly added objs.
-	for (size_t i = 0; i < sizeof(coords) / 2 * sizeof(coords[0]); i++) {
+	for (size_t i = 0; i < array_size(coords); i++) {
 		// Set object coords.
 		Game_object *obj = container->get_readied(i);
 		if (obj)//&& !obj->get_tx() && !obj->get_ty())

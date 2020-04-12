@@ -34,14 +34,11 @@ class Actor_gump : public Gump {
 	UNREPLICATABLE_CLASS(Actor_gump)
 
 protected:
-	static short coords[24];    // Coords. of where to draw things,
-	//   indexed by spot # (0-11).
-	static int spotx(int i) {
-		return coords[2 * i];
-	}
-	static int spoty(int i) {
-		return coords[2 * i + 1];
-	}
+	struct Position {
+		short x;
+		short y;
+	};
+	static Position coords[12];    // Coords. of where to draw things,
 	// Find index of closest spot.
 	int find_closest(int mx, int my, int only_empty = 0);
 	void set_to_spot(Game_object *obj, int index);
