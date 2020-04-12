@@ -400,6 +400,7 @@ bool Game::show_menu(bool skip) {
 void Game::journey_failed_text() {
 	Font *font = fontManager.get_font("MENU_FONT");
 	font->center_text(ibuf, centerx, centery + 30,  "You must start a new game first.");
+	font->center_text(ibuf, centerx, centery + 42,  "Press ESC to return.");
 	pal->fade_in(50);
 	while (!wait_delay(10))
 		;
