@@ -695,7 +695,7 @@ static void Init(
 	std::cout << "There are " << SDL_NumJoysticks() << " joystick(s) available" << std::endl;
 	std::cout << "Default joystick (index 0) is " << SDL_JoystickName(0) << std::endl;
 	sdl_joy = SDL_JoystickOpen(0);
-	if (sdl_joy == NULL)
+	if (sdl_joy == nullptr)
 		std::cout << "Error: could not open joystick" << std::endl;
 	std::cout << "joystick number of axis: " << SDL_JoystickNumAxes(sdl_joy) << ", number of hats: " << SDL_JoystickNumHats(sdl_joy) << ", number of balls: " << SDL_JoystickNumBalls(sdl_joy) << ", number of buttons: " << SDL_JoystickNumButtons(sdl_joy) << std::endl;
 #endif

@@ -562,7 +562,7 @@ bool Gump_manager::handle_modal_gump_event(
 	default:
 		if (event.type == TouchUI::eventType) {
 			if (event.user.code == TouchUI::EVENT_CODE_TEXT_INPUT) {
-				if (event.user.data1 != NULL) {
+				if (event.user.data1 != nullptr) {
 					const char *text = static_cast<const char*>(event.user.data1);
 					if (text) gump->text_input(text);
 				}

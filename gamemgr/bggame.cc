@@ -1851,21 +1851,21 @@ bool BG_Game::new_game(Vga_file &shapes) {
 				SDL_Rect rectReturn = { centerx + 10, topy + 180, 130,  16 };
 				SDL_Point point;
 				gwin->get_win()->screen_to_game(event.button.x, event.button.y, gwin->get_fastmouse(), point.x, point.y);
-				if (SDL_EnclosePoints(&point, 1, &rectName, NULL)) {
+				if (SDL_EnclosePoints(&point, 1, &rectName, nullptr)) {
 					if (event.type == SDL_MOUSEBUTTONDOWN) {
 						selected = 0;
 					} else if (selected == 0 && touchui != nullptr) {
 						touchui->promptForName(npc_name);
 					}
 					redraw = true;
-				} else if (SDL_EnclosePoints(&point, 1, &rectSex, NULL)) {
+				} else if (SDL_EnclosePoints(&point, 1, &rectSex, nullptr)) {
 					if (event.type == SDL_MOUSEBUTTONDOWN) {
 						selected = 1;
 					} else if (selected == 1) {
 						skindata = Shapeinfo_lookup::GetNextSelSkin(skindata, si_installed, true);
 					}
 					redraw = true;
-				} else if (SDL_EnclosePoints(&point, 1, &rectOnward, NULL)) {
+				} else if (SDL_EnclosePoints(&point, 1, &rectOnward, nullptr)) {
 					if (event.type == SDL_MOUSEBUTTONDOWN) {
 						selected = 2;
 					} else if (selected == 2) {
@@ -1873,7 +1873,7 @@ bool BG_Game::new_game(Vga_file &shapes) {
 						ok = true;
 					}
 					redraw = true;
-				} else if (SDL_EnclosePoints(&point, 1, &rectReturn, NULL)) {
+				} else if (SDL_EnclosePoints(&point, 1, &rectReturn, nullptr)) {
 					if (event.type == SDL_MOUSEBUTTONDOWN) {
 						selected = 3;
 					} else if (selected == 3) {
@@ -1884,7 +1884,7 @@ bool BG_Game::new_game(Vga_file &shapes) {
 				}
 			} else if (event.type == TouchUI::eventType) {
 				if (event.user.code == TouchUI::EVENT_CODE_TEXT_INPUT) {
-					if (selected == 0 && event.user.data1 != NULL) {
+					if (selected == 0 && event.user.data1 != nullptr) {
 						strcpy(npc_name, static_cast<char*>(event.user.data1));
 						redraw = true;
 					}
