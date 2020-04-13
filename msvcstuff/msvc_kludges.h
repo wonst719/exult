@@ -12,7 +12,7 @@
 #define MSVC_KLUDGES_H
 
 // Firstly some things that need to be defined
-#define VERSION "1.6.0"
+#define VERSION "1.7.0git"
 #define EXULT_DATADIR "data/"
 //#define FUDGE_SAMPLE_RATES
 #define USE_FMOPL_MIDI
