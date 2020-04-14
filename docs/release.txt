@@ -11,6 +11,9 @@ Exult Release Checklist
 
 * make sure the Windows installer doesn't refer to a Git snapshot
   - win32/exult_installer.iss (AppVerName)
+  
+* make sure the osxdmg and clean-local target doesn't refer to a Git snapshot
+  - makefile.am (-volname "...", dmg filename)
 
 * update NEWS; make sure version and date are correct
 
