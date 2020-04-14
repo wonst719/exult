@@ -288,12 +288,12 @@ osxdmg: bundle
 	cp -R $(bundle_name) ./Exult-snapshot/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 					-srcfolder Exult-snapshot \
-					-volname "Exult Git snapshot$(REVISION)" \
-					Exult-snapshot.dmg
+					-volname "Exult 1.6" \
+					Exult-1.6.dmg
 	rm -rf Exult-snapshot
 
 clean-local:
-	-rm -f Exult-snapshot.dmg
+	-rm -f Exult-1.6.dmg
 	-rm -rf $(bundle_name)
 
 else
