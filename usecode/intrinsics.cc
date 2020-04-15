@@ -2595,6 +2595,21 @@ USECODE_INTRINSIC(fade_palette) {
 	return(no_ret);
 }
 
+USECODE_INTRINSIC(fade_palette_sleep) {
+	ignore_unused_variable_warning(num_parms);
+	// Fade(cycles?, ??(always 1), in_out (0=fade to black, 1=fade in)).
+	int cycles = parms[0].get_int_value();
+	int inout = parms[2].get_int_value();
+	if (inout == 0) {
+		show_pending_text();    // Make sure prev. text was seen.
+		Audio::get_ptr()->start_music(24);
+	} else {
+		Audio::get_ptr()->start_music(22);
+	}
+	gwin->get_pal()->fade(cycles, inout);
+	return no_ret;
+}
+
 USECODE_INTRINSIC(get_party_list2) {
 	ignore_unused_variable_warning(num_parms, parms);
 	// Return party.  Same as 0x23

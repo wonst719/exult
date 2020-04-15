@@ -190,8 +190,7 @@
 	USECODE_INTRINSIC_PTR(get_skin_colour),               // 0xa6
 	USECODE_INTRINSIC_PTR(set_path_failure),              // 0xa7
 	USECODE_INTRINSIC_PTR(fade_palette),                  // 0xa8
-	// This one is used just for sleeping:
-	USECODE_INTRINSIC_PTR(fade_palette),                  // 0xa9
+	USECODE_INTRINSIC_PTR(fade_palette_sleep),            // 0xa9
 	USECODE_INTRINSIC_PTR(get_party_list2),               // 0xaa
 	USECODE_INTRINSIC_PTR(in_combat),                     // 0xab
 	USECODE_INTRINSIC_PTR(is_water),                      // 0xac
