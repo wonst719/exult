@@ -298,8 +298,7 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 		num_game_resolutions = (game_resolutions[0] != game_resolutions[2] && game_resolutions[1] != game_resolutions[2]) ? 3 : 2;
 #endif
 	}
-	gclock->reset();
-	gclock->set_palette();
+	gclock->reset_palette();
 
 	o_resolution = resolution;
 	o_scaling = scaling;
@@ -369,8 +368,7 @@ void VideoOptions_gump::save_settings() {
 	}
 	gwin->resized(resx, resy, fullscreen != 0, gw, gh, scaling + 1, scaler, fill_mode,
 	              fill_scaler ? Image_window::bilinear : Image_window::point);
-	gclock->reset();
-	gclock->set_palette();
+	gclock->reset_palette();
 	set_pos();
 	gwin->set_all_dirty();
 
@@ -386,8 +384,7 @@ void VideoOptions_gump::save_settings() {
 		else
 			gwin->resized(resx, resy, o_fullscreen, gw, gh, o_scaling + 1, o_scaler, o_fill_mode,
 			              o_fill_scaler ? Image_window::bilinear : Image_window::point);
-		gclock->reset();
-		gclock->set_palette();
+		gclock->reset_palette();
 		set_pos();
 		gwin->set_all_dirty();
 	} else {

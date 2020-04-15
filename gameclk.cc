@@ -80,11 +80,12 @@ static inline int get_final_palette(
  */
 
 void Game_clock::set_time_palette(
+	bool force
 ) {
 	Game_window *gwin = Game_window::get_instance();
 	Actor *main_actor = gwin->get_main_actor();
 	bool invis = main_actor && main_actor->get_flag(Obj_flags::invisible);
-	if (invis && !old_invisible) {
+	if (invis && (force || !old_invisible)) {
 		if (transition) {
 			delete transition;
 			transition = nullptr;
@@ -96,13 +97,12 @@ void Game_clock::set_time_palette(
 	}
 	old_invisible = invis;
 
-	if (!main_actor || (cheat.in_infravision() && !old_infravision)) {
+	if (!main_actor || (cheat.in_infravision() && (force || !old_infravision))) {
 		if (transition) {
 			delete transition;
 			transition = nullptr;
 		}
 		gwin->get_pal()->set(PALETTE_DAY);
-// As far as I can tell from testing in Direct X and Windib and other scalers, this palette apply isn't even needed.
 		if (!gwin->get_pal()->is_faded_out())
 			gwin->get_pal()->apply(false);
 		return;
@@ -114,11 +114,13 @@ void Game_clock::set_time_palette(
 	int old_palette = get_time_palette(hour, (dungeon != 255 ? dungeon : new_dungeon) != 0);
 	bool cloudy = overcast > 0;
 	bool foggy = fog > 0;
-	bool weather_change = (cloudy != was_overcast) || (foggy != was_foggy);
-	bool light_sensitive = is_dark_palette(new_palette) ||
+	bool weather_change = force || (cloudy != was_overcast) || (foggy != was_foggy);
+	bool light_sensitive = force ||
+	                       is_dark_palette(new_palette) ||
 	                       is_dark_palette(old_palette);
 	bool light_change = light_sensitive &&
-	                    ((light_source_level != old_light_level) ||
+	                    (force ||
+	                     (light_source_level != old_light_level) ||
 	                     (gwin->is_special_light() != old_special_light) ||
 	                     (new_dungeon != dungeon));
 
@@ -127,22 +129,20 @@ void Game_clock::set_time_palette(
 	old_palette = get_final_palette(old_palette, was_overcast, was_foggy,
 	                                old_light_level, old_special_light);
 
-	if (gwin->get_pal()->is_faded_out()) {
-		if (transition) {
-			delete transition;
-			transition = nullptr;
-		}
-		gwin->get_pal()->set(old_palette);
-		if (!gwin->get_pal()->is_faded_out())
-			gwin->get_pal()->apply(true);
-		return;
-	}
-
 	was_overcast = cloudy;
 	was_foggy = foggy;
 	old_light_level = light_source_level;
 	old_special_light = gwin->is_special_light();
 	dungeon = new_dungeon;
+
+	if (gwin->get_pal()->is_faded_out()) {
+		if (transition) {
+			delete transition;
+			transition = nullptr;
+		}
+		gwin->get_pal()->set(new_palette);
+		return;
+	}
 
 	if (weather_change) {
 		// TODO: Maybe implement smoother transition from
@@ -169,7 +169,7 @@ void Game_clock::set_time_palette(
 		transition = nullptr;
 	}
 
-	if (old_palette != new_palette) { // Do we have a transition?
+	if (force || old_palette != new_palette) { // Do we have a transition?
 		transition = new Palette_transition(old_palette, new_palette,
 		                                    hour, minute, 4, 15, hour, 0);
 		return;
@@ -181,13 +181,22 @@ void Game_clock::set_time_palette(
 }
 
 /*
- *  Set palette.  Used for restoring a game.
+ *  Set palette. Used for restoring a game.
  */
 
 void Game_clock::set_palette(
 ) {
 	// Update palette to new time.
-	set_time_palette();
+	set_time_palette(false);
+}
+
+/*
+ *  Resets palette.
+ */
+
+void Game_clock::reset_palette() {
+	// Forcibly update palette to new time.
+	set_time_palette(true);
 }
 
 /*
@@ -198,7 +207,7 @@ void Game_clock::set_light_source_level(
     int lev
 ) {
 	light_source_level = lev;
-	set_time_palette();
+	set_time_palette(false);
 }
 
 /*
@@ -209,7 +218,7 @@ void Game_clock::set_overcast(
     bool onoff
 ) {
 	overcast += (onoff ? 1 : -1);
-	set_time_palette();     // Update palette.
+	set_time_palette(false);     // Update palette.
 }
 
 /*
@@ -222,7 +231,7 @@ void Game_clock::set_fog(
 	fog += (onoff ? 1 : -1);
 	if (hour < 6 || hour > 20)
 		fog = 0;    // Disable fog at night???
-	set_time_palette();     // Update palette.
+	set_time_palette(false);     // Update palette.
 }
 
 /*
@@ -272,7 +281,7 @@ void Game_clock::increment(
 	hour %= 24;
 
 	// Update palette to new time.
-	set_time_palette();
+	set_time_palette(false);
 	// Check to see if we need to update the NPC schedules.
 	if (hour != old_hour)       // Update NPC schedules.
 		gwin->schedule_npcs(hour);
@@ -305,7 +314,7 @@ void Game_clock::handle_event(
 			day++;
 		}
 		// Testing.
-		//set_time_palette();
+		//set_time_palette(false);
 		gwin->mend_npcs();  // Restore HP's each hour.
 		check_hunger();     // Use food, and print complaints.
 		gwin->schedule_npcs(hour);
@@ -314,9 +323,9 @@ void Game_clock::handle_event(
 	if (transition && !transition->set_step(hour, minute)) {
 		delete transition;
 		transition = nullptr;
-		set_time_palette();
+		set_time_palette(false);
 	} else if (hour != hour_old)
-		set_time_palette();
+		set_time_palette(false);
 
 	if ((hour != hour_old) || (minute / 15 != min_old / 15))
 		COUT("Clock updated to " << hour << ':' << minute);
@@ -335,7 +344,7 @@ void Game_clock::fake_next_period(
 	day += hour / 24;       // Update day.
 	hour %= 24;
 	Game_window *gwin = Game_window::get_instance();
-	set_time_palette();
+	set_time_palette(false);
 	check_hunger();
 	gwin->schedule_npcs(hour);
 	gwin->mend_npcs();      // Just do it once, cheater.

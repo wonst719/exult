@@ -114,8 +114,7 @@ void Gamemenu_gump::video_options() {
 	gwin->show();
 	delete vid_opts;
 
-	gclock->reset();
-	gclock->set_palette();
+	gclock->reset_palette();
 }
 
 void Gamemenu_gump::audio_options() {

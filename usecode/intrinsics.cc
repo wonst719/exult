@@ -2589,9 +2589,15 @@ USECODE_INTRINSIC(fade_palette) {
 	// Fade(cycles?, ??(always 1), in_out (0=fade to black, 1=fade in)).
 	int cycles = parms[0].get_int_value();
 	int inout = parms[2].get_int_value();
-	if (inout == 0)
+	if (inout == 0) {
 		show_pending_text();    // Make sure prev. text was seen.
+	} else {
+		gclock->reset_palette();
+	}
 	gwin->get_pal()->fade(cycles, inout);
+	if (inout == 0) {
+		gwin->toggle_ambient_light(false);
+	}
 	return no_ret;
 }
 
@@ -2605,6 +2611,7 @@ USECODE_INTRINSIC(fade_palette_sleep) {
 		Audio::get_ptr()->start_music(24);
 	} else {
 		Audio::get_ptr()->start_music(22);
+		gclock->reset_palette();
 	}
 	gwin->get_pal()->fade(cycles, inout);
 	return no_ret;
@@ -2626,16 +2633,12 @@ USECODE_INTRINSIC(set_camera) {
 	if (actor) {
 		gwin->set_camera_actor(actor);
 		activate_cached(actor->get_tile()); // Mar-10-01 - For Test of Love.
-		gclock->reset();
-		gclock->set_palette();
 	} else {
 		Game_object *obj = get_item(parms[0]);
 		if (obj) {
 			Tile_coord t = obj->get_tile();
 			gwin->center_view(t);
 			activate_cached(t); // Mar-10-01 - For Test of Love.
-			gclock->reset();
-			gclock->set_palette();
 		}
 	}
 
@@ -3215,8 +3218,7 @@ USECODE_INTRINSIC(set_light) {
 USECODE_INTRINSIC(set_time_palette) {
 	ignore_unused_variable_warning(num_parms, parms);
 	// set_time_palette()
-	gclock->reset();
-	gclock->set_palette();
+	gclock->reset_palette();
 	return no_ret;
 }
 

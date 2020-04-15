@@ -201,8 +201,7 @@ void CheatScreen::show_screen() {
 	gwin->get_tqueue()->resume(SDL_GetTicks());
 
 	// Reset the palette
-	clock->reset();
-	clock->set_palette();
+	clock->reset_palette();
 	if (touchui != nullptr) {
 		Gump_manager *gumpman = gwin->get_gump_man();
 		if (!gumpman->gump_mode()) {
