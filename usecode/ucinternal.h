@@ -332,6 +332,7 @@ class Usecode_internal : public Usecode_machine {
 	USECODE_INTRINSIC_DECL(clear_item_flag);
 	USECODE_INTRINSIC_DECL(set_path_failure);
 	USECODE_INTRINSIC_DECL(fade_palette);
+	USECODE_INTRINSIC_DECL(fade_palette_sleep);
 	USECODE_INTRINSIC_DECL(get_party_list2);
 	USECODE_INTRINSIC_DECL(set_camera);
 	USECODE_INTRINSIC_DECL(in_combat);
