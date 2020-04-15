@@ -1374,6 +1374,12 @@ void Patrol_schedule::now_what(
 		// Hammer should be in inventory by now.
 		Game_object_shared hammer_obj = hammer.lock();
 		Game_object_shared keep;
+		if (!hammer_obj) {
+			// uh-oh... this should be impossible.
+			// Try finding hammer again
+			state = 1;
+			npc->start(speed, speed);
+		}
 		hammer_obj->remove_this(&keep);
 		// For safety, unready weapon first.
 		npc->empty_hands();
@@ -3018,9 +3024,14 @@ void Lab_schedule::now_what(
 	case walk_to_table: {
 		state = start;      // In case we fail.
 		int ntables = tables.size();
-		if (!ntables)
+		if (!ntables) {
 			break;
-		Game_object_shared table = (tables[rand() % ntables]).lock();
+		}
+		int tableindex = rand() % ntables;
+		Game_object_shared table = (tables[tableindex]).lock();
+		if (!table) {
+			break;
+		}
 		Rectangle r = table->get_footprint();
 		Perimeter p(r);     // Find spot adjacent to table.
 		Tile_coord spot;    // Also get closest spot on table.
@@ -3295,12 +3306,14 @@ bool Waiter_schedule::walk_to_work_spot(
 		int index = rand() % tables.size();
 		prep_table = tables[index];
 		Game_object_shared prep_table_obj = prep_table.lock();
-		Tile_coord pos = Map_chunk::find_spot(
-		                     prep_table_obj->get_tile(), 1, npc);
-		if (pos.tx != -1 &&
-		        npc->walk_path_to_tile(pos, gwin->get_std_delay(),
-		                               1000 + rand() % 1000))
-			return true;
+		if (prep_table_obj) {
+			Tile_coord pos = Map_chunk::find_spot(
+								prep_table_obj->get_tile(), 1, npc);
+			if (pos.tx != -1 &&
+					npc->walk_path_to_tile(pos, gwin->get_std_delay(),
+										1000 + rand() % 1000))
+				return true;
+		}
 		// Failed, so remove this table from the list.
 		tables.erase(tables.begin() + index);
 	}
@@ -3392,7 +3405,7 @@ static Game_object *Find_customer_table(Actor *customer,
 	vector<Game_object_weak>::const_iterator it;
 	for (it = tables.begin(); it != tables.end(); ++it) {
 	    Game_object_shared table = (*it).lock();
-		if (customer->distance(table.get()) < 3)
+		if (table && customer->distance(table.get()) < 3)
 			return table.get();
 	}
 	return nullptr;
@@ -3424,9 +3437,14 @@ Game_object *Waiter_schedule::create_customer_plate(
 	// Go through tables.
 	for (it = eating_tables.begin(); it != eating_tables.end(); ++it) {
 		Game_object_shared table = (*it).lock();
-		Rectangle foot = table->get_footprint();
-		if (foot.distance(cpos.tx, cpos.ty) > 2)
+		if (!table) {
+			it = eating_tables.erase(it);
 			continue;
+		}
+		Rectangle foot = table->get_footprint();
+		if (foot.distance(cpos.tx, cpos.ty) > 2) {
+			continue;
+		}
 		// Found it.
 		Tile_coord spot = cpos;        // Start here.
 		// East/West of table?
@@ -3767,7 +3785,7 @@ void Waiter_schedule::now_what(
 		if (!unattended_plates.empty()) {
 			// Closest.
 			Game_object_shared plate = unattended_plates.front().lock();
-			if (npc->walk_path_to_tile(plate->get_tile(),
+			if (plate && npc->walk_path_to_tile(plate->get_tile(),
 			        gwin->get_std_delay(), 500 + rand() % 1000, 2)) {
 				state = cleanup_food;
 				break;
@@ -3784,6 +3802,11 @@ void Waiter_schedule::now_what(
 			Game_object_shared plate = unattended_plates.front().lock();
 			unattended_plates.erase(unattended_plates.begin());
 			// Delete after picking up.
+			if (!plate) {
+				state = walk_to_cleanup_food;
+				npc->start(gwin->get_std_delay(), 500 + rand()%1000);
+				break;
+			}
 			Actor_action *act = new Pickup_actor_action(plate.get(), 250, true);
 			Game_object *food = plate->find_closest(377, 2);
 			if (food) {
