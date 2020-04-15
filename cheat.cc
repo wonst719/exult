@@ -981,8 +981,7 @@ void Cheat::shape_browser(void) const {
 
 	browser->browse_shapes();
 	gwin->paint();
-	gclock->reset();
-	gclock->set_palette();
+	gclock->reset_palette();
 }
 
 bool Cheat::get_browser_shape(int &shape, int &frame) const {

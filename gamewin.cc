@@ -1941,8 +1941,7 @@ void Game_window::teleport_party(
 	// Fixes a rare crash when moving between maps and teleporting:
 	newmap = main_actor->get_map_num();
 	center_view(t);         // Bring pos. into view, and insure all
-	clock->reset();         // Reset and re-display palette.
-	clock->set_palette();
+	clock->reset_palette();
 	//   objs. exist.
 	for (i = 0; i < cnt; i++) {
 		int party_member = party_man->get_member(i);
@@ -2935,8 +2934,7 @@ void Game_window::setup_game(
 		g_shortcutBar = new ShortcutBar_gump(0,0);
 
 	// Set palette for time-of-day.
-	clock->reset();
-	clock->set_palette();
+	clock->reset_palette();
 	pal->fade(6, 1, -1);        // Fade back in.
 }
 

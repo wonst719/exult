@@ -48,7 +48,7 @@ class Game_clock : public Time_sensitive {
 	bool was_foggy;
 	Palette_transition *transition; // For smooth palette transitions.
 	unsigned short time_rate;
-	void set_time_palette();
+	void set_time_palette(bool force);
 	void set_light_source_level(int lev);
 	void check_hunger() const;
 public:
@@ -83,6 +83,7 @@ public:
 		return get_total_hours() * 60 + minute;
 	}
 	void set_palette();     // Set palette for current hour.
+	void reset_palette();
 	// Set light source.  MUST be fast,
 	//   since it's called during paint().
 	void set_light_source(int lev, int dun) {
