@@ -24,6 +24,8 @@
 #include "tqueue.h"
 #include "palette.h"
 
+#include <memory>
+
 /*
  *  The number of times that the game clock ticks in one game minute.
  */
@@ -46,7 +48,7 @@ class Game_clock : public Time_sensitive {
 	bool was_overcast;
 	int fog;            // >0 if there is fog.
 	bool was_foggy;
-	Palette_transition *transition; // For smooth palette transitions.
+	std::unique_ptr<Palette_transition> transition; // For smooth palette transitions.
 	unsigned short time_rate;
 	void set_time_palette(bool force);
 	void set_light_source_level(int lev);
@@ -55,8 +57,7 @@ public:
 	Game_clock(Time_queue *tq) : tqueue(tq), hour(6), minute(0), day(0),
 		light_source_level(0), old_light_level(0), old_special_light(false),
 		old_infravision(false), old_invisible(false), dungeon(255),
-		overcast(0), was_overcast(false), fog(0), was_foggy(false),
-		transition(nullptr), time_rate(1)
+		overcast(0), was_overcast(false), fog(0), was_foggy(false), time_rate(1)
 	{ }
 	int get_hour() const {
 		return hour;
@@ -97,8 +98,7 @@ public:
 		old_infravision = false;
 		old_invisible = false;
 		dungeon = 255;
-		delete transition;
-		transition = nullptr;
+		transition.reset();
 	}
 	void set_overcast(bool onoff);  // Start/end cloud cover.
 	void set_fog(bool onoff);   // Start/end cloud cover.

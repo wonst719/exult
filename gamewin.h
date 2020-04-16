@@ -112,11 +112,12 @@ class Game_window {
 	Time_sensitive *background_noise;
 	Usecode_machine *usecode;   // Drives game plot.
 	// Game state flags:
-	bool combat;            // true if in combat.
-	bool focus;         // Do we have focus?
-	bool ice_dungeon;       // true if inside ice dungeon
-	bool painted;           // true if we updated image buffer.
-	bool ambient_light;     // Permanent version of special_light.
+	bool combat;             // true if in combat.
+	bool focus;              // Do we have focus?
+	bool ice_dungeon;        // true if inside ice dungeon
+	bool painted;            // true if we updated image buffer.
+	bool ambient_light;      // Permanent version of special_light.
+	bool infravision_active; // Infravision flag.
 	// Game state values:
 	int skip_above_actor;       // Level above actor to skip rendering.
 	unsigned int in_dungeon;    // true if inside a dungeon.
@@ -229,17 +230,17 @@ public:
 	inline Rectangle get_full_rect() const { // Get window's rectangle.
 		return Rectangle(win->get_start_x(), win->get_start_y(), win->get_full_width(), win->get_full_height());
 	}
-	Rectangle get_win_tile_rect() { // Get it in tiles, rounding up.
+	Rectangle get_win_tile_rect() const { // Get it in tiles, rounding up.
 		return Rectangle(get_scrolltx(), get_scrollty(),
 		                 (win->get_game_width() + c_tilesize - 1) / c_tilesize,
 		                 (win->get_game_height() + c_tilesize - 1) / c_tilesize);
 	}
 	// Clip rectangle to window's.
-	Rectangle clip_to_game(Rectangle const &r) {
+	Rectangle clip_to_game(Rectangle const &r) const {
 		Rectangle wr = get_game_rect();
 		return r.intersect(wr);
 	}
-	Rectangle clip_to_win(Rectangle const &r) {
+	Rectangle clip_to_win(Rectangle const &r) const {
 		Rectangle wr = get_full_rect();
 		return r.intersect(wr);
 	}
@@ -338,7 +339,7 @@ public:
 	inline void set_dpad_location(int a) {
 		dpad_location = a;
 	}
-	inline int get_dpad_location() {
+	inline int get_dpad_location() const {
 		return dpad_location;
 	}
 	bool get_touch_pathfind() const {
@@ -366,25 +367,25 @@ public:
 	inline Time_queue *get_tqueue() const {
 		return tqueue;
 	}
-	Palette *get_pal() {
+	inline Palette *get_pal() const {
 		return pal;
 	}
-	Effects_manager *get_effects() {
+	inline Effects_manager *get_effects() const {
 		return effects;
 	}
-	inline Gump_manager *get_gump_man() {
+	inline Gump_manager *get_gump_man() const {
 		return gump_man;
 	}
-	inline Party_manager *get_party_man() {
+	inline Party_manager *get_party_man() const {
 		return party_man;
 	}
-	inline Npc_proximity_handler *get_npc_prox()  {
+	inline Npc_proximity_handler *get_npc_prox() const {
 		return npc_prox;
 	}
-	Game_clock *get_clock() {
+	Game_clock *get_clock() const {
 		return clock;
 	}
-	bool is_bg_track(int num); // ripped out of Background_noise
+	bool is_bg_track(int num) const; // ripped out of Background_noise
 	Game_map *get_map(int num); // Read in additional map.
 	void set_map(int num);      // Make map #num the current map.
 	/*
@@ -401,11 +402,11 @@ public:
 		return moving_barge;
 	}
 	void set_moving_barge(Barge_object *b);
-	bool is_moving();       // Is Avatar (or barge) moving?
+	bool is_moving() const;       // Is Avatar (or barge) moving?
 	inline Main_actor *get_main_actor() const {
 		return main_actor;
 	}
-	bool is_main_actor_inside() {
+	bool is_main_actor_inside() const {
 		return skip_above_actor < 31 ;
 	}
 	// Returns if skip_above_actor changed!
@@ -418,9 +419,9 @@ public:
 		return skip_above_actor < skip_lift ?
 		       skip_above_actor : skip_lift;
 	}
-	bool main_actor_dont_move();
-	bool main_actor_can_act();
-	bool main_actor_can_act_charmed();
+	bool main_actor_dont_move() const;
+	bool main_actor_can_act() const;
+	bool main_actor_can_act_charmed() const;
 	inline bool set_in_dungeon(unsigned int lift) {
 		if (in_dungeon == lift)
 			return false;
@@ -430,10 +431,14 @@ public:
 	inline void set_ice_dungeon(bool ice) {
 		ice_dungeon = ice;
 	}
-	inline unsigned int is_in_dungeon() {
+	inline unsigned int is_in_dungeon() const {
 		return in_dungeon;
 	}
-	inline bool is_special_light() { // Light spell in effect?
+	bool in_infravision() const;
+	void toggle_infravision(bool state) {
+		infravision_active = state;
+	}
+	inline bool is_special_light() const { // Light spell in effect?
 		return ambient_light || special_light != 0;
 	}
 	// Light spell.
@@ -459,19 +464,19 @@ public:
 			bodies.resize(npc_num + 1);
 		bodies[npc_num] = body;
 	}
-	Dead_body *get_body(int npc_num) {
+	Dead_body *get_body(int npc_num) const {
 		return bodies[npc_num];
 	}
-	int get_num_npcs() {
+	int get_num_npcs() const {
 		return npcs.size();
 	}
 	int get_unused_npc();       // Find first unused NPC #.
 	void add_npc(Actor *npc, int num);  // Add new one.
-	inline bool in_combat() {    // In combat mode?
+	inline bool in_combat() const {    // In combat mode?
 		return combat;
 	}
 	void toggle_combat();
-	inline bool get_frame_skipping() {  // This needs doing
+	inline bool get_frame_skipping() const {  // This needs doing
 		return true;
 	}
 	// Get ->party members.
@@ -480,7 +485,7 @@ public:
 	void add_nearby_npc(Npc_actor *npc);
 	void remove_nearby_npc(Npc_actor *npc);
 	// Get all nearby NPC's.
-	void get_nearby_npcs(std::vector<Actor *> &list);
+	void get_nearby_npcs(std::vector<Actor *> &list) const;
 	// Update NPCs' schedules.
 	void schedule_npcs(int hour, bool repaint = true);
 	void mend_npcs();       // Restore HP's each hour.
@@ -491,7 +496,7 @@ public:
 	void call_guards(Actor *witness = nullptr, bool theft = false);
 	void stop_arresting();
 	void attack_avatar(int create_guards = 0, int align = 0);
-	bool is_hostile_nearby(); // detects if hostiles are nearby for movement speed
+	bool is_hostile_nearby() const; // detects if hostiles are nearby for movement speed
 	bool failed_copy_protection();
 	void got_bad_feeling(int odds);
 	/*
@@ -500,7 +505,7 @@ public:
 	inline void set_painted() { // Force blit.
 		painted = true;
 	}
-	inline bool was_painted() {
+	inline bool was_painted() const {
 		return painted;
 	}
 	bool show(bool force = false) { // Returns true if blit occurred.
@@ -515,7 +520,7 @@ public:
 	void clear_dirty() {    // Clear dirty rectangle.
 		dirty.w = 0;
 	}
-	bool is_dirty() {
+	bool is_dirty() const {
 		return dirty.w > 0;
 	}
 	// Paint scene at given tile.
@@ -647,13 +652,13 @@ public:
 	inline void set_step_tile_delta(int size) {
 		step_tile_delta = size;
 	}
-	inline int get_step_tile_delta() {
+	inline int get_step_tile_delta() const {
 		return step_tile_delta;
 	}
 	inline void set_allow_right_pathfind(int a) {
 		allow_right_pathfind = a;
 	}
-	inline int get_allow_right_pathfind() {
+	inline int get_allow_right_pathfind() const {
 		return allow_right_pathfind;
 	}
 	void teleport_party(Tile_coord const &t, bool skip_eggs = false,
