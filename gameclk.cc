@@ -55,8 +55,16 @@ static inline int get_final_palette(
     bool cloudy,
     bool foggy,
     int light,
-    bool special
+    bool special,
+	bool infravision,
+	bool invisible
 ) {
+	if (invisible) {
+		return PALETTE_INVISIBLE;
+	}
+	if (infravision) {
+		return PALETTE_DAY;
+	}
 	if ((light || special) && is_dark_palette(pal)) {
 		int light_palette = PALETTE_SINGLE_LIGHT;
 		// Gump mode, or light spell?
@@ -108,9 +116,11 @@ void Game_clock::set_time_palette(
 
 	// These are the final palettes we will use for checking.
 	new_palette = get_final_palette(new_palette, cloudy, foggy,
-	                                light_source_level, gwin->is_special_light());
+	                                light_source_level, gwin->is_special_light(),
+	                                infra, invis);
 	old_palette = get_final_palette(old_palette, was_overcast, was_foggy,
-	                                old_light_level, old_special_light);
+	                                old_light_level, old_special_light,
+	                                old_infravision, old_invisible);
 
 	// Always update these variables.
 	was_overcast = cloudy;
@@ -130,13 +140,7 @@ void Game_clock::set_time_palette(
 	};
 	if (invis_change || infra_change || gwin->get_pal()->is_faded_out()) {
 		transition.reset();
-		if (invis_change) {
-			apply_palette(PALETTE_INVISIBLE);
-		} else if (infra_change) {
-			apply_palette(PALETTE_DAY);
-		} else {
-			apply_palette(new_palette);
-		}
+		apply_palette(new_palette);
 		return;
 	}
 	if (weather_change) {
