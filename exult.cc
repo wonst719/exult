@@ -648,12 +648,53 @@ static void SetIcon() {
 #endif
 }
 
+void Open_game_controller(int joystick_index) {
+	SDL_GameController *input_device = SDL_GameControllerOpen(joystick_index);
+	if (input_device) {
+		SDL_GameControllerGetJoystick(input_device);
+		printf("Game controller attached and open: \"%s\"\n",
+			SDL_GameControllerName(input_device)
+		);
+	} else {
+		printf("Game controller attached, but it failed to open. Error:\"%s\"\n",
+			SDL_GetError());
+	}
+}
+
+int Handle_device_connection_event(void *, SDL_Event *event) {
+	// Make sure that game-controllers are opened and closed, as they
+	// become connected or disconnected.
+	switch (event->type) {
+		case SDL_CONTROLLERDEVICEADDED: {
+			SDL_JoystickID joystick_id = SDL_JoystickGetDeviceInstanceID(event->cdevice.which);
+			if (!SDL_GameControllerFromInstanceID(joystick_id)) {
+				Open_game_controller(event->cdevice.which);
+			}
+			break;
+		}
+		case SDL_CONTROLLERDEVICEREMOVED: {
+			SDL_GameController *input_device = SDL_GameControllerFromInstanceID(event->cdevice.which);
+			if (input_device) {
+				SDL_GameControllerClose(input_device);
+				input_device = NULL;
+				printf("Game controller detached and closed.\n");
+			}
+			break;
+		}
+	}
+
+	// Returning 1 will tell SDL2, which can invoke this via a callback
+	// setup through SDL_AddEventWatch, to make sure the event gets posted
+	// to its event-queue (rather than dropping it).
+	return 1;
+}
+
 /*
  *  Initialize and create main window.
  */
 static void Init(
 ) {
-	Uint32 init_flags = SDL_INIT_VIDEO | SDL_INIT_TIMER;
+	Uint32 init_flags = SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER;
 #ifdef NO_SDL_PARACHUTE
 	init_flags |= SDL_INIT_NOPARACHUTE;
 #endif
@@ -695,6 +736,19 @@ static void Init(
 	// KBD repeat should be nice.
 	SDL_ShowCursor(0);
 	SDL_VERSION(&info.version);
+
+	// Open any connected game controllers.
+	for (int i = 0, n = SDL_NumJoysticks(); i < n; ++i) {
+		if (SDL_IsGameController(i)) {
+			Open_game_controller(i);
+		}
+	}
+	// Listen for game controller device connection and disconnection
+	// events. Registering a listener allows these events to be received
+	// and processed via any event-processing loop, of which Exult has
+	// many, without needing to modify each individual loop, and to
+	// make sure that SDL_GameController objects are always ready.
+	SDL_AddEventWatch(Handle_device_connection_event, NULL);
 
 	// Load games and mods; also stores system paths:
 	gamemanager = new GameManager();
@@ -1254,6 +1308,75 @@ static void Handle_event(
 			}
 		}
 		dragging = dragged = false;
+		break;
+	}	
+	case SDL_CONTROLLERAXISMOTION: {
+		// Ignore axis changes on anything but a specific thumb-stick
+		// on the game-controller.
+		if (!(event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX ||
+			  event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY))
+		{
+			break;
+		}
+
+		SDL_GameController *input_device = SDL_GameControllerFromInstanceID(event.caxis.which);
+		if (input_device &&
+			!dont_move_mode &&
+			avatar_can_act &&
+			gwin->main_actor_can_act_charmed())
+		{
+			// Collect both of the controller thumb-stick's axis values.
+			// The input-event only carries one axis, and each thumb-stick
+			// has two axes.  Both axes' values are needed in order to
+			// call start_actor.
+			Sint16 axis_x = SDL_GameControllerGetAxis(input_device, SDL_CONTROLLER_AXIS_LEFTX);
+			Sint16 axis_y = SDL_GameControllerGetAxis(input_device, SDL_CONTROLLER_AXIS_LEFTY);
+
+			// Many analog game-controllers report non-zero axis values,
+			// even when the controller isn't moving.  These non-zero
+			// values can change over time, as the thumb-stick is moved
+			// by the player.
+			//
+			// In order to prevent idle controller sticks from leading
+			// to unwanted movements, axis-values that are small will
+			// be ignored.  This is sometimes referred to as a
+			// "dead zone".
+			const int axis_dead_zone = 8000;
+			if (abs(axis_x) <= axis_dead_zone) {
+				axis_x = 0;
+			}
+			if (abs(axis_y) <= axis_dead_zone) {
+				axis_y = 0;
+			}
+
+			// printf("controller-motion: %6d,%6d  (dead_zone:%d)\n",
+			// 	axis_x, axis_y, axis_dead_zone);
+
+			// Depending on axis values, we're either going to start moving,
+			// restarting moving (which looks the same as starting, to us),
+			// or stopping.
+			if (axis_x == 0 && axis_y == 0) {
+				// Both axes are zero, so we'll stop.
+				gwin->stop_actor();
+			} else {
+				// At least one axis is non-zero, so we'll [re]start moving.
+
+				// Declare a position to aim for, in window coordinates, relative
+				// to the center of the window (where the player is).
+				const float aim_distance = 50.f;
+				const int aim_dx = static_cast<int>(std::lround((aim_distance * axis_x) / SDL_JOYSTICK_AXIS_MAX));
+				const int aim_dy = static_cast<int>(std::lround((aim_distance * axis_y) / SDL_JOYSTICK_AXIS_MAX));
+				const int aim_x = (gwin->get_width() / 2) + aim_dx;
+				const int aim_y = (gwin->get_height() / 2) + aim_dy;
+
+				// Declare a player speed.  For now, just use a fixed speed.
+				// TODO: implement variable movement speeds when using a game controller
+				const int speed = 200 * gwin->get_std_delay() / Mouse::fast_speed_factor;
+
+				// [re]start moving
+				gwin->start_actor(aim_x, aim_y, speed);
+			}
+		}
 		break;
 	}
 	case SDL_MOUSEBUTTONDOWN: {
