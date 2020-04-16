@@ -2568,12 +2568,15 @@ bool Sit_schedule::set_action(
 	if (!chairobj) {        // Find chair if not given.
 		static int chairshapes[] = {873, 292};
 		actor->find_closest(chairs, chairshapes, array_size(chairshapes));
-		for (Game_object_vector::const_iterator it = chairs.begin();
-		        it != chairs.end(); ++it)
-			if (!Sit_actor_action::is_occupied((*it), actor)) {
+		for (auto& chair : chairs)
+			if (!Sit_actor_action::is_occupied(chair, actor)) {
+				Path_walking_actor_action action(nullptr, 6);
+				bool reachable = action.walk_to_tile(actor, actor->get_tile(), chair->get_tile(), 1) != nullptr;
 				// Found an unused one.
-				chairobj = *it;
-				break;
+				if (reachable) {
+					chairobj = chair;
+					break;
+				}
 			}
 		if (!chairobj)
 			return false;
