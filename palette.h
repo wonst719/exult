@@ -63,7 +63,7 @@ public:
 	void take(Palette *pal);    // Copies a palette into another.
 	// Fade palette in/out.
 	void fade(int cycles, int inout, int pal_num = -1);
-	bool is_faded_out() {
+	bool is_faded_out() const {
 		return faded_out;
 	}
 	void flash_red();   // Flash red for a moment.
@@ -72,7 +72,7 @@ public:
 	         bool repaint = true);
 	void set(unsigned char palnew[768], int new_brightness = -1,
 	         bool repaint = true, bool border255 = false);
-	int get_brightness() {  // Percentage:  100 = normal.
+	int get_brightness() const {  // Percentage:  100 = normal.
 		return brightness;
 	}
 	//   the user.
@@ -92,25 +92,29 @@ public:
 	          const File_spec &fname2, int index,
 	          const char *xfname = nullptr, int xindex = -1);
 	void set_brightness(int bright);
-	void set_max_val(int max);
-	int get_max_val();
+	void set_max_val(int max) {
+		max_val = max;
+	}
+	int get_max_val() const {
+		return max_val;
+	}
 	void fade_in(int cycles);
 	void fade_out(int cycles);
-	int find_color(int r, int g, int b, int last = 0xe0);
-	void create_palette_map(Palette *to, unsigned char *&buf);
-	Palette *create_intermediate(Palette *to, int nsteps, int pos);
+	int find_color(int r, int g, int b, int last = 0xe0) const;
+	void create_palette_map(const Palette *to, unsigned char *&buf) const;
+	Palette *create_intermediate(const Palette *to, int nsteps, int pos) const;
 	void create_trans_table(unsigned char br, unsigned bg,
-	                        unsigned bb, int alpha, unsigned char *table);
+	                        unsigned bb, int alpha, unsigned char *table) const;
 	void show();
 
 	void set_color(int nr, int r, int g, int b);
-	unsigned char get_red(int nr) {
+	unsigned char get_red(int nr) const {
 		return pal1[3 * nr];
 	}
-	unsigned char get_green(int nr) {
+	unsigned char get_green(int nr) const {
 		return pal1[3 * nr + 1];
 	}
-	unsigned char get_blue(int nr) {
+	unsigned char get_blue(int nr) const {
 		return pal1[3 * nr + 2];
 	}
 	void set_palette(unsigned char palnew[768]);
@@ -120,7 +124,7 @@ public:
 		border[2] = b;
 	}
 
-	unsigned char get_border_index() {
+	unsigned char get_border_index() const {
 
 		return border255 ? 255 : 0;
 	}
@@ -146,7 +150,7 @@ public:
 		return step;
 	}
 	bool set_step(int hour, int min);
-	Palette *get_current_palette() {
+	Palette *get_current_palette() const {
 		return current;
 	}
 };

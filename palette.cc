@@ -393,7 +393,7 @@ void Palette::fade_out(int cycles) {
 }
 
 //	Find index (0-255) of closest color (r,g,b < 64).
-int Palette::find_color(int r, int g, int b, int last) {
+int Palette::find_color(int r, int g, int b, int last) const {
 	int best_index = -1;
 	long best_distance = 0xfffffff;
 	// But don't search rotating colors.
@@ -416,7 +416,7 @@ int Palette::find_color(int r, int g, int b, int last) {
  *  Creates a translation table between two palettes.
  */
 
-void Palette::create_palette_map(Palette *to, unsigned char *&buf) {
+void Palette::create_palette_map(const Palette *to, unsigned char *&buf) const {
 	// Assume buf has 256 elements
 	for (int i = 0; i < 256; i++)
 		buf[i] = to->find_color(pal1[3 * i], pal1[3 * i + 1], pal1[3 * i + 2], 256);
@@ -426,13 +426,13 @@ void Palette::create_palette_map(Palette *to, unsigned char *&buf) {
  *  Creates a palette in-between two palettes.
  */
 
-Palette *Palette::create_intermediate(Palette *to, int nsteps, int pos) {
+Palette *Palette::create_intermediate(const Palette *to, int nsteps, int pos) const {
 	unsigned char palnew[768];
 	if (fades_enabled) {
 		for (int c = 0; c < 768; c++)
 			palnew[c] = ((to->pal1[c] - pal1[c]) * pos) / nsteps + pal1[c];
 	} else {
-		unsigned char *palold;
+		const unsigned char *palold;
 		if (2 * pos >= nsteps)
 			palold = to->pal1;
 		else
@@ -454,7 +454,7 @@ void Palette::create_trans_table(
     unsigned char br, unsigned bg, unsigned bb,
     int alpha,          // 0-255, applied to 'blend' color.
     unsigned char *table        // 256 indices are stored here.
-) {
+) const {
 	for (int i = 0; i < 256; i++) {
 		int newr = (static_cast<int>(br) * alpha) / 255 +
 		           (static_cast<int>(pal1[i * 3]) * (255 - alpha)) / 255;
@@ -483,14 +483,6 @@ void Palette::set_color(int nr, int r, int g, int b) {
 void Palette::set_palette(unsigned char palnew[768]) {
 	memcpy(pal1, palnew, 768);
 	memset(pal2, 0, 768);
-}
-
-void Palette::set_max_val(int max) {
-	max_val = max;
-}
-
-int Palette::get_max_val() {
-	return max_val;
 }
 
 Palette_transition::Palette_transition(
