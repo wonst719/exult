@@ -1489,12 +1489,8 @@ bool Usecode_internal::is_dest_reachable(
 		return false;
 	if (npc->distance(dest) <= 1)   // Already OK.
 		return true;
-	Path_walking_actor_action *action =
-	    new Path_walking_actor_action(nullptr, 6);
-
-	bool ret = action->walk_to_tile(npc, npc->get_tile(), dest, 1) != nullptr;
-	delete action;
-	return ret;
+	Path_walking_actor_action action(nullptr, 6);
+	return action.walk_to_tile(npc, npc->get_tile(), dest, 1) != nullptr;
 }
 
 /*

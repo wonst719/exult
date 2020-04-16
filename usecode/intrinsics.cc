@@ -827,18 +827,19 @@ USECODE_INTRINSIC(display_runes) {
 	int cnt = parms[1].get_array_size();
 	if (!cnt)
 		cnt = 1;        // Try with 1 element.
-	Sign_gump *sign = new Sign_gump(parms[0].get_int_value(), cnt);
-	for (int i = 0; i < cnt; i++) {
-		// Paint each line.
-		Usecode_value &lval = !i ? parms[1].get_elem0()
-		                      : parms[1].get_elem(i);
-		const char *str = lval.get_str_value();
-		sign->add_text(i, str);
+	{
+		Sign_gump sign(parms[0].get_int_value(), cnt);
+		for (int i = 0; i < cnt; i++) {
+			// Paint each line.
+			Usecode_value &lval = !i ? parms[1].get_elem0()
+								: parms[1].get_elem(i);
+			const char *str = lval.get_str_value();
+			sign.add_text(i, str);
+		}
+		int x;
+		int y;           // Paint it, and wait for click.
+		Get_click(x, y, Mouse::hand, nullptr, false, &sign);
 	}
-	int x;
-	int y;           // Paint it, and wait for click.
-	Get_click(x, y, Mouse::hand, nullptr, false, sign);
-	delete sign;
 	gwin->paint();
 	return no_ret;
 }
