@@ -3236,7 +3236,7 @@ USECODE_INTRINSIC(infravision) {
 	// infravision(npc, onoff)
 	Actor *npc = as_actor(get_item(parms[0]));
 	if (npc && npc->is_in_party()) {
-		cheat.set_infravision(parms[1].get_int_value() != 0);
+		gwin->toggle_infravision(parms[1].get_int_value() != 0);
 		gclock->set_palette();
 	}
 	return no_ret;

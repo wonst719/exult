@@ -48,6 +48,7 @@ class Game_clock : public Time_sensitive {
 	bool was_foggy;
 	Palette_transition *transition; // For smooth palette transitions.
 	unsigned short time_rate;
+	void apply_palette(int palette);
 	void set_time_palette(bool force);
 	void set_light_source_level(int lev);
 	void check_hunger() const;
@@ -98,7 +99,7 @@ public:
 		old_invisible = false;
 		dungeon = 255;
 		delete transition;
-		transition = 0;
+		transition = NULL;
 	}
 	void set_overcast(bool onoff);  // Start/end cloud cover.
 	void set_fog(bool onoff);   // Start/end cloud cover.

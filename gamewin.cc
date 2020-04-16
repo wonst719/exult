@@ -381,8 +381,8 @@ Game_window::Game_window(
 	party_man(new Party_manager), win(0),
 	npc_prox(new Npc_proximity_handler(this)), pal(0),
 	tqueue(new Time_queue()), background_noise(new Background_noise(this)),
-	usecode(0), combat(false), focus(true), ice_dungeon(false),
-	painted(false), ambient_light(false),
+	usecode(nullptr), combat(false), focus(true), ice_dungeon(false),
+	painted(false), ambient_light(false), infravision_active(false),
 	skip_above_actor(31), in_dungeon(0), num_npcs1(0),
 	std_delay(c_std_delay), time_stopped(0), special_light(0),
 	theft_warnings(0), theft_cx(255), theft_cy(255),
@@ -581,7 +581,7 @@ void Game_window::abort(
 	throw quit_exception(-1);
 }
 
-bool Game_window::is_bg_track(int num) { // ripped out of Background_noise
+bool Game_window::is_bg_track(int num) const { // ripped out of Background_noise
 	// Have to do it this way because of SI.
 	if (num == Audio::game_music(4) || num == Audio::game_music(5) ||
 			num == Audio::game_music(6) || num == Audio::game_music(7) ||
@@ -719,7 +719,7 @@ void Game_window::set_moving_barge(
  */
 
 bool Game_window::is_moving(
-) {
+) const {
 	return moving_barge ? moving_barge->is_moving()
 	       : main_actor->is_moving();
 }
@@ -727,23 +727,26 @@ bool Game_window::is_moving(
 /*
  *  Are we in dont_move mode?
  */
-
-bool Game_window::main_actor_dont_move() {
-	return !cheat.in_map_editor() && main_actor != 0 && // Not if map-editing.
-	       ((main_actor->get_flag(Obj_flags::dont_move) != 0) ||
-	        (main_actor->get_flag(Obj_flags::dont_render) != 0));
+bool Game_window::main_actor_dont_move() const {
+	return !cheat.in_map_editor() && main_actor != nullptr && // Not if map-editing.
+	       ((main_actor->get_flag(Obj_flags::dont_move)) ||
+	        (main_actor->get_flag(Obj_flags::dont_render)));
 }
 
 /*
  *  Are we in dont_move mode?
  */
 
-bool Game_window::main_actor_can_act() {
+bool Game_window::main_actor_can_act() const {
 	return main_actor->can_act();
 }
 
-bool Game_window::main_actor_can_act_charmed() {
+bool Game_window::main_actor_can_act_charmed() const {
 	return main_actor->can_act_charmed();
+}
+
+bool Game_window::in_infravision() const {
+	return infravision_active || cheat.in_infravision();
 }
 
 /*
@@ -988,6 +991,7 @@ void Game_window::clear_world(
 	moving_barge = 0;       // Get out of barge mode.
 	special_light = 0;      // Clear out light spells.
 	ambient_light = false;  // And ambient lighting.
+	infravision_active = false;
 	effects->remove_all_effects(false);
 	Schedule_change::clear();
 	cheat.set_map_editor(edit && restoremapedit);
@@ -1451,8 +1455,8 @@ void Game_window::write_gwin(
 	gout.write1(armageddon ? 1 : 0);
 	gout.write1(ambient_light ? 1 : 0);
 	gout.write1(combat ? 1 : 0);
-	gout_stream.flush();
-	if (!gout_stream.good())
+	gout.write1(infravision_active ? 1 : 0);
+	if (!gout.good())
 		throw file_write_exception(GWINDAT);
 }
 
@@ -1515,6 +1519,10 @@ void Game_window::read_gwin(
 	combat = gin.read1() == 1 ? true : false;
 	if (!gin_stream.good())
 		combat = false;
+
+	infravision_active = gin.read1() == 1;
+	if (!gin.good())
+		infravision_active = false;
 }
 
 /*
@@ -2493,7 +2501,7 @@ void Game_window::remove_nearby_npc(
 
 void Game_window::get_nearby_npcs(
     Actor_vector &a_list
-) {
+) const {
 	npc_prox->get_all(a_list);
 }
 
@@ -3165,7 +3173,7 @@ void Game_window::cycle_load_palette() {
 }
 #endif
 
-bool Game_window::is_hostile_nearby() {
+bool Game_window::is_hostile_nearby() const {
 	/* If there is a hostile NPC nearby, the avatar isn't allowed to
 	 * move very fast
 	 * Note that the range at which this occurs in the original is
