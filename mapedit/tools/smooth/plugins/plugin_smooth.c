@@ -67,7 +67,7 @@ int plugin_parse(char *line) {
 	int i, size = strlen(line);
 	int newrec = 1;
 	int let = 0;
-	unsigned int idx = -1;
+	unsigned int idx = -1, j;
 
 	// in this case we know we should receive 18 parameters
 	// 1 for slave, 1 for master and 13 for the resulting colour
@@ -93,7 +93,7 @@ int plugin_parse(char *line) {
 
 	if (my_g_stat.debug > 3) {
 		printf("Parsed line checking:\n");
-		for (unsigned j = 0; j <= idx; j++) {
+		for (j = 0; j <= idx; j++) {
 			printf("Value(%d): %s\n", glob_idx, col[glob_idx][j]);
 		}
 	}

@@ -62,7 +62,7 @@ void clean_up(int ret) {
 	exit(ret);
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !(SDL_VERSION_ATLEAST(2, 0, 0))
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 int __stdcall WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,  LPSTR lpCmdLine, int iShowCmd) {

@@ -527,13 +527,13 @@ rip$(EXEEXT) : tools/rip.o
 	$(CXX) $(LDFLAGS) -o $(@) tools/rip.o
 
 libsmooth_randomize$(LIBEXT): mapedit/tools/smooth/plugins/plugin_randomize.o
-	$(CXX) -shared -o $(@) mapedit/tools/smooth/plugins/plugin_randomize.o $(SDL_LIBS) -static -lstdc++
+	$(CXX) -shared -o $(@) mapedit/tools/smooth/plugins/plugin_randomize.o $(SDL_LIBS) $(SDL_PLUGINS) -static -lstdc++
 
 libsmooth_smooth$(LIBEXT): mapedit/tools/smooth/plugins/plugin_smooth.o
-	$(CXX) -shared -o $(@) mapedit/tools/smooth/plugins/plugin_smooth.o $(SDL_LIBS) -static -lstdc++
+	$(CXX) -shared -o $(@) mapedit/tools/smooth/plugins/plugin_smooth.o $(SDL_LIBS) $(SDL_PLUGINS) -static -lstdc++
 
 libsmooth_stream$(LIBEXT): mapedit/tools/smooth/plugins/plugin_stream.o
-	$(CXX) -shared -o $(@) mapedit/tools/smooth/plugins/plugin_stream.o $(SDL_LIBS) -static -lstdc++
+	$(CXX) -shared -o $(@) mapedit/tools/smooth/plugins/plugin_stream.o $(SDL_LIBS) $(SDL_PLUGINS) -static -lstdc++
 
 SMOOTH_OBJS=\
 	mapedit/tools/smooth/config.o \

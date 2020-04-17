@@ -16,18 +16,20 @@ ifdef SDL1
 	LIB_SDL_MAIN=-lSDLmain
 	LIB_SDL_IMAGE=-lSDL_image
 	SDL_DLL_NAME=SDL.dll
+	SDL_IMAGE_LIBS=-L$(SRC)/sdl/lib -lmingw32 $(LIB_SDL_IMAGE) $(LIB_SDL) -lpng -ltiff -ljpeg -lwebp -lz
+	SDL_PLUGINS=-lwinmm
 else
 	LIB_SDL=-lSDL2
 	LIB_SDL_IMAGE=-lSDL2_image
 	LIB_SDL_MAIN=-lSDL2main
 	SDL_DLL_NAME=SDL2.dll
+	SDL_IMAGE_LIBS=-L$(SRC)/sdl/lib -lmingw32 $(LIB_SDL_IMAGE) $(LIB_SDL_MAIN) $(LIB_SDL) -lpng -ltiff -ljpeg -lwebp -lz
+	SDL_PLUGINS=-lgdi32 -limm32 -lwinmm -lole32 -loleaut32 -lsetupapi -luuid -lversion 
 endif
 
 ### We want to do our own stdout/stderr redirection, thank you.
 #SDL_LIBS:=-L$(SRC)/sdl/lib $(LIB_SDL_MAIN) $(LIB_SDL)
 SDL_LIBS:=-L$(SRC)/sdl/lib $(LIB_SDL) -lwinmm
-
-SDL_IMAGE_LIBS=-L$(SRC)/sdl/lib -lmingw32 $(LIB_SDL_IMAGE) $(LIB_SDL) -lpng -ltiff -ljpeg -lwebp -lz
 
 ### Uncomment these 2 lines, and comment out the 2 above if you want to build
 ### Exult as a console Win32 application. This is unsupported and is somewhat
@@ -144,7 +146,7 @@ ifdef DEBUG_SYMBOLS
 endif
 
 CXXFLAGS=$(strip $(OPT_LEVEL) -Wno-deprecated -Wno-long-long -mms-bitfields -DHAVE_SNPRINTF -DHAVE_EXT_HASH_MAP -DHAVE_EXT_HASH_SET -DHAVE_SSTREAM -DUSE_FMOPL_MIDI -DUSE_MT32EMU_MIDI -DUSE_FLUIDSYNTH_MIDI)
-CXX=g++ -std=c++11
+CXX=g++
 
 CFLAGS=$(strip $(OPT_LEVEL) -mms-bitfields)
 CC=gcc

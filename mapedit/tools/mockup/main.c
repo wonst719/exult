@@ -39,7 +39,7 @@ Uint32 getpixel(SDL_Surface *surface, int x, int y) {
 	}
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !(SDL_VERSION_ATLEAST(2, 0, 0))
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 int __stdcall WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,  LPSTR lpCmdLine, int iShowCmd) {
@@ -60,6 +60,7 @@ int main(int argc, char **argv) {
 	FILE *f;                // to write to the file
 	char cmd[256], buff[7];
 	int mapping[MAX_COLOURS];
+	int i,j;
 
 	if (argc < 3 || argc > 3) {
 		printf("Usage: %s <image file> <mapping file>\nYou can name <image file> and <mapping file> the way you want.\n", argv[0]);
@@ -98,7 +99,7 @@ int main(int argc, char **argv) {
 	f = fopen(argv[2], "ra");
 
 	// we can now prepare the mapping
-	for (int i = 0; i < fmt->palette->ncolors; i++) {
+	for (i = 0; i < fmt->palette->ncolors; i++) {
 		found = 0;
 		SDL_GetRGB(i, fmt, &red, &green, &blue);
 		sprintf(buff, "%02x%02x%02x", red, green, blue);
@@ -128,8 +129,8 @@ int main(int argc, char **argv) {
 	}
 	*/
 	// need to read all pixels one after the other
-	for (int j = 0; j < mock_map->h; j++) {
-		for (int i = 0; i < mock_map->w; i++) {
+	for (j = 0; j < mock_map->h; j++) {
+		for (i = 0; i < mock_map->w; i++) {
 			pix = getpixel(mock_map, i, j);
 
 			// calculate offset in u7map based on i,j coordinate of point in map
@@ -146,7 +147,7 @@ int main(int argc, char **argv) {
 		perror("Can't open file u7map: ");
 		exit(-1);
 	};
-	for (int i = 0; i < 192 * 192 * 2; i++) {
+	for (i = 0; i < 192 * 192 * 2; i++) {
 		fputc(mymap[i], f);
 	}
 	fclose(f);
