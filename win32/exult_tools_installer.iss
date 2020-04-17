@@ -43,7 +43,7 @@ Source: Tools\tools\libsmooth_stream.dll; DestDir: {app}\tools\; Flags: ignoreve
 Source: Tools\tools\mklink.exe; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools\tools\mockup.exe; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools\tools\rip.exe; DestDir: {app}\tools\; Flags: ignoreversion
-Source: Tools\tools\SDL.dll; DestDir: {app}\tools\
+Source: Tools\tools\SDL2.dll; DestDir: {app}\tools\
 Source: Tools\tools\shp2pcx.exe; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools\tools\shp2pcx.txt; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools\tools\smooth.exe; DestDir: {app}\tools\; Flags: ignoreversion
