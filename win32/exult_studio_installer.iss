@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=Exult Studio
-AppVerName=Exult Studio
+AppVerName=Exult Studio 1.6.0
 DefaultDirName={pf}\Exult
 DefaultGroupName=Exult Studio
 OutputBaseFilename=ExultStudio

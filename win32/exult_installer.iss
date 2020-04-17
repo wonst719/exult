@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=Exult
-AppVerName=Exult
+AppVerName=Exult 1.6.0
 AppPublisher=The Exult Team
 AppPublisherURL=http://exult.sourceforge.net/
 AppSupportURL=http://exult.sourceforge.net/
