@@ -381,7 +381,7 @@ Game_window::Game_window(
 	party_man(new Party_manager), win(0),
 	npc_prox(new Npc_proximity_handler(this)), pal(0),
 	tqueue(new Time_queue()), background_noise(new Background_noise(this)),
-	usecode(nullptr), combat(false), focus(true), ice_dungeon(false),
+	usecode(0), combat(false), focus(true), ice_dungeon(false),
 	painted(false), ambient_light(false), infravision_active(false),
 	skip_above_actor(31), in_dungeon(0), num_npcs1(0),
 	std_delay(c_std_delay), time_stopped(0), special_light(0),
@@ -728,7 +728,7 @@ bool Game_window::is_moving(
  *  Are we in dont_move mode?
  */
 bool Game_window::main_actor_dont_move() const {
-	return !cheat.in_map_editor() && main_actor != nullptr && // Not if map-editing.
+	return !cheat.in_map_editor() && main_actor != 0 && // Not if map-editing.
 	       ((main_actor->get_flag(Obj_flags::dont_move)) ||
 	        (main_actor->get_flag(Obj_flags::dont_render)));
 }
