@@ -323,6 +323,7 @@ static void load_palette(gchar *filename) {
 	int i;
 
 	fp = fopen(filename, "rb");
+	g_free(filename);
 	if (!fp) {
 		return;
 	}
