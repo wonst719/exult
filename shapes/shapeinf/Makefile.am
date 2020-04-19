@@ -24,6 +24,8 @@ libshapeinf_la_SOURCES = \
 	frflags.h	\
 	frusefun.cc	\
 	frusefun.h	\
+	lightinf.cc	\
+	lightinf.h	\
 	monstinf.cc	\
 	monstinf.h	\
 	npcdollinf.cc	\

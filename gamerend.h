@@ -49,6 +49,7 @@ public:
 	// Render dungeon blackness
 	void paint_blackness(int start_chunkx, int start_chunky, int stop_chunkx, int stop_chunky,
 	                     int index = 0);
+	int get_light_strength(const Game_object *obj, const Game_object *av) const;
 };
 
 #endif

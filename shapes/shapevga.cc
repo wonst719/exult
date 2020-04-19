@@ -36,6 +36,7 @@
 #include "frnameinf.h"
 #include "frflags.h"
 #include "frusefun.h"
+#include "lightinf.h"
 #include "monstinf.h"
 #include "npcdollinf.h"
 #include "objdollinf.h"
@@ -201,7 +202,7 @@ void Shapes_vga_file::Read_Shapeinf_text_data_file(
 ) {
 	const char *sections[] = {"explosions", "shape_sfx", "animation",
 	                          "usecode_events", "mountain_tops", "monster_food", "actor_flags",
-	                          "effective_hps", "lightweight_object", "warmth_data",
+	                          "effective_hps", "lightweight_object", "light_data", "warmth_data",
 	                          "quantity_frames", "locked_containers", "content_rules",
 	                          "volatile_explosive", "framenames", "altready", "barge_type",
 	                          "frame_powers", "is_jawbone", "is_mirror", "on_fire",
@@ -250,6 +251,10 @@ void Shapes_vga_file::Read_Shapeinf_text_data_file(
 		Bit_text_reader_functor < unsigned short, Shape_info,
 		&Shape_info::shape_flags, Shape_info::lightweight > ,
 		Patch_flags_functor<lightweight_flag, Shape_info> > (info),
+		// For light data.
+		new Functor_multidata_reader < Shape_info,
+		Vector_reader_functor < Light_info, Shape_info,
+		&Shape_info::lightinf > > (info),
 		// For warmth data.
 		new Functor_multidata_reader < Shape_info,
 		Vector_reader_functor < Warmth_info, Shape_info,

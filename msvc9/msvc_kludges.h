@@ -318,6 +318,7 @@ using std::getline;
 #include "../shapes/expinf.h"
 #include "../shapes/frnameinf.h"
 #include "../shapes/frpowers.h"
+#include "../shapes/lightinf.h"
 #include "../shapes/monstinf.h"
 #include "../shapes/npcdollinf.h"
 #include "../shapes/objdollinf.h"

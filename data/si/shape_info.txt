@@ -465,6 +465,93 @@
 :867/1/0/0/0/0/0/0/0
 %%endsection
 
+%%section light_data
+#	How bright a given light source is.
+#
+#	Format
+#		:shapenum/frame/brightness
+#
+#	If frame is -1, this entry will be used for all unlisted frames.
+#	The default brightness is zero. A candle is worth 1.
+#
+#		Light.
+#
+198:/-1/3
+
+#		Fire. Has clandle-light strength in originals.
+#
+:289/-1/7
+
+#		Lit light source.
+#
+:338/2/2
+:338/3/5
+:338/4/5
+:338/5/5
+:338/7/2
+:338/8/2
+:338/9/2
+:338/10/5
+:338/11/5
+:338/12/2
+:338/-1/1
+
+#		Lit sconce. Has clandle-light strength in originals.
+#
+:435/-1/5
+
+#		Lit lamp.
+#
+:526/-1/7
+
+#		Lightning whip.
+#
+:549/-1/5
+
+#		Fire sword.
+#
+:551/-1/5
+
+#		Firedoom staff.
+#
+:553/-1/5
+
+#		Lit torch.
+#
+:701/-1/5
+
+#		Firepit.
+#
+:739/0/0
+:739/1/2
+:739/2/4
+:739/3/6
+
+#		Flaming oil.
+#
+:782/-1/5
+
+#		Campfire. Has clandle-light strength in originals.
+#
+:796/-1/7
+
+#		Campfire.
+#
+:825/-1/7
+
+#		Firedoom staff.
+#
+:926/-1/5
+
+#		Burning urn. Has clandle-light strength in originals.
+#
+:998/-1/7
+
+#		Helm of light, when not being worn.
+#
+:1013/-1/5
+%%endsection
+
 %%section warmth_data
 #	How much protection from cold is given by a given piece of clothing.
 #

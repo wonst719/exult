@@ -3211,7 +3211,7 @@ USECODE_INTRINSIC(set_light) {
 		// the other "obvious" manners fail.
 		npc->refigure_gear();
 		if (!parms[1].get_int_value())
-			npc->remove_light_source();
+			npc->remove_light_source(light);
 	}
 	return no_ret;
 }

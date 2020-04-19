@@ -300,6 +300,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\shapes\lightinf.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\shapes\warminf.cc"
 				>
 			</File>
@@ -400,6 +404,10 @@
 				</File>
 				<File
 					RelativePath="..\shapes\vgafile.h"
+					>
+				</File>
+				<File
+					RelativePath="..\shapes\lightinf.h"
 					>
 				</File>
 				<File

@@ -138,7 +138,7 @@ class Map_chunk : public Game_singletons {
 	Chunk_cache *cache;     // Data for chunks near player.
 	unsigned char roof;     // 1 if a roof present.
 	// # light sources in chunk.
-	unsigned char dungeon_lights, non_dungeon_lights;
+	std::set<Game_object*> dungeon_lights, non_dungeon_lights;
 	unsigned char cx, cy;       // Absolute chunk coords. of this.
 	bool selected;          // For 'select_chunks' mode.
 	void add_dungeon_levels(Rectangle &tiles, unsigned int lift);
@@ -186,10 +186,10 @@ public:
 	bool is_selected() const {
 		return selected;
 	}
-	int get_dungeon_lights() const { // Get #lights.
+	const std::set<Game_object*>& get_dungeon_lights() const { // Get #lights.
 		return dungeon_lights;
 	}
-	int get_non_dungeon_lights() const {
+	const std::set<Game_object*>& get_non_dungeon_lights() const {
 		return non_dungeon_lights;
 	}
 	ShapeID get_flat(int tilex, int tiley) const {

@@ -39,6 +39,7 @@
 #include "frnameinf.h"
 #include "frflags.h"
 #include "frusefun.h"
+#include "lightinf.h"
 #include "monstinf.h"
 #include "npcdollinf.h"
 #include "objdollinf.h"
@@ -123,6 +124,10 @@ void Shapes_vga_file::Write_Shapeinf_text_data_file(Exult_Game game) {
 		Shape_info, &Shape_info::shape_flags,
 		Shape_info::lightweight > > (
 		    "lightweight_object", info, num_shapes),
+		// For light data.
+		new Functor_multidata_writer < Shape_info,
+		Vector_writer_functor < Light_info, Shape_info,
+		&Shape_info::lightinf > > ("light_data", info, num_shapes),
 		// For warmth data.
 		new Functor_multidata_writer < Shape_info,
 		Vector_writer_functor < Warmth_info, Shape_info,
@@ -460,6 +465,18 @@ void Effective_hp_info::write(
 	WriteInt(out, frame < 0 ? -1 : (frame & 0xff));
 	WriteInt(out, quality < 0 ? -1 : (quality & 0xff));
 	WriteInt(out, is_invalid() ? 0 : hps, true);
+}
+
+void Light_info::write(
+    ostream &out,       // Output stream.
+    int shapenum,       // Shape number.
+    Exult_Game game     // Writing BG file.
+) {
+	ignore_unused_variable_warning(game);
+	out << ":";
+	WriteInt(out, shapenum);
+	WriteInt(out, frame < 0 ? -1 : (frame & 0xff));
+	WriteInt(out, is_invalid() ? 0 : light, true);
 }
 
 void Warmth_info::write(

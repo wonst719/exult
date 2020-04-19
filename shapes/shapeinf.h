@@ -47,6 +47,7 @@ class Effective_hp_info;
 class Frame_name_info;
 class Frame_flags_info;
 class Frame_usecode_info;
+class Light_info;
 class Warmth_info;
 class Content_rules;
 class Shapes_vga_file;
@@ -177,6 +178,7 @@ protected:
 	std::vector<Frame_name_info> nameinf;
 	std::vector<Frame_flags_info> frflagsinf;
 	std::vector<Frame_usecode_info> frucinf;
+	std::vector<Light_info> lightinf;
 	std::vector<Warmth_info> warminf;
 	std::vector<Content_rules> cntrules;
 	short gump_shape = -1;       // From container.dat.
@@ -467,6 +469,16 @@ public:
 	bool has_object_flag(int frame, int qual, int p) const {
 		return (get_object_flags(frame, qual) & (1 << p)) != 0;
 	}
+
+	bool has_light_info() const;
+	const std::vector<Light_info> &get_light_info() const {
+		return lightinf;
+	}
+	std::vector<Light_info> &set_light_info(bool tf);
+	void clean_invalid_light_info();
+	void clear_light_info();
+	void add_light_info(Light_info &add);
+	int get_object_light(int frame) const;
 
 	bool has_warmth_info() const;
 	const std::vector<Warmth_info> &get_warmth_info() const {

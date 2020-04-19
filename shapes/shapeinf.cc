@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "frnameinf.h"
 #include "frflags.h"
 #include "frusefun.h"
+#include "lightinf.h"
 #include "monstinf.h"
 #include "npcdollinf.h"
 #include "objdollinf.h"
@@ -87,6 +88,7 @@ Shape_info::~Shape_info() {
 	clear_paperdoll_info();
 	clear_effective_hp_info();
 	clear_frame_name_info();
+	clear_light_info();
 	clear_warmth_info();
 }
 
@@ -151,6 +153,7 @@ void Shape_info::copy(
 	copy_vector_info(inf2.cntrules, cntrules);
 	copy_vector_info(inf2.nameinf, nameinf);
 	copy_vector_info(inf2.frucinf, frucinf);
+	copy_vector_info(inf2.lightinf, lightinf);
 	copy_vector_info(inf2.warminf, warminf);
 
 	delete sfxinf;
@@ -336,6 +339,26 @@ void Shape_info::add_frame_flags(Frame_flags_info &add) {
 	add_vector_info(add, frflagsinf);
 }
 
+bool Shape_info::has_light_info() const {
+	return !lightinf.empty();
+}
+
+std::vector<Light_info> &Shape_info::set_light_info(bool tf) {
+	return set_vector_info(tf, lightinf);
+}
+
+void Shape_info::clean_invalid_light_info() {
+	clean_vector(lightinf);
+}
+
+void Shape_info::clear_light_info() {
+	lightinf.clear();
+}
+
+void Shape_info::add_light_info(Light_info &add) {
+	add_vector_info(add, lightinf);
+}
+
 bool Shape_info::has_warmth_info() const {
 	return !warminf.empty();
 }
@@ -423,9 +446,19 @@ bool Shape_info::is_shape_accepted(int shape) const {
 	return inf ? inf->accept : true;    // Default to true.
 }
 
+int Shape_info::get_object_light(int frame) const {
+	if (!is_light_source()) {
+		// Don't bother checking if not a light source.
+		return 0;
+	}
+	const Light_info *inf = Search_vector_data_single_wildcard(lightinf,
+	                   (frame & 31), &Light_info::frame);
+	return inf ? inf->light : 1;   // Default to candle-strength.
+}
+
 int Shape_info::get_object_warmth(int frame) const {
 	const Warmth_info *inf = Search_vector_data_single_wildcard(warminf,
-	                   frame, &Warmth_info::frame);
+	                   (frame & 31), &Warmth_info::frame);
 	return inf ? inf->warmth : 0;   // Default to no warmth.
 }
 

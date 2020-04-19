@@ -46,6 +46,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "frnameinf.h"
 #include "frflags.h"
 #include "frusefun.h"
+#include "lightinf.h"
 #include "monstinf.h"
 #include "npcdollinf.h"
 #include "objdollinf.h"
@@ -79,6 +80,15 @@ enum {
     HP_FROM_PATCH,
     HP_MODIFIED,
     HP_COLUMN_COUNT
+};
+
+// Brightness Info columns
+enum {
+    BRIGHTNESS_FRAME_COLUMN = 0,
+    BRIGHTNESS_VALUE_COLUMN,
+    BRIGHTNESS_FROM_PATCH,
+    BRIGHTNESS_MODIFIED,
+    BRIGHTNESS_COLUMN_COUNT
 };
 
 // Warmth Info columns
@@ -995,6 +1005,20 @@ C_EXPORT gboolean on_shinfo_frameflags_qual_type_toggled(
 }
 
 /*
+ *  Brightness frame type changed.
+ */
+C_EXPORT gboolean on_shinfo_brightness_frame_type_toggled(
+    GtkToggleButton *btn,
+    gpointer user_data
+) {
+	ignore_unused_variable_warning(user_data);
+	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	ExultStudio *studio = ExultStudio::get_instance();
+	studio->set_sensitive("shinfo_brightness_frame_num", on);
+	return TRUE;
+}
+
+/*
  *  Warmth frame type changed.
  */
 C_EXPORT gboolean on_shinfo_warmth_frame_type_toggled(
@@ -1292,6 +1316,113 @@ C_EXPORT gboolean on_shinfo_shape_class_changed(
 		studio->set_optmenu("shinfo_mountaintop_type", 0, false);
 
 	return TRUE;
+}
+
+/*
+ *  Helper functions for brightness data.
+ */
+static inline void Get_brightness_fields(
+    ExultStudio *studio,
+    unsigned int &frnum,
+    unsigned int *brightness = nullptr
+) {
+	bool anyfr = studio->get_toggle("shinfo_brightness_frame_type");
+	frnum = anyfr ? ~0u :
+	        studio->get_spin("shinfo_brightness_frame_num");
+	if (brightness)
+		*brightness = studio->get_spin("shinfo_brightness_val");
+}
+
+static void Set_brightness_fields(
+    int frnum = 0,
+    int brightness = 0
+) {
+	ExultStudio *studio = ExultStudio::get_instance();
+	studio->set_toggle("shinfo_brightness_frame_type", frnum == -1);
+	studio->set_spin("shinfo_brightness_frame_num", frnum == -1 ? 0 : frnum, frnum != -1);
+	studio->set_spin("shinfo_brightness_val", brightness);
+}
+
+/*
+ *  Adding brightness information.
+ */
+C_EXPORT void on_shinfo_brightness_update_clicked(
+    GtkButton *btn,
+    gpointer user_data
+) {
+	ignore_unused_variable_warning(btn, user_data);
+	ExultStudio *studio = ExultStudio::get_instance();
+	unsigned int newfrnum;
+	unsigned int newbrightness;
+	Get_brightness_fields(studio, newfrnum, &newbrightness);
+
+	GtkTreeView *brightnesstree = GTK_TREE_VIEW(
+	                            glade_xml_get_widget(studio->get_xml(), "shinfo_brightness_list"));
+	GtkTreeModel *model = gtk_tree_view_get_model(brightnesstree);
+	GtkTreeStore *store = GTK_TREE_STORE(model);
+	GtkTreeIter *iter;
+	int cmp = Find_unary_iter(model, iter, newfrnum);
+	if (cmp) {
+		GtkTreeIter newiter;
+		if (cmp > 0)
+			gtk_tree_store_insert_after(store, &newiter, nullptr, iter);
+		else
+			gtk_tree_store_insert_before(store, &newiter, nullptr, iter);
+		gtk_tree_store_set(store, &newiter, BRIGHTNESS_FRAME_COLUMN, static_cast<int>(newfrnum),
+		                   BRIGHTNESS_VALUE_COLUMN, static_cast<int>(newbrightness), BRIGHTNESS_FROM_PATCH, 1,
+		                   BRIGHTNESS_MODIFIED, 1, -1);
+	} else {
+		unsigned int brightness;
+		gtk_tree_model_get(model, iter, BRIGHTNESS_VALUE_COLUMN, &brightness, -1);
+		if (brightness != newbrightness)
+			gtk_tree_store_set(store, iter, BRIGHTNESS_VALUE_COLUMN, newbrightness,
+			                   BRIGHTNESS_MODIFIED, 1, -1);
+	}
+}
+
+/*
+ *  Deleting brightness information.
+ */
+C_EXPORT void on_shinfo_brightness_remove_clicked(
+    GtkButton *btn,
+    gpointer user_data
+) {
+	ignore_unused_variable_warning(btn, user_data);
+	ExultStudio *studio = ExultStudio::get_instance();
+	GtkTreeView *brightnesstree = GTK_TREE_VIEW(
+	                            glade_xml_get_widget(studio->get_xml(), "shinfo_brightness_list"));
+	GtkTreeModel *model = gtk_tree_view_get_model(brightnesstree);
+	GtkTreeStore *store = GTK_TREE_STORE(model);
+	GtkTreeIter *iter;
+	unsigned int newfrnum;
+	Get_brightness_fields(studio, newfrnum);
+	if (!Find_unary_iter(model, iter, newfrnum))
+		gtk_tree_store_remove(store, iter);
+}
+
+/*
+ *  Changed brightness selection.
+ */
+C_EXPORT void on_shinfo_brightness_list_cursor_changed(
+    GtkTreeView *treeview,
+    gpointer     user_data
+) {
+	ignore_unused_variable_warning(user_data);
+	GtkTreeIter iter;
+	GtkTreePath *path;
+	GtkTreeViewColumn *col;
+	gtk_tree_view_get_cursor(treeview, &path, &col);
+	if (!col)
+		return;
+
+	GtkTreeModel *model = gtk_tree_view_get_model(treeview);
+	int frnum;
+	int brightness;
+	gtk_tree_model_get_iter(model, &iter, path);
+	gtk_tree_path_free(path);
+	gtk_tree_model_get(model, &iter, BRIGHTNESS_FRAME_COLUMN, &frnum,
+	                   BRIGHTNESS_VALUE_COLUMN, &brightness, -1);
+	Set_brightness_fields(frnum, brightness);
 }
 
 /*
@@ -2419,6 +2550,14 @@ C_EXPORT void on_shinfo_sound_check_toggled(
 	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_sfx_box", on);
 }
+C_EXPORT void on_shinfo_brightness_check_toggled(
+    GtkToggleButton *btn,
+    gpointer user_data
+) {
+	ignore_unused_variable_warning(user_data);
+	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	ExultStudio::get_instance()->set_visible("shinfo_brightness_box", on);
+}
 C_EXPORT void on_shinfo_warmth_check_toggled(
     GtkToggleButton *btn,
     gpointer user_data
@@ -3068,6 +3207,42 @@ void ExultStudio::init_shape_notebook(
 	} else
 		Set_hp_fields();
 
+	const std::vector<Light_info> &lightinf = info.get_light_info();
+	set_toggle("shinfo_brightness_check", !lightinf.empty());
+	set_visible("shinfo_brightness_box", !lightinf.empty());
+	if (!lightinf.empty()) {
+		GtkTreeView *brightnesstree = GTK_TREE_VIEW(
+		                            glade_xml_get_widget(app_xml, "shinfo_brightness_list"));
+		GtkTreeModel *model = gtk_tree_view_get_model(brightnesstree);
+		GtkTreeStore *store = GTK_TREE_STORE(model);
+		GtkTreeIter iter;
+		const Light_info *first = nullptr;
+		for (std::vector<Light_info>::const_iterator it = lightinf.begin();
+		        it != lightinf.end(); ++it) {
+			const Light_info &light = *it;
+			if (light.is_invalid())
+				continue;
+			if (!first)
+				first = &*it;
+			gtk_tree_store_append(store, &iter, nullptr);
+			gtk_tree_store_set(store, &iter, BRIGHTNESS_FRAME_COLUMN, light.get_frame(),
+			                   BRIGHTNESS_VALUE_COLUMN, light.get_light(),
+			                   BRIGHTNESS_FROM_PATCH, light.from_patch(),
+			                   BRIGHTNESS_MODIFIED, light.was_modified(), -1);
+		}
+		GtkTreeSelection *sel = gtk_tree_view_get_selection(brightnesstree);
+		gtk_tree_model_get_iter_first(model, &iter);
+		gtk_tree_selection_select_iter(sel, &iter);
+		GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
+		gtk_tree_view_set_cursor(brightnesstree, path, nullptr, false);
+		gtk_tree_path_free(path);
+		if (first)
+			Set_brightness_fields(first->get_frame(), first->get_light());
+		else
+			Set_brightness_fields();
+	} else
+		Set_brightness_fields();
+
 	const std::vector<Warmth_info> &warminf = info.get_warmth_info();
 	set_toggle("shinfo_warmth_check", !warminf.empty());
 	set_visible("shinfo_warmth_box", !warminf.empty());
@@ -3356,6 +3531,20 @@ struct Update_hps {
 			return;
 		Effective_hp_info hpinf(frnum, qual, hps, patch, modded);
 		info.add_effective_hp_info(hpinf);
+	}
+};
+
+struct Update_brightness {
+	void operator()(Shape_info &info, GtkTreeModel *model, GtkTreeIter *iter) {
+		unsigned int frnum;
+		unsigned int brightness;
+		unsigned int patch;
+		unsigned int modded;
+		gtk_tree_model_get(model, iter, BRIGHTNESS_FRAME_COLUMN, &frnum,
+		                   BRIGHTNESS_VALUE_COLUMN, &brightness,
+		                   BRIGHTNESS_FROM_PATCH, &patch, BRIGHTNESS_MODIFIED, &modded, -1);
+		Light_info lightinf(frnum, brightness, patch, modded);
+		info.add_light_info(lightinf);
 	}
 };
 
@@ -3907,6 +4096,13 @@ void ExultStudio::save_shape_notebook(
 		update_shape_vector<Update_hps>("shinfo_effhps_list", info);
 		info.clean_invalid_hp_info();
 	}
+	if (!get_toggle("shinfo_brightness_check"))
+		info.set_light_info(false);
+	else {
+		info.set_light_info(true);
+		update_shape_vector<Update_brightness>("shinfo_brightness_list", info);
+		info.clean_invalid_light_info();
+	}
 	if (!get_toggle("shinfo_warmth_check"))
 		info.set_warmth_info(false);
 	else {
@@ -4024,7 +4220,7 @@ void ExultStudio::open_shape_window(
 	int nframes = ifile->get_num_frames(shnum);
 	set_spin("shinfo_frame", frnum, 0, nframes - 1);
 	set_spin("shinfo_effhps_frame_num", 0, nframes - 1);
-	set_spin("shinfo_warmth_frame_num", 0, nframes - 1);
+	set_spin("shinfo_brightness_frame_num", 0, nframes - 1);
 	set_spin("shinfo_framenames_frame_num", 0, nframes - 1);
 	set_spin("shinfo_frameflags_frame_num", 0, nframes - 1);
 	set_spin("shinfo_frameusecode_frame_num", 0, nframes - 1);
@@ -4091,6 +4287,34 @@ void ExultStudio::open_shape_window(
 		gtk_tree_store_clear(store);
 	}
 
+	GtkTreeView *brightnesstree = GTK_TREE_VIEW(
+	                            glade_xml_get_widget(app_xml, "shinfo_brightness_list"));
+	gtk_signal_connect(GTK_OBJECT(brightnesstree), "cursor_changed",
+	                   GTK_SIGNAL_FUNC(on_shinfo_brightness_list_cursor_changed),
+	                   nullptr);
+	model = gtk_tree_view_get_model(brightnesstree);
+	if (!model) {
+		GtkTreeStore *store = gtk_tree_store_new(
+		                          BRIGHTNESS_COLUMN_COUNT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
+		gtk_tree_view_set_model(brightnesstree, GTK_TREE_MODEL(store));
+		g_object_unref(store);
+		// Create each column.
+		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+		GtkTreeViewColumn *col = gtk_tree_view_column_new_with_attributes(
+		                             "Frame", renderer, "text", BRIGHTNESS_FRAME_COLUMN, nullptr);
+		gtk_tree_view_append_column(brightnesstree, col);
+		renderer = gtk_cell_renderer_text_new();
+		col = gtk_tree_view_column_new_with_attributes(
+		          "Brightness", renderer, "text", BRIGHTNESS_VALUE_COLUMN, nullptr);
+		gtk_tree_view_append_column(brightnesstree, col);
+		add_terminal_columns(brightnesstree, BRIGHTNESS_FROM_PATCH, BRIGHTNESS_MODIFIED);
+	} else {
+		// Clear it.
+		GtkTreeModel *model = gtk_tree_view_get_model(
+		                          GTK_TREE_VIEW(brightnesstree));
+		GtkTreeStore *store = GTK_TREE_STORE(model);
+		gtk_tree_store_clear(store);
+	}
 	GtkTreeView *warmtree = GTK_TREE_VIEW(
 	                            glade_xml_get_widget(app_xml, "shinfo_warmth_list"));
 	gtk_signal_connect(GTK_OBJECT(warmtree), "cursor_changed",
@@ -4152,7 +4376,7 @@ void ExultStudio::open_shape_window(
 				gtk_tree_view_column_set_visible(col, false);
 			gtk_tree_view_append_column(dolltree, col);
 		}
-		add_terminal_columns(warmtree, WARM_FROM_PATCH, WARM_MODIFIED);
+		add_terminal_columns(dolltree, DOLL_FROM_PATCH, DOLL_MODIFIED);
 	} else {
 		// Clear it.
 		GtkTreeModel *model = gtk_tree_view_get_model(

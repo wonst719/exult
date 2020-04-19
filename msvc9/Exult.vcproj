@@ -1931,6 +1931,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\shapes\lightinf.cc"
+					>
+				</File>
+				<File
 					RelativePath="..\shapes\warminf.cc"
 					>
 				</File>

@@ -290,6 +290,26 @@ int Game_render::paint_map(
 	return light_sources;
 }
 
+static int Get_light_strength(const Game_object *obj, const Game_object *av, int brightness) {
+	// Note: originals do not seem to use center tile.
+	Tile_coord t1 = obj->get_center_tile();
+	Tile_coord t2 = av->get_center_tile();
+	int dx = Tile_coord::delta(t1.tx, t2.tx);
+	int dy = Tile_coord::delta(t1.ty, t2.ty);
+	// Note: originals do not care about distance in Z. Maybe we should?
+	dx = std::abs(Tile_coord::delta(t1.tx, t2.tx));
+	dy = std::abs(Tile_coord::delta(t1.ty, t2.ty));
+	// This seems to match the originals as far as distance effects go.
+	int dist_decay_factor = std::max(0, 75 - 2 * dx - 3 * dy);
+	// Finally, return how bright this light is.
+	return dist_decay_factor * brightness;
+}
+
+int Game_render::get_light_strength(const Game_object *obj, const Game_object *av) const {
+	const Shape_info& info = obj->get_info();
+	return Get_light_strength(obj, av, info.get_object_light(obj->get_framenum()));
+}
+
 /*
  *  Paint a rectangle in the window by pulling in vga chunks.
  */
@@ -339,9 +359,9 @@ void Game_window::paint(
 		// Look for lights.
 		Actor *party[9];    // Get party, including Avatar.
 		int cnt = get_party(party, 1);
-		bool carried_light = false;
-		for (int i = 0; !carried_light && i < cnt; i++)
-			carried_light = party[i]->has_light_source();
+		int carried_light = 0;
+		for (int i = 0; i < cnt; i++)
+			carried_light += Get_light_strength(party[i], main_actor, party[i]->get_light_source());
 		// Also check light spell.
 		if (special_light && clock->get_total_minutes() > special_light) {
 			// Just expired.
@@ -349,8 +369,7 @@ void Game_window::paint(
 			clock->set_palette();
 		}
 		// Set palette for lights.
-		clock->set_light_source(carried_light + (light_sources > 0),
-		                        in_dungeon);
+		clock->set_light_source(carried_light + light_sources, in_dungeon);
 	}
 	win->clear_clip();
 }
@@ -478,9 +497,19 @@ int Game_render::paint_chunk_objects(
 	Game_object *obj;
 	Game_window *gwin = Game_window::get_instance();
 	Map_chunk *olist = gwin->map->get_chunk(cx, cy);
-	int light_sources =     // Also check for light sources.
-	    gwin->is_in_dungeon() ? olist->get_dungeon_lights()
-	    : olist->get_non_dungeon_lights();
+	int light_sources = 0;		// Also check for light sources.
+	Main_actor* const main_actor = gwin->get_main_actor();
+	if (main_actor != nullptr) {
+		const auto& lights = gwin->is_in_dungeon()
+		                   ? olist->get_dungeon_lights()
+		                   : olist->get_non_dungeon_lights();
+		for (auto& obj : lights) {
+			const Shape_info& info = obj->get_info();
+			if (info.is_light_source()) { // Count light sources.
+				light_sources += get_light_strength(obj, main_actor);
+			}
+		}
+	}
 	skip = gwin->get_render_skip_lift();
 	Nonflat_object_iterator next(olist);
 

@@ -172,6 +172,7 @@
 		E700DD551A6E3121006C8BE4 /* frflags.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD191A6E3121006C8BE4 /* frflags.cc */; };
 		E700DD561A6E3121006C8BE4 /* frnameinf.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD1B1A6E3121006C8BE4 /* frnameinf.cc */; };
 		E700DD571A6E3121006C8BE4 /* frusefun.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD1D1A6E3121006C8BE4 /* frusefun.cc */; };
+		005043EA9A06E3F7BB57379A /* lightinf.cc in Sources */ = {isa = PBXBuildFile; fileRef = FE4F4F1A887E52F238D70180 /* lightinf.cc */; };
 		E700DD5B1A6E3121006C8BE4 /* monstinf.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD221A6E3121006C8BE4 /* monstinf.cc */; };
 		E700DD5C1A6E3121006C8BE4 /* npcdollinf.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD241A6E3121006C8BE4 /* npcdollinf.cc */; };
 		E700DD5D1A6E3121006C8BE4 /* objdollinf.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD261A6E3121006C8BE4 /* objdollinf.cc */; };
@@ -686,6 +687,8 @@
 		E700DD1C1A6E3121006C8BE4 /* frnameinf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frnameinf.h; sourceTree = "<group>"; };
 		E700DD1D1A6E3121006C8BE4 /* frusefun.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = frusefun.cc; sourceTree = "<group>"; };
 		E700DD1E1A6E3121006C8BE4 /* frusefun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frusefun.h; sourceTree = "<group>"; };
+		FE4F4F1A887E52F238D70180 /* lightinf.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lightinf.cc; sourceTree = "<group>"; };
+		48254DD28D1E318C3881BC91 /* lightinf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lightinf.h; sourceTree = "<group>"; };
 		E700DD221A6E3121006C8BE4 /* monstinf.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monstinf.cc; sourceTree = "<group>"; };
 		E700DD231A6E3121006C8BE4 /* monstinf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = monstinf.h; sourceTree = "<group>"; };
 		E700DD241A6E3121006C8BE4 /* npcdollinf.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = npcdollinf.cc; sourceTree = "<group>"; };
@@ -1424,6 +1427,8 @@
 				E700DD1C1A6E3121006C8BE4 /* frnameinf.h */,
 				E700DD1D1A6E3121006C8BE4 /* frusefun.cc */,
 				E700DD1E1A6E3121006C8BE4 /* frusefun.h */,
+				FE4F4F1A887E52F238D70180 /* lightinf.cc */,
+				48254DD28D1E318C3881BC91 /* lightinf.h */,
 				E700DD221A6E3121006C8BE4 /* monstinf.cc */,
 				E700DD231A6E3121006C8BE4 /* monstinf.h */,
 				E700DD241A6E3121006C8BE4 /* npcdollinf.cc */,
@@ -2143,6 +2148,7 @@
 				E700DE911A6E3497006C8BE4 /* misc_buttons.cc in Sources */,
 				8A8728D21DD8AEFF005AC3FC /* Partial.cpp in Sources */,
 				E700DD571A6E3121006C8BE4 /* frusefun.cc in Sources */,
+				005043EA9A06E3F7BB57379A /* lightinf.cc in Sources */,
 				E700DC2C1A6E2D6A006C8BE4 /* soundtest.cc in Sources */,
 				E700DC1C1A6E2CE7006C8BE4 /* UnixSeqMidiDriver.cpp in Sources */,
 				E700DCB41A6E30A7006C8BE4 /* xdrag.cc in Sources */,

@@ -121,7 +121,7 @@ protected:
 	bool two_fingered;      // Carrying gauntlets (both fingers)
 	bool use_scabbard;      // Carrying an item in scabbard (belt, back 2h, shield).
 	bool use_neck;          // Carrying cloak (amulet, cloak)
-	unsigned char light_sources;    // # of light sources readied.
+	int light_sources;    // # of light sources readied.
 	unsigned char usecode_dir;  // Direction (0-7) for usecode anim.
 
 	unsigned type_flags: 32; // 32 flags used in movement among other things
@@ -211,16 +211,20 @@ public:
 	inline bool is_neck_used() const {
 		return use_neck;
 	}
-	bool has_light_source() const {  // Carrying a torch?
-		return light_sources > 0;
+	int get_light_source() const {  // Carrying a torch?
+		return light_sources;
 	}
-	void add_light_source() { // Add a torch
-		light_sources++;
+	void add_light_source(int brightness) { // Add a torch
+		light_sources += brightness;
 	}
-	void remove_light_source() { // Remove a torch
-		if (light_sources)
-			light_sources--;
+	void add_light_source(Game_object *obj);
+	void remove_light_source(int brightness) { // Remove a torch
+		if (light_sources >= brightness)
+			light_sources -= brightness;
+		else
+			light_sources = 0;
 	}
+	void remove_light_source(Game_object *obj);
 	Attack_mode get_attack_mode() {
 		return attack_mode;
 	}

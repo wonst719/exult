@@ -964,7 +964,7 @@ void Actor::refigure_gear() {
 			char rdy = info.get_ready_type();
 			if (info.is_light_source() && (locs[i] != belt ||
 			                               (rdy != lhand && rdy != rhand && rdy != both_hands)))
-				light_sources++;
+				add_light_source(info.get_object_light(worn->get_framenum()));
 			powers |= info.get_object_flags(worn->get_framenum(),
 			                                info.has_quality() ? worn->get_quality() : -1);
 			immune |= info.get_armor_immunity();
@@ -1157,6 +1157,16 @@ int Actor::get_attack_frames(
 		*frames++ = frame;
 	}
 	return cnt;
+}
+
+void Actor::add_light_source(Game_object *obj) {
+	const Shape_info &info = obj->get_info();
+	add_light_source(info.get_object_light(obj->get_framenum()));
+}
+
+void Actor::remove_light_source(Game_object *obj) {
+	const Shape_info &info = obj->get_info();
+	remove_light_source(info.get_object_light(obj->get_framenum()));
 }
 
 /*
@@ -3482,7 +3492,7 @@ bool Actor::add(
 
 	if (info.is_light_source() &&
 	        (index == lhand || index == rhand))
-		light_sources++;
+		add_light_source(info.get_object_light(obj->get_framenum()));
 
 	// Refigure granted immunities.
 	gear_immunities |= info.get_armor_immunity();
@@ -3552,7 +3562,7 @@ bool Actor::add_readied(
 
 	if (info.is_light_source() &&
 	        (index == lhand || index == rhand))
-		light_sources++;
+		add_light_source(info.get_object_light(obj->get_framenum()));
 
 	// Refigure granted immunities.
 	gear_immunities |= info.get_armor_immunity();

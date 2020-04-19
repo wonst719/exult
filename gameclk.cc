@@ -66,14 +66,15 @@ static inline int get_final_palette(
 		return PALETTE_DAY;
 	}
 	if ((light || special) && is_dark_palette(pal)) {
-		int light_palette = PALETTE_SINGLE_LIGHT;
 		// Gump mode, or light spell?
 		if (special)
-			light_palette = PALETTE_SPELL;
-		else if (light > 1)
-			light_palette = PALETTE_MANY_LIGHTS;
-
-		return light_palette;
+			return PALETTE_SPELL;
+		else if (light < 224)
+			return PALETTE_CANDLE;
+		else if (light < 640)
+			return PALETTE_SINGLE_LIGHT;
+		else
+			return PALETTE_MANY_LIGHTS;
 	} else if (is_day_palette(pal)) {
 		if (foggy)
 			return PALETTE_FOG;
