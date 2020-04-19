@@ -1270,6 +1270,7 @@ static void Handle_event(
 		break;
 	}
 	case SDL_MOUSEBUTTONDOWN: {
+		SDL_SetWindowGrab(gwin->get_win()->get_screen_window(), SDL_TRUE);
 		if (dont_move_mode)
 			break;
 		last_b1down_click = SDL_GetTicks();
@@ -1393,6 +1394,7 @@ static void Handle_event(
 		break;
 	}
 	case SDL_MOUSEBUTTONUP: {
+		SDL_SetWindowGrab(gwin->get_win()->get_screen_window(), SDL_FALSE);
 		if (dont_move_mode)
 			break;
 		int x ;
@@ -1659,6 +1661,7 @@ static bool Get_click(
 		while (SDL_PollEvent(&event))
 			switch (event.type) {
 			case SDL_MOUSEBUTTONDOWN:
+				SDL_SetWindowGrab(gwin->get_win()->get_screen_window(), SDL_TRUE);
 				if (g_shortcutBar && g_shortcutBar->handle_event(&event))
 					break;
 				if (event.button.button == 3)
@@ -1670,6 +1673,7 @@ static bool Get_click(
 				}
 				break;
 			case SDL_MOUSEBUTTONUP:
+				SDL_SetWindowGrab(gwin->get_win()->get_screen_window(), SDL_FALSE);
 				if (g_shortcutBar && g_shortcutBar->handle_event(&event))
 					break;
 				if (event.button.button == 1) {
