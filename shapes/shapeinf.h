@@ -188,10 +188,10 @@ protected:
 	unsigned char mountain_top = 0;
 	unsigned char barge_type = 0;
 	unsigned char actor_flags = 0;
-	char field_type = -1;
-	char ready_type = -1;    // From "ready.dat": where item can be worn.
-	char alt_ready1 = -1;    // Alternate spot where item can be worn.
-	char alt_ready2 = -1;    // Second alternate spot where item can be worn.
+	signed char field_type = -1;
+	unsigned char ready_type = 0xff;    // From "ready.dat": where item can be worn.
+	unsigned char alt_ready1 = 0xff;    // Alternate spot where item can be worn.
+	unsigned char alt_ready2 = 0xff;    // Second alternate spot where item can be worn.
 	bool spell_flag = false;        // Flagged as spell in 'ready.dat'.
 	bool occludes_flag = false;     // Flagged in 'occlude.dat'.  Roof.
 	void set_tfa_data() {   // Set fields from tfa.
@@ -524,9 +524,9 @@ public:
 		return field_type;
 	}
 	void set_field_type(int sh) {
-		if (field_type != static_cast<char>(sh)) {
+		if (field_type != static_cast<signed char>(sh)) {
 			modified_flags |= field_type_flag;
-			field_type = static_cast<char>(sh);
+			field_type = static_cast<signed char>(sh);
 		}
 	}
 
@@ -791,10 +791,10 @@ public:
 	void set_occludes(bool tf) {
 		occludes_flag = tf;
 	}
-	char get_ready_type() const {
+	unsigned char get_ready_type() const {
 		return ready_type;
 	}
-	void set_ready_type(char t) {
+	void set_ready_type(unsigned char t) {
 		if (ready_type != t) {
 			modified_flags |= ready_type_flag;
 			ready_type = t;
@@ -809,13 +809,13 @@ public:
 			spell_flag = tf;
 		}
 	}
-	char get_alt_ready1() const {
+	unsigned char get_alt_ready1() const {
 		return alt_ready1;
 	}
-	char get_alt_ready2() const {
+	unsigned char get_alt_ready2() const {
 		return alt_ready2;
 	}
-	void set_alt_ready(char t1, char t2) {
+	void set_alt_ready(unsigned char t1, unsigned char t2) {
 		if (alt_ready1 != t1 || alt_ready2 != t2) {
 			modified_flags |= altready_type_flag;
 			alt_ready1 = t1;

@@ -69,9 +69,9 @@ static inline int get_final_palette(
 		// Gump mode, or light spell?
 		if (special)
 			return PALETTE_SPELL;
-		else if (light < 224)
+		else if (light < 224)	// Seems to match original
 			return PALETTE_CANDLE;
-		else if (light < 640)
+		else if (light < 640)	// Seems to match original
 			return PALETTE_SINGLE_LIGHT;
 		else
 			return PALETTE_MANY_LIGHTS;

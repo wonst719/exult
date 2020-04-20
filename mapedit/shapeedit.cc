@@ -3753,7 +3753,7 @@ void ExultStudio::save_shape_notebook(
 	info.set_3d(get_spin("shinfo_xtiles"), get_spin("shinfo_ytiles"),
 	            get_spin("shinfo_ztiles"));
 	int spot = get_optmenu("shinfo_ready_spot");
-	static const signed char conv_spots[] = {
+	static const unsigned char conv_spots[] = {
 		rhand, lhand, both_hands, rhand, amulet, cloak,
 		neck, rhand, lfinger, gloves, lrgloves, rhand,
 		quiver, earrings, head, torso, backpack, belt,
@@ -3762,9 +3762,10 @@ void ExultStudio::save_shape_notebook(
 	info.set_ready_type(conv_spots[spot]);
 	info.set_is_spell(get_toggle("shinfo_is_spell_check"));
 	// Some Exult stuff.
-	static const signed char alt_spots[] = {
-		-1, -1, rhand, lhand, -1, neck, -1, belt,
-		back_2h, back_shield, scabbard, -1, backpack
+	static const unsigned char alt_spots[] = {
+		invalid_spot, invalid_spot, rhand, lhand, invalid_spot,
+		neck, invalid_spot, belt, back_2h, back_shield, scabbard,
+		invalid_spot, backpack
 	};
 	info.set_alt_ready(alt_spots[get_optmenu("shinfo_altready1_spot")],
 	                   alt_spots[get_optmenu("shinfo_altready2_spot")]);

@@ -53,7 +53,8 @@ enum Ready_type_Exult {
     // Marks as firing triple crossbow bolts:
     triple_bolts = 0x16,
     // Used for paperdolling only:
-    cloak_clasp = 102
+    cloak_clasp = 102,
+    invalid_spot = 0xff
 };
 
 // Black Gate Ready types
@@ -112,7 +113,7 @@ enum Ready_type_SI {
 };
 
 /*
- *  Convert to BG ready spot # from ours (or -1 if not found).
+ *  Convert to BG ready spot # from ours (or invalid_spot if not found).
  */
 
 inline int Ready_spot_to_BG(int spot) {
@@ -164,12 +165,12 @@ inline int Ready_spot_to_BG(int spot) {
 	case neck:
 		return neck_bg;
 	default:
-		return -1;
+		return invalid_spot;
 	}
 }
 
 /*
- *  Convert to SI ready spot # from ours (or -1 if not found).
+ *  Convert to SI ready spot # from ours (or invalid_spot if not found).
  */
 
 inline int Ready_spot_to_SI(int spot) {
@@ -221,13 +222,13 @@ inline int Ready_spot_to_SI(int spot) {
 	case neck:
 		return neck_si;
 	default:
-		return -1;
+		return invalid_spot;
 	}
 }
 
 
 /*
- *  Convert from BG ready spot # to ours (or -1 if not found).
+ *  Convert from BG ready spot # to ours (or invalid_spot if not found).
  */
 
 inline int Ready_spot_from_BG(int spot) {
@@ -281,12 +282,12 @@ inline int Ready_spot_from_BG(int spot) {
 	case neck_bg:
 		return neck;
 	default:
-		return -1;
+		return invalid_spot;
 	}
 }
 
 /*
- *  Convert from SI ready spot # to ours (or -1 if not found).
+ *  Convert from SI ready spot # to ours (or invalid_spot if not found).
  */
 
 inline int Ready_spot_from_SI(int spot) {
@@ -338,7 +339,7 @@ inline int Ready_spot_from_SI(int spot) {
 	case neck_si:
 		return neck;
 	default:
-		return -1;
+		return invalid_spot;
 	}
 }
 

@@ -160,7 +160,7 @@ void Shapes_vga_file::Write_Shapeinf_text_data_file(Exult_Game game) {
 		&Shape_info::nameinf > > ("framenames", info, num_shapes),
 		// For alternate ready spots.
 		new Functor_multidata_writer < Shape_info,
-		Text_pair_writer_functor < altready_type_flag, char, Shape_info,
+		Text_pair_writer_functor < altready_type_flag, unsigned char, Shape_info,
 		&Shape_info::alt_ready1, &Shape_info::alt_ready2 > > (
 		    "altready", info, num_shapes),
 		// For barge parts.
@@ -197,7 +197,7 @@ void Shapes_vga_file::Write_Shapeinf_text_data_file(Exult_Game game) {
 		    "extradimensional_storage", info, num_shapes),
 		// For field types.
 		new Functor_multidata_writer < Shape_info,
-		Text_writer_functor < field_type_flag, char, Shape_info,
+		Text_writer_functor < field_type_flag, signed char, Shape_info,
 		&Shape_info::field_type > > ("field_type", info, num_shapes),
 		// For frame usecode.
 		new Functor_multidata_writer < Shape_info,

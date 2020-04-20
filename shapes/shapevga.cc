@@ -140,10 +140,10 @@ class Ready_type_functor {
 public:
 	void operator()(std::istream &in, int version, bool patch,
 	                Exult_Game game, Shape_info &info) {
-		unsigned char ready = static_cast<unsigned char>(info.ready_type);
+		unsigned char ready = info.ready_type;
 		info.spell_flag = ready & 1;
 		ready >>= 3;
-		char spot = game == BLACK_GATE ? Ready_spot_from_BG(ready)
+		unsigned char spot = game == BLACK_GATE ? Ready_spot_from_BG(ready)
 		            : Ready_spot_from_SI(ready);
 		info.ready_type = spot;
 		// Init alternate spots.
@@ -284,7 +284,7 @@ void Shapes_vga_file::Read_Shapeinf_text_data_file(
 		&Shape_info::nameinf > > (info),
 		// For alternate ready spots.
 		new Functor_multidata_reader < Shape_info,
-		Text_pair_reader_functor < char, Shape_info,
+		Text_pair_reader_functor < unsigned char, Shape_info,
 		&Shape_info::alt_ready1, &Shape_info::alt_ready2 > ,
 		Patch_flags_functor<altready_type_flag, Shape_info> > (info),
 		// For barge parts.
@@ -318,7 +318,7 @@ void Shapes_vga_file::Read_Shapeinf_text_data_file(
 		Patch_flags_functor<extradimensional_storage_flag, Shape_info> > (info),
 		// For field types.
 		new Functor_multidata_reader < Shape_info,
-		Text_reader_functor < char, Shape_info,
+		Text_reader_functor < signed char, Shape_info,
 		&Shape_info::field_type > ,
 		Patch_flags_functor<field_type_flag, Shape_info> > (info),
 		// For frame usecode.
@@ -588,7 +588,7 @@ void Shapes_vga_file::read_info(
 	gump.read(PATCH_CONTAINER, true, game);
 
 	Functor_multidata_reader < Shape_info,
-	                         Binary_reader_functor < char, Shape_info,
+	                         Binary_reader_functor < unsigned char, Shape_info,
 	                         &Shape_info::ready_type, 6 > ,
 	                         Ready_type_functor > ready(info);
 	ready.read(READY, false, game);
@@ -599,12 +599,12 @@ void Shapes_vga_file::read_info(
 	Read_Paperdoll_text_data_file(editing, game);
 
 	// Ensure valid ready spots for all shapes.
-	char defready = game == BLACK_GATE ? backpack : rhand;
+	unsigned char defready = game == BLACK_GATE ? backpack : rhand;
 	zinfo.ready_type = defready;
 	for (std::map<int, Shape_info>::iterator it = info.begin();
 	        it != info.end(); ++it) {
 		Shape_info &inf = it->second;
-		if (inf.ready_type < 0)
+		if (inf.ready_type == invalid_spot)
 			inf.ready_type = defready;
 	}
 }

@@ -81,9 +81,11 @@ bool Monster_info::read(
 	m_cant_yell = (*ptr & (1 << 5)) != 0;   // Byte 12.
 	m_cant_bleed = (*ptr & (1 << 6)) != 0;
 	ptr++;
-	m_attackmode = (*ptr & 7) - 1;
-	if (m_attackmode < 0)       // Fixes invalid data saved by older
+	m_attackmode = (*ptr & 7);
+	if (m_attackmode == 0)       // Fixes invalid data saved by older
 		m_attackmode = 2;       // versions of ES.
+	else
+		m_attackmode--;
 	m_byte13 = (*ptr++)&~7; // Byte 13: partly unknown.
 	equip_offset = *ptr++;      // Byte 14.
 	m_can_teleport = (*ptr & 1) != 0;   // Exult's extra flags: byte 15.

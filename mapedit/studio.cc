@@ -2840,7 +2840,7 @@ C_EXPORT void on_gameinfo_apply_clicked(
 	codepageStr menu(modmenu, "CP437");
 	string menustr = menu.get_str();
 	for (size_t i = 0; i < strlen(menustr.c_str()); i++)
-		if (menustr[i] < 0)
+		if ((static_cast<unsigned char>(menustr[i]) & 0x80) != 0)
 			menustr[i] = '?';
 	g_free(modmenu);
 
