@@ -77,7 +77,7 @@ bool Map_patch_modify::apply(
 	if (mod.shapenum != c_any_shapenum)
 		obj->set_shape(mod.shapenum);
 	if (mod.framenum != c_any_framenum)
-		obj->set_frame(mod.framenum);
+		obj->change_frame(mod.framenum);
 	if (mod.quality != c_any_qual)
 		obj->set_quality(mod.quality);
 	obj->set_invalid();     // To add it back correctly.

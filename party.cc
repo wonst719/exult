@@ -502,7 +502,7 @@ static bool Take_best_step(
     Game_object_shared best_keep;
 	npc->remove_this(&npc_keep);
 	best_in_way->remove_this(&best_keep);
-	npc->set_frame(frame);      // Appear to take a step.
+	npc->change_frame(frame);      // Appear to take a step.
 	npc->move(best);
 	best_in_way->move(pos);
 	return true;

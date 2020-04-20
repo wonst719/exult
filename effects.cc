@@ -1829,7 +1829,7 @@ void Fire_field_effect::handle_event(
 		} else
 			frnum--;
 		gwin->add_dirty(field_obj.get());
-		field_obj->set_frame(frnum);
+		field_obj->change_frame(frnum);
 		gwin->get_tqueue()->add(curtime + gwin->get_std_delay(), this, udata);
 	}
 }

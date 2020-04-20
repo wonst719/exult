@@ -426,7 +426,7 @@ void Frame_animator::handle_event(
 		frame_counter = aniinf->get_frame_delay();
 		bool dirty_first = gwin->add_dirty(obj);
 		int framenum = get_next_frame();
-		obj->set_frame(last_frame = framenum);
+		obj->change_frame(last_frame = framenum);
 		if (!dirty_first && !gwin->add_dirty(obj)) {
 			// No longer on screen.
 			animating = false;

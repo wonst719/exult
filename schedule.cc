@@ -767,7 +767,7 @@ void Pace_schedule::now_what(
  */
 void Eat_at_inn_schedule::im_dormant() {
 	// Force NPCs to sit down again after cache-out/cache-in.
-	//npc->set_frame(npc->get_dir_framenum(Actor::standing));
+	//npc->change_frame(npc->get_dir_framenum(Actor::standing));
 	npc->set_action(nullptr);
 }
 
@@ -1639,7 +1639,7 @@ void Graze_schedule::now_what(
 			}
 		} else {
 			npc->add_dirty();
-			npc->set_frame(npc->get_dir_framenum(npc->get_dir_facing(),
+			npc->change_frame(npc->get_dir_framenum(npc->get_dir_facing(),
 			                                     Actor::standing));
 			npc->add_dirty();
 		}
@@ -2272,7 +2272,7 @@ void Sleep_schedule::now_what(
 		}
 		int bedshape = bed_obj->get_shapenum();
 		int dir = (bedshape == 696 || bedshape == 363) ? west : north;
-		npc->set_frame(npc->get_dir_framenum(dir, Actor::sleep_frame));
+		npc->change_frame(npc->get_dir_framenum(dir, Actor::sleep_frame));
 		// Get bed info.
 		const Shape_info &info = bed_obj->get_info();
 		Tile_coord bedloc = bed_obj->get_tile();
@@ -2310,7 +2310,7 @@ void Sleep_schedule::now_what(
  */
 void Sleep_schedule::im_dormant() {
 	// Force NPCs to lay down again after cache-out/cache-in.
-	//npc->set_frame(npc->get_dir_framenum(Actor::standing));
+	//npc->change_frame(npc->get_dir_framenum(Actor::standing));
 	npc->set_action(nullptr);
 }
 
@@ -2369,7 +2369,7 @@ void Sleep_schedule::ending(
 	if (floorloc.tx >= 0)       // Get back on floor.
 		npc->move(floorloc);
 	npc->clear_sleep();
-	npc->set_frame(npc->get_dir_framenum(Actor::standing));
+	npc->change_frame(npc->get_dir_framenum(Actor::standing));
 	if (makebed) {
 		// Animation for making bed.
 		Usecode_script *scr = new Usecode_script(npc);
@@ -2454,7 +2454,7 @@ void Sit_schedule::now_what(
  */
 void Sit_schedule::im_dormant() {
 	// Force NPCs to sit down again after cache-out/cache-in.
-	//npc->set_frame(npc->get_dir_framenum(Actor::standing));
+	//npc->change_frame(npc->get_dir_framenum(Actor::standing));
 	npc->set_action(nullptr);
 }
 
@@ -2829,7 +2829,7 @@ void Desk_schedule::now_what(
  */
 void Desk_schedule::im_dormant() {
 	// Force NPCs to sit down again after cache-out/cache-in.
-	//npc->set_frame(npc->get_dir_framenum(Actor::standing));
+	//npc->change_frame(npc->get_dir_framenum(Actor::standing));
 	npc->set_action(nullptr);
 }
 
@@ -4053,7 +4053,7 @@ void Sew_schedule::now_what(
 			int shnum = GAME_SI ? 403 : (rand() % 2 ? 738 : 249);
 			cloth_obj->set_shape(shnum);
 			int nframes = ShapeID(shnum, 0).get_num_frames();
-			cloth_obj->set_frame(rand() % nframes);
+			cloth_obj->change_frame(rand() % nframes);
 			cloth_obj->move(pos);
 			state = get_clothes;
 		}
@@ -4413,7 +4413,7 @@ void Bake_schedule::now_what() {
 		if (dough_in_oven_obj->get_shapenum() != 377) {
 			gwin->add_dirty(dough_in_oven_obj.get());
 			dough_in_oven_obj->set_shape(377);
-			dough_in_oven_obj->set_frame(rand() % 7);
+			dough_in_oven_obj->change_frame(rand() % 7);
 			dough_in_oven_obj->clear_flag(Obj_flags::okay_to_take);  // doesn't save okay_to_take
 			gwin->add_dirty(dough_in_oven_obj.get());
 		}
@@ -5046,7 +5046,7 @@ Eat_schedule::Eat_schedule(Actor *n): Schedule(n),
  */
 void Eat_schedule::im_dormant() {
 	// Force NPCs to sit down again after cache-out/cache-in.
-	//npc->set_frame(npc->get_dir_framenum(Actor::standing));
+	//npc->change_frame(npc->get_dir_framenum(Actor::standing));
 	npc->set_action(nullptr);
 }
 
@@ -5190,7 +5190,7 @@ void Walk_to_schedule::now_what(
 		// Going to jump there.
 		npc->move(dest.tx, dest.ty, dest.tz);
 		// Force actor to sit down/lie down again
-		npc->set_frame(npc->get_dir_framenum(Actor::standing));
+		npc->change_frame(npc->get_dir_framenum(Actor::standing));
 		npc->set_schedule_type(new_schedule);
 		return;
 	}

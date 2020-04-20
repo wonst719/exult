@@ -452,7 +452,7 @@ void Barge_object::turn_right(
         Game_object_shared keep;
 		obj->remove_this(&keep);    // Remove object from world.
 		// Set to rotated frame.
-		obj->set_frame(obj->get_rotated_frame(1));
+		obj->change_frame(obj->get_rotated_frame(1));
 		obj->set_invalid(); // So it gets added back right.
 	}
 	finish_move(positions);     // Add back & del. positions.
@@ -484,7 +484,7 @@ void Barge_object::turn_left(
 		Game_object_shared keep;
 		obj->remove_this(&keep);    // Remove object from world.
 		// Set to rotated frame.
-		obj->set_frame(obj->get_rotated_frame(3));
+		obj->change_frame(obj->get_rotated_frame(3));
 		obj->set_invalid(); // So it gets added back right.
 	}
 	finish_move(positions);     // Add back & del. positions.
@@ -513,7 +513,7 @@ void Barge_object::turn_around(
 		Game_object_shared keep;
 		obj->remove_this(&keep);    // Remove object from world.
 		// Set to rotated frame.
-		obj->set_frame(obj->get_rotated_frame(2));
+		obj->change_frame(obj->get_rotated_frame(2));
 		obj->set_invalid(); // So it gets added back right.
 	}
 	finish_move(positions);     // Add back & del. positions.
@@ -646,10 +646,10 @@ void Barge_object::move(
 			int frame = obj->get_framenum();
 			switch (obj->get_info().get_barge_type()) {
 			case Shape_info::barge_wheel:       // Cart wheel.
-				obj->set_frame(((frame + 1) & 3) | (frame & 32));
+				obj->change_frame(((frame + 1) & 3) | (frame & 32));
 				break;
 			case Shape_info::barge_draftanimal:     // Draft horse.
-				obj->set_frame(((frame + 4) & 15) | (frame & 32));
+				obj->change_frame(((frame + 4) & 15) | (frame & 32));
 				break;
 			}
 		}

@@ -166,7 +166,7 @@ public:
 	// Force repaint of area taken.
 	int get_effective_weapon_shape();//For displaying casting frames.
 	bool add_dirty(bool figure_rect = false);
-	void change_frame(int frnum);   // Change frame & set to repaint.
+	void change_frame(int frnum) override;   // Change frame & set to repaint.
 	bool figure_weapon_pos(int &weapon_x, int &weapon_y, int &weapon_frame);
 	void say_hunger_message();
 	void use_food();        // Decrement food level.

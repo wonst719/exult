@@ -889,7 +889,7 @@ inline void Actor::movef(
 		old_chunk->remove(this);
 	set_shape_pos(new_sx, new_sy);
 	if (new_frame >= 0)
-		set_frame(new_frame);
+		change_frame(new_frame);
 	if (new_lift >= 0)
 		set_lift(new_lift);
 	new_chunk->add(this);
@@ -1894,7 +1894,7 @@ bool Actor::teleport_offscreen_to_schedule(Tile_coord const &dest, int dist) {
 		// Teleport if more than dist tiles from target
 		if (distance(dest) > dist) {
 			move(dest.tx, dest.ty, dest.tz, mapnum);
-			set_frame(get_dir_framenum(Actor::standing));
+			change_frame(get_dir_framenum(Actor::standing));
 		}
 		return true;
 	}
@@ -4162,7 +4162,7 @@ void Actor::die(
 		Game_object::move(pos);
 		body->move(bp);
 		if (have_body_shape) {
-			body->set_frame(0); // Make body invisible
+			body->change_frame(0); // Make body invisible
 		}
 	} else
 		body = nullptr;

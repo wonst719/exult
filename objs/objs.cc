@@ -513,7 +513,7 @@ int Game_object::modify_quantity(
 	quality = static_cast<char>(newquant);  // Store new value.
 	// Set appropriate frame.
 	if (get_info().has_weapon_info())   // Starbursts, serpent(ine) daggers, knives.
-		set_frame(0);       // (Fixes messed-up games.)
+		change_frame(0);       // (Fixes messed-up games.)
 	else if (get_info().has_quantity_frames()) {
 		// This is actually hard-coded in the originals, but doing
 		// it this way is consistent with musket ammo.
@@ -522,7 +522,7 @@ int Game_object::modify_quantity(
 			base = 24;
 		// Verified.
 		int new_frame = newquant > 12 ? 7 : (newquant > 6 ? 6 : newquant - 1);
-		set_frame(base + new_frame);
+		change_frame(base + new_frame);
 	}
 
 	Container_game_object *owner = get_owner();

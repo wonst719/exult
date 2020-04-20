@@ -1876,7 +1876,7 @@ void Game_window::teleport_party(
 			                                     1);
 			if (t1.tx != -1) {
 				person->move(t1, newmap);
-				person->set_frame(person->get_dir_framenum(Actor::standing));
+				person->change_frame(person->get_dir_framenum(Actor::standing));
 			}
 		}
 	}

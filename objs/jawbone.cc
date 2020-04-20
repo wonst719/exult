@@ -76,5 +76,5 @@ void Jawbone_object::find_teeth() {
 }
 
 void Jawbone_object::update_frame() {
-	set_frame(toothcount);
+	change_frame(toothcount);
 }
