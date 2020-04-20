@@ -448,6 +448,10 @@ gumps/Gamemenu_gump.o : gumps/Gamemenu_gump.cc $(EXULT_FLX)
 
 gumps/GameplayOptions_gump.o : gumps/GameplayOptions_gump.cc $(EXULT_FLX)
 
+gumps/ItemMenu_gump.o : gumps/ItemMenu_gump.cc $(EXULT_FLX)
+
+gumps/InputOptions_gump.o : gumps/InputOptions_gump.cc $(EXULT_FLX)
+
 gumps/Newfile_gump.o : gumps/Newfile_gump.cc $(EXULT_FLX)
 
 gumps/Notebook_gump.o : gumps/Notebook_gump.cc $(EXULT_FLX)
