@@ -452,7 +452,7 @@
 0x310:You met Drusilla outside of Issik’s Maze.
 #0x311:Met_Solaria
 0x311:You met Solaria outside of Aram-Dol’s Lair, northeast of Serpent’s Fang.
-	
+
 
 #others
 
