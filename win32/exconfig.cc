@@ -330,11 +330,17 @@ extern "C" {
 
 			// Set BG Path
 			MessageBoxDebug(nullptr, p, "WriteConfig: BG", MB_OK);
-			config.set("config/disk/game/blackgate/path", BGPath, true);
+			if (BGPath)
+				config.set("config/disk/game/blackgate/path", BGPath, true);
+			else
+				config.set("config/disk/game/blackgate/path", "blackgate", true);
 
 			// Set SI Path
 			MessageBoxDebug(nullptr, p, "WriteConfig: SI", MB_OK);
-			config.set("config/disk/game/serpentisle/path", SIPath, true);
+			if (SIPath)
+				config.set("config/disk/game/serpentisle/path", SIPath, true);
+			else
+				config.set("config/disk/game/serpentisle/path", "serpentisle", true);
 
 			// Set Defaults
 			std::string s;
