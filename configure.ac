@@ -127,23 +127,6 @@ AC_PROG_CXX([$cxx_compilers])
 
 AC_LANG([C++])
 
-# TODO: Maybe making a function to do these.
-# Lets clean up CFLAGS of -O[0-3gs]? and -g[0-3]?
-for ccflag in $CFLAGS; do
-	AS_CASE([$ccflag],
-		[-O|-O0|-O1|-O2|-O3|-Os|-Og|-g|-g1|-g2|-g3], [],
-		[NEWCFLAGS="$NEWCFLAGS $ccflag"])
-done
-CFLAGS="$NEWCFLAGS"
-
-# Lets clean up CXXFLAGS of -O[0-3gs]? and -g[0-3]?
-for cxxflag in $CXXFLAGS; do
-	AS_CASE([$cxxflag],
-		[-O|-O0|-O1|-O2|-O3|-Os|-Og|-g|-g1|-g2|-g3], [],
-		[NEWCXXFLAGS="$NEWCXXFLAGS $cxxflag"])
-done
-CXXFLAGS="$NEWCXXFLAGS"
-
 AX_CXX_COMPILE_STDCXX_17([noext],[optional])
 if test "$HAVE_CXX17" = "0"; then
 	AX_CXX_COMPILE_STDCXX_14([noext],[mandatory])
@@ -674,52 +657,73 @@ fi
 
 AC_ARG_WITH([optimization],
             AS_HELP_STRING([--with-optimization=none|size|debug|light|normal|heavy],
-                           [Select optimization level @<:@default normal@:>@]),
-            [opt_level="$withval"], [opt_level="normal"])
+                           [Select optimization level @<:@default=from CXXFLAGS@:>@]),
+            [opt_level="$withval"], [opt_level=""])
 AC_MSG_CHECKING([desired optimization level])
-if test x$opt_level = xnone; then
-	AC_MSG_RESULT(none)
-	DEBUG_FLAGS="$DEBUG_FLAGS -O0"
-elif test x$opt_level = xsize; then
-	AC_MSG_RESULT(size)
-	AX_CHECK_COMPILE_FLAG([-Os], [have_os_opt=yes], [have_os_opt=no], [$DEBUG_FLAGS -Werror])
-	if test x$have_os_opt = xyes; then
-		DEBUG_FLAGS="$DEBUG_FLAGS -Os"
-	else
-		# Sane default if compiler does not support -Os
-		DEBUG_FLAGS="$DEBUG_FLAGS -O2"
-		for opt_flag in -falign-functions -falign-jumps -falign-loops -falign-labels -freorder-blocks -freorder-blocks-and-partition -fprefetch-loop-arrays -ftree-vect-loop-version
-		do
-			AX_CHECK_COMPILE_FLAG([$opt_flag], [DEBUG_FLAGS="$DEBUG_FLAGS $opt_flag"], [], [$DEBUG_FLAGS -Werror])
-		done
-	fi
-elif test x$opt_level = xdebug; then
-	AC_MSG_RESULT(debug)
-	AX_CHECK_COMPILE_FLAG([-Og], [have_og_opt=yes], [have_og_opt=no], [$DEBUG_FLAGS -Werror])
-	if test x$have_og_opt = xyes; then
-		DEBUG_FLAGS="$DEBUG_FLAGS -Og"
-	else
-		# Sane default if compiler does not support -Og
-		DEBUG_FLAGS="$DEBUG_FLAGS -O1"
-		for opt_flag in -fno-branch-count-reg -fno-if-conversion -fno-if-conversion2 -fno-inline-functions-called-once -fno-move-loop-invariants -fno-ssa-phiopt -fno-tree-bit-ccp -fno-tree-pta -fno-tree-sra
-		do
-			AX_CHECK_COMPILE_FLAG([$opt_flag], [DEBUG_FLAGS="$DEBUG_FLAGS $opt_flag"], [], [$DEBUG_FLAGS -Werror])
-		done
-	fi
-elif test x$opt_level = xlight; then
-	AC_MSG_RESULT(light)
-	DEBUG_FLAGS="$DEBUG_FLAGS -O1"
-elif test x$opt_level = xnormal; then
-	AC_MSG_RESULT(normal)
-	DEBUG_FLAGS="$DEBUG_FLAGS -O2"
-elif test x$opt_level = xheavy; then
-	AC_MSG_RESULT(heavy)
-	DEBUG_FLAGS="$DEBUG_FLAGS -O3"
+if test x$opt_level = x; then
+	AC_MSG_RESULT(from CXXFLAGS)
 else
-	AC_MSG_RESULT(invalid)
-	echo "Invalid option given for --with-optimization: $opt_level."
-	echo "Expected one of 'none', 'size', 'debug', 'light', 'normal', 'heavy'."
-	exit 1
+	# TODO: Maybe making a function to do these.
+	# Lets clean up CFLAGS of -O[0-3gs]?
+	for ccflag in $CFLAGS; do
+		AS_CASE([$ccflag],
+			[-O|-O0|-O1|-O2|-O3|-Os|-Og], [],
+			[NEWCFLAGS="$NEWCFLAGS $ccflag"])
+	done
+	CFLAGS="$NEWCFLAGS"
+
+	# Lets clean up CXXFLAGS of -O[0-3gs]?
+	for cxxflag in $CXXFLAGS; do
+		AS_CASE([$cxxflag],
+			[-O|-O0|-O1|-O2|-O3|-Os|-Og], [],
+			[NEWCXXFLAGS="$NEWCXXFLAGS $cxxflag"])
+	done
+	CXXFLAGS="$NEWCXXFLAGS"
+
+	if test x$opt_level = xnone; then
+		AC_MSG_RESULT(none)
+		DEBUG_FLAGS="$DEBUG_FLAGS -O0"
+	elif test x$opt_level = xsize; then
+		AC_MSG_RESULT(size)
+		AX_CHECK_COMPILE_FLAG([-Os], [have_os_opt=yes], [have_os_opt=no], [$DEBUG_FLAGS -Werror])
+		if test x$have_os_opt = xyes; then
+			DEBUG_FLAGS="$DEBUG_FLAGS -Os"
+		else
+			# Sane default if compiler does not support -Os
+			DEBUG_FLAGS="$DEBUG_FLAGS -O2"
+			for opt_flag in -falign-functions -falign-jumps -falign-loops -falign-labels -freorder-blocks -freorder-blocks-and-partition -fprefetch-loop-arrays -ftree-vect-loop-version
+			do
+				AX_CHECK_COMPILE_FLAG([$opt_flag], [DEBUG_FLAGS="$DEBUG_FLAGS $opt_flag"], [], [$DEBUG_FLAGS -Werror])
+			done
+		fi
+	elif test x$opt_level = xdebug; then
+		AC_MSG_RESULT(debug)
+		AX_CHECK_COMPILE_FLAG([-Og], [have_og_opt=yes], [have_og_opt=no], [$DEBUG_FLAGS -Werror])
+		if test x$have_og_opt = xyes; then
+			DEBUG_FLAGS="$DEBUG_FLAGS -Og"
+		else
+			# Sane default if compiler does not support -Og
+			DEBUG_FLAGS="$DEBUG_FLAGS -O1"
+			for opt_flag in -fno-branch-count-reg -fno-if-conversion -fno-if-conversion2 -fno-inline-functions-called-once -fno-move-loop-invariants -fno-ssa-phiopt -fno-tree-bit-ccp -fno-tree-pta -fno-tree-sra
+			do
+				AX_CHECK_COMPILE_FLAG([$opt_flag], [DEBUG_FLAGS="$DEBUG_FLAGS $opt_flag"], [], [$DEBUG_FLAGS -Werror])
+			done
+		fi
+	elif test x$opt_level = xlight; then
+		AC_MSG_RESULT(light)
+		DEBUG_FLAGS="$DEBUG_FLAGS -O1"
+	elif test x$opt_level = xnormal; then
+		AC_MSG_RESULT(normal)
+		DEBUG_FLAGS="$DEBUG_FLAGS -O2"
+	elif test x$opt_level = xheavy; then
+		AC_MSG_RESULT(heavy)
+		DEBUG_FLAGS="$DEBUG_FLAGS -O3"
+	else
+		AC_MSG_RESULT(invalid)
+		echo "Invalid option given for --with-optimization: $opt_level."
+		echo "Expected one of 'none', 'size', 'debug', 'light', 'normal', 'heavy'."
+		exit 1
+	fi
 fi
 
 # link-time optimization
@@ -733,30 +737,51 @@ DEBUG_FLAGS="$DEBUG_FLAGS $LTO_CFLAGS"
 
 AC_ARG_WITH([debug],
             AS_HELP_STRING([--with-debug=no|messages|symbols|full|extreme],
-                           [Enable debug mode @<:@default no@:>@]),
-            [dbg_level="$withval"], [dbg_level="no"])
+                           [Enable debug mode @<:@default=from CXXFLAGS@:>@]),
+            [dbg_level="$withval"], [dbg_level=""])
 AC_MSG_CHECKING([whether to enable debugging mode])
-if test x$dbg_level = xno; then
-	AC_MSG_RESULT(no)
-elif test x$dbg_level = xmessages; then
-	AC_MSG_RESULT(messages only)
-	AC_DEFINE(DEBUG, 1, [Enable debug mode])
-elif test x$dbg_level = xsymbols -o x$dbg_level = xfull -o x$dbg_level = xextreme; then
-	AC_MSG_RESULT($dbg_level)
-	if test x$dbg_level != xsymbols; then
-		AC_DEFINE(DEBUG, 1, [Enable debug mode])
-	fi
-	if test x$dbg_level = xextreme; then
-		DEBUG_FLAGS="$DEBUG_FLAGS -g3"
-	else
-		DEBUG_FLAGS="$DEBUG_FLAGS -g"
-	fi
-	# TODO: Maybe add warning that -O0 and -Og work better for debug symbols?
+if test x$dbg_level = x; then
+	AC_MSG_RESULT(from CXXFLAGS)
 else
-	AC_MSG_RESULT(invalid)
-	echo "Invalid option given for --with-debug: $dbg_level."
-	echo "Expected one of 'no', 'messages', 'symbols', 'full', 'extreme'."
-	exit 1
+	# TODO: Maybe making a function to do these.
+	# Lets clean up CFLAGS of -g[0-3]?
+	for ccflag in $CFLAGS; do
+		AS_CASE([$ccflag],
+			[-g|-g1|-g2|-g3], [],
+			[NEWCFLAGS="$NEWCFLAGS $ccflag"])
+	done
+	CFLAGS="$NEWCFLAGS"
+
+	# Lets clean up CXXFLAGS of -g[0-3]?
+	for cxxflag in $CXXFLAGS; do
+		AS_CASE([$cxxflag],
+			[-g|-g1|-g2|-g3], [],
+			[NEWCXXFLAGS="$NEWCXXFLAGS $cxxflag"])
+	done
+	CXXFLAGS="$NEWCXXFLAGS"
+
+	if test x$dbg_level = xno; then
+		AC_MSG_RESULT(no)
+	elif test x$dbg_level = xmessages; then
+		AC_MSG_RESULT(messages only)
+		AC_DEFINE(DEBUG, 1, [Enable debug mode])
+	elif test x$dbg_level = xsymbols -o x$dbg_level = xfull -o x$dbg_level = xextreme; then
+		AC_MSG_RESULT($dbg_level)
+		if test x$dbg_level != xsymbols; then
+			AC_DEFINE(DEBUG, 1, [Enable debug mode])
+		fi
+		if test x$dbg_level = xextreme; then
+			DEBUG_FLAGS="$DEBUG_FLAGS -g3"
+		else
+			DEBUG_FLAGS="$DEBUG_FLAGS -g"
+		fi
+		# TODO: Maybe add warning that -O0 and -Og work better for debug symbols?
+	else
+		AC_MSG_RESULT(invalid)
+		echo "Invalid option given for --with-debug: $dbg_level."
+		echo "Expected one of 'no', 'messages', 'symbols', 'full', 'extreme'."
+		exit 1
+	fi
 fi
 
 # SDL parachute?
