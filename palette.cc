@@ -27,6 +27,7 @@
 #include "ibuf8.h"
 #include "utils.h"
 #include "fnames.h"
+#include "gameclk.h"
 #include "gamewin.h"
 #include "exceptions.h"
 #include "ignore_unused_variable_warning.h"
@@ -426,22 +427,25 @@ void Palette::create_palette_map(const Palette *to, unsigned char *&buf) const {
  *  Creates a palette in-between two palettes.
  */
 
-Palette *Palette::create_intermediate(const Palette *to, int nsteps, int pos) const {
-	unsigned char palnew[768];
+std::unique_ptr<Palette> Palette::create_intermediate(const Palette &to, int nsteps, int pos) const {
+	auto newpal = std::make_unique<Palette>();
 	if (fades_enabled) {
 		for (int c = 0; c < 768; c++)
-			palnew[c] = ((to->pal1[c] - pal1[c]) * pos) / nsteps + pal1[c];
+			newpal->pal1[c] = ((to.pal1[c] - pal1[c]) * pos) / nsteps + pal1[c];
 	} else {
 		const unsigned char *palold;
 		if (2 * pos >= nsteps)
-			palold = to->pal1;
+			palold = to.pal1;
 		else
 			palold = pal1;
-		memcpy(palnew, palold, 768);
+		memcpy(newpal->pal1, palold, 768);
 	}
-	Palette *ret = new Palette();
-	ret->set(palnew, -1, true, true);
-	return ret;
+
+	// Reset palette data and set.
+	memset(newpal->pal2, 0, 768);
+	newpal->border255 = true;
+	newpal->apply(true);
+	return newpal;
 }
 
 /*
@@ -487,53 +491,49 @@ void Palette::set_palette(unsigned char palnew[768]) {
 
 Palette_transition::Palette_transition(
     int from, int to,
-    int ch, int cm,
+    int ch, int cm, int ct,
     int r,
     int nsteps,
-    int sh, int smin
+    int sh, int smin, int stick
 )
 	: current(nullptr), step(0), max_steps(nsteps),
-	  start_hour(sh), start_minute(smin), rate(r) {
-	start = new Palette();
-	start->load(PALETTES_FLX, PATCH_PALETTES, from);
-	end = new Palette();
-	end->load(PALETTES_FLX, PATCH_PALETTES, to);
-	set_step(ch, cm);
+	  start_hour(sh), start_minute(smin), start_ticks(stick), rate(r) {
+	start.load(PALETTES_FLX, PATCH_PALETTES, from);
+	end.load(PALETTES_FLX, PATCH_PALETTES, to);
+	set_step(ch, cm, ct);
 }
 
 Palette_transition::Palette_transition(
     Palette *from, int to,
-    int ch, int cm,
+    int ch, int cm, int ct,
     int r,
     int nsteps,
-    int sh, int smin
+    int sh, int smin, int stick
 )
-	: current(nullptr), step(0), max_steps(nsteps),
-	  start_hour(sh), start_minute(smin), rate(r) {
-	start = new Palette(from);
-	end = new Palette();
-	end->load(PALETTES_FLX, PATCH_PALETTES, to);
-	set_step(ch, cm);
+	: start(from), current(nullptr), step(0), max_steps(nsteps),
+	  start_hour(sh), start_minute(smin), start_ticks(stick), rate(r) {
+	end.load(PALETTES_FLX, PATCH_PALETTES, to);
+	set_step(ch, cm, ct);
 }
 
 Palette_transition::Palette_transition(
     Palette *from, Palette *to,
-    int ch, int cm,
+    int ch, int cm, int ct,
     int r,
     int nsteps,
-    int sh, int smin
+    int sh, int smin, int stick
 )
-	: current(nullptr), step(0), max_steps(nsteps),
-	  start_hour(sh), start_minute(smin), rate(r) {
-	start = new Palette(from);
-	end = new Palette(to);
-	set_step(ch, cm);
+	: start(from), end(to), current(nullptr), step(0), max_steps(nsteps),
+	  start_hour(sh), start_minute(smin), start_ticks(stick), rate(r) {
+	set_step(ch, cm, ct);
 }
 
-bool Palette_transition::set_step(int hour, int min) {
-	int new_step = 60 * (hour - start_hour) + min - start_minute;
+bool Palette_transition::set_step(int hour, int min, int tick) {
+	int new_step = ticks_per_minute * (60 * hour + min) + tick;
+	int old_step = ticks_per_minute * (60 * start_hour + start_minute) + start_ticks;
+	new_step -= old_step;
 	while (new_step < 0)
-		new_step += 60;
+		new_step += 60 * ticks_per_minute;
 	new_step /= rate;
 
 	Game_window *gwin = Game_window::get_instance();
@@ -542,18 +542,10 @@ bool Palette_transition::set_step(int hour, int min) {
 
 	if (!current || new_step != step) {
 		step = new_step;
-		delete current;
-		current = start->create_intermediate(end, max_steps, step);
+		current = start.create_intermediate(end, max_steps, step);
 	}
 
 	if (current)
 		current->apply(true);
 	return step < max_steps;
-}
-
-Palette_transition::~Palette_transition(
-) {
-	delete start;
-	delete end;
-	delete current;
 }

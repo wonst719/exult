@@ -36,7 +36,7 @@ const int ticks_per_minute = 25;
  */
 class Game_clock : public Time_sensitive {
 	Time_queue *tqueue;     // The time queue.
-	short hour, minute;     // Time (0-23, 0-59).
+	short hour, minute, ticks;     // Time (0-23, 0-59).
 	int day;            // Keep track of days played.
 	int light_source_level;     // Last set light source level.
 	int old_light_level;        // Last set light source level.
@@ -54,7 +54,7 @@ class Game_clock : public Time_sensitive {
 	void set_light_source_level(int lev);
 	void check_hunger() const;
 public:
-	Game_clock(Time_queue *tq) : tqueue(tq), hour(6), minute(0), day(0),
+	Game_clock(Time_queue *tq) : tqueue(tq), hour(6), minute(0), ticks(0), day(0),
 		light_source_level(0), old_light_level(0), old_special_light(false),
 		old_infravision(false), old_invisible(false), dungeon(255),
 		overcast(0), was_overcast(false), fog(0), was_foggy(false), time_rate(1)
@@ -70,6 +70,12 @@ public:
 	}
 	void set_minute(int m) {
 		minute = m;
+	}
+	int get_ticks() const {
+		return ticks;
+	}
+	void set_ticks(int m) {
+		ticks = m;
 	}
 	int get_day() const {
 		return day;

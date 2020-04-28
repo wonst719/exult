@@ -149,7 +149,7 @@ void Game_clock::set_time_palette(
 		// weather to/from dawn/sunrise/sundown/dusk.
 		// Right now, it works like the original.
 		transition = std::make_unique<Palette_transition>(old_palette, new_palette,
-		                                    hour, minute, 1, 4, hour, minute);
+		                                    hour, minute, ticks, 1, 20, hour, minute, ticks);
 		return;
 	}
 	if (light_change) {
@@ -158,13 +158,13 @@ void Game_clock::set_time_palette(
 		return;
 	}
 	if (transition) {
-		if (transition->set_step(hour, minute))
+		if (transition->set_step(hour, minute, ticks))
 			return;
 		transition.reset();
 	}
 	if (force || old_palette != new_palette) { // Do we have a transition?
 		transition = std::make_unique<Palette_transition>(old_palette, new_palette,
-		                                    hour, minute, 4, 15, hour, 0);
+		                                    hour, minute, ticks, ticks_per_minute, 60, hour, 0, 0);
 	} else {
 		apply_palette(new_palette);
 	}
@@ -258,15 +258,13 @@ void Game_clock::increment(
     int num_minutes         // # of minutes to increment.
 ) {
 	Game_window *gwin = Game_window::get_instance();
-	int old_hour;
-	long new_min;
-
-	old_hour = hour;        // Remember current 3-hour period.
+	int old_hour = hour;    // Remember current 3-hour period.
 	num_minutes += 7;       // Round to nearest 15 minutes.
 	num_minutes -= num_minutes % 15;
-	new_min = minute + num_minutes;
+	long new_min = minute + num_minutes;
 	hour += static_cast<short>(new_min / 60);   // Update hour.
 	minute = static_cast<short>(new_min % 60);
+	ticks = 0;
 	day += hour / 24;       // Update day.
 	hour %= 24;
 
@@ -291,10 +289,15 @@ void Game_clock::handle_event(
 	int hour_old = hour;
 	// Time stopped?  Don't advance.
 	if (!gwin->is_time_stopped() && !cheat.in_map_editor()) {
-		minute += time_rate;
+		ticks += time_rate;
+		minute += (ticks / ticks_per_minute);
+		ticks %= ticks_per_minute;
 		// ++++ TESTING
 		// if (Game::get_game_type() == SERPENT_ISLE)
-		Check_freezing();
+		// Only do every minute?
+		if (min_old != minute) {
+			Check_freezing();
+		}
 	}
 
 	while (minute >= 60) {  // advance to the correct hour (and day)
@@ -310,7 +313,7 @@ void Game_clock::handle_event(
 		gwin->schedule_npcs(hour);
 	}
 
-	if (transition && !transition->set_step(hour, minute)) {
+	if (transition && !transition->set_step(hour, minute, ticks)) {
 		transition.reset();
 		set_time_palette(false);
 	} else if (hour != hour_old)
@@ -318,7 +321,7 @@ void Game_clock::handle_event(
 
 	if ((hour != hour_old) || (minute / 15 != min_old / 15))
 		COUT("Clock updated to " << hour << ':' << minute);
-	curtime += gwin->get_std_delay() * ticks_per_minute;
+	curtime += gwin->get_std_delay();
 	tqueue->add(curtime, this, udata);
 }
 
@@ -328,6 +331,7 @@ void Game_clock::handle_event(
 
 void Game_clock::fake_next_period(
 ) {
+	ticks = 0;
 	minute = 0;
 	hour = ((hour / 3 + 1) * 3);
 	day += hour / 24;       // Update day.

@@ -23,6 +23,8 @@ class Image_window8;
 struct File_spec;
 class U7multiobject;
 
+#include <memory>
+
 /*
  *  Palette #'s in 'palettes.flx':
  */
@@ -40,8 +42,6 @@ const int PALETTE_RED = 8;      // Used when hit in combat.
 const int PALETTE_LIGHTNING = 10;
 const int PALETTE_SINGLE_LIGHT = 11;
 const int PALETTE_MANY_LIGHTS = 12;
-
-
 
 class Palette {
 	Image_window8 *win;
@@ -102,7 +102,7 @@ public:
 	void fade_out(int cycles);
 	int find_color(int r, int g, int b, int last = 0xe0) const;
 	void create_palette_map(const Palette *to, unsigned char *&buf) const;
-	Palette *create_intermediate(const Palette *to, int nsteps, int pos) const;
+	std::unique_ptr<Palette> create_intermediate(const Palette &to, int nsteps, int pos) const;
 	void create_trans_table(unsigned char br, unsigned bg,
 	                        unsigned bb, int alpha, unsigned char *table) const;
 	void show();
@@ -135,23 +135,32 @@ public:
  */
 
 class Palette_transition {
-	Palette *start, *end, *current;
+	Palette start, end;
+	std::unique_ptr<Palette> current;
 	int step, max_steps;
-	int start_hour, start_minute, rate;
+	int start_hour, start_minute, start_ticks;
+	int rate;
 public:
-	Palette_transition(int from, int to, int ch = 0, int cm = 0, int r = 4,
-	                   int nsteps = 15, int sh = 0, int smin = 0);
-	Palette_transition(Palette *from, Palette *to, int ch = 0, int cm = 0,
-	                   int r = 4, int nsteps = 15, int sh = 0, int smin = 0);
-	Palette_transition(Palette *from, int to, int ch = 0, int cm = 0,
-	                   int r = 4, int nsteps = 15, int sh = 0, int smin = 0);
-	~Palette_transition();
+	/*
+	Palette_transition(int from, int to, int ch = 0, int cm = 0, int ct = 0, int r = 4,
+	                   int nsteps = 15, int sh = 0, int smin = 0, int stick = 0);
+	Palette_transition(Palette *from, Palette *to, int ch = 0, int ct = 0, int cm = 0,
+	                   int r = 4, int nsteps = 15, int sh = 0, int smin = 0, int stick = 0);
+	Palette_transition(Palette *from, int to, int ch = 0, int ct = 0, int cm = 0,
+	                   int r = 4, int nsteps = 15, int sh = 0, int smin = 0, int stick = 0);
+	*/
+	Palette_transition(int from, int to, int ch, int cm, int ct, int,
+	                   int nsteps, int sh, int smin, int stick);
+	Palette_transition(Palette *from, Palette *to, int ch, int ct, int cm,
+	                   int r, int nsteps, int sh, int smin, int stick);
+	Palette_transition(Palette *from, int to, int ch, int ct, int cm,
+	                   int r, int nsteps, int sh, int smin, int stick);
 	int get_step() const {
 		return step;
 	}
-	bool set_step(int hour, int min);
+	bool set_step(int hour, int min, int tick);
 	Palette *get_current_palette() const {
-		return current;
+		return current.get();
 	}
 };
 
