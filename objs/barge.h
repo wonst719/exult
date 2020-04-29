@@ -49,7 +49,7 @@ class Barge_object : public Container_game_object, public Time_sensitive {
 	//   not moving.
 	PathFinder *path;       // For traveling.
 	Tile_coord center;      // Center of barge.
-	Game_object *get_object(int i) {
+	Game_object *get_object(int i) const {
 		return objects[i].get();
 	}
 	void swap_dims();
@@ -71,16 +71,16 @@ public:
 		boat(-1), frame_time(0), path(nullptr)
 	{  }
 	Rectangle get_tile_footprint();
-	bool is_moving() {
+	bool is_moving() const {
 		return frame_time > 0;
 	}
-	int get_xtiles() {      // Dims. in tiles.
+	int get_xtiles() const {      // Dims. in tiles.
 		return xtiles;
 	}
-	int get_ytiles() {
+	int get_ytiles() const {
 		return ytiles;
 	}
-	Tile_coord get_center() {
+	Tile_coord get_center() const {
 		return center;
 	}
 	~Barge_object() override;

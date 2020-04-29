@@ -346,7 +346,7 @@ Game_object *Actor::find_best_ammo(
 int Actor::get_effective_range(
     const Weapon_info *winf,
     int reach
-) {
+) const {
 	if (reach < 0) {
 		if (!winf) {
 			const Monster_info *minf = get_info().get_monster_info();
@@ -713,7 +713,7 @@ void Actor::empty_hands(
  */
 
 int Actor::get_effective_weapon_shape(
-) {
+) const {
 	if (get_casting_mode() == Actor::show_casting_frames)
 		// Casting frames
 		return casting_shape;
@@ -1236,7 +1236,7 @@ void Actor::purge_deleted_actions() {
  */
 
 Tile_coord Actor::get_dest(
-) {
+) const {
 	Tile_coord dest;
 	if (action && action->get_dest(dest))
 		return dest;
@@ -1350,7 +1350,7 @@ inline int Approach(
  */
 
 void Actor::follow(
-    Actor *leader
+    const Actor *leader
 ) {
 	if (Actor::is_dead() || !can_act())
 		return;         // Not when dead, paralyzed, or asleep.
@@ -1439,7 +1439,7 @@ void Actor::follow(
  */
 
 int Actor::approach_another(
-    Actor *other,
+    const Actor *other,
     bool wait           // If true, game hangs until arrival.
 ) {
 	Tile_coord dest = other->get_tile();
@@ -1617,7 +1617,7 @@ void Actor::get_prefered_slots(
     int &prefered,
     int &alt1,
     int &alt2
-) {
+) const {
 	const Shape_info &info = obj->get_info();
 
 	// Defaults
@@ -1684,7 +1684,7 @@ int Actor::find_best_spot(
  */
 
 int Actor::get_prev_schedule_type(
-) {
+) const {
 	return schedule ? schedule->get_prev_type() : -1;
 }
 
@@ -3049,7 +3049,7 @@ void Actor::set_attribute(
 
 int Actor::get_attribute(
     const char *nm
-) {
+) const {
 	return atts ? atts->get(nm) : 0;
 }
 
@@ -3059,7 +3059,7 @@ int Actor::get_attribute(
 
 void Actor::get_attributes(
     Atts_vector &attlist
-) {
+) const {
 	attlist.resize(0);
 	if (atts)
 		atts->get_all(attlist);
@@ -3672,7 +3672,7 @@ bool Actor::move_aside(
 
 int Actor::get_rotated_frame(
     int quads           // 1=90, 2=180, 3=270.
-) {
+) const {
 	int curframe = get_framenum();
 	// Bit 4=rotate180, 5=rotate-90.
 	int curdir = (4 + 2 * ((curframe >> 4) & 1) - ((curframe >> 5) & 1)) % 4;
@@ -3686,7 +3686,7 @@ int Actor::get_rotated_frame(
  */
 
 int Actor::get_armor_points(
-) {
+) const {
 	int points = 0;
 	static enum Ready_type_Exult aspots[] = {head, amulet, torso, cloak, belt,
 	                                        lhand, rhand, lfinger, rfinger, legs, feet, earrings,
@@ -3753,7 +3753,7 @@ const Weapon_info *Actor::get_weapon(
     int &points,
     int &shape,
     Game_object  *&obj      // ->weapon itself returned, or nullptr.
-) {
+) const {
 	points = 1;         // Bare hands = 1.
 	shape = -1;         // Bare hands.
 	const Weapon_info *winf = nullptr;
@@ -4405,7 +4405,7 @@ void Main_actor::handle_event(
  */
 
 void Main_actor::get_followers(
-) {
+) const {
 	int cnt = partyman->get_count();
 	for (int i = 0; i < cnt; i++) {
 		Actor *npc = gwin->get_npc(partyman->get_member(i));
@@ -4826,7 +4826,7 @@ void Npc_actor::remove_schedule(int time) {
 void Npc_actor::get_schedules(
     Schedule_change *&sc_list,
     int &cnt
-) {
+) const {
 	sc_list = schedules;
 	cnt = num_schedules;
 }

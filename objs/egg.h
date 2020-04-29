@@ -132,7 +132,7 @@ public:
 	int get_type() const {
 		return type;
 	}
-	virtual const char *get_str1() {
+	virtual const char *get_str1() const {
 		return "";
 	}
 	virtual void set_str1(const char *s) {

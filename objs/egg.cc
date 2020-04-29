@@ -258,7 +258,7 @@ public:
 		if (s && *s)
 			fun = 0;    // Want to look this up.
 	}
-	const char *get_str1() override {
+	const char *get_str1() const override {
 		return fun_name.c_str();
 	}
 	int get_usecode() const override {

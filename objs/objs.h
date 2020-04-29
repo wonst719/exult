@@ -125,7 +125,7 @@ public:
 	// Get missile start location in abs. tiles given dir.
 	Tile_coord get_missile_tile(int dir) const;
 	// Get distance to another object.
-	int distance(Game_object *o2) const;
+	int distance(const Game_object *o2) const;
 	// Get direction to another object.
 	int distance(Tile_coord t2) const;
 	// Get direction to another object.
@@ -160,10 +160,10 @@ public:
 	void set_lift(int l) {
 		lift = l;
 	}
-	Game_object *get_next() {
+	Game_object *get_next() const {
 		return next.get();
 	}
-	Game_object *get_prev() {
+	Game_object *get_prev() const {
 		return prev;
 	}
 	// Compare for render order.
@@ -262,8 +262,8 @@ public:
 		return find_closest(pos, &shapenum, 1, dist);
 	}
 	Rectangle get_footprint();  // Get tile footprint.
-	Block get_block();
-	bool blocks(Tile_coord const &tile);    // Do we block a given tile?
+	Block get_block() const;
+	bool blocks(Tile_coord const &tile) const;    // Do we block a given tile?
 	// Find object blocking given tile.
 	static Game_object *find_blocking(Tile_coord tile);
 	static Game_object *find_door(Tile_coord tile);
@@ -394,21 +394,21 @@ public:
 		return false;    // For now.
 	}
 	// Get frame if rotated clockwise.
-	virtual int get_rotated_frame(int quads);
+	virtual int get_rotated_frame(int quads) const;
 	// Step onto an (adjacent) tile.
 	virtual bool step(Tile_coord t, int frame, bool force = false) {
 		ignore_unused_variable_warning(t, frame, force);
 		return false;
 	}
-	virtual int is_monster() {
-		return 0;
+	virtual bool is_monster() const {
+		return false;
 	}
 	virtual Game_object *find_weapon_ammo(int weapon, int needed = 1,
 	                                      bool recursive = false) {
 		ignore_unused_variable_warning(weapon, needed, recursive);
 		return nullptr;
 	}
-	virtual int get_effective_range(const Weapon_info *winf = nullptr, int reach = -1);
+	virtual int get_effective_range(const Weapon_info *winf = nullptr, int reach = -1) const;
 	int get_weapon_ammo(int weapon, int family, int proj, bool ranged,
 	                    Game_object **ammo = nullptr, bool recursive = false);
 	void play_hit_sfx(int weapon, bool ranged);

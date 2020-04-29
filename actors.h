@@ -164,7 +164,7 @@ public:
 	bool ready_best_shield();   // Find best shield and ready it.
 	void empty_hands();     // Make sure both hands are empty.
 	// Force repaint of area taken.
-	int get_effective_weapon_shape();//For displaying casting frames.
+	int get_effective_weapon_shape() const;//For displaying casting frames.
 	bool add_dirty(bool figure_rect = false);
 	void change_frame(int frnum) override;   // Change frame & set to repaint.
 	bool figure_weapon_pos(int &weapon_x, int &weapon_y, int &weapon_frame);
@@ -173,7 +173,7 @@ public:
 	// Increment/decrement temperature.
 	void check_temperature(bool freeze);
 	// Get frame seq. for given dir.
-	Frames_sequence *get_frames(int dir) {
+	Frames_sequence *get_frames(int dir) const {
 		return frames[dir / 2];
 	}
 	int &get_step_index() {     // Get it (for updating).
@@ -225,7 +225,7 @@ public:
 			light_sources = 0;
 	}
 	void remove_light_source(Game_object *obj);
-	Attack_mode get_attack_mode() {
+	Attack_mode get_attack_mode() const {
 		return attack_mode;
 	}
 	void set_attack_mode(Attack_mode amode, bool byuser = false) {
@@ -348,13 +348,13 @@ public:
 	void set_dormant() {
 		dormant = true;
 	}
-	Actor_action *get_action() { // Return action.
+	Actor_action *get_action() const { // Return action.
 		return action;
 	}
 	// Set new action.
 	void set_action(Actor_action *newact);
 	void purge_deleted_actions();
-	Tile_coord get_dest();      // Get destination.
+	Tile_coord get_dest() const;      // Get destination.
 	// Walk to a desired spot.
 	void walk_to_tile(Tile_coord const &dest, int speed = 250, int delay = 0,
 	                  int maxblk = 3);
@@ -374,25 +374,25 @@ public:
 	void start(int speed = 250, int delay = 0);
 	void start_std();       // Start with std. speed, delay.
 	void stop();            // Stop animation.
-	void follow(Actor *leader); // Follow the leader.
+	void follow(const Actor *leader); // Follow the leader.
 	// Approach another from offscreen.
-	int approach_another(Actor *other, bool wait = false);
+	int approach_another(const Actor *other, bool wait = false);
 	// Get info. about tile to step onto.
 	static void get_tile_info(Actor *actor,
 	                          Game_window *gwin, Map_chunk *nlist,
 	                          int tx, int ty, bool &water, bool &poison);
 	// Set combat opponent.
 	void set_target(Game_object *obj, bool start_combat = false);
-	Game_object *get_target() { // Get who/what we're attacking.
+	Game_object *get_target() const { // Get who/what we're attacking.
 	  return target.lock().get();
 	}
 	// Works out if an object fits in a spot
 	bool fits_in_spot(Game_object *obj, int spot);
 	// The prefered slot for an object
-	void get_prefered_slots(Game_object *obj, int &prefered, int &alt1, int &alt2);
+	void get_prefered_slots(Game_object *obj, int &prefered, int &alt1, int &alt2) const;
 	// Find where to put object.
 	int find_best_spot(Game_object *obj);
-	int get_prev_schedule_type();   // Get previous schedule.
+	int get_prev_schedule_type() const;   // Get previous schedule.
 	void restore_schedule();    // Set schedule after reading in.
 	void set_schedule_loc(Tile_coord const &loc) {  // For monsters ONLY.
 		schedule_loc = loc;
@@ -455,7 +455,7 @@ public:
 	int reduce_health(int delta, int damage_type, Game_object *attacker = nullptr,
 	                          int *exp = nullptr) override;
 	void fight_back(Game_object *attacker);
-	bool get_attack_target(Game_object *&obj, Tile_coord &t) {
+	bool get_attack_target(Game_object *&obj, Tile_coord &t) const {
 		static Tile_coord invalidloc(-1, -1, 0);
 		Game_object_shared tobj = target_object.lock();
 		obj = tobj.get();
@@ -473,7 +473,7 @@ public:
 		target_tile.fixme();
 		attack_weapon = w;
 	}
-	int get_effective_range(const Weapon_info *winf = nullptr, int reach = -1) override;
+	int get_effective_range(const Weapon_info *winf = nullptr, int reach = -1) const override;
 	Game_object *find_weapon_ammo(int weapon, int needed = 1,
 	                                      bool recursive = false) override;
 	Game_object *find_best_ammo(int family, int needed = 1);
@@ -492,9 +492,9 @@ public:
 	}
 	// Get/set generic attribute.
 	void set_attribute(const char *nm, int val);
-	int get_attribute(const char *nm);
+	int get_attribute(const char *nm) const;
 	using Atts_vector = std::vector<std::pair<const char *, int>>;
-	void get_attributes(Atts_vector &attlist);
+	void get_attributes(Atts_vector &attlist) const;
 	// Set atts. from savegame.
 	void read_attributes(const unsigned char *buf, int len) override;
 	Npc_timer_list *need_timers();
@@ -538,7 +538,7 @@ public:
 	}
 //++++++Is_dead() test messes up training.
 //	unsigned char get_ident() { return is_dead() ? 0 : ident; }
-	unsigned char get_ident() {
+	unsigned char get_ident() const {
 		return ident;
 	}
 	void set_ident(unsigned char id) {
@@ -612,8 +612,8 @@ public:
 	// Move out of the way.
 	bool move_aside(Actor *for_actor, int dir) override;
 	// Get frame if rotated clockwise.
-	int get_rotated_frame(int quads) override;
-	virtual int get_armor_points(); // Get total armor value.
+	int get_rotated_frame(int quads) const override;
+	virtual int get_armor_points() const; // Get total armor value.
 	// Gets whether the actor is immune or vulnerable to a given
 	// form of damage:
 	int is_immune(int type) const;
@@ -627,8 +627,8 @@ public:
 	}
 	// Get total weapon value.
 	virtual const Weapon_info *get_weapon(int &points, int &shape,
-	                                Game_object  *&obj);
-	const Weapon_info *get_weapon(int &points) {
+	                                Game_object  *&obj) const;
+	const Weapon_info *get_weapon(int &points) const {
 		int sh;
 		Game_object *o;
 		return get_weapon(points, sh, o);
@@ -660,7 +660,7 @@ public:
 	void set_polymorph(int shape);  // Set a polymorph shape
 	void set_polymorph_default();   // Set the default shape
 	// Get the polymorph shape
-	int get_polymorph() {
+	int get_polymorph() const {
 		return shape_save;
 	}
 	// Get the non polymorph shape (note, doesn't returned skin coloured shapes)
@@ -685,7 +685,7 @@ public:
 	virtual void remove_schedule(int time) {
 		ignore_unused_variable_warning(time);
 	}
-	virtual void get_schedules(Schedule_change *&list, int &cnt) {
+	virtual void get_schedules(Schedule_change *&list, int &cnt) const {
 		list = nullptr;
 		cnt = 0;
 	}
@@ -738,7 +738,7 @@ public:
 	~Main_actor() override;
 	// For Time_sensitive:
 	void handle_event(unsigned long curtime, uintptr udata) override;
-	void get_followers();       // Get party to follow.
+	void get_followers() const;       // Get party to follow.
 	// Step onto an (adjacent) tile.
 	bool step(Tile_coord t, int frame, bool force = false) override;
 	// Update chunks after NPC moved.
@@ -778,7 +778,7 @@ public:
 	void set_schedule_time_type(int time, int type) override;
 	void set_schedule_time_location(int time, int x, int y) override;
 	void remove_schedule(int time) override;
-	void get_schedules(Schedule_change *&list, int &cnt) override;
+	void get_schedules(Schedule_change *&list, int &cnt) const override;
 	// Move and change frame.
 	void movef(Map_chunk *old_chunk, Map_chunk *new_chunk,
 	           int new_sx, int new_sy, int new_frame, int new_lift);

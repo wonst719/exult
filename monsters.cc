@@ -407,7 +407,7 @@ bool Monster_actor::add(
  */
 
 int Monster_actor::get_armor_points(
-) {
+) const {
 	const Monster_info *inf = get_info().get_monster_info();
 	// Kind of guessing here.
 	return Actor::get_armor_points() + (inf ? inf->armor : 0);
@@ -421,7 +421,7 @@ const Weapon_info *Monster_actor::get_weapon(
     int &points,
     int &shape,
     Game_object  *&obj      // ->weapon itself returned, or 0.
-) {
+) const {
 	// Kind of guessing here.
 	const Weapon_info *winf = Actor::get_weapon(points, shape, obj);
 	if (!winf) {        // No readied weapon?

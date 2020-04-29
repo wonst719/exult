@@ -240,7 +240,7 @@ static inline void delta_wrap_check(
  */
 
 int Game_object::distance(
-    Game_object *o2
+    const Game_object *o2
 ) const {
 	Tile_coord t1 = get_tile();
 	Tile_coord t2 = o2->get_tile();
@@ -369,7 +369,7 @@ int Game_object::get_quantity(
 int Game_object::get_effective_range(
     const Weapon_info *winf,
     int reach
-) {
+) const {
 	if (reach < 0) {
 		if (!winf)
 			return 3;
@@ -834,7 +834,7 @@ Rectangle Game_object::get_footprint(
  */
 
 Block Game_object::get_block(
-) {
+) const {
 	const Shape_info &info = get_info();
 	// Get footprint.
 	int frame = get_framenum();
@@ -855,7 +855,7 @@ Block Game_object::get_block(
 
 bool Game_object::blocks(
     Tile_coord const &tile
-) {
+) const {
 	Tile_coord t = get_tile();
 	if (t.tx < tile.tx || t.ty < tile.ty || t.tz > tile.tz)
 		return false;       // Out of range.
@@ -1414,7 +1414,7 @@ int Game_object::lt(
 
 int Game_object::get_rotated_frame(
     int quads           // 1=90, 2=180, 3=270.
-) {
+) const {
 	int curframe = get_framenum();
 	return get_info().get_rotated_frame(curframe, quads);
 }

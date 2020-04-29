@@ -76,12 +76,12 @@ public:
 	// Add an object.
 	bool add(Game_object *obj, bool dont_check = false,
 	                 bool combine = false, bool noset = false) override;
-	int get_armor_points() override; // Get total armor value.
+	int get_armor_points() const override; // Get total armor value.
 	// Get total weapon value.
 	const Weapon_info *get_weapon(int &points, int &shape,
-	                                Game_object  *&obj) override;
-	int is_monster() override {
-		return 1;
+	                                Game_object  *&obj) const override;
+	bool is_monster() const override {
+		return true;
 	}
 	void die(Game_object *attacker) override;        // We're dead.
 	void write(ODataSource *nfile);// Write out (to 'monsnpc.dat').
