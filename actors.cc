@@ -3728,8 +3728,8 @@ bool Actor::is_goblin() const {
 }
 
 bool Actor::can_see_invisible() const {
-	const Monster_info *minf = get_info().get_monster_info();
-	return !minf || (minf->get_flags() & (1 << Monster_info::see_invisible)) != 0;
+	const Monster_info *minf = get_info().get_monster_info_safe();
+	return (minf->get_flags() & (1 << Monster_info::see_invisible)) != 0;
 }
 
 bool Actor::can_speak() const {
