@@ -250,6 +250,7 @@ public:
 		sman->paint_outline(xoff, yoff, get_shape(), pix);
 	}
 	int get_num_frames() const;
+	bool is_frame_empty() const;
 	const Shape_info &get_info() const {  // Get info. about shape.
 		return *(info ? info : info =
 		             &Shape_manager::instance->shapes.get_info(shapenum));

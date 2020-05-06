@@ -506,5 +506,7 @@ int ShapeID::get_num_frames() const {
 	return 0;
 }
 
-
-
+bool ShapeID::is_frame_empty() const {
+	const auto shp = get_shape();
+	return shp == nullptr || shp->is_empty();
+}
