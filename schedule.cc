@@ -3593,7 +3593,9 @@ static void Prep_animation(Actor *npc, Game_object *table)
 		// Don't use last cauldron frame.
 		table->change_frame(rand() % (table->get_num_frames() - 1));
 	} else if (shapenum == 664 || shapenum == 872) {
-		table->change_frame(rand() % table->get_num_frames());
+		do {
+			table->change_frame(rand() % table->get_num_frames());
+		} while (table->is_frame_empty());
 	}
 }
 
