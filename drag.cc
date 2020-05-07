@@ -33,6 +33,7 @@
 #include "actors.h"
 #include "cheat.h"
 #include "chunks.h"
+#include "effects.h"
 #include "Audio.h"
 #include "Gump_manager.h"
 #include "ucmachine.h"
@@ -159,6 +160,9 @@ bool Dragging_info::start(
 		}
 	}
 	Mouse::mouse->set_shape(Mouse::hand);
+	// Remove text, so that we don't potentially paint the object under and
+	// the mouse pointer over it.
+	gwin->get_effects()->remove_text_effects();
 	// Store original pos. on screen.
 	rect = gump ? (obj ? gump->get_shape_rect(obj.get()) : gump->get_dirty())
 		       : gwin->get_shape_rect(obj.get());
