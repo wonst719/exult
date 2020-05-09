@@ -22,6 +22,8 @@
 #include "palette.h"
 #include "game.h"
 
+#include <memory>
+
 class BaseGameInfo;
 class Font;
 class Game_window;
@@ -45,8 +47,8 @@ private:
 	int pagesize;
 	void calc_win();
 	Mouse *menu_mouse;
-	MenuList *create_main_menu(int first = 0);
-	MenuList *create_mods_menu(ModManager *selgame, int first = 0);
+	std::unique_ptr<MenuList> create_main_menu(int first = 0);
+	std::unique_ptr<MenuList> create_mods_menu(ModManager *selgame, int first = 0);
 	BaseGameInfo *show_mods_menu(ModManager *selgame);
 
 public:

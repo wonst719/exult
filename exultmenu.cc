@@ -175,20 +175,22 @@ void ExultMenu::setup() {
 
 	Mouse::mouse = nullptr;
 	delete exult_menu_game;
-	game = exult_menu_game = nullptr;
+	game = nullptr;
 
 	gwin->clear_screen(true);
 	gpal->load(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX), EXULT_FLX_EXULT0_PAL);
 	gpal->apply();
-
 }
 
-MenuList *ExultMenu::create_main_menu(int first) {
-	MenuList *menu = new MenuList();
+std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
+	auto menu = std::make_unique<MenuList>();
 
 	int ypos = 15 + gwin->get_win()->get_start_y();
 	Shape_frame *fr = exult_flx.get_shape(EXULT_FLX_SFX_ICON_SHP, 0);
-	assert(fr != nullptr);
+	if (fr == nullptr) {
+		std::cerr << "Exult.flx file is corrupted. Please reinstall Exult." << std::endl;
+		throw quit_exception();
+	}
 	int xpos = (gwin->get_win()->get_full_width() / 2 + fr->get_width()) / 2;
 	std::vector<ModManager> &game_list = gamemanager->get_game_list();
 	int num_choices = game_list.size();
@@ -218,7 +220,7 @@ MenuList *ExultMenu::create_main_menu(int first) {
 			ypos += 45;
 	}
 
-	create_scroller_menu(menu, navfonton, navfont, first, pagesize, num_choices,
+	create_scroller_menu(menu.get(), navfonton, navfont, first, pagesize, num_choices,
 	                     centerx, ypos = gwin->get_win()->get_end_y() - 5 * font->get_text_height());
 
 	const char *menuchoices[] = {
@@ -246,8 +248,8 @@ MenuList *ExultMenu::create_main_menu(int first) {
 	return menu;
 }
 
-MenuList *ExultMenu::create_mods_menu(ModManager *selgame, int first) {
-	MenuList *menu = new MenuList();
+std::unique_ptr<MenuList> ExultMenu::create_mods_menu(ModManager *selgame, int first) {
+	auto menu = std::make_unique<MenuList>();
 
 	int ypos = 15 + gwin->get_win()->get_start_y();
 	int xpos = gwin->get_win()->get_full_width() / 4;
@@ -276,7 +278,7 @@ MenuList *ExultMenu::create_mods_menu(ModManager *selgame, int first) {
 			ypos += 45;
 	}
 
-	create_scroller_menu(menu, navfonton, navfont, first, pagesize, num_choices,
+	create_scroller_menu(menu.get(), navfonton, navfont, first, pagesize, num_choices,
 	                     centerx, ypos = gwin->get_win()->get_end_y() - 5 * font->get_text_height());
 
 	const char *menuchoices[] = {
@@ -308,12 +310,15 @@ BaseGameInfo *ExultMenu::show_mods_menu(ModManager *selgame) {
 	int first_mod = 0;
 	int num_choices = selgame->get_mod_list().size() - 1;
 	int last_page = num_choices - num_choices % pagesize;
-	MenuList *menu = create_mods_menu(selgame, first_mod);
+	auto menu = create_mods_menu(selgame, first_mod);
 	menu->set_selection(0);
 	BaseGameInfo *sel_mod = nullptr;
 
 	Shape_frame *exultlogo = exult_flx.get_shape(EXULT_FLX_EXULT_LOGO_SHP, 1);
-	assert(exultlogo != nullptr);
+	if (exultlogo == nullptr) {
+		std::cerr << "Exult.flx file is corrupted. Please reinstall Exult." << std::endl;
+		throw quit_exception();
+	}
 	int logox;
 	int logoy;
 	logox = centerx - exultlogo->get_width() / 2;
@@ -333,7 +338,6 @@ BaseGameInfo *ExultMenu::show_mods_menu(ModManager *selgame) {
 			gpal->fade_out(c_fade_out_time / 2);
 			wait_delay(c_fade_out_time / 2);
 			gwin->clear_screen(true);
-			delete menu;
 			return nullptr;
 		default:
 			if (choice >= 0) {
@@ -342,13 +346,11 @@ BaseGameInfo *ExultMenu::show_mods_menu(ModManager *selgame) {
 				sel_mod = selgame->get_mod(choice);
 				break;
 			} else if (handle_menu_click(choice, first_mod, last_page, pagesize)) {
-				delete menu;
 				menu = create_mods_menu(selgame, first_mod);
 				gwin->clear_screen(true);
 			}
 		}
 	} while (sel_mod == nullptr);
-	delete menu;
 
 	gwin->clear_screen(true);
 	return sel_mod;
@@ -401,7 +403,7 @@ BaseGameInfo *ExultMenu::run() {
 	}
 	IExultDataSource mouse_data(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX),
 	                           EXULT_FLX_POINTERS_SHP);
-	menu_mouse = new Mouse(gwin, mouse_data);
+	Mouse menu_mouse(gwin, mouse_data);
 
 	//Must check this or it will crash as midi
 	//may not be initialised
@@ -412,7 +414,10 @@ BaseGameInfo *ExultMenu::run() {
 	}
 
 	Shape_frame *exultlogo = exult_flx.get_shape(EXULT_FLX_EXULT_LOGO_SHP, 0);
-	assert(exultlogo != nullptr);
+	if (exultlogo == nullptr) {
+		std::cerr << "Exult.flx file is corrupted. Please reinstall Exult." << std::endl;
+		throw quit_exception();
+	}
 	int logox = centerx - exultlogo->get_width() / 2;
 	int logoy = centery - exultlogo->get_height() / 2;
 	sman->paint_shape(logox, logoy, exultlogo);
@@ -427,7 +432,7 @@ BaseGameInfo *ExultMenu::run() {
 	// Erase the old logo.
 	gwin->clear_screen(true);
 
-	MenuList *menu = create_main_menu(first_game);;
+	auto menu = create_main_menu(first_game);;
 	BaseGameInfo *sel_game = nullptr;
 	menu->set_selection(0);
 
@@ -437,12 +442,11 @@ BaseGameInfo *ExultMenu::run() {
 		font->draw_text(gwin->get_win()->get_ib8(),
 						gwin->get_win()->get_end_x() - font->get_text_width(VERSION),
 						gwin->get_win()->get_end_y() - font->get_text_height() - 5, VERSION);
-		int choice = menu->handle_events(gwin, menu_mouse);
+		int choice = menu->handle_events(gwin, &menu_mouse);
 		switch (choice) {
 		case -4: // Setup
 			gpal->fade_out(c_fade_out_time);
 			setup();
-			delete menu;
 			if (Audio::get_ptr()->is_audio_enabled()) {
 				// Make sure timbre library is correct!
 				//Audio::get_ptr()->get_midi()->set_timbre_lib(MyMidiPlayer::TIMBRE_LIB_GM);
@@ -487,8 +491,6 @@ BaseGameInfo *ExultMenu::run() {
 #else
 			gpal->fade_out(c_fade_out_time);
 			Audio::get_ptr()->stop_music();
-			delete menu;
-			delete menu_mouse;
 			throw quit_exception();
 #endif
 		default:
@@ -504,17 +506,14 @@ BaseGameInfo *ExultMenu::run() {
 				gwin->clear_screen(true);
 				gpal->apply();
 			} else if (handle_menu_click(choice, first_game, last_page, pagesize)) {
-				delete menu;
 				menu = create_main_menu(first_game);
 				gwin->clear_screen(true);
 			}
 			break;
 		}
 	} while (sel_game == nullptr);
-	delete menu;
 	gwin->clear_screen(true);
 	Audio::get_ptr()->stop_music();
-	delete menu_mouse;
 	return sel_game;
 }
 
