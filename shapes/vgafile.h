@@ -319,16 +319,16 @@ public:
 			// Import table was set but the source could not be opened.
 			if (data.pointer_offset < 0)
 				return nullptr;
-			r = (imported_shapes[data.pointer_offset].get(imported_sources,
-			        data.realshape, framenum, imported_cnts, data.source_offset));
+			r = imported_shapes[data.pointer_offset].get(imported_sources,
+			        data.realshape, framenum, imported_cnts, data.source_offset);
 		} else {
 			assert(!shapes.empty()); // Because if shapes is nullptr
 			// here, we won't die on the deref
 			// but we will return rubbish.
 			// I've put this assert in _before_ you know...
 			// So this isn't the first time we've had trouble here
-			r = (shapes[shapenum].get(shape_sources, shapenum,
-			                          framenum, shape_cnts, -1));
+			r = shapes[shapenum].get(shape_sources, shapenum,
+			                          framenum, shape_cnts, -1);
 		}
 		return r;
 	}
