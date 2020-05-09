@@ -502,8 +502,16 @@ bool Chunk_cache::is_blocked(
 		return false;
 	}
 	// Figure max lift allowed.
-	if (max_rise == -1)
-		max_rise = (move_flags & MOVE_FLY) ? max_drop : 1;
+	if (max_rise == -1) {
+		if ((move_flags & (MOVE_FLY | MOVE_MAPEDIT)) != 0) {
+			max_rise = max_drop;
+		} else if ((move_flags & MOVE_WALK)) {
+			max_rise = 1;
+		} else {
+			// Swim.
+			max_rise = 0;
+		}
+	}
 	int max_lift = lift + max_rise;
 	if (max_lift > 255)
 		max_lift = 255;     // As high as we can go.
@@ -552,14 +560,22 @@ bool Chunk_cache::is_blocked(
 			return false;   // Map-editor, so anything is okay.
 		int ter = 0;
 		Check_terrain(obj_list, tx, ty, ter);
-		if (ter & 2) {      // Water
-			return (move_flags & (MOVE_FLY | MOVE_SWIM)) == 0;
-		} else if (ter & 1) { // Land
-			return (move_flags & (MOVE_FLY | MOVE_WALK)) == 0;
-		} else if (ter & 4) { // Blocked
+		bool const can_walk = (move_flags & MOVE_WALK) != 0;
+		bool const can_swim = (move_flags & MOVE_SWIM) != 0;
+		bool const can_fly  = (move_flags & MOVE_FLY ) != 0;
+		if (can_swim && !can_walk && !can_fly && (ter & 2) == 0) {
+			// Can only swim; do not allow to move outside of water.
 			return true;
-		} else  // Other
-			return false;
+		}
+		if (can_walk && !can_swim && !can_fly && (ter & 2) != 0) {
+			// Can only walk; do not allow to move into water.
+			return true;
+		}
+		if (!can_swim && !can_fly && (ter & 4) != 0) {
+			// Can only walk and terrain is solid (and 0-height).
+			return true;
+		}
+		return false;
 	} else if (move_flags & (MOVE_FLY | MOVE_WALK))
 		return false;
 
