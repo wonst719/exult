@@ -506,10 +506,9 @@ void ModManager::gather_mods() {
 }
 
 ModInfo *ModManager::find_mod(const string &name) {
-	for (vector<ModInfo>::iterator it = modlist.begin();
-	        it != modlist.end(); ++it)
-		if (it->get_mod_title() == name)
-			return &*it;
+	for (auto& mod : modlist)
+		if (mod.get_mod_title() == name)
+			return &mod;
 	return nullptr;
 }
 
