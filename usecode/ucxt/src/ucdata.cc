@@ -420,12 +420,14 @@ void UCData::analyse_classes() {
 	// Class 0 can't inherit from any others.
 	for (int i = 1; i < nclasses; i++) {
 		Usecode_class_symbol *cls = _symtbl->get_class(i);
+		if (!cls) {
+			continue;
+		}
 		// Can only inherit from previously-defined classes.
 		for (int j = i - 1; j >= 0; j--) {
 			Usecode_class_symbol *base = _symtbl->get_class(j);
-			assert(base != nullptr);
 			// If "base" has more variables or more methods than "cls", it can't be a base class of "cls".
-			if (base->get_num_vars() > cls->get_num_vars() || base->get_num_methods() > cls->get_num_methods())
+			if (!base || base->get_num_vars() > cls->get_num_vars() || base->get_num_methods() > cls->get_num_methods())
 				continue;
 			// Assume this is a base class.
 			bool is_base = true;
