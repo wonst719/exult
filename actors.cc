@@ -1624,8 +1624,10 @@ void Actor::get_prefered_slots(
 	prefered = info.get_ready_type();
 	alt1 = info.get_alt_ready1();
 	alt2 = info.get_alt_ready2();
-	if (alt1 < 0)
+	if (alt1 == invalid_spot)
 		alt1 = lhand;
+	if (alt2 == invalid_spot)
+		alt2 = lhand;
 
 	if (prefered == lhand) {
 		if (info.is_object_allowed(obj->get_framenum(), rhand))
