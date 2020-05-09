@@ -394,8 +394,11 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 
 						unsigned int offset = current->first->_params_parsed[0];
 						Usecode_class_symbol *cls = symtbl->get_class(offset);
-						assert(cls);
-						num_args = cls->get_num_vars();
+						if (cls != nullptr) {
+							num_args = cls->get_num_vars();
+						} else {
+							std::cerr << "Class not found: " << offset << '\n';
+						}
 
 #ifdef DEBUG_PARSE2a
 						cout << num_args << endl;

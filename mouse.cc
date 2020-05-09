@@ -89,14 +89,11 @@ Mouse::Mouse(
 }
 
 void Mouse::Init() {
-	int cnt = pointers.get_num_frames();
 	int maxleft = 0;
 	int maxright = 0;
 	int maxabove = 0;
 	int maxbelow = 0;
-	for (int i = 0; i < cnt; i++) {
-		Shape_frame *frame = pointers.get_frame(i);
-		assert(frame != nullptr);
+	for (auto& frame : pointers) {
 		int xleft = frame->get_xleft();
 		int xright = frame->get_xright();
 		int yabove = frame->get_yabove();

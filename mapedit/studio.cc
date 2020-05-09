@@ -1067,7 +1067,6 @@ C_EXPORT void on_gameselect_gamelist_cursor_changed(
 	GtkTreeStore *model = GTK_TREE_STORE(oldmod);
 	gtk_tree_store_clear(model);
 
-	assert(gamemanager->get_game(gamenum) != nullptr);
 	std::vector<ModInfo> &mods = gamemanager->get_game(gamenum)->get_mod_list();
 	GtkTreeIter iter;
 
@@ -1249,15 +1248,12 @@ void ExultStudio::set_game_path(const string& gamename, const string& modname) {
 
 	if (curr_game < 0 && basegame)
 		curr_game = gamemanager->find_game_index(basegame->get_cfgname());
-	assert(basegame);
 	BaseGameInfo *gameinfo = nullptr;
 	curr_mod = modname.empty() ? -1 : basegame->find_mod_index(modname);
 	if (curr_mod > -1)
 		gameinfo = basegame->get_mod(curr_mod);
 	else
 		gameinfo = basegame;
-	// This really should never happen.
-	assert(gameinfo);
 
 	game_encoding = gameinfo->get_codepage();
 
@@ -2755,11 +2751,10 @@ int ExultStudio::find_palette_color(int r, int g, int b) {
 
 BaseGameInfo *ExultStudio::get_game() const {
 	ModManager *basegame = gamemanager->get_game(curr_game);
-	assert(basegame);
-	BaseGameInfo *gameinfo = curr_mod > -1 ? basegame->get_mod(curr_mod)
-	                                       : static_cast<BaseGameInfo *>(basegame);
-	assert(gameinfo);
-	return gameinfo;
+	if (curr_mod > -1) {
+		return basegame->get_mod(curr_mod);
+	}
+	return basegame;
 }
 
 // List partially copied from Firefox and from GLib's config.charset.

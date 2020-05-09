@@ -103,8 +103,9 @@ void Combat_schedule::start_battle(
 	unsigned long curtime = Game::get_ticks();
 	// If this is the avatar, and it has been at least .5 minute since last
 	// start, then change music. This allows the danger music to be heard.
+	Game_object *target = npc->get_target();
 	if (npc == gwin->get_main_actor() && curtime - battle_time >= 30000 &&
-	        (!opponents.empty() || (npc->get_target() && npc->get_target()->as_actor()))) {
+	        (!opponents.empty() || (target && target->as_actor()))) {
 		Audio::get_ptr()->start_music_combat((rand() % 2) ?
 		                                     CSAttacked1 : CSAttacked2, false);
 		battle_time = curtime;

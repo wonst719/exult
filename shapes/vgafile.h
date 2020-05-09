@@ -207,6 +207,24 @@ public:
 		       ? frames[framenum].get()
 		       : nullptr;
 	}
+	auto begin() {
+		return frames.begin();
+	}
+	auto begin() const {
+		return frames.begin();
+	}
+	auto cbegin() const {
+		return frames.cbegin();
+	}
+	auto end() {
+		return frames.end();
+	}
+	auto end() const {
+		return frames.end();
+	}
+	auto cend() const {
+		return frames.cend();
+	}
 	void resize(int newsize);   // Modify #frames.
 	// Set frame.
 	void set_frame(std::unique_ptr<Shape_frame> f, int framenum);

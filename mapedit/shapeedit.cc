@@ -2721,11 +2721,15 @@ void ExultStudio::set_shape_notebook_frame(
 	int shnum = get_num_entry("shinfo_shape");
 	Vga_file *ifile = file_info->get_ifile();
 	Shape_frame *shape = ifile->get_shape(shnum, frnum);
-	assert(shape != nullptr);
-	set_spin("shinfo_originx", shape->get_xright(), -shape->get_width(),
-	         shape->get_width());
-	set_spin("shinfo_originy", shape->get_ybelow(), -shape->get_height(),
-	         shape->get_height());
+	if (shape == nullptr) {
+		set_spin("shinfo_originx", 0, 0, 0);
+		set_spin("shinfo_originy", 0, 0, 0);
+	} else {
+		set_spin("shinfo_originx", shape->get_xright(), -shape->get_width(),
+				shape->get_width());
+		set_spin("shinfo_originy", shape->get_ybelow(), -shape->get_height(),
+				shape->get_height());
+	}
 
 	const Shape_info *info = static_cast<const Shape_info *>(
 	                   gtk_object_get_user_data(GTK_OBJECT(shapewin)));
@@ -4570,15 +4574,16 @@ void ExultStudio::save_shape_window(
 	}
 	// Update origin.
 	Shape_frame *frame = ifile->get_shape(shnum, frnum);
-	int xright = get_spin("shinfo_originx");
-	int ybelow = get_spin("shinfo_originy");
-	assert(frame != nullptr);
-	if (xright != frame->get_xright() || ybelow != frame->get_ybelow()) {
-		// It changed.
-		file_info->set_modified();
-		frame->set_offset(xright, ybelow);
-		Shape *shape = ifile->extract_shape(shnum);
-		shape->set_modified();
+	if (frame != nullptr) {
+		int xright = get_spin("shinfo_originx");
+		int ybelow = get_spin("shinfo_originy");
+		if (xright != frame->get_xright() || ybelow != frame->get_ybelow()) {
+			// It changed.
+			file_info->set_modified();
+			frame->set_offset(xright, ybelow);
+			Shape *shape = ifile->extract_shape(shnum);
+			shape->set_modified();
+		}
 	}
 	if (info)
 		save_shape_notebook(*info, shnum, frnum);

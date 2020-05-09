@@ -157,11 +157,27 @@ public:
 		return modlist.size() > 0;
 	}
 	ModInfo *get_mod(int i) {
-		if (i >= 0 && static_cast<unsigned>(i) < modlist.size())
-			return &(modlist[i]);
-		return nullptr;
+		return &(modlist.at(i));
 	}
 	BaseGameInfo *get_mod(const std::string &name, bool checkversion = true);
+	auto begin() {
+		return modlist.begin();
+	}
+	auto begin() const {
+		return modlist.begin();
+	}
+	auto cbegin() const {
+		return modlist.cbegin();
+	}
+	auto end() {
+		return modlist.end();
+	}
+	auto end() const {
+		return modlist.end();
+	}
+	auto cend() const {
+		return modlist.cend();
+	}
 	void add_mod(const std::string &mod, const std::string &modconfig);
 
 	void get_game_paths(const std::string &game_path);
@@ -197,9 +213,7 @@ public:
 		return games.size();
 	}
 	ModManager *get_game(int i) {
-		if (i >= 0 && static_cast<unsigned>(i) < games.size())
-			return &(games[i]);
-		return nullptr;
+		return &(games.at(i));
 	}
 	bool is_bg_installed() const {
 		return bg != nullptr;

@@ -234,7 +234,10 @@ static int Get_max_height(
 	int maxh = 0;
 	for (int i = 0; i < cnt; i++) {
 		Shape_frame *frame = shape->get_frame(i);
-		int ht =  frame ? frame->get_height() : -1;
+		if (!frame) {
+			continue;
+		}
+		int ht = frame->get_height();
 		if (ht > maxh)
 			maxh = ht;
 	}
@@ -259,8 +262,9 @@ static int Get_x_offset(
 	int xoff = 0;
 	for (int i = 0; i < framenum; i++) {
 		Shape_frame *fr = shape->get_frame(i);
-		assert(fr);
-		xoff += fr->get_width() + border;
+		if (fr) {
+			xoff += fr->get_width() + border;
+		}
 	}
 	return xoff;
 }
@@ -410,10 +414,11 @@ void Shape_chooser::scroll_to_frame(
 		else {
 			gint winw = draw->allocation.width;
 			Shape_frame *fr = shape->get_frame(selframe);
-			assert(fr);
-			int sw = fr->get_width();
-			if (xoff + sw + border - hoffset > winw)
-				hoffset = xoff + sw + border - winw;
+			if (fr) {
+				int sw = fr->get_width();
+				if (xoff + sw + border - hoffset > winw)
+					hoffset = xoff + sw + border - winw;
+			}
 		}
 		GtkAdjustment *adj = gtk_range_get_adjustment(
 		                         GTK_RANGE(hscroll));
@@ -1447,7 +1452,9 @@ void Shape_chooser::new_frame(
 		int cnt = shape->get_num_frames();
 		for (int i = 0; i < cnt; i++) {
 			Shape_frame *fr = shape->get_frame(i);
-			assert(fr);
+			if (!fr) {
+				continue;
+			}
 			int ht = fr->get_height();
 			if (ht > h)
 				h = ht;
