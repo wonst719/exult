@@ -85,7 +85,7 @@ enum {
 };
 
 BG_Game::BG_Game()
-	: shapes(ENDSHAPE_FLX) {
+	: shapes(ENDSHAPE_FLX, -1, PATCH_ENDSHAPE) {
 	if (!read_game_xml()) {
 		add_shape("gumps/check", 2);
 		add_shape("gumps/fileio", 3);
