@@ -1881,7 +1881,7 @@ void Farmer_schedule::now_what(
 	}
 	case attack_crop: {
 	    Game_object_shared crop_obj = crop.lock();
-		if (crop_obj->is_pos_invalid() || npc->distance(crop_obj.get()) > 2) {
+		if (!crop_obj || crop_obj->is_pos_invalid() || npc->distance(crop_obj.get()) > 2) {
 			state = find_crop;
 			break;
 		}
@@ -1900,7 +1900,7 @@ void Farmer_schedule::now_what(
 	}
 	case crop_attacked: {
 	    Game_object_shared crop_obj = crop.lock();
-		if (crop_obj->is_pos_invalid()) {
+		if (!crop_obj || crop_obj->is_pos_invalid()) {
 			state = find_crop;
 			break;
 		}
