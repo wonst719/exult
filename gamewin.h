@@ -82,7 +82,7 @@ class ShapeID;
 class Shape_info;
 class Game_render;
 class Effects_manager;
-using Game_object_shared = std::shared_ptr<Game_object>;
+using Actor_shared = std::shared_ptr<Actor>;
 
 struct Position2d {
 	int x;
@@ -131,7 +131,7 @@ class Game_window {
 	Barge_object *moving_barge; // ->cart/ship that's moving, or 0.
 	Main_actor *main_actor;     // Main sprite to move around.
 	Actor *camera_actor;        // What to center view around.
-	std::vector<Game_object_shared> npcs;  // Array of NPC's + the Avatar.
+	std::vector<Actor_shared> npcs;  // Array of NPC's + the Avatar.
 	std::vector<Dead_body *> bodies; // Corresponding Dead_body's.
 	// Rendering info:
 	int scrolltx, scrollty;     // Top-left tile of screen.

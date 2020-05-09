@@ -79,7 +79,7 @@ void Game_window::read_npcs(
 		center_view(main_actor->get_tile());
 		for (int i = 1; i < num_npcs; i++) { // Create the rest.
 			npcs[i] = std::make_shared<Npc_actor>("", 0);
-			Actor *npc = static_cast<Actor*>(npcs[i].get());
+			auto& npc = npcs[i];
 			npc->read(&nfile, i, i < num_npcs1, fix_unused);
 			if (npc->is_unused()) {
 				// Not part of the game.

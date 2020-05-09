@@ -779,12 +779,11 @@ void Game_window::add_npc(
 	assert(num == npc->get_npc_num());
 	assert(num <= static_cast<int>(npcs.size()));
 	if (num == static_cast<int>(npcs.size())) {      // Add at end.
-		npcs.push_back(nullptr);
-		npcs[npcs.size() - 1] = npc->shared_from_this();
+		npcs.push_back(std::static_pointer_cast<Actor>(npc->shared_from_this()));
 	} else {
 		// Better be unused.
-		assert(!npcs[num] || get_npc(num)->is_unused());
-		npcs[num] = npc->shared_from_this();
+		assert(!npcs[num] || npcs[num]->is_unused());
+		npcs[num] = std::static_pointer_cast<Actor>(npc->shared_from_this());
 	}
 }
 
@@ -794,8 +793,7 @@ Actor *Game_window::get_npc(long npc_num) const {
 	if (npc_num < 0 || npc_num >= static_cast<int>(npcs.size()))
 		return nullptr;
 	else {
-		Game_object *npc = npcs[npc_num].get();
-		return static_cast<Actor *>(npc);
+		return npcs[npc_num].get();
 	}
 }
 
@@ -840,7 +838,7 @@ int Game_window::get_unused_npc(
 	for (; i < cnt; i++) {
 		if (i >= 356 && i <= 359)
 			continue;   // Never return these.
-		if (!npcs[i] || get_npc(i)->is_unused())
+		if (!npcs[i] || npcs[i]->is_unused())
 			break;
 	}
 	if (i >= 356 && i <= 359) {
@@ -848,7 +846,7 @@ int Game_window::get_unused_npc(
 		i = 360;
 		do {
 			npcs.push_back(std::make_shared<Npc_actor>("Reserved", 0));
-			Actor *npc = get_npc(cnt);
+			auto& npc = npcs[i];
 			npc->set_schedule_type(Schedule::wait);
 			npc->set_unused(true);
 		} while (++cnt < 360);
@@ -903,11 +901,9 @@ void Game_window::clear_world(
 	clear_dirty();
 	Usecode_script::clear();    // Clear out all scheduled usecode.
 	// Most NPCs were deleted when the map is cleared; we have to deal with some stragglers.
-	for (vector<Game_object_shared>::iterator it = npcs.begin();
-	        it != npcs.end(); ++it) {
-	    Actor *npc = static_cast<Actor *>((*it).get());
-		if (npc->is_unused())
-			*it = nullptr;
+	for (auto& npc : npcs) {
+		if (npc && npc->is_unused())
+			npc.reset();
 	}
 	for (vector<Game_map *>::iterator it = maps.begin();
 	        it != maps.end(); ++it)
@@ -2390,9 +2386,7 @@ void Game_window::schedule_npcs(
     bool repaint
 ) {
 	// Go through npc's, skipping Avatar.
-	for (std::vector<Game_object_shared>::iterator it = npcs.begin() + 1;
-	        it != npcs.end(); ++it) {
-		Actor *npc = static_cast<Actor *>((*it).get());
+	for (auto& npc : npcs) {
 		if (!npc)
 			continue;
 		// Don't want companions leaving.
@@ -2413,9 +2407,7 @@ void Game_window::schedule_npcs(
 void Game_window::mend_npcs(
 ) {
 	// Go through npc's.
-	for (std::vector<Game_object_shared>::iterator it = npcs.begin();
-	        it != npcs.end(); ++it) {
-		Actor *npc = static_cast<Actor *>((*it).get());
+	for (auto& npc : npcs) {
 		if (npc)
 			npc->mend_wounds(true);
 	}
@@ -2456,16 +2448,14 @@ Actor *Game_window::find_witness(
     Actor  *&closest_npc,       // Closest one returned.
     int align                   // Desired alignment.
 ) {
-	Actor_vector npcs;          // See if someone is nearby.
-	main_actor->find_nearby_actors(npcs, c_any_shapenum, 12, 0x28);
+	Actor_vector nearby;          // See if someone is nearby.
+	main_actor->find_nearby_actors(nearby, c_any_shapenum, 12, 0x28);
 	closest_npc = nullptr;        // Look for closest NPC.
 	int closest_dist = 5000;
 	Actor *witness = nullptr;     // And closest facing us.
 	int closest_witness_dist = 5000;
 	int gshape = get_guard_shape();
-	for (Actor_vector::const_iterator it = npcs.begin();
-	        it != npcs.end(); ++it) {
-		Actor *npc = (*it);
+	for (auto& npc : nearby) {
 		// Want non-party intelligent and not disabled NPCs only.
 		if (npc->is_in_party() || !npc->is_sentient() || !npc->can_act())
 			continue;
@@ -2629,11 +2619,9 @@ void Game_window::stop_arresting(
 		return;
 	}
 
-	Actor_vector npcs;      // See if someone is nearby.
-	main_actor->find_nearby_actors(npcs, gshape, 20, 0x28);
-	for (Actor_vector::const_iterator it = npcs.begin();
-												   it != npcs.end(); ++it) {
-		Actor *npc = (*it);
+	Actor_vector nearby;      // See if someone is nearby.
+	main_actor->find_nearby_actors(nearby, gshape, 20, 0x28);
+	for (auto& npc : nearby) {
 		if (!npc->is_in_party() && npc->get_schedule_type() == Schedule::arrest_avatar) {
 			npc->set_schedule_type(Schedule::wander);
 			// Prevent guard from becoming hostile.
@@ -2669,18 +2657,18 @@ void Game_window::attack_avatar(
 
 	int numhelpers = 0;
 	int const maxhelpers = 3;
-	Actor_vector npcs;      // See if someone is nearby.
-	main_actor->find_nearby_actors(npcs, c_any_shapenum, 20, 0x28);
-	for (Actor_vector::const_iterator it = npcs.begin();
-	        it != npcs.end() && numhelpers < maxhelpers; ++it) {
-		Actor *npc = (*it);
+	Actor_vector nearby;      // See if someone is nearby.
+	main_actor->find_nearby_actors(nearby, c_any_shapenum, 20, 0x28);
+	for (auto& npc : nearby) {
 		if (npc->can_act() && !npc->is_in_party() && npc->is_sentient() &&
 		        ((npc->get_shapenum() == gshape && !in_dungeon) ||
 		         align == npc->get_effective_alignment()) &&
 		        // Only if can get there.
 		        Fast_pathfinder_client::is_grabable(npc, main_actor)) {
-			numhelpers++;
 			npc->set_target(main_actor, true);
+			if (++numhelpers >= maxhelpers) {
+				break;
+			}
 		}
 	}
 	// Guaranteed way to do it.
@@ -3036,9 +3024,7 @@ bool Game_window::is_hostile_nearby() const {
 		get_nearby_npcs(nearby);
 
 	bool nearby_hostile = false;
-	for (Actor_vector::const_iterator it = nearby.begin(); it != nearby.end(); ++it) {
-		Actor *actor = *it;
-
+	for (auto& actor : nearby) {
 		if (!actor->is_dead() && actor->get_schedule() &&
 		        actor->get_effective_alignment() >= Actor::evil &&
 		        ((actor->get_schedule_type() == Schedule::combat &&
