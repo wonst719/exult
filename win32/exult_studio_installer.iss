@@ -4,18 +4,25 @@
 [Setup]
 AppName=Exult Studio
 AppVerName=Exult Studio Git
-DefaultDirName={pf}\Exult
+AppPublisher=The Exult Team
+AppPublisherURL=http://exult.sourceforge.net/
+AppSupportURL=http://exult.sourceforge.net/
+AppUpdatesURL=http://exult.sourceforge.net/
+DisableDirPage=no
+DefaultDirName={autopf}\Exult
+DisableProgramGroupPage=no
 DefaultGroupName=Exult Studio
 OutputBaseFilename=ExultStudio
 Compression=lzma
-SolidCompression=true
+SolidCompression=yes
 InternalCompressLevel=max
 AppendDefaultDirName=false
 AllowNoIcons=true
-ShowLanguageDialog=yes
 OutputDir=.
 DirExistsWarning=no
 AlwaysUsePersonalGroup=true
+DisableWelcomePage=no
+WizardStyle=modern
 
 [Files]
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files

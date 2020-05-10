@@ -8,13 +8,17 @@ AppPublisher=The Exult Team
 AppPublisherURL=http://exult.sourceforge.net/
 AppSupportURL=http://exult.sourceforge.net/
 AppUpdatesURL=http://exult.sourceforge.net/
-DefaultDirName={code:GetExultInstDir|{pf}\Exult}
+DisableDirPage=no
+DefaultDirName={code:GetExultInstDir|{autopf}\Exult}
+DisableProgramGroupPage=no
 DefaultGroupName={code:GetExultGroupDir|Exult}
 OutputBaseFilename=Exultwin32
 Compression=lzma
-SolidCompression=true
+SolidCompression=yes
 InternalCompressLevel=max
 OutputDir=.
+DisableWelcomePage=no
+WizardStyle=modern
 
 [Tasks]
 
@@ -92,19 +96,19 @@ var
   SIEdit: TEdit;
 
 // Get Paths from Exult.cfg
-procedure GetExultGamePaths(sExultDir, sBGPath, sSIPath: String; iMaxPath: Integer);
+procedure GetExultGamePaths(sExultDir, sBGPath, sSIPath: AnsiString; iMaxPath: Integer);
 external 'GetExultGamePaths@files:exconfig.dll stdcall';
 
 // Write Paths into Exult.cfg
-procedure SetExultGamePaths(sExultDir, sBGPath, sSIPath: String);
+procedure SetExultGamePaths(sExultDir, sBGPath, sSIPath: AnsiString);
 external 'SetExultGamePaths@files:exconfig.dll stdcall';
 
 // Verify BG Dir
-function VerifyBGDirectory(sPath: String) : Integer;
+function VerifyBGDirectory(sPath: AnsiString) : Integer;
 external 'VerifyBGDirectory@files:exconfig.dll stdcall';
 
 // Verify SI Dir
-function VerifySIDirectory(sPath: String) : Integer;
+function VerifySIDirectory(sPath: AnsiString) : Integer;
 external 'VerifySIDirectory@files:exconfig.dll stdcall';
 
 
@@ -225,8 +229,8 @@ end;
 //
 procedure CurPageChanged(CurPageID: Integer);
 var
-  sBGPath: String;
-  sSIPath: String;
+  sBGPath: AnsiString;
+  sSIPath: AnsiString;
 begin
   if CurPageID = DataDirPage.ID then begin
     if bSetPaths = False then begin
@@ -266,6 +270,16 @@ begin
           Result := True;
         end else
           Result := False;
+      end else if (iBGVerified = 0)  AND (iSIVerified = 1) then begin
+        if MsgBox ('Warning: No valid installation of Ultima VII: The Black Gate. Do you wish to continue?', mbError, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
+          Result := True;
+        end else
+          Result := False;
+      end else if (iSIVerified = 0)  AND (iBGVerified = 1) then begin
+        if MsgBox ('Warning: No valid installation of Ultima VII Part 2: Serpent Isle. Do you wish to continue?', mbError, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
+          Result := True;
+        end else
+          Result := False;
       end else
         Result := True;
   end else
@@ -281,7 +295,7 @@ var
   sSIPath: String;
 begin
   if PageID = DataDirPage.ID then begin
-    Result := (IsComponentSelected('Paths') = False);
+    Result := (WizardIsComponentSelected('Paths') = False);
 
     if Result = True then begin
       if bSetPaths = False then begin
