@@ -403,7 +403,8 @@ BaseGameInfo *ExultMenu::run() {
 	}
 	IExultDataSource mouse_data(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX),
 	                           EXULT_FLX_POINTERS_SHP);
-	Mouse menu_mouse(gwin, mouse_data);
+	Mouse mouse(gwin, mouse_data);
+	menu_mouse = &mouse;
 
 	//Must check this or it will crash as midi
 	//may not be initialised
@@ -442,7 +443,7 @@ BaseGameInfo *ExultMenu::run() {
 		font->draw_text(gwin->get_win()->get_ib8(),
 						gwin->get_win()->get_end_x() - font->get_text_width(VERSION),
 						gwin->get_win()->get_end_y() - font->get_text_height() - 5, VERSION);
-		int choice = menu->handle_events(gwin, &menu_mouse);
+		int choice = menu->handle_events(gwin, menu_mouse);
 		switch (choice) {
 		case -4: // Setup
 			gpal->fade_out(c_fade_out_time);
