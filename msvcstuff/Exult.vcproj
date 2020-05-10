@@ -1507,14 +1507,6 @@
 				Name="imagewin"
 				>
 				<File
-					RelativePath="..\imagewin\ibuf16.cc"
-					>
-				</File>
-				<File
-					RelativePath="..\imagewin\ibuf16.h"
-					>
-				</File>
-				<File
 					RelativePath="..\imagewin\ibuf8.cc"
 					>
 				</File>

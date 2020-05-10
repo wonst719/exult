@@ -185,7 +185,6 @@ GUMPS_OBJS= \
 
 IMAGEWIN_OBJS=\
 	imagewin/ibuf8.o \
-	imagewin/ibuf16.o \
 	imagewin/imagebuf.o \
 	imagewin/imagewin.o \
 	imagewin/iwin8.o \
@@ -506,7 +505,6 @@ IPACK_OBJS=\
 	files/U7obj.o \
 	files/utils.o \
 	imagewin/ibuf8.o \
-	imagewin/ibuf16.o \
 	imagewin/imagebuf.o \
 	shapes/pngio.o \
 	shapes/vgafile.o \

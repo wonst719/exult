@@ -95,7 +95,6 @@ protected:
 	Image_buffer(unsigned int w, unsigned int h, int dpth);
 public:
 	friend class Image_buffer8;
-	friend class Image_buffer16;
 	virtual ~Image_buffer() {
 		delete [] bits;     // In case Image_window didn't.
 	}
