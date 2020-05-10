@@ -3,6 +3,8 @@
 
 # Where is Ultima 7 installed
 U7PATH:=C:/Ultima7
+# Where is the distribution packaging handled
+DISTPATH:=C:/Ultima7/Dist
 # Only used for the Gimp Plug-in
 GIMPPATH:=C:/GimpPlugin
 
@@ -307,7 +309,9 @@ debug: $(EXEC)
 	cp data/exult_si.flx $(U7PATH)/data
 
 dist:   U7PATH:=$(U7PATH)/Exult
+dist:   U7PATH:=$(DISTPATH)/Exult
 dist:   $(EXEC) exconfig.dll install
+	mkdir -p $(DISTPATH)
 	cp AUTHORS $(U7PATH)/AUTHORS.txt
 	cp ChangeLog $(U7PATH)/ChangeLog.txt
 	cp COPYING $(U7PATH)/COPYING.txt
@@ -326,6 +330,8 @@ dist:   $(EXEC) exconfig.dll install
 	u2d $(U7PATH)/*.txt
 	strip exconfig.dll -o $(U7PATH)/exconfig.dll
 	cp win32/exult_installer.iss $(U7PATH)
+	strip exconfig.dll -o $(DISTPATH)/exconfig.dll
+	cp win32/exult_installer.iss $(DISTPATH)
 
 toolsinstall: tools
 	mkdir -p $(U7PATH)
@@ -345,7 +351,9 @@ toolsinstall: tools
 	cp data/u7sibetaintrinsics.data $(U7PATH)/data
 
 toolsdist: U7PATH:=$(U7PATH)/Tools
+toolsdist: U7PATH:=$(DISTPATH)/Tools
 toolsdist: tools toolsinstall
+	mkdir -p $(DISTPATH)
 	cp tools/expack.txt $(U7PATH)/tools
 	cp tools/intrins1.txt $(U7PATH)/tools
 	cp tools/intrins2.txt $(U7PATH)/tools
@@ -358,6 +366,7 @@ toolsdist: tools toolsinstall
 	cp tools/ucformat.txt $(U7PATH)/tools
 	u2d $(U7PATH)/tools/*.txt
 	cp win32/exult_tools_installer.iss $(U7PATH)
+	cp win32/exult_tools_installer.iss $(DISTPATH)
 
 studioclean:
 	rm -f $(ES_OBJS) $(ES_OBJS:%.o=%.d) $(EXP_FILE) exult_studio$(EXEEXT)
@@ -376,7 +385,9 @@ studioinstall: exult_studio$(EXEEXT)
 	cp data/estudio/new/*.shp $(U7PATH)/data/estudio/new
 
 studiodist: U7PATH:=$(U7PATH)/Studio
+studiodist: U7PATH:=$(DISTPATH)/Studio
 studiodist: exult_studio$(EXEEXT) studioinstall
+	mkdir -p $(DISTPATH)
 	cp docs/exult_studio.html $(U7PATH)
 	cp docs/exult_studio.txt $(U7PATH)
 	mkdir -p $(U7PATH)/images
@@ -384,6 +395,7 @@ studiodist: exult_studio$(EXEEXT) studioinstall
 	cp docs/images/studio*.png $(U7PATH)/images
 	u2d $(U7PATH)/*.txt
 	cp win32/exult_studio_installer.iss $(U7PATH)
+	cp win32/exult_studio_installer.iss $(DISTPATH)
 
 pluginclean:
 	rm -f u7shp$(EXEEXT) mapedit/u7shp.o mapedit/u7shp.d
@@ -396,7 +408,9 @@ plugininstall: plugin
 	$(call copy_dlls_for_exe, u7shp$(EXEEXT), $(GIMPPATH))
 
 plugindist: GIMPPATH:=$(U7PATH)/GimpPlugin
+plugindist: GIMPPATH:=$(DISTPATH)/GimpPlugin
 plugindist: plugin plugininstall
+	mkdir -p $(DISTPATH)
 	cp mapedit/gimpwin32.txt $(GIMPPATH)
 	u2d $(GIMPPATH)/*.txt
 
