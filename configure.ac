@@ -781,8 +781,8 @@ fi
 
 CHK_WARN="-Wall -Wextra -pedantic"
 CHK_WARN="$CHK_WARN -Walloc-zero -Walloca"
-CHK_WARN="$CHK_WARN -Wc++14-compat -Wc++17-compat"
-CHK_WARN="$CHK_WARN -Wcatch-value=3 -Wcast-align -Wcast-qual"
+CHK_WARN="$CHK_WARN -Wc++14-compat -Wc++17-compat -Wbool-compare -Wbool-operation"
+CHK_WARN="$CHK_WARN -Wcatch-value=3 -Wcast-align -Wcast-qual -Wcast-function-type"
 CHK_WARN="$CHK_WARN -Wconditionally-supported -Wctor-dtor-privacy -Wdisabled-optimization"
 CHK_WARN="$CHK_WARN -Wduplicated-branches -Wduplicated-cond -Wextra-semi"
 CHK_WARN="$CHK_WARN -Wformat-nonliteral -Wformat-security"
