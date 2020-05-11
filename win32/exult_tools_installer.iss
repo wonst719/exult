@@ -8,6 +8,8 @@ AppPublisher=The Exult Team
 AppPublisherURL=http://exult.sourceforge.net/
 AppSupportURL=http://exult.sourceforge.net/
 AppUpdatesURL=http://exult.sourceforge.net/
+; Setup exe version number:
+VersionInfoVersion=1.7.0
 DisableDirPage=no
 DefaultDirName={autopf}\Exult\Tools
 DisableProgramGroupPage=yes
@@ -48,6 +50,7 @@ Source: Tools\tools\mklink.exe; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools\tools\mockup.exe; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools\tools\rip.exe; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools\tools\*.dll; DestDir: {app}\tools\; Flags: ignoreversion
+Source: Tools\*.dll; DestDir: {app}\;
 Source: Exult\README-SDL.txt; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools\tools\shp2pcx.exe; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools\tools\shp2pcx.txt; DestDir: {app}\tools\; Flags: ignoreversion

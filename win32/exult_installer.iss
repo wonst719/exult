@@ -3,11 +3,13 @@
 
 [Setup]
 AppName=Exult
-AppVerName=Exult Git Snapshot
+AppVerName=Exult 1.7.0git Snapshot
 AppPublisher=The Exult Team
 AppPublisherURL=http://exult.sourceforge.net/
 AppSupportURL=http://exult.sourceforge.net/
 AppUpdatesURL=http://exult.sourceforge.net/
+; Setup exe version number:
+VersionInfoVersion=1.7.0
 DisableDirPage=no
 DefaultDirName={code:GetExultInstDir|{autopf}\Exult}
 DisableProgramGroupPage=no
@@ -76,10 +78,10 @@ Name: {group}\reset video settings; Filename: {app}\Exult.exe; Parameters: --res
 Name: {group}\Uninstall Exult; Filename: {uninstallexe}; Components: Icons
 Name: {group}\FAQ; Filename: {app}\FAQ.html; Flags: createonlyiffileexists; Components: Icons
 Name: {group}\Readme; Filename: {app}\ReadMe.html; Flags: createonlyiffileexists; Components: Icons
-//Name: {group}\COPYING; Filename: {app}\COPYING.txt; Flags: createonlyiffileexists; Components: Icons
-//Name: {group}\ChangeLog; Filename: {app}\ChangeLog.txt; Flags: createonlyiffileexists; Components: Icons
-//Name: {group}\Readme Win32; Filename: {app}\README.win32.txt; Flags: createonlyiffileexists; Components: Icons
-//Name: {group}\NEWS; Filename: {app}\NEWS.txt; Flags: createonlyiffileexists; Components: Icons
+; Name: {group}\COPYING; Filename: {app}\COPYING.txt; Flags: createonlyiffileexists; Components: Icons
+; Name: {group}\ChangeLog; Filename: {app}\ChangeLog.txt; Flags: createonlyiffileexists; Components: Icons
+; Name: {group}\Readme Win32; Filename: {app}\README.win32.txt; Flags: createonlyiffileexists; Components: Icons
+; Name: {group}\NEWS; Filename: {app}\NEWS.txt; Flags: createonlyiffileexists; Components: Icons
 
 [Run]
 Filename: {app}\Exult.exe; Description: {cm:LaunchProgram,Exult}; WorkingDir: {app}; Flags: nowait postinstall skipifsilent skipifdoesntexist
@@ -312,7 +314,7 @@ begin
     end
 
   end else if PageID = wpSelectProgramGroup then begin
-    Result := (IsComponentSelected('Icons') = False);
+    Result := (WizardIsComponentSelected('Icons') = False);
   end else
     Result := False;
 end;
@@ -326,7 +328,7 @@ begin
   begin
     SetExultGamePaths(ExpandConstant('{app}'), BGEdit.Text, SIEdit.Text );
     RegWriteStringValue(HKEY_LOCAL_MACHINE, 'Software\Exult', 'Path', ExpandConstant('{app}'));
-    if IsComponentSelected('Icons') then
+    if WizardIsComponentSelected('Icons') then
       RegWriteStringValue(HKEY_LOCAL_MACHINE, 'Software\Exult', 'ShellObjectFolder', ExpandConstant('{groupname}'));
   end
 end;
