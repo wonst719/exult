@@ -307,7 +307,6 @@ debug: $(EXEC)
 	cp data/exult_bg.flx $(U7PATH)/data
 	cp data/exult_si.flx $(U7PATH)/data
 
-dist:   U7PATH:=$(U7PATH)/Exult
 dist:   U7PATH:=$(DISTPATH)/Exult
 dist:   $(EXEC) exconfig.dll install
 	mkdir -p $(DISTPATH)
@@ -327,8 +326,6 @@ dist:   $(EXEC) exconfig.dll install
 	cp data/bg/defaultkeys.txt $(U7PATH)/bgdefaultkeys.txt
 	cp data/si/defaultkeys.txt $(U7PATH)/sidefaultkeys.txt
 	u2d $(U7PATH)/*.txt
-	strip exconfig.dll -o $(U7PATH)/exconfig.dll
-	cp win32/exult_installer.iss $(U7PATH)
 	strip exconfig.dll -o $(DISTPATH)/exconfig.dll
 	cp win32/exult_installer.iss $(DISTPATH)
 
@@ -349,7 +346,6 @@ toolsinstall: tools
 	cp data/u7siintrinsics.data $(U7PATH)/data
 	cp data/u7sibetaintrinsics.data $(U7PATH)/data
 
-toolsdist: U7PATH:=$(U7PATH)/Tools
 toolsdist: U7PATH:=$(DISTPATH)/Tools
 toolsdist: tools toolsinstall
 	mkdir -p $(DISTPATH)
@@ -383,7 +379,6 @@ studioinstall: exult_studio$(EXEEXT)
 	cp data/estudio/new/*.vga $(U7PATH)/data/estudio/new
 	cp data/estudio/new/*.shp $(U7PATH)/data/estudio/new
 
-studiodist: U7PATH:=$(U7PATH)/Studio
 studiodist: U7PATH:=$(DISTPATH)/Studio
 studiodist: exult_studio$(EXEEXT) studioinstall
 	mkdir -p $(DISTPATH)
@@ -406,7 +401,6 @@ plugininstall: plugin
 	strip u7shp$(EXEEXT) -o $(GIMPPATH)/u7shp$(EXEEXT)
 	$(call copy_dlls_for_exe, u7shp$(EXEEXT), $(GIMPPATH))
 
-plugindist: GIMPPATH:=$(U7PATH)/GimpPlugin
 plugindist: GIMPPATH:=$(DISTPATH)/GimpPlugin
 plugindist: plugin plugininstall
 	mkdir -p $(DISTPATH)
