@@ -98,11 +98,6 @@ public:
 	void paint_rle(int xoff, int yoff, const unsigned char *in);
 	void paint_rle_remapped(int xoff, int yoff, const unsigned char *inptr,
 	                        const unsigned char *&trans);
-	// Convert to 32-bit rgba.
-	unsigned char *rgba(const unsigned char *pal, unsigned char transp,
-	                    bool &rotate, int first_rotate, int last_rotate,
-	                    int first_translucent = 256, int last_translucent = 256,
-	                    const Xform_palette *xforms = nullptr, int alpha = 255);
 };
 
 #endif
