@@ -207,42 +207,13 @@ void Image_buffer8::copy8(
 	if (!clip(srcx, srcy, srcw, srch, destx, desty))
 		return;
 
-#if !defined(__sparc__)
-	uint32 *to = reinterpret_cast<uint32 *>(bits + desty * line_width + destx);
-	const uint32 *from = reinterpret_cast<const uint32 *>(src_pixels + srcy * src_width + srcx);
-	int to_next = line_width - srcw;// # pixels to next line.
-	int from_next = src_width - srcw;
-
-	// Need to know if we end dword alligned
-	int end_align = srcw % 4;
-	// The actual aligned width in dwords
-	int aligned = srcw / 4;
-
-	uint8 *to8;
-	const uint8 *from8;
-
-	while (srch--) {        // Do each line.
-		int counter = aligned;
-		while (counter--) *to++ = *from++;
-
-		to8 = reinterpret_cast<uint8 *>(to);
-		from8 = reinterpret_cast<const uint8 *>(from);
-
-		counter = end_align;
-		while (counter--) *to8++ = *from8++;
-
-		to = reinterpret_cast<uint32 *>(to8 + to_next);
-		from = reinterpret_cast<const uint32 *>(from8 + from_next);
-	}
-#else
 	uint8 *to = bits + desty * line_width + destx;
-	uint8 *from = src_pixels + srcy * src_width + srcx;
+	const uint8 *from = src_pixels + srcy * src_width + srcx;
 	while (srch--) {
 		std::memcpy(to, from, srcw);
 		from += src_width;
 		to += line_width;
 	}
-#endif
 }
 
 /*
