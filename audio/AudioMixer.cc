@@ -103,6 +103,7 @@ id_counter(0), device(nullptr)
 			sample_rate = obtained.freq;
 			stereo = obtained.channels == 2;
 
+			internal_buffer.resize((obtained.size + 1) / 2);
 			for (int i = 0; i < num_channels_; i++)
 				channels.emplace_back(sample_rate, stereo);
 		}
@@ -298,7 +299,18 @@ void AudioMixer::get2DPosition(sint32 instance_id, int &distance, int &angle) co
 void AudioMixer::sdlAudioCallback(void *userdata, Uint8 *stream, int len)
 {
 	AudioMixer *mixer = static_cast<AudioMixer *>(userdata);
-	mixer->MixAudio(reinterpret_cast<sint16*>(stream), len);
+	// Unfortunately, SDL does not guarantee that stream will be aligned to
+	// the correct alignment for sint16.
+	// There is no real solution except using an aligned buffer and copying.
+	size_t newlen = size_t(len + 1) / 2;
+	// This should never be needed, as we set the vector length
+	// based on information provided by SDL. Lets leave it in anyway
+	// just in case...
+	if (newlen > mixer->internal_buffer.size()) {
+		mixer->internal_buffer.resize(newlen);
+	}
+	mixer->MixAudio(mixer->internal_buffer.data(), len);
+	std::memcpy(stream, mixer->internal_buffer.data(), len);
 }
 
 void AudioMixer::MixAudio(sint16 *stream, uint32 bytes)

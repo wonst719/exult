@@ -75,6 +75,7 @@ private:
 	bool			stereo;
 	MyMidiPlayer	*midi;
 	int				midi_volume;
+	std::vector<sint16> internal_buffer;
 
 	std::vector<AudioChannel>	channels;
 	sint32			id_counter;
