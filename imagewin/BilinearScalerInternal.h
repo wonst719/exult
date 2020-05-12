@@ -20,9 +20,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "BilinearScaler.h"
 #include "manip.h"
 
+#include <cstring>
+
 #define COMPILE_ALL_BILINEAR_SCALERS
 
 namespace Pentagram {
+
+template <typename uintX>
+inline void WritePix(uint8* dest, uintX val) {
+	std::memcpy(dest, &val, sizeof(uintX));
+}
 
 #define SimpleLerp(a,b,fac) ((b<<8)+((a)-(b))*(fac))
 #define SimpleLerp2(a,b,fac) ((b<<16)+((a)-(b))*(fac))
@@ -33,26 +40,24 @@ namespace Pentagram {
 		(d)[2] = SimpleLerp2(b[2],a[2],f)>>16;}
 
 #define FilterPixel(a,b,f,g,fx,fy) { \
-		*reinterpret_cast<uintX*>(pixel) = Manip::rgb( \
-		                                   SimpleLerp(SimpleLerp(a[0],f[0],fx),SimpleLerp(b[0],g[0],fx),fy)>>16,\
-		                                   SimpleLerp(SimpleLerp(a[1],f[1],fx),SimpleLerp(b[1],g[1],fx),fy)>>16,\
-		                                   SimpleLerp(SimpleLerp(a[2],f[2],fx),SimpleLerp(b[2],g[2],fx),fy)>>16);}
+		WritePix<uintX>(pixel, Manip::rgb(SimpleLerp(SimpleLerp(a[0],f[0],fx),SimpleLerp(b[0],g[0],fx),fy)>>16,\
+		                                  SimpleLerp(SimpleLerp(a[1],f[1],fx),SimpleLerp(b[1],g[1],fx),fy)>>16,\
+		                                  SimpleLerp(SimpleLerp(a[2],f[2],fx),SimpleLerp(b[2],g[2],fx),fy)>>16));}
 
 #define ScalePixel2x(a,b,f,g) { \
-		*(reinterpret_cast<uintX*>(pixel)) = Manip::rgb(a[0], a[1], a[2]); \
-		*(reinterpret_cast<uintX*>(pixel+sizeof(uintX))) = Manip::rgb((a[0]+f[0])>>1, (a[1]+f[1])>>1, (a[2]+f[2])>>1); \
+		WritePix<uintX>(pixel, Manip::rgb(a[0], a[1], a[2])); \
+		WritePix<uintX>(pixel+sizeof(uintX), Manip::rgb((a[0]+f[0])>>1, (a[1]+f[1])>>1, (a[2]+f[2])>>1)); \
 		pixel+=pitch; \
-		*(reinterpret_cast<uintX*>(pixel)) = Manip::rgb((a[0]+b[0])>>1, (a[1]+b[1])>>1, (a[2]+b[2])>>1);\
-		*(reinterpret_cast<uintX*>(pixel+sizeof(uintX))) = Manip::rgb((a[0]+b[0]+f[0]+g[0])>>2, (a[1]+b[1]+f[1]+g[1])>>2, (a[2]+b[2]+f[2]+g[2])>>2);\
+		WritePix<uintX>(pixel, Manip::rgb((a[0]+b[0])>>1, (a[1]+b[1])>>1, (a[2]+b[2])>>1));\
+		WritePix<uintX>(pixel+sizeof(uintX), Manip::rgb((a[0]+b[0]+f[0]+g[0])>>2, (a[1]+b[1]+f[1]+g[1])>>2, (a[2]+b[2]+f[2]+g[2])>>2));\
 		pixel+=pitch; } \
-	 
+
 #define X2Xy24xLerps(c0,c1,y)   \
-	*(reinterpret_cast<uintX*>(pixel)) = Manip::rgb(                        \
-	                                     cols[c0][y][0], cols[c0][y][1], cols[c0][y][2]);    \
-	*(reinterpret_cast<uintX*>(pixel+sizeof(uintX))) = Manip::rgb(      \
+	WritePix<uintX>(pixel, Manip::rgb(cols[c0][y][0], cols[c0][y][1], cols[c0][y][2]));    \
+	WritePix<uintX>(pixel+sizeof(uintX), Manip::rgb(      \
 	        (cols[c0][y][0]+cols[c1][y][0])>>1,                                 \
 	        (cols[c0][y][1]+cols[c1][y][1])>>1,                                 \
-	        (cols[c0][y][2]+cols[c1][y][2])>>1);
+	        (cols[c0][y][2]+cols[c1][y][2])>>1));
 
 #define X2xY24xInnerLoop(c0,c1) {           \
 		X2Xy24xLerps(c0,c1,0); pixel+=pitch;    \
@@ -97,8 +102,7 @@ namespace Pentagram {
 		CopyLerp(cols[1][11],j,k, 0x954E); }
 
 #define X1xY12xCopy(y)  \
-	*(reinterpret_cast<uintX*>(pixel)) = Manip::rgb(                        \
-	                                     cols[y][0], cols[y][1], cols[y][2]);
+	WritePix<uintX>(pixel, Manip::rgb(cols[y][0], cols[y][1], cols[y][2]));
 
 #define X1xY12xInnerLoop() {        \
 		X1xY12xCopy(0); pixel+=pitch;   \

@@ -1124,30 +1124,17 @@ void OPLResetChip(FM_OPL *OPL) {
 /* ----------  Create a virtual YM3812 ----------       */
 /* 'rate'  is sampling rate and 'bufsiz' is the size of the  */
 FM_OPL *OPLCreate(int type, int clock, int rate) {
-	char *ptr;
-	FM_OPL *OPL;
-	int state_size;
-	int max_ch = 9; /* normaly 9 channels */
-
 	if (OPL_LockTable() == -1)
 		return nullptr;
-	/* allocate OPL state space */
-	state_size  = sizeof(FM_OPL);
-	state_size += sizeof(OPL_CH) * max_ch;
 
-	/* allocate memory block */
-	ptr = new char[state_size];
-
-	/* clear */
-	memset(ptr, 0, state_size);
-	OPL       = reinterpret_cast<FM_OPL *>(ptr); ptr += sizeof(FM_OPL);
-	OPL->P_CH = reinterpret_cast<OPL_CH *>(ptr); ptr += sizeof(OPL_CH) * max_ch;
+	FM_OPL *OPL = new FM_OPL{};
+	OPL->P_CH = OPL->channels;
 
 	/* set channel state pointer */
 	OPL->type  = type;
 	OPL->clock = clock;
 	OPL->rate  = rate;
-	OPL->max_ch = max_ch;
+	OPL->max_ch = max_opl_channels;
 
 	/* init grobal tables */
 	OPL_initalize(OPL);
@@ -1160,7 +1147,7 @@ FM_OPL *OPLCreate(int type, int clock, int rate) {
 /* ----------  Destroy one of virtual YM3812 ----------       */
 void OPLDestroy(FM_OPL *OPL) {
 	OPL_UnLockTable();
-	delete [] reinterpret_cast<char *>(OPL);
+	delete OPL;
 }
 
 /* ----------  Option handlers ----------       */

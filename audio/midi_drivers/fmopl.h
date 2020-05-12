@@ -121,6 +121,8 @@ struct OPL_CH {
 	uint8 PAN;			/* pan								*/
 };
 
+constexpr const size_t max_opl_channels = 9;
+
 /* OPL state */
 struct FM_OPL {
 	uint8 type;			/* chip type                         */
@@ -167,6 +169,8 @@ struct FM_OPL {
 	int IRQParam;						/* IRQ parameter  */
 	OPL_UPDATEHANDLER UpdateHandler;	/* stream update handler   */
 	int UpdateParam;					/* stream update parameter */
+
+	OPL_CH channels[max_opl_channels];
 };
 
 /* ---------- Generic interface section ---------- */

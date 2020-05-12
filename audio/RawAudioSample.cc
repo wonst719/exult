@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "RawAudioSample.h"
 #include "databuf.h"
+#include <cstring>
 #include <new>
 
 namespace Pentagram {
@@ -93,9 +94,15 @@ uint32 RawAudioSample::decompressFrame(void *DecompData, void *samples) const
 	else if (!signeddata && bits==16 && !byte_swap) {
 		sint16 *dest = static_cast<sint16*>(samples);
 		sint16 *end =  static_cast<sint16*>(samples)+count/2;
-		const uint16 *src = reinterpret_cast<const uint16 *>(buffer.get() + decomp->pos);
+		const uint8 *src = buffer.get() + decomp->pos;
+		auto Read2 = [&src]() {
+			uint16 val;
+			std::memcpy(&val, src, sizeof(uint16));
+			src += sizeof(uint16);
+			return val;
+		};
 		while (dest != end) {
-			*dest++ = *src++ - 32768;
+			*dest++ = Read2() - 32768;
 		}
 	}
 	// 16 bit unsigned with byte swap

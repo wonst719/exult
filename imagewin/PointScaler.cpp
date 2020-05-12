@@ -22,10 +22,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "manip.h"
 #include "ignore_unused_variable_warning.h"
 
+#include <cstring>
+
 namespace Pentagram {
 
 // Very very simple point scaler
 template<class uintX, class Manip, class uintS = uintX> class PointScalerInternal {
+	static void WritePix(uint8 *dest, uintX p) {
+		std::memcpy(dest, &p, sizeof(uintX));
+	}
 public:
 	static bool Scale(SDL_Surface *tex  , sint32 sx, sint32 sy, sint32 sw, sint32 sh,
 	                  uint8 *pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src) {
@@ -55,10 +60,10 @@ public:
 				do {
 					uintX p = Manip::copy(*texel);
 
-					*(reinterpret_cast<uintX *>(pixel + 0)) = p;
-					*(reinterpret_cast<uintX *>(pixel + sizeof(uintX))) = p;
-					*(reinterpret_cast<uintX *>(pixel2 + 0)) = p;
-					*(reinterpret_cast<uintX *>(pixel2 + sizeof(uintX))) = p;
+					WritePix(pixel + 0, p);
+					WritePix(pixel + sizeof(uintX), p);
+					WritePix(pixel2 + 0, p);
+					WritePix(pixel2 + sizeof(uintX), p);
 					pixel  += sizeof(uintX) * 2;
 					pixel2 += sizeof(uintX) * 2;
 					texel++;
@@ -101,7 +106,7 @@ public:
 					do {
 						// Dest Loop X
 						do {
-							*(reinterpret_cast<uintX *>(pixel)) = p;
+							WritePix(pixel, p);
 							pixel += sizeof(uintX);
 						} while (pixel != px_end);
 
@@ -152,8 +157,8 @@ public:
 
 					// Dest Loop Y
 					do {
-						*(reinterpret_cast<uintX *>(pixel + 0)) = p;
-						*(reinterpret_cast<uintX *>(pixel + sizeof(uintX))) = p;
+						WritePix(pixel + 0, p);
+						WritePix(pixel + sizeof(uintX), p);
 						pixel += pitch;
 						pos_y += sh;
 					} while (pos_y < end_y);
@@ -197,7 +202,7 @@ public:
 
 					// Dest Loop Y
 					do {
-						*(reinterpret_cast<uintX *>(pixel)) = p;
+						WritePix(pixel, p);
 						pixel += pitch;
 						pos_y += sh;
 					} while (pos_y < end_y);
@@ -250,8 +255,7 @@ public:
 
 						// Dest Loop X
 						while (pos_x < end_x) {
-							*(reinterpret_cast<uintX *>(pixel)) = p;
-
+							WritePix(pixel, p);
 							pixel += sizeof(uintX);
 							pos_x += sw;
 						}

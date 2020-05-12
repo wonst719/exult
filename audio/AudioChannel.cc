@@ -22,7 +22,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AudioChannel.h"
 #include "AudioSample.h"
 
+#include <cstring>
 namespace Pentagram {
+
+sint16 ReadSample(uint8 *src) {
+	sint16 val;
+	std::memcpy(&val, src, sizeof(sint16));
+	return val;
+}
 
 // We divide the data by 2, to prevent overshots. Imagine this sample pattern:
 // 0, 65535, 65535, 0. Now you want to compute a value between the two 65535.
@@ -477,10 +484,10 @@ void AudioChannel::resampleFrameM16toS(sint16 *&stream, uint32 &bytes)
 		if (fp_pos >= 0x10000)
 		{
 			if (src+4 < src_end) {
-				int c = *reinterpret_cast<sint16 *>(src+4);
+				int c = ReadSample(src+4);
 				interp_l.feedData(c);
 			} else if (src2 < src2_end) {
-				int c = *reinterpret_cast<sint16 *>(src2);
+				int c = ReadSample(src2);
 				interp_l.feedData(c);
 				src2+=2;
 			} else {
@@ -540,10 +547,10 @@ void AudioChannel::resampleFrameM16toM(sint16 *&stream, uint32 &bytes)
 		if (fp_pos >= 0x10000)
 		{
 			if (src+4 < src_end) {
-				int c = *reinterpret_cast<sint16 *>(src+4);
+				int c = ReadSample(src+4);
 				interp_l.feedData(c);
 			} else if (src2 < src2_end) {
-				int c = *reinterpret_cast<sint16 *>(src2);
+				int c = ReadSample(src2);
 				interp_l.feedData(c);
 				src2+=2;
 			} else {
@@ -596,13 +603,13 @@ void AudioChannel::resampleFrameS16toM(sint16 *&stream, uint32 &bytes)
 		if (fp_pos >= 0x10000)
 		{
 			if (src+8 < src_end) {
-				int c  = *reinterpret_cast<sint16 *>(src+8);
-				int c2 = *reinterpret_cast<sint16 *>(src+10);
+				int c  = ReadSample(src+8);
+				int c2 = ReadSample(src+10);
 				interp_l.feedData(c);
 				interp_r.feedData(c2);
 			} else if (src2 < src2_end) {
-				int c  = *reinterpret_cast<sint16 *>(src2);
-				int c2 = *reinterpret_cast<sint16 *>(src2+2);
+				int c  = ReadSample(src2);
+				int c2 = ReadSample(src2+2);
 				interp_l.feedData(c);
 				interp_r.feedData(c2);
 				src2+=4;
@@ -657,13 +664,13 @@ void AudioChannel::resampleFrameS16toS(sint16 *&stream, uint32 &bytes)
 		if (fp_pos >= 0x10000)
 		{
 			if (src+8 < src_end) {
-				int c  = *reinterpret_cast<sint16 *>(src+8);
-				int c2 = *reinterpret_cast<sint16 *>(src+10);
+				int c  = ReadSample(src+8);
+				int c2 = ReadSample(src+10);
 				interp_l.feedData(c);
 				interp_r.feedData(c2);
 			} else if (src2 < src2_end) {
-				int c  = *reinterpret_cast<sint16 *>(src2);
-				int c2 = *reinterpret_cast<sint16 *>(src2+2);
+				int c  = ReadSample(src2);
+				int c2 = ReadSample(src2+2);
 				interp_l.feedData(c);
 				interp_r.feedData(c2);
 				src2+=4;
