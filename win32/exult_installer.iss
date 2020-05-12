@@ -48,7 +48,6 @@ Source: Exult\README-SDL.txt; DestDir: {app}; Flags: ignoreversion; Components: 
 Source: Exult\AUTHORS.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
 Source: Exult\bgdefaultkeys.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
 Source: Exult\ChangeLog.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
-Source: Exult\exult.cfg.example; DestDir: {app}; Flags: ignoreversion; Components: Docs
 Source: Exult\faq.html; DestDir: {app}; Flags: ignoreversion; Components: Docs
 Source: Exult\FAQ.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
 Source: Exult\NEWS.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs

@@ -323,6 +323,7 @@ dist:   $(EXEC) exconfig.dll install
 	cp README.1ST $(U7PATH)/README.1ST.txt
 	cp docs/ReadMe.html $(U7PATH)
 	cp README.win32 $(U7PATH)/README.win32.txt
+	cp win32/README-SDL.txt $(U7PATH)/README-SDL.txt
 	cp data/bg/defaultkeys.txt $(U7PATH)/bgdefaultkeys.txt
 	cp data/si/defaultkeys.txt $(U7PATH)/sidefaultkeys.txt
 	u2d $(U7PATH)/*.txt
@@ -359,8 +360,8 @@ toolsdist: tools toolsinstall
 	cp tools/u7bgflag.txt $(U7PATH)/tools
 	cp tools/u7siflag.txt $(U7PATH)/tools
 	cp tools/ucformat.txt $(U7PATH)/tools
+	cp win32/README-SDL.txt $(U7PATH)/tools/README-SDL.txt
 	u2d $(U7PATH)/tools/*.txt
-	cp win32/exult_tools_installer.iss $(U7PATH)
 	cp win32/exult_tools_installer.iss $(DISTPATH)
 
 studioclean:
@@ -388,7 +389,6 @@ studiodist: exult_studio$(EXEEXT) studioinstall
 	cp docs/images/*.gif $(U7PATH)/images
 	cp docs/images/studio*.png $(U7PATH)/images
 	u2d $(U7PATH)/*.txt
-	cp win32/exult_studio_installer.iss $(U7PATH)
 	cp win32/exult_studio_installer.iss $(DISTPATH)
 
 pluginclean:
