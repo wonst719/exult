@@ -64,11 +64,13 @@ When the shell starts, issue the following commands:
 	32-bit:
 		pacman -S --noconfirm --needed base-devel git \
 				mingw-w64-i686-toolchain \
-				mingw-w64-i686-binutils
+				mingw-w64-i686-binutils \
+				mingw-w64-i686-ntldd
 	64-bit:
 		pacman -S --noconfirm --needed base-devel git \
 				mingw-w64-x86_64-toolchain \
-				mingw-w64-x86_64-binutils
+				mingw-w64-x86_64-binutils \
+				mingw-w64-x86_64-ntldd
 
 This installs the toolchain for building everything. Now, you must install
 the required libraries for building each component. The commands given below

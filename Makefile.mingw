@@ -261,7 +261,7 @@ TOOL_EXES:=expack$(EXEEXT) cmanip$(EXEEXT) ipack$(EXEEXT) mklink$(EXEEXT) mockup
 	ucc$(EXEEXT) libsmooth_randomize$(LIBEXT) libsmooth_smooth$(LIBEXT) libsmooth_stream$(LIBEXT)
 
 define copy_dlls_for_exe
-	for ff in $$(ldd $(1) | grep -o '$(MSYSTEM_PREFIX)/.\+\.dll' | sort -u); do cp $$ff $(2)/$$(basename $$ff); done
+	for ff in $$($(MSYSTEM_PREFIX)/bin/ntldd -R $(1) | tr '\\' '/' | grep -io '[A-Za-z]:/.*$(MSYSTEM_PREFIX)/.\+\.dll' | sort -u); do cp $$ff $(2)/$$(basename $$ff); done
 endef
 
 include Makefile.common
