@@ -150,7 +150,7 @@ ifdef DEBUG_SYMBOLS
 	OPT_LEVEL=-Og
 endif
 
-CXXFLAGS=-MMD -std=c++14 $(ARCHFLAGS) $(strip $(OPT_LEVEL) -Wall -Wextra -pedantic -Walloc-zero -Walloca -Wbool-compare -Wbool-operation -Wc++14-compat -Wc++17-compat -Wcatch-value=3 -Werror=cast-align -Wcast-align=strict -Wcast-qual -Wcast-function-type -Wconditionally-supported -Wctor-dtor-privacy -Wdisabled-optimization -Wduplicated-branches -Wduplicated-cond -Wextra-semi -Wformat-nonliteral -Wformat-security -Wlogical-not-parentheses -Wlogical-op -Wmissing-include-dirs -Wnon-virtual-dtor -Wnull-dereference -Wold-style-cast -Woverloaded-virtual -Wplacement-new -Wredundant-decls -Wshift-negative-value -Wshift-overflow -Wtrigraphs -Wundef -Wuninitialized -Wuseless-cast -Wwrite-strings -Wzero-as-null-pointer-constant -Wno-maybe-uninitialized -Wstringop-truncation -Wunused-variable -mms-bitfields -Wno-deprecated-declarations)
+CXXFLAGS=-MMD -std=c++14 $(ARCHFLAGS) $(strip $(OPT_LEVEL) -Wall -Wextra -pedantic -Walloc-zero -Walloca -Wbool-compare -Wbool-operation -Wc++14-compat -Wc++17-compat -Wcatch-value=3 -Wcast-align=strict -Wcast-qual -Wcast-function-type -Wconditionally-supported -Wctor-dtor-privacy -Wdisabled-optimization -Wduplicated-branches -Wduplicated-cond -Wextra-semi -Wformat-nonliteral -Wformat-security -Wlogical-not-parentheses -Wlogical-op -Wmissing-include-dirs -Wnon-virtual-dtor -Wnull-dereference -Wold-style-cast -Woverloaded-virtual -Wplacement-new -Wredundant-decls -Wshift-negative-value -Wshift-overflow -Wtrigraphs -Wundef -Wuninitialized -Wuseless-cast -Wwrite-strings -Wzero-as-null-pointer-constant -Wno-maybe-uninitialized -Wstringop-truncation -Wunused-variable -mms-bitfields -Wno-deprecated-declarations)
 
 CXX?=g++
 
