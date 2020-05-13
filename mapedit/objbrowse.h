@@ -37,6 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gtk_redefines.h"
 
 #include "ignore_unused_variable_warning.h"
+#include "utils.h"
 
 #include <string>
 #include <vector>
