@@ -32,7 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #endif  // __GNUC__
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif  // __GNUC__
@@ -87,7 +86,7 @@ class ExultStudio {
 private:
 	char            *glade_path;    // Where our .glade file is.
 	GtkWidget       *app;
-	GladeXML        *app_xml;
+	GtkBuilder      *app_xml;
 	char            *static_path;
 	char            *image_editor;
 	char            *default_game;
@@ -173,13 +172,18 @@ public:
 	ExultStudio(int argc, char **argv);
 	~ExultStudio();
 	bool okay_to_close();
-
+	GtkWidget *get_widget(GtkBuilder *xml, const char *name) {
+		return GTK_WIDGET(gtk_builder_get_object(xml, name));
+	}
+	GtkWidget *get_widget(const char *name) {
+		return get_widget(app_xml, name);
+	}
 	static ExultStudio *get_instance() {
 		return self;
 	}
 	int find_misc_name(const char *id) const;
 	int add_misc_name(const char *id);
-	GladeXML *get_xml() {
+	GtkBuilder *get_xml() {
 		return app_xml;
 	}
 	int get_server_socket() const {
@@ -236,7 +240,7 @@ public:
 	// Open/create shape files:
 	Shape_file_info *open_shape_file(const char *basename);
 	void new_shape_file(bool single);
-	static void create_shape_file(char *pathname, gpointer udata);
+	static void create_shape_file(const char *pathname, gpointer udata);
 	// Groups:
 	void setup_groups();
 	void setup_group_controls();

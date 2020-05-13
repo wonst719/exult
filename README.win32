@@ -103,14 +103,12 @@ To build Exult Studio, you must install the following:
 		pacman -S --noconfirm --needed \
 				mingw-w64-i686-gtk2 \
 				mingw-w64-i686-libxml2 \
-				mingw-w64-i686-libglade \
 				mingw-w64-i686-freetype \
 				mingw-w64-i686-zlib
 	64-bit:
 		pacman -S --noconfirm --needed \
 				mingw-w64-x86_64-gtk2 \
 				mingw-w64-x86_64-libxml2 \
-				mingw-w64-x86_64-libglade \
 				mingw-w64-x86_64-freetype \
 				mingw-w64-x86_64-zlib
 

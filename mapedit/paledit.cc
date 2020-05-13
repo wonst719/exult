@@ -462,27 +462,22 @@ void
 on_exportbtn_clicked(GtkButton       *button,
                      gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	GtkFileSelection *fsel = Create_file_selection(
-	                             "Export palette to text format",
-	                             reinterpret_cast<File_sel_okay_fun>(Palette_edit::export_palette),
-	                             user_data);
-	if (is_system_path_defined("<PATCH>")) {
-		// Default to a writable location.
-		string patch = get_system_path("<PATCH>/");
-		gtk_file_selection_set_filename(fsel, patch.c_str());
-	}
-	gtk_widget_show(GTK_WIDGET(fsel));
+	Create_file_selection("Export palette to text format",
+	                      "<PATCH>", nullptr, {},
+	                      GTK_FILE_CHOOSER_ACTION_SAVE,
+	                      Palette_edit::export_palette,
+	                      user_data);
 }
 
 void
 on_importbtn_clicked(GtkButton       *button,
                      gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	GtkFileSelection *fsel = Create_file_selection(
-	                             "Import palette from text format",
-	                             reinterpret_cast<File_sel_okay_fun>(Palette_edit::import_palette),
-	                             user_data);
-	gtk_widget_show(GTK_WIDGET(fsel));
+	Create_file_selection("Import palette from text format",
+	                      "<STATIC>", nullptr, {},
+	                      GTK_FILE_CHOOSER_ACTION_OPEN,
+	                      Palette_edit::import_palette,
+	                      user_data);
 }
 
 void
@@ -878,7 +873,7 @@ void Palette_edit::remove_palette(
  */
 
 void Palette_edit::export_palette(
-    char *fname,
+    const char *fname,
     gpointer user_data
 ) {
 	Palette_edit *ed = static_cast<Palette_edit *>(user_data);
@@ -915,7 +910,7 @@ void Palette_edit::export_palette(
  */
 
 void Palette_edit::import_palette(
-    char *fname,
+    const char *fname,
     gpointer user_data
 ) {
 	Palette_edit *ed = static_cast<Palette_edit *>(user_data);

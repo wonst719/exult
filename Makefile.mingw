@@ -58,13 +58,7 @@ FLUIDSYNTH_CFLAGS:=-DUSE_FLUIDSYNTH_MIDI
 # If this doesn't work, insert output of `pkg-config --cflags gtk+-win32-2.0` manually
 GTK_INCLUDES:=$(shell pkg-config --cflags gtk+-2.0)
 # If this doesn't work, insert output of `pkg-config --libs gtk+-win32-2.0` manually
-GTK_LIBS:=$(shell pkg-config --libs gtk+-2.0)
-
-### Glade libs and includes, for Exult Studio.
-# If this doesn't work, insert output of 'pkg-config --cflags libglade-2.0' manually
-LIBGLADE_INCLUDES:=$(shell pkg-config --cflags libglade-2.0)
-# If this doesn't work, insert output of 'pkg-config --libs libglade-2.0' manually
-LIBGLADE_LIBS:=$(shell pkg-config --libs libglade-2.0)
+GTK_LIBS:=$(shell pkg-config --libs "gtk+-2.0 >= 2.24")
 
 ### FREETYPE2 libs and includes, for Exult Studio.
 # If this doesn't work, insert output of 'pkg-config --cflags freetype2' manually
@@ -79,8 +73,8 @@ GIMP_INCLUDES:=$(shell pkg-config --cflags gimpui-2.0)
 GIMP_LIBS:=$(shell pkg-config --libs gimpui-2.0)
 
 ### Combined Exult Studio includes and libs.
-ES_INCLUDES:=$(GTK_INCLUDES) $(LIBGLADE_INCLUDES) $(FREETYPE2_INCLUDES) $(GIMP_INCLUDES)
-ES_LIBS:=$(GTK_LIBS) $(LIBGLADE_LIBS) $(FREETYPE2_LIBS) $(ZIP_LIBS) -lpng -luuid -lole32 -lwinmm -lws2_32 $(SUBSYSTEM)
+ES_INCLUDES:=$(GTK_INCLUDES) $(FREETYPE2_INCLUDES) $(GIMP_INCLUDES)
+ES_LIBS:=$(GTK_LIBS) $(FREETYPE2_LIBS) $(ZIP_LIBS) -lpng -luuid -lole32 -lwinmm -lws2_32 $(SUBSYSTEM)
 
 ### Ogg vorbis inclides
 OGG_INCLUDES:=$(shell pkg-config --cflags ogg vorbis vorbisfile)

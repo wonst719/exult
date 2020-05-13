@@ -165,14 +165,14 @@ public:
 	static void read_back_edited(Editing_file *ed);
 	static void clear_editing_files();
 	// Import/export from file selector.
-	static void export_frame(char *fname, gpointer user_data);
-	static void import_frame(char *fname, gpointer user_data);
-	static void export_all_frames(char *fname, gpointer user_data);
-	static void export_shape(char *fname, gpointer user_data);
-	void export_all_pngs(char *fname, int shnum);
-	static void import_all_frames(char *fname, gpointer user_data);
-	static void import_shape(char *fname, gpointer user_data);
-	void import_all_pngs(char *fname, int shnum);
+	static void export_frame(const char *fname, gpointer user_data);
+	static void import_frame(const char *fname, gpointer user_data);
+	static void export_all_frames(const char *fname, gpointer user_data);
+	static void export_shape(const char *fname, gpointer user_data);
+	void export_all_pngs(const char *fname, int shnum);
+	static void import_all_frames(const char *fname, gpointer user_data);
+	static void import_shape(const char *fname, gpointer user_data);
+	void import_all_pngs(const char *fname, int shnum);
 	void new_frame();       // Add/del.
 	void from_font_toggled(bool on);
 	void new_shape();

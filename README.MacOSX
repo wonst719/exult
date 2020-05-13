@@ -97,14 +97,14 @@ How to compile Exult Studio on Mac OS X
 If you want to compile Exult Studio, you have to install these packages:
 
 If you use Fink
-  libglade2
+  gtk2
 
 If you use MacPorts (SDL needs to be installed with the x11 dependency for Exult Studio)
   libsdl +x11
   libsdl2 +x11
-  libglade2
+  gtk2
 
-This will cause many other packages required by libglade2 to
+This will cause many other packages required by gtk2 to
 be installed. 
 
 Then you need to install Xquartz from https://www.xquartz.org (because currently drag'n'drop 

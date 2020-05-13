@@ -75,7 +75,7 @@ void ExultStudio::open_combo_window(
 	combowin = new Combo_editor(svga, palbuf.get());
 	combowin->show(true);
 	// Set edit-mode to pick.
-	GtkWidget *mitem = glade_xml_get_widget(app_xml, "pick_for_combo1");
+	GtkWidget *mitem = get_widget("pick_for_combo1");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mitem), TRUE);
 }
 
@@ -533,13 +533,12 @@ void Combo_editor::set_combo(
 Combo_editor::Combo_editor(
     Shapes_vga_file *svga,      // File containing shapes.
     unsigned char *palbuf       // Palette for drawing shapes.
-) : Shape_draw(svga, palbuf, glade_xml_get_widget(
-	                   ExultStudio::get_instance()->get_xml(), "combo_draw")),
+) : Shape_draw(svga, palbuf,
+	                   ExultStudio::get_instance()->get_widget("combo_draw")),
 	selected(-1), setting_controls(false), file_index(-1) {
 	static bool first = true;
 	combo = new Combo(svga);
-	GladeXML *app_xml = ExultStudio::get_instance()->get_xml();
-	win = glade_xml_get_widget(app_xml, "combo_win");
+	win = ExultStudio::get_instance()->get_widget("combo_win");
 	gtk_object_set_user_data(GTK_OBJECT(win), this);
 	if (first) {        // Indicate the events we want.
 		gtk_widget_set_events(draw, GDK_EXPOSURE_MASK |

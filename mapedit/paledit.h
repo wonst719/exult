@@ -99,8 +99,8 @@ public:
 	static gint drag_begin(GtkWidget *widget, GdkDragContext *context,
 	                       gpointer data);
 	static void palnum_changed(GtkAdjustment *adj, gpointer data);
-	static void export_palette(char *fname, gpointer user_data);
-	static void import_palette(char *fname, gpointer user_data);
+	static void export_palette(const char *fname, gpointer user_data);
+	static void import_palette(const char *fname, gpointer user_data);
 };
 
 #endif

@@ -193,11 +193,11 @@ void ExultStudio::open_obj_window(
 #ifdef _WIN32
 		first_time = true;
 #endif
-		objwin = glade_xml_get_widget(app_xml, "obj_window");
+		objwin = get_widget("obj_window");
 		// Note: vgafile can't be null here.
 		if (palbuf) {
 			obj_draw = new Shape_draw(vgafile->get_ifile(), palbuf.get(),
-			                          glade_xml_get_widget(app_xml, "obj_draw"));
+			                          get_widget("obj_draw"));
 			obj_draw->enable_drop(Obj_shape_dropped, this);
 		}
 	}
@@ -265,7 +265,7 @@ int ExultStudio::init_obj_window(
 	set_spin("obj_y", ty);
 	set_spin("obj_z", tz);
 	// Set limit on frame #.
-	GtkWidget *btn = glade_xml_get_widget(app_xml, "obj_frame");
+	GtkWidget *btn = get_widget("obj_frame");
 	if (btn) {
 		GtkAdjustment *adj = gtk_spin_button_get_adjustment(
 		                         GTK_SPIN_BUTTON(btn));

@@ -84,12 +84,12 @@ void Ucc_done(
 void ExultStudio::open_compile_window(
 ) {
 	if (!compilewin) {      // First time?
-		compilewin = glade_xml_get_widget(app_xml, "compile_win");
+		compilewin = get_widget("compile_win");
 		compile_box = new Exec_box(
 		    GTK_TEXT_VIEW(
-		        glade_xml_get_widget(app_xml, "compile_msgs")),
+		        get_widget("compile_msgs")),
 		    GTK_STATUSBAR(
-		        glade_xml_get_widget(app_xml, "compile_status")),
+		        get_widget("compile_status")),
 		    Ucc_done, nullptr);
 	}
 	gtk_widget_show(compilewin);

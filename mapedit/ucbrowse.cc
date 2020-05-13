@@ -200,8 +200,7 @@ extern "C" {
 Usecode_browser::Usecode_browser(
 ) {
 	ExultStudio *studio = ExultStudio::get_instance();
-	GladeXML *app_xml = studio->get_xml();
-	win = glade_xml_get_widget(app_xml, "usecodes_dialog");
+	win = studio->get_widget("usecodes_dialog");
 	gtk_object_set_user_data(GTK_OBJECT(win), this);
 	string ucname = get_system_path("<PATCH>/usecode");
 	if (!U7exists(ucname.c_str())) {
@@ -219,7 +218,7 @@ Usecode_browser::Usecode_browser(
 	            G_TYPE_STRING,      // Number.
 	            G_TYPE_STRING);     // Type:  function, class.
 	// Create view, and set our model.
-	tree = glade_xml_get_widget(app_xml, "usecodes_treeview");
+	tree = studio->get_widget("usecodes_treeview");
 	gtk_tree_view_set_model(GTK_TREE_VIEW(tree), GTK_TREE_MODEL(model));;
 	// Set up sorting.
 	GtkTreeSortable *sortable = GTK_TREE_SORTABLE(model);

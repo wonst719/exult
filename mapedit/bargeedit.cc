@@ -97,16 +97,14 @@ void ExultStudio::open_barge_window(
 	bool first_time = false;
 	if (!bargewin) {        // First time?
 		first_time = true;
-		bargewin = glade_xml_get_widget(app_xml, "barge_window");
+		bargewin = get_widget("barge_window");
 		barge_ctx = gtk_statusbar_get_context_id(
-		                GTK_STATUSBAR(glade_xml_get_widget(
-		                                  app_xml, "barge_status")), "Barge Editor");
+		                GTK_STATUSBAR(get_widget("barge_status")), "Barge Editor");
 	}
 	// Init. barge address to null.
 	gtk_object_set_user_data(GTK_OBJECT(bargewin), nullptr);
 	// Make 'apply' sensitive.
-	gtk_widget_set_sensitive(glade_xml_get_widget(app_xml,
-	                         "barge_apply_btn"), true);
+	gtk_widget_set_sensitive(get_widget("barge_apply_btn"), true);
 	remove_statusbar("barge_status", barge_ctx, barge_status_id);
 	if (data) {
 		if (!init_barge_window(data, datalen))
@@ -204,8 +202,7 @@ int ExultStudio::save_barge_window(
 		barge_status_id = set_statusbar("barge_status", barge_ctx,
 		                                "Click on map to set lower-right corner of  barge");
 		// Make 'apply' insensitive.
-		gtk_widget_set_sensitive(glade_xml_get_widget(app_xml,
-		                         "barge_apply_btn"), false);
+		gtk_widget_set_sensitive(get_widget("barge_apply_btn"), false);
 		waiting_for_server = Barge_response;
 		return 1;       // Leave window open.
 	}

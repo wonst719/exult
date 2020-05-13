@@ -446,9 +446,8 @@ void ExultStudio::open_equip_window(
 	if (recnum <= 0 || recnum > ecnt)
 		return;
 	if (!equipwin) {        // First time?
-		equipwin = glade_xml_get_widget(app_xml, "equip_window");
-		GtkWidget *table = glade_xml_get_widget(app_xml,
-		                                        "equip_table");
+		equipwin = get_widget("equip_window");
+		GtkWidget *table = get_widget("equip_table");
 		Setup_equip(GTK_TABLE(table), vgafile->get_ifile(),
 		            palbuf.get(), equip_rows);
 	}
@@ -675,9 +674,7 @@ C_EXPORT gboolean on_shinfo_weapon_ammo_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(widget));
-	GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
-	int sel = g_list_index(GTK_MENU_SHELL(menu)->children, active);
+	int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	bool on = sel == 0;
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_weapon_ammo_shape", on);
@@ -692,9 +689,7 @@ C_EXPORT gboolean on_shinfo_weapon_sprite_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(widget));
-	GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
-	int sel = g_list_index(GTK_MENU_SHELL(menu)->children, active);
+	int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	bool on = sel == 0;
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_weapon_proj", on);
@@ -709,9 +704,7 @@ C_EXPORT gboolean on_shinfo_ammo_sprite_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(widget));
-	GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
-	int sel = g_list_index(GTK_MENU_SHELL(menu)->children, active);
+	int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	bool on = sel == 0;
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_ammo_proj", on);
@@ -726,9 +719,7 @@ C_EXPORT gboolean on_shinfo_animation_type_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(widget));
-	GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
-	int sel = g_list_index(GTK_MENU_SHELL(menu)->children, active);
+	int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	bool on = sel != static_cast<int>(Animation_info::FA_HOURLY);
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_animation_ticks", on);
@@ -795,9 +786,7 @@ C_EXPORT gboolean on_shinfo_animation_freezefirst_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(widget));
-	GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
-	int sel = g_list_index(GTK_MENU_SHELL(menu)->children, active);
+	int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_animation_freezechance", sel == 2);
 	return TRUE;
@@ -909,9 +898,7 @@ C_EXPORT gboolean on_shinfo_framenames_name_type_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(widget));
-	GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
-	int type = g_list_index(GTK_MENU_SHELL(menu)->children, active);
+	int type = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	ExultStudio *studio = ExultStudio::get_instance();
 	if (type == 0)
 		studio->set_entry("shinfo_framenames_name_text",
@@ -947,9 +934,7 @@ C_EXPORT gboolean on_shinfo_framenames_comp_msg_type_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(widget));
-	GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
-	int val = g_list_index(GTK_MENU_SHELL(menu)->children, active);
+	int val = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_framenames_comp_msg_text", val == 2);
 	return TRUE;
@@ -963,9 +948,7 @@ C_EXPORT gboolean on_shinfo_framenames_comp_type_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(widget));
-	GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
-	int val = g_list_index(GTK_MENU_SHELL(menu)->children, active);
+	int val = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	ExultStudio *studio = ExultStudio::get_instance();
 	if (!val)
 		studio->set_sensitive("shinfo_framenames_comp_msg_type", true);
@@ -1079,12 +1062,11 @@ C_EXPORT void
 on_shinfo_frame_changed(GtkSpinButton *button,
                         gpointer     user_data) {
 	ignore_unused_variable_warning(user_data);
-	ExultStudio *s = ExultStudio::get_instance();
-	s->set_shape_notebook_frame(
+	ExultStudio *studio = ExultStudio::get_instance();
+	studio->set_shape_notebook_frame(
 	    gtk_spin_button_get_value_as_int(button));
 	// Force repaint of shape.
-	gtk_widget_queue_draw(glade_xml_get_widget(s->get_xml(),
-	                      "shinfo_draw"));
+	gtk_widget_queue_draw(studio->get_widget("shinfo_draw"));
 }
 
 /*
@@ -1206,7 +1188,7 @@ C_EXPORT void on_shinfo_effhps_update_clicked(
 	ignore_unused_variable_warning(btn, user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	GtkTreeView *hptree = GTK_TREE_VIEW(
-	                          glade_xml_get_widget(studio->get_xml(), "shinfo_effhps_list"));
+	                          studio->get_widget("shinfo_effhps_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(hptree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -1244,7 +1226,7 @@ C_EXPORT void on_shinfo_effhps_remove_clicked(
 	ignore_unused_variable_warning(btn, user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	GtkTreeView *hptree = GTK_TREE_VIEW(
-	                          glade_xml_get_widget(studio->get_xml(), "shinfo_effhps_list"));
+	                          studio->get_widget("shinfo_effhps_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(hptree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -1357,7 +1339,7 @@ C_EXPORT void on_shinfo_brightness_update_clicked(
 	Get_brightness_fields(studio, newfrnum, &newbrightness);
 
 	GtkTreeView *brightnesstree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(studio->get_xml(), "shinfo_brightness_list"));
+	                            studio->get_widget("shinfo_brightness_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(brightnesstree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -1390,7 +1372,7 @@ C_EXPORT void on_shinfo_brightness_remove_clicked(
 	ignore_unused_variable_warning(btn, user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	GtkTreeView *brightnesstree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(studio->get_xml(), "shinfo_brightness_list"));
+	                            studio->get_widget("shinfo_brightness_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(brightnesstree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -1464,7 +1446,7 @@ C_EXPORT void on_shinfo_warmth_update_clicked(
 	Get_warmth_fields(studio, newfrnum, &newwarm);
 
 	GtkTreeView *warmtree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(studio->get_xml(), "shinfo_warmth_list"));
+	                            studio->get_widget("shinfo_warmth_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(warmtree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -1497,7 +1479,7 @@ C_EXPORT void on_shinfo_warmth_remove_clicked(
 	ignore_unused_variable_warning(btn, user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	GtkTreeView *warmtree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(studio->get_xml(), "shinfo_warmth_list"));
+	                            studio->get_widget("shinfo_warmth_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(warmtree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -1571,7 +1553,7 @@ C_EXPORT void on_shinfo_cntrules_update_clicked(
 	Get_cntrules_fields(studio, newshnum, &newaccept);
 
 	GtkTreeView *cnttree = GTK_TREE_VIEW(
-	                           glade_xml_get_widget(studio->get_xml(), "shinfo_cntrules_list"));
+	                           studio->get_widget("shinfo_cntrules_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -1604,7 +1586,7 @@ C_EXPORT void on_shinfo_cntrules_remove_clicked(
 	ignore_unused_variable_warning(btn, user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	GtkTreeView *cnttree = GTK_TREE_VIEW(
-	                           glade_xml_get_widget(studio->get_xml(), "shinfo_cntrules_list"));
+	                           studio->get_widget("shinfo_cntrules_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -1717,7 +1699,7 @@ C_EXPORT void on_shinfo_frameflags_update_clicked(
 	Get_frameflags_fields(studio, newfrnum, newqual, &newflags);
 
 	GtkTreeView *cnttree = GTK_TREE_VIEW(
-	                           glade_xml_get_widget(studio->get_xml(), "shinfo_frameflags_list"));
+	                           studio->get_widget("shinfo_frameflags_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -1752,7 +1734,7 @@ C_EXPORT void on_shinfo_frameflags_remove_clicked(
 	ignore_unused_variable_warning(btn, user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	GtkTreeView *cnttree = GTK_TREE_VIEW(
-	                           glade_xml_get_widget(studio->get_xml(), "shinfo_frameflags_list"));
+	                           studio->get_widget("shinfo_frameflags_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -1837,7 +1819,7 @@ C_EXPORT void on_shinfo_frameusecode_update_clicked(
 	Get_frameusecode_fields(studio, newfrnum, newqual, &newucfun);
 
 	GtkTreeView *cnttree = GTK_TREE_VIEW(
-	                           glade_xml_get_widget(studio->get_xml(), "shinfo_frameusecode_list"));
+	                           studio->get_widget("shinfo_frameusecode_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -1872,7 +1854,7 @@ C_EXPORT void on_shinfo_frameusecode_remove_clicked(
 	ignore_unused_variable_warning(btn, user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	GtkTreeView *cnttree = GTK_TREE_VIEW(
-	                           glade_xml_get_widget(studio->get_xml(), "shinfo_frameusecode_list"));
+	                           studio->get_widget("shinfo_frameusecode_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -2037,7 +2019,7 @@ C_EXPORT void on_shinfo_framenames_update_clicked(
 	                      &newothertype, &newothermsg);
 
 	GtkTreeView *nametree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(studio->get_xml(), "shinfo_framenames_list"));
+	                            studio->get_widget("shinfo_framenames_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(nametree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -2081,7 +2063,7 @@ C_EXPORT void on_shinfo_framenames_remove_clicked(
 	ignore_unused_variable_warning(btn, user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	GtkTreeView *nametree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(studio->get_xml(), "shinfo_framenames_list"));
+	                            studio->get_widget("shinfo_framenames_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(nametree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -2140,13 +2122,13 @@ static inline void Get_objpaperdoll_fields(
     bool *gender = nullptr
 ) {
 	int ready = studio->get_optmenu("shinfo_ready_spot");
-	bool fron = ready == 8 || ready == 9 || ready == 10 || ready == 12;
+	bool fron = ready == 6 || ready == 7 || ready == 8 || ready == 9;
 	int altspot = studio->get_optmenu("shinfo_altready1_spot");
-	bool armor = ready == 15 && altspot != 5;
+	bool armor = ready == 12 && altspot != 3;
 	if (armor) fron = true;
 	spot = studio->get_optmenu("shinfo_objpaperdoll_spot");
 	int max;
-	if (spot == 0 && ready == 14) // helmet
+	if (spot == 0 && ready == 11) // helmet
 		max = 1;
 	else if (spot == 3 && ready == 2)
 		max = 2;
@@ -2183,12 +2165,12 @@ static void Set_objpaperdoll_fields(
 ) {
 	ExultStudio *studio = ExultStudio::get_instance();
 	int ready = studio->get_optmenu("shinfo_ready_spot");
-	bool fron = ready == 8 || ready == 9 || ready == 10 || ready == 12;
+	bool fron = ready == 6 || ready == 7 || ready == 8 || ready == 9;
 	int altspot = studio->get_optmenu("shinfo_altready1_spot");
-	bool armor = ready == 15 && altspot != 5;
+	bool armor = ready == 12 && altspot != 3;
 	if (armor) fron = true;
 	int max;
-	if (spot == 0 && ready == 14) // helmet
+	if (spot == 0 && ready == 11) // helmet
 		max = 1;
 	else if (spot == 3 && ready == 2)
 		max = 2;
@@ -2220,7 +2202,7 @@ static inline void Set_objpaperdoll_sensitivity(
     int ready
 ) {
 	int max;
-	if (spot == 0 && ready == 14) // helmet
+	if (spot == 0 && ready == 11) // helmet
 		max = 1;
 	else if (spot == 3 && ready == 2)
 		max = 2;
@@ -2228,9 +2210,9 @@ static inline void Set_objpaperdoll_sensitivity(
 		max = 0;
 	studio->set_spin("shinfo_objpaperdoll_spotframe", 0, max);
 	studio->set_sensitive("shinfo_objpaperdoll_spotframe", max > 0);
-	bool fron = ready == 8 || ready == 9 || ready == 10 || ready == 12;
+	bool fron = ready == 6 || ready == 7 || ready == 8 || ready == 9;
 	int altspot = studio->get_optmenu("shinfo_altready1_spot");
-	bool armor = ready == 15 && altspot != 5;
+	bool armor = ready == 12 && altspot != 3;
 	if (armor) fron = true;
 	studio->set_sensitive("shinfo_objpaperdoll_frame1", fron);
 	studio->set_sensitive("shinfo_objpaperdoll_frame2", fron);
@@ -2316,7 +2298,7 @@ C_EXPORT void on_shinfo_objpaperdoll_update_clicked(
 	                        &newframe1, &newframe2, &newframe3, &newtype, &newtrans, &newgender);
 
 	GtkTreeView *dolltree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(studio->get_xml(), "shinfo_objpaperdoll_list"));
+	                            studio->get_widget("shinfo_objpaperdoll_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(dolltree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -2374,7 +2356,7 @@ C_EXPORT void on_shinfo_objpaperdoll_remove_clicked(
 	ignore_unused_variable_warning(btn, user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	GtkTreeView *hptree = GTK_TREE_VIEW(
-	                          glade_xml_get_widget(studio->get_xml(), "shinfo_objpaperdoll_list"));
+	                          studio->get_widget("shinfo_objpaperdoll_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(hptree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter *iter;
@@ -2393,9 +2375,7 @@ C_EXPORT gboolean on_shinfo_objpaperdoll_spot_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(widget));
-	GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
-	int spot = g_list_index(GTK_MENU_SHELL(menu)->children, active);
+	int spot = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	ExultStudio *studio = ExultStudio::get_instance();
 	int ready = studio->get_optmenu("shinfo_ready_spot");
 	Set_objpaperdoll_sensitivity(studio, spot, ready);
@@ -2410,9 +2390,7 @@ C_EXPORT gboolean on_shinfo_ready_spot_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(widget));
-	GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
-	int ready = g_list_index(GTK_MENU_SHELL(menu)->children, active);
+	int ready = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	ExultStudio *studio = ExultStudio::get_instance();
 	int spot = studio->get_optmenu("shinfo_objpaperdoll_spot");
 	Set_objpaperdoll_sensitivity(studio, spot, ready);
@@ -2717,7 +2695,7 @@ void ExultStudio::set_shape_notebook_frame(
     int frnum           // Frame # to set.
 ) {
 	Shape_file_info *file_info = static_cast<Shape_file_info *>(
-	                             gtk_object_get_data(GTK_OBJECT(shapewin), "file_info"));
+	                             g_object_get_data(G_OBJECT(shapewin), "file_info"));
 	int shnum = get_num_entry("shinfo_shape");
 	Vga_file *ifile = file_info->get_ifile();
 	Shape_frame *shape = ifile->get_shape(shnum, frnum);
@@ -2753,39 +2731,39 @@ inline short get_spots(short spot) {
 	case both_hands:
 		return 2;
 	case amulet:
-		return 4;
+		return 3;
 	case cloak:
-		return 5;
+		return 4;
 	case neck:
-		return 6;
+		return 5;
 	case lfinger:
-		return 8;
+		return 6;
 	case rfinger:
-		return 8;
+		return 6;
 	case gloves:
-		return 9;
+		return 7;
 	case lrgloves:
-		return 10;
+		return 8;
 	case quiver:
-		return 12;
+		return 9;
 	case earrings:
-		return 13;
+		return 10;
 	case head:
-		return 14;
+		return 11;
 	case torso:
-		return 15;
+		return 12;
 	case backpack:
-		return 16;
+		return 13;
 	case belt:
-		return 17;
+		return 14;
 	case legs:
-		return 18;
+		return 15;
 	case feet:
-		return 19;
+		return 16;
 	case ucont:
-		return 20;
+		return 17;
 	case triple_bolts:
-		return 21;
+		return 18;
 	default:
 		return 0;
 	}
@@ -2794,21 +2772,21 @@ inline short get_spots(short spot) {
 inline short get_alt_spots(short spot) {
 	switch (spot) {
 	case rhand:
-		return 2;
+		return 1;
 	case lhand:
-		return 3;
+		return 2;
 	case neck:
-		return 5;
+		return 3;
 	case belt:
-		return 7;
+		return 4;
 	case back_2h:
-		return 8;
+		return 5;
 	case back_shield:
-		return 9;
+		return 6;
 	case scabbard:
-		return 10;
+		return 7;
 	case backpack:
-		return 12;
+		return 8;
 	default:
 		return 0;
 	}
@@ -2824,7 +2802,7 @@ void ExultStudio::init_shape_notebook(
     int shnum,          // Shape #.
     int frnum           // Frame #.
 ) {
-	static int classes[] = {0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 0,
+	static const int classes[] = {0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 0,
 	                        9, 10, 11, 12, 0
 	                       };
 	const int numclasses = array_size(classes);
@@ -3178,7 +3156,7 @@ void ExultStudio::init_shape_notebook(
 	set_visible("shinfo_effhps_box", !hpinf.empty());
 	if (!hpinf.empty()) {
 		GtkTreeView *hptree = GTK_TREE_VIEW(
-		                          glade_xml_get_widget(app_xml, "shinfo_effhps_list"));
+		                          get_widget("shinfo_effhps_list"));
 		GtkTreeModel *model = gtk_tree_view_get_model(hptree);
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
@@ -3216,7 +3194,7 @@ void ExultStudio::init_shape_notebook(
 	set_visible("shinfo_brightness_box", !lightinf.empty());
 	if (!lightinf.empty()) {
 		GtkTreeView *brightnesstree = GTK_TREE_VIEW(
-		                            glade_xml_get_widget(app_xml, "shinfo_brightness_list"));
+		                            get_widget("shinfo_brightness_list"));
 		GtkTreeModel *model = gtk_tree_view_get_model(brightnesstree);
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
@@ -3252,7 +3230,7 @@ void ExultStudio::init_shape_notebook(
 	set_visible("shinfo_warmth_box", !warminf.empty());
 	if (!warminf.empty()) {
 		GtkTreeView *warmtree = GTK_TREE_VIEW(
-		                            glade_xml_get_widget(app_xml, "shinfo_warmth_list"));
+		                            get_widget("shinfo_warmth_list"));
 		GtkTreeModel *model = gtk_tree_view_get_model(warmtree);
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
@@ -3288,7 +3266,7 @@ void ExultStudio::init_shape_notebook(
 	set_visible("shinfo_cntrules_box", !cntinf.empty());
 	if (!cntinf.empty()) {
 		GtkTreeView *cnttree = GTK_TREE_VIEW(
-		                           glade_xml_get_widget(app_xml, "shinfo_cntrules_list"));
+		                           get_widget("shinfo_cntrules_list"));
 		GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
@@ -3324,7 +3302,7 @@ void ExultStudio::init_shape_notebook(
 	set_visible("shinfo_frameflags_box", !frflaginf.empty());
 	if (!frflaginf.empty()) {
 		GtkTreeView *flagtree = GTK_TREE_VIEW(
-		                            glade_xml_get_widget(app_xml, "shinfo_frameflags_list"));
+		                            get_widget("shinfo_frameflags_list"));
 		GtkTreeModel *model = gtk_tree_view_get_model(flagtree);
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
@@ -3363,7 +3341,7 @@ void ExultStudio::init_shape_notebook(
 	set_visible("shinfo_frameusecode_box", !frucinf.empty());
 	if (!frucinf.empty()) {
 		GtkTreeView *uctree = GTK_TREE_VIEW(
-		                          glade_xml_get_widget(app_xml, "shinfo_frameusecode_list"));
+		                          get_widget("shinfo_frameusecode_list"));
 		GtkTreeModel *model = gtk_tree_view_get_model(uctree);
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
@@ -3413,7 +3391,7 @@ void ExultStudio::init_shape_notebook(
 	set_visible("shinfo_framenames_box", !nmvec.empty());
 	if (!nmvec.empty()) {
 		GtkTreeView *nametree = GTK_TREE_VIEW(
-		                            glade_xml_get_widget(app_xml, "shinfo_framenames_list"));
+		                            get_widget("shinfo_framenames_list"));
 		GtkTreeModel *model = gtk_tree_view_get_model(nametree);
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
@@ -3473,7 +3451,7 @@ void ExultStudio::init_shape_notebook(
 	set_visible("shinfo_objpaperdoll_box", !dollinf.empty());
 	if (!dollinf.empty()) {
 		GtkTreeView *dolltree = GTK_TREE_VIEW(
-		                            glade_xml_get_widget(app_xml, "shinfo_objpaperdoll_list"));
+		                            get_widget("shinfo_objpaperdoll_list"));
 		GtkTreeModel *model = gtk_tree_view_get_model(dolltree);
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
@@ -3704,7 +3682,7 @@ static inline void update_shape_vector(
 ) {
 	Functor update;
 	GtkTreeView *tree = GTK_TREE_VIEW(
-	                        glade_xml_get_widget(ExultStudio::get_instance()->get_xml(), treename));
+	                        ExultStudio::get_instance()->get_widget(treename));
 	GtkTreeModel *model = gtk_tree_view_get_model(tree);
 	GtkTreeIter iter;
 	if (gtk_tree_model_get_iter_first(model, &iter))
@@ -3758,8 +3736,8 @@ void ExultStudio::save_shape_notebook(
 	            get_spin("shinfo_ztiles"));
 	int spot = get_optmenu("shinfo_ready_spot");
 	static const unsigned char conv_spots[] = {
-		rhand, lhand, both_hands, rhand, amulet, cloak,
-		neck, rhand, lfinger, gloves, lrgloves, rhand,
+		rhand, lhand, both_hands, amulet, cloak,
+		neck, lfinger, gloves, lrgloves,
 		quiver, earrings, head, torso, backpack, belt,
 		legs, feet, ucont, triple_bolts
 	};
@@ -3767,9 +3745,9 @@ void ExultStudio::save_shape_notebook(
 	info.set_is_spell(get_toggle("shinfo_is_spell_check"));
 	// Some Exult stuff.
 	static const unsigned char alt_spots[] = {
-		invalid_spot, invalid_spot, rhand, lhand, invalid_spot,
-		neck, invalid_spot, belt, back_2h, back_shield, scabbard,
-		invalid_spot, backpack
+		invalid_spot, rhand, lhand,
+		neck, belt, back_2h, back_shield, scabbard,
+		backpack
 	};
 	info.set_alt_ready(alt_spots[get_optmenu("shinfo_altready1_spot")],
 	                   alt_spots[get_optmenu("shinfo_altready2_spot")]);
@@ -4187,7 +4165,7 @@ void ExultStudio::open_shape_window(
     Shape_info *info        // Info. if in main object shapes.
 ) {
 	if (!shapewin)          // First time?
-		shapewin = glade_xml_get_widget(app_xml, "shape_window");
+		shapewin = get_widget("shape_window");
 	// Ifile might have changed.
 	delete shape_draw;
 	shape_draw = nullptr;
@@ -4201,25 +4179,25 @@ void ExultStudio::open_shape_window(
 	Vga_file *ifile = file_info->get_ifile();
 	if (palbuf) {
 		shape_draw = new Shape_draw(ifile, palbuf.get(),
-		                            glade_xml_get_widget(app_xml, "shinfo_draw"));
+		                            get_widget("shinfo_draw"));
 //		shape_draw->enable_drop(Shape_shape_dropped, this);
 		body_draw = new Shape_draw(vgafile->get_ifile(), palbuf.get(),
-		                           glade_xml_get_widget(app_xml, "shinfo_body_draw"));
+		                           get_widget("shinfo_body_draw"));
 		body_draw->enable_drop(Body_shape_dropped, this);
 	}
 	if (gumpfile && palbuf) {
 		gump_draw = new Shape_draw(gumpfile->get_ifile(), palbuf.get(),
-		                           glade_xml_get_widget(app_xml, "shinfo_gump_draw"));
+		                           get_widget("shinfo_gump_draw"));
 		gump_draw->enable_drop(Gump_shape_dropped, this);
 	}
 	if (spritefile && palbuf) {
 		explosion_draw = new Shape_draw(spritefile->get_ifile(), palbuf.get(),
-		                                glade_xml_get_widget(app_xml, "shinfo_explosion_draw"));
+		                                get_widget("shinfo_explosion_draw"));
 		explosion_draw->enable_drop(Explosion_shape_dropped, this);
 	}
 	// Store ->'s.
 	gtk_object_set_user_data(GTK_OBJECT(shapewin), info);
-	gtk_object_set_data(GTK_OBJECT(shapewin), "file_info", file_info);
+	g_object_set_data(G_OBJECT(shapewin), "file_info", file_info);
 	// Shape/frame.
 	set_entry("shinfo_shape", shnum, false, false);
 	int nframes = ifile->get_num_frames(shnum);
@@ -4259,7 +4237,7 @@ void ExultStudio::open_shape_window(
 		set_spin("shinfo_explosion_sprite", 0,
 		         spritefile->get_ifile()->get_num_shapes() - 1);
 	GtkTreeView *hptree = GTK_TREE_VIEW(
-	                          glade_xml_get_widget(app_xml, "shinfo_effhps_list"));
+	                          get_widget("shinfo_effhps_list"));
 	gtk_signal_connect(GTK_OBJECT(hptree), "cursor_changed",
 	                   GTK_SIGNAL_FUNC(on_shinfo_effhps_list_cursor_changed),
 	                   nullptr);
@@ -4293,7 +4271,7 @@ void ExultStudio::open_shape_window(
 	}
 
 	GtkTreeView *brightnesstree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(app_xml, "shinfo_brightness_list"));
+	                            get_widget("shinfo_brightness_list"));
 	gtk_signal_connect(GTK_OBJECT(brightnesstree), "cursor_changed",
 	                   GTK_SIGNAL_FUNC(on_shinfo_brightness_list_cursor_changed),
 	                   nullptr);
@@ -4321,7 +4299,7 @@ void ExultStudio::open_shape_window(
 		gtk_tree_store_clear(store);
 	}
 	GtkTreeView *warmtree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(app_xml, "shinfo_warmth_list"));
+	                            get_widget("shinfo_warmth_list"));
 	gtk_signal_connect(GTK_OBJECT(warmtree), "cursor_changed",
 	                   GTK_SIGNAL_FUNC(on_shinfo_warmth_list_cursor_changed),
 	                   nullptr);
@@ -4349,7 +4327,7 @@ void ExultStudio::open_shape_window(
 		gtk_tree_store_clear(store);
 	}
 	GtkTreeView *dolltree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(app_xml, "shinfo_objpaperdoll_list"));
+	                            get_widget("shinfo_objpaperdoll_list"));
 	gtk_signal_connect(GTK_OBJECT(dolltree), "cursor_changed",
 	                   GTK_SIGNAL_FUNC(on_shinfo_objpaperdoll_list_cursor_changed),
 	                   nullptr);
@@ -4391,7 +4369,7 @@ void ExultStudio::open_shape_window(
 	}
 
 	GtkTreeView *cnttree = GTK_TREE_VIEW(
-	                           glade_xml_get_widget(app_xml, "shinfo_cntrules_list"));
+	                           get_widget("shinfo_cntrules_list"));
 	gtk_signal_connect(GTK_OBJECT(cnttree), "cursor_changed",
 	                   GTK_SIGNAL_FUNC(on_shinfo_cntrules_list_cursor_changed),
 	                   nullptr);
@@ -4420,7 +4398,7 @@ void ExultStudio::open_shape_window(
 	}
 
 	GtkTreeView *flagtree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(app_xml, "shinfo_frameflags_list"));
+	                            get_widget("shinfo_frameflags_list"));
 	gtk_signal_connect(GTK_OBJECT(flagtree), "cursor_changed",
 	                   GTK_SIGNAL_FUNC(on_shinfo_frameflags_list_cursor_changed),
 	                   nullptr);
@@ -4454,7 +4432,7 @@ void ExultStudio::open_shape_window(
 	}
 
 	GtkTreeView *ucfuntree = GTK_TREE_VIEW(
-	                             glade_xml_get_widget(app_xml, "shinfo_frameusecode_list"));
+	                             get_widget("shinfo_frameusecode_list"));
 	gtk_signal_connect(GTK_OBJECT(ucfuntree), "cursor_changed",
 	                   GTK_SIGNAL_FUNC(on_shinfo_frameusecode_list_cursor_changed),
 	                   nullptr);
@@ -4488,7 +4466,7 @@ void ExultStudio::open_shape_window(
 	}
 
 	GtkTreeView *nametree = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(app_xml, "shinfo_framenames_list"));
+	                            get_widget("shinfo_framenames_list"));
 	gtk_signal_connect(GTK_OBJECT(nametree), "cursor_changed",
 	                   GTK_SIGNAL_FUNC(on_shinfo_framenames_list_cursor_changed),
 	                   nullptr);
@@ -4536,7 +4514,7 @@ void ExultStudio::open_shape_window(
 		gtk_tree_store_clear(store);
 	}
 
-	GtkWidget *notebook = glade_xml_get_widget(app_xml, "shinfo_notebook");
+	GtkWidget *notebook = get_widget("shinfo_notebook");
 	if (info)
 		init_shape_notebook(*info, notebook, shnum, frnum);
 	else
@@ -4556,7 +4534,7 @@ void ExultStudio::save_shape_window(
 	Shape_info *info = static_cast<Shape_info *>(
 	                   gtk_object_get_user_data(GTK_OBJECT(shapewin)));
 	Shape_file_info *file_info = static_cast<Shape_file_info *>(
-	                             gtk_object_get_data(GTK_OBJECT(shapewin), "file_info"));
+	                             g_object_get_data(G_OBJECT(shapewin), "file_info"));
 	Vga_file *ifile = file_info->get_ifile();
 	if (info) {         // If 'shapes.vga', get name.
 		codepageStr locnm(get_text_entry("shinfo_name"));

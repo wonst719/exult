@@ -38,7 +38,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ignore_unused_variable_warning.h"
 
-//#include <glade/glade.h>
+#include <string>
+#include <vector>
 
 class Shape_group;
 class Shape_file_info;
@@ -141,8 +142,12 @@ public:
 // File-selector utility:
 // Callback for file-selector 'ok':
 using File_sel_okay_fun = void (*)(const char *, gpointer);
-GtkFileSelection *Create_file_selection(
+void Create_file_selection(
     const char *title,
+	const char *path,
+	const char *filtername,
+	const std::vector<std::string>& filters,
+	GtkFileChooserAction action,
     File_sel_okay_fun ok_handler,
     gpointer user_data
 );

@@ -153,18 +153,18 @@ C_EXPORT gint on_loc_draw_motion_notify_event(
  */
 
 Locator::Locator() {
-	GladeXML *app_xml = ExultStudio::get_instance()->get_xml();
-	win = glade_xml_get_widget(app_xml, "loc_window");
+	ExultStudio *studio = ExultStudio::get_instance();
+	win = studio->get_widget("loc_window");
 	gtk_object_set_user_data(GTK_OBJECT(win), this);
-	draw = glade_xml_get_widget(app_xml, "loc_draw");
+	draw = studio->get_widget("loc_draw");
 	// Indicate the events we want.
 	gtk_widget_set_events(draw, GDK_EXPOSURE_MASK |
 	                      GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
 	                      GDK_BUTTON1_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK);
 	// Set up scales.
-	GtkWidget *scale = glade_xml_get_widget(app_xml, "loc_hscale");
+	GtkWidget *scale = studio->get_widget("loc_hscale");
 	hadj = gtk_range_get_adjustment(GTK_RANGE(scale));
-	scale = glade_xml_get_widget(app_xml, "loc_vscale");
+	scale = studio->get_widget("loc_vscale");
 	vadj = gtk_range_get_adjustment(GTK_RANGE(scale));
 	hadj->upper = vadj->upper = c_num_chunks;
 	hadj->page_increment = vadj->page_increment = c_chunks_per_schunk;

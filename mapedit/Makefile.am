@@ -2,7 +2,7 @@ AM_CPPFLAGS = -I$(srcdir)/../headers -I$(srcdir)/.. -I$(srcdir)/../shapes \
 	-I$(srcdir)/../imagewin -I$(srcdir)/../conf -I$(srcdir)/../gamemgr \
 	-I$(srcdir)/../files -I$(srcdir)/../server  -I$(srcdir)/../usecode \
 	-I$(srcdir)/../shapes/shapeinf \
-	$(GLADE_CFLAGS) $(INCDIRS) $(WINDOWING_SYSTEM) $(DEBUG_FLAGS) $(CPPFLAGS) -DEXULT_DATADIR=\"$(EXULT_DATADIR)\"
+	$(GTK_CFLAGS) $(INCDIRS) $(WINDOWING_SYSTEM) $(DEBUG_FLAGS) $(CPPFLAGS) -DEXULT_DATADIR=\"$(EXULT_DATADIR)\"
 
 if GIMP_PLUGIN
 GIMP_PLUGINS=u7shp
@@ -70,10 +70,10 @@ exult_studio_LDADD = \
 	../server/libserver.la		\
 	../usecode/libusecode.la		\
 	../shapes/shapeinf/libshapeinf.la	\
-	-lpng $(FREETYPE2_LIBS) $(SYSLIBS) $(x_libraries) $(GLADE_LIBS) $(ZLIB_LIBS)
+	-lpng $(FREETYPE2_LIBS) $(SYSLIBS) $(x_libraries) $(GTK_LIBS) $(ZLIB_LIBS)
 
-exult_studio_CFLAGS = $(GLADE_CFLAGS)
-exult_studio_LDFLAGS = -export-dynamic		# For libglade 2.x
+exult_studio_CFLAGS = $(GTK_CFLAGS)
+exult_studio_LDFLAGS = -export-dynamic		# For Gtk+ 2.x
 
 mapeditdir = $(datadir)/exult
 

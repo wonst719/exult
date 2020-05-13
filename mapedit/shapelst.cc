@@ -1230,7 +1230,7 @@ void Shape_chooser::clear_editing_files(
  */
 
 void Shape_chooser::export_frame(
-    char *fname,
+    const char *fname,
     gpointer user_data
 ) {
 	Shape_chooser *ed = static_cast<Shape_chooser *>(user_data);
@@ -1252,7 +1252,7 @@ void Shape_chooser::export_frame(
  */
 
 void Shape_chooser::import_frame(
-    char *fname,
+    const char *fname,
     gpointer user_data
 ) {
 	Shape_chooser *ed = static_cast<Shape_chooser *>(user_data);
@@ -1274,7 +1274,7 @@ void Shape_chooser::import_frame(
  */
 
 void Shape_chooser::export_all_pngs(
-    char *fname,
+    const char *fname,
     int shnum
 ) {
 	for (int i = 0; i < ifile->get_num_frames(shnum); i++) {
@@ -1299,7 +1299,7 @@ void Shape_chooser::export_all_pngs(
 }
 
 void Shape_chooser::export_all_frames(
-    char *fname,
+    const char *fname,
     gpointer user_data
 ) {
 	Shape_chooser *ed = static_cast<Shape_chooser *>(user_data);
@@ -1308,7 +1308,7 @@ void Shape_chooser::export_all_frames(
 }
 
 void Shape_chooser::export_shape(
-    char *fname,
+    const char *fname,
     gpointer user_data
 ) {
 	Shape_chooser *ed = static_cast<Shape_chooser *>(user_data);
@@ -1322,7 +1322,7 @@ void Shape_chooser::export_shape(
  */
 
 void Shape_chooser::import_all_pngs(
-    char *fname,
+    const char *fname,
     int shnum
 ) {
 	char *fullname = new char[strlen(fname) + 30];
@@ -1380,7 +1380,7 @@ void Shape_chooser::import_all_pngs(
 }
 
 void Shape_chooser::import_all_frames(
-    char *fname,
+    const char *fname,
     gpointer user_data
 ) {
 	Shape_chooser *ed = static_cast<Shape_chooser *>(user_data);
@@ -1389,13 +1389,14 @@ void Shape_chooser::import_all_frames(
 	int shnum = ed->info[ed->selected].shapenum;
 	int len = strlen(fname);
 	// Ensure we have a valid file name.
-	if (fname[len - 4] == '.')
-		fname[len - 6] = 0;
-	ed->import_all_pngs(fname, shnum);
+	std::string file = fname;
+	if (file[len - 4] == '.')
+		file[len - 6] = 0;
+	ed->import_all_pngs(file.c_str(), shnum);
 }
 
 void Shape_chooser::import_shape(
-    char *fname,
+    const char *fname,
     gpointer user_data
 ) {
 	if (U7exists(fname)) {
@@ -1524,10 +1525,10 @@ C_EXPORT gboolean on_new_shape_font_color_draw_expose_event(
 	                    gtk_object_get_user_data(GTK_OBJECT(widget)));
 	guint32 color = ed->get_color(index);
 	GdkGC *gc = static_cast<GdkGC *>(
-	            gtk_object_get_data(GTK_OBJECT(widget), "color_gc"));
+	            g_object_get_data(G_OBJECT(widget), "color_gc"));
 	if (!gc) {
 		gc = gdk_gc_new(widget->window);
-		gtk_object_set_data(GTK_OBJECT(widget), "color_gc", gc);
+		g_object_set_data(G_OBJECT(widget), "color_gc", gc);
 	}
 	gdk_rgb_gc_set_foreground(gc, color);
 	gdk_draw_rectangle(widget->window, gc, TRUE, event->area.x,
@@ -1541,8 +1542,7 @@ C_EXPORT void on_new_shape_font_color_changed(
 	ignore_unused_variable_warning(button, user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	// Show new color.
-	GtkWidget *draw = glade_xml_get_widget(studio->get_xml(),
-	                                       "new_shape_font_color_draw");
+	GtkWidget *draw = studio->get_widget("new_shape_font_color_draw");
 	GdkRectangle area = {0, 0, draw->allocation.width,
 	                     draw->allocation.height
 	                    };
@@ -1576,14 +1576,11 @@ void Shape_chooser::from_font_toggled(
 		return;
 	studio->set_sensitive("new_shape_font_color", true);
 	studio->set_sensitive("new_shape_font_height", true);
-	GtkFileSelection *fsel = Create_file_selection(
-	                             "Choose font file", font_file_chosen, nullptr);
-	if (is_system_path_defined("<PATCH>")) {
-		// Default to a writable location.
-		string patch = get_system_path("<PATCH>/");
-		gtk_file_selection_set_filename(fsel, patch.c_str());
-	}
-	gtk_widget_show(GTK_WIDGET(fsel));
+	Create_file_selection("Choose font file",
+	                      "<PATCH>", "Fonts",
+	                      {"*.ttf", "*.ttc,", "*.otf", "*.otc","*.pcf", "*.fnt", "*.fon"},
+	                      GTK_FILE_CHOOSER_ACTION_OPEN,
+	                      font_file_chosen, nullptr);
 }
 
 /*
@@ -1593,13 +1590,12 @@ void Shape_chooser::from_font_toggled(
 void Shape_chooser::new_shape(
 ) {
 	ExultStudio *studio = ExultStudio::get_instance();
-	GladeXML *xml = studio->get_xml();
-	GtkWidget *win = glade_xml_get_widget(xml, "new_shape_window");
+	GtkWidget *win = studio->get_widget("new_shape_window");
 	gtk_window_set_modal(GTK_WINDOW(win), true);
 	gtk_object_set_user_data(GTK_OBJECT(win), this);
 	// Get current selection.
 	int shnum = selected >= 0 ? info[selected].shapenum : 0;
-	GtkWidget *spin = glade_xml_get_widget(xml, "new_shape_num");
+	GtkWidget *spin = studio->get_widget("new_shape_num");
 	GtkAdjustment *adj = gtk_spin_button_get_adjustment(
 	                         GTK_SPIN_BUTTON(spin));
 	adj->upper = c_max_shapes - 1;
@@ -1618,7 +1614,7 @@ void Shape_chooser::new_shape(
 			shstart = shnum;
 	}
 	gtk_adjustment_set_value(adj, shstart);
-	spin = glade_xml_get_widget(xml, "new_shape_nframes");
+	spin = studio->get_widget("new_shape_nframes");
 	adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(spin));
 	bool flat = IS_FLAT(shnum) && file_info == studio->get_vgafile();
 	if (flat)
@@ -1626,13 +1622,13 @@ void Shape_chooser::new_shape(
 	else
 		adj->upper = 255;
 	gtk_adjustment_changed(adj);
-	spin = glade_xml_get_widget(xml, "new_shape_font_height");
+	spin = studio->get_widget("new_shape_font_height");
 	studio->set_sensitive("new_shape_font_height", false);
 	adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(spin));
 	adj->lower = 4;
 	adj->upper = 64;
 	gtk_adjustment_changed(adj);
-	spin = glade_xml_get_widget(xml, "new_shape_font_color");
+	spin = studio->get_widget("new_shape_font_color");
 	studio->set_sensitive("new_shape_font_color", false);
 	adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(spin));
 	adj->lower = 0;
@@ -1644,8 +1640,7 @@ void Shape_chooser::new_shape(
 	studio->set_sensitive("new_shape_font", false);
 #endif
 	// Store our pointer in color drawer.
-	GtkWidget *draw = glade_xml_get_widget(xml,
-	                                       "new_shape_font_color_draw");
+	GtkWidget *draw = studio->get_widget("new_shape_font_color_draw");
 	gtk_object_set_user_data(GTK_OBJECT(draw), this);
 	gtk_widget_show(win);
 }
@@ -2034,15 +2029,14 @@ void Shape_chooser::on_shapes_popup_edtiles_activate(
 	if (ch->selected < 0)
 		return;         // Shouldn't happen.
 	ExultStudio *studio = ExultStudio::get_instance();
-	GladeXML *xml = studio->get_xml();
-	GtkWidget *win = glade_xml_get_widget(xml, "export_tiles_window");
+	GtkWidget *win = studio->get_widget("export_tiles_window");
 	gtk_window_set_modal(GTK_WINDOW(win), true);
 	gtk_object_set_user_data(GTK_OBJECT(win), ch);
 	// Get current selection.
 	int shnum = ch->info[ch->selected].shapenum;
 	Vga_file *ifile = ch->file_info->get_ifile();
 	int nframes = ifile->get_num_frames(shnum);
-	GtkWidget *spin = glade_xml_get_widget(xml, "export_tiles_count");
+	GtkWidget *spin = studio->get_widget("export_tiles_count");
 	GtkAdjustment *adj = gtk_spin_button_get_adjustment(
 	                         GTK_SPIN_BUTTON(spin));
 	adj->lower = 1;
@@ -2056,96 +2050,65 @@ static void on_shapes_popup_import(
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	GtkFileSelection *fsel = Create_file_selection(
-	                             "Import frame from a .png file",
-	                             reinterpret_cast<File_sel_okay_fun>(Shape_chooser::import_frame),
-	                             udata);
-	if (is_system_path_defined("<PATCH>")) {
-		// Default to a writable location.
-		string patch = get_system_path("<PATCH>/");
-		gtk_file_selection_set_filename(fsel, patch.c_str());
-	}
-	gtk_widget_show(GTK_WIDGET(fsel));
+	Create_file_selection("Import frame from a .png file",
+	                      "<PATCH>", "PNG Images",
+	                      {"*.png"}, GTK_FILE_CHOOSER_ACTION_OPEN,
+	                      Shape_chooser::import_frame,
+	                      udata);
 }
 static void on_shapes_popup_export(
     GtkMenuItem *item,
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	GtkFileSelection *fsel = Create_file_selection(
-	                             "Export frame to a .png file",
-	                             reinterpret_cast<File_sel_okay_fun>(Shape_chooser::export_frame),
-	                             udata);
-	if (is_system_path_defined("<PATCH>")) {
-		// Default to a writable location.
-		string patch = get_system_path("<PATCH>/");
-		gtk_file_selection_set_filename(fsel, patch.c_str());
-	}
-	gtk_widget_show(GTK_WIDGET(fsel));
+	Create_file_selection("Export frame to a .png file",
+	                      "<PATCH>", "PNG Images",
+	                      {"*.png"}, GTK_FILE_CHOOSER_ACTION_SAVE,
+	                      Shape_chooser::export_frame,
+	                      udata);
 }
 static void on_shapes_popup_export_all(
     GtkMenuItem *item,
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	GtkFileSelection *fsel = Create_file_selection(
-	                             "Choose the base .png file name for all frames",
-	                             reinterpret_cast<File_sel_okay_fun>(Shape_chooser::export_all_frames),
-	                             udata);
-	if (is_system_path_defined("<PATCH>")) {
-		// Default to a writable location.
-		string patch = get_system_path("<PATCH>/");
-		gtk_file_selection_set_filename(fsel, patch.c_str());
-	}
-	gtk_widget_show(GTK_WIDGET(fsel));
+	Create_file_selection("Choose the base .png file name for all frames",
+	                      "<PATCH>", nullptr, {}, GTK_FILE_CHOOSER_ACTION_SAVE,
+	                      Shape_chooser::export_all_frames,
+	                      udata);
 }
 static void on_shapes_popup_import_all(
     GtkMenuItem *item,
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	GtkFileSelection *fsel = Create_file_selection(
-	                             "Choose the one of the .png sprites to import",
-	                             reinterpret_cast<File_sel_okay_fun>(Shape_chooser::import_all_frames),
-	                             udata);
-	if (is_system_path_defined("<PATCH>")) {
-		// Default to a writable location.
-		string patch = get_system_path("<PATCH>/");
-		gtk_file_selection_set_filename(fsel, patch.c_str());
-	}
-	gtk_widget_show(GTK_WIDGET(fsel));
+	Create_file_selection("Choose the one of the .png sprites to import",
+	                      "<PATCH>", "PNG Images",
+	                      {"*.png"}, GTK_FILE_CHOOSER_ACTION_OPEN,
+	                      Shape_chooser::import_all_frames,
+	                      udata);
 }
 static void on_shapes_popup_export_shape(
     GtkMenuItem *item,
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	GtkFileSelection *fsel = Create_file_selection(
-	                             "Choose the shp file name",
-	                             reinterpret_cast<File_sel_okay_fun>(Shape_chooser::export_shape),
-	                             udata);
-	if (is_system_path_defined("<PATCH>")) {
-		// Default to a writable location.
-		string patch = get_system_path("<PATCH>/");
-		gtk_file_selection_set_filename(fsel, patch.c_str());
-	}
-	gtk_widget_show(GTK_WIDGET(fsel));
+	Create_file_selection("Choose the shp file name",
+	                      "<PATCH>", "Shape files",
+	                      {"*.shp"}, GTK_FILE_CHOOSER_ACTION_SAVE,
+	                      Shape_chooser::export_shape,
+	                      udata);
 }
 static void on_shapes_popup_import_shape(
     GtkMenuItem *item,
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	GtkFileSelection *fsel = Create_file_selection(
-	                             "Choose the shp file to import",
-	                             reinterpret_cast<File_sel_okay_fun>(Shape_chooser::import_shape),
-	                             udata);
-	if (is_system_path_defined("<PATCH>")) {
-		// Default to a writable location.
-		string patch = get_system_path("<PATCH>/");
-		gtk_file_selection_set_filename(fsel, patch.c_str());
-	}
-	gtk_widget_show(GTK_WIDGET(fsel));
+	Create_file_selection("Choose the shp file to import",
+	                      "<PATCH>", "Shape files",
+	                      {"*.shp"}, GTK_FILE_CHOOSER_ACTION_OPEN,
+	                      Shape_chooser::import_shape,
+	                      udata);
 }
 static void on_shapes_popup_new_frame(
     GtkMenuItem *item,

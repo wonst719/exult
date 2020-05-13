@@ -215,11 +215,11 @@ void ExultStudio::open_cont_window(
 #ifdef _WIN32
 		first_time = true;
 #endif
-		contwin = glade_xml_get_widget(app_xml, "cont_window");
+		contwin = get_widget("cont_window");
 		// Note: vgafile can't be null here.
 		if (palbuf) {
 			cont_draw = new Shape_draw(vgafile->get_ifile(), palbuf.get(),
-			                           glade_xml_get_widget(app_xml, "cont_draw"));
+			                           get_widget("cont_draw"));
 			cont_draw->enable_drop(cont_shape_dropped, this);
 		}
 	}
@@ -290,7 +290,7 @@ int ExultStudio::init_cont_window(
 	set_toggle("cont_invisible", invis);
 	set_toggle("cont_okay_to_take", can_take);
 	// Set limit on frame #.
-	GtkWidget *btn = glade_xml_get_widget(app_xml, "cont_frame");
+	GtkWidget *btn = get_widget("cont_frame");
 	if (btn) {
 		GtkAdjustment *adj = gtk_spin_button_get_adjustment(
 		                         GTK_SPIN_BUTTON(btn));

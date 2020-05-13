@@ -314,7 +314,7 @@ Shape_group *Shape_group_file::get_builtin(
 	    Shape_group::last_builtin_group - Shape_group::first_group;
 	if (menindex < grpdelta)
 		type = menindex + Shape_group::ammo_group;
-	else switch (menindex - (grpdelta + 1)) {
+	else switch (menindex - grpdelta) {
 		case 0:
 			type = Shape_info::unusable;
 			break;
@@ -517,7 +517,7 @@ void ExultStudio::setup_groups(
 		return;
 	}
 	GtkTreeView *tview = GTK_TREE_VIEW(
-	                         glade_xml_get_widget(app_xml, "group_list"));
+	                         get_widget("group_list"));
 	GtkTreeModel *oldmod = gtk_tree_view_get_model(tview);
 	GtkTreeStore *model;
 	gulong addsig = 0;
@@ -592,7 +592,7 @@ void ExultStudio::setup_group_controls(
 ) {
 	set_visible("groups_frame", true);
 	GtkTreeView *tview = GTK_TREE_VIEW(
-	                         glade_xml_get_widget(app_xml, "group_list"));
+	                         get_widget("group_list"));
 	GtkTreeSelection *list = gtk_tree_view_get_selection(tview);
 	if (list) {
 //		int row = static_cast<int>(list->data);
@@ -617,7 +617,7 @@ void ExultStudio::add_group(
 	if (!curfile)
 		return;
 	GtkTreeView *tview = GTK_TREE_VIEW(
-	                         glade_xml_get_widget(app_xml, "group_list"));
+	                         get_widget("group_list"));
 	GtkTreeStore *model = GTK_TREE_STORE(gtk_tree_view_get_model(tview));
 	const char *nm = get_text_entry("groups_new_name");
 	Shape_group_file *groups = curfile->get_groups();
@@ -639,7 +639,7 @@ void ExultStudio::del_group(
 	if (!curfile)
 		return;
 	GtkTreeView *tview = GTK_TREE_VIEW(
-	                         glade_xml_get_widget(app_xml, "group_list"));
+	                         get_widget("group_list"));
 	GtkTreeSelection *list = gtk_tree_view_get_selection(tview);
 	if (!list)
 		return;
@@ -663,7 +663,7 @@ void ExultStudio::del_group(
 	vector<GtkWindow *>::const_iterator it;
 	for (it = group_windows.begin(); it != group_windows.end(); ++it) {
 		Object_browser *chooser = static_cast<Object_browser *>(
-		                          gtk_object_get_data(GTK_OBJECT(*it), "browser"));
+		                          g_object_get_data(G_OBJECT(*it), "browser"));
 		if (chooser->get_group() == grp)
 			// A match?
 			toclose.push_back(*it);
@@ -719,8 +719,8 @@ C_EXPORT void
 on_group_up_clicked(GtkToggleButton *button,
                     gpointer     user_data) {
 	ignore_unused_variable_warning(user_data);
-	Object_browser *chooser = static_cast<Object_browser *>(gtk_object_get_data(
-	                              GTK_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(button))),
+	Object_browser *chooser = static_cast<Object_browser *>(g_object_get_data(
+	                              G_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(button))),
 	                              "browser"));
 	Shape_group *grp = chooser->get_group();
 	int i = chooser->get_selected();
@@ -733,8 +733,8 @@ C_EXPORT void
 on_group_down_clicked(GtkToggleButton *button,
                       gpointer     user_data) {
 	ignore_unused_variable_warning(user_data);
-	Object_browser *chooser = static_cast<Object_browser *>(gtk_object_get_data(
-	                              GTK_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(button))),
+	Object_browser *chooser = static_cast<Object_browser *>(g_object_get_data(
+	                              G_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(button))),
 	                              "browser"));
 	Shape_group *grp = chooser->get_group();
 	int i = chooser->get_selected();
@@ -747,8 +747,8 @@ C_EXPORT void
 on_group_shape_remove_clicked(GtkToggleButton *button,
                               gpointer     user_data) {
 	ignore_unused_variable_warning(user_data);
-	Object_browser *chooser = static_cast<Object_browser *>(gtk_object_get_data(
-	                              GTK_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(button))),
+	Object_browser *chooser = static_cast<Object_browser *>(g_object_get_data(
+	                              G_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(button))),
 	                              "browser"));
 	Shape_group *grp = chooser->get_group();
 	int i = chooser->get_selected();
@@ -765,7 +765,7 @@ on_group_shape_remove_clicked(GtkToggleButton *button,
 void ExultStudio::open_group_window(
 ) {
 	GtkTreeView *tview = GTK_TREE_VIEW(
-	                         glade_xml_get_widget(app_xml, "group_list"));
+	                         get_widget("group_list"));
 	GtkTreeSelection *list = gtk_tree_view_get_selection(tview);
 	if (!list || !curfile || !vgafile || !palbuf)
 		return;
@@ -788,12 +788,12 @@ void ExultStudio::open_builtin_group_window(
 	if (!curfile || !vgafile || !palbuf)
 		return;
 	Shape_group_file *groups = curfile->get_groups();
-	int index = get_optmenu("builtin_group");
-	GtkButton *btn = GTK_BUTTON(
-	                     glade_xml_get_widget(app_xml, "builtin_group"));
-	GtkLabel *label = GTK_LABEL(GTK_BIN(btn)->child);
-	Shape_group *grp = groups->get_builtin(index,
-	                                       gtk_label_get_text(label));
+	GtkComboBox *btn = GTK_COMBO_BOX(get_widget("builtin_group"));
+	assert(btn != nullptr);
+	int index = gtk_combo_box_get_active(btn);
+	gchar * label = gtk_combo_box_get_active_text(btn);
+	Shape_group *grp = groups->get_builtin(index, label);
+	g_free(label);
 	if (grp)
 		open_group_window(grp);
 }
@@ -805,22 +805,29 @@ void ExultStudio::open_builtin_group_window(
 void ExultStudio::open_group_window(
     Shape_group *grp
 ) {
-	GladeXML *xml = glade_xml_new(glade_path, "group_window", nullptr);
-	glade_xml_signal_autoconnect(xml);
-	GtkWidget *grpwin = glade_xml_get_widget(xml, "group_window");
+	GError* error = nullptr;
+	GtkBuilder *xml = gtk_builder_new();
+	const gchar *objects[] = {"group_window", nullptr};
+	if (!gtk_builder_add_objects_from_file(xml, glade_path, const_cast<gchar **>(objects), &error)) {
+		g_warning ("Couldn't load group window: %s", error->message);
+		g_error_free(error);
+		exit(1);
+	}
+	gtk_builder_connect_signals(xml, nullptr);
+	GtkWidget *grpwin = get_widget(xml, "group_window");
 	Object_browser *chooser = curfile->create_browser(vgafile, palbuf.get(), grp);
 	// Set xml as data on window.
-	gtk_object_set_data(GTK_OBJECT(grpwin), "xml", xml);
-	gtk_object_set_data(GTK_OBJECT(grpwin), "browser", chooser);
+	g_object_set_data(G_OBJECT(grpwin), "xml", xml);
+	g_object_set_data(G_OBJECT(grpwin), "browser", chooser);
 	// Set window title, name field.
 	string title("Exult Group:  ");
 	title += grp->get_name();
 	gtk_window_set_title(GTK_WINDOW(grpwin), title.c_str());
-	GtkWidget *field = glade_xml_get_widget(xml, "group_name");
+	GtkWidget *field = get_widget(xml, "group_name");
 	if (field)
 		gtk_entry_set_text(GTK_ENTRY(field), grp->get_name());
 	// Attach browser.
-	GtkWidget *browser_box = glade_xml_get_widget(xml, "group_shapes");
+	GtkWidget *browser_box = get_widget(xml, "group_shapes");
 	gtk_widget_show(browser_box);
 	gtk_box_pack_start(GTK_BOX(browser_box), chooser->get_widget(),
 	                   TRUE, TRUE, 0);
@@ -847,10 +854,10 @@ void ExultStudio::close_group_window(
 			break;
 		}
 	}
-	GladeXML *xml = static_cast<GladeXML *>(gtk_object_get_data(GTK_OBJECT(grpwin),
+	GtkBuilder *xml = static_cast<GtkBuilder *>(g_object_get_data(G_OBJECT(grpwin),
 	                "xml"));
-	Object_browser *chooser = static_cast<Object_browser *>(gtk_object_get_data(
-	                              GTK_OBJECT(grpwin), "browser"));
+	Object_browser *chooser = static_cast<Object_browser *>(g_object_get_data(
+	                              G_OBJECT(grpwin), "browser"));
 	delete chooser;
 	gtk_widget_destroy(grpwin);
 	g_object_unref(G_OBJECT(xml));
@@ -901,7 +908,7 @@ void ExultStudio::update_group_windows(
 	for (vector<GtkWindow *>::const_iterator it = group_windows.begin();
 	        it != group_windows.end(); ++it) {
 		Object_browser *chooser = static_cast<Object_browser *>(
-		                          gtk_object_get_data(GTK_OBJECT(*it), "browser"));
+		                          g_object_get_data(G_OBJECT(*it), "browser"));
 		if (!grp || chooser->get_group() == grp) {
 			// A match?
 			chooser->setup_info();

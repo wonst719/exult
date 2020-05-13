@@ -184,23 +184,21 @@ void ExultStudio::open_egg_window(
 	bool first_time = false;
 	if (!eggwin) {          // First time?
 		first_time = true;
-		eggwin = glade_xml_get_widget(app_xml, "egg_window");
+		eggwin = get_widget("egg_window");
 		if (vgafile && palbuf) {
 			egg_monster_draw = new Shape_draw(vgafile->get_ifile(),
 			                                  palbuf.get(),
-			                                  glade_xml_get_widget(app_xml, "egg_monster_draw"));
+			                                  get_widget("egg_monster_draw"));
 			egg_monster_draw->enable_drop(Egg_monster_dropped,
 			                              this);
 		}
 		egg_ctx = gtk_statusbar_get_context_id(
-		              GTK_STATUSBAR(glade_xml_get_widget(
-		                                app_xml, "egg_status")), "Egg Editor");
+		              GTK_STATUSBAR(get_widget("egg_status")), "Egg Editor");
 	}
 	// Init. egg address to null.
 	gtk_object_set_user_data(GTK_OBJECT(eggwin), nullptr);
 	// Make 'apply' sensitive.
-	gtk_widget_set_sensitive(glade_xml_get_widget(app_xml,
-	                         "egg_apply_btn"), true);
+	gtk_widget_set_sensitive(get_widget("egg_apply_btn"), true);
 	remove_statusbar("egg_status", egg_ctx, egg_status_id);
 	if (data) {
 		if (!init_egg_window(data, datalen))
@@ -271,7 +269,7 @@ int ExultStudio::init_egg_window(
 	}
 	// Store address with window.
 	gtk_object_set_user_data(GTK_OBJECT(eggwin), addr);
-	GtkWidget *notebook = glade_xml_get_widget(app_xml, "notebook1");
+	GtkWidget *notebook = get_widget("notebook1");
 	if (notebook)           // 1st is monster (1).
 		gtk_notebook_set_page(GTK_NOTEBOOK(notebook), type - 1);
 	set_spin("probability", probability);
@@ -399,7 +397,7 @@ int ExultStudio::save_egg_window(
 	int shape = -1;
 	int frame = -1; // For now.
 	int type = -1;
-	GtkWidget *notebook = glade_xml_get_widget(app_xml, "notebook1");
+	GtkWidget *notebook = get_widget("notebook1");
 	if (notebook)           // 1st is monster (1).
 		type = 1 + gtk_notebook_get_current_page(
 		           GTK_NOTEBOOK(notebook));
@@ -507,8 +505,7 @@ int ExultStudio::save_egg_window(
 		egg_status_id = set_statusbar("egg_status", egg_ctx,
 		                              "Click on map at place to insert egg");
 		// Make 'apply' insensitive.
-		gtk_widget_set_sensitive(glade_xml_get_widget(app_xml,
-		                         "egg_apply_btn"), false);
+		gtk_widget_set_sensitive(get_widget("egg_apply_btn"), false);
 		waiting_for_server = Egg_response;
 		return 1;       // Leave window open.
 	}

@@ -543,7 +543,6 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr), static_pat
 	self = this;
 	gtk_init(&argc, &argv);
 	gdk_rgb_init();
-	glade_init();
 #ifdef _WIN32
 	bool portable = false;
 #endif
@@ -610,16 +609,22 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr), static_pat
 		strcpy(path, ".");
 	strcat(path, "/exult_studio.glade");
 	// Load the Glade interface
-	app_xml = glade_xml_new(path, nullptr, nullptr);
+	GError* error = nullptr;
+	app_xml = gtk_builder_new();
+	if (!gtk_builder_add_from_file(app_xml, path, &error)) {
+		g_warning("Couldn't load builder file: %s", error->message);
+		g_error_free(error);
+		exit(1);
+	}
 	assert(app_xml);
-	app = glade_xml_get_widget(app_xml, "main_window");
+	app = get_widget("main_window");
 	assert(app);
 	glade_path = g_strdup(path);
-	mainnotebook = GTK_NOTEBOOK(glade_xml_get_widget(app_xml, "notebook3"));
+	mainnotebook = GTK_NOTEBOOK(get_widget("notebook3"));
 
 	// More setting up...
 	// Connect signals automagically.
-	glade_xml_signal_autoconnect(app_xml);
+	gtk_builder_connect_signals(app_xml, nullptr);
 	int w;
 	int h;           // Get main window dims.
 	config->value("config/estudio/main/width", w, 0);
@@ -666,7 +671,7 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr), static_pat
 	//   doesn't seem to do it right.
 	GSList *group = nullptr;
 	for (size_t i = 0; i < array_size(mode_names); i++) {
-		GtkWidget *item = glade_xml_get_widget(app_xml, mode_names[i]);
+		GtkWidget *item = get_widget(mode_names[i]);
 		gtk_radio_menu_item_set_group(GTK_RADIO_MENU_ITEM(item),
 		                              group);
 		group = gtk_radio_menu_item_group(GTK_RADIO_MENU_ITEM(item));
@@ -796,9 +801,8 @@ bool ExultStudio::has_focus(
  *  Set browser area.  NOTE:  obj may be null.
  */
 void ExultStudio::set_browser(const char *name, Object_browser *obj) {
-	GtkWidget *browser_frame = glade_xml_get_widget(app_xml,
-	                           "browser_frame");
-	GtkWidget *browser_box = glade_xml_get_widget(app_xml, "browser_box");
+	GtkWidget *browser_frame = get_widget("browser_frame");
+	GtkWidget *browser_box = get_widget("browser_box");
 //+++Now owned by Shape_file_info.  delete browser;
 	if (browser)
 		gtk_container_remove(GTK_CONTAINER(browser_box),
@@ -937,15 +941,9 @@ void ExultStudio::create_new_game(
 void ExultStudio::new_game() {
 	if (!okay_to_close())       // Okay to close prev. game?
 		return;
-	GtkFileSelection *fsel = Create_file_selection(
-	                             "Choose new game directory",
-	                             on_choose_new_game_dir, this);
-	if (is_system_path_defined("<SAVEHOME>")) {
-		// Default to a writable location.
-		string patch = get_system_path("<SAVEHOME>/");
-		gtk_file_selection_set_filename(fsel, patch.c_str());
-	}
-	gtk_widget_show(GTK_WIDGET(fsel));
+	Create_file_selection("Choose new game directory",
+	                      "<SAVEHOME>", nullptr, {}, GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER,
+	                      on_choose_new_game_dir, this);
 }
 
 C_EXPORT void on_gameselect_ok_clicked(
@@ -954,10 +952,8 @@ C_EXPORT void on_gameselect_ok_clicked(
 ) {
 	ignore_unused_variable_warning(button, user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
-	GladeXML *app_xml = studio->get_xml();
 	// Get selected game:
-	GtkTreeView *treeview = GTK_TREE_VIEW(
-	                            glade_xml_get_widget(app_xml, "gameselect_gamelist"));
+	GtkTreeView *treeview = GTK_TREE_VIEW(studio->get_widget("gameselect_gamelist"));
 	GtkTreePath *path;
 	GtkTreeViewColumn *col;
 	gtk_tree_view_get_cursor(treeview, &path, &col);
@@ -974,7 +970,7 @@ C_EXPORT void on_gameselect_ok_clicked(
 	ModManager *game = gamemanager->get_game(gamenum);
 	string modtitle;
 
-	GtkWidget *frame = glade_xml_get_widget(app_xml, "modinfo_frame");
+	GtkWidget *frame = studio->get_widget("modinfo_frame");
 	if (GTK_WIDGET_VISIBLE(frame)) {
 		// Creating a new mod
 		modtitle = studio->get_text_entry("gameselect_cfgname");
@@ -982,7 +978,7 @@ C_EXPORT void on_gameselect_ok_clicked(
 			return;
 		//Get the mod's Exult menu string.
 		GtkTextBuffer *buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(
-		                          glade_xml_get_widget(app_xml, "gameselect_menustring")));
+		                          studio->get_widget("gameselect_menustring")));
 		GtkTextIter startpos;
 		GtkTextIter endpos;
 		gtk_text_buffer_get_bounds(buff, &startpos, &endpos);
@@ -1014,7 +1010,7 @@ C_EXPORT void on_gameselect_ok_clicked(
 		game->add_mod(modtitle, cfgfile);
 	} else {
 		// Selecting a game/mod to load
-		treeview = GTK_TREE_VIEW(glade_xml_get_widget(app_xml, "gameselect_modlist"));
+		treeview = GTK_TREE_VIEW(studio->get_widget("gameselect_modlist"));
 		gtk_tree_view_get_cursor(treeview, &path, &col);
 
 		modnum = -1;
@@ -1031,7 +1027,7 @@ C_EXPORT void on_gameselect_ok_clicked(
 	}
 
 	studio->set_game_path(game->get_cfgname(), modtitle);
-	GtkWidget *win = glade_xml_get_widget(app_xml, "game_selection");
+	GtkWidget *win = studio->get_widget("game_selection");
 	gtk_widget_hide(win);
 }
 
@@ -1056,11 +1052,11 @@ C_EXPORT void on_gameselect_gamelist_cursor_changed(
 	gtk_tree_model_get(gamemodel, &gameiter, 0, &text, 1, &gamenum, -1);
 	g_free(text);
 
-	GladeXML *app_xml = ExultStudio::get_instance()->get_xml();
-	GtkWidget *win = glade_xml_get_widget(app_xml, "game_selection");
+	ExultStudio *studio = ExultStudio::get_instance();
+	GtkWidget *win = studio->get_widget("game_selection");
 	gtk_window_set_modal(GTK_WINDOW(win), true);
 
-	GtkWidget *mod_tree = glade_xml_get_widget(app_xml, "gameselect_modlist");
+	GtkWidget *mod_tree = studio->get_widget("gameselect_modlist");
 
 	GtkTreeModel *oldmod = gtk_tree_view_get_model(
 	                           GTK_TREE_VIEW(mod_tree));
@@ -1138,18 +1134,18 @@ void fill_game_tree(GtkTreeView *treeview, int curr_game) {
 void ExultStudio::open_game_dialog(
     bool createmod
 ) {
-	GtkWidget *win = glade_xml_get_widget(app_xml, "game_selection");
+	GtkWidget *win = get_widget("game_selection");
 	gtk_window_set_modal(GTK_WINDOW(win), true);
 
 	gtk_signal_connect(
-	    GTK_OBJECT(glade_xml_get_widget(app_xml, "gameselect_ok")),
+	    GTK_OBJECT(get_widget("gameselect_ok")),
 	    "clicked",
 	    GTK_SIGNAL_FUNC(on_gameselect_ok_clicked),
 	    nullptr);
 
 	GtkWidget *dlg_list[2] = {
-		glade_xml_get_widget(app_xml, "gameselect_gamelist"),
-		glade_xml_get_widget(app_xml, "gameselect_modlist")
+		get_widget("gameselect_gamelist"),
+		get_widget("gameselect_modlist")
 	};
 	GtkTreeStore *model;
 
@@ -1281,10 +1277,10 @@ void ExultStudio::set_game_path(const string& gamename, const string& modname) {
 	vector<GtkWindow *>::const_iterator it;
 	for (it = group_windows.begin(); it != group_windows.end(); ++it) {
 		GtkWidget *grpwin = GTK_WIDGET(*it);
-		GladeXML *xml = static_cast<GladeXML *>(gtk_object_get_data(GTK_OBJECT(grpwin),
+		GtkBuilder *xml = static_cast<GtkBuilder *>(g_object_get_data(G_OBJECT(grpwin),
 		                "xml"));
-		Object_browser *chooser = static_cast<Object_browser *>(gtk_object_get_data(
-		                              GTK_OBJECT(grpwin), "browser"));
+		Object_browser *chooser = static_cast<Object_browser *>(g_object_get_data(
+		                              G_OBJECT(grpwin), "browser"));
 		delete chooser;
 		gtk_widget_destroy(grpwin);
 		g_object_unref(G_OBJECT(xml));
@@ -1436,7 +1432,7 @@ void add_to_tree(GtkTreeStore *model, const char *folderName,
  */
 
 void ExultStudio::setup_file_list() {
-	GtkWidget *file_list = glade_xml_get_widget(app_xml, "file_list");
+	GtkWidget *file_list = get_widget("file_list");
 
 	/* create tree store */
 	GtkTreeModel *oldmod = gtk_tree_view_get_model(
@@ -1678,8 +1674,7 @@ void ExultStudio::set_edit_terrain(
 	} else              // Disable "Hide lift".
 		set_sensitive("hide_lift_spin", false);
 	// Set edit-mode to paint.
-	GtkWidget *mitem = glade_xml_get_widget(app_xml,
-	                                        terrain ? "paint1" : "move1");
+	GtkWidget *mitem = get_widget(terrain ? "paint1" : "move1");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mitem), TRUE);
 }
 
@@ -1714,7 +1709,7 @@ void ExultStudio::show_unused_shapes(
     int datalen         // #bytes.
 ) {
 	int nshapes = datalen * 8;
-	GtkTextView *text = GTK_TEXT_VIEW(glade_xml_get_widget(app_xml, "msg_text"));
+	GtkTextView *text = GTK_TEXT_VIEW(get_widget("msg_text"));
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(text);
 	gtk_text_buffer_set_text(buffer, "", 0);    // Clear out old text
 	set_visible("msg_win", TRUE);   // Show message window.
@@ -1760,18 +1755,13 @@ Shape_file_info *ExultStudio::open_shape_file(
 void ExultStudio::new_shape_file(
     bool single         // Not a FLEX file.
 ) {
-	GtkFileSelection *fsel = Create_file_selection(
-	                             single ? "Write new .shp file" : "Write new .vga file",
-	                             reinterpret_cast<File_sel_okay_fun>(create_shape_file),
-	                             reinterpret_cast<gpointer>(single));
-//	This doesn't work very well in GTK 1.2.  Try again later.
-//	gtk_file_selection_complete(fsel, single ? "*.shp" : "*.vga");
-	if (is_system_path_defined("<PATCH>")) {
-		// Default to 'patch'.
-		string patch = get_system_path("<PATCH>/");
-		gtk_file_selection_set_filename(fsel, patch.c_str());
-	}
-	gtk_widget_show(GTK_WIDGET(fsel));
+	Create_file_selection(single ? "Write new .shp file" : "Write new .vga file",
+	                      "<PATCH>",
+						  single ? "Shape files" : "VGA files",
+	                      {single ? "*.shp" : "*.vga"},
+	                      GTK_FILE_CHOOSER_ACTION_SAVE,
+	                      create_shape_file,
+	                      reinterpret_cast<gpointer>(uintptr_t(single)));
 }
 
 /*
@@ -1779,7 +1769,7 @@ void ExultStudio::new_shape_file(
  */
 
 void ExultStudio::create_shape_file(
-    char *pathname,         // Full path.
+    const char *pathname,         // Full path.
     gpointer udata          // 1 if NOT a FLEX file.
 ) {
 	bool oneshape = reinterpret_cast<uintptr>(udata) != 0;
@@ -1811,7 +1801,7 @@ void ExultStudio::create_shape_file(
 bool ExultStudio::get_toggle(
     const char *name
 ) {
-	GtkWidget *btn = glade_xml_get_widget(app_xml, name);
+	GtkWidget *btn = get_widget(name);
 	assert(btn);
 	return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 }
@@ -1825,7 +1815,7 @@ void ExultStudio::set_toggle(
     bool val,
     bool sensitive
 ) {
-	GtkWidget *btn = glade_xml_get_widget(app_xml, name);
+	GtkWidget *btn = get_widget(name);
 	if (btn) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(btn), val);
 		gtk_widget_set_sensitive(btn, sensitive);
@@ -1867,11 +1857,9 @@ void ExultStudio::set_bit_toggles(
 int ExultStudio::get_optmenu(
     const char *name
 ) {
-	GtkWidget *btn = glade_xml_get_widget(app_xml, name);
+	GtkWidget *btn = get_widget(name);
 	assert(btn);
-	GtkWidget *menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(btn));
-	GtkWidget *active = gtk_menu_get_active(GTK_MENU(menu));
-	return g_list_index(GTK_MENU_SHELL(menu)->children, active);
+	return gtk_combo_box_get_active(GTK_COMBO_BOX(btn));
 }
 
 /*
@@ -1883,9 +1871,9 @@ void ExultStudio::set_optmenu(
     int val,
     bool sensitive
 ) {
-	GtkWidget *btn = glade_xml_get_widget(app_xml, name);
+	GtkWidget *btn = get_widget(name);
 	if (btn) {
-		gtk_option_menu_set_history(GTK_OPTION_MENU(btn), val);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(btn), val);
 		gtk_widget_set_sensitive(btn, sensitive);
 	}
 }
@@ -1897,7 +1885,7 @@ void ExultStudio::set_optmenu(
 int ExultStudio::get_spin(
     const char *name
 ) {
-	GtkWidget *btn = glade_xml_get_widget(app_xml, name);
+	GtkWidget *btn = get_widget(name);
 	assert(btn);
 	return gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(btn));
 }
@@ -1911,7 +1899,7 @@ void ExultStudio::set_spin(
     int val,
     bool sensitive
 ) {
-	GtkWidget *btn = glade_xml_get_widget(app_xml, name);
+	GtkWidget *btn = get_widget(name);
 	if (btn) {
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(btn), val);
 		gtk_widget_set_sensitive(btn, sensitive);
@@ -1926,7 +1914,7 @@ void ExultStudio::set_spin(
     const char *name,
     int low, int high       // Range.
 ) {
-	GtkWidget *btn = glade_xml_get_widget(app_xml, name);
+	GtkWidget *btn = get_widget(name);
 	if (btn) {
 		gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON(btn),
 		                               GTK_ADJUSTMENT(
@@ -1943,7 +1931,7 @@ void ExultStudio::set_spin(
     int val,
     int low, int high       // Range.
 ) {
-	GtkWidget *btn = glade_xml_get_widget(app_xml, name);
+	GtkWidget *btn = get_widget(name);
 	if (btn) {
 		gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON(btn),
 		                               GTK_ADJUSTMENT(
@@ -1961,7 +1949,7 @@ void ExultStudio::set_spin(
 int ExultStudio::get_num_entry(
     const char *name
 ) {
-	GtkWidget *field = glade_xml_get_widget(app_xml, name);
+	GtkWidget *field = get_widget(name);
 	return get_num_entry(field, 0);
 }
 
@@ -1992,7 +1980,7 @@ int ExultStudio::get_num_entry(
 const gchar *ExultStudio::get_text_entry(
     const char *name
 ) {
-	GtkWidget *field = glade_xml_get_widget(app_xml, name);
+	GtkWidget *field = get_widget(name);
 	if (!field)
 		return nullptr;
 	return gtk_entry_get_text(GTK_ENTRY(field));
@@ -2008,7 +1996,7 @@ void ExultStudio::set_entry(
     bool hex,
     bool sensitive
 ) {
-	GtkWidget *field = glade_xml_get_widget(app_xml, name);
+	GtkWidget *field = get_widget(name);
 	if (field) {
 		char *txt = hex ? g_strdup_printf("0x%x", val)
 		            : g_strdup_printf("%d", val);
@@ -2027,7 +2015,7 @@ void ExultStudio::set_entry(
     const char *val,
     bool sensitive
 ) {
-	GtkWidget *field = glade_xml_get_widget(app_xml, name);
+	GtkWidget *field = get_widget(name);
 	if (field) {
 		gtk_entry_set_text(GTK_ENTRY(field), val);
 		gtk_widget_set_sensitive(field, sensitive);
@@ -2044,7 +2032,7 @@ guint ExultStudio::set_statusbar(
     int context,
     const char *msg
 ) {
-	GtkWidget *sbar = glade_xml_get_widget(app_xml, name);
+	GtkWidget *sbar = get_widget(name);
 	if (sbar)
 		return gtk_statusbar_push(GTK_STATUSBAR(sbar), context, msg);
 	else
@@ -2062,7 +2050,7 @@ void ExultStudio::remove_statusbar(
 ) {
 	if (msgid == 0)
 		return;
-	GtkWidget *sbar = glade_xml_get_widget(app_xml, name);
+	GtkWidget *sbar = get_widget(name);
 	if (sbar)
 		return gtk_statusbar_remove(GTK_STATUSBAR(sbar), context, msgid);
 }
@@ -2075,7 +2063,7 @@ void ExultStudio::set_button(
     const char *name,
     const char *text
 ) {
-	GtkWidget *btn = glade_xml_get_widget(app_xml, name);
+	GtkWidget *btn = get_widget(name);
 	GtkLabel *label = GTK_LABEL(GTK_BIN(btn)->child);
 	gtk_label_set_text(label, text);
 }
@@ -2088,7 +2076,7 @@ void ExultStudio::set_visible(
     const char *name,
     bool vis
 ) {
-	GtkWidget *widg = glade_xml_get_widget(app_xml, name);
+	GtkWidget *widg = get_widget(name);
 	if (widg) {
 		if (vis)
 			gtk_widget_show(widg);
@@ -2105,7 +2093,7 @@ void ExultStudio::set_sensitive(
     const char *name,
     bool tf
 ) {
-	GtkWidget *widg = glade_xml_get_widget(app_xml, name);
+	GtkWidget *widg = get_widget(name);
 	if (widg)
 		gtk_widget_set_sensitive(widg, tf);
 }
@@ -2154,15 +2142,14 @@ int ExultStudio::prompt(
 		              &logo_mask, nullptr, const_cast<gchar **>(logo_xpm));
 		GtkWidget *pix = gtk_pixmap_new(logo_pixmap, logo_mask);
 		gtk_widget_show(pix);
-		GtkWidget *hbox = glade_xml_get_widget(app_xml,
-		                                       "prompt3_hbox");
+		GtkWidget *hbox = get_widget("prompt3_hbox");
 		gtk_box_pack_start(GTK_BOX(hbox), pix, FALSE, FALSE, 12);
 		// Make logo show to left.
 		gtk_box_reorder_child(GTK_BOX(hbox), pix, 0);
 	}
-	GtkWidget *dlg = glade_xml_get_widget(app_xml, "prompt3_dialog");
+	GtkWidget *dlg = get_widget("prompt3_dialog");
 	gtk_label_set_text(
-	    GTK_LABEL(glade_xml_get_widget(app_xml, "prompt3_label")),
+	    GTK_LABEL(get_widget("prompt3_label")),
 	    msg);
 	set_button("prompt3_yes", choice0);
 	if (choice1) {
@@ -2321,8 +2308,7 @@ void ExultStudio::background_color_okay(
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->background_color = (r << 16) + (g << 8) + b;
 	// Show new color.
-	GtkWidget *backgrnd = glade_xml_get_widget(studio->app_xml,
-	                      "prefs_background");
+	GtkWidget *backgrnd = studio->get_widget("prefs_background");
 	gtk_object_set_user_data(GTK_OBJECT(backgrnd),
 	                         reinterpret_cast<gpointer>(uintptr(studio->background_color)));
 	GdkRectangle area = {0, 0, backgrnd->allocation.width,
@@ -2368,10 +2354,10 @@ C_EXPORT gboolean on_prefs_background_expose_event(
 	ignore_unused_variable_warning(data);
 	guint32 color = static_cast<guint32>(reinterpret_cast<uintptr>(gtk_object_get_user_data(GTK_OBJECT(widget))));
 	GdkGC *gc = static_cast<GdkGC *>(
-	            gtk_object_get_data(GTK_OBJECT(widget), "color_gc"));
+	            g_object_get_data(G_OBJECT(widget), "color_gc"));
 	if (!gc) {
 		gc = gdk_gc_new(widget->window);
-		gtk_object_set_data(GTK_OBJECT(widget), "color_gc", gc);
+		g_object_set_data(G_OBJECT(widget), "color_gc", gc);
 	}
 	gdk_rgb_gc_set_foreground(gc, color);
 	gdk_draw_rectangle(widget->window, gc, TRUE, event->area.x,
@@ -2398,11 +2384,10 @@ void ExultStudio::open_preferences(
 ) {
 	set_entry("prefs_image_editor", image_editor ? image_editor : "");
 	set_entry("prefs_default_game", default_game ? default_game : "");
-	GtkWidget *backgrnd = glade_xml_get_widget(app_xml,
-	                      "prefs_background");
+	GtkWidget *backgrnd = get_widget("prefs_background");
 	gtk_object_set_user_data(GTK_OBJECT(backgrnd),
 	                         reinterpret_cast<gpointer>(uintptr(background_color)));
-	GtkWidget *win = glade_xml_get_widget(app_xml, "prefs_window");
+	GtkWidget *win = get_widget("prefs_window");
 	gtk_widget_show(win);
 }
 
@@ -2420,8 +2405,7 @@ void ExultStudio::save_preferences(
 	g_free(default_game);
 	default_game = g_strdup(text);
 	config->set("config/estudio/default_game", default_game, true);
-	GtkWidget *backgrnd = glade_xml_get_widget(app_xml,
-	                      "prefs_background");
+	GtkWidget *backgrnd = get_widget("prefs_background");
 	background_color = reinterpret_cast<uintptr>(gtk_object_get_user_data(
 	                       GTK_OBJECT(backgrnd)));
 	config->set("config/estudio/background_color", background_color, true);
@@ -2703,8 +2687,7 @@ void ExultStudio::info_received(
 	set_toggle("tile_grid_button", grid);
 	if (edmode >= 0 &&
 	        unsigned(edmode) < array_size(mode_names)) {
-		GtkWidget *mitem = glade_xml_get_widget(app_xml,
-		                                        mode_names[edmode]);
+		GtkWidget *mitem = get_widget(mode_names[edmode]);
 
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mitem),
 		                               TRUE);
@@ -2825,7 +2808,7 @@ C_EXPORT void on_gameinfo_apply_clicked(
 	const char *enc = Get_Encoding(studio->get_optmenu("gameinfo_charset"));
 
 	GtkTextBuffer *buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(
-	                          glade_xml_get_widget(studio->get_xml(), "gameinfo_menustring")));
+	                          studio->get_widget("gameinfo_menustring")));
 	GtkTextIter startpos;
 	GtkTextIter endpos;
 	gtk_text_buffer_get_bounds(buff, &startpos, &endpos);
@@ -2852,7 +2835,7 @@ C_EXPORT void on_gameinfo_apply_clicked(
 	if (ismod)
 		delete cfg;
 
-	GtkWidget *win = glade_xml_get_widget(studio->get_xml(), "game_information");
+	GtkWidget *win = studio->get_widget("game_information");
 	gtk_widget_hide(win);
 }
 
@@ -2893,7 +2876,7 @@ void ExultStudio::show_charset(
 
 	utf8Str codechars(charset, enc);
 	GtkTextBuffer *buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(
-	                          glade_xml_get_widget(app_xml, "gameinfo_codepage_display")));
+	                          get_widget("gameinfo_codepage_display")));
 	gtk_text_buffer_set_text(buff, codechars, -1);
 }
 
@@ -2904,18 +2887,18 @@ void ExultStudio::show_charset(
 void ExultStudio::set_game_information(
 ) {
 	if (!gameinfowin) {
-		GtkWidget *win = glade_xml_get_widget(app_xml, "game_information");
+		GtkWidget *win = get_widget("game_information");
 		gtk_window_set_modal(GTK_WINDOW(win), true);
 		gameinfowin = win;
 
 		gtk_signal_connect(
-		    GTK_OBJECT(glade_xml_get_widget(app_xml, "gameinfo_apply")),
+		    GTK_OBJECT(get_widget("gameinfo_apply")),
 		    "clicked",
 		    GTK_SIGNAL_FUNC(on_gameinfo_apply_clicked),
 		    nullptr);
 
 		gtk_signal_connect(
-		    GTK_OBJECT(glade_xml_get_widget(app_xml, "gameinfo_charset")),
+		    GTK_OBJECT(get_widget("gameinfo_charset")),
 		    "clicked",
 		    GTK_SIGNAL_FUNC(on_gameinfo_charset_changed),
 		    nullptr);
@@ -2930,7 +2913,7 @@ void ExultStudio::set_game_information(
 
 	BaseGameInfo *gameinfo = get_game();
 	GtkTextBuffer *buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(
-	                          glade_xml_get_widget(app_xml, "gameinfo_menustring")));
+	                          get_widget("gameinfo_menustring")));
 	// Titles need to be displayable in Exult menu, hence should not
 	// have any extra characters.
 	utf8Str title(gameinfo->get_menu_string().c_str(), "CP437");
@@ -2977,7 +2960,7 @@ void convertFromUTF8::convert(gchar *&_convstr, const char *str, const char *enc
 	// But for now, we only take UTF-8 strings from GTK.
 	if (error->code == G_CONVERT_ERROR_NO_CONVERSION) {
 		// Can't convert between chosen code page and UTF-8.
-		// GLib from Glade/GTK+ for Windows may fail here for some ISO charsets.
+		// GLib from GTK+ for Windows may fail here for some ISO charsets.
 		CONV_ERROR("UTF-8", enc);
 		ExultStudio *studio = ExultStudio::get_instance();
 		studio->prompt("Failed to convert from UTF-8 to selected codepage.\n"

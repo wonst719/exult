@@ -143,27 +143,46 @@ void File_selector_ok(
  *  Create a modal file selector.
  */
 
-GtkFileSelection *Create_file_selection(
+void Create_file_selection(
     const char *title,
+	const char *path,
+	const char *filtername,
+	const std::vector<std::string>& filters,
+	GtkFileChooserAction action,
     File_sel_okay_fun ok_handler,
     gpointer user_data
 ) {
-	GtkFileSelection *fsel = GTK_FILE_SELECTION(gtk_file_selection_new(
-	                             title));
+	const char *stock_accept = (action == GTK_FILE_CHOOSER_ACTION_OPEN) ? GTK_STOCK_OPEN : GTK_STOCK_SAVE;
+	GtkFileChooser *fsel = GTK_FILE_CHOOSER(gtk_file_chooser_dialog_new(
+	                             title, nullptr, action,
+	                             GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+	                             stock_accept, GTK_RESPONSE_ACCEPT,
+	                             nullptr));
 	gtk_window_set_modal(GTK_WINDOW(fsel), true);
-	gtk_object_set_user_data(GTK_OBJECT(fsel),
-							reinterpret_cast<void *>(
-	                        	reinterpret_cast<uintptr_t>(ok_handler)));
-	gtk_signal_connect(GTK_OBJECT(fsel->ok_button), "clicked",
-	                   GTK_SIGNAL_FUNC(File_selector_ok), user_data);
-	// Destroy when done.
-	gtk_signal_connect_object(GTK_OBJECT(fsel->ok_button), "clicked",
-	                          GTK_SIGNAL_FUNC(gtk_widget_destroy),
-	                          GTK_OBJECT(fsel));
-	gtk_signal_connect_object(GTK_OBJECT(fsel->cancel_button), "clicked",
-	                          GTK_SIGNAL_FUNC(gtk_widget_destroy),
-	                          GTK_OBJECT(fsel));
-	return fsel;
+	if (action == GTK_FILE_CHOOSER_ACTION_SAVE) {
+		gtk_file_chooser_set_do_overwrite_confirmation(fsel, TRUE);
+	}
+	if (path != nullptr && is_system_path_defined(path)) {
+		// Default to a writable location.
+		std::string startdir = get_system_path(path);
+		gtk_file_chooser_set_current_folder(fsel, startdir.c_str());
+	}
+	if (!filters.empty()) {
+		GtkFileFilter *gfilt = gtk_file_filter_new();
+		for (const auto& filter : filters) {
+			gtk_file_filter_add_pattern(gfilt, filter.c_str());
+		}
+		if (filtername != nullptr) {
+			gtk_file_filter_set_name(gfilt, filtername);
+		}
+		gtk_file_chooser_add_filter(fsel, gfilt);
+	}
+	if (gtk_dialog_run(GTK_DIALOG(fsel)) == GTK_RESPONSE_ACCEPT) {
+		char *filename = gtk_file_chooser_get_filename(fsel);
+		ok_handler(filename, user_data);
+		g_free (filename);
+	}
+	gtk_widget_destroy(GTK_WIDGET(fsel));
 }
 
 /*

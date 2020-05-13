@@ -283,13 +283,13 @@ else
 fi
 
 # ---------------------------------------------------------------------
-# libglade (for ES)
+# Gtk (for ES)
 # ---------------------------------------------------------------------
 
 if test "x$PKG_CONFIG" != "x"; then
-	PKG_CHECK_MODULES(GLADE, libglade-2.0 >= 2.0, have_glade=yes, have_glade=no)
+	PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.24, have_gtk=yes, have_gtk=no)
 else
-	have_glade=no
+	have_gtk=no
 fi
 
 # ---------------------------------------------------------------------
@@ -893,9 +893,9 @@ AC_ARG_ENABLE(exult-studio, AS_HELP_STRING([--enable-exult-studio], [Build Exult
 AC_MSG_CHECKING([whether to build Exult Studio])
 if test x$enable_exult_studio = xyes; then
 	AC_MSG_RESULT(yes)
-	if test x$have_glade = xno; then
-		echo "Umm, but we don't have any libglade stuff."
-		echo "Try again, either with libglade, or with --disable-exult-studio"
+	if test x$have_gtk = xno; then
+		echo "Umm, but we don't have any Gtk+ stuff."
+		echo "Try again, either with Gtk-2.22 or newer, or with --disable-exult-studio"
 		exit 1
 	fi
 	AM_CONDITIONAL(BUILD_STUDIO, true)
@@ -1108,10 +1108,9 @@ echo
 echo Exult v$VERSION
 echo
 echo SDL ....................... : `$SDL_CONFIG --version`
-if test x$have_glade = xyes; then
+if test x$have_gtk = xyes; then
 echo GLIB ...................... : `$PKG_CONFIG --modversion glib-2.0`
 echo GTK+ ...................... : `$PKG_CONFIG --modversion gtk+-2.0`
-echo libGlade .................. : `$PKG_CONFIG --modversion libglade-2.0`
 fi
 if test x$have_gnomeui = xyes; then
 echo libGnomeui................. : `$PKG_CONFIG --modversion libgnomeui-2.0`

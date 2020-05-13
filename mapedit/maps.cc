@@ -104,7 +104,7 @@ C_EXPORT void on_newmap_activate(
 }
 void ExultStudio::new_map_dialog(
 ) {
-	GtkWidget *win = glade_xml_get_widget(app_xml, "newmap_dialog");
+	GtkWidget *win = get_widget("newmap_dialog");
 	gtk_window_set_modal(GTK_WINDOW(win), true);
 	int highest = Find_highest_map();
 	set_spin("newmap_num", highest + 1, 1, 100);
@@ -149,8 +149,7 @@ C_EXPORT void on_newmap_ok_clicked(
 	char fname[128];
 	char sname[128];
 	ExultStudio *studio = ExultStudio::get_instance();
-	GtkWidget *win = glade_xml_get_widget(studio->get_xml(),
-	                                      "newmap_dialog");
+	GtkWidget *win = studio->get_widget("newmap_dialog");
 	int num = studio->get_spin("newmap_num");
 
 	if (U7exists(Get_mapped_name("<PATCH>/", num, fname)) ||
@@ -196,7 +195,7 @@ C_EXPORT void on_newmap_ok_clicked(
 void ExultStudio::setup_maps_list(
 ) {
 	GtkWidget *maps = gtk_menu_item_get_submenu(
-	                      GTK_MENU_ITEM(glade_xml_get_widget(app_xml, "map1")));
+	                      GTK_MENU_ITEM(get_widget("map1")));
 	GList *items = gtk_container_get_children(GTK_CONTAINER(maps));
 	GList *each = g_list_last(items);
 	GSList *group = nullptr;
