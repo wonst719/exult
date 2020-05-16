@@ -224,7 +224,7 @@ class Frames_actor_action : public Actor_action {
     bool use_actor;
 public:
 	Frames_actor_action(signed char *f, int c, int spd = 200, Game_object *o = nullptr);
-	Frames_actor_action(char f, int spd = 200, Game_object *o = nullptr);
+	Frames_actor_action(signed char f, int spd = 200, Game_object *o = nullptr);
 	~Frames_actor_action() override {
 		delete [] frames;
 	}

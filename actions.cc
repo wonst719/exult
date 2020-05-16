@@ -754,7 +754,7 @@ Frames_actor_action::Frames_actor_action(
  */
 
 Frames_actor_action::Frames_actor_action(
-    char f,             // Frames.  -1 means don't change.
+    signed char f,             // Frames.  -1 means don't change.
     int spd,            // Frame delay in 1/1000 secs.
     Game_object *o
 ) : cnt(1), index(0), speed(spd), obj(weak_from_obj(o)) {
