@@ -1,7 +1,8 @@
 language: cpp
-
+os:
+  - linux
+  - osx
 dist: xenial
-sudo: required
 
 cache:
   directories:
@@ -44,7 +45,7 @@ addons:
       - timidity
       - libgimp2.0-dev
 
-matrix:
+jobs:
   include:
     ##########################################################################
     # Coverity with GCC on Linux
@@ -87,7 +88,8 @@ matrix:
       env: MATRIX_EVAL="export CXX=clang++ && export CC=clang" EXTRA_OPT="" DO_COVERITY=0
       addons:
         apt:
-          sources: llvm-toolchain-xenial-7
+          sources:
+            - llvm-toolchain-xenial-7
           packages:
             - *common_depends
             - clang-7
