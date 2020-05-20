@@ -151,6 +151,18 @@ int usecode_trace = 0;      // Do we trace Usecode-instructions?
 // 0 = no, 1 = short, 2 = long
 bool combat_trace = false; // show combat messages?
 
+// Joystick-axis configuration.
+//
+// All values are normalized to -1 to 1, 0 being centered and either
+// 1 or -1 being fully-extended along a single axis.
+//
+// Dead-zone is applied to each axis, X and Y, on the game's 2d plane.
+//
+// "Length" is calculated with both X and Y axes, using Pythagorean Theorem.
+float joy_axis_dead_zone = 0.25f;	// all axis readings below this are ignored
+float joy_axis_length_move_medium = 0.60f;	// below this, move slow; equal or above this, move medium-speed
+float joy_axis_length_move_fast = 0.90f;	// equal or above this, move fast
+
 // Save game compression level
 int save_compression = 1;
 bool ignore_crc = false;
@@ -1329,8 +1341,12 @@ static void Handle_event(
 			// The input-event only carries one axis, and each thumb-stick
 			// has two axes.  Both axes' values are needed in order to
 			// call start_actor.
-			Sint16 axis_x = SDL_GameControllerGetAxis(input_device, SDL_CONTROLLER_AXIS_LEFTX);
-			Sint16 axis_y = SDL_GameControllerGetAxis(input_device, SDL_CONTROLLER_AXIS_LEFTY);
+			float joy_axis_x = \
+				SDL_GameControllerGetAxis(input_device, SDL_CONTROLLER_AXIS_LEFTX)
+				/ static_cast<float>(SDL_JOYSTICK_AXIS_MAX);
+			float joy_axis_y = \
+				SDL_GameControllerGetAxis(input_device, SDL_CONTROLLER_AXIS_LEFTY)
+				/ static_cast<float>(SDL_JOYSTICK_AXIS_MAX);
 
 			// Many analog game-controllers report non-zero axis values,
 			// even when the controller isn't moving.  These non-zero
@@ -1341,21 +1357,32 @@ static void Handle_event(
 			// to unwanted movements, axis-values that are small will
 			// be ignored.  This is sometimes referred to as a
 			// "dead zone".
-			const int axis_dead_zone = 8000;
-			if (abs(axis_x) <= axis_dead_zone) {
-				axis_x = 0;
+			if (joy_axis_dead_zone >= std::fabs(joy_axis_x)) {
+				joy_axis_x = 0;
 			}
-			if (abs(axis_y) <= axis_dead_zone) {
-				axis_y = 0;
+			if (joy_axis_dead_zone >= std::fabs(joy_axis_y)) {
+				joy_axis_y = 0;
 			}
 
-			// printf("controller-motion: %6d,%6d  (dead_zone:%d)\n",
-			// 	axis_x, axis_y, axis_dead_zone);
+			// Pick a player's speed-factor, depending on how much the input-stick
+			// is being pushed in a direction.
+			const float joy_axis_length = std::sqrt(
+				(joy_axis_x * joy_axis_x) + (joy_axis_y * joy_axis_y)
+			);
+			int speed_factor = Mouse::fast_speed_factor;
+			if (joy_axis_length < 0.60f) {
+				speed_factor = Mouse::slow_speed_factor;
+			} else if (joy_axis_length < 0.90f) {
+				speed_factor = Mouse::medium_speed_factor;
+			}
+
+			// printf("joy axis move: %f (X=%f Y=%f) --> player speed_factor=%d\n",
+			// 	joy_axis_length, joy_axis_x, joy_axis_y, speed_factor);
 
 			// Depending on axis values, we're either going to start moving,
 			// restarting moving (which looks the same as starting, to us),
 			// or stopping.
-			if (axis_x == 0 && axis_y == 0) {
+			if (joy_axis_x == 0 && joy_axis_y == 0) {
 				// Both axes are zero, so we'll stop.
 				gwin->stop_actor();
 			} else {
@@ -1364,14 +1391,13 @@ static void Handle_event(
 				// Declare a position to aim for, in window coordinates, relative
 				// to the center of the window (where the player is).
 				const float aim_distance = 50.f;
-				const int aim_dx = static_cast<int>(std::lround((aim_distance * axis_x) / SDL_JOYSTICK_AXIS_MAX));
-				const int aim_dy = static_cast<int>(std::lround((aim_distance * axis_y) / SDL_JOYSTICK_AXIS_MAX));
+				const int aim_dx = static_cast<int>(std::lround(aim_distance * joy_axis_x));
+				const int aim_dy = static_cast<int>(std::lround(aim_distance * joy_axis_y));
 				const int aim_x = (gwin->get_width() / 2) + aim_dx;
 				const int aim_y = (gwin->get_height() / 2) + aim_dy;
 
-				// Declare a player speed.  For now, just use a fixed speed.
-				// TODO: implement variable movement speeds when using a game controller
-				const int speed = 200 * gwin->get_std_delay() / Mouse::fast_speed_factor;
+				// Calculate the player speed
+				const int speed = 200 * gwin->get_std_delay() / speed_factor;
 
 				// [re]start moving
 				gwin->start_actor(aim_x, aim_y, speed);
