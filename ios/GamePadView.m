@@ -26,6 +26,25 @@ if ((x) > 1.0) { \
 		self.backgroundColor = [UIColor clearColor];
 		minDistance = MAX(10, frame.size.width/2 * 0.16);
 		fourWay = NO;
+
+#if SDL_VERSION_ATLEAST(2,0,13)
+		int vjoy_index = SDL_JoystickAttachVirtual(
+			SDL_JOYSTICK_TYPE_GAMECONTROLLER,
+			SDL_CONTROLLER_AXIS_MAX,
+			SDL_CONTROLLER_BUTTON_MAX,
+			0
+		);
+		if (vjoy_index < 0) {
+			printf("SDL_JoystickAttachVirtual failed: %s\n", SDL_GetError());
+		} else {
+			vjoy_controller = SDL_GameControllerOpen(vjoy_index);
+			if (!vjoy_controller) {
+				printf("SDL_GameControllerOpen failed for virtual joystick: %s\n", SDL_GetError());
+				SDL_JoystickDetachVirtual(vjoy_index);
+			}
+		}
+		// printf("VJOY INIT, controller=%p\n", vjoy_controller);
+#endif
 	}
 	return self;
 }
@@ -56,6 +75,23 @@ if ((x) > 1.0) { \
 }
 
 - (void)dealloc {
+#if SDL_VERSION_ATLEAST(2,0,13)
+	if (vjoy_controller) {
+		const SDL_JoystickID vjoy_controller_id = SDL_JoystickInstanceID(
+			SDL_GameControllerGetJoystick(vjoy_controller)
+		);
+		SDL_GameControllerClose(vjoy_controller);
+		for (int i = 0, n = SDL_NumJoysticks(); i < n; ++i) {
+			const SDL_JoystickID current_id = SDL_JoystickGetDeviceInstanceID(i);
+			if (current_id == vjoy_controller_id) {
+				// printf("detach virtual at id:%d, index:%d\n", current_id, i);
+				SDL_JoystickDetachVirtual(i);
+				break;
+			}
+		}
+	}
+#endif
+
 	[backgroundImage release];
 	[images release];
 	[super dealloc];
@@ -173,21 +209,115 @@ if ((x) > 1.0) { \
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+	// UITouch *touch = [touches anyObject];
+	// CGPoint pt = [touch locationInView:self];
+	// [self updateCurrentDirectionFromPoint:pt];
+
 	UITouch *touch = [touches anyObject];
-	CGPoint pt = [touch locationInView:self];
-	[self updateCurrentDirectionFromPoint:pt];
+	// printf("touchesBegan, %p\n", touch);
+
+#if SDL_VERSION_ATLEAST(2,0,13)
+	if (!vjoy_is_active && touch != nil) {
+		vjoy_input_source = touch;
+		vjoy_center = vjoy_current = [touch locationInView:self];
+		vjoy_is_active = true;
+		SDL_JoystickSetVirtualAxis(
+			SDL_GameControllerGetJoystick(vjoy_controller),
+			SDL_CONTROLLER_AXIS_LEFTX,
+			0
+		);
+		SDL_JoystickSetVirtualAxis(
+			SDL_GameControllerGetJoystick(vjoy_controller),
+			SDL_CONTROLLER_AXIS_LEFTY,
+			0
+		);
+		// printf("VJOY START\n");
+	}
+#endif
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	UITouch *touch = [touches anyObject];
-	CGPoint pt = [touch locationInView:self];
-	[self updateCurrentDirectionFromPoint:pt];
+	// UITouch *touch = [touches anyObject];
+	// CGPoint pt = [touch locationInView:self];
+	// [self updateCurrentDirectionFromPoint:pt];
+
+	UITouch * touch = nil;
+	for (UITouch * t in touches) {
+		if (t == vjoy_input_source) {
+			touch = t;
+			break;
+		}
+	}
+
+	// printf("touchesMoved, vjoy_input_source:%p, touch:%p\n", vjoy_input_source, touch);
+
+#if SDL_VERSION_ATLEAST(2,0,13)
+	if (vjoy_is_active && touch != nil) {
+		vjoy_current = [touch locationInView:self];
+		float dx = vjoy_current.x - vjoy_center.x;
+		float dy = vjoy_current.y - vjoy_center.y;
+
+		// Move the vjoy's center if it's outside of its radius
+		float dlength = sqrt((dx * dx) + (dy * dy));
+		if (dlength > vjoy_radius) {
+			vjoy_center.x = vjoy_current.x - (dx * (vjoy_radius / dlength));
+			vjoy_center.y = vjoy_current.y - (dy * (vjoy_radius / dlength));
+			dx = vjoy_current.x - vjoy_center.x;
+			dy = vjoy_current.y - vjoy_center.y;
+		}
+
+		// Update vjoy state
+		const Sint16 joy_axis_x_raw = (Sint16)((dx / vjoy_radius) * SDL_JOYSTICK_AXIS_MAX);
+		SDL_JoystickSetVirtualAxis(
+			SDL_GameControllerGetJoystick(vjoy_controller),
+			SDL_CONTROLLER_AXIS_LEFTX,
+			joy_axis_x_raw
+		);
+		const Sint16 joy_axis_y_raw = (Sint16)((dy / vjoy_radius) * SDL_JOYSTICK_AXIS_MAX);
+		SDL_JoystickSetVirtualAxis(
+			SDL_GameControllerGetJoystick(vjoy_controller),
+			SDL_CONTROLLER_AXIS_LEFTY,
+			joy_axis_y_raw
+		);
+		// printf("VJOY MOVE: %d, %d\n", (int)joy_axis_x_raw, (int)joy_axis_y_raw);
+	}
+#endif
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	[self setCurrentDirection:DPadDirectionNone];
+	// [self setCurrentDirection:DPadDirectionNone];
+
+	UITouch * touch = nil;
+	for (UITouch * t in touches) {
+		if (t == vjoy_input_source) {
+			touch = t;
+			break;
+		}
+	}
+
+	// printf("touchesEnded, vjoy_input_source:%p, touch:%p\n", vjoy_input_source, touch);
+
+#if SDL_VERSION_ATLEAST(2,0,13)
+	if (vjoy_is_active && touch != nil) {
+		// Reset vjoy position to zero
+		SDL_JoystickSetVirtualAxis(
+			SDL_GameControllerGetJoystick(vjoy_controller),
+			SDL_CONTROLLER_AXIS_LEFTX,
+			0
+		);
+		SDL_JoystickSetVirtualAxis(
+			SDL_GameControllerGetJoystick(vjoy_controller),
+			SDL_CONTROLLER_AXIS_LEFTY,
+			0
+		);
+
+		// Mark vjoy as inactive
+		vjoy_is_active = false;
+		// printf("VJOY STOP\n");
+	}
+#endif
 }
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event

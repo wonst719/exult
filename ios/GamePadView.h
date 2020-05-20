@@ -40,6 +40,9 @@ typedef enum
 	DPadDirectionRightDown = 9
 } DPadDirection;
 
+
+const float vjoy_radius = 80.f;  // max-radius of vjoy
+
 @interface DPadView : UIView
 {
 	DPadDirection currentDirection;
@@ -48,6 +51,14 @@ typedef enum
 	NSArray *images;
 	BOOL fourWay;
 	id<KeyInputDelegate> keyInput;
+
+	bool vjoy_is_active; 		// true when the vjoy is active
+	CGPoint vjoy_center;     	// center of the vjoy
+	CGPoint vjoy_current;     	// current position of the vjoy
+#if SDL_VERSION_ATLEAST(2,0,13)
+	SDL_GameController * vjoy_controller; // the vjoy's SDL_GameController
+#endif
+	UITouch * __weak vjoy_input_source;	// where vjoy input is actively coming from
 }
 
 @property (nonatomic, retain) NSArray *images;
