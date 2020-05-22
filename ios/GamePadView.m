@@ -21,7 +21,7 @@ if ((x) > 1.0) { \
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor clearColor];
-        self.backgroundImage = [UIImage imageNamed:@"joypad-glass.png"];
+		self.backgroundImage = [UIImage imageNamed:@"joypad-glass.png"];
 
 #if SDL_VERSION_ATLEAST(2,0,13)
 		int vjoy_index = SDL_JoystickAttachVirtual(
@@ -39,7 +39,7 @@ if ((x) > 1.0) { \
 				SDL_JoystickDetachVirtual(vjoy_index);
 			}
 		}
-        [self reset];
+		[self reset];
 		// printf("VJOY INIT, controller=%p\n", vjoy_controller);
 #endif
 	}
@@ -50,7 +50,7 @@ if ((x) > 1.0) { \
 {
 	if (backgroundImage) {
 		[backgroundImage drawInRect:rect];
-    }
+	}
 }
 
 - (void)dealloc {
@@ -79,42 +79,42 @@ if ((x) > 1.0) { \
 - (void)reset
 {
 	vjoy_is_active = false;
-    SDL_JoystickSetVirtualAxis(
-        SDL_GameControllerGetJoystick(vjoy_controller),
-        SDL_CONTROLLER_AXIS_LEFTX,
-        0
-    );
-    SDL_JoystickSetVirtualAxis(
-        SDL_GameControllerGetJoystick(vjoy_controller),
-        SDL_CONTROLLER_AXIS_LEFTY,
-        0
-    );
+	SDL_JoystickSetVirtualAxis(
+		SDL_GameControllerGetJoystick(vjoy_controller),
+		SDL_CONTROLLER_AXIS_LEFTX,
+		0
+	);
+	SDL_JoystickSetVirtualAxis(
+		SDL_GameControllerGetJoystick(vjoy_controller),
+		SDL_CONTROLLER_AXIS_LEFTY,
+		0
+	);
 	vjoy_center = vjoy_current = CGPointMake(0,0);
 	vjoy_input_source = nil;
-    [self updateViewTransform];
+	[self updateViewTransform];
 }
 
 - (void)updateViewTransform
 {
-    if (!vjoy_is_active) {
-    	self.transform = CGAffineTransformIdentity;
+	if (!vjoy_is_active) {
+		self.transform = CGAffineTransformIdentity;
 //        printf("updateViewTransform: reset to identity\n");
-    } else {
-        
-        // Calculate the position of vjoy_center within this view's
-        // parent/super-view.  This requires first resetting this view's
-        // UIKit 'transform' to an untransformed state, as UIView's
-        // method, 'convertPoint:toView:', will apply any existing
-        // transform.
-        self.transform = CGAffineTransformIdentity;
-        CGPoint vjoy_center_in_parent_view = [self convertPoint:vjoy_center toView:self.superview];
-        const CGPoint translation = CGPointMake(
-            vjoy_center_in_parent_view.x - self.center.x,
-            vjoy_center_in_parent_view.y - self.center.y
-        );
-        self.transform = CGAffineTransformMakeTranslation(translation.x, translation.y);
-    }
-    [self setNeedsDisplay];
+	} else {
+		
+		// Calculate the position of vjoy_center within this view's
+		// parent/super-view.  This requires first resetting this view's
+		// UIKit 'transform' to an untransformed state, as UIView's
+		// method, 'convertPoint:toView:', will apply any existing
+		// transform.
+		self.transform = CGAffineTransformIdentity;
+		CGPoint vjoy_center_in_parent_view = [self convertPoint:vjoy_center toView:self.superview];
+		const CGPoint translation = CGPointMake(
+			vjoy_center_in_parent_view.x - self.center.x,
+			vjoy_center_in_parent_view.y - self.center.y
+		);
+		self.transform = CGAffineTransformMakeTranslation(translation.x, translation.y);
+	}
+	[self setNeedsDisplay];
 }
 
 
@@ -138,7 +138,7 @@ if ((x) > 1.0) { \
 			SDL_CONTROLLER_AXIS_LEFTY,
 			0
 		);
-        [self updateViewTransform];
+		[self updateViewTransform];
 		// printf("VJOY START\n");
 	}
 #endif
@@ -149,14 +149,14 @@ if ((x) > 1.0) { \
 //    printf("touchesMoved, vjoy_input_source:%p, touch:%p\n", vjoy_input_source, touch);
 
 #if SDL_VERSION_ATLEAST(2,0,13)
-    UITouch * __strong current_input_source = vjoy_input_source;
+	UITouch * __strong current_input_source = vjoy_input_source;
 	if (vjoy_is_active && [touches containsObject:current_input_source]) {
 
-        // Calculate new vjoy_current, but first, reset this view's
-        // UIKit-transform, lest the call to UITouch's 'locationInView:'
-        // method reports incorrect values (due to a previously-applied
-        // transform).
-        self.transform = CGAffineTransformIdentity;
+		// Calculate new vjoy_current, but first, reset this view's
+		// UIKit-transform, lest the call to UITouch's 'locationInView:'
+		// method reports incorrect values (due to a previously-applied
+		// transform).
+		self.transform = CGAffineTransformIdentity;
 		vjoy_current = [current_input_source locationInView:self];
 
 		float dx = vjoy_current.x - vjoy_center.x;
@@ -185,9 +185,9 @@ if ((x) > 1.0) { \
 			joy_axis_y_raw
 		);
 
-        // Update visuals
-        [self updateViewTransform];
-        
+		// Update visuals
+		[self updateViewTransform];
+		
 		// printf("VJOY MOVE: %d, %d\n", (int)joy_axis_x_raw, (int)joy_axis_y_raw);
 	}
 #endif
@@ -198,9 +198,9 @@ if ((x) > 1.0) { \
 	// printf("touchesEnded, vjoy_input_source:%p, touch:%p\n", vjoy_input_source, touch);
 
 #if SDL_VERSION_ATLEAST(2,0,13)
-    if ([touches containsObject:vjoy_input_source]) {
+	if ([touches containsObject:vjoy_input_source]) {
 		// Mark vjoy as inactive
-        [self reset];
+		[self reset];
 	}
 #endif
 }
@@ -312,8 +312,8 @@ if ((x) > 1.0) { \
 					(rect.size.height-size.height)/2,
 					size.width, size.height);
 		[color setFill];
-		[title drawInRect:rc withAttributes:@{NSFontAttributeName:fnt,
-		                                      NSForegroundColorAttributeName: color}];
+		[title drawInRect:rc withAttributes:@{NSFontAttributeName:fnt, 
+											  NSForegroundColorAttributeName: color}];
 	}
 }
 
