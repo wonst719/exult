@@ -15,17 +15,13 @@ if ((x) > 1.0) { \
 
 /** DPadView */
 @implementation DPadView
-@synthesize currentDirection;
 @synthesize backgroundImage;
 @synthesize images;
-@synthesize keyInput;
-@synthesize fourWay;
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor clearColor];
-		minDistance = MAX(10, frame.size.width/2 * 0.16);
-		fourWay = NO;
+        self.backgroundImage = [UIImage imageNamed:@"joypad-glass.png"];
 
 #if SDL_VERSION_ATLEAST(2,0,13)
 		int vjoy_index = SDL_JoystickAttachVirtual(
@@ -43,35 +39,18 @@ if ((x) > 1.0) { \
 				SDL_JoystickDetachVirtual(vjoy_index);
 			}
 		}
+        [self reset];
 		// printf("VJOY INIT, controller=%p\n", vjoy_controller);
 #endif
 	}
 	return self;
 }
 
-- (UIImage*)imageForDirection:(DPadDirection)dir
-{
-	switch (dir) {
-	case DPadDirectionNone      : return [images objectAtIndex:0];
-	case DPadDirectionRight     : return [images objectAtIndex:1];
-	case DPadDirectionRightUp   : return [images objectAtIndex:2];
-	case DPadDirectionUp        : return [images objectAtIndex:3];
-	case DPadDirectionLeftUp    : return [images objectAtIndex:4];
-	case DPadDirectionLeft      : return [images objectAtIndex:5];
-	case DPadDirectionLeftDown  : return [images objectAtIndex:6];
-	case DPadDirectionDown      : return [images objectAtIndex:7];
-	case DPadDirectionRightDown : return [images objectAtIndex:8];
-	default                     : return nil;
-	}
-}
-
 - (void)drawRect:(CGRect)rect
 {
-	UIImage *image;
-	if (backgroundImage)
+	if (backgroundImage) {
 		[backgroundImage drawInRect:rect];
-	if ((image = [self imageForDirection:currentDirection]))
-		[image drawInRect:rect];
+    }
 }
 
 - (void)dealloc {
@@ -97,122 +76,50 @@ if ((x) > 1.0) { \
 	[super dealloc];
 }
 
-- (DPadDirection)directionOfPoint:(CGPoint)pt
+- (void)reset
 {
-	static DPadDirection eight_way_map[] = {
-		DPadDirectionLeft,  DPadDirectionLeftDown,  DPadDirectionLeftDown,  DPadDirectionDown, 
-		DPadDirectionDown,  DPadDirectionRightDown, DPadDirectionRightDown, DPadDirectionRight,
-		DPadDirectionRight, DPadDirectionRightUp,   DPadDirectionRightUp,   DPadDirectionUp,
-		DPadDirectionUp,    DPadDirectionLeftUp,    DPadDirectionLeftUp,    DPadDirectionLeft
-	};
-	static DPadDirection four_way_map[] = {
-		DPadDirectionLeft,  DPadDirectionLeft,  DPadDirectionDown,  DPadDirectionDown, 
-		DPadDirectionDown,  DPadDirectionDown,  DPadDirectionRight, DPadDirectionRight,
-		DPadDirectionRight, DPadDirectionRight, DPadDirectionUp,    DPadDirectionUp,
-		DPadDirectionUp,    DPadDirectionUp,    DPadDirectionLeft,  DPadDirectionLeft
-	};
-
-	CGPoint ptCenter = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
-	double angle = atan2(ptCenter.y - pt.y, pt.x - ptCenter.x);
-	int index = (unsigned)((angle+M_PI) / (M_PI/8)) % 16;
-	return fourWay ? four_way_map[index] : eight_way_map[index];
+	vjoy_is_active = false;
+    SDL_JoystickSetVirtualAxis(
+        SDL_GameControllerGetJoystick(vjoy_controller),
+        SDL_CONTROLLER_AXIS_LEFTX,
+        0
+    );
+    SDL_JoystickSetVirtualAxis(
+        SDL_GameControllerGetJoystick(vjoy_controller),
+        SDL_CONTROLLER_AXIS_LEFTY,
+        0
+    );
+	vjoy_center = vjoy_current = CGPointMake(0,0);
+	vjoy_input_source = nil;
+    [self updateViewTransform];
 }
 
-- (void)sendKey:(int)code pressed:(BOOL)pressed
+- (void)updateViewTransform
 {
-	if (keyInput) {
-		if (pressed) {
-			[keyInput keydown:code];
-		} else {
-			[keyInput keyup:code];
-		}
-	}
+    if (!vjoy_is_active) {
+    	self.transform = CGAffineTransformIdentity;
+//        printf("updateViewTransform: reset to identity\n");
+    } else {
+        
+        // Calculate the position of vjoy_center within this view's
+        // parent/super-view.  This requires first resetting this view's
+        // UIKit 'transform' to an untransformed state, as UIView's
+        // method, 'convertPoint:toView:', will apply any existing
+        // transform.
+        self.transform = CGAffineTransformIdentity;
+        CGPoint vjoy_center_in_parent_view = [self convertPoint:vjoy_center toView:self.superview];
+        const CGPoint translation = CGPointMake(
+            vjoy_center_in_parent_view.x - self.center.x,
+            vjoy_center_in_parent_view.y - self.center.y
+        );
+        self.transform = CGAffineTransformMakeTranslation(translation.x, translation.y);
+    }
+    [self setNeedsDisplay];
 }
 
-- (void)setCurrentDirection:(DPadDirection)dir
-{
-	if (dir != currentDirection) {
-		switch (currentDirection)
-		{
-			case DPadDirectionLeft:
-				[self sendKey:SDL_SCANCODE_LEFT  pressed:dir & 4];
-				break;
-			case DPadDirectionRight:
-				[self sendKey:SDL_SCANCODE_RIGHT  pressed:dir & 1];
-				break;
-			case DPadDirectionUp:
-				[self sendKey:SDL_SCANCODE_UP  pressed:dir & 2];
-				break;
-			case DPadDirectionDown:
-				[self sendKey:SDL_SCANCODE_DOWN  pressed:dir & 8];
-				break;
-			case DPadDirectionLeftUp:
-				[self sendKey:SDL_SCANCODE_KP_7  pressed:dir & 6];
-				break;
-			case DPadDirectionLeftDown:
-				[self sendKey:SDL_SCANCODE_KP_1  pressed:dir & 12];
-				break;
-			case DPadDirectionRightUp:
-				[self sendKey:SDL_SCANCODE_KP_9  pressed:dir & 3];
-				break;
-			case DPadDirectionRightDown:
-				[self sendKey:SDL_SCANCODE_KP_3  pressed:dir & 9];
-				break;
-			default:
-				break;
-		}
-
-		switch (dir)
-		{
-			case DPadDirectionLeft:
-				[self sendKey:SDL_SCANCODE_LEFT  pressed:dir & 4];
-				break;
-			case DPadDirectionRight:
-				[self sendKey:SDL_SCANCODE_RIGHT  pressed:dir & 1];
-				break;
-			case DPadDirectionUp:
-				[self sendKey:SDL_SCANCODE_UP  pressed:dir & 2];
-				break;
-			case DPadDirectionDown:
-				[self sendKey:SDL_SCANCODE_DOWN  pressed:dir & 8];
-				break;
-			case DPadDirectionLeftUp:
-				[self sendKey:SDL_SCANCODE_KP_7  pressed:dir & 6];
-				break;
-			case DPadDirectionLeftDown:
-				[self sendKey:SDL_SCANCODE_KP_1  pressed:dir & 12];
-				break;
-			case DPadDirectionRightUp:
-				[self sendKey:SDL_SCANCODE_KP_9  pressed:dir & 3];
-				break;
-			case DPadDirectionRightDown:
-				[self sendKey:SDL_SCANCODE_KP_3  pressed:dir & 9];
-				break;
-			default:
-				break;
-		}
-		currentDirection = dir;
-		[self setNeedsDisplay];
-	}
-}
-
-
-- (void)updateCurrentDirectionFromPoint:(CGPoint)pt
-{
-	DPadDirection dir = DPadDirectionNone;
-	CGPoint ptCenter = CENTER_OF_RECT(self.bounds);
-	if (DISTANCE_BETWEEN(pt, ptCenter) > minDistance)
-		dir = [self directionOfPoint:pt];
-	if (dir != currentDirection)
-		[self setCurrentDirection:dir];
-}
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	// UITouch *touch = [touches anyObject];
-	// CGPoint pt = [touch locationInView:self];
-	// [self updateCurrentDirectionFromPoint:pt];
-
 	UITouch *touch = [touches anyObject];
 	// printf("touchesBegan, %p\n", touch);
 
@@ -231,6 +138,7 @@ if ((x) > 1.0) { \
 			SDL_CONTROLLER_AXIS_LEFTY,
 			0
 		);
+        [self updateViewTransform];
 		// printf("VJOY START\n");
 	}
 #endif
@@ -238,23 +146,19 @@ if ((x) > 1.0) { \
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	// UITouch *touch = [touches anyObject];
-	// CGPoint pt = [touch locationInView:self];
-	// [self updateCurrentDirectionFromPoint:pt];
-
-	UITouch * touch = nil;
-	for (UITouch * t in touches) {
-		if (t == vjoy_input_source) {
-			touch = t;
-			break;
-		}
-	}
-
-	// printf("touchesMoved, vjoy_input_source:%p, touch:%p\n", vjoy_input_source, touch);
+//    printf("touchesMoved, vjoy_input_source:%p, touch:%p\n", vjoy_input_source, touch);
 
 #if SDL_VERSION_ATLEAST(2,0,13)
-	if (vjoy_is_active && touch != nil) {
-		vjoy_current = [touch locationInView:self];
+    UITouch * __strong current_input_source = vjoy_input_source;
+	if (vjoy_is_active && [touches containsObject:current_input_source]) {
+
+        // Calculate new vjoy_current, but first, reset this view's
+        // UIKit-transform, lest the call to UITouch's 'locationInView:'
+        // method reports incorrect values (due to a previously-applied
+        // transform).
+        self.transform = CGAffineTransformIdentity;
+		vjoy_current = [current_input_source locationInView:self];
+
 		float dx = vjoy_current.x - vjoy_center.x;
 		float dy = vjoy_current.y - vjoy_center.y;
 
@@ -280,6 +184,10 @@ if ((x) > 1.0) { \
 			SDL_CONTROLLER_AXIS_LEFTY,
 			joy_axis_y_raw
 		);
+
+        // Update visuals
+        [self updateViewTransform];
+        
 		// printf("VJOY MOVE: %d, %d\n", (int)joy_axis_x_raw, (int)joy_axis_y_raw);
 	}
 #endif
@@ -287,35 +195,12 @@ if ((x) > 1.0) { \
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	// [self setCurrentDirection:DPadDirectionNone];
-
-	UITouch * touch = nil;
-	for (UITouch * t in touches) {
-		if (t == vjoy_input_source) {
-			touch = t;
-			break;
-		}
-	}
-
 	// printf("touchesEnded, vjoy_input_source:%p, touch:%p\n", vjoy_input_source, touch);
 
 #if SDL_VERSION_ATLEAST(2,0,13)
-	if (vjoy_is_active && touch != nil) {
-		// Reset vjoy position to zero
-		SDL_JoystickSetVirtualAxis(
-			SDL_GameControllerGetJoystick(vjoy_controller),
-			SDL_CONTROLLER_AXIS_LEFTX,
-			0
-		);
-		SDL_JoystickSetVirtualAxis(
-			SDL_GameControllerGetJoystick(vjoy_controller),
-			SDL_CONTROLLER_AXIS_LEFTY,
-			0
-		);
-
+    if ([touches containsObject:vjoy_input_source]) {
 		// Mark vjoy as inactive
-		vjoy_is_active = false;
-		// printf("VJOY STOP\n");
+        [self reset];
 	}
 #endif
 }
