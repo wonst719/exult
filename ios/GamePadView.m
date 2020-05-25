@@ -21,7 +21,7 @@ if ((x) > 1.0) { \
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor clearColor];
-		self.backgroundImage = [UIImage imageNamed:@"joypad-glass.png"];
+		self.backgroundImage = [UIImage imageNamed:@"joythumb-glass.png"];
 
 #if SDL_VERSION_ATLEAST(2,0,13)
 		int vjoy_index = SDL_JoystickAttachVirtual(

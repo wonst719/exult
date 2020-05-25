@@ -25,6 +25,7 @@
 		8A2C52621DE6E9000016E16A /* U7fileman.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD7A1A6E3161006C8BE4 /* U7fileman.cc */; };
 		8A2C52631DE6E9040016E16A /* U7obj.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD7C1A6E3161006C8BE4 /* U7obj.cc */; };
 		8A2C52641DE6E9070016E16A /* utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD7E1A6E3161006C8BE4 /* utils.cc */; };
+		8A45A3B8247C068500F12F4D /* joythumb-glass.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A45A3AC247C068500F12F4D /* joythumb-glass.png */; };
 		8A6013712057CFAD00FCA555 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A6013662057CF0C00FCA555 /* Metal.framework */; };
 		8A7F1F7E1DE5B7820066F6FC /* expack.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A7F1F7D1DE5B7820066F6FC /* expack.cc */; };
 		8A8340C71F8977FC000696C7 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A8340BF1F8977FB000696C7 /* CoreMotion.framework */; };
@@ -373,6 +374,7 @@
 		8A0342C2242A1B0900E7CB36 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		8A0C19E11D6D9F1800B9105A /* sibetaintrinsics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sibetaintrinsics.h; sourceTree = "<group>"; };
 		8A1C581B1FE7D91B00738E40 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		8A45A3AC247C068500F12F4D /* joythumb-glass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joythumb-glass.png"; sourceTree = "<group>"; };
 		8A6013662057CF0C00FCA555 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		8A7F1F721DE5B72A0066F6FC /* expack */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = expack; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A7F1F7D1DE5B7820066F6FC /* expack.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = expack.cc; path = ../tools/expack.cc; sourceTree = "<group>"; };
@@ -1771,6 +1773,7 @@
 		E71BBD881A725E1E0003F662 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				8A45A3AC247C068500F12F4D /* joythumb-glass.png */,
 				8AF2AFDB2016708000696E08 /* joypad-glass-east.png */,
 				8AF2AFD72016708000696E08 /* joypad-glass-north.png */,
 				8AF2AFDA2016708000696E08 /* joypad-glass-northeast.png */,
@@ -1989,6 +1992,7 @@
 				8AF2AFE12016708100696E08 /* joypad-glass.png in Resources */,
 				8AF2AFE22016708100696E08 /* joypad-glass-southeast.png in Resources */,
 				8AF2AFE32016708100696E08 /* joypad-glass-northeast.png in Resources */,
+				8A45A3B8247C068500F12F4D /* joythumb-glass.png in Resources */,
 				8AF2AFE42016708100696E08 /* joypad-glass-east.png in Resources */,
 				8AF2AFE52016708100696E08 /* joypad-glass-west.png in Resources */,
 				8AF2AFE62016708100696E08 /* joypad-glass-northwest.png in Resources */,
