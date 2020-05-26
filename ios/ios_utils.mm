@@ -113,8 +113,8 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 	UIWindow *window = [[[UIApplication sharedApplication] delegate] window];
 	UIViewController *controller = window.rootViewController;
 	CGRect rcScreen = controller.view.bounds;
-	CGSize sizeDpad = CGSizeMake(180, 180);
-	float margin = 30;
+	CGSize sizeDpad = CGSizeMake(100, 100);
+	float margin = 100;
 
 	std::string str;
 	float left = rcScreen.size.width - sizeDpad.width - margin;
