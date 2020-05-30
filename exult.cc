@@ -260,6 +260,8 @@ static int show_items_x = 0, show_items_y = 0;
 static unsigned int show_items_time = 0;
 static bool show_items_clicked = false;
 static int left_down_x = 0, left_down_y = 0;
+static int joy_aim_x = 0, joy_aim_y = 0;
+Mouse::Avatar_Speed_Factors joy_speed_factor = Mouse::medium_speed_factor;
 
 #if defined _WIN32
 void do_cleanup_output() {
@@ -1194,6 +1196,14 @@ static void Handle_events(
 			show_items_clicked = false;
 		}
 
+		if (joy_aim_x != 0 || joy_aim_y != 0) {
+			// Calculate the player speed
+			const int speed = 200 * gwin->get_std_delay() / static_cast<int>(joy_speed_factor);
+
+			// [re]start moving
+			gwin->start_actor(joy_aim_x, joy_aim_y, speed);
+		}
+
 		// Lerping stuff...
 		int lerp = gwin->is_lerping_enabled();
 		bool didlerp = false;
@@ -1359,11 +1369,11 @@ static void Handle_event(
 			// Pick a player's speed-factor, depending on how much the input-stick
 			// is being pushed in a direction.
 			const float joy_axis_length = std::sqrt((axis_x * axis_x) + (axis_y * axis_y));
-			int speed_factor = Mouse::fast_speed_factor;
+			joy_speed_factor = Mouse::fast_speed_factor;
 			if (joy_axis_length < axis_length_move_medium) {
-				speed_factor = Mouse::slow_speed_factor;
+				joy_speed_factor = Mouse::slow_speed_factor;
 			} else if (joy_axis_length < axis_length_move_fast) {
-				speed_factor = Mouse::medium_speed_factor;
+				joy_speed_factor = Mouse::medium_speed_factor;
 			}
 
 			// Depending on axis values, we're either going to start moving,
@@ -1372,6 +1382,8 @@ static void Handle_event(
 			if (axis_x == 0 && axis_y == 0) {
 				// Both axes are zero, so we'll stop.
 				gwin->stop_actor();
+				joy_aim_x = 0;
+				joy_aim_y = 0;
 			} else {
 				// At least one axis is non-zero, so we'll [re]start moving.
 
@@ -1380,14 +1392,8 @@ static void Handle_event(
 				const float aim_distance = 50.f;
 				const int aim_dx = static_cast<int>(std::lround(aim_distance * axis_x));
 				const int aim_dy = static_cast<int>(std::lround(aim_distance * axis_y));
-				const int aim_x = (gwin->get_width() / 2) + aim_dx;
-				const int aim_y = (gwin->get_height() / 2) + aim_dy;
-
-				// Calculate the player speed
-				const int speed = 200 * gwin->get_std_delay() / speed_factor;
-
-				// [re]start moving
-				gwin->start_actor(aim_x, aim_y, speed);
+				joy_aim_x = (gwin->get_width() / 2) + aim_dx;
+				joy_aim_y = (gwin->get_height() / 2) + aim_dy;
 			}
 		}
 		break;
@@ -1462,8 +1468,7 @@ static void Handle_event(
 			} else if (avatar_can_act && gwin->main_actor_can_act_charmed()) {
 				// Try removing old queue entry.
 				gwin->get_tqueue()->remove(gwin->get_main_actor());
-				gwin->start_actor(x, y,
-				                  Mouse::mouse->avatar_speed);
+				gwin->start_actor(x, y, Mouse::mouse->avatar_speed);
 			}
 		}
 		break;
