@@ -152,18 +152,6 @@ int usecode_trace = 0;      // Do we trace Usecode-instructions?
 // 0 = no, 1 = short, 2 = long
 bool combat_trace = false; // show combat messages?
 
-// Joystick-axis configuration.
-//
-// All values are normalized to -1 to 1, 0 being centered and either
-// 1 or -1 being fully-extended along a single axis.
-//
-// Dead-zone is applied to each axis, X and Y, on the game's 2d plane.
-//
-// "Length" is calculated with both X and Y axes, using Pythagorean Theorem.
-float joy_axis_dead_zone = 0.25f;	// all axis readings below this are ignored
-float joy_axis_length_move_medium = 0.60f;	// below this, move slow; equal or above this, move medium-speed
-float joy_axis_length_move_fast = 0.90f;	// equal or above this, move fast
-
 // Save game compression level
 int save_compression = 1;
 bool ignore_crc = false;
@@ -665,16 +653,16 @@ void Open_game_controller(int joystick_index) {
 	SDL_GameController *input_device = SDL_GameControllerOpen(joystick_index);
 	if (input_device) {
 		SDL_GameControllerGetJoystick(input_device);
-		printf("Game controller attached and open: \"%s\"\n",
-			SDL_GameControllerName(input_device)
-		);
+		std::cout << "Game controller attached and open: \""
+		          << SDL_GameControllerName(input_device) << '"' << std::endl;
 	} else {
-		printf("Game controller attached, but it failed to open. Error:\"%s\"\n",
-			SDL_GetError());
+		std::cout << "Game controller attached, but it failed to open. Error: \""
+		          << SDL_GetError() << '"' << std::endl;
 	}
 }
 
-int Handle_device_connection_event(void *, SDL_Event *event) {
+int Handle_device_connection_event(void *userdata, SDL_Event *event) {
+	ignore_unused_variable_warning(userdata);
 	// Make sure that game-controllers are opened and closed, as they
 	// become connected or disconnected.
 	switch (event->type) {
@@ -689,8 +677,8 @@ int Handle_device_connection_event(void *, SDL_Event *event) {
 			SDL_GameController *input_device = SDL_GameControllerFromInstanceID(event->cdevice.which);
 			if (input_device) {
 				SDL_GameControllerClose(input_device);
-				input_device = NULL;
-				printf("Game controller detached and closed.\n");
+				input_device = nullptr;
+				std::cout << "Game controller detached and closed." << std::endl;
 			}
 			break;
 		}
@@ -761,7 +749,7 @@ static void Init(
 	// and processed via any event-processing loop, of which Exult has
 	// many, without needing to modify each individual loop, and to
 	// make sure that SDL_GameController objects are always ready.
-	SDL_AddEventWatch(Handle_device_connection_event, NULL);
+	SDL_AddEventWatch(Handle_device_connection_event, nullptr);
 
 	// Load games and mods; also stores system paths:
 	gamemanager = new GameManager();
@@ -1322,32 +1310,35 @@ static void Handle_event(
 		}
 		dragging = dragged = false;
 		break;
-	}	
+	}
 	case SDL_CONTROLLERAXISMOTION: {
 		// Ignore axis changes on anything but a specific thumb-stick
 		// on the game-controller.
 		if (!(event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX ||
-			  event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY))
-		{
+			  event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY)) {
 			break;
 		}
 
 		SDL_GameController *input_device = SDL_GameControllerFromInstanceID(event.caxis.which);
-		if (input_device &&
-			!dont_move_mode &&
-			avatar_can_act &&
-			gwin->main_actor_can_act_charmed())
-		{
+		if (input_device && !dont_move_mode && avatar_can_act &&
+			gwin->main_actor_can_act_charmed()) {
+			auto get_normalized_axis = [input_device](SDL_GameControllerAxis axis){
+				return SDL_GameControllerGetAxis(input_device, axis) / static_cast<float>(SDL_JOYSTICK_AXIS_MAX);
+			};
 			// Collect both of the controller thumb-stick's axis values.
 			// The input-event only carries one axis, and each thumb-stick
 			// has two axes.  Both axes' values are needed in order to
 			// call start_actor.
-			float joy_axis_x = \
-				SDL_GameControllerGetAxis(input_device, SDL_CONTROLLER_AXIS_LEFTX)
-				/ static_cast<float>(SDL_JOYSTICK_AXIS_MAX);
-			float joy_axis_y = \
-				SDL_GameControllerGetAxis(input_device, SDL_CONTROLLER_AXIS_LEFTY)
-				/ static_cast<float>(SDL_JOYSTICK_AXIS_MAX);
+			float axis_x = get_normalized_axis(SDL_CONTROLLER_AXIS_LEFTX);
+			float axis_y = get_normalized_axis(SDL_CONTROLLER_AXIS_LEFTY);
+
+			// Dead-zone is applied to each axis, X and Y, on the game's 2d plane.
+			// All axis readings below this are ignored
+			constexpr const float axis_dead_zone = 0.25f;
+			// Medium-speed threashold; below this, move slow
+			constexpr const float axis_length_move_medium = 0.60f;
+			// Fast-speed threashold; above this, move fast
+			constexpr const float axis_length_move_fast = 0.90f;
 
 			// Many analog game-controllers report non-zero axis values,
 			// even when the controller isn't moving.  These non-zero
@@ -1358,32 +1349,27 @@ static void Handle_event(
 			// to unwanted movements, axis-values that are small will
 			// be ignored.  This is sometimes referred to as a
 			// "dead zone".
-			if (joy_axis_dead_zone >= std::fabs(joy_axis_x)) {
-				joy_axis_x = 0;
+			if (axis_dead_zone >= std::fabs(axis_x)) {
+				axis_x = 0;
 			}
-			if (joy_axis_dead_zone >= std::fabs(joy_axis_y)) {
-				joy_axis_y = 0;
+			if (axis_dead_zone >= std::fabs(axis_y)) {
+				axis_y = 0;
 			}
 
 			// Pick a player's speed-factor, depending on how much the input-stick
 			// is being pushed in a direction.
-			const float joy_axis_length = std::sqrt(
-				(joy_axis_x * joy_axis_x) + (joy_axis_y * joy_axis_y)
-			);
+			const float joy_axis_length = std::sqrt((axis_x * axis_x) + (axis_y * axis_y));
 			int speed_factor = Mouse::fast_speed_factor;
-			if (joy_axis_length < 0.60f) {
+			if (joy_axis_length < axis_length_move_medium) {
 				speed_factor = Mouse::slow_speed_factor;
-			} else if (joy_axis_length < 0.90f) {
+			} else if (joy_axis_length < axis_length_move_fast) {
 				speed_factor = Mouse::medium_speed_factor;
 			}
-
-			// printf("joy axis move: %f (X=%f Y=%f) --> player speed_factor=%d\n",
-			// 	joy_axis_length, joy_axis_x, joy_axis_y, speed_factor);
 
 			// Depending on axis values, we're either going to start moving,
 			// restarting moving (which looks the same as starting, to us),
 			// or stopping.
-			if (joy_axis_x == 0 && joy_axis_y == 0) {
+			if (axis_x == 0 && axis_y == 0) {
 				// Both axes are zero, so we'll stop.
 				gwin->stop_actor();
 			} else {
@@ -1392,8 +1378,8 @@ static void Handle_event(
 				// Declare a position to aim for, in window coordinates, relative
 				// to the center of the window (where the player is).
 				const float aim_distance = 50.f;
-				const int aim_dx = static_cast<int>(std::lround(aim_distance * joy_axis_x));
-				const int aim_dy = static_cast<int>(std::lround(aim_distance * joy_axis_y));
+				const int aim_dx = static_cast<int>(std::lround(aim_distance * axis_x));
+				const int aim_dy = static_cast<int>(std::lround(aim_distance * axis_y));
 				const int aim_x = (gwin->get_width() / 2) + aim_dx;
 				const int aim_y = (gwin->get_height() / 2) + aim_dy;
 
