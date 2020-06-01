@@ -97,13 +97,13 @@ data/usecode: $(UCC) $(USECODE_OBJECTS)
 	$(UCC) -I src -o data/usecode src/usecode.uc
 
 data/gumps.vga: $(EXPACK) $(GUMPS_VGA_OBJECTS)
-	$(EXPACK) -i $(srcdir)/src/graphics/gumps.in
+	$(EXPACK) -i src/graphics/gumps.in
 
 data/mainshp.flx: $(EXPACK) $(MAINSHP_FLX_OBJECTS)
-	$(EXPACK) -i $(srcdir)/src/graphics/mainshp.in
+	$(EXPACK) -i src/graphics/mainshp.in
 
 data/shapes.vga: $(EXPACK) $(SHAPES_VGA_OBJECTS)
-	$(EXPACK) -i $(srcdir)/src/graphics/shapes.in
+	$(EXPACK) -i src/graphics/shapes.in
 
 clean:
 	rm -f $(CLEANFILES)

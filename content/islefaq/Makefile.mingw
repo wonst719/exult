@@ -45,10 +45,10 @@ patch/usecode: $(UCC) $(USECODE_OBJECTS)
 	$(UCC) -I src -o patch/usecode src/usecode.uc
 
 patch/faces.vga: $(EXPACK) $(FACES_VGA_OBJECTS)
-	$(EXPACK) -i $(srcdir)/src/graphics/faces.in
+	$(EXPACK) -i src/graphics/faces.in
 
 patch/shapes.vga: $(EXPACK) $(SHAPES_VGA_OBJECTS)
-	$(EXPACK) -i $(srcdir)/src/graphics/shapes.in
+	$(EXPACK) -i src/graphics/shapes.in
 
 clean:
 	rm -f $(CLEANFILES)
