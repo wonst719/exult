@@ -429,7 +429,6 @@ void Game_window::read_save_names(
 
 
 void Game_window::write_saveinfo() {
-	ofstream out_stream;
 	int i;
 
 	int save_count = 1;
@@ -521,7 +520,8 @@ void Game_window::write_saveinfo() {
 
 	{
 		// Current Exult version
-		OFileDataSource out(GEXULTVER);     // Open file; throws an exception - Don't care
+		ofstream out_stream;
+		U7open(out_stream, GEXULTVER);     // Open file; throws an exception - Don't care
 		getVersionInfo(out_stream);
 	}
 
