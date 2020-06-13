@@ -54,6 +54,12 @@
 #include "version.h"
 #include "array_size.h"
 
+// Zip file support
+#ifdef HAVE_ZIP_SUPPORT
+#include "files/zip/unzip.h"
+#include "files/zip/zip.h"
+#endif
+
 #include <cstddef>
 #ifndef offsetof    // Broken <cstddef>? Just in case...
 #   define offsetof(type, field) reinterpret_cast<long>(&(static_cast<type *>(0)->field))
@@ -678,9 +684,6 @@ void Game_window::get_saveinfo(std::unique_ptr<Shape_file> &map, SaveGame_Detail
 
 // Zip file support
 #ifdef HAVE_ZIP_SUPPORT
-
-#include "files/zip/unzip.h"
-#include "files/zip/zip.h"
 
 static const char *remove_dir(const char *fname) {
 	const char *base = strchr(fname, '/');// Want the base name.
