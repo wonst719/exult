@@ -72,12 +72,13 @@ void Object_sfx::Play(Game_object *obj, int sfx, int delay) {
 		Game_object *outer = obj->get_outermost();
 		osfx->last_pos = outer->get_center_tile();
 
-		int volume = AUDIO_MAX_VOLUME;  // Set volume based on distance.
 		bool halt = Get_sfx_out_of_range(gwin, osfx->last_pos);
 
-		if (!halt && osfx->channel == -1 && sfx > -1)     // First time?
+		if (!halt && osfx->channel == -1 && sfx > -1) {    // First time?
 			// Start playing.
+			int volume = AUDIO_MAX_VOLUME;  // Set volume based on distance.
 			osfx->channel = Audio::get_ptr()->play_sound_effect(sfx, osfx->last_pos, volume, 0);
+		}
 		delay = 100;
 	}
 	gwin->get_tqueue()->add(Game::get_ticks() + delay, osfx, gwin);
@@ -134,13 +135,13 @@ void Object_sfx::handle_event(
 	    }
 	*/
 
-	int volume = AUDIO_MAX_VOLUME;  // Set volume based on distance.
 	bool halt = Get_sfx_out_of_range(gwin, last_pos);
 
-	if (!halt && channel == -1 && sfx > -1)     // First time?
+	if (!halt && channel == -1 && sfx > -1) {    // First time?
 		// Start playing.
+		int volume = AUDIO_MAX_VOLUME;  // Set volume based on distance.
 		channel = Audio::get_ptr()->play_sound_effect(sfx, last_pos, volume, 0);
-	else if (channel != -1) {
+	} else if (channel != -1) {
 		if (halt) {
 			Audio::get_ptr()->stop_sound_effect(channel);
 			channel = -1;

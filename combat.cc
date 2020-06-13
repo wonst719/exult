@@ -410,12 +410,12 @@ list<Game_object_weak>::iterator Combat_schedule::find_protected_attacker(
 	if (!prot_actor)        // Not found?
 		return opponents.end();
 	// Find closest attacker.
-	int dist;
 	int best_dist = 4 * c_tiles_per_chunk;
 	list<Game_object_weak>::iterator best_opp = opponents.end();
 	for (list<Game_object_weak>::iterator it = opponents.begin();
 	        it != opponents.end(); ++it) {
 		Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
+		int dist;
 		if (opp && opp->get_target() == prot_actor &&
 		        (dist = npc->distance(opp.get())) < best_dist) {
 			best_dist = dist;

@@ -251,10 +251,6 @@ void SI_Game::play_intro() {
 	MyMidiPlayer *midi = audio->get_midi();
 	if (midi) midi->set_timbre_lib(MyMidiPlayer::TIMBRE_LIB_INTRO);
 
-	int next = 0;
-	size_t  size;
-	int     i;
-	int     j;
 	Font *sifont = fontManager.get_font("SIINTRO_FONT");
 
 	bool speech = audio->is_audio_enabled() &&
@@ -268,7 +264,8 @@ void SI_Game::play_intro() {
 		playfli fli0(INTRO_DAT, PATCH_INTRO, 0);
 		fli0.info();
 
-		for (j = 0; j < 20; j++) {
+		int next = 0;
+		for (int j = 0; j < 20; j++) {
 			next = fli0.play(win, 0, 0, next, j * 5);
 			win->show();
 			wait_delay(0, 0, 1);
@@ -280,7 +277,7 @@ void SI_Game::play_intro() {
 		if (wait_delay(3000, 0, 1))
 			throw UserBreakException();
 
-		for (j = 20; j; j--) {
+		for (int j = 20; j; j--) {
 			next = fli0.play(win, 0, 0, next, j * 5);
 			win->show();
 			wait_delay(0, 0, 1);
@@ -296,6 +293,7 @@ void SI_Game::play_intro() {
 		// Start Music
 		audio->start_music(R_SINTRO, 0, false);
 
+		size_t  size;
 		unique_ptr<unsigned char[]> buffer;
 		// Thunder, note we use the buffer again later so it's not freed here
 		if (speech) {
@@ -313,10 +311,10 @@ void SI_Game::play_intro() {
 		int prev = -1;
 		int num;
 
-		for (j = 0; j < 20; j++) {
+		for (int j = 0; j < 20; j++) {
 			num = get_frame();
 			if (prev != num)
-				for (i = 0; i < num + 1; i++)
+				for (int i = 0; i < num + 1; i++)
 					fli1.play(win, i, i, next);
 
 			prev = num;
@@ -327,10 +325,10 @@ void SI_Game::play_intro() {
 
 		}
 
-		for (j = 0; j < 50; j++) {
+		for (int j = 0; j < 50; j++) {
 			num = get_frame();
 			if (prev != num)
-				for (i = 0; i < num + 1; i++)
+				for (int i = 0; i < num + 1; i++)
 					fli1.play(win, i, i, next);
 
 			if (jive)
@@ -346,10 +344,10 @@ void SI_Game::play_intro() {
 
 		}
 
-		for (j = 0; j < 10; j++) {
+		for (int j = 0; j < 10; j++) {
 			num = get_frame();
 			if (prev != num)
-				for (i = 0; i < num + 1; i++)
+				for (int i = 0; i < num + 1; i++)
 					fli1.play(win, i, i, next);
 
 			// Thunder again, we free the buffer here
@@ -366,13 +364,13 @@ void SI_Game::play_intro() {
 
 		}
 
-		for (j = 0; j < 75; j++) {
+		for (int j = 0; j < 75; j++) {
 			num = get_frame();
 			if (prev != num)
-				for (i = 0; i < num + 1; i++)
+				for (int i = 0; i < num + 1; i++)
 					fli1.play(win, i, i, next);
 
-			for (i = 0; i < 3; i++) {
+			for (int i = 0; i < 3; i++) {
 				sifont->center_text(ibuf, centerx, centery + 50 + 15 * i, get_text_msg(bg_fellow + i));
 			}
 
@@ -384,7 +382,7 @@ void SI_Game::play_intro() {
 
 		}
 
-		for (j = 20; j; j--) {
+		for (int j = 20; j; j--) {
 			next = fli1.play(win, 0, 0, next, j * 5);
 			win->show();
 			if (wait_delay(0, 0, 1))
@@ -402,7 +400,7 @@ void SI_Game::play_intro() {
 		playfli fli2(INTRO_DAT, PATCH_INTRO, 2);
 		fli2.info();
 
-		for (j = 0; j < 20; j++) {
+		for (int j = 0; j < 20; j++) {
 			next = fli2.play(win, 0, 0, next, j * 5);
 			win->show();
 			if (wait_delay(0, 0, 1))
@@ -410,6 +408,7 @@ void SI_Game::play_intro() {
 		}
 
 		// Guard walks in
+		int j;
 		for (j = 0; j < 37; j++) {
 			next = fli2.play(win, j, j, next);
 			win->show();
@@ -461,15 +460,15 @@ void SI_Game::play_intro() {
 			if (wait_delay(0, 0, 1))
 				throw UserBreakException();
 		}
-		for (i = 0; i < 220; i++)
+		for (int i = 0; i < 220; i++)
 			if (wait_delay(10))
 				throw UserBreakException();
 
-		const char *and_a[2] = { get_text_msg(and_a0), get_text_msg(and_a0 + 1) };
 
 		next = fli2.play(win, j, j, next);
 
 		if (!speech || jive  || speech_n_subs) {
+			const char *and_a[2] = { get_text_msg(and_a0), get_text_msg(and_a0 + 1) };
 			sifont->draw_text(ibuf, centerx + 150 - sifont->get_text_width(and_a[0]), centery + 74, and_a[0]);
 			sifont->draw_text(ibuf, centerx + 150 - sifont->get_text_width(and_a[1]), centery + 87, and_a[1]);
 		}
@@ -477,14 +476,14 @@ void SI_Game::play_intro() {
 		win->show();
 		j++;
 
-		for (i = 0; i < 290; i++)
+		for (int i = 0; i < 290; i++)
 			if (wait_delay(10, 0, 1))
 				throw UserBreakException();
 
 		fli2.play(win, j, j);
 		j++;
 
-		for (i = 0; i < 50; i++)
+		for (int i = 0; i < 50; i++)
 			if (wait_delay(10, 0, 1))
 				throw UserBreakException();
 
@@ -512,7 +511,7 @@ void SI_Game::play_intro() {
 				throw UserBreakException();
 		}
 
-		for (i = 0; i < 200; i++)
+		for (int i = 0; i < 200; i++)
 			if (wait_delay(10))
 				throw UserBreakException();
 
@@ -712,7 +711,7 @@ void SI_Game::play_intro() {
 		win->show();
 		wait_delay(0, 0, 1);
 
-		for (i = 0; i < 300; i++)
+		for (int i = 0; i < 300; i++)
 			if (wait_delay(10))
 				throw UserBreakException();
 
@@ -1214,7 +1213,6 @@ bool SI_Game::new_game(Vga_file &shapes) {
 
 	int selected = 0;
 	int num_choices = 4;
-	SDL_Event event;
 	bool editing = true;
 	bool redraw = true;
 	bool ok = true;
@@ -1245,6 +1243,7 @@ bool SI_Game::new_game(Vga_file &shapes) {
 			gwin->get_win()->show();
 			redraw = false;
 		}
+		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			Uint16 keysym_unicode = 0;
 			bool isTextInput = false;

@@ -144,12 +144,11 @@ int Paperdoll_gump::find_closest(
 	my -= y;       // Get point rel. to us.
 	long closest_squared = 1000000; // Best distance squared.
 	int closest = -1;       // Best index.
-	int spot;
 
 	Actor *npc = container->as_actor();
 
 	for (size_t i = 0; i < array_size(coords_hot); i++) {
-		spot = i;
+		int spot = i;
 
 		int dx = mx - coords_hot[spot].x;
 		int dy = my - coords_hot[spot].y;

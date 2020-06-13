@@ -825,7 +825,6 @@ void Image_window::show(
 
 	// Phase 1 blit from draw_surface to inter_surface
 	if (draw_surface != inter_surface) {
-		scalefun show_scaled;
 		const ScalerInfo &sel_scaler = Scalers[scaler];
 
 		// Need to apply an offset to compensate for the guard_band
@@ -836,6 +835,7 @@ void Image_window::show(
 			if (!sel_scaler.arb->Scale(draw_surface, x + guard_band, y + guard_band, w, h, inter_surface, scale * (x + guard_band), scale * (y + guard_band), scale * w, scale * h, false))
 				Scalers[point].arb->Scale(draw_surface, x + guard_band, y + guard_band, w, h, inter_surface, scale * (x + guard_band), scale * (y + guard_band), scale * w, scale * h, false);
 		} else {
+			scalefun show_scaled;
 			if (inter_surface->format->BitsPerPixel == 16 || inter_surface->format->BitsPerPixel == 15) {
 				int r = inter_surface->format->Rmask;
 				int g = inter_surface->format->Gmask;

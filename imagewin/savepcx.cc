@@ -73,15 +73,12 @@ struct PCX_Header {
 };
 
 static void writeline(SDL_RWops *dst, Uint8 *buffer, int bytes) {
-	Uint8 value;
-	Uint8 count;
-	Uint8 tmp;
 	Uint8 *finish = buffer + bytes;
 
 	while (buffer < finish) {
 
-		value = *(buffer++);
-		count = 1;
+		Uint8 value = *(buffer++);
+		Uint8 count = 1;
 
 		while (buffer < finish && count < 63 && *buffer == value) {
 			count++;
@@ -91,7 +88,7 @@ static void writeline(SDL_RWops *dst, Uint8 *buffer, int bytes) {
 		if (value < 0xc0 && count == 1) {
 			SDL_RWwrite(dst, &value, 1, 1);
 		} else {
-			tmp = count + 0xc0;
+			Uint8 tmp = count + 0xc0;
 			SDL_RWwrite(dst, &tmp, 1, 1);
 			SDL_RWwrite(dst, &value, 1, 1);
 		}
@@ -101,9 +98,7 @@ static void writeline(SDL_RWops *dst, Uint8 *buffer, int bytes) {
 
 static void save_8(SDL_RWops *dst, int width, int height,
                    int pitch, Uint8 *buffer) {
-	int row;
-
-	for (row = 0; row < height; ++row) {
+	for (int row = 0; row < height; ++row) {
 		writeline(dst, buffer, width);
 		buffer += pitch;
 	}
@@ -112,16 +107,11 @@ static void save_8(SDL_RWops *dst, int width, int height,
 
 static void save_24(SDL_RWops *dst, int width, int height,
                     int pitch, const Uint8 *buffer) {
-	int x;
-	int y;
-	int c;
-	Uint8 *line;
+	Uint8 *line = new Uint8[width];
 
-	line = new Uint8[width];
-
-	for (y = 0; y < height; ++y) {
-		for (c = 2; c >= 0; --c) {
-			for (x = 0; x < width; ++x) {
+	for (int y = 0; y < height; ++y) {
+		for (int c = 2; c >= 0; --c) {
+			for (int x = 0; x < width; ++x) {
 				line[x] = buffer[(3 * x) + c];
 			}
 			writeline(dst, line, width);
@@ -133,20 +123,14 @@ static void save_24(SDL_RWops *dst, int width, int height,
 
 static bool save_image(SDL_Surface *surface, SDL_RWops *dst) {
 	Uint8 *cmap = nullptr;
-	Uint8 *pixels;
-	Uint8 tmp;
-	int width;
-	int height;
-	int pitch;
 	int colors = 0;
-	int i;
+
+	int width = surface->w;
+	int height = surface->h;
+	Uint8 *pixels = static_cast<Uint8 *>(surface->pixels);
+	int pitch = surface->pitch;
+
 	PCX_Header header;
-
-	width = surface->w;
-	height = surface->h;
-	pixels = static_cast<Uint8 *>(surface->pixels);
-	pitch = surface->pitch;
-
 	header.manufacturer = 0x0a;
 	header.version = 5;
 	header.compression = 1;
@@ -154,7 +138,7 @@ static bool save_image(SDL_Surface *surface, SDL_RWops *dst) {
 	if (surface->format->palette && surface->format->BitsPerPixel == 8) {
 		colors = surface->format->palette->ncolors;
 		cmap = new Uint8[3 * colors];
-		for (i = 0; i < colors; i++) {
+		for (int i = 0; i < colors; i++) {
 			cmap[3 * i] = surface->format->palette->colors[i].r;
 			cmap[3 * i + 1] = surface->format->palette->colors[i].g;
 			cmap[3 * i + 2] = surface->format->palette->colors[i].b;
@@ -189,13 +173,13 @@ static bool save_image(SDL_Surface *surface, SDL_RWops *dst) {
 		save_8(dst, width, height, pitch, pixels);
 
 		/* write palette */
-		tmp = 0x0c;
+		Uint8 tmp = 0x0c;
 		SDL_RWwrite(dst, &tmp, 1, 1);
 		SDL_RWwrite(dst, cmap, 3, colors);
 
 		/* fill unused colors */
 		tmp = 0;
-		for (i = colors; i < 256; i++) {
+		for (int i = colors; i < 256; i++) {
 			SDL_RWwrite(dst, &tmp, 1, 1);
 			SDL_RWwrite(dst, &tmp, 1, 1);
 			SDL_RWwrite(dst, &tmp, 1, 1);

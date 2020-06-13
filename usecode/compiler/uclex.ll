@@ -112,7 +112,6 @@ static void Include
 	char *yytext			// ->text containing name.
 	)
 	{
-	char msg[180];
 	if (bufstack.size() > 20)
 		{
 		Uc_location::yyerror("#includes are nested too deeply");
@@ -143,6 +142,7 @@ static void Include
 		}
 	if (!yyin)
 		{
+		char msg[180];
 		sprintf(msg, "Can't open '%s'", name);
 		Uc_location::yyerror(msg);
 		exit(1);

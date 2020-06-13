@@ -281,21 +281,17 @@ void MenuList::set_selection(int x, int y) {
 }
 
 int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
-	bool mouse_visible;
 	int count = entries.size();
-	bool exit_loop = false;
-	//int scale = gwin->get_fastmouse() ? 1 : gwin->get_win()->get_scale();
-	int gx;
-	int gy;
-	SDL_Event event;
 	for (int i = 0; i < count; i++)
 		entries[i]->dirty = true;
 
 	gwin->show(true);
 	mouse->show();
+
+	bool exit_loop = false;
 	do {
 		Delay();
-		mouse_visible = mouse->is_onscreen();
+		bool mouse_visible = mouse->is_onscreen();
 		if (mouse_visible)
 			mouse->hide();
 		// redraw items if they're dirty
@@ -308,7 +304,10 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 			mouse->blit_dirty();
 		}
 		bool mouse_updated = false;
+		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
+			int gx;
+			int gy;
 			if (event.type == SDL_MOUSEMOTION) {
 				gwin->get_win()->screen_to_game(event.motion.x, event.motion.y, gwin->get_fastmouse(), gx, gy);
 				if (!mouse_updated) mouse->hide();

@@ -80,12 +80,6 @@ void playfli::info(fliinfo *fi) {
 }
 
 int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned long ticks, int brightness) {
-	int frame_size;
-	//int frame_magic;
-	int frame_chunks;
-	//int chunk_size;
-	int chunk_type;
-	uint8 *pixbuf;
 	int xoffset = (win->get_game_width() - fli_width) / 2;
 	int yoffset = (win->get_game_height() - fli_height) / 2;
 	bool dont_show = false;
@@ -108,7 +102,7 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 		frame = 0;
 		streampos = streamstart;
 	}
-	pixbuf = new uint8[fli_width];
+	uint8 *pixbuf = new uint8[fli_width];
 
 	if (brightness != palette->get_brightness()) {
 		palette->set_brightness(brightness);
@@ -118,15 +112,15 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 	// Play frames...
 	for (; frame < last_frame; frame++) {
 		fli_data.seek(streampos);
-		frame_size = fli_data.read4();
+		int frame_size = fli_data.read4();
 		//frame_magic = fli_data.read2();
 		fli_data.skip(2);
-		frame_chunks = fli_data.read2();
+		int frame_chunks = fli_data.read2();
 		fli_data.skip(8);
 		for (int chunk = 0; chunk < frame_chunks; chunk++) {
 			//chunk_size = fli_data.read4();
 			fli_data.skip(4);
-			chunk_type = fli_data.read2();
+			int chunk_type = fli_data.read2();
 
 			switch (chunk_type) {
 			case 11: {

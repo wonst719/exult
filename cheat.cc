@@ -453,18 +453,16 @@ void Cheat::levelup_party() const {
 	if (!enabled) return;
 
 	Actor *party[9];
-	int level;
-	int newexp;
 	bool leveledup = false;
 
 	// get party, including Avatar
 	int cnt = gwin->get_party(party, 1);
 
 	for (int i = 0; i < cnt; i++) {
-		level = party[i]->get_level();
+		int level = party[i]->get_level();
 		if (level < 10) {
 			leveledup = true;
-			newexp = 25 * (2 << level); // one level higher
+			int newexp = 25 * (2 << level); // one level higher
 			party[i]->set_property(Actor::exp, newexp);
 		}
 	}

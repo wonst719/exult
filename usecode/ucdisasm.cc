@@ -73,12 +73,6 @@ void Usecode_internal::uc_trace_disasm(Usecode_value *locals, int num_locals,
 
 	if (opcode >= 0 && static_cast<unsigned>(opcode) < array_size(opcode_table))
 		pdesc = &(opcode_table[opcode]);
-	signed short immed;
-	uint16 varref;
-	sint16 staticref;
-	unsigned short func;
-	int immed32;
-	int offset;
 
 	std::printf("      %04X: ", func_ip);
 
@@ -91,6 +85,9 @@ void Usecode_internal::uc_trace_disasm(Usecode_value *locals, int num_locals,
 	}
 
 	if (pdesc && pdesc->nbytes > 0) {
+		uint16 varref;
+		signed short immed;
+		int offset;
 		switch (pdesc->type) {
 		case op_byte:
 			std::printf("\t%02x", *ip++);
@@ -100,10 +97,11 @@ void Usecode_internal::uc_trace_disasm(Usecode_value *locals, int num_locals,
 			immed = Read2(ip);
 			std::printf("\t%04hXH\t\t; %d", immed, immed);
 			break;
-		case op_immed32:
-			immed32 = Read4s(ip);
+		case op_immed32: {
+			int immed32 = Read4s(ip);
 			std::printf("\t%08XH\t\t; %d", immed32, immed32);
 			break;
+		}
 		case op_data_string:
 		case op_data_string32: {
 			const char *pstr;
@@ -173,7 +171,7 @@ void Usecode_internal::uc_trace_disasm(Usecode_value *locals, int num_locals,
 			            offset + func_ip + 1 + pdesc->nbytes);
 			break;
 		case op_call: {
-			func = Read2(ip);
+			unsigned short func = Read2(ip);
 			immed = *ip++;
 			const char **func_table = bg_intrinsic_table;
 			if (Game::get_game_type() == SERPENT_ISLE) {
@@ -207,8 +205,8 @@ void Usecode_internal::uc_trace_disasm(Usecode_value *locals, int num_locals,
 			else
 				std::printf("unset");
 			break;
-		case op_staticref:
-			staticref = Read2(ip);
+		case op_staticref: {
+			sint16 staticref = Read2(ip);
 			std::printf("[%04X]\t= ", static_cast<uint16>(staticref));
 			if (staticref < 0) {
 				// global
@@ -223,6 +221,7 @@ void Usecode_internal::uc_trace_disasm(Usecode_value *locals, int num_locals,
 					std::printf("<out of range>");
 			}
 			break;
+		}
 		default:
 			// Unknown type
 			break;

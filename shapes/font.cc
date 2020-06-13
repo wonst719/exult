@@ -250,9 +250,9 @@ int Font::paint_text(
 ) {
 	ignore_unused_variable_warning(win);
 	int x = xoff;
-	int chr;
 	yoff += get_text_baseline();
-	if (font_shapes)
+	if (font_shapes) {
+		int chr;
 		while ((chr = *text++) != 0) {
 			Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
 			if (!shape)
@@ -263,6 +263,7 @@ int Font::paint_text(
 				shape->paint_rle(x, yoff);
 			x += shape->get_width() + hor_lead;
 		}
+	}
 	return x - xoff;
 }
 
@@ -491,13 +492,14 @@ int Font::get_text_width(
     const char *text
 ) {
 	int width = 0;
-	short chr;
-	if (font_shapes)
+	if (font_shapes) {
+		short chr;
 		while ((chr = *text++) != 0) {
 			Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
 			if (shape)
 				width += shape->get_width() + hor_lead;
 		}
+	}
 	return width;
 }
 

@@ -335,12 +335,11 @@ bool U7open(
 DIR *U7opendir(
     const char *fname			// May be converted to upper-case.
 ) {
-	DIR *dir;
 	string name = get_system_path(fname);
 	int uppercasecount = 0;
 
 	do {
-		dir = opendir(name.c_str()); // Try to open
+		DIR *dir = opendir(name.c_str()); // Try to open
 		if (dir)
 			return dir; // found it!
 	} while (base_to_uppercase(name, ++uppercasecount));
@@ -365,12 +364,11 @@ void U7remove(
 	DeleteFile(lpszT);
 #else
 
-	bool exists;
 	struct stat sbuf;
 
 	int uppercasecount = 0;
 	do {
-		exists = (stat(name, &sbuf) == 0);
+		bool exists = (stat(name, &sbuf) == 0);
 		if (exists) {
 			std::remove(name.c_str());
 		}
@@ -415,12 +413,11 @@ bool U7exists(
     const char *fname         // May be converted to upper-case.
 ) {
 	string name = get_system_path(fname);
-	bool    exists;
 	struct stat sbuf;
 
 	int uppercasecount = 0;
 	do {
-		exists = (stat(name, &sbuf) == 0);
+		bool exists = (stat(name, &sbuf) == 0);
 		if (exists)
 			return true; // found it!
 	} while (base_to_uppercase(name, ++uppercasecount));

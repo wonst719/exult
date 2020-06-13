@@ -2127,16 +2127,13 @@ void CheatScreen::BusinessDisplay(Actor *actor) {
 		int types[8] = { -1, -1, -1, -1, -1, -1, -1, -1};
 		int x[8];
 		int y[8];
-		int time;
-		int i;
-		Tile_coord tile;
 
 		actor->get_schedules(scheds, num);
 
-		for (i = 0; i < num; i++) {
-			time = scheds[i].get_time();
+		for (int i = 0; i < num; i++) {
+			int time = scheds[i].get_time();
 			types[time] = scheds[i].get_type();
-			tile = scheds[i].get_pos();
+			Tile_coord tile = scheds[i].get_pos();
 			x[time] = tile.tx;
 			y[time] = tile.ty;
 		}
@@ -2150,7 +2147,7 @@ void CheatScreen::BusinessDisplay(Actor *actor) {
 		font->paint_text_fixedwidth(ibuf, " 6 PM:", offsetx, 84 - offsety1, 8);
 		font->paint_text_fixedwidth(ibuf, " 9 PM:", offsetx, 92 - offsety1, 8);
 
-		for (i = 0; i < 8; i++) if (types[i] != -1) {
+		for (int i = 0; i < 8; i++) if (types[i] != -1) {
 				snprintf(buf, 512, "%2i (%4i,%4i) - %s", types[i], x[i], y[i], schedules[types[i]]);
 				font->paint_text_fixedwidth(ibuf, buf, offsetx + 56, (36  - offsety1) + i * 8, 8);
 			}
@@ -2809,9 +2806,7 @@ void CheatScreen::TeleportMenu() {
 }
 
 void CheatScreen::TeleportActivate(char *input, int &command, Cheat_Prompt &mode, int &prev) {
-	Actor *actor;
 	int i = std::atoi(input);
-	int npc = std::atoi(input);
 	static int lat;
 	Tile_coord t = gwin->get_main_actor()->get_tile();
 	int highest = Find_highest_map();
@@ -2938,10 +2933,10 @@ void CheatScreen::TeleportActivate(char *input, int &command, Cheat_Prompt &mode
 		break;
 
 	case 'n':   // NPC
-		if (npc < -1 || (npc >= 356 && npc <= 359)) mode = CP_InvalidNPC;
-		else if (npc == -1) mode = CP_Canceled;
+		if (i < -1 || (i >= 356 && i <= 359)) mode = CP_InvalidNPC;
+		else if (i == -1) mode = CP_Canceled;
 		else {
-			actor = gwin->get_npc(npc);
+			Actor *actor = gwin->get_npc(i);
 			Game_window::get_instance()->teleport_party(actor->get_tile(),
 			false, actor->get_map_num());
 		}

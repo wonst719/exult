@@ -307,15 +307,9 @@ void FMOplMidiDriver::send(uint32 b)
 	case 0x90:{									/*note on */
 			unsigned char note = static_cast<unsigned char>((b >> 8) & 0x7F);
 			unsigned char vel = static_cast<unsigned char>((b >> 16) & 0x7F);
-			int i;
-			int j;
-			int onl;
-			int on;
-			int nv;
-			on = -1;
 
 			// First send a note off, if it's found
-			for (i = 0; i < 9; i++)
+			for (int i = 0; i < 9; i++)
 				if ((chp[i][CHP_CHAN] == channel) && (chp[i][CHP_NOTE] == note)) {
 					midi_fm_endnote(i);
 					chp[i][CHP_CHAN] = -1;
@@ -324,11 +318,13 @@ void FMOplMidiDriver::send(uint32 b)
 			if (vel != 0 && ch[channel].on != 0) {
 
 				// Increment each counter
-				for (i = 0; i < 9; i++) chp[i][CHP_COUNTER]++;
+				for (int i = 0; i < 9; i++) chp[i][CHP_COUNTER]++;
 
 				// Try to find the last channel that was used, that is currently unused
-				j = 0; onl = 0;
-				for (i = 0; i < 9; i++)
+				int j = 0;
+				int onl = 0;
+				int on = -1;
+				for (int i = 0; i < 9; i++)
 					if ((chp[i][CHP_CHAN] == -1) && (chp[i][CHP_COUNTER] > onl)) {
 						onl = chp[i][CHP_COUNTER];
 						on = i;
@@ -338,7 +334,7 @@ void FMOplMidiDriver::send(uint32 b)
 				// If we didn't find a free chan, use the oldest chan
 				if (on == -1) {
 					onl = 0;
-					for (i = 0; i < 9; i++)
+					for (int i = 0; i < 9; i++)
 						if (chp[i][CHP_COUNTER] > onl) {
 							onl = chp[i][CHP_COUNTER];
 							on = i;
@@ -357,7 +353,7 @@ void FMOplMidiDriver::send(uint32 b)
 				}
 
 				// Calculate the adlib volume
-				nv = midi_calc_volume(channel, vel);
+				int nv = midi_calc_volume(channel, vel);
 
 				// Send note on
 				midi_fm_playnote(on, note + ch[channel].nshift, nv * 2, ch[channel].pitchbend);
@@ -486,15 +482,16 @@ void FMOplMidiDriver::send(uint32 b)
 			//std::POUT << "Setting instrument: " << static_cast<unsigned int>(instrument) << " for chan " << static_cast<unsigned int>(channel) << std::endl;
 
 			unsigned char *ins = nullptr;
-			int b = -1;
 
 			// Search for xmidi ins.
-			if (ch[channel].xmidi) for (b = ch[channel].xmidi_bank; b>=0; b--) {
-				xmidibank *bank = xmidibanks[b];
-				if (!bank) continue;
-				if (bank->insbank[instrument][INDEX_PERC] &= 0x80) {
-					ins = bank->insbank[instrument];
-					break;
+			if (ch[channel].xmidi) {
+				for (int b = ch[channel].xmidi_bank; b>=0; b--) {
+					xmidibank *bank = xmidibanks[b];
+					if (!bank) continue;
+					if (bank->insbank[instrument][INDEX_PERC] &= 0x80) {
+						ins = bank->insbank[instrument];
+						break;
+					}
 				}
 			}
 
@@ -720,12 +717,11 @@ void FMOplMidiDriver::midi_fm_playnote(int voice, int note, int volume, int pitc
 {
 	int freq = fnums[note % 12];
 	int oct = note / 12;
-	int c;
-	float pf;
 
 	pitchbend -= 0x2000;
 	if (pitchbend != 0) {
 		pitchbend *= 2;
+		float pf;
 		if (pitchbend >= 0)
 			pf = static_cast<float>(bend_fine[(pitchbend >> 5) & 0xFF] * bend_coarse[(pitchbend >> 13) & 0x7F]);
 		else {
@@ -747,7 +743,7 @@ void FMOplMidiDriver::midi_fm_playnote(int voice, int note, int volume, int pitc
 	midi_fm_volume(voice, volume);
 	midi_write_adlib(0xa0 + voice, static_cast<unsigned char>(freq & 0xff));
 
-	c = ((freq & 0x300) >> 8) + (oct << 2) + (1 << 5);
+	int c = ((freq & 0x300) >> 8) + (oct << 2) + (1 << 5);
 	midi_write_adlib(0xb0 + voice, static_cast<unsigned char>(c));
 }
 

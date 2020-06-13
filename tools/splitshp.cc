@@ -119,41 +119,27 @@ char *framefilename(char *shapefilename, int frame) {
 }
 
 void split_shape(char *filename) {
-	FILE *shpfile;
-	FILE *framefile;
-	int file_size;
-	int shape_size;
-	int hdr_size;
-	int frame_offset;
-	int next_frame_offset;
-	int num_frames;
-	size_t datalen;
-	uint8 *data;
-	char *framename;
-	int i;
-	size_t err;
-
-	shpfile = fopen(filename, "rb");
+	FILE *shpfile = fopen(filename, "rb");
 	if (!shpfile) {
 		cerr << "Can't open " << filename << endl;
 		return;
 	}
 	fseek(shpfile, 0, SEEK_END);
-	file_size = ftell(shpfile);
+	int file_size = ftell(shpfile);
 	fseek(shpfile, 0, SEEK_SET);
 
-	shape_size = read4(shpfile);
+	int shape_size = read4(shpfile);
 
 	if (file_size != shape_size) { /* 8x8 tile */
-		num_frames = file_size / 64;
+		int num_frames = file_size / 64;
 		fseek(shpfile, 0, SEEK_SET);        /* Return to start of file */
 		cout << "num_frames = " << num_frames << endl;
-		data = new uint8[64];
-		for (i = 0; i < num_frames; i++) {
-			framename = framefilename(filename, i);
+		uint8 *data = new uint8[64];
+		for (int i = 0; i < num_frames; i++) {
+			char *framename = framefilename(filename, i);
 			cout << "writing " << framename << "..." << endl;
-			framefile = fopen(framename, "wb");
-			err = fread(data, 1, 64, shpfile);
+			FILE *framefile = fopen(framename, "wb");
+			size_t err = fread(data, 1, 64, shpfile);
 			assert(err == 64);
 			fwrite(data, 1, 64, framefile);
 			fclose(framefile);
@@ -161,19 +147,20 @@ void split_shape(char *filename) {
 		}
 		delete[] data;
 	} else {
-		hdr_size = read4(shpfile);
-		num_frames = (hdr_size - 4) / 4;
+		int hdr_size = read4(shpfile);
+		int num_frames = (hdr_size - 4) / 4;
 
 		cout << "num_frames = " << num_frames << endl;
 
-		for (i = 0; i < num_frames; i++) {
-			framename = framefilename(filename, i);
+		for (int i = 0; i < num_frames; i++) {
+			char *framename = framefilename(filename, i);
 			cout << "writing " << framename << "..." << endl;
-			framefile = fopen(framename, "wb");
+			FILE *framefile = fopen(framename, "wb");
 
 			// Go to where frame offset is stored
 			fseek(shpfile, (i + 1) * 4, SEEK_SET);
-			frame_offset = read4(shpfile);
+			int frame_offset = read4(shpfile);
+			int next_frame_offset;
 
 			if (i + 1 < num_frames)
 				next_frame_offset = read4(shpfile);
@@ -181,13 +168,13 @@ void split_shape(char *filename) {
 				next_frame_offset = shape_size;
 
 			fseek(shpfile, frame_offset, SEEK_SET);
-			datalen = next_frame_offset - frame_offset;
+			size_t datalen = next_frame_offset - frame_offset;
 
 			write4(framefile, datalen + 8);
 			write4(framefile, 8);
 
-			data = new uint8[datalen];
-			err = fread(data, 1, datalen, shpfile);
+			uint8 *data = new uint8[datalen];
+			size_t err = fread(data, 1, datalen, shpfile);
 			assert(err == datalen);
 			fwrite(data, 1, datalen, framefile);
 			fclose(framefile);
@@ -201,31 +188,21 @@ void split_shape(char *filename) {
 }
 
 void merge_frames(char *shapefile, char **framefiles, int numframefiles) {
-	FILE *shpfile;
-	FILE *framefile;
-	int i;
 	bool tiles = false;
-	int file_size;
-	int shape_size;
-	int hdr_size;
-	size_t frame_size;
-	int total_size;
-	uint8 *data;
-	size_t err;
 
-	shpfile = fopen(shapefile, "wb");
+	FILE *shpfile = fopen(shapefile, "wb");
 
-	total_size = 4 + 4 * numframefiles;
+	int total_size = 4 + 4 * numframefiles;
 
-	for (i = 0; i < numframefiles; i++) {
-		framefile = fopen(framefiles[i], "rb");
+	for (int i = 0; i < numframefiles; i++) {
+		FILE *framefile = fopen(framefiles[i], "rb");
 
 		cout << "reading " << framefiles[i] << "..." << endl;
 
 		fseek(framefile, 0, SEEK_END);
-		file_size = ftell(framefile);
+		int file_size = ftell(framefile);
 		fseek(framefile, 0, SEEK_SET);
-		shape_size = read4(framefile);
+		int shape_size = read4(framefile);
 
 		if (file_size != shape_size) { // 8x8 tile
 			if (i > 0 && !tiles) {
@@ -238,9 +215,9 @@ void merge_frames(char *shapefile, char **framefiles, int numframefiles) {
 			fseek(framefile, 0, SEEK_SET);
 			fseek(shpfile, 64 * i, SEEK_SET);
 
-			data = new uint8[64];
+			uint8 *data = new uint8[64];
 
-			err = fread(data, 1, 64, framefile);
+			size_t err = fread(data, 1, 64, framefile);
 			assert(err == 64);
 			fwrite(data, 1, 64, shpfile);
 			fclose(framefile);
@@ -252,8 +229,9 @@ void merge_frames(char *shapefile, char **framefiles, int numframefiles) {
 				exit(1);
 			}
 
-			hdr_size = read4(framefile);
+			int hdr_size = read4(framefile);
 
+			size_t  frame_size;
 			if (hdr_size > 8) {
 				frame_size = read4(framefile);
 				frame_size -= hdr_size;
@@ -261,9 +239,9 @@ void merge_frames(char *shapefile, char **framefiles, int numframefiles) {
 				frame_size = shape_size - hdr_size;
 			}
 
-			data = new uint8[frame_size];
+			uint8 *data = new uint8[frame_size];
 			fseek(framefile, hdr_size, SEEK_SET);
-			err = fread(data, 1, frame_size, framefile);
+			size_t err = fread(data, 1, frame_size, framefile);
 			assert(err == frame_size);
 			fclose(framefile);
 
@@ -288,9 +266,6 @@ void merge_frames(char *shapefile, char **framefiles, int numframefiles) {
 }
 
 int main(int argc, char *argv[]) {
-	char *shapefile;
-	int numframefiles;
-	char *framefiles[255];
 
 	if (argc < 2) {
 		cout << "Usage: To split: splitshp [shape file]" << endl
@@ -298,10 +273,11 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 
-	shapefile = argv[1];
+	char *shapefile = argv[1];
 
 	if (argc > 2) {
-		numframefiles = argc - 2;
+		int numframefiles = argc - 2;
+		char *framefiles[255];
 		for (int i = 0; i < numframefiles; i++)
 			framefiles[i] = argv[i + 2];
 		merge_frames(shapefile, framefiles, numframefiles);

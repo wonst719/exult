@@ -54,9 +54,9 @@ void Game_window::read_npcs(
 	Main_actor_shared ava = std::make_shared<Main_actor>("", 0);
 	npcs[0] = ava;
 	camera_actor = main_actor = ava.get();
-	int num_npcs;
 	bool fix_unused = false;    // Get set for old savegames.
 	{
+		int num_npcs;
 		IFileDataSource nfile(NPC_DAT);
 		if (nfile.good()) {
 			num_npcs1 = nfile.read2();  // Get counts.

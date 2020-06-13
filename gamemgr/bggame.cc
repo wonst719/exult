@@ -472,7 +472,6 @@ void BG_Game::scene_butterfly() {
 	};
 
 	int frame;
-	int dir = 0;
 
 	auto DrawButterfly = [&](int x, int y, int frame, int delay, Image_buffer *backup, Shape_frame *butterfly) {
 		// Draw butterfly
@@ -485,6 +484,7 @@ void BG_Game::scene_butterfly() {
 				topy + y - butterfly->get_yabove());
 	};
 
+	int dir = 0;
 	auto ButterflyFlap = [&]() {
 		if ((rand() % 5)<4) {
 			if (frame == 3) {
@@ -1339,8 +1339,6 @@ bool ExVoiceBuffer::play_it() {
 }
 
 void BG_Game::end_game(bool success) {
-	unsigned int next = 0;
-	int starty;
 	Font *font = fontManager.get_font("MENU_FONT");
 
 	if (!success) {
@@ -1406,6 +1404,7 @@ void BG_Game::end_game(bool success) {
 	if (midi) midi->start_music(ENDSCORE_XMI, 1, false);
 
 	try {
+		unsigned int next = 0;
 		for (unsigned int i = 0; i < 240; i++) {
 			next = fli1.play(win, 0, 1, next);
 			if (wait_delay(0)) {
@@ -1548,7 +1547,7 @@ void BG_Game::end_game(bool success) {
 		fli3.info(&finfo);
 
 		int m;
-		starty = (gwin->get_height() - endfont3->get_text_height() * 8) / 2;
+		int starty = (gwin->get_height() - endfont3->get_text_height() * 8) / 2;
 
 		next = SDL_GetTicks();
 		for (unsigned int i = next + 28000; i > next;) {

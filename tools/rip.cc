@@ -18,8 +18,6 @@ void rebuild() {
 	unsigned int c;
 	char s[10];
 	char filename[18];
-	char *pos;
-	char *err;
 	FILE *fi = fopen("index", "r");
 	FILE *fi2;
 	FILE *fo = fopen("usecode", "wb");
@@ -32,11 +30,11 @@ void rebuild() {
 		exit(0);
 	}
 	while (!feof(fi)) {
-		err = fgets(s, 10, fi);
+		char *err = fgets(s, 10, fi);
 		assert(err != nullptr);
 
 		strcpy(filename, s);
-		pos = strchr(filename, '\n');
+		char *pos = strchr(filename, '\n');
 		if (pos) *pos = '\0';
 		strcat(filename, ".uco");
 		if (!feof(fi)) {

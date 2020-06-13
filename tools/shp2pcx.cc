@@ -131,44 +131,24 @@ unsigned int read4(FILE *f) {
 
 
 u7shape *load_shape(char *filename) {
-	FILE *fp;
-	int file_size;
-	int shape_size;
-	int hdr_size;
-	uint8 *pixptr/*, *eod*/;
-	int frame_offset;
-	int slice;
-	int slice_type;
-	int slice_length;
-	int block_type;
-	int block_length;
 	int max_leftX = -1;
 	int max_rightX = -1;
 	int max_leftY = -1;
 	int max_rightY = -1;
-	int offsetX;
-	int offsetY;
-	uint8 block;
-	uint8 pix;
-	int i;
-	int j;
-	size_t err;
 
-	int temp_int;
-
-	fp = fopen(filename, "rb");
+	FILE *fp = fopen(filename, "rb");
 	if (!fp) {
 		cerr << "Can't open " << filename << endl;
 		return nullptr;
 	}
 	fseek(fp, 0, SEEK_END);
-	file_size = ftell(fp);
+	int file_size = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
 	u7shape *shape = new u7shape;
 	u7frame *frame;
 
-	shape_size = read4(fp);
+	int shape_size = read4(fp);
 
 	if (file_size != shape_size) { /* 8x8 tile */
 		shape->num_frames = file_size / 64;
@@ -180,29 +160,29 @@ u7shape *load_shape(char *filename) {
 		max_rightX = 7;
 		max_rightY = 7;
 
-		for (i = 0; i < shape->num_frames; i++) {
+		for (int i = 0; i < shape->num_frames; i++) {
 			frame = &shape->frames[i];
 			frame->width = 8;
 			frame->height = 8;
 			frame->leftX = 0;
 			frame->leftY = 0;
 			frame->pixels = new uint8[64];
-			err = fread(frame->pixels, 1, 64, fp);
+			size_t err = fread(frame->pixels, 1, 64, fp);
 			assert(err == 64);
 		}
 	} else {
-		hdr_size = read4(fp);
+		int hdr_size = read4(fp);
 		shape->num_frames = (hdr_size - 4) / 4;
 
 		cout << "num_frames = " << shape->num_frames << endl;
 		shape->frames = new u7frame[shape->num_frames];
 
-		for (i = 0; i < shape->num_frames; i++) {
+		for (int i = 0; i < shape->num_frames; i++) {
 			frame = &shape->frames[i];
 
 			// Go to where frame offset is stored
 			fseek(fp, (i + 1) * 4, SEEK_SET);
-			frame_offset = read4(fp);
+			int frame_offset = read4(fp);
 			fseek(fp, frame_offset, SEEK_SET);
 			frame->rightX = read2(fp);
 			frame->leftX = read2(fp);
@@ -221,39 +201,39 @@ u7shape *load_shape(char *filename) {
 			frame->width = frame->leftX + frame->rightX + 1;
 			frame->height = frame->leftY + frame->rightY + 1;
 
-			pixptr = new uint8[frame->width * frame->height];
-			frame->pixels = pixptr;
-			memset(pixptr, 0, frame->width * frame->height);
+			frame->pixels = new uint8[frame->width * frame->height];
+			memset(frame->pixels, 0, frame->width * frame->height);
 
 			//eod = frame->pixels+frame->width*frame->height;
+			int slice;
 			while ((slice = read2(fp)) != 0) {
-				slice_type = slice & 0x1;
-				slice_length = slice >> 1;
+				int slice_type = slice & 0x1;
+				int slice_length = slice >> 1;
 
-				offsetX = read2signed(fp);
-				offsetY = read2signed(fp);
+				int offsetX = read2signed(fp);
+				int offsetY = read2signed(fp);
 
-				temp_int = (frame->leftY + offsetY) * frame->width +
+				int temp_int = (frame->leftY + offsetY) * frame->width +
 				           (frame->leftX + offsetX);
 
-				pixptr = frame->pixels;
+				uint8 *pixptr = frame->pixels;
 				pixptr = pixptr + temp_int;
 
 				if (pixptr < frame->pixels)
 					pixptr = frame->pixels;
 				if (slice_type) {   // Compressed
 					while (slice_length > 0) {
-						block = read1(fp);
-						block_type = block & 0x1;
-						block_length = block >> 1;
+						uint8 block = read1(fp);
+						int block_type = block & 0x1;
+						int block_length = block >> 1;
 						if (block_type) {
-							pix = read1(fp);
-							for (j = 0; j < block_length; j++) {
+							uint8 pix = read1(fp);
+							for (int j = 0; j < block_length; j++) {
 								*pixptr++ = pix;
 							}
 						} else {
-							for (j = 0; j < block_length; j++) {
-								pix = read1(fp);
+							for (int j = 0; j < block_length; j++) {
+								uint8 pix = read1(fp);
 								*pixptr++ = pix;
 							}
 						}
@@ -261,8 +241,8 @@ u7shape *load_shape(char *filename) {
 					}
 				} else {        // Uncompressed
 					// Just read the pixels
-					for (j = 0; j < slice_length; j++) {
-						pix = read1(fp);
+					for (int j = 0; j < slice_length; j++) {
+						uint8 pix = read1(fp);
 						*pixptr++ = pix;
 					}
 				}
@@ -278,23 +258,18 @@ u7shape *load_shape(char *filename) {
 	shape->width = width;
 	shape->height = height;
 
-	int srcx;
-	int srcy;
-	int dstx;
-	int dsty;
-
-	for (i = 0; i < shape->num_frames; i++) {
+	for (int i = 0; i < shape->num_frames; i++) {
 		frame = &shape->frames[i];
-		pixptr = frame->pixels;
+		uint8 *pixptr = frame->pixels;
 
 		frame->pixels = new uint8[width * height];
 		memset(frame->pixels, 0, width * height);
 
-		dsty = max_leftY - frame->leftY;
+		int dsty = max_leftY - frame->leftY;
 
-		for (srcy = 0; srcy < frame->height; srcy++, dsty++) {
-			dstx = max_leftX - frame->leftX;
-			srcx = 0;
+		for (int srcy = 0; srcy < frame->height; srcy++, dsty++) {
+			int dstx = max_leftX - frame->leftX;
+			int srcx = 0;
 			memcpy(frame->pixels + dsty * width + dstx, pixptr + srcy * frame->width + srcx, frame->width);
 		}
 
@@ -305,11 +280,7 @@ u7shape *load_shape(char *filename) {
 }
 
 uint8 *load_palette(char *filename) {
-	FILE *fp;
-	long len;
-	int i;
-
-	fp = fopen(filename, "rb");
+	FILE *fp = fopen(filename, "rb");
 	if (!fp) {
 		cerr << "Can't open " << filename << endl;
 		return nullptr;
@@ -318,16 +289,16 @@ uint8 *load_palette(char *filename) {
 	uint8 *palette = new uint8[768];
 
 	fseek(fp, 0, SEEK_END);
-	len = ftell(fp);
+	long len = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 	if (len == 768) {
-		for (i = 0; i < 256; i++) {
+		for (int i = 0; i < 256; i++) {
 			palette[i * 3] = read1(fp) << 2;
 			palette[i * 3 + 1] = read1(fp) << 2;
 			palette[i * 3 + 2] = read1(fp) << 2;
 		}
 	} else if (len == 1536) {
-		for (i = 0; i < 256; i++) {
+		for (int i = 0; i < 256; i++) {
 			palette[i * 3] = read1(fp) << 2;
 			read1(fp);
 			palette[i * 3 + 1] = read1(fp) << 2;
@@ -347,15 +318,11 @@ uint8 *load_palette(char *filename) {
 }
 
 static void writeline(FILE *dst, uint8 *buffer, int bytes) {
-	uint8 value;
-	uint8 count;
-	uint8 tmp;
 	uint8 *finish = buffer + bytes;
 
 	while (buffer < finish) {
-
-		value = *(buffer++);
-		count = 1;
+		uint8 value = *(buffer++);
+		uint8 count = 1;
 
 		while (buffer < finish && count < 63 && *buffer == value) {
 			count++;
@@ -365,7 +332,7 @@ static void writeline(FILE *dst, uint8 *buffer, int bytes) {
 		if (value < 0xc0 && count == 1) {
 			fputc(value, dst);
 		} else {
-			tmp = count + 0xc0;
+			uint8 tmp = count + 0xc0;
 			fputc(tmp, dst);
 			fputc(value, dst);
 		}
@@ -374,9 +341,7 @@ static void writeline(FILE *dst, uint8 *buffer, int bytes) {
 
 void save_8(FILE *dst, int width, int height,
             int pitch, uint8 *buffer) {
-	int row;
-
-	for (row = 0; row < height; ++row) {
+	for (int row = 0; row < height; ++row) {
 		writeline(dst, buffer, width);
 		buffer += pitch;
 	}

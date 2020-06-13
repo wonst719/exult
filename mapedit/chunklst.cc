@@ -903,9 +903,8 @@ void Chunk_chooser::unselect(
 			(*sel_changed)();
 	}
 	enable_controls();      // Enable/disable controls.
-	char buf[150];          // Show new selection.
 	if (info_cnt > 0) {
-//		gtk_statusbar_pop(GTK_STATUSBAR(sbar), sbar_sel);
+		char buf[150];          // Show new selection.
 		g_snprintf(buf, sizeof(buf), "Chunks %d to %d",
 		           info[0].num, info[info_cnt - 1].num);
 		gtk_statusbar_push(GTK_STATUSBAR(sbar), sbar_sel, buf);

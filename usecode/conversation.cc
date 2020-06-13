@@ -561,11 +561,9 @@ void Conversation::paint_faces(
 			continue;
 		Shape_frame *face = finfo->face_num >= 0 ?
 		                    finfo->shape.get_shape() : nullptr;
-		int face_xleft = 0;
-		int face_yabove = 0;
 		if (face) {
-			face_xleft = face->get_xleft();
-			face_yabove = face->get_yabove();
+			int face_xleft = face->get_xleft();
+			int face_yabove = face->get_yabove();
 			int fx = finfo->face_rect.x + face_xleft;
 			int fy = finfo->face_rect.y + face_yabove;
 			if (finfo->large_face) {

@@ -435,8 +435,6 @@ void Game_window::read_save_names(
 
 
 void Game_window::write_saveinfo() {
-	int i;
-
 	int save_count = 1;
 
 	{
@@ -481,7 +479,7 @@ void Game_window::write_saveinfo() {
 		        j < sizeof(SaveGame_Details); j++)
 			out.write1(0);
 
-		for (i = 0; i < party_size ; i++) {
+		for (int i = 0; i < party_size ; i++) {
 			Actor *npc;
 			if (i == 0)
 				npc = main_actor;
@@ -759,7 +757,6 @@ bool Game_window::Restore_level2(
 
 	char oname[50];     // Set up name.
 	char *oname2 = oname + sizeof(GAMEDAT) + dirlen - 1;
-	int size;
 	strcpy(oname, dirname);
 	oname2[0] = '/';
 	oname2++;
@@ -787,7 +784,7 @@ bool Game_window::Restore_level2(
 			return false;
 		}
 		const unsigned char *ptr = size_buffer;
-		size = Read4(ptr);
+		int size = Read4(ptr);
 
 		if (size) {
 			// Watch for names ending in '.'.

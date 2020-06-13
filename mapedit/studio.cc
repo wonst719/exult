@@ -1147,13 +1147,12 @@ void ExultStudio::open_game_dialog(
 		get_widget("gameselect_gamelist"),
 		get_widget("gameselect_modlist")
 	};
-	GtkTreeStore *model;
 
 	/* create the store for both trees */
 	for (int i = 0; i < 2; i++) {
 		GtkTreeModel *oldmod = gtk_tree_view_get_model(
 		                           GTK_TREE_VIEW(dlg_list[i]));
-		GtkTreeViewColumn *column;
+		GtkTreeStore *model;
 		if (oldmod)
 			model = GTK_TREE_STORE(oldmod);
 		else {              // Create the first time.
@@ -1172,7 +1171,7 @@ void ExultStudio::open_game_dialog(
 			                 -1, "Column1",
 			                 renderer, "text",
 			                 FOLDER_COLUMN, nullptr);
-			column = gtk_tree_view_get_column(GTK_TREE_VIEW(dlg_list[i]),
+			GtkTreeViewColumn *column = gtk_tree_view_get_column(GTK_TREE_VIEW(dlg_list[i]),
 			                                  col_offset - 1);
 			gtk_tree_view_column_set_clickable(
 			    GTK_TREE_VIEW_COLUMN(column), TRUE);

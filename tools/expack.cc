@@ -170,8 +170,6 @@ int main(int argc, char **argv)
 	string fname;
 	string hname;
 	string hprefix;
-	char ext[] = "u7o";
-	int index;
 	vector<string>  file_names;
 	file_names.reserve(1200);
 
@@ -281,6 +279,7 @@ int main(int argc, char **argv)
 	}
 	break;
 	case EXTRACT: {
+		constexpr const char ext[] = "u7o";
 		if (argc == 4) {
 			U7object f(fname, atoi(argv[3]));
 			unsigned long nobjs = f.number_of_objects();
@@ -299,7 +298,7 @@ int main(int argc, char **argv)
 			U7FileManager *fm = U7FileManager::get_ptr();
 			U7file *f = fm->get_file_object(fname);
 			int count = static_cast<int>(f->number_of_objects());
-			for (index = 0; index < count; index++) {
+			for (int index = 0; index < count; index++) {
 				U7object o(fname, index);
 				char outfile[32];
 				snprintf(outfile, 32, "%05d.%s", index, ext);

@@ -613,14 +613,11 @@ inline void OPL_CALC_RH(OPL_CH *CH) {
 
 /* ----------- initialize time tabls ----------- */
 static void init_timetables(FM_OPL *OPL, int ARRATE, int DRRATE) {
-	int i;
-	double rate;
-
 	/* make attack rate & decay rate tables */
-	for (i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 		OPL->AR_TABLE[i] = OPL->DR_TABLE[i] = 0;
-	for (i = 4; i <= 60; i++) {
-		rate = OPL->freqbase;						/* frequency rate */
+	for (int i = 4; i <= 60; i++) {
+		double rate = OPL->freqbase;						/* frequency rate */
 		if (i < 60)
 			rate *= 1.0 + (i & 3) * 0.25;		/* b0-1 : x1 , x1.25 , x1.5 , x1.75 */
 		rate *= 1 << ((i >> 2) - 1);						/* b2-5 : shift bit */
@@ -628,7 +625,7 @@ static void init_timetables(FM_OPL *OPL, int ARRATE, int DRRATE) {
 		OPL->AR_TABLE[i] = static_cast<int>(rate / ARRATE);
 		OPL->DR_TABLE[i] = static_cast<int>(rate / DRRATE);
 	}
-	for (i = 60; i < 76; i++) {
+	for (int i = 60; i < 76; i++) {
 		OPL->AR_TABLE[i] = EG_AED-1;
 		OPL->DR_TABLE[i] = OPL->DR_TABLE[60];
 	}
@@ -636,13 +633,6 @@ static void init_timetables(FM_OPL *OPL, int ARRATE, int DRRATE) {
 
 /* ---------- generic table initialize ---------- */
 static int OPLOpenTable() {
-	uint32 s;
-	uint32 t;
-	uint32 i;
-	double rate;
-	int j;
-	double pom;
-
 	/* allocate dynamic tables */
 	TL_TABLE = new int[TL_MAX * 2];
 	SIN_TABLE = new int *[SIN_ENT * 4];
@@ -650,39 +640,39 @@ static int OPLOpenTable() {
 	VIB_TABLE = new int[VIB_ENT * 2];
 	ENV_CURVE = new int[2*EG_ENT+1];
 	/* make total level table */
-	for (t = 0; t < EG_ENT - 1; t++) {
-		rate = ((1 << TL_BITS) - 1) / pow(10.0, EG_STEP * t / 20);	/* dB -> voltage */
+	for (uint32 t = 0; t < EG_ENT - 1; t++) {
+		double rate = ((1 << TL_BITS) - 1) / pow(10.0, EG_STEP * t / 20);	/* dB -> voltage */
 		TL_TABLE[         t] =  static_cast<int>(rate);
 		TL_TABLE[TL_MAX + t] = -TL_TABLE[t];
 	}
 	/* fill volume off area */
-	for (t = EG_ENT - 1; t < TL_MAX; t++) {
+	for (uint32 t = EG_ENT - 1; t < TL_MAX; t++) {
 		TL_TABLE[t] = TL_TABLE[TL_MAX + t] = 0;
 	}
 
 	/* make sinwave table (total level offet) */
 	/* degree 0 = degree 180                   = off */
 	SIN_TABLE[0] = SIN_TABLE[SIN_ENT /2 ] = &TL_TABLE[EG_ENT - 1];
-	for (s = 1;s <= SIN_ENT / 4; s++) {
-		pom = sin(2 * M_PI * s / SIN_ENT); /* sin     */
+	for (uint32 s = 1; s <= SIN_ENT / 4; s++) {
+		double pom = sin(2 * M_PI * s / SIN_ENT); /* sin     */
 		pom = 20 * log10(1 / pom);	   /* decibel */
-		j = int(pom / EG_STEP);         /* TL_TABLE steps */
+		int j = int(pom / EG_STEP);         /* TL_TABLE steps */
 
 		/* degree 0   -  90    , degree 180 -  90 : plus section */
 		SIN_TABLE[          s] = SIN_TABLE[SIN_ENT / 2 - s] = &TL_TABLE[j];
 		/* degree 180 - 270    , degree 360 - 270 : minus section */
 		SIN_TABLE[SIN_ENT / 2 + s] = SIN_TABLE[SIN_ENT - s] = &TL_TABLE[TL_MAX + j];
 	}
-	for (s = 0;s < SIN_ENT; s++) {
+	for (uint32 s = 0; s < SIN_ENT; s++) {
 		SIN_TABLE[SIN_ENT * 1 + s] = s < (SIN_ENT / 2) ? SIN_TABLE[s] : &TL_TABLE[EG_ENT];
 		SIN_TABLE[SIN_ENT * 2 + s] = SIN_TABLE[s % (SIN_ENT / 2)];
 		SIN_TABLE[SIN_ENT * 3 + s] = (s / (SIN_ENT / 4)) & 1 ? &TL_TABLE[EG_ENT] : SIN_TABLE[SIN_ENT * 2 + s];
 	}
 
 	/* envelope counter -> envelope output table */
-	for (i = 0; i < EG_ENT; i++) {
+	for (uint32 i = 0; i < EG_ENT; i++) {
 		/* ATTACK curve */
-		pom = pow((static_cast<double>(EG_ENT - 1 - i) / EG_ENT), 8) * EG_ENT;
+		double pom = pow((static_cast<double>(EG_ENT - 1 - i) / EG_ENT), 8) * EG_ENT;
 		/* if (pom >= EG_ENT) pom = EG_ENT-1; */
 		ENV_CURVE[i] = static_cast<int>(pom);
 		/* DECAY ,RELEASE curve */
@@ -691,15 +681,15 @@ static int OPLOpenTable() {
 	/* off */
 	ENV_CURVE[EG_OFF >> ENV_BITS]= EG_ENT - 1;
 	/* make LFO ams table */
-	for (i = 0; i < AMS_ENT; i++) {
-		pom = (1.0 + sin(2 * M_PI * i / AMS_ENT)) / 2; /* sin */
+	for (uint32 i = 0; i < AMS_ENT; i++) {
+		double pom = (1.0 + sin(2 * M_PI * i / AMS_ENT)) / 2; /* sin */
 		AMS_TABLE[i]         = static_cast<int>((1.0 / EG_STEP) * pom); /* 1dB   */
 		AMS_TABLE[AMS_ENT + i] = static_cast<int>((4.8 / EG_STEP) * pom); /* 4.8dB */
 	}
 	/* make LFO vibrate table */
-	for (i = 0; i < VIB_ENT; i++) {
+	for (uint32 i = 0; i < VIB_ENT; i++) {
 		/* 100cent = 1seminote = 6% ?? */
-		pom = VIB_RATE * 0.06 * sin(2 * M_PI * i / VIB_ENT); /* +-100sect step */
+		double pom = VIB_RATE * 0.06 * sin(2 * M_PI * i / VIB_ENT); /* +-100sect step */
 		VIB_TABLE[i]         = static_cast<int>(VIB_RATE + (pom * 0.07)); /* +- 7cent */
 		VIB_TABLE[VIB_ENT + i] = static_cast<int>(VIB_RATE + (pom * 0.14)); /* +-14cent */
 	}
@@ -971,14 +961,10 @@ static void OPL_UnLockTable() {
 
 /* ---------- update one of chip ----------- */
 void YM3812UpdateOne_Mono(FM_OPL *OPL, sint16 *buffer, int length) {
-	int i;
-	int data;
 	sint16 *buf = buffer;
 	uint32 amsCnt = OPL->amsCnt;
 	uint32 vibCnt = OPL->vibCnt;
 	uint8 rythm = OPL->rythm & 0x20;
-	OPL_CH *CH;
-	OPL_CH *R_CH;
 
 	if (OPL != cur_chip) {
 		cur_chip = OPL;
@@ -996,21 +982,21 @@ void YM3812UpdateOne_Mono(FM_OPL *OPL, sint16 *buffer, int length) {
 		ams_table = OPL->ams_table;
 		vib_table = OPL->vib_table;
 	}
-	R_CH = rythm ? &S_CH[6] : E_CH;
-	for (i = 0; i < length; i++) {
+	OPL_CH *R_CH = rythm ? &S_CH[6] : E_CH;
+	for (int i = 0; i < length; i++) {
 		/*            channel A         channel B         channel C      */
 		/* LFO */
 		ams = ams_table[(amsCnt += amsIncr) >> AMS_SHIFT];
 		vib = vib_table[(vibCnt += vibIncr) >> VIB_SHIFT];
 		outd[0] = 0;
 		/* FM part */
-		for (CH = S_CH; CH < R_CH; CH++)
+		for (OPL_CH *CH = S_CH; CH < R_CH; CH++)
 			OPL_CALC_CH(CH);
 		/* Rythn part */
 		if (rythm)
 			OPL_CALC_RH(S_CH);
 		/* limit check */
-		data = CLIP(outd[0], OPL_MINOUT, OPL_MAXOUT);
+		int data = CLIP(outd[0], OPL_MINOUT, OPL_MAXOUT);
 		/* store to sound buffer */
 		buf[i] = data >> OPL_OUTSB;
 	}
@@ -1020,16 +1006,10 @@ void YM3812UpdateOne_Mono(FM_OPL *OPL, sint16 *buffer, int length) {
 }
 
 void YM3812UpdateOne_Stereo(FM_OPL *OPL, sint16 *buffer, int length) {
-	int i;
-	int data;
-	int left;
-	int right;
 	sint16 *buf = buffer;
 	uint32 amsCnt = OPL->amsCnt;
 	uint32 vibCnt = OPL->vibCnt;
 	uint8 rythm = OPL->rythm & 0x20;
-	OPL_CH *CH;
-	OPL_CH *R_CH;
 
 	if (OPL != cur_chip) {
 		cur_chip = OPL;
@@ -1047,16 +1027,16 @@ void YM3812UpdateOne_Stereo(FM_OPL *OPL, sint16 *buffer, int length) {
 		ams_table = OPL->ams_table;
 		vib_table = OPL->vib_table;
 	}
-	R_CH = rythm ? &S_CH[6] : E_CH;
-	for (i = 0; i < length; i++) {
+	OPL_CH *R_CH = rythm ? &S_CH[6] : E_CH;
+	for (int i = 0; i < length; i++) {
 		/*            channel A         channel B         channel C      */
 		/* LFO */
 		ams = ams_table[(amsCnt += amsIncr) >> AMS_SHIFT];
 		vib = vib_table[(vibCnt += vibIncr) >> VIB_SHIFT];
-		left = 0;
-		right = 0;
+		int left = 0;
+		int right = 0;
 		/* FM part */
-		for(CH = S_CH; CH < R_CH; CH++) {
+		for(OPL_CH *CH = S_CH; CH < R_CH; CH++) {
 			outd[0] = 0;
 			OPL_CALC_CH(CH);
 			if (CH->PAN <= 64)
@@ -1076,7 +1056,7 @@ void YM3812UpdateOne_Stereo(FM_OPL *OPL, sint16 *buffer, int length) {
 			right += outd[0];
 		}
 		/* limit check */
-		data = CLIP(left , OPL_MINOUT, OPL_MAXOUT);
+		int data = CLIP(left , OPL_MINOUT, OPL_MAXOUT);
 		/* store to sound buffer */
 		buf[i * 2] = data >> OPL_OUTSB;
 

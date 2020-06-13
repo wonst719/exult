@@ -599,8 +599,8 @@ bool Fast_pathfinder_client::is_grabable_internal(
 	if (zpath.get_num_steps() == 0)
 		return false;
 
-	Game_object *block;
-	while (zpath.GetNextStep(t, done))
+	while (zpath.GetNextStep(t, done)) {
+		Game_object *block;
 		if (!tovol.has_world_point(t.tx, t.ty, t.tz) &&
 		        !srcvol.has_world_point(t.tx, t.ty, t.tz) &&
 		        !fromvol.has_world_point(t.tx, t.ty, t.tz) &&
@@ -609,6 +609,7 @@ bool Fast_pathfinder_client::is_grabable_internal(
 		        // Ignore all blocking actors and movable objects.
 		        block->as_actor() == nullptr && !block->is_dragable())
 			return false;   // Blocked.
+	}
 	return true;
 }
 

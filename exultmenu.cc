@@ -81,9 +81,8 @@ static inline bool handle_menu_click(
 int maximum_size(Font *font, const char *options[], int num_choices, int centerx) {
 	ignore_unused_variable_warning(centerx);
 	int max_width = 0;
-	int width;
 	for (int i = 0; i < num_choices; i++) {
-		width = font->get_text_width(options[i]);
+		int width = font->get_text_width(options[i]);
 		if (width > max_width)
 			max_width = width;
 	}

@@ -490,9 +490,9 @@ void Shapes_vga_file::read_info(
 
 	// Load data about drawing the weapon in an actor's hand
 	ifstream wihh;
-	unsigned short offsets[c_max_shapes];
 	if (U7open2(wihh, patch_name(PATCH_WIHH), WIHH, editing)) {
 		size_t cnt = shapes.size();
+		unsigned short offsets[c_max_shapes];
 		for (size_t i = 0; i < cnt; i++)
 			offsets[i] = Read2(wihh);
 		for (size_t i = 0; i < cnt; i++)

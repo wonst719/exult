@@ -235,7 +235,6 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 
 void VideoOptions_gump::load_settings(bool Fullscreen) {
 	fullscreen = Fullscreen;
-	int i;
 	setup_video(fullscreen, MENU_INIT);
 	int w = get_width(resolution);
 	int h = get_height(resolution);
@@ -247,7 +246,7 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 		num_resolutions = Resolutions.size();
 		resolutions = new uint32[num_resolutions + 1];
 
-		i = 0;
+		int i = 0;
 		for (std::map<uint32, Image_window::Resolution>::const_iterator it = Resolutions.begin(); it != Resolutions.end(); ++it)
 			resolutions[i++] = it->first;
 
