@@ -332,32 +332,6 @@ bool U7open(
 	return false;
 }
 
-/*
- *  Open a file with the access rights specified in mode,
- *  works just like fopen but in a system independant fashion.
- *
- *  Output: A pointer to a FILE
- */
-
-std::FILE *U7open(
-    const char *fname,         // May be converted to upper-case.
-    const char *mode           // File access mode.
-) {
-	std::FILE *f;
-	string name = get_system_path(fname);
-
-	int uppercasecount = 0;
-	do {
-		f = std::fopen(name.c_str(), mode); // Try to open
-		if (f)
-			return f; // found it!
-	} while (base_to_uppercase(name, ++uppercasecount));
-
-	// file not found.
-	throw file_open_exception(get_system_path(fname));
-	return nullptr;
-}
-
 DIR *U7opendir(
     const char *fname			// May be converted to upper-case.
 ) {

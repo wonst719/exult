@@ -25,7 +25,6 @@
 #include <iostream>
 #include <string>
 #include <cstring>
-#include <cstdio>
 #include <iosfwd>
 #include <limits>
 #include <dirent.h>
@@ -60,15 +59,6 @@ inline uint8 Read1(
     const uint8 *& in
 ) {
 	return *in++;
-}
-
-inline uint8 Read1(
-    std::FILE *in
-) {
-	uint8 b0;
-	if (std::fread(&b0, sizeof(uint8), 1, in) != 1)
-		b0 = 0;
-	return b0;
 }
 
 /*
@@ -304,13 +294,6 @@ inline void Write1(
 	*out++ = val;
 }
 
-inline void Write1(
-    std::FILE *out,
-    uint8 val
-) {
-	std::fputc(val, out);
-}
-
 /*
  *  Write a 2-byte value, lsb first.
  */
@@ -415,11 +398,6 @@ bool U7open(
     std::ofstream &out,         // Output stream to open.
     const char *fname,          // May be converted to upper-case.
     bool is_text = false            // Should the file be opened in text mode
-);
-
-std::FILE *U7open(
-    const char *fname,          // May be converted to upper-case.
-    const char *mode            // File access mode.
 );
 
 bool U7open_static(
