@@ -117,10 +117,6 @@ static FILE *try_to_open(char *name, int decompress, int noise_mode)
  them through a decompressor. */
 FILE *open_file(const char *name, int decompress, int noise_mode)
 {
-	FILE *fp;
-	PathList *plp=pathlist;
-	int l;
-
 	if (!name || !(*name))
 	{
 		ctl->cmsg(CMSG_ERROR, VERB_NORMAL, "Attempted to open nameless file.");
@@ -133,6 +129,7 @@ FILE *open_file(const char *name, int decompress, int noise_mode)
 	current_filename[1023]='\0';
 
 	ctl->cmsg(CMSG_INFO, VERB_DEBUG, "Trying to open %s", current_filename);
+	FILE *fp;
 	if ((fp=try_to_open(current_filename, decompress, noise_mode)))
 		return fp;
 
@@ -144,14 +141,15 @@ FILE *open_file(const char *name, int decompress, int noise_mode)
 	}
 
 #ifndef __WIN32__
-	if (name[0] != PATH_SEP)
+	if (name[0] != PATH_SEP) {
 #else
-	if (name[0] != '\\' && name[0] != '/' && name[1] != ':')
+	if (name[0] != '\\' && name[0] != '/' && name[1] != ':') {
 #endif
+		PathList *plp=pathlist;
 		while (plp)	/* Try along the path then */
 		{
 			*current_filename=0;
-			l=static_cast<int>(strlen(plp->path));
+			int l=static_cast<int>(strlen(plp->path));
 			if(l)
 			{
 				strcpy(current_filename, plp->path);
@@ -174,6 +172,7 @@ FILE *open_file(const char *name, int decompress, int noise_mode)
 			}
 			plp=plp->next;
 		}
+	}
 
 	/* Nothing could be opened. */
 
@@ -197,13 +196,12 @@ void close_file(FILE *fp)
 /* This is meant for skipping a few bytes in a file or fifo. */
 void skip(FILE *fp, size_t len)
 {
-	size_t c;
-	char tmp[1024];
 	while (len>0)
 	{
-		c=len;
+		size_t c=len;
 		if (c>1024) c=1024;
 		len-=c;
+		char tmp[1024];
 		if (c!=fread(tmp, 1, c, fp))
 			ctl->cmsg(CMSG_ERROR, VERB_NORMAL, "%s: skip: %s",
 			          current_filename, strerror(errno));

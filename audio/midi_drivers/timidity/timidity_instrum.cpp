@@ -68,12 +68,10 @@ int fast_decay=0;
 
 static void free_instrument(Instrument *ip)
 {
-	Sample *sp;
-	int i;
 	if (!ip) return;
-	for (i=0; i<ip->samples; i++)
+	for (int i=0; i<ip->samples; i++)
 	{
-		sp=&(ip->sample[i]);
+		Sample *sp = &(ip->sample[i]);
 		free(sp->data);
 	}
 	free(ip->sample);
@@ -82,9 +80,8 @@ static void free_instrument(Instrument *ip)
 
 static void free_bank(int dr, int b)
 {
-	int i;
 	ToneBank *bank=((dr) ? drumset[b] : tonebank[b]);
-	for (i=0; i<128; i++)
+	for (int i=0; i<128; i++)
 		if (bank->tone[i].instrument)
 		{
 			/* Not that this could ever happen, of course */
@@ -96,9 +93,7 @@ static void free_bank(int dr, int b)
 
 static sint32 convert_envelope_rate(uint8 rate)
 {
-	sint32 r;
-
-	r=3-((rate>>6) & 0x3);
+	sint32 r=3-((rate>>6) & 0x3);
 	r*=3;
 	r = (rate & 0x3f) << r; /* 6.9 fixed point */
 
@@ -158,14 +153,13 @@ static sint32 convert_vibrato_rate(uint8 rate)
 
 static void reverse_data(sint16 *sp, sint32 ls, sint32 le)
 {
-	sint16 s;
 	sint16 *ep=sp+le;
 	sp+=ls;
 	le-=ls;
 	le/=2;
 	while (le--)
 	{
-		s=*sp;
+		sint16 s=*sp;
 		*sp++=*ep;
 		*ep--=s;
 	}
@@ -454,7 +448,8 @@ static Instrument *load_instrument(char *name, int percussion,
 		{
 			sint32 i=sp->data_length/2;
 #ifdef LOOKUP_HACK
-			sint16 *tmp=reinterpret_cast<sint16 *>(sp->data), s;
+			sint16 *tmp=reinterpret_cast<sint16 *>(sp->data);
+			sint16 *s;
 #else
 			sample_t *tmp=sp->data;
 			sample_t s;
@@ -508,11 +503,10 @@ static Instrument *load_instrument(char *name, int percussion,
 			 balanced with it. Still, this should be a runtime option. */
 			sint32 i=sp->data_length/2;
 			sint16 maxamp=0;
-			sint16 a;
 			sint16 *tmp = sp->data;
 			while (i--)
 			{
-				a=*tmp++;
+				sint16 a=*tmp++;
 				if (a<0) a=-a;
 				if (a>maxamp)
 					maxamp=a;

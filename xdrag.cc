@@ -169,14 +169,14 @@ void Xdnd::client_msg(
 		// Save mouse position.
 		int x = ((cev.data.l[2] >> 16) & 0xffff) - winx;
 		int y = (cev.data.l[2] & 0xffff) - winy;
-		// Get timestamp.
-		unsigned long time = 0; //????++++++++++++++++
 		if (i == num_types)
 			return;
-		if (!data_valid)    // Tell owner we want data.
+		if (!data_valid) {   // Tell owner we want data.
+			// Get timestamp.
+			unsigned long time = 0; //????++++++++++++++++
 			XConvertSelection(display, xdnd_selection,
 			                  drag_types[i], xdnd_selection, xwmwin, time);
-		else if (file == U7_SHAPE_SHAPES)
+		} else if (file == U7_SHAPE_SHAPES)
 			(*move_shape_handler)(shape, frame, x, y,
 			                      lastx, lasty, true);
 		else if (combo_cnt > 0)

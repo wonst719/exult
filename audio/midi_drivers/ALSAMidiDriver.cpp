@@ -186,9 +186,9 @@ void ALSAMidiDriver::send_sysex(uint8 status,const uint8 *msg,uint16 length) {
 // static
 int ALSAMidiDriver::parse_addr(const std::string& _arg, int *client, int *port) {
 	const char* arg = _arg.c_str();
-	const char *p;
 
 	if (isdigit(static_cast<unsigned char>(*arg))) {
+		const char *p;
 		if ((p = strpbrk(arg, ADDR_DELIM)) == nullptr)
 			return -1;
 		*client = atoi(arg);

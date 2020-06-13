@@ -119,16 +119,8 @@ static void reset_midi()
 
 static void select_sample(int v, Instrument *ip)
 {
-	sint32 f;
-	sint32 cdiff;
-	sint32 diff;
-	int s;
-	int i;
-	Sample *sp;
-	Sample *closest;
-
-	s=ip->samples;
-	sp=ip->sample;
+	int s=ip->samples;
+	Sample *sp=ip->sample;
 
 	if (s==1)
 	{
@@ -136,8 +128,8 @@ static void select_sample(int v, Instrument *ip)
 		return;
 	}
 
-	f=voice[v].orig_frequency;
-	for (i=0; i<s; i++)
+	sint32 f=voice[v].orig_frequency;
+	for (int i=0; i<s; i++)
 	{
 		if (sp->low_freq <= f && sp->high_freq >= f)
 		{
@@ -153,11 +145,11 @@ static void select_sample(int v, Instrument *ip)
 	                                           probably convert the low, high, and root frequencies to MIDI note
 	                                           values and compare those.) */
 
-	cdiff=0x7FFFFFFF;
-	closest=sp=ip->sample;
-	for(i=0; i<s; i++)
+	sint32 cdiff=0x7FFFFFFF;
+	Sample *closest=sp=ip->sample;
+	for(int i=0; i<s; i++)
 	{
-		diff=sp->root_freq - f;
+		sint32 diff=sp->root_freq - f;
 		if (diff<0) diff=-diff;
 		if (diff<cdiff)
 		{
@@ -700,9 +692,9 @@ static int apply_controls()
 
 				case TM_RC_BACK: /* << */
 					if (current_sample > val)
-					skip_to(current_sample-val);
-				else
-					skip_to(0); /* We can't seek to end of previous song. */
+						skip_to(current_sample-val);
+					else
+						skip_to(0); /* We can't seek to end of previous song. */
 				did_skip=1;
 				break;
 		}
@@ -732,7 +724,6 @@ static void do_compute_data(sint32 count)
  flush the device itself */
 static int compute_data(void *stream, sint32 count)
 {
-	int rc;
 	int channels;
 
 	if ( play_mode->encoding & PE_MONO )
@@ -758,6 +749,7 @@ static int compute_data(void *stream, sint32 count)
 		buffered_count=0;
 
 		ctl->current_time(current_sample);
+		int rc;
 		if ((rc=apply_controls())!=TM_RC_NONE)
 			return rc;
 	}
@@ -903,11 +895,12 @@ void Timidity_SetVolume(int volume)
 	int i;
 	if (volume > MAX_AMPLIFICATION)
 		amplification=MAX_AMPLIFICATION;
-	else
+	else {
 		if (volume < 0)
-		amplification=0;
-	else
-		amplification=volume;
+			amplification=0;
+		else
+			amplification=volume;
+	}
 	adjust_amplification();
 	for (i=0; i<voices; i++)
 		if (voice[i].status != VOICE_FREE)

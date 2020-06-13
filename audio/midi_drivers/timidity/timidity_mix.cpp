@@ -86,12 +86,9 @@ int recompute_envelope(int v)
 void apply_envelope_to_amp(int v)
 {
 	float lamp=voice[v].left_amp;
-	float ramp;
-	sint32 la;
-	sint32 ra;
 	if (voice[v].panned == PANNED_MYSTERY)
 	{
-		ramp=voice[v].right_amp;
+		float ramp=voice[v].right_amp;
 		if (voice[v].tremolo_phase_increment)
 		{
 			lamp *= voice[v].tremolo_volume;
@@ -103,12 +100,12 @@ void apply_envelope_to_amp(int v)
 			ramp *= static_cast<float>(vol_table[voice[v].envelope_volume>>23]);
 		}
 
-		la = static_cast<sint32>(FSCALE(lamp,AMP_BITS));
+		sint32 la = static_cast<sint32>(FSCALE(lamp,AMP_BITS));
 
 		if (la>MAX_AMP_VALUE)
 			la=MAX_AMP_VALUE;
 
-		ra = static_cast<sint32>(FSCALE(ramp,AMP_BITS));
+		sint32 ra = static_cast<sint32>(FSCALE(ramp,AMP_BITS));
 		if (ra>MAX_AMP_VALUE)
 			ra=MAX_AMP_VALUE;
 
@@ -123,7 +120,7 @@ void apply_envelope_to_amp(int v)
 		if (voice[v].sample->modes & MODES_ENVELOPE)
 			lamp *= static_cast<float>(vol_table[voice[v].envelope_volume>>23]);
 
-		la = static_cast<sint32>(FSCALE(lamp,AMP_BITS));
+		sint32 la = static_cast<sint32>(FSCALE(lamp,AMP_BITS));
 
 		if (la>MAX_AMP_VALUE)
 			la=MAX_AMP_VALUE;
@@ -293,10 +290,8 @@ static void mix_center_signal(sample_t *sp, sint32 *lp, int v, int count)
 static void mix_single_signal(sample_t *sp, sint32 *lp, int v, int count)
 {
 	Voice *vp = voice + v;
-	final_volume_t 
-		left=vp->left_mix;
+	final_volume_t left=vp->left_mix;
 	int cc;
-	sample_t s;
 
 	if (!(cc = vp->control_counter))
 	{
@@ -312,7 +307,7 @@ static void mix_single_signal(sample_t *sp, sint32 *lp, int v, int count)
 			count -= cc;
 			while (cc--)
 			{
-				s = *sp++;
+				sample_t s = *sp++;
 				MIXATION(left);
 				lp++;
 			}
@@ -326,7 +321,7 @@ static void mix_single_signal(sample_t *sp, sint32 *lp, int v, int count)
 			vp->control_counter = cc - count;
 			while (count--)
 			{
-				s = *sp++;
+				sample_t s = *sp++;
 				MIXATION(left);
 				lp++;
 			}
@@ -337,10 +332,8 @@ static void mix_single_signal(sample_t *sp, sint32 *lp, int v, int count)
 static void mix_mono_signal(sample_t *sp, sint32 *lp, int v, int count)
 {
 	Voice *vp = voice + v;
-	final_volume_t 
-		left=vp->left_mix;
+	final_volume_t left=vp->left_mix;
 	int cc;
-	sample_t s;
 
 	if (!(cc = vp->control_counter))
 	{
@@ -356,7 +349,7 @@ static void mix_mono_signal(sample_t *sp, sint32 *lp, int v, int count)
 			count -= cc;
 			while (cc--)
 			{
-				s = *sp++;
+				sample_t s = *sp++;
 				MIXATION(left);
 			}
 			cc = control_ratio;
@@ -369,7 +362,7 @@ static void mix_mono_signal(sample_t *sp, sint32 *lp, int v, int count)
 			vp->control_counter = cc - count;
 			while (count--)
 			{
-				s = *sp++;
+				sample_t s = *sp++;
 				MIXATION(left);
 			}
 			return;
@@ -392,13 +385,11 @@ static void mix_mystery(sample_t *sp, sint32 *lp, int v, int count)
 
 static void mix_center(sample_t *sp, sint32 *lp, int v, int count)
 {
-	final_volume_t 
-		left=voice[v].left_mix;
-	sample_t s;
+	final_volume_t left=voice[v].left_mix;
 
 	while (count--)
 	{
-		s = *sp++;
+		sample_t s = *sp++;
 		MIXATION(left);
 		MIXATION(left);
 	}
@@ -406,8 +397,7 @@ static void mix_center(sample_t *sp, sint32 *lp, int v, int count)
 
 static void mix_single(sample_t *sp, sint32 *lp, int v, int count)
 {
-	final_volume_t 
-		left=voice[v].left_mix;
+	final_volume_t left=voice[v].left_mix;
 	sample_t s;
 
 	while (count--)
@@ -420,13 +410,11 @@ static void mix_single(sample_t *sp, sint32 *lp, int v, int count)
 
 static void mix_mono(sample_t *sp, sint32 *lp, int v, int count)
 {
-	final_volume_t 
-		left=voice[v].left_mix;
-	sample_t s;
+	final_volume_t left=voice[v].left_mix;
 
 	while (count--)
 	{
-		s = *sp++;
+		sample_t s = *sp++;
 		MIXATION(left);
 	}
 }
@@ -434,20 +422,14 @@ static void mix_mono(sample_t *sp, sint32 *lp, int v, int count)
 /* Ramp a note out in c samples */
 static void ramp_out(sample_t *sp, sint32 *lp, int v, sint32 c)
 {
-
 	/* should be final_volume_t, but uint8 gives trouble. */
-	sint32 left;
-	sint32 right;
-	sint32 li;
-	sint32 ri;
-
 	sample_t s=0; /* silly warning about uninitialized s */
 
 	/* Fix by James Caldwell */
 	if ( c == 0 ) c = 1;
 
-	left=voice[v].left_mix;
-	li=-(left/c);
+	sint32 left=voice[v].left_mix;
+	sint32 li=-(left/c);
 	if (!li) li=-1;
 
 	/* printf("Ramping out: left=%d, c=%d, li=%d\n", left, c, li); */
@@ -456,8 +438,8 @@ static void ramp_out(sample_t *sp, sint32 *lp, int v, sint32 c)
 	{
 		if (voice[v].panned==PANNED_MYSTERY)
 		{
-			right=voice[v].right_mix;
-			ri=-(right/c);
+			sint32 right=voice[v].right_mix;
+			sint32 ri=-(right/c);
 			while (c--)
 			{
 				left += li;
@@ -478,7 +460,7 @@ static void ramp_out(sample_t *sp, sint32 *lp, int v, sint32 c)
 				left += li;
 				if (left<0)
 					return;
-				s=*sp++;	
+				s=*sp++;
 				MIXATION(left);
 				MIXATION(left);
 			}
