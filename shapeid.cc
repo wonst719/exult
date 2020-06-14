@@ -205,7 +205,7 @@ void Shape_manager::load(
 		pair<string, int> sourcesi(string("<SERPENT_STATIC>/sprites.vga"), -1);
 
 		vector<pair<int, int> > imports;
-		imports.push_back(pair<int, int>(0, 0));
+		imports.emplace_back(0, 0);
 		if (U7exists(sourcesi.first.c_str()))
 			files[SF_SPRITES_VGA].import_shapes(sourcesi, imports);
 		else if (U7exists(sourcebg.first.c_str()))
@@ -221,13 +221,13 @@ void Shape_manager::load(
 	}
 
 	vector<pair<string, int> > source;
-	source.push_back(pair<string, int>(FACES_VGA, -1));
+	source.emplace_back(FACES_VGA, -1);
 	if (GAME_BG) {
 		// Multiracial faces.
 		const str_int_pair &resource = game->get_resource("files/mrfacesvga");
-		source.push_back(pair<string, int>(string(resource.str), resource.num));
+		source.emplace_back(resource.str, resource.num);
 	}
-	source.push_back(pair<string, int>(PATCH_FACES, -1));
+	source.emplace_back(PATCH_FACES, -1);
 	files[SF_FACES_VGA].load(source);
 
 	files[SF_EXULT_FLX].load(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX));

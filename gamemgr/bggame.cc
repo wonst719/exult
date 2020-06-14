@@ -1773,11 +1773,11 @@ bool BG_Game::new_game(Vga_file &shapes) {
 
 	// List of files to load.
 	std::vector<std::pair<std::string, int> > source;
-	source.push_back(std::pair<std::string, int>(FACES_VGA, -1));
+	source.emplace_back(FACES_VGA, -1);
 	// Multiracial faces.
 	const str_int_pair &resource = game->get_resource("files/mrfacesvga");
-	source.push_back(std::pair<std::string, int>(resource.str, resource.num));
-	source.push_back(std::pair<std::string, int>(PATCH_FACES, -1));
+	source.emplace_back(resource.str, resource.num);
+	source.emplace_back(PATCH_FACES, -1);
 	faces_vga.load(source);
 
 	const int max_name_len = 16;

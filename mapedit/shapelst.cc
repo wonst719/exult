@@ -332,7 +332,7 @@ void Shape_chooser::setup_shapes_info(
 			curr_y += row_h + border;
 			row_h = 0;
 			x = 0;
-			rows.push_back(Shape_row());
+			rows.emplace_back();
 			rows.back().index0 = info.size();
 			rows.back().y = curr_y;
 		}
@@ -340,7 +340,7 @@ void Shape_chooser::setup_shapes_info(
 			row_h = sh;
 		int sy = curr_y + border; // Get top y-coord.
 		// Store info. about where drawn.
-		info.push_back(Shape_entry());
+		info.emplace_back();
 		info.back().set(shapenum, framenum, x, sy, sw, sh);
 		x += sw + border;
 	}
@@ -367,7 +367,7 @@ void Shape_chooser::setup_frames_info(
 		if (!nframes)
 			continue;
 		int row_h = Get_max_height(shape);
-		rows.push_back(Shape_row());
+		rows.emplace_back();
 		rows.back().index0 = info.size();
 		rows.back().y = curr_y;
 		rows.back().height = row_h + border;
@@ -385,7 +385,7 @@ void Shape_chooser::setup_frames_info(
 			sw = frame->get_width();
 			int sy = curr_y + border; // Get top y-coord.
 			// Store info. about where drawn.
-			info.push_back(Shape_entry());
+			info.emplace_back();
 			info.back().set(shapenum, framenum, x, sy, sw, sh);
 		}
 		if (x > maxw)

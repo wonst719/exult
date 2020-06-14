@@ -150,7 +150,7 @@ void ucxtInit::opcodes() {
 	for (std::vector<UCOpcodeData>::iterator op = opcode_table_data.begin(); op != opcode_table_data.end(); ++op) {
 		for (unsigned int i = 0; i < op->param_sizes.size(); i++) {
 			if (op->param_sizes[i].second) { // this is a calculated offset
-				opcode_jumps.push_back(std::pair<unsigned int, unsigned int>(op->opcode, i + 1)); // parameters are stored as base 1
+				opcode_jumps.emplace_back(op->opcode, i + 1); // parameters are stored as base 1
 			}
 		}
 	}
@@ -230,7 +230,7 @@ void map_type_size(const std::vector<std::string> &param_types, std::vector<std:
 			assert(tsm != type_size_map.end());
 		}
 
-		param_sizes.push_back(std::pair<unsigned int, bool>(tsm->second.first, tsm->second.second));
+		param_sizes.emplace_back(tsm->second.first, tsm->second.second);
 	}
 }
 

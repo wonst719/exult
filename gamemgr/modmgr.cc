@@ -498,9 +498,9 @@ void ModManager::gather_mods() {
 		for (int i = 0; i < num_mods; i++) {
 			string modtitle = filenames[i].substr(ptroff,
 			                                      filenames[i].size() - ptroff - 4);
-			modlist.push_back(ModInfo(type, cfgname,
+			modlist.emplace_back(type, cfgname,
 			                          modtitle, path_prefix, expansion, sibeta,
-			                          editing, filenames[i]));
+			                          editing, filenames[i]);
 		}
 	}
 }
@@ -520,8 +520,8 @@ int ModManager::find_mod_index(const string &name) {
 }
 
 void ModManager::add_mod(const string &mod, const string &modconfig) {
-	modlist.push_back(ModInfo(type, cfgname, mod, path_prefix,
-	                          expansion, sibeta, editing, modconfig));
+	modlist.emplace_back(type, cfgname, mod, path_prefix,
+	                          expansion, sibeta, editing, modconfig);
 	store_system_paths();
 }
 
@@ -602,11 +602,11 @@ GameManager::GameManager(bool silent) {
 	std::vector<string> checkgames;
 	checkgames.reserve(checkgames.size()+5);	// +5 in case the four below are not in the cfg.
 	// The original games plus expansions.
-	checkgames.push_back(CFG_BG_NAME);
-	checkgames.push_back(CFG_FOV_NAME);
-	checkgames.push_back(CFG_SI_NAME);
-	checkgames.push_back(CFG_SS_NAME);
-	checkgames.push_back(CFG_SIB_NAME);
+	checkgames.emplace_back(CFG_BG_NAME);
+	checkgames.emplace_back(CFG_FOV_NAME);
+	checkgames.emplace_back(CFG_SI_NAME);
+	checkgames.emplace_back(CFG_SS_NAME);
+	checkgames.emplace_back(CFG_SIB_NAME);
 
 	for (std::vector<string>::iterator it = gamestrs.begin();
 	        it != gamestrs.end(); ++it) {
@@ -736,6 +736,6 @@ int GameManager::find_game_index(const string &name) {
 }
 
 void GameManager::add_game(const string &name, const string &menu) {
-	games.push_back(ModManager(name, menu, false));
+	games.emplace_back(name, menu, false);
 	store_system_paths();
 }

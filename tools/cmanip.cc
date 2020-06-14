@@ -92,8 +92,8 @@ void read_params(const int argc, char *argv[]) {
 
 			DoListPair dlp;
 			dlp.first = DoAdd;
-			dlp.second.push_back(argv[i + 1]);
-			dlp.second.push_back(argv[i + 2]);
+			dlp.second.emplace_back(argv[i + 1]);
+			dlp.second.emplace_back(argv[i + 2]);
 			dolist.push_back(dlp);
 			i += 2;
 		}
@@ -108,7 +108,7 @@ void read_params(const int argc, char *argv[]) {
 
 			DoListPair dlp;
 			dlp.first = DoRem;
-			dlp.second.push_back(argv[i + 1]);
+			dlp.second.emplace_back(argv[i + 1]);
 			dolist.push_back(dlp);
 			i++;
 		}
@@ -121,7 +121,7 @@ void read_params(const int argc, char *argv[]) {
 
 			DoListPair dlp;
 			dlp.first = DoGet;
-			dlp.second.push_back(argv[i + 1]);
+			dlp.second.emplace_back(argv[i + 1]);
 			dolist.push_back(dlp);
 			i++;
 		}

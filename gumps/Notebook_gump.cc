@@ -246,7 +246,7 @@ Notebook_gump::Notebook_gump(
 	// (Obj. area doesn't matter.)
 	set_object_area(Rectangle(36, 10, 100, 100), 7, 40);
 	if (page_info.empty())
-		page_info.push_back(Notebook_top(0, 0));
+		page_info.emplace_back(0, 0);
 	// Where to paint page marks:
 	const int lpagex = 35;
 	const int rpagex = 298;

@@ -245,7 +245,7 @@ int main(int argc, char **argv)
 				break;
 			case 'c': {
 				for (int i = 0; i < argc - 3; i++) {
-					file_names.push_back(argv[i + 3]);
+					file_names.emplace_back(argv[i + 3]);
 				}
 				set_mode(mode, CREATE);
 				break;

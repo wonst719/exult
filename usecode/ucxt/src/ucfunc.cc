@@ -338,12 +338,12 @@ void UCFunc::parse_ucs_pass1(vector<UCNode *> &nodes) {
 		}
 	}
 
-	gotoset.push_back(GotoSet());
+	gotoset.emplace_back(GotoSet());
 
 	for (unsigned int i = 0; i < nodes.size(); i++) {
 		if (nodes[i]->ucc != nullptr) {
 			if (count(jumps.begin(), jumps.end(), nodes[i]->ucc->_offset)) {
-				gotoset.push_back(nodes[i]->ucc);
+				gotoset.emplace_back(nodes[i]->ucc);
 			} else
 				gotoset.back().add(nodes[i]->ucc);
 		}

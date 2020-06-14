@@ -153,7 +153,7 @@ public:
 	}
 
 	void add(UCc *ucc, bool gc = false) {
-		_uccs.push_back(std::pair<UCc *, bool>(ucc, gc));
+		_uccs.emplace_back(ucc, gc);
 	}
 
 	/* Just a quick function to remove all the Uccs in _uccs marked for

@@ -205,7 +205,7 @@ void Npc_chooser::setup_shapes_info(
 			curr_y += row_h + border;
 			row_h = 0;
 			x = 0;
-			rows.push_back(Npc_row());
+			rows.emplace_back();
 			rows.back().index0 = info.size();
 			rows.back().y = curr_y;
 		}
@@ -213,7 +213,7 @@ void Npc_chooser::setup_shapes_info(
 			row_h = sh;
 		int sy = curr_y + border; // Get top y-coord.
 		// Store info. about where drawn.
-		info.push_back(Npc_entry());
+		info.emplace_back();
 		info.back().set(npcnum, x, sy, sw, sh);
 		x += sw + border;
 	}

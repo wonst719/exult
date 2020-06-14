@@ -261,7 +261,7 @@ public:
 	void get_all(std::vector<std::pair<const char *, int> > &attlist) {
 		Att_map::const_iterator it;
 		for (it = map.begin(); it != map.end(); ++it)
-			attlist.push_back(*it);
+			attlist.emplace_back(*it);
 	}
 };
 std::set<string> *Actor_attributes::strings = nullptr;

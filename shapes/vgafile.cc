@@ -1123,9 +1123,9 @@ bool Vga_file::load(
     bool resetimports
 ) {
 	vector<pair<string, int>> src;
-	src.push_back(pair<string, int>(string(nm), -1));
+	src.emplace_back(nm, -1);
 	if (nm2 != nullptr)
-		src.push_back(pair<string, int>(string(nm2), -1));
+		src.emplace_back(nm2, -1);
 	return load(src, resetimports);
 }
 

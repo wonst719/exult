@@ -231,9 +231,9 @@ void UCData::dump_flags(ostream &o) {
 	for (vector<UCFunc *>::iterator func = _funcs.begin(); func != _funcs.end(); ++func)
 		for (vector<UCc>::iterator op = (*func)->_opcodes.begin(); op != (*func)->_opcodes.end(); ++op) {
 			if (op->_id == 0x42)
-				flags.push_back(FlagData((*func)->_funcid, op->_offset, op->_params_parsed[0], FlagData::GETFLAG));
+				flags.emplace_back((*func)->_funcid, op->_offset, op->_params_parsed[0], FlagData::GETFLAG);
 			else if (op->_id == 0x43)
-				flags.push_back(FlagData((*func)->_funcid, op->_offset, op->_params_parsed[0], FlagData::SETFLAG));
+				flags.emplace_back((*func)->_funcid, op->_offset, op->_params_parsed[0], FlagData::SETFLAG);
 		}
 
 	o << "Number of flags found: " << setbase(10) << flags.size() << endl << endl;

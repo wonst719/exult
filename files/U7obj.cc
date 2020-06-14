@@ -108,8 +108,8 @@ U7multiobject::U7multiobject(
 )
 	: U7object(file0, objnum), buffer(nullptr), length(0) {
 	std::vector<U7object> objects;
-	objects.push_back(U7object(file1, objnum));
-	objects.push_back(U7object(file0, objnum));
+	objects.emplace_back(file1, objnum);
+	objects.emplace_back(file0, objnum);
 	set_object(objects);
 }
 
@@ -128,9 +128,9 @@ U7multiobject::U7multiobject(
 )
 	: U7object(file0, objnum), buffer(nullptr), length(0) {
 	std::vector<U7object> objects;
-	objects.push_back(U7object(file2, objnum));
-	objects.push_back(U7object(file1, objnum));
-	objects.push_back(U7object(file0, objnum));
+	objects.emplace_back(file2, objnum);
+	objects.emplace_back(file1, objnum);
+	objects.emplace_back(file0, objnum);
 	set_object(objects);
 }
 
@@ -151,10 +151,10 @@ U7multiobject::U7multiobject(
 )
 	: U7object(file0, objnum), buffer(nullptr), length(0) {
 	std::vector<U7object> objects;
-	objects.push_back(U7object(file3, objnum));
-	objects.push_back(U7object(file2, objnum));
-	objects.push_back(U7object(file1, objnum));
-	objects.push_back(U7object(file0, objnum));
+	objects.emplace_back(file3, objnum);
+	objects.emplace_back(file2, objnum);
+	objects.emplace_back(file1, objnum);
+	objects.emplace_back(file0, objnum);
 	set_object(objects);
 }
 
@@ -173,7 +173,7 @@ U7multiobject::U7multiobject(
 		std::vector<U7object> objects;
 		for (std::vector<File_spec>::const_iterator it = files.begin();
 		        it != files.end(); ++it)
-			objects.push_back(U7object(*it, objnum));
+			objects.emplace_back(*it, objnum);
 		set_object(objects);
 	}
 }
