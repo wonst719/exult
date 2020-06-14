@@ -42,7 +42,7 @@ using std::endl;
 #include <sys/types.h>
 #endif
 #include <unistd.h>
-#include <signal.h>
+#include <csignal>
 #include <sys/wait.h>
 
 /*
