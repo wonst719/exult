@@ -477,7 +477,7 @@ inline void Usecode_internal::pushref(Game_object *obj) {
 }
 
 inline void Usecode_internal::pushref(Game_object_shared obj) {
-	Usecode_value v(obj);
+	Usecode_value v(std::move(obj));
 	push(v);
 }
 

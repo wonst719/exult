@@ -309,7 +309,7 @@ class Uc_converse_case_statement : public Uc_statement {
 	Uc_statement *statements;   // Execute these.
 public:
 	Uc_converse_case_statement(std::vector<int> soff, bool rem, Uc_statement *stmts)
-		: string_offset(soff), remove(rem), statements(stmts)
+		: string_offset(std::move(soff)), remove(rem), statements(stmts)
 	{  }
 	~Uc_converse_case_statement() override {
 		delete statements;

@@ -660,7 +660,7 @@ bool Cheat::is_selected(Game_object *o) {
  */
 class Clip_compare {
 public:
-	bool operator()(const Game_object_shared o1, const Game_object_shared o2) {
+	bool operator()(const Game_object_shared& o1, const Game_object_shared& o2) {
 		Tile_coord t1 = o1->get_tile();
 		Tile_coord t2 = o2->get_tile();
 		if (t1.tz != t2.tz)

@@ -631,8 +631,11 @@ GameManager::GameManager(bool silent) {
 		string new_title;
 		to_uppercase(base_title);
 		base_title += "\nMissing Title";
-		config->value(config_path + "/" + gameentry + "/title",
-		              game_title, base_title.c_str());
+		string base_conf = config_path;
+		base_conf += '/';
+		base_conf += gameentry;
+		base_conf += "/title";
+		config->value(base_conf, game_title, base_title.c_str());
 		bool need_title = game_title == base_title;
 		// This checks static identity and sets game type.
 		ModManager game = ModManager(gameentry, game_title, need_title, silent);

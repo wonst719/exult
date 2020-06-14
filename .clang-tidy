@@ -1,5 +1,6 @@
 Checks: "-*\
 ,modernize-use-bool-literals\
+,performance-*\
 ,-readability-avoid-const-params-in-decls\
 ,readability-container-size-empty\
 ,readability-const-return-type\

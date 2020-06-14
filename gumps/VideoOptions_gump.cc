@@ -108,7 +108,7 @@ void VideoOptions_gump::rebuild_buttons() {
 
 	// the text arrays are freed by the destructors of the buttons
 
-	std::vector<std::string> scalers;
+	std::vector<std::string> scalers(Image_window::NumScalers);
 	for (int i = 0; i < Image_window::NumScalers; i++) {
 		scalers.emplace_back(Image_window::get_name_for_scaler(i));
 	}

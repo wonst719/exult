@@ -282,7 +282,9 @@ bool	Audio::can_sfx(const std::string &file, std::string *out)
 			if (!is_system_path_defined(d)) {
 				continue;
 			}
-			f = d + '/' + file;
+			f = d;
+			f += '/';
+			f += file;
 		} else {
 			f = file;
 		}

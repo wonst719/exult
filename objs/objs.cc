@@ -245,7 +245,7 @@ int Game_object::distance(
 	Tile_coord t1 = get_tile();
 	Tile_coord t2 = o2->get_tile();
 	const Shape_info &info1 = get_info();
-	const Shape_info info2 = o2->get_info();
+	const Shape_info &info2 = o2->get_info();
 	int f1 = get_framenum();
 	int f2 = o2->get_framenum();
 	int dx = Tile_coord::delta(t1.tx, t2.tx);

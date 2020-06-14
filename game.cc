@@ -213,9 +213,10 @@ void Game::write_game_xml() {
 	Configuration xml(name, root);
 	for (rsc_map::iterator it1 = resources.begin(); it1 != resources.end();
 	        ++it1) {
-		string key = (*it1).first;
+		string key = root;
+		key += "/resources/";
+		key += (*it1).first;
 		str_int_pair &val = (*it1).second;
-		key = root + "/resources/" + key;
 		if (val.str)
 			xml.set(key.c_str(), val.str, false);
 		if (val.num != 0) {
@@ -226,9 +227,10 @@ void Game::write_game_xml() {
 	}
 	for (shapes_map::iterator it2 = shapes.begin(); it2 != shapes.end();
 	        ++it2) {
-		string key = (*it2).first;
+		string key = root;
+		key += "/shapes/";
+		key += (*it2).first;
 		int num = (*it2).second;
-		key = root + "/shapes/" + key;
 		xml.set(key.c_str(), num, false);
 	}
 	xml.write_back();

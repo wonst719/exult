@@ -1318,9 +1318,11 @@ void readbin_U7UCFunc(
 					     ++it, i++) {
 						std::string varname = it->second;
 						if (!varname.empty()) {
-							if (std::isdigit(static_cast<unsigned char>(varname[0])))
-								varname = UCFunc::VARPREFIX + varname;
-							else if (varname == "item")
+							if (std::isdigit(static_cast<unsigned char>(varname[0]))) {
+								string temp = UCFunc::VARPREFIX;
+								temp += varname;
+								varname.swap(temp);
+							} else if (varname == "item")
 								varname = "_item";
 							ucf._varmap[i] = varname;
 						}

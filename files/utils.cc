@@ -152,7 +152,8 @@ string get_system_path(const string &path) {
 		string syspath = new_path.substr(0, pos);
 		if (is_system_path_defined(syspath)) {
 			string new_prefix = path_map[syspath];
-			new_path = new_prefix + new_path.substr(pos);
+			new_prefix += new_path.substr(pos);
+			new_path.swap(new_prefix);
 			pos = new_path.find('>');
 			pos2 = new_path.find('<');
 		} else {
@@ -715,7 +716,7 @@ void setup_data_dir(
 
 void setup_program_paths() {
 	string home_dir(Get_home());
-	string config_dir(home_dir);
+	string config_dir;
 	string savehome_dir(home_dir);
 	string gamehome_dir(".");
 
@@ -724,10 +725,12 @@ void setup_program_paths() {
 	savehome_dir = config_dir + "/save";
 	gamehome_dir = config_dir + "/game";
 #elif defined(MACOSX)
+	config_dir = home_dir;
 	config_dir += "/Library/Preferences";
 	savehome_dir += "/Library/Application Support/Exult";
 	gamehome_dir = "/Library/Application Support/Exult";
 #elif defined(XWIN)
+	config_dir = home_dir;
 	savehome_dir += "/.exult";
 	gamehome_dir = EXULT_DATADIR;
 #endif

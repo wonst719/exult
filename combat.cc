@@ -457,7 +457,7 @@ Game_object *Combat_schedule::find_foe(
 	                      avatar->get_effective_alignment() !=  Actor::good;
 	// Remove any that died.
 	opponents.erase(std::remove_if(opponents.begin(), opponents.end(),
-		[this, avatar, charmed_avatar](Game_object_weak curr) {
+		[this, avatar, charmed_avatar](const Game_object_weak& curr) {
 			Actor_shared actor = std::static_pointer_cast<Actor>(curr.lock());
 			return !actor || actor->is_dead() ||
 			       (npc == avatar && !charmed_avatar &&

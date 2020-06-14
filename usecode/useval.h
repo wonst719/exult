@@ -173,7 +173,7 @@ public:
 		return *this;
 	}
 	Usecode_value &operator=(Game_object_shared ptr) noexcept {
-		replace(ptrval, ptr, pointer_type);
+		replace(ptrval, std::move(ptr), pointer_type);
 		return *this;
 	}
 	Usecode_value &operator=(Usecode_class_symbol *ptr) noexcept {
