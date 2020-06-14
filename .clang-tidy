@@ -1,5 +1,10 @@
 Checks: "-*\
+,modernize-redundant-void-arg\
+,modernize-replace-auto-ptr\
+,modernize-replace-random-shuffle\
+,modernize-return-braced-init-list\
 ,modernize-use-auto\
+,modernize-use-default-member-init\
 ,modernize-use-bool-literals\
 ,modernize-use-emplace\
 ,modernize-use-equals-default\

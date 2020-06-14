@@ -783,9 +783,9 @@ class Cheat_map : public Game_singletons, public Paintable {
 public:
 	int x, y;           // Where it's painted.
 	int w, h;
-	Shape_frame *map;
-	Vga_file *mini;         // If "minimaps.vga" is found.
-	Cheat_map(int mapnum = 0) : map(nullptr), mini(nullptr) {
+	Shape_frame *map = nullptr;
+	Vga_file *mini = nullptr;         // If "minimaps.vga" is found.
+	Cheat_map(int mapnum = 0) {
 		if (U7exists(PATCH_MINIMAPS)) {
 			mini = new Vga_file(PATCH_MINIMAPS);
 			if (!(map = mini->get_shape(0, mapnum)))

@@ -1178,11 +1178,11 @@ bool Weather_effect::out_of_range(
  *  A generic raindrop/snowflake/magic sparkle particle:
  */
 class Particle : public ShapeID {
-	long ax, ay;            // Coords. where drawn in abs. pixels.
-	bool forward;
+	long ax = -1, ay = -1;            // Coords. where drawn in abs. pixels.
+	bool forward = true;
 public:
 	Particle()
-		: ShapeID(0, -1, SF_SPRITES_VGA), ax(-1), ay(-1), forward(true)
+		: ShapeID(0, -1, SF_SPRITES_VGA)
 	{  }
 	// Move to next position.
 	void move(long dx, long dy) {
