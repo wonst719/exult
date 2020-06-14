@@ -1252,7 +1252,6 @@ public:
 		x = (gwin->get_game_width() - s->get_width()) / 2 + s->get_xleft();
 		y = (gwin->get_game_height() - s->get_height()) / 2 + s->get_yabove();
 	}
-	~Paint_centered() override {  }
 	void paint() override {
 		sid->paint_shape(x, y);
 	}
@@ -1265,7 +1264,6 @@ class Paint_map : public Paint_centered {
 public:
 	Paint_map(ShapeID *s, bool loc) : Paint_centered(s), show_loc(loc)
 	{  }
-	~Paint_map() override {  }
 	void paint() override {
 		Paint_centered::paint();
 		if (show_loc) {

@@ -36,7 +36,7 @@ class TimidityMidiDriver : public LowLevelMidiDriver
 
 public:
 	static const MidiDriverDesc* getDesc() { return &desc; }
-	TimidityMidiDriver();
+	TimidityMidiDriver() = default;
 
 protected:
 	// LowLevelMidiDriver implementation

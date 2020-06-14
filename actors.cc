@@ -5149,14 +5149,6 @@ void Npc_actor::move(
 }
 
 /*
- *  Delete.
- */
-
-Dead_body::~Dead_body(
-) {
-}
-
-/*
  *  Get # of NPC a body came from (or -1 if not known).
  */
 
@@ -5214,8 +5206,4 @@ Frames_sequence::Frames_sequence(
 ) : num_frames(cnt) {
 	frames = new unsigned char[cnt];
 	memcpy(frames, f, cnt);     // Copy in the list.
-}
-
-Main_actor::~Main_actor() {
-
 }

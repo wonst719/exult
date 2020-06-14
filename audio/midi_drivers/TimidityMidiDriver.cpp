@@ -26,10 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 const MidiDriver::MidiDriverDesc TimidityMidiDriver::desc = 
 		MidiDriver::MidiDriverDesc ("Timidity", createInstance);
 
-TimidityMidiDriver::TimidityMidiDriver()
-{
-}
-
 int TimidityMidiDriver::open()
 {
 	sint32 encoding = PE_16BIT|PE_SIGNED;

@@ -735,7 +735,6 @@ public:
 		: Actor(nm, shapenum, num, uc) {
 		frames = &avatar_frames[0];
 	}
-	~Main_actor() override;
 	// For Time_sensitive:
 	void handle_event(unsigned long curtime, uintptr udata) override;
 	void get_followers() const;       // Get party to follow.
@@ -819,7 +818,6 @@ public:
 		: Container_game_object(shapenum, framenum, tilex, tiley, lft),
 		  npc_num(n) {
 	}
-	~Dead_body() override;
 	int get_live_npc_num() const override;
 	// Under attack.
 	Game_object *attacked(Game_object *attacker, int weapon_shape = 0,
