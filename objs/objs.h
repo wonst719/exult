@@ -92,7 +92,6 @@ private:
 	std::vector <Object_client *> clients; // Notify when deleted.
 public:
 	uint32 render_seq = 0;      // Render sequence #.
-public:
 	friend class T_Object_list<Game_object>;
 	friend class T_Object_iterator<Game_object>;
 	friend class T_Flat_object_iterator<Game_object, Map_chunk *>;

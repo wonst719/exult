@@ -473,7 +473,6 @@ public:
 	void poke_stack(int depth, Usecode_value &val);
 #endif
 
-public:
 	friend class Usecode_script;
 	Usecode_internal();
 	~Usecode_internal() override;
