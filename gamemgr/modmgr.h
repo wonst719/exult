@@ -52,22 +52,22 @@ public:
 	BaseGameInfo(const BaseGameInfo &) = default;
 	virtual ~BaseGameInfo() = default;
 
-	const std::string get_cfgname() const {
+	std::string get_cfgname() const {
 		return cfgname;
 	}
-	const std::string get_path_prefix() const {
+	std::string get_path_prefix() const {
 		return path_prefix;
 	}
-	const std::string get_mod_title() const {
+	std::string get_mod_title() const {
 		return mod_title;
 	}
-	const std::string get_menu_string() const {
+	std::string get_menu_string() const {
 		return menustring;
 	}
 	Exult_Game get_game_type() const {
 		return type;
 	}
-	const std::string get_codepage() const {
+	std::string get_codepage() const {
 		return codepage;
 	}
 	// For FoV/SS ONLY.

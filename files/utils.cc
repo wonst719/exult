@@ -84,7 +84,7 @@ void reset_system_paths() {
 	path_map = stored_path_map;
 }
 
-static const string remove_trailing_slash(const string &value) {
+static string remove_trailing_slash(const string &value) {
 	string new_path = value;
 	if (*(new_path.end() - 1) == '/'
 #ifdef _WIN32
@@ -611,7 +611,7 @@ void cleanup_output(const char *prefix) {
 #endif // USE_CONSOLE
 #endif  // _WIN32
 
-const string Get_home() {
+string Get_home() {
 	std::string home_dir;
 #ifdef _WIN32
 #ifdef PORTABLE_EXULT_WIN32
