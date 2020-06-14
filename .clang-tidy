@@ -1,5 +1,6 @@
 Checks: "-*\
 ,modernize-use-bool-literals\
+,readability-container-size-empty\
 ,readability-const-return-type\
 ,readability-inconsistent-declaration-parameter-name\
 ,readability-isolate-declaration\

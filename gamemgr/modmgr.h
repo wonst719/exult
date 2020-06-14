@@ -154,7 +154,7 @@ public:
 	int find_mod_index(const std::string &name);
 
 	bool has_mods() const {
-		return modlist.size() > 0;
+		return !modlist.empty();
 	}
 	ModInfo *get_mod(int i) {
 		return &(modlist.at(i));

@@ -1919,7 +1919,7 @@ int_cast:
 primary:
 	INT_LITERAL
 		{
-		UsecodeOps op = const_opcode.size() ? const_opcode.back() : UC_PUSHI;
+		UsecodeOps op = !const_opcode.empty() ? const_opcode.back() : UC_PUSHI;
 		if (is_sint_32bit($1) && op != UC_PUSHI32)
 			{
 			char buf[150];
@@ -2130,7 +2130,7 @@ param:
 int_literal:				/* A const. integer value.	*/
 	INT_LITERAL
 		{
-		UsecodeOps op = const_opcode.size() ? const_opcode.back() : UC_PUSHI;
+		UsecodeOps op = !const_opcode.empty() ? const_opcode.back() : UC_PUSHI;
 		if (is_sint_32bit($1) && op != UC_PUSHI32)
 			{
 			char buf[150];

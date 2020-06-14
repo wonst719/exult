@@ -110,7 +110,7 @@ public:
 		// if (head && !(curtime < head->time))
 		if (paused)
 			activate_always(curtime);
-		else if (data.size() && !(curtime < data.front().time))
+		else if (!data.empty() && !(curtime < data.front().time))
 			activate0(curtime);
 	}
 	void pause(uint32 curtime) { // Game paused.

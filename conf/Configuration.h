@@ -29,7 +29,7 @@ public:
 	{ }
 	Configuration(const std::string &fname, const std::string &root)
 		: xmltree(new XMLnode(root)), rootname(root) {
-		if (fname.size()) read_config_file(fname);
+		if (!fname.empty()) read_config_file(fname);
 	}
 
 	~Configuration() {

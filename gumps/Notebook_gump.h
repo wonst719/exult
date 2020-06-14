@@ -88,7 +88,7 @@ public:
 	static void add_gflag_text(int gflag) {
 		if (!initialized_auto_text)
 			read_auto_text();
-		if (gflag < static_cast<int>(auto_text.size()) && auto_text[gflag].size())
+		if (gflag < static_cast<int>(auto_text.size()) && !auto_text[gflag].empty())
 			add_gflag_text(gflag, auto_text[gflag]);
 	}
 	bool is_draggable() const override {

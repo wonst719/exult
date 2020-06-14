@@ -237,7 +237,7 @@ public:
 	// Text data file.
 	void parse(std::vector<std::string> &strings, int version, bool patch, Exult_Game game) {
 		for (size_t j = 0; j < strings.size(); j++) {
-			if (strings[j].size()) {
+			if (!strings[j].empty()) {
 				std::istringstream strin(strings[j], std::ios::in);
 				read_data(strin, j, version, patch, game, false);
 			}

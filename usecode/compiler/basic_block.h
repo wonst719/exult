@@ -259,7 +259,7 @@ public:
 		jmp_op = nullptr;
 	}
 	UsecodeOps get_last_instruction() const {
-		return instructions.size() ? instructions.back()->get_opcode() : UC_INVALID;
+		return !instructions.empty() ? instructions.back()->get_opcode() : UC_INVALID;
 	}
 	void set_32bit_jump() {
 		if (jmp_op) jmp_op->set_32bit();
@@ -271,7 +271,7 @@ public:
 		return jmp_op == nullptr;
 	}
 	bool ends_in_return() const {
-		return instructions.size() && instructions.back()->is_return();
+		return !instructions.empty() && instructions.back()->is_return();
 	}
 	int get_jump_size() const {
 		if (!jmp_op)
