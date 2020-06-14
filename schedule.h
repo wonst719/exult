@@ -24,6 +24,7 @@
 #include "tiles.h"
 #include "singles.h"
 #include <memory>
+#include <string>
 #include <vector>
 #include "ignore_unused_variable_warning.h"
 

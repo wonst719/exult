@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "SDL.h"
 #include "gamewin.h"
-#include "../objs/objs.h"
+#include "objs.h"
 #include "misc_buttons.h"
 #include "Modal_gump.h"
 #include "Gamemenu_gump.h"
