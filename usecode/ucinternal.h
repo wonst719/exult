@@ -104,7 +104,7 @@ class Usecode_internal : public Usecode_machine {
 	Usecode_value pop();
 	Usecode_value peek();
 	void pushref(Game_object *obj); // Push itemref
-  void pushref(Game_object_shared obj);
+	void pushref(Game_object_shared obj);
 	void pushi(long val);       // Push/pop integers.
 	int popi();
 	// Push/pop strings.
@@ -438,12 +438,6 @@ class Usecode_internal : public Usecode_machine {
 	bool is_object_fun(int n);
 
 #ifdef USECODE_DEBUGGER
-
-	Breakpoints breakpoints;
-
-	bool on_breakpoint = false; // are we on a breakpoint?
-	int breakpoint_action = -1; // stay on breakpoint/continue/abort?
-
 public:
 	bool is_on_breakpoint() const {
 		return on_breakpoint;
@@ -471,8 +465,16 @@ public:
 	int get_stack_size() const;
 	Usecode_value *peek_stack(int depth) const;
 	void poke_stack(int depth, Usecode_value &val);
+
+private:
+
+	Breakpoints breakpoints;
+
+	bool on_breakpoint = false; // are we on a breakpoint?
+	int breakpoint_action = -1; // stay on breakpoint/continue/abort?
 #endif
 
+public:
 	friend class Usecode_script;
 	Usecode_internal();
 	~Usecode_internal() override;
