@@ -373,7 +373,7 @@ BaseGameInfo *ExultMenu::run() {
 		font->center_text(gwin->get_win()->get_ib8(),
 		                  centerx, topy + 40, "Could not find the static data for either");
 		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 50, "\"The Black Gate\" or \"Serpent Isle\".");
+		                  centerx, topy + 50, R"("The Black Gate" or "Serpent Isle".)");
 #ifndef __IPHONEOS__
 		const char games_missing_msg[] = "Please edit the configuration file";
 #else
