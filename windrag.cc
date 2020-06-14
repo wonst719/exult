@@ -336,7 +336,7 @@ Windropsource::GiveFeedback(
 
 // IDataObject implementation
 
-Winstudioobj::Winstudioobj(windragdata pdata)
+Winstudioobj::Winstudioobj(const windragdata& pdata)
 	: data(pdata) {
 	m_cRef = 1;
 	drag_image = nullptr;

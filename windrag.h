@@ -197,7 +197,7 @@ private:
 	windragdata data;
 
 public:
-	Winstudioobj(windragdata pdata);
+	Winstudioobj(const windragdata& pdata);
 	virtual ~Winstudioobj() = default;
 
 	STDMETHOD(QueryInterface)(REFIID iid, void **ppvObject);

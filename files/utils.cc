@@ -499,7 +499,7 @@ public:
 	~shell32_wrapper() {
 		FreeLibrary(hLib);
 	}
-	const string Get_local_appdata() {
+	string Get_local_appdata() {
 		/*  Not yet.
 		if (SHGetKnownFolderPath != nullptr)
 		    {
@@ -623,7 +623,7 @@ string Get_home() {
 	else {
 		shell32_wrapper shell32;
 		home_dir = shell32.Get_local_appdata();
-		if (home_dir != "")
+		if (!home_dir.empty())
 			home_dir += "\\Exult";
 		else
 			home_dir = ".";
@@ -717,7 +717,7 @@ void setup_data_dir(
 void setup_program_paths() {
 	string home_dir(Get_home());
 	string config_dir;
-	string savehome_dir(home_dir);
+	string savehome_dir;
 	string gamehome_dir(".");
 
 #ifdef __IPHONEOS__
@@ -727,10 +727,12 @@ void setup_program_paths() {
 #elif defined(MACOSX)
 	config_dir = home_dir;
 	config_dir += "/Library/Preferences";
+	savehome_dir = home_dir;
 	savehome_dir += "/Library/Application Support/Exult";
 	gamehome_dir = "/Library/Application Support/Exult";
 #elif defined(XWIN)
 	config_dir = home_dir;
+	savehome_dir = home_dir;
 	savehome_dir += "/.exult";
 	gamehome_dir = EXULT_DATADIR;
 #endif

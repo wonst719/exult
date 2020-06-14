@@ -136,7 +136,7 @@ int Import_png8(
 	png_read_update_info(png, info);
 	// Allocate pixel buffer.
 	rowbytes = png_get_rowbytes(png, info);
-	auto image = new png_byte[height * rowbytes];
+	auto *image = new png_byte[height * rowbytes];
 	pixels = image;         // Return ->.
 	png_bytep rowptr;       // Read in rows.
 	int r;
@@ -329,7 +329,7 @@ int Import_png32(
 	png_read_update_info(png, info);
 	// Allocate pixel buffer.
 	rowbytes = png_get_rowbytes(png, info);
-	auto image = new png_byte[height * rowbytes];
+	auto *image = new png_byte[height * rowbytes];
 	pixels = image;         // Return ->.
 	png_bytep rowptr = image;   // Read in rows.
 	int stride;         // Distance to next row.

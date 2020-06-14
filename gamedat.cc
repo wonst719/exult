@@ -753,7 +753,7 @@ bool Game_window::get_saveinfo_zip(const char *fname, char *&name, std::unique_p
 bool Game_window::Restore_level2(
     void *uzf, const char *dirname, int dirlen
 ) {
-	auto unzipfile = static_cast<unzFile>(uzf);
+	auto *unzipfile = static_cast<unzFile>(uzf);
 
 	char oname[50];     // Set up name.
 	char *oname2 = oname + sizeof(GAMEDAT) + dirlen - 1;
