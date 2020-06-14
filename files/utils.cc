@@ -84,7 +84,7 @@ void reset_system_paths() {
 	path_map = stored_path_map;
 }
 
-static const string remove_trainling_slash(const string &value) {
+static const string remove_trailing_slash(const string &value) {
 	string new_path = value;
 	if (*(new_path.end() - 1) == '/'
 #ifdef _WIN32
@@ -106,7 +106,7 @@ void add_system_path(const string &key, const string &value) {
 			          << value << "'." << std::endl;
 			exit(1);
 		} else
-			path_map[key] = remove_trainling_slash(value);
+			path_map[key] = remove_trailing_slash(value);
 	} else {
 		clear_system_path(key);
 	}
