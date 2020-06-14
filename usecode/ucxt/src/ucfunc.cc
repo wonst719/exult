@@ -602,7 +602,7 @@ void UCFunc::parse_ucs_pass3(vector<GotoSet> &gotoset, const map<unsigned int, s
 bool UCFunc::output_tt(std::ostream &o) {
 	o << "\t<0x" << setw(4) << _funcid << ">" << endl;
 
-	for (map<unsigned int, string, less<unsigned int> >::iterator i = _data.begin(); i != _data.end(); ++i) {
+	for (auto i = _data.begin(); i != _data.end(); ++i) {
 		o << "\t\t<0x" << setw(4) << i->first << ">" << endl
 		  << "\t\t`" << i->second << "`" << endl
 		  << "\t\t</>" << endl;
@@ -705,7 +705,7 @@ bool UCFunc::output_asm(ostream &o, const FuncMap &funcmap, const map<unsigned i
 void UCFunc::output_asm_data(ostream &o) {
 	static const unsigned int nochars = 60;
 	// limit of about 60 chars to a line, wrap to the next line if longer then this...
-	for (map<unsigned int, string, less<unsigned int> >::iterator i = _data.begin(); i != _data.end(); ++i) {
+	for (auto i = _data.begin(); i != _data.end(); ++i) {
 		for (unsigned int j = 0; j < i->second.size(); j++) {
 			if (j == 0)
 				o << "L" << setw(4) << i->first << ":";
@@ -1310,9 +1310,7 @@ void readbin_U7UCFunc(
 					str.setf(ios::uppercase);
 					str << std::setw(4) << ucf._funcid;
 					ucf.funcname = str.str();
-					std::map<unsigned int, std::string,
-					         std::less<unsigned int> >::iterator it;
-					it = ucf._data.find(ucf.debugging_offset);
+					auto it = ucf._data.find(ucf.debugging_offset);
 					for (unsigned int i = 0;
 					     i < ucf._num_args + ucf._num_locals && it != ucf._data.end();
 					     ++it, i++) {
