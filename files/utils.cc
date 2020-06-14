@@ -537,7 +537,7 @@ void cleanup_output(const char *prefix) {
 	ignore_unused_variable_warning(prefix);
 }
 #else
-const std::string Get_home();
+std::string Get_home();
 
 // Pulled from exult_studio.cc.
 void redirect_output(const char *prefix) {
