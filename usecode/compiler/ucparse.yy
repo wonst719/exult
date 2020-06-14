@@ -61,7 +61,7 @@ static Uc_class *Find_class(const char *nm);
 static bool Class_unexpected_error(Uc_expression *expr);
 static bool Nonclass_unexpected_error(Uc_expression *expr);
 static bool Incompatible_classes_error(Uc_class *src, Uc_class *trg);
-static Uc_call_expression *cls_method_call(Uc_expression *cls, Uc_class *curcls,
+static Uc_call_expression *cls_method_call(Uc_expression *ths, Uc_class *curcls,
 		Uc_class *clsscope, char *nm, Uc_array_expression *parms);
 static Uc_call_expression *cls_function_call(Uc_expression *ths,
 		Uc_class *curcls, char *nm, bool original, Uc_array_expression *parms);

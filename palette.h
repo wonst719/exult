@@ -141,19 +141,11 @@ class Palette_transition {
 	int start_hour, start_minute, start_ticks;
 	int rate;
 public:
-	/*
-	Palette_transition(int from, int to, int ch = 0, int cm = 0, int ct = 0, int r = 4,
-	                   int nsteps = 15, int sh = 0, int smin = 0, int stick = 0);
-	Palette_transition(Palette *from, Palette *to, int ch = 0, int ct = 0, int cm = 0,
-	                   int r = 4, int nsteps = 15, int sh = 0, int smin = 0, int stick = 0);
-	Palette_transition(Palette *from, int to, int ch = 0, int ct = 0, int cm = 0,
-	                   int r = 4, int nsteps = 15, int sh = 0, int smin = 0, int stick = 0);
-	*/
 	Palette_transition(int from, int to, int ch, int cm, int ct, int,
 	                   int nsteps, int sh, int smin, int stick);
-	Palette_transition(Palette *from, Palette *to, int ch, int ct, int cm,
+	Palette_transition(Palette *from, Palette *to, int ch, int cm, int ct,
 	                   int r, int nsteps, int sh, int smin, int stick);
-	Palette_transition(Palette *from, int to, int ch, int ct, int cm,
+	Palette_transition(Palette *from, int to, int ch, int cm, int ct,
 	                   int r, int nsteps, int sh, int smin, int stick);
 	int get_step() const {
 		return step;
