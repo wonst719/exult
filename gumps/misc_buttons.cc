@@ -87,7 +87,7 @@ bool Disk_button::activate(
     int button
 ) {
 	if (button != 1) return false;
-	Gamemenu_gump *menu = new Gamemenu_gump();
+	auto *menu = new Gamemenu_gump();
 	gumpman->do_modal_gump(menu, Mouse::hand);
 	delete menu;
 	return true;

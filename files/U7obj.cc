@@ -63,7 +63,7 @@ unique_ptr<unsigned char[]> U7object::retrieve(size_t &len) const {
  *  @param objects  Vector containing U7objects we will test.
  */
 void U7multiobject::set_object(const std::vector<U7object> &objects) {
-	for (std::vector<U7object>::const_iterator it = objects.begin();
+	for (auto it = objects.begin();
 	        it != objects.end(); ++it) {
 		size_t len;
 		auto buf = it->retrieve(len);
@@ -171,7 +171,7 @@ U7multiobject::U7multiobject(
 	if (!files.empty()) {
 		identifier = files[0];
 		std::vector<U7object> objects;
-		for (std::vector<File_spec>::const_iterator it = files.begin();
+		for (auto it = files.begin();
 		        it != files.end(); ++it)
 			objects.emplace_back(*it, objnum);
 		set_object(objects);

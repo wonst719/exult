@@ -545,7 +545,7 @@ void Cheat::toggle_selected(Game_object *obj) {
 	else
 		gwin->set_all_dirty();
 	// In list?
-	for (Game_object_shared_vector::iterator it = selected.begin();
+	for (auto it = selected.begin();
 	        it != selected.end(); ++it)
 		if ((*it).get() == obj) {
 			// Yes, so remove it.
@@ -565,7 +565,7 @@ void Cheat::toggle_selected(Game_object *obj) {
 void Cheat::clear_selected() {
 	if (selected.empty())
 		return;
-	for (Game_object_shared_vector::iterator it = selected.begin();
+	for (auto it = selected.begin();
 	        it != selected.end(); ++it) {
 		Game_object *obj = (*it).get();
 		if (!obj->get_owner())

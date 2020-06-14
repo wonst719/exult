@@ -97,7 +97,7 @@ C_EXPORT void on_npc_show_gump_clicked(
 	cout << "In on_npc_show_gump_clicked()" << endl;
 	unsigned char data[Exult_server::maxlength];
 	// Get container address.
-	uintptr addr = reinterpret_cast<uintptr>(gtk_object_get_user_data(
+	auto addr = reinterpret_cast<uintptr>(gtk_object_get_user_data(
 	                         GTK_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(btn)))));
 	unsigned char *ptr = &data[0];
 	Serial_out io(ptr);
@@ -381,7 +381,7 @@ static bool Get_prop_spin(
     GtkSpinButton  *&spin,      // Spin button returned.
     int &pnum           // Property number (0-11) returned.
 ) {
-	GtkTableChild *ent = static_cast<GtkTableChild *>(list->data);
+	auto *ent = static_cast<GtkTableChild *>(list->data);
 	GtkBin *frame = GTK_BIN(ent->widget);
 	spin = GTK_SPIN_BUTTON(frame->child);
 	assert(spin != nullptr);
@@ -409,7 +409,7 @@ static bool Get_flag_cbox(
     unsigned long  *&bits,      // ->one of 3 flags above.
     int &fnum           // Flag # (0-31) returned.
 ) {
-	GtkTableChild *ent = static_cast<GtkTableChild *>(list->data);
+	auto *ent = static_cast<GtkTableChild *>(list->data);
 	cbox = GTK_CHECK_BUTTON(ent->widget);
 	assert(cbox != nullptr);
 	const char *name = gtk_widget_get_name(GTK_WIDGET(cbox));
@@ -466,7 +466,7 @@ void ExultStudio::init_new_npc(
 	// Set flag checkboxes.
 	for (GList *list = g_list_first(ftable->children); list;
 	        list = g_list_next(list)) {
-		GtkTableChild *ent = static_cast<GtkTableChild *>(list->data);
+		auto *ent = static_cast<GtkTableChild *>(list->data);
 		GtkCheckButton *cbox = GTK_CHECK_BUTTON(ent->widget);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(cbox), false);
 	}
@@ -588,7 +588,7 @@ int ExultStudio::init_npc_window(
  * close. You can't call it in Npc_response because browser is private.
  */
 void ExultStudio::update_npc() { // update npc browser display (if open)
-	Npc_chooser *npcchoose = dynamic_cast<Npc_chooser *>(browser);
+	auto *npcchoose = dynamic_cast<Npc_chooser *>(browser);
 	if (npcchoose) {
 		short npc_num = get_num_entry("npc_num_entry");
 		npcchoose->update_npc(npc_num);
@@ -624,7 +624,7 @@ int ExultStudio::save_npc_window(
 ) {
 	cout << "In save_npc_window()" << endl;
 	// Get npc (null if creating new).
-	Actor *addr = static_cast<Actor*>(gtk_object_get_user_data(GTK_OBJECT(npcwin)));
+	auto *addr = static_cast<Actor*>(gtk_object_get_user_data(GTK_OBJECT(npcwin)));
 	int tx = -1;
 	int ty = -1;
 	int tz = -1;  // +++++For now.
@@ -701,7 +701,7 @@ int ExultStudio::save_npc_window(
 		return 1;       // Leave window open.
 	}
 	// Update NPC browser information.
-	Npc_chooser *npcchoose = dynamic_cast<Npc_chooser *>(browser);
+	auto *npcchoose = dynamic_cast<Npc_chooser *>(browser);
 	if (npcchoose)
 		npcchoose->update_npc(npc_num);
 	close_npc_window();
@@ -796,8 +796,8 @@ void ExultStudio::schedule_btn_clicked(
 	const char *name = gtk_widget_get_name(btn);
 	const char *numptr = name + 5;  // Past "sched".
 	int num = atoi(numptr);
-	GtkWidget *schedwin = static_cast<GtkWidget *>(data);
-	GtkLabel *label = static_cast<GtkLabel *>(gtk_object_get_user_data(
+	auto *schedwin = static_cast<GtkWidget *>(data);
+	auto *label = static_cast<GtkLabel *>(gtk_object_get_user_data(
 	                      GTK_OBJECT(schedwin)));
 	// User data = schedule #.
 	gtk_object_set_user_data(GTK_OBJECT(label), reinterpret_cast<gpointer>(uintptr(num)));
@@ -862,7 +862,7 @@ static void Game_loc_response(
 	if (id != Exult_server::game_pos)
 		return;
 	// Get box with loc. spin btns.
-	GtkBox *box = static_cast<GtkBox *>(client);
+	auto *box = static_cast<GtkBox *>(client);
 	int tx = Read2(data);
 	int ty = Read2(data);
 	int tz = Read2(data);

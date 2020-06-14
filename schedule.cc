@@ -300,7 +300,7 @@ bool Schedule::try_proximity_usecode(int odds) {
 	if ((rand() % odds) == 0) {
 		// Note: since we can get here from within usecode, lets not
 		// call the function directly but queue it instead.
-		Usecode_script *scr = new Usecode_script(npc);
+		auto *scr = new Usecode_script(npc);
 		(*scr) << Ucscript::dont_halt << Ucscript::usecode2
 		       << npc->get_usecode() << Usecode_machine::npc_proximity;
 		scr->start();
@@ -921,7 +921,7 @@ void Preach_schedule::now_what(
 		state = at_podium;
 		Actor *member = Find_congregant(npc);
 		if (member) {
-			Usecode_script *scr = new Usecode_script(member);
+			auto *scr = new Usecode_script(member);
 			scr->add(Ucscript::delay_ticks, 3);
 			scr->add(Ucscript::face_dir, member->get_dir_facing());
 			scr->add(Ucscript::npc_frame + Actor::standing);
@@ -974,7 +974,7 @@ void Preach_schedule::now_what(
 		return;
 	}
 	case pray: {
-		Usecode_script *scr = new Usecode_script(npc);
+		auto *scr = new Usecode_script(npc);
 		(*scr) << Ucscript::face_dir << 6   // Face west.
 		       << (Ucscript::npc_frame + Actor::standing)
 		       << (Ucscript::npc_frame + Actor::bow_frame)
@@ -1100,7 +1100,7 @@ void Patrol_schedule::now_what(
 			int delay = 2;
 			// Scripts for all actions. At worst, display standing frame
 			// once the path egg is reached.
-			Usecode_script *scr = new Usecode_script(npc);
+			auto *scr = new Usecode_script(npc);
 			(*scr) << Ucscript::npc_frame + Actor::standing;
 			// Quality = type.  (I think high bits
 			// are flags).
@@ -1332,7 +1332,7 @@ void Patrol_schedule::now_what(
 				book = Game_object_weak();
 			}
 			// Standing up animation.
-			Usecode_script *scr = new Usecode_script(npc);
+			auto *scr = new Usecode_script(npc);
 			(*scr) << Ucscript::delay_ticks << 2 <<
 			       Ucscript::npc_frame + Actor::bow_frame <<
 			       Ucscript::delay_ticks << 2 <<
@@ -1389,7 +1389,7 @@ void Patrol_schedule::now_what(
 		// Number of swings.
 		int repcnt = 1 + rand() % 3;
 
-		Usecode_script *scr = new Usecode_script(npc);
+		auto *scr = new Usecode_script(npc);
 		(*scr) << Ucscript::delay_ticks << 2 <<
 		       Ucscript::npc_frame + Actor::ready_frame <<
 		       Ucscript::delay_ticks << 2 <<
@@ -2165,7 +2165,7 @@ bool Sleep_schedule::is_bed_occupied(
 	bed->find_nearby_actors(occ, c_any_shapenum, 2);
 	Rectangle foot = bed->get_footprint();
 	int bedz = bed->get_tile().tz / 5;
-	for (Actor_vector::iterator it = occ.begin(); it != occ.end(); ++it) {
+	for (auto it = occ.begin(); it != occ.end(); ++it) {
 		if (npc == *it)
 			continue;
 		Tile_coord tn = (*it)->get_tile();
@@ -2202,11 +2202,11 @@ void Sleep_schedule::now_what(
 			bedshapes.push_back(312);
 		}
 		Game_object_vector beds;    // Want to find top of bed.
-		for (vector<int>::iterator it = bedshapes.begin();
+		for (auto it = bedshapes.begin();
 		        it != bedshapes.end(); ++it)
 			npc->find_nearby(beds, *it, 24, 0);
 		int best_dist = 100;
-		for (Game_object_vector::iterator it = beds.begin();
+		for (auto it = beds.begin();
 		        it != beds.end(); ++it) {
 			Game_object *newbed = *it;
 			int newdist = npc->distance(newbed);
@@ -2357,7 +2357,7 @@ void Sleep_schedule::ending(
 		        !is_bed_occupied(bed_obj.get(), npc)) { // And not if there is another occupant.
 			// Make the bed set itself after a small delay.
 			makebed = true;
-			Usecode_script *scr = new Usecode_script(bed_obj.get());
+			auto *scr = new Usecode_script(bed_obj.get());
 			(*scr) << Ucscript::finish
 			       << Ucscript::delay_ticks << 3 << Ucscript::frame << frnum - 1;
 			scr->start();
@@ -2372,7 +2372,7 @@ void Sleep_schedule::ending(
 	npc->change_frame(npc->get_dir_framenum(Actor::standing));
 	if (makebed) {
 		// Animation for making bed.
-		Usecode_script *scr = new Usecode_script(npc);
+		auto *scr = new Usecode_script(npc);
 		(*scr) << Ucscript::dont_halt << Ucscript::face_dir << dir
 		       << Ucscript::npc_frame + Actor::ready_frame
 		       << Ucscript::delay_ticks << 1 << Ucscript::npc_frame + Actor::raise1_frame
@@ -2582,7 +2582,7 @@ bool Sit_schedule::set_action(
 			return false;
 	} else if (Sit_actor_action::is_occupied(chairobj, actor))
 		return false;       // Given chair is occupied.
-	Sit_actor_action *act = new Sit_actor_action(chairobj, actor);
+	auto *act = new Sit_actor_action(chairobj, actor);
 	// Walk there, then sit.
 	set_action_sequence(actor, act->get_sitloc(), act, false, delay);
 	if (chair_found)
@@ -3257,7 +3257,7 @@ bool Waiter_schedule::find_unattended_plate()
 		(void) npc->find_closest(plates, shapes, shapecnt, 32);
 		int floor = npc->get_lift() / 5; // Make sure it's on same floor.
 
-		for (Game_object_vector::iterator it = plates.begin();
+		for (auto it = plates.begin();
 		                                     it != plates.end(); ++it) {
 			Actor_vector custs;
 			Game_object *plate = *it;
@@ -3529,7 +3529,7 @@ static void Prep_animation(Actor *npc, Game_object *table)
 {
 	npc->change_frame(npc->get_dir_framenum(npc->get_facing_direction(table),
 	                                  Actor::standing));
-	Usecode_script *scr = new Usecode_script(npc);
+	auto *scr = new Usecode_script(npc);
 	(*scr) << Ucscript::face_dir << npc->get_dir_facing();
 	for (int cnt = 1 + rand() % 3; cnt; --cnt) {
 		(*scr) << (Ucscript::npc_frame + Actor::ready_frame)
@@ -3625,7 +3625,7 @@ void Waiter_schedule::now_what(
 		break;
 	case give_plate: {
 		create_customer_plate();
-		Usecode_script *scr = new Usecode_script(npc);
+		auto *scr = new Usecode_script(npc);
 		(*scr) << Ucscript::face_dir << npc->get_dir_facing()
 		       << (Ucscript::npc_frame + Actor::ready_frame)
 		       << Ucscript::delay_ticks << 2
@@ -3748,7 +3748,7 @@ void Waiter_schedule::now_what(
 			if (rand() % 3)
 				npc->say(first_waiter_serve,
 				         last_waiter_serve);
-			Usecode_script *scr = new Usecode_script(npc);
+			auto *scr = new Usecode_script(npc);
 			(*scr) << Ucscript::face_dir << npc->get_dir_facing()
 			       << (Ucscript::npc_frame + Actor::ready_frame)
 			       << Ucscript::delay_ticks << 2
@@ -4725,7 +4725,7 @@ void Forge_schedule::now_what(
 		Actor_action *pact = Path_walking_actor_action::create_path(
 		                         npcpos, tpos, cost);
 
-		Actor_action **a = new Actor_action*[35];
+		auto **a = new Actor_action*[35];
 		a[0] = pact;
 		a[1] = new Face_pos_actor_action(bellows_obj, 250);
 		a[2] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
@@ -4858,7 +4858,7 @@ void Forge_schedule::now_what(
 		if (cnt)
 			npc->set_action(new Frames_actor_action(frames, cnt));
 
-		Actor_action **a = new Actor_action*[10];
+		auto **a = new Actor_action*[10];
 		a[0] = new Frames_actor_action(frames, cnt);
 		a[1] = new Frames_actor_action(0x03, 0, blank_obj.get());
 		a[2] = new Frames_actor_action(0x02, 0, firepit_obj);
@@ -4964,7 +4964,7 @@ void Forge_schedule::now_what(
 			int dir = npc->get_direction(trough_obj);
 			signed char npcframe = npc->get_dir_framenum(dir, Actor::bow_frame);
 
-			Actor_action **a = new Actor_action*[7];
+			auto **a = new Actor_action*[7];
 			a[0] = pact;
 			a[1] = new Pickup_actor_action(blank_obj.get(), 250);
 			a[2] = pact2;

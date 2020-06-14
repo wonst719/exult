@@ -145,7 +145,7 @@ u7shape *load_shape(char *filename) {
 	int file_size = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
-	u7shape *shape = new u7shape;
+	auto *shape = new u7shape;
 	u7frame *frame;
 
 	int shape_size = read4(fp);
@@ -286,7 +286,7 @@ uint8 *load_palette(char *filename) {
 		return nullptr;
 	}
 
-	uint8 *palette = new uint8[768];
+	auto *palette = new uint8[768];
 
 	fseek(fp, 0, SEEK_END);
 	long len = ftell(fp);

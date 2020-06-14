@@ -1804,11 +1804,11 @@ bool BG_Game::new_game(Vga_file &shapes) {
 	pal->load(File_spec(INTROPAL_DAT, 6),
 	          File_spec(get_resource("files/gameflx").str, EXULT_BG_FLX_U7MENUPAL_PAL),
 	          File_spec(PATCH_INTROPAL, 6), 0);
-	Palette *oldpal = new Palette();
+	auto *oldpal = new Palette();
 	oldpal->load(INTROPAL_DAT, PATCH_INTROPAL, 6);
 
 	// Create palette translation table. Maybe make them static?
-	unsigned char *transto = new unsigned char[256];
+	auto *transto = new unsigned char[256];
 	oldpal->create_palette_map(pal, transto);
 	delete oldpal;
 	pal->apply(true);

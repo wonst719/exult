@@ -333,7 +333,7 @@ void Uc_binary_expression::gen_value(
 ) {
 	int ival;
 	if (eval_const(ival)) {
-		Uc_int_expression *iexpr = new Uc_int_expression(ival, intop);
+		auto *iexpr = new Uc_int_expression(ival, intop);
 		iexpr->gen_value(out);
 		delete iexpr;
 	} else {
@@ -422,7 +422,7 @@ void Uc_unary_expression::gen_value(
 ) {
 	int ival;
 	if (eval_const(ival)) {
-		Uc_int_expression *iexpr = new Uc_int_expression(ival);
+		auto *iexpr = new Uc_int_expression(ival);
 		iexpr->gen_value(out);
 		delete iexpr;
 	} else {
@@ -621,7 +621,7 @@ int Uc_string_prefix_expression::get_string_offset(
 
 Uc_array_expression::~Uc_array_expression(
 ) {
-	for (std::vector<Uc_expression *>::iterator it = exprs.begin();
+	for (auto it = exprs.begin();
 	        it != exprs.end(); ++it)
 		delete(*it);
 }
@@ -635,11 +635,11 @@ Uc_array_expression::~Uc_array_expression(
 void Uc_array_expression::concat(
     Uc_expression *e
 ) {
-	Uc_array_expression *arr = dynamic_cast<Uc_array_expression *>(e);
+	auto *arr = dynamic_cast<Uc_array_expression *>(e);
 	if (!arr)
 		add(e);         // Singleton?  Just add it.
 	else {
-		for (std::vector<Uc_expression *>::iterator it =
+		for (auto it =
 		            arr->exprs.begin(); it != arr->exprs.end(); ++it)
 			add(*it);
 		arr->exprs.clear(); // Don't want to delete elements.
@@ -670,7 +670,7 @@ int Uc_array_expression::gen_values(
 ) {
 	int actual = 0;         // (Just to be safe.)
 	// Push backwards, so #0 pops first.
-	for (std::vector<Uc_expression *>::reverse_iterator it =
+	for (auto it =
 	            exprs.rbegin(); it != exprs.rend(); ++it) {
 		Uc_expression *expr = *it;
 		if (expr) {
@@ -703,7 +703,7 @@ inline Uc_class *Uc_call_expression::get_cls() const {
  */
 
 int Uc_call_expression::is_object_function(bool error) const {
-	Uc_intrinsic_symbol *fun = dynamic_cast<Uc_intrinsic_symbol *>(sym);
+	auto *fun = dynamic_cast<Uc_intrinsic_symbol *>(sym);
 	if (!fun)
 		return -1;  // Can't determine.
 
@@ -733,7 +733,7 @@ int Uc_call_expression::is_object_function(bool error) const {
  */
 
 void Uc_call_expression::check_params() {
-	Uc_function_symbol *fun = dynamic_cast<Uc_function_symbol *>(sym);
+	auto *fun = dynamic_cast<Uc_function_symbol *>(sym);
 	if (!fun) {
 		// Intrinsics; do nothing for now.
 		return;
@@ -754,7 +754,7 @@ void Uc_call_expression::check_params() {
 	for (unsigned long i = ignore_this; i < parmscnt; i++) {
 		Uc_expression *expr = callparms[i - ignore_this];
 		Uc_var_symbol *var = protoparms[i];
-		Uc_class_inst_symbol *cls =
+		auto *cls =
 		    dynamic_cast<Uc_class_inst_symbol *>(var);
 		char buf[180];
 		if (expr->is_class()) {

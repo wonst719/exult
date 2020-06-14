@@ -72,7 +72,7 @@ void ActionQuit(int const *params) {
 // { ActionOldFileGump, 0, "Save/restore", normal_keys, NONE },
 void ActionOldFileGump(int const *params) {
 	ignore_unused_variable_warning(params);
-	File_gump *fileio = new File_gump();
+	auto *fileio = new File_gump();
 	Game_window::get_instance()->get_gump_man()->do_modal_gump(fileio,
 	        Mouse::hand);
 	delete fileio;
@@ -81,7 +81,7 @@ void ActionOldFileGump(int const *params) {
 // { ActionMenuGump, 0, "GameMenu", normal_keys, NONE },
 void ActionMenuGump(int const *params) {
 	ignore_unused_variable_warning(params);
-	Gamemenu_gump *gmenu = new Gamemenu_gump();
+	auto *gmenu = new Gamemenu_gump();
 	Game_window::get_instance()->get_gump_man()->do_modal_gump(gmenu,
 	        Mouse::hand);
 	delete gmenu;
@@ -90,7 +90,7 @@ void ActionMenuGump(int const *params) {
 // { ActionFileGump, 0, "Save/restore", normal_keys, NONE },
 void ActionFileGump(int const *params) {
 	ignore_unused_variable_warning(params);
-	Newfile_gump *fileio = new Newfile_gump();
+	auto *fileio = new Newfile_gump();
 	Game_window::get_instance()->get_gump_man()->do_modal_gump(fileio,
 	        Mouse::hand);
 	delete fileio;

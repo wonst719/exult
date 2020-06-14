@@ -93,7 +93,7 @@ Object_browser *Image_file_info::create_browser(
     unsigned char *palbuf,      // Palette for displaying.
     Shape_group *g          // Group, or 0.
 ) {
-	Shape_chooser *chooser = new Shape_chooser(ifile, palbuf, 400, 64,
+	auto *chooser = new Shape_chooser(ifile, palbuf, 400, 64,
 	        g, this);
 	// Fonts?  Show 'A' as the default.
 	if (strcasecmp(basename.c_str(), "fonts.vga") == 0)
@@ -507,7 +507,7 @@ bool Flex_file_info::revert(
 
 Shape_file_set::~Shape_file_set(
 ) {
-	for (vector<Shape_file_info *>::iterator it = files.begin();
+	for (auto it = files.begin();
 	        it != files.end(); ++it)
 		delete(*it);
 }
@@ -553,7 +553,7 @@ Shape_file_info *Shape_file_set::create(
     const char *basename        // Like 'shapes.vga'.
 ) {
 	// Already have it open?
-	for (vector<Shape_file_info *>::iterator it = files.begin();
+	for (auto it = files.begin();
 	        it != files.end(); ++it)
 		if (strcasecmp((*it)->basename.c_str(), basename) == 0)
 			return *it; // Found it.
@@ -571,7 +571,7 @@ Shape_file_info *Shape_file_set::create(
 	const char *fullname = pexists ? ppath : spath;
 	string group_name(basename);    // Create groups file.
 	group_name += ".grp";
-	Shape_group_file *groups = new Shape_group_file(group_name.c_str());
+	auto *groups = new Shape_group_file(group_name.c_str());
 	if (strcasecmp(basename, "shapes.vga") == 0)
 		return append(new Image_file_info(basename, fullname,
 		                                  new Shapes_vga_file(spath, U7_SHAPE_SHAPES, ppath),
@@ -592,7 +592,7 @@ Shape_file_info *Shape_file_set::create(
 		return append(new Image_file_info(basename, fullname,
 		                                  new Vga_file(spath, U7_SHAPE_FONTS, ppath), groups));
 	else if (strcasecmp(basename, "u7chunks") == 0) {
-		std::ifstream *file = new std::ifstream;
+		auto *file = new std::ifstream;
 		U7open(*file, fullname);
 		return append(new Chunks_file_info(basename, fullname,
 		                                   file, groups));
@@ -612,7 +612,7 @@ Shape_file_info *Shape_file_set::create(
 		return append(new Flex_file_info(basename, fullname, sz));
 	} else {            // Not handled above?
 		// Get image file for this path.
-		Vga_file *ifile = new Vga_file(spath, U7_SHAPE_UNK, ppath);
+		auto *ifile = new Vga_file(spath, U7_SHAPE_UNK, ppath);
 		if (ifile->is_good())
 			return append(new Image_file_info(basename, fullname,
 			                                  ifile, groups));
@@ -632,7 +632,7 @@ Shape_file_info *Shape_file_set::create(
 
 Shape_file_info *Shape_file_set::get_npc_browser(
 ) {
-	for (vector<Shape_file_info *>::iterator it = files.begin();
+	for (auto it = files.begin();
 	        it != files.end(); ++it)
 		if (strcasecmp((*it)->basename.c_str(), "npcs") == 0)
 			return *it; // Found it.
@@ -645,7 +645,7 @@ Shape_file_info *Shape_file_set::get_npc_browser(
 
 void Shape_file_set::flush(
 ) {
-	for (vector<Shape_file_info *>::iterator it = files.begin();
+	for (auto it = files.begin();
 	        it != files.end(); ++it)
 		(*it)->flush();
 }
@@ -656,7 +656,7 @@ void Shape_file_set::flush(
 
 bool Shape_file_set::is_modified(
 ) {
-	for (vector<Shape_file_info *>::iterator it = files.begin();
+	for (auto it = files.begin();
 	        it != files.end(); ++it)
 		if ((*it)->modified)
 			return true;

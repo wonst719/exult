@@ -409,7 +409,7 @@ Bit16s LA32PartialPair::nextOutSample() {
 	Bit16s slaveSample = slave.isPCMWave() ? LA32Utilites::unlog(slave.getOutputLogSample(true)) : unlogAndMixWGOutput(slave);
 	slaveSample <<= 2;
 	slaveSample >>= 2;
-	Bit16s ringModulatedSample = Bit16s((Bit32s(masterSample) * Bit32s(slaveSample)) >> 13);
+	auto ringModulatedSample = Bit16s((Bit32s(masterSample) * Bit32s(slaveSample)) >> 13);
 	return mixed ? nonOverdrivenMasterSample + ringModulatedSample : ringModulatedSample;
 }
 

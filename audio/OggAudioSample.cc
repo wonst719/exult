@@ -54,7 +54,7 @@ OggAudioSample::OggAudioSample(std::unique_ptr<uint8[]> buffer, uint32 size)
 
 size_t OggAudioSample::read_func  (void *ptr, size_t size, size_t nmemb, void *datasource)
 {
-	IDataSource *ids = static_cast<IDataSource*>(datasource);
+	auto *ids = static_cast<IDataSource*>(datasource);
 	//if (ids->eof()) return 0;
 	size_t limit = ids->getSize() - ids->getPos();
 	if (limit == 0) return 0;
@@ -64,7 +64,7 @@ size_t OggAudioSample::read_func  (void *ptr, size_t size, size_t nmemb, void *d
 }
 int    OggAudioSample::seek_func  (void *datasource, ogg_int64_t offset, int whence)
 {
-	IDataSource *ids = static_cast<IDataSource*>(datasource);
+	auto *ids = static_cast<IDataSource*>(datasource);
 	switch(whence)
 	{
 	case SEEK_SET:
@@ -81,7 +81,7 @@ int    OggAudioSample::seek_func  (void *datasource, ogg_int64_t offset, int whe
 }
 long   OggAudioSample::tell_func  (void *datasource)
 {
-	IDataSource *ids = static_cast<IDataSource*>(datasource);
+	auto *ids = static_cast<IDataSource*>(datasource);
 	return ids->getPos();
 }
 
@@ -98,7 +98,7 @@ bool OggAudioSample::isThis(IDataSource *oggdata)
 
 void OggAudioSample::initDecompressor(void *DecompData) const
 {
-	OggDecompData *decomp = new (DecompData) OggDecompData;
+	auto *decomp = new (DecompData) OggDecompData;
 
 	if (locked)
 		throw exult_exception("Attempted to play OggAudioSample on more than one channel at the same time.");
@@ -125,7 +125,7 @@ void OggAudioSample::initDecompressor(void *DecompData) const
 
 void OggAudioSample::freeDecompressor(void *DecompData) const
 {
-	OggDecompData *decomp = static_cast<OggDecompData *>(DecompData);
+	auto *decomp = static_cast<OggDecompData *>(DecompData);
 	if (decomp->freed)
 		return;
 	decomp->freed = true;
@@ -140,7 +140,7 @@ void OggAudioSample::freeDecompressor(void *DecompData) const
 
 uint32 OggAudioSample::decompressFrame(void *DecompData, void *samples) const
 {
-	OggDecompData *decomp = static_cast<OggDecompData *>(DecompData);
+	auto *decomp = static_cast<OggDecompData *>(DecompData);
 
 	vorbis_info *info = ov_info(&decomp->ov,-1);
 

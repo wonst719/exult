@@ -79,7 +79,7 @@ public:
 	UCOpcodeData() = default;
 	UCOpcodeData(unsigned int op, const Configuration::KeyTypeList &ktl)
 		: opcode(op) {
-		for (Configuration::KeyTypeList::const_iterator k = ktl.begin(); k != ktl.end(); ++k) {
+		for (auto k = ktl.begin(); k != ktl.end(); ++k) {
 			switch (k->first[0]) {
 			case 'a':
 				if (k->first == "asm_nmo")             asm_nmo = strip_backticks(k->second);
@@ -146,7 +146,7 @@ public:
 		o << "ucs_nmo: " << ucs_nmo << std::endl;
 		o << "num_bytes: " << num_bytes << std::endl;
 		o << "param_types: ";
-		for (std::vector<std::string>::const_iterator i = param_types.begin(); i != param_types.end(); ++i)
+		for (auto i = param_types.begin(); i != param_types.end(); ++i)
 			o << *i << ',';
 		o << std::endl;
 		o << "num_pop: " << num_pop << std::endl;

@@ -283,7 +283,7 @@ void Game_clock::handle_event(
     unsigned long curtime,      // Current time of day.
     uintptr udata          // ->game window.
 ) {
-	Game_window *gwin = reinterpret_cast<Game_window *>(udata);
+	auto *gwin = reinterpret_cast<Game_window *>(udata);
 
 	int min_old = minute;
 	int hour_old = hour;

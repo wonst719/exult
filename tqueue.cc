@@ -60,7 +60,7 @@ void Time_queue::add(
 		data.push_back(newent);
 		return;
 	}
-	for (Temporal_sequence::iterator it = data.begin();
+	for (auto it = data.begin();
 	        it != data.end(); ++it) {
 		if (newent < *it) {
 			data.insert(it, newent);
@@ -85,7 +85,7 @@ int Time_queue::remove(
 ) {
 	if (data.empty())
 		return 0;
-	for (Temporal_sequence::iterator it = data.begin();
+	for (auto it = data.begin();
 	        it != data.end(); ++it) {
 		if (it->handler == obj) {
 			obj->queue_cnt--;
@@ -108,7 +108,7 @@ int Time_queue::remove(
 ) {
 	if (data.empty())
 		return 0;
-	for (Temporal_sequence::iterator it = data.begin();
+	for (auto it = data.begin();
 	        it != data.end(); ++it) {
 		if (it->handler == obj && it->udata == udata) {
 			obj->queue_cnt--;
@@ -130,7 +130,7 @@ int Time_queue::find(
 ) const {
 	if (data.empty())
 		return 0;
-	for (Temporal_sequence::const_iterator it = data.begin();
+	for (auto it = data.begin();
 	        it != data.end(); ++it) {
 		if (it->handler == obj)
 			return 1;
@@ -150,7 +150,7 @@ long Time_queue::find_delay(
 ) const {
 	if (data.empty())
 		return -1;
-	for (Temporal_sequence::const_iterator it = data.begin();
+	for (auto it = data.begin();
 	        it != data.end(); ++it) {
 		if (it->handler == obj) {
 			if (pause_time) // Watch for case when paused.
@@ -194,9 +194,9 @@ void Time_queue::activate_always(
 	if (data.empty())
 		return;
 	Queue_entry ent;
-	for (Temporal_sequence::iterator it = data.begin();
+	for (auto it = data.begin();
 	        it != data.end() && !(curtime < (*it).time);) {
-		Temporal_sequence::iterator next = it;
+		auto next = it;
 		++next;         // Get ->next in case we erase.
 		ent = *it;
 		Time_sensitive *obj = ent.handler;
@@ -223,7 +223,7 @@ void Time_queue::resume(
 	pause_time = 0;
 	if (diff < 0)           // Should not happen.
 		return;
-	for (Temporal_sequence::iterator it = data.begin();
+	for (auto it = data.begin();
 	        it != data.end(); ++it) {
 		if (!(*it).handler->always)
 			it->time += diff;   // Push entries ahead.

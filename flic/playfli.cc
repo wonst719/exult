@@ -102,7 +102,7 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 		frame = 0;
 		streampos = streamstart;
 	}
-	uint8 *pixbuf = new uint8[fli_width];
+	auto *pixbuf = new uint8[fli_width];
 
 	if (brightness != palette->get_brightness()) {
 		palette->set_brightness(brightness);

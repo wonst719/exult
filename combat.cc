@@ -411,8 +411,8 @@ list<Game_object_weak>::iterator Combat_schedule::find_protected_attacker(
 		return opponents.end();
 	// Find closest attacker.
 	int best_dist = 4 * c_tiles_per_chunk;
-	list<Game_object_weak>::iterator best_opp = opponents.end();
-	for (list<Game_object_weak>::iterator it = opponents.begin();
+	auto best_opp = opponents.end();
+	for (auto it = opponents.begin();
 	        it != opponents.end(); ++it) {
 		Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
 		int dist;
@@ -469,12 +469,12 @@ Game_object *Combat_schedule::find_foe(
 		if (practice_target)    // For dueling.
 			return practice_target;
 	}
-	list<Game_object_weak>::iterator new_opp_link = opponents.end();
+	auto new_opp_link = opponents.end();
 	switch (static_cast<Actor::Attack_mode>(mode)) {
 	case Actor::weakest: {
 		int str;
 		int least_str = 100;
-		for (list<Game_object_weak>::iterator it = opponents.begin();
+		for (auto it = opponents.begin();
 		        it != opponents.end(); ++it) {
 	    	Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
 			if (!opp)
@@ -490,7 +490,7 @@ Game_object *Combat_schedule::find_foe(
 	case Actor::strongest: {
 		int str;
 		int best_str = -100;
-		for (list<Game_object_weak>::iterator it = opponents.begin();
+		for (auto it = opponents.begin();
 		        it != opponents.end(); ++it) {
 	    	Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
 			if (!opp)
@@ -505,7 +505,7 @@ Game_object *Combat_schedule::find_foe(
 	}
 	case Actor::nearest: {
 		int best_dist = 4 * c_tiles_per_chunk;
-		for (list<Game_object_weak>::iterator it = opponents.begin();
+		for (auto it = opponents.begin();
 		        it != opponents.end(); ++it) {
 	    	Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
 			if (!opp)
@@ -1030,7 +1030,7 @@ bool Combat_schedule::attack_target(
 				// Weapon will return, so wait for it.
 				if (combat) {
 					// We got here due to combat schedule.
-					Combat_schedule *sched =
+					auto *sched =
 					    dynamic_cast<Combat_schedule *>(att->get_schedule());
 					if (sched)  // May not need this check.
 						sched->set_state(wait_return);
@@ -1341,7 +1341,7 @@ void Combat_schedule::now_what(
 		int delay = gwin->get_std_delay();
 		// Neither slime nor BG sea serpent?
 		if (!npc->get_info().has_strange_movement()) {
-			signed char frame =
+			auto frame =
 			    static_cast<signed char>(npc->get_dir_framenum(Actor::ready_frame));
 			npc->set_action(new Frames_actor_action(&frame, 1, delay));
 		} else if (!npc->is_slime()) { // Sea serpent?
@@ -1383,7 +1383,7 @@ void Combat_schedule::now_what(
 		// Change back to ready frame.
 		// Neither slime nor BG sea serpent?
 		if (!npc->get_info().has_strange_movement()) {
-			signed char frame =
+			auto frame =
 			    static_cast<signed char>(npc->get_dir_framenum(Actor::ready_frame));
 			npc->set_action(new Frames_actor_action(&frame, 1, delay));
 		} else if (!npc->is_slime()) { // Sea serpent?

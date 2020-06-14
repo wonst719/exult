@@ -271,7 +271,7 @@ int Game_render::paint_map(
 	// Outline selected objects.
 	const Game_object_shared_vector &sel = cheat.get_selected();
 	int render_skip = gwin->get_render_skip_lift();
-	for (Game_object_shared_vector::const_iterator it = sel.begin();
+	for (auto it = sel.begin();
 	        it != sel.end(); ++it) {
 		Game_object *obj = (*it).get();
 		if (!obj->get_owner() && obj->get_lift() < render_skip)
@@ -533,7 +533,7 @@ void Game_render::paint_object(
 		return;
 	obj->render_seq = render_seq;
 	Game_object::Game_object_set &deps = obj->get_dependencies();
-	for (Game_object::Game_object_set::iterator it = deps.begin();
+	for (auto it = deps.begin();
 	        it != deps.end(); ++it) {
 		Game_object *dep = *it;
 		if (dep && dep->render_seq != render_seq)

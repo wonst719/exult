@@ -110,7 +110,7 @@ void Game_window::read_npcs(
 				if (!okay || sid.get_num_frames() < 16)
 					break;  // Watch for corrupted file.
 				Game_object_shared new_monster = Monster_actor::create(shnum);
-				Monster_actor *act = static_cast<Monster_actor*>(new_monster.get());
+				auto *act = static_cast<Monster_actor*>(new_monster.get());
 				act->read(&nfile, -1, false, fix_unused);
 				act->set_schedule_loc(act->get_tile());
 				act->restore_schedule();

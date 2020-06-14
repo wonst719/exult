@@ -286,7 +286,7 @@ int ExultStudio::save_obj_window(
 ) {
 	cout << "In save_obj_window()" << endl;
 	// Get object address.
-	Game_object *addr = static_cast<Game_object*>(gtk_object_get_user_data(GTK_OBJECT(objwin)));
+	auto *addr = static_cast<Game_object*>(gtk_object_get_user_data(GTK_OBJECT(objwin)));
 	int tx = get_spin("obj_x");
 	int ty = get_spin("obj_y");
 	int tz = get_spin("obj_z");
@@ -317,7 +317,7 @@ void ExultStudio::rotate_obj(
 	int frnum = get_num_entry("obj_frame");
 	if (shnum <= 0)
 		return;
-	Shapes_vga_file *shfile = static_cast<Shapes_vga_file *>(vgafile->get_ifile());
+	auto *shfile = static_cast<Shapes_vga_file *>(vgafile->get_ifile());
 	// Make sure data's been read in.
 	shfile->read_info(game_type, true);
 	const Shape_info &info = shfile->get_info(shnum);

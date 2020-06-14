@@ -258,7 +258,7 @@ void Usecode_script::purge(
 ) {
 	Usecode_script *next = nullptr;
 	Game_window *gwin = Game_window::get_instance();
-	Usecode_internal *usecode = static_cast<Usecode_internal *>(
+	auto *usecode = static_cast<Usecode_internal *>(
 	                                gwin->get_usecode());
 	for (Usecode_script *each = first; each; each = next) {
 		next = each->next;  // Get next in case we delete 'each'.
@@ -303,7 +303,7 @@ void Usecode_script::handle_event(
 	Actor *act = o ? o->as_actor() : nullptr;
 	if (act && act->get_casting_mode() == Actor::init_casting)
 		act->display_casting_frames();
-	Usecode_internal *usecode = reinterpret_cast<Usecode_internal *>(udata);
+	auto *usecode = reinterpret_cast<Usecode_internal *>(udata);
 #ifdef DEBUG
     if (intrinsic_trace)
         cout << "Executing script (" << i << ":" << cnt << ") for "
@@ -633,7 +633,7 @@ int Usecode_script::exec(
 			break;
 		}
 		case resurrect: {
-			Dead_body *body = dynamic_cast<Dead_body *>(optr.get());
+			auto *body = dynamic_cast<Dead_body *>(optr.get());
 			if (!body)
 				break;
 			Actor *act = gwin->get_npc(body->get_live_npc_num());
@@ -743,7 +743,7 @@ Usecode_script *Usecode_script::restore(
 	int cnt = in->read2();      // Get # instructions.
 	int curindex = in->read2(); // Where it is.
 	// Create empty array.
-	Usecode_value *code = new Usecode_value(cnt, nullptr);
+	auto *code = new Usecode_value(cnt, nullptr);
 	for (int i = 0; i < cnt; i++) {
 		Usecode_value &val = code->get_elem(i);
 		if (!val.restore(in)) {
@@ -758,7 +758,7 @@ Usecode_script *Usecode_script::restore(
 	int frame_index = in->read2();
 	int no_halt = in->read2();
 	int delay = in->read4();
-	Usecode_script *scr =
+	auto *scr =
 	    new Usecode_script(item, code, frame_index, no_halt, delay);
 	scr->i = curindex;      // Set index.
 	return scr;

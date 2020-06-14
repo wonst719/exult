@@ -82,7 +82,7 @@ Actor_action *Actor_action::walk_to_tile(
     bool ignnpc       // Ignored.
 ) {
 	ignore_unused_variable_warning(npc, dist, ignnpc);
-	Zombie *path = new Zombie();
+	auto *path = new Zombie();
 	get_party = false;
 	// Set up new path.
 	if (path->NewPath(src, dest, nullptr))
@@ -185,7 +185,7 @@ Path_walking_actor_action *Path_walking_actor_action::create_path(
     Tile_coord const &dest,     // Destination.
     Pathfinder_client &cost     // Cost for Astar.
 ) {
-	Astar *path = new Astar();
+	auto *path = new Astar();
 	// Get to within 1 tile.
 	if (path->NewPath(src, dest, &cost))
 		return new Path_walking_actor_action(path);
@@ -521,7 +521,7 @@ Approach_actor_action *Approach_actor_action::create_path(
     int gdist,          // Stop when this close to dest.
     Pathfinder_client &cost     // Cost for Astar.
 ) {
-	Astar *path = new Astar();
+	auto *path = new Astar();
 	// Get to within 1 tile.
 	if (path->NewPath(src, dest->get_tile(), &cost))
 		return new Approach_actor_action(path, dest, gdist);

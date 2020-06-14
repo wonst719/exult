@@ -467,8 +467,8 @@ static void Handle_client_message(
 		Serial_in io(ptr);
 		uintptr addr;
 		io << addr;
-		Game_object *p = reinterpret_cast<Game_object *>(addr);
-		Container_game_object *obj = dynamic_cast<Container_game_object *>(p);
+		auto *p = reinterpret_cast<Game_object *>(addr);
+		auto *obj = dynamic_cast<Container_game_object *>(p);
 		if (!obj) {
 			cout << "Error decoding container data" << endl;
 			break;

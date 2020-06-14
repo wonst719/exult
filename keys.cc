@@ -456,7 +456,7 @@ KeyMap::const_iterator KeyBinder::TranslateEvent(SDL_Event const &ev) const {
 }
 
 bool KeyBinder::HandleEvent(SDL_Event const &ev) const {
-	KeyMap::const_iterator sdlkey_index = TranslateEvent(ev);
+	auto sdlkey_index = TranslateEvent(ev);
 	if (sdlkey_index != bindings.end())
 		return DoAction(sdlkey_index->second, ev.type == SDL_KEYDOWN);
 
@@ -464,7 +464,7 @@ bool KeyBinder::HandleEvent(SDL_Event const &ev) const {
 }
 
 bool KeyBinder::IsMotionEvent(SDL_Event const &ev) const {
-	KeyMap::const_iterator sdlkey_index = TranslateEvent(ev);
+	auto sdlkey_index = TranslateEvent(ev);
 	if (sdlkey_index == bindings.end())
 		return false;
 	ActionType const &act = sdlkey_index->second;
@@ -529,7 +529,7 @@ void KeyBinder::ShowMapeditHelp() const {
 }
 
 void KeyBinder::ShowBrowserKeys() const {
-	Scroll_gump *scroll = new Scroll_gump();
+	auto *scroll = new Scroll_gump();
 	scroll->add_text("Esc - Exits the shape browser");
 	scroll->add_text("down - Increase shape by 1");
 	scroll->add_text("S - Increase shape by 1");

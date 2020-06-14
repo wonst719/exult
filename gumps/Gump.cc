@@ -78,7 +78,7 @@ Gump::Gump(
 	container(cont), x(initx), y(inity),
 	object_area(from->object_area), handles_kbd(false) {
 	// Clone widgets.
-	for (Gump_elems::iterator it = from->elems.begin();
+	for (auto it = from->elems.begin();
 	        it != from->elems.end(); ++it)
 		add_elem((*it)->clone(this));
 }
@@ -88,7 +88,7 @@ Gump::Gump(
  */
 
 Gump::~Gump() {
-	for (Gump_elems::iterator it = elems.begin(); it != elems.end(); ++it)
+	for (auto it = elems.begin(); it != elems.end(); ++it)
 		delete *it;
 	if (container) // Probabbly dont need to check.. but would crash the game if it was NULL.
 		container->setGumpXY(x, y);
@@ -213,7 +213,7 @@ Game_object *Gump::get_owner() {
 Gump_button *Gump::on_button(
     int mx, int my          // Point in window.
 ) {
-	for (Gump_elems::iterator it = elems.begin(); it != elems.end(); ++it) {
+	for (auto it = elems.begin(); it != elems.end(); ++it) {
 		Gump_widget *w = *it;
 		if (w->on_button(mx, my))
 			return dynamic_cast<Gump_button *>(w);
@@ -299,7 +299,7 @@ void Gump::remove(
 
 void Gump::paint_elems(
 ) {
-	for (Gump_elems::iterator it = elems.begin(); it != elems.end(); ++it)
+	for (auto it = elems.begin(); it != elems.end(); ++it)
 		(*it)->paint();
 }
 
@@ -389,7 +389,7 @@ void Gump::paint(
 	}
 	// Outline selections in this gump.
 	const Game_object_shared_vector &sel = cheat.get_selected();
-	for (Game_object_shared_vector::const_iterator it = sel.begin();
+	for (auto it = sel.begin();
 	        it != sel.end(); ++it) {
 		Game_object *obj = (*it).get();
 		if (container == obj->get_owner()) {

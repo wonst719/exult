@@ -78,7 +78,7 @@ bool Keyring::checkkey(int qual) {
 }
 
 bool Keyring::removekey(int qual) {
-	std::set<int>::iterator ent = keys.find(qual);
+	auto ent = keys.find(qual);
 	if (ent == keys.end())
 		return false;
 	else {

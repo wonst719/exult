@@ -246,7 +246,7 @@ Image_window::ScalerVector::ScalerVector() {
 }
 
 Image_window::ScalerVector::~ScalerVector() {
-	for (std::vector<Image_window::ScalerInfo>::iterator it = begin();
+	for (auto it = begin();
 	        it != end(); ++it)
 		delete it->arb;
 }
@@ -423,7 +423,7 @@ void Image_window::static_init() {
 	bool ok_pal = false;
 	bool ok_rgb = false;
 
-	for (std::map<uint32, Image_window::Resolution>::iterator it = p_resolutions.begin(); it != p_resolutions.end();) {
+	for (auto it = p_resolutions.begin(); it != p_resolutions.end();) {
 		Image_window::Resolution &res = it->second;
 		bool ok = false;
 

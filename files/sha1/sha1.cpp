@@ -118,7 +118,7 @@ namespace sha1
         unsigned int result[5] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
 
         // Cast the void src pointer to be the byte array we can work with.
-        const unsigned char* sarray = static_cast<const unsigned char*>(src);
+        const auto* sarray = static_cast<const unsigned char*>(src);
 
         // The reusable round buffer
         unsigned int w[80];

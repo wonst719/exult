@@ -288,7 +288,7 @@ static void Exec_callback(
     int exit_code,          // Exit code if datalen = 0.
     void *user_data         // ->Exex_box
 ) {
-	Exec_box *box = static_cast<Exec_box *>(user_data);
+	auto *box = static_cast<Exec_box *>(user_data);
 	box->read_from_child(data, datalen, exit_code);
 }
 void Exec_box::read_from_child(

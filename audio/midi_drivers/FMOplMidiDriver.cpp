@@ -305,8 +305,8 @@ void FMOplMidiDriver::send(uint32 b)
 			b &= 0xFFFF;
 			// FALL THROUGH
 	case 0x90:{									/*note on */
-			unsigned char note = static_cast<unsigned char>((b >> 8) & 0x7F);
-			unsigned char vel = static_cast<unsigned char>((b >> 16) & 0x7F);
+			auto note = static_cast<unsigned char>((b >> 8) & 0x7F);
+			auto vel = static_cast<unsigned char>((b >> 16) & 0x7F);
 
 			// First send a note off, if it's found
 			for (int i = 0; i < 9; i++)
@@ -370,8 +370,8 @@ void FMOplMidiDriver::send(uint32 b)
 		break;
 
 	case 0xa0:{									/*key after touch */
-			unsigned char note = static_cast<unsigned char>((b >> 8) & 0x7F);
-			unsigned char vel = static_cast<unsigned char>((b >> 16) & 0x7F);
+			auto note = static_cast<unsigned char>((b >> 8) & 0x7F);
+			auto vel = static_cast<unsigned char>((b >> 16) & 0x7F);
 			int nv = midi_calc_volume(channel, vel);
 
 			for (int i = 0; i < 9; i++)
@@ -384,8 +384,8 @@ void FMOplMidiDriver::send(uint32 b)
 
 	case 0xb0:{									/* control change */
 			int i;
-			unsigned char ctrl = static_cast<unsigned char>((b >> 8) & 0x7F);
-			unsigned char vel = static_cast<unsigned char>((b >> 16) & 0x7F);
+			auto ctrl = static_cast<unsigned char>((b >> 8) & 0x7F);
+			auto vel = static_cast<unsigned char>((b >> 16) & 0x7F);
 
 			/* FIXME: Except for Volume, the Modulation and Sustain
 			   code is just a random guess. */
@@ -477,7 +477,7 @@ void FMOplMidiDriver::send(uint32 b)
 		break;
 
 	case 0xc0:{									/* patch change */
-			unsigned char instrument = static_cast<unsigned char>((b >> 8) & 0x7F);
+			auto instrument = static_cast<unsigned char>((b >> 8) & 0x7F);
 			ch[channel].inum = instrument;
 			//std::POUT << "Setting instrument: " << static_cast<unsigned int>(instrument) << " for chan " << static_cast<unsigned int>(channel) << std::endl;
 

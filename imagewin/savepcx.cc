@@ -107,7 +107,7 @@ static void save_8(SDL_RWops *dst, int width, int height,
 
 static void save_24(SDL_RWops *dst, int width, int height,
                     int pitch, const Uint8 *buffer) {
-	Uint8 *line = new Uint8[width];
+	auto *line = new Uint8[width];
 
 	for (int y = 0; y < height; ++y) {
 		for (int c = 2; c >= 0; --c) {
@@ -127,7 +127,7 @@ static bool save_image(SDL_Surface *surface, SDL_RWops *dst) {
 
 	int width = surface->w;
 	int height = surface->h;
-	Uint8 *pixels = static_cast<Uint8 *>(surface->pixels);
+	auto *pixels = static_cast<Uint8 *>(surface->pixels);
 	int pitch = surface->pitch;
 
 	PCX_Header header;

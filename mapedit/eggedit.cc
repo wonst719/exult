@@ -492,7 +492,7 @@ int ExultStudio::save_egg_window(
 		cout << "Unknown egg type" << endl;
 		return 0;
 	}
-	Egg_object *addr = static_cast<Egg_object*>(gtk_object_get_user_data(GTK_OBJECT(eggwin)));
+	auto *addr = static_cast<Egg_object*>(gtk_object_get_user_data(GTK_OBJECT(eggwin)));
 	if (Egg_object_out(server_socket, addr, tx, ty, tz,
 	                   shape, frame, type, criteria, probability, distance,
 	                   nocturnal, once, hatched, auto_reset,

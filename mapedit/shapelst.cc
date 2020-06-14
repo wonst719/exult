@@ -501,7 +501,7 @@ static gint Configure_chooser(
     gpointer data           // ->Shape_chooser
 ) {
 	ignore_unused_variable_warning(widget);
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(data);
+	auto *chooser = static_cast<Shape_chooser *>(data);
 	return chooser->configure(event);
 }
 gint Shape_chooser::configure(
@@ -534,7 +534,7 @@ gint Shape_chooser::expose(
     gpointer data           // ->Shape_chooser.
 ) {
 	ignore_unused_variable_warning(widget);
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(data);
+	auto *chooser = static_cast<Shape_chooser *>(data);
 	chooser->show(event->area.x, event->area.y, event->area.width,
 	              event->area.height);
 	return TRUE;
@@ -665,7 +665,7 @@ static gint Mouse_press(
     GdkEventButton *event,
     gpointer data           // ->Shape_chooser.
 ) {
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(data);
+	auto *chooser = static_cast<Shape_chooser *>(data);
 	return chooser->mouse_press(widget, event);
 }
 static gint Mouse_release(
@@ -674,7 +674,7 @@ static gint Mouse_release(
     gpointer data           // ->Shape_chooser.
 ) {
 	ignore_unused_variable_warning(widget, event);
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(data);
+	auto *chooser = static_cast<Shape_chooser *>(data);
 	chooser->mouse_up();
 	return true;
 }
@@ -687,7 +687,7 @@ on_draw_key_press(GtkEntry   *entry,
                   GdkEventKey    *event,
                   gpointer    user_data) {
 	ignore_unused_variable_warning(entry);
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(user_data);
+	auto *chooser = static_cast<Shape_chooser *>(user_data);
 	switch (event->keyval) {
 	case GDK_Delete:
 		chooser->del_frame();
@@ -1233,7 +1233,7 @@ void Shape_chooser::export_frame(
     const char *fname,
     gpointer user_data
 ) {
-	Shape_chooser *ed = static_cast<Shape_chooser *>(user_data);
+	auto *ed = static_cast<Shape_chooser *>(user_data);
 	if (U7exists(fname)) {
 		char *msg = g_strdup_printf(
 		                "'%s' already exists.  Overwrite?", fname);
@@ -1255,7 +1255,7 @@ void Shape_chooser::import_frame(
     const char *fname,
     gpointer user_data
 ) {
-	Shape_chooser *ed = static_cast<Shape_chooser *>(user_data);
+	auto *ed = static_cast<Shape_chooser *>(user_data);
 	if (ed->selected < 0)
 		return;         // Shouldn't happen.
 	int shnum = ed->info[ed->selected].shapenum;
@@ -1302,7 +1302,7 @@ void Shape_chooser::export_all_frames(
     const char *fname,
     gpointer user_data
 ) {
-	Shape_chooser *ed = static_cast<Shape_chooser *>(user_data);
+	auto *ed = static_cast<Shape_chooser *>(user_data);
 	int shnum = ed->info[ed->selected].shapenum;
 	ed->export_all_pngs(fname, shnum);
 }
@@ -1311,7 +1311,7 @@ void Shape_chooser::export_shape(
     const char *fname,
     gpointer user_data
 ) {
-	Shape_chooser *ed = static_cast<Shape_chooser *>(user_data);
+	auto *ed = static_cast<Shape_chooser *>(user_data);
 	int shnum = ed->info[ed->selected].shapenum;
 	Shape *shp = ed->ifile->extract_shape(shnum);
 	Image_file_info::write_file(fname, &shp, 1, true);
@@ -1383,7 +1383,7 @@ void Shape_chooser::import_all_frames(
     const char *fname,
     gpointer user_data
 ) {
-	Shape_chooser *ed = static_cast<Shape_chooser *>(user_data);
+	auto *ed = static_cast<Shape_chooser *>(user_data);
 	if (ed->selected < 0)
 		return;         // Shouldn't happen.
 	int shnum = ed->info[ed->selected].shapenum;
@@ -1400,7 +1400,7 @@ void Shape_chooser::import_shape(
     gpointer user_data
 ) {
 	if (U7exists(fname)) {
-		Shape_chooser *ed = static_cast<Shape_chooser *>(user_data);
+		auto *ed = static_cast<Shape_chooser *>(user_data);
 		if (ed->selected < 0)
 			return;         // Shouldn't happen.
 		IFileDataSource ds(fname);
@@ -1496,7 +1496,7 @@ on_new_shape_okay_clicked(GtkButton       *button,
                           gpointer         user_data) {
 	ignore_unused_variable_warning(user_data);
 	GtkWidget *win = gtk_widget_get_toplevel(GTK_WIDGET(button));
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(
+	auto *chooser = static_cast<Shape_chooser *>(
 	                         gtk_object_get_user_data(GTK_OBJECT(win)));
 	chooser->create_new_shape();
 	gtk_widget_hide(win);
@@ -1509,7 +1509,7 @@ C_EXPORT void on_new_shape_font_toggled(
 	ignore_unused_variable_warning(user_data);
 	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	GtkWidget *win = gtk_widget_get_toplevel(GTK_WIDGET(btn));
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(
+	auto *chooser = static_cast<Shape_chooser *>(
 	                         gtk_object_get_user_data(GTK_OBJECT(win)));
 	chooser->from_font_toggled(on);
 }
@@ -1521,10 +1521,10 @@ C_EXPORT gboolean on_new_shape_font_color_draw_expose_event(
 	ignore_unused_variable_warning(data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	int index = studio->get_spin("new_shape_font_color");
-	Shape_chooser *ed = static_cast<Shape_chooser *>(
+	auto *ed = static_cast<Shape_chooser *>(
 	                    gtk_object_get_user_data(GTK_OBJECT(widget)));
 	guint32 color = ed->get_color(index);
-	GdkGC *gc = static_cast<GdkGC *>(
+	auto *gc = static_cast<GdkGC *>(
 	            g_object_get_data(G_OBJECT(widget), "color_gc"));
 	if (!gc) {
 		gc = gdk_gc_new(widget->window);
@@ -1760,7 +1760,7 @@ void Shape_chooser::drag_data_get(
 ) {
 	ignore_unused_variable_warning(widget, context, time);
 	cout << "In DRAG_DATA_GET" << endl;
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(data);
+	auto *chooser = static_cast<Shape_chooser *>(data);
 	if (chooser->selected < 0 || info != U7_TARGET_SHAPEID)
 		return;         // Not sure about this.
 	guchar buf[30];
@@ -1773,7 +1773,7 @@ void Shape_chooser::drag_data_get(
 	cout << "Setting selection data (" << shinfo.shapenum <<
 	     '/' << shinfo.framenum << ')' << endl;
 #ifdef _WIN32
-	windragdata *wdata = reinterpret_cast<windragdata*>(seldata);
+	auto *wdata = reinterpret_cast<windragdata*>(seldata);
 	wdata->assign(info, len, buf);
 #else
 	// Make us owner of xdndselection.
@@ -1812,7 +1812,7 @@ gint Shape_chooser::drag_begin(
 ) {
 	ignore_unused_variable_warning(widget);
 	cout << "In DRAG_BEGIN" << endl;
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(data);
+	auto *chooser = static_cast<Shape_chooser *>(data);
 	if (chooser->selected < 0)
 		return FALSE;       // ++++Display a halt bitmap.
 	// Get ->shape.
@@ -1935,7 +1935,7 @@ void Shape_chooser::vscrolled(      // For vertical scrollbar.
     GtkAdjustment *adj,     // The adjustment.
     gpointer data           // ->Shape_chooser.
 ) {
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(data);
+	auto *chooser = static_cast<Shape_chooser *>(data);
 	cout << "Scrolled to " << adj->value << '\n';
 	gint newindex = static_cast<gint>(adj->value);
 	chooser->scroll_vertical(newindex);
@@ -1944,7 +1944,7 @@ void Shape_chooser::hscrolled(      // For horizontal scrollbar.
     GtkAdjustment *adj,     // The adjustment.
     gpointer data           // ->Shape_chooser.
 ) {
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(data);
+	auto *chooser = static_cast<Shape_chooser *>(data);
 	chooser->hoffset = static_cast<gint>(adj->value);
 	chooser->render();
 	chooser->show();
@@ -1958,7 +1958,7 @@ void Shape_chooser::frame_changed(
     GtkAdjustment *adj,     // The adjustment.
     gpointer data           // ->Shape_chooser.
 ) {
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(data);
+	auto *chooser = static_cast<Shape_chooser *>(data);
 	gint newframe = static_cast<gint>(adj->value);
 	if (chooser->selected >= 0) {
 		Shape_entry &shinfo = chooser->info[chooser->selected];
@@ -1982,7 +1982,7 @@ void Shape_chooser::all_frames_toggled(
     GtkToggleButton *btn,
     gpointer data
 ) {
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(data);
+	auto *chooser = static_cast<Shape_chooser *>(data);
 	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	chooser->frames_mode = on;
 	if (on)             // Frame => show horiz. scrollbar.
@@ -2025,7 +2025,7 @@ void Shape_chooser::on_shapes_popup_edtiles_activate(
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	Shape_chooser *ch = static_cast<Shape_chooser *>(udata);
+	auto *ch = static_cast<Shape_chooser *>(udata);
 	if (ch->selected < 0)
 		return;         // Shouldn't happen.
 	ExultStudio *studio = ExultStudio::get_instance();
@@ -2133,7 +2133,7 @@ on_export_tiles_okay_clicked(GtkButton       *button,
                              gpointer         user_data) {
 	ignore_unused_variable_warning(user_data);
 	GtkWidget *win = gtk_widget_get_toplevel(GTK_WIDGET(button));
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(
+	auto *chooser = static_cast<Shape_chooser *>(
 	                         gtk_object_get_user_data(GTK_OBJECT(win)));
 	ExultStudio *studio = ExultStudio::get_instance();
 	int tiles = studio->get_spin("export_tiles_count");
@@ -2205,7 +2205,7 @@ void Shape_chooser::search(
 		if (info.has_frame_name_info()) {
 			bool found = false;
 			const std::vector<Frame_name_info> &nminf = info.get_frame_name_info();
-			for (std::vector<Frame_name_info>::const_iterator it = nminf.begin();
+			for (auto it = nminf.begin();
 			        it != nminf.end(); ++it) {
 				int type = it->get_type();
 				int msgid = it->get_msgid();

@@ -42,19 +42,19 @@ RawAudioSample::RawAudioSample(std::unique_ptr<uint8[]> buffer_, uint32 size_, u
 
 void RawAudioSample::initDecompressor(void *DecompData) const
 {
-	RawDecompData *decomp = new (DecompData) RawDecompData;
+	auto *decomp = new (DecompData) RawDecompData;
 	decomp->pos = start_pos;
 }
 
 void RawAudioSample::freeDecompressor(void *DecompData) const
 {
-	RawDecompData *decomp = static_cast<RawDecompData *>(DecompData);
+	auto *decomp = static_cast<RawDecompData *>(DecompData);
 	decomp->~RawDecompData();
 }
 
 uint32 RawAudioSample::decompressFrame(void *DecompData, void *samples) const
 {
-	RawDecompData *decomp = static_cast<RawDecompData *>(DecompData);
+	auto *decomp = static_cast<RawDecompData *>(DecompData);
 
 	if (decomp->pos == buffer_size) return 0;
 
@@ -71,7 +71,7 @@ uint32 RawAudioSample::decompressFrame(void *DecompData, void *samples) const
 		std::memcpy(samples, buffer.get()+decomp->pos, count);
 	// 8 bit signed
 	} else if (bits == 8) {
-		uint8 *dest = static_cast<uint8*>(samples);
+		auto *dest = static_cast<uint8*>(samples);
 		uint8 *end =  static_cast<uint8*>(samples)+count;
 		const uint8 *src = buffer.get() + decomp->pos;
 		while (dest != end) {
@@ -80,7 +80,7 @@ uint32 RawAudioSample::decompressFrame(void *DecompData, void *samples) const
 	}
 	// 16 bit signed with byte swap
 	else if (signeddata && bits==16 && byte_swap) {
-		sint16 *dest = static_cast<sint16*>(samples);
+		auto *dest = static_cast<sint16*>(samples);
 		sint16 *end =  static_cast<sint16*>(samples)+count/2;
 		const uint8 *src = buffer.get() + decomp->pos;
 		while (dest != end) {
@@ -92,7 +92,7 @@ uint32 RawAudioSample::decompressFrame(void *DecompData, void *samples) const
 	}
 	// 16 bit unsigned
 	else if (!signeddata && bits==16 && !byte_swap) {
-		sint16 *dest = static_cast<sint16*>(samples);
+		auto *dest = static_cast<sint16*>(samples);
 		sint16 *end =  static_cast<sint16*>(samples)+count/2;
 		const uint8 *src = buffer.get() + decomp->pos;
 		auto Read2 = [&src]() {
@@ -107,7 +107,7 @@ uint32 RawAudioSample::decompressFrame(void *DecompData, void *samples) const
 	}
 	// 16 bit unsigned with byte swap
 	else if (!signeddata && bits==16 && byte_swap) {
-		sint16 *dest = static_cast<sint16*>(samples);
+		auto *dest = static_cast<sint16*>(samples);
 		sint16 *end =  static_cast<sint16*>(samples)+count/2;
 		const uint8 *src = buffer.get() + decomp->pos;
 		while (dest != end) {

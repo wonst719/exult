@@ -115,7 +115,7 @@ Chunk_terrain *Game_map::read_terrain(
 		chunks->seekg(chunk_num * ntiles * 2);
 		chunks->read(reinterpret_cast<char *>(buf), ntiles * 2);
 	}
-	Chunk_terrain *ter = new Chunk_terrain(&buf[0], v2_chunks);
+	auto *ter = new Chunk_terrain(&buf[0], v2_chunks);
 	if (static_cast<unsigned>(chunk_num) >= chunk_terrains->size())
 		chunk_terrains->resize(chunk_num + 1);
 	(*chunk_terrains)[chunk_num] = ter;
@@ -582,7 +582,7 @@ void Game_map::get_ifix_chunk_objects(
 	Game_object_shared obj;
 	ifix->seek(filepos);        // Get to actual shape.
 	// Get buffer to hold entries' indices.
-	unsigned char *entries = new unsigned char[len];
+	auto *entries = new unsigned char[len];
 	unsigned char *ent = entries;   // Read them in.
 	ifix->read(reinterpret_cast<char *>(entries), len);
 	// Get object list for chunk.
@@ -823,7 +823,7 @@ void Read_special_ireg(
 ) {
 	int type = ireg->read1();       // Get type.
 	int len = ireg->read2();        // Length of rest.
-	unsigned char *buf = new unsigned char[len];
+	auto *buf = new unsigned char[len];
 	ireg->read(reinterpret_cast<char *>(buf), len);
 	if (type == IREG_UCSCRIPT) { // Usecode script?
 		IBufferDataView nbuf(buf, len);
@@ -1299,7 +1299,7 @@ bool Game_map::swap_terrains(
 	// Update terrain maps.
 	Game_window *gwin = Game_window::get_instance();
 	const vector<Game_map *> &maps = gwin->get_maps();
-	for (vector<Game_map *>::const_iterator it = maps.begin();
+	for (auto it = maps.begin();
 	        it != maps.end(); ++it) {
 		Game_map *map = *it;
 		if (!map)
@@ -1356,7 +1356,7 @@ bool Game_map::insert_terrain(
 			}
 	} else
 		memset(buf, 0, ntiles * nbytes);
-	Chunk_terrain *new_terrain = new Chunk_terrain(&buf[0], v2_chunks);
+	auto *new_terrain = new Chunk_terrain(&buf[0], v2_chunks);
 	// Insert in list.
 	chunk_terrains->insert(chunk_terrains->begin() + tnum + 1, new_terrain);
 	// Indicate terrains are modified.
@@ -1369,7 +1369,7 @@ bool Game_map::insert_terrain(
 	// Update terrain map.
 	Game_window *gwin = Game_window::get_instance();
 	const vector<Game_map *> &maps = gwin->get_maps();
-	for (vector<Game_map *>::const_iterator it = maps.begin();
+	for (auto it = maps.begin();
 	        it != maps.end(); ++it) {
 		Game_map *map = *it;
 		if (!map)
@@ -1408,7 +1408,7 @@ bool Game_map::delete_terrain(
 	// Update terrain map.
 	Game_window *gwin = Game_window::get_instance();
 	const vector<Game_map *> &maps = gwin->get_maps();
-	for (vector<Game_map *>::const_iterator it = maps.begin();
+	for (auto it = maps.begin();
 	        it != maps.end(); ++it) {
 		Game_map *map = *it;
 		if (!map)
@@ -1431,7 +1431,7 @@ void Game_map::commit_terrain_edits(
 ) {
 	int num_terrains = chunk_terrains->size();
 	// Create list of flags.
-	unsigned char *ters = new unsigned char[num_terrains];
+	auto *ters = new unsigned char[num_terrains];
 	memset(ters, 0, num_terrains);
 	// Commit edits.
 	for (int i = 0; i < num_terrains; i++)
@@ -1441,7 +1441,7 @@ void Game_map::commit_terrain_edits(
 	// Update terrain map.
 	Game_window *gwin = Game_window::get_instance();
 	const vector<Game_map *> &maps = gwin->get_maps();
-	for (vector<Game_map *>::const_iterator it = maps.begin();
+	for (auto it = maps.begin();
 	        it != maps.end(); ++it) {
 		Game_map *map = *it;
 		if (!map)
@@ -1622,7 +1622,7 @@ Game_object *Game_map::locate_shape(
 void Game_map::create_minimap(Shape *minimaps, const unsigned char *chunk_pixels) {
 	int cx;
 	int cy;
-	unsigned char *pixels = new unsigned char[c_num_chunks * c_num_chunks];
+	auto *pixels = new unsigned char[c_num_chunks * c_num_chunks];
 
 	for (cy = 0; cy < c_num_chunks; ++cy) {
 		int yoff = cy * c_num_chunks;

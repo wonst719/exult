@@ -111,7 +111,7 @@ void create_scroller_menu(MenuList *menu, Font *fonton, Font *font, int first, i
 		        (i == 0 && first == pagesize) ||
 		        (i >= 2 && lastpage == first) ||
 		        (i == 3 && lastpage == first + pagesize))) {
-			MenuTextEntry *entry = new MenuTextEntry(fonton, font, menuscroller[i],
+			auto *entry = new MenuTextEntry(fonton, font, menuscroller[i],
 			        xpos, ypos);
 			//These commands have negative ids:
 			entry->set_id(i - 8);
@@ -204,13 +204,13 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 
 		Shape_frame *sfxicon = exult_flx.get_shape(EXULT_FLX_SFX_ICON_SHP,
 		                       have_sfx ? 1 : 0);
-		MenuGameEntry *entry = new MenuGameEntry(fonton, font,
+		auto *entry = new MenuGameEntry(fonton, font,
 		        exultgame.get_menu_string().c_str(),
 		        sfxicon, menux, ypos);
 		entry->set_id(i);
 		menu->add_entry(entry);
 		if (exultgame.has_mods()) {
-			MenuTextEntry *mod_entry = new MenuTextEntry(navfonton, navfont, "SHOW MODS",
+			auto *mod_entry = new MenuTextEntry(navfonton, navfont, "SHOW MODS",
 			        menux, ypos + entry->get_height() + 4);
 			mod_entry->set_id(i + MAX_GAMES);
 			menu->add_entry(mod_entry);
@@ -237,7 +237,7 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 	xpos = centerx - max_width * (num_entries - 1) / 2;
 	ypos = gwin->get_win()->get_end_y() - 3 * font->get_text_height();
 	for (int i = 0; i < 4; i++) {
-		MenuTextEntry *entry = new MenuTextEntry(fonton, font, menuchoices[i],
+		auto *entry = new MenuTextEntry(fonton, font, menuchoices[i],
 		        xpos, ypos);
 		//These commands have negative ids:
 		entry->set_id(i - 4);
@@ -259,7 +259,7 @@ std::unique_ptr<MenuList> ExultMenu::create_mods_menu(ModManager *selgame, int f
 	for (int i = first; i < last; i++) {
 		int menux = xpos + (i % 2) * gwin->get_win()->get_full_width() / 2 + gwin->get_win()->get_start_x();
 		ModInfo &exultmod = mod_list[i];
-		MenuGameEntry *entry = new MenuGameEntry(fonton, font,
+		auto *entry = new MenuGameEntry(fonton, font,
 		        exultmod.get_menu_string().c_str(),
 		        nullptr, menux, ypos);
 		entry->set_id(i);
@@ -267,7 +267,7 @@ std::unique_ptr<MenuList> ExultMenu::create_mods_menu(ModManager *selgame, int f
 		menu->add_entry(entry);
 
 		if (!exultmod.is_mod_compatible()) {
-			MenuGameEntry *incentry = new MenuGameEntry(navfonton, navfont, "WRONG EXULT VERSION",
+			auto *incentry = new MenuGameEntry(navfonton, navfont, "WRONG EXULT VERSION",
 			        nullptr, menux, ypos + entry->get_height() + 4);
 			// Accept no clicks:
 			incentry->set_enabled(false);
@@ -288,7 +288,7 @@ std::unique_ptr<MenuList> ExultMenu::create_mods_menu(ModManager *selgame, int f
 	xpos = centerx - max_width * (num_entries - 1) / 2;
 	ypos = gwin->get_win()->get_end_y() - 3 * font->get_text_height();
 	for (int i = 0; i < num_entries; i++) {
-		MenuTextEntry *entry = new MenuTextEntry(fonton, font, menuchoices[i],
+		auto *entry = new MenuTextEntry(fonton, font, menuchoices[i],
 		        xpos, ypos);
 		//These commands have negative ids:
 		entry->set_id(i - 4);

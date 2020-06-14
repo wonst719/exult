@@ -78,8 +78,8 @@ void Object_browser::on_browser_group_add(
     GtkMenuItem *item,
     gpointer udata
 ) {
-	Object_browser *chooser = static_cast<Object_browser *>(udata);
-	Shape_group *grp = static_cast<Shape_group *>(gtk_object_get_user_data(
+	auto *chooser = static_cast<Object_browser *>(udata);
+	auto *grp = static_cast<Shape_group *>(gtk_object_get_user_data(
 	                       GTK_OBJECT(item)));
 	int id = chooser->get_selected_id();
 	if (id >= 0) {          // Selected shape?
@@ -132,7 +132,7 @@ void File_selector_ok(
 	GtkFileSelection *fsel = GTK_FILE_SELECTION(gtk_widget_get_toplevel(
 	                             GTK_WIDGET(btn)));
 	const char *fname = gtk_file_selection_get_filename(fsel);
-	File_sel_okay_fun fun = reinterpret_cast<File_sel_okay_fun>(
+	auto fun = reinterpret_cast<File_sel_okay_fun>(
 	                        	reinterpret_cast<uintptr_t>(
 									gtk_object_get_user_data(GTK_OBJECT(fsel))));
 	if (fname && *fname && fun)
@@ -194,7 +194,7 @@ void Object_browser::on_browser_file_save(
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	Object_browser *chooser = static_cast<Object_browser *>(udata);
+	auto *chooser = static_cast<Object_browser *>(udata);
 	if (!chooser->file_info)
 		return;         // Nothing to write to.
 	try {
@@ -213,7 +213,7 @@ void Object_browser::on_browser_file_revert(
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	Object_browser *chooser = static_cast<Object_browser *>(udata);
+	auto *chooser = static_cast<Object_browser *>(udata);
 	if (!chooser->file_info)
 		return;         // No file?
 	char *msg = g_strdup_printf("Okay to throw away any changes to '%s'?",
@@ -261,7 +261,7 @@ static void
 on_find_down(GtkButton       *button,
              gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	Object_browser *chooser = static_cast<Object_browser *>(user_data);
+	auto *chooser = static_cast<Object_browser *>(user_data);
 	chooser->search(gtk_entry_get_text(
 	                    GTK_ENTRY(chooser->get_find_text())), 1);
 }
@@ -269,7 +269,7 @@ static void
 on_find_up(GtkButton       *button,
            gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	Object_browser *chooser = static_cast<Object_browser *>(user_data);
+	auto *chooser = static_cast<Object_browser *>(user_data);
 	chooser->search(gtk_entry_get_text(
 	                    GTK_ENTRY(chooser->get_find_text())), -1);
 }
@@ -279,7 +279,7 @@ on_find_key(GtkEntry   *entry,
             gpointer    user_data) {
 	ignore_unused_variable_warning(entry);
 	if (event->keyval == GDK_Return) {
-		Object_browser *chooser = static_cast<Object_browser *>(user_data);
+		auto *chooser = static_cast<Object_browser *>(user_data);
 		chooser->search(gtk_entry_get_text(
 		                    GTK_ENTRY(chooser->get_find_text())), 1);
 		return TRUE;
@@ -291,14 +291,14 @@ static void
 on_loc_down(GtkButton       *button,
             gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	Object_browser *chooser = static_cast<Object_browser *>(user_data);
+	auto *chooser = static_cast<Object_browser *>(user_data);
 	chooser->locate(false);
 }
 static void
 on_loc_up(GtkButton       *button,
           gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	Object_browser *chooser = static_cast<Object_browser *>(user_data);
+	auto *chooser = static_cast<Object_browser *>(user_data);
 	chooser->locate(true);
 }
 
@@ -306,14 +306,14 @@ static void
 on_move_down(GtkButton       *button,
              gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	Object_browser *chooser = static_cast<Object_browser *>(user_data);
+	auto *chooser = static_cast<Object_browser *>(user_data);
 	chooser->move(false);
 }
 static void
 on_move_up(GtkButton       *button,
            gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	Object_browser *chooser = static_cast<Object_browser *>(user_data);
+	auto *chooser = static_cast<Object_browser *>(user_data);
 	chooser->move(true);
 }
 

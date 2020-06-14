@@ -153,7 +153,7 @@ Gump *Gump_manager::find_gump(
  */
 
 void Gump_manager::add_gump(Gump *gump) {
-	Gump_list *g = new Gump_list(gump);
+	auto *g = new Gump_list(gump);
 
 	set_kbd_focus(gump);
 	if (!open_gumps)
@@ -746,7 +746,7 @@ int Gump_manager::prompt_for_number(
     int defval,         // Default to start with.
     Paintable *paint        // Should be the conversation.
 ) {
-	Slider_gump *slider = new Slider_gump(minval, maxval,
+	auto *slider = new Slider_gump(minval, maxval,
 	                                      step, defval);
 	bool ok = do_modal_gump(slider, Mouse::hand, paint);
 	int ret = !ok ? 0 : slider->get_val();

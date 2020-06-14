@@ -91,7 +91,7 @@ bool Map_patch_modify::apply(
 
 Map_patch_collection::~Map_patch_collection(
 ) {
-	for (Map_patch_map::iterator it1 = patches.begin();
+	for (auto it1 = patches.begin();
 	        it1 != patches.end(); ++it1) {
 		Map_patch_list &lst = (*it1).second;
 		while (!lst.empty()) {
@@ -124,7 +124,7 @@ void Map_patch_collection::add(
 void Map_patch_collection::apply(
     int schunk
 ) {
-	Map_patch_map::iterator it1 = patches.find(schunk);
+	auto it1 = patches.find(schunk);
 	if (it1 != patches.end()) { // Found list for superchunk?
 		Map_patch_list &lst = (*it1).second;
 		for (Map_patch_list::const_iterator it2 = lst.begin();

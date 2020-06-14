@@ -277,7 +277,7 @@ public:
 			ucmachine->call_usecode(fun, this,
 			                        Usecode_machine::egg_proximity);
 		else {          // Do on next animation frame.
-			Usecode_script *scr = new Usecode_script(this);
+			auto *scr = new Usecode_script(this);
 			scr->add(Ucscript::usecode, fun);
 			if (flags & (1 << static_cast<int>(once))) {
 				// Don't remove until done.
@@ -723,7 +723,7 @@ bool Egg_object::is_active(
 		if (!(hour >= 21 || hour <= 4))
 			return false; // It's not night.
 	}
-	Egg_criteria cri = static_cast<Egg_criteria>(get_criteria());
+	auto cri = static_cast<Egg_criteria>(get_criteria());
 
 	int deltaz = tz - get_lift();
 	switch (cri) {

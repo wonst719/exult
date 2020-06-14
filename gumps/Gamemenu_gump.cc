@@ -97,7 +97,7 @@ void Gamemenu_gump::quit(bool return_to_menu) {
 //+++++ implement actual functionality and option screens
 void Gamemenu_gump::loadsave() {
 	//File_gump *fileio = new File_gump();
-	Newfile_gump *fileio = new Newfile_gump();
+	auto *fileio = new Newfile_gump();
 	gumpman->do_modal_gump(fileio, Mouse::hand);
 	if (fileio->restored_game())
 		done = true;
@@ -105,7 +105,7 @@ void Gamemenu_gump::loadsave() {
 }
 
 void Gamemenu_gump::video_options() {
-	VideoOptions_gump *vid_opts = new VideoOptions_gump();
+	auto *vid_opts = new VideoOptions_gump();
 	gumpman->do_modal_gump(vid_opts, Mouse::hand);
 
 	// resolution could have changed, so recenter & repaint menu.
@@ -118,19 +118,19 @@ void Gamemenu_gump::video_options() {
 }
 
 void Gamemenu_gump::audio_options() {
-	AudioOptions_gump *aud_opts = new AudioOptions_gump();
+	auto *aud_opts = new AudioOptions_gump();
 	gumpman->do_modal_gump(aud_opts, Mouse::hand);
 	delete aud_opts;
 }
 
 void Gamemenu_gump::gameplay_options() {
-	GameplayOptions_gump *gp_opts = new GameplayOptions_gump();
+	auto *gp_opts = new GameplayOptions_gump();
 	gumpman->do_modal_gump(gp_opts, Mouse::hand);
 	delete gp_opts;
 }
 
 void Gamemenu_gump::misc_options() {
-	MiscOptions_gump *cbt_opts = new MiscOptions_gump();
+	auto *cbt_opts = new MiscOptions_gump();
 	gumpman->do_modal_gump(cbt_opts, Mouse::hand);
 	delete cbt_opts;
 }

@@ -209,7 +209,7 @@ Game_object_shared Monster_actor::create(
 	if (!inf)
 		inf = Monster_info::get_default();
 	Game_object_shared new_monster = create(shnum);
-	Monster_actor *monster = static_cast<Monster_actor *>(new_monster.get());
+	auto *monster = static_cast<Monster_actor *>(new_monster.get());
 	monster->set_alignment(align == static_cast<int>(Actor::neutral)
 	                       ? inf->alignment : align);
 	// Movement flags

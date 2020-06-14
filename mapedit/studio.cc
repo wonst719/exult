@@ -277,7 +277,7 @@ on_fix_old_shape_info_activate(GtkMenuItem     *menuitem,
 	Vga_file *ifile = vga->get_ifile();
 	if (!ifile)
 		return;
-	Shapes_vga_file *svga = dynamic_cast<Shapes_vga_file *>(ifile);
+	auto *svga = dynamic_cast<Shapes_vga_file *>(ifile);
 	if (!svga)
 		return;
 	std::string msg = "Older versions of Exult Studio lost information when saving the following files:\n";
@@ -1276,9 +1276,9 @@ void ExultStudio::set_game_path(const string& gamename, const string& modname) {
 	vector<GtkWindow *>::const_iterator it;
 	for (it = group_windows.begin(); it != group_windows.end(); ++it) {
 		GtkWidget *grpwin = GTK_WIDGET(*it);
-		GtkBuilder *xml = static_cast<GtkBuilder *>(g_object_get_data(G_OBJECT(grpwin),
+		auto *xml = static_cast<GtkBuilder *>(g_object_get_data(G_OBJECT(grpwin),
 		                "xml"));
-		Object_browser *chooser = static_cast<Object_browser *>(g_object_get_data(
+		auto *chooser = static_cast<Object_browser *>(g_object_get_data(
 		                              G_OBJECT(grpwin), "browser"));
 		delete chooser;
 		gtk_widget_destroy(grpwin);
@@ -1572,7 +1572,7 @@ void ExultStudio::write_shape_info(
     bool force          // If set, always write.
 ) {
 	if ((force || shape_info_modified) && vgafile) {
-		Shapes_vga_file *svga =
+		auto *svga =
 		    static_cast<Shapes_vga_file *>(vgafile->get_ifile());
 		// Make sure data's been read in.
 		svga->read_info(game_type, true);
@@ -2301,9 +2301,9 @@ void ExultStudio::background_color_okay(
 	gdouble rgb[4];
 	gtk_color_selection_get_color(
 	    GTK_COLOR_SELECTION(colorsel->colorsel), rgb);
-	unsigned char r = static_cast<unsigned char>(rgb[0] * 256);
-	unsigned char g = static_cast<unsigned char>(rgb[1] * 256);
-	unsigned char b = static_cast<unsigned char>(rgb[2] * 256);
+	auto r = static_cast<unsigned char>(rgb[0] * 256);
+	auto g = static_cast<unsigned char>(rgb[1] * 256);
+	auto b = static_cast<unsigned char>(rgb[2] * 256);
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->background_color = (r << 16) + (g << 8) + b;
 	// Show new color.
@@ -2351,8 +2351,8 @@ C_EXPORT gboolean on_prefs_background_expose_event(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	guint32 color = static_cast<guint32>(reinterpret_cast<uintptr>(gtk_object_get_user_data(GTK_OBJECT(widget))));
-	GdkGC *gc = static_cast<GdkGC *>(
+	auto color = static_cast<guint32>(reinterpret_cast<uintptr>(gtk_object_get_user_data(GTK_OBJECT(widget))));
+	auto *gc = static_cast<GdkGC *>(
 	            g_object_get_data(G_OBJECT(widget), "color_gc"));
 	if (!gc) {
 		gc = gdk_gc_new(widget->window);
@@ -2431,7 +2431,7 @@ void ExultStudio::run() {
 static gint Reconnect(
     gpointer data           // ->ExultStudio.
 ) {
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	if (studio->connect_to_server())
 		return 0;       // Cancel timer.  We succeeded.
 	else
@@ -2474,7 +2474,7 @@ static void Read_from_server(
 static gint Read_from_server(
     gpointer data           // ->ExultStudio.
 ) {
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	studio->read_from_server();
 	return TRUE;
 }

@@ -653,7 +653,7 @@ public:
 		symbols[sym->name.c_str()] = sym;
 	}
 	Uc_scope *add_scope() {     // Create new scope.
-		Uc_scope *newscope = new Uc_scope(this);
+		auto *newscope = new Uc_scope(this);
 		scopes.push_back(newscope);
 		return newscope;
 	}

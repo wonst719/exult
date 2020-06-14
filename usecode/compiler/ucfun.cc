@@ -71,7 +71,7 @@ Uc_function::Uc_function(
 	add_global_function_symbol(proto, parent);// Add prototype to globals.
 	const std::vector<Uc_var_symbol *> &parms = proto->get_parms();
 	// Add backwards.
-	for (std::vector<Uc_var_symbol *>::const_reverse_iterator it = parms.rbegin();
+	for (auto it = parms.rbegin();
 	        it != parms.rend(); ++it)
 		add_symbol(*it);
 	num_parms = num_locals;     // Set counts.
@@ -101,7 +101,7 @@ Uc_var_symbol *Uc_function::add_symbol(
 	if (cur_scope->is_dup(nm))
 		return nullptr;
 	// Create & assign slot.
-	Uc_var_symbol *var = new Uc_var_symbol(nm, num_parms + num_locals++);
+	auto *var = new Uc_var_symbol(nm, num_parms + num_locals++);
 	cur_scope->add(var);
 	return var;
 }
@@ -172,7 +172,7 @@ Uc_var_symbol *Uc_function::add_alias(
 	if (cur_scope->is_dup(nm))
 		return nullptr;
 	// Create & assign slot.
-	Uc_alias_symbol *alias = new Uc_alias_symbol(nm, var);
+	auto *alias = new Uc_alias_symbol(nm, var);
 	cur_scope->add(alias);
 	return alias;
 }
@@ -191,7 +191,7 @@ Uc_var_symbol *Uc_function::add_alias(
 	if (cur_scope->is_dup(nm))
 		return nullptr;
 	// Create & assign slot.
-	Uc_var_symbol *var = static_cast<Uc_var_symbol *>(v->get_sym());
+	auto *var = static_cast<Uc_var_symbol *>(v->get_sym());
 	Uc_alias_symbol *alias = new Uc_struct_alias_symbol(nm, var, struc);
 	cur_scope->add(alias);
 	return alias;
@@ -211,7 +211,7 @@ Uc_var_symbol *Uc_function::add_alias(
 	if (cur_scope->is_dup(nm))
 		return nullptr;
 	// Create & assign slot.
-	Uc_var_symbol *var = static_cast<Uc_var_symbol *>(v->get_sym());
+	auto *var = static_cast<Uc_var_symbol *>(v->get_sym());
 	Uc_alias_symbol *alias = new Uc_class_alias_symbol(nm, var, c);
 	cur_scope->add(alias);
 	return alias;
@@ -291,7 +291,7 @@ Uc_symbol *Uc_function::add_int_const_symbol(
 	if (cur_scope->is_dup(nm))
 		return nullptr;
 	// Create & assign slot.
-	Uc_const_int_symbol *var = new Uc_const_int_symbol(nm, value, static_cast<UsecodeOps>(opcode));
+	auto *var = new Uc_const_int_symbol(nm, value, static_cast<UsecodeOps>(opcode));
 	cur_scope->add(var);
 	return var;
 }
@@ -310,7 +310,7 @@ Uc_symbol *Uc_function::add_global_int_const_symbol(
 	if (globals.is_dup(nm))
 		return nullptr;
 	// Create & assign slot.
-	Uc_const_int_symbol *var = new Uc_const_int_symbol(nm, value, static_cast<UsecodeOps>(opcode));
+	auto *var = new Uc_const_int_symbol(nm, value, static_cast<UsecodeOps>(opcode));
 	globals.add(var);
 	return var;
 }
@@ -416,7 +416,7 @@ int Uc_function::find_string_prefix(
 		delete [] buf;
 		return 0;
 	}
-	std::map<std::string, int>::const_iterator next = exist;
+	auto next = exist;
 	++next;
 	if (next != text_map.end() &&
 	        strncmp(text, (*next).first.c_str(), len) == 0) {
@@ -472,7 +472,7 @@ static int Remove_dead_blocks(
 			}
 			if (remove) {
 				++nremoved;
-				vector<Basic_block *>::iterator it = blocks.begin() + i;
+				auto it = blocks.begin() + i;
 				blocks.erase(it);
 				delete block;
 				continue;
@@ -601,7 +601,7 @@ static int Optimize_jumps(
 				++nremoved;
 				aux->unlink_descendants();
 				aux->unlink_predecessors();
-				vector<Basic_block *>::iterator it = blocks.begin() + i + 1;
+				auto it = blocks.begin() + i + 1;
 				blocks.erase(it);
 				delete aux;
 				continue;
@@ -622,7 +622,7 @@ static inline int Compute_locations(
 	locs.push_back(0);  // First block is at zero.
 	// Get locations.
 	Basic_block *back = blocks.back();
-	for (vector<Basic_block *>::iterator it = blocks.begin();
+	for (auto it = blocks.begin();
 	        *it != back; ++it)
 		locs.push_back(locs.back() + (*it)->get_block_size());
 	return locs.back() + back->get_block_size();
@@ -650,7 +650,7 @@ static int Set_32bit_jump_flags(
 		vector<int> locs;
 		Compute_locations(blocks, locs);
 		// Determine base distances and which are 32-bit.
-		for (vector<Basic_block *>::iterator it = blocks.begin();
+		for (auto it = blocks.begin();
 		        it != blocks.end(); ++it) {
 			Basic_block *block = *it;
 			// If the jump is already 32-bit, or if there is
@@ -677,15 +677,15 @@ void Uc_function::gen(
     std::ostream &out
 ) {
 	map<string, Basic_block *> label_blocks;
-	for (std::set<string>::iterator it = labels.begin();
+	for (auto it = labels.begin();
 	        it != labels.end(); ++it)
 		// Fill up label <==> basic block map.
 		label_blocks.insert(pair<string, Basic_block *>(*it, new Basic_block()));
-	Basic_block *initial = new Basic_block(-1);
-	Basic_block *endblock = new Basic_block(-1);
+	auto *initial = new Basic_block(-1);
+	auto *endblock = new Basic_block(-1);
 	vector<Basic_block *> fun_blocks;
 	fun_blocks.reserve(300);
-	Basic_block *current = new Basic_block();
+	auto *current = new Basic_block();
 	initial->set_taken(current);
 	fun_blocks.push_back(current);
 	if (statement)
@@ -701,7 +701,7 @@ void Uc_function::gen(
 	if (!fun_blocks.empty() && !fun_blocks.back()->is_end_block())
 		fun_blocks.back()->set_targets(UC_INVALID, endblock);
 	// Labels map is no longer needed.
-	for (map<string, Basic_block *>::iterator it = label_blocks.begin();
+	for (auto it = label_blocks.begin();
 	        it != label_blocks.end(); ++it) {
 		Basic_block *label = it->second;
 		if (!label->is_reachable()) {
@@ -736,7 +736,7 @@ void Uc_function::gen(
 
 		code.reserve(size);
 		// Output code.
-		for (vector<Basic_block *>::iterator it = fun_blocks.begin();
+		for (auto it = fun_blocks.begin();
 		        it != fun_blocks.end(); ++it) {
 			Basic_block *block = *it;
 			block->write(code);
@@ -762,7 +762,7 @@ void Uc_function::gen(
 	}
 
 	// Free up the blocks.
-	for (vector<Basic_block *>::iterator it = fun_blocks.begin();
+	for (auto it = fun_blocks.begin();
 	        it != fun_blocks.end(); ++it)
 		delete *it;
 	fun_blocks.clear();
@@ -882,7 +882,7 @@ void Uc_function::set_intrinsics(
 			get_usecode_fun = i;
 		else if (!strncmp(nm, "UI_get_item_shape", sizeof("UI_get_item_shape")))
 			get_item_shape = i;
-		Uc_intrinsic_symbol *sym = new Uc_intrinsic_symbol(nm, i);
+		auto *sym = new Uc_intrinsic_symbol(nm, i);
 		intrinsics[i] = sym;    // Store in indexed list.
 		if (!globals.search(nm))
 			// ++++Later, get num parms.

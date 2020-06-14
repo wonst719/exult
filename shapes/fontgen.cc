@@ -116,7 +116,7 @@ static bool Gen_font_shape_win32(
 				size.cy += 2;
 				offset = 1;
 			}
-			uint8 *pixels = new uint8[size.cy * size.cx];
+			auto *pixels = new uint8[size.cy * size.cx];
 			memset(pixels, bg, size.cy * size.cx);
 
 			// Not sure about dims here+++++
@@ -124,7 +124,7 @@ static bool Gen_font_shape_win32(
 				                         offset, offset, true), chr);
 			delete [] pixels;
 		} else {
-			uint32 *buffer = new uint32[buffsize];
+			auto *buffer = new uint32[buffsize];
 			if (GetGlyphOutline(dc, chr, GGO_BITMAP, &metrics, buffsize, buffer, &matrix) == GDI_ERROR) {
 				delete [] buffer;
 				shape->set_frame(make_unique<Shape_frame>(&bg, 1, 1, 0, 0, true), chr);
@@ -144,7 +144,7 @@ static bool Gen_font_shape_win32(
 
 			// Allocate our buffer.
 			int cnt = sw * sh;  // Total #pixels.
-			unsigned char *pixels = new unsigned char[cnt];
+			auto *pixels = new unsigned char[cnt];
 			memset(pixels, bg, cnt);// Fill with background.
 
 			unsigned char *dest = pixels + offset * sw + offset;
@@ -350,7 +350,7 @@ bool Gen_font_shape(
 		}
 		// Allocate our buffer.
 		int cnt = sw * sh;  // Total #pixels.
-		unsigned char *pixels = new unsigned char[cnt];
+		auto *pixels = new unsigned char[cnt];
 		memset(pixels, bg, cnt);// Fill with background.
 		// I believe this is 1 bit/pixel:
 		unsigned char *src = glyph->bitmap.buffer;

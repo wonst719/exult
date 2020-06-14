@@ -132,7 +132,7 @@ void ucxtInit::opcodes() {
 
 	vector<string> keys = opdata.listkeys(opcodes_root);
 
-	for (vector<string>::iterator key = keys.begin(); key != keys.end(); ++key) {
+	for (auto key = keys.begin(); key != keys.end(); ++key) {
 		if ((*key)[0] != '!') {
 			Configuration::KeyTypeList ktl;
 
@@ -147,7 +147,7 @@ void ucxtInit::opcodes() {
 
 	/* Create an {opcode, parameter_index} array of all opcodes that
 	    execute a 'jump' statement */
-	for (std::vector<UCOpcodeData>::iterator op = opcode_table_data.begin(); op != opcode_table_data.end(); ++op) {
+	for (auto op = opcode_table_data.begin(); op != opcode_table_data.end(); ++op) {
 		for (unsigned int i = 0; i < op->param_sizes.size(); i++) {
 			if (op->param_sizes[i].second) { // this is a calculated offset
 				opcode_jumps.emplace_back(op->opcode, i + 1); // parameters are stored as base 1
@@ -163,7 +163,7 @@ void ucxtInit::intrinsics(const string &intrinsic_data, const string &intrinsic_
 
 	intdata.getsubkeys(ktl, intrinsic_root);
 
-	for (Configuration::KeyTypeList::iterator k = ktl.begin(); k != ktl.end(); ++k)
+	for (auto k = ktl.begin(); k != ktl.end(); ++k)
 		uc_intrinsics.insert(pair<unsigned int, string>(static_cast<unsigned int>(strtol(k->first.c_str(), nullptr, 0)), k->second));
 }
 
@@ -223,8 +223,8 @@ std::vector<std::string> str2vec(const std::string &s) {
 }
 
 void map_type_size(const std::vector<std::string> &param_types, std::vector<std::pair<unsigned int, bool> > &param_sizes) {
-	for (std::vector<std::string>::const_iterator s = param_types.begin(); s != param_types.end(); ++s) {
-		map<string, pair<unsigned int, bool> >::iterator tsm(type_size_map.find(*s));
+	for (auto s = param_types.begin(); s != param_types.end(); ++s) {
+		auto tsm(type_size_map.find(*s));
 		if (tsm == type_size_map.end()) {
 			cerr << "error: No size type `" << *s << "`" << endl;
 			assert(tsm != type_size_map.end());

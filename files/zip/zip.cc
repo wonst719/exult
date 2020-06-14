@@ -214,7 +214,7 @@ static int ziplocal_putValue(FILE *file, uLong x, int nbByte) {
 
 static void ziplocal_putValue_inmemory(void *dest, uLong x, int nbByte);
 static void ziplocal_putValue_inmemory(void *dest, uLong x, int nbByte) {
-	unsigned char *buf = static_cast<unsigned char *>(dest);
+	auto *buf = static_cast<unsigned char *>(dest);
 	int n;
 	for (n = 0; n < nbByte; n++) {
 		buf[n] = static_cast<unsigned char>(x & 0xff);

@@ -175,7 +175,7 @@ void Game::add_resource(const char *name, const char *str, int num) {
 }
 
 const str_int_pair &Game::get_resource(const char *name) {
-	rsc_map::iterator it = resources.find(name);
+	auto it = resources.find(name);
 	if (it != resources.end())
 		return it->second;
 	else if (xml) {
@@ -211,7 +211,7 @@ void Game::write_game_xml() {
 		U7remove(name.c_str());
 	string root = xml_root;
 	Configuration xml(name, root);
-	for (rsc_map::iterator it1 = resources.begin(); it1 != resources.end();
+	for (auto it1 = resources.begin(); it1 != resources.end();
 	        ++it1) {
 		string key = root;
 		key += "/resources/";
@@ -225,7 +225,7 @@ void Game::write_game_xml() {
 			xml.set(valkey.c_str(), val.num, false);
 		}
 	}
-	for (shapes_map::iterator it2 = shapes.begin(); it2 != shapes.end();
+	for (auto it2 = shapes.begin(); it2 != shapes.end();
 	        ++it2) {
 		string key = root;
 		key += "/shapes/";
@@ -294,7 +294,7 @@ bool Game::show_menu(bool skip) {
 					Shape_frame *f0 = menushapes.get_shape(menuchoices[i], 0);
 					Shape_frame *f1 = menushapes.get_shape(menuchoices[i], 1);
 					assert(f0 != nullptr && f1 != nullptr);
-					MenuEntry *entry = new MenuEntry(f1, f0, centerx, menuy + offset);
+					auto *entry = new MenuEntry(f1, f0, centerx, menuy + offset);
 					entry->set_id(i);
 					menu->add_entry(entry);
 					offset += f1->get_ybelow() + 3;

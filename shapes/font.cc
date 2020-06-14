@@ -102,7 +102,7 @@ int Font::paint_text_box(
 	int height = get_text_height() + vert_lead + ver_lead;
 	int space_width = get_text_width(" ", 1);
 	int max_lines = h / height; // # lines that can be shown.
-	string *lines = new string[max_lines + 1];
+	auto *lines = new string[max_lines + 1];
 	int cur_line = 0;
 	const char *last_punct_end = nullptr;// ->last period, qmark, etc.
 	// Last punct in 'lines':
@@ -328,7 +328,7 @@ int Font::paint_text_box_fixedwidth(
 	int cury = y;
 	int height = get_text_height() + vert_lead + ver_lead;
 	int max_lines = h / height; // # lines that can be shown.
-	string *lines = new string[max_lines + 1];
+	auto *lines = new string[max_lines + 1];
 	int cur_line = 0;
 	const char *last_punct_end = nullptr;// ->last period, qmark, etc.
 	// Last punct in 'lines':

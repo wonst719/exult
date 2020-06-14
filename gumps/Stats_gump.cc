@@ -157,7 +157,7 @@ Stats_gump *Stats_gump::create(
 	// Create going backwards.
 	for (int i = num - 1; i >= 0; --i) {
 		int first = i * num_extra_spots;
-		Stats_extra_gump *egmp = new Stats_extra_gump(npc,
+		auto *egmp = new Stats_extra_gump(npc,
 		        x - 5 * (i + 1), y - 5 * (i + 1), atts, first, i + 1);
 		gumpman->add_gump(egmp);
 	}

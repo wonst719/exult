@@ -140,8 +140,8 @@ void FluidSynthMidiDriver::send(uint32 b) {
 	//uint8 param3 = static_cast<uint8>((b >> 24) & 0xFF);
 	uint32 param2 = static_cast<uint8>((b >> 16) & 0xFF);
 	uint32 param1 = static_cast<uint8>((b >>  8) & 0xFF);
-	uint8 cmd     = static_cast<uint8>(b & 0xF0);
-	uint8 chan    = static_cast<uint8>(b & 0x0F);
+	auto cmd     = static_cast<uint8>(b & 0xF0);
+	auto chan    = static_cast<uint8>(b & 0x0F);
 
 	switch (cmd) {
 	case 0x80:	// Note Off

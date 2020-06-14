@@ -494,7 +494,7 @@ Game_window::~Game_window(
 	delete win;
 	delete dragging;
 	delete pal;
-	for (vector<Game_map *>::iterator it = maps.begin();
+	for (auto it = maps.begin();
 	        it != maps.end(); ++it)
 		delete *it;
 	delete usecode;
@@ -591,7 +591,7 @@ Game_map *Game_window::get_map(
 	if (num >= static_cast<int>(maps.size()))
 		maps.resize(num + 1);
 	if (maps[num] == nullptr) {
-		Game_map *newmap = new Game_map(num);
+		auto *newmap = new Game_map(num);
 		maps[num] = newmap;
 		maps[num]->init();
 	}
@@ -905,7 +905,7 @@ void Game_window::clear_world(
 		if (npc && npc->is_unused())
 			npc.reset();
 	}
-	for (vector<Game_map *>::iterator it = maps.begin();
+	for (auto it = maps.begin();
 	        it != maps.end(); ++it)
 		(*it)->clear();
 	set_map(0);         // Back to main map.
@@ -1326,7 +1326,7 @@ void Game_window::write(
 	shape_man->paint_text(0, "Saving Game", centre_x - text_width / 2,
 	                      centre_y - text_height);
 	show(true);
-	for (vector<Game_map *>::iterator it = maps.begin();
+	for (auto it = maps.begin();
 	        it != maps.end(); ++it)
 		(*it)->write_ireg();    // Write ireg files.
 	write_npcs();           // Write out npc.dat.
@@ -1461,7 +1461,7 @@ bool Game_window::was_map_modified(
 ) {
 	if (Game_map::was_chunk_terrain_modified())
 		return true;
-	for (vector<Game_map *>::iterator it = maps.begin();
+	for (auto it = maps.begin();
 	        it != maps.end(); ++it) {
 		Game_map *map = *it;
 		if (map && map->was_map_modified())
@@ -1481,7 +1481,7 @@ bool Game_window::was_map_modified(
 
 void Game_window::write_map(
 ) {
-	for (vector<Game_map *>::iterator it = maps.begin();
+	for (auto it = maps.begin();
 	        it != maps.end(); ++it) {
 		Game_map *map = *it;
 		if (map && map->was_map_modified())
@@ -2469,7 +2469,7 @@ Actor *Game_window::find_witness(
 		        !Fast_pathfinder_client::is_grabable(npc, main_actor))
 			continue;
 		// Looking toward Avatar?
-		Schedule::Schedule_types sched =
+		auto sched =
 		    static_cast<Schedule::Schedule_types>(npc->get_schedule_type());
 		int dir = npc->get_direction(main_actor);
 		int facing = npc->get_dir_facing();
@@ -2524,7 +2524,7 @@ void Game_window::theft(
 	witness->change_frame(witness->get_dir_framenum(dir,
 	                      Actor::standing));
 	// If not in combat, change to hound schedule.
-	Schedule::Schedule_types sched =
+	auto sched =
 	    static_cast<Schedule::Schedule_types>(witness->get_schedule_type());
 	if (sched != Schedule::combat && sched != Schedule::hound)
 		witness->set_schedule_type(Schedule::hound);
@@ -2591,7 +2591,7 @@ void Game_window::call_guards(
 		for (int i = 0; i < numguards; i++) {
 			Game_object_shared new_guard = Monster_actor::create(
 							   gshape, offscreen, sched, Actor::chaotic);
-			Monster_actor *guard = static_cast<Monster_actor *>(
+			auto *guard = static_cast<Monster_actor *>(
 													new_guard.get());
 			add_nearby_npc(guard);
 			guard->approach_another(main_actor);
@@ -2646,7 +2646,7 @@ void Game_window::attack_avatar(
 			Game_object_shared new_guard = Monster_actor::create(gshape,
 			                  main_actor->get_tile() + Tile_coord(128, 128, 0),
 			                  Schedule::combat, Actor::chaotic);
-			Monster_actor *guard = static_cast<Monster_actor *>(
+			auto *guard = static_cast<Monster_actor *>(
 													new_guard.get());
 			add_nearby_npc(guard);
 			guard->set_target(main_actor, true);

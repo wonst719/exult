@@ -65,12 +65,12 @@ void Handle_client_debug_message(int &fd) {
 void Handle_debug_message(unsigned char *data, int datalen) {
 	ignore_unused_variable_warning(datalen);
 	Usecode_machine *ucm = Game_window::get_instance()->get_usecode();
-	Usecode_internal *uci = dynamic_cast<Usecode_internal *>(ucm);
+	auto *uci = dynamic_cast<Usecode_internal *>(ucm);
 
 	if (uci == nullptr)
 		return; // huh?
 
-	Exult_server::Debug_msg_type id = static_cast<Exult_server::Debug_msg_type>(data[0]);
+	auto id = static_cast<Exult_server::Debug_msg_type>(data[0]);
 
 	const unsigned char *ptr = data;
 
@@ -139,7 +139,7 @@ void Handle_debug_message(unsigned char *data, int datalen) {
 				          << std::endl;
 			}
 			std::string data(dataio.str());
-			unsigned char *dptr = reinterpret_cast<unsigned char *>(&data[0]);
+			auto *dptr = reinterpret_cast<unsigned char *>(&data[0]);
 			int datalen = std::min(static_cast<int>(data.size()),
 			                       Exult_server::maxlength);
 			Exult_server::Send_data(client_socket,

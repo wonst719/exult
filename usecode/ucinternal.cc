@@ -131,14 +131,14 @@ void Usecode_internal::stack_trace(ostream &out) {
 	if (call_stack.empty())
 		return;
 
-	std::deque<Stack_frame *>::iterator iter = call_stack.begin();
+	auto iter = call_stack.begin();
 
 	boost::io::ios_flags_saver flags(out);
 	boost::io::ios_fill_saver fill(out);
 	out << std::hex << std::setfill('0');
 	do {
 		out << *(*iter);
-		std::map<Stack_frame *, const uint8 *>::iterator it = except_stack.find(*iter);
+		auto it = except_stack.find(*iter);
 		if (it != except_stack.end()) {
 			out << ", active catch at 0x" << std::setw(8) << it->second;
 		}
@@ -230,7 +230,7 @@ bool Usecode_internal::call_function(int funcid,
 			caller = parent->caller_item.get(); // use parent's
 	}
 
-	Stack_frame *frame = new Stack_frame(fun, eventid, caller, chain, depth);
+	auto *frame = new Stack_frame(fun, eventid, caller, chain, depth);
 
 	int num_args = std::max(frame->num_args, givenargs);
 	// Many functions have 'itemref' as a 'phantom' arg.
@@ -304,7 +304,7 @@ void Usecode_internal::previous_stack_frame() {
 
 	// Get rid of exception handler for the current function (say, due to return
 	// in a try block).
-	std::map<Stack_frame *, const uint8 *>::iterator it = except_stack.find(frame);
+	auto it = except_stack.find(frame);
 	if (it != except_stack.end()) {
 		except_stack.erase(it);
 	}
@@ -411,7 +411,7 @@ void Usecode_internal::abort_function(Usecode_value &retval) {
 	while (call_stack.front() != nullptr) {
 		previous_stack_frame();
 		Stack_frame *frame = call_stack.front();
-		std::map<Stack_frame *, const uint8 *>::iterator it = except_stack.find(frame);
+		auto it = except_stack.find(frame);
 		if (it != except_stack.end()) {
 			const uint8 *target = it->second;
 #ifdef DEBUG
@@ -1355,7 +1355,7 @@ Usecode_value Usecode_internal::remove_cont_items(
 	int quantity = quantval.get_int_value();
 	int shapenum = shapeval.get_int_value();
 	int framenum = frameval.get_int_value();
-	unsigned int quality = static_cast<unsigned int>(qualval.get_int_value());
+	auto quality = static_cast<unsigned int>(qualval.get_int_value());
 
 	if (quantity == c_any_quantity) {
 		quantval = count_objects(container, shapeval, qualval, frameval);
@@ -1383,7 +1383,7 @@ Game_object_shared Usecode_internal::create_object(
 		Game_object_shared new_monster = Monster_actor::create(shapenum,
 		                         Tile_coord(-1, -1, -1), Schedule::wait,
 		                         static_cast<int>(Actor::neutral), true, equip);
-		Monster_actor *monster = static_cast<Monster_actor *>(
+		auto *monster = static_cast<Monster_actor *>(
 					  		   	 				new_monster.get());
 		// FORCE it to be neutral (dec04,01).
 		monster->set_alignment(static_cast<int>(Actor::neutral));
@@ -1462,7 +1462,7 @@ bool Usecode_internal::path_run_usecode(
 		return res;
 	}
 	// Walk there and execute.
-	If_else_path_actor_action *action =
+	auto *action =
 	    new If_else_path_actor_action(npc, dest,
 	                                  new Usecode_actor_action(usefun, obj,
 	                                          eventval.get_int_value()));
@@ -1520,9 +1520,9 @@ void Usecode_internal::create_script(
 		cerr << "Can't create script for nullptr object" << endl;
 		return;
 	}
-	Usecode_value *code = new Usecode_value();
+	auto *code = new Usecode_value();
 	code->steal_array(codeval); // codeval is undefined after this.
-	Usecode_script *script = new Usecode_script(obj, code);
+	auto *script = new Usecode_script(obj, code);
 	script->start(delay);
 }
 
@@ -1802,7 +1802,7 @@ void Usecode_internal::read_usecode(
 	}
 	// Read in all the functions.
 	while (file.tellg() < size) {
-		Usecode_function *fun = new Usecode_function(file);
+		auto *fun = new Usecode_function(file);
 		unsigned int slotnum = fun->id / 0x100;
 		if (slotnum >= funs.size())
 			funs.resize(slotnum < 10 ? 10 : slotnum + 1);
@@ -1923,7 +1923,7 @@ int Usecode_internal::run() {
 
 			int current_IP = frame->ip - frame->code;
 
-			UsecodeOps opcode = static_cast<UsecodeOps>(*(frame->ip));
+			auto opcode = static_cast<UsecodeOps>(*(frame->ip));
 
 			if (frame->ip + get_opcode_length(static_cast<int>(opcode)) > frame->endp) {
 				cerr << "Operands lie outside of code segment. ";
@@ -1950,7 +1950,7 @@ int Usecode_internal::run() {
 				cout << "On breakpoint" << endl;
 
 				// signal remote client that we hit a breakpoint
-				unsigned char c = static_cast<unsigned char>(Exult_server::dbg_on_breakpoint);
+				auto c = static_cast<unsigned char>(Exult_server::dbg_on_breakpoint);
 				if (client_socket >= 0)
 					Exult_server::Send_data(client_socket,
 					                        Exult_server::usecode_debugging,
@@ -2597,7 +2597,7 @@ int Usecode_internal::run() {
 				except_stack[frame] = frame->ip + offset;
 				break;
 			case UC_TRYEND: {
-				std::map<Stack_frame *, const uint8 *>::iterator it = except_stack.find(frame);
+				auto it = except_stack.find(frame);
 				if (it != except_stack.end()) {
 					except_stack.erase(it);
 				}
@@ -2995,7 +2995,7 @@ bool Usecode_internal::call_method(
 	if (!fun)
 		return false;
 
-	Stack_frame *frame = new Stack_frame(fun, 0, item,
+	auto *frame = new Stack_frame(fun, 0, item,
 	                                     Stack_frame::getCallChainID(), 0);
 
 	int oldstack = 0;
@@ -3095,7 +3095,7 @@ bool Usecode_internal::in_usecode_for(
     Game_object *item,
     Usecode_events event
 ) {
-	for (std::deque<Stack_frame *>::iterator iter = call_stack.begin();
+	for (auto iter = call_stack.begin();
 	        iter != call_stack.end(); ++iter) {
 		Stack_frame *frame = *iter;
 		if (frame->eventid == event && frame->caller_item.get() == item)
@@ -3128,7 +3128,7 @@ void Usecode_internal::write(
 			out.write2(partyman->get_member(i));
 		// Timers.
 		out.write4(0xffffffffU);
-		for (std::map<int, uint32>::iterator it = timers.begin();
+		for (auto it = timers.begin();
 				it != timers.end(); ++it) {
 			if (!it->second)    // Don't write unused timers.
 				continue;
@@ -3152,7 +3152,7 @@ void Usecode_internal::write(
 	int num_slots = funs.size();
 	for (int i = 0; i < num_slots; i++) {
 		Funs256 &slot = funs[i];
-		for (std::vector<Usecode_function *>::iterator fit =
+		for (auto fit =
 		            slot.begin(); fit != slot.end(); ++fit) {
 			Usecode_function *fun = *fit;
 			if (!fun || fun->statics.empty())

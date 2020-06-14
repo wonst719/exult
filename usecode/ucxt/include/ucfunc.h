@@ -159,7 +159,7 @@ public:
 	/* Just a quick function to remove all the Uccs in _uccs marked for
 	   garbage collection. */
 	void gc() {
-		for (GotoSet::iterator j = _uccs.begin(); j != _uccs.end();) {
+		for (auto j = _uccs.begin(); j != _uccs.end();) {
 #ifdef DEBUG_GOTOSET
 			std::cout << "OP: " << opcode_table_data[j->first->_id].ucs_nmo << '\t' << j->second;
 #endif
@@ -173,7 +173,7 @@ public:
 				std::cout << "\tremoved";
 #endif
 
-				GotoSet::iterator rem(j);
+				auto rem(j);
 
 				if (!begin) --j;
 

@@ -63,7 +63,7 @@ Chunk_cache::Chunk_cache(
 
 Chunk_cache::~Chunk_cache(
 ) {
-	for (vector<blocked8z>::iterator it = blocked.begin();
+	for (auto it = blocked.begin();
 	        it != blocked.end(); ++it)
 		delete[] *it;
 }
@@ -96,7 +96,7 @@ inline void Set_blocked_tile(
 ) {
 	uint16 val = blocked[ty * c_tiles_per_chunk + tx];
 	// Get mask for the bit0's:
-	uint16 mask0 = static_cast<uint16>(tmasks[ztiles] << 2 * lift);
+	auto mask0 = static_cast<uint16>(tmasks[ztiles] << 2 * lift);
 	uint16 mask1 = mask0 << 1;  // Mask for the bit1's.
 	uint16 val0s = val & mask0;
 	uint16 Nval0s = (~val)&mask0;
@@ -121,7 +121,7 @@ inline void Clear_blocked_tile(
 ) {
 	uint16 val = blocked[ty * c_tiles_per_chunk + tx];
 	// Get mask for the bit0's:
-	uint16 mask0 = static_cast<uint16>(tmasks[ztiles] << 2 * lift);
+	auto mask0 = static_cast<uint16>(tmasks[ztiles] << 2 * lift);
 	uint16 mask1 = mask0 << 1;  // Mask for the bit1's.
 	uint16 val0s = val & mask0;
 	uint16 Nval0s = (~val)&mask0;
@@ -629,7 +629,7 @@ void Chunk_cache::activate_eggs(
 Game_object *Chunk_cache::find_door(
     const Tile_coord& tile
 ) {
-	for (std::set<Game_object *>::iterator it = doors.begin();
+	for (auto it = doors.begin();
 	        it != doors.end(); ++it)
 		if ((*it)->blocks(tile))
 			return *it; // Found it.
@@ -1084,7 +1084,7 @@ static Tile_coord *Get_square(
     Tile_coord &pos,        // Center of square.
     int dist            // Distance to perimeter (>0)
 ) {
-	Tile_coord *square = new Tile_coord[8 * dist];
+	auto *square = new Tile_coord[8 * dist];
 	// Upper left corner:
 	square[0] = Tile_coord(DECR_TILE(pos.tx, dist),
 	                       DECR_TILE(pos.ty, dist), pos.tz);

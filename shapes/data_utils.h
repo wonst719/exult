@@ -794,7 +794,7 @@ public:
 				// T::entry_size should be >= 3!
 				// For stupid compilers...
 				const size_t nelems = T::entry_size >= 3 ? T::entry_size : 1;
-				unsigned char *buf = new unsigned char[nelems];
+				auto *buf = new unsigned char[nelems];
 				unsigned char *ptr = buf;
 				Write2(ptr, index);
 				if (T::entry_size >= 4)

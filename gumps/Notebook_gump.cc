@@ -222,7 +222,7 @@ void Notebook_gump::add_new(
 ) {
 	Game_clock *clk = gwin->get_clock();
 	Tile_coord t = gwin->get_main_actor()->get_tile();
-	One_note *note = new One_note(clk->get_day(), clk->get_hour(),
+	auto *note = new One_note(clk->get_day(), clk->get_hour(),
 	                              clk->get_minute(), t.tx, t.ty, text, gflag);
 	note->is_new = true;
 	notes.push_back(note);
@@ -714,7 +714,7 @@ void Notebook_gump::add_gflag_text(
 	if (!initialized)
 		initialize();
 	// See if already there.
-	for (vector<One_note *>::iterator it = notes.begin();
+	for (auto it = notes.begin();
 	        it != notes.end(); ++it)
 		if ((*it)->gflag == gflag)
 			return;
@@ -733,7 +733,7 @@ void Notebook_gump::write(
 	U7open(out, NOTEBOOKXML);
 	out << "<notebook>" << endl;
 	if (initialized) {
-		for (vector<One_note *>::iterator it = notes.begin();
+		for (auto it = notes.begin();
 		        it != notes.end(); ++it)
 			if ((*it)->text.length() || !(*it)->is_new)
 				(*it)->write(out);
@@ -761,7 +761,7 @@ void Notebook_gump::read(
 	string basekey = "notebook";
 	conf.getsubkeys(note_nds, basekey);
 	One_note *note = nullptr;
-	for (Configuration::KeyTypeList::iterator it = note_nds.begin();
+	for (auto it = note_nds.begin();
 	        it != note_nds.end(); ++it) {
 		Configuration::KeyType notend = *it;
 		if (notend.first == "note") {

@@ -116,7 +116,7 @@ int main(
 	Write4(out, UCSYMTBL_MAGIC0);   // Start with symbol table.
 	Write4(out, UCSYMTBL_MAGIC1);
 	std::vector<Uc_design_unit *>::iterator it;
-	Usecode_symbol_table *symtbl = new Usecode_symbol_table;
+	auto *symtbl = new Usecode_symbol_table;
 	for (it = units.begin(); it != units.end(); ++it) {
 		symtbl->add_sym((*it)->create_sym());
 	}

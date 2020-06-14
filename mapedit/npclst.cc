@@ -296,7 +296,7 @@ static gint Configure_chooser(
     gpointer data           // ->Npc_chooser
 ) {
 	ignore_unused_variable_warning(widget);
-	Npc_chooser *chooser = static_cast<Npc_chooser *>(data);
+	auto *chooser = static_cast<Npc_chooser *>(data);
 	return chooser->configure(event);
 }
 gint Npc_chooser::configure(
@@ -327,7 +327,7 @@ gint Npc_chooser::expose(
     gpointer data           // ->Npc_chooser.
 ) {
 	ignore_unused_variable_warning(widget);
-	Npc_chooser *chooser = static_cast<Npc_chooser *>(data);
+	auto *chooser = static_cast<Npc_chooser *>(data);
 	chooser->show(event->area.x, event->area.y, event->area.width,
 	              event->area.height);
 	return TRUE;
@@ -458,7 +458,7 @@ static gint Mouse_press(
     GdkEventButton *event,
     gpointer data           // ->Npc_chooser.
 ) {
-	Npc_chooser *chooser = static_cast<Npc_chooser *>(data);
+	auto *chooser = static_cast<Npc_chooser *>(data);
 	return chooser->mouse_press(widget, event);
 }
 static gint Mouse_release(
@@ -467,7 +467,7 @@ static gint Mouse_release(
     gpointer data           // ->Npc_chooser.
 ) {
 	ignore_unused_variable_warning(widget, event);
-	Npc_chooser *chooser = static_cast<Npc_chooser *>(data);
+	auto *chooser = static_cast<Npc_chooser *>(data);
 	chooser->mouse_up();
 	return true;
 }
@@ -536,7 +536,7 @@ void Npc_chooser::drag_data_get(
 ) {
 	ignore_unused_variable_warning(widget, context, time);
 	cout << "In DRAG_DATA_GET" << endl;
-	Npc_chooser *chooser = static_cast<Npc_chooser *>(data);
+	auto *chooser = static_cast<Npc_chooser *>(data);
 	if (chooser->selected < 0 || info != U7_TARGET_NPCID)
 		return;         // Not sure about this.
 	guchar buf[30];
@@ -544,7 +544,7 @@ void Npc_chooser::drag_data_get(
 	int len = Store_u7_npcid(buf, npcnum);
 	cout << "Setting selection data (" << npcnum << ')' << endl;
 #ifdef _WIN32
-	windragdata *wdata = reinterpret_cast<windragdata*>(seldata);
+	auto *wdata = reinterpret_cast<windragdata*>(seldata);
 	wdata->assign(info, len, buf);
 #else
 	// Make us owner of xdndselection.
@@ -582,7 +582,7 @@ gint Npc_chooser::drag_begin(
 ) {
 	ignore_unused_variable_warning(widget);
 	cout << "In DRAG_BEGIN" << endl;
-	Npc_chooser *chooser = static_cast<Npc_chooser *>(data);
+	auto *chooser = static_cast<Npc_chooser *>(data);
 	if (chooser->selected < 0)
 		return FALSE;       // ++++Display a halt bitmap.
 	// Get ->npc.
@@ -610,7 +610,7 @@ void Npc_chooser::drag_data_received(
     gpointer udata          // Should point to Shape_draw.
 ) {
 	ignore_unused_variable_warning(widget, context, x, y, info, time);
-	Npc_chooser *chooser = static_cast<Npc_chooser *>(udata);
+	auto *chooser = static_cast<Npc_chooser *>(udata);
 	cout << "Npc drag_data_received" << endl;
 	if (seldata->type == gdk_atom_intern(U7_TARGET_NPCID_NAME, 0) &&
 	        seldata->format == 8 && seldata->length > 0) {
@@ -737,7 +737,7 @@ void Npc_chooser::vscrolled(    // For vertical scrollbar.
     GtkAdjustment *adj,     // The adjustment.
     gpointer data           // ->Npc_chooser.
 ) {
-	Npc_chooser *chooser = static_cast<Npc_chooser *>(data);
+	auto *chooser = static_cast<Npc_chooser *>(data);
 	cout << "Scrolled to " << adj->value << '\n';
 	gint newindex = static_cast<gint>(adj->value);
 	chooser->scroll_vertical(newindex);

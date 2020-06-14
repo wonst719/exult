@@ -78,7 +78,7 @@ void Effects_manager::add_text(
 	for (Text_effect *each = texts; each; each = each->next)
 		if (each->is_text(item))
 			return;     // Already have text on this.
-	Text_effect *txt = new Text_effect(msg, item);
+	auto *txt = new Text_effect(msg, item);
 //	txt->paint(this);        // Draw it.
 //	painted = 1;
 	add_text_effect(txt);
@@ -95,7 +95,7 @@ void Effects_manager::add_text(
     const char *msg,
     int x, int y
 ) {
-	Text_effect *txt = new Text_effect(msg,
+	auto *txt = new Text_effect(msg,
 	                                   gwin->get_scrolltx() + x / c_tilesize,
 	                                   gwin->get_scrollty() + y / c_tilesize);
 	add_text_effect(txt);
@@ -264,7 +264,7 @@ void Effects_manager::remove_usecode_lightning(
 	while (each) {
 		Special_effect *next = each->next;
 		// See if we're far enough away.
-		Lightning_effect *light = dynamic_cast<Lightning_effect *>(each);
+		auto *light = dynamic_cast<Lightning_effect *>(each);
 		if (light && light->from_usecode())
 			remove_effect(each);
 		each = next;
@@ -282,7 +282,7 @@ int Effects_manager::get_weather(
 	while (each) {
 		Special_effect *next = each->next;
 		if (each->is_weather()) {
-			Weather_effect *weather = static_cast<Weather_effect *>(each);
+			auto *weather = static_cast<Weather_effect *>(each);
 			if (weather->get_num() >= 0)
 				return weather->get_num();
 		}
@@ -803,7 +803,7 @@ void Projectile_effect::handle_event(
 			if (returns && att_obj &&  // boomerangs
 			        att_obj->distance(pos) < 50) {
 				// not teleported away
-				Projectile_effect *proj = new Projectile_effect(
+				auto *proj = new Projectile_effect(
 				    pos, att_obj.get(), weapon, projectile_shape,
 				    sprite.get_shapenum(), attval, speed, true);
 				proj->set_speed(speed);

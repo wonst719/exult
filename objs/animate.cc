@@ -62,7 +62,7 @@ static inline bool Get_sfx_out_of_range(
  */
 
 void Object_sfx::Play(Game_object *obj, int sfx, int delay) {
-	Object_sfx *osfx = new Object_sfx(obj, sfx);
+	auto *osfx = new Object_sfx(obj, sfx);
 
 	if (!delay) {
 		// Start right now -- so that usecode sounds will play when intended
@@ -421,7 +421,7 @@ void Frame_animator::handle_event(
     uintptr udata          // Game window.
 ) {
 	const int delay = 100;
-	Game_window *gwin = reinterpret_cast<Game_window *>(udata);
+	auto *gwin = reinterpret_cast<Game_window *>(udata);
 
 	if (!--frame_counter) {
 		frame_counter = aniinf->get_frame_delay();
@@ -484,7 +484,7 @@ void Sfx_animator::handle_event(
 ) {
 	const int delay = 100;      // Guessing this will be enough.
 
-	Game_window *gwin = reinterpret_cast<Game_window *>(udata);
+	auto *gwin = reinterpret_cast<Game_window *>(udata);
 	Rectangle rect = gwin->clip_to_win(gwin->get_shape_rect(obj));
 	if (rect.w <= 0 || rect.h <= 0) {
 		// No longer on screen.
@@ -533,7 +533,7 @@ void Wiggle_animator::handle_event(
     uintptr udata          // Game window.
 ) {
 	const int delay = 100;      // Delay between frames.
-	Game_window *gwin = reinterpret_cast<Game_window *>(udata);
+	auto *gwin = reinterpret_cast<Game_window *>(udata);
 	if (!gwin->add_dirty(obj)) {
 		// No longer on screen.
 		animating = false;

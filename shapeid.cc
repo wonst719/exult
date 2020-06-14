@@ -111,7 +111,7 @@ void Shape_manager::read_shape_info(
 	const Shape_info &female = shapes.get_info(Shapeinfo_lookup::GetFemaleAvShape());
 
 	vector<Skin_data> *skins = Shapeinfo_lookup::GetSkinList();
-	for (vector<Skin_data>::iterator it = skins->begin();
+	for (auto it = skins->begin();
 	        it != skins->end(); ++it) {
 		if ((*it).copy_info) {
 			shapes.copy_info((*it).shape_num, (*it).is_female ? female : male);

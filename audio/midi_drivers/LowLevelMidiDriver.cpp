@@ -480,7 +480,7 @@ void LowLevelMidiDriver::destroyThreadedSynth()
 int LowLevelMidiDriver::threadMain_Static(void *data)
 {
 	giveinfo();
-	LowLevelMidiDriver *ptr=static_cast<LowLevelMidiDriver *>(data);
+	auto *ptr=static_cast<LowLevelMidiDriver *>(data);
 	giveinfo();
 	return ptr->threadMain();
 }

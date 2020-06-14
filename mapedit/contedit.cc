@@ -88,7 +88,7 @@ C_EXPORT void on_cont_show_gump_clicked(
 	cout << "In on_cont_show_gump_clicked()" << endl;
 	unsigned char data[Exult_server::maxlength];
 	// Get container address.
-	uintptr addr = reinterpret_cast<uintptr>(gtk_object_get_user_data(
+	auto addr = reinterpret_cast<uintptr>(gtk_object_get_user_data(
 	                         GTK_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(btn)))));
 	unsigned char *ptr = &data[0];
 	Serial_out io(ptr);
@@ -311,7 +311,7 @@ int ExultStudio::save_cont_window(
 ) {
 	cout << "In save_cont_window()" << endl;
 	// Get container address.
-	Container_game_object *addr = static_cast<Container_game_object*>(gtk_object_get_user_data(GTK_OBJECT(contwin)));
+	auto *addr = static_cast<Container_game_object*>(gtk_object_get_user_data(GTK_OBJECT(contwin)));
 	int tx = get_spin("cont_x");
 	int ty = get_spin("cont_y");
 	int tz = get_spin("cont_z");
@@ -342,7 +342,7 @@ void ExultStudio::rotate_cont(
 	int frnum = get_num_entry("cont_frame");
 	if (shnum <= 0)
 		return;
-	Shapes_vga_file *shfile = static_cast<Shapes_vga_file *>(vgafile->get_ifile());
+	auto *shfile = static_cast<Shapes_vga_file *>(vgafile->get_ifile());
 	// Make sure data's been read in.
 	shfile->read_info(game_type, true);
 	const Shape_info &info = shfile->get_info(shnum);

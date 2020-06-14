@@ -90,7 +90,7 @@ void UCData::parse_params(const unsigned int argc, char **argv) {
 		else if (argv[i][0] != '-') {
 			char *stopstr;
 			/* Disassembly mode */
-			unsigned int search_func = static_cast<unsigned int>(strtoul(argv[i], &stopstr, 16));
+			auto search_func = static_cast<unsigned int>(strtoul(argv[i], &stopstr, 16));
 			if (stopstr - argv[i] < static_cast<int>(strlen(argv[i])))
 				/* Invalid number */
 			{ /* Do Nothing */
@@ -129,7 +129,7 @@ void UCData::disassamble(ostream &o) {
 	analyse_classes();
 
 	if (options.verbose) {
-		for (vector<unsigned int>::iterator i = search_funcs.begin(); i != search_funcs.end(); ++i)
+		for (auto i = search_funcs.begin(); i != search_funcs.end(); ++i)
 			o << "Looking for function number " << setw(8) << (*i) << endl;
 		o << endl;
 	}
@@ -228,8 +228,8 @@ void UCData::dump_flags(ostream &o) {
 	vector<FlagData> flags;
 
 	// *BLEH* ugly!
-	for (vector<UCFunc *>::iterator func = _funcs.begin(); func != _funcs.end(); ++func)
-		for (vector<UCc>::iterator op = (*func)->_opcodes.begin(); op != (*func)->_opcodes.end(); ++op) {
+	for (auto func = _funcs.begin(); func != _funcs.end(); ++func)
+		for (auto op = (*func)->_opcodes.begin(); op != (*func)->_opcodes.end(); ++op) {
 			if (op->_id == 0x42)
 				flags.emplace_back((*func)->_funcid, op->_offset, op->_params_parsed[0], FlagData::GETFLAG);
 			else if (op->_id == 0x43)
@@ -266,7 +266,7 @@ void UCData::dump_flags(ostream &o) {
 		sort(flags.begin(), flags.end(), SortFlagDataLessFlag());
 
 		o << setbase(16) << setfill('0');
-		unsigned int currflag = static_cast<unsigned int>(-1);
+		auto currflag = static_cast<unsigned int>(-1);
 		for (unsigned int i = 0; i < flags.size(); i++) {
 			if (currflag != flags[i].flag()) {
 				o << "Flag: " << setw(4) << flags[i].flag() << endl;
@@ -361,7 +361,7 @@ void UCData::load_funcs(ostream &o) {
 
 	bool eof = false;
 	while (!eof) {
-		UCFunc *ucfunc = new UCFunc();
+		auto *ucfunc = new UCFunc();
 
 		if (options.game_u7())
 			readbin_U7UCFunc(_file, *ucfunc, options, _symtbl);
@@ -393,7 +393,7 @@ void UCData::load_funcs(ostream &o) {
 
 	if (options.verbose) o << "Creating function map..." << endl;
 
-	for (vector<UCFunc *>::iterator i = _funcs.begin(); i != _funcs.end(); ++i) {
+	for (auto i = _funcs.begin(); i != _funcs.end(); ++i) {
 		int funcid = (*i)->_funcid;
 		Usecode_symbol::Symbol_kind kind;
 		if ((*i)->_sym)
@@ -455,7 +455,7 @@ void UCData::output_extern_header(ostream &o) {
 	}
 	load_funcs(o);
 
-	for (vector<UCFunc *>::iterator func = _funcs.begin(); func != _funcs.end(); ++func) {
+	for (auto func = _funcs.begin(); func != _funcs.end(); ++func) {
 		//(*func)->output_ucs_funcname(o << "extern ", _funcmap, (*func)->_funcid, (*func)->_num_args, (*func)->return_var) << ';' << endl;
 		(*func)->output_ucs_funcname(o << "extern ", _funcmap, _symtbl) << ';' << endl;
 	}

@@ -1107,7 +1107,7 @@ FM_OPL *OPLCreate(int type, int clock, int rate) {
 	if (OPL_LockTable() == -1)
 		return nullptr;
 
-	FM_OPL *OPL = new FM_OPL{};
+	auto *OPL = new FM_OPL{};
 	OPL->P_CH = OPL->channels;
 
 	/* set channel state pointer */

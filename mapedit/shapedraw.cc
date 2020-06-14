@@ -210,7 +210,7 @@ void Shape_draw::drag_data_received(
     gpointer udata          // Should point to Shape_draw.
 ) {
 	ignore_unused_variable_warning(widget, context, x, y, info, time);
-	Shape_draw *draw = static_cast<Shape_draw *>(udata);
+	auto *draw = static_cast<Shape_draw *>(udata);
 	cout << "drag_data_received" << endl;
 	if (draw->drop_callback &&
 	        seldata->type == gdk_atom_intern(U7_TARGET_SHAPEID_NAME, 0) &&

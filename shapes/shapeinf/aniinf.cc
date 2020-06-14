@@ -64,7 +64,7 @@ Animation_info *Animation_info::create_from_tfa(
     int type,
     int nframes
 ) {
-	Animation_info *inf = new Animation_info();
+	auto *inf = new Animation_info();
 
 	switch (type) {
 	case 0:

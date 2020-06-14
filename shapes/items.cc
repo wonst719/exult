@@ -309,11 +309,11 @@ void Setup_text(bool si, bool expansion, bool sibeta) {
 	// TODO: allow multilingual exultmsg.txt files.
 	istream *exultmsg;
 	if (is_patch && U7exists(PATCH_EXULTMSG)) {
-		ifstream *exultmsgfile = new ifstream();
+		auto *exultmsgfile = new ifstream();
 		exultmsg = exultmsgfile;
 		U7open(*exultmsgfile, PATCH_EXULTMSG, true);
 	} else {
-		stringstream *exultmsgbuf = new stringstream();
+		auto *exultmsgbuf = new stringstream();
 		exultmsg = exultmsgbuf;
 		const char *msgs = BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX);
 		U7object txtobj(msgs, EXULT_FLX_EXULTMSG_TXT);

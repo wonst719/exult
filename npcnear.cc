@@ -95,7 +95,7 @@ void Npc_proximity_handler::handle_event(
     unsigned long curtime,
     uintptr udata
 ) {
-	Npc_actor *npc = reinterpret_cast<Npc_actor *>(udata);
+	auto *npc = reinterpret_cast<Npc_actor *>(udata);
 	int extra_delay = 5;        // For next time.
 	// See if still on visible screen.
 	Rectangle tiles = gwin->get_win_tile_rect().enlarge(10);
@@ -107,7 +107,7 @@ void Npc_proximity_handler::handle_event(
 		npc->clear_nearby();
 		return;
 	}
-	Schedule::Schedule_types sched =
+	auto sched =
 	    static_cast<Schedule::Schedule_types>(npc->get_schedule_type());
 	// Sleep schedule?
 	if (npc->get_schedule() &&

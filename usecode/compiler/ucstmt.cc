@@ -122,9 +122,9 @@ void Uc_if_statement::gen(
 	if (!if_stmt && !else_stmt) // Optimize whole block away.
 		return;
 	// The basic block for the if code.
-	Basic_block *if_block = new Basic_block();
+	auto *if_block = new Basic_block();
 	// The basic block after the if/else blocks.
-	Basic_block *past_if = new Basic_block();
+	auto *past_if = new Basic_block();
 	blocks.push_back(if_block);
 	int ival;
 	bool const_expr = !expr || expr->eval_const(ival);
@@ -145,7 +145,7 @@ void Uc_if_statement::gen(
 		if_stmt->gen(fun, blocks, if_block, end, labels, start, exit);
 	if (else_stmt) {
 		// The basic block for the else code.
-		Basic_block *else_block = new Basic_block();
+		auto *else_block = new Basic_block();
 		blocks.push_back(else_block);
 		if (!expr)  // Go directly to else block instead.
 			curr->set_taken(else_block);
@@ -192,11 +192,11 @@ void Uc_trycatch_statement::gen(
 	if (!try_stmt) // Optimize whole block away.
 		return;
 	// The basic block for the try code.
-	Basic_block *try_block = new Basic_block();
+	auto *try_block = new Basic_block();
 	// The basic block for the catch code.
-	Basic_block *catch_block = new Basic_block();
+	auto *catch_block = new Basic_block();
 	// The basic block after the try/catch blocks.
-	Basic_block *past_trycatch = new Basic_block();
+	auto *past_trycatch = new Basic_block();
 	// Gen start opcode for try block.
 	curr->set_targets(UC_TRYSTART, try_block, catch_block);
 	// Generate code for try block
@@ -261,7 +261,7 @@ void Uc_breakable_statement::gen(
 	ignore_unused_variable_warning(start, exit);
 	if (!stmt)  // Optimize whole statement away.
 		return;
-	Basic_block *past_block = new Basic_block();
+	auto *past_block = new Basic_block();
 	stmt->gen(fun, blocks, curr, end, labels, past_block, past_block);
 	blocks.push_back(curr = past_block);
 }
@@ -294,11 +294,11 @@ void Uc_while_statement::gen(
 		return;
 	// The start of a loop is a jump target and needs
 	// a new basic block.
-	Basic_block *while_top = new Basic_block();
+	auto *while_top = new Basic_block();
 	// Basic block past while body.
-	Basic_block *past_while = new Basic_block();
+	auto *past_while = new Basic_block();
 	// Need new block past a JNE (the test) or JMP.
-	Basic_block *while_block = new Basic_block();
+	auto *while_block = new Basic_block();
 	// Fall-through to WHILE top.
 	curr->set_taken(while_top);
 	blocks.push_back(while_top);
@@ -350,17 +350,17 @@ void Uc_dowhile_statement::gen(
 		return;
 	// The start of a loop is a jump target and needs
 	// a new basic block.
-	Basic_block *do_block = new Basic_block();
+	auto *do_block = new Basic_block();
 	curr->set_taken(do_block);
 	blocks.push_back(do_block);
 	// Need new block for test as it is a jump target.
-	Basic_block *do_test = new Basic_block();
+	auto *do_test = new Basic_block();
 	// Gen test code.
 	expr->gen_value(do_test);
 	// Basic block past while body.
-	Basic_block *past_do = new Basic_block();
+	auto *past_do = new Basic_block();
 	// Jump back to top.
-	Basic_block *do_jmp = new Basic_block();
+	auto *do_jmp = new Basic_block();
 	do_jmp->set_targets(UC_JMP, do_block);
 	do_test->set_targets(UC_JNE, do_jmp, past_do);
 	// Generate while body.
@@ -399,13 +399,13 @@ void Uc_infinite_loop_statement::gen(
 		return;
 	// The start of a loop is a jump target and needs
 	// a new basic block.
-	Basic_block *loop_top = new Basic_block();
+	auto *loop_top = new Basic_block();
 	curr->set_taken(loop_top);
 	blocks.push_back(loop_top);
 	// Local copy.
 	Basic_block *loop_body = loop_top;
 	// Basic block past loop body.
-	Basic_block *past_loop = new Basic_block();
+	auto *past_loop = new Basic_block();
 	// Generate loop body.
 	stmt->gen(fun, blocks, loop_body, end, labels, loop_top, past_loop);
 	// Jump back to top.
@@ -463,14 +463,14 @@ void Uc_arrayloop_statement::gen(
 	WriteOp(curr, UC_LOOP);
 	// The start of a loop is a jump target and needs
 	// a new basic block.
-	Basic_block *for_top = new Basic_block();
+	auto *for_top = new Basic_block();
 	curr->set_taken(for_top);
 	blocks.push_back(for_top);
 	// Body of FOR loop.
-	Basic_block *for_body = new Basic_block();
+	auto *for_body = new Basic_block();
 	blocks.push_back(for_body);
 	// Block immediatelly after FOR.
-	Basic_block *past_for = new Basic_block();
+	auto *past_for = new Basic_block();
 	UsecodeOps opcode;
 	if (array->is_static())
 		opcode = UC_LOOPTOPS;
@@ -577,7 +577,7 @@ void Uc_label_statement::gen(
     Basic_block *exit           // Block used for 'break' statements.
 ) {
 	ignore_unused_variable_warning(fun, end, start, exit);
-	map<string, Basic_block *>::iterator it = labels.find(label);
+	auto it = labels.find(label);
 	// Should never fail, but...
 	assert(it != labels.end());
 	Basic_block *block = it->second;
@@ -598,7 +598,7 @@ void Uc_goto_statement::gen(
     Basic_block *exit           // Block used for 'break' statements.
 ) {
 	ignore_unused_variable_warning(fun, end, start, exit);
-	map<string, Basic_block *>::iterator it = labels.find(label);
+	auto it = labels.find(label);
 	if (it != labels.end()) {
 		Basic_block *l = it->second;
 		curr->set_targets(UC_JMP, l);
@@ -624,10 +624,10 @@ static void Call_intrinsic(
     Uc_expression *parm0 = nullptr    // Parm, or null.
 ) {
 	// Create parms. list.
-	Uc_array_expression *parms = new Uc_array_expression;
+	auto *parms = new Uc_array_expression;
 	if (parm0)
 		parms->add(parm0);
-	Uc_call_expression *fcall = new Uc_call_expression(intr, parms, fun);
+	auto *fcall = new Uc_call_expression(intr, parms, fun);
 	Uc_call_statement fstmt(fcall);
 	fstmt.gen(fun, blocks, curr, end, labels);
 	parms->clear();         // DON'T want to delete parm0.
@@ -649,7 +649,7 @@ void Uc_converse_case_statement::gen(
 	if (!remove && !statements) // Optimize whole case away.
 		return;
 
-	for (vector<int>::reverse_iterator it = string_offset.rbegin();
+	for (auto it = string_offset.rbegin();
 	        it != string_offset.rend(); ++it) {
 		// Push strings on stack; *it should always be >= 0.
 		if (is_int_32bit(*it)) {
@@ -661,10 +661,10 @@ void Uc_converse_case_statement::gen(
 		}
 	}
 	// New basic block for CASE body.
-	Basic_block *case_body = new Basic_block();
+	auto *case_body = new Basic_block();
 	blocks.push_back(case_body);
 	// Past CASE body.
-	Basic_block *past_case = new Basic_block();
+	auto *past_case = new Basic_block();
 	if (is_default())
 		curr->set_targets(UC_INVALID, case_body);
 	else {
@@ -674,10 +674,10 @@ void Uc_converse_case_statement::gen(
 
 	if (remove) {       // Remove answer?
 		if (string_offset.size() > 1) {
-			Uc_array_expression *strlist = new Uc_array_expression();
-			for (vector<int>::iterator it = string_offset.begin();
+			auto *strlist = new Uc_array_expression();
+			for (auto it = string_offset.begin();
 			        it != string_offset.end(); ++it) {
-				Uc_string_expression *str = new Uc_string_expression(*it);
+				auto *str = new Uc_string_expression(*it);
 				strlist->add(str);
 			}
 			Call_intrinsic(fun, blocks, case_body, end, labels,
@@ -711,7 +711,7 @@ Uc_converse_statement::Uc_converse_statement(
 	bool has_default = false;
 	for (vector<Uc_statement *>::const_iterator it = cases.begin();
 	        it != cases.end(); ++it) {
-		Uc_converse_case_statement *stmt =
+		auto *stmt =
 		    static_cast<Uc_converse_case_statement *>(*it);
 		if (stmt->is_default()) {
 			if (has_default) {
@@ -761,21 +761,21 @@ void Uc_converse_statement::gen(
 		               Uc_function::get_add_answer(), answers);
 	// The start of a CONVERSE loop is a jump target and needs
 	// a new basic block.
-	Basic_block *conv_top = new Basic_block();
+	auto *conv_top = new Basic_block();
 	curr->set_taken(conv_top);
 	blocks.push_back(conv_top);
 	// Need new block as it is past a jump.
-	Basic_block *conv_body = new Basic_block();
+	auto *conv_body = new Basic_block();
 	blocks.push_back(conv_body);
 	// Block past the CONVERSE loop.
-	Basic_block *past_conv = new Basic_block();
+	auto *past_conv = new Basic_block();
 	WriteOp(past_conv, UC_CONVERSELOC);
 	conv_top->set_targets(UC_CONVERSE, conv_body, past_conv);
 	// Generate loop body.
 	Uc_converse_case_statement *def = nullptr;
 	for (std::vector<Uc_statement *>::const_iterator it = cases.begin();
 	        it != cases.end(); ++it) {
-		Uc_converse_case_statement *stmt =
+		auto *stmt =
 		    static_cast<Uc_converse_case_statement *>(*it);
 		if (stmt->is_default())
 			def = stmt;
@@ -818,7 +818,7 @@ int Uc_switch_expression_case_statement::gen_check(
 	ignore_unused_variable_warning(fun, end, labels);
 	check->gen_value(curr);
 	WriteOp(curr, UC_CMPNE);
-	Basic_block *block = new Basic_block();
+	auto *block = new Basic_block();
 	curr->set_targets(UC_JNE, block, case_block);
 	blocks.push_back(curr = block);
 	return 1;
@@ -864,7 +864,7 @@ Uc_switch_statement::Uc_switch_statement(
 	bool has_default = false;
 	for (vector<Uc_statement *>::const_iterator it = cases.begin();
 	        it != cases.end(); ++it) {
-		Uc_switch_case_statement *stmt =
+		auto *stmt =
 		    static_cast<Uc_switch_case_statement *>(*it);
 		if (stmt->is_default()) {
 			if (has_default) {
@@ -891,11 +891,11 @@ void Uc_switch_statement::gen(
     Basic_block *exit           // Block used for 'break' statements.
 ) {
 	ignore_unused_variable_warning(exit);
-	Uc_var_expression *var = new Uc_var_expression(cond->need_var(curr, fun));
+	auto *var = new Uc_var_expression(cond->need_var(curr, fun));
 	vector<Basic_block *> case_blocks;
 	Basic_block *def_case = nullptr;
 	for (size_t i = 0; i < cases.size(); i++) {
-		Uc_switch_case_statement *stmt =
+		auto *stmt =
 		    dynamic_cast<Uc_switch_case_statement *>(cases[i]);
 		if (stmt->is_default()) { // Store the default case iterator.
 			def_case = new Basic_block();
@@ -904,7 +904,7 @@ void Uc_switch_statement::gen(
 			// Generate the conditional jumps and the case basic blocks.
 			var->gen_value(curr);
 			// Case block.
-			Basic_block *case_code = new Basic_block();
+			auto *case_code = new Basic_block();
 			stmt->gen_check(fun, blocks, curr, end, labels, case_code);
 			case_blocks.push_back(case_code);
 		}
@@ -912,14 +912,14 @@ void Uc_switch_statement::gen(
 	// All done with it.
 	delete var;
 	// Past SWITCH block.
-	Basic_block *past_switch = new Basic_block();
+	auto *past_switch = new Basic_block();
 	// For all other cases, the default jump.
 	if (def_case)
 		curr->set_targets(UC_JMP, def_case);
 	else
 		curr->set_targets(UC_JMP, past_switch);
 	for (size_t i = 0; i < cases.size(); i++) {
-		Uc_switch_case_statement *stmt =
+		auto *stmt =
 		    static_cast<Uc_switch_case_statement *>(cases[i]);
 		Basic_block *block = case_blocks[i];
 		// Link cases (for fall-through).
@@ -949,7 +949,7 @@ void Uc_message_statement::gen(
 	if (!msgs)
 		return;
 	const std::vector<Uc_expression *> &exprs = msgs->get_exprs();
-	for (std::vector<Uc_expression *>::const_iterator it = exprs.begin();
+	for (auto it = exprs.begin();
 	        it != exprs.end(); ++it) {
 		Uc_expression *msg = *it;
 		// A known string?

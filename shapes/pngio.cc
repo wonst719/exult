@@ -136,7 +136,7 @@ int Import_png8(
 	png_read_update_info(png, info);
 	// Allocate pixel buffer.
 	rowbytes = png_get_rowbytes(png, info);
-	png_bytep image = new png_byte[height * rowbytes];
+	auto image = new png_byte[height * rowbytes];
 	pixels = image;         // Return ->.
 	png_bytep rowptr;       // Read in rows.
 	int r;
@@ -239,7 +239,7 @@ int Export_png8(
 		if (!dotransp_to_0)     // Normal?
 			png_write_row(png, rowptr);
 		else {
-			unsigned char *tbuf = new unsigned char[rowbytes];
+			auto *tbuf = new unsigned char[rowbytes];
 			for (int i = 0; i < rowbytes; i++)
 				tbuf[i] = (rowptr[i] + rot) % pal_size;
 			png_write_row(png, &tbuf[0]);
@@ -329,7 +329,7 @@ int Import_png32(
 	png_read_update_info(png, info);
 	// Allocate pixel buffer.
 	rowbytes = png_get_rowbytes(png, info);
-	png_bytep image = new png_byte[height * rowbytes];
+	auto image = new png_byte[height * rowbytes];
 	pixels = image;         // Return ->.
 	png_bytep rowptr = image;   // Read in rows.
 	int stride;         // Distance to next row.

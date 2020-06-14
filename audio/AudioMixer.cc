@@ -298,7 +298,7 @@ void AudioMixer::get2DPosition(sint32 instance_id, int &distance, int &angle) co
 
 void AudioMixer::sdlAudioCallback(void *userdata, Uint8 *stream, int len)
 {
-	AudioMixer *mixer = static_cast<AudioMixer *>(userdata);
+	auto *mixer = static_cast<AudioMixer *>(userdata);
 	// Unfortunately, SDL does not guarantee that stream will be aligned to
 	// the correct alignment for sint16.
 	// There is no real solution except using an aligned buffer and copying.
@@ -327,7 +327,7 @@ void AudioMixer::openMidiOutput()
 	if (midi) return;
 	if (!audio_ok) return;
 
-	MyMidiPlayer * new_driver = new MyMidiPlayer();
+	auto * new_driver = new MyMidiPlayer();
 
 	{
 		std::lock_guard<SDLAudioDevice> lock(*device);

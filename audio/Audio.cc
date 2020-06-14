@@ -86,7 +86,7 @@ int const *Audio::bg2si_songs = nullptr;
 // Tries to locate a sfx in the cache based on sfx num.
 SFX_cache_manager::SFX_cached *SFX_cache_manager::find_sfx(int id)
 {
-	cache_iterator found = cache.find(id);
+	auto found = cache.find(id);
 	if (found  == cache.end()) return nullptr;
 	return &(found->second);
 }
@@ -127,7 +127,7 @@ AudioSample *SFX_cache_manager::request(Flex *sfx_file, int id)
 // Empties the cache.
 void SFX_cache_manager::flush(AudioMixer *mixer)
 {
-	for (cache_iterator it = cache.begin() ; it != cache.end(); it = cache.begin())
+	for (auto it = cache.begin() ; it != cache.end(); it = cache.begin())
 	{
 		if (it->second.second) 
 		{
@@ -150,7 +150,7 @@ void SFX_cache_manager::garbage_collect()
 
 	std::multiset <int> sorted;
 
-	for (cache_iterator it = cache.begin(); it != cache.end(); ++it)
+	for (auto it = cache.begin(); it != cache.end(); ++it)
 	{
 		if (it->second.second && it->second.second->getRefCount() == 1) 
 			sorted.insert(it->second.first); 
@@ -161,7 +161,7 @@ void SFX_cache_manager::garbage_collect()
 	int threshold = INT_MAX;
 	int count = 0;
 
-	for ( std::multiset <int>::reverse_iterator it = sorted.rbegin( ) ; it != sorted.rend( ); ++it )
+	for ( auto it = sorted.rbegin( ) ; it != sorted.rend( ); ++it )
 	{
 		if (count < max_fixed)
 		{
@@ -181,7 +181,7 @@ void SFX_cache_manager::garbage_collect()
 	if (count <= max_fixed) 
 		return;
 
-	for (cache_iterator it = cache.begin(); it != cache.end(); ++it)
+	for (auto it = cache.begin(); it != cache.end(); ++it)
 	{
 		if (it->second.second)
 		{

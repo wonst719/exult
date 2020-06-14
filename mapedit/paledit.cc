@@ -131,7 +131,7 @@ void Palette_edit::select(
 void Palette_edit::load(
 ) {
 	// Free old.
-	for (vector<GdkRgbCmap *>::iterator it = palettes.begin();
+	for (auto it = palettes.begin();
 	        it != palettes.end(); ++it)
 		gdk_rgb_cmap_free(*it);
 	unsigned cnt = flex_info->size();
@@ -218,7 +218,7 @@ int Palette_edit::color_closed(
 ) {
 	ignore_unused_variable_warning(dlg, event);
 	cout << "color_closed" << endl;
-	Palette_edit *paled = static_cast<Palette_edit *>(data);
+	auto *paled = static_cast<Palette_edit *>(data);
 	paled->colorsel = nullptr;
 	return FALSE;
 }
@@ -232,7 +232,7 @@ void Palette_edit::color_cancel(
     gpointer data
 ) {
 	ignore_unused_variable_warning(dlg);
-	Palette_edit *paled = static_cast<Palette_edit *>(data);
+	auto *paled = static_cast<Palette_edit *>(data);
 	if (paled->colorsel)
 		gtk_widget_destroy(GTK_WIDGET(paled->colorsel));
 	paled->colorsel = nullptr;
@@ -247,14 +247,14 @@ void Palette_edit::color_okay(
     gpointer data
 ) {
 	ignore_unused_variable_warning(dlg);
-	Palette_edit *paled = static_cast<Palette_edit *>(data);
+	auto *paled = static_cast<Palette_edit *>(data);
 	if (paled->colorsel) {
 		gdouble rgb[4];
 		gtk_color_selection_get_color(
 		    GTK_COLOR_SELECTION(paled->colorsel->colorsel), rgb);
-		unsigned char r = static_cast<unsigned char>(rgb[0] * 256);
-		unsigned char g = static_cast<unsigned char>(rgb[1] * 256);
-		unsigned char b = static_cast<unsigned char>(rgb[2] * 256);
+		auto r = static_cast<unsigned char>(rgb[0] * 256);
+		auto g = static_cast<unsigned char>(rgb[1] * 256);
+		auto b = static_cast<unsigned char>(rgb[2] * 256);
 		if (paled->selected >= 0)
 			paled->palettes[paled->cur_pal]->colors[
 			    paled->selected] =
@@ -310,7 +310,7 @@ gint Palette_edit::configure(
     gpointer data           // ->Palette_edit
 ) {
 	ignore_unused_variable_warning(event);
-	Palette_edit *paled = static_cast<Palette_edit *>(data);
+	auto *paled = static_cast<Palette_edit *>(data);
 	if (!paled->width) {    // First time?
 		paled->drawgc = gdk_gc_new(widget->window);
 		// Foreground = yellow.
@@ -331,7 +331,7 @@ gint Palette_edit::expose(
     gpointer data           // ->Palette_edit.
 ) {
 	ignore_unused_variable_warning(widget);
-	Palette_edit *paled = static_cast<Palette_edit *>(data);
+	auto *paled = static_cast<Palette_edit *>(data);
 	paled->show(event->area.x, event->area.y, event->area.width,
 	            event->area.height);
 	return TRUE;
@@ -347,7 +347,7 @@ gint Palette_edit::mouse_press(
     gpointer data           // ->Palette_edit.
 ) {
 	ignore_unused_variable_warning(widget);
-	Palette_edit *paled = static_cast<Palette_edit *>(data);
+	auto *paled = static_cast<Palette_edit *>(data);
 
 	if (event->button == 4 || event->button == 5) // mouse wheel
 		return TRUE;
@@ -447,7 +447,7 @@ void Palette_edit::palnum_changed(
     GtkAdjustment *adj,     // The adjustment.
     gpointer data           // ->Shape_chooser.
 ) {
-	Palette_edit *ed = static_cast<Palette_edit *>(data);
+	auto *ed = static_cast<Palette_edit *>(data);
 	gint newnum = static_cast<gint>(adj->value);
 	ed->show_palette(newnum);
 	ed->render();
@@ -484,28 +484,28 @@ void
 on_insert_btn_clicked(GtkButton       *button,
                       gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	Palette_edit *ed = static_cast<Palette_edit *>(user_data);
+	auto *ed = static_cast<Palette_edit *>(user_data);
 	ed->add_palette();
 }
 void
 on_remove_btn_clicked(GtkButton       *button,
                       gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	Palette_edit *ed = static_cast<Palette_edit *>(user_data);
+	auto *ed = static_cast<Palette_edit *>(user_data);
 	ed->remove_palette();
 }
 void
 on_up_btn_clicked(GtkButton       *button,
                   gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	Palette_edit *ed = static_cast<Palette_edit *>(user_data);
+	auto *ed = static_cast<Palette_edit *>(user_data);
 	ed->move_palette(true);
 }
 void
 on_down_btn_clicked(GtkButton       *button,
                     gpointer         user_data) {
 	ignore_unused_variable_warning(button);
-	Palette_edit *ed = static_cast<Palette_edit *>(user_data);
+	auto *ed = static_cast<Palette_edit *>(user_data);
 	ed->move_palette(false);
 }
 
@@ -753,7 +753,7 @@ Palette_edit::Palette_edit(
 
 Palette_edit::~Palette_edit(
 ) {
-	for (vector<GdkRgbCmap *>::iterator it = palettes.begin();
+	for (auto it = palettes.begin();
 	        it != palettes.end(); ++it)
 		gdk_rgb_cmap_free(*it);
 	gtk_widget_destroy(get_widget());
@@ -876,7 +876,7 @@ void Palette_edit::export_palette(
     const char *fname,
     gpointer user_data
 ) {
-	Palette_edit *ed = static_cast<Palette_edit *>(user_data);
+	auto *ed = static_cast<Palette_edit *>(user_data);
 	if (U7exists(fname)) {
 		char *msg = g_strdup_printf(
 		                "'%s' already exists.  Overwrite?", fname);
@@ -913,7 +913,7 @@ void Palette_edit::import_palette(
     const char *fname,
     gpointer user_data
 ) {
-	Palette_edit *ed = static_cast<Palette_edit *>(user_data);
+	auto *ed = static_cast<Palette_edit *>(user_data);
 	char *msg = g_strdup_printf(
 	                "Overwrite current palette from '%s'?", fname);
 	int answer = Prompt(msg, "Yes", "No");

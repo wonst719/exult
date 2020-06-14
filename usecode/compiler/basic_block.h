@@ -149,7 +149,7 @@ public:
 #ifdef DEBUG    // For debugging.
 	void write_text() const {
 		std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(opcode) << ' ';
-		for (std::vector<char>::const_iterator it = params.begin();
+		for (auto it = params.begin();
 		        it != params.end(); ++it)
 			std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(static_cast<unsigned char>(*it)) << ' ';
 		if (is_jump)
@@ -239,7 +239,7 @@ public:
 	}
 	~Basic_block() {
 		predecessors.clear();
-		for (std::vector<Opcode *>::iterator it = instructions.begin();
+		for (auto it = instructions.begin();
 		        it != instructions.end(); ++it)
 			delete *it;
 		instructions.clear();
@@ -281,7 +281,7 @@ public:
 	}
 	int get_block_size() const {
 		int size = get_jump_size();
-		for (std::vector<Opcode *>::const_iterator it = instructions.begin();
+		for (auto it = instructions.begin();
 		        it != instructions.end(); ++it) {
 			const Opcode *op = *it;
 			size += op->get_size();
@@ -309,7 +309,7 @@ public:
 		return !jmp_op && taken && (taken->index == -1);
 	}
 	bool is_forced_target() const {
-		for (std::set<Basic_block *>::const_iterator it = predecessors.begin();
+		for (auto it = predecessors.begin();
 		        it != predecessors.end(); ++it) {
 			Basic_block *block = *it;
 			if (!block->is_jump_block() && !block->is_fallthrough_block())
@@ -395,7 +395,7 @@ public:
 		}
 	}
 	void link_predecessors() {
-		for (std::set<Basic_block *>::iterator it = predecessors.begin();
+		for (auto it = predecessors.begin();
 		        it != predecessors.end(); ++it) {
 			Basic_block *block = *it;
 			if (block->taken == this)
@@ -405,7 +405,7 @@ public:
 		}
 	}
 	void unlink_predecessors() {
-		for (std::set<Basic_block *>::iterator it = predecessors.begin();
+		for (auto it = predecessors.begin();
 		        it != predecessors.end(); ++it) {
 			Basic_block *block = *it;
 			if (block->taken == this) {
@@ -420,7 +420,7 @@ public:
 		predecessors.clear();
 	}
 	void link_through_block() {
-		for (std::set<Basic_block *>::iterator it = predecessors.begin();
+		for (auto it = predecessors.begin();
 		        it != predecessors.end(); ++it) {
 			Basic_block *pred = *it;
 			// Do NOT use set_taken, set_ntaken!
@@ -456,7 +456,7 @@ public:
 		safetaken->jmp_op = nullptr;
 	}
 	void write(std::vector<char> &out) {
-		for (std::vector<Opcode *>::iterator it = instructions.begin();
+		for (auto it = instructions.begin();
 		        it != instructions.end(); ++it) {
 			Opcode *op = *it;
 			op->write(out);
@@ -470,7 +470,7 @@ public:
 		          << '\t' << std::setw(8) << std::setfill('0') << taken
 		          << '\t' << std::setw(8) << std::setfill('0') << ntaken
 		          << '\t';
-		for (std::vector<Opcode *>::const_iterator it = instructions.begin();
+		for (auto it = instructions.begin();
 		        it != instructions.end(); ++it)
 			(*it)->write_text();
 		if (jmp_op)
@@ -500,7 +500,7 @@ inline void PopOpcode(Basic_block *dest) {
  */
 
 inline void WriteOp(Basic_block *dest, UsecodeOps val) {
-	Opcode *op = new Opcode(val);
+	auto *op = new Opcode(val);
 	dest->instructions.push_back(op);
 }
 

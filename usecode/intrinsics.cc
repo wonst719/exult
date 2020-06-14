@@ -1442,7 +1442,7 @@ USECODE_INTRINSIC(clone) {
 	if (npc) {
 		modified_map = true;
 		Game_object_shared new_npc = npc->clone();
-		Actor *clonednpc = static_cast<Actor *>(new_npc.get());
+		auto *clonednpc = static_cast<Actor *>(new_npc.get());
 		clonednpc->set_alignment(Actor::good);
 		clonednpc->set_schedule_type(Schedule::combat);
 		return Usecode_value(clonednpc);
@@ -1558,7 +1558,7 @@ USECODE_INTRINSIC(resurrect) {
 	Actor *actor = gwin->get_npc(npc_num);
 	if (actor) {
 		// Want to resurrect after returning.
-		Usecode_script *scr = new Usecode_script(body);
+		auto *scr = new Usecode_script(body);
 		(*scr) << Ucscript::resurrect;
 		scr->start();
 		modified_map = true;
@@ -1592,7 +1592,7 @@ USECODE_INTRINSIC(add_spell) {
 	// add_spell(spell# (0-71), ??, spellbook).
 	// Returns 0 if book already has that spell.
 	Game_object *obj = get_item(parms[2]);
-	Spellbook_object *book = dynamic_cast<Spellbook_object *>(obj);
+	auto *book = dynamic_cast<Spellbook_object *>(obj);
 	if (!book) {
 		cout << "Add_spell - Not a spellbook!" << endl;
 		return Usecode_value(0);
@@ -1605,7 +1605,7 @@ USECODE_INTRINSIC(remove_all_spells) {
 	// remove_all_spells(spellbook).
 	// Removes all spells from spellbook.
 	Game_object *obj = get_item(parms[0]);
-	Spellbook_object *book = dynamic_cast<Spellbook_object *>(obj);
+	auto *book = dynamic_cast<Spellbook_object *>(obj);
 	if (!book) {
 		cout << "remove_all_spells - Not a spellbook!" << endl;
 		return no_ret;
@@ -1619,7 +1619,7 @@ USECODE_INTRINSIC(has_spell) {
 	// has_spell(spellbook, spell#).
 	// Returns true if the spellbook has desired spell, false if not.
 	Game_object *obj = get_item(parms[0]);
-	Spellbook_object *book = dynamic_cast<Spellbook_object *>(obj);
+	auto *book = dynamic_cast<Spellbook_object *>(obj);
 	if (!book) {
 		cout << "has_spell - Not a spellbook!" << endl;
 		return Usecode_value(0);
@@ -1632,7 +1632,7 @@ USECODE_INTRINSIC(remove_spell) {
 	// remove_spell(spellbook, spell#).
 	// Returns true if the spellbook has desired spell, false if not.
 	Game_object *obj = get_item(parms[0]);
-	Spellbook_object *book = dynamic_cast<Spellbook_object *>(obj);
+	auto *book = dynamic_cast<Spellbook_object *>(obj);
 	if (!book) {
 		cout << "remove_spell - Not a spellbook!" << endl;
 		return Usecode_value(0);
@@ -1828,7 +1828,7 @@ USECODE_INTRINSIC(get_array_size) {
 USECODE_INTRINSIC(mark_virtue_stone) {
 	ignore_unused_variable_warning(num_parms);
 	Game_object *obj = get_item(parms[0]);
-	Virtue_stone_object *vs = dynamic_cast<Virtue_stone_object *>(obj);
+	auto *vs = dynamic_cast<Virtue_stone_object *>(obj);
 	if (vs) {
 		vs->set_target_pos(obj->get_outermost()->get_tile());
 		vs->set_target_map(obj->get_outermost()->get_map_num());
@@ -1839,7 +1839,7 @@ USECODE_INTRINSIC(mark_virtue_stone) {
 USECODE_INTRINSIC(recall_virtue_stone) {
 	Game_object *obj = get_item(parms[0]);
 	Game_object_shared keep;
-	Virtue_stone_object *vs = dynamic_cast<Virtue_stone_object *>(obj);
+	auto *vs = dynamic_cast<Virtue_stone_object *>(obj);
 	if (vs) {
 		gumpman->close_all_gumps();
 		// Pick it up if necessary.
@@ -1938,7 +1938,7 @@ USECODE_INTRINSIC(set_orrery) {
 	if (brit && state >= 0 && state <= 9) {
 		Game_object_vector planets; // Remove existing planets.
 		brit->find_nearby(planets, 988, 24, 0);
-		for (Game_object_vector::iterator it = planets.begin();
+		for (auto it = planets.begin();
 		        it != planets.end(); ++it) {
 			Game_object *p = *it;
 			if (p->get_framenum() <= 7) // Leave the sun.
@@ -1958,7 +1958,7 @@ USECODE_INTRINSIC(get_timer) {
 	ignore_unused_variable_warning(num_parms);
 	int tnum = parms[0].get_int_value();
 	int ret;
-	std::map<int, uint32>::iterator it = timers.find(tnum);
+	auto it = timers.find(tnum);
 	if (it != timers.end() && timers[tnum] > 0)
 		ret = gclock->get_total_hours() - timers[tnum];
 	else
@@ -2884,7 +2884,7 @@ USECODE_INTRINSIC(set_new_schedules) {
 	if (!actor) return no_ret;
 
 	int count = parms[1].is_array() ? parms[1].get_array_size() : 1;
-	Schedule_change *list = new Schedule_change[count];
+	auto *list = new Schedule_change[count];
 
 	if (!parms[1].is_array()) {
 		int time = parms[1].get_int_value();
@@ -3186,7 +3186,7 @@ USECODE_INTRINSIC(remove_from_area) {
 	Game_object_vector vec;     // Find objects.
 	Map_chunk::find_in_area(vec, area, shnum, frnum);
 	// Remove them.
-	for (Game_object_vector::iterator it = vec.begin();
+	for (auto it = vec.begin();
 	        it != vec.end(); ++it) {
 		Game_object *obj = *it;
 		gwin->add_dirty(obj);

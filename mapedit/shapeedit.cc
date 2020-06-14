@@ -260,7 +260,7 @@ C_EXPORT gboolean on_equip_shape_changed(
     gpointer data           // ->row info.
 ) {
 	ignore_unused_variable_warning(widget);
-	Equip_row_widgets *eq = static_cast<Equip_row_widgets *>(data);
+	auto *eq = static_cast<Equip_row_widgets *>(data);
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->show_equip_shape(eq);
 	int shape = gtk_spin_button_get_value_as_int(
@@ -281,7 +281,7 @@ static void Equip_shape_dropped(
     void *udata         // ->row.
 ) {
 	ignore_unused_variable_warning(frame);
-	Equip_row_widgets *eq = static_cast<Equip_row_widgets *>(udata);
+	auto *eq = static_cast<Equip_row_widgets *>(udata);
 	if (file == U7_SHAPE_SHAPES && shape >= 0 && shape < c_max_shapes) {
 		// Set shape #.
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(eq->shape), shape);
@@ -2694,7 +2694,7 @@ static void Explosion_shape_dropped(
 void ExultStudio::set_shape_notebook_frame(
     int frnum           // Frame # to set.
 ) {
-	Shape_file_info *file_info = static_cast<Shape_file_info *>(
+	auto *file_info = static_cast<Shape_file_info *>(
 	                             g_object_get_data(G_OBJECT(shapewin), "file_info"));
 	int shnum = get_num_entry("shinfo_shape");
 	Vga_file *ifile = file_info->get_ifile();
@@ -2709,7 +2709,7 @@ void ExultStudio::set_shape_notebook_frame(
 				shape->get_height());
 	}
 
-	const Shape_info *info = static_cast<const Shape_info *>(
+	const auto *info = static_cast<const Shape_info *>(
 	                   gtk_object_get_user_data(GTK_OBJECT(shapewin)));
 	if (!info)
 		return;
@@ -3161,7 +3161,7 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Effective_hp_info *first = nullptr;
-		for (std::vector<Effective_hp_info>::const_iterator it = hpinf.begin();
+		for (auto it = hpinf.begin();
 		        it != hpinf.end(); ++it) {
 			const Effective_hp_info &hps = *it;
 			if (hps.is_invalid())
@@ -3199,7 +3199,7 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Light_info *first = nullptr;
-		for (std::vector<Light_info>::const_iterator it = lightinf.begin();
+		for (auto it = lightinf.begin();
 		        it != lightinf.end(); ++it) {
 			const Light_info &light = *it;
 			if (light.is_invalid())
@@ -3235,7 +3235,7 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Warmth_info *first = nullptr;
-		for (std::vector<Warmth_info>::const_iterator it = warminf.begin();
+		for (auto it = warminf.begin();
 		        it != warminf.end(); ++it) {
 			const Warmth_info &warm = *it;
 			if (warm.is_invalid())
@@ -3271,7 +3271,7 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Content_rules *first = nullptr;
-		for (std::vector<Content_rules>::const_iterator it = cntinf.begin();
+		for (auto it = cntinf.begin();
 		        it != cntinf.end(); ++it) {
 			const Content_rules &cntr = *it;
 			if (cntr.is_invalid())
@@ -3307,7 +3307,7 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Frame_flags_info *first = nullptr;
-		for (std::vector<Frame_flags_info>::const_iterator it = frflaginf.begin();
+		for (auto it = frflaginf.begin();
 		        it != frflaginf.end(); ++it) {
 			const Frame_flags_info &frflag = *it;
 			if (frflag.is_invalid())
@@ -3346,7 +3346,7 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Frame_usecode_info *first = nullptr;
-		for (std::vector<Frame_usecode_info>::const_iterator it = frucinf.begin();
+		for (auto it = frucinf.begin();
 		        it != frucinf.end(); ++it) {
 			const Frame_usecode_info &frucfun = *it;
 			if (frucfun.is_invalid())
@@ -3398,7 +3398,7 @@ void ExultStudio::init_shape_notebook(
 		const Frame_name_info *first = nullptr;
 		codepageStr locsname(get_text_entry("shinfo_name"));
 		const char *sname = locsname.get_str();
-		for (std::vector<Frame_name_info>::const_iterator it = nmvec.begin();
+		for (auto it = nmvec.begin();
 		        it != nmvec.end(); ++it) {
 			const Frame_name_info &nmit = *it;
 			if (nmit.is_invalid())
@@ -3456,7 +3456,7 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Paperdoll_item *first = nullptr;
-		for (std::vector<Paperdoll_item>::const_iterator it = dollinf.begin();
+		for (auto it = dollinf.begin();
 		        it != dollinf.end(); ++it) {
 			const Paperdoll_item &doll = *it;
 			if (doll.is_invalid())
@@ -3625,7 +3625,7 @@ struct Update_paperdolls {
 };
 
 int ExultStudio::find_misc_name(const char *id) const {
-	map<string, int>::const_iterator it = misc_name_map.find(id);
+	auto it = misc_name_map.find(id);
 	if (it != misc_name_map.end())
 		return it->second;
 	return -1;
@@ -4043,7 +4043,7 @@ void ExultStudio::save_shape_notebook(
 		info.set_animation_info(false);
 	else {
 		Animation_info *aniinf = info.set_animation_info(true);
-		Animation_info::AniType type =
+		auto type =
 		    static_cast<Animation_info::AniType>(get_optmenu("shinfo_animation_type"));
 		aniinf->set_type(type);
 		int count = get_spin("shinfo_animation_frcount");
@@ -4130,7 +4130,7 @@ void ExultStudio::save_shape_notebook(
 	}
 
 	shape_info_modified = true;
-	Shape_chooser *shpchoose = dynamic_cast<Shape_chooser *>(browser);
+	auto *shpchoose = dynamic_cast<Shape_chooser *>(browser);
 	if (shpchoose)
 		shpchoose->update_statusbar();
 }
@@ -4531,9 +4531,9 @@ void ExultStudio::save_shape_window(
 ) {
 	int shnum = get_num_entry("shinfo_shape");
 	int frnum = get_num_entry("shinfo_frame");
-	Shape_info *info = static_cast<Shape_info *>(
+	auto *info = static_cast<Shape_info *>(
 	                   gtk_object_get_user_data(GTK_OBJECT(shapewin)));
-	Shape_file_info *file_info = static_cast<Shape_file_info *>(
+	auto *file_info = static_cast<Shape_file_info *>(
 	                             g_object_get_data(G_OBJECT(shapewin), "file_info"));
 	Vga_file *ifile = file_info->get_ifile();
 	if (info) {         // If 'shapes.vga', get name.

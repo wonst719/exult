@@ -183,7 +183,7 @@ int ExultStudio::save_barge_window(
 ) {
 	cout << "In save_barge_window()" << endl;
 	// Get barge (null if creating new).
-	Barge_object *addr = static_cast<Barge_object*>(gtk_object_get_user_data(GTK_OBJECT(bargewin)));
+	auto *addr = static_cast<Barge_object*>(gtk_object_get_user_data(GTK_OBJECT(bargewin)));
 	int tx = -1;
 	int ty = -1;
 	int tz = -1;  // +++++For now.

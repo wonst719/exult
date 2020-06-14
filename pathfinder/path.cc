@@ -125,7 +125,7 @@ public:
 		while ((each = each->parent) != nullptr)
 			cnt++;
 		pathlen = cnt - 1;  // Don't want starting tile.
-		Tile_coord *result = new Tile_coord[pathlen];
+		auto *result = new Tile_coord[pathlen];
 		each = this;
 		for (int i = pathlen - 1; i >= 0; i--) {
 			result[i] = each->tile;
@@ -259,7 +259,7 @@ public:
 		dereferences the Search_node* stored). This might cause an endless
 		loop.
 		*/
-		for (Lookup_set::iterator X = lookup.begin(); X != lookup.end();) {
+		for (auto X = lookup.begin(); X != lookup.end();) {
 			Search_node *sn = *X;
 			++X;
 			delete sn; // only delete this _after_ iterating
@@ -324,7 +324,7 @@ public:
 	// Find node for given tile.
 	Search_node *find(const Tile_coord& tile) {
 		Search_node key(tile);
-		std::unordered_set<Search_node *, Hash_node, Equal_nodes>::iterator it =
+		auto it =
 		    lookup.find(&key);
 		if (it != lookup.end())
 			return *it;

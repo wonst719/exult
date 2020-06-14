@@ -134,7 +134,7 @@ public:
 
 void Bookmark_button::set(
 ) {
-	Spellbook_gump *sgump = static_cast<Spellbook_gump *>(parent);
+	auto *sgump = static_cast<Spellbook_gump *>(parent);
 	Rectangle &object_area = sgump->object_area;
 	int spwidth = sgump->spwidth;   // Spell width.
 	Spellbook_object *book = sgump->book;
@@ -160,7 +160,7 @@ bool Bookmark_button::activate(
     int button
 ) {
 	if (button != 1) return false;
-	Spellbook_gump *sgump = static_cast<Spellbook_gump *>(parent);
+	auto *sgump = static_cast<Spellbook_gump *>(parent);
 	int bmpage = sgump->book->bookmark / 8; // Bookmark's page.
 	int delta = sign(bmpage - sgump->page);
 	// On a different, valid page?

@@ -59,13 +59,13 @@ public:
 	void write_info(Exult_Game game);   // Write them back out.
 	Shape *new_shape(int shapenum) override;
 	Shape_info &get_info(int shapenum) {
-		std::map<int, Shape_info>::iterator it = info.find(shapenum);
+		auto it = info.find(shapenum);
 		if (it != info.end())
 			return (*it).second;
 		return zinfo;
 	}
 	bool has_info(int shapenum) {
-		std::map<int, Shape_info>::iterator it = info.find(shapenum);
+		auto it = info.find(shapenum);
 		return it != info.end();
 	}
 	void set_info(int shapenum, const Shape_info &inf) {

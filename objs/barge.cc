@@ -442,7 +442,7 @@ void Barge_object::turn_right(
 	dir = (dir + 1) % 4;    // Increment direction.
 	int cnt = objects.size();   // We'll move each object.
 	// But 1st, remove & save new pos.
-	Tile_coord *positions = new Tile_coord[cnt];
+	auto *positions = new Tile_coord[cnt];
 	for (int i = 0; i < cnt; i++) {
 		Game_object *obj = get_object(i);
 		int frame = obj->get_framenum();
@@ -474,7 +474,7 @@ void Barge_object::turn_left(
 	dir = (dir + 3) % 4;    // Increment direction.
 	int cnt = objects.size();   // We'll move each object.
 	// But 1st, remove & save new pos.
-	Tile_coord *positions = new Tile_coord[cnt];
+	auto *positions = new Tile_coord[cnt];
 	for (int i = 0; i < cnt; i++) {
 		Game_object *obj = get_object(i);
 		int frame = obj->get_framenum();
@@ -503,7 +503,7 @@ void Barge_object::turn_around(
 	dir = (dir + 2) % 4;    // Increment direction.
 	int cnt = objects.size();   // We'll move each object.
 	// But 1st, remove & save new pos.
-	Tile_coord *positions = new Tile_coord[cnt];
+	auto *positions = new Tile_coord[cnt];
 	for (int i = 0; i < cnt; i++) {
 		Game_object *obj = get_object(i);
 		int frame = obj->get_framenum();
@@ -628,7 +628,7 @@ void Barge_object::move(
 	int dz = newlift - old.tz;
 	int cnt = objects.size();   // We'll move each object.
 	// But 1st, remove & save new pos.
-	Tile_coord *positions = new Tile_coord[cnt];
+	auto *positions = new Tile_coord[cnt];
 	int i;
 	for (i = 0; i < cnt; i++) {
 		Game_object *obj = get_object(i);

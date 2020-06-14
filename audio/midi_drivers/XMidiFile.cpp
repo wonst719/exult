@@ -545,7 +545,7 @@ void XMidiFile::CreateNewEvent (int time)
 
 	if (time < 0 || list->time > time)
 	{
-		XMidiEvent *event = new XMidiEvent{};
+		auto *event = new XMidiEvent{};
 		event->next = list;
 		list = current = event;
 		return;
@@ -558,7 +558,7 @@ void XMidiFile::CreateNewEvent (int time)
 	{
 		if (current->next->time > time)
 		{
-			XMidiEvent *event = new XMidiEvent{};
+			auto *event = new XMidiEvent{};
 
 			event->next = current->next;
 			current->next = event;

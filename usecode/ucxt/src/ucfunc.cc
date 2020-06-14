@@ -139,8 +139,8 @@ bool UCFunc::output_ucs(ostream &o, const FuncMap &funcmap, const map<unsigned i
 
 	if (!_externs.empty()) tab_indent(indent, o) << "// externs" << endl;
 	// output the 'externs'
-	for (vector<unsigned int>::iterator e = _externs.begin(); e != _externs.end(); ++e) {
-		FuncMap::const_iterator fmp = funcmap.find(*e);
+	for (auto e = _externs.begin(); e != _externs.end(); ++e) {
+		auto fmp = funcmap.find(*e);
 		output_ucs_funcname(tab_indent(indent, o) << "extern ", funcmap, *e, fmp->second.num_args, symtbl) << ';' << endl;
 	}
 
@@ -180,7 +180,7 @@ ostream &UCFunc::output_ucs_funcname(ostream &o, const FuncMap &funcmap,
                                      unsigned int funcid, unsigned int numargs,
                                      Usecode_symbol_table *symtbl) {
 	ignore_unused_variable_warning(symtbl);
-	FuncMap::const_iterator fmp = funcmap.find(funcid);
+	auto fmp = funcmap.find(funcid);
 	// do we return a variable
 	if (fmp->second.return_var) o << VARNAME << ' ';
 	else o << NORETURN << ' ';
@@ -230,14 +230,14 @@ ostream &UCFunc::output_ucs_funcname(ostream &o, const FuncMap &funcmap, Usecode
 
 void UCFunc::output_ucs_data(ostream &o, const FuncMap &funcmap, const map<unsigned int, string> &intrinsics, const UCOptions &options, unsigned int indent, Usecode_symbol_table *symtbl) {
 	vector<unsigned int> labeltmp(1);
-	for (vector<GotoSet>::iterator i = gotoset.begin(); i != gotoset.end(); ++i) {
+	for (auto i = gotoset.begin(); i != gotoset.end(); ++i) {
 		// we don't want to output the first "jump" (the start of the function)
 		if (i != gotoset.begin()) {
 			labeltmp[0] = i->offset();
 			tab_indent(indent - 1, o) << demunge_ocstring(*this, funcmap, "label%f*_%1:", intrinsics, UCc(labeltmp), true, symtbl) << endl;
 		}
 
-		for (GotoSet::iterator j = (*i)().begin(); j != (*i)().end(); ++j) {
+		for (auto j = (*i)().begin(); j != (*i)().end(); ++j) {
 			const UCc &ucc = *(j->first);
 
 			if (options.uselesscomment)
@@ -274,7 +274,7 @@ void UCFunc::output_ucs_node(ostream &o, const FuncMap &funcmap, UCNode *ucn, co
 		output_asm_opcode(tab_indent(indent, o), funcmap, opcode_table_data, intrinsics, *(ucn->ucc), options, symtbl);
 
 	if (!ucn->nodelist.empty())
-		for (vector<UCNode *>::iterator i = ucn->nodelist.begin(); i != ucn->nodelist.end(); ++i) {
+		for (auto i = ucn->nodelist.begin(); i != ucn->nodelist.end(); ++i) {
 			//tab_indent(indent, o);
 			output_ucs_node(o, funcmap, *i, intrinsics, indent + 1, options, symtbl);
 		}
@@ -285,7 +285,7 @@ void UCFunc::output_ucs_node(ostream &o, const FuncMap &funcmap, UCNode *ucn, co
 
 /* Just a quick function to remove all the ucc structured flagged as removable */
 inline void gc_gotoset(vector<GotoSet> &gotoset) {
-	for (vector<GotoSet>::iterator i = gotoset.begin(); i != gotoset.end(); ++i) {
+	for (auto i = gotoset.begin(); i != gotoset.end(); ++i) {
 		i->gc();
 #ifdef DEBUG_GOTOSET
 		cout << "----" << endl;
@@ -294,7 +294,7 @@ inline void gc_gotoset(vector<GotoSet> &gotoset) {
 }
 
 void UCFunc::parse_ucs(const FuncMap &funcmap, const map<unsigned int, string> &intrinsics, const UCOptions &options, Usecode_symbol_table *symtbl) {
-	for (vector<UCc>::iterator i = _opcodes.begin(); i != _opcodes.end(); ++i)
+	for (auto i = _opcodes.begin(); i != _opcodes.end(); ++i)
 		node.nodelist.push_back(new UCNode(&(*i)));
 
 	parse_ucs_pass1(node.nodelist);
@@ -325,7 +325,7 @@ void UCFunc::parse_ucs_pass1(vector<UCNode *> &nodes) {
 	for (unsigned int i = 0; i < nodes.size(); i++) {
 		if (nodes[i]->ucc != nullptr) {
 			unsigned int isjump = 0;
-			for (vector<pair<unsigned int, unsigned int> >::iterator op = opcode_jumps.begin(); op != opcode_jumps.end(); ++op)
+			for (auto op = opcode_jumps.begin(); op != opcode_jumps.end(); ++op)
 				if (op->first == nodes[i]->ucc->_id) {
 					isjump = op->second;
 					break;
@@ -355,7 +355,7 @@ void UCFunc::parse_ucs_pass1(vector<UCNode *> &nodes) {
    that are parameters are flagged for removal (Gotoset::()[i]->second=true) from
    the original GotoSet. */
 void UCFunc::parse_ucs_pass2(vector<GotoSet> &gotoset, const FuncMap &funcmap, const map<unsigned int, string> &intrinsics, Usecode_symbol_table *symtbl) {
-	for (vector<GotoSet>::iterator i = gotoset.begin(); i != gotoset.end(); ++i) {
+	for (auto i = gotoset.begin(); i != gotoset.end(); ++i) {
 		parse_ucs_pass2a((*i)().rbegin(), (*i)(), 0, funcmap, intrinsics, symtbl);
 	}
 }
@@ -426,7 +426,7 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 							assert(cls);
 							int method = cls->get_method_id(current->first->_params_parsed[0]);
 							assert(method >= 0);
-							FuncMap::const_iterator fmp = funcmap.find(method);
+							auto fmp = funcmap.find(method);
 							assert(fmp != funcmap.end());
 							num_args = fmp->second.num_args;
 
@@ -451,7 +451,7 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 
 					} else if (opcode_table_data[current->first->_id].flag_function_effect) {
 						assert(!current->first->_params_parsed.empty());
-						FuncMap::const_iterator fmp = funcmap.find(current->first->_params_parsed[0]);
+						auto fmp = funcmap.find(current->first->_params_parsed[0]);
 						assert(fmp != funcmap.end());
 #ifdef DEBUG_PARSE2
 						cout << "CALL:     " << fmp->second.funcid << '\t' << fmp->second.num_args << endl;
@@ -461,7 +461,7 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 					} else if (opcode_table_data[current->first->_id].flag_call_effect) {
 						assert(!current->first->_params_parsed.empty());
 						assert(_externs.size() >= current->first->_params_parsed[0]);
-						FuncMap::const_iterator fmp = funcmap.find(_externs[current->first->_params_parsed[0]]);
+						auto fmp = funcmap.find(_externs[current->first->_params_parsed[0]]);
 						assert(fmp != funcmap.end());
 #ifdef DEBUG_PARSE2
 						cout << "CALL EXTERN:" << fmp->second.funcid << '\t' << fmp->second.num_args << endl;
@@ -479,10 +479,10 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 					if (num_args != 0) {
 						/* save the 'current' value as the return value and increment it so it's
 						   pointing at the 'next' current value */
-						vector<pair<UCc *, bool> >::reverse_iterator ret(current);
+						auto ret(current);
 
 						ret->first->_popped = parse_ucs_pass2a(++current, vec, num_args, funcmap, intrinsics, symtbl);
-						unsigned nargs = static_cast<unsigned>(num_args);
+						auto nargs = static_cast<unsigned>(num_args);
 						if (num_args < 0 || nargs <= ret->first->_popped.size()) {
 							ret->first->_missing_args = 0;
 						} else {
@@ -530,7 +530,7 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 						unsigned int offset = current->first->_params_parsed[1];
 						Usecode_class_symbol *cls = symtbl->get_class(offset);
 						int method = cls->get_method_id(current->first->_params_parsed[0]);
-						FuncMap::const_iterator fmp = funcmap.find(method);
+						auto fmp = funcmap.find(method);
 						assert(fmp != funcmap.end());
 						if (fmp->second.return_var) {
 #ifdef DEBUG_PARSE2
@@ -545,7 +545,7 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 				}
 				// if it's a call to a function that returns a variable...
 				else if (opcode_table_data[current->first->_id].flag_function_effect) {
-					FuncMap::const_iterator fmp = funcmap.find(current->first->_params_parsed[0]);
+					auto fmp = funcmap.find(current->first->_params_parsed[0]);
 					assert(fmp != funcmap.end());
 
 					if (fmp->second.return_var) {
@@ -560,7 +560,7 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 				}
 				// if it's a call to an extern function that returns a variable...
 				else if (opcode_table_data[current->first->_id].flag_call_effect) {
-					FuncMap::const_iterator fmp = funcmap.find(_externs[current->first->_params_parsed[0]]);
+					auto fmp = funcmap.find(_externs[current->first->_params_parsed[0]]);
 					assert(fmp != funcmap.end());
 
 					if (fmp->second.return_var) {
@@ -625,7 +625,7 @@ inline int calc32reloffset(const UCc &op, unsigned int param) {
 void ucc_parse_parambytes(UCc &ucop, const UCOpcodeData &otd) {
 	unsigned int first = 0;
 
-	for (vector<pair<unsigned int, bool> >::const_iterator s = otd.param_sizes.begin(); s != otd.param_sizes.end(); ++s) {
+	for (auto s = otd.param_sizes.begin(); s != otd.param_sizes.end(); ++s) {
 		//cout << ucop._id << '\t' << ucop._params.size() << endl;
 
 		assert(first < ucop._params.size());
@@ -639,19 +639,19 @@ void ucc_parse_parambytes(UCc &ucop, const UCOpcodeData &otd) {
 			ucop._params_parsed.push_back(static_cast<unsigned int>(ucop._params[first++]));
 		else if (ssize == 2)
 			if (offset_munge) {
-				unsigned int calcvar = static_cast<unsigned int>(ucop._params[first++]);
+				auto calcvar = static_cast<unsigned int>(ucop._params[first++]);
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 8);
 				unsigned int reloffset = calc16reloffset(ucop, calcvar);
 				ucop._params_parsed.push_back(reloffset);
 				ucop._jump_offsets.push_back(reloffset);
 			} else {
-				unsigned int calcvar = static_cast<unsigned int>(ucop._params[first++]);
+				auto calcvar = static_cast<unsigned int>(ucop._params[first++]);
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 8);
 				ucop._params_parsed.push_back(calcvar);
 			}
 		else if (ssize == 4)
 			if (offset_munge) {
-				unsigned int calcvar = static_cast<unsigned int>(ucop._params[first++]);
+				auto calcvar = static_cast<unsigned int>(ucop._params[first++]);
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 8);
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 16);
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 24);
@@ -659,7 +659,7 @@ void ucc_parse_parambytes(UCc &ucop, const UCOpcodeData &otd) {
 				ucop._params_parsed.push_back(reloffset);
 				ucop._jump_offsets.push_back(reloffset);
 			} else {
-				unsigned int calcvar = static_cast<unsigned int>(ucop._params[first++]);
+				auto calcvar = static_cast<unsigned int>(ucop._params[first++]);
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 8);
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 16);
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 24);
@@ -693,10 +693,10 @@ bool UCFunc::output_asm(ostream &o, const FuncMap &funcmap, const map<unsigned i
 	o << "\t.localc      " << std::setw(4) << _num_locals << "H" << endl;
 	o << "\t.externsize  " << std::setw(4) << _externs.size() << "H" << endl;
 
-	for (std::vector<unsigned int>::iterator i = _externs.begin(); i != _externs.end(); ++i)
+	for (auto i = _externs.begin(); i != _externs.end(); ++i)
 		o << '\t' << "  .extern    " << std::setw(4) << *i << "H" << endl;
 
-	for (vector<UCc>::iterator op = _opcodes.begin(); op != _opcodes.end(); ++op)
+	for (auto op = _opcodes.begin(); op != _opcodes.end(); ++op)
 		output_asm_opcode(o, funcmap, opcode_table_data, intrinsics, *op, options, symtbl);
 
 	return true;
@@ -946,7 +946,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 					assert(params.size() >= t);
 					assert(t != 0);
 
-					FuncMap::const_iterator fmp = funcmap.find(params[t - 1]);
+					auto fmp = funcmap.find(params[t - 1]);
 					funcname = fmp->second.funcname;
 					funcid = params[t - 1];
 				} else if (c == 'm') {
@@ -970,7 +970,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 
 					funcid = cls->get_method_id(params[t - 1]);
 					assert(funcid >= 0);
-					FuncMap::const_iterator fmp = funcmap.find(funcid);
+					auto fmp = funcmap.find(funcid);
 					assert(fmp != funcmap.end());
 					funcname = cls->get_name();
 					funcname += "::";
@@ -982,7 +982,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 					assert(t != 0);
 					assert(!params.empty());
 
-					FuncMap::const_iterator fmp = funcmap.find(ucf._externs[params[t - 1]]);
+					auto fmp = funcmap.find(ucf._externs[params[t - 1]]);
 					funcname = fmp->second.funcname;
 					funcid = ucf._externs[params[t - 1]];
 				}
@@ -1005,7 +1005,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 				// followed by plus sign, start on the parameter specified by the
 				// following digit.
 				if ((t == 0) && (c == ',' || c == '+')) {
-					vector<UCc *>::const_iterator it = op._popped.begin();
+					auto it = op._popped.begin();
 					if (c == '+') {
 						i++;
 						c = asmstr[i];

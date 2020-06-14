@@ -56,7 +56,7 @@ Uc_class::Uc_class(
 ) : name(nm), scope(&base->scope), num_vars(base->num_vars),
 	methods(base->methods), base_class(base) {
 	num = ++last_num;
-	for (vector<Uc_function *>::iterator it = methods.begin();
+	for (auto it = methods.begin();
 	        it != methods.end(); ++it)
 		(*it)->set_inherited();
 }
@@ -109,7 +109,7 @@ Uc_var_symbol *Uc_class::add_alias(
 	if (scope.is_dup(nm))
 		return nullptr;
 	// Create & assign slot.
-	Uc_alias_symbol *alias = new Uc_alias_symbol(nm, var);
+	auto *alias = new Uc_alias_symbol(nm, var);
 	scope.add(alias);
 	return alias;
 }
@@ -128,7 +128,7 @@ Uc_var_symbol *Uc_class::add_alias(
 	if (scope.is_dup(nm))
 		return nullptr;
 	// Create & assign slot.
-	Uc_var_symbol *var = static_cast<Uc_var_symbol *>(v->get_sym());
+	auto *var = static_cast<Uc_var_symbol *>(v->get_sym());
 	Uc_alias_symbol *alias = new Uc_struct_alias_symbol(nm, var, struc);
 	scope.add(alias);
 	return alias;
@@ -143,7 +143,7 @@ void Uc_class::add_method(
 ) {
 	// If this is a duplicate inherited function,
 	// or an externed class method, override it.
-	for (vector<Uc_function *>::iterator it = methods.begin();
+	for (auto it = methods.begin();
 	        it != methods.end(); ++it) {
 		Uc_function *method = *it;
 		if (!strcmp(m->get_name(), method->get_name())) {
@@ -184,7 +184,7 @@ void Uc_class::gen(
 
 Usecode_symbol *Uc_class::create_sym(
 ) {
-	Usecode_class_symbol *cs = new Usecode_class_symbol(name.c_str(),
+	auto *cs = new Usecode_class_symbol(name.c_str(),
 	        Usecode_symbol::class_scope, num, num_vars);
 	vector<Uc_function *>::iterator it;
 	for (it = methods.begin(); it != methods.end(); ++it) {

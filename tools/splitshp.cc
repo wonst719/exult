@@ -134,7 +134,7 @@ void split_shape(char *filename) {
 		int num_frames = file_size / 64;
 		fseek(shpfile, 0, SEEK_SET);        /* Return to start of file */
 		cout << "num_frames = " << num_frames << endl;
-		uint8 *data = new uint8[64];
+		auto *data = new uint8[64];
 		for (int i = 0; i < num_frames; i++) {
 			char *framename = framefilename(filename, i);
 			cout << "writing " << framename << "..." << endl;
@@ -173,7 +173,7 @@ void split_shape(char *filename) {
 			write4(framefile, datalen + 8);
 			write4(framefile, 8);
 
-			uint8 *data = new uint8[datalen];
+			auto *data = new uint8[datalen];
 			size_t err = fread(data, 1, datalen, shpfile);
 			assert(err == datalen);
 			fwrite(data, 1, datalen, framefile);
@@ -215,7 +215,7 @@ void merge_frames(char *shapefile, char **framefiles, int numframefiles) {
 			fseek(framefile, 0, SEEK_SET);
 			fseek(shpfile, 64 * i, SEEK_SET);
 
-			uint8 *data = new uint8[64];
+			auto *data = new uint8[64];
 
 			size_t err = fread(data, 1, 64, framefile);
 			assert(err == 64);
@@ -239,7 +239,7 @@ void merge_frames(char *shapefile, char **framefiles, int numframefiles) {
 				frame_size = shape_size - hdr_size;
 			}
 
-			uint8 *data = new uint8[frame_size];
+			auto *data = new uint8[frame_size];
 			fseek(framefile, hdr_size, SEEK_SET);
 			size_t err = fread(data, 1, frame_size, framefile);
 			assert(err == frame_size);

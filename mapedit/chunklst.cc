@@ -319,7 +319,7 @@ gint Chunk_chooser::configure(
     gpointer data           // ->Chunk_chooser
 ) {
 	ignore_unused_variable_warning(widget);
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(data);
+	auto *chooser = static_cast<Chunk_chooser *>(data);
 	chooser->Shape_draw::configure();
 	chooser->render();
 	// Set new scroll amounts.
@@ -351,7 +351,7 @@ gint Chunk_chooser::expose(
     gpointer data           // ->Chunk_chooser.
 ) {
 	ignore_unused_variable_warning(widget);
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(data);
+	auto *chooser = static_cast<Chunk_chooser *>(data);
 	chooser->show(event->area.x, event->area.y, event->area.width,
 	              event->area.height);
 	return TRUE;
@@ -421,7 +421,7 @@ gint Chunk_chooser::mouse_press(
     gpointer data           // ->Chunk_chooser.
 ) {
 	ignore_unused_variable_warning(widget);
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(data);
+	auto *chooser = static_cast<Chunk_chooser *>(data);
 
 	if (event->button == 4) {
 		chooser->scroll(true);
@@ -475,7 +475,7 @@ static gint Mouse_release(
     gpointer data           // ->Shape_chooser.
 ) {
 	ignore_unused_variable_warning(widget, event);
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(data);
+	auto *chooser = static_cast<Chunk_chooser *>(data);
 	chooser->mouse_up();
 	return true;
 }
@@ -494,7 +494,7 @@ void Chunk_chooser::drag_data_get(
 ) {
 	ignore_unused_variable_warning(widget, context, time);
 	cout << "In DRAG_DATA_GET" << endl;
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(data);
+	auto *chooser = static_cast<Chunk_chooser *>(data);
 	if (chooser->selected < 0 || info != U7_TARGET_CHUNKID)
 		return;         // Not sure about this.
 	guchar buf[30];
@@ -502,7 +502,7 @@ void Chunk_chooser::drag_data_get(
 	int len = Store_u7_chunkid(buf, shinfo.num);
 	cout << "Setting selection data (" << shinfo.num << ')' << endl;
 #ifdef _WIN32
-	windragdata *wdata = reinterpret_cast<windragdata*>(seldata);
+	auto *wdata = reinterpret_cast<windragdata*>(seldata);
 	wdata->assign(info, len, buf);
 #else
 	// Make us owner of xdndselection.
@@ -540,7 +540,7 @@ gint Chunk_chooser::drag_begin(
 ) {
 	ignore_unused_variable_warning(widget, context);
 	cout << "In DRAG_BEGIN" << endl;
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(data);
+	auto *chooser = static_cast<Chunk_chooser *>(data);
 	if (chooser->selected < 0)
 		return FALSE;       // ++++Display a halt bitmap.
 	return TRUE;
@@ -561,7 +561,7 @@ void Chunk_chooser::drag_data_received(
     gpointer udata          // Should point to Shape_draw.
 ) {
 	ignore_unused_variable_warning(widget, context, x, y, info, time);
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(udata);
+	auto *chooser = static_cast<Chunk_chooser *>(udata);
 	cout << "Chunk drag_data_received" << endl;
 	if (seldata->type == gdk_atom_intern(U7_TARGET_CHUNKID_NAME, 0) &&
 	        seldata->format == 8 && seldata->length > 0) {
@@ -636,7 +636,7 @@ void Chunk_chooser::scrolled(
     GtkAdjustment *adj,     // The adjustment.
     gpointer data           // ->Chunk_chooser.
 ) {
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(data);
+	auto *chooser = static_cast<Chunk_chooser *>(data);
 	cout << "Scrolled to " << adj->value << '\n';
 	gint newindex = static_cast<gint>(adj->value);
 	chooser->scroll(newindex);
@@ -676,7 +676,7 @@ static void on_insert_empty(
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(udata);
+	auto *chooser = static_cast<Chunk_chooser *>(udata);
 	chooser->insert(false);
 }
 
@@ -685,7 +685,7 @@ static void on_insert_dup(
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(udata);
+	auto *chooser = static_cast<Chunk_chooser *>(udata);
 	chooser->insert(true);
 }
 static void on_delete(
@@ -693,7 +693,7 @@ static void on_delete(
     gpointer udata
 ) {
 	ignore_unused_variable_warning(item);
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(udata);
+	auto *chooser = static_cast<Chunk_chooser *>(udata);
 	chooser->del();
 }
 
@@ -962,8 +962,8 @@ void Chunk_chooser::locate_response(
 		to_del = -1;
 		return;         // Not the current selection.
 	}
-	short cx = static_cast<short>(Read2(ptr));  // Get chunk found.
-	short cy = static_cast<short>(Read2(ptr));
+	auto cx = static_cast<short>(Read2(ptr));  // Get chunk found.
+	auto cy = static_cast<short>(Read2(ptr));
 	ptr++;              // Skip upwards flag.
 	if (!*ptr) {
 		if (to_del >= 0 && to_del == tnum) {
@@ -1031,7 +1031,7 @@ void Chunk_chooser::insert_response(
 		EStudio::Alert("Terrain insert failed.");
 	else {
 		// Insert in our list.
-		unsigned char *data = new unsigned char[chunksz];
+		auto *data = new unsigned char[chunksz];
 		if (dup && tnum >= 0 && tnum < num_chunks && chunklist[tnum])
 			memcpy(data, chunklist[tnum], chunksz);
 		else

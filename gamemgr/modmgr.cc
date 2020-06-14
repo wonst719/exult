@@ -608,7 +608,7 @@ GameManager::GameManager(bool silent) {
 	checkgames.emplace_back(CFG_SS_NAME);
 	checkgames.emplace_back(CFG_SIB_NAME);
 
-	for (std::vector<string>::iterator it = gamestrs.begin();
+	for (auto it = gamestrs.begin();
 	        it != gamestrs.end(); ++it) {
 		if (*it != CFG_BG_NAME && *it != CFG_FOV_NAME &&
 		    *it != CFG_SI_NAME && *it != CFG_SS_NAME &&
@@ -623,7 +623,7 @@ GameManager::GameManager(bool silent) {
 	int ssind = -1;
 	int sibind = -1;
 
-	for (std::vector<string>::iterator it = checkgames.begin();
+	for (auto it = checkgames.begin();
 	        it != checkgames.end(); ++it) {
 		string gameentry = *it;
 		// Load the paths for all games found:
@@ -721,7 +721,7 @@ void GameManager::print_found(
 }
 
 ModManager *GameManager::find_game(const string &name) {
-	for (vector<ModManager>::iterator it = games.begin();
+	for (auto it = games.begin();
 	        it != games.end(); ++it)
 		if (it->get_cfgname() == name)
 			return &*it;

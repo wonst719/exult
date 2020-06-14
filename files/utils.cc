@@ -121,7 +121,7 @@ void clone_system_path(const string &new_key, const string &old_key) {
 }
 
 void clear_system_path(const string &key) {
-	std::map<string, string>::iterator iter = path_map.find(key);
+	auto iter = path_map.find(key);
 	if (iter != path_map.end())
 		path_map.erase(iter);
 }

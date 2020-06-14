@@ -72,7 +72,7 @@ int WindowsMidiDriver::open()
 
 	// List all the midi devices.
 	MIDIOUTCAPS caps;
-	signed long dev_count = static_cast<signed long>(midiOutGetNumDevs()); 
+	auto dev_count = static_cast<signed long>(midiOutGetNumDevs()); 
 	pout << dev_count << " Midi Devices Detected" << endl;
 	pout << "Listing midi devices:" << endl;
 

@@ -137,7 +137,7 @@ void read_params(const int argc, char *argv[]) {
 /* Walk over the operations list (dolist) and execute each operation in the order
     it was listed on the command line */
 void process_ops() {
-	for (DoList::iterator i = dolist.begin(); i != dolist.end(); i++) {
+	for (auto i = dolist.begin(); i != dolist.end(); i++) {
 		if (i->first == DoAdd) {
 			assert(i->second.size() == 2);
 			if (verbose) {
@@ -198,9 +198,9 @@ int main(int argc, char *argv[]) {
 
 	if (verbose) {
 		cerr << "Operations:" << endl;
-		for (DoList::iterator i = dolist.begin(); i != dolist.end(); i++) {
+		for (auto i = dolist.begin(); i != dolist.end(); i++) {
 			cerr << '\t' << ((i->first == DoAdd) ? "add" : ((i->first == DoRem) ? "rem" : ((i->first == DoGet) ? "get" : "unknown"))) << '\t';
-			for (vector<string>::iterator j = i->second.begin(); j != i->second.end(); j++)
+			for (auto j = i->second.begin(); j != i->second.end(); j++)
 				cerr << *j << '\t';
 			cerr << endl;
 		}

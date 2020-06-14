@@ -227,13 +227,13 @@ bool Uc_struct_symbol::is_dup(
 }
 
 Uc_struct_symbol::~Uc_struct_symbol() {
-	for (Var_map::iterator it = vars.begin(); it != vars.end(); ++it)
+	for (auto it = vars.begin(); it != vars.end(); ++it)
 		delete it->first;
 	vars.clear();
 }
 
 void Uc_struct_symbol::merge_struct(Uc_struct_symbol *other) {
-	for (Var_map::iterator it = other->vars.begin();
+	for (auto it = other->vars.begin();
 	        it != other->vars.end(); ++it)
 		add(it->first);
 }
@@ -252,7 +252,7 @@ Uc_class_symbol *Uc_class_symbol::create(
 		sprintf(buf, "Class name '%s' already exists.", nm);
 		Uc_location::yyerror(buf);
 	}
-	Uc_class_symbol *csym = new Uc_class_symbol(nm, c);
+	auto *csym = new Uc_class_symbol(nm, c);
 	Uc_function::add_global_class_symbol(csym);
 	return csym;
 }
@@ -433,7 +433,7 @@ Uc_function_symbol *Uc_function_symbol::create(
 		num = shp;
 
 	// Override function number if the function has been declared before this.
-	Uc_function_symbol *sym = dynamic_cast<Uc_function_symbol *>(scope ?
+	auto *sym = dynamic_cast<Uc_function_symbol *>(scope ?
 	                          scope->search(nm) : Uc_function::search_globals(nm));
 	if (sym) {
 		if (sym->get_function_type() != kind) {
@@ -635,10 +635,10 @@ bool String_compare::operator()(const char *const &x, const char *const &y) cons
 
 Uc_scope::~Uc_scope(
 ) {
-	for (std::map<const char *, Uc_symbol *, String_compare>::iterator it = symbols.begin();
+	for (auto it = symbols.begin();
 	        it != symbols.end(); ++it)
 		delete(*it).second;
-	for (std::vector<Uc_scope *>::iterator it = scopes.begin();
+	for (auto it = scopes.begin();
 	        it != scopes.end(); ++it)
 		delete *it;
 }
@@ -685,7 +685,7 @@ int Uc_scope::add_function_symbol(
 			add(fun);
 		return 1;
 	}
-	Uc_function_symbol *fun2 = dynamic_cast<Uc_function_symbol *>(found);
+	auto *fun2 = dynamic_cast<Uc_function_symbol *>(found);
 	if (fun2 == fun)        // The case for an EXTERN.
 		return 1;
 	else if (!fun2) {       // Non-function name.

@@ -262,7 +262,7 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
     int &datalen            // Length of RLE data returned.
 ) {
 	// Create an oversized buffer.
-	uint8 *buf = new uint8[w * h * 2 + 16 * h];
+	auto *buf = new uint8[w * h * 2 + 16 * h];
 	uint8 *out = buf;
 	int newx;           // Gets new x at end of a scan line.
 	for (int y = 0; y < h; y++) // Go through rows.
@@ -1195,13 +1195,13 @@ bool Vga_file::load(
 }
 
 bool Vga_file::is_shape_imported(int shnum) {
-	std::map<int, imported_map>::iterator it =
+	auto it =
 	    imported_shape_table.find(shnum);
 	return it != imported_shape_table.end();
 }
 
 bool Vga_file::get_imported_shape_data(int shnum, imported_map &data) {
-	std::map<int, imported_map>::iterator it =
+	auto it =
 	    imported_shape_table.find(shnum);
 	if (it != imported_shape_table.end()) {
 		data = (*it).second;
@@ -1223,7 +1223,7 @@ bool Vga_file::import_shapes(
 		flex = Flex::is_flex(ds);
 		assert(flex);
 		imported_shapes.reserve(imported_shapes.size() + imports.size());
-		for (vector<pair<int, int>>::const_iterator it = imports.begin();
+		for (auto it = imports.begin();
 		        it != imports.end(); ++it) {
 			int shpsize = imported_shapes.size();
 			int srcsize = imported_sources.size() - 1;
@@ -1238,7 +1238,7 @@ bool Vga_file::import_shapes(
 		return true;
 	} else {
 		// Set up the import table anyway.
-		for (vector<pair<int, int>>::const_iterator it = imports.begin();
+		for (auto it = imports.begin();
 		        it != imports.end(); ++it) {
 			imported_map data = {(*it).second, -1, -1};
 			imported_shape_table[(*it).first] = data;

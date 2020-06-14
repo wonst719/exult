@@ -226,7 +226,7 @@ void ExultStudio::setup_maps_list(
 	while ((num = Find_next_map(num + 1, 10)) != -1) {
 		char name[40];
 		sprintf(name, "Map #%02x", num);
-		gpointer ptrnum = reinterpret_cast<gpointer>(uintptr(num));
+		auto ptrnum = reinterpret_cast<gpointer>(uintptr(num));
 		GtkWidget *item =
 		    Add_menu_item(maps, name, GTK_SIGNAL_FUNC(on_map_activate), ptrnum, group);
 		gtk_object_set_user_data(GTK_OBJECT(item), ptrnum);

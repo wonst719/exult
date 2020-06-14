@@ -238,7 +238,7 @@ public:
 	/// @param nm The name of the attribute to be set.
 	/// @param val Value to set the attribute to.
 	void set(const char *nm, int val) {
-		std::set<string>::iterator siter = strings->find(nm);
+		auto siter = strings->find(nm);
 		if (siter == strings->end())
 			siter = strings->insert(nm).first;
 		nm = (*siter).c_str();
@@ -249,7 +249,7 @@ public:
 	/// @return val Current value of the attribute, or
 	/// zero if the attribute is not on the list.
 	int get(const char *nm) {   // Returns 0 if not set.
-		std::set<string>::const_iterator siter = strings->find(nm);
+		auto siter = strings->find(nm);
 		if (siter == strings->end())
 			return 0;
 		nm = (*siter).c_str();
@@ -1730,7 +1730,7 @@ void Actor::set_schedule_type(
 	if (schedule)           // Finish up old if necessary.
 		schedule->ending(new_schedule_type);
 	// Save old for a moment.
-	Schedule::Schedule_types old_schedule =
+	auto old_schedule =
 	    static_cast<Schedule::Schedule_types>(schedule_type);
 	delete schedule;        // Done with the old.
 	schedule = newsched;
@@ -2152,7 +2152,7 @@ void Actor::activate(
 
 	bool show_party_inv = gumpman->showing_gumps(true) ||
 	                      gwin->in_combat();
-	Schedule::Schedule_types sched =
+	auto sched =
 	    static_cast<Schedule::Schedule_types>(get_schedule_type());
 	if (party_id >= 0 && !can_act_charmed() &&    // if in party, charmed, and charmed more difficult
 	        !cheat.in_pickpocket() && event == 1) // and not pickpocket, return if double click
@@ -2502,7 +2502,7 @@ void Clear_casting::handle_event(unsigned long curtime, uintptr) {
 }
 
 void Actor::end_casting_mode(int delay) {
-	Clear_casting *c = new Clear_casting(this);
+	auto *c = new Clear_casting(this);
 	gwin->get_tqueue()->add(Game::get_ticks() + 2 * delay, c, this);
 }
 
@@ -2705,7 +2705,7 @@ int Actor::apply_damage(
 		// Flash red outline.
 		hit = true;
 		add_dirty();
-		Clear_hit *c = new Clear_hit(this);
+		auto *c = new Clear_hit(this);
 		gwin->get_tqueue()->add(Game::get_ticks() + 200, c, this);
 		// Attack back.
 		fight_back(attacker);
@@ -2771,7 +2771,7 @@ int Actor::reduce_health(
 	else {
 		hit = true;     // Flash red outline.
 		add_dirty();
-		Clear_hit *c = new Clear_hit(this);
+		auto *c = new Clear_hit(this);
 		gwin->get_tqueue()->add(Game::get_ticks() + 200, c, this);
 	}
 	if (oldhp >= maxhp / 2 && val < maxhp / 2 && rand() % 2 != 0) {
@@ -2956,7 +2956,7 @@ void Actor::lay_down(bool die) {
 		return;
 
 	set_action(nullptr);
-	Usecode_script *scr = new Usecode_script(this);
+	auto *scr = new Usecode_script(this);
 	(*scr) << Ucscript::finish << (Ucscript::npc_frame + Actor::standing);
 	if (GAME_SI && get_shapenum() == 832) { // SI Frost serpent
 		// Frames are in reversed order. This results in a
@@ -3920,7 +3920,7 @@ int Actor::figure_hit_points(
 				spells.reserve(50);
 				get_objects(vec, c_any_shapenum, c_any_qual, c_any_framenum);
 				// Gather all spells...
-				for (Game_object_vector::iterator it = vec.begin();
+				for (auto it = vec.begin();
 				        it != vec.end(); ++it)
 					if ((*it)->get_info().is_spell())   // Seems to be right.
 						spells.push_back(*it);
@@ -4105,7 +4105,7 @@ void Actor::die(
 	bool frost_serp = GAME_SI && get_shapenum() == 832;
 	if ((frost_serp && (get_framenum() & 0xf) == Actor::sit_frame)
 	        || (get_framenum() & 0xf) == Actor::sleep_frame) {
-		Usecode_script *scr = new Usecode_script(this);
+		auto *scr = new Usecode_script(this);
 		(*scr) << Ucscript::delay_ticks << 4 << Ucscript::remove;
 		scr->start();
 	} else  // Laying down to die.
@@ -4127,7 +4127,7 @@ void Actor::die(
 		if (have_body_shape) {
 			// Note: only do this if target shape is an actual
 			// body shape (frame 0 empty).
-			Usecode_script *scr = new Usecode_script(body);
+			auto *scr = new Usecode_script(body);
 			(*scr) << Ucscript::delay_ticks << 4 << Ucscript::frame << frnum;
 			scr->start();
 		}
@@ -4335,7 +4335,7 @@ Actor *Actor::resurrect(
 	// Stand up.
 	if (!body)
 		return this;
-	Usecode_script *scr = new Usecode_script(this);
+	auto *scr = new Usecode_script(this);
 	(*scr) << (Ucscript::npc_frame + Actor::sleep_frame)
 	       << (Ucscript::npc_frame + Actor::kneel_frame)
 	       << (Ucscript::npc_frame + Actor::standing);
@@ -4742,7 +4742,7 @@ void Npc_actor::set_schedule_time_type(int time, int type) {
 	for (i = 0; i < num_schedules; i++) if (schedules[i].get_time() == time) break;
 
 	if (i == num_schedules) { // Didn't find it
-		Schedule_change *scheds = new Schedule_change[num_schedules + 1];
+		auto *scheds = new Schedule_change[num_schedules + 1];
 
 		for (i = 0; i < num_schedules; i++) {
 			tile = schedules[i].get_pos();
@@ -4773,7 +4773,7 @@ void Npc_actor::set_schedule_time_location(int time, int x, int y) {
 
 	if (i == num_schedules) { // Didn't find it
 		Tile_coord tile;
-		Schedule_change *scheds = new Schedule_change[num_schedules + 1];
+		auto *scheds = new Schedule_change[num_schedules + 1];
 
 		for (i = 0; i < num_schedules; i++) {
 			tile = schedules[i].get_pos();
@@ -4802,7 +4802,7 @@ void Npc_actor::remove_schedule(int time) {
 	if (i != num_schedules) { // Found it
 		int todel = i;
 		Tile_coord tile;
-		Schedule_change *scheds = new Schedule_change[num_schedules - 1];
+		auto *scheds = new Schedule_change[num_schedules - 1];
 
 		for (i = 0; i < todel; i++) {
 			tile = schedules[i].get_pos();
