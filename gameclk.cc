@@ -132,7 +132,7 @@ void Game_clock::set_time_palette(
 	old_invisible = invis;
 	old_infravision = infra;
 
-	auto apply_palette = [this, gwin](int palette) {
+	auto apply_palette = [gwin](int palette) {
 		auto *pal = gwin->get_pal();
 		pal->set(palette);
 		if (!pal->is_faded_out()) {
