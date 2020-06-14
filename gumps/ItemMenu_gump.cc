@@ -137,7 +137,7 @@ Itemmenu_gump::~Itemmenu_gump() {
 
 void Itemmenu_gump::paint() {
 	for (auto& objPos : objects) {
-		auto& obj = objPos.first;
+		const auto & obj = objPos.first;
 		obj->paint_outline(CHARMED_PIXEL);
 	}
 	if (objectSelected) {
@@ -201,7 +201,7 @@ void Itemmenu_gump::postCloseActions() {
 	Game_window *gwin = Game_window::get_instance();
 	switch (objectAction) {
 	case show_inventory: {
-		auto act = dynamic_cast<Actor*>(objectSelected);
+		auto *act = dynamic_cast<Actor*>(objectSelected);
 		if (act != nullptr) {
 			act->show_inventory();
 		}
@@ -215,7 +215,7 @@ void Itemmenu_gump::postCloseActions() {
 		Tile_coord avaLoc = ava->get_tile();
 		int avaX = (avaLoc.tx - gwin->get_scrolltx()) * c_tilesize;
 		int avaY = (avaLoc.ty - gwin->get_scrollty()) * c_tilesize;
-		auto tmpObj = gwin->find_object(avaX, avaY);
+		auto *tmpObj = gwin->find_object(avaX, avaY);
 		if (tmpObj != ava) {
 			// Avatar isn't in a good spot...
 			// Let's give up for now :(

@@ -1168,7 +1168,7 @@ bool Vga_file::load(
 	size_t num_shapes = shapes.size();
 	if (!U7exists(sources[0].first.c_str()))
 		is_good = false;
-	for (auto& src : sources) {
+	for (const auto& src : sources) {
 		IDataSource *source = U7load(src, shape_sources);
 		if (source) {
 			flex = Flex::is_flex(source);

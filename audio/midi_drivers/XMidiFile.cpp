@@ -1759,7 +1759,7 @@ void XMidiFile::InsertDisplayEvents()
 
 void XMidiFile::CreateEventList()
 {
-	auto newevents = new XMidiEventList*[num_tracks]; //new XMidiEvent *[info.tracks];
+	auto *newevents = new XMidiEventList*[num_tracks]; //new XMidiEvent *[info.tracks];
 	for (int i = 0; i < num_tracks; i++)
 		newevents[i] = new XMidiEventList{};
 	events = newevents;
@@ -1768,7 +1768,7 @@ void XMidiFile::CreateEventList()
 void XMidiFile::DestroyEventList()
 {
 	for (int i=0; i < num_tracks; i++) {
-		auto event = std::exchange(events[i], nullptr);
+		auto *event = std::exchange(events[i], nullptr);
 		event->decrementCounter();
 	}
 	delete [] events;

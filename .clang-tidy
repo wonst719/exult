@@ -11,6 +11,7 @@ Checks: "-*\
 ,readability-misplaced-array-index\
 ,-readability-named-parameter\
 ,readability-non-const-parameter\
+,readability-qualified-auto\
 ,readability-redundant-access-specifiers\
 ,readability-redundant-control-flow\
 ,-readability-redundant-declaration\

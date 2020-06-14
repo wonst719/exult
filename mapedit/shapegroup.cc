@@ -378,7 +378,7 @@ void Shape_group_file::write(
 		OFileDataSource out(patchname.c_str());
 		Flex_writer gfile(out, "ExultStudio shape groups", groups.size());
 		// Write each group.
-		for (auto grp : groups) {
+		for (auto *grp : groups) {
 			gfile.write_object(grp);
 		}
 	} catch (exult_exception &e) {

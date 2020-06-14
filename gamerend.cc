@@ -503,7 +503,7 @@ int Game_render::paint_chunk_objects(
 		const auto& lights = gwin->is_in_dungeon()
 		                   ? olist->get_dungeon_lights()
 		                   : olist->get_non_dungeon_lights();
-		for (auto& obj : lights) {
+		for (const auto& obj : lights) {
 			const Shape_info& info = obj->get_info();
 			if (info.is_light_source()) { // Count light sources.
 				light_sources += get_light_strength(obj, main_actor);

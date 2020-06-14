@@ -1726,7 +1726,7 @@ int Usecode_internal::get_user_choice_num(
 			choice_num = -1;    //invalid key
 			if (std::isalnum(static_cast<unsigned char>(chr))) {
 				constexpr static const char optionKeys[] = "123456789abcdefghijklmnopqrstuvwxyz";
-				auto it = std::find(std::cbegin(optionKeys), std::cend(optionKeys), chr);
+				const auto *it = std::find(std::cbegin(optionKeys), std::cend(optionKeys), chr);
 				auto dist = std::distance(std::cbegin(optionKeys), it);
 				if (it != std::cend(optionKeys) && dist < conv->get_num_answers()) {
 					choice_num = dist;
