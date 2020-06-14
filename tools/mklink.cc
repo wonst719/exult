@@ -49,8 +49,7 @@ uint16 usecode_functions::get_total_size(vector<uint16>& call_tree) const {
 	uint16 size = 0;
 
 	// Add size of each function
-	for (vector<uint16>::const_iterator it = call_tree.begin();
-	     it != call_tree.end(); ++it) {
+	for (auto it = call_tree.begin(); it != call_tree.end(); ++it) {
 		size += functions[*it].size;
 	}
 	return size;

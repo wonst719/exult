@@ -503,8 +503,7 @@ void Explosion_effect::handle_event(
         // Objects could disappear due to Avatar being killed and teleported.
 		vector<Game_object_weak> cvec(vec.size());
 		Game_object::obj_vec_to_weak(cvec, vec);
-		for (vector<Game_object_weak>::const_iterator it = cvec.begin();
-													  it != cvec.end(); ++it) {
+		for (auto it = cvec.begin(); it != cvec.end(); ++it) {
 			Game_object_shared obj = (*it).lock();
 			if (obj) {
 			    Game_object_shared att_obj = attacker.lock();
@@ -941,8 +940,7 @@ void Homing_projectile::handle_event(
 		Game_object::find_nearby_actors(npcs, pos, -1, 30);
 		Actor *nearest = nullptr;
 		uint32 bestdist = 100000;
-		for (Actor_vector::const_iterator it = npcs.begin();
-		        it != npcs.end(); ++it) {
+		for (auto it = npcs.begin(); it != npcs.end(); ++it) {
 			Actor *npc = *it;
 			if (!npc->is_in_party() && !npc->is_dead() &&
 			        (npc->get_effective_alignment() >= Actor::evil)) {
@@ -964,8 +962,7 @@ void Homing_projectile::handle_event(
 		next_damage_time = curtime + 1000;
 		Actor_vector npcs;  // Find NPC's.
 		Game_object::find_nearby_actors(npcs, pos, -1, width / (2 * c_tilesize));
-		for (Actor_vector::const_iterator it = npcs.begin();
-		        it != npcs.end(); ++it) {
+		for (auto it = npcs.begin(); it != npcs.end(); ++it) {
 			Actor *npc = *it;
 			if (!npc->is_in_party()) {
 				//Still powerful, but no longer overkill...

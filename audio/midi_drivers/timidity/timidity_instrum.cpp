@@ -429,7 +429,7 @@ static Instrument *load_instrument(char *name, int percussion,
 		if (!(sp->modes & MODES_16BIT)) /* convert to 16-bit data */
 		{
 			sint32 i=sp->data_length;
-			uint8 *cp=reinterpret_cast<uint8 *>(sp->data);
+			auto *cp=reinterpret_cast<uint8 *>(sp->data);
 			uint16 *tmp;
 			uint16 *new_dat;
 			tmp=new_dat=safe_Malloc<uint16>(sp->data_length);

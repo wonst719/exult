@@ -107,14 +107,14 @@ void ucxtInit::misc() {
 	miscdata.getsubkeys(st, misc_root + "/size_type");
 
 	// For each size type (small/long/byte/etc.)
-	for (Configuration::KeyTypeList::const_iterator k = st.begin(); k != st.end(); ++k) {
+	for (auto k = st.begin(); k != st.end(); ++k) {
 		bool munge_offset = false;
 
 		const string tmpstr(k->first + "/");
 
 		/* ... we need to find out if we should munge it's parameter
 		    that is, it's some sort of goto target (like offset) or such */
-		for (Configuration::KeyTypeList::const_iterator m = om.begin(); m != om.end(); ++m)
+		for (auto m = om.begin(); m != om.end(); ++m)
 			if (m->first.size() - 1 == k->first.size())
 				if (m->first == tmpstr)
 //				if(m->first.compare(0, m->first.size()-1, k->first, 0, k->first.size())==0)

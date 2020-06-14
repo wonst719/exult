@@ -95,7 +95,7 @@ static void Read_from_child(
     GdkInputCondition condition
 ) {
 	ignore_unused_variable_warning(condition);
-	Exec_process *ex = static_cast<Exec_process *>(data);
+	auto *ex = static_cast<Exec_process *>(data);
 	ex->read_from_child(id);
 }
 void Exec_process::read_from_child(

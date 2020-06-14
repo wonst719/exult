@@ -102,8 +102,7 @@ int FluidSynthMidiDriver::open() {
 	// fluid_synth_set_chorus_on(_synth, 0);
 
 	int numloaded = 0;
-	for (std::vector<std::string>::const_iterator it = soundfonts.begin();
-	     it != soundfonts.end(); ++it)
+	for (auto it = soundfonts.begin(); it != soundfonts.end(); ++it)
 	{
 		int soundFont = fluid_synth_sfload(_synth, it->c_str(), 1);
 		if (soundFont == -1) {

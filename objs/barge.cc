@@ -694,8 +694,7 @@ bool Barge_object::add(
 bool Barge_object::contains(
     Game_object *obj
 ) {
-	for (vector<Game_object_shared>::const_iterator it = objects.begin();
-	        it != objects.end(); ++it)
+	for (auto it = objects.begin(); it != objects.end(); ++it)
 		if (obj == (*it).get())
 			return true;
 	return false;

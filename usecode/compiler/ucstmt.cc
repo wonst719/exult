@@ -50,8 +50,7 @@ int Uc_converse_statement::nest = 0;
 Uc_block_statement::~Uc_block_statement(
 ) {
 	// Delete all the statements.
-	for (std::vector<Uc_statement *>::const_iterator it = statements.begin();
-	        it != statements.end(); ++it)
+	for (auto it = statements.begin(); it != statements.end(); ++it)
 		delete(*it);
 }
 
@@ -68,8 +67,7 @@ void Uc_block_statement::gen(
     Basic_block *start,         // Block used for 'continue' statements.
     Basic_block *exit           // Block used for 'break' statements.
 ) {
-	for (std::vector<Uc_statement *>::const_iterator it = statements.begin();
-	        it != statements.end(); ++it) {
+	for (auto it = statements.begin(); it != statements.end(); ++it) {
 		Uc_statement *stmt = *it;
 		stmt->gen(fun, blocks, curr, end, labels, start, exit);
 	}
@@ -709,8 +707,7 @@ Uc_converse_statement::Uc_converse_statement(
 )
 	: answers(a), cases(*cs), nestconv(n) {
 	bool has_default = false;
-	for (vector<Uc_statement *>::const_iterator it = cases.begin();
-	        it != cases.end(); ++it) {
+	for (auto it = cases.begin(); it != cases.end(); ++it) {
 		auto *stmt =
 		    static_cast<Uc_converse_case_statement *>(*it);
 		if (stmt->is_default()) {
@@ -731,8 +728,7 @@ Uc_converse_statement::Uc_converse_statement(
 Uc_converse_statement::~Uc_converse_statement(
 ) {
 	delete answers;
-	for (std::vector<Uc_statement *>::const_iterator it = cases.begin();
-	        it != cases.end(); ++it)
+	for (auto it = cases.begin(); it != cases.end(); ++it)
 		delete(*it);
 }
 
@@ -773,8 +769,7 @@ void Uc_converse_statement::gen(
 	conv_top->set_targets(UC_CONVERSE, conv_body, past_conv);
 	// Generate loop body.
 	Uc_converse_case_statement *def = nullptr;
-	for (std::vector<Uc_statement *>::const_iterator it = cases.begin();
-	        it != cases.end(); ++it) {
+	for (auto it = cases.begin(); it != cases.end(); ++it) {
 		auto *stmt =
 		    static_cast<Uc_converse_case_statement *>(*it);
 		if (stmt->is_default())
@@ -847,8 +842,7 @@ void Uc_switch_case_statement::gen(
 Uc_switch_statement::~Uc_switch_statement(
 ) {
 	delete cond;
-	for (std::vector<Uc_statement *>::const_iterator it = cases.begin();
-	        it != cases.end(); ++it)
+	for (auto it = cases.begin(); it != cases.end(); ++it)
 		delete(*it);
 }
 
@@ -862,8 +856,7 @@ Uc_switch_statement::Uc_switch_statement(
 )
 	: cond(v), cases(*cs) {
 	bool has_default = false;
-	for (vector<Uc_statement *>::const_iterator it = cases.begin();
-	        it != cases.end(); ++it) {
+	for (auto it = cases.begin(); it != cases.end(); ++it) {
 		auto *stmt =
 		    static_cast<Uc_switch_case_statement *>(*it);
 		if (stmt->is_default()) {

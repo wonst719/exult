@@ -872,8 +872,7 @@ void Usecode_internal::remove_item(
 		Egg_vector vec;         // Gets list.
 		// Same parameters used in the egg to activate the trap.
 		if (obj->find_nearby_eggs(vec, 0xc8, 0xf)) {
-			for (Egg_vector::const_iterator it = vec.begin(); it != vec.end();
-					++it) {
+			for (auto it = vec.begin(); it != vec.end(); ++it) {
 				Egg_object *egg = *it;
 				egg->remove_this(nullptr);
 			}
@@ -938,8 +937,7 @@ void Usecode_internal::activate_cached(
 	const int dist = 16;
 	Egg_vector vec;         // Find all usecode eggs.
 	Game_object::find_nearby_eggs(vec, pos, 275, dist, c_any_qual, 7);
-	for (Egg_vector::const_iterator it = vec.begin(); it != vec.end();
-	        ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Egg_object *egg = *it;
 		if (egg->get_criteria() == Egg_object::cached_in)
 			egg->activate();
@@ -1030,8 +1028,7 @@ Usecode_value Usecode_internal::find_nearby(
 		std::sort(vec.begin(), vec.end(), Object_reverse_sorter());
 	Usecode_value nearby(vec.size(), nullptr);    // Create return array.
 	int i = 0;
-	for (Game_object_vector::const_iterator it = vec.begin();
-	        it != vec.end(); ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Game_object *each = *it;
 		Usecode_value val(each);
 		nearby.put_elem(i++, val);
@@ -1061,8 +1058,7 @@ Barge_object *Get_barge(
 	// Object must be inside it.
 	Tile_coord pos = obj->get_tile();
 	Barge_object *best = nullptr;
-	for (Game_object_vector::const_iterator it = vec.begin();
-	        it != vec.end(); it++) {
+	for (auto it = vec.begin(); it != vec.end(); it++) {
 		barge = (*it)->as_barge();
 		if (barge && barge->get_tile_footprint().has_world_point(pos.tx, pos.ty)) {
 			int lift = barge->get_lift();
@@ -1100,8 +1096,7 @@ Usecode_value Usecode_internal::find_nearest(
 	Game_object *closest = nullptr;
 	uint32 bestdist = 100000;// Distance-squared in tiles.
 	Tile_coord t1 = obj->get_tile();
-	for (Game_object_vector::const_iterator it = vec.begin();
-	        it != vec.end(); ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Game_object *each = *it;
 		Tile_coord t2 = each->get_tile();
 		int dx = t1.tx - t2.tx;
@@ -1186,7 +1181,7 @@ Usecode_value Usecode_internal::get_objects(
 //	cout << "Container objects found:  " << cnt << << endl;
 	Usecode_value within(vec.size(), nullptr);    // Create return array.
 	int i = 0;
-	for (Game_object_vector::const_iterator it = vec.begin(); it != vec.end(); ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Game_object *each = *it;
 		Usecode_value val(each);
 		within.put_elem(i++, val);

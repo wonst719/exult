@@ -127,8 +127,7 @@ void Map_patch_collection::apply(
 	auto it1 = patches.find(schunk);
 	if (it1 != patches.end()) { // Found list for superchunk?
 		Map_patch_list &lst = (*it1).second;
-		for (Map_patch_list::const_iterator it2 = lst.begin();
-		        it2 != lst.end(); ++it2)
+		for (auto it2 = lst.begin(); it2 != lst.end(); ++it2)
 			(*it2)->apply();    // Apply each one in list.
 	}
 }

@@ -500,7 +500,7 @@ Uc_function_symbol *Uc_function_symbol::create(
 	        (num >= 0 && !new_auto_num))
 		last_num = ucnum;
 	// Keep track of #'s used.
-	Sym_nums::const_iterator it = nums_used.find(ucnum);
+	auto it = nums_used.find(ucnum);
 	if (it == nums_used.end()) { // Unused?  That's good.
 		sym = new Uc_function_symbol(nm, ucnum, p, shp, kind);
 		if (is_extern)

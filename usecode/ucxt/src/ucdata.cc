@@ -167,7 +167,7 @@ void UCData::disassamble(ostream &o) {
 					if (cls) {
 						o << CLASSNAME << " " << cls->get_name();
 						// Does the class inherit from another?
-						InheritMap::const_iterator it = _clsmap.find(cls);
+						auto it = _clsmap.find(cls);
 						int initvar = 0;
 						if (it != _clsmap.end()) {
 							// Yes; print base class.

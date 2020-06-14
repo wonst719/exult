@@ -727,8 +727,7 @@ void Game_object::obj_vec_to_weak(
     std::vector<Game_object_weak> &dest,
 	Game_object_vector &src
 ) {
-	for (Game_object_vector::const_iterator it = src.begin(); it != src.end();
-											   	 			  ++it) {
+	for (auto it = src.begin(); it != src.end(); ++it) {
 		Game_object *obj = *it;
 		dest.push_back(weak_from_obj(obj));
 	}
@@ -799,8 +798,7 @@ Game_object *Game_object::find_closest(
 	Game_object *closest = nullptr;   // Get closest.
 	int best_dist = 10000;      // In tiles.
 	// Get our location.
-	for (Game_object_vector::const_iterator it = vec.begin();
-	        it != vec.end(); ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Game_object *obj = *it;
 		int dist = obj->get_tile().distance(pos);
 		if (dist < best_dist) {

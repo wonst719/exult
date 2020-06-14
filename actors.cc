@@ -253,7 +253,7 @@ public:
 		if (siter == strings->end())
 			return 0;
 		nm = (*siter).c_str();
-		Att_map::const_iterator it = map.find(nm);
+		auto it = map.find(nm);
 		return it == map.end() ? 0 : (*it).second;
 	}
 	/// Gets all attributes for the current actor.
@@ -309,8 +309,7 @@ Game_object *Actor::find_best_ammo(
 	Game_object_vector vec;     // Get list of all possessions.
 	vec.reserve(50);
 	get_objects(vec, c_any_shapenum, c_any_qual, c_any_framenum);
-	for (Game_object_vector::const_iterator it = vec.begin();
-	        it != vec.end(); ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Game_object *obj = *it;
 		if (obj->inside_locked() || !In_ammo_family(obj->get_shapenum(), family))
 			continue;
@@ -547,8 +546,7 @@ bool Actor::ready_best_shield(
 	get_objects(vec, c_any_shapenum, c_any_qual, c_any_framenum);
 	Game_object *best = nullptr;
 	int best_strength = -20;
-	for (Game_object_vector::const_iterator it = vec.begin();
-	        it != vec.end(); ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Game_object *obj = *it;
 		if (obj->inside_locked())
 			continue;
@@ -612,8 +610,7 @@ bool Actor::ready_best_weapon(
 	Game_object_shared best_keep;
 	int best_strength = -20;
 	int wtype = backpack;
-	for (Game_object_vector::const_iterator it = vec.begin();
-	        it != vec.end(); ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Game_object *obj = *it;
 		Game_object *ammo_obj = nullptr;
 		if (obj->inside_locked())
@@ -2846,8 +2843,7 @@ int Actor::reduce_health(
 				Game_object_vector vec;     // Get list of all possessions.
 				vec.reserve(50);
 				get_objects(vec, c_any_shapenum, c_any_qual, c_any_framenum);
-				for (Game_object_vector::const_iterator it = vec.begin();
-				        it != vec.end(); ++it) {
+				for (auto it = vec.begin(); it != vec.end(); ++it) {
 					Game_object *obj = *it;
 					// This matches the original, but maybe
 					// we should iterate through all items.
@@ -4196,8 +4192,7 @@ void Actor::die(
 		body->set_flag_recursively(Obj_flags::okay_to_take);
 
 	// Put the heavy ones back.
-	for (Game_object_shared_vector::const_iterator it = tooheavy.begin();
-	        it != tooheavy.end(); ++it)
+	for (auto it = tooheavy.begin(); it != tooheavy.end(); ++it)
 		add((*it).get(), true);
 	if (body)
 		gwin->add_dirty(body);

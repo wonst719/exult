@@ -379,7 +379,7 @@ public:
 		return num_vars;
 	}
 	int search(const char *nm) {
-		Var_map::const_iterator it = vars.find(nm);
+		auto it = vars.find(nm);
 		if (it == vars.end())
 			return -1;
 		else
@@ -591,7 +591,7 @@ public:
 		new_auto_num = true;
 	}
 	static Uc_function_symbol *search_num(int ucnum) {
-		Sym_nums::const_iterator it = nums_used.find(ucnum);
+		auto it = nums_used.find(ucnum);
 		if (it == nums_used.end())  // Unused?  That's good.
 			return nullptr;
 		return (*it).second;
@@ -641,7 +641,7 @@ public:
 		return parent;
 	}
 	Uc_symbol *search(const char *nm) { // Look in this scope.
-		Sym_map::const_iterator it = symbols.find(nm);
+		auto it = symbols.find(nm);
 		if (it == symbols.end())
 			return nullptr;
 		else

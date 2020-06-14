@@ -85,7 +85,7 @@ static sint32 getvl()
    or unprintable characters will be converted to periods. */
 static int dumpstring(sint32 len, const char *label)
 {
-	signed char *s=safe_Malloc<signed char>(len+1);
+	auto *s=safe_Malloc<signed char>(len+1);
 	if (len != static_cast<sint32>(fread(s, 1, len, fp)))
 	{
 		free(s);

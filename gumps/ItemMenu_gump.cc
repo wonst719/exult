@@ -74,8 +74,7 @@ Itemmenu_gump::Itemmenu_gump(Game_object_map_xy *mobjxy, int cx, int cy)
 	//set_object_area(Rectangle(0, 0, 0, 0), -1, -1);//++++++ ???
 	int btop = 0;
 	int maxh = Game_window::get_instance()->get_height() - 2 * button_spacing_y;
-	for (Game_object_map_xy::const_iterator it = mobjxy->begin();
-	        it != mobjxy->end() && btop < maxh; it++) {
+	for (auto it = mobjxy->begin(); it != mobjxy->end() && btop < maxh; it++) {
 		Game_object *o = it->first;
 		std::string name = o->get_name();
 		// Skip objects with no name.

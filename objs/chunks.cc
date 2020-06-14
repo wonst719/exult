@@ -261,8 +261,7 @@ void Chunk_cache::set_egged(
 	// Egg already there?
 	int eggnum = -1;
 	int spot = -1;
-	for (Egg_vector::const_iterator it = egg_objects.begin();
-	        it != egg_objects.end(); ++it) {
+	for (auto it = egg_objects.begin(); it != egg_objects.end(); ++it) {
 		if (*it == egg) {
 			eggnum = it - egg_objects.begin();
 			break;
@@ -291,9 +290,7 @@ void Chunk_cache::set_egged(
 		egg_objects[eggnum] = nullptr;
 		if (eggnum >= 15) { // We only have 16 bits.
 			// Last one at 15 or above?
-			for (Egg_vector::const_iterator it =
-			            egg_objects.begin() + 15;
-			        it != egg_objects.end(); ++it)
+			for (auto it = egg_objects.begin() + 15; it != egg_objects.end(); ++it)
 				if (*it != nullptr)
 					// No, so leave bits alone.
 					return;
@@ -681,8 +678,7 @@ void Map_chunk::set_terrain(
 				if (each->as_terrain())
 					removes.push_back(each);
 		}
-		for (Game_object_vector::const_iterator it = removes.begin();
-		        it != removes.end(); ++it)
+		for (auto it = removes.begin(); it != removes.end(); ++it)
 			// We don't want to edit the chunks here:
 			(*it)->Game_object::remove_this();
 	}
@@ -1288,8 +1284,7 @@ void Map_chunk::try_all_eggs(
 					eggs.push_back(egg);
 			}
 	}
-	for (Egg_vector::const_iterator it = eggs.begin(); it != eggs.end();
-	        ++it)
+	for (auto it = eggs.begin(); it != eggs.end(); ++it)
 		(*it)->hatch(obj);
 	norecurse--;
 }

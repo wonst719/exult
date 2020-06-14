@@ -232,7 +232,7 @@ void *safe_malloc(size_t count)
 /* This adds a directory to the path list */
 void add_to_pathlist(char *s)
 {
-	PathList *plp=safe_Malloc<PathList>();
+	auto *plp=safe_Malloc<PathList>();
 	char *path=safe_Malloc<char>(strlen(s)+1);
 	strcpy(path,s);
 	plp->path=path;

@@ -671,8 +671,7 @@ static void Create(
 	}
 	OFileDataSource out(imagename);     // May throw exception.
 	Flex_writer writer(out, title, specs.size());
-	for (Shape_specs::const_iterator it = specs.begin();
-	        it != specs.end();  ++it) {
+	for (auto it = specs.begin(); it != specs.end();  ++it) {
 		char *basename = (*it).filename;
 		if (basename) {     // Not empty?
 			int dim0_cnt = (*it).dim0_tiles;
@@ -758,8 +757,7 @@ static void Extract(
 	for (size_t i = 0; i < len; i++)    // Turn into full bytes.
 		palbuf[i] *= 4;     // Exult palette vals are 0-63.
 	Vga_file ifile(imagename);  // May throw an exception.
-	for (Shape_specs::const_iterator it = specs.begin();
-	        it != specs.end();  ++it) {
+	for (auto it = specs.begin(); it != specs.end();  ++it) {
 		char *basename = (*it).filename;
 		if (!basename)      // Empty?
 			continue;

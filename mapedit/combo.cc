@@ -462,7 +462,7 @@ unique_ptr<unsigned char[]> Combo::write(
 	out << name;
 	out << hot_index << starttx << startty;
 	out << static_cast<short>(members.size());  // # members to follow.
-	for (std::vector<Combo_member *>::const_iterator it = members.begin();
+	for (auto it = members.begin();
 	        it != members.end(); ++it) {
 		Combo_member *m = *it;
 		out << m->tx << m->ty << m->tz << m->shapenum <<
@@ -1382,7 +1382,7 @@ gint Combo_chooser::drag_motion(
     gpointer data           // ->Shape_chooser.
 ) {
 	ignore_unused_variable_warning(widget);
-	Combo_chooser *chooser = static_cast<Combo_chooser *>(data);
+	auto *chooser = static_cast<Combo_chooser *>(data);
 	if (!chooser->dragging && chooser->selected >= 0)
 		chooser->start_drag(U7_TARGET_COMBOID_NAME,
 		                    U7_TARGET_COMBOID, reinterpret_cast<GdkEvent *>(event));

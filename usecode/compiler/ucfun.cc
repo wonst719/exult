@@ -375,7 +375,7 @@ int Uc_function::add_string(
     char *text
 ) {
 	// Search for an existing string.
-	std::map<std::string, int>::const_iterator exist = text_map.find(text);
+	auto exist = text_map.find(text);
 	if (exist != text_map.end())
 		return (*exist).second;
 	int offset = text_data_size;    // This is where it will go.
@@ -405,8 +405,7 @@ int Uc_function::find_string_prefix(
 ) {
 	int len = strlen(text);
 	// Find 1st entry >= text.
-	std::map<std::string, int>::const_iterator exist =
-	    text_map.lower_bound(text);
+	auto exist = text_map.lower_bound(text);
 	if (exist == text_map.end() ||
 	        strncmp(text, (*exist).first.c_str(), len) != 0) {
 		char *buf = new char[len + 100];
@@ -438,8 +437,7 @@ int Uc_function::find_string_prefix(
 int Uc_function::link(
     Uc_function_symbol *fun
 ) {
-	for (std::vector<Uc_function_symbol *>::const_iterator it = links.begin();
-	        it != links.end(); ++it)
+	for (auto it = links.begin(); it != links.end(); ++it)
 		if (*it == fun)     // Found it?  Return offset.
 			return it - links.begin();
 	int offset = links.size();  // Going to add it.
@@ -804,8 +802,7 @@ void Uc_function::gen(
 	Write2(out, num_locals);
 	Write2(out, num_links);
 	// Write external links.
-	for (std::vector<Uc_function_symbol *>::const_iterator it =
-	            links.begin(); it != links.end(); ++it)
+	for (auto it = links.begin(); it != links.end(); ++it)
 		Write2(out, (*it)->get_usecode_num());
 	char *ucstr = &code[0];     // Finally, the code itself.
 	out.write(ucstr, codelen);

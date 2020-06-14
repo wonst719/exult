@@ -71,10 +71,10 @@ static float ino(float x)
 /* Kaiser Window (symetric) */
 static void kaiser(float *w,int n,float beta)
 {
-	float xind = static_cast<float>((2*n - 1) * (2*n - 1));
+	auto xind = static_cast<float>((2*n - 1) * (2*n - 1));
 	for (int i =0; i<n ; i++)
 	{
-		float xi = static_cast<float>(i + 0.5);
+		auto xi = static_cast<float>(i + 0.5);
 		w[i] = ino(static_cast<float>(beta * sqrt(1. - 4 * xi * xi / xind))) / ino(beta);
 	}
 }
@@ -86,13 +86,13 @@ static void designfir(float *g , float fc)
 {
 	for (int i =0; i < ORDER2 ;i++)
 	{
-		float xi = static_cast<float>(i + 0.5);
-		float omega = static_cast<float>(PI * xi);
+		auto xi = static_cast<float>(i + 0.5);
+		auto omega = static_cast<float>(PI * xi);
 		g[i] = static_cast<float>(sin( static_cast<double>(omega * fc)) / omega);
 	}
 
-	float att = 40.; /* attenuation  in  db */
-	float beta = static_cast<float>(exp(log(0.58417 * (att - 20.96)) * 0.4) + 0.07886 
+	auto att = 40.; /* attenuation  in  db */
+	auto beta = static_cast<float>(exp(log(0.58417 * (att - 20.96)) * 0.4) + 0.07886 
 	                          * (att - 20.96));
 	float w[ORDER2];
 	kaiser( w, ORDER2, beta);
@@ -193,7 +193,7 @@ void antialiasing(Sample *sp, sint32 output_rate )
 		fir_symetric[ORDER-1 - i] = fir_symetric[i] = fir_coef[ORDER2-1 - i];
 
 	/* We apply the filter we have designed on a copy of the patch */
-	sample_t *temp = safe_Malloc<sample_t>(sp->data_length);
+	auto *temp = safe_Malloc<sample_t>(sp->data_length);
 	memcpy(temp,sp->data,sp->data_length);
 
 	filter(sp->data,temp,sp->data_length/sizeof(sample_t),fir_symetric);

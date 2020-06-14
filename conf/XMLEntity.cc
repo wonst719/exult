@@ -96,9 +96,7 @@ string  XMLnode::dump(int depth) {
 	s += id;
 	s += ">\n";
 	if (id[id.length() - 1] != '/') {
-		for (std::vector<XMLnode *>::const_iterator it = nodelist.begin();
-		        it != nodelist.end();
-		        ++it) {
+		for (auto it = nodelist.begin(); it != nodelist.end(); ++it) {
 			s += (**it).dump(depth + 1);
 		}
 

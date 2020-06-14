@@ -382,7 +382,7 @@ gint Npc_chooser::drag_motion(
     gpointer data           // ->Npc_chooser.
 ) {
 	ignore_unused_variable_warning(widget);
-	Npc_chooser *chooser = static_cast<Npc_chooser *>(data);
+	auto *chooser = static_cast<Npc_chooser *>(data);
 	if (!chooser->dragging && chooser->selected >= 0)
 		chooser->start_drag(U7_TARGET_NPCID_NAME,
 		                    U7_TARGET_NPCID, reinterpret_cast<GdkEvent *>(event));

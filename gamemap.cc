@@ -1660,8 +1660,7 @@ bool Game_map::write_minimap() {
 	eman->center_text("Encoding chunks");
 	gwin->paint();
 	gwin->show();
-	for (vector<Chunk_terrain *>::const_iterator it =
-	            chunk_terrains->begin(); it != chunk_terrains->end(); ++it) {
+	for (auto it = chunk_terrains->begin(); it != chunk_terrains->end(); ++it) {
 		Chunk_terrain *ter = *it;
 		Image_buffer8 *ibuf = ter->get_rendered_flats();
 		unsigned char *terbits = ibuf->get_bits();
@@ -1806,13 +1805,13 @@ void Game_map::cache_out_schunk(int schunk) {
 #endif
 
 	// Now remove the objects
-	for (Game_object_vector::const_iterator it = removes.begin(); it != removes.end(); ++it) {
+	for (auto it = removes.begin(); it != removes.end(); ++it) {
 		(*it)->delete_contents();
 		(*it)->remove_this();
 	}
 
 	// Now disable the actors
-	for (Actor_vector::const_iterator act = actors.begin(); act != actors.end(); ++act) {
+	for (auto act = actors.begin(); act != actors.end(); ++act) {
 		(*act)->cache_out();
 	}
 

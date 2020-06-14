@@ -126,8 +126,7 @@ void Combat_schedule::monster_died(
 		return;         // No, it's over.
 	Actor_vector nearby;        // Get all nearby NPC's.
 	gwin->get_nearby_npcs(nearby);
-	for (Actor_vector::const_iterator it = nearby.begin();
-	        it != nearby.end(); ++it) {
+	for (auto it = nearby.begin(); it != nearby.end(); ++it) {
 		Actor *actor = *it;
 		if (!actor->is_dead() &&
 		        actor->get_attack_mode() != Actor::flee &&
@@ -153,8 +152,7 @@ void Combat_schedule::stop_attacking_npc(
 ) {
 	Actor_vector nearby;        // Get all nearby NPC's.
 	gwin->get_nearby_npcs(nearby);
-	for (Actor_vector::const_iterator it = nearby.begin();
-	        it != nearby.end(); ++it) {
+	for (auto it = nearby.begin(); it != nearby.end(); ++it) {
 		Actor *actor = *it;
 		if (actor->get_target() == npc)
 			actor->set_target(nullptr);
@@ -171,8 +169,7 @@ void Combat_schedule::stop_attacking_invisible(
 ) {
 	Actor_vector nearby;        // Get all nearby NPC's.
 	gwin->get_nearby_npcs(nearby);
-	for (Actor_vector::const_iterator it = nearby.begin();
-	        it != nearby.end(); ++it) {
+	for (auto it = nearby.begin(); it != nearby.end(); ++it) {
 		Actor *actor = *it;
 		if (actor->get_target() == npc && !actor->can_see_invisible())
 			actor->set_target(nullptr);
@@ -323,8 +320,7 @@ void Combat_schedule::find_opponents(
 	bool in_party = npc->is_in_party() || npc == avatar;
 	int npc_align = npc->get_effective_alignment();
 	bool see_invisible = npc->can_see_invisible();
-	for (Actor_vector::const_iterator it = nearby.begin();
-	        it != nearby.end(); ++it) {
+	for (auto it = nearby.begin(); it != nearby.end(); ++it) {
 		Actor *actor = *it;
 		if (actor->is_dead() || (!see_invisible && actor->get_flag(Obj_flags::invisible)))
 			continue;   // Dead or invisible.
@@ -379,8 +375,7 @@ void Combat_schedule::find_opponents(
 	// Still none? Try the sleeping/unconscious foes.
 	if (opponents.empty() && !sleeping.empty()
 	    && (npc != avatar || charmed_avatar)) {
-		for (Actor_vector::const_iterator it = sleeping.begin();
-										  	 it != sleeping.end(); ++it) {
+		for (auto it = sleeping.begin(); it != sleeping.end(); ++it) {
 		    opponents.push_front(weak_from_obj(*it));
 		}
 		if (combat_trace)
@@ -1474,8 +1469,7 @@ void Combat_schedule::ending(
 		// See if being a coward.
 		find_opponents();
 		bool found = false; // Find a close-by enemy.
-		for (list<Game_object_weak>::const_iterator it = opponents.begin();
-		        it != opponents.end(); ++it) {
+		for (auto it = opponents.begin(); it != opponents.end(); ++it) {
 	    	Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
 			if (opp && opp->distance(npc) < (c_screen_tile_size / 2 - 2) &&
 			        Fast_pathfinder_client::is_grabable(npc, opp.get())) {
@@ -1571,8 +1565,7 @@ void Duel_schedule::find_opponents(
 	}
 	Actor_vector vec;       // Find all nearby NPC's.
 	npc->find_nearby_actors(vec, c_any_shapenum, 24);
-	for (Actor_vector::const_iterator it = vec.begin(); it != vec.end();
-	        ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Actor *opp = *it;
 		Game_object *oppopp = opp->get_target();
 		if (opp != npc && opp->get_schedule_type() == duel &&

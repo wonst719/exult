@@ -100,12 +100,12 @@ void apply_envelope_to_amp(int v)
 			ramp *= static_cast<float>(vol_table[voice[v].envelope_volume>>23]);
 		}
 
-		sint32 la = static_cast<sint32>(FSCALE(lamp,AMP_BITS));
+		auto la = static_cast<sint32>(FSCALE(lamp,AMP_BITS));
 
 		if (la>MAX_AMP_VALUE)
 			la=MAX_AMP_VALUE;
 
-		sint32 ra = static_cast<sint32>(FSCALE(ramp,AMP_BITS));
+		auto ra = static_cast<sint32>(FSCALE(ramp,AMP_BITS));
 		if (ra>MAX_AMP_VALUE)
 			ra=MAX_AMP_VALUE;
 
@@ -120,7 +120,7 @@ void apply_envelope_to_amp(int v)
 		if (voice[v].sample->modes & MODES_ENVELOPE)
 			lamp *= static_cast<float>(vol_table[voice[v].envelope_volume>>23]);
 
-		sint32 la = static_cast<sint32>(FSCALE(lamp,AMP_BITS));
+		auto la = static_cast<sint32>(FSCALE(lamp,AMP_BITS));
 
 		if (la>MAX_AMP_VALUE)
 			la=MAX_AMP_VALUE;

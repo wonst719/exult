@@ -281,8 +281,7 @@ void Cheat::move_chunk(Map_chunk *chunk, int dx, int dy) {
 			if (!obj->as_npc())
 				tmplist.push_back(obj->shared_from_this());
 	}
-	for (Game_object_shared_vector::const_iterator it = tmplist.begin();
-	        it != tmplist.end(); ++it)
+	for (auto it = tmplist.begin(); it != tmplist.end(); ++it)
 		(*it)->remove_this();
 	tmplist.clear();
 	// Copy terrain into new chunk.
@@ -295,8 +294,7 @@ void Cheat::move_chunk(Map_chunk *chunk, int dx, int dy) {
 	}
 	dx *= c_tiles_per_chunk;
 	dy *= c_tiles_per_chunk;
-	for (Game_object_shared_vector::const_iterator it = tmplist.begin();
-	        it != tmplist.end(); ++it) {
+	for (auto it = tmplist.begin(); it != tmplist.end(); ++it) {
 		obj = (*it).get();
 		Tile_coord t = obj->get_tile();
 		// Got to move objects legally.
@@ -648,8 +646,7 @@ void Cheat::move_selected(int dx, int dy, int dz) {
 }
 
 bool Cheat::is_selected(Game_object *o) {
-	for (Game_object_shared_vector::const_iterator it = selected.begin();
-	        it != selected.end(); ++it)
+	for (auto it = selected.begin(); it != selected.end(); ++it)
 		if (o == (*it).get())
 			return true;
 	return false;

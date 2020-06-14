@@ -56,7 +56,7 @@ PlayMode *play_mode_list[] = {
 
 void s32tos8(void *dp, sint32 *lp, sint32 c)
 {
-	sint8 *cp=static_cast<sint8 *>(dp);
+	auto *cp=static_cast<sint8 *>(dp);
 	while (c--)
 	{
 		sint32 l=(*lp++)>>(32-8-GUARD_BITS);
@@ -68,7 +68,7 @@ void s32tos8(void *dp, sint32 *lp, sint32 c)
 
 void s32tou8(void *dp, sint32 *lp, sint32 c)
 {
-	uint8 *cp=static_cast<uint8 *>(dp);
+	auto *cp=static_cast<uint8 *>(dp);
 	while (c--)
 	{
 		sint32 l=(*lp++)>>(32-8-GUARD_BITS);
@@ -80,7 +80,7 @@ void s32tou8(void *dp, sint32 *lp, sint32 c)
 
 void s32tos16(void *dp, sint32 *lp, sint32 c)
 {
-	sint16 *sp=static_cast<sint16 *>(dp);
+	auto *sp=static_cast<sint16 *>(dp);
 	while (c--)
 	{
 		sint32 l=(*lp++)>>(32-16-GUARD_BITS);
@@ -92,7 +92,7 @@ void s32tos16(void *dp, sint32 *lp, sint32 c)
 
 void s32tou16(void *dp, sint32 *lp, sint32 c)
 {
-	uint16 *sp=static_cast<uint16 *>(dp);
+	auto *sp=static_cast<uint16 *>(dp);
 	while (c--)
 	{
 		sint32 l=(*lp++)>>(32-16-GUARD_BITS);
@@ -104,7 +104,7 @@ void s32tou16(void *dp, sint32 *lp, sint32 c)
 
 void s32tos16x(void *dp, sint32 *lp, sint32 c)
 {
-	sint16 *sp=static_cast<sint16 *>(dp);
+	auto *sp=static_cast<sint16 *>(dp);
 	while (c--)
 	{
 		sint32 l=(*lp++)>>(32-16-GUARD_BITS);
@@ -116,7 +116,7 @@ void s32tos16x(void *dp, sint32 *lp, sint32 c)
 
 void s32tou16x(void *dp, sint32 *lp, sint32 c)
 {
-	uint16 *sp=static_cast<uint16 *>(dp);
+	auto *sp=static_cast<uint16 *>(dp);
 	while (c--)
 	{
 		sint32 l=(*lp++)>>(32-16-GUARD_BITS);
@@ -128,7 +128,7 @@ void s32tou16x(void *dp, sint32 *lp, sint32 c)
 
 void s32toulaw(void *dp, sint32 *lp, sint32 c)
 {
-	uint8 *up=static_cast<uint8 *>(dp);
+	auto *up=static_cast<uint8 *>(dp);
 	while (c--)
 	{
 		sint32 l=(*lp++)>>(32-13-GUARD_BITS);

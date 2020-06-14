@@ -675,9 +675,9 @@ void pre_resample(Sample * sp)
 	double a = (static_cast<double>(sp->sample_rate) * freq_table[static_cast<int>(sp->note_to_use)]) /
 		(static_cast<double>(sp->root_freq) * play_mode->rate);
 	if (a <= 0) return;
-	sint32 newlen = static_cast<sint32>(sp->data_length / a);
+	auto newlen = static_cast<sint32>(sp->data_length / a);
 	if (newlen < 0 || (newlen >> FRACTION_BITS) > MAX_SAMPLE_SIZE) return;
-	sint16 *newdata = safe_Malloc<sint16>(newlen >> FRACTION_BITS);
+	auto *newdata = safe_Malloc<sint16>(newlen >> FRACTION_BITS);
 	sint16 *dest = newdata;
 
 	sint32 count = (newlen >> FRACTION_BITS) - 1;

@@ -589,7 +589,7 @@ gint Shape_chooser::drag_motion(
     gpointer data           // ->Shape_chooser.
 ) {
 	ignore_unused_variable_warning(widget);
-	Shape_chooser *chooser = static_cast<Shape_chooser *>(data);
+	auto *chooser = static_cast<Shape_chooser *>(data);
 	if (!chooser->dragging && chooser->selected >= 0)
 		chooser->start_drag(U7_TARGET_SHAPEID_NAME,
 		                    U7_TARGET_SHAPEID, reinterpret_cast<GdkEvent *>(event));

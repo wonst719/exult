@@ -2905,8 +2905,7 @@ void Game_window::emulate_cache(Map_chunk *olist, Map_chunk *nlist) {
 					removes.push_back(each);
 			}
 		}
-	for (Game_object_vector::const_iterator it = removes.begin();
-	        it != removes.end(); ++it) {
+	for (auto it = removes.begin(); it != removes.end(); ++it) {
 #ifdef DEBUG
 		Tile_coord t = (*it)->get_tile();
 		cout << "Culling object: " << (*it)->get_name() <<

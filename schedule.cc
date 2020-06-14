@@ -158,8 +158,7 @@ Game_object *Schedule::find_nearest(
 ) {
 	Game_object *nearest = nullptr;
 	int best_dist = 1000;   // Find closest.
-	for (Game_object_vector::const_iterator it = nearby.begin();
-	        it != nearby.end(); ++it) {
+	for (auto it = nearby.begin(); it != nearby.end(); ++it) {
 		Game_object *obj = *it;
 		int dist;
 		if ((dist = obj->distance(actor)) < best_dist) {
@@ -184,8 +183,7 @@ bool Schedule::seek_foes(
 	int npc_align = npc->get_effective_alignment();
 	Actor *foe = nullptr;
 	bool see_invisible = npc->can_see_invisible();
-	for (Actor_vector::const_iterator it = vec.begin();
-	        it != vec.end(); ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Actor *actor = *it;
 		if (actor->is_dead() || actor->get_flag(Obj_flags::asleep) ||
 		        (!see_invisible && actor->get_flag(Obj_flags::invisible)) ||
@@ -797,8 +795,7 @@ void Eat_at_inn_schedule::now_what(
 		// Find closest.
 		Game_object *food = nullptr;
 		int dist = 500;
-		for (Game_object_vector::const_iterator it = foods.begin();
-		        it != foods.end(); ++it) {
+		for (auto it = foods.begin(); it != foods.end(); ++it) {
 			Game_object *obj = *it;
 			int odist = obj->distance(npc);
 			if (odist < dist) {
@@ -824,8 +821,7 @@ void Eat_at_inn_schedule::ending(int new_type) { // new schedule type
 	Game_object_vector foods;           // Food nearby?
 	int cnt = npc->find_nearby(foods, 377, 2, 0);
 	if (cnt) {          // Found?
-		for (Game_object_vector::const_iterator it = foods.begin();
-		        it != foods.end(); ++it) {
+		for (auto it = foods.begin(); it != foods.end(); ++it) {
 			Game_object *food = *it;
 			if (food) {
 				gwin->add_dirty(food);
@@ -850,8 +846,7 @@ Actor *Find_congregant(
 	if (!npc->find_nearby_actors(vec, c_any_shapenum, 16))
 		return nullptr;
 	vec2.reserve(vec.size());   // Get list of ones to consider.
-	for (Actor_vector::const_iterator it = vec.begin();
-	        it != vec.end(); ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Actor *act = *it;
 		if (act->get_schedule_type() == Schedule::sit &&
 		        !act->is_in_party())
@@ -1702,8 +1697,7 @@ void Kid_games_schedule::now_what(
 	} else {            // No more kids?  Search.
 		Actor_vector vec;
 		npc->find_nearby_actors(vec, c_any_shapenum, 16);
-		for (Actor_vector::const_iterator it = vec.begin();
-		        it != vec.end(); ++it) {
+		for (auto it = vec.begin(); it != vec.end(); ++it) {
 			Actor *act = *it;
 			if (act->get_schedule_type() == kid_games)
 				kids.push_back(act);
@@ -1816,8 +1810,7 @@ static void Grow_crops(Actor *npc)
 	npc->find_closest(crops, cropshapes, array_size(cropshapes));
 	// Grow the farther ones.
 	int cnt = crops.size();
-	for (Game_object_vector::const_iterator it = crops.begin() + cnt/2;
-	                                        it != crops.end(); ++it) {
+	for (auto it = crops.begin() + cnt/2; it != crops.end(); ++it) {
 		if (rand()%4)
 			continue;
 		Game_object *c = *it;
@@ -1853,8 +1846,7 @@ void Farmer_schedule::now_what(
 			npc->say(first_farmer2, last_farmer2);
 		npc->find_closest(crops, cropshapes, array_size(cropshapes));
 		// Filter out frame #3 (already cut).
-		for (Game_object_vector::const_iterator it = crops.begin();
-		                                        it != crops.end(); ++it) {
+		for (auto it = crops.begin(); it != crops.end(); ++it) {
 			if ((*it)->get_framenum()%4 != 3) {
 				crop_obj = *it;
 				if (rand()%3 == 0)		// A little randomness.
@@ -2238,8 +2230,7 @@ void Sleep_schedule::now_what(
 		Game_object_vector tops;    // Want to find top of bed.
 		bed_obj->find_nearby(tops, bed_obj->get_shapenum(), 1, 0);
 		int floor = (bed_obj->get_tile().tz) / 5;
-		for (Game_object_vector::const_iterator it = tops.begin();
-		        it != tops.end(); ++it) {
+		for (auto it = tops.begin(); it != tops.end(); ++it) {
 			Game_object *top = *it;
 			int frnum = top->get_framenum();
 			Tile_coord tpos = top->get_tile();
@@ -2478,8 +2469,7 @@ class Sit_actor_action : public Frames_actor_action, public Game_singletons {
 	static bool is_occupied(Tile_coord const &sitloc, Actor *actor) {
 		Game_object_vector occ; // See if occupied.
 		if (Game_object::find_nearby(occ, sitloc, c_any_shapenum, 0, 8))
-			for (Game_object_vector::const_iterator it =
-			            occ.begin(); it != occ.end(); ++it) {
+			for (auto it = occ.begin(); it != occ.end(); ++it) {
 				Game_object *npc = *it;
 				if (npc == actor)
 					continue;
@@ -2608,8 +2598,7 @@ void Desk_schedule::find_tables(
 	Game_object_vector vec;
 	npc->find_nearby(vec, shapenum, 16, 0);
 	int floor = npc->get_lift() / 5; // Make sure it's on same floor.
-	for (Game_object_vector::const_iterator it = vec.begin(); it != vec.end();
-	        ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Game_object *table = *it;
 		if (table->get_lift() / 5 != floor)
 			continue;
@@ -3280,8 +3269,7 @@ bool Waiter_schedule::find_customer(
 	if (customers.empty()) {        // Got to search?
 		Actor_vector vec;       // Look within 32 tiles;
 		npc->find_nearby_actors(vec, c_any_shapenum, 32);
-		for (Actor_vector::const_iterator it = vec.begin();
-		        it != vec.end(); ++it) {
+		for (auto it = vec.begin(); it != vec.end(); ++it) {
 			// Filter them.
 			Actor *each = *it;
 			if (each->get_schedule_type() == Schedule::eat_at_inn)
@@ -3365,8 +3353,7 @@ void Waiter_schedule::find_tables(
 	Game_object_vector vec;
 	npc->find_nearby(vec, shapenum, dist, 0);
 	int floor = npc->get_lift() / 5; // Make sure it's on same floor.
-	for (Game_object_vector::const_iterator it = vec.begin(); it != vec.end();
-	        ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Game_object *table_obj = *it;
 		if (table_obj->get_lift() / 5 != floor)
 			continue;
@@ -5067,8 +5054,7 @@ void Eat_schedule::now_what() {
 		if (cnt) {          // Found?
 			Game_object *food = nullptr; // Find closest.
 			int dist = 500;
-			for (Game_object_vector::const_iterator it = foods.begin();
-			        it != foods.end(); ++it) {
+			for (auto it = foods.begin(); it != foods.end(); ++it) {
 				Game_object *obj = *it;
 				int odist = obj->distance(npc);
 				if (odist < dist) {
@@ -5125,8 +5111,7 @@ void Eat_schedule::ending(int new_type) { // new schedule type
 	Game_object_vector foods;           // Food nearby?
 	int cnt = npc->find_nearby(foods, 377, 2, 0);
 	if (cnt) {          // Found?
-		for (Game_object_vector::const_iterator it = foods.begin();
-		        it != foods.end(); ++it) {
+		for (auto it = foods.begin(); it != foods.end(); ++it) {
 			Game_object *food = *it;
 			if (food) {
 				gwin->add_dirty(food);

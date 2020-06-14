@@ -247,7 +247,7 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 		resolutions = new uint32[num_resolutions + 1];
 
 		int i = 0;
-		for (std::map<uint32, Image_window::Resolution>::const_iterator it = Resolutions.begin(); it != Resolutions.end(); ++it)
+		for (auto it = Resolutions.begin(); it != Resolutions.end(); ++it)
 			resolutions[i++] = it->first;
 
 		// Add in useful window resolutions
@@ -266,7 +266,7 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 		win_resolutions = new uint32[num_win_resolutions + 1];
 
 		i = 0;
-		for (std::map<uint32, Image_window::Resolution>::const_iterator it = Resolutions.begin(); it != Resolutions.end(); ++it)
+		for (auto it = Resolutions.begin(); it != Resolutions.end(); ++it)
 			win_resolutions[i++] = it->first;
 	}
 	if (startup_fill_mode == 0)

@@ -205,7 +205,7 @@ void Shape_group::swap(
 void Shape_group::add(
     int id
 ) {
-	for (vector<int>::const_iterator it = begin(); it != end(); ++it)
+	for (auto it = begin(); it != end(); ++it)
 		if ((*it) == id)
 			return;     // Already there.
 	push_back(id);
@@ -267,8 +267,7 @@ Shape_group_file::Shape_group_file(
 int Shape_group_file::find(
     const char *nm
 ) {
-	for (vector<Shape_group *>::const_iterator it = groups.begin();
-	        it != groups.end(); ++it)
+	for (auto it = groups.begin(); it != groups.end(); ++it)
 		if ((*it)->name == nm)
 			return it - groups.begin();
 	return -1;
@@ -905,8 +904,7 @@ bool ExultStudio::groups_modified(
 void ExultStudio::update_group_windows(
     Shape_group *grp        // Group, or 0 for all.
 ) {
-	for (vector<GtkWindow *>::const_iterator it = group_windows.begin();
-	        it != group_windows.end(); ++it) {
+	for (auto it = group_windows.begin(); it != group_windows.end(); ++it) {
 		auto *chooser = static_cast<Object_browser *>(
 		                          g_object_get_data(G_OBJECT(*it), "browser"));
 		if (!grp || chooser->get_group() == grp) {

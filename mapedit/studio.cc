@@ -2467,7 +2467,7 @@ static void Read_from_server(
     GdkInputCondition condition
 ) {
 	ignore_unused_variable_warning(socket, condition);
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	studio->read_from_server();
 }
 #else

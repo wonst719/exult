@@ -533,8 +533,7 @@ USECODE_INTRINSIC(set_last_created) {
 	// Take itemref off map and set last_created to it.
 	Game_object *obj = get_item(parms[0]);
 	// Don't do it for same object if already there.
-	for (vector<Game_object_shared>::const_iterator it = last_created.begin();
-	        it != last_created.end(); ++it)
+	for (auto it = last_created.begin(); it != last_created.end(); ++it)
 		if ((*it).get() == obj)
 			return Usecode_value(0);
 	modified_map = true;
@@ -1787,8 +1786,7 @@ USECODE_INTRINSIC(armageddon) {
 		Armageddon_death(gwin->get_npc(i), true, screen);
 	Actor_vector vec;       // Get any monsters nearby.
 	gwin->get_main_actor()->find_nearby_actors(vec, c_any_shapenum, 40, 0x28);
-	for (Actor_vector::const_iterator it = vec.begin(); it != vec.end();
-	        ++it) {
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
 		Actor *act = *it;
 		if (act->is_monster())
 			Armageddon_death(act, false, screen);

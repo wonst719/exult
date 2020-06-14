@@ -407,7 +407,7 @@ gint Chunk_chooser::drag_motion(
     gpointer data           // ->Shape_chooser.
 ) {
 	ignore_unused_variable_warning(widget);
-	Chunk_chooser *chooser = static_cast<Chunk_chooser *>(data);
+	auto *chooser = static_cast<Chunk_chooser *>(data);
 	if (!chooser->dragging && chooser->selected >= 0)
 		chooser->start_drag(U7_TARGET_CHUNKID_NAME,
 		                    U7_TARGET_CHUNKID, reinterpret_cast<GdkEvent *>(event));
