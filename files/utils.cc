@@ -480,7 +480,11 @@ protected:
 
 	template <typename Dest>
 	Dest get_function(const char *func) {
-		return reinterpret_cast<Dest>(reinterpret_cast<void (*)(void)>(GetProcAddress(hLib, func)));
+		static_assert(sizeof(Dest) == sizeof(decltype(GetProcAddress(hLib, func))), "sizeof(void*) is not equal to sizeof(Dest)!");
+		Dest fptr;
+		auto *optr = GetProcAddress(hLib, func);
+		std::memcpy(&fptr, &optr, sizeof(optr));
+		return fptr;
 	}
 
 public:
