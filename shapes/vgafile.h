@@ -237,7 +237,7 @@ public:
  *  A shape file just has one shape with multiple frames.  They're all
  *  read in during construction.
  */
-class Shape_file : public Shape {
+class Shape_file final : public Shape {
 public:
 	explicit Shape_file(const char *nm);
 	explicit Shape_file(std::unique_ptr<Shape_frame> fr): Shape(std::move(fr)) {}

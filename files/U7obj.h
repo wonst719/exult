@@ -99,7 +99,7 @@ public:
  *  An 'object' it loads may be an object in a file or an object
  *  in a buffer.
  */
-class U7multiobject : public U7object {
+class U7multiobject final : public U7object {
 private:
 	std::unique_ptr<unsigned char[]> buffer;
 	size_t length;
