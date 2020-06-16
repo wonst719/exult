@@ -718,28 +718,65 @@ void setup_data_dir(
 	exit(-1);
 }
 
+static string Get_config_dir(const string& home_dir) {
+#ifdef __IPHONEOS__
+	ignore_unused_variable_warning(home_dir);
+	return ios_get_documents_dir();
+#elif defined(MACOSX)
+	string config_dir(home_dir);
+	config_dir += "/Library/Preferences";
+	return config_dir;
+#else
+	return home_dir;
+#endif
+}
+
+static string Get_savehome_dir(const string& home_dir, const string& config_dir) {
+#ifdef __IPHONEOS__
+	ignore_unused_variable_warning(home_dir);
+	string savehome_dir(config_dir);
+	savehome_dir += "/save";
+	return savehome_dir;
+#elif defined(MACOSX)
+	ignore_unused_variable_warning(config_dir);
+	string savehome_dir(home_dir);
+	savehome_dir += "/Library/Application Support/Exult";
+	return savehome_dir;
+#elif defined(XWIN)
+	ignore_unused_variable_warning(config_dir);
+	string savehome_dir(home_dir);
+	savehome_dir += "/.exult";
+	return savehome_dir;
+#else
+	ignore_unused_variable_warning(config_dir);
+	return home_dir;
+#endif
+}
+
+static string Get_gamehome_dir(const string& home_dir, const string& config_dir) {
+#ifdef __IPHONEOS__
+	ignore_unused_variable_warning(home_dir);
+	string gamehome_dir(config_dir);
+	gamehome_dir += "/game";
+	return gamehome_dir;
+#elif defined(MACOSX)
+	ignore_unused_variable_warning(home_dir, config_dir);
+	return "/Library/Application Support/Exult";
+#elif defined(XWIN)
+	ignore_unused_variable_warning(home_dir, config_dir);
+	return EXULT_DATADIR;
+#else
+	ignore_unused_variable_warning(home_dir, config_dir);
+	return ".";
+#endif
+}
+
 void setup_program_paths() {
 	string home_dir(Get_home());
-	string config_dir;
-	string savehome_dir;
-	string gamehome_dir(".");
+	string config_dir(Get_config_dir(home_dir));
+	string savehome_dir(Get_savehome_dir(home_dir, config_dir));
+	string gamehome_dir(Get_gamehome_dir(home_dir, config_dir));
 
-#ifdef __IPHONEOS__
-	config_dir = ios_get_documents_dir();
-	savehome_dir = config_dir + "/save";
-	gamehome_dir = config_dir + "/game";
-#elif defined(MACOSX)
-	config_dir = home_dir;
-	config_dir += "/Library/Preferences";
-	savehome_dir = home_dir;
-	savehome_dir += "/Library/Application Support/Exult";
-	gamehome_dir = "/Library/Application Support/Exult";
-#elif defined(XWIN)
-	config_dir = home_dir;
-	savehome_dir = home_dir;
-	savehome_dir += "/.exult";
-	gamehome_dir = EXULT_DATADIR;
-#endif
 	if (get_system_path("<HOME>") != ".")
 		add_system_path("<HOME>", home_dir);
 	add_system_path("<CONFIG>", config_dir);
