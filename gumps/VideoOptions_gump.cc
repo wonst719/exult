@@ -108,19 +108,28 @@ void VideoOptions_gump::rebuild_buttons() {
 
 	// the text arrays are freed by the destructors of the buttons
 
-	std::vector<std::string> scalers(Image_window::NumScalers);
+	std::vector<std::string> scalers;
+	scalers.reserve(Image_window::NumScalers);
 	for (int i = 0; i < Image_window::NumScalers; i++) {
 		scalers.emplace_back(Image_window::get_name_for_scaler(i));
 	}
 	buttons[id_scaler] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_scaler,
 	        std::move(scalers), scaler, colx[2], rowy[3], 74);
 
-	std::vector<std::string> game_restext = {"Auto", "320x200"};
-#ifdef __IPHONEOS__
-	game_restext.emplace_back("400x250");
-	game_restext.emplace_back("480x300");
-#endif
-	game_restext.emplace_back(resolutionstring(game_resolutions[2]));
+	std::vector<std::string> game_restext;
+	game_restext.reserve(num_game_resolutions);
+	for (auto *it = std::begin(game_resolutions); it != std::begin(game_resolutions) + num_game_resolutions;  ++it) {
+		uint32 res = *it;
+		std::string restext;
+		if (res == 0) {
+			restext = "Auto";
+		} else {
+			restext = std::to_string(get_width(res));
+			restext += 'x';
+			restext += std::to_string(get_height(res));
+		}
+		game_restext.emplace_back(std::move(restext));
+	}
 
 	buttons[id_game_resolution] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_game_resolution,
 	        std::move(game_restext), game_resolution, colx[2], rowy[6], 74);
