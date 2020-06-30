@@ -30,13 +30,16 @@ class Gump_button;
 class VideoOptions_gump : public Modal_gump {
 	UNREPLICATABLE_CLASS(VideoOptions_gump)
 	static VideoOptions_gump *video_options_gump;
-private:
 
+private:
 	uint32 resolution;
 	int scaling;
 	int scaler;
 	int fullscreen;
 	uint32 game_resolution;
+	std::vector<uint32> resolutions;
+	std::vector<uint32> win_resolutions;
+	std::vector<uint32> game_resolutions;
 	int fill_scaler;
 	Image_window::FillMode fill_mode;
 	bool has_ac;
@@ -52,20 +55,7 @@ private:
 	bool highdpi;
 	bool o_highdpi;
 
-	static uint32 *resolutions;
-	static int num_resolutions;
-
-	static uint32 *win_resolutions;
-	static int num_win_resolutions;
-
-#ifdef __IPHONEOS__
-	static uint32 game_resolutions[5];
-#else
-	static uint32 game_resolutions[3];
-#endif
-	static int num_game_resolutions;
-
-	static Image_window::FillMode startup_fill_mode;
+	Image_window::FillMode startup_fill_mode;
 
 	enum button_ids {
 	    id_first = 0,
@@ -86,7 +76,6 @@ private:
 
 public:
 	VideoOptions_gump();
-	~VideoOptions_gump() override;
 	static VideoOptions_gump *get_instance() {
 		return video_options_gump;
 	}
@@ -150,7 +139,7 @@ public:
 	}
 
 	void toggle_game_resolution(int state) {
-		game_resolution = state;
+		game_resolution = game_resolutions[state];
 	}
 
 	void toggle_fill_scaler(int state) {
