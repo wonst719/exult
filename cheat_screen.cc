@@ -178,7 +178,11 @@ void CheatScreen::show_screen() {
 	font = fontManager.get_font("MENU_FONT");
 	clock = gwin->get_clock();
 	maxx = gwin->get_width();
+#ifdef __IPHONEOS__
+	maxy = 200;
+#else
 	maxy = gwin->get_height();
+#endif
 	centerx = maxx / 2;
 	centery = maxy / 2;
 	if (touchui != nullptr) {
