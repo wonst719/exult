@@ -2913,7 +2913,7 @@ UI_fade_palette(int length, int unk, bool type)
   Parameters:
     length    The length, in ticks, of the fade; that is, how long it will take
               for the fade to happen.
-    unk       Reservedi; unknown. This is an unknown parameter from the
+    unk       Reserved; unknown. This is an unknown parameter from the
               original games; it is unimplemented in Exult. It cannot be left
               out, however.
     type      The type of fade. If true, fades from black; if false, fades to
@@ -2928,7 +2928,7 @@ UI_fade_palette_sleep(int length, int unk, bool type)                [SI, Exult]
   Parameters:
     length    The length, in ticks, of the fade; that is, how long it will take
               for the fade to happen.
-    unk       Reservedi; unknown. This is an unknown parameter from the
+    unk       Reserved; unknown. This is an unknown parameter from the
               original games; it is unimplemented in Exult. It cannot be left
               out, however.
     type      The type of fade. If true, fades from black; if false, fades to
