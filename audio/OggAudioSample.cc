@@ -118,8 +118,8 @@ void OggAudioSample::initDecompressor(void *DecompData) const
 	decomp->bitstream = 0;
 
 	vorbis_info *info = ov_info(&decomp->ov,-1);
-	*const_cast<uint32*>(&sample_rate) = decomp->last_rate = info->rate;
-	*const_cast<bool*>(&stereo) = decomp->last_stereo = info->channels == 2;
+	sample_rate = decomp->last_rate = info->rate;
+	stereo = decomp->last_stereo = info->channels == 2;
 	decomp->freed = false;
 }
 
@@ -146,8 +146,8 @@ uint32 OggAudioSample::decompressFrame(void *DecompData, void *samples) const
 
 	if (info == nullptr) return 0;
 
-	*const_cast<uint32*>(&sample_rate) = decomp->last_rate;
-	*const_cast<bool*>(&stereo) = decomp->last_stereo;
+	sample_rate = decomp->last_rate;
+	stereo = decomp->last_stereo;
 	decomp->last_rate = info->rate;
 	decomp->last_stereo = info->channels == 2;
 

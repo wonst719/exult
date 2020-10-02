@@ -31,9 +31,7 @@ namespace Pentagram {
 class AudioSample
 {
 protected:
-	uint32	sample_rate;
 	uint32	bits;
-	bool	stereo;
 	int		frame_size;
 	uint32	decompressor_size;
 	uint32	decompressor_align;
@@ -43,6 +41,9 @@ protected:
 	std::unique_ptr<uint8[]> buffer;
 
 	uint32	refcount;
+
+	mutable uint32	sample_rate;
+	mutable bool	stereo;
 
 public:
 	AudioSample(std::unique_ptr<uint8[]> buffer, uint32 size);
