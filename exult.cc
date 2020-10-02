@@ -702,13 +702,7 @@ static void Init(
 	init_flags |= SDL_INIT_NOPARACHUTE;
 #endif
 #ifdef _WIN32
-	// Due to the new menu size, the window can sometimes
-	// be partially offscreen in Windows. SDL currently
-	// offers no better way of doing this, so...
-	// I don't know if this will be problem in other OSes,
-	// so I leave it Windows-specific for now.
-	SDL_putenv(const_cast<char *>("SDL_VIDEO_CENTERED=center"));
-	SDL_putenv(const_cast<char *>("SDL_AUDIODRIVER=DirectSound"));
+	SDL_putenv("SDL_AUDIODRIVER=DirectSound");
 #elif defined(MACOSX) && defined(USE_EXULTSTUDIO)
 	// Just in case:
 #ifndef XWIN
@@ -716,7 +710,7 @@ static void Init(
 #endif
 	// Exult Studio support in Mac OS X is experimental and requires
 	// SDL to use X11. Hence, we force the issue.
-	SDL_putenv(const_cast<char *>("SDL_VIDEODRIVER=x11"));
+	SDL_putenv("SDL_VIDEODRIVER=x11");
 #endif
 	SDL_SetHint(SDL_HINT_ORIENTATIONS, "Landscape");
 #if 0
