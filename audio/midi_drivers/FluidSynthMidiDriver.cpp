@@ -33,30 +33,15 @@ const MidiDriver::MidiDriverDesc FluidSynthMidiDriver::desc =
 // MidiDriver method implementations
 
 void FluidSynthMidiDriver::setInt(const char *name, int val) {
-	//char *name2 = strdup(name);
-	char *name2 = const_cast<char*>(name);
-
-	fluid_settings_setint(_settings, name2, val);
-	//std::free(name2);
+	fluid_settings_setint(_settings, name, val);
 }
 
 void FluidSynthMidiDriver::setNum(const char *name, double val) {
-	//char *name2 = strdup(name);
-	char *name2 = const_cast<char*>(name);
-
-	fluid_settings_setnum(_settings, name2, val);
-	//std::free(name2);
+	fluid_settings_setnum(_settings, name, val);
 }
 
 void FluidSynthMidiDriver::setStr(const char *name, const char *val) {
-	//char *name2 = strdup(name);
-	//char *val2 = strdup(val);
-	char *name2 = const_cast<char*>(name);
-	char *val2 = const_cast<char*>(val);
-
-	fluid_settings_setstr(_settings, name2, val2);
-	//std::free(name2);
-	//std::free(val2);
+	fluid_settings_setstr(_settings, name, val);
 }
 
 int FluidSynthMidiDriver::open() {
