@@ -602,7 +602,7 @@ int exult_main(const char *runpath) {
 	//  invilved with registering DnD a second time over an old variable.
 #if defined(_WIN32)
 	RevokeDragDrop(hgwin);
-	delete windnd;
+	windnd->Release();
 #else
 	delete xdnd;
 #endif

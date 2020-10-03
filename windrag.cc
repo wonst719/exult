@@ -16,6 +16,11 @@
 
 static UINT CF_EXULT = RegisterClipboardFormat("ExultData");
 
+// Just in case
+#ifndef DECLSPEC_NOTHROW
+#define DECLSPEC_NOTHROW
+#endif
+
 // Statics
 
 void Windnd::CreateStudioDropDest(Windnd  *&windnd, HWND &hWnd,
@@ -65,7 +70,7 @@ Windnd::Windnd(HWND hgwnd, Drop_shape_handler_fun shapefun,
 	m_cRef = 1;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Windnd::QueryInterface(REFIID iid, void **ppvObject) {
 	*ppvObject = nullptr;
 	if (IID_IUnknown == iid || IID_IDropTarget == iid)
@@ -76,12 +81,12 @@ Windnd::QueryInterface(REFIID iid, void **ppvObject) {
 	return NOERROR;
 }
 
-STDMETHODIMP_(ULONG)
+STDMETHODIMP_(ULONG) DECLSPEC_NOTHROW
 Windnd::AddRef() {
 	return ++m_cRef;
 }
 
-STDMETHODIMP_(ULONG)
+STDMETHODIMP_(ULONG) DECLSPEC_NOTHROW
 Windnd::Release() {
 	if (0 != --m_cRef)
 		return m_cRef;
@@ -89,7 +94,7 @@ Windnd::Release() {
 	return 0;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Windnd::DragEnter(IDataObject *pDataObject,
                   DWORD grfKeyState,
                   POINTL pt,
@@ -145,7 +150,7 @@ Windnd::DragEnter(IDataObject *pDataObject,
 	return S_OK;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Windnd::DragOver(DWORD grfKeyState,
                  POINTL pt,
                  DWORD *pdwEffect) {
@@ -182,7 +187,7 @@ Windnd::DragOver(DWORD grfKeyState,
 	return S_OK;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Windnd::DragLeave() {
 	if (move_shape_handler)
 		move_shape_handler(-1, -1, 0, 0, prevx, prevy, true);
@@ -203,7 +208,7 @@ Windnd::DragLeave() {
 	return S_OK;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Windnd::Drop(IDataObject *pDataObject,
              DWORD grfKeyState,
              POINTL pt,
@@ -287,7 +292,7 @@ Windropsource::~Windropsource() {
 	DestroyWindow(drag_shape);
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Windropsource::QueryInterface(REFIID iid, void **ppvObject) {
 	*ppvObject = nullptr;
 	if (IID_IUnknown == iid || IID_IDropSource == iid)
@@ -298,14 +303,14 @@ Windropsource::QueryInterface(REFIID iid, void **ppvObject) {
 	return NOERROR;
 }
 
-STDMETHODIMP_(ULONG)
+STDMETHODIMP_(ULONG) DECLSPEC_NOTHROW
 Windropsource::AddRef() {
 	m_cRef = m_cRef + 1;
 
 	return m_cRef;
 }
 
-STDMETHODIMP_(ULONG)
+STDMETHODIMP_(ULONG) DECLSPEC_NOTHROW
 Windropsource::Release() {
 	if (0 != --m_cRef)
 		return m_cRef;
@@ -313,7 +318,7 @@ Windropsource::Release() {
 	return 0;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Windropsource::QueryContinueDrag(
     BOOL fEscapePressed,
     DWORD grfKeyState
@@ -326,7 +331,7 @@ Windropsource::QueryContinueDrag(
 		return NOERROR;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Windropsource::GiveFeedback(
     DWORD dwEffect
 ) {
@@ -342,7 +347,7 @@ Winstudioobj::Winstudioobj(const windragdata& pdata)
 	drag_image = nullptr;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Winstudioobj::QueryInterface(REFIID iid, void **ppvObject) {
 	*ppvObject = nullptr;
 	if (IID_IUnknown == iid || IID_IDataObject == iid)
@@ -353,12 +358,12 @@ Winstudioobj::QueryInterface(REFIID iid, void **ppvObject) {
 	return NOERROR;
 }
 
-STDMETHODIMP_(ULONG)
+STDMETHODIMP_(ULONG) DECLSPEC_NOTHROW
 Winstudioobj::AddRef() {
 	return ++m_cRef;
 }
 
-STDMETHODIMP_(ULONG)
+STDMETHODIMP_(ULONG) DECLSPEC_NOTHROW
 Winstudioobj::Release() {
 	if (0 != --m_cRef)
 		return m_cRef;
@@ -366,7 +371,7 @@ Winstudioobj::Release() {
 	return 0;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Winstudioobj::GetData(
     FORMATETC *pFormatetc,
     STGMEDIUM *pmedium
@@ -403,7 +408,7 @@ Winstudioobj::GetData(
 	return DATA_E_FORMATETC;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Winstudioobj::GetDataHere(
     FORMATETC *pFormatetc,
     STGMEDIUM *pmedium
@@ -412,7 +417,7 @@ Winstudioobj::GetDataHere(
 	return DATA_E_FORMATETC;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Winstudioobj::QueryGetData(
     FORMATETC *pFormatetc
 ) {
@@ -425,7 +430,7 @@ Winstudioobj::QueryGetData(
 	else return S_FALSE;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Winstudioobj::GetCanonicalFormatEtc(
     FORMATETC *pFormatetcIn,
     FORMATETC *pFormatetcOut
@@ -435,7 +440,7 @@ Winstudioobj::GetCanonicalFormatEtc(
 	return E_NOTIMPL;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Winstudioobj::SetData(
     FORMATETC *pFormatetc,
     STGMEDIUM *pmedium,
@@ -445,7 +450,7 @@ Winstudioobj::SetData(
 	return E_NOTIMPL;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Winstudioobj::EnumFormatEtc(
     DWORD dwDirection,
     IEnumFORMATETC **ppenumFormatetc
@@ -487,7 +492,7 @@ error:
 	return sc;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Winstudioobj::DAdvise(
     FORMATETC *pFormatetc,
     DWORD advf,
@@ -498,7 +503,7 @@ Winstudioobj::DAdvise(
 	return OLE_E_ADVISENOTSUPPORTED;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Winstudioobj::DUnadvise(
     DWORD dwConnection
 ) {
@@ -506,7 +511,7 @@ Winstudioobj::DUnadvise(
 	return OLE_E_ADVISENOTSUPPORTED;
 }
 
-STDMETHODIMP
+STDMETHODIMP DECLSPEC_NOTHROW
 Winstudioobj::EnumDAdvise(
     IEnumSTATDATA **ppenumAdvise
 ) {

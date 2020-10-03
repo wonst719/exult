@@ -568,16 +568,17 @@ gint Shape_chooser::win32_drag_motion(
 		POINT pnt;
 		GetCursorPos(&pnt);
 
-		Windropsource idsrc(nullptr, pnt.x, pnt.y);
+		LPDROPSOURCE idsrc = new Windropsource(nullptr, pnt.x, pnt.y);
 		LPDATAOBJECT idobj = new Winstudioobj(wdata);
 		DWORD dndout;
 
-		HRESULT res = DoDragDrop(idobj, &idsrc, DROPEFFECT_COPY, &dndout);
+		HRESULT res = DoDragDrop(idobj, idsrc, DROPEFFECT_COPY, &dndout);
 		if (FAILED(res)) {
 			g_warning("Oops! Something is wrong with OLE2 DnD..");
 		}
 
 		idobj->Release();   // Not sure if we really need this. However, it doesn't hurt either.
+		idsrc->Release();
 	}
 
 	return true;
