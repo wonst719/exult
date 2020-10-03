@@ -27,7 +27,7 @@ const MidiDriver::MidiDriverDesc WindowsMidiDriver::desc =
 using std::endl;
 
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
-#include "util.h"
+#include "utils.h"
 #endif
 
 #ifndef WIN32_LEAN_AND_MEAN

@@ -20,6 +20,8 @@
 #  include <config.h>
 #endif
 
+#include <cstring>
+
 #include "SDL_events.h"
 #include "files/U7file.h"
 #include "chunks.h"
@@ -28,7 +30,6 @@
 #include "game.h"
 #include "cheat_screen.h"
 #include "font.h"
-#include "cstring"
 #include "actors.h"
 #include "cheat.h"
 #include "exult.h"

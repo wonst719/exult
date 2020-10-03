@@ -295,12 +295,6 @@ void UCData::file_open(const string &filename) {
 	}
 }
 
-#undef LOAD_SPEED_TEST
-
-#ifdef LOAD_SPEED_TEST
-#include "tools/dbgutils.h"
-#endif
-
 void UCData::load_globals(ostream &o) {
 	if (_global_flags_file.empty())
 		return;
@@ -353,12 +347,6 @@ void UCData::load_funcs(ostream &o) {
 
 	if (options.verbose) o << "Loading functions..." << endl;
 
-#ifdef LOAD_SPEED_TEST
-	dbg::DateDiff dd;
-	dbg::timeDateDiff(o);
-	dd.start();
-#endif
-
 	bool eof = false;
 	while (!eof) {
 		auto *ucfunc = new UCFunc();
@@ -381,15 +369,6 @@ void UCData::load_funcs(ostream &o) {
 			_file.unget();
 		}
 	}
-
-#ifdef LOAD_SPEED_TEST
-	dd.end();
-	o << setbase(10) << setfill(' ');
-	dd.print_start(o) << endl;
-	dd.print_end(o) << endl;
-	dd.print_diff(o) << endl;
-	o << setbase(16) << setfill('0');
-#endif
 
 	if (options.verbose) o << "Creating function map..." << endl;
 
