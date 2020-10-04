@@ -132,10 +132,9 @@ static void Include
 	bufstack.push_back(YY_CURRENT_BUFFER);
 	yyin = fopen(name, "r");
 					// Look in -I list if not found here.
-	for (std::vector<char *>::const_iterator it = include_dirs.begin();
-				!yyin && it != include_dirs.end(); ++it)
+	for (char *dir : include_dirs)
 		{
-		string path(*it);
+		string path(dir);
 		path += '/';
 		path += name;
 		yyin = fopen(path.c_str(), "r");

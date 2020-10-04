@@ -494,9 +494,8 @@ Game_window::~Game_window(
 	delete win;
 	delete dragging;
 	delete pal;
-	for (auto it = maps.begin();
-	        it != maps.end(); ++it)
-		delete *it;
+	for (auto *map : maps)
+		delete map;
 	delete usecode;
 	delete clock;
 	delete npc_prox;
@@ -905,9 +904,8 @@ void Game_window::clear_world(
 		if (npc && npc->is_unused())
 			npc.reset();
 	}
-	for (auto it = maps.begin();
-	        it != maps.end(); ++it)
-		(*it)->clear();
+	for (auto *map : maps)
+		map->clear();
 	set_map(0);         // Back to main map.
 	Monster_actor::delete_all();    // To be safe, del. any still around.
 	Notebook_gump::clear();
@@ -1326,9 +1324,8 @@ void Game_window::write(
 	shape_man->paint_text(0, "Saving Game", centre_x - text_width / 2,
 	                      centre_y - text_height);
 	show(true);
-	for (auto it = maps.begin();
-	        it != maps.end(); ++it)
-		(*it)->write_ireg();    // Write ireg files.
+	for (auto *map : maps)
+		map->write_ireg();    // Write ireg files.
 	write_npcs();           // Write out npc.dat.
 	usecode->write();       // Usecode.dat (party, global flags).
 	Notebook_gump::write();     // Write out journal.
@@ -1461,9 +1458,7 @@ bool Game_window::was_map_modified(
 ) {
 	if (Game_map::was_chunk_terrain_modified())
 		return true;
-	for (auto it = maps.begin();
-	        it != maps.end(); ++it) {
-		Game_map *map = *it;
+	for (auto *map : maps) {
 		if (map && map->was_map_modified())
 			return true;
 	}
@@ -1481,9 +1476,7 @@ bool Game_window::was_map_modified(
 
 void Game_window::write_map(
 ) {
-	for (auto it = maps.begin();
-	        it != maps.end(); ++it) {
-		Game_map *map = *it;
+	for (auto *map : maps) {
 		if (map && map->was_map_modified())
 			map->write_static();    // Write ifix, map files.
 	}
@@ -2905,15 +2898,15 @@ void Game_window::emulate_cache(Map_chunk *olist, Map_chunk *nlist) {
 					removes.push_back(each);
 			}
 		}
-	for (auto it = removes.begin(); it != removes.end(); ++it) {
+	for (auto *remove : removes) {
 #ifdef DEBUG
-		Tile_coord t = (*it)->get_tile();
-		cout << "Culling object: " << (*it)->get_name() <<
-		     '(' << *it << ")@" <<
+		Tile_coord t = remove->get_tile();
+		cout << "Culling object: " << remove->get_name() <<
+		     '(' << remove << ")@" <<
 		     t.tx << "," << t.ty << "," << t.tz << endl;
 #endif
-		(*it)->delete_contents();  // first delete item's contents
-		(*it)->remove_this(nullptr);
+		remove->delete_contents();  // first delete item's contents
+		remove->remove_this(nullptr);
 	}
 
 	if (omap == nmap)

@@ -765,8 +765,7 @@ Game_object *Container_game_object::find_weapon_ammo(
 	Game_object_vector vec;     // Get list of all possessions.
 	vec.reserve(50);
 	get_objects(vec, c_any_shapenum, c_any_qual, c_any_framenum);
-	for (auto it = vec.begin(); it != vec.end(); ++it) {
-		Game_object *obj = *it;
+	for (auto *obj : vec) {
 		if (obj->get_shapenum() != weapon)
 			continue;
 		const Shape_info &inf = obj->get_info();

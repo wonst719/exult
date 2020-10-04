@@ -252,9 +252,9 @@ static void switch_slashes(
     string &name
 ) {
 #ifdef _WIN32
-	for (string::iterator X = name.begin(); X != name.end(); ++X) {
-		if (*X == '/')
-			*X = '\\';
+	for (char& X : name) {
+		if (X == '/')
+			X = '\\';
 	}
 #else
 	ignore_unused_variable_warning(name);

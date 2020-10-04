@@ -1223,25 +1223,23 @@ bool Vga_file::import_shapes(
 		flex = Flex::is_flex(ds);
 		assert(flex);
 		imported_shapes.reserve(imported_shapes.size() + imports.size());
-		for (auto it = imports.begin();
-		        it != imports.end(); ++it) {
+		for (const auto& import : imports) {
 			int shpsize = imported_shapes.size();
 			int srcsize = imported_sources.size() - 1;
 			imported_map data = {
-				(*it).second,   // The real shape
+				import.second,   // The real shape
 				shpsize,    // The index of the data pointer.
 				srcsize
 			};   // The data source index.
-			imported_shape_table[(*it).first] = data;
+			imported_shape_table[import.first] = data;
 			imported_shapes.emplace_back();
 		}
 		return true;
 	} else {
 		// Set up the import table anyway.
-		for (auto it = imports.begin();
-		        it != imports.end(); ++it) {
-			imported_map data = {(*it).second, -1, -1};
-			imported_shape_table[(*it).first] = data;
+		for (const auto& import : imports) {
+			imported_map data = {import.second, -1, -1};
+			imported_shape_table[import.first] = data;
 		}
 	}
 	return false;

@@ -671,17 +671,17 @@ static void Create(
 	}
 	OFileDataSource out(imagename);     // May throw exception.
 	Flex_writer writer(out, title, specs.size());
-	for (auto it = specs.begin(); it != specs.end();  ++it) {
-		char *basename = (*it).filename;
+	for (auto& spec : specs) {
+		char *basename = spec.filename;
 		if (basename) {     // Not empty?
-			int dim0_cnt = (*it).dim0_tiles;
+			int dim0_cnt = spec.dim0_tiles;
 			if (dim0_cnt > 0)
 				Write_exult_from_tiles(writer, basename,
-				                       (*it).nframes, (*it).bycol,
-				                       (*it).dim0_tiles, palname);
+				                       spec.nframes, spec.bycol,
+				                       spec.dim0_tiles, palname);
 			else
-				Write_exult(writer, basename, (*it).nframes,
-				            (*it).flat, palname);
+				Write_exult(writer, basename, spec.nframes,
+				            spec.flat, palname);
 			palname = nullptr;    // Only write 1st palette.
 		} else {
 			writer.empty_object();

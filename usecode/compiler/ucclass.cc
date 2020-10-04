@@ -56,9 +56,8 @@ Uc_class::Uc_class(
 ) : name(nm), scope(&base->scope), num_vars(base->num_vars),
 	methods(base->methods), base_class(base) {
 	num = ++last_num;
-	for (auto it = methods.begin();
-	        it != methods.end(); ++it)
-		(*it)->set_inherited();
+	for (auto *method : methods)
+		method->set_inherited();
 }
 
 /*
@@ -143,13 +142,11 @@ void Uc_class::add_method(
 ) {
 	// If this is a duplicate inherited function,
 	// or an externed class method, override it.
-	for (auto it = methods.begin();
-	        it != methods.end(); ++it) {
-		Uc_function *method = *it;
+	for (auto *&method : methods) {
 		if (!strcmp(m->get_name(), method->get_name())) {
 			if (method->is_inherited() || method->is_externed()) {
 				m->set_method_num(method->get_method_num());
-				*it = m;
+				method = m;
 				return;
 			} else {
 				char buf[150];

@@ -111,11 +111,10 @@ void Shape_manager::read_shape_info(
 	const Shape_info &female = shapes.get_info(Shapeinfo_lookup::GetFemaleAvShape());
 
 	vector<Skin_data> *skins = Shapeinfo_lookup::GetSkinList();
-	for (auto it = skins->begin();
-	        it != skins->end(); ++it) {
-		if ((*it).copy_info) {
-			shapes.copy_info((*it).shape_num, (*it).is_female ? female : male);
-			shapes.copy_info((*it).naked_shape, (*it).is_female ? female : male);
+	for (auto& skin : *skins) {
+		if (skin.copy_info) {
+			shapes.copy_info(skin.shape_num, skin.is_female ? female : male);
+			shapes.copy_info(skin.naked_shape, skin.is_female ? female : male);
 		}
 	}
 }

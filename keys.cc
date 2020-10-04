@@ -475,10 +475,8 @@ void KeyBinder::ShowHelp() const {
 	Scroll_gump *scroll;
 	scroll = new Scroll_gump();
 
-	std::vector<string>::const_iterator iter;
-
-	for (iter = keyhelp.begin(); iter != keyhelp.end(); ++iter)
-		scroll->add_text(iter->c_str());
+	for (const auto& iter : keyhelp)
+		scroll->add_text(iter.c_str());
 
 	scroll->paint();
 	do {
@@ -494,10 +492,8 @@ void KeyBinder::ShowCheatHelp() const {
 	Scroll_gump *scroll;
 	scroll = new Scroll_gump();
 
-	std::vector<string>::const_iterator iter;
-
-	for (iter = cheathelp.begin(); iter != cheathelp.end(); ++iter)
-		scroll->add_text(iter->c_str());
+	for (const auto& iter : cheathelp)
+		scroll->add_text(iter.c_str());
 
 	scroll->paint();
 	do {
@@ -513,10 +509,8 @@ void KeyBinder::ShowMapeditHelp() const {
 	Scroll_gump *scroll;
 	scroll = new Scroll_gump();
 
-	std::vector<string>::const_iterator iter;
-
-	for (iter = mapedithelp.begin(); iter != mapedithelp.end(); ++iter)
-		scroll->add_text(iter->c_str());
+	for (const auto& iter : mapedithelp)
+		scroll->add_text(iter.c_str());
 
 	scroll->paint();
 	do {
@@ -554,15 +548,13 @@ void KeyBinder::ShowBrowserKeys() const {
 		strcpy(returned_key, "Error: No key assigned");
 	else {
 		strcpy(returned_key, "");   // prevent garbage text
-		std::vector<string>::const_iterator iter;
 		int extra_keys = 0;
-		for (iter = last_created_key.begin();
-		        iter != last_created_key.end(); ++iter) {
+		for (const auto& iter : last_created_key) {
 			if (extra_keys >= 5)
 				continue;
 			else if (extra_keys > 0)
 				strcat(returned_key, " or ");
-			strcat(returned_key, iter->c_str());
+			strcat(returned_key, iter.c_str());
 			extra_keys += 1;
 		}
 	}

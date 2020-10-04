@@ -87,13 +87,13 @@ int FluidSynthMidiDriver::open() {
 	// fluid_synth_set_chorus_on(_synth, 0);
 
 	int numloaded = 0;
-	for (auto it = soundfonts.begin(); it != soundfonts.end(); ++it)
+	for (auto& soundfont : soundfonts)
 	{
-		int soundFont = fluid_synth_sfload(_synth, it->c_str(), 1);
+		int soundFont = fluid_synth_sfload(_synth, soundfont.c_str(), 1);
 		if (soundFont == -1) {
-			perr << "Failed loading custom sound font '" << *it << "'" << std::endl;
+			perr << "Failed loading custom sound font '" << soundfont << "'" << std::endl;
 		} else {
-			perr << "Loaded custom sound font '" << *it << "'" << std::endl;
+			perr << "Loaded custom sound font '" << soundfont << "'" << std::endl;
 			_soundFont.push(soundFont);
 			numloaded++;
 		}

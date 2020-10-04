@@ -601,9 +601,8 @@ void Shapes_vga_file::read_info(
 	// Ensure valid ready spots for all shapes.
 	unsigned char defready = game == BLACK_GATE ? backpack : rhand;
 	zinfo.ready_type = defready;
-	for (auto it = info.begin();
-	        it != info.end(); ++it) {
-		Shape_info &inf = it->second;
+	for (auto& it : info) {
+		Shape_info &inf = it.second;
 		if (inf.ready_type == invalid_spot)
 			inf.ready_type = defready;
 	}

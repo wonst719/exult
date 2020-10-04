@@ -510,8 +510,7 @@ void Slime_actor::update_frames(
 		Game_object::find_nearby(nearby, dest, get_shapenum(), 2, 8);
 	if (src.tx != -1) {     // Update neighbors we moved from.
 		Get_slime_neighbors(src, neighbors);
-		for (auto it = nearby.begin(); it != nearby.end(); ++it) {
-			Game_object *slime = *it;
+		for (auto *slime : nearby) {
 			if (slime != this &&
 			        (dir = Find_neighbor(slime, neighbors)) >= 0) {
 				int ndir = (dir + 2) % 4;
@@ -525,8 +524,7 @@ void Slime_actor::update_frames(
 	if (dest.tx != -1) {    // Update neighbors we moved to.
 		int frnum = 0;      // Figure our new frame too.
 		Get_slime_neighbors(dest, neighbors);
-		for (auto it = nearby.begin(); it != nearby.end(); ++it) {
-			Game_object *slime = *it;
+		for (auto *slime : nearby) {
 			if (slime != this &&
 			        (dir = Find_neighbor(slime, neighbors)) >= 0) {
 				// In a neighboring spot?

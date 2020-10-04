@@ -533,8 +533,8 @@ USECODE_INTRINSIC(set_last_created) {
 	// Take itemref off map and set last_created to it.
 	Game_object *obj = get_item(parms[0]);
 	// Don't do it for same object if already there.
-	for (auto it = last_created.begin(); it != last_created.end(); ++it)
-		if ((*it).get() == obj)
+	for (auto& it : last_created)
+		if (it.get() == obj)
 			return Usecode_value(0);
 	modified_map = true;
 	Game_object_shared keep;
@@ -1786,8 +1786,7 @@ USECODE_INTRINSIC(armageddon) {
 		Armageddon_death(gwin->get_npc(i), true, screen);
 	Actor_vector vec;       // Get any monsters nearby.
 	gwin->get_main_actor()->find_nearby_actors(vec, c_any_shapenum, 40, 0x28);
-	for (auto it = vec.begin(); it != vec.end(); ++it) {
-		Actor *act = *it;
+	for (auto *act : vec) {
 		if (act->is_monster())
 			Armageddon_death(act, false, screen);
 	}
@@ -1936,9 +1935,7 @@ USECODE_INTRINSIC(set_orrery) {
 	if (brit && state >= 0 && state <= 9) {
 		Game_object_vector planets; // Remove existing planets.
 		brit->find_nearby(planets, 988, 24, 0);
-		for (auto it = planets.begin();
-		        it != planets.end(); ++it) {
-			Game_object *p = *it;
+		for (auto *p : planets) {
 			if (p->get_framenum() <= 7) // Leave the sun.
 				p->remove_this();
 		}
@@ -3184,9 +3181,7 @@ USECODE_INTRINSIC(remove_from_area) {
 	Game_object_vector vec;     // Find objects.
 	Map_chunk::find_in_area(vec, area, shnum, frnum);
 	// Remove them.
-	for (auto it = vec.begin();
-	        it != vec.end(); ++it) {
-		Game_object *obj = *it;
+	for (auto *obj : vec) {
 		gwin->add_dirty(obj);
 		obj->remove_this();
 	}

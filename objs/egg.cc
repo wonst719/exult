@@ -421,8 +421,7 @@ public:
 		Egg_vector eggs;
 		find_nearby_eggs(eggs, 275, dist);
 		find_nearby_eggs(eggs, 200, dist);
-		for (auto it = eggs.begin(); it != eggs.end(); ++it) {
-			Egg_object *egg = *it;
+		for (auto *egg : eggs) {
 			if (egg != this &&
 			        egg->criteria == external_criteria &&
 			        // Attempting to fix problem in Silver Seed
@@ -1301,8 +1300,7 @@ void Field_object::activate(
 	Rectangle eggfoot = get_footprint();
 	// Clear flag to check.
 	static_cast<Field_frame_animator *>(animator)->activated = false;
-	for (auto it = npcs.begin(); it != npcs.end(); ++it) {
-		Actor *actor = *it;
+	for (auto *actor : npcs) {
 		if (actor->is_dead() || Game_object::distance(actor) > 4)
 			continue;
 		if (actor->get_footprint().intersects(eggfoot))

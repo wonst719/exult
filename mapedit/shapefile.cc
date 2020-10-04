@@ -507,9 +507,8 @@ bool Flex_file_info::revert(
 
 Shape_file_set::~Shape_file_set(
 ) {
-	for (auto it = files.begin();
-	        it != files.end(); ++it)
-		delete(*it);
+	for (auto *file : files)
+		delete file;
 }
 
 /*
@@ -553,10 +552,9 @@ Shape_file_info *Shape_file_set::create(
     const char *basename        // Like 'shapes.vga'.
 ) {
 	// Already have it open?
-	for (auto it = files.begin();
-	        it != files.end(); ++it)
-		if (strcasecmp((*it)->basename.c_str(), basename) == 0)
-			return *it; // Found it.
+	for (auto *file : files)
+		if (strcasecmp(file->basename.c_str(), basename) == 0)
+			return file; // Found it.
 	// Look in 'static', 'patch'.
 	string sstr = string("<STATIC>/") + basename;
 	string pstr = string("<PATCH>/") + basename;
@@ -632,10 +630,9 @@ Shape_file_info *Shape_file_set::create(
 
 Shape_file_info *Shape_file_set::get_npc_browser(
 ) {
-	for (auto it = files.begin();
-	        it != files.end(); ++it)
-		if (strcasecmp((*it)->basename.c_str(), "npcs") == 0)
-			return *it; // Found it.
+	for (auto *file : files)
+		if (strcasecmp(file->basename.c_str(), "npcs") == 0)
+			return file; // Found it.
 	return nullptr;   // Doesn't exist yet.
 }
 
@@ -645,9 +642,8 @@ Shape_file_info *Shape_file_set::get_npc_browser(
 
 void Shape_file_set::flush(
 ) {
-	for (auto it = files.begin();
-	        it != files.end(); ++it)
-		(*it)->flush();
+	for (auto *file : files)
+		file->flush();
 }
 
 /*
@@ -656,9 +652,8 @@ void Shape_file_set::flush(
 
 bool Shape_file_set::is_modified(
 ) {
-	for (auto it = files.begin();
-	        it != files.end(); ++it)
-		if ((*it)->modified)
+	for (auto *file : files)
+		if (file->modified)
 			return true;
 	return false;
 }

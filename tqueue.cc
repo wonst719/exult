@@ -130,9 +130,8 @@ int Time_queue::find(
 ) const {
 	if (data.empty())
 		return 0;
-	for (auto it = data.begin();
-	        it != data.end(); ++it) {
-		if (it->handler == obj)
+	for (const auto& it : data) {
+		if (it.handler == obj)
 			return 1;
 	}
 	return 0;
@@ -150,12 +149,11 @@ long Time_queue::find_delay(
 ) const {
 	if (data.empty())
 		return -1;
-	for (auto it = data.begin();
-	        it != data.end(); ++it) {
-		if (it->handler == obj) {
+	for (const auto& it : data) {
+		if (it.handler == obj) {
 			if (pause_time) // Watch for case when paused.
 				curtime = pause_time;
-			long delay = it->time - curtime;
+			long delay = it.time - curtime;
 			return delay >= 0 ? delay : 0;
 		}
 	}
@@ -223,10 +221,9 @@ void Time_queue::resume(
 	pause_time = 0;
 	if (diff < 0)           // Should not happen.
 		return;
-	for (auto it = data.begin();
-	        it != data.end(); ++it) {
-		if (!(*it).handler->always)
-			it->time += diff;   // Push entries ahead.
+	for (auto& it : data) {
+		if (!it.handler->always)
+			it.time += diff;   // Push entries ahead.
 	}
 }
 

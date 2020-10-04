@@ -150,10 +150,10 @@ void SFX_cache_manager::garbage_collect()
 
 	std::multiset <int> sorted;
 
-	for (auto it = cache.begin(); it != cache.end(); ++it)
+	for (auto& it : cache)
 	{
-		if (it->second.second && it->second.second->getRefCount() == 1) 
-			sorted.insert(it->second.first); 
+		if (it.second.second && it.second.second->getRefCount() == 1)
+			sorted.insert(it.second.first);
 	}
 
 	if (sorted.empty()) return;
@@ -181,19 +181,19 @@ void SFX_cache_manager::garbage_collect()
 	if (count <= max_fixed) 
 		return;
 
-	for (auto it = cache.begin(); it != cache.end(); ++it)
+	for (auto& it : cache)
 	{
-		if (it->second.second)
+		if (it.second.second)
 		{
-			if (it->second.first < threshold) 
+			if (it.second.first < threshold)
 			{
-				it->second.second->Release();
-				it->second.second = nullptr;
+				it.second.second->Release();
+				it.second.second = nullptr;
 			}
-			else if (it->second.first == threshold && count > max_fixed) 
+			else if (it.second.first == threshold && count > max_fixed)
 			{
-				it->second.second->Release();
-				it->second.second = nullptr;
+				it.second.second->Release();
+				it.second.second = nullptr;
 				count--;
 			}
 		}

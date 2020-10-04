@@ -849,7 +849,7 @@ void FontManager::reset() {
 	unordered_map<const char *, Font *, hashstr, eqstr>::iterator i;
 
 	for (i = fonts.begin(); i != fonts.end(); ++i) {
-		delete(*i).second;
+		delete i->second;
 	}
 
 	fonts.clear();

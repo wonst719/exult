@@ -198,10 +198,10 @@ int main(int argc, char *argv[]) {
 
 	if (verbose) {
 		cerr << "Operations:" << endl;
-		for (auto i = dolist.begin(); i != dolist.end(); i++) {
-			cerr << '\t' << ((i->first == DoAdd) ? "add" : ((i->first == DoRem) ? "rem" : ((i->first == DoGet) ? "get" : "unknown"))) << '\t';
-			for (auto j = i->second.begin(); j != i->second.end(); j++)
-				cerr << *j << '\t';
+		for (auto& i : dolist) {
+			cerr << '\t' << ((i.first == DoAdd) ? "add" : ((i.first == DoRem) ? "rem" : ((i.first == DoGet) ? "get" : "unknown"))) << '\t';
+			for (auto& j : i.second)
+				cerr << j << '\t';
 			cerr << endl;
 		}
 	}

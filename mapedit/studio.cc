@@ -790,9 +790,8 @@ bool ExultStudio::has_focus(
 	if (Window_has_focus(GTK_WINDOW(app)))
 		return true;        // Main window.
 	// Group windows:
-	vector<GtkWindow *>::const_iterator it;
-	for (it = group_windows.begin(); it != group_windows.end(); ++it)
-		if (Window_has_focus(*it))
+	for (auto *win : group_windows)
+		if (Window_has_focus(win))
 			return true;
 	return false;
 }
@@ -1149,29 +1148,27 @@ void ExultStudio::open_game_dialog(
 	};
 
 	/* create the store for both trees */
-	for (int i = 0; i < 2; i++) {
-		GtkTreeModel *oldmod = gtk_tree_view_get_model(
-		                           GTK_TREE_VIEW(dlg_list[i]));
+	for (auto *widg : dlg_list) {
+		auto *tree = GTK_TREE_VIEW(widg);
+		GtkTreeModel *oldmod = gtk_tree_view_get_model(tree);
 		GtkTreeStore *model;
 		if (oldmod)
 			model = GTK_TREE_STORE(oldmod);
 		else {              // Create the first time.
 			model = gtk_tree_store_new(
 			            2, G_TYPE_STRING, G_TYPE_INT);
-			gtk_tree_view_set_model(GTK_TREE_VIEW(dlg_list[i]),
-			                        GTK_TREE_MODEL(model));
+			gtk_tree_view_set_model(tree, GTK_TREE_MODEL(model));
 			g_object_unref(model);
 			gint col_offset;
 			GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 
 			/* column for game names */
 			g_object_set(renderer, "xalign", 0.0, nullptr);
-			col_offset = gtk_tree_view_insert_column_with_attributes(
-			                 GTK_TREE_VIEW(dlg_list[i]),
+			col_offset = gtk_tree_view_insert_column_with_attributes(tree,
 			                 -1, "Column1",
 			                 renderer, "text",
 			                 FOLDER_COLUMN, nullptr);
-			GtkTreeViewColumn *column = gtk_tree_view_get_column(GTK_TREE_VIEW(dlg_list[i]),
+			GtkTreeViewColumn *column = gtk_tree_view_get_column(tree,
 			                                  col_offset - 1);
 			gtk_tree_view_column_set_clickable(
 			    GTK_TREE_VIEW_COLUMN(column), TRUE);
@@ -1273,9 +1270,8 @@ void ExultStudio::set_game_path(const string& gamename, const string& modname) {
 	curfile = nullptr;
 	browser = nullptr;
 	shape_info_modified = shape_names_modified = npc_modified = false;
-	vector<GtkWindow *>::const_iterator it;
-	for (it = group_windows.begin(); it != group_windows.end(); ++it) {
-		GtkWidget *grpwin = GTK_WIDGET(*it);
+	for (auto *win : group_windows) {
+		GtkWidget *grpwin = GTK_WIDGET(win);
 		auto *xml = static_cast<GtkBuilder *>(g_object_get_data(G_OBJECT(grpwin),
 		                "xml"));
 		auto *chooser = static_cast<Object_browser *>(g_object_get_data(

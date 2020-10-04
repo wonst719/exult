@@ -714,9 +714,8 @@ void Notebook_gump::add_gflag_text(
 	if (!initialized)
 		initialize();
 	// See if already there.
-	for (auto it = notes.begin();
-	        it != notes.end(); ++it)
-		if ((*it)->gflag == gflag)
+	for (auto *note : notes)
+		if (note->gflag == gflag)
 			return;
 	if (gwin->get_allow_autonotes())
 		add_new(text, gflag);
@@ -733,10 +732,9 @@ void Notebook_gump::write(
 	U7open(out, NOTEBOOKXML);
 	out << "<notebook>" << endl;
 	if (initialized) {
-		for (auto it = notes.begin();
-		        it != notes.end(); ++it)
-			if ((*it)->text.length() || !(*it)->is_new)
-				(*it)->write(out);
+		for (auto *note : notes)
+			if (note->text.length() || !note->is_new)
+				note->write(out);
 	}
 	out << "</notebook>" << endl;
 	out.close();
@@ -761,9 +759,7 @@ void Notebook_gump::read(
 	string basekey = "notebook";
 	conf.getsubkeys(note_nds, basekey);
 	One_note *note = nullptr;
-	for (auto it = note_nds.begin();
-	        it != note_nds.end(); ++it) {
-		Configuration::KeyType notend = *it;
+	for (const auto& notend : note_nds) {
 		if (notend.first == "note") {
 			note = new One_note();
 			notes.push_back(note);

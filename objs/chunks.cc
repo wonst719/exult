@@ -63,9 +63,8 @@ Chunk_cache::Chunk_cache(
 
 Chunk_cache::~Chunk_cache(
 ) {
-	for (auto it = blocked.begin();
-	        it != blocked.end(); ++it)
-		delete[] *it;
+	for (auto *it : blocked)
+		delete[] it;
 }
 
 /*
@@ -626,10 +625,9 @@ void Chunk_cache::activate_eggs(
 Game_object *Chunk_cache::find_door(
     const Tile_coord& tile
 ) {
-	for (auto it = doors.begin();
-	        it != doors.end(); ++it)
-		if ((*it)->blocks(tile))
-			return *it; // Found it.
+	for (auto *door : doors)
+		if (door->blocks(tile))
+			return door; // Found it.
 	return nullptr;
 }
 
@@ -678,9 +676,9 @@ void Map_chunk::set_terrain(
 				if (each->as_terrain())
 					removes.push_back(each);
 		}
-		for (auto it = removes.begin(); it != removes.end(); ++it)
+		for (auto *remove : removes)
 			// We don't want to edit the chunks here:
-			(*it)->Game_object::remove_this();
+			remove->Game_object::remove_this();
 	}
 	terrain = ter;
 	terrain->add_client();
@@ -1284,8 +1282,8 @@ void Map_chunk::try_all_eggs(
 					eggs.push_back(egg);
 			}
 	}
-	for (auto it = eggs.begin(); it != eggs.end(); ++it)
-		(*it)->hatch(obj);
+	for (auto *egg : eggs)
+		egg->hatch(obj);
 	norecurse--;
 }
 
@@ -1424,10 +1422,8 @@ void Map_chunk::gravity(
 				dropped.push_back(obj);
 		}
 	}
-	Game_object_vector::const_iterator it;
 	// Drop each one found.
-	for (it = dropped.begin(); it != dropped.end(); ++it) {
-		Game_object *obj = *it;
+	for (auto *obj : dropped) {
 		Tile_coord t = obj->get_tile();
 		// Get footprint.
 		Rectangle foot = obj->get_footprint();

@@ -477,13 +477,12 @@ static bool Take_best_step(
     int dir             // Direction we want to go.
 ) {
 	static int deltadir[] = {0, 1, 7, 2, 6, 3, 5};
-	const int cnt = array_size(deltadir);
 
 	int best_cost = max_cost + 8;
 	Tile_coord best(-1, -1, -1);
 	Actor *best_in_way = nullptr;
-	for (int i = 0; i < cnt; i++) {
-		int diri = (dir + deltadir[i]) % 8;
+	for (int i : deltadir) {
+		int diri = (dir + i) % 8;
 		Tile_coord to = pos.get_neighbor(diri);
 		Actor *in_way;      // Fudge cost with diff. in dir.
 		int cost = Get_cost(npc, leader, to, &in_way);

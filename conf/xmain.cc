@@ -118,8 +118,8 @@ void    test1() {
 
 	cout << endl;
 
-	for (auto i = ktl.begin(); i != ktl.end(); i++)
-		cout << "Key:\t" << i->first << endl << "Value:\t" << i->second << endl;
+	for (const auto& i : ktl)
+		cout << "Key:\t" << i.first << endl << "Value:\t" << i.second << endl;
 	assert(ktl.size() == 7);
 
 }

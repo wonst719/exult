@@ -239,9 +239,8 @@ public:
 	}
 	~Basic_block() {
 		predecessors.clear();
-		for (auto it = instructions.begin();
-		        it != instructions.end(); ++it)
-			delete *it;
+		for (auto *op : instructions)
+			delete op;
 		instructions.clear();
 		delete jmp_op;
 	}
@@ -281,10 +280,8 @@ public:
 	}
 	int get_block_size() const {
 		int size = get_jump_size();
-		for (auto it = instructions.begin();
-		        it != instructions.end(); ++it) {
-			const Opcode *op = *it;
-			size += op->get_size();
+		for (auto *op : instructions) {
+				size += op->get_size();
 		}
 		return size;
 	}
@@ -309,9 +306,7 @@ public:
 		return !jmp_op && taken && (taken->index == -1);
 	}
 	bool is_forced_target() const {
-		for (auto it = predecessors.begin();
-		        it != predecessors.end(); ++it) {
-			Basic_block *block = *it;
+		for (auto *block : predecessors) {
 			if (!block->is_jump_block() && !block->is_fallthrough_block())
 				return false;
 		}
@@ -395,9 +390,7 @@ public:
 		}
 	}
 	void link_predecessors() {
-		for (auto it = predecessors.begin();
-		        it != predecessors.end(); ++it) {
-			Basic_block *block = *it;
+		for (auto *block : predecessors) {
 			if (block->taken == this)
 				block->taken_index = index;
 			if (block->ntaken == this)
@@ -405,9 +398,7 @@ public:
 		}
 	}
 	void unlink_predecessors() {
-		for (auto it = predecessors.begin();
-		        it != predecessors.end(); ++it) {
-			Basic_block *block = *it;
+		for (auto *block : predecessors) {
 			if (block->taken == this) {
 				block->taken = nullptr;
 				block->taken_index = -1;
@@ -420,9 +411,7 @@ public:
 		predecessors.clear();
 	}
 	void link_through_block() {
-		for (auto it = predecessors.begin();
-		        it != predecessors.end(); ++it) {
-			Basic_block *pred = *it;
+		for (auto *pred : predecessors) {
 			// Do NOT use set_taken, set_ntaken!
 			if (pred->taken == this) {
 				if (taken)  // Check almost unneeded.
@@ -456,9 +445,7 @@ public:
 		safetaken->jmp_op = nullptr;
 	}
 	void write(std::vector<char> &out) {
-		for (auto it = instructions.begin();
-		        it != instructions.end(); ++it) {
-			Opcode *op = *it;
+		for (auto *op : instructions) {
 			op->write(out);
 		}
 		if (jmp_op)

@@ -419,9 +419,8 @@ const Paperdoll_item *Shape_info::get_item_paperdoll(int frame, int spot) const 
 	else if (spot == scabbard)
 		spot = belt;
 	inf.spot = spot;
-	vector<Paperdoll_item>::const_iterator it;
 	// Try finding exact match first.
-	it = std::lower_bound(objpaperdoll.begin(), objpaperdoll.end(), inf);
+	auto it = std::lower_bound(objpaperdoll.begin(), objpaperdoll.end(), inf);
 	if (it == objpaperdoll.end())   // Nowhere to be found.
 		return nullptr;
 	else if (*it == inf && !it->is_invalid())   // Have it already.

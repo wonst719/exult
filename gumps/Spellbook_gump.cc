@@ -304,8 +304,8 @@ Spellbook_gump::~Spellbook_gump(
 	delete leftpage;
 	delete rightpage;
 	delete bookmark;
-	for (int i = 0; i < 9 * 8; i++)
-		delete spells[i];
+	for (auto *spell : spells)
+		delete spell;
 }
 
 /*

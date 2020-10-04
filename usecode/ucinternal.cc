@@ -872,8 +872,7 @@ void Usecode_internal::remove_item(
 		Egg_vector vec;         // Gets list.
 		// Same parameters used in the egg to activate the trap.
 		if (obj->find_nearby_eggs(vec, 0xc8, 0xf)) {
-			for (auto it = vec.begin(); it != vec.end(); ++it) {
-				Egg_object *egg = *it;
+			for (auto *egg : vec) {
 				egg->remove_this(nullptr);
 			}
 		}
@@ -937,8 +936,7 @@ void Usecode_internal::activate_cached(
 	const int dist = 16;
 	Egg_vector vec;         // Find all usecode eggs.
 	Game_object::find_nearby_eggs(vec, pos, 275, dist, c_any_qual, 7);
-	for (auto it = vec.begin(); it != vec.end(); ++it) {
-		Egg_object *egg = *it;
+	for (auto *egg : vec) {
 		if (egg->get_criteria() == Egg_object::cached_in)
 			egg->activate();
 	}
@@ -1028,8 +1026,7 @@ Usecode_value Usecode_internal::find_nearby(
 		std::sort(vec.begin(), vec.end(), Object_reverse_sorter());
 	Usecode_value nearby(vec.size(), nullptr);    // Create return array.
 	int i = 0;
-	for (auto it = vec.begin(); it != vec.end(); ++it) {
-		Game_object *each = *it;
+	for (auto *each : vec) {
 		Usecode_value val(each);
 		nearby.put_elem(i++, val);
 	}
@@ -1058,8 +1055,8 @@ Barge_object *Get_barge(
 	// Object must be inside it.
 	Tile_coord pos = obj->get_tile();
 	Barge_object *best = nullptr;
-	for (auto it = vec.begin(); it != vec.end(); it++) {
-		barge = (*it)->as_barge();
+	for (auto *it : vec) {
+		barge = it->as_barge();
 		if (barge && barge->get_tile_footprint().has_world_point(pos.tx, pos.ty)) {
 			int lift = barge->get_lift();
 			if (!best ||    // First qualifying?
@@ -1096,8 +1093,7 @@ Usecode_value Usecode_internal::find_nearest(
 	Game_object *closest = nullptr;
 	uint32 bestdist = 100000;// Distance-squared in tiles.
 	Tile_coord t1 = obj->get_tile();
-	for (auto it = vec.begin(); it != vec.end(); ++it) {
-		Game_object *each = *it;
+	for (auto *each : vec) {
 		Tile_coord t2 = each->get_tile();
 		int dx = t1.tx - t2.tx;
 		int dy = t1.ty - t2.ty;
@@ -1181,8 +1177,7 @@ Usecode_value Usecode_internal::get_objects(
 //	cout << "Container objects found:  " << cnt << << endl;
 	Usecode_value within(vec.size(), nullptr);    // Create return array.
 	int i = 0;
-	for (auto it = vec.begin(); it != vec.end(); ++it) {
-		Game_object *each = *it;
+	for (auto *each : vec) {
 		Usecode_value val(each);
 		within.put_elem(i++, val);
 	}
@@ -3090,9 +3085,7 @@ bool Usecode_internal::in_usecode_for(
     Game_object *item,
     Usecode_events event
 ) {
-	for (auto iter = call_stack.begin();
-	        iter != call_stack.end(); ++iter) {
-		Stack_frame *frame = *iter;
+	for (auto *frame : call_stack) {
 		if (frame->eventid == event && frame->caller_item.get() == item)
 			return true;
 	}
@@ -3123,12 +3116,11 @@ void Usecode_internal::write(
 			out.write2(partyman->get_member(i));
 		// Timers.
 		out.write4(0xffffffffU);
-		for (auto it = timers.begin();
-				it != timers.end(); ++it) {
-			if (!it->second)    // Don't write unused timers.
+		for (auto& timer : timers) {
+			if (!timer.second)    // Don't write unused timers.
 				continue;
-			out.write2(it->first);
-			out.write4(it->second);
+			out.write2(timer.first);
+			out.write4(timer.second);
 		}
 		out.write2(0xffff);
 		out.write2(saved_pos.tx);  // Write saved pos.
@@ -3147,9 +3139,7 @@ void Usecode_internal::write(
 	int num_slots = funs.size();
 	for (int i = 0; i < num_slots; i++) {
 		Funs256 &slot = funs[i];
-		for (auto fit =
-		            slot.begin(); fit != slot.end(); ++fit) {
-			Usecode_function *fun = *fit;
+		for (auto *fun : slot) {
 			if (!fun || fun->statics.empty())
 				continue;
 			Usecode_symbol *fsym = symtbl ? (*symtbl)[fun->id] : nullptr;
@@ -3282,8 +3272,7 @@ void Usecode_internal::clear_usevars() {
 	int nslots = funs.size();
 	for (int i = 0; i < nslots; ++i) {
 		vector<Usecode_function *> &slot = funs[i];
-		for (unsigned int j = 0; j < slot.size(); ++j) {
-			Usecode_function *fun = slot[j];
+		for (auto *fun : slot) {
 			if (fun) fun->statics.clear();
 		}
 	}

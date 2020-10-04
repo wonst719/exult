@@ -259,9 +259,8 @@ public:
 	/// Gets all attributes for the current actor.
 	/// @param attlist (name, value) vector containig all attributes.
 	void get_all(std::vector<std::pair<const char *, int> > &attlist) {
-		Att_map::const_iterator it;
-		for (it = map.begin(); it != map.end(); ++it)
-			attlist.emplace_back(*it);
+		for (auto& it : map)
+			attlist.emplace_back(it);
 	}
 };
 std::set<string> *Actor_attributes::strings = nullptr;
@@ -309,8 +308,7 @@ Game_object *Actor::find_best_ammo(
 	Game_object_vector vec;     // Get list of all possessions.
 	vec.reserve(50);
 	get_objects(vec, c_any_shapenum, c_any_qual, c_any_framenum);
-	for (auto it = vec.begin(); it != vec.end(); ++it) {
-		Game_object *obj = *it;
+	for (auto *obj : vec) {
 		if (obj->inside_locked() || !In_ammo_family(obj->get_shapenum(), family))
 			continue;
 		const Ammo_info *ainf = obj->get_info().get_ammo_info();
@@ -405,10 +403,9 @@ Game_object *Actor::find_weapon_ammo(
 	}
 
 	// Search readied weapons first.
-	static enum Ready_type_Exult wspots[] = {lhand, rhand, back_2h, belt};
-	const int num_weapon_spots = array_size(wspots);
-	for (int i = 0; i < num_weapon_spots; i++) {
-		Game_object *obj = spots[static_cast<int>(wspots[i])];
+	static Ready_type_Exult wspots[] = {lhand, rhand, back_2h, belt};
+	for (auto wspot : wspots) {
+		Game_object *obj = spots[static_cast<int>(wspot)];
 		if (!obj || obj->get_shapenum() != weapon)
 			continue;
 		const Shape_info &inf = obj->get_info();
@@ -546,8 +543,7 @@ bool Actor::ready_best_shield(
 	get_objects(vec, c_any_shapenum, c_any_qual, c_any_framenum);
 	Game_object *best = nullptr;
 	int best_strength = -20;
-	for (auto it = vec.begin(); it != vec.end(); ++it) {
-		Game_object *obj = *it;
+	for (auto *obj : vec) {
 		if (obj->inside_locked())
 			continue;
 		const Shape_info &info = obj->get_info();
@@ -610,9 +606,7 @@ bool Actor::ready_best_weapon(
 	Game_object_shared best_keep;
 	int best_strength = -20;
 	int wtype = backpack;
-	for (auto it = vec.begin(); it != vec.end(); ++it) {
-		Game_object *obj = *it;
-		Game_object *ammo_obj = nullptr;
+	for (auto *obj : vec) {
 		if (obj->inside_locked())
 			continue;
 		const Shape_info &info = obj->get_info();
@@ -624,6 +618,7 @@ bool Actor::ready_best_weapon(
 		const Weapon_info *winf = info.get_weapon_info();
 		if (!winf)
 			continue;   // Not a weapon.
+		Game_object *ammo_obj = nullptr;
 		if (!Is_weapon_usable(this, obj, &ammo_obj))
 			continue;
 		int strength = winf->get_base_strength();
@@ -682,8 +677,8 @@ bool Actor::empty_hand(
 	static int chkspots[] = {belt, backpack};
 	add_dirty();
 	obj->remove_this(keep);
-	for (size_t i = 0; i < array_size(chkspots); i++)
-		if (add_readied(obj, chkspots[i], true, true))      // Slot free?
+	for (int chkspot : chkspots)
+		if (add_readied(obj, chkspot, true, true))      // Slot free?
 			return true;
 
 	return false;
@@ -954,12 +949,12 @@ void Actor::refigure_gear() {
 	int powers = 0;
 	int immune = 0;
 	light_sources = 0;
-	for (size_t i = 0; i < array_size(locs); i++) {
-		Game_object *worn = spots[static_cast<int>(locs[i])];
+	for (auto loc : locs) {
+		Game_object *worn = spots[static_cast<int>(loc)];
 		if (worn) {
 			const Shape_info &info = worn->get_info();
 			char rdy = info.get_ready_type();
-			if (info.is_light_source() && (locs[i] != belt ||
+			if (info.is_light_source() && (loc != belt ||
 			                               (rdy != lhand && rdy != rhand && rdy != both_hands)))
 				add_light_source(info.get_object_light(worn->get_framenum()));
 			powers |= info.get_object_flags(worn->get_framenum(),
@@ -2843,8 +2838,7 @@ int Actor::reduce_health(
 				Game_object_vector vec;     // Get list of all possessions.
 				vec.reserve(50);
 				get_objects(vec, c_any_shapenum, c_any_qual, c_any_framenum);
-				for (auto it = vec.begin(); it != vec.end(); ++it) {
-					Game_object *obj = *it;
+				for (auto *obj : vec) {
 					// This matches the original, but maybe
 					// we should iterate through all items.
 					// After all, a death bolt in the backpack
@@ -3302,9 +3296,9 @@ int Actor::figure_warmth(
 ) {
 	int warmth = -75;       // Base value.
 
-	static enum Ready_type_Exult locs[] = {head, cloak, feet, torso, gloves, legs};
-	for (size_t i = 0; i < array_size(locs); i++) {
-		Game_object *worn = spots[static_cast<int>(locs[i])];
+	static Ready_type_Exult locs[] = {head, cloak, feet, torso, gloves, legs};
+	for (auto loc : locs) {
+		Game_object *worn = spots[static_cast<int>(loc)];
 		if (worn)
 			warmth += worn->get_info().get_object_warmth(worn->get_framenum());
 	}
@@ -3686,13 +3680,12 @@ int Actor::get_rotated_frame(
 int Actor::get_armor_points(
 ) const {
 	int points = 0;
-	static enum Ready_type_Exult aspots[] = {head, amulet, torso, cloak, belt,
+	static Ready_type_Exult aspots[] = {head, amulet, torso, cloak, belt,
 	                                        lhand, rhand, lfinger, rfinger, legs, feet, earrings,
 	                                        gloves
 	                                        };
-	const int num_armor_spots = array_size(aspots);
-	for (int i = 0; i < num_armor_spots; i++) {
-		Game_object *armor = spots[static_cast<int>(aspots[i])];
+	for (auto aspot : aspots) {
+		Game_object *armor = spots[static_cast<int>(aspot)];
 		if (armor)
 			points += armor->get_info().get_armor();
 	}
@@ -3916,10 +3909,9 @@ int Actor::figure_hit_points(
 				spells.reserve(50);
 				get_objects(vec, c_any_shapenum, c_any_qual, c_any_framenum);
 				// Gather all spells...
-				for (auto it = vec.begin();
-				        it != vec.end(); ++it)
-					if ((*it)->get_info().is_spell())   // Seems to be right.
-						spells.push_back(*it);
+				for (auto *obj : vec)
+					if (obj->get_info().is_spell())   // Seems to be right.
+						spells.push_back(obj);
 				vec.clear();
 				// ... and take them all away.
 				while (!spells.empty()) {
@@ -4192,8 +4184,8 @@ void Actor::die(
 		body->set_flag_recursively(Obj_flags::okay_to_take);
 
 	// Put the heavy ones back.
-	for (auto it = tooheavy.begin(); it != tooheavy.end(); ++it)
-		add((*it).get(), true);
+	for (auto &it : tooheavy)
+		add(it.get(), true);
 	if (body)
 		gwin->add_dirty(body);
 	add_dirty();            // Want to repaint area.

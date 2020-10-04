@@ -923,9 +923,9 @@ void Shape_chooser::edit_shape(
 	if (ret == 127 || ret == -1)
 		Alert("Can't launch '%s'", studio->get_image_editor());
 #else
-	for (string::iterator it = cmd.begin(); it != cmd.end(); ++it)
-		if (*it == '/')
-			*it =  '\\';
+	for (char& ch : cmd)
+		if (ch == '/')
+			ch =  '\\';
 	PROCESS_INFORMATION pi;
 	STARTUPINFO     si;
 	std::memset(&si, 0, sizeof(si));
@@ -2206,10 +2206,9 @@ void Shape_chooser::search(
 		if (info.has_frame_name_info()) {
 			bool found = false;
 			const std::vector<Frame_name_info> &nminf = info.get_frame_name_info();
-			for (auto it = nminf.begin();
-			        it != nminf.end(); ++it) {
-				int type = it->get_type();
-				int msgid = it->get_msgid();
+			for (const auto& it : nminf) {
+				int type = it.get_type();
+				int msgid = it.get_msgid();
 				if (type == -255 || type == -1 || msgid >= get_num_misc_names()
 				        || !get_misc_name(msgid))
 					continue;   // Keep looking.

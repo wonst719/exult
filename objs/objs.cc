@@ -631,16 +631,14 @@ bool Game_object::swap_positions(
 
 void Game_object::clear_dependencies(
 ) {
-	Game_object_set::const_iterator X;
-
 	// First do those we depend on.
-	for (X = dependencies.begin(); X != dependencies.end(); ++X)
-		(**X).dependors.erase(this);
+	for (auto *dependency : dependencies)
+		dependency->dependors.erase(this);
 	dependencies.clear();
 
 	// Now those who depend on us.
-	for (X = dependors.begin(); X != dependors.end(); ++X)
-		(**X).dependencies.erase(this);
+	for (auto *dependor : dependors)
+		dependor->dependencies.erase(this);
 	dependors.clear();
 }
 
@@ -727,8 +725,7 @@ void Game_object::obj_vec_to_weak(
     std::vector<Game_object_weak> &dest,
 	Game_object_vector &src
 ) {
-	for (auto it = src.begin(); it != src.end(); ++it) {
-		Game_object *obj = *it;
+	for (auto *obj : src) {
 		dest.push_back(weak_from_obj(obj));
 	}
 }
@@ -798,8 +795,7 @@ Game_object *Game_object::find_closest(
 	Game_object *closest = nullptr;   // Get closest.
 	int best_dist = 10000;      // In tiles.
 	// Get our location.
-	for (auto it = vec.begin(); it != vec.end(); ++it) {
-		Game_object *obj = *it;
+	for (auto *obj : vec) {
 		int dist = obj->get_tile().distance(pos);
 		if (dist < best_dist) {
 			closest = obj;

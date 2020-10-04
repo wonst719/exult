@@ -78,9 +78,8 @@ Gump::Gump(
 	container(cont), x(initx), y(inity),
 	object_area(from->object_area), handles_kbd(false) {
 	// Clone widgets.
-	for (auto it = from->elems.begin();
-	        it != from->elems.end(); ++it)
-		add_elem((*it)->clone(this));
+	for (auto *elem : from->elems)
+		add_elem(elem->clone(this));
 }
 
 /*
@@ -88,8 +87,8 @@ Gump::Gump(
  */
 
 Gump::~Gump() {
-	for (auto it = elems.begin(); it != elems.end(); ++it)
-		delete *it;
+	for (auto *elem : elems)
+		delete elem;
 	if (container) // Probabbly dont need to check.. but would crash the game if it was NULL.
 		container->setGumpXY(x, y);
 }
@@ -213,8 +212,7 @@ Game_object *Gump::get_owner() {
 Gump_button *Gump::on_button(
     int mx, int my          // Point in window.
 ) {
-	for (auto it = elems.begin(); it != elems.end(); ++it) {
-		Gump_widget *w = *it;
+	for (auto *w : elems) {
 		if (w->on_button(mx, my))
 			return dynamic_cast<Gump_button *>(w);
 	}
@@ -299,8 +297,8 @@ void Gump::remove(
 
 void Gump::paint_elems(
 ) {
-	for (auto it = elems.begin(); it != elems.end(); ++it)
-		(*it)->paint();
+	for (auto *elem : elems)
+		elem->paint();
 }
 
 void check_elem_positions(Object_list &objects)
@@ -389,9 +387,8 @@ void Gump::paint(
 	}
 	// Outline selections in this gump.
 	const Game_object_shared_vector &sel = cheat.get_selected();
-	for (auto it = sel.begin();
-	        it != sel.end(); ++it) {
-		Game_object *obj = (*it).get();
+	for (const auto& it : sel) {
+		Game_object *obj = it.get();
 		if (container == obj->get_owner()) {
 			int x;
 			int y;

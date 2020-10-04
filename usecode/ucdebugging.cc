@@ -90,11 +90,9 @@ bool FinishBreakpoint::check(Stack_frame *frame) const {
 int Breakpoints::lastID = 0;
 
 Breakpoints::~Breakpoints() {
-	std::list<Breakpoint *>::iterator iter;
-
 	// clear queue
-	for (iter = breaks.begin(); iter != breaks.end(); ++iter) {
-		delete(*iter);
+	for (auto *brk : breaks) {
+		delete brk;
 	}
 }
 
@@ -114,14 +112,12 @@ int Breakpoints::check(Stack_frame *frame) {
 
 	int breakID = -1;
 
-	std::list<Breakpoint *>::iterator iter;
-
-	for (iter = breaks.begin(); iter != breaks.end(); ++iter) {
-		if ((*iter)->check(frame)) {
-			breakID = (*iter)->id;
-			if ((*iter)->once) {
-				delete(*iter);
-				(*iter) = nullptr;
+	for (auto *&brk : breaks) {
+		if (brk->check(frame)) {
+			breakID = brk->id;
+			if (brk->once) {
+				delete brk;
+				brk = nullptr;
 			}
 		}
 	}
@@ -144,13 +140,11 @@ void Breakpoints::remove(Breakpoint *breakpoint) {
 bool Breakpoints::remove(int id) {
 	bool found = false;
 
-	std::list<Breakpoint *>::iterator iter;
-
-	for (iter = breaks.begin(); iter != breaks.end(); ++iter) {
-		if ((*iter)->id == id) {
+	for (auto *&brk : breaks) {
+		if (brk->id == id) {
 			found = true;
-			delete(*iter);
-			(*iter) = nullptr;
+			delete brk;
+			brk = nullptr;
 		}
 	}
 
@@ -160,8 +154,6 @@ bool Breakpoints::remove(int id) {
 }
 
 void Breakpoints::transmit(int fd) {
-	std::list<Breakpoint *>::iterator iter;
-
-	for (iter = breaks.begin(); iter != breaks.end(); ++iter)
-		(*iter)->serialize(fd);
+	for (auto *brk : breaks)
+		brk->serialize(fd);
 }

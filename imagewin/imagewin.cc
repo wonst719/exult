@@ -246,9 +246,8 @@ Image_window::ScalerVector::ScalerVector() {
 }
 
 Image_window::ScalerVector::~ScalerVector() {
-	for (auto it = begin();
-	        it != end(); ++it)
-		delete it->arb;
+	for (auto& it : *this)
+		delete it.arb;
 }
 
 Image_window::ScalerType Image_window::get_scaler_for_name(const char *scaler) {

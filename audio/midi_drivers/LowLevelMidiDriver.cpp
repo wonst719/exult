@@ -1302,8 +1302,8 @@ void LowLevelMidiDriver::loadTimbreLibrary(IDataSource *ds, TimbreLibraryType ty
 		{87, {0x04, 0x64, 0x08, 0x01}}
 	};
 
-	for (unsigned ii = 0; ii < array_size(default_rhythms); ii++) {
-		loadRhythm(default_rhythms[ii].rhythm, default_rhythms[ii].note);
+	for (const auto& default_rhythm : default_rhythms) {
+		loadRhythm(default_rhythm.rhythm, default_rhythm.note);
 	}
 
 	XMidiFile *xmidi = nullptr;

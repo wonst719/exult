@@ -139,9 +139,9 @@ bool UCFunc::output_ucs(ostream &o, const FuncMap &funcmap, const map<unsigned i
 
 	if (!_externs.empty()) tab_indent(indent, o) << "// externs" << endl;
 	// output the 'externs'
-	for (auto e = _externs.begin(); e != _externs.end(); ++e) {
-		auto fmp = funcmap.find(*e);
-		output_ucs_funcname(tab_indent(indent, o) << "extern ", funcmap, *e, fmp->second.num_args, symtbl) << ';' << endl;
+	for (unsigned int ext : _externs) {
+		auto fmp = funcmap.find(ext);
+		output_ucs_funcname(tab_indent(indent, o) << "extern ", funcmap, ext, fmp->second.num_args, symtbl) << ';' << endl;
 	}
 
 	if (!_externs.empty()) o << endl;
@@ -237,8 +237,8 @@ void UCFunc::output_ucs_data(ostream &o, const FuncMap &funcmap, const map<unsig
 			tab_indent(indent - 1, o) << demunge_ocstring(*this, funcmap, "label%f*_%1:", intrinsics, UCc(labeltmp), true, symtbl) << endl;
 		}
 
-		for (auto j = (*i)().begin(); j != (*i)().end(); ++j) {
-			const UCc &ucc = *(j->first);
+		for (auto& j : (*i)()) {
+			const UCc &ucc = *(j.first);
 
 			if (options.uselesscomment)
 				tab_indent(indent, o) << "// Offset: " << std::setw(4) << ucc._offset << endl;
@@ -257,12 +257,12 @@ void UCFunc::output_ucs_opcode(ostream &o, const FuncMap &funcmap, const vector<
 	o << endl;
 
 #ifdef DEBUG_PRINT
-	for (vector<UCc *>::const_iterator i = op._popped.begin(); i != op._popped.end(); ++i) {
-		if ((*i)->_popped.size())
-			output_ucs_opcode(o, funcmap, opcode_table_data, **i, intrinsics, indent + 1, symtbl);
+	for (auto *i : op._popped) {
+		if (!i->_popped.empty())
+			output_ucs_opcode(o, funcmap, opcode_table_data, *i, intrinsics, indent + 1, symtbl);
 		else
 //			tab_indent(indent+1, o) << demunge_ocstring(*this, funcmap, optab[(*i)->_id].ucs_nmo, **i, symtbl) << endl;
-			tab_indent(indent + 1, o) << optab[(*i)->_id].ucs_nmo << endl;
+			tab_indent(indent + 1, o) << optab[i->_id].ucs_nmo << endl;
 	}
 #endif
 }
@@ -274,9 +274,9 @@ void UCFunc::output_ucs_node(ostream &o, const FuncMap &funcmap, UCNode *ucn, co
 		output_asm_opcode(tab_indent(indent, o), funcmap, opcode_table_data, intrinsics, *(ucn->ucc), options, symtbl);
 
 	if (!ucn->nodelist.empty())
-		for (auto i = ucn->nodelist.begin(); i != ucn->nodelist.end(); ++i) {
+		for (auto *i : ucn->nodelist) {
 			//tab_indent(indent, o);
-			output_ucs_node(o, funcmap, *i, intrinsics, indent + 1, options, symtbl);
+			output_ucs_node(o, funcmap, i, intrinsics, indent + 1, options, symtbl);
 		}
 
 	// end of func
@@ -285,8 +285,8 @@ void UCFunc::output_ucs_node(ostream &o, const FuncMap &funcmap, UCNode *ucn, co
 
 /* Just a quick function to remove all the ucc structured flagged as removable */
 inline void gc_gotoset(vector<GotoSet> &gotoset) {
-	for (auto i = gotoset.begin(); i != gotoset.end(); ++i) {
-		i->gc();
+	for (auto& i : gotoset) {
+		i.gc();
 #ifdef DEBUG_GOTOSET
 		cout << "----" << endl;
 #endif
@@ -294,8 +294,8 @@ inline void gc_gotoset(vector<GotoSet> &gotoset) {
 }
 
 void UCFunc::parse_ucs(const FuncMap &funcmap, const map<unsigned int, string> &intrinsics, const UCOptions &options, Usecode_symbol_table *symtbl) {
-	for (auto i = _opcodes.begin(); i != _opcodes.end(); ++i)
-		node.nodelist.push_back(new UCNode(&(*i)));
+	for (auto& opcode : _opcodes)
+		node.nodelist.push_back(new UCNode(&opcode));
 
 	parse_ucs_pass1(node.nodelist);
 	parse_ucs_pass2(gotoset, funcmap, intrinsics, symtbl);
@@ -322,30 +322,30 @@ void UCFunc::parse_ucs_pass1(vector<UCNode *> &nodes) {
 	vector<unsigned int> jumps;
 
 	// collect jump references
-	for (unsigned int i = 0; i < nodes.size(); i++) {
-		if (nodes[i]->ucc != nullptr) {
+	for (auto *node : nodes) {
+		if (node->ucc != nullptr) {
 			unsigned int isjump = 0;
-			for (auto op = opcode_jumps.begin(); op != opcode_jumps.end(); ++op)
-				if (op->first == nodes[i]->ucc->_id) {
-					isjump = op->second;
+			for (auto& jump : opcode_jumps)
+				if (jump.first == node->ucc->_id) {
+					isjump = jump.second;
 					break;
 				}
 
 			if (isjump != 0) {
-				assert(nodes[i]->ucc->_params_parsed.size() >= isjump);
-				jumps.push_back(nodes[i]->ucc->_params_parsed[isjump - 1]);
+				assert(node->ucc->_params_parsed.size() >= isjump);
+				jumps.push_back(node->ucc->_params_parsed[isjump - 1]);
 			}
 		}
 	}
 
 	gotoset.emplace_back(GotoSet());
 
-	for (unsigned int i = 0; i < nodes.size(); i++) {
-		if (nodes[i]->ucc != nullptr) {
-			if (count(jumps.begin(), jumps.end(), nodes[i]->ucc->_offset)) {
-				gotoset.emplace_back(nodes[i]->ucc);
+	for (auto *node : nodes) {
+		if (node->ucc != nullptr) {
+			if (count(jumps.begin(), jumps.end(), node->ucc->_offset)) {
+				gotoset.emplace_back(node->ucc);
 			} else
-				gotoset.back().add(nodes[i]->ucc);
+				gotoset.back().add(node->ucc);
 		}
 	}
 }
@@ -355,8 +355,8 @@ void UCFunc::parse_ucs_pass1(vector<UCNode *> &nodes) {
    that are parameters are flagged for removal (Gotoset::()[i]->second=true) from
    the original GotoSet. */
 void UCFunc::parse_ucs_pass2(vector<GotoSet> &gotoset, const FuncMap &funcmap, const map<unsigned int, string> &intrinsics, Usecode_symbol_table *symtbl) {
-	for (auto i = gotoset.begin(); i != gotoset.end(); ++i) {
-		parse_ucs_pass2a((*i)().rbegin(), (*i)(), 0, funcmap, intrinsics, symtbl);
+	for (auto& i : gotoset) {
+		parse_ucs_pass2a(i().rbegin(), i(), 0, funcmap, intrinsics, symtbl);
 	}
 }
 
@@ -602,9 +602,9 @@ void UCFunc::parse_ucs_pass3(vector<GotoSet> &gotoset, const map<unsigned int, s
 bool UCFunc::output_tt(std::ostream &o) {
 	o << "\t<0x" << setw(4) << _funcid << ">" << endl;
 
-	for (auto i = _data.begin(); i != _data.end(); ++i) {
-		o << "\t\t<0x" << setw(4) << i->first << ">" << endl
-		  << "\t\t`" << i->second << "`" << endl
+	for (auto& i : _data) {
+		o << "\t\t<0x" << setw(4) << i.first << ">" << endl
+		  << "\t\t`" << i.second << "`" << endl
 		  << "\t\t</>" << endl;
 	}
 	o << "\t</>" << endl;
@@ -625,13 +625,13 @@ inline int calc32reloffset(const UCc &op, unsigned int param) {
 void ucc_parse_parambytes(UCc &ucop, const UCOpcodeData &otd) {
 	unsigned int first = 0;
 
-	for (auto s = otd.param_sizes.begin(); s != otd.param_sizes.end(); ++s) {
+	for (const auto& param_size : otd.param_sizes) {
 		//cout << ucop._id << '\t' << ucop._params.size() << endl;
 
 		assert(first < ucop._params.size());
 
-		unsigned int ssize = s->first;
-		bool offset_munge = s->second;
+		unsigned int ssize = param_size.first;
+		bool offset_munge = param_size.second;
 
 		assert(ssize != 0);
 
@@ -693,11 +693,11 @@ bool UCFunc::output_asm(ostream &o, const FuncMap &funcmap, const map<unsigned i
 	o << "\t.localc      " << std::setw(4) << _num_locals << "H" << endl;
 	o << "\t.externsize  " << std::setw(4) << _externs.size() << "H" << endl;
 
-	for (auto i = _externs.begin(); i != _externs.end(); ++i)
-		o << '\t' << "  .extern    " << std::setw(4) << *i << "H" << endl;
+	for (unsigned int ext : _externs)
+		o << '\t' << "  .extern    " << std::setw(4) << ext << "H" << endl;
 
-	for (auto op = _opcodes.begin(); op != _opcodes.end(); ++op)
-		output_asm_opcode(o, funcmap, opcode_table_data, intrinsics, *op, options, symtbl);
+	for (auto& opcode : _opcodes)
+		output_asm_opcode(o, funcmap, opcode_table_data, intrinsics, opcode, options, symtbl);
 
 	return true;
 }
@@ -705,16 +705,16 @@ bool UCFunc::output_asm(ostream &o, const FuncMap &funcmap, const map<unsigned i
 void UCFunc::output_asm_data(ostream &o) {
 	static const unsigned int nochars = 60;
 	// limit of about 60 chars to a line, wrap to the next line if longer then this...
-	for (auto i = _data.begin(); i != _data.end(); ++i) {
-		for (unsigned int j = 0; j < i->second.size(); j++) {
+	for (auto& i : _data) {
+		for (unsigned int j = 0; j < i.second.size(); j++) {
 			if (j == 0)
-				o << "L" << setw(4) << i->first << ":";
+				o << "L" << setw(4) << i.first << ":";
 			if ((j != 0) && !(j % nochars))
 				o << "'" << endl;
 			if (!(j % nochars))
 				o << "\tdb\t'";
 
-			o << i->second[j];
+			o << i.second[j];
 		}
 		o << "'" << endl;
 		o << "\tdb\t00" << endl;

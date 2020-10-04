@@ -107,22 +107,22 @@ void ucxtInit::misc() {
 	miscdata.getsubkeys(st, misc_root + "/size_type");
 
 	// For each size type (small/long/byte/etc.)
-	for (auto k = st.begin(); k != st.end(); ++k) {
+	for (auto& k : st) {
 		bool munge_offset = false;
 
-		const string tmpstr(k->first + "/");
+		const string tmpstr(k.first + "/");
 
 		/* ... we need to find out if we should munge it's parameter
 		    that is, it's some sort of goto target (like offset) or such */
-		for (auto m = om.begin(); m != om.end(); ++m)
-			if (m->first.size() - 1 == k->first.size())
-				if (m->first == tmpstr)
+		for (auto& m : om)
+			if (m.first.size() - 1 == k.first.size())
+				if (m.first == tmpstr)
 //				if(m->first.compare(0, m->first.size()-1, k->first, 0, k->first.size())==0)
 					munge_offset = true;
 
 		// once we've got it, add it to the map
-		pair<unsigned int, bool> tsm_tmp(static_cast<unsigned int>(strtol(k->second.c_str(), nullptr, 0)), munge_offset);
-		type_size_map.insert(pair<string, pair<unsigned int, bool> >(k->first, tsm_tmp));
+		pair<unsigned int, bool> tsm_tmp(static_cast<unsigned int>(strtol(k.second.c_str(), nullptr, 0)), munge_offset);
+		type_size_map.insert(pair<string, pair<unsigned int, bool> >(k.first, tsm_tmp));
 	}
 }
 
@@ -132,14 +132,14 @@ void ucxtInit::opcodes() {
 
 	vector<string> keys = opdata.listkeys(opcodes_root);
 
-	for (auto key = keys.begin(); key != keys.end(); ++key) {
-		if ((*key)[0] != '!') {
+	for (auto& key : keys) {
+		if (key[0] != '!') {
 			Configuration::KeyTypeList ktl;
 
-			opdata.getsubkeys(ktl, *key);
+			opdata.getsubkeys(ktl, key);
 
 			if (!ktl.empty()) {
-				unsigned int i = static_cast<unsigned int>(strtol(key->substr(key->find_first_of("0")).c_str(), nullptr, 0));
+				unsigned int i = static_cast<unsigned int>(strtol(key.substr(key.find_first_of("0")).c_str(), nullptr, 0));
 				opcode_table_data[i] = UCOpcodeData(i, ktl);
 			}
 		}
@@ -147,10 +147,10 @@ void ucxtInit::opcodes() {
 
 	/* Create an {opcode, parameter_index} array of all opcodes that
 	    execute a 'jump' statement */
-	for (auto op = opcode_table_data.begin(); op != opcode_table_data.end(); ++op) {
-		for (unsigned int i = 0; i < op->param_sizes.size(); i++) {
-			if (op->param_sizes[i].second) { // this is a calculated offset
-				opcode_jumps.emplace_back(op->opcode, i + 1); // parameters are stored as base 1
+	for (auto& op : opcode_table_data) {
+		for (unsigned int i = 0; i < op.param_sizes.size(); i++) {
+			if (op.param_sizes[i].second) { // this is a calculated offset
+				opcode_jumps.emplace_back(op.opcode, i + 1); // parameters are stored as base 1
 			}
 		}
 	}
@@ -163,8 +163,8 @@ void ucxtInit::intrinsics(const string &intrinsic_data, const string &intrinsic_
 
 	intdata.getsubkeys(ktl, intrinsic_root);
 
-	for (auto k = ktl.begin(); k != ktl.end(); ++k)
-		uc_intrinsics.insert(pair<unsigned int, string>(static_cast<unsigned int>(strtol(k->first.c_str(), nullptr, 0)), k->second));
+	for (auto& k : ktl)
+		uc_intrinsics.insert(pair<unsigned int, string>(static_cast<unsigned int>(strtol(k.first.c_str(), nullptr, 0)), k.second));
 }
 
 /* To be depricated when I get the complex std::vector<std::string> splitter online */
@@ -174,14 +174,14 @@ std::vector<std::string> qnd_ocsplit(const std::string &s) {
 	std::vector<std::string> vs;
 	std::string tstr;
 
-	for (std::string::const_iterator i = s.begin(); i != s.end(); ++i) {
-		if (*i == ',') {
+	for (char i : s) {
+		if (i == ',') {
 			vs.push_back(tstr);
 			tstr = "";
-		} else if (*i == '{' || *i == '}') {
+		} else if (i == '{' || i == '}') {
 			/* nothing */
 		} else
-			tstr += *i;
+			tstr += i;
 	}
 	if (!tstr.empty())
 		vs.push_back(tstr);
@@ -223,10 +223,10 @@ std::vector<std::string> str2vec(const std::string &s) {
 }
 
 void map_type_size(const std::vector<std::string> &param_types, std::vector<std::pair<unsigned int, bool> > &param_sizes) {
-	for (auto s = param_types.begin(); s != param_types.end(); ++s) {
-		auto tsm(type_size_map.find(*s));
+	for (const auto& param_type : param_types) {
+		auto tsm(type_size_map.find(param_type));
 		if (tsm == type_size_map.end()) {
-			cerr << "error: No size type `" << *s << "`" << endl;
+			cerr << "error: No size type `" << param_type << "`" << endl;
 			assert(tsm != type_size_map.end());
 		}
 

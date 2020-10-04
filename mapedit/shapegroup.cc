@@ -205,8 +205,8 @@ void Shape_group::swap(
 void Shape_group::add(
     int id
 ) {
-	for (auto it = begin(); it != end(); ++it)
-		if ((*it) == id)
+	for (int it : *this)
+		if (it == id)
 			return;     // Already there.
 	push_back(id);
 	file->modified = true;
@@ -279,9 +279,8 @@ int Shape_group_file::find(
 
 Shape_group_file::~Shape_group_file(
 ) {
-	for (auto it = groups.begin();
-	        it != groups.end(); ++it)
-		delete(*it);        // Delete each group.
+	for (auto *group : groups)
+		delete group;        // Delete each group.
 }
 
 /*
@@ -659,16 +658,15 @@ void ExultStudio::del_group(
 	gtk_tree_store_remove(GTK_TREE_STORE(model), &iter);
 	// Close the group's windows.
 	vector<GtkWindow *> toclose;
-	vector<GtkWindow *>::const_iterator it;
-	for (it = group_windows.begin(); it != group_windows.end(); ++it) {
+	for (auto *widg : group_windows) {
 		auto *chooser = static_cast<Object_browser *>(
-		                          g_object_get_data(G_OBJECT(*it), "browser"));
+		                          g_object_get_data(G_OBJECT(widg), "browser"));
 		if (chooser->get_group() == grp)
 			// A match?
-			toclose.push_back(*it);
+			toclose.push_back(widg);
 	}
-	for (it = toclose.begin(); it != toclose.end(); ++it)
-		close_group_window(GTK_WIDGET(*it));
+	for (auto *widg : toclose)
+		close_group_window(GTK_WIDGET(widg));
 }
 
 /*
@@ -904,9 +902,9 @@ bool ExultStudio::groups_modified(
 void ExultStudio::update_group_windows(
     Shape_group *grp        // Group, or 0 for all.
 ) {
-	for (auto it = group_windows.begin(); it != group_windows.end(); ++it) {
+	for (auto *win : group_windows) {
 		auto *chooser = static_cast<Object_browser *>(
-		                          g_object_get_data(G_OBJECT(*it), "browser"));
+		                          g_object_get_data(G_OBJECT(win), "browser"));
 		if (!grp || chooser->get_group() == grp) {
 			// A match?
 			chooser->setup_info();

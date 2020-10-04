@@ -79,60 +79,60 @@ public:
 	UCOpcodeData() = default;
 	UCOpcodeData(unsigned int op, const Configuration::KeyTypeList &ktl)
 		: opcode(op) {
-		for (auto k = ktl.begin(); k != ktl.end(); ++k) {
-			switch (k->first[0]) {
+		for (const auto& k : ktl) {
+			switch (k.first[0]) {
 			case 'a':
-				if (k->first == "asm_nmo")             asm_nmo = strip_backticks(k->second);
-				else if (k->first == "asm_comment")    asm_comment = strip_backticks(k->second);
-				else if (k->first == "abort/")         flag_abort = true;
+				if (k.first == "asm_nmo")             asm_nmo = strip_backticks(k.second);
+				else if (k.first == "asm_comment")    asm_comment = strip_backticks(k.second);
+				else if (k.first == "abort/")         flag_abort = true;
 				break;
 			case 'c':
-				if (k->first == "call_effect/")        flag_call_effect = true;
+				if (k.first == "call_effect/")        flag_call_effect = true;
 				break;
 			case 'd':
-				if (k->first == "debug/")              flag_debug = true;
+				if (k.first == "debug/")              flag_debug = true;
 				break;
 			case 'f':
-				if (k->first == "function_effect/")    flag_function_effect = true;
+				if (k.first == "function_effect/")    flag_function_effect = true;
 				break;
 			case 'i':
-				if (k->first == "indent_inc/")         flag_indent_inc = true;
-				else if (k->first == "indent_dec/")    flag_indent_dec = true;
-				else if (k->first == "indent_tmpinc/") flag_indent_tmpinc = true;
-				else if (k->first == "indent_tmpdec/") flag_indent_tmpdec = true;
+				if (k.first == "indent_inc/")         flag_indent_inc = true;
+				else if (k.first == "indent_dec/")    flag_indent_dec = true;
+				else if (k.first == "indent_tmpinc/") flag_indent_tmpinc = true;
+				else if (k.first == "indent_tmpdec/") flag_indent_tmpdec = true;
 				break;
 			case 'l':
-				if (k->first == "loop/")               flag_loop = true;
+				if (k.first == "loop/")               flag_loop = true;
 				break;
 			case 'm':
-				if (k->first == "method_effect/")      flag_method_effect = true;
+				if (k.first == "method_effect/")      flag_method_effect = true;
 				break;
 			case 'n':
-				if (k->first == "name")                name = strip_backticks(k->second);
-				else if (k->first == "num_bytes")      num_bytes = static_cast<unsigned int>(strtol(k->second.c_str(), nullptr, 0));
-				else if (k->first == "num_pop")        num_pop = static_cast<unsigned int>(strtol(k->second.c_str(), nullptr, 0));
-				else if (k->first == "num_push")       num_push = static_cast<unsigned int>(strtol(k->second.c_str(), nullptr, 0));
-				else if (k->first == "nosemicolon/")   flag_nosemicolon = true;
-				else if (k->first == "new_effect/")    flag_new_effect = true;
-				else if (k->first == "not_param/")     flag_not_param = true;
+				if (k.first == "name")                name = strip_backticks(k.second);
+				else if (k.first == "num_bytes")      num_bytes = static_cast<unsigned int>(strtol(k.second.c_str(), nullptr, 0));
+				else if (k.first == "num_pop")        num_pop = static_cast<unsigned int>(strtol(k.second.c_str(), nullptr, 0));
+				else if (k.first == "num_push")       num_push = static_cast<unsigned int>(strtol(k.second.c_str(), nullptr, 0));
+				else if (k.first == "nosemicolon/")   flag_nosemicolon = true;
+				else if (k.first == "new_effect/")    flag_new_effect = true;
+				else if (k.first == "not_param/")     flag_not_param = true;
 				break;
 			case 'p':
-				if (k->first == "param_types")         param_types = qnd_ocsplit(k->second);
-				else if (k->first == "paren/")         flag_paren = true;
+				if (k.first == "param_types")         param_types = qnd_ocsplit(k.second);
+				else if (k.first == "paren/")         flag_paren = true;
 				break;
 			case 'r':
-				if (k->first == "return/")             flag_return = true;
+				if (k.first == "return/")             flag_return = true;
 				break;
 			case 's':
-				if (k->first == "staticref/")          flag_staticref = true;
+				if (k.first == "staticref/")          flag_staticref = true;
 				break;
 			case 'u':
-				if (k->first == "ucs_nmo")             ucs_nmo = strip_backticks(k->second);
+				if (k.first == "ucs_nmo")             ucs_nmo = strip_backticks(k.second);
 				break;
 			case '!': // ignore, it's a comment or something.
 				break;
 			default:
-				std::cerr << "invalid key `" << k->first << "` value `" << k->second << "`" << std::endl;
+				std::cerr << "invalid key `" << k.first << "` value `" << k.second << "`" << std::endl;
 			}
 		}
 		map_type_size(param_types, param_sizes);
@@ -146,8 +146,8 @@ public:
 		o << "ucs_nmo: " << ucs_nmo << std::endl;
 		o << "num_bytes: " << num_bytes << std::endl;
 		o << "param_types: ";
-		for (auto i = param_types.begin(); i != param_types.end(); ++i)
-			o << *i << ',';
+		for (const auto& param_type : param_types)
+			o << param_type << ',';
 		o << std::endl;
 		o << "num_pop: " << num_pop << std::endl;
 		o << "num_push: " << num_push << std::endl;

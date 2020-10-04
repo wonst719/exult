@@ -307,8 +307,9 @@ Face_stats::~Face_stats() {
 
 void Face_stats::paint(
 ) {
-	for (int i = 0; i < 8; i++)
-		if (party[i]) party[i]->paint();
+	for (auto *act : party)
+		if (act)
+			act->paint();
 }
 
 /*
@@ -316,17 +317,18 @@ void Face_stats::paint(
  */
 
 Gump_button *Face_stats::on_button(int mx, int my) {
-	for (int i = 0; i < 8; i++)
-		if (party[i] && party[i]->on_button(mx, my))
-			return party[i];
+	for (auto *act : party)
+		if (act && act->on_button(mx, my))
+			return act;
 
 	return nullptr;
 }
 
 // add dirty region, if dirty
 void Face_stats::update_gump() {
-	for (int i = 0; i < 8; i++)
-		if (party[i]) party[i]->update_widget();
+	for (auto *act : party)
+		if (act)
+			act->update_widget();
 }
 
 // Delete all the buttons
@@ -416,8 +418,8 @@ void Face_stats::create_buttons() {
 }
 
 bool Face_stats::has_point(int x, int y) const {
-	for (int i = 0; i < 8; i++)
-		if (party[i] && party[i]->on_button(x, y))
+	for (auto *act : party)
+		if (act && act->on_button(x, y))
 			return true;
 
 	return false;
@@ -442,16 +444,17 @@ bool Face_stats::add(
 	if (sx < 0 && sy < 0 && my < 0 && mx < 0)
 		return false;
 
-	for (int i = 0; i < 8; i++)
-		if (party[i] && party[i]->on_button(mx, my))
-			return party[i]->get_actor()->add(obj, dont_check, combine);
+	for (auto *act : party)
+		if (act && act->on_button(mx, my))
+			return act->get_actor()->add(obj, dont_check, combine);
 
 	return false;
 }
 
 Container_game_object *Face_stats::find_actor(int mx, int my) {
-	for (int i = 0; i < 8; i++) if (party[i] && party[i]->on_button(mx, my))
-		return party[i]->get_actor();
+	for (auto *act : party)
+		if (act && act->on_button(mx, my))
+			return act->get_actor();
 
 	return nullptr;
 }

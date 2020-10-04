@@ -250,7 +250,7 @@ void Game_map::clear_chunks(
 	if (chunk_terrains) {
 		int cnt = chunk_terrains->size();
 		for (int i = 0; i < cnt; i++)
-			delete(*chunk_terrains)[i];
+			delete (*chunk_terrains)[i];
 		delete chunk_terrains;
 		chunk_terrains = nullptr;
 	}
@@ -275,7 +275,9 @@ void Game_map::clear(
 				delete objects[x][y];
 				objects[x][y] = nullptr;
 			}
-		for (int i = 0; i < 144; i++) delete [] schunk_cache[i];
+		for (auto *i : schunk_cache) {
+			delete [] i;
+		}
 	} else
 		memset(objects, 0, sizeof(objects));
 	didinit = false;
@@ -1299,9 +1301,7 @@ bool Game_map::swap_terrains(
 	// Update terrain maps.
 	Game_window *gwin = Game_window::get_instance();
 	const vector<Game_map *> &maps = gwin->get_maps();
-	for (auto it = maps.begin();
-	        it != maps.end(); ++it) {
-		Game_map *map = *it;
+	for (auto *map : maps) {
 		if (!map)
 			continue;
 		for (int cy = 0; cy < c_num_chunks; cy++)
@@ -1369,9 +1369,7 @@ bool Game_map::insert_terrain(
 	// Update terrain map.
 	Game_window *gwin = Game_window::get_instance();
 	const vector<Game_map *> &maps = gwin->get_maps();
-	for (auto it = maps.begin();
-	        it != maps.end(); ++it) {
-		Game_map *map = *it;
+	for (auto *map : maps) {
 		if (!map)
 			continue;
 		for (int cy = 0; cy < c_num_chunks; cy++)
@@ -1396,7 +1394,7 @@ bool Game_map::delete_terrain(
 	if (tnum < 0 || static_cast<unsigned>(tnum) >= chunk_terrains->size())
 		return false;       // Out of bounds.
 	int sz = chunk_terrains->size();
-	delete(*chunk_terrains)[tnum];
+	delete (*chunk_terrains)[tnum];
 	for (int i = tnum + 1; i < sz; i++) {
 		// Move the rest downwards.
 		Chunk_terrain *tmp = get_terrain(i);
@@ -1408,9 +1406,7 @@ bool Game_map::delete_terrain(
 	// Update terrain map.
 	Game_window *gwin = Game_window::get_instance();
 	const vector<Game_map *> &maps = gwin->get_maps();
-	for (auto it = maps.begin();
-	        it != maps.end(); ++it) {
-		Game_map *map = *it;
+	for (auto *map : maps) {
 		if (!map)
 			continue;
 		for (int cy = 0; cy < c_num_chunks; cy++)
@@ -1441,9 +1437,7 @@ void Game_map::commit_terrain_edits(
 	// Update terrain map.
 	Game_window *gwin = Game_window::get_instance();
 	const vector<Game_map *> &maps = gwin->get_maps();
-	for (auto it = maps.begin();
-	        it != maps.end(); ++it) {
-		Game_map *map = *it;
+	for (auto *map : maps) {
 		if (!map)
 			continue;
 		for (int cy = 0; cy < c_num_chunks; cy++)
@@ -1660,8 +1654,7 @@ bool Game_map::write_minimap() {
 	eman->center_text("Encoding chunks");
 	gwin->paint();
 	gwin->show();
-	for (auto it = chunk_terrains->begin(); it != chunk_terrains->end(); ++it) {
-		Chunk_terrain *ter = *it;
+	for (auto *ter : *chunk_terrains) {
 		Image_buffer8 *ibuf = ter->get_rendered_flats();
 		unsigned char *terbits = ibuf->get_bits();
 		int w = ibuf->get_width();
@@ -1805,14 +1798,14 @@ void Game_map::cache_out_schunk(int schunk) {
 #endif
 
 	// Now remove the objects
-	for (auto it = removes.begin(); it != removes.end(); ++it) {
-		(*it)->delete_contents();
-		(*it)->remove_this();
+	for (auto *remove : removes) {
+		remove->delete_contents();
+		remove->remove_this();
 	}
 
 	// Now disable the actors
-	for (auto act = actors.begin(); act != actors.end(); ++act) {
-		(*act)->cache_out();
+	for (auto *actor : actors) {
+		actor->cache_out();
 	}
 
 	// Go through chunks and finish up

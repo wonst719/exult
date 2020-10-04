@@ -1382,7 +1382,7 @@ switch_statement:
 			{
 			end_breakable();
 			$$ = new Uc_switch_statement($4, $8);
-			delete($8);		// a copy has been made.
+			delete $8;		// a copy has been made.
 			cur_fun->pop_scope();
 			}
 		}

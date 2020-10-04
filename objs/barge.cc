@@ -694,8 +694,8 @@ bool Barge_object::add(
 bool Barge_object::contains(
     Game_object *obj
 ) {
-	for (auto it = objects.begin(); it != objects.end(); ++it)
-		if (obj == (*it).get())
+	for (auto& object : objects)
+		if (obj == object.get())
 			return true;
 	return false;
 }

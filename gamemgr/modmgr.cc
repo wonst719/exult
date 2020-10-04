@@ -608,12 +608,11 @@ GameManager::GameManager(bool silent) {
 	checkgames.emplace_back(CFG_SS_NAME);
 	checkgames.emplace_back(CFG_SIB_NAME);
 
-	for (auto it = gamestrs.begin();
-	        it != gamestrs.end(); ++it) {
-		if (*it != CFG_BG_NAME && *it != CFG_FOV_NAME &&
-		    *it != CFG_SI_NAME && *it != CFG_SS_NAME &&
-		    *it != CFG_SIB_NAME)
-			checkgames.push_back(*it);
+	for (auto& gamestr : gamestrs) {
+		if (gamestr != CFG_BG_NAME && gamestr != CFG_FOV_NAME &&
+		    gamestr != CFG_SI_NAME && gamestr != CFG_SS_NAME &&
+		    gamestr != CFG_SIB_NAME)
+			checkgames.push_back(gamestr);
 	}
 
 	games.reserve(checkgames.size());
@@ -623,9 +622,7 @@ GameManager::GameManager(bool silent) {
 	int ssind = -1;
 	int sibind = -1;
 
-	for (auto it = checkgames.begin();
-	        it != checkgames.end(); ++it) {
-		string gameentry = *it;
+	for (const auto& gameentry : checkgames) {
 		// Load the paths for all games found:
 		string base_title = gameentry;
 		string new_title;
@@ -721,10 +718,9 @@ void GameManager::print_found(
 }
 
 ModManager *GameManager::find_game(const string &name) {
-	for (auto it = games.begin();
-	        it != games.end(); ++it)
-		if (it->get_cfgname() == name)
-			return &*it;
+	for (auto& game : games)
+		if (game.get_cfgname() == name)
+			return &game;
 	return nullptr;
 }
 

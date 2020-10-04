@@ -272,30 +272,30 @@ void Cheat::move_chunk(Map_chunk *chunk, int dx, int dy) {
 	int toy = (chunk->get_cy() + dy + c_num_chunks) % c_num_chunks;
 	Map_chunk *tochunk = gmap->get_chunk(tox, toy);
 	Game_object_shared_vector tmplist; // Delete objs. in 'tochunk'.
-	Game_object *obj;
 
 	{
 		// Iterator needs its own scope.
+		Game_object *obj = nullptr;
 		Object_iterator toiter(tochunk->get_objects());
 		while ((obj = toiter.get_next()) != nullptr)
 			if (!obj->as_npc())
 				tmplist.push_back(obj->shared_from_this());
 	}
-	for (auto it = tmplist.begin(); it != tmplist.end(); ++it)
-		(*it)->remove_this();
+	for (auto& it : tmplist)
+		it->remove_this();
 	tmplist.clear();
 	// Copy terrain into new chunk.
 	tochunk->set_terrain(chunk->get_terrain());
 	{
 		Object_iterator fromiter(chunk->get_objects());
+		Game_object *obj = nullptr;
 		while ((obj = fromiter.get_next()) != nullptr)
 			if (!obj->as_terrain())
 				tmplist.push_back(obj->shared_from_this());
 	}
 	dx *= c_tiles_per_chunk;
 	dy *= c_tiles_per_chunk;
-	for (auto it = tmplist.begin(); it != tmplist.end(); ++it) {
-		obj = (*it).get();
+	for (auto& obj : tmplist) {
 		Tile_coord t = obj->get_tile();
 		// Got to move objects legally.
 		obj->move((t.tx + dx + c_num_tiles) % c_num_tiles,
@@ -563,11 +563,9 @@ void Cheat::toggle_selected(Game_object *obj) {
 void Cheat::clear_selected() {
 	if (selected.empty())
 		return;
-	for (auto it = selected.begin();
-	        it != selected.end(); ++it) {
-		Game_object *obj = (*it).get();
+	for (auto& obj : selected) {
 		if (!obj->get_owner())
-			gwin->add_dirty(obj);
+			gwin->add_dirty(obj.get());
 		else
 			gwin->set_all_dirty();
 	}
@@ -646,8 +644,8 @@ void Cheat::move_selected(int dx, int dy, int dz) {
 }
 
 bool Cheat::is_selected(Game_object *o) {
-	for (auto it = selected.begin(); it != selected.end(); ++it)
-		if (o == (*it).get())
+	for (auto& it : selected)
+		if (o == it.get())
 			return true;
 	return false;
 }

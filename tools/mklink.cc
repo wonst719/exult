@@ -49,8 +49,8 @@ uint16 usecode_functions::get_total_size(vector<uint16>& call_tree) const {
 	uint16 size = 0;
 
 	// Add size of each function
-	for (auto it = call_tree.begin(); it != call_tree.end(); ++it) {
-		size += functions[*it].size;
+	for (unsigned short funcid : call_tree) {
+		size += functions[funcid].size;
 	}
 	return size;
 }
@@ -177,8 +177,8 @@ int main() {
 		Write2(linkdep1, lnk2_written);
 		Write2(linkdep1, total_size);
 		// Write each pointer
-		for (size_t j = 0; j < func_tree.size(); j++) {
-			Write4(linkdep2, functions.get(func_tree[j]).where);
+		for (unsigned short j : func_tree) {
+			Write4(linkdep2, functions.get(j).where);
 			lnk2_written++;
 		}
 	}

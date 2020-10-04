@@ -621,9 +621,8 @@ int Uc_string_prefix_expression::get_string_offset(
 
 Uc_array_expression::~Uc_array_expression(
 ) {
-	for (auto it = exprs.begin();
-	        it != exprs.end(); ++it)
-		delete(*it);
+	for (auto *expr : exprs)
+		delete expr;
 }
 
 /*
@@ -639,9 +638,8 @@ void Uc_array_expression::concat(
 	if (!arr)
 		add(e);         // Singleton?  Just add it.
 	else {
-		for (auto it =
-		            arr->exprs.begin(); it != arr->exprs.end(); ++it)
-			add(*it);
+		for (auto *expr : arr->exprs)
+			add(expr);
 		arr->exprs.clear(); // Don't want to delete elements.
 		delete arr;     // But this array is history.
 	}

@@ -490,8 +490,8 @@ bool Usecode_value::restore(
 	}
 	case array_type:
 		construct(arrayval, Usecode_vector(in->read2()));
-		for (size_t i = 0; i < arrayval.size(); i++) {
-			if (!arrayval[i].restore(in)) {
+		for (auto& elem : arrayval) {
+			if (!elem.restore(in)) {
 				return false;
 			}
 		}

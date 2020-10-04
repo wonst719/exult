@@ -253,9 +253,9 @@ void FMOplMidiDriver::close()
 	opl = nullptr;
 
 	// Clear the xmidibanks
-	for (int i = 0; i < 128; i++) {
-		delete xmidibanks[i];
-		xmidibanks[i] = nullptr;
+	for (auto *&xmidibank : xmidibanks) {
+		delete xmidibank;
+		xmidibank = nullptr;
 	}
 
 }

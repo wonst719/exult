@@ -648,9 +648,7 @@ static int Set_32bit_jump_flags(
 		vector<int> locs;
 		Compute_locations(blocks, locs);
 		// Determine base distances and which are 32-bit.
-		for (auto it = blocks.begin();
-		        it != blocks.end(); ++it) {
-			Basic_block *block = *it;
+		for (auto *block : blocks) {
 			// If the jump is already 32-bit, or if there is
 			// no jump (just a fall-through), then there is
 			// nothing to do.
@@ -675,10 +673,9 @@ void Uc_function::gen(
     std::ostream &out
 ) {
 	map<string, Basic_block *> label_blocks;
-	for (auto it = labels.begin();
-	        it != labels.end(); ++it)
+	for (const auto& label : labels)
 		// Fill up label <==> basic block map.
-		label_blocks.insert(pair<string, Basic_block *>(*it, new Basic_block()));
+		label_blocks.insert(pair<string, Basic_block *>(label, new Basic_block()));
 	auto *initial = new Basic_block(-1);
 	auto *endblock = new Basic_block(-1);
 	vector<Basic_block *> fun_blocks;
@@ -699,15 +696,14 @@ void Uc_function::gen(
 	if (!fun_blocks.empty() && !fun_blocks.back()->is_end_block())
 		fun_blocks.back()->set_targets(UC_INVALID, endblock);
 	// Labels map is no longer needed.
-	for (auto it = label_blocks.begin();
-	        it != label_blocks.end(); ++it) {
-		Basic_block *label = it->second;
+	for (auto &elem : label_blocks) {
+		Basic_block *label = elem.second;
 		if (!label->is_reachable()) {
 			// Label can't be reached from the initial block.
 			// Remove it from map and unlink references to it.
 			label->unlink_descendants();
 			label->unlink_predecessors();
-			it->second = nullptr;
+			elem.second = nullptr;
 			delete label;
 		}
 	}
@@ -734,10 +730,8 @@ void Uc_function::gen(
 
 		code.reserve(size);
 		// Output code.
-		for (auto it = fun_blocks.begin();
-		        it != fun_blocks.end(); ++it) {
-			Basic_block *block = *it;
-			block->write(code);
+		for (auto *block : fun_blocks) {
+				block->write(code);
 			if (block->does_not_jump())
 				continue;   // Not a jump.
 			int dist = Compute_jump_distance(block, locs);
@@ -760,9 +754,8 @@ void Uc_function::gen(
 	}
 
 	// Free up the blocks.
-	for (auto it = fun_blocks.begin();
-	        it != fun_blocks.end(); ++it)
-		delete *it;
+	for (auto *fun_block : fun_blocks)
+		delete fun_block;
 	fun_blocks.clear();
 	delete initial;
 	delete endblock;
@@ -802,8 +795,8 @@ void Uc_function::gen(
 	Write2(out, num_locals);
 	Write2(out, num_links);
 	// Write external links.
-	for (auto it = links.begin(); it != links.end(); ++it)
-		Write2(out, (*it)->get_usecode_num());
+	for (auto *link : links)
+		Write2(out, link->get_usecode_num());
 	char *ucstr = &code[0];     // Finally, the code itself.
 	out.write(ucstr, codelen);
 	out.flush();

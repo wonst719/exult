@@ -211,12 +211,11 @@ void Game::write_game_xml() {
 		U7remove(name.c_str());
 	string root = xml_root;
 	Configuration xml(name, root);
-	for (auto it1 = resources.begin(); it1 != resources.end();
-	        ++it1) {
+	for (auto& resource : resources) {
 		string key = root;
 		key += "/resources/";
-		key += (*it1).first;
-		str_int_pair &val = (*it1).second;
+		key += resource.first;
+		str_int_pair &val = resource.second;
 		if (val.str)
 			xml.set(key.c_str(), val.str, false);
 		if (val.num != 0) {
@@ -225,12 +224,11 @@ void Game::write_game_xml() {
 			xml.set(valkey.c_str(), val.num, false);
 		}
 	}
-	for (auto it2 = shapes.begin(); it2 != shapes.end();
-	        ++it2) {
+	for (auto& shape : shapes) {
 		string key = root;
 		key += "/shapes/";
-		key += (*it2).first;
-		int num = (*it2).second;
+		key += shape.first;
+		int num = shape.second;
 		xml.set(key.c_str(), num, false);
 	}
 	xml.write_back();

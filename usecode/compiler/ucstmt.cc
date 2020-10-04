@@ -50,8 +50,8 @@ int Uc_converse_statement::nest = 0;
 Uc_block_statement::~Uc_block_statement(
 ) {
 	// Delete all the statements.
-	for (auto it = statements.begin(); it != statements.end(); ++it)
-		delete(*it);
+	for (auto *statement : statements)
+		delete statement;
 }
 
 /*
@@ -67,8 +67,7 @@ void Uc_block_statement::gen(
     Basic_block *start,         // Block used for 'continue' statements.
     Basic_block *exit           // Block used for 'break' statements.
 ) {
-	for (auto it = statements.begin(); it != statements.end(); ++it) {
-		Uc_statement *stmt = *it;
+	for (auto *stmt : statements) {
 		stmt->gen(fun, blocks, curr, end, labels, start, exit);
 	}
 }
@@ -673,9 +672,8 @@ void Uc_converse_case_statement::gen(
 	if (remove) {       // Remove answer?
 		if (string_offset.size() > 1) {
 			auto *strlist = new Uc_array_expression();
-			for (auto it = string_offset.begin();
-			        it != string_offset.end(); ++it) {
-				auto *str = new Uc_string_expression(*it);
+			for (int it : string_offset) {
+				auto *str = new Uc_string_expression(it);
 				strlist->add(str);
 			}
 			Call_intrinsic(fun, blocks, case_body, end, labels,
@@ -707,9 +705,9 @@ Uc_converse_statement::Uc_converse_statement(
 )
 	: answers(a), cases(*cs), nestconv(n) {
 	bool has_default = false;
-	for (auto it = cases.begin(); it != cases.end(); ++it) {
+	for (auto *it : cases) {
 		auto *stmt =
-		    static_cast<Uc_converse_case_statement *>(*it);
+		    static_cast<Uc_converse_case_statement *>(it);
 		if (stmt->is_default()) {
 			if (has_default) {
 				char buf[255];
@@ -728,8 +726,8 @@ Uc_converse_statement::Uc_converse_statement(
 Uc_converse_statement::~Uc_converse_statement(
 ) {
 	delete answers;
-	for (auto it = cases.begin(); it != cases.end(); ++it)
-		delete(*it);
+	for (auto *it : cases)
+		delete it;
 }
 
 /*
@@ -769,9 +767,9 @@ void Uc_converse_statement::gen(
 	conv_top->set_targets(UC_CONVERSE, conv_body, past_conv);
 	// Generate loop body.
 	Uc_converse_case_statement *def = nullptr;
-	for (auto it = cases.begin(); it != cases.end(); ++it) {
+	for (auto *it : cases) {
 		auto *stmt =
-		    static_cast<Uc_converse_case_statement *>(*it);
+		    static_cast<Uc_converse_case_statement *>(it);
 		if (stmt->is_default())
 			def = stmt;
 		else
@@ -842,8 +840,8 @@ void Uc_switch_case_statement::gen(
 Uc_switch_statement::~Uc_switch_statement(
 ) {
 	delete cond;
-	for (auto it = cases.begin(); it != cases.end(); ++it)
-		delete(*it);
+	for (auto *it : cases)
+		delete it;
 }
 
 /*
@@ -856,9 +854,9 @@ Uc_switch_statement::Uc_switch_statement(
 )
 	: cond(v), cases(*cs) {
 	bool has_default = false;
-	for (auto it = cases.begin(); it != cases.end(); ++it) {
+	for (auto *it : cases) {
 		auto *stmt =
-		    static_cast<Uc_switch_case_statement *>(*it);
+		    static_cast<Uc_switch_case_statement *>(it);
 		if (stmt->is_default()) {
 			if (has_default) {
 				char buf[255];
@@ -887,9 +885,9 @@ void Uc_switch_statement::gen(
 	auto *var = new Uc_var_expression(cond->need_var(curr, fun));
 	vector<Basic_block *> case_blocks;
 	Basic_block *def_case = nullptr;
-	for (size_t i = 0; i < cases.size(); i++) {
+	for (auto *it : cases) {
 		auto *stmt =
-		    dynamic_cast<Uc_switch_case_statement *>(cases[i]);
+		    dynamic_cast<Uc_switch_case_statement *>(it);
 		if (stmt->is_default()) { // Store the default case iterator.
 			def_case = new Basic_block();
 			case_blocks.push_back(def_case);
@@ -942,10 +940,8 @@ void Uc_message_statement::gen(
 	if (!msgs)
 		return;
 	const std::vector<Uc_expression *> &exprs = msgs->get_exprs();
-	for (auto it = exprs.begin();
-	        it != exprs.end(); ++it) {
-		Uc_expression *msg = *it;
-		// A known string?
+	for (auto *msg : exprs) {
+			// A known string?
 		int offset = msg->get_string_offset();
 		if (offset >= 0) {
 			if (is_int_32bit(offset)) {

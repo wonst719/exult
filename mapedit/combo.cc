@@ -261,9 +261,7 @@ Combo::Combo(
     const Combo &c2
 ) : shapes_file(c2.shapes_file), hot_index(c2.hot_index), starttx(c2.starttx),
 	startty(c2.startty), name(c2.name), tilefoot(c2.tilefoot) {
-	for (auto it = c2.members.begin();
-	        it != c2.members.end(); ++it) {
-		Combo_member *m = *it;
+	for (auto *m : c2.members) {
 		members.push_back(new Combo_member(m->tx, m->ty, m->tz,
 		                                   m->shapenum, m->framenum));
 	}
@@ -275,9 +273,8 @@ Combo::Combo(
 
 Combo::~Combo(
 ) {
-	for (auto it = members.begin();
-	        it != members.end(); ++it)
-		delete *it;
+	for (auto *member : members)
+		delete member;
 }
 
 /*
@@ -462,10 +459,8 @@ unique_ptr<unsigned char[]> Combo::write(
 	out << name;
 	out << hot_index << starttx << startty;
 	out << static_cast<short>(members.size());  // # members to follow.
-	for (auto it = members.begin();
-	        it != members.end(); ++it) {
-		Combo_member *m = *it;
-		out << m->tx << m->ty << m->tz << m->shapenum <<
+	for (auto *m : members) {
+			out << m->tx << m->ty << m->tz << m->shapenum <<
 		    m->framenum;
 	}
 	datalen = ptr - buf.get();        // Return actual length.

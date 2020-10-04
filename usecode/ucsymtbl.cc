@@ -33,9 +33,7 @@ const int curvers = 0;
  *  Cleanup.
  */
 Usecode_scope_symbol::~Usecode_scope_symbol() {
-	for (auto it = symbols.begin(); it != symbols.end();
-	        ++it) {
-		Usecode_symbol *sym = *it;
+	for (auto *sym : symbols) {
 		delete sym;
 	}
 }
@@ -86,9 +84,7 @@ void Usecode_scope_symbol::read(istream &in) {
 void Usecode_scope_symbol::write(ostream &out) {
 	Write4(out, symbols.size());
 	Write4(out, curvers);
-	for (auto it = symbols.begin(); it != symbols.end();
-	        ++it) {
-		Usecode_symbol *sym = *it;
+	for (auto *sym : symbols) {
 		const char *nm = sym->get_name();
 		out.write(nm, strlen(nm) + 1);
 		Write2(out, static_cast<int>(sym->get_kind()));
@@ -219,9 +215,8 @@ void Usecode_class_symbol::write(ostream &out) {
 	Usecode_scope_symbol::write(out);
 	int num_methods = methods.size();
 	Write2(out, num_methods);
-	for (auto it = methods.begin(); it != methods.end();
-	        ++it)
-		Write2(out, *it);
+	for (int method : methods)
+		Write2(out, method);
 	Write2(out, num_vars);
 }
 

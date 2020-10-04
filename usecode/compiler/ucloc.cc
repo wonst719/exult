@@ -52,9 +52,9 @@ void Uc_location::set_cur(
 ) {
 	cur_line = l;
 	cur_source = nullptr;         // See if already here.
-	for (auto it = source_names.begin(); it != source_names.end(); ++it)
-		if (strcmp(s, *it) == 0) {
-			cur_source = *it;
+	for (auto *name : source_names)
+		if (strcmp(s, name) == 0) {
+			cur_source = name;
 			break;
 		}
 	if (!cur_source) {      // 1st time.

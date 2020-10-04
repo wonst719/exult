@@ -332,9 +332,7 @@ void Usecode_browser::setup_list(
 	bool show_shapes = studio->get_toggle("view_uc_shapes");
 	bool show_objects = studio->get_toggle("view_uc_objects");
 	const Usecode_symbol_table::Syms_vector &syms = symtbl.get_symbols();
-	Usecode_symbol_table::Syms_vector::const_iterator siter;
-	for (siter = syms.begin(); siter != syms.end(); ++siter) {
-		Usecode_symbol *sym = *siter;
+	for (auto *sym : syms) {
 		Usecode_symbol::Symbol_kind kind = sym->get_kind();
 		const char *kindstr = nullptr;
 		const char *nm = sym->get_name();

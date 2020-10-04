@@ -90,8 +90,8 @@ void ShortcutBar_gump::createButtons() {
 	starty = gwin->get_win()->get_start_y();
 	resy = gwin->get_win()->get_full_height();
 	gamey = gwin->get_game_height();
-	for (int i = 0; i < MAX_SHORTCUT_BAR_ITEMS; ++i)
-		buttonItems[i].translucent = false;
+	for (auto& buttonItem : buttonItems)
+		buttonItem.translucent = false;
 	int x = (gamex - 320)/2;
 
 	memset(buttonItems, 0, sizeof(buttonItems));
@@ -271,8 +271,8 @@ ShortcutBar_gump::ShortcutBar_gump
 	height = 25;
 	locx = placex;
 	locy = placey;
-	for(int i = 0; i < MAX_SHORTCUT_BAR_ITEMS; ++i)
-		buttonItems[i].pushed = false;
+	for (auto& buttonItem : buttonItems)
+		buttonItem.pushed = false;
 	createButtons();
 	gumpman->add_gump(this);
 	has_changed = true;

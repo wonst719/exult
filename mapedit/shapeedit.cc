@@ -3161,13 +3161,11 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Effective_hp_info *first = nullptr;
-		for (auto it = hpinf.begin();
-		        it != hpinf.end(); ++it) {
-			const Effective_hp_info &hps = *it;
+		for (const auto &hps : hpinf) {
 			if (hps.is_invalid())
 				continue;
 			if (!first)
-				first = &*it;
+				first = &hps;
 			gtk_tree_store_append(store, &iter, nullptr);
 			gtk_tree_store_set(store, &iter, HP_FRAME_COLUMN, hps.get_frame(),
 			                   HP_QUALITY_COLUMN, hps.get_quality(),
@@ -3199,13 +3197,11 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Light_info *first = nullptr;
-		for (auto it = lightinf.begin();
-		        it != lightinf.end(); ++it) {
-			const Light_info &light = *it;
+		for (const auto &light : lightinf) {
 			if (light.is_invalid())
 				continue;
 			if (!first)
-				first = &*it;
+				first = &light;
 			gtk_tree_store_append(store, &iter, nullptr);
 			gtk_tree_store_set(store, &iter, BRIGHTNESS_FRAME_COLUMN, light.get_frame(),
 			                   BRIGHTNESS_VALUE_COLUMN, light.get_light(),
@@ -3235,13 +3231,11 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Warmth_info *first = nullptr;
-		for (auto it = warminf.begin();
-		        it != warminf.end(); ++it) {
-			const Warmth_info &warm = *it;
+		for (const auto &warm : warminf) {
 			if (warm.is_invalid())
 				continue;
 			if (!first)
-				first = &*it;
+				first = &warm;
 			gtk_tree_store_append(store, &iter, nullptr);
 			gtk_tree_store_set(store, &iter, WARM_FRAME_COLUMN, warm.get_frame(),
 			                   WARM_VALUE_COLUMN, warm.get_warmth(),
@@ -3271,13 +3265,11 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Content_rules *first = nullptr;
-		for (auto it = cntinf.begin();
-		        it != cntinf.end(); ++it) {
-			const Content_rules &cntr = *it;
+		for (const auto &cntr : cntinf) {
 			if (cntr.is_invalid())
 				continue;
 			if (!first)
-				first = &*it;
+				first = &cntr;
 			gtk_tree_store_append(store, &iter, nullptr);
 			gtk_tree_store_set(store, &iter, CNT_SHAPE_COLUMN, cntr.get_shape(),
 			                   CNT_ACCEPT_COLUMN, cntr.accepts_shape(),
@@ -3307,13 +3299,11 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Frame_flags_info *first = nullptr;
-		for (auto it = frflaginf.begin();
-		        it != frflaginf.end(); ++it) {
-			const Frame_flags_info &frflag = *it;
+		for (const auto &frflag : frflaginf) {
 			if (frflag.is_invalid())
 				continue;
 			if (!first)
-				first = &*it;
+				first = &frflag;
 			gtk_tree_store_append(store, &iter, nullptr);
 			gtk_tree_store_set(store, &iter,
 			                   FRFLAG_FRAME_COLUMN, frflag.get_frame(),
@@ -3346,13 +3336,11 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Frame_usecode_info *first = nullptr;
-		for (auto it = frucinf.begin();
-		        it != frucinf.end(); ++it) {
-			const Frame_usecode_info &frucfun = *it;
+		for (const auto &frucfun : frucinf) {
 			if (frucfun.is_invalid())
 				continue;
 			if (!first)
-				first = &*it;
+				first = &frucfun;
 
 			std::stringstream ucfun;
 			if (frucfun.get_usecode_name().length())
@@ -3398,13 +3386,11 @@ void ExultStudio::init_shape_notebook(
 		const Frame_name_info *first = nullptr;
 		codepageStr locsname(get_text_entry("shinfo_name"));
 		const char *sname = locsname.get_str();
-		for (auto it = nmvec.begin();
-		        it != nmvec.end(); ++it) {
-			const Frame_name_info &nmit = *it;
+		for (const auto &nmit : nmvec) {
 			if (nmit.is_invalid())
 				continue;
 			if (!first)
-				first = &*it;
+				first = &nmit;
 			int type = nmit.get_type();
 			int msgid = nmit.get_msgid();
 			const char *msgstr = type == -255 ? sname :
@@ -3456,13 +3442,11 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Paperdoll_item *first = nullptr;
-		for (auto it = dollinf.begin();
-		        it != dollinf.end(); ++it) {
-			const Paperdoll_item &doll = *it;
+		for (const auto &doll : dollinf) {
 			if (doll.is_invalid())
 				continue;
 			if (!first)
-				first = &*it;
+				first = &doll;
 			gtk_tree_store_append(store, &iter, nullptr);
 			gtk_tree_store_set(store, &iter,
 			                   DOLL_WORLD_FRAME, doll.get_world_frame(),

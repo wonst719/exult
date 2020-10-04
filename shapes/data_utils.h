@@ -105,9 +105,8 @@ static const T *Search_vector_data_single_wildcard(
 		return nullptr;
 	T inf;
 	inf.*dat = src;
-	typename std::vector<T>::const_iterator it;
 	// Try finding exact match first.
-	it = std::lower_bound(vec.begin(), vec.end(), inf);
+	auto it = std::lower_bound(vec.begin(), vec.end(), inf);
 	if (it == vec.end())    // Nowhere to be found.
 		return nullptr;
 	else if (*it == inf && !it->is_invalid())   // Have it already.
@@ -133,9 +132,8 @@ static const T *Search_vector_data_double_wildcards(
 	T inf;
 	inf.*fr = frame;
 	inf.*qual = quality;
-	typename std::vector<T>::const_iterator it;
 	// Try finding exact match first.
-	it = std::lower_bound(vec.begin(), vec.end(), inf);
+	auto it = std::lower_bound(vec.begin(), vec.end(), inf);
 	if (it == vec.end())    // Nowhere to be found.
 		return nullptr;
 	else if (*it == inf && !it->is_invalid())   // Have it already.

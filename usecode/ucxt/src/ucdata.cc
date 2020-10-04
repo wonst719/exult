@@ -50,8 +50,8 @@ UCData::UCData() = default;
 
 UCData::~UCData() {
 	_file.close();
-	for (unsigned int i = 0; i < _funcs.size(); i++)
-		delete _funcs[i];
+	for (auto *func : _funcs)
+		delete func;
 	delete _symtbl;
 }
 
@@ -129,8 +129,8 @@ void UCData::disassamble(ostream &o) {
 	analyse_classes();
 
 	if (options.verbose) {
-		for (auto i = search_funcs.begin(); i != search_funcs.end(); ++i)
-			o << "Looking for function number " << setw(8) << (*i) << endl;
+		for (unsigned int func : search_funcs)
+			o << "Looking for function number " << setw(8) << func << endl;
 		o << endl;
 	}
 
@@ -228,12 +228,12 @@ void UCData::dump_flags(ostream &o) {
 	vector<FlagData> flags;
 
 	// *BLEH* ugly!
-	for (auto func = _funcs.begin(); func != _funcs.end(); ++func)
-		for (auto op = (*func)->_opcodes.begin(); op != (*func)->_opcodes.end(); ++op) {
+	for (auto *func : _funcs)
+		for (auto op = func->_opcodes.begin(); op != func->_opcodes.end(); ++op) {
 			if (op->_id == 0x42)
-				flags.emplace_back((*func)->_funcid, op->_offset, op->_params_parsed[0], FlagData::GETFLAG);
+				flags.emplace_back(func->_funcid, op->_offset, op->_params_parsed[0], FlagData::GETFLAG);
 			else if (op->_id == 0x43)
-				flags.emplace_back((*func)->_funcid, op->_offset, op->_params_parsed[0], FlagData::SETFLAG);
+				flags.emplace_back(func->_funcid, op->_offset, op->_params_parsed[0], FlagData::SETFLAG);
 		}
 
 	o << "Number of flags found: " << setbase(10) << flags.size() << endl << endl;
@@ -244,20 +244,20 @@ void UCData::dump_flags(ostream &o) {
 
 		o << setbase(16) << setfill('0');
 		int currfunc = -1;
-		for (unsigned int i = 0; i < flags.size(); i++) {
-			if (currfunc != flags[i].func()) {
-				o << "Function: " << setw(4) << flags[i].func() << endl;
-				currfunc = static_cast<int>(flags[i].func());
+		for (auto& flag : flags) {
+			if (currfunc != flag.func()) {
+				o << "Function: " << setw(4) << flag.func() << endl;
+				currfunc = static_cast<int>(flag.func());
 				o << "              flag  offset" << endl;
 			}
 
 			o << "        ";
-			if (flags[i].access() == FlagData::GETFLAG)
+			if (flag.access() == FlagData::GETFLAG)
 				o << "push  ";
-			else if (flags[i].access() == FlagData::SETFLAG)
+			else if (flag.access() == FlagData::SETFLAG)
 				o << "pop   ";
-			o << setw(4) << flags[i].flag()   << "  "
-			  << setw(4) << flags[i].offset() << endl;
+			o << setw(4) << flag.flag()   << "  "
+			  << setw(4) << flag.offset() << endl;
 		}
 	}
 
@@ -267,20 +267,20 @@ void UCData::dump_flags(ostream &o) {
 
 		o << setbase(16) << setfill('0');
 		auto currflag = static_cast<unsigned int>(-1);
-		for (unsigned int i = 0; i < flags.size(); i++) {
-			if (currflag != flags[i].flag()) {
-				o << "Flag: " << setw(4) << flags[i].flag() << endl;
-				currflag = flags[i].flag();
+		for (auto& flag : flags) {
+			if (currflag != flag.flag()) {
+				o << "Flag: " << setw(4) << flag.flag() << endl;
+				currflag = flag.flag();
 				o << "              func  offset" << endl;
 			}
 
 			o << "        ";
-			if (flags[i].access() == FlagData::GETFLAG)
+			if (flag.access() == FlagData::GETFLAG)
 				o << "push  ";
-			else if (flags[i].access() == FlagData::SETFLAG)
+			else if (flag.access() == FlagData::SETFLAG)
 				o << "pop   ";
-			o << setw(4) << flags[i].func()   << "  "
-			  << setw(4) << flags[i].offset() << endl;
+			o << setw(4) << flag.func()   << "  "
+			  << setw(4) << flag.offset() << endl;
 		}
 	}
 }
@@ -372,21 +372,21 @@ void UCData::load_funcs(ostream &o) {
 
 	if (options.verbose) o << "Creating function map..." << endl;
 
-	for (auto i = _funcs.begin(); i != _funcs.end(); ++i) {
-		int funcid = (*i)->_funcid;
+	for (auto *func : _funcs) {
+		int funcid = func->_funcid;
 		Usecode_symbol::Symbol_kind kind;
-		if ((*i)->_sym)
-			kind = (*i)->_sym->get_kind();
+		if (func->_sym)
+			kind = func->_sym->get_kind();
 		else if (funcid < 0x400)
 			kind = Usecode_symbol::shape_fun;
 		else if (funcid < 0x800)
 			kind = Usecode_symbol::object_fun;
 		else
 			kind = Usecode_symbol::fun_defined;
-		_funcmap.insert(FuncMapPair((*i)->_funcid, UCFuncSet(funcid, (*i)->_num_args,
-		                                                     (*i)->return_var, (*i)->aborts,
-		                                                     (*i)->_cls != nullptr, (*i)->funcname,
-		                                                     kind, (*i)->_varmap)));
+		_funcmap.insert(FuncMapPair(func->_funcid, UCFuncSet(funcid, func->_num_args,
+		                                                     func->return_var, func->aborts,
+		                                                     func->_cls != nullptr, func->funcname,
+		                                                     kind, func->_varmap)));
 	}
 	/*  for(map<unsigned int, UCFuncSet>::iterator i=_funcmap.begin(); i!=_funcmap.end(); ++i)
 	        o << i->first << "\t" << i->second.num_args << endl;*/
@@ -434,9 +434,9 @@ void UCData::output_extern_header(ostream &o) {
 	}
 	load_funcs(o);
 
-	for (auto func = _funcs.begin(); func != _funcs.end(); ++func) {
+	for (auto *func : _funcs) {
 		//(*func)->output_ucs_funcname(o << "extern ", _funcmap, (*func)->_funcid, (*func)->_num_args, (*func)->return_var) << ';' << endl;
-		(*func)->output_ucs_funcname(o << "extern ", _funcmap, _symtbl) << ';' << endl;
+		func->output_ucs_funcname(o << "extern ", _funcmap, _symtbl) << ';' << endl;
 	}
 }
 

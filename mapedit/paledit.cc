@@ -131,9 +131,8 @@ void Palette_edit::select(
 void Palette_edit::load(
 ) {
 	// Free old.
-	for (auto it = palettes.begin();
-	        it != palettes.end(); ++it)
-		gdk_rgb_cmap_free(*it);
+	for (auto *palette : palettes)
+		gdk_rgb_cmap_free(palette);
 	unsigned cnt = flex_info->size();
 	palettes.resize(cnt);       // Set size of list.
 	if (!cnt)           // No palettes?
@@ -753,9 +752,8 @@ Palette_edit::Palette_edit(
 
 Palette_edit::~Palette_edit(
 ) {
-	for (auto it = palettes.begin();
-	        it != palettes.end(); ++it)
-		gdk_rgb_cmap_free(*it);
+	for (auto *palette : palettes)
+		gdk_rgb_cmap_free(palette);
 	gtk_widget_destroy(get_widget());
 	delete [] image;
 }

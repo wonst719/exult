@@ -227,15 +227,14 @@ bool Uc_struct_symbol::is_dup(
 }
 
 Uc_struct_symbol::~Uc_struct_symbol() {
-	for (auto it = vars.begin(); it != vars.end(); ++it)
-		delete it->first;
+	for (auto& var : vars)
+		delete var.first;
 	vars.clear();
 }
 
 void Uc_struct_symbol::merge_struct(Uc_struct_symbol *other) {
-	for (auto it = other->vars.begin();
-	        it != other->vars.end(); ++it)
-		add(it->first);
+	for (auto& var : other->vars)
+		add(var.first);
 }
 
 /*
@@ -635,12 +634,10 @@ bool String_compare::operator()(const char *const &x, const char *const &y) cons
 
 Uc_scope::~Uc_scope(
 ) {
-	for (auto it = symbols.begin();
-	        it != symbols.end(); ++it)
-		delete(*it).second;
-	for (auto it = scopes.begin();
-	        it != scopes.end(); ++it)
-		delete *it;
+	for (auto& symbol : symbols)
+		delete symbol.second;
+	for (auto *scope : scopes)
+		delete scope;
 }
 
 /*
