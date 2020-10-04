@@ -906,7 +906,11 @@ void Game_window::clear_world(
 	}
 	for (auto *map : maps)
 		map->clear();
-	set_map(0);         // Back to main map.
+	try {
+		set_map(0);         // Back to main map.
+	} catch (const quit_exception & /*f*/) {
+		// Lets not allow this to go up.
+	}
 	Monster_actor::delete_all();    // To be safe, del. any still around.
 	Notebook_gump::clear();
 	main_actor = nullptr;
