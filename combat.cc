@@ -467,7 +467,7 @@ Game_object *Combat_schedule::find_foe(
 		int least_str = 100;
 		for (auto it = opponents.begin();
 		        it != opponents.end(); ++it) {
-	    	Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
+			Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
 			if (!opp)
 			    continue;
 			str = opp->get_property(Actor::strength);
@@ -483,7 +483,7 @@ Game_object *Combat_schedule::find_foe(
 		int best_str = -100;
 		for (auto it = opponents.begin();
 		        it != opponents.end(); ++it) {
-	    	Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
+			Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
 			if (!opp)
 			    continue;
 			str = opp->get_property(Actor::strength);
@@ -498,7 +498,7 @@ Game_object *Combat_schedule::find_foe(
 		int best_dist = 4 * c_tiles_per_chunk;
 		for (auto it = opponents.begin();
 		        it != opponents.end(); ++it) {
-	    	Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
+			Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
 			if (!opp)
 			    continue;
 			int dist = npc->distance(opp.get());
