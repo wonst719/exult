@@ -60,33 +60,47 @@ U7multifile::U7multifile(const File_spec &spec0, const File_spec &spec1,
 /// Initializes from file specs. Needed by some constructors.
 /// @param specs    List of file specs.
 U7multifile::U7multifile(const std::vector<File_spec> &specs) {
-	for (std::vector<File_spec>::const_iterator it = specs.begin();
-	        it != specs.end(); ++it)
-		files.push_back(File_data(*it));
+	for (const auto& spec : specs)
+		files.push_back(File_data(spec));
 }
 
 uint32 U7multifile::number_of_objects() const {
 	int num = 0;
-	for (std::vector<File_data>::const_iterator it = files.begin();
-	        it != specs.end(); ++it)
-		if (it->number_of_objects() > num)
-			num = it->number_of_objects();
+	for (const auto& file : files)
+		if (file.number_of_objects() > num)
+			num = file.number_of_objects();
 	return num;
 }
 
-char *U7multifile::retrieve(uint32 objnum, std::size_t &len, bool &patch) const {
-	char *buf;
-	for (std::vector<File_data>::const_reverse_iterator it = files.rbegin();
-	        it != specs.rend(); ++it) {
-		buf = it->retrieve(objnum, len, patch);
+template <typename T>
+struct reverse_wrapper {
+	T& iterable;
+};
+
+template <typename T>
+auto begin(reverse_wrapper<T> container) {
+	return std::rbegin(container.iterable);
+}
+
+template <typename T>
+auto end(reverse_wrapper<T> container) {
+	return std::rend(container.iterable);
+}
+
+template <typename T>
+reverse_wrapper<T> reverse(T&& iterable) {
+	return reverse_wrapper<T>{std::forward<T>(iterable)};
+}
+
+std::unique_ptr<unsigned char[]> U7multifile::retrieve(uint32 objnum, std::size_t &len, bool &patch) const {
+	for (auto& file : reverse(files)) {
+		auto buf = file.retrieve(objnum, len, patch);
 		if (buf && len > 0)
 			return buf;
-		else if (buf)
-			delete [] buf;
 	}
 	// Failed to retrieve the object.
 	patch = false;
 	len = 0;
-	return 0;
+	return nullptr;
 }
 #endif

@@ -194,10 +194,19 @@ public:
 	size_t number_of_objects() const {
 		return cnt;
 	}
-	char *retrieve(uint32 objnum, std::size_t &len, bool &pt) {
+	std::unique_ptr<unsigned char[]> retrieve(uint32 objnum, std::size_t &len, bool &pt) {
 		pt = patch;
 		len = 0;
-		return file ? file->retrieve(objnum, len) : 0;
+		if (file) {
+			return file->retrieve(objnum, len);
+		}
+		return nullptr;
+	}
+	IBufferDataSource retrieve(uint32 objnum) {
+		if (file) {
+			return file->retrieve(objnum);
+		}
+		return IBufferDataSource(nullptr, 0);
 	}
 	const char *get_archive_type() {
 		return file ? file->get_archive_type() : "NONE";
@@ -223,7 +232,12 @@ public:
 	U7multifile(const std::vector<File_spec> &specs);
 
 	size_t number_of_objects() const;
-	char *retrieve(uint32 objnum, std::size_t &len, bool &patch) const;
+	std::unique_ptr<unsigned char[]> retrieve(uint32 objnum, std::size_t &len, bool &patch) const;
+	IBufferDataSource retrieve(uint32 objnum, bool &patch, const) {
+		std::size_t len;
+		auto buffer = retrieve(objnum, len, patch);
+		return IBufferDataSource(std::move(buffer), len);
+	}
 };
 #endif
 
