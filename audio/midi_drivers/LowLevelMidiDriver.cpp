@@ -157,9 +157,10 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo)
 	string s;
 
 	// Reset the current stream states
-	std::memset(sequences, 0, sizeof (XMidiSequence*) * LLMD_NUM_SEQ);
-	std::memset(chan_locks, -1, sizeof (sint32) * 16);
-	std::memset(chan_map, -1, sizeof (sint32) * LLMD_NUM_SEQ * 16);
+	std::fill(std::begin(sequences), std::end(sequences), nullptr);
+	std::fill(std::begin(chan_locks), std::end(chan_locks), -1);
+	for (auto& chan : chan_map)
+		std::fill(std::begin(chan), std::end(chan), -1);
 	for (int i = 0; i < LLMD_NUM_SEQ; i++) {
 		playing[i] = false;
 		callback_data[i] = -1;
@@ -175,12 +176,15 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo)
 	next_sysex = 0;
 
 	// Zero the memory
-	std::memset(mt32_patch_banks,0,sizeof(mt32_patch_banks[0])*128);
-	std::memset(mt32_timbre_banks,0,sizeof(mt32_timbre_banks[0])*128);
-	std::memset(mt32_timbre_used,-1,sizeof(mt32_timbre_used[0])*64);
-	std::memset(mt32_bank_sel,0,sizeof(mt32_bank_sel[0])*LLMD_NUM_SEQ);
-	std::memset(mt32_patch_bank_sel,0,sizeof(mt32_patch_bank_sel[0])*128);
-	std::memset(mt32_rhythm_bank,0,sizeof(mt32_rhythm_bank[0])*128);
+	std::fill(std::begin(mt32_patch_banks), std::end(mt32_patch_banks), nullptr);
+	std::fill(std::begin(mt32_timbre_banks), std::end(mt32_timbre_banks), nullptr);
+	for (auto& timbre : mt32_timbre_used)
+		std::fill(std::begin(timbre), std::end(timbre), -1);
+	for (auto& bank : mt32_bank_sel)
+		std::fill(std::begin(bank), std::end(bank), 0);
+	// Note: This is inconsistent with the one from LowLevelMidiDriver::loadTimbreLibrary
+	std::fill(std::begin(mt32_patch_bank_sel), std::end(mt32_patch_bank_sel), 0);
+	std::fill(std::begin(mt32_rhythm_bank), std::end(mt32_rhythm_bank), nullptr);
 
 	int code = 0;
 
@@ -1252,22 +1256,24 @@ void LowLevelMidiDriver::loadTimbreLibrary(IDataSource *ds, TimbreLibraryType ty
 	}
 
 	// Zero the memory
-	std::memset(mt32_patch_banks,0,sizeof(mt32_patch_banks[0])*128);
+	std::fill(std::begin(mt32_patch_banks), std::end(mt32_patch_banks), nullptr);
 
 	// Zero the memory
-	std::memset(mt32_timbre_banks,0,sizeof(mt32_timbre_banks[0])*128);
+	std::fill(std::begin(mt32_timbre_banks), std::end(mt32_timbre_banks), nullptr);
 
 	// Mask it out
-	std::memset(mt32_timbre_used,-1,sizeof(mt32_timbre_used[0])*64);
+	for (auto& timbre : mt32_timbre_used)
+		std::fill(std::begin(timbre), std::end(timbre), -1);
 
 	// Zero the memory
-	std::memset(mt32_bank_sel,0,sizeof(mt32_bank_sel[0])*LLMD_NUM_SEQ);
+	for (auto& bank : mt32_bank_sel)
+		std::fill(std::begin(bank), std::end(bank), 0);
 
-	// Zero the memory
-	std::memset(mt32_patch_bank_sel,-1,sizeof(mt32_patch_bank_sel[0])*128);
+	// Zero the memory; note: this is inconsistent with LowLevelMidiDriver::initMidiDriver
+	std::fill(std::begin(mt32_patch_bank_sel), std::end(mt32_patch_bank_sel), -1);
 
 	// Zero
-	std::memset(mt32_rhythm_bank,0,sizeof(mt32_rhythm_bank[0])*128);
+	std::fill(std::begin(mt32_rhythm_bank), std::end(mt32_rhythm_bank), nullptr);
 
 	// Setup Default Patch library
 	mt32_patch_banks[0] = new MT32Patch*[128];
@@ -1434,8 +1440,7 @@ void LowLevelMidiDriver::extractTimbreLibrary(XMidiEventList *eventlist)
 
 				// Allocate memory
 				if (!mt32_timbre_banks[2]) {
-					mt32_timbre_banks[2] = new MT32Timbre*[128];
-					std::memset(mt32_timbre_banks[2],0,sizeof(mt32_timbre_banks[2][0])*128);
+					mt32_timbre_banks[2] = new MT32Timbre*[128]{};
 				}
 				if (!mt32_timbre_banks[2][start]) mt32_timbre_banks[2][start] = new MT32Timbre;
 
@@ -1805,14 +1810,12 @@ void LowLevelMidiDriver::loadXMidiTimbreLibrary(IDataSource *ds)
 
 		// Allocate memory
 		if (!mt32_timbre_banks[bank]) {
-			mt32_timbre_banks[bank] = new MT32Timbre*[128];
-			std::memset(mt32_timbre_banks[bank],0,sizeof(mt32_timbre_banks[bank][0])*128);
+			mt32_timbre_banks[bank] = new MT32Timbre*[128]{};
 		}
 		if (!mt32_timbre_banks[bank][patch]) mt32_timbre_banks[bank][patch] = new MT32Timbre;
 
 		if (!mt32_patch_banks[bank]) {
-			mt32_patch_banks[bank] = new MT32Patch*[128];
-			std::memset(mt32_patch_banks[bank],0,sizeof(mt32_patch_banks[bank][0])*128);
+			mt32_patch_banks[bank] = new MT32Patch*[128]{};
 		}
 		if (!mt32_patch_banks[bank][patch]) mt32_patch_banks[bank][patch] = new MT32Patch;
 
