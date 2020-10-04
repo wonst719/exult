@@ -47,7 +47,9 @@ int read_config(FILE *f) {
 	char *pluginname = NULL;
 	colour_hex col;
 	int idx;
-	unsigned r, g, b;
+	unsigned r;
+	unsigned g;
+	unsigned b;
 	libhandle_t a_hdl = NULL;
 	void *(*init)(glob_statics * g_var);
 
