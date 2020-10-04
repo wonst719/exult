@@ -1786,7 +1786,7 @@ bool BG_Game::new_game(Vga_file &shapes) {
 	std::vector<std::pair<std::string, int> > source;
 	source.emplace_back(FACES_VGA, -1);
 	// Multiracial faces.
-	const str_int_pair &resource = game->get_resource("files/mrfacesvga");
+	const str_int_pair &resource = get_resource("files/mrfacesvga");
 	source.emplace_back(resource.str, resource.num);
 	source.emplace_back(PATCH_FACES, -1);
 	faces_vga.load(source);
