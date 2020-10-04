@@ -54,7 +54,6 @@ using std::cerr;
 using std::cout;
 using std::endl;
 using std::string;
-using std::strcpy;
 
 //
 // Midi devices types and conversions

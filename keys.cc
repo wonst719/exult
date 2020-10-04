@@ -44,7 +44,6 @@ using std::isspace;
 using std::strchr;
 using std::string;
 using std::strlen;
-using std::vector;
 
 static  class Chardata { // ctype-like character lists
 public:

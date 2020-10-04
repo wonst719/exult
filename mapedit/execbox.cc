@@ -33,9 +33,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cstring>
 #include <cstdlib>
 
-using std::cout;
-using std::endl;
-
 #ifndef _WIN32
 
 #ifdef HAVE_SYS_TYPES_H

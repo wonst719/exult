@@ -67,8 +67,6 @@ using std::setfill;
 
 using std::cout;
 using std::endl;
-using std::strcpy;
-using std::strcat;
 
 Cheat cheat;
 

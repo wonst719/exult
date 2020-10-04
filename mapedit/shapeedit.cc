@@ -64,7 +64,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "array_size.h"
 
 using   std::string;
-using   std::map;
 
 inline GtkAttachOptions operator|(GtkAttachOptions op1, GtkAttachOptions op2) {
 	return static_cast<GtkAttachOptions>(static_cast<int>(op1) | static_cast<int>(op2));

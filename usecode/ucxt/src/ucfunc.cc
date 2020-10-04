@@ -62,7 +62,6 @@ using std::ios;
 using std::streampos;
 using std::cout;
 using std::setw;
-using std::less;
 
 const string UCFunc::VARPREFIX = "var";
 const string UCFunc::CLASSVARPREFIX = "cvar";

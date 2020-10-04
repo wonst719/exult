@@ -47,7 +47,6 @@ using std::endl;
 using std::ifstream;
 using std::ios;
 using std::memcpy;
-using std::memset;
 using std::ostream;
 using std::vector;
 using std::string;

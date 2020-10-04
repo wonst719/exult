@@ -43,10 +43,8 @@ using std::hex;
 using std::ostream;
 using std::setfill;
 using std::setw;
-using std::strcmp;
 using std::strlen;
 using std::string;
-using std::vector;
 
 /*
  *  Destructor
