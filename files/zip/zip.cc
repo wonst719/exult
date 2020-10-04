@@ -437,7 +437,7 @@ extern int ZEXPORT zipOpenNewFileInZip(zipFile file,
 	return err;
 }
 
-extern int ZEXPORT zipWriteInFileInZip(zipFile file, const voidp buf, unsigned len) {
+extern int ZEXPORT zipWriteInFileInZip(zipFile file, voidp buf, unsigned len) {
 	int err = ZIP_OK;
 
 	if (file == nullptr)
