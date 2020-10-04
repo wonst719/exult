@@ -1058,9 +1058,6 @@ void BG_Game::scene_desk() {
 		sman->paint_shape(centerx, centery, shapes.get_shape(0x08, 0));
 		sman->paint_shape(centerx, centery, shapes.get_shape(0x0A, 0));
 
-		// draw white dot in center of monitor (sh. 0x14)
-		sman->paint_shape(centerx + 12, centery - 22, shapes.get_shape(0x14, 0));
-
 		// Zoom out from zoomed in screen
 		{
 			unique_ptr<Image_buffer> unzoomed(win->create_buffer(320, 200));
@@ -1072,6 +1069,18 @@ void BG_Game::scene_desk() {
 			SDL_Surface *draw_surface = win->get_draw_surface();
 			SDL_SurfaceOwner unzoomed_surf(unzoomed.get(), draw_surface);
 			SDL_SurfaceOwner zoomed_surf(zoomed.get(), draw_surface);
+
+			Shape_frame *dotshp = shapes.get_shape(0x14, 0);
+			unique_ptr<Image_buffer> dot(win->create_buffer(dotshp->get_width(), dotshp->get_height()));
+			{
+				unique_ptr<Image_buffer> backup(win->create_buffer(dot->get_width(), dot->get_height()));
+				win->get(backup.get(), centerx + 12, centery - 22);
+				sman->paint_shape(centerx + 12, centery - 22, dotshp);
+				win->get(dot.get(), centerx + 12, centery - 22);
+				win->put(backup.get(), centerx + 12, centery - 22);
+			}
+			unique_ptr<Image_buffer> backup(win->create_buffer(dot->get_width() + 2, dot->get_height() + 2));
+			unzoomed->get(backup.get(), centerx + 12, centery - 22);
 
 			const int zx = 88;
 			const int zy = 22;
@@ -1087,6 +1096,8 @@ void BG_Game::scene_desk() {
 
 				// frame drop?
 				if (next_ticks > SDL_GetTicks()) {
+					unzoomed->put(backup.get(), centerx + 12, centery - 22);
+					unzoomed->put(dot.get(), centerx + rand() % 3 - 1 + 12, centery + rand() % 3 - 1 - 22);
 					scaler.arb->Scale(unzoomed_surf.get(), sx, sy, sw, sh, zoomed_surf.get(), 0, 0, 320, 200, true);
 					win->put(zoomed.get(), 0 + (win->get_game_width() - 320) / 2, 0 + (win->get_game_height() - 200) / 2);
 					win->show();
