@@ -338,7 +338,8 @@ EXULT_BG_FLX_OBJECTS = \
 	data/bg/shape_info.txt \
 	data/bg/blends.dat \
 	data/bg/container.dat \
-	data/bg/autonotes.txt
+	data/bg/autonotes.txt \
+	data/bg/intro_hand.shp
 
 EXULT_SI_FLX = data/exult_si.flx data/exult_si_flx.h
 EXULT_SI_FLX_OBJECTS = \

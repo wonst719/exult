@@ -161,6 +161,7 @@ BG_Game::BG_Game()
 		add_resource("config/shape_files", gameflx, EXULT_BG_FLX_SHAPE_FILES_TXT);
 		add_resource("config/avatar_data", gameflx, EXULT_BG_FLX_AVATAR_DATA_TXT);
 		add_resource("config/autonotes", gameflx, EXULT_BG_FLX_AUTONOTES_TXT);
+		add_resource("files/intro_hand", gameflx, EXULT_BG_FLX_INTRO_HAND_SHP);
 
 		add_resource("palettes/count", nullptr, 18);
 		add_resource("palettes/0", PALETTES_FLX, 0);
@@ -1041,6 +1042,179 @@ void BG_Game::scene_guardian() {
 	}
 }
 
+namespace {//anonymous
+class Hand_Handler {
+private:
+	enum HandlerScriptOps {
+		eNOP,                   // Does nothing except redraw static if needed
+		eHAND_HIT,              // Move hand to frame 3, and redraw static if needed
+		eHAND_RECOIL,           // Decrement hand frame, and redraw static if needed
+		eBLACK_SCREEN,          // Draw black screen
+		eSHOW_STATIC,           // Draw static
+		eFLASH_FAKE_TITLE,      // Draw fake title screen for 1 frame, then revert to black screen
+		eSHOW_FAKE_TITLE,       // Draw fake title screen permanently
+	};
+
+	static constexpr const HandlerScriptOps HandlerScript[] = {
+		eHAND_HIT        ,
+		eBLACK_SCREEN    ,
+		eSHOW_FAKE_TITLE ,
+		eSHOW_STATIC     , eHAND_RECOIL     ,
+		eNOP             , eHAND_RECOIL     ,
+		eNOP             , eHAND_RECOIL     ,
+		eBLACK_SCREEN    ,
+		eHAND_HIT        ,
+		eNOP             ,
+		eSHOW_FAKE_TITLE ,
+		eSHOW_STATIC     , eHAND_RECOIL     ,
+		eNOP             , eHAND_RECOIL     ,
+		eNOP             , eHAND_RECOIL     ,
+		eBLACK_SCREEN    ,
+		eHAND_HIT        ,
+		eNOP             ,
+		eFLASH_FAKE_TITLE, eHAND_RECOIL     ,
+		eFLASH_FAKE_TITLE, eHAND_RECOIL     ,
+		eFLASH_FAKE_TITLE, eHAND_RECOIL     ,
+		eSHOW_FAKE_TITLE
+	};
+
+	Image_window8 *win;
+	Shape_manager *sman;
+	std::unique_ptr<Shape_file> handshp;
+	std::unique_ptr<Image_buffer> handBackup;
+	std::unique_ptr<Image_buffer> staticScreen;
+	Shape_frame *screenShape;
+	Shape_frame *handFrame;
+	size_t scriptPosition;
+	int centerx, centery;
+	int handFrNum;
+	HandlerScriptOps currBackground;
+	bool playedStaticSFX;
+
+public:
+	Hand_Handler(BG_Game *game, Vga_file& shapes,
+	             Image_window8 *_win, Shape_manager *_sman,
+	             int _centerx, int _centery)
+		: win(_win), sman(_sman), staticScreen(win->create_buffer(160, 99)),
+		  screenShape(shapes.get_shape(0x1D, 0)), handFrame(nullptr),
+		  scriptPosition(0), centerx(_centerx), centery(_centery), handFrNum(-1),
+		  currBackground(eBLACK_SCREEN), playedStaticSFX(false) {
+		const str_int_pair &resource = game->get_resource("files/intro_hand");
+		U7object shpobj(resource.str, resource.num);
+		std::size_t len;
+		auto handBuffer = shpobj.retrieve(len);
+		IBufferDataSource ds(std::move(handBuffer), len);
+		handshp = std::make_unique<Shape_file>(&ds);
+	}
+	// Returns true to keep going.
+	bool draw_frame();
+
+	void backup_shape_bkgnd(Shape_frame *fra, std::unique_ptr<Image_buffer>& backup) {
+		backup = win->create_buffer(fra->get_width(), fra->get_height());
+
+		win->get(backup.get(), centerx - 156 - fra->get_xleft(),
+		         centery + 78 - fra->get_yabove());
+	}
+
+	void restore_shape_bkgnd(Shape_frame *fra, std::unique_ptr<Image_buffer>& backup) {
+		win->put(backup.get(), centerx - 156 - fra->get_xleft(),
+		         centery + 78 - fra->get_yabove());
+		backup.reset();
+	}
+};
+
+constexpr const Hand_Handler::HandlerScriptOps Hand_Handler::HandlerScript[];
+
+bool Hand_Handler::draw_frame() {
+	if (scriptPosition >= array_size(HandlerScript)) {
+		return false;
+	}
+	HandlerScriptOps currOp = HandlerScript[scriptPosition];
+	bool drawHand = false;
+	// Do hand first
+	switch (currOp) {
+		case eHAND_HIT:
+			// TODO: SFX for hand hitting monitor
+			drawHand = true;
+			handFrNum = 3;
+			break;
+		case eHAND_RECOIL:
+			if (handFrNum > 0) {
+				handFrNum--;
+				drawHand = true;
+			}
+			break;
+		default:
+			break;
+	};
+	if (drawHand) {
+		if (handFrame && handBackup) {
+			restore_shape_bkgnd(handFrame, handBackup);
+		}
+		handFrame = handshp->get_frame(handFrNum);
+		backup_shape_bkgnd(handFrame, handBackup);
+		sman->paint_shape(centerx - 167, centery + 78, handFrame);
+	}
+	// Lets now handle backgrounds.
+	switch (currOp) {
+	case eHAND_HIT:
+	case eHAND_RECOIL:
+		// Special case for hand opcodes: redraw static
+		// if it is the current background.
+		if (currBackground != eSHOW_STATIC) {
+			break;
+		}
+		// FALL THROUGH
+	case eSHOW_STATIC:
+	case eNOP:
+		if (currOp == eSHOW_STATIC) {
+			currBackground = currOp;
+			if (!playedStaticSFX) {
+				playedStaticSFX = true;
+				//play static SFX
+				Audio::get_ptr()->play_sound_effect(115, AUDIO_MAX_VOLUME, 0, 0);
+			}
+		}
+		staticScreen->fill_static(0, 7, 15);
+		win->put(staticScreen.get(),
+		         centerx + 12 - screenShape->get_width()/2,
+		         centery - 22 - screenShape->get_height()/2);
+		win->show();
+		drawHand = false;
+		break;
+	case eFLASH_FAKE_TITLE:
+	case eSHOW_FAKE_TITLE:
+		sman->paint_shape(centerx + 12, centery - 22, screenShape);
+		win->show();
+		drawHand = false;
+		if (currOp == eSHOW_FAKE_TITLE) {
+			currBackground = currOp;
+			break;
+		}
+		// FALL THROUGH
+	case eBLACK_SCREEN:
+		win->fill8(0, screenShape->get_width(), screenShape->get_height(),
+		           centerx + 12 - screenShape->get_width()/2,
+		           centery - 22 - screenShape->get_height()/2);
+		if (currOp == eBLACK_SCREEN) {
+			currBackground = currOp;
+			win->show();
+			drawHand = false;
+		}
+		break;
+	default:        // Just in case
+		return false;
+	};
+
+	if (drawHand) {
+		win->show();
+	}
+
+	scriptPosition++;
+	return scriptPosition < array_size(HandlerScript);
+}
+}// End of anonymous namespace
+
 void BG_Game::scene_desk() {
 	try {
 		Audio::get_ptr()->start_music(home_song_midi, false, INTROMUS);
@@ -1112,30 +1286,13 @@ void BG_Game::scene_desk() {
 			win->show();
 		}
 
-		// draw arm hitting pc (sh. 0x0C)
 		{
-			Shape_frame *s = shapes.get_shape(0x0C, 0);
-			auto backup = win->create_buffer(s->get_width(), s->get_height());
-
-			// TODO: add stuff on screen while hitting (static, butterfly scene, black)
-
-			for (int hits = 0; hits < 3; hits++) {
-				WAITDELAY(100);
-				for (int i = 0; i < 5; i++) { //was i<9
-					win->get(backup.get(), centerx - 96 - 30 * abs(i % 4 - 2) - s->get_xleft(),
-							centery + 100 - s->get_yabove());
-					sman->paint_shape(centerx - 96 - 30 * abs(i % 4 - 2), centery + 100, s);
-					win->show();
-					win->put(backup.get(), centerx - 96 - 30 * abs(i % 4 - 2) - s->get_xleft(),
-							centery + 100 - s->get_yabove());
-					WAITDELAY(80);
-				}
-
+			// draw arm hitting pc
+			Hand_Handler hand(this, shapes, win, sman, centerx, centery);
+			while (hand.draw_frame()) {
+				WAITDELAY(60);
 			}
 
-			// screen comes back up (sh. 0x1D)
-			sman->paint_shape(centerx + 12, centery - 22, shapes.get_shape(0x1D, 0));
-			win->show();
 			WAITDELAY(1300);
 		}
 

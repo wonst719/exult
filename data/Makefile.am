@@ -61,7 +61,8 @@ EXULT_BG_FLX_OBJECTS = \
 	bg/shape_info.txt \
 	bg/blends.dat \
 	bg/container.dat \
-	bg/autonotes.txt
+	bg/autonotes.txt \
+	bg/intro_hand.shp
 
 EXULT_SI_FLX_OBJECTS = \
 	si/flx.in \
