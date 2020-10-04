@@ -28,6 +28,7 @@
 
 #include "databuf.h"
 
+#include <algorithm>
 #include <cmath>
 
 const MidiDriver::MidiDriverDesc FMOplMidiDriver::desc =
@@ -259,7 +260,7 @@ void FMOplMidiDriver::close()
 void FMOplMidiDriver::lowLevelProduceSamples(sint16 *samples, uint32 num_samples)
 {
 	if (!opl)
-		memset(samples, 0, num_samples * sizeof(sint16) * (stereo?2:1));
+		std::fill_n(samples, num_samples * (stereo?2:1), 0);
 	else if (stereo)
 		FMOpl_Pentagram::YM3812UpdateOne_Stereo(opl, samples, num_samples);
 	else
@@ -763,9 +764,6 @@ void FMOplMidiDriver::loadTimbreLibrary(IDataSource *ds, TimbreLibraryType type)
 
 void FMOplMidiDriver::loadXMIDITimbres(IDataSource *ds)
 {
-	bool read[128];
-	std::memset(read, false, sizeof(read));
-
 	// Read all the timbres
 	for (uint32 i = 0; ds->getPos() < ds->getSize(); i++) {
 		// Seek to the entry
@@ -787,8 +785,7 @@ void FMOplMidiDriver::loadXMIDITimbres(IDataSource *ds)
 
 		// Check to see if the bank exists
 		if (!xmidibanks[bank]) {
-			xmidibanks[bank] = new xmidibank;
-			std::memset (xmidibanks[bank], 0, sizeof (xmidibank));
+			xmidibanks[bank] = new xmidibank{};
 		}
 
 		// Seek to offset
@@ -955,8 +952,7 @@ void FMOplMidiDriver::loadU7VoiceTimbres(IDataSource *ds)
 
 		// Check to see if the bank exists
 		if (!xmidibanks[bank]) {
-			xmidibanks[bank] = new xmidibank;
-			std::memset (xmidibanks[bank], 0, sizeof (xmidibank));
+			xmidibanks[bank] = new xmidibank{};
 		}
 
 		if (patch > 127) {

@@ -68,7 +68,6 @@ using std::ifstream;
 using std::istringstream;
 using std::ios;
 using std::memcpy;
-using std::memset;
 using std::ofstream;
 using std::ostringstream;
 using std::string;
@@ -165,9 +164,8 @@ void Game_map::init_chunks(
 				throw;
 			ofstream ochunks;   // Create one in 'patch'.
 			U7open(ochunks, PATCH_U7CHUNKS);
-			unsigned char buf[16 * 16 * 3];
 			ochunks.write(v2hdr, sizeof(v2hdr));
-			memset(&buf[0], 0, sizeof(buf));
+			unsigned char buf[16 * 16 * 3]{};
 			ochunks.write(reinterpret_cast<char *>(buf), sizeof(buf));
 			ochunks.close();
 			U7open(*chunks, PATCH_U7CHUNKS);
@@ -220,7 +218,7 @@ void Game_map::init(
 		// Read in the chunk #'s.
 		unsigned char buf[16 * 16 * 2];
 		if (nomap)
-			memset(&buf[0], 0, sizeof(buf));
+			std::fill(std::begin(buf), std::end(buf), 0);
 		else
 			u7map.read(reinterpret_cast<char *>(buf), sizeof(buf));
 		int scy = 16 * (schunk / 12); // Get abs. chunk coords.
@@ -233,11 +231,14 @@ void Game_map::init(
 	}
 	u7map.close();
 	// Clear object lists, flags.
-	memset(objects, 0, sizeof(objects));
-	memset(schunk_read, 0, sizeof(schunk_read));
-	memset(schunk_modified, 0, sizeof(schunk_modified));
-	memset(schunk_cache, 0, sizeof(schunk_cache));
-	memset(schunk_cache_sizes, -1, sizeof(schunk_cache_sizes));
+	for (auto& row : objects) {
+		std::fill(std::begin(row), std::end(row), nullptr);
+	}
+	std::fill(std::begin(schunk_read), std::end(schunk_read), false);
+	std::fill(std::begin(schunk_modified), std::end(schunk_modified), false);
+	std::fill(std::begin(schunk_cache), std::end(schunk_cache), nullptr);
+	std::fill(std::begin(schunk_cache_sizes), std::end(schunk_cache_sizes), -1);
+
 	didinit = true;
 }
 
@@ -270,23 +271,25 @@ void Game_map::clear(
 
 	if (didinit) {
 		// Delete all chunks (& their objs).
-		for (int y = 0; y < c_num_chunks; y++)
-			for (int x = 0; x < c_num_chunks; x++) {
-				delete objects[x][y];
-				objects[x][y] = nullptr;
+		for (auto& row : objects) {
+			for (auto& obj : row) {
+				delete obj;
 			}
+		}
 		for (auto *i : schunk_cache) {
 			delete [] i;
 		}
-	} else
-		memset(objects, 0, sizeof(objects));
+	}
+	for (auto& row : objects) {
+		std::fill(std::begin(row), std::end(row), nullptr);
+	}
 	didinit = false;
 	map_modified = false;
 	// Clear 'read' flags.
-	memset(schunk_read, 0, sizeof(schunk_read));
-	memset(schunk_modified, 0, sizeof(schunk_modified));
-	memset(schunk_cache, 0, sizeof(schunk_cache));
-	memset(schunk_cache_sizes, -1, sizeof(schunk_cache_sizes));
+	std::fill(std::begin(schunk_read), std::end(schunk_read), false);
+	std::fill(std::begin(schunk_modified), std::end(schunk_modified), false);
+	std::fill(std::begin(schunk_cache), std::end(schunk_cache), nullptr);
+	std::fill(std::begin(schunk_cache_sizes), std::end(schunk_cache_sizes), -1);
 }
 
 /*
@@ -455,7 +458,7 @@ void Game_map::write_chunk_terrains(
 				ter->write_flats(data, v2_chunks);
 				ter->set_modified(false);
 			} else {
-				memset(&data[0], 0, ntiles * nbytes);
+				std::fill_n(data, ntiles * nbytes, 0);
 				cerr << "nullptr terrain.  U7chunks may be bad."
 				     << endl;
 			}
@@ -1304,13 +1307,14 @@ bool Game_map::swap_terrains(
 	for (auto *map : maps) {
 		if (!map)
 			continue;
-		for (int cy = 0; cy < c_num_chunks; cy++)
-			for (int cx = 0; cx < c_num_chunks; cx++) {
-				if (map->terrain_map[cx][cy] == tnum)
-					map->terrain_map[cx][cy]++;
-				else if (map->terrain_map[cx][cy] == tnum + 1)
-					map->terrain_map[cx][cy]--;
+		for (auto& row : map->terrain_map) {
+			for (short& terrain : row) {
+				if (terrain == tnum)
+					terrain++;
+				else if (terrain == tnum + 1)
+					terrain--;
 			}
+		}
 		map->map_modified = true;
 	}
 	gwin->set_all_dirty();
@@ -1355,7 +1359,7 @@ bool Game_map::insert_terrain(
 				}
 			}
 	} else
-		memset(buf, 0, ntiles * nbytes);
+		std::fill_n(buf, ntiles * nbytes, 0);
 	auto *new_terrain = new Chunk_terrain(&buf[0], v2_chunks);
 	// Insert in list.
 	chunk_terrains->insert(chunk_terrains->begin() + tnum + 1, new_terrain);
@@ -1372,10 +1376,12 @@ bool Game_map::insert_terrain(
 	for (auto *map : maps) {
 		if (!map)
 			continue;
-		for (int cy = 0; cy < c_num_chunks; cy++)
-			for (int cx = 0; cx < c_num_chunks; cx++)
-				if (map->terrain_map[cx][cy] > tnum)
-					map->terrain_map[cx][cy]++;
+		for (auto& row : map->terrain_map) {
+			for (short& terrain : row) {
+				if (terrain > tnum)
+					terrain++;
+			}
+		}
 		map->map_modified = true;
 	}
 	gwin->set_all_dirty();
@@ -1409,10 +1415,12 @@ bool Game_map::delete_terrain(
 	for (auto *map : maps) {
 		if (!map)
 			continue;
-		for (int cy = 0; cy < c_num_chunks; cy++)
-			for (int cx = 0; cx < c_num_chunks; cx++)
-				if (map->terrain_map[cx][cy] >= tnum)
-					map->terrain_map[cx][cy]--;
+		for (auto& row : map->terrain_map) {
+			for (short& terrain : row) {
+				if (terrain >= tnum)
+					terrain--;
+			}
+		}
 		map->map_modified = true;
 	}
 	gwin->set_all_dirty();
@@ -1427,8 +1435,7 @@ void Game_map::commit_terrain_edits(
 ) {
 	int num_terrains = chunk_terrains->size();
 	// Create list of flags.
-	auto *ters = new unsigned char[num_terrains];
-	memset(ters, 0, num_terrains);
+	auto *ters = new unsigned char[num_terrains]{};
 	// Commit edits.
 	for (int i = 0; i < num_terrains; i++)
 		if ((*chunk_terrains)[i] &&
@@ -1474,7 +1481,7 @@ void Game_map::find_unused_shapes(
     unsigned char *found,       // Bits set for shapes found.
     int foundlen            // # bytes.
 ) {
-	memset(found, 0, foundlen);
+	std::fill_n(found, foundlen, 0);
 	Game_window *gwin = Game_window::get_instance();
 	Shape_manager *sman = Shape_manager::get_instance();
 	cout << "Reading all chunks";
@@ -1702,7 +1709,7 @@ bool Game_map::write_minimap() {
 void Game_map::cache_out(int cx, int cy) {
 	int sx = cx / c_chunks_per_schunk;
 	int sy = cy / c_chunks_per_schunk;
-	bool chunk_flags[12][12];
+	bool chunk_flags[12][12]{};
 
 #ifdef DEBUG
 	if (cx == -1)
@@ -1712,8 +1719,6 @@ void Game_map::cache_out(int cx, int cy) {
 		std::cout << "Want to cache out around super chunk: " <<
 		          (sy * 12 + sx) << " = "  << sx << ", " << sy << std::endl;
 #endif
-
-	std::memset(chunk_flags, 0, sizeof(chunk_flags));
 
 	// We cache out all but the 9 directly around the pov
 	if (cx != -1 && cy != -1) {
