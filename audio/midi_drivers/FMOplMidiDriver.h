@@ -49,8 +49,22 @@ protected:
 	void		loadTimbreLibrary(IDataSource*, TimbreLibraryType type) override;
 
 private:
+	struct xinstrument {
+		unsigned char mod_avekm;
+		unsigned char car_avekm;
+		unsigned char mod_ksl_tl;
+		unsigned char car_ksl_tl;
+		unsigned char mod_ad;
+		unsigned char car_ad;
+		unsigned char mod_sr;
+		unsigned char car_sr;
+		unsigned char mod_ws;
+		unsigned char car_ws;
+		unsigned char fb_c;
+		unsigned char perc_voice;
+	};
 
-	static const unsigned char midi_fm_instruments_table[128][11];
+	static const xinstrument midi_fm_instruments_table[128];
 	static const int my_midi_fm_vol_table[128];
 	static int lucas_fm_vol_table[128];
 	static const unsigned char adlib_opadd[9];
@@ -60,7 +74,7 @@ private:
 
 	struct midi_channel {
 		int inum;
-		unsigned char ins[12];
+		xinstrument ins;
 		bool xmidi;
 		int	xmidi_bank;
 		int vol;
@@ -70,8 +84,16 @@ private:
 		int pitchbend;
 		int pan;
 	};
+
 	struct xmidibank {
-		unsigned char	insbank[128][12];
+		xinstrument insbank[128];
+	};
+
+	struct channel_data {
+		int channel;
+		int note;
+		int counter;
+		int velocity;
 	};
 
 	enum {
@@ -80,7 +102,7 @@ private:
 	};
 
 	void midi_write_adlib(unsigned int reg, unsigned char val);
-	void midi_fm_instrument(int voice, unsigned char *inst);
+	void midi_fm_instrument(int voice, xinstrument &inst);
 	int  midi_calc_volume(int chan, int vel);
 	void midi_update_volume(int chan);
 	void midi_fm_volume(int voice, int volume);
@@ -88,9 +110,8 @@ private:
 	void midi_fm_endnote(int voice);
 	unsigned char adlib_data[256];
 
-
-	int chp[9][4];
-	unsigned char	myinsbank[128][12];
+	channel_data	chp[9];
+	xinstrument		myinsbank[128];
 	xmidibank		*xmidibanks[128];
 	void			loadXMIDITimbres(IDataSource *ds);
 	void			loadU7VoiceTimbres(IDataSource *ds);
