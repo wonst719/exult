@@ -203,7 +203,7 @@ std::vector<std::string> str2vec(const std::string &s) {
 		else if (isspace(static_cast<unsigned char>(s[i])) && (!indquote)) {
 			if (lasti != i) {
 				if ((s[lasti] == '"') && (s[i - 1] == '"')) {
-					if ((lasti + 1) != (lasti - 1))
+					if ((lasti + 1) < (i - 1))
 						vs.push_back(s.substr(lasti + 1, i - lasti - 2));
 				} else
 					vs.push_back(s.substr(lasti, i - lasti));
@@ -213,7 +213,7 @@ std::vector<std::string> str2vec(const std::string &s) {
 		}
 		if (i == s.size() - 1) {
 			if ((s[lasti] == '"') && (s[i] == '"')) {
-				if ((lasti + 1) != (lasti - 1))
+				if ((lasti + 1) < (i - 1))
 					vs.push_back(s.substr(lasti + 1, i - lasti - 2));
 			} else
 				vs.push_back(s.substr(lasti, i - lasti + 1));

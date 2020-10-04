@@ -550,7 +550,7 @@ bool Gump_manager::handle_modal_gump_event(
 			return true;
 		}
 
-		if (event.key.keysym.sym != 0 && event.key.keysym.sym > +'~') {
+		if (event.key.keysym.sym > +'~') {
 			keysym_unicode = event.key.keysym.sym;
 		}
 		translate_numpad(event.key.keysym.sym, keysym_unicode, event.key.keysym.mod);
