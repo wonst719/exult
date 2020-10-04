@@ -69,7 +69,7 @@ void Usecode_internal::uc_trace_disasm(Usecode_value *locals, int num_locals,
 	int func_ip = static_cast<int>(ip - code);
 	int opcode = *ip++;
 	const uint8 *param_ip = ip;
-	opcode_desc *pdesc = nullptr;
+	const opcode_desc *pdesc = nullptr;
 
 	if (opcode >= 0 && static_cast<unsigned>(opcode) < array_size(opcode_table))
 		pdesc = &(opcode_table[opcode]);
@@ -173,7 +173,7 @@ void Usecode_internal::uc_trace_disasm(Usecode_value *locals, int num_locals,
 		case op_call: {
 			unsigned short func = Read2(ip);
 			immed = *ip++;
-			const char **func_table = bg_intrinsic_table;
+			const char * const *func_table = bg_intrinsic_table;
 			if (Game::get_game_type() == SERPENT_ISLE) {
 				if (Game::is_si_beta())
 					func_table = sibeta_intrinsic_table;

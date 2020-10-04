@@ -112,7 +112,7 @@ void check_data_label_16(int label) {
 		printf("Warning: offset too big for 16 bit at label %s!\n", curlabel);
 }
 
-int find_intrinsic(const char **func_table, unsigned funsize, const char *name) {
+int find_intrinsic(const char * const *func_table, unsigned funsize, const char *name) {
 	unsigned i;
 	for (i = 0; i < funsize; i++) {
 		if (!strcasecmp(name, func_table[i]))
@@ -165,7 +165,7 @@ int main(int argc,char *argv[]) {
 	unsigned popsize = array_size(pop_table);
 	unsigned compsize = array_size(compiler_table);
 	int label;
-	const char **func_table = bg_intrinsic_table;
+	const char * const *func_table = bg_intrinsic_table;
 	int funsize = bg_intrinsic_size;
 	int findex = 1;         // Index in argv of 1st filename.
 	unsigned int opcodetype;

@@ -65,7 +65,7 @@ struct opcode_desc {
 };
 
 // Opcode table
-static opcode_desc opcode_table[] = {
+constexpr const opcode_desc opcode_table[] = {
 	{ nullptr, 0, 0, 0, 0 },                       // 00
 	{ nullptr, 0, 0, 0, 0 },                       // 01
 	{ "loop", 10, op_sloop, 0, 0 },     // 02
@@ -280,19 +280,19 @@ static opcode_desc opcode_table[] = {
  */
 #define USECODE_INTRINSIC_PTR(NAME) #NAME
 
-const char *bg_intrinsic_table[] = {
+constexpr const char *bg_intrinsic_table[] = {
 #include "bgintrinsics.h"
 };
-const int bg_intrinsic_size = array_size(bg_intrinsic_table);
-const char *si_intrinsic_table[] = {
+constexpr const int bg_intrinsic_size = array_size(bg_intrinsic_table);
+constexpr const char *si_intrinsic_table[] = {
 #include "siintrinsics.h"
 };
-const int si_intrinsic_size = array_size(si_intrinsic_table);
+constexpr const int si_intrinsic_size = array_size(si_intrinsic_table);
 
-const char *sibeta_intrinsic_table[] = {
+constexpr const char *sibeta_intrinsic_table[] = {
 #include "sibetaintrinsics.h"
 };
-const int sibeta_intrinsic_size = array_size(sibeta_intrinsic_table);
+constexpr const int sibeta_intrinsic_size = array_size(sibeta_intrinsic_table);
 
 #endif
 
