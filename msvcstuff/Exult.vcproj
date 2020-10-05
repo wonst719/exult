@@ -662,14 +662,6 @@
 							>
 						</File>
 						<File
-							RelativePath="..\audio\midi_drivers\FileMidiDriver.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\audio\midi_drivers\FileMidiDriver.h"
-							>
-						</File>
-						<File
 							RelativePath="..\audio\midi_drivers\FluidSynthMidiDriver.cpp"
 							>
 						</File>

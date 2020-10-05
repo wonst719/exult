@@ -24,8 +24,6 @@ libmididrv_la_SOURCES =	\
 	CoreAudioMidiDriver.h	\
 	CoreMidiDriver.cpp \
 	CoreMidiDriver.h \
-	FileMidiDriver.cpp	\
-	FileMidiDriver.h	\
 	fmopl.cpp		\
 	fmopl.h			\
 	FMOplMidiDriver.cpp	\

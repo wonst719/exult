@@ -139,7 +139,7 @@ void ucxtInit::opcodes() {
 			opdata.getsubkeys(ktl, key);
 
 			if (!ktl.empty()) {
-				unsigned int i = static_cast<unsigned int>(strtol(key.substr(key.find_first_of("0")).c_str(), nullptr, 0));
+				unsigned int i = static_cast<unsigned int>(strtol(key.substr(key.find_first_of('0')).c_str(), nullptr, 0));
 				opcode_table_data[i] = UCOpcodeData(i, ktl);
 			}
 		}

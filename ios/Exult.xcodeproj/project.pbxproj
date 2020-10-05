@@ -76,7 +76,6 @@
 		E700DBD81A6E2CE7006C8BE4 /* ALSAMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB271A6E2CE7006C8BE4 /* ALSAMidiDriver.cpp */; };
 		E700DBDB1A6E2CE7006C8BE4 /* CoreAudioMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB2D1A6E2CE7006C8BE4 /* CoreAudioMidiDriver.cpp */; };
 		E700DBDC1A6E2CE7006C8BE4 /* CoreMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB2F1A6E2CE7006C8BE4 /* CoreMidiDriver.cpp */; };
-		E700DBDD1A6E2CE7006C8BE4 /* FileMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB311A6E2CE7006C8BE4 /* FileMidiDriver.cpp */; };
 		E700DBDE1A6E2CE7006C8BE4 /* FluidSynthMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB331A6E2CE7006C8BE4 /* FluidSynthMidiDriver.cpp */; };
 		E700DBDF1A6E2CE7006C8BE4 /* fmopl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB351A6E2CE7006C8BE4 /* fmopl.cpp */; };
 		E700DBE01A6E2CE7006C8BE4 /* FMOplMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB371A6E2CE7006C8BE4 /* FMOplMidiDriver.cpp */; };
@@ -472,8 +471,6 @@
 		E700DB2E1A6E2CE7006C8BE4 /* CoreAudioMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAudioMidiDriver.h; sourceTree = "<group>"; };
 		E700DB2F1A6E2CE7006C8BE4 /* CoreMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreMidiDriver.cpp; sourceTree = "<group>"; };
 		E700DB301A6E2CE7006C8BE4 /* CoreMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreMidiDriver.h; sourceTree = "<group>"; };
-		E700DB311A6E2CE7006C8BE4 /* FileMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileMidiDriver.cpp; sourceTree = "<group>"; };
-		E700DB321A6E2CE7006C8BE4 /* FileMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMidiDriver.h; sourceTree = "<group>"; };
 		E700DB331A6E2CE7006C8BE4 /* FluidSynthMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FluidSynthMidiDriver.cpp; sourceTree = "<group>"; };
 		E700DB341A6E2CE7006C8BE4 /* FluidSynthMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluidSynthMidiDriver.h; sourceTree = "<group>"; };
 		E700DB351A6E2CE7006C8BE4 /* fmopl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fmopl.cpp; sourceTree = "<group>"; };
@@ -1107,8 +1104,6 @@
 				E700DB2E1A6E2CE7006C8BE4 /* CoreAudioMidiDriver.h */,
 				E700DB2F1A6E2CE7006C8BE4 /* CoreMidiDriver.cpp */,
 				E700DB301A6E2CE7006C8BE4 /* CoreMidiDriver.h */,
-				E700DB311A6E2CE7006C8BE4 /* FileMidiDriver.cpp */,
-				E700DB321A6E2CE7006C8BE4 /* FileMidiDriver.h */,
 				E700DB331A6E2CE7006C8BE4 /* FluidSynthMidiDriver.cpp */,
 				E700DB341A6E2CE7006C8BE4 /* FluidSynthMidiDriver.h */,
 				E700DB351A6E2CE7006C8BE4 /* fmopl.cpp */,
@@ -2118,7 +2113,6 @@
 				E700DCA71A6E30A7006C8BE4 /* npcnear.cc in Sources */,
 				E700DD5F1A6E3121006C8BE4 /* warminf.cc in Sources */,
 				E700DD5C1A6E3121006C8BE4 /* npcdollinf.cc in Sources */,
-				E700DBDD1A6E2CE7006C8BE4 /* FileMidiDriver.cpp in Sources */,
 				E700DF521A6E34C6006C8BE4 /* ucsymtbl.cc in Sources */,
 				E700DE9B1A6E3497006C8BE4 /* Text_button.cc in Sources */,
 				E700DE841A6E3497006C8BE4 /* File_gump.cc in Sources */,
