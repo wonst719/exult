@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <windows.h>
 #endif
 
+#include <cmath>
 #include <iostream>
 
 #ifdef __GNUC__
@@ -2384,7 +2385,7 @@ Shape_chooser::Shape_chooser(
 	gtk_widget_show(draw);
 	// Want vert. scrollbar for the shapes.
 	GtkObject *shape_adj = gtk_adjustment_new(0, 0,
-	                       get_count() / 4, 1, 1, 1);
+	                       std::ceil(get_count() / 4.0), 1, 1, 1);
 	vscroll = gtk_vscrollbar_new(GTK_ADJUSTMENT(shape_adj));
 	gtk_box_pack_start(GTK_BOX(hbox), vscroll, FALSE, TRUE, 0);
 	// Set scrollbar handler.

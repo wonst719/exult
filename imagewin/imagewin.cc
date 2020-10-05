@@ -624,7 +624,7 @@ bool Image_window::create_scale_surfaces(int w, int h, int bpp) {
 		//getting new native scale when highdpi is active
 		int sw;
 		SDL_GetWindowSize(screen_window, &sw, nullptr);
-		nativescale = dw / sw;
+		nativescale = float(dw) / sw;
 		//high resolution fullscreen needs this to make the whole screen available
 		SDL_RenderSetLogicalSize(screen_renderer, w, h);
 	} else
