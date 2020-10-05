@@ -1,6 +1,7 @@
 Checks: "-*\
 ,bugprone-*\
 ,-bugprone-branch-clone\
+,-bugprone-macro-parentheses\
 ,-bugprone-parent-virtual-call\
 ,-bugprone-signed-char-misuse\
 ,-bugprone-narrowing-conversions\

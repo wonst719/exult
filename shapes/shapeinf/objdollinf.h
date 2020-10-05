@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "baseinf.h"
 #include "exult_constants.h"
 
+#include <array>
 #include <cstring>
 #include <iosfwd>
 
@@ -48,7 +49,7 @@ private:
 	bool    gender;             // Is this object gender specific
 
 	short   shape;              // The shape (if -1 use world shape and frame)
-	short   frame[4];           // The paperdoll frame and alternates.
+	std::array<short, 4> frame; // The paperdoll frame and alternates.
 public:
 	friend class Shape_info;
 	Paperdoll_item() = default;
@@ -57,18 +58,8 @@ public:
 	               bool p = false, bool m = false, bool s = false,
 	               bool inv = false)
 		: Base_info(m, p, inv, s), world_frame(w), spot(sp),
-		  type(ty), translucent(tr), gender(g), shape(sh) {
-		frame[0] = fr0;
-		frame[1] = fr1;
-		frame[2] = fr2;
-		frame[3] = fr3;
-	}
-	Paperdoll_item(const Paperdoll_item &other)
-		:   Base_info(other), world_frame(other.world_frame), spot(other.spot),
-		    type(other.type), translucent(other.translucent),
-		    gender(other.gender), shape(other.shape) {
-		memcpy(frame, other.frame, sizeof(frame));
-		info_flags = other.info_flags;
+		  type(ty), translucent(tr), gender(g), shape(sh),
+		  frame{fr0, fr1, fr2, fr3} {
 	}
 	// Read in from file.
 	bool read(std::istream &in, int version, Exult_Game game);
@@ -124,9 +115,9 @@ public:
 		return frame[0];
 	}
 	int get_paperdoll_frame(int num) const {
-		if (num < 4)
+		if (num >= 0 && num < 4)
 			return frame[num];
-		return num;
+		return get_paperdoll_baseframe();
 	}
 	void set_paperdoll_frame(int num, short fr) {
 		if (frame[num] != fr) {
@@ -153,19 +144,6 @@ public:
 	bool operator!=(const Paperdoll_item &other) const {
 		return !(*this == other);
 	}
-	Paperdoll_item &operator=(const Paperdoll_item &other) {
-		if (this != &other) {
-			world_frame = other.world_frame;
-			spot = other.spot;
-			type = other.type;
-			translucent = other.translucent;
-			gender = other.gender;
-			shape = other.shape;
-			memcpy(frame, other.frame, sizeof(frame));
-			info_flags = other.info_flags;
-		}
-		return *this;
-	}
 	void set(const Paperdoll_item &other) {
 		// Assumes *this == other.
 		if (this != &other) {
@@ -176,9 +154,9 @@ public:
 			set_translucent(other.translucent);
 			set_gender(other.gender);
 			set_paperdoll_shape(other.shape);
-			if (std::memcmp(frame, other.frame, sizeof(frame))) {
+			if (frame != other.frame) {
 				set_modified(true);
-				memcpy(frame, other.frame, sizeof(frame));
+				frame = other.frame;
 			}
 		}
 	}
