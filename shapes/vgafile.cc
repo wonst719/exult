@@ -300,13 +300,13 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 						len -= c;
 					}
 				} else while (len > 0) {
-						int c = len > 127 ? 127 : len;
-						*out++ = c << 1;
-						memcpy(out, pixels, c);
-						out += c;
-						pixels += c;
-						len -= c;
-					}
+					int c = len > 127 ? 127 : len;
+					*out++ = c << 1;
+					memcpy(out, pixels, c);
+					out += c;
+					pixels += c;
+					len -= c;
+				}
 			}
 		}
 	Write2(out, 0);         // End with 0 length.
