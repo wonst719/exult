@@ -42,6 +42,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <csignal>
 #include <sys/wait.h>
 
+using std::cout;
+using std::endl;
+
 /*
  *  Create.
  */
