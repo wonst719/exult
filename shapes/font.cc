@@ -350,8 +350,6 @@ int Font::paint_text_box_fixedwidth(
 			const char *wrd = Pass_space(text);
 			if (wrd != text) {
 				int w = static_cast<int>(wrd - text) * char_width;
-				if (!w)
-					w = char_width;
 				int nsp = w / char_width;
 				lines[cur_line].append(nsp, ' ');
 				curx += nsp * char_width;
