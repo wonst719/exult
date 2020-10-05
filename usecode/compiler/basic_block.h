@@ -149,9 +149,8 @@ public:
 #ifdef DEBUG    // For debugging.
 	void write_text() const {
 		std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(opcode) << ' ';
-		for (auto it = params.begin();
-		        it != params.end(); ++it)
-			std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(static_cast<unsigned char>(*it)) << ' ';
+		for (char param : params)
+			std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(static_cast<unsigned char>(param)) << ' ';
 		if (is_jump)
 			std::cout << "<offset>";
 	}
@@ -457,9 +456,8 @@ public:
 		          << '\t' << std::setw(8) << std::setfill('0') << taken
 		          << '\t' << std::setw(8) << std::setfill('0') << ntaken
 		          << '\t';
-		for (auto it = instructions.begin();
-		        it != instructions.end(); ++it)
-			(*it)->write_text();
+		for (const auto *instruction : instructions)
+			instruction->write_text();
 		if (jmp_op)
 			jmp_op->write_text();
 		else
