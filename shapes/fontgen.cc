@@ -95,13 +95,14 @@ static bool Gen_font_shape_win32(
 	//matrix.eM22.fract = 0x10000 * 10 / 12;
 
 	shape->resize(nframes);     // Make it big enough.
-	for (wchar_t chr = 0; chr < nframes; chr++) {
+	for (int ii = 0; ii < nframes; ii++) {
 		// Get each glyph.
 		GLYPHMETRICS metrics;
 
-		unsigned int buffsize = GetGlyphOutline(dc, chr, GGO_BITMAP, &metrics, 0, nullptr, &matrix);
+		unsigned int buffsize = GetGlyphOutline(dc, ii, GGO_BITMAP, &metrics, 0, nullptr, &matrix);
 		int offset = 0;     // Starting row, col.
 
+		const wchar_t chr = ii;
 		if (buffsize == GDI_ERROR || buffsize == 0) {
 			SIZE size;
 			GetTextExtentPoint32W(dc, &chr, 1, &size);
