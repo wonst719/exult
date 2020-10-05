@@ -2199,15 +2199,15 @@ void change_gamma(bool down) {
 	snprintf(text, 256, "Gamma Set to R: %01.2f G: %01.2f B: %01.2f", r, g, b);
 	gwin->get_effects()->center_text(text);
 
-	int igam = static_cast<int>((r * 10000) + 0.5);
+	int igam = std::lround(r * 10000);
 	snprintf(text, 256, "%d.%04d", igam / 10000, igam % 10000);
 	config->set("config/video/gamma/red", text, true);
 
-	igam = static_cast<int>((b * 10000) + 0.5);
+	igam = std::lround(b * 10000);
 	snprintf(text, 256, "%d.%04d", igam / 10000, igam % 10000);
 	config->set("config/video/gamma/green", text, true);
 
-	igam = static_cast<int>((g * 10000) + 0.5);
+	igam = std::lround(g * 10000);
 	snprintf(text, 256, "%d.%04d", igam / 10000, igam % 10000);
 	config->set("config/video/gamma/blue", text, true);
 }

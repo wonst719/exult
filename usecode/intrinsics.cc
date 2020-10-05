@@ -20,6 +20,7 @@
 #  include <config.h>
 #endif
 
+#include <cmath>
 #include <map>
 
 #include "gamemap.h"
@@ -1270,14 +1271,14 @@ public:
 			int yy;
 			Tile_coord t = gwin->get_main_actor()->get_tile();
 			if (Game::get_game_type() == BLACK_GATE) {
-				xx = static_cast<int>(t.tx / 16.05 + 5 + 0.5);
-				yy = static_cast<int>(t.ty / 15.95 + 4 + 0.5);
+				xx = std::lround(t.tx / 16.05 + 5);
+				yy = std::lround(t.ty / 15.95 + 4);
 			} else if (Game::get_game_type() == SERPENT_ISLE) {
-				xx = static_cast<int>(t.tx / 16.0 + 18 + 0.5);
-				yy = static_cast<int>(t.ty / 16.0 + 9.4 + 0.5);
+				xx = std::lround(t.tx / 16.0 + 18);
+				yy = std::lround(t.ty / 16.0 + 9.4);
 			} else {
-				xx = static_cast<int>(t.tx / 16.0 + 5 + 0.5);
-				yy = static_cast<int>(t.ty / 16.0 + 5 + 0.5);
+				xx = std::lround(t.tx / 16.0 + 5);
+				yy = std::lround(t.ty / 16.0 + 5);
 			}
 			Shape_frame *s = sid->get_shape();
 			xx += x - s->get_xleft();
