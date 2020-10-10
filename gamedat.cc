@@ -87,7 +87,6 @@ using std::time_t;
 using std::tm;
 using std::localtime;
 using std::time;
-using std::vector;
 
 // Save game compression level
 extern int save_compression;
@@ -345,13 +344,12 @@ void Game_window::save_gamedat(
 	                         bgsavefiles : sisavefiles;
 
 	OFileDataSource out(fname);
-	vector<Game_map *>::iterator it;
 	int count = numsavefiles;   // Count up #files to write.
 	count += 12 * 12 - 1; // First map outputs IREG's directly to
 	// gamedat flex, while all others have a flex
 	// of their own contained in gamedat flex.
-	for (it = maps.begin(); it != maps.end(); ++it)
-		if (*it)
+	for (auto *map : maps)
+		if (map)
 			count++;
 	// Use samename for title.
 	Flex_writer flex(out, savename, count);
@@ -360,12 +358,12 @@ void Game_window::save_gamedat(
 		Savefile(flex, savefiles[i]);
 	}
 	// Now the Ireg's.
-	for (it = maps.begin(); it != maps.end(); ++it) {
-		if (!*it)
+	for (auto *map : maps) {
+		if (!map)
 			continue;
-		if (!(*it)->get_num())
+		if (!map->get_num())
 			// Map 0 is a special case.
-			save_gamedat_chunks(*it, flex);
+			save_gamedat_chunks(map, flex);
 		else {
 			// Multimap directory entries. Each map is stored in their
 			// own flex file contained inside the general gamedat flex.
@@ -375,9 +373,9 @@ void Game_window::save_gamedat(
 			OStreamDataSource outds(&outbuf);
 			{
 				Flex_writer flexbuf(outds,
-			                        (*it)->get_mapped_name(GAMEDAT, dname), 12 * 12);
+			                        map->get_mapped_name(GAMEDAT, dname), 12 * 12);
 				// Save chunks to memory flex
-				save_gamedat_chunks(*it, flexbuf);
+				save_gamedat_chunks(map, flexbuf);
 			}
 			outbuf.seekg(0);
 			IStreamDataSource inds(&outbuf);
@@ -1069,7 +1067,6 @@ bool Game_window::save_gamedat_zip(
 	                   bgnumsavefiles : sinumsavefiles;
 	const char **savefiles = (Game::get_game_type() == BLACK_GATE) ?
 	                         bgsavefiles : sisavefiles;
-	vector<Game_map *>::iterator it;
 
 	// Name
 	{
@@ -1091,14 +1088,14 @@ bool Game_window::save_gamedat_zip(
 			Save_level1(zipfile, savefiles[i]);
 
 		// Now the Ireg's.
-		for (it = maps.begin(); it != maps.end(); ++it) {
-			if (!*it)
+		for (auto *map : maps) {
+			if (!map)
 				continue;
 			for (int schunk = 0; schunk < 12 * 12; schunk++) {
 				//Check to see if the ireg exists before trying to
 				//save it; prevents crash when creating new maps
 				//for existing games
-				if (U7exists((*it)->get_schunk_file_name(U7IREG,
+				if (U7exists(map->get_schunk_file_name(U7IREG,
 				             schunk, iname)))
 					Save_level1(zipfile, iname);
 			}
@@ -1119,20 +1116,20 @@ bool Game_window::save_gamedat_zip(
 			Save_level2(zipfile, savefiles[i]);
 
 		// Now the Ireg's.
-		for (it = maps.begin(); it != maps.end(); ++it) {
-			if (!*it)
+		for (auto *map : maps) {
+			if (!map)
 				continue;
-			if ((*it)->get_num() != 0) {
+			if (map->get_num() != 0) {
 				// Finish the open file (GAMEDAT or mapXX).
 				End_level2(zipfile);
 				// Start the next file (mapXX).
-				Begin_level2(zipfile, (*it)->get_num());
+				Begin_level2(zipfile, map->get_num());
 			}
 			for (int schunk = 0; schunk < 12 * 12; schunk++)
 				//Check to see if the ireg exists before trying to
 				//save it; prevents crash when creating new maps
 				//for existing games
-				if (U7exists((*it)->get_schunk_file_name(U7IREG,
+				if (U7exists(map->get_schunk_file_name(U7IREG,
 				             schunk, iname)))
 					Save_level2(zipfile, iname);
 		}

@@ -196,8 +196,6 @@ public:
 		return _offset;
 	}
 
-	using iterator = std::vector<std::pair<UCc *, bool>>::iterator;
-
 private:
 	unsigned int _offset = 0;
 	std::vector<std::pair<UCc *, bool> > _uccs;
@@ -220,11 +218,11 @@ public:
 
 	void parse_ucs(const FuncMap &funcmap, const std::map<unsigned int, std::string> &intrinsics, const UCOptions &options, Usecode_symbol_table *symtbl);
 	void parse_ucs_pass1(std::vector<UCNode *> &nodes);
-	void parse_ucs_pass2(std::vector<GotoSet> &gotoset, const FuncMap &funcmap, const std::map<unsigned int, std::string> &intrinsics, Usecode_symbol_table *symtbl);
+	void parse_ucs_pass2(std::vector<GotoSet> &gotoset, const FuncMap &funcmap, const std::map<unsigned int, std::string> &intrinsics, const UCOptions &options, Usecode_symbol_table *symtbl);
 	std::vector<UCc *> parse_ucs_pass2a(std::vector<std::pair<UCc *, bool> >::reverse_iterator current,
 	                                    std::vector<std::pair<UCc *, bool> > &vec, int opsneeded,
 	                                    const FuncMap &funcmap, const std::map<unsigned int, std::string> &intrinsics,
-	                                    Usecode_symbol_table *symtbl);
+	                                    const UCOptions &options, Usecode_symbol_table *symtbl);
 	void parse_ucs_pass3(std::vector<GotoSet> &gotoset, const std::map<unsigned int, std::string> &intrinsics);
 
 	bool output_asm(std::ostream &o, const FuncMap &funcmap, const std::map<unsigned int, std::string> &intrinsics, const UCOptions &options, Usecode_symbol_table *symtbl);

@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <string>
 #include <iomanip>
+#include <map>
 using std::setw;
 using std::setfill;
 
@@ -596,17 +597,16 @@ void Cheat::delete_selected() {
 void Cheat::move_selected_objs(int dx, int dy, int dz) {
 	if (selected.empty())
 		return;         // Nothing to do.
-	std::vector<Tile_coord> tiles;  // Store locations here.
+	std::map<Game_object*, Tile_coord> tiles;  // Store locations here.
 	int lowz = 1000;
 	int highz = -1000; // Get min/max lift.
 	// Remove & store old locations.
-	Game_object_shared_vector::iterator it;
-	for (it = selected.begin(); it != selected.end(); ++it) {
-		Game_object *obj = (*it).get();
+	for (auto& it : selected) {
+		Game_object *obj = it.get();
 		Game_object *owner = obj->get_outermost();
 		// Get location.  Use owner if inside.
 		Tile_coord tile = owner->get_tile();
-		tiles.push_back(tile);
+		tiles[obj] = tile;
 		if (obj == owner)   // Not inside?
 			gwin->add_dirty(obj);
 		else            // In a gump.  Repaint all for now.
@@ -623,13 +623,13 @@ void Cheat::move_selected_objs(int dx, int dy, int dz) {
 	if (highz + dz > 255)       // Too high?
 		dz = 255 - highz;
 	// Add back in new locations.
-	for (it = selected.begin(); it != selected.end(); ++it) {
-		Tile_coord tile = tiles[it - selected.begin()];
+	for (auto& it : selected) {
+		Tile_coord tile = tiles[it.get()];
 		int newtx = (tile.tx + dx + c_num_tiles) % c_num_tiles;
 		int newty = (tile.ty + dy + c_num_tiles) % c_num_tiles;
 		int newtz = (tile.tz + dz + 256) % 256;
-		(*it)->set_invalid();
-		(*it)->move(newtx, newty, newtz);
+		it->set_invalid();
+		it->move(newtx, newty, newtz);
 	}
 }
 
@@ -671,17 +671,16 @@ void Cheat::cut(bool copy) {
 	if (selected.empty())
 		return;         // Nothing selected.
 	bool clip_was_empty = clipboard.empty();
-	Game_object_shared_vector::iterator it;
 	// Clear out old clipboard.
 	clipboard.resize(0);
 	clipboard.reserve(selected.size());
 	if (!copy)          // Removing?  Force repaint.
 		gwin->set_all_dirty();
 	// Go through selected objects.
-	for (it = selected.begin(); it != selected.end(); ++it) {
+	for (auto& it : selected) {
 		Game_object_shared newobj;
 		Game_object_shared keep;
-		Game_object *obj = (*it).get();
+		Game_object *obj = it.get();
 		Tile_coord t = obj->get_outermost()->get_tile();
 		if (copy)
 			// TEST+++++REALLY want a 'clone()'.
@@ -738,10 +737,8 @@ void Cheat::paste(
 	// Use lowest/south/east for position.
 	Tile_coord hot = clipboard[0]->get_tile();
 	clear_selected();       // Remove old selected.
-	Game_object_shared_vector::iterator it;
-	for (it = clipboard.begin(); it != clipboard.end(); ++it) {
-		Game_object_shared obj = *it;
-		Tile_coord t = obj->get_tile();
+	for (const auto& obj : clipboard) {
+			Tile_coord t = obj->get_tile();
 		// Figure spot rel. to hot-spot.
 		int liftpix = ((t.tz - hot.tz) * c_tilesize) / 2;
 		int x = mx + (t.tx - hot.tx) * c_tilesize - liftpix;

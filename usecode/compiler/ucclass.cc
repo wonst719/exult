@@ -36,8 +36,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ucfun.h"
 #include "ucloc.h"
 
-using std::vector;
-
 int Uc_class::last_num = -1;
 
 /*
@@ -167,11 +165,9 @@ void Uc_class::add_method(
 void Uc_class::gen(
     std::ostream &out
 ) {
-	vector<Uc_function *>::iterator it;
-	for (it = methods.begin(); it != methods.end(); ++it) {
-		Uc_function *m = *it;
+	for (auto *m : methods) {
 		if (m->get_parent() == &scope)
-			m->gen(out);    // Generate function if its ours.
+		m->gen(out);    // Generate function if its ours.
 	}
 }
 
@@ -183,10 +179,8 @@ Usecode_symbol *Uc_class::create_sym(
 ) {
 	auto *cs = new Usecode_class_symbol(name.c_str(),
 	        Usecode_symbol::class_scope, num, num_vars);
-	vector<Uc_function *>::iterator it;
-	for (it = methods.begin(); it != methods.end(); ++it) {
-		Uc_function *m = *it;
-		cs->add_sym(m->create_sym());
+	for (auto *m : methods) {
+			cs->add_sym(m->create_sym());
 		cs->add_method_num(m->get_usecode_num());
 	}
 	return cs;

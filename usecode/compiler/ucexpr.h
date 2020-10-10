@@ -339,8 +339,7 @@ public:
  */
 class Uc_array_expression : public Uc_expression {
 	std::vector<Uc_expression *> exprs;
-	using Iterator = typename std::vector<Uc_expression *>::iterator;
-	using ConstIterator = typename std::vector<Uc_expression *>::const_iterator;
+
 public:
 	Uc_array_expression() = default;
 	Uc_array_expression(Uc_expression *e0) {

@@ -57,10 +57,8 @@ void Keyring::write() {
 
 	U7open(out, KEYRINGDAT);
 
-	std::set<int>::iterator iter;
-
-	for (iter = keys.begin(); iter != keys.end(); ++iter)
-		Write2(out, *iter);
+	for (int key : keys)
+		Write2(out, key);
 
 	out.close();
 }

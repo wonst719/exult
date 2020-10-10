@@ -35,7 +35,6 @@
 using std::size_t;
 using std::strcpy;
 using std::string;
-using std::vector;
 
 //TODO: show_face & show_avatar_choices seem to share code?
 //TODO: show_avatar_choices shouldn't first convert to char**, probably
@@ -92,13 +91,9 @@ void Conversation::add_answer(Usecode_value &val) {
 }
 
 void Conversation::remove_answer(const char *str) {
-	std::vector<string>::iterator it;
+	auto it = std::find(answers.cbegin(), answers.cend(), str);
 
-	for (it = answers.begin(); it != answers.end(); ++it)
-		if (*it == str)
-			break;
-
-	if (it != answers.end())
+	if (it != answers.cend())
 		answers.erase(it);
 }
 
@@ -606,11 +601,9 @@ void Conversation::paint_faces(
  */
 
 int Conversation::locate_answer(const char *str) {
-	int num;
-	std::vector<string>::iterator it;
-	num = 0;
-	for (it = answers.begin(); it != answers.end(); ++it) {
-		if (*it == str)
+	int num = 0;
+	for (auto& answer : answers) {
+		if (answer == str)
 			return num;
 		num++;
 	}

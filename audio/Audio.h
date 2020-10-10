@@ -61,7 +61,6 @@ enum Combat_song
  */
 class SFX_cache_manager {
 	using SFX_cached = std::pair<int,Pentagram::AudioSample*>;
-	using cache_iterator = std::map<int, SFX_cached>::iterator;
 
 	std::map<int, SFX_cached> cache;
 

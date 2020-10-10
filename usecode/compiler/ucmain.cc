@@ -115,15 +115,14 @@ int main(
 	}
 	Write4(out, UCSYMTBL_MAGIC0);   // Start with symbol table.
 	Write4(out, UCSYMTBL_MAGIC1);
-	std::vector<Uc_design_unit *>::iterator it;
 	auto *symtbl = new Usecode_symbol_table;
-	for (it = units.begin(); it != units.end(); ++it) {
-		symtbl->add_sym((*it)->create_sym());
+	for (auto *unit : units) {
+		symtbl->add_sym(unit->create_sym());
 	}
 	symtbl->write(out);
 	delete symtbl;
-	for (it = units.begin(); it != units.end(); ++it) {
-		(*it)->gen(out);    // Generate function.
+	for (auto *unit : units) {
+		unit->gen(out);    // Generate function.
 	}
 	return Uc_location::get_num_errors();
 }

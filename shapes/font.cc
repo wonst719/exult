@@ -30,7 +30,6 @@ using std::size_t;
 using std::string;
 using std::strncmp;
 using std::toupper;
-using std::unordered_map;
 
 FontManager fontManager;
 
@@ -844,10 +843,8 @@ Font *FontManager::get_font(const char *name) {
 }
 
 void FontManager::reset() {
-	unordered_map<const char *, Font *, hashstr, eqstr>::iterator i;
-
-	for (i = fonts.begin(); i != fonts.end(); ++i) {
-		delete i->second;
+	for (auto& font : fonts) {
+		delete font.second;
 	}
 
 	fonts.clear();

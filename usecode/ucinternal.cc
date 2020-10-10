@@ -3131,9 +3131,8 @@ void Usecode_internal::write(
 	// Static variables. 1st, globals.
 	OFileDataSource nfile(USEVARS);
 	nfile.write4(statics.size());  // # globals.
-	vector<Usecode_value>::iterator it;
-	for (it = statics.begin(); it != statics.end(); ++it)
-		if (!(*it).save(&nfile))
+	for (auto& it : statics)
+		if (!it.save(&nfile))
 			throw file_exception("Could not write static usecode value");
 	// Now do the local statics.
 	int num_slots = funs.size();
@@ -3151,9 +3150,8 @@ void Usecode_internal::write(
 			} else
 				nfile.write4(fun->id);
 			nfile.write4(fun->statics.size());
-			for (it = fun->statics.begin();
-			        it != fun->statics.end(); ++it) {
-				if (!(*it).save(&nfile))
+			for (auto& it : fun->statics) {
+				if (!it.save(&nfile))
 					throw file_exception("Could not write static usecode value");
 			}
 		}

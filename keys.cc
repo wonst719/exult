@@ -653,8 +653,7 @@ void KeyBinder::ParseLine(char *line) {
 				}
 			} else {
 				// lookup in table
-				ParseKeyMap::iterator key_index;
-				key_index = keys.find(t);
+				auto key_index = keys.find(t);
 				if (key_index != keys.end()) {
 					k.sym = (*key_index).second;
 				} else {
@@ -678,8 +677,7 @@ void KeyBinder::ParseLine(char *line) {
 	s.erase(0, i);
 	to_uppercase(t);
 
-	ParseActionMap::iterator action_index;
-	action_index = actions.find(t);
+	auto action_index = actions.find(t);
 	if (action_index != actions.end()) {
 		a.action = (*action_index).second;
 	} else {

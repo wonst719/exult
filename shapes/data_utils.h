@@ -50,9 +50,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 template <typename T>
 void add_vector_info(const T &inf, std::vector<T> &vec) {
-	typename std::vector<T>::iterator it;
 	// Find using operator<.
-	it = std::lower_bound(vec.begin(), vec.end(), inf);
+	auto it = std::lower_bound(vec.begin(), vec.end(), inf);
 	if (it == vec.end() || *it != inf)  // Not found.
 		vec.insert(it, inf);    // Add new.
 	else {  // Already exists.
@@ -81,9 +80,8 @@ std::vector<T> &set_vector_info(bool tf, std::vector<T> &vec) {
 }
 template <typename T>
 void invalidate_vector(std::vector<T> &vec) {
-	typename std::vector<T>::iterator it;
-	for (it = vec.begin(); it != vec.end(); ++it)
-		it->set_invalid(true);
+	for (auto& elem : vec)
+		elem.set_invalid(true);
 }
 
 template <typename T>
@@ -615,17 +613,15 @@ protected:
 	Functor writer;
 	int check_write() override {
 		int num = 0;
-		for (typename std::map<int, Info>::iterator it = info.begin();
-		        it != info.end(); ++it)
-			if (writer(it->second))
+		for (auto& kvpair : info)
+			if (writer(kvpair.second))
 				num++;
 		return num;
 	}
 	void write_data(std::ostream &out, Exult_Game game) override {
-		for (typename std::map<int, Info>::iterator it = info.begin();
-		        it != info.end(); ++it)
-			if (writer(it->second))
-				writer(out, it->first, game, it->second);
+		for (auto& kvpair : info)
+			if (writer(kvpair.second))
+				writer(out, kvpair.first, game, kvpair.second);
 	}
 public:
 	Functor_multidata_writer(const char *s, std::map<int, Info> &nfo,
@@ -820,18 +816,16 @@ class Vector_writer_functor {
 public:
 	void operator()(std::ostream &out, int index, Exult_Game game, Info &info) {
 		std::vector<T> &vec = info.*data;
-		for (typename std::vector<T>::iterator it = vec.begin();
-		        it != vec.end(); ++it)
-			if (need_write(*it))
-				it->write(out, index, game);
+		for (auto& elem : vec)
+			if (need_write(elem))
+				elem.write(out, index, game);
 	}
 	bool operator()(Info &info) {
 		std::vector<T> &vec = info.*data;
 		if (vec.empty())    // Nothing to do.
 			return false;
-		for (typename std::vector<T>::iterator it = vec.begin();
-		        it != vec.end(); ++it)
-			if (need_write(*it))
+		for (auto& elem : vec)
+			if (need_write(elem))
 				return true;
 		return false;
 	}

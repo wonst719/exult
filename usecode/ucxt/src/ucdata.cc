@@ -388,8 +388,10 @@ void UCData::load_funcs(ostream &o) {
 		                                                     func->_cls != nullptr, func->funcname,
 		                                                     kind, func->_varmap)));
 	}
-	/*  for(map<unsigned int, UCFuncSet>::iterator i=_funcmap.begin(); i!=_funcmap.end(); ++i)
-	        o << i->first << "\t" << i->second.num_args << endl;*/
+	/*
+	for(auto i : _funcmap)
+		o << i.first << "\t" << i.second.num_args << endl;
+	*/
 }
 
 void UCData::analyse_classes() {

@@ -32,11 +32,10 @@
 
 void Time_queue::clear(
 ) {
-	Temporal_sequence::iterator it;
-	while ((it = data.begin()) != data.end()) {
-		Queue_entry ent = *it;
+	while (!data.empty()) {
+		Queue_entry ent = data.front();
+		data.pop_front();
 		Time_sensitive *obj = ent.handler;
-		data.erase(it);
 		obj->dequeue();
 	}
 }
