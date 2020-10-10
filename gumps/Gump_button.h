@@ -65,7 +65,9 @@ public:
 	virtual bool is_checkmark() const {
 		return false;
 	}
-
+	Gump_button *as_button() override {
+		return this;
+	}
 };
 
 template <class Callable, class Tuple, size_t... Is>

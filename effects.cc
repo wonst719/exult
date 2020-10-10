@@ -264,8 +264,7 @@ void Effects_manager::remove_usecode_lightning(
 	while (each) {
 		Special_effect *next = each->next;
 		// See if we're far enough away.
-		auto *light = dynamic_cast<Lightning_effect *>(each);
-		if (light && light->from_usecode())
+		if (each->is_usecode_lightning())
 			remove_effect(each);
 		each = next;
 	}

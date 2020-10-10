@@ -51,6 +51,9 @@ class Vga_file;
 class ODataSource;
 class Game_map;
 class Object_client;
+class Spellbook_object;
+class Virtue_stone_object;
+class Dead_body;
 
 template<class T>
 class T_Object_list;
@@ -335,6 +338,15 @@ public:
 		return nullptr;
 	}
 	virtual Egg_object *as_egg() {
+		return nullptr;
+	}
+	virtual Spellbook_object *as_spellbook() {
+		return nullptr;
+	}
+	virtual Virtue_stone_object *as_virtstone() {
+		return nullptr;
+	}
+	virtual Dead_body *as_body() {
 		return nullptr;
 	}
 	virtual int is_egg() const { // An egg?

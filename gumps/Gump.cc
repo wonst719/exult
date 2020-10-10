@@ -214,7 +214,7 @@ Gump_button *Gump::on_button(
 ) {
 	for (auto *w : elems) {
 		if (w->on_button(mx, my))
-			return dynamic_cast<Gump_button *>(w);
+			return w->as_button();
 	}
 	return nullptr;
 }

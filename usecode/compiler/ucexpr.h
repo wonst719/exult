@@ -39,6 +39,7 @@ class Uc_function;
 class Uc_function_symbol;
 class Uc_class;
 class Basic_block;
+class Uc_array_expression;
 
 /*
  *  Base class for expressions.
@@ -86,6 +87,7 @@ public:
 	virtual void set_is_obj_fun(int s) {
 		ignore_unused_variable_warning(s);
 	}
+	virtual void add_to(Uc_array_expression *arr);
 };
 
 /*
@@ -337,6 +339,8 @@ public:
  */
 class Uc_array_expression : public Uc_expression {
 	std::vector<Uc_expression *> exprs;
+	using Iterator = typename std::vector<Uc_expression *>::iterator;
+	using ConstIterator = typename std::vector<Uc_expression *>::const_iterator;
 public:
 	Uc_array_expression() = default;
 	Uc_array_expression(Uc_expression *e0) {
@@ -350,6 +354,9 @@ public:
 	void add(Uc_expression *e) { // Append an expression.
 		exprs.push_back(e);
 	}
+	void add(std::vector<Uc_expression *>& vec) { // Append an expression.
+		exprs.insert(exprs.cend(), vec.begin(), vec.end());
+	}
 	void clear() {          // Remove, but DON'T delete, elems.
 		exprs.clear();
 	}
@@ -361,6 +368,7 @@ public:
 	void gen_value(Basic_block *out) override;
 	// Gen code to push value(s).
 	int gen_values(Basic_block *out) override;
+	void add_to(Uc_array_expression *arr) override;
 };
 
 /*

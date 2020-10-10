@@ -114,6 +114,10 @@ public:
 		return deltay;
 	}
 	virtual int get_framenum();
+	virtual void activate_animator() {
+	}
+	virtual void deactivate_animator() {
+	}
 };
 
 /*
@@ -159,6 +163,12 @@ public:
 	Field_frame_animator(Game_object *o);
 	// For Time_sensitive:
 	void handle_event(unsigned long time, uintptr udata) override;
+	void activate_animator() override {
+		activated = true;
+	}
+	void deactivate_animator() override {
+		activated = false;
+	}
 };
 
 /*

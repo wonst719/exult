@@ -85,6 +85,9 @@ public:
 	virtual bool is_weather() {  // Need to distinguish weather.
 		return false;
 	}
+	virtual bool is_usecode_lightning() const {
+		return false;
+	}
 };
 
 /*
@@ -278,6 +281,9 @@ public:
 	{ }
 	bool from_usecode() const {
 		return fromusecode;
+	}
+	bool is_usecode_lightning() const override {
+		return from_usecode();
 	}
 	~Lightning_effect() override;
 	// Execute when due.

@@ -468,7 +468,7 @@ static void Handle_client_message(
 		uintptr addr;
 		io << addr;
 		auto *p = reinterpret_cast<Game_object *>(addr);
-		auto *obj = dynamic_cast<Container_game_object *>(p);
+		auto *obj = p->as_container();
 		if (!obj) {
 			cout << "Error decoding container data" << endl;
 			break;

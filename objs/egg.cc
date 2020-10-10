@@ -197,7 +197,7 @@ class Monster_egg : public Egg_object {
 			Game_object *monster = new_monster.get();
 			monster->change_frame(mframe);
 			gwin->add_dirty(monster);
-			gwin->add_nearby_npc(static_cast<Monster_actor *>(monster));
+			gwin->add_nearby_npc(monster->as_npc());
 		}
 	}
 public:
@@ -1262,10 +1262,9 @@ bool Field_object::field_effect(
 		return false;
 	}
 
-	Field_frame_animator *ani;
-	if (!del && (ani = dynamic_cast<Field_frame_animator *>(animator)) != nullptr)
+	if (!del)
 		// Tell animator to keep checking.
-		ani->activated = true;
+		animator->activate_animator();
 	return del;
 }
 
@@ -1299,7 +1298,7 @@ void Field_object::activate(
 	npcs.push_back(gwin->get_main_actor()); // Include Avatar.
 	Rectangle eggfoot = get_footprint();
 	// Clear flag to check.
-	static_cast<Field_frame_animator *>(animator)->activated = false;
+	animator->deactivate_animator();
 	for (auto *actor : npcs) {
 		if (actor->is_dead() || Game_object::distance(actor) > 4)
 			continue;

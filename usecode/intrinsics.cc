@@ -1591,7 +1591,7 @@ USECODE_INTRINSIC(add_spell) {
 	// add_spell(spell# (0-71), ??, spellbook).
 	// Returns 0 if book already has that spell.
 	Game_object *obj = get_item(parms[2]);
-	auto *book = dynamic_cast<Spellbook_object *>(obj);
+	auto *book = obj->as_spellbook();
 	if (!book) {
 		cout << "Add_spell - Not a spellbook!" << endl;
 		return Usecode_value(0);
@@ -1604,7 +1604,7 @@ USECODE_INTRINSIC(remove_all_spells) {
 	// remove_all_spells(spellbook).
 	// Removes all spells from spellbook.
 	Game_object *obj = get_item(parms[0]);
-	auto *book = dynamic_cast<Spellbook_object *>(obj);
+	auto *book = obj->as_spellbook();
 	if (!book) {
 		cout << "remove_all_spells - Not a spellbook!" << endl;
 		return no_ret;
@@ -1618,7 +1618,7 @@ USECODE_INTRINSIC(has_spell) {
 	// has_spell(spellbook, spell#).
 	// Returns true if the spellbook has desired spell, false if not.
 	Game_object *obj = get_item(parms[0]);
-	auto *book = dynamic_cast<Spellbook_object *>(obj);
+	auto *book = obj->as_spellbook();
 	if (!book) {
 		cout << "has_spell - Not a spellbook!" << endl;
 		return Usecode_value(0);
@@ -1631,7 +1631,7 @@ USECODE_INTRINSIC(remove_spell) {
 	// remove_spell(spellbook, spell#).
 	// Returns true if the spellbook has desired spell, false if not.
 	Game_object *obj = get_item(parms[0]);
-	auto *book = dynamic_cast<Spellbook_object *>(obj);
+	auto *book = obj->as_spellbook();
 	if (!book) {
 		cout << "remove_spell - Not a spellbook!" << endl;
 		return Usecode_value(0);
@@ -1825,7 +1825,7 @@ USECODE_INTRINSIC(get_array_size) {
 USECODE_INTRINSIC(mark_virtue_stone) {
 	ignore_unused_variable_warning(num_parms);
 	Game_object *obj = get_item(parms[0]);
-	auto *vs = dynamic_cast<Virtue_stone_object *>(obj);
+	auto *vs = obj->as_virtstone();
 	if (vs) {
 		vs->set_target_pos(obj->get_outermost()->get_tile());
 		vs->set_target_map(obj->get_outermost()->get_map_num());
@@ -1836,7 +1836,7 @@ USECODE_INTRINSIC(mark_virtue_stone) {
 USECODE_INTRINSIC(recall_virtue_stone) {
 	Game_object *obj = get_item(parms[0]);
 	Game_object_shared keep;
-	auto *vs = dynamic_cast<Virtue_stone_object *>(obj);
+	auto *vs = obj->as_virtstone();
 	if (vs) {
 		gumpman->close_all_gumps();
 		// Pick it up if necessary.

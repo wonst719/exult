@@ -818,6 +818,9 @@ public:
 		: Container_game_object(shapenum, framenum, tilex, tiley, lft),
 		  npc_num(n) {
 	}
+	Dead_body *as_body() override {
+		return this;
+	}
 	int get_live_npc_num() const override;
 	// Under attack.
 	Game_object *attacked(Game_object *attacker, int weapon_shape = 0,

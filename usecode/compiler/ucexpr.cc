@@ -86,6 +86,14 @@ Uc_var_symbol *Uc_expression::need_var(
 }
 
 /*
+ *  Concatenate expression into an array.
+ */
+
+void Uc_expression::add_to(Uc_array_expression *arr) {
+	arr->add(this);
+}
+
+/*
  *  Evaluate constant.
  *
  *  Output: true if successful, with result returned in 'val'.
@@ -634,15 +642,18 @@ Uc_array_expression::~Uc_array_expression(
 void Uc_array_expression::concat(
     Uc_expression *e
 ) {
-	auto *arr = dynamic_cast<Uc_array_expression *>(e);
-	if (!arr)
-		add(e);         // Singleton?  Just add it.
-	else {
-		for (auto *expr : arr->exprs)
-			add(expr);
-		arr->exprs.clear(); // Don't want to delete elements.
-		delete arr;     // But this array is history.
-	}
+	e->add_to(this);
+}
+
+/*
+ *  Concatenate array into another array, and destroys the current array
+ *  is destroyed and should not be used after this function is called.
+ */
+
+void Uc_array_expression::add_to(Uc_array_expression *arr) {
+	arr->add(exprs);
+	exprs.clear();   // Don't want to delete elements.
+	delete this;     // But this array is history.
 }
 
 /*

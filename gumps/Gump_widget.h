@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Gump;
 class Game_window;
+class Gump_button;
 
 /*
  *  A gump widget, such as a button or text field:
@@ -65,7 +66,9 @@ public:
 	virtual bool is_draggable() {
 		return true;
 	}
-
+	virtual Gump_button *as_button() {
+		return nullptr;
+	}
 };
 
 #endif

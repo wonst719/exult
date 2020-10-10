@@ -633,7 +633,7 @@ int Usecode_script::exec(
 			break;
 		}
 		case resurrect: {
-			auto *body = dynamic_cast<Dead_body *>(optr.get());
+			auto *body = optr->as_body();
 			if (!body)
 				break;
 			Actor *act = gwin->get_npc(body->get_live_npc_num());

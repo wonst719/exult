@@ -200,7 +200,7 @@ void Itemmenu_gump::postCloseActions() {
 	Game_window *gwin = Game_window::get_instance();
 	switch (objectAction) {
 	case show_inventory: {
-		auto *act = dynamic_cast<Actor*>(objectSelected);
+		auto *act = objectSelected->as_actor();
 		if (act != nullptr) {
 			act->show_inventory();
 		}
