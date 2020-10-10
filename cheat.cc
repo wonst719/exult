@@ -201,7 +201,7 @@ void Cheat::toggle_map_editor() {
 			std::memset(&si, 0, sizeof(si));
 			si.cb = sizeof(si);
 
-			int ret = CreateProcess(nullptr, const_cast<char*>(cmnd.c_str()), nullptr, nullptr,
+			int ret = CreateProcess(nullptr, &cmnd[0], nullptr, nullptr,
 			                        FALSE, 0,
 			                        nullptr, nullptr, &si, &pi);
 			if (!ret) cout << "Couldn't run Exult Studio" << endl;

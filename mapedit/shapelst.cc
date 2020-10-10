@@ -931,7 +931,7 @@ void Shape_chooser::edit_shape(
 	STARTUPINFO     si;
 	std::memset(&si, 0, sizeof(si));
 	si.cb = sizeof(si);
-	int ret = CreateProcess(nullptr, const_cast<char *>(cmd.c_str()),
+	int ret = CreateProcess(nullptr, &cmd[0],
 	                        nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi);
 	if (!ret)
 		Alert("Can't launch '%s'", studio->get_image_editor());
