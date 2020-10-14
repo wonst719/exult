@@ -23,7 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef USE_CORE_MIDI
 
+#include <algorithm>
 #include <iomanip>
+#include <new>
+#include <type_traits>
 using namespace std;
 
 const MidiDriver::MidiDriverDesc CoreMidiDriver::desc = 
@@ -155,11 +158,11 @@ void CoreMidiDriver::send_sysex(uint8 status, const uint8 *msg, uint16 length) {
 	assert(mOutPort != 0);
 	assert(mDest != 0);
 
-	uint8 buf[384];
-	MIDIPacketList *packetList = reinterpret_cast<MIDIPacketList *>(buf);
+	std::aligned_storage_t<sizeof(MIDIPacketList) + 128, alignof(MIDIPacketList)> buf;
+	MIDIPacketList *packetList = new (&buf) MIDIPacketList;
 	MIDIPacket *packet = packetList->packet;
 
-	assert(sizeof(buf) >= sizeof(UInt32) + sizeof(MIDITimeStamp) + sizeof(UInt16) + length + 2);
+	assert(sizeof(packet->data) + 128 >= length + 2);
 
 	packetList->numPackets = 1;
 
@@ -167,12 +170,14 @@ void CoreMidiDriver::send_sysex(uint8 status, const uint8 *msg, uint16 length) {
 
 	// Add SysEx frame
 	packet->length = length + 2;
-	packet->data[0] = 0xF0;
-	memcpy(packet->data + 1, msg, length);
-	packet->data[length + 1] = 0xF7;
+	auto *data = packet->data;
+	*data++ = 0xF0;
+	data = std::copy(msg, msg + length, data);
+	*data++ = 0xF7;
 
 	// Send it
 	MIDISend(mOutPort, mDest, packetList);
+	packetList->~MIDIPacketList();
 }
 
 void CoreMidiDriver::increaseThreadPriority()
