@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LowLevelMidiDriver.h"
 
 #include <AudioToolbox/AUGraph.h>
-#include <CoreServices/CoreServices.h>
 
 class CoreAudioMidiDriver : public LowLevelMidiDriver {
 	AUGraph _auGraph;
