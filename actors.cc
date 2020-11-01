@@ -901,7 +901,7 @@ Actor::Actor(
     int num,
     int uc
 ) : name(nm), usecode(uc),
-	usecode_assigned(false), usecode_name(""), unused(false),
+	usecode_assigned(false), unused(false),
 	npc_num(num), face_num(num), party_id(-1), atts(nullptr), temperature(0),
 	shape_save(-1), oppressor(-1),
 	casting_mode(not_casting), casting_shape(-1),
