@@ -27,7 +27,6 @@ extern int errno;
 #endif
 using namespace std;
 
-#include "zlib.h"
 #include "unzip.h"
 
 #if !defined(unix) && !defined(CASESENSITIVITYDEFAULT_YES) && \

@@ -50,9 +50,8 @@
 extern "C" {
 #endif
 
-#ifndef _ZLIB_H
+#define ZLIB_CONST
 #include "zlib.h"
-#endif
 
 struct unz_s;
 using unzFile = unz_s *;

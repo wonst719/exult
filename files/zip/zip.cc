@@ -26,7 +26,6 @@ extern int errno;
 #endif
 using namespace std;
 
-#include "zlib.h"
 #include "zip.h"
 
 /* Added by Ryan Nunn to overcome DEF_MEM_LEVEL being undeclared */
@@ -437,7 +436,7 @@ extern int ZEXPORT zipOpenNewFileInZip(zipFile file,
 	return err;
 }
 
-extern int ZEXPORT zipWriteInFileInZip(zipFile file, voidp buf, unsigned len) {
+extern int ZEXPORT zipWriteInFileInZip(zipFile file, voidpc buf, unsigned len) {
 	int err = ZIP_OK;
 
 	if (file == nullptr)
@@ -446,9 +445,9 @@ extern int ZEXPORT zipWriteInFileInZip(zipFile file, voidp buf, unsigned len) {
 	if (file->in_opened_file_inzip == 0)
 		return ZIP_PARAMERROR;
 
-	file->ci.stream.next_in = static_cast<Bytef *>(buf);
+	file->ci.stream.next_in = static_cast<const Bytef *>(buf);
 	file->ci.stream.avail_in = len;
-	file->ci.crc32 = crc32(file->ci.crc32, static_cast<Bytef *>(buf), len);
+	file->ci.crc32 = crc32(file->ci.crc32, static_cast<const Bytef *>(buf), len);
 
 	while ((err == ZIP_OK) && (file->ci.stream.avail_in > 0)) {
 		if (file->ci.stream.avail_out == 0) {
@@ -467,23 +466,19 @@ extern int ZEXPORT zipWriteInFileInZip(zipFile file, voidp buf, unsigned len) {
 
 		} else {
 			uInt copy_this;
-			uInt i;
 			if (file->ci.stream.avail_in < file->ci.stream.avail_out)
 				copy_this = file->ci.stream.avail_in;
 			else
 				copy_this = file->ci.stream.avail_out;
-			for (i = 0; i < copy_this; i++)
-				*(reinterpret_cast<char *>(file->ci.stream.next_out) + i) =
-				    *(reinterpret_cast<const char *>(file->ci.stream.next_in) + i);
-			{
-				file->ci.stream.avail_in -= copy_this;
-				file->ci.stream.avail_out -= copy_this;
-				file->ci.stream.next_in += copy_this;
-				file->ci.stream.next_out += copy_this;
-				file->ci.stream.total_in += copy_this;
-				file->ci.stream.total_out += copy_this;
-				file->ci.pos_in_buffered_data += copy_this;
-			}
+			for (uInt i = 0; i < copy_this; i++)
+				file->ci.stream.next_out[i] = file->ci.stream.next_in[i];
+			file->ci.stream.avail_in -= copy_this;
+			file->ci.stream.avail_out -= copy_this;
+			file->ci.stream.next_in += copy_this;
+			file->ci.stream.next_out += copy_this;
+			file->ci.stream.total_in += copy_this;
+			file->ci.stream.total_out += copy_this;
+			file->ci.pos_in_buffered_data += copy_this;
 		}
 	}
 
