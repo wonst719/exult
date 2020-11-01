@@ -96,7 +96,7 @@ unsigned short Spellbook_object::si_reagents[9 * 8] = {
 	// Circle 2:
 	gr | gn, bm | sa, ns | sa, bp | sa | wh, mr | sa, gr | gn | ss, gr | gn | mr, gr | gn | sa,
 	// Circle 3:
-	gr | gn | wh, gr | ns | sa, bp | mr, bp | gr, gr | gn | mr | sa, ns | ss, bp | ns | ss, bp | mr | sa | sa,
+	gr | gn | wh, gr | ns | sa, bp | mr, bp | gr, gr | gn | mr | sa, ns | ss, bp | ns | ss, bp | mr | sa,
 	// Circle 4:
 	bm | mr, gr | ss, mr | sa, sa | bm | gr | mr | ss | sc, gr | mr | ns | sa, bm | sa, bp | ss, bm | sa,
 	// Circle 5:
