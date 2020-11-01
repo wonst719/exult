@@ -305,11 +305,11 @@ bool Gen_font_shape(
 #if defined(_WIN32) && defined(USE_WIN32_FONTGEN)
 	static HANDLE(WINAPI * AddFontResourceExA)(LPCSTR, DWORD, PVOID);
 	if (AddFontResourceExA == nullptr) {
-		AddFontResourceExA = reinterpret_cast<HANDLE(WINAPI *)(LPCSTR, DWORD, PVOID)>
-		                     (GetProcAddress(LoadLibrary("GDI32"), "AddFontResourceExA"));
-
+		static_assert(sizeof(HANDLE) == sizeof(FARPROC), "sizeof(FARPROC) is not equal to sizeof(HANDLE)!");
+		const FARPROC handle = GetProcAddress(LoadLibrary("GDI32"), "AddFontResourceExA");
+		std::memcpy(&AddFontResourceExA, &handle, sizeof(HANDLE));
 	}
-	if (AddFontResourceExA && AddFontResourceExA(fontfile, FR_PRIVATE, nullptr) != nullptr) {
+	if (AddFontResourceExA != nullptr && AddFontResourceExA(fontfile, FR_PRIVATE, nullptr) != nullptr) {
 		//if (face->family_name) MessageBox(nullptr,face->family_name,"face->family_name",MB_OK);
 		//if (face->style_name) MessageBox(nullptr,face->style_name,"face->style_name",MB_OK);
 		if (Gen_font_shape_win32(shape, face->family_name, face->style_name, nframes, pixels_ht, fg, bg, shadow)) {

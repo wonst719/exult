@@ -480,9 +480,9 @@ protected:
 
 	template <typename Dest>
 	Dest get_function(const char *func) {
-		static_assert(sizeof(Dest) == sizeof(decltype(GetProcAddress(hLib, func))), "sizeof(void*) is not equal to sizeof(Dest)!");
+		static_assert(sizeof(Dest) == sizeof(decltype(GetProcAddress(hLib, func))), "sizeof(FARPROC) is not equal to sizeof(Dest)!");
 		Dest fptr;
-		auto *optr = GetProcAddress(hLib, func);
+		const FARPROC optr = GetProcAddress(hLib, func);
 		std::memcpy(&fptr, &optr, sizeof(optr));
 		return fptr;
 	}
