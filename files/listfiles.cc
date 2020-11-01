@@ -24,12 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cctype>
 #include <cstdio>
 
-#include <vector>
 #include <string>
 #include <cstring>
 #include <iostream>
 
-using std::vector;
 using std::cerr;
 using std::endl;
 using std::string;
