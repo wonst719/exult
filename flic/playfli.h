@@ -50,13 +50,12 @@ private:
 	int streamstart;
 	int streampos;
 	int frame;
-	char fli_name[9];
+	char fli_name[9]{};
 public:
 	template <typename... T>
 	explicit playfli(T&&... args)
 		: fli_data(std::forward<T>(args)...),
-		  palette(std::make_unique<Palette>()),
-		  fli_name{0} {
+		  palette(std::make_unique<Palette>()) {
 		initfli();
 	}
 	~playfli() noexcept = default;
