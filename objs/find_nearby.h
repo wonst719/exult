@@ -29,41 +29,6 @@
 #include "objiter.h"
 #include "ignore_unused_variable_warning.h"
 
-/*
- *  Check an object in find_nearby() against the mask.
- *
- *  Output: 1 if it passes.
- */
-static int Check_mask(
-    Game_window *gwin,
-    Game_object *obj,
-    int mask
-) {
-	ignore_unused_variable_warning(gwin);
-	const Shape_info &info = obj->get_info();
-	if ((mask & (4 | 8)) && // Both seem to be all NPC's.
-	        !info.is_npc())
-		return 0;
-	Shape_info::Shape_class sclass = info.get_shape_class();
-	// Egg/barge?
-	if ((sclass == Shape_info::hatchable || sclass == Shape_info::barge) &&
-	        !(mask & 0x10))     // Only accept if bit 16 set.
-		return 0;
-	if (info.is_transparent() &&    // Transparent?
-	        !(mask & 0x80))
-		return 0;
-	// Invisible object?
-	if (obj->get_flag(Obj_flags::invisible))
-		if (!(mask & 0x20)) { // Guess:  0x20 == invisible.
-			if (!(mask & 0x40)) // Guess:  Inv. party member.
-				return 0;
-			if (!obj->get_flag(Obj_flags::in_party))
-				return 0;
-		}
-
-	return 1;           // Passed all tests.
-}
-
 template <typename VecType, typename Cast>
 int Game_object::find_nearby(
     VecType &vec,           // Objects appended to this.
@@ -78,6 +43,33 @@ int Game_object::find_nearby(
     Cast const &obj_cast,           // Cast functor.
     bool exclude_okay_to_take
 ) {
+	// Check an object in find_nearby() against the mask.
+	auto Check_mask = [](
+		Game_object *obj,
+		int mask
+	) {
+		const Shape_info &info = obj->get_info();
+		if ((mask & (4 | 8)) && // Both seem to be all NPC's.
+				!info.is_npc())
+			return false;
+		Shape_info::Shape_class sclass = info.get_shape_class();
+		// Egg/barge?
+		if ((sclass == Shape_info::hatchable || sclass == Shape_info::barge) &&
+				!(mask & 0x10))     // Only accept if bit 16 set.
+			return false;
+		if (info.is_transparent() &&    // Transparent?
+				!(mask & 0x80))
+			return false;
+		// Invisible object?
+		if (obj->get_flag(Obj_flags::invisible))
+			if (!(mask & 0x20)) { // Guess:  0x20 == invisible.
+				if (!(mask & 0x40)) // Guess:  Inv. party member.
+					return false;
+				if (!obj->get_flag(Obj_flags::in_party))
+					return false;
+			}
+		return true;           // Passed all tests.
+	};
 	if (delta < 0)          // +++++Until we check all old callers.
 		delta = 24;
 	if (shapenum > 0 && mask == 4)  // Ignore mask=4 if shape given!
@@ -112,7 +104,7 @@ int Game_object::find_nearby(
 			if (framenum !=  c_any_framenum &&
 			        obj->get_framenum() != framenum)
 				continue;
-			if (!Check_mask(gwin, obj, mask))
+			if (!Check_mask(obj, mask))
 				continue;
 			if (exclude_okay_to_take && obj->get_flag(Obj_flags::okay_to_take))
 				continue;
