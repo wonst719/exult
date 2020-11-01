@@ -262,9 +262,10 @@ Makecache
 
 # vscode
 .vscode
-.clangd/*
-.vs/*
-msvc/.vs/*
+.clangd
+.vs
+.cache
+msvc/.vs
 
 # Win32 build
 data/u7bgintrinsics.data
