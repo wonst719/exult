@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <cmath>
 #include <cstdlib>
 
 #include "pent_include.h"
@@ -1346,7 +1347,7 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 	config->value("config/audio/midi/volume_curve",s,"---");
 	if (s == "---") config->value("config/audio/midi/gamma",s,"1");
 	VolumeCurve.set_gamma (atof(s.c_str()));
-	int igam = static_cast<int>((VolumeCurve.get_gamma()*10000)+0.5);
+	int igam = std::lround(VolumeCurve.get_gamma()*10000);
 	char buf[32];
 	snprintf (buf, 32, "%d.%04d", igam/10000, igam%10000);
 	config->set("config/audio/midi/volume_curve",buf,true);
