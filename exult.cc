@@ -2316,7 +2316,8 @@ void setup_video(bool fullscreen, int setup_video_type, int resx, int resy,
 		string default_scaler = "point";
 		string default_fill_scaler = "point";
 		string default_fmode = "Fill";
-        fullscreen = true;
+		fullscreen = true;
+		config->set("config/video/force_bpp", 32, true);
 #else
 		int sc = 2;
 		string default_scaler = "2xSaI";
