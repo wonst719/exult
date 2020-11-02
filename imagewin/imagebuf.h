@@ -31,8 +31,6 @@ Boston, MA  02111-1307, USA.
 #include <memory>
 
 // Table for translating palette vals.:
-//using Xform_palette = unsigned char *; // Should be 256-bytes.
-
 /*
  *  This class represents a single transparent color by providing a
  *  palette for its effect on all the other colors.
@@ -40,13 +38,6 @@ Boston, MA  02111-1307, USA.
 class Xform_palette {
 public:
 	unsigned char colors[256];  // For transforming 8-bit colors.
-	unsigned char r, g, b, a;   // Actual colour and alpha.
-	void set_color(int cr, int cg, int cb, int ca) {
-		r = cr;
-		g = cg;
-		b = cb;
-		a = ca;
-	}
 	unsigned char operator[](int i) const {
 		return colors[i];
 	}

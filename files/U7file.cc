@@ -1,6 +1,4 @@
 /*
-Copyright (C) 2000  Dancer A.L Vesperman
-
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2
@@ -16,8 +14,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-// Not yet.
-#if 0
 #include "U7file.h"
 #include "U7fileman.h"
 #include "U7obj.h"
@@ -27,23 +23,23 @@ File_data::File_data(const File_spec &spec) {
 	file = U7FileManager::get_ptr()->get_file_object(spec, true);
 	patch = !spec.name.compare(1, sizeof("<PATCH>/") - 1, "<PATCH>/");
 	if (file)
-		cnt = file->number_of_objects();
+		count = file->number_of_objects();
 	else
-		cnt = -1;
+		count = 0;
 }
 
 /// Initializes from a file spec. Needed by some constructors.
 /// @param spec A file specification.
 U7multifile::U7multifile(const File_spec &spec) {
-	files.push_back(File_data(spec));
+	files.emplace_back(spec);
 }
 
 /// Initializes from file specs. Needed by some constructors.
 /// @param spec0    First file specification (usually <STATIC>).
 /// @param spec1    Second file specification (usually <PATCH>).
 U7multifile::U7multifile(const File_spec &spec0, const File_spec &spec1) {
-	files.push_back(File_data(spec0));
-	files.push_back(File_data(spec1));
+	files.emplace_back(spec0);
+	files.emplace_back(spec1);
 }
 
 /// Initializes from file specs. Needed by some constructors.
@@ -52,20 +48,20 @@ U7multifile::U7multifile(const File_spec &spec0, const File_spec &spec1) {
 /// @param spec2    Third file specification (usually <PATCH>).
 U7multifile::U7multifile(const File_spec &spec0, const File_spec &spec1,
                          const File_spec &spec2) {
-	files.push_back(File_data(spec0));
-	files.push_back(File_data(spec1));
-	files.push_back(File_data(spec2));
+	files.emplace_back(spec0);
+	files.emplace_back(spec1);
+	files.emplace_back(spec2);
 }
 
 /// Initializes from file specs. Needed by some constructors.
 /// @param specs    List of file specs.
 U7multifile::U7multifile(const std::vector<File_spec> &specs) {
 	for (const auto& spec : specs)
-		files.push_back(File_data(spec));
+		files.emplace_back(spec);
 }
 
-uint32 U7multifile::number_of_objects() const {
-	int num = 0;
+size_t U7multifile::number_of_objects() const {
+	size_t num = 0;
 	for (const auto& file : files)
 		if (file.number_of_objects() > num)
 			num = file.number_of_objects();
@@ -93,7 +89,7 @@ reverse_wrapper<T> reverse(T&& iterable) {
 }
 
 std::unique_ptr<unsigned char[]> U7multifile::retrieve(uint32 objnum, std::size_t &len, bool &patch) const {
-	for (auto& file : reverse(files)) {
+	for (const auto& file : reverse(files)) {
 		auto buf = file.retrieve(objnum, len, patch);
 		if (buf && len > 0)
 			return buf;
@@ -103,4 +99,3 @@ std::unique_ptr<unsigned char[]> U7multifile::retrieve(uint32 objnum, std::size_
 	len = 0;
 	return nullptr;
 }
-#endif

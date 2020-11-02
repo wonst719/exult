@@ -171,8 +171,6 @@ public:
 	}
 };
 
-// Not yet.
-#if 0
 /**
  *  This class stores data from each file.
  */
@@ -180,10 +178,10 @@ class File_data {
 protected:
 	/// The file this refers to. Should NOT be deleted!
 	U7file *file;
+	/// Number of objects in the file.
+	size_t count;
 	/// Whether the file comes from patch dir.
 	bool patch;
-	/// Number of objects in the file.
-	int cnt;
 
 public:
 	explicit File_data(const File_spec &spec);
@@ -192,9 +190,13 @@ public:
 		return patch;
 	}
 	size_t number_of_objects() const {
-		return cnt;
+		return count;
 	}
-	std::unique_ptr<unsigned char[]> retrieve(uint32 objnum, std::size_t &len, bool &pt) {
+	std::unique_ptr<unsigned char[]> retrieve(uint32 objnum, std::size_t &len) const {
+		bool pt;
+		return retrieve(objnum, len, pt);
+	}
+	std::unique_ptr<unsigned char[]> retrieve(uint32 objnum, std::size_t &len, bool &pt) const {
 		pt = patch;
 		len = 0;
 		if (file) {
@@ -202,7 +204,7 @@ public:
 		}
 		return nullptr;
 	}
-	IBufferDataSource retrieve(uint32 objnum) {
+	IBufferDataSource retrieve(uint32 objnum) const {
 		if (file) {
 			return file->retrieve(objnum);
 		}
@@ -232,13 +234,20 @@ public:
 	U7multifile(const std::vector<File_spec> &specs);
 
 	size_t number_of_objects() const;
+	std::unique_ptr<unsigned char[]> retrieve(uint32 objnum, std::size_t &len) const {
+		bool pt;
+		return retrieve(objnum, len, pt);
+	}
 	std::unique_ptr<unsigned char[]> retrieve(uint32 objnum, std::size_t &len, bool &patch) const;
-	IBufferDataSource retrieve(uint32 objnum, bool &patch, const) {
+	IBufferDataSource retrieve(uint32 objnum) {
+		bool pt;
+		return retrieve(objnum, pt);
+	}
+	IBufferDataSource retrieve(uint32 objnum, bool &patch) {
 		std::size_t len;
 		auto buffer = retrieve(objnum, len, patch);
 		return IBufferDataSource(std::move(buffer), len);
 	}
 };
-#endif
 
 #endif
