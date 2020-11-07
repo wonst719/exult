@@ -17,7 +17,14 @@
 #include <string.h>
 #include <ctype.h>
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif  // __GNUC__
 #include <gtk/gtk.h>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif  // __GNUC__
 
 #include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>

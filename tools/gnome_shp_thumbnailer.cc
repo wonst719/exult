@@ -31,13 +31,24 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wcast-qual"
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif  // __GNUC__
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif  // __GNUC__
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif  // __GNUC__
 #include <libgnomeui/libgnomeui.h>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif  // __GNUC__
+
 #include <iostream>
 #include <cstdlib>
 #include "Flex.h"
