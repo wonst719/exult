@@ -213,6 +213,7 @@ public:
  *  Game_window.
  */
 class Text_effect : public Time_sensitive, public Game_singletons {
+	Game_window *gwin;
 	std::string msg;        // What to print.
 	Game_object_weak item;      // Item text is on.  May be null.
 	Tile_coord tpos;        // Position to display it at.
@@ -222,7 +223,6 @@ class Text_effect : public Time_sensitive, public Game_singletons {
 	void add_dirty();
 	void init();
 	Rectangle Figure_text_pos();
-	Game_window *gwin;
 public:
 	Text_effect(const std::string &m, Game_object *it, Game_window* gwin_);
 	Text_effect(const std::string &m, int t_x, int t_y, Game_window* gwin_);

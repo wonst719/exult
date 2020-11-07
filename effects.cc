@@ -964,7 +964,7 @@ void Homing_projectile::paint(
  */
 
 Rectangle Text_effect::Figure_text_pos() {
-    Game_object_shared item_obj = item.lock();
+	Game_object_shared item_obj = item.lock();
 	if (item_obj) {
 		Gump_manager *gumpman = gwin->get_gump_man();
 		// See if it's in a gump.
@@ -1028,7 +1028,7 @@ Text_effect::Text_effect(
     const string &m,        // A copy is made.
     Game_object *it,        // Item text is on, or null.
     Game_window *gwin_      // Back-reference to gwin from Effects_manager
-) : msg(m), item(weak_from_obj(it)), pos(Figure_text_pos()), num_ticks(0), gwin(gwin_) {
+) : gwin(gwin_), msg(m), item(weak_from_obj(it)), pos(Figure_text_pos()), num_ticks(0) {
 	init();
 }
 
@@ -1040,7 +1040,7 @@ Text_effect::Text_effect(
     const string &m,        // A copy is made.
     int t_x, int t_y,       // Abs. tile coords.
     Game_window *gwin_      // Back-reference to gwin from Effects_manager
-) : msg(m), tpos(t_x, t_y, 0), pos(Figure_text_pos()), num_ticks(0), gwin(gwin_) {
+) : gwin(gwin_), msg(m), tpos(t_x, t_y, 0), pos(Figure_text_pos()), num_ticks(0) {
 	init();
 }
 
