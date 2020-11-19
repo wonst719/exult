@@ -237,7 +237,7 @@ bundle: ${EXE_TARGET}
 	$(INSTALL_DATA) $(srcdir)/README $(bundle_name)/Contents/Documents
 	$(INSTALL_DATA) $(srcdir)/README.MacOSX $(bundle_name)/Contents/Documents
 if WITH_OSX_CODE_SIGNATURE
-	codesign -f -s "$(OSX_CODE_SIGNATURE)" $(bundle_name)
+	codesign --options runtime --deep -f -s "$(OSX_CODE_SIGNATURE)" $(bundle_name)
 endif
 
 install-exec-local: bundle
