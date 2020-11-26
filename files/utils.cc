@@ -641,16 +641,26 @@ string Get_home() {
 	return home_dir;
 }
 
+#if defined(MACOSX) || defined(__IPHONEOS__)
+struct CFDeleter
+{
+	void operator()(CFTypeRef ptr) const
+	{
+		if (ptr) CFRelease(ptr);
+	}
+};
+#endif
+
 void setup_data_dir(
     const std::string &data_path,
     const char *runpath
 ) {
 #if defined(MACOSX) || defined(__IPHONEOS__)
 	// Can we try from the bundle?
-	CFURLRef fileUrl = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+	std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter> fileUrl {std::move(CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle()))};
 	if (fileUrl) {
 		unsigned char buf[MAXPATHLEN];
-		if (CFURLGetFileSystemRepresentation(fileUrl, true, buf, sizeof(buf))) {
+		if (CFURLGetFileSystemRepresentation(fileUrl.get(), true, buf, sizeof(buf))) {
 			string path(reinterpret_cast<const char *>(buf));
 			path += "/data";
 			add_system_path("<BUNDLE>", path.c_str());
