@@ -13,6 +13,8 @@
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
 		8A1C58211FE7D91B00738E40 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A1C581B1FE7D91B00738E40 /* libz.tbd */; };
+		8A1FC2E72571ADDA007B86DD /* hidapi.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A5252B525718897005AD385 /* hidapi.framework */; };
+		8A1FC2E82571ADDA007B86DD /* hidapi.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8A5252B525718897005AD385 /* hidapi.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8A2C52511DE6E1810016E16A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A7F1F8E1DE5BDD40066F6FC /* CoreFoundation.framework */; };
 		8A2C52591DE6E8E50016E16A /* crc.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD671A6E3161006C8BE4 /* crc.cc */; };
 		8A2C525A1DE6E8E90016E16A /* Flat.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD6A1A6E3161006C8BE4 /* Flat.cc */; };
@@ -28,7 +30,6 @@
 		8A45A3B8247C068500F12F4D /* joythumb-glass.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A45A3AC247C068500F12F4D /* joythumb-glass.png */; };
 		8A52528B25718086005AD385 /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A52527F25718086005AD385 /* CoreHaptics.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		8A5252C4257188A5005AD385 /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A5252A725718897005AD385 /* libSDL2.a */; };
-		8A5252D125718955005AD385 /* hidapi.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A5252B525718897005AD385 /* hidapi.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		8A6013712057CFAD00FCA555 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A6013662057CF0C00FCA555 /* Metal.framework */; };
 		8A7F1F7E1DE5B7820066F6FC /* expack.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A7F1F7D1DE5B7820066F6FC /* expack.cc */; };
 		8A8340C71F8977FC000696C7 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A8340BF1F8977FB000696C7 /* CoreMotion.framework */; };
@@ -413,6 +414,20 @@
 			remoteInfo = vorbis;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8A1FC2E92571ADDA007B86DD /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8A1FC2E82571ADDA007B86DD /* hidapi.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -989,12 +1004,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A5252D125718955005AD385 /* hidapi.framework in Frameworks */,
 				8A5252C4257188A5005AD385 /* libSDL2.a in Frameworks */,
 				8A52528B25718086005AD385 /* CoreHaptics.framework in Frameworks */,
 				8A6013712057CFAD00FCA555 /* Metal.framework in Frameworks */,
 				8A8340D01F897827000696C7 /* AVKit.framework in Frameworks */,
 				8A8340D11F897827000696C7 /* AVFoundation.framework in Frameworks */,
+				8A1FC2E72571ADDA007B86DD /* hidapi.framework in Frameworks */,
 				8A8340D51F8979D3000696C7 /* AudioToolbox.framework in Frameworks */,
 				E738C8561A6FFF75003A950D /* libvorbis.a in Frameworks */,
 				E738C8551A6FFF71003A950D /* liblibogg.a in Frameworks */,
@@ -1899,6 +1914,7 @@
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				8A1FC2E92571ADDA007B86DD /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2410,7 +2426,7 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = 5PRK96AWD5;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2433,6 +2449,7 @@
 				);
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = info.exult;
 				PRODUCT_NAME = Exult;
@@ -2451,7 +2468,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				DEVELOPMENT_TEAM = 5PRK96AWD5;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2471,6 +2488,7 @@
 				);
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = info.exult;
 				PRODUCT_NAME = Exult;
