@@ -616,7 +616,6 @@ namespace ExultIcon {
 }
 
 static void SetIcon() {
-#ifndef MACOSX      // Don't set icon on OS X; the external icon is *much* nicer
 	SDL_Color iconpal[256];
 	for (int i = 0; i < 256; ++i) {
 		iconpal[i].r = ExultIcon::header_data_cmap[i][0];
@@ -648,7 +647,6 @@ static void SetIcon() {
 			iconpal[0].r, iconpal[0].g, iconpal[0].b));
 	SDL_SetWindowIcon(gwin->get_win()->get_screen_window(), iconsurface);
 	SDL_FreeSurface(iconsurface);
-#endif
 }
 
 void Open_game_controller(int joystick_index) {
