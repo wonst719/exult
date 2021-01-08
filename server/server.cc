@@ -182,6 +182,8 @@ void Server_close(
 	listen_socket = client_socket = -1;
 #else
 	// unlink socket file+++++++
+	std::string servename = get_system_path(EXULT_SERVER);
+	unlink(servename.c_str());
 #endif
 }
 

@@ -606,6 +606,7 @@ int exult_main(const char *runpath) {
 #else
 	delete xdnd;
 #endif
+	Server_close();
 #endif
 
 	return result;

@@ -35,6 +35,7 @@ extern int client_socket;
 extern void Server_init();
 extern void Server_delay(Message_handler handle_message);
 extern void Server_delay();
+extern void Server_close();
 
 #endif  /* USE_EXULTSTUDIO */
 
