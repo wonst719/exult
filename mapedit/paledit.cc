@@ -151,12 +151,10 @@ void Palette_edit::load(
 			unsigned char *buf = flex_info->get(pnum, len);
 			palettes[pnum] = new ExultRgbCmap;
 			for (size_t i = 0; i < len / 3; i++)
-				palettes[pnum]->
-				colors[i] = (buf[3 * i] << 16) * 4 +
+				palettes[pnum]->colors[i] = (buf[3 * i] << 16) * 4 +
 				            (buf[3 * i + 1] << 8) * 4 + buf[3 * i + 2] * 4;
 			for (size_t i = len / 3; i < 256; i++)
-				palettes[pnum]->
-				colors[i] = 0;
+				palettes[pnum]->colors[i] = 0;
 		}
 	}
 }
@@ -637,12 +635,9 @@ void Palette_edit::new_palette(
 ) {
 	ExultRgbCmap *newpal = new ExultRgbCmap;        // R, G, B, then all black.
 	memset(&newpal->colors[0], 0, 256 * sizeof(guint32));
-	newpal->
-	colors[0] = 255 << 16;
-	newpal->
-	colors[1] = 255 << 8;
-	newpal->
-	colors[2] = 255;
+	newpal->colors[0] = 255 << 16;
+	newpal->colors[1] = 255 << 8;
+	newpal->colors[2] = 255;
 	int index = palettes.size();    // Index of new palette.
 	palettes.push_back(newpal);
 	update_flex(index);     // Add to file.

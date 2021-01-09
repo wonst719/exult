@@ -98,8 +98,7 @@ void ShapeBrowser::browse_shapes() {
 				char xfrsc[256];
 				snprintf(xfrsc, 255, "xforms/%d",
 				         current_xform);
-				const str_int_pair &xform_tuple = game->
-				                                  get_resource(xfrsc);
+				const str_int_pair &xform_tuple = game->get_resource(xfrsc);
 				pal.load(pal_tuple.str, patch_tuple.str,
 				         pal_tuple.num, xform_tuple.str, xform_tuple.num);
 			} else

@@ -475,10 +475,8 @@ static MidiEvent *groom_list(sint32 divisions,sint32 *eventsp,sint32 *samplesp)
 				if (ISDRUMCHANNEL(meep->event.channel))
 				{
 					/* Mark this instrument to be loaded */
-					if (!(drumset[current_set[meep->event.channel]]
-						  ->tone[meep->event.a].instrument))
-						drumset[current_set[meep->event.channel]]
-						->tone[meep->event.a].instrument=
+					if (!(drumset[current_set[meep->event.channel]]->tone[meep->event.a].instrument))
+						drumset[current_set[meep->event.channel]]->tone[meep->event.a].instrument=
 						MAGIC_LOAD_INSTRUMENT;
 				}
 				else
@@ -486,10 +484,8 @@ static MidiEvent *groom_list(sint32 divisions,sint32 *eventsp,sint32 *samplesp)
 					if (current_program[meep->event.channel]==SPECIAL_PROGRAM)
 						break;
 					/* Mark this instrument to be loaded */
-					if (!(tonebank[current_bank[meep->event.channel]]
-						  ->tone[current_program[meep->event.channel]].instrument))
-						tonebank[current_bank[meep->event.channel]]
-						->tone[current_program[meep->event.channel]].instrument=
+					if (!(tonebank[current_bank[meep->event.channel]]->tone[current_program[meep->event.channel]].instrument))
+						tonebank[current_bank[meep->event.channel]]->tone[current_program[meep->event.channel]].instrument=
 						MAGIC_LOAD_INSTRUMENT;
 				}
 				break;

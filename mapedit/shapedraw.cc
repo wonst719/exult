@@ -155,10 +155,8 @@ Shape_draw::Shape_draw(
 	drop_callback(nullptr), drop_user_data(nullptr), dragging(false) {
 	palette = new ExultRgbCmap;
 	for (int i = 0; i < 256; i++)
-		palette->
-		colors[i] = (palbuf[3 * i] << 16) * 4 + (palbuf[3 * i + 1] << 8) * 4 +
-		            palbuf[3 * i + 2] * 4;
-
+		palette->colors[i] = (palbuf[3 * i] << 16) * 4 +
+		            (palbuf[3 * i + 1] << 8) * 4 + palbuf[3 * i + 2] * 4;
 }
 
 /*

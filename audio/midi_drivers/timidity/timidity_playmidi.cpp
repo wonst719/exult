@@ -304,8 +304,7 @@ static void start_note(MidiEvent *e, int i)
 	{
 		if (channel[e->channel].program==SPECIAL_PROGRAM)
 			ip=default_instrument;
-		else if (!(ip=tonebank[channel[e->channel].bank]->
-		           tone[channel[e->channel].program].instrument))
+		else if (!(ip=tonebank[channel[e->channel].bank]->tone[channel[e->channel].program].instrument))
 		{
 			if (!(ip=tonebank[0]->tone[channel[e->channel].program].instrument))
 				return; /* No instrument? Then we can't play. */
