@@ -633,7 +633,7 @@ void Palette_edit::setup(
 
 void Palette_edit::new_palette(
 ) {
-	ExultRgbCmap *newpal = new ExultRgbCmap;        // R, G, B, then all black.
+	auto *newpal = new ExultRgbCmap;        // R, G, B, then all black.
 	memset(&newpal->colors[0], 0, 256 * sizeof(guint32));
 	newpal->colors[0] = 255 << 16;
 	newpal->colors[1] = 255 << 8;

@@ -580,7 +580,7 @@ gboolean ExultStudio::on_shinfo_draw_expose_event(
     gpointer data           // -> ExultSudio.
 ) {
 	ignore_unused_variable_warning(widget);
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	GdkRectangle area = { 0, 0, 0, 0 };
 	gdk_cairo_get_clip_rectangle(cairo, &area);
 	studio->shape_draw->set_graphic_context(cairo);
@@ -598,7 +598,7 @@ gboolean ExultStudio::on_shinfo_gump_draw_expose_event(
     gpointer data           // -> ExultStudio.
 ) {
 	ignore_unused_variable_warning(widget, data);
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	GdkRectangle area = { 0, 0, 0, 0 };
 	gdk_cairo_get_clip_rectangle(cairo, &area);
 	studio->gump_draw->set_graphic_context(cairo);
@@ -630,7 +630,7 @@ gboolean ExultStudio::on_shinfo_body_draw_expose_event(
     gpointer data           // -> ExultStudio.
 ) {
 	ignore_unused_variable_warning(widget, data);
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	GdkRectangle area = { 0, 0, 0, 0 };
 	gdk_cairo_get_clip_rectangle(cairo, &area);
 	studio->body_draw->set_graphic_context(cairo);
@@ -676,7 +676,7 @@ gboolean ExultStudio::on_shinfo_explosion_draw_expose_event(
     gpointer data           // -> ExultStudio.
 ) {
 	ignore_unused_variable_warning(widget, data);
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	GdkRectangle area = { 0, 0, 0, 0 };
 	gdk_cairo_get_clip_rectangle(cairo, &area);
 	studio->explosion_draw->set_graphic_context(cairo);

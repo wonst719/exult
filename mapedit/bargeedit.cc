@@ -184,8 +184,8 @@ int ExultStudio::save_barge_window(
 ) {
 	cout << "In save_barge_window()" << endl;
 	// Get barge (null if creating new).
-	Barge_object *addr = static_cast<Barge_object *>(
-	                         g_object_get_data(G_OBJECT(bargewin), "user_data"));
+	auto *addr = static_cast<Barge_object *>(
+	                 g_object_get_data(G_OBJECT(bargewin), "user_data"));
 	int tx = -1;
 	int ty = -1;
 	int tz = -1;  // +++++For now.

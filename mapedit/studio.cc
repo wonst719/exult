@@ -2478,7 +2478,7 @@ void ExultStudio::run() {
 static gint Reconnect(
     gpointer data           // ->ExultStudio.
 ) {
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	if (studio->connect_to_server())
 		return 0;       // Cancel timer.  We succeeded.
 	else
@@ -2522,7 +2522,7 @@ static gboolean Read_from_server(
 static gint Read_from_server(
     gpointer data           // ->ExultStudio.
 ) {
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	studio->read_from_server();
 	return TRUE;
 }

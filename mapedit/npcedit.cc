@@ -144,7 +144,7 @@ gboolean ExultStudio::on_npc_draw_expose_event(
     gpointer data           // -> ExultStudio.
 ) {
 	ignore_unused_variable_warning(widget, data);
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	GdkRectangle area = { 0, 0, 0, 0 };
 	gdk_cairo_get_clip_rectangle(cairo, &area);
 	studio->npc_draw->set_graphic_context(cairo);
@@ -190,7 +190,7 @@ gboolean ExultStudio::on_npc_face_draw_expose_event(
     gpointer data           // -> ExultStudio.
 ) {
 	ignore_unused_variable_warning(widget, data);
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	GdkRectangle area = { 0, 0, 0, 0 };
 	gdk_cairo_get_clip_rectangle(cairo, &area);
 	studio->npc_face_draw->set_graphic_context(cairo);
@@ -879,7 +879,7 @@ static void Game_loc_response(
 	if (id != Exult_server::game_pos)
 		return;
 	// Get box with loc. spin btns.
-	GtkBox *box = static_cast<GtkBox *>(client);
+	auto *box = static_cast<GtkBox *>(client);
 	int tx = Read2(data);
 	int ty = Read2(data);
 	int tz = Read2(data);

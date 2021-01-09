@@ -132,7 +132,7 @@ gboolean ExultStudio::on_cont_draw_expose_event(
     gpointer data           // -> ExultSudio.
 ) {
 	ignore_unused_variable_warning(widget);
-	ExultStudio *studio = static_cast<ExultStudio *>(data);
+	auto *studio = static_cast<ExultStudio *>(data);
 	GdkRectangle area = { 0, 0, 0, 0 };
 	gdk_cairo_get_clip_rectangle(cairo, &area);
 	studio->cont_draw->set_graphic_context(cairo);
