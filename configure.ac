@@ -895,7 +895,7 @@ if test x$enable_exult_studio = xyes; then
 	AC_MSG_RESULT(yes)
 	if test x$have_gtk = xno; then
 		echo "Umm, but we don't have any Gtk+ stuff."
-		echo "Try again, either with Gtk-2.22 or newer, or with --disable-exult-studio"
+		echo "Try again, either with Gtk-3.16 or newer, or with --disable-exult-studio"
 		exit 1
 	fi
 	AM_CONDITIONAL(BUILD_STUDIO, true)
