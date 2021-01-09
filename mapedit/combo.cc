@@ -1511,8 +1511,6 @@ void Combo_chooser::search(
 	int newsel = i - index0;    // New selection.
 	if (newsel >= 0 && newsel < info_cnt)
 		select(newsel);
-	// Strange : show() not following a render()
-	// Put a render(), remove the show()
 	render();
 }
 

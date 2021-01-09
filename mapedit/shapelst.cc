@@ -2194,8 +2194,6 @@ void Shape_chooser::search(
 		return;         // Not found.
 	goto_index(i);
 	select(i);
-	// Strange : show() not following a render()·
-	// Put a render(), comment the show()·
 	render();
 }
 
