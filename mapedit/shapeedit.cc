@@ -495,7 +495,6 @@ void ExultStudio::show_equip_shape(
     Equip_row_widgets *eq,
     int x, int y, int w, int h  // Rectangle. w=-1 to show all.
 ) {
-	ignore_unused_variable_warning(x, y, w, h);
 	if (!eq->draw)
 		return;
 	if (w == -1) {
@@ -4614,7 +4613,6 @@ void ExultStudio::close_shape_window(
 void ExultStudio::show_shinfo_shape(
     int x, int y, int w, int h  // Rectangle. w=-1 to show all.
 ) {
-	ignore_unused_variable_warning(x, y, w, h);
 	if (!shape_draw)
 		return;
 	if (w == -1) {
@@ -4636,7 +4634,6 @@ void ExultStudio::show_shinfo_shape(
 void ExultStudio::show_shinfo_gump(
     int x, int y, int w, int h  // Rectangle. w=-1 to show all.
 ) {
-	ignore_unused_variable_warning(x, y, w, h);
 	if (!gump_draw)
 		return;
 	if (w == -1) {
@@ -4657,7 +4654,6 @@ void ExultStudio::show_shinfo_gump(
 void ExultStudio::show_shinfo_body(
     int x, int y, int w, int h  // Rectangle. w=-1 to show all.
 ) {
-	ignore_unused_variable_warning(x, y, w, h);
 	if (!body_draw)
 		return;
 	if (w == -1) {
@@ -4679,7 +4675,6 @@ void ExultStudio::show_shinfo_body(
 void ExultStudio::show_shinfo_explosion(
     int x, int y, int w, int h  // Rectangle. w=-1 to show all.
 ) {
-	ignore_unused_variable_warning(x, y, w, h);
 	if (!explosion_draw)
 		return;
 	if (w == -1) {

@@ -341,7 +341,6 @@ void ExultStudio::rotate_obj(
 void ExultStudio::show_obj_shape(
     int x, int y, int w, int h  // Rectangle. w=-1 to show all.
 ) {
-	ignore_unused_variable_warning(x, y, w, h);
 	if (!obj_draw)
 		return;
 	if (w == -1) {

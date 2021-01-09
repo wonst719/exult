@@ -526,7 +526,6 @@ int ExultStudio::save_egg_window(
 void ExultStudio::show_egg_monster(
     int x, int y, int w, int h  // Rectangle. w=-1 to show all.
 ) {
-	ignore_unused_variable_warning(x, y, w, h);
 	if (!egg_monster_draw)
 		return;
 	if (w == -1) {

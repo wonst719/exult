@@ -449,7 +449,6 @@ on_open_builtin_group_clicked(GtkButton       *button,
  */
 C_EXPORT void
 on_group_list_cursor_changed(GtkTreeView    *tview) {
-	ignore_unused_variable_warning(tview);
 	GtkTreePath *path;
 	GtkTreeViewColumn *col;
 
