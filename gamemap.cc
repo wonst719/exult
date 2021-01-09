@@ -1211,13 +1211,9 @@ Ifix_game_object_shared Game_map::create_ifix_object(
 void Game_map::get_superchunk_objects(
     int schunk          // Superchunk #.
 ) {
-//	CYCLE_RED_PLASMA();
 	get_map_objects(schunk);    // Get map objects/scenery.
-//	CYCLE_RED_PLASMA();
 	get_ifix_objects(schunk);   // Get objects from ifix.
-//	CYCLE_RED_PLASMA();
 	get_ireg_objects(schunk);   // Get moveable objects.
-//	CYCLE_RED_PLASMA();
 	schunk_read[schunk] = true;    // Done this one now.
 	map_patches->apply(schunk); // Move/delete objects.
 }

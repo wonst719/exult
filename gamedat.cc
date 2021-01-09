@@ -157,7 +157,7 @@ void Game_window::restore_flex_files(
 		if (!out.good())
 			abort("Error writing '%s'.", fname);
 		out.close();
-		CYCLE_RED_PLASMA();
+		cycle_load_palette();
 	}
 	delete [] finfo;
 }
@@ -194,10 +194,8 @@ void Game_window::restore_gamedat(
 
 	ifstream in_stream;
 
-#ifdef RED_PLASMA
 	// Display red plasma during load...
 	setup_load_palette();
-#endif
 
 	U7mkdir("<GAMEDAT>", 0755);     // Create dir. if not already there. Don't
 	// use GAMEDAT define cause that's got a
@@ -234,9 +232,7 @@ void Game_window::restore_gamedat(
 
 	cout.flush();
 
-#ifdef RED_PLASMA
 	load_palette_timer = 0;
-#endif
 }
 
 /*
@@ -810,7 +806,7 @@ bool Game_window::Restore_level2(
 				return false;
 			}
 			out.close();
-			CYCLE_RED_PLASMA();
+			cycle_load_palette();
 		}
 	}
 
@@ -833,10 +829,8 @@ bool Game_window::restore_gamedat_zip(
 	} catch (const file_exception & /*f*/) {
 		return false;       // Ignore if not found.
 	}
-#ifdef RED_PLASMA
 	// Display red plasma during load...
 	setup_load_palette();
-#endif
 	std::string filestr = get_system_path(fname);
 	unzFile unzipfile = unzOpen(filestr.c_str());
 	if (!unzipfile) return false;
@@ -946,16 +940,14 @@ bool Game_window::restore_gamedat_zip(
 			abort("Error closing current in zip '%s'.", fname);
 		delete [] buf;
 
-		CYCLE_RED_PLASMA();
+		cycle_load_palette();
 	} while (unzGoToNextFile(unzipfile) == UNZ_OK);
 
 	unzClose(unzipfile);
 
 	cout.flush();
 
-#ifdef RED_PLASMA
 	load_palette_timer = 0;
-#endif
 
 	return true;
 }

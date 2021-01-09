@@ -88,7 +88,7 @@ void Game_window::read_npcs(
 				npc->set_schedule_type(Schedule::wait);
 			} else
 				npc->restore_schedule();
-			CYCLE_RED_PLASMA();
+			cycle_load_palette();
 		}
 	}
 	main_actor->set_actor_shape();
@@ -114,7 +114,7 @@ void Game_window::read_npcs(
 				act->read(&nfile, -1, false, fix_unused);
 				act->set_schedule_loc(act->get_tile());
 				act->restore_schedule();
-				CYCLE_RED_PLASMA();
+				cycle_load_palette();
 			}
 		} else {
 #ifdef DEBUG
@@ -276,7 +276,7 @@ void Game_window::read_schedules(
 		// Avatar isn't included here.
 		Actor *npc = get_npc(i + 1);
 		Read_a_schedule(*sfile, i + 1, npc, entsize, offsets.get());
-		CYCLE_RED_PLASMA();
+		cycle_load_palette();
 	}
 	cout.flush();
 }

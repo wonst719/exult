@@ -300,9 +300,7 @@ Game_window::Game_window(
 	mouse3rd(false), fastmouse(false), double_click_closes_gumps(false),
 	text_bg(false), step_tile_delta(8), allow_right_pathfind(2),
 	scroll_with_mouse(false), alternate_drop(false), allow_autonotes(false), in_exult_menu(false),
-#ifdef RED_PLASMA
 	load_palette_timer(0), plasma_start_color(0), plasma_cycle_range(0),
-#endif
 	skip_lift(255), paint_eggs(false), armageddon(false),
 	walk_in_formation(false), debug(0), blits(0),
 	scrolltx_l(0), scrollty_l(0), scrolltx_lp(0), scrollty_lp(0),
@@ -529,18 +527,16 @@ bool Game_window::is_bg_track(int num) const { // ripped out of Background_noise
 }
 
 void Game_window::init_files(bool cycle) {
-#ifdef RED_PLASMA
 	// Display red plasma during load...
 	if (cycle)
 		setup_load_palette();
-#endif
 
 	usecode = Usecode_machine::create();
 	Game_singletons::init(this);    // Everything should exist here.
 
-	CYCLE_RED_PLASMA();
+	cycle_load_palette();
 	shape_man->load();      // All the .vga files!
-	CYCLE_RED_PLASMA();
+	cycle_load_palette();
 
 	unsigned long timer = SDL_GetTicks();
 	srand(timer);           // Use time to seed rand. generator.
@@ -572,7 +568,7 @@ void Game_window::init_files(bool cycle) {
 		}
 	}
 	keybinder->LoadFromPatch();
-	CYCLE_RED_PLASMA();
+	cycle_load_palette();
 
 	int fps;            // Init. animation speed.
 	config->value("config/video/fps", fps, 5);
@@ -1347,10 +1343,8 @@ void Game_window::write(
 void Game_window::read(
 ) {
 	Audio::get_ptr()->cancel_streams();
-#ifdef RED_PLASMA
 	// Display red plasma during load...
 	setup_load_palette();
-#endif
 
 	clear_world(true);      // Wipe clean.
 	read_gwin();            // Read our data.
@@ -2725,7 +2719,7 @@ void Game_window::setup_game(
 	// This also sets up initial
 	// schedules and positions.
 
-	CYCLE_RED_PLASMA();
+	cycle_load_palette();
 
 	Notebook_gump::initialize();        // Read in journal.
 
@@ -2747,7 +2741,7 @@ void Game_window::setup_game(
 	}
 
 	usecode->read();        // Read the usecode flags
-	CYCLE_RED_PLASMA();
+	cycle_load_palette();
 
 	if (Game::get_game_type() == BLACK_GATE && !map_editing) {
 		string yn;      // Override from config. file.
@@ -2764,14 +2758,12 @@ void Game_window::setup_game(
 			main_actor->set_flag(Obj_flags::bg_dont_render);
 	}
 
-	CYCLE_RED_PLASMA();
+	cycle_load_palette();
 
 	// Fade out & clear screen before palette change
 	pal->fade_out(c_fade_out_time);
 	clear_screen(true);
-#ifdef RED_PLASMA
 	load_palette_timer = 0;
-#endif
 
 	// note: we had to stop the plasma here already, because init_readied
 	// and activate_eggs may update the screen through usecode functions
@@ -2955,8 +2947,6 @@ unique_ptr<Shape_file> Game_window::create_mini_screenshot() {
 	return sh;
 }
 
-#ifdef RED_PLASMA
-
 #define BG_PLASMA_START_COLOR   128
 #define BG_PLASMA_CYCLE_RANGE   80
 
@@ -3002,7 +2992,6 @@ void Game_window::cycle_load_palette() {
 		load_palette_timer = SDL_GetTicks();
 	}
 }
-#endif
 
 bool Game_window::is_hostile_nearby() const {
 	/* If there is a hostile NPC nearby, the avatar isn't allowed to

@@ -33,14 +33,6 @@
 #include <string>   // STL string
 #include <vector>
 
-#define RED_PLASMA  1
-
-#ifdef RED_PLASMA
-#define CYCLE_RED_PLASMA()  cycle_load_palette()
-#else
-#define CYCLE_RED_PLASMA()
-#endif
-
 #ifndef ATTR_PRINTF
 #ifdef __GNUC__
 #define ATTR_PRINTF(x,y) __attribute__((format(printf, (x), (y))))
@@ -165,11 +157,9 @@ class Game_window {
 	void read_save_names();     // Read in saved-game names.
 	long check_time_stopped();
 
-#ifdef RED_PLASMA
 	// Red plasma animation during game load
 	uint32 load_palette_timer;
 	int plasma_start_color, plasma_cycle_range;
-#endif
 
 public:
 	friend class Game_render;
@@ -698,11 +688,8 @@ public:
 	// Swapping a superchunk to disk emulation
 	void emulate_swapout(int scx, int scy);
 
-
-#ifdef RED_PLASMA
 	void setup_load_palette();
 	void cycle_load_palette();
-#endif
 
 private:
 	//
