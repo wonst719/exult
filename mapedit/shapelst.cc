@@ -23,49 +23,49 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
-
-#ifdef _WIN32
-#include "windrag.h"
-#include <windows.h>
-#endif
-
-#include <cmath>
-#include <iostream>
-
-#include <glib.h>
-#include <cstdlib>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <memory>
 #include "shapelst.h"
-#include "shapevga.h"
+
+#include "databuf.h"
+#include "fontgen.h"
+#include "frnameinf.h"
 #include "ibuf8.h"
+#include "items.h"
+#include "pngio.h"
+#include "shapefile.h"
+#include "shapegroup.h"
+#include "shapevga.h"
+#include "studio.h"
 #include "u7drag.h"
 #include "utils.h"
-#include "shapegroup.h"
-#include "shapefile.h"
-#include "pngio.h"
-#include "fontgen.h"
-#include "utils.h"
-#include "databuf.h"
-#include "items.h"
-#include "frnameinf.h"
 
+#ifdef _WIN32
+#	include "windrag.h"
+
+#	include <windows.h>
+#endif
+
+#include <glib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include <cmath>
+#include <cstdlib>
+#include <iostream>
+#include <memory>
+
+using EStudio::Add_menu_item;
+using EStudio::Alert;
+using EStudio::Prompt;
 using std::cout;
 using std::endl;
-using std::strlen;
-using std::string;
 using std::ifstream;
 using std::make_unique;
+using std::string;
+using std::strlen;
 using std::unique_ptr;
-using EStudio::Prompt;
-using EStudio::Alert;
-using EStudio::Add_menu_item;
 
 std::vector<std::unique_ptr<Editing_file>> Shape_chooser::editing_files;
 int Shape_chooser::check_editing_timer = -1;

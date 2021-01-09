@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "objbrowse.h"
 #include "rect.h"
+
 #include <vector>
 
 class Flex_file_info;

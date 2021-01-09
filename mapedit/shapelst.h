@@ -26,11 +26,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "objbrowse.h"
-#include "shapedraw.h"
 #include "rect.h"
+#include "shapedraw.h"
+
+#include <ctime>
 #include <memory>
 #include <vector>
-#include <ctime>
 
 class Vga_file;
 class Image_buffer8;

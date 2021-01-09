@@ -27,10 +27,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Exec_box;
 class Exec_process;
+
+#include "studio.h"
+
 // Called when child is done:
 using Exec_done_fun = void (*)(int exit_code, Exec_box *box,
                                gpointer user_data);
-
 
 #ifndef _WIN32
 

@@ -23,33 +23,33 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
-
-#include <glib.h>
 #include "paledit.h"
+
+#include "shapefile.h"
 #include "u7drag.h"
 #include "utils.h"
-#include <iostream>
-#include <iomanip>
+
+#include <glib.h>
+
 #include <cctype>
 #include <cstdio>
 #include <cstring>
-#include "shapefile.h"
+#include <iomanip>
+#include <iostream>
 
-using   std::cout;
-using   std::endl;
-using   std::string;
-using   std::ostream;
-using   std::ofstream;
-using   std::setw;
-using   std::ifstream;
-using   std::make_unique;
-using   EStudio::Prompt;
-using   EStudio::Alert;
+using EStudio::Alert;
+using EStudio::Prompt;
+using std::cout;
+using std::endl;
+using std::ifstream;
+using std::make_unique;
+using std::ofstream;
+using std::ostream;
+using std::setw;
+using std::string;
 
 /*
  *  Write out a single palette to a buffer.

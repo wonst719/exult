@@ -23,31 +23,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
-
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
 
 #ifdef _WIN32
-#include "windrag.h"
+#	include "windrag.h"
 #endif
 
-#include <glib.h>
 #include "chunklst.h"
-#include "vgafile.h"
-#include "ibuf8.h"
-#include "u7drag.h"
-#include "exult_constants.h"
-#include "utils.h"
-#include "shapegroup.h"
 
+#include "exult_constants.h"
+#include "ibuf8.h"
+#include "shapegroup.h"
+#include "u7drag.h"
+#include "utils.h"
+#include "vgafile.h"
+
+#include <glib.h>
 
 #include <iosfwd>
 
+using EStudio::Add_menu_item;
 using std::cout;
 using std::endl;
-using EStudio::Add_menu_item;
 
 const int border = 2;           // Border at bottom, sides of each
 //   chunk.

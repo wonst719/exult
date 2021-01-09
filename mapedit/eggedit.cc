@@ -23,18 +23,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
-
-#include "u7drag.h"
-#include "servemsg.h"
-#include "objserial.h"
 #include "exult_constants.h"
-#include "shapefile.h"
+#include "objserial.h"
+#include "servemsg.h"
 #include "shapedraw.h"
+#include "shapefile.h"
+#include "studio.h"
+#include "u7drag.h"
 
 using std::cout;
 using std::endl;

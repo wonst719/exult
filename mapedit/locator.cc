@@ -23,19 +23,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
-
-#include "servemsg.h"
-#include "exult_constants.h"
 #include "locator.h"
+
+#include "exult_constants.h"
+#include "servemsg.h"
 #include "utils.h"
 
-using   std::cout;
-using   std::endl;
+using std::cout;
+using std::endl;
 
 /*
  *  Open locator window.

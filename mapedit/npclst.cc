@@ -23,39 +23,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
+#include "npclst.h"
+
+#include "fontgen.h"
+#include "ibuf8.h"
+#include "pngio.h"
+#include "shapefile.h"
+#include "shapegroup.h"
+#include "shapevga.h"
+#include "u7drag.h"
+#include "utils.h"
 
 #ifdef _WIN32
-#include "windrag.h"
-#include <windows.h>
+#	include "windrag.h"
+#	include <windows.h>
 #endif
 
 #include <glib.h>
-#include <cmath>
-#include <cstdlib>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "npclst.h"
-#include "shapevga.h"
-#include "ibuf8.h"
-#include "u7drag.h"
-#include "utils.h"
-#include "shapegroup.h"
-#include "shapefile.h"
-#include "pngio.h"
-#include "fontgen.h"
 
-using std::cout;
+#include <cmath>
+#include <cstdlib>
+
+using EStudio::Add_menu_item;
+using EStudio::Alert;
 using std::cerr;
+using std::cout;
 using std::endl;
 using std::string;
 using std::vector;
-using EStudio::Alert;
-using EStudio::Add_menu_item;
 
 /*
  *  Blit onto screen.

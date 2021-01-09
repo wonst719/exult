@@ -23,26 +23,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
-
 #include "combo.h"
-#include "exult_constants.h"
+
 #include "exceptions.h"
-#include "shapevga.h"
-#include "shapefile.h"
+#include "exult_constants.h"
 #include "ibuf8.h"
 #include "objserial.h"
+#include "shapefile.h"
 #include "shapegroup.h"
+#include "shapevga.h"
 #include "u7drag.h"
 
 using std::cout;
 using std::endl;
-using std::unique_ptr;
 using std::make_unique;
+using std::unique_ptr;
 
 class Game_object;
 

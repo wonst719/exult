@@ -26,46 +26,48 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #  include <config.h>
 #endif
 
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
+#ifdef HAVE_CONFIG_H
+#	include <config.h>
+#endif
 
-#include <map>
-#include <string>
-#include <cstring>
-#include <cstdlib>
-#include <sstream>
-#include "servemsg.h"
-#include "exult_constants.h"
-#include "utils.h"
-#include "shapeinf.h"
 #include "ammoinf.h"
 #include "aniinf.h"
 #include "armorinf.h"
+#include "array_size.h"
 #include "bodyinf.h"
 #include "continf.h"
+#include "data_utils.h"
 #include "effhpinf.h"
 #include "expinf.h"
-#include "frnameinf.h"
+#include "exult_constants.h"
 #include "frflags.h"
+#include "frnameinf.h"
 #include "frusefun.h"
+#include "items.h"
 #include "lightinf.h"
 #include "monstinf.h"
 #include "npcdollinf.h"
 #include "objdollinf.h"
+#include "ready.h"
+#include "servemsg.h"
 #include "sfxinf.h"
+#include "shapedraw.h"
+#include "shapefile.h"
+#include "shapeinf.h"
+#include "shapelst.h"
+#include "studio.h"
+#include "u7drag.h"
+#include "utils.h"
 #include "warminf.h"
 #include "weaponinf.h"
-#include "u7drag.h"
-#include "shapefile.h"
-#include "shapedraw.h"
-#include "items.h"
-#include "shapelst.h"
-#include "ready.h"
-#include "data_utils.h"
-#include "ignore_unused_variable_warning.h"
-#include "array_size.h"
 
-using   std::string;
+#include <cstdlib>
+#include <cstring>
+#include <map>
+#include <sstream>
+#include <string>
+
+using std::string;
 
 // HP Info columns
 enum {

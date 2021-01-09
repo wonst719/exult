@@ -17,68 +17,71 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
 #include "studio.h"
-#include "ignore_unused_variable_warning.h"
 
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#include <dirent.h>
-
-#include <glib.h>
-#include <unistd.h>
-#ifdef HAVE_GETOPT_LONG
-#include <getopt.h>
-#endif
-#include <cerrno>
-
-#include <cstdio>           /* These are for sockets. */
-#ifdef _WIN32
-#include <windows.h>
-#include <ole2.h>
-#include "servewin32.h"
-#else
-#include <sys/socket.h>
-#include <sys/un.h>
-#endif
-#include <fcntl.h>
-#include <cstdarg>
-#include <cstdlib>
-#include <memory>
-
+#include "Configuration.h"
+#include "Flex.h"
+#include "U7fileman.h"
+#include "array_size.h"
+#include "combo.h"
+#include "databuf.h"
+#include "exceptions.h"
+#include "execbox.h"
+#include "fnames.h"
+#include "items.h"
+#include "locator.h"
+#include "logo.xpm"
+#include "modmgr.h"
+#include "objserial.h"
+#include "shapefile.h"
+#include "shapegroup.h"
 #include "shapelst.h"
 #include "shapevga.h"
-#include "U7fileman.h"
-#include "Flex.h"
-#include "utils.h"
 #include "u7drag.h"
-#include "shapegroup.h"
-#include "shapefile.h"
-#include "locator.h"
 #include "ucbrowse.h"
-#include "combo.h"
-#include "Configuration.h"
-#include "objserial.h"
-#include "exceptions.h"
-#include "logo.xpm"
-#include "fnames.h"
-#include "execbox.h"
-#include "items.h"
-#include "databuf.h"
-#include "modmgr.h"
-#include "array_size.h"
+#include "utils.h"
+
+#ifdef _WIN32
+#	include "servewin32.h"
+
+#	include <ole2.h>
+#	include <windows.h>
+#else
+#	include <sys/socket.h>
+#	include <sys/un.h>
+#endif
+
+#ifdef HAVE_SYS_TYPES_H
+#	include <sys/types.h>
+#endif
+
+#include <dirent.h>
+#include <glib.h>
+#include <unistd.h>
+
+#ifdef HAVE_GETOPT_LONG
+#	include <getopt.h>
+#endif
+
+#include <fcntl.h>
+
+#include <cerrno>
+#include <cstdarg>
+#include <cstdio> /* These are for sockets. */
+#include <cstdlib>
+#include <memory>
 
 using std::cerr;
 using std::cout;
 using std::endl;
-using std::string;
-using std::vector;
-using std::ofstream;
 using std::ifstream;
 using std::make_unique;
+using std::ofstream;
+using std::string;
+using std::vector;
 
 #if defined _WIN32
 static void do_cleanup_output() {

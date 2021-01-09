@@ -21,45 +21,46 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define STUDIO_H
 
 #ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#if !defined(__llvm__) && !defined(__clang__)
-#pragma GCC diagnostic ignored "-Wuseless-cast"
-#else
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif
-#endif  // __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#	if !defined(__llvm__) && !defined(__clang__)
+#		pragma GCC diagnostic ignored "-Wuseless-cast"
+#	else
+#		pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#	endif
+#endif    // __GNUC__
 #ifdef USE_STRICT_GTK
-#define GTK_DISABLE_SINGLE_INCLUDES
-#define GSEAL_ENABLE
-#define GNOME_DISABLE_DEPRECATED
-#define GTK_DISABLE_DEPRECATED
-#define GDK_DISABLE_DEPRECATED
-#endif // USE_STRICT_GTK
+#	define GTK_DISABLE_SINGLE_INCLUDES
+#	define GSEAL_ENABLE
+#	define GNOME_DISABLE_DEPRECATED
+#	define GTK_DISABLE_DEPRECATED
+#	define GDK_DISABLE_DEPRECATED
+#endif    // USE_STRICT_GTK
 #include <gtk/gtk.h>
 #ifndef __GDK_KEYSYMS_H__
-#include <gdk/gdkkeysyms.h>
+#	include <gdk/gdkkeysyms.h>
 #endif
 #ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif  // __GNUC__
-#include "gtk_redefines.h"
+#	pragma GCC diagnostic pop
+#endif    // __GNUC__
 
-#include <vector>
+#include "exult_constants.h"
+#include "gtk_redefines.h"
+#include "servemsg.h"
+#include "vgafile.h"
+
 #include <map>
 #include <memory>
 #include <string>
-#include "vgafile.h"
-#include "servemsg.h"
-#include "exult_constants.h"
+#include <vector>
 
 #ifndef ATTR_PRINTF
-#ifdef __GNUC__
-#define ATTR_PRINTF(x,y) __attribute__((format(printf, (x), (y))))
-#else
-#define ATTR_PRINTF(x,y)
-#endif
+#	ifdef __GNUC__
+#		define ATTR_PRINTF(x, y) __attribute__((format(printf, (x), (y))))
+#	else
+#		define ATTR_PRINTF(x, y)
+#	endif
 #endif
 
 class Shape_info;

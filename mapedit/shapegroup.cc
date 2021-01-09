@@ -23,29 +23,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
-
-#include <cstdlib>
-#include <cassert>
-#include <fstream>
 #include "shapegroup.h"
+
 #include "Flex.h"
-#include "utils.h"
 #include "exceptions.h"
 #include "objbrowse.h"
 #include "shapefile.h"
 #include "shapevga.h"
+#include "studio.h"
+#include "utils.h"
 
-using std::vector;
+#include <cassert>
+#include <cstdlib>
+#include <fstream>
+
+using EStudio::Alert;
 using std::ios;
+using std::make_unique;
 using std::string;
 using std::unique_ptr;
-using std::make_unique;
-using EStudio::Alert;
+using std::vector;
 
 /*
  *  Create an empty group.

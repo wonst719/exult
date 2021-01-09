@@ -25,10 +25,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <vector>
 #include "objbrowse.h"
 #include "rect.h"
 #include "shapedraw.h"
+
+#include <vector>
 
 class Image_buffer8;
 class Shape_group;

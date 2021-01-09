@@ -23,26 +23,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
-
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
 
 #include "execbox.h"
+
+#include <cstdlib>
+#include <cstring>
 #include <iostream> /* Debugging only */
 #include <string>
-#include <cstring>
-#include <cstdlib>
 
 #ifndef _WIN32
+#	ifdef HAVE_SYS_TYPES_H
+#		include <sys/types.h>
+#	endif
+#	include <sys/wait.h>
+#	include <unistd.h>
 
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#include <unistd.h>
-#include <csignal>
-#include <sys/wait.h>
+#	include <csignal>
 
 using std::cout;
 using std::endl;

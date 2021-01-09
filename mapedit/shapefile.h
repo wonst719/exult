@@ -25,6 +25,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "ignore_unused_variable_warning.h"
+
 #include <fstream>
 #include <memory>
 #include <string>

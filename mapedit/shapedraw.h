@@ -32,6 +32,8 @@ class Image_buffer8;
 using Drop_callback = void (*)(int filenum,
                                int shapenum, int framenum, void *udata);
 
+#include "studio.h"
+
 /*
  *  This class can draw shapes from a .vga file.
  */

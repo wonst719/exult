@@ -20,14 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #  include <config.h>
 #endif
 
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
+#include "objbrowse.h"
+
+#include "exceptions.h"
+#include "shapefile.h"
+#include "shapegroup.h"
 
 #include <cctype>
-#include "objbrowse.h"
-#include "shapegroup.h"
-#include "shapefile.h"
-#include "exceptions.h"
 
 using EStudio::Add_menu_item;
 using EStudio::Create_arrow_button;

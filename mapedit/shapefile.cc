@@ -23,31 +23,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include "studio.h"
-#include "ignore_unused_variable_warning.h"
-
 #include "shapefile.h"
-#include "u7drag.h"
-#include "shapegroup.h"
-#include "shapevga.h"
-#include "shapelst.h"
+
+#include "Flex.h"
 #include "chunklst.h"
+#include "combo.h"
+#include "exceptions.h"
 #include "npclst.h"
 #include "paledit.h"
+#include "shapegroup.h"
+#include "shapelst.h"
+#include "shapevga.h"
+#include "studio.h"
+#include "u7drag.h"
 #include "utils.h"
-#include "Flex.h"
-#include "exceptions.h"
-#include "combo.h"
 
-using std::vector;
-using std::string;
 using std::cerr;
 using std::endl;
 using std::ofstream;
+using std::string;
 using std::unique_ptr;
+using std::vector;
 
 /*
  *  Delete file and groups.
