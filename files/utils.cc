@@ -84,13 +84,17 @@ void reset_system_paths() {
 	path_map = stored_path_map;
 }
 
+static bool is_path_separator(char cc) {
+#ifdef _WIN32
+	return cc == '/' || cc == '\\';
+#else
+	return cc == '/';
+#endif
+}
+
 static string remove_trailing_slash(const string &value) {
 	string new_path = value;
-	if (*(new_path.end() - 1) == '/'
-#ifdef _WIN32
-	        || *(new_path.end() - 1) == '\\'
-#endif
-	   ) {
+	if (is_path_separator(new_path.back())) {
 		std::cerr << "Warning, trailing slash in path: \"" << new_path << "\"" << std::endl;
 		new_path.resize(new_path.size() - 1);
 	}
@@ -173,7 +177,7 @@ string get_system_path(const string &path) {
 
 	switch_slashes(new_path);
 #ifdef _WIN32
-	if (*(new_path.end() - 1) == '/' || *(new_path.end() - 1) == '\\') {
+	if (new_path.back() == '/' || new_path.back() == '\\') {
 		//std::cerr << "Trailing slash in path: \"" << new_path << "\"" << std::endl << "...compensating, but go complain to Colourless anyway" << std::endl;
 		std::cerr << "Warning, trailing slash in path: \"" << new_path << "\"" << std::endl;
 		new_path += '.';
@@ -795,7 +799,7 @@ void setup_program_paths() {
 	U7mkdir("<HOME>", 0755);
 	U7mkdir("<CONFIG>", 0755);
 	U7mkdir("<SAVEHOME>", 0755);
-#ifdef MACOSX	
+#ifdef MACOSX
 	// setup APPBUNDLE needed to launch Exult Studio from one
 	std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter> fileUrl {std::move(CFBundleCopyBundleURL(CFBundleGetMainBundle()))};
 	if (fileUrl) {

@@ -346,11 +346,11 @@ int main(
 		     << "--mapnum <N>\tThis must be used with '--buildmap'. Selects which map" << endl
 		     << "\t\t(for multimap games or mods) whose map is desired" << endl
 		     << "--nocrc\t\tDon't check crc's of .flx files" << endl
-		     << "--edit\t\tStart in map-edit mode" << endl
+		     << "--edit\t\tStart in map-edit mode" << endl;
 #if defined _WIN32
-		     << " -p\t\tMakes the home path the Exult directory (old Windows way)" << endl
+		cerr << " -p\t\tMakes the home path the Exult directory (old Windows way)" << endl;
 #endif
-		     << "--write-xml\tWrite 'patch/exultgame.xml'" << endl
+		cerr << "--write-xml\tWrite 'patch/exultgame.xml'" << endl
 		     << "--reset-video\tResets to the default video settings" << endl;
 
 		exit(1);
@@ -1692,18 +1692,18 @@ static void Handle_event(
 		        !gwin->get_gump_man()->handle_kbd_event(&event))
 			keybinder->HandleEvent(event);
 		break;
+	case SDL_SYSWMEVENT: {
 #ifdef USE_EXULTSTUDIO
 #ifndef _WIN32
-	case SDL_SYSWMEVENT: {
 		XEvent &ev = event.syswm.msg->msg.x11.event;
 		if (ev.type == ClientMessage)
 			xdnd->client_msg(reinterpret_cast<XClientMessageEvent &>(ev));
 		else if (ev.type == SelectionNotify)
 			xdnd->select_msg(reinterpret_cast<XSelectionEvent &>(ev));
+#endif
+#endif
 		break;
 	}
-#endif
-#endif
 	}
 }
 

@@ -381,6 +381,7 @@ public:
 	                    unsigned char *data = nullptr, int datalen = 0);
 	void read_from_server();
 	bool connect_to_server();
+	void disconnect_from_server();
 	// Message from Exult.
 	void info_received(unsigned char *data, int datalen);
 	void set_edit_menu(bool sel, bool clip);

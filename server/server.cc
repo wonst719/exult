@@ -202,6 +202,10 @@ static void Handle_client_message(
 		return;
 	const unsigned char *ptr = &data[0];
 	Game_window *gwin = Game_window::get_instance();
+	auto unhandled_message = [](Exult_server::Msg_type id) {
+		cout << "Unhandled message received from Exult Studio (id = "
+		     << id << ")" << endl;
+	};
 	switch (id) {
 	case Exult_server::obj:
 		Game_object::update_from_studio(&data[0], datalen);
@@ -494,14 +498,15 @@ static void Handle_client_message(
 	case Exult_server::reload_shapes_info:
 		Shape_manager::get_instance()->reload_shape_info();
 		break;
-#ifdef USECODE_DEBUGGER
 	case Exult_server::usecode_debugging:
+#ifdef USECODE_DEBUGGER
 		Handle_debug_message(&data[0], datalen);
-		break;
+#else
+		unhandled_message(id);
 #endif
+		break;
 	default:
-		cout << "Unhandled message received from Exult Studio (id = "
-		     << id << ")" << endl;
+		unhandled_message(id);
 	}
 }
 

@@ -83,7 +83,7 @@ using std::ofstream;
 using std::string;
 using std::vector;
 
-#if defined _WIN32
+#ifdef _WIN32
 static void do_cleanup_output() {
 	cleanup_output("studio_");
 }
@@ -544,22 +544,25 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr), static_pat
 	static const char *optstring = "hsc:g:m:px:";
 	opterr = 0;         // Don't let getopt() print errs.
 	int optchr;
+	auto get_next_option = [&]() {
 #ifdef HAVE_GETOPT_LONG
-	static const struct option optarray[] = {
-		{ "help",           no_argument, nullptr, 'h' },
-		{ "silent",         no_argument, nullptr, 's' },
-		{ "config",   required_argument, nullptr, 'c' },
-		{ "game",     required_argument, nullptr, 'g' },
-		{ "mod",      required_argument, nullptr, 'm' },
-		{ "portable",       no_argument, nullptr, 'p' },
-		{ "xmldir",   required_argument, nullptr, 'x' },
-		{ nullptr,    0,                 nullptr,  0  }
-	};
-	while ((optchr = getopt_long(argc, argv, optstring,
-	                             optarray, nullptr)) != -1)
+		static const struct option optarray[] = {
+			{ "help",           no_argument, nullptr, 'h' },
+			{ "silent",         no_argument, nullptr, 's' },
+			{ "config",   required_argument, nullptr, 'c' },
+			{ "game",     required_argument, nullptr, 'g' },
+			{ "mod",      required_argument, nullptr, 'm' },
+			{ "portable",       no_argument, nullptr, 'p' },
+			{ "xmldir",   required_argument, nullptr, 'x' },
+			{ nullptr,    0,                 nullptr,  0  }
+		};
+		return getopt_long(argc, argv, optstring,
+	                             optarray, nullptr);
 #else
-	while ((optchr = getopt(argc, argv, optstring)) != -1)
+		return getopt(argc, argv, optstring);
 #endif // HAVE_GETOPT_LONG
+	};
+	while ((optchr = get_next_option()) != -1) {
 		switch (optchr) {
 		case 'c':       // Configuration file.
 			alt_cfg = optarg;
@@ -578,54 +581,55 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr), static_pat
 		case 'm':       // Mod.
 			modtitle = optarg;
 			break;
-#ifdef _WIN32
 		case 'p':
+#ifdef _WIN32
 			portable = true;
-			break;
 #endif
+			break;
 		case 's':
 			silent = true;
 			break;
 		case 'h':
 #ifdef HAVE_GETOPT_LONG
 			cerr << "Usage: exult_studio [--help|-h] [--silent|-s] [--config|-c <configfile>]" << endl
-			     << "                    [--game|-g <game>] [--mod|-m <mod>]" << endl
-#if defined _WIN32
-			     << "                    [--portable|-p]" << endl
+			     << "                    [--game|-g <game>] [--mod|-m <mod>]" << endl;
+#ifdef _WIN32
+			cerr << "                    [--portable|-p]" << endl;
 #endif
-			     << "                    [--xmldir|-x <gladedir>]" << endl
+			cerr << "                    [--xmldir|-x <gladedir>]" << endl
 			     << "        --help                   Show this information" << endl
 			     << "        --silent                 Do not display the state of the games" << endl
 			     << "        --config configfile      Specify alternate config file, default is (.)exult.cfg" << endl
 			     << "        --game game              Start with <game> directly, one of :" << endl
 			     << "                                         blackgate or bg, forgeofvirtue or fov" << endl
 			     << "                                         serpentisle or si, silverseed or ss, serpentbeta or sib" << endl
-			     << "        --mod mod                With --game, Start vith <game> and <mod>" << endl
-#if defined _WIN32
-			     << "        --portable               Make the home path the Exult directory (old Windows way)" << endl
+			     << "        --mod mod                With --game, Start vith <game> and <mod>" << endl;
+#ifdef _WIN32
+			cerr << "        --portable               Make the home path the Exult directory (old Windows way)" << endl;
 #endif
-			     << "        --xmldir gladedir        Specify where the exult_studio.glade resides, default is share/exult" << endl;
+			cerr << "        --xmldir gladedir        Specify where the exult_studio.glade resides, default is share/exult" << endl;
 #else
 			cerr << "Usage: exult_studio [-h] [-s] [-c <configfile>]" << endl
-			     << "                    [-g <game>] [-m <mod>]" << endl
-#if defined _WIN32
-			     << "                    [-p]" << endl
+			     << "                    [-g <game>] [-m <mod>]" << endl;
+#ifdef _WIN32
+			cerr << "                    [-p]" << endl;
 #endif
-			     << "                    [-x <gladedir>]" << endl
+			cerr << "                    [-x <gladedir>]" << endl
 			     << "        -h              Show this information" << endl
 			     << "        -s              Do not display the state of the games" << endl
 			     << "        -c configfile   Specify alternate config file, default is (.)exult.cfg" << endl
 			     << "        -g game         Start with <game> directly, one of :" << endl
 			     << "                                blackgate or bg, forgeofvirtue or fov" << endl
 			     << "                                serpentisle or si, silverseed or ss, serpentbeta or sib" << endl
-			     << "        -m mod          With -g, Start vith <game> and <mod>" << endl
-#if defined _WIN32
-			     << "        -p              Make the home path the Exult directory (old Windows way)" << endl
+			     << "        -m mod          With -g, Start vith <game> and <mod>" << endl;
+#ifdef _WIN32
+			cerr << "        -p              Make the home path the Exult directory (old Windows way)" << endl;
 #endif
-			     << "        -x gladedir     Specify where the exult_studio.glade resides, default is share/exult" << endl;
+			cerr << "        -x gladedir     Specify where the exult_studio.glade resides, default is share/exult" << endl;
 #endif // HAVE_GETOPT_LONG
 			exit(1);
 		}
+	}
 #ifdef _WIN32
 	if (portable)
 		add_system_path("<HOME>", ".");
@@ -794,17 +798,10 @@ ExultStudio::~ExultStudio() {
 		gtk_widget_destroy(gameinfowin);
 	gameinfowin = nullptr;
 	g_object_unref(G_OBJECT(app_xml));
-#ifndef _WIN32
 	if (server_input_tag >= 0)
 		g_source_remove(server_input_tag);
 	if (server_socket >= 0)
-		close(server_socket);
-#else
-	if (server_input_tag >= 0)
-		g_source_remove(server_input_tag);
-	if (server_socket >= 0)
-		Exult_server::disconnect_from_server();
-#endif
+		disconnect_from_server();
 	g_free(static_path);
 	g_free(image_editor);
 	g_free(default_game);
@@ -2552,7 +2549,6 @@ void ExultStudio::read_from_server(
 		server_socket = -1;
 		// Try again every 4 secs.
 		g_timeout_add(4000, Reconnect, this);
-
 		return;
 	}
 	if (len < 1) return;
@@ -2564,10 +2560,8 @@ void ExultStudio::read_from_server(
 	if (datalen < 0) {
 		cout << "Error reading from server" << endl;
 		if (server_socket == -1) { // Socket closed?
-#ifndef _WIN32
 			g_source_remove(server_input_tag);
-#else
-			g_source_remove(server_input_tag);
+#ifdef _WIN32
 			Exult_server::disconnect_from_server();
 #endif
 			server_input_tag = -1;
@@ -2705,6 +2699,16 @@ bool ExultStudio::connect_to_server(
 	set_edit_menu(false, false);    // For now, init. edit menu.
 	return true;
 }
+
+void ExultStudio::disconnect_from_server(
+) {
+#ifndef _WIN32
+	close(server_socket);
+#else
+	Exult_server::disconnect_from_server();
+#endif
+}
+
 /*
  *  'Info' message received.
  */
@@ -2726,13 +2730,8 @@ void ExultStudio::info_received(
 		// Wrong version of Exult.
 		EStudio::Alert("Expected ExultServer version %d, but got %d",
 		               Exult_server::version, vers);
-#ifndef _WIN32
-		close(server_socket);
+		disconnect_from_server();
 		g_source_remove(server_input_tag);
-#else
-		Exult_server::disconnect_from_server();
-		g_source_remove(server_input_tag);
-#endif
 		server_socket = server_input_tag = -1;
 		return;
 	}

@@ -137,13 +137,19 @@ bool    Configuration::read_config_string(const string &s) {
 }
 
 static inline bool is_path_absolute(const string &path) {
-	return (path.find("./") == 0) || (path.find("../") == 0) || (path[0] == '/')
-#if defined(_WIN32)
-	        || (path.find(".\\") == 0) || (path.find("..\\") == 0) || (path[0] == '\\')
-	        || (std::isalpha(path[0]) && path[1] == ':' &&
-	            (path[2] == '/' || path[2] == '\\'))
+#ifdef _WIN32
+	const auto is_win32_abs_path = [](const string &path) {
+			return (path.find(".\\") == 0) || (path.find("..\\") == 0) || (path[0] == '\\')
+			        || (std::isalpha(path[0]) && path[1] == ':' &&
+			            (path[2] == '/' || path[2] == '\\'));
+		};
+#else
+	const auto is_win32_abs_path = [](const string &path) {
+			return false;
+		};
 #endif
-	       ;
+
+	return (path.find("./") == 0) || (path.find("../") == 0) || (path[0] == '/') || is_win32_abs_path(path);
 }
 
 bool    Configuration::read_config_file(const string &input_filename, const string &root) {

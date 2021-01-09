@@ -200,6 +200,15 @@ bool SavePCX_RW(SDL_Surface *saveme, SDL_RWops *dst, bool freedst) {
 	cout << "Taking screenshot...";
 
 	surface = nullptr;
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+	constexpr const Uint32 Rmask = 0x00FF0000U;
+	constexpr const Uint32 Gmask = 0x0000FF00U;
+	constexpr const Uint32 Bmask = 0x000000FFU;
+#else
+	constexpr const Uint32 Rmask = 0x000000FFU;
+	constexpr const Uint32 Gmask = 0x0000FF00U;
+	constexpr const Uint32 Bmask = 0x00FF0000U;
+#endif
 	if (dst) {
 		if (saveme->format->palette) {
 			if (saveme->format->BitsPerPixel == 8) {
@@ -210,15 +219,9 @@ bool SavePCX_RW(SDL_Surface *saveme, SDL_RWops *dst, bool freedst) {
 				     << "bpp PCX files not supported" << endl;
 			}
 		} else if ((saveme->format->BitsPerPixel == 24) &&
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-		           (saveme->format->Rmask == 0x00FF0000) &&
-		           (saveme->format->Gmask == 0x0000FF00) &&
-		           (saveme->format->Bmask == 0x000000FF)
-#else
-		           (saveme->format->Rmask == 0x000000FF) &&
-		           (saveme->format->Gmask == 0x0000FF00) &&
-		           (saveme->format->Bmask == 0x00FF0000)
-#endif
+		           (saveme->format->Rmask == Rmask) &&
+		           (saveme->format->Gmask == Gmask) &&
+		           (saveme->format->Bmask == Bmask)
 		          ) {
 			surface = saveme;
 		} else {
@@ -227,12 +230,7 @@ bool SavePCX_RW(SDL_Surface *saveme, SDL_RWops *dst, bool freedst) {
 			/* Convert to 24 bits per pixel */
 			surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
 			                               saveme->w, saveme->h, 24,
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-			                               0x00FF0000, 0x0000FF00, 0x000000FF,
-#else
-			                               0x000000FF, 0x0000FF00, 0x00FF0000,
-#endif
-			                               0);
+			                               Rmask, Gmask, Bmask, 0);
 
 			if (surface != nullptr) {
 				bounds.x = 0;

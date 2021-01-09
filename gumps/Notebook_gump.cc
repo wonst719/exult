@@ -234,11 +234,11 @@ void Notebook_gump::add_new(
 
 Notebook_gump::Notebook_gump(
 ) : Gump(nullptr,
+	EXULT_FLX_NOTEBOOK_SHP, SF_EXULT_FLX) {
 #ifdef __IPHONEOS__
 	//on iOS the Notebook gump needs to be aligned with the top
-	5, -2,
+	set_pos(5, -2);
 #endif
-	EXULT_FLX_NOTEBOOK_SHP, SF_EXULT_FLX) {
 	handles_kbd = true;
 	cursor.offset = 0;
 	cursor.x = cursor.y = -1;

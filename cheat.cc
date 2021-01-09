@@ -174,7 +174,7 @@ void Cheat::toggle_map_editor() {
 #endif
 			std::string data_path;
 #ifdef MACOSX
-			if (is_system_path_defined("<APPBUNDLE>")) { 
+			if (is_system_path_defined("<APPBUNDLE>")) {
 				std::string app_path = get_system_path("<APPBUNDLE>");
 				app_path += "/Contents/MacOS/";
 				app_path += cmnd;
@@ -184,7 +184,7 @@ void Cheat::toggle_map_editor() {
 				data_path = get_system_path("<BUNDLE>");
 			else
 #endif
-				data_path = get_system_path("<DATA>");	
+				data_path = get_system_path("<DATA>");
 			if (data_path.find(' ') != std::string::npos)
 				data_path = "\"" + data_path + "\"";
 			cmnd += data_path;// Path to where .glade file should be.
