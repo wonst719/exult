@@ -22,24 +22,26 @@ bundle_bin="$bundle_res"/bin
 bundle_data="$bundle_res"/share
 bundle_etc="$bundle_res"/etc
 
-#export DYLD_LIBRARY_PATH="$bundle_lib"
+# automatic usage of dark theme between 9pm an 6am
+currenttime=$(date +%H:%M)
+if [[ "$currenttime" > "21:00" ]] || [[ "$currenttime" < "06:00" ]]; then
+     export GTK_THEME=Adwaita:light
+ else
+     export GTK_THEME=Adwaita:dark
+fi
+
 export XDG_CONFIG_DIRS="$bundle_etc"/xdg
 export XDG_DATA_DIRS="$bundle_data"
 export GTK_DATA_PREFIX="$bundle_res"
 export GTK_EXE_PREFIX="$bundle_res"
 export GTK_PATH="$bundle_res"
 
-export GTK2_RC_FILES="$bundle_etc/gtk-2.0/gtkrc"
-export GTK_IM_MODULE_FILE="$bundle_etc/gtk-2.0/gtk.immodules"
-#N.B. When gdk-pixbuf was separated from Gtk+ the location of the
-#loaders cache changed as well. Depending on the version of Gtk+ that
-#you built with you may still need to use the old location:
-#export GDK_PIXBUF_MODULE_FILE="$bundle_etc/gtk-2.0/gdk-pixbuf.loaders"
 export GDK_PIXBUF_MODULE_FILE="$bundle_lib/gdk-pixbuf-2.0/2.10.0/loaders.cache"
-export PANGO_LIBDIR="$bundle_lib"
-export PANGO_SYSCONFDIR="$bundle_etc"
+if [ `uname -r | cut -d . -f 1` -ge 10 ]; then
+    export GTK_IM_MODULE_FILE="$bundle_etc/gtk-3.0/gtk.immodules"
+fi
 
-APP=name
+APP=$name
 I18NDIR="$bundle_data/locale"
 # Set the locale-related variables appropriately:
 unset LANG LC_MESSAGES LC_MONETARY LC_COLLATE

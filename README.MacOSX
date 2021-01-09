@@ -79,7 +79,7 @@ How to compile Exult Studio on Mac OS X
 If you want to compile Exult Studio, you have to install these packages
 (SDL needs to be installed with the x11 dependency for Exult Studio):
   libsdl2 +x11
-  gtk2 +x11
+  gtk3 +x11
 
 This will cause many other packages required by gtk2 to
 be installed. 

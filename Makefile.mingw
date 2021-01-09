@@ -429,6 +429,8 @@ studioinstall: exult_studio$(EXEEXT)
 	cp $(MSYSTEM_PREFIX)/share/glib-2.0/schemas/gschemas.compiled $(U7PATH)/share/glib-2.0/schemas
 	mkdir -p $(U7PATH)/share/icons
 	cp -R $(MSYSTEM_PREFIX)/share/icons/Adwaita $(MSYSTEM_PREFIX)/share/icons/hicolor $(U7PATH)/share/icons
+	mkdir -p $(U7PATH)/share/gtk-3.0
+	echo "[Settings]" > $(U7PATH)/share/gtk-3.0/settings.ini
 
 studiodist: U7PATH:=$(DISTPATH)/Studio
 studiodist: exult_studio$(EXEEXT) studioinstall
