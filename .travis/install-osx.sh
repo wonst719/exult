@@ -16,4 +16,4 @@ sudo port -q upgrade outdated | cat
 
 # Install actual dependencies
 sudo port -q install automake libtool pkgconfig libvorbis libpng zlib | cat
-sudo port -q install libsdl2 gtk2 +x11 | cat
+sudo port -q install libsdl2 gtk3 +x11 | cat
