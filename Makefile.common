@@ -1,6 +1,6 @@
-VERSION=1.7.0git
+VERSION:=1.7.0git
 
-MAIN_OBJS=actions.o \
+MAIN_OBJS:=actions.o \
 	actorio.o \
 	actors.o  \
 	args.o \
@@ -39,18 +39,18 @@ MAIN_OBJS=actions.o \
 	version.o \
 	windrag.o
 
-PATH_OBJS= \
+PATH_OBJS:= \
 	pathfinder/Astar.o \
 	pathfinder/path.o \
 	pathfinder/PathFinder.o \
 	pathfinder/Zombie.o
 
-CONF_OBJS= \
+CONF_OBJS:= \
 	conf/Configuration.o \
 	conf/XMLEntity.o
 # unused: xmain.o
 
-TIMIDITY_OBJS=\
+TIMIDITY_OBJS:=\
 	audio/midi_drivers/timidity/timidity.o \
 	audio/midi_drivers/timidity/timidity_common.o \
 	audio/midi_drivers/timidity/timidity_controls.o \
@@ -65,7 +65,7 @@ TIMIDITY_OBJS=\
 	audio/midi_drivers/timidity/timidity_sdl_c.o \
 	audio/midi_drivers/timidity/timidity_tables.o
 
-MT32EMU_OBJS=\
+MT32EMU_OBJS:=\
 	files/sha1/sha1.o \
 	audio/midi_drivers/mt32emu/Analog.o \
 	audio/midi_drivers/mt32emu/BReverbModel.o \
@@ -86,7 +86,7 @@ MT32EMU_OBJS=\
 	audio/midi_drivers/mt32emu/TVP.o
 
 # Note we now always compile all midi drivers
-MIDI_DRV_OBJS=\
+MIDI_DRV_OBJS:=\
 	audio/midi_drivers/ALSAMidiDriver.o \
 	audio/midi_drivers/CoreAudioMidiDriver.o \
 	audio/midi_drivers/FluidSynthMidiDriver.o \
@@ -105,7 +105,7 @@ MIDI_DRV_OBJS=\
 	$(TIMIDITY_OBJS) \
 	$(MT32EMU_OBJS)
 
-AUDIO_OBJS=\
+AUDIO_OBJS:=\
 	audio/Audio.o \
 	audio/conv.o \
 	audio/Midi.o \
@@ -120,10 +120,10 @@ AUDIO_OBJS=\
 	$(MIDI_DRV_OBJS)
 # unused: test.o u7audiotool.o
 
-FLIC_OBJS=\
+FLIC_OBJS:=\
 	flic/playfli.o
 
-FILE_OBJS= \
+FILE_OBJS:= \
 	files/crc.o \
 	files/Flat.o \
 	files/Flex.o \
@@ -137,17 +137,17 @@ FILE_OBJS= \
 	files/utils.o
 
 # Zipfile support objs
-ZIP_OBJS=\
+ZIP_OBJS:=\
 	files/zip/zip.o \
 	files/zip/unzip.o
 
-GAMEMGR_OBJS= \
+GAMEMGR_OBJS:= \
 	gamemgr/bggame.o \
 	gamemgr/devgame.o \
 	gamemgr/modmgr.o \
 	gamemgr/sigame.o
 
-GUMPS_OBJS= \
+GUMPS_OBJS:= \
 	gumps/Actor_gump.o \
 	gumps/AudioOptions_gump.o \
 	gumps/Book_gump.o \
@@ -182,7 +182,7 @@ GUMPS_OBJS= \
 	gumps/VideoOptions_gump.o \
 	gumps/Yesno_gump.o
 
-IMAGEWIN_OBJS=\
+IMAGEWIN_OBJS:=\
 	imagewin/ibuf8.o \
 	imagewin/imagebuf.o \
 	imagewin/imagewin.o \
@@ -217,7 +217,7 @@ IMAGEWIN_OBJS=\
 #NMake Line\
 !endif
 
-SHAPES_OBJS= \
+SHAPES_OBJS:= \
 	shapes/font.o \
 	shapes/fontvga.o\
 	shapes/items.o \
@@ -244,7 +244,7 @@ SHAPES_OBJS= \
 	shapes/shapeinf/warminf.o \
 	shapes/shapeinf/weaponinf.o
 
-OBJS_OBJS= \
+OBJS_OBJS:= \
 	objs/animate.o \
 	objs/barge.o \
 	objs/chunks.o \
@@ -259,7 +259,7 @@ OBJS_OBJS= \
 	objs/spellbook.o \
 	objs/virstone.o
 
-USECODE_OBJS= \
+USECODE_OBJS:= \
 	usecode/debugserver.o \
 	usecode/ucdebugging.o \
 	usecode/ucserial.o \
@@ -275,10 +275,10 @@ USECODE_OBJS= \
 	usecode/ucsymtbl.o \
 	usecode/useval.o
 
-OBJS=$(MAIN_OBJS) $(PATH_OBJS) $(CONF_OBJS) $(AUDIO_OBJS) $(FLIC_OBJS) $(FILE_OBJS) $(GAMEMGR_OBJS) $(GUMPS_OBJS) $(OBJS_OBJS) $(SHAPES_OBJS) $(IMAGEWIN_OBJS) $(USECODE_OBJS) $(ZIP_OBJS) $(SERVER_OBJS) $(ICON_OBJS)
+OBJS:=$(MAIN_OBJS) $(PATH_OBJS) $(CONF_OBJS) $(AUDIO_OBJS) $(FLIC_OBJS) $(FILE_OBJS) $(GAMEMGR_OBJS) $(GUMPS_OBJS) $(OBJS_OBJS) $(SHAPES_OBJS) $(IMAGEWIN_OBJS) $(USECODE_OBJS) $(ZIP_OBJS) $(SERVER_OBJS) $(ICON_OBJS)
 
-EXULT_FLX = data/exult.flx data/exult_flx.h
-EXULT_FLX_OBJECTS = \
+EXULT_FLX := data/exult.flx data/exult_flx.h
+EXULT_FLX_OBJECTS := \
 	data/flx.in \
 	data/quotes.txt \
 	data/credits.txt \
@@ -321,8 +321,8 @@ EXULT_FLX_OBJECTS = \
 	data/sb_backpack.shp \
 	data/transparentmenu.shp
 
-EXULT_BG_FLX = data/exult_bg.flx data/exult_bg_flx.h
-EXULT_BG_FLX_OBJECTS = \
+EXULT_BG_FLX := data/exult_bg.flx data/exult_bg_flx.h
+EXULT_BG_FLX_OBJECTS := \
 	data/bg/flx.in \
 	data/bg/BGmap.shp \
 	data/bg/defaultkeys.txt	\
@@ -340,8 +340,8 @@ EXULT_BG_FLX_OBJECTS = \
 	data/bg/autonotes.txt \
 	data/bg/intro_hand.shp
 
-EXULT_SI_FLX = data/exult_si.flx data/exult_si_flx.h
-EXULT_SI_FLX_OBJECTS = \
+EXULT_SI_FLX := data/exult_si.flx data/exult_si_flx.h
+EXULT_SI_FLX_OBJECTS := \
 	data/si/flx.in \
 	data/si/SImap.shp \
 	data/si/defaultkeys.txt \
@@ -354,8 +354,8 @@ EXULT_SI_FLX_OBJECTS = \
 	data/si/container.dat \
 	data/si/autonotes.txt
 
-EXULT_BG_PAPERDOL_VGA = data/bg/bg_paperdol.vga data/bg/bg_paperdol_vga.h
-EXULT_BG_PAPERDOL_VGA_OBJECTS = \
+EXULT_BG_PAPERDOL_VGA := data/bg/bg_paperdol.vga data/bg/bg_paperdol_vga.h
+EXULT_BG_PAPERDOL_VGA_OBJECTS := \
 	data/bg/amulets.shp \
 	data/bg/bgfiredoom.shp \
 	data/bg/bluedress.shp \
@@ -411,15 +411,15 @@ EXULT_BG_PAPERDOL_VGA_OBJECTS = \
 	data/bg/diaper.shp \
 	data/bg/bg_paperdol.in
 
-EXULT_BG_MR_FACES_VGA = data/bg/bg_mr_faces.vga data/bg/bg_mr_faces_vga.h
-EXULT_BG_MR_FACES_VGA_OBJECTS = \
+EXULT_BG_MR_FACES_VGA := data/bg/bg_mr_faces.vga data/bg/bg_mr_faces_vga.h
+EXULT_BG_MR_FACES_VGA_OBJECTS := \
 	data/bg/mr_faces.shp \
 	data/bg/u7menupal.pal \
 	data/bg/bg_mr_faces.in
 
-FLEXES = $(EXULT_FLX) $(EXULT_BG_FLX) $(EXULT_SI_FLX)
-BG_PAPERDOLL = $(EXULT_BG_PAPERDOL_VGA)
-BG_MR_FACES = $(EXULT_BG_MR_FACES_VGA)
+FLEXES := $(EXULT_FLX) $(EXULT_BG_FLX) $(EXULT_SI_FLX)
+BG_PAPERDOLL := $(EXULT_BG_PAPERDOL_VGA)
+BG_MR_FACES := $(EXULT_BG_MR_FACES_VGA)
 
 all: $(EXEC)
 
@@ -495,7 +495,7 @@ $(BG_MR_FACES): expack$(EXEEXT) $(EXULT_BG_MR_FACES_VGA_OBJECTS)
 cmanip$(EXEEXT) : tools/cmanip.o $(CONF_OBJS) $(FILE_OBJS)
 	$(CXX) $(LDFLAGS) -o $(@) tools/cmanip.o $(CONF_OBJS) $(FILE_OBJS)
 
-IPACK_OBJS=\
+IPACK_OBJS:=\
 	files/Flat.o \
 	files/Flex.o \
 	files/IFF.o \
@@ -531,7 +531,7 @@ libsmooth_smooth$(LIBEXT): mapedit/tools/smooth/plugins/plugin_smooth.o
 libsmooth_stream$(LIBEXT): mapedit/tools/smooth/plugins/plugin_stream.o
 	$(CXX) -shared -o $(@) mapedit/tools/smooth/plugins/plugin_stream.o $(subst -mwindows,-mconsole,$(SDL_LIBS)) $(LDFLAGS)
 
-SMOOTH_OBJS=\
+SMOOTH_OBJS:=\
 	mapedit/tools/smooth/config.o \
 	mapedit/tools/smooth/image.o \
 	mapedit/tools/smooth/linked.o \
@@ -558,7 +558,7 @@ u7voice2syx$(EXEEXT) : tools/u7voice2syx.o $(FILE_OBJS)
 wuc$(EXEEXT) : tools/wuc.o tools/uctools.h usecode/bgintrinsics.h usecode/siintrinsics.h usecode/sibetaintrinsics.h
 	$(CXX) $(LDFLAGS) -o $(@) tools/wuc.o
 
-UCC_OBJS=\
+UCC_OBJS:=\
 	ucparse.o \
 	uclex.o \
 	usecode/ucsymtbl.o \
@@ -581,7 +581,7 @@ uclex.cc: usecode/compiler/uclex.ll
 	flex usecode/compiler/uclex.ll
 	mv lex.yy.c uclex.cc
 
-UCXT_OBJS=\
+UCXT_OBJS:=\
 	$(CONF_OBJS) \
 	$(ZIP_OBJS) \
 	$(FILE_OBJS) \
@@ -595,12 +595,12 @@ UCXT_OBJS=\
 ucxt$(EXEEXT) : $(UCXT_OBJS)
 	$(CXX) $(LDFLAGS) -o $(@) $(UCXT_OBJS) $(ZIP_LIBS)
 
-CONFREGRESS_OBJS=$(CONF_OBJS) conf/xmain.o files/utils.o
+CONFREGRESS_OBJS:=$(CONF_OBJS) conf/xmain.o files/utils.o
 
 confregress$(EXEEXT)  : $(CONFREGRESS_OBJS)
 	$(CXX) $(LDFLAGS) -o $(@) $(CONFREGRESS_OBJS)
 
-TOOL_OBJS=tools/expack.o $(FILE_OBJS) tools/cmanip.o tools/ipack.o $(IPACK_OBJS) \
+TOOL_OBJS:=tools/expack.o $(FILE_OBJS) tools/cmanip.o tools/ipack.o $(IPACK_OBJS) \
 	mapedit/tools/mockup/main.o tools/mklink.o tools/rip.o tools/shp2pcx.o \
 	tools/splitshp.o $(SMOOTH_OBJS) mapedit/tools/smooth/plugins/plugin_smooth.o \
 	mapedit/tools/smooth/plugins/plugin_randomize.o mapedit/tools/smooth/plugins/plugin_stream.o \

@@ -9,20 +9,20 @@ DISTPATH:=C:/Ultima7/Dist
 GIMPPATH:=C:/GimpPlugin
 
 # Base of the exult source
-SRC=.
+SRC:=.
 
 ifneq (,$(findstring /mingw64,$(MSYSTEM_PREFIX)))
-	ARCHFLAGS=-m64
+	ARCHFLAGS:=-m64
 else
-	ARCHFLAGS=-m32
+	ARCHFLAGS:=-m32
 endif
 
 ifdef USE_CONSOLE
-	SUBSYSTEM=-mconsole
-	SYSFLAGS=-DUSE_CONSOLE
+	SUBSYSTEM:=-mconsole
+	SYSFLAGS:=-DUSE_CONSOLE
 else
-	SUBSYSTEM=-mwindows
-	SYSFLAGS=
+	SUBSYSTEM:=-mwindows
+	SYSFLAGS:=
 endif
 
 SDL_CFLAGS:=$(shell pkg-config --cflags-only-I SDL2)
@@ -56,9 +56,9 @@ FLUIDSYNTH_CFLAGS:=-DUSE_FLUIDSYNTH_MIDI
 
 ### GTK+ libs and includes, for Exult Studio.
 # If this doesn't work, insert output of `pkg-config --cflags gtk+-win32-2.0` manually
-GTK_INCLUDES:=$(shell pkg-config --cflags gtk+-2.0)
+GTK_INCLUDES:=$(shell pkg-config --cflags gtk+-3.0)
 # If this doesn't work, insert output of `pkg-config --libs gtk+-win32-2.0` manually
-GTK_LIBS:=$(shell pkg-config --libs "gtk+-2.0 >= 2.24")
+GTK_LIBS:=$(shell pkg-config --libs "gtk+-3.0 >= 3.16")
 
 ### FREETYPE2 libs and includes, for Exult Studio.
 # If this doesn't work, insert output of 'pkg-config --cflags freetype2' manually
@@ -66,15 +66,15 @@ FREETYPE2_INCLUDES:=$(shell pkg-config --cflags freetype2)
 # If this doesn't work, insert output of 'pkg-config --libs freetype2' manually
 FREETYPE2_LIBS:=$(shell pkg-config --libs freetype2)
 
-### GIMP libs and includes, for Exult Studio.
-# If this doesn't work, insert output of 'pkg-config --cflags gimpui-2.0' manually
-GIMP_INCLUDES:=$(shell pkg-config --cflags gimpui-2.0)
-# If this doesn't work, insert output of 'pkg-config --libs gimpui-2.0' manually
-GIMP_LIBS:=$(shell pkg-config --libs gimpui-2.0)
-
 ### Combined Exult Studio includes and libs.
-ES_INCLUDES:=$(GTK_INCLUDES) $(FREETYPE2_INCLUDES) $(GIMP_INCLUDES)
+ES_INCLUDES:=$(GTK_INCLUDES) $(FREETYPE2_INCLUDES)
 ES_LIBS:=$(GTK_LIBS) $(FREETYPE2_LIBS) $(ZIP_LIBS) -lpng -luuid -lole32 -lwinmm -lws2_32 $(SUBSYSTEM)
+
+### GIMP libs and includes, for the GIMP plugin.
+# If this doesn't work, insert output of 'gimptool --cflags' manually
+GIMP_INCLUDES:=$(shell gimptool --cflags) $(shell pkg-config --cflags gtk+-2.0)
+# If this doesn't work, insert output of 'gimptool --libs' manually
+GIMP_LIBS:=$(shell gimptool --libs)
 
 ### Ogg vorbis inclides
 OGG_INCLUDES:=$(shell pkg-config --cflags ogg vorbis vorbisfile)
@@ -92,87 +92,112 @@ MT32EMU_CFLAGS:=-DMT32EMU_EXPORTS_TYPE=0 -DMT32EMU_API_TYPE=0 \
 			-DMT32EMU_VERSION=$(MT32EMU_VERSION)
 
 ifdef DEBUG_SYMBOLS
-	DEBUG_LEVEL=-g3
+	DEBUG_LEVEL:=-g3
 endif
 
 ifdef DEBUG
-	DEF_DEBUG=-DDEBUG
+	DEF_DEBUG:=-DDEBUG
 endif
 
 ifdef USECODE_CONTAINER
-	SHOW_USECODE_CONTAINER=-DSHOW_USECODE_CONTAINER
+	SHOW_USECODE_CONTAINER:=-DSHOW_USECODE_CONTAINER
 endif
 
 ifdef USECODE_DEBUGGER
-	USE_USECODE_DEBUGGER=-DUSECODE_DEBUGGER
+	USE_USECODE_DEBUGGER:=-DUSECODE_DEBUGGER
 endif
 
 ifdef SHOW_NONREADIED_OBJECTS
-	USE_SHOW_NONREADIED_OBJECTS=-DSHOW_NONREADIED_OBJECTS
+	USE_SHOW_NONREADIED_OBJECTS:=-DSHOW_NONREADIED_OBJECTS
 endif
 
 USING_SJLJ_EXCEPTIONS:=$(findstring --enable-sjlj-exceptions, $(shell gcc -v 2>&1))
 ifeq ($(USING_SJLJ_EXCEPTIONS),$())
-	MTHREADS=
+	MTHREADS:=
 else
 	WARN:=$(warning This compiler uses SJLJ exceptions; for thread safety, the -mthreads option is being used.)
 	WARN:=$(warning The compiled binary will depend on MINGWM10.DLL; make sure it is somewhere Exult can find it.)
-	MTHREADS=-mthreads
+	MTHREADS:=-mthreads
 endif
 
-EXTRA_OPTIONS=$(DEBUG_LEVEL) $(DEF_DEBUG) $(SHOW_USECODE_CONTAINER) $(USE_USECODE_DEBUGGER) $(USE_SHOW_NONREADIED_OBJECTS)
-
-CPPFLAGS=$(strip -DVERSION=\"$(VERSION)\" -DEXULT_DATADIR=\"data\" \
-	-DNOMINMAX=1 -D_USE_MATH_DEFINES -DHAVE_NETDB_H=0 $(SYSFLAGS) \
-	-DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_TIME_H=1 -DHAVE_SYS_SOCKET_H=0 \
-	-DHAVE_SNPRINTF -DUSE_FMOPL_MIDI -DUSE_MT32EMU_MIDI $(FLUIDSYNTH_CFLAGS) \
-	-DUSE_EXULTSTUDIO -DHAVE_PNG_H \
-	-DHAVE_FREETYPE2 -DUSE_HQ2X_SCALER -DUSE_HQ3X_SCALER -DUSE_HQ4X_SCALER -DUSE_XBR_SCALER \
-	-I$(SRC) -I$(SRC)/audio -I$(SRC)/audio/midi_drivers -I$(SRC)/conf -I$(SRC)/data \
-	-I$(SRC)/files -I$(SRC)/files/zip -I$(SRC)/gamemgr -I$(SRC)/gumps -I$(SRC)/headers \
-	-I$(SRC)/imagewin -I$(SRC)/ios/include -I$(SRC)/objs -I$(SRC)/pathfinder -I$(SRC)/server \
-	-I$(SRC)/shapes -I$(SRC)/tools -I$(SRC)/usecode -I$(SRC)/usecode/compiler \
-	-I$(SRC)/usecode/ucxt/include -I$(SRC)/mapedit -I$(SRC)/shapes/shapeinf \
-	$(SDL_CFLAGS) $(ZIP_CFLAGS) $(MT32EMU_CFLAGS) $(ES_INCLUDES) \
-	$(EXTRA_OPTIONS))
+EXTRA_OPTIONS:=$(DEBUG_LEVEL) $(DEF_DEBUG) $(SHOW_USECODE_CONTAINER) $(USE_USECODE_DEBUGGER) $(USE_SHOW_NONREADIED_OBJECTS)
 
 ifndef OPT_LEVEL
-	OPT_LEVEL=-O2
+	OPT_LEVEL:=-O2
 endif
 
 ifdef DEBUG_SYMBOLS
-	OPT_LEVEL=-Og
+	OPT_LEVEL:=-Og
 endif
 
-CXXFLAGS=-MMD -std=c++14 $(ARCHFLAGS) $(strip $(OPT_LEVEL) -Wall -Wextra -pedantic -Walloc-zero -Walloca -Wbool-compare -Wbool-operation -Wc++14-compat -Wc++17-compat -Wcatch-value=3 -Wcast-align=strict -Wcast-qual -Wcast-function-type -Wconditionally-supported -Wctor-dtor-privacy -Wdisabled-optimization -Wduplicated-branches -Wduplicated-cond -Wextra-semi -Wformat-nonliteral -Wformat-security -Wlogical-not-parentheses -Wlogical-op -Wmissing-include-dirs -Wnon-virtual-dtor -Wnull-dereference -Wold-style-cast -Woverloaded-virtual -Wplacement-new -Wredundant-decls -Wshift-negative-value -Wshift-overflow -Wtrigraphs -Wundef -Wuninitialized -Wuseless-cast -Wwrite-strings -Wzero-as-null-pointer-constant -Wno-maybe-uninitialized -Wstringop-truncation -Wunused-variable -mms-bitfields -Wno-deprecated-declarations)
+WARNINGS := \
+	-Wall \
+	-Wextra \
+	-pedantic \
+	-Walloc-zero \
+	-Walloca \
+	-Wbool-compare \
+	-Wbool-operation \
+	-Wc++14-compat \
+	-Wc++17-compat \
+	-Wcast-align=strict \
+	-Wcast-function-type \
+	-Wcast-qual \
+	-Wcatch-value=3 \
+	-Wconditionally-supported \
+	-Wctor-dtor-privacy \
+	-Wdisabled-optimization \
+	-Wduplicated-branches \
+	-Wduplicated-cond \
+	-Wextra-semi \
+	-Wformat-nonliteral \
+	-Wformat-security \
+	-Wlogical-not-parentheses \
+	-Wlogical-op \
+	-Wmissing-include-dirs \
+	-Wno-deprecated-declarations \
+	-Wno-maybe-uninitialized \
+	-Wnon-virtual-dtor \
+	-Wnull-dereference \
+	-Wold-style-cast \
+	-Woverloaded-virtual \
+	-Wplacement-new \
+	-Wredundant-decls \
+	-Wshift-negative-value \
+	-Wshift-overflow \
+	-Wstringop-truncation \
+	-Wtrigraphs \
+	-Wundef \
+	-Wuninitialized \
+	-Wunused-variable \
+	-Wuseless-cast \
+	-Wwrite-strings \
+	-Wzero-as-null-pointer-constant
 
-CXX?=g++
+CXXFLAGS:=-MMD -std=c++14 $(ARCHFLAGS) $(strip $(OPT_LEVEL) $(WARNINGS) -mms-bitfields)
 
-CFLAGS=-MMD $(ARCHFLAGS) $(strip $(OPT_LEVEL) -Wall -Wextra -pedantic -mms-bitfields)
-CC?=gcc
+LDFLAGS:=$(ARCHFLAGS)
+LIBS:=-lmingw32 $(SDL_LIBS) $(ZIP_LIBS) $(OGG_LIBS) $(FLUIDSYNTH_LIBS) -ldsound -luuid -lole32 -lwinmm -lws2_32 $(SUBSYSTEM) $(MTHREADS)
 
-LDFLAGS=$(ARCHFLAGS)
-LIBS=-lmingw32 $(SDL_LIBS) $(ZIP_LIBS) $(OGG_LIBS) $(FLUIDSYNTH_LIBS) -ldsound -luuid -lole32 -lwinmm -lws2_32 $(SUBSYSTEM) $(MTHREADS)
+EXEC:=Exult.exe
+EXEEXT:=.exe
+LIBEXT:=.dll
 
-EXEC=Exult.exe
-EXEEXT=.exe
-LIBEXT=.dll
-
-EXP_FILE=exult_studio.exp
-SERVER_OBJS=\
+EXP_FILE:=exult_studio.exp
+SERVER_OBJS:=\
 	server/objserial.o \
 	server/servemsg.o \
 	server/server.o \
 	server/servewin32.o
 
-ICON_OBJS=exultico.o
+ICON_OBJS:=exultico.o
 
-ES_SERVER_OBJS=\
+ES_SERVER_OBJS:=\
 	server/objserial.o \
 	server/servemsg.o \
 	server/servewin32.o
 
-MAPEDIT_OBJS=\
+MAPEDIT_OBJS:=\
 	mapedit/bargeedit.o \
 	mapedit/chunklst.o \
 	mapedit/combo.o \
@@ -197,7 +222,7 @@ MAPEDIT_OBJS=\
 	mapedit/ucbrowse.o \
 	usecode/ucsymtbl.o
 
-ES_FILES_OBJS=\
+ES_FILES_OBJS:=\
 	files/crc.o \
 	files/Flat.o \
 	files/Flex.o \
@@ -210,13 +235,13 @@ ES_FILES_OBJS=\
 	files/U7obj.o \
 	files/utils.o
 
-ES_GAMEMGR_OBJS=gamemgr/modmgr.o
+ES_GAMEMGR_OBJS:=gamemgr/modmgr.o
 
-ES_IMAGEWIN_OBJS=\
+ES_IMAGEWIN_OBJS:=\
 	imagewin/ibuf8.o \
 	imagewin/imagebuf.o
 
-ES_SHAPES_OBJS=\
+ES_SHAPES_OBJS:=\
 	shapes/font.o \
 	shapes/fontgen.o \
 	shapes/fontvga.o \
@@ -245,22 +270,45 @@ ES_SHAPES_OBJS=\
 	shapes/shapeinf/warminf.o \
 	shapes/shapeinf/weaponinf.o
 
-MISC_OBJS=exultstudioico.o windrag.o
-
-ES_OBJS=$(MAPEDIT_OBJS) $(ES_FILES_OBJS) $(ES_GAMEMGR_OBJS) $(ES_IMAGEWIN_OBJS) $(ES_SHAPES_OBJS) \
-	$(ES_SERVER_OBJS) $(CONF_OBJS) $(MISC_OBJS) $(ZIP_OBJS)
-
-TOOL_EXES:=expack$(EXEEXT) cmanip$(EXEEXT) ipack$(EXEEXT) mklink$(EXEEXT) mockup$(EXEEXT) rip$(EXEEXT) \
-	shp2pcx$(EXEEXT) smooth$(EXEEXT) splitshp$(EXEEXT) textpack$(EXEEXT) wuc$(EXEEXT) u7voice2syx$(EXEEXT) \
-	ucc$(EXEEXT) libsmooth_randomize$(LIBEXT) libsmooth_smooth$(LIBEXT) libsmooth_stream$(LIBEXT)
-
 define copy_dlls_for_exe
 	for ff in $$($(MSYSTEM_PREFIX)/bin/ntldd -R $(1) | tr '\\' '/' | grep -io '[A-Za-z]:/.*$(MSYSTEM_PREFIX)/.\+\.dll' | sort -u); do cp $$ff $(2)/$$(basename $$ff); done
 endef
 
 include Makefile.common
 
-OBJECTS=$(OBJS) $(TOOL_OBJS) $(ES_OBJS) mapedit/u7shp.o
+E :=
+S := $E $E
+
+CXX?=g++
+
+CPPFLAGS:=$(strip -DVERSION=\"$(VERSION)\" -DEXULT_DATADIR=\"data\" \
+	-DNOMINMAX=1 -D_USE_MATH_DEFINES -DHAVE_NETDB_H=0 $(SYSFLAGS) \
+	-DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_TIME_H=1 -DHAVE_SYS_SOCKET_H=0 \
+	-DHAVE_SNPRINTF -DUSE_FMOPL_MIDI -DUSE_MT32EMU_MIDI \
+	-DUSE_EXULTSTUDIO -DHAVE_PNG_H -DHAVE_GETOPT_LONG \
+	-DHAVE_FREETYPE2 -DUSE_HQ2X_SCALER -DUSE_HQ3X_SCALER -DUSE_HQ4X_SCALER -DUSE_XBR_SCALER \
+	-I$(SRC) -I$(SRC)/audio -I$(SRC)/audio/midi_drivers -I$(SRC)/conf -I$(SRC)/data \
+	-I$(SRC)/files -I$(SRC)/files/zip -I$(SRC)/gamemgr -I$(SRC)/gumps -I$(SRC)/headers \
+	-I$(SRC)/imagewin -I$(SRC)/ios/include -I$(SRC)/objs -I$(SRC)/pathfinder -I$(SRC)/server \
+	-I$(SRC)/shapes -I$(SRC)/tools -I$(SRC)/usecode -I$(SRC)/usecode/compiler \
+	-I$(SRC)/usecode/ucxt/include -I$(SRC)/mapedit -I$(SRC)/shapes/shapeinf \
+	$(subst -I, -isystem$(S), $(FLUIDSYNTH_CFLAGS) $(SDL_CFLAGS) $(ZIP_CFLAGS) $(MT32EMU_CFLAGS) $(ES_INCLUDES)) \
+	$(EXTRA_OPTIONS))
+
+CFLAGS:=-MMD $(ARCHFLAGS) $(strip $(OPT_LEVEL) -Wall -Wextra -pedantic -mms-bitfields) \
+	$(subst -I, -isystem$(S), $(GIMP_INCLUDES))
+CC?=gcc
+
+OBJECTS:=$(OBJS) $(TOOL_OBJS) $(ES_OBJS) mapedit/u7shp.o
+
+MISC_OBJS:=exultstudioico.o windrag.o
+
+ES_OBJS:=$(MAPEDIT_OBJS) $(ES_FILES_OBJS) $(ES_GAMEMGR_OBJS) $(ES_IMAGEWIN_OBJS) $(ES_SHAPES_OBJS) \
+	$(ES_SERVER_OBJS) $(CONF_OBJS) $(MISC_OBJS) $(ZIP_OBJS)
+
+TOOL_EXES:=expack$(EXEEXT) cmanip$(EXEEXT) ipack$(EXEEXT) mklink$(EXEEXT) mockup$(EXEEXT) rip$(EXEEXT) \
+	shp2pcx$(EXEEXT) smooth$(EXEEXT) splitshp$(EXEEXT) textpack$(EXEEXT) wuc$(EXEEXT) u7voice2syx$(EXEEXT) \
+	ucc$(EXEEXT) libsmooth_randomize$(LIBEXT) libsmooth_smooth$(LIBEXT) libsmooth_stream$(LIBEXT)
 
 exultico.o: win32/exultico.rc win32/exult.ico win32/exult.exe.manifest
 	windres --include-dir win32 win32/exultico.rc exultico.o
@@ -281,7 +329,7 @@ exultstudioico.o: $(SRC)/win32/exultstudioico.rc $(SRC)/win32/exultstudio.ico wi
 	windres --include-dir $(SRC)/win32 $(SRC)/win32/exultstudioico.rc $@
 
 u7shp$(EXEEXT) : mapedit/u7shp.o
-	$(CXX) $(LDFLAGS) -o $(@) $+ $(GTK_LIBS) $(GIMP_LIBS) -mwindows
+	$(CXX) $(LDFLAGS) -o $(@) $+ $(GIMP_LIBS) -mwindows
 
 install: $(EXEC)
 	mkdir -p $(U7PATH)
@@ -373,6 +421,14 @@ studioinstall: exult_studio$(EXEEXT)
 	cp data/estudio/new/*.flx $(U7PATH)/data/estudio/new
 	cp data/estudio/new/*.vga $(U7PATH)/data/estudio/new
 	cp data/estudio/new/*.shp $(U7PATH)/data/estudio/new
+	mkdir -p $(U7PATH)/lib/gdk-pixbuf-2.0/2.10.0/loaders
+	gdk-pixbuf-query-loaders --update-cache
+	cp $(MSYSTEM_PREFIX)/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache $(U7PATH)/lib/gdk-pixbuf-2.0/2.10.0
+	cp $(MSYSTEM_PREFIX)/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll $(U7PATH)/lib/gdk-pixbuf-2.0/2.10.0/loaders
+	mkdir -p $(U7PATH)/share/glib-2.0/schemas
+	cp $(MSYSTEM_PREFIX)/share/glib-2.0/schemas/gschemas.compiled $(U7PATH)/share/glib-2.0/schemas
+	mkdir -p $(U7PATH)/share/icons
+	cp -R $(MSYSTEM_PREFIX)/share/icons/Adwaita $(MSYSTEM_PREFIX)/share/icons/hicolor $(U7PATH)/share/icons
 
 studiodist: U7PATH:=$(DISTPATH)/Studio
 studiodist: exult_studio$(EXEEXT) studioinstall

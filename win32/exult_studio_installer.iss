@@ -46,6 +46,8 @@ Source: Studio\exult_studio.exe; DestDir: {app}; Flags: ignoreversion
 Source: Studio\exult_studio.html; DestDir: {app}; Flags: ignoreversion
 Source: Studio\exult_studio.txt; DestDir: {app}; Flags: ignoreversion
 Source: Studio\*.dll; DestDir: {app}; Flags: ignoreversion
+Source: Studio\lib\*; DestDir: {app}\lib\; Flags: ignoreversion recursesubdirs
+Source: Studio\share\*; DestDir: {app}\share\; Flags: ignoreversion recursesubdirs
 Source: Studio\data\estudio\new\combos.flx; DestDir: {app}\data\estudio\new; Flags: ignoreversion
 Source: Studio\data\estudio\new\faces.vga; DestDir: {app}\data\estudio\new; Flags: ignoreversion
 Source: Studio\data\estudio\new\fonts.vga; DestDir: {app}\data\estudio\new; Flags: ignoreversion
