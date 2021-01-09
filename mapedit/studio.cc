@@ -816,7 +816,6 @@ ExultStudio::~ExultStudio() {
 
 bool ExultStudio::okay_to_close(
 ) {
-
 	GtkAllocation alloc = {0, 0, 0, 0};
 	gtk_widget_get_allocation(app, &alloc);
 	w_at_close = alloc.width;
@@ -2281,8 +2280,8 @@ GtkWidget *Add_menu_item(
 	GtkWidget *mitem = group ?
 	                   (label ? gtk_radio_menu_item_new_with_label(group, label)
 	                    : gtk_radio_menu_item_new(group))
-	                   : (label ? gtk_menu_item_new_with_label(label) :
-	                      gtk_menu_item_new());
+	                       : (label ? gtk_menu_item_new_with_label(label) :
+	                          gtk_menu_item_new());
 	gtk_widget_show(mitem);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), mitem);
 	if (!label)         // Want separator?
@@ -3074,7 +3073,8 @@ void convertToUTF8::convert(gchar *&_convstr, const char *str, const char *enc) 
 		CONV_ERROR(enc, "UTF-8");
 		// Can't convert between UTF-8 and chosen code page.
 		ExultStudio *studio = ExultStudio::get_instance();
-		studio->prompt("Failed to convert from selected codepage to UTF-8", "OK");
+		studio->prompt("Failed to convert from selected codepage to UTF-8\n"
+		               "This usually happens on Windows for some ISO character sets.", "OK");
 		return;
 	} else if (error->code == G_CONVERT_ERROR_ILLEGAL_SEQUENCE) {
 		// Need to clean string.
