@@ -497,8 +497,8 @@ public:
 using utf8Str = strCodepageConvert<convertToUTF8>;
 using codepageStr = strCodepageConvert<convertFromUTF8>;
 
-typedef struct _ExultRgbCmap {
+struct ExultRgbCmap {
 	guint32 colors[256];
-} ExultRgbCmap;
+};
 
 #endif
