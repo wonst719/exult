@@ -73,6 +73,25 @@ can only use it on your own computer (see the instructions further down
 for a static build)
 
 
+How to compile a static version of Exult on Mac OS X
+----------------------------------------------------
+
+If you want a version of Exult for using it on another OS X machine you need to 
+compile a static version.
+You need to follow the above instructions on how to compile Exult. Then you have to
+re-run configure and make
+  ./configure --enable-static-libraries --with-macosx-static-lib-path=path/to/static/libs
+  make
+
+You need to enter the path to your prefix' static libs in the configure option 
+"--with-macosx-static-lib-path=path/to/static/libs".
+For MacPorts this would be "--with-macosx-static-lib-path=/opt/local/lib".
+
+On our dowloads page we currently provide a static built snapshot of our source
+for macOS 10.17-11.x.
+Take note however that compiling a static version of Exult Studio does not work.
+
+
 How to compile Exult Studio on Mac OS X
 ---------------------------------------
 
@@ -111,7 +130,6 @@ on File->Connect.
 default in /Library/Application Support/Exult/data.
 
 
-
 How to build an Exult Studio app Bundle
 ---------------------------------------
 
@@ -137,21 +155,17 @@ When you run it, Exult will actually start and you will need to start Exult Stud
 by entering Map Edit mode after you have started a game.
 
 
-How to compile a static version of Exult on Mac OS X
-----------------------------------------------------
+How to build the Gimp plugin
+----------------------------
 
-If you want a version of Exult for using it on another OS X machine you need to 
-compile a static version.
-You need to follow the above instructions on how to compile Exult. Then you have to
-re-run configure and make
-  ./configure --enable-static-libraries --with-macosx-static-lib-path=path/to/static/libs
+With MacPorts install:
+  gimp2 +quartz
+
+Then re-run configure and make
+  ./configure --enable-tools --enable-gimp-plugin
   make
 
-Depending on whether you use Fink or MacPorts you need to enter the path to your
-static libs in the configure option "--with-macosx-static-lib-path=path/to/static/libs".
-For Fink it should be "--with-macosx-static-lib-path=/sw/lib".
-For MacPorts "--with-macosx-static-lib-path=/opt/local/lib".
-
-On our dowloads page we currently provide a static built snapshot of Git for 
-OS X 10.4 and newer for both PowerPC and Intel machines.
-Take note however that compiling a static version of Exult Studio does not work.
+You will then find the Gimp plugin "u7shp" in the mapedit folder of our source. For the Gimp
+to use it you need to copy it into ~/Library/Application Support/GIMP/2.10/plug-ins.
+Note that this is again not a static build of the plugin and relies on your MacPorts installation.
+So if you uninstall MacPorts the Plugin will cease to work.
