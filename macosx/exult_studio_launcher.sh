@@ -25,9 +25,9 @@ bundle_etc="$bundle_res"/etc
 # automatic usage of dark theme between 9pm an 6am
 currenttime=$(date +%H:%M)
 if [[ "$currenttime" > "21:00" ]] || [[ "$currenttime" < "06:00" ]]; then
-     export GTK_THEME=Adwaita:light
- else
      export GTK_THEME=Adwaita:dark
+ else
+     export GTK_THEME=Adwaita:light
 fi
 
 export XDG_CONFIG_DIRS="$bundle_etc"/xdg

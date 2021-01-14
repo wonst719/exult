@@ -2,10 +2,13 @@
 <app-bundle>
 	<meta>
 		<prefix name="default">
-			/opt/local
+			/opt/gtk3
+		</prefix>
+		<prefix name="64">
+			/opt/x86_64
 		</prefix>
 		<prefix name="code">
-			PathToExultBuildDirectory
+			/users/dominus/code/snapshots/exult
 		</prefix>
 		<destination overwrite="yes">
 			${project}
@@ -22,11 +25,8 @@
 		${project}/Info.plist
 	</plist>
 	<main-binary>
-		${prefix:code}/exult
-	</main-binary>
-	<binary dest="${bundle}/Contents/MacOS/exult_studio">
 		${prefix:code}/mapedit/exult_studio
-	</binary>
+	</main-binary>
 	<binary>
 		${prefix}/lib/gdk-pixbuf-2.0/${pkg:gdk-pixbuf-2.0:gdk_pixbuf_binary_version}/loaders/*.so
 	</binary>
