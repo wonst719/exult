@@ -7,11 +7,11 @@
 	<key>CFBundleExecutable</key>
 	<string>exult_studio</string>
 	<key>CFBundleGetInfoString</key>
-	<string>1.7.0git, Copyright 1998-2020 The Exult Team</string>
+	<string>1.7.0git, Copyright 1998-2021 The Exult Team</string>
 	<key>CFBundleIconFile</key>
 	<string>exult_studio.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>net.sourceforge.exult</string>
+	<string>info.exult</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -27,7 +27,7 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright 1998-2020 The Exult Team</string>
+	<string>Copyright 1998-2021 The Exult Team</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>LSMinimumSystemVersionByArchitecture</key>

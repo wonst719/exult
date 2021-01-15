@@ -22,7 +22,7 @@
 		<run-install-name-tool/>
 	</meta>
 	<plist>
-		${project}/Info.plist
+		${project}/exult_studio_info.plist
 	</plist>
 	<main-binary>
 		${prefix:code}/mapedit/exult_studio
@@ -38,6 +38,24 @@
 	</data>
 	<data dest="${bundle}/Contents/Resources/data/*.glade">
 		${prefix:code}/mapedit/*.glade
+	</data>
+	<data>
+		${prefix:code}/data/estudio
+	</data>
+	<data dest="${bundle}/Contents/Resources/Documents/Exult_Studio.txt">
+		${prefix:code}/docs/exult_studio.txt
+	</data>
+	<data dest="${bundle}/Contents/Resources/Documents/AUTHORS.txt">
+		${prefix:code}/AUTHORS
+	</data>
+	<data dest="${bundle}/Contents/Resources/Documents/COPYING.txt">
+		${prefix:code}/COPYING
+	</data>
+	<data dest="${bundle}/Contents/Resources/Documents/README.txt">
+		${prefix:code}/README
+	</data>
+	<data dest="${bundle}/Contents/Resources/Documents/README.MacOSX.txt">
+		${prefix:code}/README.MacOSX
 	</data>
     <data>
       ${prefix}/share/icons

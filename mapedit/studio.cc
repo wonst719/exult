@@ -651,10 +651,26 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr), static_pat
 	}
 	// Setup virtual directories
 	string data_path;
+	string app_path;
+#ifdef MACOSX
+	if (is_system_path_defined("<APPBUNDLE>")) {
+		app_path = get_system_path("<APPBUNDLE>");
+		if (U7exists(app_path)) {
+			data_path = app_path;
+			data_path += "/Contents/Resources/data";
+		}
+	} else
+#endif
 	config->value("config/disk/data_path", data_path, EXULT_DATADIR);
 	setup_data_dir(data_path, argv[0]);
 	string dirstr;
 	string datastr;
+#ifdef MACOSX
+	if (U7exists(app_path)) {
+			datastr = app_path;
+			datastr += "/Contents/Resources/data";
+	} else
+#endif
 	config->value("config/disk/data_path", datastr, EXULT_DATADIR);
 	add_system_path("<DATA>", datastr);
 

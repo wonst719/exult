@@ -174,13 +174,18 @@ void Cheat::toggle_map_editor() {
 #endif
 			std::string data_path;
 #ifdef MACOSX
-			if (is_system_path_defined("<APPBUNDLE>")) {
-				std::string app_path = get_system_path("<APPBUNDLE>");
-				app_path += "/Contents/MacOS/";
-				app_path += cmnd;
-				cmnd = app_path;
+			// first try whether the Exult_Studio app bundle is installed
+			// and use its data folder
+			std::string app_path("/Applications/Exult_Studio.app");
+			if (U7exists(app_path)) {
+				data_path = app_path;
+				cmnd = "open ";
+				cmnd += app_path;
+				cmnd += " --args -x ";
+				data_path += "/Contents/Resources/data/";
+				std::cout << "cmnd Path   : " << cmnd << std::endl;
 			}
-			if (is_system_path_defined("<BUNDLE>"))
+			else if (is_system_path_defined("<BUNDLE>"))
 				data_path = get_system_path("<BUNDLE>");
 			else
 #endif
