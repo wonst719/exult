@@ -399,7 +399,7 @@ static bool Get_prop_spin(
 	GtkBin *frame = GTK_BIN(list->data);
 	spin = GTK_SPIN_BUTTON(gtk_bin_get_child(frame));
 	assert(spin != nullptr);
-	const char *name = gtk_widget_get_name(GTK_WIDGET(spin));
+	const char *name = gtk_buildable_get_name(GTK_BUILDABLE(spin));
 	// Names: npc_prop_nn.
 	if (strncmp(name, "npc_prop_", 9) != 0)
 		return false;
@@ -425,7 +425,7 @@ static bool Get_flag_cbox(
 ) {
 	cbox = GTK_CHECK_BUTTON(list->data);
 	assert(cbox != nullptr);
-	const char *name = gtk_widget_get_name(GTK_WIDGET(cbox));
+	const char *name = gtk_buildable_get_name(GTK_BUILDABLE(cbox));
 	// Names: npc_flag_xx_nn, where
 	//   xx = si, of, tf.
 	if (strncmp(name, "npc_flag_", 9) != 0)
@@ -808,7 +808,7 @@ void ExultStudio::schedule_btn_clicked(
 ) {
 	ExultStudio *studio = ExultStudio::get_instance();
 	// Get name assigned in Glade.
-	const char *name = gtk_widget_get_name(btn);
+	const char *name = gtk_buildable_get_name(GTK_BUILDABLE(btn));
 	const char *numptr = name + 5;  // Past "sched".
 	int num = atoi(numptr);
 	auto *schedwin = static_cast<GtkWidget *>(data);
@@ -843,7 +843,7 @@ C_EXPORT void on_npc_set_sched(
 ) {
 	ignore_unused_variable_warning(user_data);
 	static int first = 1;       // To initialize signal handlers.
-	const char *name = gtk_widget_get_name(btn);
+	const char *name = gtk_buildable_get_name(GTK_BUILDABLE(btn));
 	const char *numptr = name + strlen(name) - 1;
 	char lname[20];         // Set up label name.
 	strcpy(lname, "npc_sched");
