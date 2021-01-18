@@ -433,7 +433,7 @@ bool Container_game_object::edit(
 #ifdef USE_EXULTSTUDIO
 	if (client_socket >= 0 &&   // Talking to ExultStudio?
 	        cheat.in_map_editor()) {
-		editing = nullptr;
+		editing.reset();
 		Tile_coord t = get_tile();
 		std::string name = get_name();
 		if (Container_out(client_socket, this, t.tx, t.ty, t.tz,
@@ -442,7 +442,7 @@ bool Container_game_object::edit(
 		                  get_flag(Obj_flags::invisible),
 		                  get_flag(Obj_flags::okay_to_take)) != -1) {
 			cout << "Sent object data to ExultStudio" << endl;
-			editing = this;
+			editing = shared_from_this();
 		} else
 			cout << "Error sending object to ExultStudio" << endl;
 		return true;
@@ -476,11 +476,12 @@ void Container_game_object::update_from_studio(
 		cout << "Error decoding object" << endl;
 		return;
 	}
-	if (!editing || obj != editing) {
+	if (!editing || obj != editing.get()) {
 		cout << "Obj from ExultStudio is not being edited" << endl;
 		return;
 	}
-//	editing = nullptr; // He may have chosen 'Apply', so still editing.
+	// Keeps NPC alive until end of function
+	//Game_object_shared keep = std::move(editing); // He may have chosen 'Apply', so still editing.
 	if (invis)
 		obj->set_flag(Obj_flags::invisible);
 	else

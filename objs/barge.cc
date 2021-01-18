@@ -54,7 +54,7 @@ using std::ostream;
 using std::cout;
 using std::endl;
 
-Barge_object *Barge_object::editing = nullptr;
+Game_object_shared Barge_object::editing;
 
 /*
  *  Rotate a point 90 degrees to the right around a point.
@@ -764,13 +764,13 @@ bool Barge_object::edit(
 #ifdef USE_EXULTSTUDIO
 	if (client_socket >= 0 &&   // Talking to ExultStudio?
 	        cheat.in_map_editor()) {
-		editing = nullptr;
+		editing.reset();
 		Tile_coord t = get_tile();
 		if (Barge_object_out(client_socket, this, t.tx, t.ty, t.tz,
 		                     get_shapenum(), get_framenum(),
 		                     xtiles, ytiles, dir) != -1) {
 			cout << "Sent barge data to ExultStudio" << endl;
-			editing = this;
+			editing = shared_from_this();
 		} else
 			cout << "Error sending barge data to ExultStudio" <<
 			     endl;
@@ -804,11 +804,12 @@ void Barge_object::update_from_studio(
 		cout << "Error decoding barge" << endl;
 		return;
 	}
-	if (barge && barge != editing) {
+	if (barge && barge != editing.get()) {
 		cout << "Barge from ExultStudio is not being edited" << endl;
 		return;
 	}
-	editing = nullptr;
+	// Keeps NPC alive until end of function
+	Game_object_shared keep = std::move(editing);
 	if (!barge) {       // Create a new one?
 		int x;
 		int y;
@@ -821,7 +822,9 @@ void Barge_object::update_from_studio(
 		if (shape == -1)
 			shape = 961;    // FOR NOW.
 		// Create.  Gets initialized below.
-		barge = new Barge_object(shape, 0, 0, 0, 0, 0, 0, 0);
+		auto obj = std::make_shared<Barge_object>(shape, 0, 0, 0, 0, 0, 0, 0);
+		barge = obj.get();
+		keep = std::move(obj);
 		int lift;       // Try to drop at increasing hts.
 		for (lift = 0; lift < 12; lift++)
 			if (gwin->drop_at_lift(barge, x, y, lift) == 1)

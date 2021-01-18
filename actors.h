@@ -47,7 +47,7 @@ class Actor_attributes;
  *  An actor:
  */
 class Actor : public Container_game_object, public Time_sensitive {
-	static Actor *editing;      // NPC being edited by ExultStudio.
+	static Game_object_shared editing;      // NPC being edited by ExultStudio.
 protected:
 	std::string name;           // Its name.
 	int usecode;            // # of usecode function.

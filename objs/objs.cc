@@ -98,7 +98,7 @@ bool Game_object::usecode_exists() const {
 short Tile_coord::neighbors[16] = {0, -1, 1, -1, 1, 0, 1, 1, 0, 1,
                                    -1, 1, -1, 0, -1, -1
                                   };
-Game_object *Game_object::editing = nullptr;
+Game_object_shared Game_object::editing;
 // Bit 5=S, Bit6=reflect. on diag.
 unsigned char Game_object::rotate[8] = { 0, 0, 48, 48, 16, 16, 32, 32};
 
@@ -1034,7 +1034,7 @@ bool Game_object::edit(
 #ifdef USE_EXULTSTUDIO
 	if (client_socket >= 0 &&   // Talking to ExultStudio?
 	        cheat.in_map_editor()) {
-		editing = nullptr;
+		editing.reset();
 		Tile_coord t = get_tile();
 		std::string name = get_name();
 		if (Object_out(client_socket, Exult_server::obj,
@@ -1042,7 +1042,7 @@ bool Game_object::edit(
 		               get_shapenum(), get_framenum(), get_quality(),
 		               name) != -1) {
 			cout << "Sent object data to ExultStudio" << endl;
-			editing = this;
+			editing = shared_from_this();
 		} else
 			cout << "Error sending object to ExultStudio" << endl;
 		return true;
@@ -1073,11 +1073,12 @@ void Game_object::update_from_studio(
 		cout << "Error decoding object" << endl;
 		return;
 	}
-	if (!editing || obj != editing) {
+	if (!editing || obj != editing.get()) {
 		cout << "Obj from ExultStudio is not being edited" << endl;
 		return;
 	}
-//	editing = nullptr; // He may have chosen 'Apply', so still editing.
+	// Keeps NPC alive until end of function
+	//Game_object_shared keep = std::move(editing); // He may have chosen 'Apply', so still editing.
 	gwin->add_dirty(obj);
 	obj->set_shape(shape, frame);
 	gwin->add_dirty(obj);

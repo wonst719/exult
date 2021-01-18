@@ -52,7 +52,7 @@ public:
  *  circumstances.
  */
 class Egg_object : public Egglike_game_object {
-	static Egg_object *editing; // Egg being edited by ExultStudio.
+	static Game_object_shared editing; // Egg being edited by ExultStudio.
 protected:
 	unsigned char type;     // One of the below types.
 	unsigned char probability;  // 1-100, chance of egg activating.

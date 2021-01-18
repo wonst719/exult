@@ -60,7 +60,7 @@ using std::rand;
 using std::ostream;
 using std::string;
 
-Egg_object *Egg_object::editing = nullptr;
+Game_object_shared Egg_object::editing;
 
 /*
  *  Timer for a missile egg (type-6 egg).
@@ -853,7 +853,7 @@ bool Egg_object::edit(
 #ifdef USE_EXULTSTUDIO
 	if (client_socket >= 0 &&   // Talking to ExultStudio?
 	        cheat.in_map_editor()) {
-		editing = nullptr;
+		editing.reset();
 		Tile_coord t = get_tile();
 		// Usecode function name.
 		string str1 = get_str1();
@@ -864,7 +864,7 @@ bool Egg_object::edit(
 		                   (flags >> hatched) & 1, (flags >> auto_reset) & 1,
 		                   data1, data2, data3, str1) != -1) {
 			cout << "Sent egg data to ExultStudio" << endl;
-			editing = this;
+			editing = shared_from_this();
 		} else
 			cout << "Error sending egg data to ExultStudio" << endl;
 		return true;
@@ -910,11 +910,12 @@ void Egg_object::update_from_studio(
 		cout << "Error decoding egg" << endl;
 		return;
 	}
-	if (oldegg && oldegg != editing) {
+	if (oldegg && oldegg != editing.get()) {
 		cout << "Egg from ExultStudio is not being edited" << endl;
 		return;
 	}
-	editing = nullptr;
+	// Keeps NPC alive until end of function
+	Game_object_shared keep = std::move(editing);
 	if (!oldegg) {          // Creating a new one?  Get loc.
 		if (!Get_click(x, y, Mouse::hand, nullptr)) {
 			if (client_socket >= 0)

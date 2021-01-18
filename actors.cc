@@ -19,6 +19,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "objs.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -92,7 +93,7 @@ using std::rand;
 using std::string;
 using std::swap;
 
-Actor *Actor::editing = nullptr;
+Game_object_shared Actor::editing;
 
 extern bool combat_trace;
 
@@ -2188,7 +2189,7 @@ bool Actor::edit(
 #ifdef USE_EXULTSTUDIO
 	if (client_socket >= 0 &&   // Talking to ExultStudio?
 	        cheat.in_map_editor()) {
-		editing = nullptr;
+		editing.reset();
 		Tile_coord t = get_tile();
 		int num_schedules;  // Set up schedule-change list.
 		Schedule_change *changes;
@@ -2208,7 +2209,7 @@ bool Actor::edit(
 		                  attack_mode, alignment, flags, flags2, type_flags,
 		                  num_schedules, schedules) != -1) {
 			cout << "Sent npc data to ExultStudio" << endl;
-			editing = this;
+			editing = shared_from_this();
 		} else
 			cout << "Error sending npc data to ExultStudio" << endl;
 		return true;
@@ -2253,11 +2254,12 @@ void Actor::update_from_studio(
 		cout << "Error decoding npc" << endl;
 		return;
 	}
-	if (npc && npc != editing) {
+	if (npc && npc != editing.get()) {
 		cout << "Npc from ExultStudio is not being edited" << endl;
 		return;
 	}
-	editing = nullptr;
+	// Keeps NPC alive until end of function
+	Game_object_shared keep = std::move(editing);
 	if (!npc) {         // Create a new one?
 		int x;
 		int y;
@@ -2267,7 +2269,9 @@ void Actor::update_from_studio(
 			return;
 		}
 		// Create.  Gets initialized below.
-		npc = new Npc_actor(name, shape, npc_num, usecode);
+		Actor_shared act = std::make_shared<Npc_actor>(name, shape, npc_num, usecode);
+		npc = act.get();
+		keep = std::move(act);
 		npc->usecode_name = usecodefun;
 		if (!usecodefun.empty())
 			npc->usecode = ucmachine->find_function(usecodefun.c_str(), true);

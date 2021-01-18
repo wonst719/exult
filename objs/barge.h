@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *  don't have to be reimplemented.
  */
 class Barge_object : public Container_game_object, public Time_sensitive {
-	static Barge_object *editing;   // Egg being edited by ExultStudio.
+	static Game_object_shared editing;   // Egg being edited by ExultStudio.
     std::vector<Game_object_shared> objects; // All objects in/on barge.
 	int perm_count;         // Counts permanent parts of barge,
 	//   which proceed those placed on it.
