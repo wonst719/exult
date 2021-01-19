@@ -699,10 +699,7 @@ static void Init(
 	std::atexit(SDL_Quit);
 
 	SDL_SysWMinfo info;     // Get system info.
-#ifdef USE_EXULTSTUDIO
-	// Want drag-and-drop events.
-	SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
-#endif
+
 	// KBD repeat should be nice.
 	SDL_ShowCursor(0);
 	SDL_VERSION(&info.version);
