@@ -680,6 +680,10 @@ static void Init(
 #endif
 #ifdef _WIN32
 	SDL_putenv("SDL_AUDIODRIVER=DirectSound");
+#elif defined(MACOSX) && defined(XWIN) && defined(USE_EXULTSTUDIO)
+	// Exult Studio drag'n'drop with SDL2 < 2.0.15 requires Exult
+	// to use X11. Hence, we force the issue.
+	SDL_putenv("SDL_VIDEODRIVER=x11");
 #endif
 	SDL_SetHint(SDL_HINT_ORIENTATIONS, "Landscape");
 #if 0

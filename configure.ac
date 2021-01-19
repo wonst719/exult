@@ -553,18 +553,26 @@ if test "$WINDOWING_SYSTEM" != -DXWIN -a "$WINDOWING_SYSTEM" != -D_WIN32 ; then
 	enable_exult_studio_support=no
 fi
 
-AC_ARG_ENABLE(macosx-studio-support, AS_HELP_STRING([--enable-macosx-studio-support], [Force ExultStudio support in Mac OS X @<:@EXPERIMENTAL@:>@ @<:@default no@:>@]),,enable_macosx_studio_support=no)
+AC_ARG_ENABLE(macosx-x11-studio-support, AS_HELP_STRING([--enable-macosx-x11-studio-support], [Force Exult Studio X11 support in Mac OS X @<:@default no@:>@]),,enable_macosx_x11_studio_support=no)
 if test "$WINDOWING_SYSTEM" != -DMACOSX; then
-	enable_macosx_studio_support=no
+	enable_macosx_x11_studio_support=no
 fi
 
-if test x$enable_macosx_studio_support = xyes ; then
+if test x$enable_macosx_x11_studio_support = xyes ; then
 	enable_exult_studio_support=yes
+	SYSLIBS="$SYSLIBS -L/usr/X11R6/lib -lX11"
+	AC_DEFINE(XWIN, 1, [X11 (needed by Exult Studio X11 support in macOS)])
 fi
 
 if test x$enable_exult_studio_support = xyes ; then
 	AC_MSG_RESULT(yes)
 	AC_DEFINE(USE_EXULTSTUDIO, 1, [Use Exult Studio])
+	AC_CHECK_FUNC(xwin, AC_DEFINE(XWIN))
+	if test "$WINDOWING_SYSTEM" = -DMACOSX -a "$ac_cv_func_xwin" != yes; then
+		if test ! $sdl_patchlevel -gt "14"; then
+			as_fn_error $? "*** SDL2 2.0.15 or newer is needed or use --enable-macosx-x11-studio-support!" "$LINENO" 5
+		fi
+	fi
 
 	# due to bug 2129731 and 3139441 some Linux distributions need -lX11 explicitly set 
 	# when enabling Exult Studio support or linking fails
