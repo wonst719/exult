@@ -11,7 +11,7 @@
 	<key>CFBundleIconFile</key>
 	<string>exult_studio.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>info.exult</string>
+	<string>info.exult.studio</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

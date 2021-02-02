@@ -5,9 +5,9 @@
 AppName=Exult Studio
 AppVerName=Exult Studio Git
 AppPublisher=The Exult Team
-AppPublisherURL=http://exult.sourceforge.net/
-AppSupportURL=http://exult.sourceforge.net/
-AppUpdatesURL=http://exult.sourceforge.net/
+AppPublisherURL=http://exult.info/
+AppSupportURL=http://exult.info/
+AppUpdatesURL=http://exult.info/
 ; Setup exe version number:
 VersionInfoVersion=1.7.0
 DisableDirPage=no
@@ -21,8 +21,6 @@ InternalCompressLevel=max
 AppendDefaultDirName=false
 AllowNoIcons=true
 OutputDir=.
-DirExistsWarning=no
-AlwaysUsePersonalGroup=true
 DisableWelcomePage=no
 WizardStyle=modern
 
