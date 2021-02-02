@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "LowLevelMidiDriver.h"
 
-#include <mt32emu.h>
+#include <mt32emu/mt32emu.h>
 
 namespace MT32Emu { class Synth; }
 
