@@ -38,26 +38,16 @@
 #pragma GCC diagnostic pop
 #endif  // __GNUC__
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif  // __GNUC__
-#include <libgnomeui/libgnomeui.h>
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif  // __GNUC__
-
-#include <iostream>
-#include <cstdlib>
 #include "Flex.h"
-#include "utils.h"
 #include "exceptions.h"
-#include "vgafile.h"
-#include "pngio.h"
 #include "ibuf8.h"
 #include "ignore_unused_variable_warning.h"
+#include "pngio.h"
+#include "utils.h"
+#include "vgafile.h"
+
+#include <array>
+#include <iostream>
 
 using namespace std;
 
@@ -68,7 +58,8 @@ using namespace std;
 // better, but others to look worse; most shapes are unaffected.
 // The values used for the OpenGL translucent pixels in shapeid.cc (also
 // in the blends.dat files for BG and SI) could be used for this purpose.
-static unsigned char shppal[768] = {
+using U7Palette = std::array<unsigned char, 768>;
+constexpr static const U7Palette shppal = {
 	0x00, 0x00, 0x00, 0xF8, 0xF0, 0xCC, 0xF4, 0xE4, 0xA4, 0xF0, 0xDC, 0x78,
 	0xEC, 0xD0, 0x50, 0xEC, 0xC8, 0x28, 0xD8, 0xAC, 0x20, 0xC4, 0x94, 0x18,
 	0xB0, 0x80, 0x10, 0x9C, 0x68, 0x0C, 0x88, 0x54, 0x08, 0x74, 0x44, 0x04,
@@ -161,13 +152,13 @@ type intSqrt(type remainder) {
 const unsigned char transp = 255;   // Transparent pixel.
 
 static unsigned char *Convert8to32(
-    unsigned char *bits,
+    const unsigned char *bits,
     size_t nsize,
-    unsigned char *palette
+    const U7Palette& palette
 ) {
-	unsigned char *out = new unsigned char[nsize * 4];
+	auto *out = new unsigned char[nsize * 4];
 	for (size_t i = 0; i < nsize; i++) {
-		size_t pix = bits[i];
+		const size_t pix = bits[i];
 		out[4 * i    ] = palette[3 * pix    ];
 		out[4 * i + 1] = palette[3 * pix + 1];
 		out[4 * i + 2] = palette[3 * pix + 2];
@@ -215,7 +206,8 @@ struct Render_tiles {
 				cerr << "Can only tile 8x8 flat shapes, but shape doesn't qualify" << endl;
 				exit(4);
 			}
-			int x = f % dim0_cnt, y = f / dim0_cnt;
+			int x = f % dim0_cnt;
+			int y = f / dim0_cnt;
 			frame->paint(&img, xo + x * 8 + frame->get_xleft(),
 			             yo + y * 8 + frame->get_yabove());
 		}
@@ -228,38 +220,28 @@ struct Render_tiles {
 
 template<typename Data, typename Render>
 static void Write_thumbnail(
-    char *filename,         // Base filename to write.
-    Data *data,             // What to write.
-    unsigned char *palette, // 3*256 bytes.
-    int w, int h,           // Width, height of rendered image.
-    int size                // Desired thumbnail size
+    char *filename,           // Base filename to write.
+    Data *data,               // What to write.
+    const U7Palette& palette, // 3*256 bytes.
+    int w, int h,             // Width, height of rendered image.
+    int size                  // Desired thumbnail size
 ) {
 	assert(data != nullptr);
 	cout << "Writing " << filename << endl;
-	int w1 = w, h1 = h;
-	if (w > size || h > size)
-		// Make into a padded square of the largest dimension.
-		w1 = h1 = w > h ? w : h;
-	else {
-		// Pad it to minimum size to avoid blurring.
-		if (w < 16)
-			w1 = 16;
-		if (h < 16)
-			h1 = 16;
-	}
+	// Make into a padded square of the largest dimension, but limit it
+	// to a minimum of 16x16 to avoid blurring.
+	const int w1 = std::max(std::max(w, h), 16);
+	const int h1 = w1;
 	Image_buffer8 img(w1, h1);  // Render into a buffer.
-	img.fill8(transp);      // Fill with transparent pixel.
+	img.fill8(transp);          // Fill with transparent pixel.
 	Render r;
 	r(img, data, w, h, (w1 - w) / 2, (h1 - h) / 2);
 	unsigned char *bits = Convert8to32(img.get_bits(), w1 * h1, palette);
-	if (w > size || h > size) {
-		// Use GTHUMB scaler to reduce large image.
-		// These few lines are all that create dependencies on gdk-pixbuf and
-		// libgnomeui.
+	if (w1 != size) {
 		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(bits, GDK_COLORSPACE_RGB,
 		                    true, 8, w1, h1, 4 * w1, nullptr, nullptr);
-		GdkPixbuf *smallpixbuf = gnome_thumbnail_scale_down_pixbuf(pixbuf,
-		                         size, size);
+		GdkPixbuf *smallpixbuf = gdk_pixbuf_scale_simple(pixbuf,
+		                         size, size, GDK_INTERP_HYPER);
 		// Write out to the .png.
 		if (!Export_png32(filename, size, size, 4 * size, 0, 0,
 		                  gdk_pixbuf_get_pixels(smallpixbuf)))
@@ -278,7 +260,6 @@ int main(int argc, char *argv[]) {
 		cerr << "Usage: gnome-shp-thumbnailer -s size inputfile outputfile" << endl;
 		return 1;
 	}
-	gtk_init(&argc, &argv);
 	int  size = atoi(argv[2]);
 	if (size < 0 || size > 2048) {
 		cerr << "Invalid thumbnail size: " << size << "!" << endl;

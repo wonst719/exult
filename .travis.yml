@@ -42,7 +42,6 @@ addons:
       - libxml2-dev
       - bison
       - flex
-      - libgnomeui-dev
       - timidity
       - libgimp2.0-dev
 
