@@ -433,7 +433,16 @@ if test x$HAVEMT32EMU = xyes; then
 		AC_DEFINE(USE_MT32EMU_MIDI, 1, [Enable mt32emu])
 		AM_CONDITIONAL(BUILD_MT32EMU, true)
 		if test "x$PKG_CONFIG" != "x"; then
-			PKG_CHECK_MODULES(MT32EMU, mt32emu)
+			PKG_CHECK_MODULES(MT32EMU, mt32emu, ,
+				[
+					if test x$enable_static_libs = xno; then
+						MT32EMU_LIBS="-lmt32emu"
+						MT32EMU_CFLAGS=""
+					fi
+				])
+		elif test x$enable_static_libs = xno; then
+			MT32EMU_LIBS="-lmt32emu"
+			MT32EMU_CFLAGS=""
 		fi
 	else
 		AC_MSG_RESULT(no)
@@ -558,13 +567,12 @@ fi
 if test x$enable_exult_studio_support = xyes ; then
 	AC_MSG_RESULT(yes)
 	AC_DEFINE(USE_EXULTSTUDIO, 1, [Use Exult Studio])
-	
+
 	# due to bug 2129731 and 3139441 some Linux distributions need -lX11 explicitly set 
 	# when enabling Exult Studio support or linking fails
 	if test "$WINDOWING_SYSTEM" = -DXWIN ; then
 		SYSLIBS="$SYSLIBS -lX11"
 	fi
-	
 else
 	AC_MSG_RESULT(no)
 fi
@@ -581,7 +589,7 @@ AC_ARG_WITH([desktopdir],
 		yes)
 		;;
 		no)
-		;;	
+		;;
 		*)
 			DESKTOPDIR="${withval}"
 		;;
