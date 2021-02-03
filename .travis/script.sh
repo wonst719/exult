@@ -6,7 +6,7 @@ if [ "$TRAVIS_OS_NAME" = "linux" ]; then
 	export EXTRA_TOOLS="--enable-gimp-plugin --enable-gnome-shp-thumbnailer --enable-compiler --enable-mods --with-usecode-debugger=yes"
 	export NPROC=$(nproc)
 else
-	export LIBOPTS="--enable-static-libraries --disable-alsa --disable-fluidsynth --disable-timidity-midi --with-macosx-static-lib-path=/opt/local/lib"
+	export LIBOPTS="--enable-static-libraries --disable-alsa --disable-fluidsynth --disable-timidity-midi"
 	export EXTRA_TOOLS=""
 	export NPROC=$(sysctl -n hw.ncpu)
 	export SDK=' -w -mmacosx-version-min=10.7 '
