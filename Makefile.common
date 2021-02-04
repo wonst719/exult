@@ -331,7 +331,11 @@ EXULT_SI_FLX_OBJECTS := \
 	data/si/shape_info.txt \
 	data/si/blends.dat \
 	data/si/container.dat \
-	data/si/autonotes.txt
+	data/si/autonotes.txt \
+	data/si/ext_intro_castle.flc \
+	data/si/ext_intro_ship1.flc \
+	data/si/ext_intro_ship2.flc \
+	data/si/ext_intro_pil1.flc
 
 EXULT_BG_PAPERDOL_VGA := data/bg/bg_paperdol.vga data/bg/bg_paperdol_vga.h
 EXULT_BG_PAPERDOL_VGA_OBJECTS := \

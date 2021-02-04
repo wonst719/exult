@@ -75,7 +75,11 @@ EXULT_SI_FLX_OBJECTS = \
 	si/shape_info.txt \
 	si/blends.dat \
 	si/container.dat \
-	si/autonotes.txt
+	si/autonotes.txt \
+	si/ext_intro_castle.flc \
+	si/ext_intro_ship1.flc \
+	si/ext_intro_ship2.flc \
+	si/ext_intro_pil1.flc
 
 EXULT_BG_PAPERDOL_VGA_OBJECTS = \
 	bg/amulets.shp \

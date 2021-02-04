@@ -302,7 +302,11 @@ void SI_Game::play_intro() {
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
 
+#if 0
 		playfli fli1(INTRO_DAT, PATCH_INTRO, 1);
+#else
+		playfli fli1(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX, EXULT_SI_FLX_EXT_INTRO_CASTLE_FLC);
+#endif
 		fli1.info();
 
 		fli1.play(win, 0, 1, 0, 0);
@@ -629,10 +633,18 @@ void SI_Game::play_intro() {
 		gwin->clear_screen(true);
 
 		// Tis LBs's Worst fear
+#if 0
 		playfli fli5(INTRO_DAT, PATCH_INTRO, 5);
+#else
+		playfli fli5(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX, EXULT_SI_FLX_EXT_INTRO_SHIP1_FLC);
+#endif
 		fli5.info();
 
+#if 0
 		for (j = 0; j < 20; j++) {
+#else
+		for (j = 0; j < 10; j++) {
+#endif
 			next = fli5.play(win, 0, 0, next, j * 5);
 			win->show();
 			if (wait_delay(0, 0, 1))
@@ -645,7 +657,11 @@ void SI_Game::play_intro() {
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
 
+#if 0
 		for (j = 0; j < 61; j++) {
+#else
+		for (j = 0; j < 120; j++) {
+#endif
 			next = fli5.play(win, j, j, next) + 30;
 
 			if (j < 20 && (!speech || jive || speech_n_subs)) {
@@ -664,10 +680,18 @@ void SI_Game::play_intro() {
 		gwin->clear_screen(true);
 
 		// Boat 1
+#if 0
 		playfli fli6(INTRO_DAT, PATCH_INTRO, 6);
+#else
+		playfli fli6(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX, EXULT_SI_FLX_EXT_INTRO_SHIP2_FLC);
+#endif
 		fli6.info();
 
+#if 0
 		for (j = 0; j < 61; j++) {
+#else
+		for (j = 0; j < 120; j++) {
+#endif
 			next = fli6.play(win, j, j, next) + 30;
 			win->show();
 			if (wait_delay(0, 0, 1))
@@ -678,12 +702,20 @@ void SI_Game::play_intro() {
 		gwin->clear_screen(true);
 
 		// Boat 2
+#if 0
 		playfli fli7(INTRO_DAT, PATCH_INTRO, 7);
+#else
+		playfli fli7(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX, EXULT_SI_FLX_EXT_INTRO_PIL1_FLC);
+#endif
 		fli7.info();
 
 		const char *zot = "Zot!";
 
+#if 0
 		for (j = 0; j < 61; j++) {
+#else
+		for (j = 0; j < 91; j++) {
+#endif
 			next = fli7.play(win, j, j, next) + 30;
 
 			if (j > 55 && jive)
