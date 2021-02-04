@@ -371,7 +371,6 @@ dist:   $(EXEC) exconfig.dll install
 	cp docs/images/docs*.png $(U7PATH)/images
 	cp NEWS $(U7PATH)/NEWS.txt
 	cp README $(U7PATH)/README.txt
-	cp README.1ST $(U7PATH)/README.1ST.txt
 	cp docs/ReadMe.html $(U7PATH)
 	cp README.win32 $(U7PATH)/README.win32.txt
 	cp win32/README-SDL.txt $(U7PATH)/README-SDL.txt

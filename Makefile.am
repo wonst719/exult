@@ -135,7 +135,6 @@ exult_DEPENDENCIES = $(ICON_FILE) $(EXULTLIBS)
 
 EXTRA_DIST = 	\
 	autogen.sh \
-	README.1ST \
 	README \
 	FAQ \
 	README.win32 \

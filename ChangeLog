@@ -1,3 +1,5 @@
+*** with the switch to git we gradually stopped using the changelog - please use our github commit history instead ***
+
 2017-03-01  jeff  <jeff@jeff-HP-Pavilion-dm4-Notebook-PC>
 
 	* Enhancing 'waiter' schedule:  Get correct 'prep' table, take several orders before serving, wait at counter after serving.

@@ -119,7 +119,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root)
-%doc AUTHORS COPYING ChangeLog NEWS README FAQ README.1ST
+%doc AUTHORS COPYING ChangeLog NEWS README FAQ
 %{_bindir}/exult
 %{_datadir}/exult/exultmsg.txt
 %{_datadir}/exult/exult_bg.flx
