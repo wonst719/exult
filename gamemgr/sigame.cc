@@ -316,7 +316,7 @@ void SI_Game::play_intro() {
 		next = SDL_GetTicks();
 		int prev = -1;
 		int num;
-
+		
 		for (int j = 0; j < 20; j++) {
 			num = get_frame();
 			if (prev != num)
@@ -367,7 +367,7 @@ void SI_Game::play_intro() {
 				audio->copy_and_play(buffer.get() + 8, size - 8, false);
 				buffer.reset();
 			}
-
+			
 			prev = num;
 			next += 75;
 			win->show();
@@ -417,6 +417,9 @@ void SI_Game::play_intro() {
 		// Do this! Prevents palette corruption
 		gwin->clear_screen(true);
 
+//******************************
+		
+		
 		// Guard walks in
 		playfli fli2(INTRO_DAT, PATCH_INTRO, 2);
 		fli2.info();
@@ -677,7 +680,7 @@ void SI_Game::play_intro() {
 #if 0
 		for (j = 0; j < 61; j++) {
 #else
-		for (j = 0; j < 120; j++) {
+		for (j = 0; j < 115; j++) {
 #endif
 			next = fli5.play(win, j, j, next) + 30;
 
@@ -707,7 +710,7 @@ void SI_Game::play_intro() {
 #if 0
 		for (j = 0; j < 61; j++) {
 #else
-		for (j = 0; j < 120; j++) {
+		for (j = 0; j < 115; j++) {
 #endif
 			next = fli6.play(win, j, j, next) + 30;
 			win->show();
