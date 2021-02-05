@@ -29,33 +29,23 @@
 #include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>
 
-#ifdef HAVE_GIMP_1_2
-#define GIMP20_CONST
-#else
-#define GIMP20_CONST const
-#endif
-
 
 /* Declare some local functions.
  */
 static void   query(void);
-static void   run(GIMP20_CONST gchar   *name,
-                  gint     nparams,
-                  GIMP20_CONST GimpParam  *param,
-                  gint    *nreturn_vals,
-                  GimpParam **return_vals);
+static void   run(const gchar      *name,
+                  gint              nparams,
+                  const GimpParam  *param,
+                  gint             *nreturn_vals,
+                  GimpParam       **return_vals);
 static void   load_palette(gchar *filename);
 static void   choose_palette(void);
-static gint32 load_image(gchar   *filename);
+static gint32 load_image(gchar  *filename);
 static gint32 save_image(gchar  *filename,
                          gint32  image_ID,
                          gint32  drawable_ID,
                          gint32  orig_image_ID);
-#ifdef HAVE_GIMP_1_2
-static GimpRunModeType run_mode;
-#else
 static GimpRunMode run_mode;
-#endif
 
 static guchar   gimp_cmap[768] = {
 	0x00, 0x00, 0x00, 0xF8, 0xF0, 0xCC, 0xF4, 0xE4, 0xA4, 0xF0, 0xDC, 0x78,
@@ -208,16 +198,16 @@ query(void) {
 }
 
 static void
-run(GIMP20_CONST gchar   *name,
-    gint     nparams,
-    GIMP20_CONST GimpParam  *param,
-    gint    *nreturn_vals,
-    GimpParam **return_vals) {
-	static GimpParam values[2];
-	GimpPDBStatusType   status = GIMP_PDB_SUCCESS;
-	gint32        image_ID;
-	gint32        drawable_ID;
-	gint32        orig_image_ID;
+run(const gchar      *name,
+    gint              nparams,
+    const GimpParam  *param,
+    gint             *nreturn_vals,
+    GimpParam       **return_vals) {
+	static GimpParam  values[2];
+	GimpPDBStatusType status = GIMP_PDB_SUCCESS;
+	gint32            image_ID;
+	gint32            drawable_ID;
+	gint32            orig_image_ID;
 
 	gegl_init (NULL, NULL);
 
@@ -695,11 +685,7 @@ static gint32 save_image(gchar  *filename,
 #endif
 		orientation = gimp_image_get_guide_orientation(image_ID, guide_ID);
 		switch (orientation) {
-#ifdef HAVE_GIMP_1_2
-		case GIMP_HORIZONTAL:
-#else
 		case GIMP_ORIENTATION_HORIZONTAL:
-#endif
 			if (hoty < 0) {
 				hoty = gimp_image_get_guide_position(image_ID, guide_ID);
 #ifdef DEBUG
@@ -707,11 +693,7 @@ static gint32 save_image(gchar  *filename,
 #endif
 			}
 			break;
-#ifdef HAVE_GIMP_1_2
-		case GIMP_VERTICAL:
-#else
 		case GIMP_ORIENTATION_VERTICAL:
-#endif
 			if (hotx < 0) {
 				hotx = gimp_image_get_guide_position(image_ID, guide_ID);
 #ifdef DEBUG
