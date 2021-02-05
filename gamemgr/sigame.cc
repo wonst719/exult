@@ -290,8 +290,10 @@ void SI_Game::play_intro() {
 
 		// Castle Outside
 
+#if 0
 		// Start Music
 		audio->start_music(R_SINTRO, 0, false);
+#endif
 
 		size_t  size;
 		unique_ptr<unsigned char[]> buffer;
@@ -397,6 +399,9 @@ void SI_Game::play_intro() {
 				throw UserBreakException();
 
 		}
+
+		// Start Music
+		audio->start_music(R_SINTRO, 0, false);
 
 		for (int j = 20; j; j--) {
 			next = fli1.play(win, 0, 0, next, j * 5);
