@@ -329,11 +329,17 @@ void SI_Game::play_intro() {
 
 		}
 
+#if 0
 		for (int j = 0; j < 50; j++) {
 			num = get_frame();
 			if (prev != num)
 				for (int i = 0; i < num + 1; i++)
 					fli1.play(win, i, i, next);
+#else
+		for (int j = 0; j < 25; j++) {
+					num = get_frame();
+			next = fli1.play(win, j, j, next) + 30;
+#endif
 
 			if (jive)
 				sifont->center_text(ibuf, centerx, centery + 50, get_text_msg(dick_castle));
@@ -368,11 +374,17 @@ void SI_Game::play_intro() {
 
 		}
 
+#if 0
 		for (int j = 0; j < 75; j++) {
 			num = get_frame();
 			if (prev != num)
 				for (int i = 0; i < num + 1; i++)
 					fli1.play(win, i, i, next);
+#else
+		for (int j = 0; j < 25; j++) {
+			num = get_frame();
+			next = fli1.play(win, j, j, next) + 30;
+#endif
 
 			for (int i = 0; i < 3; i++) {
 				sifont->center_text(ibuf, centerx, centery + 50 + 15 * i, get_text_msg(bg_fellow + i));
