@@ -145,6 +145,7 @@ class Game_window {
 	uint8 use_shortcutbar; // 0 = no, 1 = trans, 2 = yes
 	Pixel_colors outline_color;
 	bool sb_hide_missing;
+	bool extended_intro;
 
 	// Touch Options
 	bool item_menu;
@@ -316,7 +317,12 @@ public:
 	void set_sb_hide_missing_items(bool s) {
 		sb_hide_missing = s;
 	}
-
+	bool get_extended_intro() const {
+		return extended_intro;
+	}
+	void set_extended_intro(bool i) {
+		extended_intro = i;
+	}
 	/*
 	 * Touch options:
  	*/

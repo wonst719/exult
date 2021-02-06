@@ -256,6 +256,19 @@ void SI_Game::play_intro() {
 	bool speech = audio->is_audio_enabled() &&
 	              audio->is_speech_enabled();
 	bool speech_n_subs = Audio::get_ptr()->is_speech_with_subs();
+	bool extended_intro = gwin->get_extended_intro();
+	
+	auto select_fli = [&extended_intro](int orig_id, int ext_id) {
+		if (extended_intro) {
+			return playfli(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX, ext_id);
+		}
+		return playfli(INTRO_DAT, PATCH_INTRO, orig_id);
+	};
+
+	playfli fli1 = select_fli(1, EXULT_SI_FLX_EXT_INTRO_CASTLE_FLC);
+	playfli fli5 = select_fli(5, EXULT_SI_FLX_EXT_INTRO_SHIP1_FLC);
+	playfli fli6 = select_fli(6, EXULT_SI_FLX_EXT_INTRO_SHIP2_FLC);
+	playfli fli7 = select_fli(7, EXULT_SI_FLX_EXT_INTRO_PIL1_FLC);
 
 	gwin->clear_screen(true);
 
@@ -290,10 +303,9 @@ void SI_Game::play_intro() {
 
 		// Castle Outside
 
-#if 0
 		// Start Music
-		audio->start_music(R_SINTRO, 0, false);
-#endif
+		if (!extended_intro)
+			audio->start_music(R_SINTRO, 0, false);
 
 		size_t  size;
 		unique_ptr<unsigned char[]> buffer;
@@ -304,11 +316,6 @@ void SI_Game::play_intro() {
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
 
-#if 0
-		playfli fli1(INTRO_DAT, PATCH_INTRO, 1);
-#else
-		playfli fli1(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX, EXULT_SI_FLX_EXT_INTRO_CASTLE_FLC);
-#endif
 		fli1.info();
 
 		fli1.play(win, 0, 1, 0, 0);
@@ -332,15 +339,15 @@ void SI_Game::play_intro() {
 		}
 
 #if 0
-		for (int j = 0; j < 50; j++) {
-			num = get_frame();
+			for (int j = 0; j < 50; j++) {
+				num = get_frame();
 			if (prev != num)
 				for (int i = 0; i < num + 1; i++)
 					fli1.play(win, i, i, next);
 #else
-		for (int j = 0; j < 25; j++) {
+			for (int j = 0; j < 25; j++) {
 					num = get_frame();
-			next = fli1.play(win, j, j, next) + 30;
+					next = fli1.play(win, j, j, next) + 30;
 #endif
 
 			if (jive)
@@ -354,7 +361,7 @@ void SI_Game::play_intro() {
 			if (wait_delay(1, 0, 1))
 				throw UserBreakException();
 
-		}
+			}
 
 		for (int j = 0; j < 10; j++) {
 			num = get_frame();
@@ -401,7 +408,8 @@ void SI_Game::play_intro() {
 		}
 
 		// Start Music
-		audio->start_music(R_SINTRO, 0, false);
+		if(extended_intro)
+			audio->start_music(R_SINTRO, 0, false);
 
 		for (int j = 20; j; j--) {
 			next = fli1.play(win, 0, 0, next, j * 5);
@@ -653,11 +661,6 @@ void SI_Game::play_intro() {
 		gwin->clear_screen(true);
 
 		// Tis LBs's Worst fear
-#if 0
-		playfli fli5(INTRO_DAT, PATCH_INTRO, 5);
-#else
-		playfli fli5(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX, EXULT_SI_FLX_EXT_INTRO_SHIP1_FLC);
-#endif
 		fli5.info();
 
 #if 0
@@ -700,11 +703,6 @@ void SI_Game::play_intro() {
 		gwin->clear_screen(true);
 
 		// Boat 1
-#if 0
-		playfli fli6(INTRO_DAT, PATCH_INTRO, 6);
-#else
-		playfli fli6(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX, EXULT_SI_FLX_EXT_INTRO_SHIP2_FLC);
-#endif
 		fli6.info();
 
 #if 0
@@ -722,11 +720,6 @@ void SI_Game::play_intro() {
 		gwin->clear_screen(true);
 
 		// Boat 2
-#if 0
-		playfli fli7(INTRO_DAT, PATCH_INTRO, 7);
-#else
-		playfli fli7(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX, EXULT_SI_FLX_EXT_INTRO_PIL1_FLC);
-#endif
 		fli7.info();
 
 		const char *zot = "Zot!";
