@@ -42,7 +42,6 @@
 #pragma GCC diagnostic pop
 #endif  // __GNUC__
 
-#include "Flex.h"
 #include "exceptions.h"
 #include "ibuf8.h"
 #include "ignore_unused_variable_warning.h"
@@ -178,12 +177,12 @@ struct Render_frame {
 	void operator()
 	(
 	    Image_buffer8 &img,
-	    Shape_frame *frame,
+	    Shape_frame& frame,
 	    int w, int h,
 	    int xo, int yo
 	) {
 		ignore_unused_variable_warning(w, h);
-		frame->paint(&img, xo + frame->get_xleft(), yo + frame->get_yabove());
+		frame.paint(&img, xo + frame.get_xleft(), yo + frame.get_yabove());
 	}
 };
 
@@ -194,18 +193,18 @@ struct Render_tiles {
 	void operator()
 	(
 	    Image_buffer8 &img,
-	    Shape *shape,
+	    Shape& shape,
 	    int w, int h,
 	    int xo, int yo
 	) {
 		ignore_unused_variable_warning(h);
-		int nframes = shape->get_num_frames();
 		int dim0_cnt = w / 8;
-		for (int f = 0; f < nframes; f++) {
-			Shape_frame *frame = shape->get_frame(f);
+		int f = -1;
+		for (auto& frame : shape) {
+			f++;
 			if (!frame)
 				continue;   // We'll just leave empty ones blank.
-			if (!frame->is_rle() || frame->get_width() != 8 ||
+			if (frame->is_rle() || frame->get_width() != 8 ||
 			        frame->get_height() != 8) {
 				cerr << "Can only tile 8x8 flat shapes, but shape doesn't qualify" << endl;
 				exit(4);
@@ -225,12 +224,11 @@ struct Render_tiles {
 template<typename Data, typename Render>
 static void Write_thumbnail(
     char *filename,           // Base filename to write.
-    Data *data,               // What to write.
+    Data& data,               // What to write.
     const U7Palette& palette, // 3*256 bytes.
     int w, int h,             // Width, height of rendered image.
     int size                  // Desired thumbnail size
 ) {
-	assert(data != nullptr);
 	cout << "Writing " << filename << endl;
 	// Make into a padded square of the largest dimension, but limit it
 	// to a minimum of 16x16 to avoid blurring.
@@ -272,37 +270,31 @@ int main(int argc, char *argv[]) {
 	char *inputfile = argv[3];
 	char *outputfile = argv[4];
 	Shape_file shape(inputfile);    // May throw an exception.
-	int nframes = shape.get_num_frames();
-	if (nframes == 0) {
+	if (shape.is_empty()) {
 		cerr << "Shape is empty!" << endl;
 		return 3;
 	}
-	Shape_frame *frame0 = shape.get_frame(0);
-	if (!frame0) {
-		cerr << "Null first frame!" << endl;
-		return 4;
-	}
 	try {
-		if (frame0->is_rle()) {
-			for (int i = 0; i < nframes; i++) {
-				Shape_frame *frame = shape.get_frame(i);
+		if (shape.is_rle()) {
+			for (auto& frame : shape) {
 				if (!frame || frame->is_empty())
 					continue;
-				Write_thumbnail<Shape_frame, Render_frame>(outputfile, frame, shppal,
+				Write_thumbnail<Shape_frame, Render_frame>(outputfile, *frame, shppal,
 					    frame->get_width(), frame->get_height(), size);
 				break;
 			}
 		} else {
+			int nframes = shape.get_num_frames();
 			int dim0 = intSqrt(nframes);
 			if (dim0 * dim0 < nframes)
 				dim0 += 1;
 			int dim1 = (nframes + dim0 - 1) / dim0;
-			Write_thumbnail<Shape, Render_tiles>(outputfile, &shape, shppal,
+			Write_thumbnail<Shape, Render_tiles>(outputfile, shape, shppal,
 				                                 dim0 * 8, dim1 * 8, size);
 		}
 	} catch (const std::exception& except) {
 		cerr << "Could not generate thumbnail: " << except.what() << endl;
-		return 5;
+		return 4;
 	}
 	return 0;
 }

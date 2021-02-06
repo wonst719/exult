@@ -195,7 +195,7 @@ public:
 	}
 	bool is_rle() const {
 		auto *frame0 = get_frame(0);
-		return frame0 == nullptr || frame0->is_rle();
+		return frame0 != nullptr && frame0->is_rle();
 	}
 	bool is_empty() const {
 		return num_frames == 0;
