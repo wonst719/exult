@@ -389,6 +389,18 @@ inline void WriteNhigh(
 		Write1(out, static_cast<uint8>(val >>(8 * i)));
 }
 
+/*
+ *  Get file size without undefined behavior.
+ */
+inline size_t get_file_size(std::istream& in) {
+	const auto start = in.tellg();
+	in.seekg(0);
+	in.ignore(std::numeric_limits<std::streamsize>::max());
+	size_t len = in.gcount();
+	in.seekg(start);
+	return len;
+}
+
 bool U7open(
     std::ifstream &in,          // Input stream to open.
     const char *fname,          // May be converted to upper-case.

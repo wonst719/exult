@@ -61,10 +61,10 @@ public:
 
 	virtual void seek(size_t) = 0;
 	virtual void skip(std::streamoff) = 0;
-	virtual size_t getSize() = 0;
-	virtual size_t getPos() = 0;
-	virtual bool eof() = 0;
-	virtual bool good() {
+	virtual size_t getSize() const = 0;
+	virtual size_t getPos() const = 0;
+	virtual bool eof() const = 0;
+	virtual bool good() const {
 		return true;
 	}
 	virtual void clear_error() { }
@@ -140,19 +140,15 @@ public:
 		in->seekg(pos, std::ios::cur);
 	}
 
-	size_t getSize() final {
-		size_t pos = in->tellg();
-		in->seekg(0, std::ios::end);
-		size_t len = in->tellg();
-		in->seekg(pos);
-		return len;
+	size_t getSize() const final {
+		return get_file_size(*in);
 	}
 
-	size_t getPos() final {
+	size_t getPos() const final {
 		return in->tellg();
 	}
 
-	bool eof() final {
+	bool eof() const final {
 		in->get();
 		bool ret = in->eof();
 		if (!ret) {
@@ -160,7 +156,7 @@ public:
 		}
 		return ret;
 	}
-	bool good() final {
+	bool good() const final {
 		return in->good();
 	}
 	void clear_error() final {
@@ -254,11 +250,11 @@ public:
 		buf_ptr += pos;
 	}
 
-	size_t getSize() final {
+	size_t getSize() const final {
 		return size;
 	}
 
-	size_t getPos() final {
+	size_t getPos() const final {
 		return buf_ptr - buf;
 	}
 
@@ -266,11 +262,11 @@ public:
 		return buf_ptr;
 	}
 
-	bool eof() final {
+	bool eof() const final {
 		return buf_ptr >= buf + size;
 	}
 
-	bool good() final {
+	bool good() const final {
 		return (buf != nullptr) && (size != 0U);
 	}
 
@@ -344,10 +340,10 @@ public:
 
 	virtual void seek(size_t) = 0;
 	virtual void skip(std::streamoff) = 0;
-	virtual size_t getSize() = 0;
-	virtual size_t getPos() = 0;
+	virtual size_t getSize() const = 0;
+	virtual size_t getPos() const = 0;
 	virtual void flush() { }
-	virtual bool good() {
+	virtual bool good() const {
 		return true;
 	}
 	virtual void clear_error() { }
@@ -400,22 +396,18 @@ public:
 		out->seekp(pos, std::ios::cur);
 	}
 
-	size_t getSize() final {
-		size_t pos = out->tellp();
-		out->seekp(0, std::ios::end);
-		size_t len = out->tellp();
-		out->seekp(pos);
-		return len;
+	size_t getSize() const final {
+		return std::numeric_limits<size_t>::max();
 	}
 
-	size_t getPos() final {
+	size_t getPos() const final {
 		return out->tellp();
 	}
 
 	void flush() final {
 		out->flush();
 	}
-	bool good() final {
+	bool good() const final {
 		return out->good();
 	}
 	void clear_error() final {
@@ -496,11 +488,11 @@ public:
 		buf_ptr += pos;
 	}
 
-	size_t getSize() final {
+	size_t getSize() const final {
 		return size;
 	}
 
-	size_t getPos() final {
+	size_t getPos() const final {
 		return buf_ptr - buf;
 	}
 
