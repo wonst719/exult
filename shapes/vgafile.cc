@@ -179,13 +179,15 @@ static int Find_runs(
 			run = ((run + 1) << 1) | 1;
 			x++;        // Also pass the last one.
 			pixels++;
-		} else do {     // Pass non-repeated run of
-				//   andy length.
+		} else {
+			do {
+				// Pass non-repeated run of any length.
 				x++;
 				pixels++;
 				run += 2;   // So we don't have to shift.
 			} while (x < w && *pixels != 255 &&
 			         (x == w - 1 || pixels[0] != pixels[1]));
+		}
 		// Store run length.
 		runs[runcnt++] = run;
 	}
@@ -290,8 +292,7 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 				// Check for repeated run.
 				if (runs[i] & 1) {
 					while (len) {
-						int c = len > 127
-						        ? 127 : len;
+						int c = len > 127 ? 127 : len;
 						*out++ = (c << 1) | 1;
 						*out++ = *pixels;
 						pixels += c;
@@ -309,14 +310,14 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 			}
 		}
 	Write2(out, 0);         // End with 0 length.
-	datalen = buf.size();        // Create buffer of correct size.
+	datalen = out - buf.data();        // Create buffer of correct size.
 #ifdef DEBUG
 	if (datalen > w * h * 2 + 16 * h)
 		cout << "create_rle: datalen: " << datalen << " w: " << w
 		     << " h: " << h << endl;
 #endif
 	auto data = make_unique<unsigned char[]>(datalen);
-	std::copy(buf.begin(), buf.end(), data.get());
+	std::copy_n(buf.begin(), datalen, data.get());
 	return data;
 }
 
@@ -429,11 +430,15 @@ void Shape_frame::get_rle_shape(
 	yabove = shapes->read2();
 	ybelow = shapes->read2();
 	len -= 8;           // Subtract what we just read.
-	datalen = len + 2;
-	data = make_unique<unsigned char[]>(datalen);
-	shapes->read(data.get(), len);
-	data[len] = 0;          // 0-delimit.
-	data[len + 1] = 0;
+	if (len == 0) {
+		datalen = 2;
+		data[len] = 0;          // 0-delimit.
+		data[len + 1] = 0;
+	} else {
+		datalen = len;
+		data = make_unique<unsigned char[]>(datalen);
+		shapes->read(data.get(), len);
+	}
 	rle = true;
 }
 
