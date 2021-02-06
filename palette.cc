@@ -181,7 +181,7 @@ void Palette::apply(bool repaint) {
  *  @param xfname   xform file name.
  *  @param xindex   xform index.
  */
-void Palette::loadxform(const char *buf, const char *xfname, int &xindex) {
+void Palette::loadxform(const unsigned char *buf, const char *xfname, int &xindex) {
 	U7object xform(xfname, xindex);
 	size_t xlen;
 	auto xbuf = xform.retrieve(xlen);
@@ -210,7 +210,7 @@ void Palette::set_loaded(
 ) {
 	size_t len;
 	auto xfbuf = pal.retrieve(len);
-	const char *buf = reinterpret_cast<const char*>(xfbuf.get());
+	const unsigned char *buf = xfbuf.get();
 	if (len == 768) {
 		// Simple palette
 		if (xindex >= 0)

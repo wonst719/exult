@@ -23,12 +23,11 @@
 #  include <config.h>
 #endif
 
-#include <cstring>
+#include "vgafile.h"
 
 #include "utils.h"
 #include "rect.h"
 #include "ibuf8.h"
-#include "vgafile.h"
 #include "databuf.h"
 #include "Flex.h"
 #include "U7file.h"
@@ -36,17 +35,17 @@
 #include "palette.h"
 
 #include <cassert>
-#include <vector>
+#include <cstring>
+#include <map>
 #include <string>
 #include <utility>
-#include <map>
+#include <vector>
 
 using std::cerr;
 using std::cout;
 using std::endl;
 using std::ifstream;
 using std::ios;
-using std::memcpy;
 using std::ostream;
 using std::vector;
 using std::string;
@@ -261,8 +260,8 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
     int &datalen            // Length of RLE data returned.
 ) {
 	// Create an oversized buffer.
-	auto *buf = new uint8[w * h * 2 + 16 * h];
-	uint8 *out = buf;
+	std::vector<uint8> buf(w * h * 2 + 16 * h);
+	auto *out = buf.data();
 	int newx;           // Gets new x at end of a scan line.
 	for (int y = 0; y < h; y++) // Go through rows.
 		for (int x = 0; (x = Skip_transparent(pixels, x, w)) < w;
@@ -276,9 +275,8 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 				// Write position.
 				Write2(out, x - xoff);
 				Write2(out, y - yoff);
-				memcpy(out, pixels, len);
+				out = std::copy_n(pixels, len, out);
 				pixels += len;
-				out += len;
 				continue;
 			}
 			// Encoded, so write it with bit0==1.
@@ -299,26 +297,26 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 						pixels += c;
 						len -= c;
 					}
-				} else while (len > 0) {
-					int c = len > 127 ? 127 : len;
-					*out++ = c << 1;
-					memcpy(out, pixels, c);
-					out += c;
-					pixels += c;
-					len -= c;
+				} else {
+					while (len > 0) {
+						int c = len > 127 ? 127 : len;
+						*out++ = c << 1;
+						out = std::copy_n(pixels, c, out);
+						pixels += c;
+						len -= c;
+					}
 				}
 			}
 		}
 	Write2(out, 0);         // End with 0 length.
-	datalen = out - buf;        // Create buffer of correct size.
+	datalen = buf.size();        // Create buffer of correct size.
 #ifdef DEBUG
 	if (datalen > w * h * 2 + 16 * h)
 		cout << "create_rle: datalen: " << datalen << " w: " << w
 		     << " h: " << h << endl;
 #endif
 	auto data = make_unique<unsigned char[]>(datalen);
-	memcpy(data.get(), buf, datalen);
-	delete [] buf;
+	std::copy(buf.begin(), buf.end(), data.get());
 	return data;
 }
 
@@ -337,7 +335,7 @@ Shape_frame::Shape_frame(
 		assert(w == c_tilesize && h == c_tilesize);
 		datalen = c_num_tile_bytes;
 		data = make_unique<unsigned char[]>(c_num_tile_bytes);
-		memcpy(data.get(), pixels, c_num_tile_bytes);
+		std::copy_n(pixels, c_num_tile_bytes, data.get());
 	} else
 		data = encode_rle(pixels, w, h, xleft, yabove, datalen);
 }
