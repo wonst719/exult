@@ -193,6 +193,13 @@ public:
 	bool get_from_patch() const {
 		return from_patch;
 	}
+	bool is_rle() const {
+		auto *frame0 = get_frame(0);
+		return frame0 == nullptr || frame0->is_rle();
+	}
+	bool is_empty() const {
+		return num_frames == 0;
+	}
 	Shape_frame *get(std::vector<std::pair<std::unique_ptr<IDataSource>, bool>> const &shapes, int shnum,
 	                 int frnum, std::vector<int> const &counts, int src = -1) {
 		return (size_t(frnum) < frames.size() && frames[frnum])
@@ -202,7 +209,7 @@ public:
 	int get_num_frames() const {
 		return num_frames;
 	}
-	Shape_frame *get_frame(int framenum) {
+	Shape_frame *get_frame(int framenum) const {
 		return 0 <= framenum && size_t(framenum) < frames.size()
 		       ? frames[framenum].get()
 		       : nullptr;
