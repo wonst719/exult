@@ -353,7 +353,7 @@ exultstudioico.o: $(SRC)/win32/exultstudioico.rc $(SRC)/win32/exultstudio.ico wi
 
 mapedit/u7shp.o: CPPFLAGS:=$(PLUGIN_CPPFLAGS)
 
-u7shp$(EXEEXT) : mapedit/u7shp.o
+u7shp$(EXEEXT) : mapedit/u7shp.o $(FILE_OBJS) shapes/vgafile.o imagewin/ibuf8.o imagewin/imagebuf.o
 	$(CXX) $(LDFLAGS) -o $(@) $+ $(GIMP_LIBS) -mwindows
 
 install: $(EXEC)

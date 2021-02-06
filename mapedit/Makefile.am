@@ -18,6 +18,11 @@ endif
 
 u7shp_SOURCES = u7shp.cc
 
+u7shp_LDADD = \
+	../imagewin/libimagewin.la	\
+	../shapes/libshapes.la \
+	../files/libu7file.la
+
 exult_studio_SOURCES = \
 	bargeedit.cc \
 	chunklst.cc \
