@@ -123,19 +123,19 @@ GimpPlugInInfo PLUG_IN_INFO = {
 };
 
 struct u7frame {
+	guchar *pixels;
+	size_t datalen;
 	gint16 leftX;
 	gint16 leftY;
 	gint16 rightX;
 	gint16 rightY;
 	gint16 width;
 	gint16 height;
-	gint32 datalen;
-	guchar *pixels;
 };
 
 struct u7shape {
-	int num_frames;
-	struct u7frame *frames;
+	u7frame *frames;
+	size_t num_frames;
 };
 
 
@@ -202,7 +202,8 @@ static void run(
     gint              nparams,
     const GimpParam  *param,
     gint             *nreturn_vals,
-    GimpParam       **return_vals) {
+    GimpParam       **return_vals
+) {
 	ignore_unused_variable_warning(nparams);
 	static GimpParam  values[2];
 
@@ -245,8 +246,7 @@ static void run(
 }
 
 unsigned int read1(FILE *f) {
-	unsigned char b0;
-	b0 = fgetc(f);
+	unsigned char b0 = fgetc(f);
 	return b0;
 }
 
@@ -387,10 +387,10 @@ static gint32 load_image(gchar *filename) {
 		return -1;
 	}
 	fseek(fp, 0, SEEK_END);
-	const gint32 file_size = ftell(fp);
+	const size_t file_size = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
-	const gint32 shape_size = read4(fp);
+	const size_t shape_size = read4(fp);
 
 	u7shape shape;
 	gint16 max_leftX = -1;
@@ -406,12 +406,12 @@ static gint32 load_image(gchar *filename) {
 #ifdef DEBUG
 		printf("num_frames = %d\n", shape.num_frames);
 #endif
-		shape.frames = g_new(struct u7frame, shape.num_frames);
+		shape.frames = g_new(u7frame, shape.num_frames);
 		max_leftX = 0;
 		max_leftY = 0;
 		max_rightX = 7;
 		max_rightY = 7;
-		for (int i = 0; i < shape.num_frames; i++) {
+		for (size_t i = 0; i < shape.num_frames; i++) {
 			u7frame &frame = shape.frames[i];
 			frame.width = 8;
 			frame.height = 8;
@@ -421,7 +421,7 @@ static gint32 load_image(gchar *filename) {
 			if (fread(frame.pixels, 1, 64, fp) != 64) {
 				// Silently fail
 				memset(frame.pixels, 0, 64);
-			};
+			}
 		}
 	} else {
 		image_type = GIMP_INDEXEDA_IMAGE;
@@ -430,9 +430,9 @@ static gint32 load_image(gchar *filename) {
 #ifdef DEBUG
 		printf("num_frames = %d\n", shape.num_frames);
 #endif
-		shape.frames = g_new(struct u7frame, shape.num_frames);
+		shape.frames = g_new(u7frame, shape.num_frames);
 
-		for (int i = 0; i < shape.num_frames; i++) {
+		for (size_t i = 0; i < shape.num_frames; i++) {
 			u7frame &frame = shape.frames[i];
 			// Go to where frame offset is stored
 			fseek(fp, (i + 1) * 4, SEEK_SET);
@@ -504,16 +504,16 @@ static gint32 load_image(gchar *filename) {
 	                          max_leftY + max_rightY + 1, GIMP_INDEXED);
 	gimp_image_set_filename(image_ID, filename);
 	gimp_image_set_colormap(image_ID, gimp_cmap, 256);
-	for (int i = 0; i < shape.num_frames; i++) {
-		gchar *framename = g_strdup_printf("Frame %d", i);
+	for (size_t i = 0; i < shape.num_frames; i++) {
+		gchar *framename = g_strdup_printf("Frame %zu", i);
 		u7frame &frame = shape.frames[i];
 		const gint32 layer_ID = gimp_layer_new(image_ID, framename,
 		                          frame.width, frame.height,
 		                          image_type, 100, GIMP_NORMAL_MODE);
 		g_free(framename);
 		gimp_image_insert_layer(image_ID, layer_ID, -1, 0);
-		gimp_item_transform_translate(layer_ID, static_cast<gint>(max_leftX - frame.leftX),
-		                     static_cast<gint>(max_leftY - frame.leftY));
+		gimp_item_transform_translate(layer_ID, max_leftX - frame.leftX,
+		                              max_leftY - frame.leftY);
 
 		GeglBuffer *drawable = gimp_drawable_get_buffer(layer_ID);
 		const GeglRectangle rect{0, 0,
@@ -526,7 +526,7 @@ static gint32 load_image(gchar *filename) {
 
 	fclose(fp);
 
-	for (int i = 0; i < shape.num_frames; i++) {
+	for (size_t i = 0; i < shape.num_frames; i++) {
 		g_free(shape.frames[i].pixels);
 	}
 
@@ -641,7 +641,7 @@ static gint32 save_image(gchar  *filename,
 
 	u7shape shape;
 	shape.num_frames = nlayers;
-	shape.frames = g_new(struct u7frame, shape.num_frames);
+	shape.frames = g_new(u7frame, shape.num_frames);
 
 	for (int k = 0; k < nlayers; k++) {
 		u7frame& frame = shape.frames[k];
@@ -725,9 +725,9 @@ static gint32 save_image(gchar  *filename,
 	}
 
 	write4(fp, 0); // Fill in later
-	for (int i = 0; i < shape.num_frames; i++)
+	for (size_t i = 0; i < shape.num_frames; i++)
 		write4(fp, 0);  // Fill in later
-	for (int i = 0; i < shape.num_frames; i++) {
+	for (size_t i = 0; i < shape.num_frames; i++) {
 		u7frame &frame = shape.frames[shape.num_frames - i - 1];
 		size_t pos = ftell(fp);    // Get the frame offset
 		fseek(fp, (i + 1) * 4, SEEK_SET);
@@ -746,7 +746,7 @@ static gint32 save_image(gchar  *filename,
 
 	fclose(fp);
 
-	for (int i = 0; i < shape.num_frames; i++) {
+	for (size_t i = 0; i < shape.num_frames; i++) {
 		g_free(shape.frames[i].pixels);
 	}
 	g_free(shape.frames);
