@@ -288,7 +288,8 @@ include Makefile.common
 E :=
 S := $E $E
 
-CXX?=g++
+CXX:=g++
+CC:=gcc
 
 CPPFLAGS:=$(strip -DVERSION=\"$(VERSION)\" -DEXULT_DATADIR=\"data\" \
 	-DNOMINMAX=1 -D_USE_MATH_DEFINES -DHAVE_NETDB_H=0 $(SYSFLAGS) \
@@ -304,9 +305,22 @@ CPPFLAGS:=$(strip -DVERSION=\"$(VERSION)\" -DEXULT_DATADIR=\"data\" \
 	$(subst -I, -isystem$(S), $(FLUIDSYNTH_CFLAGS) $(SDL_CFLAGS) $(ZIP_CFLAGS) $(MT32EMU_CFLAGS) $(ES_INCLUDES)) \
 	$(EXTRA_OPTIONS))
 
+PLUGIN_CPPFLAGS:=$(strip -DVERSION=\"$(VERSION)\" -DEXULT_DATADIR=\"data\" \
+	-DNOMINMAX=1 -D_USE_MATH_DEFINES -DHAVE_NETDB_H=0 $(SYSFLAGS) \
+	-DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_TIME_H=1 -DHAVE_SYS_SOCKET_H=0 \
+	-DHAVE_SNPRINTF -DUSE_FMOPL_MIDI -DUSE_MT32EMU_MIDI \
+	-DUSE_EXULTSTUDIO -DHAVE_PNG_H -DHAVE_GETOPT_LONG \
+	-DHAVE_FREETYPE2 -DUSE_HQ2X_SCALER -DUSE_HQ3X_SCALER -DUSE_HQ4X_SCALER -DUSE_XBR_SCALER \
+	-I$(SRC) -I$(SRC)/audio -I$(SRC)/audio/midi_drivers -I$(SRC)/conf -I$(SRC)/data \
+	-I$(SRC)/files -I$(SRC)/files/zip -I$(SRC)/gamemgr -I$(SRC)/gumps -I$(SRC)/headers \
+	-I$(SRC)/imagewin -I$(SRC)/ios/include -I$(SRC)/objs -I$(SRC)/pathfinder -I$(SRC)/server \
+	-I$(SRC)/shapes -I$(SRC)/tools -I$(SRC)/usecode -I$(SRC)/usecode/compiler \
+	-I$(SRC)/usecode/ucxt/include -I$(SRC)/mapedit -I$(SRC)/shapes/shapeinf \
+	$(subst -I, -isystem$(S), $(GIMP_INCLUDES)) \
+	$(EXTRA_OPTIONS))
+
 CFLAGS:=-MMD $(ARCHFLAGS) $(strip $(OPT_LEVEL) -Wall -Wextra -pedantic -mms-bitfields) \
 	$(subst -I, -isystem$(S), $(GIMP_INCLUDES))
-CC?=gcc
 
 OBJECTS:=$(OBJS) $(TOOL_OBJS) $(ES_OBJS) mapedit/u7shp.o
 
@@ -336,6 +350,8 @@ $(EXP_FILE): $(ES_OBJS)
 
 exultstudioico.o: $(SRC)/win32/exultstudioico.rc $(SRC)/win32/exultstudio.ico win32/exult_studio.exe.manifest
 	windres --include-dir $(SRC)/win32 $(SRC)/win32/exultstudioico.rc $@
+
+mapedit/u7shp.o: CPPFLAGS:=$(PLUGIN_CPPFLAGS)
 
 u7shp$(EXEEXT) : mapedit/u7shp.o
 	$(CXX) $(LDFLAGS) -o $(@) $+ $(GIMP_LIBS) -mwindows

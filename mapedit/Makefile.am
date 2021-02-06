@@ -11,12 +11,12 @@ GIMP_PLUGINS=
 endif
 
 if BUILD_STUDIO
-bin_PROGRAMS = exult_studio 
+bin_PROGRAMS = exult_studio
 else
 bin_PROGRAMS =
 endif
 
-u7shp_SOURCES = u7shp.c
+u7shp_SOURCES = u7shp.cc
 
 exult_studio_SOURCES = \
 	bargeedit.cc \
@@ -83,8 +83,8 @@ else
 mapedit_DATA =
 endif
 
-u7shp$(EXEEXT): u7shp.c $(top_builddir)/config.h
-	CFLAGS="-O2 -I$(top_srcdir) -DHAVE_CONFIG_H" $(GIMPTOOL) --build $<
+u7shp$(EXEEXT): u7shp.cc $(top_builddir)/config.h
+	CXXFLAGS="-O2 -I$(top_srcdir) -DHAVE_CONFIG_H" $(GIMPTOOL) --build $<
 
 EXTRA_DIST=	\
 	exult_studio.glade \
