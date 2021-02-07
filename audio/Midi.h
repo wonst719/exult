@@ -50,7 +50,6 @@ public:
 	MyMidiPlayer();
 	~MyMidiPlayer();
 
-
 	void			destroyMidiDriver();
 
 	void			start_music(int num,bool repeat=false,std::string flex=MAINMUS);
@@ -58,31 +57,31 @@ public:
 	void			stop_music(bool quitting = false);
 
 	bool			is_track_playing(int num);
-	int				get_current_track();
+	int				get_current_track() const;
 	bool			is_repeating() { return repeating; }
-	
+
 	void			set_timbre_lib(TimbreLibrary lib);
-	TimbreLibrary	get_timbre_lib() { return timbre_lib; }
-	
+	TimbreLibrary	get_timbre_lib() const { return timbre_lib; }
+
 	void			set_midi_driver(const std::string& desired_driver, bool use_oggs);
 	std::string		get_midi_driver() { return midi_driver_name; }
-	bool			get_ogg_enabled() { return ogg_enabled; }
+	bool			get_ogg_enabled() const { return ogg_enabled; }
 
 	void			set_music_conversion(int conv);
-	int				get_music_conversion() { return music_conversion; }
+	int				get_music_conversion() const { return music_conversion; }
 
 #ifdef ENABLE_MIDISFX
 	void			start_sound_effect(int num);
 	void			stop_sound_effects();
 
 	void			set_effects_conversion(int conv);
-	int				get_effects_conversion() { return effects_conversion; }
+	int				get_effects_conversion() const { return effects_conversion; }
 #endif
 
 	void			produceSamples(sint16 *stream, uint32 bytes);
 	void			load_timbres();
-	bool			is_mt32(); // Check for true mt32, mt32emu or fakemt32
-	bool			is_adlib(); // Check for adlib
+	bool			is_mt32() const; // Check for true mt32, mt32emu or fakemt32
+	bool			is_adlib() const; // Check for adlib
 
 private:
 	bool			repeating = false;
@@ -100,16 +99,16 @@ private:
 	int				music_conversion = XMIDIFILE_CONVERT_MT32_TO_GM;
 	int				effects_conversion = XMIDIFILE_CONVERT_GS127_TO_GS;
 	int				setup_timbre_for_track(std::string &str);
-	
+
 	// Ogg Stuff
 	bool			ogg_enabled = false;
 	sint32			ogg_instance_id = -1;
 
-	bool				ogg_play_track(const std::string& filename, int num, bool repeat);
-	bool				ogg_is_playing();
-	void				ogg_stop_track();
+	bool			ogg_play_track(const std::string& filename, int num, bool repeat);
+	bool			ogg_is_playing() const;
+	void			ogg_stop_track();
 
-	void				ogg_mix(sint16 *stream, uint32 bytes);
+	void			ogg_mix(sint16 *stream, uint32 bytes);
 };
 
 #endif

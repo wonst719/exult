@@ -22,6 +22,7 @@
 
 #include <cctype>
 
+#include "array_size.h"
 #include "SDL_events.h"
 #include "files/U7file.h"
 #include "files/utils.h"
@@ -44,7 +45,6 @@
 #include "array_size.h"
 #include "exult.h"
 #include "touchui.h"
-#include "MidiDriver.h"
 
 using std::cout;
 using std::endl;
@@ -234,7 +234,6 @@ SI_Game::SI_Game() {
 		mp->add(new Map_patch_remove(Object_spec(
 		                                 Tile_coord(60, 1937, 0), 275, 0, 0)));
 	}
-
 }
 
 // Little weighted random function for lightning on the castle
@@ -258,18 +257,26 @@ void SI_Game::play_intro() {
 	              audio->is_speech_enabled();
 	bool speech_n_subs = Audio::get_ptr()->is_speech_with_subs();
 	bool extended_intro = gwin->get_extended_intro();
-	
+
 	auto select_fli = [&extended_intro](int orig_id, int ext_id) {
 		if (extended_intro) {
 			return playfli(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX, ext_id);
 		}
 		return playfli(INTRO_DAT, PATCH_INTRO, orig_id);
 	};
-
-	playfli fli1 = select_fli(1, EXULT_SI_FLX_EXT_INTRO_CASTLE_FLC);
-	playfli fli5 = select_fli(5, EXULT_SI_FLX_EXT_INTRO_SHIP1_FLC);
-	playfli fli6 = select_fli(6, EXULT_SI_FLX_EXT_INTRO_SHIP2_FLC);
-	playfli fli7 = select_fli(7, EXULT_SI_FLX_EXT_INTRO_PIL1_FLC);
+	constexpr const static int original_intro_counts[] = {
+	     20, 20,  20,  50,  10, 75,  20,  20, 37,
+	     55, 73, 220, 290,  50, 81, 200,  20, 61,
+	    320, 20,  20,  61,  61, 61,  20, 300, 20
+	};
+	constexpr const static int extended_intro_counts[] = {
+	     20, 20,  20,  25,  10, 25,  20,  20, 37,
+	     55, 73, 220, 290,  50, 81, 200,  20, 61,
+	    320, 20,  10, 115, 115, 91,  20, 300, 20
+	};
+	static_assert(array_size(original_intro_counts) == array_size(extended_intro_counts),
+	              "Missing array count in one of the arrays");
+	const int *selected_intro_counts = extended_intro ? extended_intro_counts : original_intro_counts;
 
 	gwin->clear_screen(true);
 
@@ -279,7 +286,8 @@ void SI_Game::play_intro() {
 		fli0.info();
 
 		int next = 0;
-		for (int j = 0; j < 20; j++) {
+		int count = *selected_intro_counts++;
+		for (int j = 0; j < count; j++) {
 			next = fli0.play(win, 0, 0, next, j * 5);
 			win->show();
 			wait_delay(0, 0, 1);
@@ -291,7 +299,8 @@ void SI_Game::play_intro() {
 		if (wait_delay(3000, 0, 1))
 			throw UserBreakException();
 
-		for (int j = 20; j; j--) {
+		count = *selected_intro_counts++;
+		for (int j = count; j; j--) {
 			next = fli0.play(win, 0, 0, next, j * 5);
 			win->show();
 			wait_delay(0, 0, 1);
@@ -305,16 +314,17 @@ void SI_Game::play_intro() {
 		// Castle Outside
 
 		// Start Music
-		// FIXME a way to load the flx files
-		/*if (extended_intro) {
-			if (midi_driver->isFMSynth())
-				audio->start_music(EXULT_SI_FLX_EXT_INTRO_A_XMI, 0, false);
-			else if (ogg_enabled && ogg_is_playing())
-				audio->start_music(EXULT_SI_FLX_EXT_INTRO_SI01_OGG, 0, false);
-			else if (midi_driver->isMT32())
-				audio->start_music(EXULT_SI_FLX_EXT_INTRO_R_XMI, 0, false);
-		} else*/
+		if (extended_intro) {
+			const auto *midi_driver = audio->get_midi();
+			if (midi_driver->get_ogg_enabled())
+				audio->start_music(EXULT_SI_FLX_EXT_INTRO_SI01_OGG, false, EXULT_SI_FLX);
+			else if (midi_driver->is_mt32())
+				audio->start_music(EXULT_SI_FLX_EXT_INTRO_R_XMI, false, EXULT_SI_FLX);
+			else
+				audio->start_music(EXULT_SI_FLX_EXT_INTRO_A_XMI, false, EXULT_SI_FLX);
+		} else {
 			audio->start_music(R_SINTRO, 0, false);
+		}
 
 		size_t  size;
 		unique_ptr<unsigned char[]> buffer;
@@ -325,6 +335,7 @@ void SI_Game::play_intro() {
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
 
+		playfli fli1 = select_fli(1, EXULT_SI_FLX_EXT_INTRO_CASTLE_FLC);
 		fli1.info();
 
 		fli1.play(win, 0, 1, 0, 0);
@@ -332,8 +343,9 @@ void SI_Game::play_intro() {
 		next = SDL_GetTicks();
 		int prev = -1;
 		int num;
-		
-		for (int j = 0; j < 20; j++) {
+
+		count = *selected_intro_counts++;
+		for (int j = 0; j < count; j++) {
 			num = get_frame();
 			if (prev != num)
 				for (int i = 0; i < num + 1; i++)
@@ -344,20 +356,18 @@ void SI_Game::play_intro() {
 			win->show();
 			if (wait_delay(1, 0, 1))
 				throw UserBreakException();
-
 		}
 
-#if 0
-			for (int j = 0; j < 50; j++) {
-				num = get_frame();
-			if (prev != num)
-				for (int i = 0; i < num + 1; i++)
-					fli1.play(win, i, i, next);
-#else
-			for (int j = 0; j < 25; j++) {
-					num = get_frame();
-					next = fli1.play(win, j, j, next) + 30;
-#endif
+		count = *selected_intro_counts++;
+		for (int j = 0; j < count; j++) {
+			num = get_frame();
+			if (!extended_intro) {
+				if (prev != num)
+					for (int i = 0; i < num + 1; i++)
+						fli1.play(win, i, i, next);
+			} else {
+				next = fli1.play(win, j, j, next) + 30;
+			}
 
 			if (jive)
 				sifont->center_text(ibuf, centerx, centery + 50, get_text_msg(dick_castle));
@@ -369,10 +379,10 @@ void SI_Game::play_intro() {
 			win->show();
 			if (wait_delay(1, 0, 1))
 				throw UserBreakException();
+		}
 
-			}
-
-		for (int j = 0; j < 10; j++) {
+		count = *selected_intro_counts++;
+		for (int j = 0; j < count; j++) {
 			num = get_frame();
 			if (prev != num)
 				for (int i = 0; i < num + 1; i++)
@@ -383,26 +393,24 @@ void SI_Game::play_intro() {
 				audio->copy_and_play(buffer.get() + 8, size - 8, false);
 				buffer.reset();
 			}
-			
+
 			prev = num;
 			next += 75;
 			win->show();
 			if (wait_delay(1, 0, 1))
 				throw UserBreakException();
-
 		}
 
-#if 0
-		for (int j = 0; j < 75; j++) {
+		count = *selected_intro_counts++;
+		for (int j = 0; j < count; j++) {
 			num = get_frame();
-			if (prev != num)
-				for (int i = 0; i < num + 1; i++)
-					fli1.play(win, i, i, next);
-#else
-		for (int j = 0; j < 25; j++) {
-			num = get_frame();
-			next = fli1.play(win, j, j, next) + 30;
-#endif
+			if (!extended_intro) {
+				if (prev != num)
+					for (int i = 0; i < num + 1; i++)
+						fli1.play(win, i, i, next);
+			} else {
+				next = fli1.play(win, j, j, next) + 30;
+			}
 
 			for (int i = 0; i < 3; i++) {
 				sifont->center_text(ibuf, centerx, centery + 50 + 15 * i, get_text_msg(bg_fellow + i));
@@ -413,15 +421,14 @@ void SI_Game::play_intro() {
 			win->show();
 			if (wait_delay(1, 0, 1))
 				throw UserBreakException();
-
 		}
 
-		for (int j = 20; j; j--) {
+		count = *selected_intro_counts++;
+		for (int j = count; j; j--) {
 			next = fli1.play(win, 0, 0, next, j * 5);
 			win->show();
 			if (wait_delay(0, 0, 1))
 				throw UserBreakException();
-
 		}
 
 		if (wait_delay(0))
@@ -430,14 +437,12 @@ void SI_Game::play_intro() {
 		// Do this! Prevents palette corruption
 		gwin->clear_screen(true);
 
-//******************************
-		
-		
 		// Guard walks in
 		playfli fli2(INTRO_DAT, PATCH_INTRO, 2);
 		fli2.info();
 
-		for (int j = 0; j < 20; j++) {
+		count = *selected_intro_counts++;
+		for (int j = 0; j < count; j++) {
 			next = fli2.play(win, 0, 0, next, j * 5);
 			win->show();
 			if (wait_delay(0, 0, 1))
@@ -446,7 +451,8 @@ void SI_Game::play_intro() {
 
 		// Guard walks in
 		int j;
-		for (j = 0; j < 37; j++) {
+		count = *selected_intro_counts++;
+		for (j = 0; j < count; j++) {
 			next = fli2.play(win, j, j, next);
 			win->show();
 			if (wait_delay(0, 0, 1))
@@ -460,7 +466,8 @@ void SI_Game::play_intro() {
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
 
-		for (; j < 55; j++) {
+		count = *selected_intro_counts++;
+		for (; j < count; j++) {
 			next = fli2.play(win, j, j, next);
 
 			if (jive)
@@ -485,7 +492,8 @@ void SI_Game::play_intro() {
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
 
-		for (; j < 73; j++) {
+		count = *selected_intro_counts++;
+		for (; j < count; j++) {
 			next = fli2.play(win, j, j, next);
 
 			if (!speech || jive  || speech_n_subs) {
@@ -497,7 +505,9 @@ void SI_Game::play_intro() {
 			if (wait_delay(0, 0, 1))
 				throw UserBreakException();
 		}
-		for (int i = 0; i < 220; i++)
+
+		count = *selected_intro_counts++;
+		for (int i = 0; i < count; i++)
 			if (wait_delay(10))
 				throw UserBreakException();
 
@@ -513,14 +523,16 @@ void SI_Game::play_intro() {
 		win->show();
 		j++;
 
-		for (int i = 0; i < 290; i++)
+		count = *selected_intro_counts++;
+		for (int i = 0; i < count; i++)
 			if (wait_delay(10, 0, 1))
 				throw UserBreakException();
 
 		fli2.play(win, j, j);
 		j++;
 
-		for (int i = 0; i < 50; i++)
+		count = *selected_intro_counts++;
+		for (int i = 0; i < count; i++)
 			if (wait_delay(10, 0, 1))
 				throw UserBreakException();
 
@@ -533,7 +545,8 @@ void SI_Game::play_intro() {
 		next = fli2.play(win, j, j);
 		j++;
 
-		for (; j < 81; j++) {
+		count = *selected_intro_counts++;
+		for (; j < count; j++) {
 			next = fli2.play(win, j, j, next);
 
 			if (jive)
@@ -548,7 +561,8 @@ void SI_Game::play_intro() {
 				throw UserBreakException();
 		}
 
-		for (int i = 0; i < 200; i++)
+		count = *selected_intro_counts++;
+		for (int i = 0; i < count; i++)
 			if (wait_delay(10))
 				throw UserBreakException();
 
@@ -562,7 +576,8 @@ void SI_Game::play_intro() {
 		next = 0;
 
 		// Scroll opens
-		for (j = 0; j < 20; j++) {
+		count = *selected_intro_counts++;
+		for (j = 0; j < count; j++) {
 			next = fli3.play(win, j, j, next) + 20;
 			win->show();
 			if (wait_delay(0, 0, 1))
@@ -576,7 +591,8 @@ void SI_Game::play_intro() {
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
 
-		for (; j < 61; j++) {
+		count = *selected_intro_counts++;
+		for (; j < count; j++) {
 			next = fli3.play(win, j, j, next) + 20;
 
 			if (jive)
@@ -615,7 +631,8 @@ void SI_Game::play_intro() {
 
 		// Batlin...
 
-		for (j = 0; j < 320; j++) {
+		count = *selected_intro_counts++;
+		for (j = 0; j < count; j++) {
 			next = fli4.play(win, j % 40, j % 40, next);
 
 			if (j < 300)
@@ -652,7 +669,8 @@ void SI_Game::play_intro() {
 		}
 		sf = gshape.get_frame(0);
 
-		for (j = 20; j; j--) {
+		count = *selected_intro_counts++;
+		for (j = count; j; j--) {
 			next = fli4.play(win, 0, 0, next, j * 5);
 			if (sf)
 				sman->paint_shape(centerx - 36, centery, sf);
@@ -666,13 +684,11 @@ void SI_Game::play_intro() {
 		gwin->clear_screen(true);
 
 		// Tis LBs's Worst fear
+		playfli fli5 = select_fli(5, EXULT_SI_FLX_EXT_INTRO_SHIP1_FLC);
 		fli5.info();
 
-#if 0
-		for (j = 0; j < 20; j++) {
-#else
-		for (j = 0; j < 10; j++) {
-#endif
+		count = *selected_intro_counts++;
+		for (j = 0; j < count; j++) {
 			next = fli5.play(win, 0, 0, next, j * 5);
 			win->show();
 			if (wait_delay(0, 0, 1))
@@ -685,11 +701,8 @@ void SI_Game::play_intro() {
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
 
-#if 0
-		for (j = 0; j < 61; j++) {
-#else
-		for (j = 0; j < 115; j++) {
-#endif
+		count = *selected_intro_counts++;
+		for (j = 0; j < count; j++) {
 			next = fli5.play(win, j, j, next) + 30;
 
 			if (j < 20 && (!speech || jive || speech_n_subs)) {
@@ -708,13 +721,11 @@ void SI_Game::play_intro() {
 		gwin->clear_screen(true);
 
 		// Boat 1
+		playfli fli6 = select_fli(6, EXULT_SI_FLX_EXT_INTRO_SHIP2_FLC);
 		fli6.info();
 
-#if 0
-		for (j = 0; j < 61; j++) {
-#else
-		for (j = 0; j < 115; j++) {
-#endif
+		count = *selected_intro_counts++;
+		for (j = 0; j < count; j++) {
 			next = fli6.play(win, j, j, next) + 30;
 			win->show();
 			if (wait_delay(0, 0, 1))
@@ -725,15 +736,13 @@ void SI_Game::play_intro() {
 		gwin->clear_screen(true);
 
 		// Boat 2
+		playfli fli7 = select_fli(7, EXULT_SI_FLX_EXT_INTRO_PIL1_FLC);
 		fli7.info();
 
 		const char *zot = "Zot!";
 
-#if 0
-		for (j = 0; j < 61; j++) {
-#else
-		for (j = 0; j < 91; j++) {
-#endif
+		count = *selected_intro_counts++;
+		for (j = 0; j < count; j++) {
 			next = fli7.play(win, j, j, next) + 30;
 
 			if (j > 55 && jive)
@@ -751,7 +760,8 @@ void SI_Game::play_intro() {
 		playfli fli8(INTRO_DAT, PATCH_INTRO, 8);
 		fli8.info();
 
-		for (j = 0; j < 20; j++) {
+		count = *selected_intro_counts++;
+		for (j = 0; j < count; j++) {
 			next = fli8.play(win, 0, 0, next, j * 5);
 			win->show();
 			wait_delay(0, 0, 1);
@@ -761,11 +771,13 @@ void SI_Game::play_intro() {
 		win->show();
 		wait_delay(0, 0, 1);
 
-		for (int i = 0; i < 300; i++)
+		count = *selected_intro_counts++;
+		for (int i = 0; i < count; i++)
 			if (wait_delay(10))
 				throw UserBreakException();
 
-		for (j = 20; j; j--) {
+		count = *selected_intro_counts++;
+		for (j = count; j; j--) {
 			next = fli8.play(win, 0, 0, next, j * 5);
 			win->show();
 			wait_delay(0, 0, 1);
@@ -774,8 +786,8 @@ void SI_Game::play_intro() {
 	}
 
 	// Fade out the palette...
-//	pal.fade_out(c_fade_out_time);
-// this doesn't work right ATM since the FLIC player has its own palette handling
+	// pal->fade_out(c_fade_out_time);
+	// this doesn't work right ATM since the FLIC player has its own palette handling
 
 	// ... and clean the screen.
 	gwin->clear_screen(true);

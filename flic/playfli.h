@@ -58,6 +58,10 @@ public:
 		  palette(std::make_unique<Palette>()) {
 		initfli();
 	}
+	playfli(const playfli&) = delete;
+	playfli(playfli&&) noexcept = default;
+	playfli& operator=(const playfli&) = delete;
+	playfli& operator=(playfli&&) noexcept = default;
 	~playfli() noexcept = default;
 	void info(fliinfo *fi = nullptr);
 	int play(Image_window *win, int first_frame = 0, int last_frame = -1, unsigned long ticks = 0, int brightness = 100);

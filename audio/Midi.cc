@@ -271,6 +271,7 @@ int MyMidiPlayer::setup_timbre_for_track(std::string &str)
 
 	// SI
 	else if (str == MAINSHP_FLX) lib = TIMBRE_LIB_MAINMENU;
+	else if (str == EXULT_SI_FLX) lib = TIMBRE_LIB_INTRO;
 	else if (str == R_SINTRO) lib = TIMBRE_LIB_INTRO;
 	else if (str == A_SINTRO) lib = TIMBRE_LIB_INTRO;
 	else if (str == R_SEND) lib = TIMBRE_LIB_ENDGAME;
@@ -419,7 +420,7 @@ bool MyMidiPlayer::is_track_playing(int num)
 	return false;
 }
 
-int MyMidiPlayer::get_current_track()
+int MyMidiPlayer::get_current_track() const
 {
 	if (current_track == -1) return -1;
 
@@ -636,7 +637,7 @@ bool MyMidiPlayer::init_device(bool timbre_load)
 // Check for true mt32, mt32emu or fakemt32
 // primarily for the mt32 background music tracks
 
-bool MyMidiPlayer::is_mt32()
+bool MyMidiPlayer::is_mt32() const
 {
 	return midi_driver && (midi_driver->isMT32() ||
 		get_music_conversion() == XMIDIFILE_CONVERT_NOCONVERSION ||
@@ -644,7 +645,7 @@ bool MyMidiPlayer::is_mt32()
 		!midi_driver->isFMSynth();
 }
 
-bool MyMidiPlayer::is_adlib()
+bool MyMidiPlayer::is_adlib() const
 {
 	return midi_driver && (midi_driver->isFMSynth());
 }
@@ -766,6 +767,10 @@ bool MyMidiPlayer::ogg_play_track(const std::string& filename, int num, bool rep
 			snprintf(outputstr, 255, "%02dbg.ogg", num);
 			ogg_name = outputstr;
 			}
+		else if (filename == EXULT_BG_FLX)
+			{
+			ogg_name = filename;
+			}
 		}
 	else if (Game::get_game_type() == SERPENT_ISLE)
 		{
@@ -793,6 +798,10 @@ bool MyMidiPlayer::ogg_play_track(const std::string& filename, int num, bool rep
 				ogg_name = outputstr;
 				}
 			}
+		else if (filename == EXULT_SI_FLX)
+			{
+			ogg_name = filename;
+			}
 		}
 	else
 		{
@@ -804,7 +813,10 @@ bool MyMidiPlayer::ogg_play_track(const std::string& filename, int num, bool rep
 
 	if (ogg_name.empty()) return false;
 
-	if (U7exists("<PATCH>/music/" + ogg_name))
+	const bool flex_source = ogg_name == filename;
+	if (flex_source)
+		ogg_name = get_system_path(ogg_name);
+	else if (U7exists("<PATCH>/music/" + ogg_name))
 		ogg_name = get_system_path("<PATCH>/music/" + ogg_name);
 	else if (is_system_path_defined("<BUNDLE>") &&
 	         U7exists("<BUNDLE>/music/" + ogg_name))
@@ -816,7 +828,13 @@ bool MyMidiPlayer::ogg_play_track(const std::string& filename, int num, bool rep
 	cout << "OGG audio: Music track " << ogg_name << endl;
 #endif
 
-	auto ds = std::make_unique<IFileDataSource>(ogg_name.c_str());
+	auto ds = [flex_source, &ogg_name, num]() -> std::unique_ptr<IDataSource> {
+		if (flex_source) {
+			return std::make_unique<IExultDataSource>(ogg_name, num);
+		} else {
+			return std::make_unique<IFileDataSource>(ogg_name);
+		}
+	}();
 	if (!ds->good()) {
 		return false;
 	}
@@ -852,7 +870,7 @@ void MyMidiPlayer::ogg_stop_track()
 	}
 }
 
-bool MyMidiPlayer::ogg_is_playing()
+bool MyMidiPlayer::ogg_is_playing() const
 {
 	if (ogg_instance_id != -1) {
 		Pentagram::AudioMixer *mixer = Pentagram::AudioMixer::get_instance();
