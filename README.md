@@ -2,6 +2,8 @@
 [![Travis CI Build Status](https://img.shields.io/travis/exult/exult/master.svg?label=Travis+CI+Build)](https://www.travis-ci.org/exult/exult)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/10872/badge.svg)](https://scan.coverity.com/projects/exult-exult)
 [![CodeFactor](https://www.codefactor.io/repository/github/exult/exult/badge)](https://www.codefactor.io/repository/github/exult/exult)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/exult/exult.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/exult/exult/alerts/)
+[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/exult/exult.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/exult/exult/context:cpp)
 
 What is Exult?
 ----
