@@ -1,9 +1,9 @@
-[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![Travis CI Build Status](https://img.shields.io/travis/exult/exult/master.svg?label=Travis+CI+Build)](https://www.travis-ci.org/exult/exult)
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/10872/badge.svg)](https://scan.coverity.com/projects/exult-exult)
-[![CodeFactor](https://www.codefactor.io/repository/github/exult/exult/badge)](https://www.codefactor.io/repository/github/exult/exult)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/exult/exult.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/exult/exult/alerts/)
-[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/exult/exult.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/exult/exult/context:cpp)
+[![GitHub](https://img.shields.io/github/license/exult/exult?label=License&logo=GNU)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+[![Travis (.com)](https://img.shields.io/travis/com/exult/exult?label=Travis%20CI%20Build&logo=Travis%20CI&logoColor=white)](https://www.travis-ci.com/exult/exult)
+[![Coverity Scan](https://scan.coverity.com/projects/10872/badge.svg)](https://scan.coverity.com/projects/exult-exult)
+[![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/exult/exult?label=codefactor&logo=codefactor&logoColor=white)](https://www.codefactor.io/repository/github/exult/exult)
+[![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/exult/exult?logo=LGTM)](https://lgtm.com/projects/g/exult/exult/alerts/)
+[![LGTM Grade](https://img.shields.io/lgtm/grade/cpp/github/exult/exult?logo=LGTM)](https://lgtm.com/projects/g/exult/exult/context:cpp)
 
 What is Exult?
 ----
