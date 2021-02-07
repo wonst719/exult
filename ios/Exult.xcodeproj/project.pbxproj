@@ -128,7 +128,6 @@
 		E700DCB11A6E30A7006C8BE4 /* txtscroll.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DC851A6E30A7006C8BE4 /* txtscroll.cc */; };
 		E700DCB21A6E30A7006C8BE4 /* version.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DC871A6E30A7006C8BE4 /* version.cc */; };
 		E700DCB31A6E30A7006C8BE4 /* windrag.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DC891A6E30A7006C8BE4 /* windrag.cc */; };
-		E700DCB41A6E30A7006C8BE4 /* xdrag.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DC8B1A6E30A7006C8BE4 /* xdrag.cc */; };
 		E700DCD71A6E30D8006C8BE4 /* animate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DCB51A6E30D8006C8BE4 /* animate.cc */; };
 		E700DCD81A6E30D8006C8BE4 /* barge.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DCB71A6E30D8006C8BE4 /* barge.cc */; };
 		E700DCD91A6E30D8006C8BE4 /* chunks.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DCB91A6E30D8006C8BE4 /* chunks.cc */; };
@@ -617,8 +616,6 @@
 		E700DC881A6E30A7006C8BE4 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = ../version.h; sourceTree = "<group>"; };
 		E700DC891A6E30A7006C8BE4 /* windrag.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = windrag.cc; path = ../windrag.cc; sourceTree = "<group>"; };
 		E700DC8A1A6E30A7006C8BE4 /* windrag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = windrag.h; path = ../windrag.h; sourceTree = "<group>"; };
-		E700DC8B1A6E30A7006C8BE4 /* xdrag.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xdrag.cc; path = ../xdrag.cc; sourceTree = "<group>"; };
-		E700DC8C1A6E30A7006C8BE4 /* xdrag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xdrag.h; path = ../xdrag.h; sourceTree = "<group>"; };
 		E700DCB51A6E30D8006C8BE4 /* animate.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = animate.cc; path = ../objs/animate.cc; sourceTree = "<group>"; };
 		E700DCB61A6E30D8006C8BE4 /* animate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = animate.h; path = ../objs/animate.h; sourceTree = "<group>"; };
 		E700DCB71A6E30D8006C8BE4 /* barge.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = barge.cc; path = ../objs/barge.cc; sourceTree = "<group>"; };
@@ -1299,8 +1296,6 @@
 				E700DC881A6E30A7006C8BE4 /* version.h */,
 				E700DC891A6E30A7006C8BE4 /* windrag.cc */,
 				E700DC8A1A6E30A7006C8BE4 /* windrag.h */,
-				E700DC8B1A6E30A7006C8BE4 /* xdrag.cc */,
-				E700DC8C1A6E30A7006C8BE4 /* xdrag.h */,
 			);
 			name = main;
 			sourceTree = "<group>";
@@ -2161,7 +2156,6 @@
 				005043EA9A06E3F7BB57379A /* lightinf.cc in Sources */,
 				E700DC2C1A6E2D6A006C8BE4 /* soundtest.cc in Sources */,
 				E700DC1C1A6E2CE7006C8BE4 /* UnixSeqMidiDriver.cpp in Sources */,
-				E700DCB41A6E30A7006C8BE4 /* xdrag.cc in Sources */,
 				E700DCB11A6E30A7006C8BE4 /* txtscroll.cc in Sources */,
 				E700DC131A6E2CE7006C8BE4 /* timidity_mix.cpp in Sources */,
 				E700DD5D1A6E3121006C8BE4 /* objdollinf.cc in Sources */,

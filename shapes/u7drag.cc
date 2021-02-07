@@ -26,9 +26,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #  include <config.h>
 #endif
 
-
 #include "u7drag.h"
 #include "utils.h"
+
+#include <cassert>
+
+#define FILE_URI "file:///"
+
+/*
+ *  Check and skip the URI introducer.
+ */
+static bool verify_is_uri(
+    const unsigned char *&data,
+	const char *searched_uri
+) {
+	static const size_t urilen = strlen(searched_uri);
+	if (memcmp(data, searched_uri, urilen) == 0) {
+		data += urilen;
+		return true;
+	}
+	return false;
+}
 
 /*
  *  Store a Shape : file, shape, frame.
@@ -43,7 +61,7 @@ int Store_u7_shapeid(
     int frame             // 0-0xff.
 ) {
 	return 1 + snprintf(reinterpret_cast<char *>(data), U7DND_DATA_LENGTH(3),
-	                    "file:///%s.%d.%d.%d", U7_TARGET_SHAPEID_NAME, file, shape, frame);
+	                    FILE_URI "%s.%d.%d.%d", U7_TARGET_SHAPEID_NAME, file, shape, frame);
 }
 
 /*
@@ -56,7 +74,6 @@ void Get_u7_shapeid(
     int &shape,           // 0-0xffff.
     int &frame            // 0-0xff.
 ) {
-	if (memcmp(data, "file:///", strlen("file:///")) == 0) data += strlen("file:///"); else if (data[0] == '/') data++;
 	const char *ptr = strchr(reinterpret_cast<const char *>(data), '.');
 	sscanf(ptr, ".%d.%d.%d", &file, &shape, &frame);
 }
@@ -65,17 +82,10 @@ void Get_u7_shapeid(
  *  Check a Shape.
  */
 
-int Is_u7_shapeid(
+bool Is_u7_shapeid(
     const unsigned char *data
 ) {
-	if (memcmp(data, "file:///", strlen("file:///")) == 0) data += strlen("file:///"); else if (data[0] == '/') data++;
-	const unsigned char *dot  = reinterpret_cast<const unsigned char *>(
-	    strchr(reinterpret_cast<const char *>(data), '.'));
-	if (dot == nullptr) return false;
-	int len = dot - data;
-	if (strncmp(reinterpret_cast<const char *>(data), U7_TARGET_SHAPEID_NAME, len) == 0)
-		return true;
-	return false;
+	return !verify_is_uri(data, FILE_URI U7_TARGET_SHAPEID_NAME ".");
 }
 
 /*
@@ -89,7 +99,7 @@ int Store_u7_chunkid(
     int cnum              // 0-0xffff.
 ) {
 	return 1 + snprintf(reinterpret_cast<char *>(data), U7DND_DATA_LENGTH(1),
-	                    "file:///%s.%d", U7_TARGET_CHUNKID_NAME, cnum);
+	                    FILE_URI "%s.%d", U7_TARGET_CHUNKID_NAME, cnum);
 }
 
 /*
@@ -100,7 +110,6 @@ void Get_u7_chunkid(
     const unsigned char *data,
     int &cnum             // 0-0xffff.
 ) {
-	if (memcmp(data, "file:///", strlen("file:///")) == 0) data += strlen("file:///"); else if (data[0] == '/') data++;
 	const char *ptr = strchr(reinterpret_cast<const char *>(data), '.');
 	sscanf(ptr, ".%d", &cnum);
 }
@@ -109,17 +118,10 @@ void Get_u7_chunkid(
  *  Check a Chunk.
  */
 
-int Is_u7_chunkid(
+bool Is_u7_chunkid(
     const unsigned char *data
 ) {
-	if (memcmp(data, "file:///", strlen("file:///")) == 0) data += strlen("file:///"); else if (data[0] == '/') data++;
-	const unsigned char *dot  = reinterpret_cast<const unsigned char *>(
-	    strchr(reinterpret_cast<const char *>(data), '.'));
-	if (dot == nullptr) return false;
-	int len = dot - data;
-	if (strncmp(reinterpret_cast<const char *>(data), U7_TARGET_CHUNKID_NAME, len) == 0)
-		return true;
-	return false;
+	return !verify_is_uri(data, FILE_URI U7_TARGET_CHUNKID_NAME ".");
 }
 
 /*
@@ -133,7 +135,7 @@ int Store_u7_npcid(
     int npcnum            // 0-0xffff.
 ) {
 	return 1 + snprintf(reinterpret_cast<char *>(data), U7DND_DATA_LENGTH(1),
-	                    "file:///%s.%d", U7_TARGET_NPCID_NAME, npcnum);
+	                    FILE_URI "%s.%d", U7_TARGET_NPCID_NAME, npcnum);
 }
 
 /*
@@ -144,7 +146,6 @@ void Get_u7_npcid(
     const unsigned char *data,
     int &npcnum           // 0-0xffff.
 ) {
-	if (memcmp(data, "file:///", strlen("file:///")) == 0) data += strlen("file:///"); else if (data[0] == '/') data++;
 	const char *ptr = strchr(reinterpret_cast<const char *>(data), '.');
 	sscanf(ptr, ".%d", &npcnum);
 }
@@ -153,17 +154,10 @@ void Get_u7_npcid(
  *  Check an NPC.
  */
 
-int Is_u7_npcid(
+bool Is_u7_npcid(
     const unsigned char *data
 ) {
-	if (memcmp(data, "file:///", strlen("file:///")) == 0) data += strlen("file:///"); else if (data[0] == '/') data++;
-	const unsigned char *dot  = reinterpret_cast<const unsigned char *>(
-	    strchr(reinterpret_cast<const char *>(data), '.'));
-	if (dot == nullptr) return false;
-	int len = dot - data;
-	if (strncmp(reinterpret_cast<const char *>(data), U7_TARGET_NPCID_NAME, len) == 0)
-		return true;
-	return false;
+	return !verify_is_uri(data, FILE_URI U7_TARGET_NPCID_NAME ".");
 }
 
 /*
@@ -182,7 +176,7 @@ int Store_u7_comboid(
     U7_combo_data *ents   // The members, with locations relative - can be negative - to hot-spot.
 ) {
 	unsigned char *ptr = data + snprintf(reinterpret_cast<char *>(data), U7DND_DATA_LENGTH(5),
-	                                     "file:///%s.%d.%d.%d.%d.%d", U7_TARGET_COMBOID_NAME,
+	                                     FILE_URI "%s.%d.%d.%d.%d.%d", U7_TARGET_COMBOID_NAME,
 	                                     xtiles, ytiles, tiles_right, tiles_below, cnt);
 	for (int i = 0; i < cnt; i++) {
 		ptr = ptr + snprintf(reinterpret_cast<char *>(ptr),
@@ -209,7 +203,6 @@ void Get_u7_comboid(
     int &cnt,             // 0-0xffff : Number of members.
     U7_combo_data *&ents  // The members, with locations relative - can be negative - to hot-spot.
 ) {
-	if (memcmp(data, "file:///", strlen("file:///")) == 0) data += strlen("file:///"); else if (data[0] == '/') data++;
 	const char *ptr = strchr(reinterpret_cast<const char *>(data), '.');
 	int n;
 	sscanf(ptr, ".%d.%d.%d.%d.%d%n", &xtiles, &ytiles, &tiles_right, &tiles_below, &cnt, &n);
@@ -226,15 +219,8 @@ void Get_u7_comboid(
  *  Check a Combo.
  */
 
-int Is_u7_comboid(
+bool Is_u7_comboid(
     const unsigned char *data
 ) {
-	if (memcmp(data, "file:///", strlen("file:///")) == 0) data += strlen("file:///"); else if (data[0] == '/') data++;
-	const unsigned char *dot  = reinterpret_cast<const unsigned char *>(
-	    strchr(reinterpret_cast<const char *>(data), '.'));
-	if (dot == nullptr) return false;
-	int len = dot - data;
-	if (strncmp(reinterpret_cast<const char *>(data), U7_TARGET_COMBOID_NAME, len) == 0)
-		return true;
-	return false;
+	return !verify_is_uri(data, FILE_URI U7_TARGET_COMBOID_NAME ".");
 }

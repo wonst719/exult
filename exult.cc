@@ -42,8 +42,6 @@
 #endif
 #ifdef _WIN32
 #include "windrag.h"
-#elif defined(XWIN)
-// #include "xdrag.h" Removed : Use SDL_DROPFILE
 #endif
 #include "servemsg.h"
 #include "objserial.h"
@@ -185,21 +183,7 @@ int num_res = array_size(res_list);
 int current_res = 0;
 int current_scaleval = 1;
 
-#ifdef XWIN
-#  ifdef __GNUC__
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wold-style-cast"
-#  endif  // __GNUC__
-
-#ifdef USE_EXULTSTUDIO
-//static class Xdnd *xdnd = nullptr; Removed : Use SDL_DROPFILE
-#endif
-
-#  ifdef __GNUC__
-#  pragma GCC diagnostic pop
-#  endif  // __GNUC__
-
-#elif defined(_WIN32)
+#ifdef _WIN32
 static HWND hgwin;
 static class Windnd *windnd = nullptr;
 #endif
@@ -597,8 +581,6 @@ int exult_main(const char *runpath) {
 #if defined(_WIN32)
 	RevokeDragDrop(hgwin);
 	windnd->Release();
-#else
-//	delete xdnd; Removed : Use SDL_DROPFILE
 #endif
 	Server_close();
 #endif
@@ -893,11 +875,6 @@ static void Init(
 #ifndef _WIN32
 	SDL_GetWindowWMInfo(gwin->get_win()->get_screen_window(), &info);
 	Server_init();          // Initialize server (for map-editor).
-//	xdnd = new Xdnd(info.info.x11.display, info.info.x11.window,
-//	                info.info.x11.window,
-//	                Move_dragged_shape, Move_dragged_combo,
-//	                Drop_dragged_shape, Drop_dragged_chunk,
-//	                Drop_dragged_npc, Drop_dragged_combo);
 	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
 #else
 	SDL_GetWindowWMInfo(gwin->get_win()->get_screen_window(), &info);
