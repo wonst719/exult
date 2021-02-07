@@ -984,7 +984,7 @@ void Shape::load(
 	reset();
 	auto frame = make_unique<Shape_frame>();
 	size_t location = shape_source->getPos();
-	uint32 shapelen = shape_source->getSize();
+	uint32 shapelen = shape_source->getSize() - location;
 	// Read frame 0 & get frame count.
 	create_frames_list(frame->read(shape_source, location, shapelen, 0));
 	store_frame(std::move(frame), 0);
