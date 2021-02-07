@@ -79,7 +79,10 @@ EXULT_SI_FLX_OBJECTS = \
 	si/ext_intro_castle.flc \
 	si/ext_intro_ship1.flc \
 	si/ext_intro_ship2.flc \
-	si/ext_intro_pil1.flc
+	si/ext_intro_pil1.flc \
+	si/ext_intro_a.xmi \
+	si/ext_intro_r.xmi \
+	si/ext_intro_si01.ogg
 
 EXULT_BG_PAPERDOL_VGA_OBJECTS = \
 	bg/amulets.shp \

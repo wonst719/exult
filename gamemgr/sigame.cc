@@ -44,6 +44,7 @@
 #include "array_size.h"
 #include "exult.h"
 #include "touchui.h"
+#include "MidiDriver.h"
 
 using std::cout;
 using std::endl;
@@ -304,7 +305,15 @@ void SI_Game::play_intro() {
 		// Castle Outside
 
 		// Start Music
-		if (!extended_intro)
+		// FIXME a way to load the flx files
+		/*if (extended_intro) {
+			if (midi_driver->isFMSynth())
+				audio->start_music(EXULT_SI_FLX_EXT_INTRO_A_XMI, 0, false);
+			else if (ogg_enabled && ogg_is_playing())
+				audio->start_music(EXULT_SI_FLX_EXT_INTRO_SI01_OGG, 0, false);
+			else if (midi_driver->isMT32())
+				audio->start_music(EXULT_SI_FLX_EXT_INTRO_R_XMI, 0, false);
+		} else*/
 			audio->start_music(R_SINTRO, 0, false);
 
 		size_t  size;
@@ -406,10 +415,6 @@ void SI_Game::play_intro() {
 				throw UserBreakException();
 
 		}
-
-		// Start Music
-		if(extended_intro)
-			audio->start_music(R_SINTRO, 0, false);
 
 		for (int j = 20; j; j--) {
 			next = fli1.play(win, 0, 0, next, j * 5);

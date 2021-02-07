@@ -335,7 +335,10 @@ EXULT_SI_FLX_OBJECTS := \
 	data/si/ext_intro_castle.flc \
 	data/si/ext_intro_ship1.flc \
 	data/si/ext_intro_ship2.flc \
-	data/si/ext_intro_pil1.flc
+	data/si/ext_intro_pil1.flc \
+	data/si/ext_intro_a.xmi \
+	data/si/ext_intro_r.xmi \
+	data/si/ext_intro_si01.ogg
 
 EXULT_BG_PAPERDOL_VGA := data/bg/bg_paperdol.vga data/bg/bg_paperdol_vga.h
 EXULT_BG_PAPERDOL_VGA_OBJECTS := \
