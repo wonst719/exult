@@ -23,6 +23,7 @@
 #include "common_types.h"
 #include "Configuration.h"
 #include "exceptions.h"
+#include "ignore_unused_variable_warning.h"
 #include "utils.h"
 
 #include <cassert>
@@ -145,6 +146,7 @@ static inline bool is_path_absolute(const string &path) {
 		};
 #else
 	const auto is_win32_abs_path = [](const string &path) {
+			ignore_unused_variable_warning(path);
 			return false;
 		};
 #endif
