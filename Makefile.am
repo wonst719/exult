@@ -149,6 +149,7 @@ EXTRA_DIST = 	\
 	win32/exultstudio.ico \
 	win32/exultstudioico.rc \
 	macosx/exult.icns \
+	macosx/exult_studio_info.plist.in \
 	msvcstuff/expack.vcproj \
 	msvcstuff/Exult.vcproj \
 	msvcstuff/Exult.sln \
@@ -210,6 +211,7 @@ CLEANFILES = *~
 if MACOSX
 
 bundle_name = Exult.app
+studio_name = Exult_Studio.app
 
 bundle: ${EXE_TARGET}
 	mkdir -p $(bundle_name)/Contents/MacOS
@@ -232,6 +234,13 @@ if WITH_OSX_CODE_SIGNATURE
 	codesign --options runtime --deep -f -s "$(OSX_CODE_SIGNATURE)" $(bundle_name)
 endif
 
+studiobundle: ${EXE_TARGET}
+	$(eval export SOURCE=$(shell pwd))
+	gtk-mac-bundler ./macosx/exult_studio.bundle
+if WITH_OSX_CODE_SIGNATURE
+	codesign --options runtime --deep -f -s "$(OSX_CODE_SIGNATURE)" --entitlements ./macosx/exult_studio_entitlements.plist $(studio_name)
+endif
+
 install-exec-local: bundle
 	mkdir -p $(DESTDIR)/Applications/
 	cp -r $(bundle_name) $(DESTDIR)/Applications/
@@ -245,7 +254,7 @@ osxdmg: bundle
 	cp $(srcdir)/README.MacOSX ./Exult-snapshot/ReadMe.MacOSX
 	cp $(srcdir)/docs/ReadMe.html ./Exult-snapshot/ReadMe.html
 	cp $(srcdir)/docs/faq.html ./Exult-snapshot/FAQ.html
-	cp $(srcdir)/docs/images/* ./Exult-snapshot/images
+	cp $(srcdir)/docs/images/docs*.* ./Exult-snapshot/images
 	cp $(srcdir)/macosx/diskback.png ./Exult-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/DS_Store ./Exult-snapshot/.DS_Store
 	SetFile -a V ./Exult-snapshot/.DS_Store
@@ -261,9 +270,32 @@ osxdmg: bundle
 					Exult-snapshot.dmg
 	rm -rf Exult-snapshot
 
+studiodmg:
+	mkdir -p Studio-snapshot
+	mkdir -p ./Studio-snapshot/images
+	cp $(srcdir)/AUTHORS ./Studio-snapshot/Authors
+	cp $(srcdir)/COPYING ./Studio-snapshot/License
+	cp $(srcdir)/README.MacOSX ./Studio-snapshot/ReadMe.MacOSX
+	cp $(srcdir)/docs/exult_studio.html ./Studio-snapshot/Exult_Studio.html
+	cp $(srcdir)/docs/images/studio*.* ./Studio-snapshot/images
+	cp $(srcdir)/macosx/diskback.png ./Studio-snapshot/images/diskback.png
+	cp $(srcdir)/macosx/DS_Store ./Studio-snapshot/.DS_Store
+	SetFile -a V ./Studio-snapshot/.DS_Store
+	SetFile -a V ./Studio-snapshot/images
+	SetFile -t ttro -c ttxt ./Studio-snapshot/Authors
+	SetFile -t ttro -c ttxt ./Studio-snapshot/License
+	cp -R $(studio_name) ./Studio-snapshot/
+	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
+					-srcfolder Studio-snapshot \
+					-volname "Exult Stuido Git snapshot$(REVISION)" \
+					ExultStudio-snapshot.dmg
+	rm -rf Studio-snapshot
+
 clean-local:
 	-rm -f Exult-snapshot.dmg
+	-rm -f ExultStudio-snapshot.dmg
 	-rm -rf $(bundle_name)
+	-rm -rf $(studio_name)
 
 else
 install-exec-local:

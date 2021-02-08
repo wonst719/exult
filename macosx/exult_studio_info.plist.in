@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>exult_studio</string>
 	<key>CFBundleGetInfoString</key>
-	<string>1.7.0git, Copyright 1998-2021 The Exult Team</string>
+	<string>@VERSION@, Copyright 1998-2021 The Exult Team</string>
 	<key>CFBundleIconFile</key>
 	<string>exult_studio.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -19,9 +19,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.7.0git</string>
+	<string>@VERSION@</string>
 	<key>CFBundleVersion</key>
-	<string>1.7.0git</string>
+	<string>@VERSION@</string>
     <key>CFBundleSignature</key>
     <string>????</string>
 	<key>NSPrincipalClass</key>

@@ -105,7 +105,7 @@ be installed.
 
 After that, you have to re-run configure and make (remember to do the export commands 
 to find the headers):
-  ./configure --enable-exult-studio --enable-studio-support
+  ./configure --enable-exult-studio --enable-exult-studio-support
   make
 
 - You need to add the path of Exult Studio to your PATH settings so that Exult 
@@ -128,19 +128,17 @@ How to build an Exult Studio app Bundle
 You will need another package from MacPorts:
   gtk-mac-bundler
 
-The following assumes you built Exult in the Exult source folder.
-Open the file macosx/exult_studio.bundle in the Exult source with a text editor. Find
-the lines
-		<prefix name="code">
-			PathToExultBuildDirectory
-		</prefix>
-and enter the correct path to where you build Exult (the Exult source).
-
 Follow the above steps to build Exult Studio and Exult with Exult Studio Support.
-Afterwards run the command:
-  gtk-mac-bundler ./macosx/exult_studio.bundle
+Afterwards run the commands:
+  export PREFIX=PATH_TO_PREFIX
+  make studiobundle
 
-This will generate a ExultStudio.app in the macosx folder in your Exult source.
+In the above command substitute PATH_TO_PREFIX with your real prefix path. 
+If you use MacPorts this would be "/opt/local". Making the commands look like this:
+  export PREFIX=/opt/local
+  make studiobundle
+
+This will generate the Exult_Studio.app in your Exult source.
 
 
 How to build the Gimp plugin

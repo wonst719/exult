@@ -2,16 +2,13 @@
 <app-bundle>
 	<meta>
 		<prefix name="default">
-			/opt/gtk3
+			${env:PREFIX}
 		</prefix>
-		<prefix name="64">
-			/opt/x86_64
-		</prefix>
-		<prefix name="code">
-			/users/dominus/code/snapshots/exult
+		<prefix name="source">
+			${env:SOURCE}
 		</prefix>
 		<destination overwrite="yes">
-			${project}
+			${prefix:source}
 		</destination>
 		<launcher-script>
 			${project}/exult_studio_launcher.sh
@@ -25,7 +22,7 @@
 		${project}/exult_studio_info.plist
 	</plist>
 	<main-binary>
-		${prefix:code}/mapedit/exult_studio
+		${prefix:source}/mapedit/exult_studio
 	</main-binary>
 	<binary>
 		${prefix}/lib/gdk-pixbuf-2.0/${pkg:gdk-pixbuf-2.0:gdk_pixbuf_binary_version}/loaders/*.so
@@ -34,28 +31,28 @@
 		${project}/exult_studio.icns
 	</data>
 	<data dest="${bundle}/Contents/Resources/data/*.flx">
-		${prefix:code}/data/*.flx
+		${prefix:source}/data/*.flx
 	</data>
 	<data dest="${bundle}/Contents/Resources/data/*.glade">
-		${prefix:code}/mapedit/*.glade
+		${prefix:source}/mapedit/*.glade
 	</data>
 	<data>
-		${prefix:code}/data/estudio
+		${prefix:source}/data/estudio
 	</data>
 	<data dest="${bundle}/Contents/Resources/Documents/Exult_Studio.txt">
-		${prefix:code}/docs/exult_studio.txt
+		${prefix:source}/docs/exult_studio.txt
 	</data>
 	<data dest="${bundle}/Contents/Resources/Documents/AUTHORS.txt">
-		${prefix:code}/AUTHORS
+		${prefix:source}/AUTHORS
 	</data>
 	<data dest="${bundle}/Contents/Resources/Documents/COPYING.txt">
-		${prefix:code}/COPYING
+		${prefix:source}/COPYING
 	</data>
 	<data dest="${bundle}/Contents/Resources/Documents/README.txt">
-		${prefix:code}/README
+		${prefix:source}/README
 	</data>
 	<data dest="${bundle}/Contents/Resources/Documents/README.MacOSX.txt">
-		${prefix:code}/README.MacOSX
+		${prefix:source}/README.MacOSX
 	</data>
     <data>
       ${prefix}/share/icons

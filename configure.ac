@@ -1088,6 +1088,7 @@ AC_SUBST(AR_FLAGS)
 AC_OUTPUT([
 exult.spec
 Info.plist
+macosx/exult_studio_info.plist
 Makefile
 audio/Makefile
 audio/midi_drivers/Makefile
