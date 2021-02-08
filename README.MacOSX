@@ -96,26 +96,17 @@ Take note however that compiling a static version of Exult Studio does not work.
 How to compile Exult Studio on Mac OS X
 ---------------------------------------
 
-If you want to compile Exult Studio, you have to install these packages
-(SDL needs to be installed with the x11 dependency for Exult Studio):
-  libsdl2 +x11
-  gtk3 +x11
+If you want to compile Exult Studio, you have to install these packages:
+  libsdl2
+  gtk3
 
-This will cause many other packages required by gtk2 to
+This will cause many other packages required by gtk3 to
 be installed. 
-
-Then you need to install Xquartz from https://www.xquartz.org (because currently drag'n'drop 
-between Exult Studio and Exult requires the X.org X Windows System (x11)).
 
 After that, you have to re-run configure and make (remember to do the export commands 
 to find the headers):
-  ./configure --enable-exult-studio --enable-macosx-studio-support
+  ./configure --enable-exult-studio --enable-studio-support
   make
-
-In order to use Exult Studio with Exult you will need to do:
-
-- The nice Exult.app will not work with Exult Studio, you will need to run 
-the exult binary, found where you compiled the source. 
 
 - You need to add the path of Exult Studio to your PATH settings so that Exult 
 can start Exult Studio on entering Map-Edit-Mode (ctrl+cmd+m).
@@ -150,10 +141,6 @@ Afterwards run the command:
   gtk-mac-bundler ./macosx/exult_studio.bundle
 
 This will generate a ExultStudio.app in the macosx folder in your Exult source.
-
-Currently this will still require you to have Xquartz installed.
-When you run it, Exult will actually start and you will need to start Exult Studio
-by entering Map Edit mode after you have started a game.
 
 
 How to build the Gimp plugin
