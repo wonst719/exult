@@ -549,7 +549,7 @@ fi
 # ---------------------------------------------------------------------
 AC_MSG_CHECKING([whether to enable support for Exult Studio])
 AC_ARG_ENABLE(exult-studio-support, AS_HELP_STRING([--enable-exult-studio-support], [Enable ExultStudio support @<:@default no@:>@]),,enable_exult_studio_support=no)
-if test "$WINDOWING_SYSTEM" != -DXWIN -a "$WINDOWING_SYSTEM" != -D_WIN32 ; then
+if test "$WINDOWING_SYSTEM" != -DXWIN -a "$WINDOWING_SYSTEM" != -D_WIN32 -a "$WINDOWING_SYSTEM" != -DMACOSX; then
 	enable_exult_studio_support=no
 fi
 
