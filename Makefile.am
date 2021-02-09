@@ -291,7 +291,7 @@ studiodmg:
 	cp -R $(studio_name) ./Studio-snapshot/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 					-srcfolder Studio-snapshot \
-					-volname "Exult Stuido Git snapshot$(REVISION)" \
+					-volname "Exult Studio Git snapshot$(REVISION)" \
 					ExultStudio-snapshot.dmg
 	rm -rf Studio-snapshot
 
