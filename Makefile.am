@@ -281,7 +281,7 @@ studiodmg:
 	cp $(srcdir)/README.MacOSX ./Studio-snapshot/ReadMe.MacOSX
 	cp $(srcdir)/docs/exult_studio.html ./Studio-snapshot/Exult_Studio.html
 	cp $(srcdir)/docs/images/studio*.* ./Studio-snapshot/images
-	cp $(srcdir)/docs/images/*.gif ./Exult-snapshot/images
+	cp $(srcdir)/docs/images/*.gif ./Studio-snapshot/images
 	cp $(srcdir)/macosx/diskback.png ./Studio-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/DS_Store ./Studio-snapshot/.DS_Store
 	SetFile -a V ./Studio-snapshot/.DS_Store
