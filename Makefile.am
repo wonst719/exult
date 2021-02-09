@@ -239,6 +239,8 @@ studiobundle: ${EXE_TARGET}
 	gtk-mac-bundler ./macosx/exult_studio.bundle
 if WITH_OSX_CODE_SIGNATURE
 	codesign --options runtime --deep -f -s "$(OSX_CODE_SIGNATURE)" --entitlements ./macosx/exult_studio_entitlements.plist $(studio_name)
+	codesign --options runtime -f -s "$(OSX_CODE_SIGNATURE)" $(studio_name)/contents/resources/lib/*.dylib
+	codesign --options runtime -f -s "$(OSX_CODE_SIGNATURE)" $(studio_name)/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.so
 endif
 
 install-exec-local: bundle
@@ -255,6 +257,7 @@ osxdmg: bundle
 	cp $(srcdir)/docs/ReadMe.html ./Exult-snapshot/ReadMe.html
 	cp $(srcdir)/docs/faq.html ./Exult-snapshot/FAQ.html
 	cp $(srcdir)/docs/images/docs*.* ./Exult-snapshot/images
+	cp $(srcdir)/docs/images/*.gif ./Exult-snapshot/images
 	cp $(srcdir)/macosx/diskback.png ./Exult-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/DS_Store ./Exult-snapshot/.DS_Store
 	SetFile -a V ./Exult-snapshot/.DS_Store
@@ -278,6 +281,7 @@ studiodmg:
 	cp $(srcdir)/README.MacOSX ./Studio-snapshot/ReadMe.MacOSX
 	cp $(srcdir)/docs/exult_studio.html ./Studio-snapshot/Exult_Studio.html
 	cp $(srcdir)/docs/images/studio*.* ./Studio-snapshot/images
+	cp $(srcdir)/docs/images/*.gif ./Exult-snapshot/images
 	cp $(srcdir)/macosx/diskback.png ./Studio-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/DS_Store ./Studio-snapshot/.DS_Store
 	SetFile -a V ./Studio-snapshot/.DS_Store
