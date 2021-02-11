@@ -319,7 +319,31 @@ EXULT_BG_FLX_OBJECTS := \
 	data/bg/blends.dat \
 	data/bg/container.dat \
 	data/bg/autonotes.txt \
-	data/bg/intro_hand.shp
+	data/bg/intro_hand.shp \
+	data/bg/intro_mt_static1.wav \
+	data/bg/intro_mt_static2.wav \
+	data/bg/intro_mt_static3.wav \
+	data/bg/intro_mt_guardian1.wav \
+	data/bg/intro_mt_guardian2.wav \
+	data/bg/intro_mt_guardian3.wav \
+	data/bg/intro_mt_guardian4.wav \
+	data/bg/intro_mt_outstatic.wav \
+	data/bg/intro_mt_outnoise.wav \
+	data/bg/intro_mt_monitorslap.wav \
+	data/bg/intro_mt_moongate.wav \
+	data/bg/intro_mt_shot.wav \
+	data/bg/intro_sb_static1.wav \
+	data/bg/intro_sb_static2.wav \
+	data/bg/intro_sb_static3.wav \
+	data/bg/intro_sb_guardian1.wav \
+	data/bg/intro_sb_guardian2.wav \
+	data/bg/intro_sb_guardian3.wav \
+	data/bg/intro_sb_guardian4.wav \
+	data/bg/intro_sb_outstatic.wav \
+	data/bg/intro_sb_outnoise.wav \
+	data/bg/intro_sb_monitorslap.wav \
+	data/bg/intro_sb_moongate.wav \
+	data/bg/intro_sb_shot.wav
 
 EXULT_SI_FLX := data/exult_si.flx data/exult_si_flx.h
 EXULT_SI_FLX_OBJECTS := \

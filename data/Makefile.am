@@ -62,7 +62,31 @@ EXULT_BG_FLX_OBJECTS = \
 	bg/blends.dat \
 	bg/container.dat \
 	bg/autonotes.txt \
-	bg/intro_hand.shp
+	bg/intro_hand.shp \
+	bg/intro_mt_static1.wav \
+	bg/intro_mt_static2.wav \
+	bg/intro_mt_static3.wav \
+	bg/intro_mt_guardian1.wav \
+	bg/intro_mt_guardian2.wav \
+	bg/intro_mt_guardian3.wav \
+	bg/intro_mt_guardian4.wav \
+	bg/intro_mt_outstatic.wav \
+	bg/intro_mt_outnoise.wav \
+	bg/intro_mt_monitorslap.wav \
+	bg/intro_mt_moongate.wav \
+	bg/intro_mt_shot.wav \
+	bg/intro_sb_static1.wav \
+	bg/intro_sb_static2.wav \
+	bg/intro_sb_static3.wav \
+	bg/intro_sb_guardian1.wav \
+	bg/intro_sb_guardian2.wav \
+	bg/intro_sb_guardian3.wav \
+	bg/intro_sb_guardian4.wav \
+	bg/intro_sb_outstatic.wav \
+	bg/intro_sb_outnoise.wav \
+	bg/intro_sb_monitorslap.wav \
+	bg/intro_sb_moongate.wav \
+	bg/intro_sb_shot.wav
 
 EXULT_SI_FLX_OBJECTS = \
 	si/flx.in \
