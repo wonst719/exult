@@ -21,33 +21,39 @@
 #ifndef MODMGR_H
 #define MODMGR_H
 
-#include <vector>
-#include <string>
-#include "exult_constants.h"
-#include "exceptions.h"
 #include "Configuration.h"
+#include "exceptions.h"
+#include "exult_constants.h"
+
+#include <string>
+#include <utility>
+#include <vector>
 
 extern Configuration *config;
 
 class BaseGameInfo {
 protected:
-	Exult_Game type = NONE;  // Game type
-	std::string cfgname;     // What the game is called in Exult.cfg
-	std::string path_prefix; // System path prefix for the game/mod.
-	std::string mod_title;   // Internal mod name, the mod's title
-	std::string menustring;  // Text displayed in mods menu
-	bool expansion = false;          // For FoV/SS ONLY.
-	bool sibeta = false;             // For beta version of SI.
-	bool found = false;              // If the game/mod is found.
-	bool editing = false;            // Game is being edited and may have missing files.
-	std::string codepage = "CP437";  // Game/mod codepage (mainly for ES).
+	Exult_Game type = NONE;           // Game type
+	Game_Language language = ENGLISH; // Official translation language
+	std::string cfgname;              // What the game is called in Exult.cfg
+	std::string path_prefix;          // System path prefix for the game/mod.
+	std::string mod_title;            // Internal mod name, the mod's title
+	std::string menustring;           // Text displayed in mods menu
+	bool expansion = false;           // For FoV/SS ONLY.
+	bool sibeta = false;              // For beta version of SI.
+	bool found = false;               // If the game/mod is found.
+	bool editing = false;             // Game is being edited and may have missing files.
+	std::string codepage = "CP437";   // Game/mod codepage (mainly for ES).
 public:
 	BaseGameInfo() = default;
-	BaseGameInfo(const Exult_Game ty, const char *cf, const char *mt,
-	             const char *pt, const char *ms, bool exp, bool sib, bool f, bool ed,
-	             const char *cp)
-		: type(ty), cfgname(cf), path_prefix(pt), mod_title(mt), menustring(ms),
-		  expansion(exp), sibeta(sib), found(f), editing(ed), codepage(cp)
+	BaseGameInfo(
+		const Exult_Game ty, const Game_Language lang, std::string cf,
+		std::string mt, std::string pt, std::string ms, bool exp, bool sib,
+		bool f, bool ed, std::string cp)
+		: type(ty), language(lang), cfgname(std::move(cf)),
+			path_prefix(std::move(pt)), mod_title(std::move(mt)),
+			menustring(std::move(ms)), expansion(exp), sibeta(sib), found(f),
+			editing(ed), codepage(std::move(cp))
 	{  }
 	BaseGameInfo(const BaseGameInfo &) = default;
 	virtual ~BaseGameInfo() = default;
@@ -66,6 +72,9 @@ public:
 	}
 	Exult_Game get_game_type() const {
 		return type;
+	}
+	Game_Language get_game_language() const {
+		return language;
 	}
 	std::string get_codepage() const {
 		return codepage;
@@ -98,6 +107,9 @@ public:
 	void set_game_type(Exult_Game game) {
 		type = game;
 	}
+	void set_game_language(Game_Language lang) {
+		language = lang;
+	}
 	// For FoV/SS ONLY.
 	void set_expansion(bool tf) {
 		expansion = tf;
@@ -122,10 +134,10 @@ public:
 
 class ModInfo : public BaseGameInfo {
 protected:
-	bool compatible;
 	std::string configfile;
+	bool compatible;
 public:
-	ModInfo(Exult_Game game, const std::string &name, const std::string &mod,
+	ModInfo(Exult_Game game, Game_Language lang, const std::string &name, const std::string &mod,
 	        const std::string &path, bool exp, bool sib, bool ed, const std::string &cfg);
 
 	bool is_mod_compatible() const {

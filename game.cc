@@ -29,6 +29,7 @@
 #include "Configuration.h"
 #include "databuf.h"
 #include "exult.h"
+#include "exult_constants.h"
 #include "exult_flx.h"
 #include "files/U7fileman.h"
 #include "files/U7file.h"
@@ -57,6 +58,7 @@ bool Game::new_game_flag = false;
 bool Game::editing_flag = false;
 Game *game = nullptr;
 Exult_Game Game::game_type = NONE;
+Game_Language Game::language = ENGLISH;
 bool Game::expansion = false;
 bool Game::sibeta = false;
 
@@ -88,6 +90,7 @@ Game::Game() {
 
 Game::~Game() {
 	game_type = NONE;
+	language = ENGLISH;
 	delete xml;
 	while (!xmlstrings.empty()) {
 		char *str = xmlstrings.back();
@@ -103,6 +106,7 @@ Game *Game::create_game(BaseGameInfo *mygame) {
 	gametitle = mygame->get_cfgname();
 	modtitle = mygame->get_mod_title();
 	game_type = mygame->get_game_type();
+	language = mygame->get_game_language();
 	expansion = mygame->have_expansion();
 	sibeta = mygame->is_si_beta();
 	editing_flag = mygame->being_edited();

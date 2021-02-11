@@ -51,6 +51,7 @@ class Game : public Game_singletons {
 private:
 	static bool new_game_flag;
 	static Exult_Game game_type;
+	static Game_Language language;
 	static bool expansion, sibeta;
 	using shapes_map = std::unordered_map<const char *, int, hashstr, eqstr>;
 	using rsc_map = std::unordered_map<const char *, str_int_pair, hashstr, eqstr>;
@@ -90,6 +91,9 @@ public:
 	static Game *create_game(BaseGameInfo *mygame);
 	static Exult_Game get_game_type() {
 		return game_type;
+	}
+	static Game_Language get_game_language() {
+		return language;
 	}
 	static bool has_expansion() {
 		return expansion;

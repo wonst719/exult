@@ -101,4 +101,11 @@ enum Exult_Game {
     EXULT_MENU_GAME         // Game type for the exult menu
 };
 
+// For the original released translations
+enum Game_Language {
+    ENGLISH,
+	FRENCH,                 // Black Gate only
+	GERMAN,                 // Black Gate only
+	SPANISH                 // Black Gate and Serpent Isle
+};
 #endif

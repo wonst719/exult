@@ -18,35 +18,37 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
 
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cstdlib>
 #include "modmgr.h"
-#include "fnames.h"
-#include "listfiles.h"
-#include "exult_constants.h"
-#include "utils.h"
+
 #include "Configuration.h"
 #include "Flex.h"
-#include "databuf.h"
 #include "crc.h"
+#include "databuf.h"
+#include "exult_constants.h"
+#include "fnames.h"
+#include "listfiles.h"
+#include "utils.h"
+
+#include <cstdlib>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <vector>
 
 #ifdef HAVE_ZIP_SUPPORT
-#include "files/zip/unzip.h"
-#include "files/zip/zip.h"
+#  include "files/zip/unzip.h"
+#  include "files/zip/zip.h"
 #endif
 
-using std::ifstream;
-using std::cout;
 using std::cerr;
+using std::cout;
 using std::endl;
+using std::ifstream;
 using std::string;
 using std::vector;
 
@@ -93,6 +95,7 @@ static inline void ReplaceMacro(
 // ModInfo: class that manages one mod's information
 ModInfo::ModInfo(
     Exult_Game game,
+	Game_Language lang,
     const string &name,
     const string &mod,
     const string &path,
@@ -100,24 +103,12 @@ ModInfo::ModInfo(
     bool sib,
     bool ed,
     const string &cfg
-) {
-	type = game;
-	cfgname = name;
-	mod_title = mod;
-	path_prefix = path;
-	expansion = exp;
-	sibeta = sib;
-	editing = ed;
-	configfile = cfg;
+) : BaseGameInfo(game, lang, name, mod, path, "", exp, sib, false, ed, ""),
+    configfile(cfg), compatible(false) {
 	Configuration modconfig(configfile, "modinfo");
 
 	string config_path;
 	string default_dir;
-	string modversion;
-	string savedir;
-	string patchdir;
-	string sourcedir;
-	string gamedatdir;
 
 	config_path = "mod_info/mod_title";
 	default_dir = mod;
@@ -133,6 +124,7 @@ ModInfo::ModInfo(
 
 	config_path = "mod_info/required_version";
 	default_dir = "0.0.00R";
+	string modversion;
 	modconfig.value(config_path, modversion, default_dir.c_str());
 	if (modversion == default_dir)
 		// Required version is missing; assume the mod to be incompatible
@@ -191,12 +183,14 @@ ModInfo::ModInfo(
 	// mods_dir does too.
 	config_path = "mod_info/patch";
 	default_dir = data_directory + "/patch";
+	string patchdir;
 	modconfig.value(config_path, patchdir, default_dir.c_str());
 	ReplaceMacro(patchdir, mods_macro, mods_dir);
 	ReplaceMacro(patchdir, mod_path_macro, data_directory);
 	add_system_path("<" + system_path_tag + "_PATCH>", get_system_path(patchdir));
 	// Where usecode source is found; defaults to same as patch.
 	config_path = "mod_info/source";
+	string sourcedir;
 	modconfig.value(config_path, sourcedir, default_dir.c_str());
 	ReplaceMacro(sourcedir, mods_macro, mods_dir);
 	ReplaceMacro(sourcedir, mod_path_macro, data_directory);
@@ -208,6 +202,7 @@ ModInfo::ModInfo(
 	// The following paths default to user-writable locations.
 	config_path = "mod_info/gamedat_path";
 	default_dir = savedata_directory + "/gamedat";
+	string gamedatdir;
 	modconfig.value(config_path, gamedatdir, default_dir.c_str());
 	// Path 'macros' for relative paths:
 	ReplaceMacro(gamedatdir, mods_macro, mods_save_dir);
@@ -216,6 +211,7 @@ ModInfo::ModInfo(
 	U7mkdir(gamedatdir.c_str(), 0755);
 
 	config_path = "mod_info/savegame_path";
+	string savedir;
 	modconfig.value(config_path, savedir, savedata_directory.c_str());
 	// Path 'macros' for relative paths:
 	ReplaceMacro(savedir, mods_macro, mods_save_dir);
@@ -380,49 +376,112 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 			cout << "but it wasn't there." << endl;
 	}
 
+	const string mainshp = static_dir + "/mainshp.flx";
+	const uint32 crc = U7exists(mainshp) ? crc32_syspath(mainshp.c_str()) : 0;
+	auto unknown_crc = [crc](const char *game) {
+		cerr << "Warning: Unknown CRC for mainshp.flx: 0x"
+				<< std::hex << crc << std::dec << std::endl;
+		cerr << "Note: Guessing hacked " << game << std::endl;
+	};
 	string new_title;
 	if (static_identity == "ULTIMA7") {
 		type = BLACK_GATE;
-		path_prefix = to_uppercase(CFG_BG_NAME);
-		if (needtitle)
-			new_title = CFG_BG_TITLE;
 		expansion = false;
 		sibeta = false;
+		switch (crc) {
+		case 0x36af707f:
+			// French BG
+			language = FRENCH;
+			path_prefix = to_uppercase(CFG_BG_FR_NAME);
+			if (needtitle)
+				new_title = CFG_BG_FR_TITLE;
+			break;
+		case 0x157ca514:
+			// German BG
+			language = GERMAN;
+			path_prefix = to_uppercase(CFG_BG_DE_NAME);
+			if (needtitle)
+				new_title = CFG_BG_DE_TITLE;
+			break;
+		case 0x6d7b7323:
+			// Spanish BG
+			language = SPANISH;
+			path_prefix = to_uppercase(CFG_BG_ES_NAME);
+			if (needtitle)
+				new_title = CFG_BG_ES_TITLE;
+			break;
+		default:
+			unknown_crc("Black Gate");
+			// FALLTHROUGH
+		case 0xafc35523:
+			// English BG
+			language = ENGLISH;
+			path_prefix = to_uppercase(CFG_BG_NAME);
+			if (needtitle)
+				new_title = CFG_BG_TITLE;
+			break;
+		};
 	} else if (static_identity == "FORGE") {
 		type = BLACK_GATE;
+		language = ENGLISH;
+		expansion = true;
+		sibeta = false;
+		if (crc != 0x8a74c26b) {
+			unknown_crc("Forge of Virtue");
+		}
 		path_prefix = to_uppercase(CFG_FOV_NAME);
 		if (needtitle)
 			new_title = CFG_FOV_TITLE;
-		expansion = true;
-		sibeta = false;
 	} else if (static_identity == "SERPENT ISLE") {
 		type = SERPENT_ISLE;
 		expansion = false;
-		uint32 crc = crc32_syspath((static_dir + "/mainshp.flx").c_str());
-		if (crc == 0xdbdc2676) {
+		switch (crc) {
+		case 0x96f66a7a:
+			// Spanish SI
+			language = FRENCH;
+			path_prefix = to_uppercase(CFG_SI_ES_NAME);
+			if (needtitle)
+				new_title = CFG_SI_ES_TITLE;
+			sibeta = false;
+			break;
+		case 0xdbdc2676:
+			// SI Beta
+			language = ENGLISH;
 			path_prefix = to_uppercase(CFG_SIB_NAME);
 			if (needtitle)
 				new_title = CFG_SIB_TITLE;
 			sibeta = true;
-		} else {
+			break;
+		default:
+			unknown_crc("Serpent Isle");
+			// FALLTHROUGH
+		case 0xf98f5f3e:
+			// English SI
+			language = ENGLISH;
 			path_prefix = to_uppercase(CFG_SI_NAME);
 			if (needtitle)
 				new_title = CFG_SI_TITLE;
 			sibeta = false;
-		}
+			break;
+		};
 	} else if (static_identity == "SILVER SEED") {
 		type = SERPENT_ISLE;
+		language = ENGLISH;
+		expansion = true;
+		sibeta = false;
+		if (crc != 0x3e18f9a0) {
+			unknown_crc("Silver Seed");
+		}
 		path_prefix = to_uppercase(CFG_SS_NAME);
 		if (needtitle)
 			new_title = CFG_SS_TITLE;
-		expansion = true;
-		sibeta = false;
 	} else {
 		type = EXULT_DEVEL_GAME;
-		path_prefix = "DEVEL" + to_uppercase(name);
-		new_title = menu;   // To be safe.
+		language = ENGLISH;
 		expansion = false;
 		sibeta = false;
+		path_prefix = "DEVEL" + to_uppercase(name);
+		new_title = menu;   // To be safe.
 	}
 
 	// If the "default" path selected above is already taken, then use a unique
@@ -498,7 +557,7 @@ void ModManager::gather_mods() {
 		for (int i = 0; i < num_mods; i++) {
 			string modtitle = filenames[i].substr(ptroff,
 			                                      filenames[i].size() - ptroff - 4);
-			modlist.emplace_back(type, cfgname,
+			modlist.emplace_back(type, language, cfgname,
 			                          modtitle, path_prefix, expansion, sibeta,
 			                          editing, filenames[i]);
 		}
@@ -520,7 +579,7 @@ int ModManager::find_mod_index(const string &name) {
 }
 
 void ModManager::add_mod(const string &mod, const string &modconfig) {
-	modlist.emplace_back(type, cfgname, mod, path_prefix,
+	modlist.emplace_back(type, language, cfgname, mod, path_prefix,
 	                          expansion, sibeta, editing, modconfig);
 	store_system_paths();
 }

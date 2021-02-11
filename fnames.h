@@ -175,15 +175,23 @@
 
 // U7 game names in "exult.cfg":
 #define CFG_BG_NAME     "blackgate"
+#define CFG_BG_DE_NAME  "schwarzepforte"
+#define CFG_BG_ES_NAME  "puertanegra"
+#define CFG_BG_FR_NAME  "portenoire"
 #define CFG_FOV_NAME    "forgeofvirtue"
 #define CFG_SI_NAME     "serpentisle"
+#define CFG_SI_ES_NAME  "islaserpiente"
 #define CFG_SS_NAME     "silverseed"
 #define CFG_SIB_NAME    "serpentbeta"
 
 // U7 game titles in "exult.cfg":
 #define CFG_BG_TITLE    "ULTIMA VII\nTHE BLACK GATE"
+#define CFG_BG_DE_TITLE "ULTIMA VII\nDIE SCHWARZE PFORTE"
+#define CFG_BG_ES_TITLE "ULTIMA VII\nLA PUERTA NEGRA"
+#define CFG_BG_FR_TITLE "ULTIMA VII\nLA PORTE NOIRE"
 #define CFG_FOV_TITLE   "ULTIMA VII\nTHE FORGE OF VIRTUE"
 #define CFG_SI_TITLE    "ULTIMA VII PART 2\nSERPENT ISLE"
+#define CFG_SI_ES_TITLE "ULTIMA VII PART 2\nLA ISLA SERPIENTE"
 #define CFG_SS_TITLE    "ULTIMA VII PART 2\nTHE SILVER SEED"
 #define CFG_SIB_TITLE   "ULTIMA VII PART 2\nSERPENT ISLE BETA"
 
