@@ -102,6 +102,7 @@ exult_SOURCES =	\
 	tqueue.h	\
 	txtscroll.cc	\
 	txtscroll.h	\
+	verify.o \
 	version.cc	\
 	version.h
 

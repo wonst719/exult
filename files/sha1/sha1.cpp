@@ -34,6 +34,13 @@
 
 #include "sha1.h"
 
+#include <algorithm>
+
+#ifdef _MSC_VER
+#  include <stdlib.h>
+#  pragma intrinsic(_rotl)
+#endif
+
 namespace sha1
 {
     namespace // local
@@ -42,17 +49,20 @@ namespace sha1
         inline unsigned int rol(const unsigned int value,
                 const unsigned int steps)
         {
-            return (value << steps) | (value >> (32 - steps));
+#ifdef _MSC_VER
+            return _rotl(value, steps);
+#else
+            const unsigned int mask = (CHAR_BIT * sizeof(value) - 1);
+            const unsigned int rsteps = steps & mask;
+            return (value << rsteps) | (value >> ((-rsteps) & mask));
+#endif
         }
 
         // Sets the first 16 integers in the buffert to zero.
         // Used for clearing the W buffert.
         inline void clearWBuffert(unsigned int* buffert)
         {
-            for (int pos = 16; --pos >= 0;)
-            {
-                buffert[pos] = 0;
-            }
+            std::fill_n(buffert, 16, 0);
         }
 
         void innerHash(unsigned int* result, unsigned int* w)
@@ -67,11 +77,11 @@ namespace sha1
 
             auto sha1macro = [&](unsigned int func, unsigned int val) {
                 const unsigned int t = rol(a, 5) + func + e + val + w[round];
-				e = d;
-				d = c;
-				c = rol(b, 30);
-				b = a;
-				a = t;
+                e = d;
+                d = c;
+                c = rol(b, 30);
+                b = a;
+                a = t;
             };
 
             while (round < 16)
@@ -112,7 +122,7 @@ namespace sha1
         }
     } // namespace
 
-    void calc(const void* src, const int bytelength, unsigned char* hash)
+    HashBytes calc(const void* src, const int bytelength)
     {
         // Init the result array.
         unsigned int result[5] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
@@ -162,21 +172,25 @@ namespace sha1
         innerHash(result, w);
 
         // Store hash in result pointer, and make sure we get in in the correct order on both endian models.
-        for (int hashByte = 20; --hashByte >= 0;)
+        HashBytes hash;
+        for (int hashByte = hash.size() - 1; hashByte >= 0; hashByte--)
         {
             hash[hashByte] = (result[hashByte >> 2] >> (((3 - hashByte) & 0x3) << 3)) & 0xff;
         }
+        return hash;
     }
 
-    void toHexString(const unsigned char* hash, char* hexstring)
+    HashString toHexString(const HashBytes& hash)
     {
+        HashString hexstring;
         const char hexDigits[] = { "0123456789abcdef" };
 
-        for (int hashByte = 20; --hashByte >= 0;)
+        for (int hashByte = hash.size() - 1; hashByte >= 0; hashByte--)
         {
             hexstring[hashByte << 1] = hexDigits[(hash[hashByte] >> 4) & 0xf];
             hexstring[(hashByte << 1) + 1] = hexDigits[hash[hashByte] & 0xf];
         }
-        hexstring[40] = 0;
+        hexstring.back() = 0;
+        return hexstring;
     }
 } // namespace sha1

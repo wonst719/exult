@@ -97,6 +97,7 @@
 #include "ShortcutBar_gump.h"
 #include "ignore_unused_variable_warning.h"
 #include "touchui.h"
+#include "verify.h"
 using namespace Pentagram;
 
 #ifdef __IPHONEOS__
@@ -230,6 +231,7 @@ static bool arg_nomenu = false;
 static bool arg_edit_mode = false;  // Start up ExultStudio.
 static bool arg_write_xml = false;  // Write out game's config. as XML.
 static bool arg_reset_video = false;    // Resets the video setings.
+static bool arg_verify_files = false;    // Verify a game's files.
 
 static bool dragging = false;       // Object or gump being moved.
 static bool dragged = false;        // Flag for when obj. moved.
@@ -282,6 +284,7 @@ int main(
 	parameters.declare("--edit", &arg_edit_mode, true);
 	parameters.declare("--write-xml", &arg_write_xml, true);
 	parameters.declare("--reset-video", &arg_reset_video, true);
+	parameters.declare("--verify-files", &arg_verify_files, true);
 #if defined _WIN32
 	bool portable = false;
 	parameters.declare("-p", &portable, true);
@@ -311,7 +314,7 @@ int main(
 		     << "--ss\t\tSkip menu and run Serpent Isle with Silver Seed expansion" << endl
 		     << "--sib\t\tSkip menu and run Serpent Isle Beta" << endl
 		     << "--nomenu\tSkip BG/SI game menu" << endl
-		     << "--game <game>\tRun original game" << endl
+		     << "--game <game>\tSkip menu and run the game with key '<game>' in Exult.cfg" << endl
 		     << "--mod <mod>\tMust be used together with '--bg', '--fov', '--si', '--ss', '--sib' or" << endl
 		     << "\t\t'--game <game>'; runs the specified game using the mod with" << endl
 		     << "\t\ttitle equal to '<mod>'" << endl
@@ -324,6 +327,9 @@ int main(
 		     << "--mapnum <N>\tThis must be used with '--buildmap'. Selects which map" << endl
 		     << "\t\t(for multimap games or mods) whose map is desired" << endl
 		     << "--nocrc\t\tDon't check crc's of .flx files" << endl
+		     << "--verify-files\tVerifies that the files in static dir are not corrupt" << endl
+		     << "\t\tOnly valid if used together with '--bg', '--fov', '--si', '--ss', '--sib'" << endl
+		     << "\t\tor '--game <game>'; you cannot specify a mod with this flag" << endl
 		     << "--edit\t\tStart in map-edit mode" << endl;
 #if defined _WIN32
 		cerr << " -p\t\tMakes the home path the Exult directory (old Windows way)" << endl;
@@ -347,6 +353,10 @@ int main(
 		cerr << "Error: --buildmap requires one of --bg, --fov, --si, --ss, --sib or --game!" <<
 		     endl;
 		exit(1);
+	} else if (arg_verify_files && gameparam == 0) {
+		cerr << "Error: --verify-files requires one of --bg, --fov, --si, --ss, --sib or --game!" <<
+		     endl;
+		exit(1);
 	}
 
 	if (arg_mapnum >= 0 && arg_buildmap < 0) {
@@ -357,6 +367,9 @@ int main(
 
 	if (arg_modname != "default" && !gameparam) {
 		cerr << "Error: You must also specify the game to be used!" << endl;
+		exit(1);
+	} else if (arg_verify_files && arg_modname != "default") {
+		cerr << "Error: You cannot combine --mod with --verify-files!" << endl;
 		exit(1);
 	}
 
@@ -720,7 +733,7 @@ static void Init(
 	// Load games and mods; also stores system paths:
 	gamemanager = new GameManager();
 
-	if (arg_buildmap < 0) {
+	if (arg_buildmap < 0 && arg_verify_files == false) {
 		string gr;
 		string gg;
 		string gb;
@@ -828,6 +841,10 @@ static void Init(
 		if (arg_buildmap >= 0) {
 			BuildGameMap(newgame, arg_mapnum);
 			exit(0);
+		}
+		if (arg_verify_files) {
+			newgame->setup_game_paths();
+			exit(verify_files(newgame));
 		}
 
 		Game::create_game(newgame);
