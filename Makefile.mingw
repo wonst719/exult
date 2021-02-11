@@ -82,7 +82,7 @@ OGG_LIBS:=$(shell pkg-config --libs vorbisfile vorbis ogg)
 
 ### MT32Emu stuff
 # MT32EMU_LIBS=$(shell pkg-config --libs mt32emu)
-MT32EMU_LIBS=-LC:/msys64/mingw64/lib -lmt32emu
+MT32EMU_LIBS=-L$(shell cygpath -m $(MSYSTEM_PREFIX))/lib -lmt32emu
 MT32EMU_VERSION_MAJOR:=2
 MT32EMU_VERSION_MINOR:=4
 MT32EMU_VERSION_PATCH:=2
