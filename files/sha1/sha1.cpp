@@ -35,6 +35,7 @@
 #include "sha1.h"
 
 #include <algorithm>
+#include <climits>
 
 #ifdef _MSC_VER
 #  include <stdlib.h>

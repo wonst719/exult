@@ -66,8 +66,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 const int HMARGIN = 2;
 const int VMARGIN = 1;
 
-static inline void
-widget_set_margins(GtkWidget *w, int s, int e, int t, int b) {
+inline void widget_set_margins(GtkWidget *w, int s, int e, int t, int b) {
 	gtk_widget_set_margin_start  (w, s);
 	gtk_widget_set_margin_end    (w, e);
 	gtk_widget_set_margin_top    (w, t);
