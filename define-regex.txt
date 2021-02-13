@@ -1,0 +1,2 @@
+
+\(_WIN32\|MACOSX\|XWIN\|__IPHONEOS__\?\|__CYGWIN__\|\(__\)\?linux\(__\)\?\|__sun\(__\)\?\|NETBSD\|OPENBSD\|DARWIN\|USE_WIN32_FONTGEN\|_WIN32_WINNT\)

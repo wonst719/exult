@@ -44,8 +44,11 @@
 #endif
 
 #include "crc.h"
+
 #include "common_types.h"
-#include "utils.h"
+#include "databuf.h"
+#include "exceptions.h"
+
 #include <fstream>
 
 static uint32 crc32_tab[] = {
@@ -103,35 +106,28 @@ static uint32 crc32_tab[] = {
 	0x2d02ef8dL
 };
 
-/*
-unsigned int ssh_crc32(const unsigned char *s, unsigned int len)
-{
-    unsigned int i;
-    unsigned int crc32val;
-
-    crc32val = 0;
-    for (i = 0;  i < len;  i ++) {
-        crc32val = crc32_tab[(crc32val ^ s[i]) & 0xff] ^ (crc32val >> 8);
-    }
-    return crc32val;
-}
-*/
-
-uint32 crc32(const char *filename) {
-	std::ifstream crcfile(filename, std::ios::binary | std::ios::in);
-
+static inline uint32 crc32_internal(IDataSource&& in) {
 	uint32 crc32val = 0;
-	unsigned char c;
+	unsigned char c = in.read1();
 
-	crcfile.get(reinterpret_cast<char &>(c));
-	while (crcfile.good()) {
+	while (in.good()) {
 		crc32val = crc32_tab[(crc32val ^ c) & 0xff] ^ (crc32val >> 8);
-		crcfile.get(reinterpret_cast<char &>(c));
+		c = in.read1();
 	}
 
 	return crc32val;
 }
 
-uint32 crc32_syspath(const char *filename) {
-	return crc32(get_system_path(filename).c_str());
+// unsigned int crc32(const unsigned char *s, unsigned int len) {
+// 	return crc32_internal(IBufferDataView(s, len));
+// }
+
+uint32 crc32(const char *filename) {
+	IFileDataSource crcfile(filename);
+	if (!crcfile.good()) {
+		std::cerr << "Could not open file '" << get_system_path(filename) << std::endl;
+		return 0;
+	}
+
+	return crc32_internal(std::move(crcfile));
 }

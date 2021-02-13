@@ -377,7 +377,7 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 	}
 
 	const string mainshp = static_dir + "/mainshp.flx";
-	const uint32 crc = U7exists(mainshp) ? crc32_syspath(mainshp.c_str()) : 0;
+	const uint32 crc = crc32(mainshp.c_str());
 	auto unknown_crc = [crc](const char *game) {
 		cerr << "Warning: Unknown CRC for mainshp.flx: 0x"
 				<< std::hex << crc << std::dec << std::endl;

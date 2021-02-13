@@ -480,24 +480,20 @@ int exult_main(const char *runpath) {
 	// Check CRCs of our .flx files
 	bool crc_ok = true;
 	const char *flexname = BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX);
-	uint32 crc = crc32_syspath(flexname);
+	uint32 crc = crc32(flexname);
 	if (crc != EXULT_FLX_CRC32) {
 		crc_ok = false;
 		cerr << "exult.flx has a wrong checksum!" << endl;
 	}
 	flexname = BUNDLE_CHECK(BUNDLE_EXULT_BG_FLX, EXULT_BG_FLX);
-	if (U7exists(flexname)) {
-		if (crc32_syspath(flexname) != EXULT_BG_FLX_CRC32) {
-			crc_ok = false;
-			cerr << "exult_bg.flx has a wrong checksum!" << endl;
-		}
+	if (crc32(flexname) != EXULT_BG_FLX_CRC32) {
+		crc_ok = false;
+		cerr << "exult_bg.flx has a wrong checksum!" << endl;
 	}
 	flexname = BUNDLE_CHECK(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX);
-	if (U7exists(flexname)) {
-		if (crc32_syspath(flexname) != EXULT_SI_FLX_CRC32) {
-			crc_ok = false;
-			cerr << "exult_si.flx has a wrong checksum!" << endl;
-		}
+	if (crc32(flexname) != EXULT_SI_FLX_CRC32) {
+		crc_ok = false;
+		cerr << "exult_si.flx has a wrong checksum!" << endl;
 	}
 
 	bool config_ignore_crc;
