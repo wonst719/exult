@@ -129,18 +129,13 @@ constexpr static const U7Palette shppal = {
 	0xFC, 0xFC, 0xFC, 0x61, 0x61, 0x61, 0xC0, 0xC0, 0xC0, 0xFC, 0x00, 0xF1
 };
 
-// Finds the integer square root of a positive number of any type.
-// This is utter overkill...
-template <typename type>
-type intSqrt(type remainder) {
-	if (remainder < 0) // if type is unsigned this will be ignored = no runtime
-		return 0; // negative number ERROR
-
-	type place = static_cast<type>(1) << (sizeof(type) * 8 - 2);  // calculated by precompiler = same runtime as: place = 0x40000000
+// Finds the integer square root of a positive number
+unsigned intSqrt(unsigned remainder) {
+	unsigned place = 1U << (sizeof(unsigned) * 8 - 2);  // calculated by precompiler = same runtime as: place = 0x40000000
 	while (place > remainder)
 		place /= 4; // optimized by complier as place >>= 2
 
-	type root = 0;
+	unsigned root = 0;
 	while (place) {
 		if (remainder >= root + place) {
 			remainder -= root + place;
@@ -284,11 +279,11 @@ int main(int argc, char *argv[]) {
 				break;
 			}
 		} else {
-			int nframes = shape.get_num_frames();
-			int dim0 = intSqrt(nframes);
+			unsigned nframes = shape.get_num_frames();
+			unsigned dim0 = intSqrt(nframes);
 			if (dim0 * dim0 < nframes)
 				dim0 += 1;
-			int dim1 = (nframes + dim0 - 1) / dim0;
+			unsigned dim1 = (nframes + dim0 - 1) / dim0;
 			Write_thumbnail<Shape, Render_tiles>(outputfile, shape, shppal,
 				                                 dim0 * 8, dim1 * 8, size);
 		}
