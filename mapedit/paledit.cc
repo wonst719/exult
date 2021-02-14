@@ -136,7 +136,7 @@ void Palette_edit::select(
  *  Load/reload from file.
  */
 
-void Palette_edit::load(
+void Palette_edit::load_internal(
 ) {
 	// Free old.
 	for (auto *palette : palettes)
@@ -695,7 +695,7 @@ Palette_edit::Palette_edit(
 ) : Object_browser(nullptr, flinfo),
 	flex_info(flinfo), /* image(nullptr),*/ width(0), height(0),
 	cur_pal(0), colorsel(nullptr) {
-	load();             // Load from file.
+	load_internal();             // Load from file.
 	setup();
 }
 

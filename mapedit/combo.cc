@@ -835,7 +835,7 @@ void Combo_chooser::unselect(
  *  Load/reload from file.
  */
 
-void Combo_chooser::load(
+void Combo_chooser::load_internal(
 ) {
 	unsigned cnt = combos.size();
 	for (unsigned i = 0; i < cnt; i++)   // Delete all the combos.
@@ -1099,7 +1099,7 @@ Combo_chooser::Combo_chooser(
 	Shape_draw(i, palbuf, gtk_drawing_area_new()),
 	flex_info(flinfo), index0(0),
 	info(nullptr), info_cnt(0), sel_changed(nullptr) {
-	load();             // Init. from file data.
+	load_internal();             // Init. from file data.
 
 	// Put things in a vert. box.
 	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);

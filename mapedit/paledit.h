@@ -55,7 +55,10 @@ class Palette_edit: public Object_browser {
 	// Blit onto screen.
 	void show(int x, int y, int w, int h) override;
 	void select(int new_sel);   // Show new selection.
-	void load() override;        // Load from file data.
+	void load() override {
+		load_internal();
+	}
+	void load_internal() ;        // Load from file data.
 	void render() override;      // Draw list.
 	void double_clicked();      // Handle double-click on a color.
 	GtkWidget *create_controls();   // Controls at bottom of browser.

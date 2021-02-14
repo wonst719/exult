@@ -158,7 +158,10 @@ class Combo_chooser: public Object_browser, public Shape_draw {
 	// Blit onto screen.
 	void show(int x, int y, int w, int h) override;
 	void select(int new_sel);   // Show new selection.
-	void load() override;        // Load from file data.
+	void load() override {
+		load_internal();
+	}
+	void load_internal();        // Load from file data.
 	void render() override;      // Draw list.
 	void set_background_color(guint32 c) override {
 		Shape_draw::set_background_color(c);
