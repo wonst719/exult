@@ -142,7 +142,7 @@ static int unzlocal_getByte(FILE *fin, int *pi) {
 */
 static int unzlocal_getShort(FILE *fin, uLong *pX) {
 	uLong x ;
-	int i;
+	int i = 0;
 	int err;
 
 	err = unzlocal_getByte(fin, &i);
@@ -161,7 +161,7 @@ static int unzlocal_getShort(FILE *fin, uLong *pX) {
 
 static int unzlocal_getLong(FILE *fin, uLong *pX) {
 	uLong x ;
-	int i;
+	int i = 0;
 	int err;
 
 	err = unzlocal_getByte(fin, &i);
@@ -687,7 +687,7 @@ extern int ZEXPORT unzLocateFile(unzFile file, const char *szFileName, int iCase
 	err = unzGoToFirstFile(file);
 
 	while (err == UNZ_OK) {
-		char szCurrentFileName[UNZ_MAXFILENAMEINZIP + 1];
+		char szCurrentFileName[UNZ_MAXFILENAMEINZIP + 1]{};
 		unzGetCurrentFileInfo(file, nullptr,
 		                      szCurrentFileName, sizeof(szCurrentFileName) - 1,
 		                      nullptr, 0, nullptr, 0);

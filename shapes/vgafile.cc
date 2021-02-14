@@ -168,6 +168,7 @@ static int Find_runs(
     int w               // Remaining width of pixels.
 ) {
 	int runcnt = 0;         // Counts runs.
+	runs[0] = runs[1] = 0;  // Just in case.
 	while (x < w && *pixels != 255) { // Stop at first transparent pixel.
 		int run = 0;        // Look for repeat.
 		while (x < w - 1 && pixels[0] == pixels[1]) {
