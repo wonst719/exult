@@ -339,7 +339,7 @@ Flex_file_info::Flex_file_info(
     const char *pnm,        // Full pathname,
     unsigned size           // File size.
 ) : Shape_file_info(bnm, pnm, nullptr), flex(nullptr), write_flat(true) {
-	entries.resize(size > 0);
+	entries.resize(static_cast<size_t>(size > 0));
 	lengths.resize(entries.size());
 	if (size > 0) {         // Read in whole thing.
 		IFileDataSource in(pnm);
