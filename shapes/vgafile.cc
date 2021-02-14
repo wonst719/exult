@@ -896,17 +896,16 @@ void Shape::write(
 	// Save starting position.
 	size_t startpos = out.getPos();
 
-	size_t frnum;
 	if (!flat) {
 		out.write4(0);     // Place-holder for total length.
 		// Also for frame locations.
-		for (frnum = 0; frnum < num_frames; frnum++)
+		for (size_t frnum = 0; frnum < num_frames; frnum++)
 			out.write4(0);
 	}
-	for (frnum = 0; frnum < num_frames; frnum++) {
+	for (size_t frnum = 0; frnum < num_frames; frnum++) {
 		Shape_frame *frame = frames[frnum].get();
-		assert(frame != nullptr); // Better all be the same type.
-		assert(flat == !frame->is_rle());
+		// Better all be the same type.
+		assert(frame != nullptr && flat == !frame->is_rle());
 		if (frame->is_rle()) {
 			// Get position of frame.
 			size_t pos = out.getPos();
