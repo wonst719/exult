@@ -240,15 +240,14 @@ bool Npcs_file_info::read_npc(unsigned num) {
 	int server_socket = studio->get_server_socket();
 	unsigned char buf[Exult_server::maxlength];
 	Exult_server::Msg_type id;
-	int datalen;
 	unsigned char *ptr;
 	const unsigned char *newptr;
 	newptr = ptr = &buf[0];
 	Write2(ptr, num);
 	if (!studio->send_to_server(Exult_server::npc_info, buf, ptr - buf) ||
 	        !Exult_server::wait_for_response(server_socket, 100) ||
-	        (datalen = Exult_server::Receive_data(server_socket,
-	                   id, buf, sizeof(buf))) == -1 ||
+	        Exult_server::Receive_data(server_socket,
+	                   id, buf, sizeof(buf)) == -1 ||
 	        id != Exult_server::npc_info ||
 	        Read2(newptr) != num)
 		return false;
@@ -279,11 +278,10 @@ void Npcs_file_info::setup(
 	unsigned char buf[Exult_server::maxlength];
 	Exult_server::Msg_type id;
 	int num_npcs;
-	int datalen;
 	if (Send_data(server_socket, Exult_server::npc_unused) == -1 ||
 	        !Exult_server::wait_for_response(server_socket, 100) ||
-	        (datalen = Exult_server::Receive_data(server_socket,
-	                   id, buf, sizeof(buf))) == -1 ||
+	        Exult_server::Receive_data(server_socket,
+	                   id, buf, sizeof(buf)) == -1 ||
 	        id != Exult_server::npc_unused) {
 		cerr << "Error sending data to server." << endl;
 		return;
@@ -298,8 +296,8 @@ void Npcs_file_info::setup(
 		if (!studio->send_to_server(Exult_server::npc_info,
 		                            buf, ptr - buf) ||
 		        !Exult_server::wait_for_response(server_socket, 100) ||
-		        (datalen = Exult_server::Receive_data(server_socket,
-		                   id, buf, sizeof(buf))) == -1 ||
+		        Exult_server::Receive_data(server_socket,
+		                   id, buf, sizeof(buf)) == -1 ||
 		        id != Exult_server::npc_info ||
 		        Read2(newptr) != i) {
 			npcs.resize(0);

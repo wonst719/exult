@@ -315,13 +315,12 @@ void Usecode_browser::setup_list(
 	ifstream in;
 	U7open(in, ucfile);
 	Usecode_symbol_table symtbl;
-	unsigned int magic = Read4(in);     // Test for symbol table.
 	if (!in.good()) {
 		EStudio::Alert("Error reading '%s'.", ucfile);
 		return;
 	}
-	if (magic != UCSYMTBL_MAGIC0 || (magic = Read4(in))
-	        != UCSYMTBL_MAGIC1)
+	// Test for symbol table.
+	if (Read4(in) != UCSYMTBL_MAGIC0 || Read4(in) != UCSYMTBL_MAGIC1)
 		return;
 	symtbl.read(in);
 	gtk_tree_store_clear(model);

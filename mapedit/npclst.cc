@@ -309,7 +309,7 @@ void Npc_chooser::setup_frames_info(
 		        x += sw + border) {
 			Shape_frame *frame = shape->get_frame(framenum);
 			if (!frame) {
-				sw = sh = 0;
+				sw = 0;
 				continue;
 			}
 			sh = frame->get_height();
