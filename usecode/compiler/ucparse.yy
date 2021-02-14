@@ -26,13 +26,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <vector>
-#include <string>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
+#include <iostream>
+#include <string>
+#include <vector>
 
 #include "ucfun.h"
 #include "ucclass.h"
@@ -41,9 +40,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "opcodes.h"
 #include "ucscriptop.h"
 
-using std::strcpy;
-using std::strcat;
-using std::strlen;
 using std::string;
 using std::vector;
 
@@ -245,7 +241,7 @@ class_definition:
 		{
 		units.push_back(cur_class);
 		// Add to 'globals' symbol table.
-		(void) Uc_class_symbol::create($2, cur_class);
+		Uc_class_symbol::create($2, cur_class);
 		cur_class = nullptr;
 		}
 	;
@@ -291,7 +287,7 @@ method:
 		{
 		$3->insert($3->begin(),		// So it's local[0].
 			new Uc_class_inst_symbol("this", cur_class, 0));
-		Uc_function_symbol *funsym =
+		auto *funsym =
 			Uc_function_symbol::create($1, -1, *$3, false,
 					cur_class->get_scope(), Uc_function_symbol::utility_fun);
 		delete $3;		// A copy was made.
@@ -467,7 +463,7 @@ statement_block:
 		{	// Label followed by statements; "grab" next statement for label.
 		if ($2)
 			{
-			Uc_block_statement *stmt = new Uc_block_statement();
+			auto *stmt = new Uc_block_statement();
 			stmt->add($1);
 			stmt->add($2);
 			$$ = stmt;
@@ -579,7 +575,7 @@ var_decl_list:
 			$$ = $3;
 		else			/* Both nonzero.  Need a list. */
 			{
-			Uc_block_statement *b = dynamic_cast<Uc_block_statement *>($1);
+			auto *b = dynamic_cast<Uc_block_statement *>($1);
 			if (!b)
 				{
 				b = new Uc_block_statement();
@@ -684,7 +680,7 @@ var_decl:
 			}
 		else
 			{
-			Uc_var_symbol *var = cur_fun ? cur_fun->add_symbol($1)
+			auto *var = cur_fun ? cur_fun->add_symbol($1)
 							 : cur_class->add_symbol($1);
 			var->set_is_obj_fun($3->is_object_function(false));
 			$$ = new Uc_assignment_statement(new Uc_var_expression(var), $3);
@@ -701,7 +697,7 @@ class_decl_list:
 			$$ = $3;
 		else		/*	Both nonzero; need a list.	*/
 			{
-			Uc_block_statement *b = dynamic_cast<Uc_block_statement *>($1);
+			auto *b = dynamic_cast<Uc_block_statement *>($1);
 			if (!b)
 				{
 				b = new Uc_block_statement();
@@ -736,7 +732,7 @@ class_decl:
 				$$ = nullptr;
 			else
 				{
-				Uc_var_symbol *v = cur_fun->add_symbol($1, class_type);
+				auto *v = cur_fun->add_symbol($1, class_type);
 				$$ = new Uc_assignment_statement(new Uc_class_expression(v), $3);
 				}
 			}
@@ -752,7 +748,7 @@ struct_decl_list:
 			$$ = $3;
 		else		/*	Both nonzero; need a list.	*/
 			{
-			Uc_block_statement *b = dynamic_cast<Uc_block_statement *>($1);
+			auto *b = dynamic_cast<Uc_block_statement *>($1);
 			if (!b)
 				{
 				b = new Uc_block_statement();
@@ -786,7 +782,7 @@ struct_decl:
 			}
 		else
 			{
-			Uc_var_symbol *var = cur_fun ? cur_fun->add_symbol($1, struct_type)
+			auto *var = cur_fun ? cur_fun->add_symbol($1, struct_type)
 							 : cur_class->add_symbol($1, struct_type);
 			var->set_is_obj_fun($3->is_object_function(false));
 			$$ = new Uc_assignment_statement(new Uc_var_expression(var), $3);
@@ -819,7 +815,7 @@ class_expr:
 		else
 			{
 				// Tests above guarantee this will always work.
-			Uc_class_inst_symbol *cls =
+			auto *cls =
 					dynamic_cast<Uc_class_inst_symbol *>(sym->get_sym());
 			$$ = new Uc_class_expression(cls);
 			}
@@ -1027,7 +1023,7 @@ if_statement:
 trycatch_statement:
 	trystart_statement '{' statement_list '}'
 		{
-		Uc_trycatch_statement *stmt = dynamic_cast<Uc_trycatch_statement*>($1);
+		auto *stmt = dynamic_cast<Uc_trycatch_statement*>($1);
 		if (!stmt) {
 			yyerror("try/catch statement is not a try/catch statement");
 		} else {
@@ -1046,7 +1042,7 @@ trystart_statement:
 	| TRY '{' statement_list '}' CATCH '(' IDENTIFIER ')'
 		{
 		cur_fun->push_scope();
-		Uc_trycatch_statement *stmt = new Uc_trycatch_statement($3);
+		auto *stmt = new Uc_trycatch_statement($3);
 		stmt->set_catch_variable(cur_fun->add_symbol($7));
 		$$ = stmt;
 		}
@@ -1136,7 +1132,7 @@ start_array_loop:
 					$4->get_name());
 			yyerror(buf);
 			}
-		Uc_var_symbol *var = cur_fun->add_symbol($2);
+		auto *var = cur_fun->add_symbol($2);
 		$$ = new Uc_arrayloop_statement(var, $4);
 		}
 	;
@@ -1158,7 +1154,7 @@ special_method_call_statement:
 					/* Have 'primary' say something.*/
 	primary hierarchy_tok SAY '(' opt_nonclass_expr_list ')' ';'
 		{
-		Uc_block_statement *stmts = new Uc_block_statement();
+		auto *stmts = new Uc_block_statement();
 					/* Set up 'show' call.		*/
 		stmts->add(new Uc_call_statement(
 			new Uc_call_expression(Uc_function::get_show_face(),
@@ -1182,7 +1178,7 @@ special_method_call_statement:
 					$5->get_name());
 			yyerror(buf);
 			}
-		Uc_array_expression *parms = new Uc_array_expression();
+		auto *parms = new Uc_array_expression();
 		parms->add($1);		// Itemref.
 		parms->add(new Uc_var_expression($5));		// Script.
 		if ($6)
@@ -1411,14 +1407,14 @@ switch_case:
 script_statement:			/* Yes, this could be an intrinsic. */
 	SCRIPT { start_script(); } item opt_script_delay script_command
 		{
-		Uc_array_expression *parms = new Uc_array_expression();
+		auto *parms = new Uc_array_expression();
 		parms->add($3);		// Itemref.
 		parms->add($5);		// Script.
 		if ($4)			// Delay?
 			parms->add($4);
 					// Get the script intrinsic.
 		Uc_symbol *sym = Uc_function::get_intrinsic($4 ? 2 : 1);
-		Uc_call_expression *fcall =
+		auto *fcall =
 				new Uc_call_expression(sym, parms, cur_fun);
 		$$ = new Uc_call_statement(fcall);
 		end_script();
@@ -1451,7 +1447,7 @@ script_command:
 	| REPEAT nonclass_expr { repeat_nesting++; } script_command  ';'
 		{
 		repeat_nesting--;
-		Uc_array_expression *result = new Uc_array_expression();
+		auto *result = new Uc_array_expression();
 		result->concat($4);	// Start with cmnds. to repeat.
 		int sz = result->get_exprs().size();
 		result->add(new Uc_int_expression(
@@ -1467,7 +1463,7 @@ script_command:
 		script_command  ';'
 		{	// Allow setting a different initial number of repeats.
 		repeat_nesting--;
-		Uc_array_expression *result = new Uc_array_expression();
+		auto *result = new Uc_array_expression();
 		result->concat($6);	// Start with cmnds. to repeat.
 		int sz = result->get_exprs().size();
 		result->add(new Uc_int_expression(Ucscript::repeat2, UC_PUSHB));
@@ -1736,7 +1732,7 @@ goto_statement:
 delete_statement:
 	DELETE declared_var ';'
 		{
-		Uc_class_inst_symbol *cls =
+		auto *cls =
 				dynamic_cast<Uc_class_inst_symbol *>($2->get_sym());
 		if (!cls)
 			{
@@ -1878,7 +1874,7 @@ addressof:
 			yyerror(buf);
 			$$ = nullptr;
 			}
-		Uc_function_symbol *fun = dynamic_cast<Uc_function_symbol *>(sym);
+		auto *fun = dynamic_cast<Uc_function_symbol *>(sym);
 		if (!fun)	/* See if the symbol is a function */
 			{
 			char buf[150];
@@ -1940,7 +1936,7 @@ primary:
 		{ $$ = new Uc_int_expression($2, static_cast<UsecodeOps>($1)); }
 	| member_selector
 		{
-		Uc_var_expression *expr = dynamic_cast<Uc_var_expression *>($1->expr);
+		auto *expr = dynamic_cast<Uc_var_expression *>($1->expr);
 		Uc_struct_symbol *base;
 		if (!expr || !(base = expr->get_struct()))
 			{
@@ -1960,8 +1956,8 @@ primary:
 				}
 			else
 				{
-				Uc_var_symbol *var = expr->get_var();
-				Uc_int_expression *index = new Uc_int_expression(offset);
+				auto *var = expr->get_var();
+				auto *index = new Uc_int_expression(offset);
 				if (var->is_static())
 					$$ = new Uc_static_arrayelem_expression(var, index);
 				else if (var->get_sym_type() == Uc_symbol::Member_var)
@@ -2151,7 +2147,7 @@ int_literal:				/* A const. integer value.	*/
 		{ $$ = new Uc_int_expression($2, static_cast<UsecodeOps>($1)); }
 	| declared_sym
 		{
-		Uc_const_int_symbol *sym =
+		auto *sym =
 				dynamic_cast<Uc_const_int_symbol *>($1);
 		if (!sym)
 			{
@@ -2203,7 +2199,7 @@ declared_var_value:
 declared_var:
 	declared_sym %prec UCC_SYM
 		{
-		Uc_var_symbol *var = dynamic_cast<Uc_var_symbol *>($1);
+		auto *var = dynamic_cast<Uc_var_symbol *>($1);
 		if (!var)
 			{
 			char buf[150];
@@ -2239,7 +2235,7 @@ defined_class:
 defined_struct:
 	IDENTIFIER
 		{
-		Uc_struct_symbol *sym = dynamic_cast<Uc_struct_symbol *>(
+		auto *sym = dynamic_cast<Uc_struct_symbol *>(
 				Uc_function::search_globals($1));
 		if (!sym)
 			{
@@ -2269,7 +2265,7 @@ static Uc_array_expression *Create_array
 	Uc_expression *e2
 	)
 	{
-	Uc_array_expression *arr = new Uc_array_expression();
+	auto *arr = new Uc_array_expression();
 	arr->add(new Uc_int_expression(e1, UC_PUSHB));
 	arr->add(e2);
 	return arr;
@@ -2281,7 +2277,7 @@ static Uc_array_expression *Create_array
 	Uc_expression *e3
 	)
 	{
-	Uc_array_expression *arr = new Uc_array_expression();
+	auto *arr = new Uc_array_expression();
 	arr->add(new Uc_int_expression(e1, UC_PUSHB));
 	arr->add(e2);
 	arr->add(e3);
@@ -2292,7 +2288,7 @@ static Uc_class *Find_class
 	const char *nm
 	)
 	{
-	Uc_class_symbol *csym = dynamic_cast<Uc_class_symbol *>(
+	auto *csym = dynamic_cast<Uc_class_symbol *>(
 			Uc_function::search_globals(nm));
 	if (!csym)
 		{
@@ -2367,7 +2363,7 @@ static Uc_call_expression *cls_method_call
 		return nullptr;
 		}
 
-	Uc_function_symbol *fun = dynamic_cast<Uc_function_symbol *>(sym);
+	auto *fun = dynamic_cast<Uc_function_symbol *>(sym);
 	if (!fun)
 		{
 		char buf[150];
@@ -2376,7 +2372,7 @@ static Uc_call_expression *cls_method_call
 		return nullptr;
 		}
 
-	Uc_call_expression *ret =
+	auto *ret =
 			new Uc_call_expression(sym, parms, cur_fun, false);
 	ret->set_itemref(ths);
 	ret->set_call_scope(clsscope);
@@ -2394,7 +2390,7 @@ static bool Uc_is_valid_calle
 	{
 	if (original)
 		return true;
-	Uc_function_symbol *fun = dynamic_cast<Uc_function_symbol *>(sym);
+	auto *fun = dynamic_cast<Uc_function_symbol *>(sym);
 	if (!fun)		// Most likely an intrinsic.
 		return true;
 
@@ -2475,7 +2471,7 @@ static Uc_call_expression *cls_function_call
 		}
 	else
 		{
-		Uc_call_expression *ret =
+		auto *ret =
 				new Uc_call_expression(sym, parms, cur_fun, original);
 		ret->set_itemref(ths);
 		ret->check_params();

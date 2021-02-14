@@ -36,8 +36,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <string>
 #include <cstring>
+#include <string>
 #include <vector>
 #include <set>
 #include "ucparse.h"
@@ -125,7 +125,7 @@ static void Include
 		return;
 		}
 					// Check if file has already been included.
-	std::set<string>::iterator it = inclfiles.find(name);
+	auto it = inclfiles.find(name);
 	if (it != inclfiles.end())
 		return;
 	locstack.push_back(new Uc_location());
@@ -191,7 +191,7 @@ static void Set_autonum
 	int fun_number = strtol(text, &name, 0);
 	if (fun_number<=0)
 		Uc_location::yyerror("Starting function number too low in #autonumber");
-	
+
 	Uc_function_symbol::set_last_num(fun_number - 1);
 	}
 
@@ -481,7 +481,7 @@ sonic_damage	return SONIC_DAMAGE;
 				Uc_location *loc = locstack.back();
 				locstack.pop_back();
 				const char *nm = loc->get_source();
-				loc->set_cur(nm, loc->get_line());
+				Uc_location::set_cur(nm, loc->get_line());
 				delete loc;
 				// Close currently opened file.
 				if (yyin && yyin != stdin && bufstack.size()) fclose(yyin);
