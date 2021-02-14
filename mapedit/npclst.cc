@@ -744,7 +744,7 @@ void Npc_chooser::drag_data_received(
 	if ((gtk_selection_data_get_data_type(seldata) == gdk_atom_intern(U7_TARGET_NPCID_NAME, 0) ||
 	     gtk_selection_data_get_data_type(seldata) == gdk_atom_intern(U7_TARGET_GENERIC_NAME_X11, 0) ||
 	     gtk_selection_data_get_data_type(seldata) == gdk_atom_intern(U7_TARGET_GENERIC_NAME_MACOSX, 0)) &&
-	        Is_u7_npcid(gtk_selection_data_get_data(seldata)) == true &&
+	        Is_u7_npcid(gtk_selection_data_get_data(seldata)) &&
 	        gtk_selection_data_get_format(seldata) == 8 &&
 	        gtk_selection_data_get_length(seldata) > 0) {
 		int npcnum;
@@ -941,7 +941,7 @@ void Npc_chooser::all_frames_toggled(
     gpointer data
 ) {
 	auto *chooser = static_cast<Npc_chooser *>(data);
-	if (chooser->info.size() == 0) return;
+	if (chooser->info.empty()) return;
 	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	chooser->frames_mode = on;
 	if (on)             // Frame => show horiz. scrollbar.

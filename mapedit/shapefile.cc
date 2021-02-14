@@ -41,7 +41,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "u7drag.h"
 #include "utils.h"
 
-using std::cout;
+#include <algorithm>
+
 using std::cerr;
 using std::endl;
 using std::ofstream;
@@ -654,8 +655,7 @@ void Shape_file_set::flush(
 
 bool Shape_file_set::is_modified(
 ) {
-	for (auto *file : files)
-		if (file->modified)
-			return true;
-	return false;
+	return std::any_of(files.cbegin(), files.cend(), [](auto* file) {
+		return file->modified;
+	});
 }

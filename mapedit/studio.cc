@@ -710,7 +710,7 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 	{
 		GSList *objects = gtk_builder_get_objects(app_xml);
 		for (GSList *l = objects; l; l = l->next) {
-			GObject *obj = static_cast<GObject *>(l->data);
+			auto *obj = static_cast<GObject *>(l->data);
 			if (GTK_IS_WIDGET(obj) && GTK_IS_BUILDABLE(obj)) {
 				gtk_widget_set_name(GTK_WIDGET(obj),
 				                    gtk_buildable_get_name(GTK_BUILDABLE(obj)));
@@ -927,10 +927,8 @@ bool ExultStudio::has_focus(
 	if (Window_has_focus(GTK_WINDOW(app)))
 		return true;        // Main window.
 	// Group windows:
-	for (auto *win : group_windows)
-		if (Window_has_focus(win))
-			return true;
-	return false;
+	return std::any_of(
+			group_windows.cbegin(), group_windows.cend(), Window_has_focus);
 }
 
 /*

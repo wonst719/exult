@@ -84,7 +84,7 @@ int img_write(char *img_out) {
 		fprintf(stderr, "ERROR: Can't write output to stdout.\n");
 		return -1;
 	}
-	if (strncasecmp(img_out + strlen(img_out) - 4, ".bmp", 4)) { // img_out does not end in .bmp
+	if (strncasecmp(img_out + strlen(img_out) - 4, ".bmp", 4) != 0) { // img_out does not end in .bmp
 		fprintf(stderr, "WARNING: it seems the output file does not end with .bmp. Creating a BMP anyways.\n");
 	}
 
@@ -114,7 +114,8 @@ void putpixel(SDL_Surface *surface, int x, int y, Uint8 pixel) {
 }
 
 char *transform(int index) {
-	char *ret, *tmp;
+	char *ret;
+	char *tmp;
 	node *cursor;
 	pfnPluginApply tmp_func;
 
@@ -144,7 +145,9 @@ char *transform(int index) {
 Uint8 palette_rw(char *col) {
 	// this function returns the colour number from image_out palette for the colour [rgb]
 	// or if it doesn't exist in the palette, it simply adds it!
-	unsigned r, g, b;
+	unsigned r;
+	unsigned g;
+	unsigned b;
 	int ncol = g_variables.image_out->format->palette->ncolors;
 	int idx;
 

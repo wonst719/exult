@@ -543,7 +543,7 @@ void Chunk_chooser::drag_data_received(
 	if ((gtk_selection_data_get_data_type(seldata) == gdk_atom_intern(U7_TARGET_CHUNKID_NAME, 0) ||
 	     gtk_selection_data_get_data_type(seldata) == gdk_atom_intern(U7_TARGET_GENERIC_NAME_X11, 0) ||
 	     gtk_selection_data_get_data_type(seldata) == gdk_atom_intern(U7_TARGET_GENERIC_NAME_MACOSX, 0)) &&
-	        Is_u7_chunkid(gtk_selection_data_get_data(seldata)) == true &&
+	        Is_u7_chunkid(gtk_selection_data_get_data(seldata)) &&
 	        gtk_selection_data_get_format(seldata) == 8 &&
 	        gtk_selection_data_get_length(seldata) > 0) {
 		int cnum;

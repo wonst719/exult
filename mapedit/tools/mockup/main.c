@@ -40,16 +40,19 @@ Uint32 getpixel(SDL_Surface *surface, int x, int y) {
 }
 
 int main(int argc, char **argv) {
-
 	SDL_Surface *mock_map;  // where the sketch map is loaded on
 	Uint32 pix = 0;         // pixel that is read at (x,y)
-	Uint8 red, green, blue; // values of pix in RGB
+	// values of pix in RGB
+	Uint8 red;
+	Uint8 green;
+	Uint8 blue;
 	SDL_PixelFormat *fmt;   // we need that to determine which BPP
 	long int offset;        // where in the real mapfile is coord (x,y)
 	int found;
 	u7map mymap;            // a table in which the map is created and is then written to a file
 	FILE *f;                // to write to the file
-	char cmd[256], buff[7];
+	char cmd[256];
+	char buff[7];
 	int mapping[MAX_COLOURS];
 
 	if (argc < 3 || argc > 3) {

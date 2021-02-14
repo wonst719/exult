@@ -47,7 +47,8 @@ int plugin_parse(char *line) {
 	// will prepare the plugin to know what to send back when receiving a colour_hex in plugin_apply
 
 	char c;
-	int i, size = strlen(line);
+	int i;
+	int size = strlen(line);
 	int newrec = 1;
 	int let = 0;
 	unsigned int idx = -1;
@@ -105,7 +106,7 @@ char *plugin_apply(char colour[6]) {
 	int my_rand;
 
 	// find the colour in big table
-	while (strncasecmp(col[loc_idx][0], colour, 6) && loc_idx < glob_idx) {
+	while (strncasecmp(col[loc_idx][0], colour, 6) != 0 && loc_idx < glob_idx) {
 		//    printf("I look for %s and I got %s instead!\n",colour,col[loc_idx][0]);
 		loc_idx++;
 	}

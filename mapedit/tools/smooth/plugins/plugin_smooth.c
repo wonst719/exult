@@ -1,5 +1,6 @@
-#include <stdio.h>
+#include <math.h>
 #include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -64,7 +65,8 @@ int plugin_parse(char *line) {
 	// will prepare the plugin to know what to send back when receiving a colour_hex in plugin_apply
 
 	char c;
-	int i, size = strlen(line);
+	int i;
+	int size = strlen(line);
 	int newrec = 1;
 	int let = 0;
 	unsigned int idx = -1;
@@ -162,7 +164,10 @@ char *plugin_apply(char colour[6], glob_variables *g_var) {
 	unsigned int calc_value;
 	Uint8 col_num = 4;
 	char *a_star = "*";
-	unsigned short int a, b, c, d;
+	unsigned short int a;
+	unsigned short int b;
+	unsigned short int c;
+	unsigned short int d;
 
 	my_g_var.global_x = g_var->global_x;
 	my_g_var.global_y = g_var->global_y;
@@ -171,7 +176,7 @@ char *plugin_apply(char colour[6], glob_variables *g_var) {
 	col_num = my_getpixel(my_g_stat.image_in, my_g_var.global_x, my_g_var.global_y);
 
 	// find the colour in big table
-	while (strncasecmp(col[loc_idx][0], colour, 6) && loc_idx < glob_idx) {
+	while (strncasecmp(col[loc_idx][0], colour, 6) != 0 && loc_idx < glob_idx) {
 		//    printf("I look for %s and I got %s instead!\n",colour,col[loc_idx][0]);
 		loc_idx++;
 	}
@@ -200,7 +205,7 @@ char *plugin_apply(char colour[6], glob_variables *g_var) {
 			return colour;
 		}
 
-		calc_value = (int)(1 + (2.4 * a) + (-2.1 * b) + (1.1 * c) + (3.1 * d) + 0.5);
+		calc_value = lround(1 + (2.4 * a) + (-2.1 * b) + (1.1 * c) + (3.1 * d) + 0.5);
 
 		if (my_g_stat.debug > 3) printf("calc_value is %d at (%d,%d) -- a=%d b=%d c=%d d=%d\n", calc_value, my_g_var.global_x, my_g_var.global_y, a, b, c, d);
 
@@ -209,7 +214,10 @@ char *plugin_apply(char colour[6], glob_variables *g_var) {
 			return col[loc_idx][calc_value + 2]; // the first 2 cells are taken by slave and trigger
 		} else {
 			// in this case, the chunk is a center chunk with a trigger on one corner
-			unsigned short int i, j, k, l;
+			unsigned short int i;
+			unsigned short int j;
+			unsigned short int k;
+			unsigned short int l;
 			// need to know trigger's index.
 			//      Uint8 idx_trigger = SDL_MapRGB(my_g_stat.image_in->format,16*(int)col[loc_idx][1][0]+(int)col[loc_idx][1][1],16*(int)col[loc_idx][1][2]+(int)col[loc_idx][1][3],16*(int)col[loc_idx][1][4]+(int)col[loc_idx][1][5]);
 			Uint8 idx_trigger = 0;

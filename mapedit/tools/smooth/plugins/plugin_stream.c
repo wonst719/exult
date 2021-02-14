@@ -62,7 +62,8 @@ int plugin_parse(char *line) {
 	// will prepare the plugin to know what to send back when receiving a colour_hex in plugin_apply
 
 	char c;
-	int i, size = strlen(line);
+	int i;
+	int size = strlen(line);
 	int newrec = 1;
 	int let = 0;
 	unsigned int idx = -1;
@@ -170,7 +171,7 @@ char *plugin_apply(char colour[6], glob_variables *g_var) {
 	col_num = my_getpixel(my_g_stat.image_in, my_g_var.global_x, my_g_var.global_y);
 
 	// find the colour in big table
-	while (strncasecmp(col[loc_idx][0], colour, 6) && loc_idx < glob_idx) {
+	while (strncasecmp(col[loc_idx][0], colour, 6) != 0 && loc_idx < glob_idx) {
 		loc_idx++;
 	}
 
