@@ -1104,69 +1104,64 @@ on_shinfo_frame_changed(GtkSpinButton *button,
 	gtk_widget_queue_draw(studio->get_widget("shinfo_draw"));
 }
 
+const auto TreeIterDeleter = [](GtkTreeIter *iter) {
+	if (iter != nullptr) {
+		gtk_tree_iter_free(iter);
+	}
+};
+using UniqueTreeIter = std::unique_ptr<GtkTreeIter, decltype(TreeIterDeleter)>;
+
 /*
  *  Helper tree functions.
  */
 template<typename T>
 static inline int Find_unary_iter(
     GtkTreeModel *model,
-    GtkTreeIter *&iter,
+    UniqueTreeIter &out_iter,
     T newval
 ) {
-	iter = static_cast<GtkTreeIter *>(g_malloc(sizeof(GtkTreeIter)));
-	if (!gtk_tree_model_get_iter_first(model, iter)) {
-		gtk_tree_iter_free(iter);
-		iter = nullptr;
+	GtkTreeIter iter;
+	if (!gtk_tree_model_get_iter_first(model, &iter)) {
+		out_iter.reset(nullptr);
 		return 1;
 	}
-	GtkTreeIter *iter2;
 	do {
-		iter2 = gtk_tree_iter_copy(iter);
+		out_iter.reset(gtk_tree_iter_copy(&iter));
 		T val;
-		gtk_tree_model_get(model, iter, 0, &val, -1);
+		gtk_tree_model_get(model, &iter, 0, &val, -1);
 		if (val == newval) {
-			gtk_tree_iter_free(iter2);
 			return 0;
 		} else if (newval < val) {
-			gtk_tree_iter_free(iter2);
 			return -1;
 		}
-	} while (gtk_tree_model_iter_next(model, iter));
-	gtk_tree_iter_free(iter);
-	iter = iter2;
+	} while (gtk_tree_model_iter_next(model, &iter));
 	return 1;
 }
 
 template<typename T1, typename T2>
 static inline int Find_binary_iter(
     GtkTreeModel *model,
-    GtkTreeIter *&iter,
+    UniqueTreeIter &out_iter,
     T1 newval1,
     T2 newval2
 ) {
-	iter = static_cast<GtkTreeIter *>(g_malloc(sizeof(GtkTreeIter)));
-	if (!gtk_tree_model_get_iter_first(model, iter)) {
-		gtk_tree_iter_free(iter);
-		iter = nullptr;
+	GtkTreeIter iter;
+	if (!gtk_tree_model_get_iter_first(model, &iter)) {
+		out_iter.reset(nullptr);
 		return 1;
 	}
-	GtkTreeIter *iter2;
 	do {
-		iter2 = gtk_tree_iter_copy(iter);
+		out_iter.reset(gtk_tree_iter_copy(&iter));
 		T1 val1;
 		T2 val2;
-		gtk_tree_model_get(model, iter, 0, &val1, 1, &val2, -1);
+		gtk_tree_model_get(model, &iter, 0, &val1, 1, &val2, -1);
 		if (val1 == newval1 && val2 == newval2) {
-			gtk_tree_iter_free(iter2);
 			return 0;
 		} else if ((newval1 == val1 && newval2 < val2) || (newval1 < val1)) {
-			gtk_tree_iter_free(iter2);
 			return -1;
 		}
 
-	} while (gtk_tree_model_iter_next(model, iter));
-	gtk_tree_iter_free(iter);
-	iter = iter2;
+	} while (gtk_tree_model_iter_next(model, &iter));
 	return 1;
 }
 
@@ -1226,27 +1221,27 @@ C_EXPORT void on_shinfo_effhps_update_clicked(
 	                          studio->get_widget("shinfo_effhps_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(hptree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
 	unsigned int newfrnum;
 	unsigned int newqual;
 	unsigned int newhps;
 	Get_hp_fields(studio, newfrnum, newqual, &newhps);
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
 	if (cmp) {
 		GtkTreeIter newiter;
 		if (cmp > 0)
-			gtk_tree_store_insert_after(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_after(store, &newiter, nullptr, iter.get());
 		else
-			gtk_tree_store_insert_before(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_before(store, &newiter, nullptr, iter.get());
 		gtk_tree_store_set(store, &newiter, HP_FRAME_COLUMN, static_cast<int>(newfrnum),
 		                   HP_QUALITY_COLUMN, static_cast<int>(newqual),
 		                   HP_HIT_POINTS, static_cast<int>(newhps),
 		                   HP_FROM_PATCH, 1, HP_MODIFIED, 1, -1);
 	} else {
 		unsigned int hps;
-		gtk_tree_model_get(model, iter, HP_HIT_POINTS, &hps, -1);
+		gtk_tree_model_get(model, iter.get(), HP_HIT_POINTS, &hps, -1);
 		if (hps != newhps)
-			gtk_tree_store_set(store, iter, HP_HIT_POINTS, newhps,
+			gtk_tree_store_set(store, iter.get(), HP_HIT_POINTS, newhps,
 			                   HP_MODIFIED, 1, -1);
 	}
 }
@@ -1264,12 +1259,12 @@ C_EXPORT void on_shinfo_effhps_remove_clicked(
 	                          studio->get_widget("shinfo_effhps_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(hptree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
 	unsigned int newfrnum;
 	unsigned int newqual;
 	Get_hp_fields(studio, newfrnum, newqual);
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	if (!Find_binary_iter(model, iter, newfrnum, newqual))
-		gtk_tree_store_remove(store, iter);
+		gtk_tree_store_remove(store, iter.get());
 }
 
 /*
@@ -1377,22 +1372,22 @@ C_EXPORT void on_shinfo_brightness_update_clicked(
 	                                  studio->get_widget("shinfo_brightness_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(brightnesstree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	int cmp = Find_unary_iter(model, iter, newfrnum);
 	if (cmp) {
 		GtkTreeIter newiter;
 		if (cmp > 0)
-			gtk_tree_store_insert_after(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_after(store, &newiter, nullptr, iter.get());
 		else
-			gtk_tree_store_insert_before(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_before(store, &newiter, nullptr, iter.get());
 		gtk_tree_store_set(store, &newiter, BRIGHTNESS_FRAME_COLUMN, static_cast<int>(newfrnum),
 		                   BRIGHTNESS_VALUE_COLUMN, static_cast<int>(newbrightness), BRIGHTNESS_FROM_PATCH, 1,
 		                   BRIGHTNESS_MODIFIED, 1, -1);
 	} else {
 		unsigned int brightness;
-		gtk_tree_model_get(model, iter, BRIGHTNESS_VALUE_COLUMN, &brightness, -1);
+		gtk_tree_model_get(model, iter.get(), BRIGHTNESS_VALUE_COLUMN, &brightness, -1);
 		if (brightness != newbrightness)
-			gtk_tree_store_set(store, iter, BRIGHTNESS_VALUE_COLUMN, newbrightness,
+			gtk_tree_store_set(store, iter.get(), BRIGHTNESS_VALUE_COLUMN, newbrightness,
 			                   BRIGHTNESS_MODIFIED, 1, -1);
 	}
 }
@@ -1410,11 +1405,11 @@ C_EXPORT void on_shinfo_brightness_remove_clicked(
 	                                  studio->get_widget("shinfo_brightness_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(brightnesstree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
 	unsigned int newfrnum;
 	Get_brightness_fields(studio, newfrnum);
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	if (!Find_unary_iter(model, iter, newfrnum))
-		gtk_tree_store_remove(store, iter);
+		gtk_tree_store_remove(store, iter.get());
 }
 
 /*
@@ -1484,22 +1479,22 @@ C_EXPORT void on_shinfo_warmth_update_clicked(
 	                            studio->get_widget("shinfo_warmth_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(warmtree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	int cmp = Find_unary_iter(model, iter, newfrnum);
 	if (cmp) {
 		GtkTreeIter newiter;
 		if (cmp > 0)
-			gtk_tree_store_insert_after(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_after(store, &newiter, nullptr, iter.get());
 		else
-			gtk_tree_store_insert_before(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_before(store, &newiter, nullptr, iter.get());
 		gtk_tree_store_set(store, &newiter, WARM_FRAME_COLUMN, static_cast<int>(newfrnum),
 		                   WARM_VALUE_COLUMN, newwarm, WARM_FROM_PATCH, 1,
 		                   WARM_MODIFIED, 1, -1);
 	} else {
 		int warm;
-		gtk_tree_model_get(model, iter, WARM_VALUE_COLUMN, &warm, -1);
+		gtk_tree_model_get(model, iter.get(), WARM_VALUE_COLUMN, &warm, -1);
 		if (warm != newwarm)
-			gtk_tree_store_set(store, iter, WARM_VALUE_COLUMN, newwarm,
+			gtk_tree_store_set(store, iter.get(), WARM_VALUE_COLUMN, newwarm,
 			                   WARM_MODIFIED, 1, -1);
 	}
 }
@@ -1517,11 +1512,11 @@ C_EXPORT void on_shinfo_warmth_remove_clicked(
 	                            studio->get_widget("shinfo_warmth_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(warmtree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
 	unsigned int newfrnum;
 	Get_warmth_fields(studio, newfrnum);
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	if (!Find_unary_iter(model, iter, newfrnum))
-		gtk_tree_store_remove(store, iter);
+		gtk_tree_store_remove(store, iter.get());
 }
 
 /*
@@ -1591,22 +1586,22 @@ C_EXPORT void on_shinfo_cntrules_update_clicked(
 	                           studio->get_widget("shinfo_cntrules_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	int cmp = Find_unary_iter(model, iter, newshnum);
 	if (cmp) {
 		GtkTreeIter newiter;
 		if (cmp > 0)
-			gtk_tree_store_insert_after(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_after(store, &newiter, nullptr, iter.get());
 		else
-			gtk_tree_store_insert_before(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_before(store, &newiter, nullptr, iter.get());
 		gtk_tree_store_set(store, &newiter, CNT_SHAPE_COLUMN, static_cast<int>(newshnum),
 		                   CNT_ACCEPT_COLUMN, static_cast<int>(newaccept), CNT_FROM_PATCH, 1,
 		                   CNT_MODIFIED, 1, -1);
 	} else {
 		unsigned int accept;
-		gtk_tree_model_get(model, iter, CNT_ACCEPT_COLUMN, &accept, -1);
+		gtk_tree_model_get(model, iter.get(), CNT_ACCEPT_COLUMN, &accept, -1);
 		if (accept != newaccept)
-			gtk_tree_store_set(store, iter, CNT_ACCEPT_COLUMN, newaccept,
+			gtk_tree_store_set(store, iter.get(), CNT_ACCEPT_COLUMN, newaccept,
 			                   CNT_MODIFIED, 1, -1);
 	}
 }
@@ -1624,11 +1619,11 @@ C_EXPORT void on_shinfo_cntrules_remove_clicked(
 	                           studio->get_widget("shinfo_cntrules_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
 	unsigned int newshnum;
 	Get_cntrules_fields(studio, newshnum);
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	if (!Find_unary_iter(model, iter, newshnum))
-		gtk_tree_store_remove(store, iter);
+		gtk_tree_store_remove(store, iter.get());
 }
 
 /*
@@ -1737,14 +1732,14 @@ C_EXPORT void on_shinfo_frameflags_update_clicked(
 	                           studio->get_widget("shinfo_frameflags_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
 	if (cmp) {
 		GtkTreeIter newiter;
 		if (cmp > 0)
-			gtk_tree_store_insert_after(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_after(store, &newiter, nullptr, iter.get());
 		else
-			gtk_tree_store_insert_before(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_before(store, &newiter, nullptr, iter.get());
 		gtk_tree_store_set(store, &newiter,
 		                   FRFLAG_FRAME_COLUMN, static_cast<int>(newfrnum),
 		                   FRFLAG_QUAL_COLUMN, static_cast<int>(newqual),
@@ -1752,9 +1747,9 @@ C_EXPORT void on_shinfo_frameflags_update_clicked(
 		                   FRFLAG_MODIFIED, 1, -1);
 	} else {
 		unsigned int flags;
-		gtk_tree_model_get(model, iter, FRFLAG_FLAGS_COLUMN, &flags, -1);
+		gtk_tree_model_get(model, iter.get(), FRFLAG_FLAGS_COLUMN, &flags, -1);
 		if (flags != newflags)
-			gtk_tree_store_set(store, iter, FRFLAG_FLAGS_COLUMN, newflags,
+			gtk_tree_store_set(store, iter.get(), FRFLAG_FLAGS_COLUMN, newflags,
 			                   FRFLAG_MODIFIED, 1, -1);
 	}
 }
@@ -1772,12 +1767,12 @@ C_EXPORT void on_shinfo_frameflags_remove_clicked(
 	                           studio->get_widget("shinfo_frameflags_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
 	unsigned int newfrnum;
 	unsigned int newqual;
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	Get_frameflags_fields(studio, newfrnum, newqual);
 	if (!Find_binary_iter(model, iter, newfrnum, newqual))
-		gtk_tree_store_remove(store, iter);
+		gtk_tree_store_remove(store, iter.get());
 }
 
 /*
@@ -1857,14 +1852,14 @@ C_EXPORT void on_shinfo_frameusecode_update_clicked(
 	                           studio->get_widget("shinfo_frameusecode_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
 	if (cmp) {
 		GtkTreeIter newiter;
 		if (cmp > 0)
-			gtk_tree_store_insert_after(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_after(store, &newiter, nullptr, iter.get());
 		else
-			gtk_tree_store_insert_before(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_before(store, &newiter, nullptr, iter.get());
 		gtk_tree_store_set(store, &newiter,
 		                   FRUC_FRAME_COLUMN, static_cast<int>(newfrnum),
 		                   FRUC_QUAL_COLUMN, static_cast<int>(newqual),
@@ -1872,9 +1867,9 @@ C_EXPORT void on_shinfo_frameusecode_update_clicked(
 		                   FRUC_MODIFIED, 1, -1);
 	} else {
 		const char *ucfun;
-		gtk_tree_model_get(model, iter, FRUC_USEFUN_COLUMN, &ucfun, -1);
+		gtk_tree_model_get(model, iter.get(), FRUC_USEFUN_COLUMN, &ucfun, -1);
 		if (!std::strcmp(ucfun, newucfun))
-			gtk_tree_store_set(store, iter, FRUC_USEFUN_COLUMN, newucfun,
+			gtk_tree_store_set(store, iter.get(), FRUC_USEFUN_COLUMN, newucfun,
 			                   FRUC_MODIFIED, 1, -1);
 	}
 }
@@ -1892,12 +1887,12 @@ C_EXPORT void on_shinfo_frameusecode_remove_clicked(
 	                           studio->get_widget("shinfo_frameusecode_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
-	unsigned int newfrnum;
 	unsigned int newqual;
+	unsigned int newfrnum;
 	Get_frameusecode_fields(studio, newfrnum, newqual);
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	if (!Find_binary_iter(model, iter, newfrnum, newqual))
-		gtk_tree_store_remove(store, iter);
+		gtk_tree_store_remove(store, iter.get());
 }
 
 /*
@@ -2057,14 +2052,14 @@ C_EXPORT void on_shinfo_framenames_update_clicked(
 	                            studio->get_widget("shinfo_framenames_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(nametree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
 	if (cmp) {
 		GtkTreeIter newiter;
 		if (cmp > 0)
-			gtk_tree_store_insert_after(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_after(store, &newiter, nullptr, iter.get());
 		else
-			gtk_tree_store_insert_before(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_before(store, &newiter, nullptr, iter.get());
 		gtk_tree_store_set(store, &newiter, FNAME_FRAME, static_cast<int>(newfrnum),
 		                   FNAME_QUALITY, static_cast<int>(newqual), FNAME_MSGTYPE, newtype,
 		                   FNAME_MSGSTR, newstr, FNAME_OTHERTYPE, newothertype,
@@ -2075,12 +2070,12 @@ C_EXPORT void on_shinfo_framenames_update_clicked(
 		int othertype;
 		const char *str;
 		const char *othermsg;
-		gtk_tree_model_get(model, iter, FNAME_MSGTYPE, &type,
+		gtk_tree_model_get(model, iter.get(), FNAME_MSGTYPE, &type,
 		                   FNAME_MSGSTR, &str, FNAME_OTHERTYPE, &othertype,
 		                   FNAME_OTHERMSG, &othermsg, -1);
 		if (type != newtype || othertype != newothertype
 		        || !strcmp(str, newstr) || !strcmp(othermsg, newothermsg))
-			gtk_tree_store_set(store, iter, FNAME_FRAME, static_cast<int>(newfrnum),
+			gtk_tree_store_set(store, iter.get(), FNAME_FRAME, static_cast<int>(newfrnum),
 			                   FNAME_QUALITY, static_cast<int>(newqual), FNAME_MSGTYPE, newtype,
 			                   FNAME_MSGSTR, newstr, FNAME_OTHERTYPE, newothertype,
 			                   FNAME_OTHERMSG, newothermsg,
@@ -2101,12 +2096,12 @@ C_EXPORT void on_shinfo_framenames_remove_clicked(
 	                            studio->get_widget("shinfo_framenames_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(nametree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
 	unsigned int newfrnum;
 	unsigned int newqual;
 	Get_framenames_fields(studio, newfrnum, newqual);
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	if (!Find_binary_iter(model, iter, newfrnum, newqual))
-		gtk_tree_store_remove(store, iter);
+		gtk_tree_store_remove(store, iter.get());
 }
 
 /*
@@ -2336,14 +2331,14 @@ C_EXPORT void on_shinfo_objpaperdoll_update_clicked(
 	                            studio->get_widget("shinfo_objpaperdoll_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(dolltree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	int cmp = Find_binary_iter(model, iter, newfrnum, newspot);
 	if (cmp) {
 		GtkTreeIter newiter;
 		if (cmp > 0)
-			gtk_tree_store_insert_after(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_after(store, &newiter, nullptr, iter.get());
 		else
-			gtk_tree_store_insert_before(store, &newiter, nullptr, iter);
+			gtk_tree_store_insert_before(store, &newiter, nullptr, iter.get());
 		gtk_tree_store_set(store, &newiter,
 		                   DOLL_WORLD_FRAME, static_cast<int>(newfrnum), DOLL_SPOT, newspot,
 		                   DOLL_TRANSLUCENT, newtrans, DOLL_GENDER_BASED, newgender,
@@ -2362,7 +2357,7 @@ C_EXPORT void on_shinfo_objpaperdoll_update_clicked(
 		int frame3;
 		int patch;
 		int modded;
-		gtk_tree_model_get(model, iter, DOLL_TRANSLUCENT, &trans,
+		gtk_tree_model_get(model, iter.get(), DOLL_TRANSLUCENT, &trans,
 		                   DOLL_GENDER_BASED, &gender, DOLL_SPOT_TYPE, &type,
 		                   DOLL_SHAPE, &shape, DOLL_FRAME_0, &frame0,
 		                   DOLL_FRAME_1, &frame1, DOLL_FRAME_2, &frame2,
@@ -2372,7 +2367,7 @@ C_EXPORT void on_shinfo_objpaperdoll_update_clicked(
 		        || (type != newtype) || (shape != newshape)
 		        || (frame0 != newframe0) || (frame1 != newframe1)
 		        || (frame2 != newframe2) || (frame3 != newframe3))
-			gtk_tree_store_set(store, iter,
+			gtk_tree_store_set(store, iter.get(),
 			                   DOLL_TRANSLUCENT, newtrans, DOLL_GENDER_BASED, newgender,
 			                   DOLL_SPOT_TYPE, newtype, DOLL_SHAPE, newshape,
 			                   DOLL_FRAME_0, newframe0, DOLL_FRAME_1, newframe1,
@@ -2394,12 +2389,12 @@ C_EXPORT void on_shinfo_objpaperdoll_remove_clicked(
 	                          studio->get_widget("shinfo_objpaperdoll_list"));
 	GtkTreeModel *model = gtk_tree_view_get_model(hptree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter *iter;
 	unsigned int newfrnum;
 	int newspot;
 	Get_objpaperdoll_fields(studio, newfrnum, newspot);
+	UniqueTreeIter iter(nullptr, TreeIterDeleter);
 	if (!Find_binary_iter(model, iter, newfrnum, newspot))
-		gtk_tree_store_remove(store, iter);
+		gtk_tree_store_remove(store, iter.get());
 }
 
 /*
