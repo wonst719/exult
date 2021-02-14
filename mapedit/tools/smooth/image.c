@@ -152,6 +152,7 @@ Uint8 palette_rw(char *col) {
 	int idx;
 
 	sscanf(col, "%02x%02x%02x", &r, &g, &b);
+	free(col);
 	// get index of col from palette
 	idx = SDL_MapRGB(g_variables.image_out->format, r, g, b);
 
