@@ -234,7 +234,7 @@ public:
 	unsigned char *get_palbuf() {
 		return palbuf.get();
 	}
-	Shape_file_info *get_vgafile() { // 'shapes.vga'.
+	Shape_file_info *get_vgafile() const { // 'shapes.vga'.
 		return vgafile;
 	}
 	Combo_editor *get_combowin() {

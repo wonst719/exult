@@ -832,7 +832,7 @@ void Npc_chooser::scroll_vertical(
 			delta += row0_voffset;
 			row0_voffset = 0;
 		} else {
-			if (row0 <= 0)
+			if (row0 == 0)
 				break;
 			--row0;
 			row0_voffset = 0;

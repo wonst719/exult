@@ -56,7 +56,7 @@ public:
 	void set_name(char *nm) {
 		name = nm;
 	}
-	int size() {
+	int size() const {
 		return std::vector<int>::size();
 	}
 	int &operator[](int i) {

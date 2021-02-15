@@ -228,9 +228,9 @@ void map_type_size(const std::vector<std::string> &param_types, std::vector<std:
 		if (tsm == type_size_map.end()) {
 			cerr << "error: No size type `" << param_type << "`" << endl;
 			assert(tsm != type_size_map.end());
+		} else {
+			param_sizes.emplace_back(tsm->second);
 		}
-
-		param_sizes.emplace_back(tsm->second.first, tsm->second.second);
 	}
 }
 
