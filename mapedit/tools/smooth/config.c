@@ -19,7 +19,6 @@ int close_config(FILE *f) {
 }
 
 FILE *open_config(char *configfile) {
-	FILE *f;
 	if (g_statics.debug) {
 		printf("\nConfig file: %s\n********************\n", configfile);
 	}
@@ -33,7 +32,8 @@ FILE *open_config(char *configfile) {
 			return stdin;
 		}
 	} else {
-		if ((f = fopen(configfile, "ra")) == NULL) {
+		FILE *f = fopen(configfile, "ra");
+		if (f == NULL) {
 			fprintf(stderr, "ERROR: Couldn't open config file %s\n", configfile);
 			return NULL;
 		}
@@ -42,21 +42,14 @@ FILE *open_config(char *configfile) {
 }
 
 int read_config(FILE *f) {
-	char line[MAX_LINE_LENGTH];
-	int line_length;
 	char *pluginname = NULL;
-	colour_hex col;
-	int idx;
-	unsigned r;
-	unsigned g;
-	unsigned b;
 	libhandle_t a_hdl = NULL;
-	void *(*init)(glob_statics * g_var);
 
 	rewind(f);
 	while (!feof(f)) {
+		char line[MAX_LINE_LENGTH];
 		fgets(line, MAX_LINE_LENGTH, f);
-		line_length = strlen(line);
+		int line_length = strlen(line);
 		if (g_statics.debug > 2) {
 			printf("length of line: %d\n", line_length);
 			fflush(stdout);
@@ -99,6 +92,7 @@ int read_config(FILE *f) {
 						printf("Adding %s to list\n", pluginname);
 					}
 					// TODO: load the init function with our global stuff to initialise the plugin
+					void *(*init)(glob_statics * g_var);
 					*(void**)&init = plug_load_func(a_hdl, "init_plugin");
 					(*init)(&g_statics);
 					hdl_list = add_handle(a_hdl, hdl_list);
@@ -119,18 +113,22 @@ int read_config(FILE *f) {
 					fprintf(stderr, "WARNING: line entered before first section. Use comments (# or ;) please.\nIgnoring line: %s", line);
 				} else {
 					// extract the first colour from the line, get index from palette and populate action_table at right index with hdl
+					colour_hex col;
 					if (sscanf(line, "%6s", col) != 1 || strlen(col) != 6) { // just read 6 characters to prevent buffer overflow
 						// problem
 						fprintf(stderr, "ERROR: couldn't read the slave value of %s\n", line);
 						fflush(stderr);
 						return -1;
 					} else {
+						unsigned r;
+						unsigned g;
+						unsigned b;
 						sscanf(col, "%02x%02x%02x", &r, &g, &b);
 						// get index of col from palette
-						idx = SDL_MapRGB(g_statics.image_in->format, r, g, b);
+						int idx = SDL_MapRGB(g_statics.image_in->format, r, g, b);
 						// some reporting
 						if (g_statics.debug > 3) {
-							printf("slave is %s (idx=%d: r=%d g=%d b=%d)\n", col, idx, r, g, b);
+							printf("slave is %s (idx=%d: r=%u g=%u b=%u)\n", col, idx, r, g, b);
 							fflush(stdout);
 						}
 						// teach the plugin how to convert what

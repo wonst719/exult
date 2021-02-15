@@ -46,14 +46,13 @@ int plugin_parse(char *line) {
 	// required
 	// will prepare the plugin to know what to send back when receiving a colour_hex in plugin_apply
 
-	char c;
-	int i;
-	int size = strlen(line);
+	const int size = strlen(line);
 	int newrec = 1;
 	int let = 0;
 	unsigned int idx = -1;
 
-	for (i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
+		char c;
 		sscanf(line, "%c", &c);
 		line++;
 		if (c != ' ' && c != '\t' && c != '\n' && c != '\r') {
@@ -77,7 +76,7 @@ int plugin_parse(char *line) {
 	//    printf("Value(%d): %s\n",glob_idx,col[glob_idx][i]);
 	//  }
 	// mark the end of the
-	col[glob_idx][i][0] = '\0';
+	col[glob_idx][size][0] = '\0';
 
 	glob_idx++;
 
@@ -86,11 +85,10 @@ int plugin_parse(char *line) {
 
 int get_random(int max) {
 	unsigned long int timer = SDL_GetTicks();
-	int i;
 	int temp = rand() % 10;
 	srand(timer * rand());
 
-	for (i = 0; i < temp; i++) rand();
+	for (int i = 0; i < temp; i++) (void)rand();
 	return rand() % max;
 }
 
@@ -102,11 +100,9 @@ char *plugin_apply(char colour[6]) {
 	// colour is the colour at point (i,j) -- (i,j) are external variables from smooth
 
 	int loc_idx = 0;
-	int max_num = 0;
-	int my_rand;
 
 	// find the colour in big table
-	while (strncasecmp(col[loc_idx][0], colour, 6) != 0 && loc_idx < glob_idx) {
+	while (loc_idx < glob_idx && strncasecmp(col[loc_idx][0], colour, 6) != 0) {
 		//    printf("I look for %s and I got %s instead!\n",colour,col[loc_idx][0]);
 		loc_idx++;
 	}
@@ -116,11 +112,11 @@ char *plugin_apply(char colour[6]) {
 	}
 
 	// find the max number of elements
+	int max_num = 0;
 	while (col[loc_idx][max_num][0] != '\0') max_num++;
 	max_num = max_num - 1;
 	//  printf("there are %d element to take from:",max_num);
-	my_rand = get_random(max_num);
-	my_rand++;
+	int my_rand = get_random(max_num) + 1;
 	//  printf(" taking %d\ (%s)\n",my_rand,col[loc_idx][my_rand]);
 
 	return col[loc_idx][my_rand];

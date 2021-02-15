@@ -61,9 +61,7 @@ int plugin_parse(char *line) {
 	// required
 	// will prepare the plugin to know what to send back when receiving a colour_hex in plugin_apply
 
-	char c;
-	int i;
-	int size = strlen(line);
+	const int size = strlen(line);
 	int newrec = 1;
 	int let = 0;
 	unsigned int idx = -1;
@@ -75,7 +73,8 @@ int plugin_parse(char *line) {
 		printf("Parsing %s\n", line);
 	}
 
-	for (i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
+		char c;
 		sscanf(line, "%c", &c);
 		line++;
 		if (c != ' ' && c != '\t' && c != '\n' && c != '\r') {
@@ -103,7 +102,7 @@ int plugin_parse(char *line) {
 	//  }
 
 	// mark the end of the record
-	col[glob_idx][i][0] = '\0';
+	col[glob_idx][size][0] = '\0';
 
 	glob_idx++;
 
@@ -114,13 +113,11 @@ int calculate(Uint8 col_num, unsigned int my_x, unsigned int my_y) {
 	// this function helps to identify which colour to return
 	// it returns either 1 or 0 based on whether the pixel at (x,y) is of colour col_num
 	// it also checks boundaries and return 0 if out of boundaries
-	int ret;
-
 	if (my_x > 191 || my_y > 191) {
 		//    printf("out of bounds\n");
 		return 0;
 	} else {
-		ret = my_getpixel(my_g_stat.image_in, my_x, my_y);
+		int ret = my_getpixel(my_g_stat.image_in, my_x, my_y);
 		return ret == col_num;
 	}
 }
@@ -159,19 +156,16 @@ char *plugin_apply(char colour[6], glob_variables *g_var) {
 	// both plugin_parse and plugin_apply are obviously plugin-specific
 	// colour is the colour at point (i,j) -- (i,j) are external variables from smooth
 
-	int loc_idx = 0;
-	unsigned int calc_value;
-	Uint8 col_num = 4;
-	char *a_star = "*";
 
 	my_g_var.global_x = g_var->global_x;
 	my_g_var.global_y = g_var->global_y;
 	my_g_var.image_out = g_var->image_out;
 
-	col_num = my_getpixel(my_g_stat.image_in, my_g_var.global_x, my_g_var.global_y);
+	Uint8 col_num = my_getpixel(my_g_stat.image_in, my_g_var.global_x, my_g_var.global_y);
 
 	// find the colour in big table
-	while (strncasecmp(col[loc_idx][0], colour, 6) != 0 && loc_idx < glob_idx) {
+	int loc_idx = 0;
+	while (loc_idx < glob_idx && strncasecmp(col[loc_idx][0], colour, 6) != 0) {
 		loc_idx++;
 	}
 
@@ -180,8 +174,9 @@ char *plugin_apply(char colour[6], glob_variables *g_var) {
 		return colour; // colour is not in table, so we don't treat it. This should never happen.
 	}
 
+	const char *a_star = "*";
 	if (strncasecmp(col[loc_idx][1], a_star, 1) == 0 || has_around(col[loc_idx][1])) {
-		calc_value = (1 * calculate(col_num, my_g_var.global_x, (my_g_var.global_y - 1))) + (2 * calculate(col_num, (my_g_var.global_x + 1), my_g_var.global_y)) + (4 * calculate(col_num, my_g_var.global_x, (my_g_var.global_y + 1))) + (8 * calculate(col_num, (my_g_var.global_x - 1), my_g_var.global_y));
+		unsigned int calc_value = (1 * calculate(col_num, my_g_var.global_x, (my_g_var.global_y - 1))) + (2 * calculate(col_num, (my_g_var.global_x + 1), my_g_var.global_y)) + (4 * calculate(col_num, my_g_var.global_x, (my_g_var.global_y + 1))) + (8 * calculate(col_num, (my_g_var.global_x - 1), my_g_var.global_y));
 
 		if (my_g_stat.debug > 4) printf("calc_value is %u at (%d,%d) -- col_num = %u\n", calc_value, my_g_var.global_x, my_g_var.global_y, col_num);
 		return col[loc_idx][calc_value + 2]; // the first 2 cells are taken by slave and trigger

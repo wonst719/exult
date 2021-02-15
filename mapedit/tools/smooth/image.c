@@ -15,14 +15,12 @@
 
 int img_read(char *filein) {
 
-	SDL_PixelFormat *fmt;   // we need that to determine which BPP
-	SDL_RWops *rw;
-
 	if (g_statics.debug) {
 		printf("Reading from %s\n", filein);
 		fflush(stdout);
 	}
 
+	SDL_RWops *rw;
 	if (!strcmp(filein, "-")) { // stdin as input. Shouldn't work but we try anyways
 		rw = SDL_RWFromFP(stdin, 0);
 	} else { // a regular file name
@@ -37,7 +35,7 @@ int img_read(char *filein) {
 	}
 
 	// check if image is in 8bpp format
-	fmt = g_statics.image_in->format;
+	SDL_PixelFormat *fmt = g_statics.image_in->format;
 	if (fmt->BitsPerPixel != 8) {
 		fprintf(stderr, "ERROR: the image file is not in 8 bpp. Please convert it.\n");
 		SDL_FreeSurface(g_statics.image_in);
@@ -75,7 +73,6 @@ int img_read(char *filein) {
 }
 
 int img_write(char *img_out) {
-
 	if (g_statics.debug) {
 		printf("Writing to %s\n", img_out);
 		fflush(stdout);
@@ -114,12 +111,7 @@ void putpixel(SDL_Surface *surface, int x, int y, Uint8 pixel) {
 }
 
 char *transform(int index) {
-	char *ret;
-	char *tmp;
-	node *cursor;
-	pfnPluginApply tmp_func;
-
-	ret = (char *)malloc(7 * sizeof(char));
+	char *ret = (char *)malloc(7 * sizeof(char));
 
 	sprintf(ret, "%02x%02x%02x", \
 	        g_variables.image_out->format->palette->colors[index].r, \
@@ -127,11 +119,12 @@ char *transform(int index) {
 	        g_variables.image_out->format->palette->colors[index].b\
 	       );
 
-	cursor = action_table[index];
+	node *cursor = action_table[index];
 	if (cursor != NULL) {
 		// there is some apply functions to take care of
+		char *tmp;
 		do {
-			tmp_func = cursor->plugin_apply;
+			pfnPluginApply tmp_func = cursor->plugin_apply;
 			tmp = (*tmp_func)(ret, &g_variables);
 			cursor = cursor->next;
 		} while (cursor != NULL);
@@ -148,18 +141,16 @@ Uint8 palette_rw(char *col) {
 	unsigned r;
 	unsigned g;
 	unsigned b;
-	int ncol = g_variables.image_out->format->palette->ncolors;
-	int idx;
-
 	sscanf(col, "%02x%02x%02x", &r, &g, &b);
 	free(col);
 	// get index of col from palette
-	idx = SDL_MapRGB(g_variables.image_out->format, r, g, b);
+	int idx = SDL_MapRGB(g_variables.image_out->format, r, g, b);
 
 	if (g_variables.image_out->format->palette->colors[idx].r != r || \
 	        g_variables.image_out->format->palette->colors[idx].g != g || \
 	        g_variables.image_out->format->palette->colors[idx].b != b) {
 		// not an exact match! Gotta add the color
+		int ncol = g_variables.image_out->format->palette->ncolors;
 		g_variables.image_out->format->palette->colors[ncol].r = r;
 		g_variables.image_out->format->palette->colors[ncol].g = g;
 		g_variables.image_out->format->palette->colors[ncol].b = b;
@@ -177,10 +168,9 @@ int process_image() {
 	// for each pixel of image_in at coord (x,y):
 	//    write the converted pixel at coord (x,y) in image_out
 
-	Uint8 idx;
 	for (g_variables.global_y = 0; g_variables.global_y < 192; g_variables.global_y++) {
 		for (g_variables.global_x = 0; g_variables.global_x < 192; g_variables.global_x++) {
-			idx = getpixel(g_statics.image_in, g_variables.global_x, g_variables.global_y);
+			Uint8 idx = getpixel(g_statics.image_in, g_variables.global_x, g_variables.global_y);
 			SDL_LockSurface(g_variables.image_out);
 			putpixel(g_variables.image_out, g_variables.global_x, g_variables.global_y, palette_rw(transform(idx)));
 			SDL_UnlockSurface(g_variables.image_out);

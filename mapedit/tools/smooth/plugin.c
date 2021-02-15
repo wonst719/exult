@@ -19,9 +19,7 @@ char *plug_error() {
 
 	// Colourless: Unix specific part. Add your #def here
 #ifdef _WIN32
-	HRESULT hRes;
-
-	hRes = GetLastError();
+	HRESULT hRes = GetLastError();
 
 	if (FAILED(hRes)) {
 		static TCHAR lpMsgBuf[256];
@@ -99,20 +97,19 @@ int add_plugin_apply(int col_index, libhandle_t a_hdl) {
 	// cursor = cursor->next;
 	// insert new node at cursor->next, with handle as the pointer to plugin_apply
 
-	pfnPluginApply apply;
 	//  char *(*apply)(colour_hex,glob_variables *);
-	char *error;
-	node *new_node;
-	node *cursor; // used to navigate the list found at action_table[idx]
 
 	// first of all, load a_hdl's apply function
+	pfnPluginApply apply;
 	*(void**)&apply = plug_load_func(a_hdl, "plugin_apply");
 
-	if ((error = plug_error()) != NULL)  {
+	char *error = plug_error();
+	if (error != NULL)  {
 		fprintf(stderr, "%s\n", error);
 		return -1;
 	}
-	if ((new_node = create_node()) == NULL) {
+	node *new_node = create_node();
+	if (new_node == NULL) {
 		// problem
 		fprintf(stderr, "Couldn't create node\n");
 		return -1;
@@ -125,7 +122,7 @@ int add_plugin_apply(int col_index, libhandle_t a_hdl) {
 		action_table[col_index] = new_node;
 	} else {
 		// go to the end and add it there
-		cursor = action_table[col_index];
+		node *cursor = action_table[col_index];
 		while (cursor->next != NULL) {
 			cursor = cursor->next;
 		}
@@ -139,10 +136,10 @@ int add_plugin_apply(int col_index, libhandle_t a_hdl) {
 
 int add_plugin_parse(char *line, libhandle_t a_hdl) {
 	int (*teach)(char *);
-	char *error;
-
 	*(void**)&teach = plug_load_func(a_hdl, "plugin_parse");
-	if ((error = plug_error()) != NULL) {
+
+	char *error = plug_error();
+	if (error != NULL) {
 		fprintf(stderr, "%s\n", error);
 		return -1;
 	}
@@ -155,8 +152,8 @@ node *add_handle(libhandle_t a_hdl, node *list) {
 	// create a node with a_hdl as node->a_hdl value and list as node->next value
 	// insert node at head;
 
-	node *new_head;
-	if ((new_head = create_node()) == NULL) {
+	node *new_head = create_node();
+	if (new_head == NULL) {
 		// problem
 		fprintf(stderr, "WARNING: couldn't create node\n");
 		return NULL;

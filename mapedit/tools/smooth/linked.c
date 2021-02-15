@@ -38,14 +38,14 @@ int delete_node(node *n) {
 	// for now, returns 0 in case of error
 	// for now, returns (!0) otherwise
 
-	int val = 1;
-	void *(*deinit)();
 
 	if (n != NULL) {
+		int val = 1;
 		if (n->handle != NULL) {
 			// that's the handle list. We must use plug_unload
 			// note: plug_unload return non-zero when successful!
 			// must call deinit first
+			void *(*deinit)();
 			*(void**)&deinit = plug_load_func(n->handle, "deinit_plugin");
 			(*deinit)();
 			val = plug_unload(n->handle);

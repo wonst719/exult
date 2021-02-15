@@ -45,7 +45,6 @@ int read_param(int argc, char **argv) {
 			case 'h': {
 				show_help(argv[0]);
 				exit(0);
-				break;
 			}
 			case 'd': {
 				if (i + 1 < argc && !is_switch(argv[i + 1])) {
