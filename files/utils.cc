@@ -841,7 +841,7 @@ void U7copy(
 	} catch (exult_exception &e) {
 		in.close();
 		out.close();
-		throw e;
+		throw;
 	}
 	size_t bufsize = 0x8000;
 	char *buf = new char[0x8000];

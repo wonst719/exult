@@ -529,7 +529,7 @@ static void Read_text_data_file(
 			if (!editing) {
 				for (int i = 0; i < numsections; i++)
 					delete parsers[i];
-				throw e;
+				throw;
 			}
 			static_strings.resize(numsections);
 		}
