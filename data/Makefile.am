@@ -49,7 +49,6 @@ EXULT_BG_FLX_OBJECTS = \
 	bg/flx.in \
 	bg/BGmap.shp \
 	bg/defaultkeys.txt	\
-	bg/mr_faces.shp \
 	bg/u7menupal.pal \
 	bg/bg_paperdol.vga \
 	bg/bg_mr_faces.vga \
@@ -173,7 +172,6 @@ EXULT_BG_PAPERDOL_VGA_OBJECTS = \
 
 EXULT_BG_MR_FACES_VGA_OBJECTS = \
 	bg/mr_faces.shp \
-	bg/u7menupal.pal \
 	bg/bg_mr_faces.in
 
 ESTUDIO_NEW_FILES = \
