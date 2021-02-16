@@ -16,6 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "exult_constants.h"
+#include "fnames.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -41,6 +43,7 @@
 #include "font.h"
 #include "txtscroll.h"
 #include "data/exult_bg_flx.h"
+#include "data/bg/introsfx_mt32_flx.h"
 #include "exult.h"
 #include "Configuration.h"
 #include "shapeid.h"
@@ -409,6 +412,17 @@ void BG_Game::play_intro() {
 	audio->cancel_streams();
 }
 
+File_spec BG_Game::get_sfx_subflex() {
+	if (Audio::have_sblaster_sfx(BLACK_GATE)) {
+		return File_spec{EXULT_BG_FLX, EXULT_BG_FLX_INTROSFX_SB_FLX};
+	}
+	// TODO: MIDI SFX
+	// if (audio->have_midi_sfx()) {
+	// 	return File_spec{EXULT_BG_FLX, EXULT_BG_FLX_INTROSFX_MTIDI_FLX};
+	// }
+	return File_spec{EXULT_BG_FLX, EXULT_BG_FLX_INTROSFX_MT32_FLX};
+}
+
 void BG_Game::scene_lord_british() {
 	/*
 	 *  Enhancements to lip-syncing contributed by
@@ -720,6 +734,7 @@ void BG_Game::scene_guardian() {
 
 	try {
 		Uint32 ticks;
+		const File_spec sfxfile = get_sfx_subflex();
 		{
 			// create buffer containing a blue 'plasma' screen
 			unique_ptr<Image_buffer> plasma(win->create_buffer(win->get_full_width(),
@@ -732,7 +747,7 @@ void BG_Game::scene_guardian() {
 			pal->apply();
 
 			//play static SFX
-			Audio::get_ptr()->play_sound_effect(115, AUDIO_MAX_VOLUME, 0, 0);
+			Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_STATIC1_WAV);
 
 			//
 			// Show some "static" alternating with the blue plasma
@@ -741,7 +756,6 @@ void BG_Game::scene_guardian() {
 			//      with an ocassional white pixel static - but is this what it
 			//      was really like?
 
-			// TODO: have the static sound effect play for every time there's static in the intro
 			ticks = SDL_GetTicks();
 			while (true) {
 				win->get_ibuf()->fill_static(0, 7, 15);
@@ -750,6 +764,8 @@ void BG_Game::scene_guardian() {
 				if (SDL_GetTicks() > ticks + 400)//400)
 					break;
 			}
+
+			Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_STATIC2_WAV);
 
 			win->put(plasma.get(), win->get_start_x(), win->get_start_y());
 			win->show();
@@ -763,6 +779,8 @@ void BG_Game::scene_guardian() {
 				if (SDL_GetTicks() > ticks + 200)
 					break;
 			}
+
+			Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_STATIC3_WAV);
 
 			win->put(plasma.get(), win->get_start_x(), win->get_start_y());
 			win->show();
@@ -792,7 +810,8 @@ void BG_Game::scene_guardian() {
 		// First 'popup' (sh. 0x21)
 		//
 
-		// TODO: Play the 'bloop' sound for each popup
+		Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_GUARDIAN1_WAV);
+
 		{
 			Shape_frame *s = shapes.get_shape(0x21, 0);
 			unique_ptr<Image_buffer> backup(win->create_buffer(s->get_width(), s->get_height()));
@@ -805,6 +824,8 @@ void BG_Game::scene_guardian() {
 		//
 		// Second 'popup' (sh. 0x22)
 		//
+		Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_GUARDIAN2_WAV);
+
 		{
 			Shape_frame *s = shapes.get_shape(0x22, 0);
 			unique_ptr<Image_buffer> backup(win->create_buffer(s->get_width(), s->get_height()));
@@ -817,6 +838,8 @@ void BG_Game::scene_guardian() {
 		//
 		// Successful 'popup' (sh. 0x23)
 		//
+		Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_GUARDIAN3_WAV);
+
 		{
 			Shape_frame *s = shapes.get_shape(0x23, 0);
 			unique_ptr<Image_buffer> backup(win->create_buffer(s->get_width(), s->get_height()));
@@ -989,6 +1012,8 @@ void BG_Game::scene_guardian() {
 			}
 
 			// G. disappears again (sp. 0x23 again)
+			Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_GUARDIAN4_WAV);
+
 			{
 				Shape_frame *s = shapes.get_shape(0x23, 0);
 				unique_ptr<Image_buffer> backup(win->create_buffer(s->get_width(), s->get_height()));
@@ -1010,6 +1035,7 @@ void BG_Game::scene_guardian() {
 		//
 		// More static
 		//
+		Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_OUTSTATIC_WAV);
 
 		ticks = SDL_GetTicks();
 		while (true) {
@@ -1025,6 +1051,8 @@ void BG_Game::scene_guardian() {
 		//
 		// White dot
 		//
+		Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_OUTNOISE_WAV);
+
 		Shape_frame *s = shapes.get_shape(0x14, 0);
 		unique_ptr<Image_buffer> backup(win->create_buffer(s->get_width() + 2, s->get_height() + 2));
 		win->get(backup.get(), centerx - 1, centery - 1);
@@ -1172,7 +1200,8 @@ bool Hand_Handler::draw_frame() {
 			if (!playedStaticSFX) {
 				playedStaticSFX = true;
 				//play static SFX
-				Audio::get_ptr()->play_sound_effect(115, AUDIO_MAX_VOLUME, 0, 0);
+				const File_spec sfxfile = BG_Game::get_sfx_subflex();
+				Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_MONITORSLAP_WAV);
 			}
 		}
 		staticScreen->fill_static(0, 7, 15);
@@ -1374,7 +1403,8 @@ void BG_Game::scene_moongate() {
 	sman->paint_shape(centerx, centery + 50, shapes.get_shape(0x19, 0));
 	pal->fade_in(c_fade_in_time);
 
-	// TODO: moongate sound
+	const File_spec sfxfile = get_sfx_subflex();
+	Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_MOONGATE_WAV);
 
 	// TODO: fade in screen while text is onscreen
 
@@ -1433,6 +1463,8 @@ void BG_Game::scene_moongate() {
 	const int zy = 81;
 	const int zw = 5;
 	const int zh = 4;
+
+	Audio::get_ptr()->play_sound_effect(sfxfile, INTROSFX_MT32_FLX_INTRO_MT_SHOT_WAV);
 
 	uint32 next_ticks = SDL_GetTicks() + 10;
 	for (int i = 159; i >= 0; i--) {

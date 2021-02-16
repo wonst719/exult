@@ -287,6 +287,10 @@ public:
 	IBufferDataSource(std::unique_ptr<unsigned char[]> data_, size_t len)
 		: IBufferDataView(data_, len), data(std::move(data_)) {
 	}
+	auto steal_data(size_t& len) {
+		len = size;
+		return std::move(data);
+	}
 };
 
 /**

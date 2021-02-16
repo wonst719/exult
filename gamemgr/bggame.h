@@ -21,6 +21,7 @@
 
 #include "game.h"
 
+struct File_spec;
 
 class BG_Game: public Game {
 public:
@@ -40,6 +41,7 @@ public:
 	}
 	void show_journey_failed() override;
 	Shape_frame *get_menu_shape() override;
+	static File_spec get_sfx_subflex();
 
 private:
 	Vga_file shapes;

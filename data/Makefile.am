@@ -44,7 +44,6 @@ EXULT_FLX_OBJECTS = \
 	exultmsg_de.txt \
 	exultmsg_es.txt \
 	exultmsg_fr.txt
-	
 
 EXULT_BG_FLX_OBJECTS = \
 	bg/flx.in \
@@ -63,6 +62,11 @@ EXULT_BG_FLX_OBJECTS = \
 	bg/container.dat \
 	bg/autonotes.txt \
 	bg/intro_hand.shp \
+	bg/introsfx_mt32.flx \
+	bg/introsfx_sb.flx
+
+EXULT_BG_INTROSFX_MT32_OBJECTS = \
+	bg/introsfx_mt.in \
 	bg/intro_mt_static1.wav \
 	bg/intro_mt_static2.wav \
 	bg/intro_mt_static3.wav \
@@ -74,7 +78,10 @@ EXULT_BG_FLX_OBJECTS = \
 	bg/intro_mt_outnoise.wav \
 	bg/intro_mt_monitorslap.wav \
 	bg/intro_mt_moongate.wav \
-	bg/intro_mt_shot.wav \
+	bg/intro_mt_shot.wav
+
+EXULT_BG_INTROSFX_SB_OBJECTS = \
+	bg/introsfx_sb.in \
 	bg/intro_sb_static1.wav \
 	bg/intro_sb_static2.wav \
 	bg/intro_sb_static3.wav \
@@ -163,6 +170,7 @@ EXULT_BG_PAPERDOL_VGA_OBJECTS = \
 	bg/shieldbacks.shp \
 	bg/diaper.shp \
 	bg/bg_paperdol.in
+
 EXULT_BG_MR_FACES_VGA_OBJECTS = \
 	bg/mr_faces.shp \
 	bg/u7menupal.pal \
@@ -236,6 +244,12 @@ exult.flx: $(expack) $(EXULT_FLX_OBJECTS)
 exult_bg.flx: $(expack) $(EXULT_BG_FLX_OBJECTS)
 	$(expack) -i $(srcdir)/bg/flx.in
 
+bg/introsfx_mt32.flx: $(expack) $(EXULT_BG_INTROSFX_MT32_OBJECTS)
+	$(expack) -i $(srcdir)/bg/introsfx_mt.in
+
+bg/introsfx_sb.flx: $(expack) $(EXULT_BG_INTROSFX_SB_OBJECTS)
+	$(expack) -i $(srcdir)/bg/introsfx_sb.in
+
 exult_si.flx: $(expack) $(EXULT_SI_FLX_OBJECTS)
 	$(expack) -i $(srcdir)/si/flx.in
 
@@ -244,4 +258,8 @@ exult_flx.h: exult.flx
 exult_bg_flx.h: exult_bg.flx
 
 exult_si_flx.h: exult_si.flx
+
+bg/introsfx_mt32_flx.h: bg/introsfx_mt32.flx
+
+bg/introsfx_sb_flx.h: bg/introsfx_sb.flx
 

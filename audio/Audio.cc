@@ -305,7 +305,7 @@ bool Audio::have_roland_sfx(Exult_Game game, std::string *out)
 		return can_sfx(SFX_ROLAND_SI, out);
 	return false;
 	}
-	
+
 bool Audio::have_sblaster_sfx(Exult_Game game, std::string *out)
 	{
 	if (game == BLACK_GATE)
@@ -314,7 +314,7 @@ bool Audio::have_sblaster_sfx(Exult_Game game, std::string *out)
 		return can_sfx(SFX_BLASTER_SI, out);
 	return false;
 	}
-	
+
 bool Audio::have_midi_sfx(std::string *out)
 	{
 #ifdef ENABLE_MIDISFX
@@ -324,7 +324,7 @@ bool Audio::have_midi_sfx(std::string *out)
 	return false;
 #endif
 	}
-	
+
 bool Audio::have_config_sfx(const std::string &game, std::string *out)
 	{
 	string s;
@@ -332,7 +332,7 @@ bool Audio::have_config_sfx(const std::string &game, std::string *out)
 	config->value(d.c_str(), s, "---");
 	return (s != "---") && can_sfx(s, out);
 	}
-	
+
 void	Audio::Init_sfx()
 {
 	sfx_file.reset();
@@ -610,7 +610,7 @@ int	Audio::play_sound_effect (int num, int volume, int balance, int repeat, int 
 }
 
 /*
-*	Play a .wav format sound effect, 
+*	Play a .wav format sound effect,
 *  return the channel number playing on or -1 if not playing, (0 is a valid channel in SDL_Mixer!)
 */
 int Audio::play_wave_sfx
@@ -622,7 +622,7 @@ int Audio::play_wave_sfx
 	int distance
 )
 {
-	if (!effects_enabled || !sfx_file || !mixer) 
+	if (!effects_enabled || !sfx_file || !mixer)
 		return -1;  // no .wav sfx available
 
 	if (num < 0 || static_cast<unsigned>(num) >= sfx_file->number_of_objects())
@@ -645,9 +645,65 @@ int Audio::play_wave_sfx
 	}
 
 	CERR("Playing SFX: " << num);
-	
+
 	mixer->set2DPosition(instance_id,distance,balance);
 	mixer->setPaused(instance_id,false);
+
+	return instance_id;
+}
+
+/*
+*	This returns a 'unique' ID, but only for .wav SFX's (for now).
+*/
+int	Audio::play_sound_effect (const File_spec& sfxfile, int num, int volume, int balance, int repeat, int distance)
+{
+	if (!audio_enabled || !effects_enabled) return -1;
+	// TODO: No support for MIDI SFX at this time here.
+	return play_wave_sfx(sfxfile, num, volume, balance, repeat, distance);
+}
+
+/*
+*	Play a .wav format sound effect,
+*  return the channel number playing on or -1 if not playing, (0 is a valid channel in SDL_Mixer!)
+*/
+int Audio::play_wave_sfx
+(
+	const File_spec& sfxfile,
+	int num,
+	int volume,		// 0-256.
+	int balance,		// balance, -256 (left) - +256 (right)
+	int repeat,		// Keep playing.
+	int distance
+)
+{
+	if (!effects_enabled || !mixer || !U7exists(sfxfile.name)) {
+		return -1;  // no .wav sfx available
+	}
+	IExultDataSource ds(sfxfile, num);
+	if (!ds.good()) {
+		cerr << "SFX " << num << " from {" << sfxfile.name << ", " << sfxfile.index << "} is out of range" << endl;
+		return -1;
+	}
+
+	size_t wavlen;			// Read .wav file.
+	auto wavbuf = ds.steal_data(wavlen);
+	auto *wave = AudioSample::createAudioSample(std::move(wavbuf), wavlen);
+
+	int instance_id = mixer->playSample(wave, repeat, 0, true, AUDIO_DEF_PITCH, volume,volume);
+	// Either AudioMixer::playSample called IncRef through AudioChannel::playSample and the sample
+	// will be played, of the sample was not queued for playback.
+	// In either case we need to Release the sample to avoid a memory leak.
+	wave->Release();
+	if (instance_id < 0)
+	{
+		CERR("No channel was available to play sfx '" << num << "' from {" << sfxfile.name << ", " << sfxfile.index << "}");
+		return -1;
+	}
+
+	CERR("Playing SFX: " << num << " from {" << sfxfile.name << ", " << sfxfile.index << "}");
+
+	mixer->set2DPosition(instance_id, distance, balance);
+	mixer->setPaused(instance_id, false);
 
 	return instance_id;
 }

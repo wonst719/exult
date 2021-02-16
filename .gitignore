@@ -49,6 +49,10 @@ data/bg/bg_mr_faces.vga
 data/bg/bg_mr_faces_vga.h
 data/bg/bg_paperdol.vga
 data/bg/bg_paperdol_vga.h
+data/bg/introsfx_mt32.flx
+data/bg/introsfx_mt32_flx.h
+data/bg/introsfx_sb.flx
+data/bg/introsfx_sb_flx.h
 data/bg/sfx/
 data/exult.flx
 data/exult_bg.flx

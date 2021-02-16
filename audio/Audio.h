@@ -33,6 +33,7 @@
 namespace Pentagram {
 	class AudioSample;
 }
+struct File_spec;
 class Game_object;
 class MyMidiPlayer;
 class SFX_cached;
@@ -136,15 +137,19 @@ public:
 	void	start_music(const std::string& fname,int num,bool continuous=false);
 	void	start_music_combat(Combat_song song,bool continuous);
 	void	stop_music();
-	int		play_sound_effect (int num, int volume = AUDIO_MAX_VOLUME,
+	int		play_sound_effect(int num, int volume = AUDIO_MAX_VOLUME,
 					int balance = 0, int repeat = 0, int distance=0);
 	int		play_wave_sfx(int num, int volume = AUDIO_MAX_VOLUME,
 					int balance = 0, int repeat = 0, int distance=0);
+	int		play_sound_effect(int num, const Game_object *obj, int volume = AUDIO_MAX_VOLUME, int repeat = 0);
+	int		play_sound_effect(int num, const Tile_coord &tile, int volume = AUDIO_MAX_VOLUME, int repeat = 0);
+	// These two do not cache the SFX, and play it directly from the file.
+	int		play_sound_effect(const File_spec& sfxfile, int num, int volume = AUDIO_MAX_VOLUME,
+					int balance = 0, int repeat = 0, int distance=0);
+	int		play_wave_sfx(const File_spec& sfxfile, int num, int volume = AUDIO_MAX_VOLUME,
+					int balance = 0, int repeat = 0, int distance=0);
 
 	static void get_2d_position_for_tile(const Tile_coord &tile, int &distance, int &balance);
-
-	int		play_sound_effect (int num, const Game_object *obj, int volume = AUDIO_MAX_VOLUME, int repeat = 0);
-	int		play_sound_effect (int num, const Tile_coord &tile, int volume = AUDIO_MAX_VOLUME, int repeat = 0);
 
 	int		update_sound_effect(int chan, const Game_object *obj);
 	int		update_sound_effect(int chan, const Tile_coord &tile);
@@ -174,7 +179,7 @@ public:
 
 	bool	is_track_playing(int num);
 
-	Flex *get_sfx_file()                   
+	Flex *get_sfx_file()
 		{ return sfx_file.get(); }
 	SFX_cache_manager *get_sfx_cache() const
 		{ return sfxs.get(); }
