@@ -260,7 +260,7 @@ void SI_Game::play_intro() {
 
 	auto select_fli = [&extended_intro](int orig_id, int ext_id) {
 		if (extended_intro) {
-			return playfli(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX, ext_id);
+			return playfli(game->get_resource("files/gameflx").str, ext_id);
 		}
 		return playfli(INTRO_DAT, PATCH_INTRO, orig_id);
 	};

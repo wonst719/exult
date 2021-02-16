@@ -414,13 +414,13 @@ void BG_Game::play_intro() {
 
 File_spec BG_Game::get_sfx_subflex() {
 	if (Audio::have_sblaster_sfx(BLACK_GATE)) {
-		return File_spec{EXULT_BG_FLX, EXULT_BG_FLX_INTROSFX_SB_FLX};
+		return File_spec{game->get_resource("files/gameflx").str, EXULT_BG_FLX_INTROSFX_SB_FLX};
 	}
 	// TODO: MIDI SFX
 	// if (audio->have_midi_sfx()) {
-	// 	return File_spec{EXULT_BG_FLX, EXULT_BG_FLX_INTROSFX_MTIDI_FLX};
+	// 	return File_spec{game->get_resource("files/gameflx").str, EXULT_BG_FLX_INTROSFX_MTIDI_FLX};
 	// }
-	return File_spec{EXULT_BG_FLX, EXULT_BG_FLX_INTROSFX_MT32_FLX};
+	return File_spec{game->get_resource("files/gameflx").str, EXULT_BG_FLX_INTROSFX_MT32_FLX};
 }
 
 void BG_Game::scene_lord_british() {
