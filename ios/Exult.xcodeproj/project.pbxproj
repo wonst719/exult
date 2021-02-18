@@ -61,31 +61,12 @@
 		E700DBBD1A6E2CE7006C8BE4 /* AudioSample.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DB061A6E2CE7006C8BE4 /* AudioSample.cc */; };
 		E700DBBE1A6E2CE7006C8BE4 /* conv.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DB081A6E2CE7006C8BE4 /* conv.cc */; };
 		E700DBC21A6E2CE7006C8BE4 /* Midi.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DB0E1A6E2CE7006C8BE4 /* Midi.cc */; };
-		E700DBD81A6E2CE7006C8BE4 /* ALSAMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB271A6E2CE7006C8BE4 /* ALSAMidiDriver.cpp */; };
-		E700DBDB1A6E2CE7006C8BE4 /* CoreAudioMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB2D1A6E2CE7006C8BE4 /* CoreAudioMidiDriver.cpp */; };
 		E700DBDC1A6E2CE7006C8BE4 /* CoreMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB2F1A6E2CE7006C8BE4 /* CoreMidiDriver.cpp */; };
-		E700DBDE1A6E2CE7006C8BE4 /* FluidSynthMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB331A6E2CE7006C8BE4 /* FluidSynthMidiDriver.cpp */; };
 		E700DBDF1A6E2CE7006C8BE4 /* fmopl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB351A6E2CE7006C8BE4 /* fmopl.cpp */; };
 		E700DBE01A6E2CE7006C8BE4 /* FMOplMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB371A6E2CE7006C8BE4 /* FMOplMidiDriver.cpp */; };
 		E700DBE31A6E2CE7006C8BE4 /* LowLevelMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB3D1A6E2CE7006C8BE4 /* LowLevelMidiDriver.cpp */; };
 		E700DBE71A6E2CE7006C8BE4 /* MidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB421A6E2CE7006C8BE4 /* MidiDriver.cpp */; };
 		E700DBFC1A6E2CE7006C8BE4 /* MT32EmuMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB651A6E2CE7006C8BE4 /* MT32EmuMidiDriver.cpp */; };
-		E700DC0E1A6E2CE7006C8BE4 /* timidity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB7A1A6E2CE7006C8BE4 /* timidity.cpp */; };
-		E700DC0F1A6E2CE7006C8BE4 /* timidity_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB7C1A6E2CE7006C8BE4 /* timidity_common.cpp */; };
-		E700DC101A6E2CE7006C8BE4 /* timidity_controls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB7E1A6E2CE7006C8BE4 /* timidity_controls.cpp */; };
-		E700DC111A6E2CE7006C8BE4 /* timidity_filter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB801A6E2CE7006C8BE4 /* timidity_filter.cpp */; };
-		E700DC121A6E2CE7006C8BE4 /* timidity_instrum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB821A6E2CE7006C8BE4 /* timidity_instrum.cpp */; };
-		E700DC131A6E2CE7006C8BE4 /* timidity_mix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB841A6E2CE7006C8BE4 /* timidity_mix.cpp */; };
-		E700DC141A6E2CE7006C8BE4 /* timidity_output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB861A6E2CE7006C8BE4 /* timidity_output.cpp */; };
-		E700DC151A6E2CE7006C8BE4 /* timidity_playmidi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB881A6E2CE7006C8BE4 /* timidity_playmidi.cpp */; };
-		E700DC161A6E2CE7006C8BE4 /* timidity_readmidi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB8A1A6E2CE7006C8BE4 /* timidity_readmidi.cpp */; };
-		E700DC171A6E2CE7006C8BE4 /* timidity_resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB8C1A6E2CE7006C8BE4 /* timidity_resample.cpp */; };
-		E700DC181A6E2CE7006C8BE4 /* timidity_sdl_a.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB8E1A6E2CE7006C8BE4 /* timidity_sdl_a.cpp */; };
-		E700DC191A6E2CE7006C8BE4 /* timidity_sdl_c.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB8F1A6E2CE7006C8BE4 /* timidity_sdl_c.cpp */; };
-		E700DC1A1A6E2CE7006C8BE4 /* timidity_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB901A6E2CE7006C8BE4 /* timidity_tables.cpp */; };
-		E700DC1B1A6E2CE7006C8BE4 /* TimidityMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB921A6E2CE7006C8BE4 /* TimidityMidiDriver.cpp */; };
-		E700DC1C1A6E2CE7006C8BE4 /* UnixSeqMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB941A6E2CE7006C8BE4 /* UnixSeqMidiDriver.cpp */; };
-		E700DC1D1A6E2CE7006C8BE4 /* WindowsMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB961A6E2CE7006C8BE4 /* WindowsMidiDriver.cpp */; };
 		E700DC1E1A6E2CE7006C8BE4 /* XMidiEventList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB991A6E2CE7006C8BE4 /* XMidiEventList.cpp */; };
 		E700DC1F1A6E2CE7006C8BE4 /* XMidiFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB9B1A6E2CE7006C8BE4 /* XMidiFile.cpp */; };
 		E700DC201A6E2CE7006C8BE4 /* XMidiSequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DB9E1A6E2CE7006C8BE4 /* XMidiSequence.cpp */; };
@@ -473,14 +454,8 @@
 		E700DB0A1A6E2CE7006C8BE4 /* convmusic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = convmusic.h; sourceTree = "<group>"; };
 		E700DB0E1A6E2CE7006C8BE4 /* Midi.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Midi.cc; sourceTree = "<group>"; };
 		E700DB0F1A6E2CE7006C8BE4 /* Midi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Midi.h; sourceTree = "<group>"; };
-		E700DB271A6E2CE7006C8BE4 /* ALSAMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ALSAMidiDriver.cpp; sourceTree = "<group>"; };
-		E700DB281A6E2CE7006C8BE4 /* ALSAMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ALSAMidiDriver.h; sourceTree = "<group>"; };
-		E700DB2D1A6E2CE7006C8BE4 /* CoreAudioMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreAudioMidiDriver.cpp; sourceTree = "<group>"; };
-		E700DB2E1A6E2CE7006C8BE4 /* CoreAudioMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAudioMidiDriver.h; sourceTree = "<group>"; };
 		E700DB2F1A6E2CE7006C8BE4 /* CoreMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CoreMidiDriver.cpp; sourceTree = "<group>"; };
 		E700DB301A6E2CE7006C8BE4 /* CoreMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreMidiDriver.h; sourceTree = "<group>"; };
-		E700DB331A6E2CE7006C8BE4 /* FluidSynthMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FluidSynthMidiDriver.cpp; sourceTree = "<group>"; };
-		E700DB341A6E2CE7006C8BE4 /* FluidSynthMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluidSynthMidiDriver.h; sourceTree = "<group>"; };
 		E700DB351A6E2CE7006C8BE4 /* fmopl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fmopl.cpp; sourceTree = "<group>"; };
 		E700DB361A6E2CE7006C8BE4 /* fmopl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fmopl.h; sourceTree = "<group>"; };
 		E700DB371A6E2CE7006C8BE4 /* FMOplMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMOplMidiDriver.cpp; sourceTree = "<group>"; };
@@ -492,36 +467,6 @@
 		E700DB651A6E2CE7006C8BE4 /* MT32EmuMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MT32EmuMidiDriver.cpp; sourceTree = "<group>"; };
 		E700DB661A6E2CE7006C8BE4 /* MT32EmuMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MT32EmuMidiDriver.h; sourceTree = "<group>"; };
 		E700DB671A6E2CE7006C8BE4 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		E700DB7A1A6E2CE7006C8BE4 /* timidity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity.cpp; sourceTree = "<group>"; };
-		E700DB7B1A6E2CE7006C8BE4 /* timidity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timidity.h; sourceTree = "<group>"; };
-		E700DB7C1A6E2CE7006C8BE4 /* timidity_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_common.cpp; sourceTree = "<group>"; };
-		E700DB7D1A6E2CE7006C8BE4 /* timidity_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timidity_common.h; sourceTree = "<group>"; };
-		E700DB7E1A6E2CE7006C8BE4 /* timidity_controls.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_controls.cpp; sourceTree = "<group>"; };
-		E700DB7F1A6E2CE7006C8BE4 /* timidity_controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timidity_controls.h; sourceTree = "<group>"; };
-		E700DB801A6E2CE7006C8BE4 /* timidity_filter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_filter.cpp; sourceTree = "<group>"; };
-		E700DB811A6E2CE7006C8BE4 /* timidity_filter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timidity_filter.h; sourceTree = "<group>"; };
-		E700DB821A6E2CE7006C8BE4 /* timidity_instrum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_instrum.cpp; sourceTree = "<group>"; };
-		E700DB831A6E2CE7006C8BE4 /* timidity_instrum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timidity_instrum.h; sourceTree = "<group>"; };
-		E700DB841A6E2CE7006C8BE4 /* timidity_mix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_mix.cpp; sourceTree = "<group>"; };
-		E700DB851A6E2CE7006C8BE4 /* timidity_mix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timidity_mix.h; sourceTree = "<group>"; };
-		E700DB861A6E2CE7006C8BE4 /* timidity_output.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_output.cpp; sourceTree = "<group>"; };
-		E700DB871A6E2CE7006C8BE4 /* timidity_output.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timidity_output.h; sourceTree = "<group>"; };
-		E700DB881A6E2CE7006C8BE4 /* timidity_playmidi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_playmidi.cpp; sourceTree = "<group>"; };
-		E700DB891A6E2CE7006C8BE4 /* timidity_playmidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timidity_playmidi.h; sourceTree = "<group>"; };
-		E700DB8A1A6E2CE7006C8BE4 /* timidity_readmidi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_readmidi.cpp; sourceTree = "<group>"; };
-		E700DB8B1A6E2CE7006C8BE4 /* timidity_readmidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timidity_readmidi.h; sourceTree = "<group>"; };
-		E700DB8C1A6E2CE7006C8BE4 /* timidity_resample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_resample.cpp; sourceTree = "<group>"; };
-		E700DB8D1A6E2CE7006C8BE4 /* timidity_resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timidity_resample.h; sourceTree = "<group>"; };
-		E700DB8E1A6E2CE7006C8BE4 /* timidity_sdl_a.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_sdl_a.cpp; sourceTree = "<group>"; };
-		E700DB8F1A6E2CE7006C8BE4 /* timidity_sdl_c.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_sdl_c.cpp; sourceTree = "<group>"; };
-		E700DB901A6E2CE7006C8BE4 /* timidity_tables.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timidity_tables.cpp; sourceTree = "<group>"; };
-		E700DB911A6E2CE7006C8BE4 /* timidity_tables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timidity_tables.h; sourceTree = "<group>"; };
-		E700DB921A6E2CE7006C8BE4 /* TimidityMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimidityMidiDriver.cpp; sourceTree = "<group>"; };
-		E700DB931A6E2CE7006C8BE4 /* TimidityMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimidityMidiDriver.h; sourceTree = "<group>"; };
-		E700DB941A6E2CE7006C8BE4 /* UnixSeqMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnixSeqMidiDriver.cpp; sourceTree = "<group>"; };
-		E700DB951A6E2CE7006C8BE4 /* UnixSeqMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnixSeqMidiDriver.h; sourceTree = "<group>"; };
-		E700DB961A6E2CE7006C8BE4 /* WindowsMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowsMidiDriver.cpp; sourceTree = "<group>"; };
-		E700DB971A6E2CE7006C8BE4 /* WindowsMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowsMidiDriver.h; sourceTree = "<group>"; };
 		E700DB981A6E2CE7006C8BE4 /* XMidiEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMidiEvent.h; sourceTree = "<group>"; };
 		E700DB991A6E2CE7006C8BE4 /* XMidiEventList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XMidiEventList.cpp; sourceTree = "<group>"; };
 		E700DB9A1A6E2CE7006C8BE4 /* XMidiEventList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMidiEventList.h; sourceTree = "<group>"; };
@@ -1128,14 +1073,8 @@
 		E700DB101A6E2CE7006C8BE4 /* midi_drivers */ = {
 			isa = PBXGroup;
 			children = (
-				E700DB271A6E2CE7006C8BE4 /* ALSAMidiDriver.cpp */,
-				E700DB281A6E2CE7006C8BE4 /* ALSAMidiDriver.h */,
-				E700DB2D1A6E2CE7006C8BE4 /* CoreAudioMidiDriver.cpp */,
-				E700DB2E1A6E2CE7006C8BE4 /* CoreAudioMidiDriver.h */,
 				E700DB2F1A6E2CE7006C8BE4 /* CoreMidiDriver.cpp */,
 				E700DB301A6E2CE7006C8BE4 /* CoreMidiDriver.h */,
-				E700DB331A6E2CE7006C8BE4 /* FluidSynthMidiDriver.cpp */,
-				E700DB341A6E2CE7006C8BE4 /* FluidSynthMidiDriver.h */,
 				E700DB351A6E2CE7006C8BE4 /* fmopl.cpp */,
 				E700DB361A6E2CE7006C8BE4 /* fmopl.h */,
 				E700DB371A6E2CE7006C8BE4 /* FMOplMidiDriver.cpp */,
@@ -1147,13 +1086,6 @@
 				E700DB651A6E2CE7006C8BE4 /* MT32EmuMidiDriver.cpp */,
 				E700DB661A6E2CE7006C8BE4 /* MT32EmuMidiDriver.h */,
 				E700DB671A6E2CE7006C8BE4 /* README */,
-				E700DB681A6E2CE7006C8BE4 /* timidity */,
-				E700DB921A6E2CE7006C8BE4 /* TimidityMidiDriver.cpp */,
-				E700DB931A6E2CE7006C8BE4 /* TimidityMidiDriver.h */,
-				E700DB941A6E2CE7006C8BE4 /* UnixSeqMidiDriver.cpp */,
-				E700DB951A6E2CE7006C8BE4 /* UnixSeqMidiDriver.h */,
-				E700DB961A6E2CE7006C8BE4 /* WindowsMidiDriver.cpp */,
-				E700DB971A6E2CE7006C8BE4 /* WindowsMidiDriver.h */,
 				E700DB981A6E2CE7006C8BE4 /* XMidiEvent.h */,
 				E700DB991A6E2CE7006C8BE4 /* XMidiEventList.cpp */,
 				E700DB9A1A6E2CE7006C8BE4 /* XMidiEventList.h */,
@@ -1165,37 +1097,6 @@
 				E700DBA01A6E2CE7006C8BE4 /* XMidiSequenceHandler.h */,
 			);
 			path = midi_drivers;
-			sourceTree = "<group>";
-		};
-		E700DB681A6E2CE7006C8BE4 /* timidity */ = {
-			isa = PBXGroup;
-			children = (
-				E700DB7A1A6E2CE7006C8BE4 /* timidity.cpp */,
-				E700DB7B1A6E2CE7006C8BE4 /* timidity.h */,
-				E700DB7C1A6E2CE7006C8BE4 /* timidity_common.cpp */,
-				E700DB7D1A6E2CE7006C8BE4 /* timidity_common.h */,
-				E700DB7E1A6E2CE7006C8BE4 /* timidity_controls.cpp */,
-				E700DB7F1A6E2CE7006C8BE4 /* timidity_controls.h */,
-				E700DB801A6E2CE7006C8BE4 /* timidity_filter.cpp */,
-				E700DB811A6E2CE7006C8BE4 /* timidity_filter.h */,
-				E700DB821A6E2CE7006C8BE4 /* timidity_instrum.cpp */,
-				E700DB831A6E2CE7006C8BE4 /* timidity_instrum.h */,
-				E700DB841A6E2CE7006C8BE4 /* timidity_mix.cpp */,
-				E700DB851A6E2CE7006C8BE4 /* timidity_mix.h */,
-				E700DB861A6E2CE7006C8BE4 /* timidity_output.cpp */,
-				E700DB871A6E2CE7006C8BE4 /* timidity_output.h */,
-				E700DB881A6E2CE7006C8BE4 /* timidity_playmidi.cpp */,
-				E700DB891A6E2CE7006C8BE4 /* timidity_playmidi.h */,
-				E700DB8A1A6E2CE7006C8BE4 /* timidity_readmidi.cpp */,
-				E700DB8B1A6E2CE7006C8BE4 /* timidity_readmidi.h */,
-				E700DB8C1A6E2CE7006C8BE4 /* timidity_resample.cpp */,
-				E700DB8D1A6E2CE7006C8BE4 /* timidity_resample.h */,
-				E700DB8E1A6E2CE7006C8BE4 /* timidity_sdl_a.cpp */,
-				E700DB8F1A6E2CE7006C8BE4 /* timidity_sdl_c.cpp */,
-				E700DB901A6E2CE7006C8BE4 /* timidity_tables.cpp */,
-				E700DB911A6E2CE7006C8BE4 /* timidity_tables.h */,
-			);
-			path = timidity;
 			sourceTree = "<group>";
 		};
 		E700DC2D1A6E2DBC006C8BE4 /* headers */ = {
@@ -2049,9 +1950,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E700DC111A6E2CE7006C8BE4 /* timidity_filter.cpp in Sources */,
 				8AC797C81C8D0E4F001AF014 /* zip.cc in Sources */,
-				E700DC161A6E2CE7006C8BE4 /* timidity_readmidi.cpp in Sources */,
 				E700DF441A6E34C6006C8BE4 /* debugserver.cc in Sources */,
 				E700DE2F1A6E344D006C8BE4 /* scale_hq2x.cc in Sources */,
 				E700DF751A6E34C6006C8BE4 /* useval.cc in Sources */,
@@ -2085,7 +1984,6 @@
 				E700DE2C1A6E344D006C8BE4 /* scale_2xSaI.cc in Sources */,
 				E700DE991A6E3497006C8BE4 /* Spellbook_gump.cc in Sources */,
 				E700DE201A6E344D006C8BE4 /* BilinearScalerInternal_2x.cpp in Sources */,
-				E700DC151A6E2CE7006C8BE4 /* timidity_playmidi.cpp in Sources */,
 				E700DCE21A6E30D8006C8BE4 /* objnames.cc in Sources */,
 				E700DBE71A6E2CE7006C8BE4 /* MidiDriver.cpp in Sources */,
 				E700DF4B1A6E34C6006C8BE4 /* ucdebugging.cc in Sources */,
@@ -2102,7 +2000,6 @@
 				E700DF501A6E34C6006C8BE4 /* ucsched.cc in Sources */,
 				E700DE7E1A6E3497006C8BE4 /* AudioOptions_gump.cc in Sources */,
 				E700E0DF1A6E4782006C8BE4 /* playfli.cc in Sources */,
-				E700DC121A6E2CE7006C8BE4 /* timidity_instrum.cpp in Sources */,
 				E700DE301A6E344D006C8BE4 /* scale_hq3x.cc in Sources */,
 				E700DF4C1A6E34C6006C8BE4 /* ucdisasm.cc in Sources */,
 				E700DD501A6E3121006C8BE4 /* armorinf.cc in Sources */,
@@ -2113,7 +2010,6 @@
 				E700DE9C1A6E3497006C8BE4 /* Text_gump.cc in Sources */,
 				E700E0E11A6E4A35006C8BE4 /* ios_utils.mm in Sources */,
 				E700DF9E1A6E36D6006C8BE4 /* servemsg.cc in Sources */,
-				E700DBDE1A6E2CE7006C8BE4 /* FluidSynthMidiDriver.cpp in Sources */,
 				E700DF4A1A6E34C6006C8BE4 /* stackframe.cc in Sources */,
 				E700DE971A6E3497006C8BE4 /* Sign_gump.cc in Sources */,
 				E700DD971A6E3161006C8BE4 /* utils.cc in Sources */,
@@ -2121,7 +2017,6 @@
 				E700DC9B1A6E30A7006C8BE4 /* game.cc in Sources */,
 				E700DCB21A6E30A7006C8BE4 /* version.cc in Sources */,
 				E700DE341A6E344D006C8BE4 /* scale_xbr.cc in Sources */,
-				E700DC181A6E2CE7006C8BE4 /* timidity_sdl_a.cpp in Sources */,
 				E700DFD61A6E3943006C8BE4 /* modmgr.cc in Sources */,
 				E700DCA81A6E30A7006C8BE4 /* npctime.cc in Sources */,
 				E700DD541A6E3121006C8BE4 /* expinf.cc in Sources */,
@@ -2144,7 +2039,6 @@
 				E700DE221A6E344D006C8BE4 /* BilinearScalerInternal_X1Y12.cpp in Sources */,
 				E700DC8E1A6E30A7006C8BE4 /* actorio.cc in Sources */,
 				E700DCA21A6E30A7006C8BE4 /* keyactions.cc in Sources */,
-				E700DC101A6E2CE7006C8BE4 /* timidity_controls.cpp in Sources */,
 				E700DE231A6E344D006C8BE4 /* BilinearScalerInternal_X2Y24.cpp in Sources */,
 				E700DE2D1A6E344D006C8BE4 /* scale_bilinear.cc in Sources */,
 				E700DF461A6E34C6006C8BE4 /* keyring.cc in Sources */,
@@ -2155,9 +2049,7 @@
 				E700DD571A6E3121006C8BE4 /* frusefun.cc in Sources */,
 				005043EA9A06E3F7BB57379A /* lightinf.cc in Sources */,
 				E700DC2C1A6E2D6A006C8BE4 /* soundtest.cc in Sources */,
-				E700DC1C1A6E2CE7006C8BE4 /* UnixSeqMidiDriver.cpp in Sources */,
 				E700DCB11A6E30A7006C8BE4 /* txtscroll.cc in Sources */,
-				E700DC131A6E2CE7006C8BE4 /* timidity_mix.cpp in Sources */,
 				E700DD5D1A6E3121006C8BE4 /* objdollinf.cc in Sources */,
 				E700DE9A1A6E3497006C8BE4 /* Stats_gump.cc in Sources */,
 				E700DC971A6E30A7006C8BE4 /* drag.cc in Sources */,
@@ -2167,11 +2059,8 @@
 				E700DE941A6E3497006C8BE4 /* Notebook_gump.cc in Sources */,
 				E700DBC21A6E2CE7006C8BE4 /* Midi.cc in Sources */,
 				8AD4A9311A92B9DB0004762D /* InputOptions_gump.cc in Sources */,
-				E700DC141A6E2CE7006C8BE4 /* timidity_output.cpp in Sources */,
 				E700DBBB1A6E2CE7006C8BE4 /* AudioChannel.cc in Sources */,
 				E700DD8B1A6E3161006C8BE4 /* crc.cc in Sources */,
-				E700DBD81A6E2CE7006C8BE4 /* ALSAMidiDriver.cpp in Sources */,
-				E700DC1A1A6E2CE7006C8BE4 /* timidity_tables.cpp in Sources */,
 				E700DCAD1A6E30A7006C8BE4 /* schedule.cc in Sources */,
 				E700DC981A6E30A7006C8BE4 /* effects.cc in Sources */,
 				E700DCA11A6E30A7006C8BE4 /* istring.cc in Sources */,
@@ -2187,7 +2076,6 @@
 				E700DBBA1A6E2CE7006C8BE4 /* Audio.cc in Sources */,
 				E700DC1F1A6E2CE7006C8BE4 /* XMidiFile.cpp in Sources */,
 				E700DC9F1A6E30A7006C8BE4 /* gamerend.cc in Sources */,
-				E700DC1B1A6E2CE7006C8BE4 /* TimidityMidiDriver.cpp in Sources */,
 				E700DFD21A6E3943006C8BE4 /* devgame.cc in Sources */,
 				E700DCAB1A6E30A7006C8BE4 /* paths.cc in Sources */,
 				E700DF511A6E34C6006C8BE4 /* ucserial.cc in Sources */,
@@ -2207,7 +2095,6 @@
 				E700DC921A6E30A7006C8BE4 /* cheat_screen.cc in Sources */,
 				E700DC8D1A6E30A7006C8BE4 /* actions.cc in Sources */,
 				E738C8611A71DEA1003A950D /* touchui.cc in Sources */,
-				E700DC191A6E2CE7006C8BE4 /* timidity_sdl_c.cpp in Sources */,
 				E700DFB91A6E372A006C8BE4 /* path.cc in Sources */,
 				E700DD8D1A6E3161006C8BE4 /* Flex.cc in Sources */,
 				E700DD961A6E3161006C8BE4 /* U7obj.cc in Sources */,
@@ -2227,7 +2114,6 @@
 				E700E0291A6E4067006C8BE4 /* gamewin.cc in Sources */,
 				E700DE871A6E3497006C8BE4 /* Gump_button.cc in Sources */,
 				E700DE8B1A6E3497006C8BE4 /* Gump_ToggleButton.cc in Sources */,
-				E700DBDB1A6E2CE7006C8BE4 /* CoreAudioMidiDriver.cpp in Sources */,
 				E700DE2A1A6E344D006C8BE4 /* savepcx.cc in Sources */,
 				E700DD4E1A6E3121006C8BE4 /* ammoinf.cc in Sources */,
 				E700DE7F1A6E3497006C8BE4 /* Book_gump.cc in Sources */,
@@ -2239,7 +2125,6 @@
 				E700DC9D1A6E30A7006C8BE4 /* gamedat.cc in Sources */,
 				E700DD8C1A6E3161006C8BE4 /* Flat.cc in Sources */,
 				E700DBE31A6E2CE7006C8BE4 /* LowLevelMidiDriver.cpp in Sources */,
-				E700DC171A6E2CE7006C8BE4 /* timidity_resample.cpp in Sources */,
 				E700DFBA1A6E372A006C8BE4 /* PathFinder.cc in Sources */,
 				E700DCAA1A6E30A7006C8BE4 /* party.cc in Sources */,
 				E700DD951A6E3161006C8BE4 /* U7fileman.cc in Sources */,
@@ -2251,12 +2136,9 @@
 				E700E02B1A6E4074006C8BE4 /* gamemap.cc in Sources */,
 				E700DC961A6E30A7006C8BE4 /* dir.cc in Sources */,
 				8ADFFDF625DE791000FC4D3A /* verify.cc in Sources */,
-				E700DC0E1A6E2CE7006C8BE4 /* timidity.cpp in Sources */,
 				E700DCDC1A6E30D8006C8BE4 /* egg.cc in Sources */,
 				E700DC8F1A6E30A7006C8BE4 /* actors.cc in Sources */,
-				E700DC0F1A6E2CE7006C8BE4 /* timidity_common.cpp in Sources */,
 				E700DF4E1A6E34C6006C8BE4 /* ucinternal.cc in Sources */,
-				E700DC1D1A6E2CE7006C8BE4 /* WindowsMidiDriver.cpp in Sources */,
 				E700DE291A6E344D006C8BE4 /* PointScaler.cpp in Sources */,
 				E700DE981A6E3497006C8BE4 /* Slider_gump.cc in Sources */,
 				E700DE961A6E3497006C8BE4 /* Scroll_gump.cc in Sources */,
