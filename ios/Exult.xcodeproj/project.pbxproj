@@ -45,6 +45,7 @@
 		8AC797C71C8D0E4F001AF014 /* unzip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AC797C51C8D0E4F001AF014 /* unzip.cc */; };
 		8AC797C81C8D0E4F001AF014 /* zip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AC797C61C8D0E4F001AF014 /* zip.cc */; };
 		8AD4A9311A92B9DB0004762D /* InputOptions_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AD4A92F1A92B9DB0004762D /* InputOptions_gump.cc */; };
+		8ADFFDF625DE791000FC4D3A /* verify.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8ADFFDF425DE791000FC4D3A /* verify.cc */; };
 		8AF2AFDF2016708100696E08 /* joypad-glass-southwest.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD62016707F00696E08 /* joypad-glass-southwest.png */; };
 		8AF2AFE02016708100696E08 /* joypad-glass-north.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD72016708000696E08 /* joypad-glass-north.png */; };
 		8AF2AFE12016708100696E08 /* joypad-glass.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD82016708000696E08 /* joypad-glass.png */; };
@@ -127,7 +128,6 @@
 		E700DCB01A6E30A7006C8BE4 /* tqueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DC831A6E30A7006C8BE4 /* tqueue.cc */; };
 		E700DCB11A6E30A7006C8BE4 /* txtscroll.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DC851A6E30A7006C8BE4 /* txtscroll.cc */; };
 		E700DCB21A6E30A7006C8BE4 /* version.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DC871A6E30A7006C8BE4 /* version.cc */; };
-		E700DCB31A6E30A7006C8BE4 /* windrag.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DC891A6E30A7006C8BE4 /* windrag.cc */; };
 		E700DCD71A6E30D8006C8BE4 /* animate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DCB51A6E30D8006C8BE4 /* animate.cc */; };
 		E700DCD81A6E30D8006C8BE4 /* barge.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DCB71A6E30D8006C8BE4 /* barge.cc */; };
 		E700DCD91A6E30D8006C8BE4 /* chunks.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DCB91A6E30D8006C8BE4 /* chunks.cc */; };
@@ -249,7 +249,6 @@
 		E700DF961A6E364E006C8BE4 /* XMLEntity.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DF891A6E364E006C8BE4 /* XMLEntity.cc */; };
 		E700DF9D1A6E36D6006C8BE4 /* objserial.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DF971A6E36D6006C8BE4 /* objserial.cc */; };
 		E700DF9E1A6E36D6006C8BE4 /* servemsg.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DF991A6E36D6006C8BE4 /* servemsg.cc */; };
-		E700DF9F1A6E36D6006C8BE4 /* server.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DF9B1A6E36D6006C8BE4 /* server.cc */; };
 		E700DFB51A6E372A006C8BE4 /* Astar.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DFA71A6E372A006C8BE4 /* Astar.cc */; };
 		E700DFB91A6E372A006C8BE4 /* path.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DFAC1A6E372A006C8BE4 /* path.cc */; };
 		E700DFBA1A6E372A006C8BE4 /* PathFinder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DFAD1A6E372A006C8BE4 /* PathFinder.cc */; };
@@ -388,6 +387,13 @@
 			remoteGlobalIDString = 4F58F7AA67A348AC99788A8C;
 			remoteInfo = mt32emu;
 		};
+		8ABE808F25DE9B58005B3BC7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8A52528E25718896005AD385 /* SDL.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7D88D1723E24D3B00DCD162;
+			remoteInfo = "Static Library-iOS";
+		};
 		E738C84D1A6FFF58003A950D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E738C8491A6FFF58003A950D /* libogg.xcodeproj */;
@@ -417,7 +423,7 @@
 		8A45A3AC247C068500F12F4D /* joythumb-glass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joythumb-glass.png"; sourceTree = "<group>"; };
 		8A52527F25718086005AD385 /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
 		8A52528E25718896005AD385 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = SDL2/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
-		8A599C1C246058A9006E3252 /* libmt32emu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libmt32emu.xcodeproj; path = libmt32emu.xcodeproj; sourceTree = "<group>"; };
+		8A599C1C246058A9006E3252 /* libmt32emu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = libmt32emu.xcodeproj; sourceTree = "<group>"; };
 		8A6013662057CF0C00FCA555 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		8A7F1F721DE5B72A0066F6FC /* expack */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = expack; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A7F1F7D1DE5B7820066F6FC /* expack.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = expack.cc; path = ../tools/expack.cc; sourceTree = "<group>"; };
@@ -442,6 +448,8 @@
 		8AD2C46F1DF83918006D6005 /* ios_state.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ios_state.hpp; path = ../headers/ios_state.hpp; sourceTree = "<group>"; };
 		8AD4A92F1A92B9DB0004762D /* InputOptions_gump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InputOptions_gump.cc; path = ../gumps/InputOptions_gump.cc; sourceTree = "<group>"; };
 		8AD4A9301A92B9DB0004762D /* InputOptions_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputOptions_gump.h; path = ../gumps/InputOptions_gump.h; sourceTree = "<group>"; };
+		8ADFFDF425DE791000FC4D3A /* verify.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = verify.cc; path = ../verify.cc; sourceTree = "<group>"; };
+		8ADFFDF525DE791000FC4D3A /* verify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = verify.h; path = ../verify.h; sourceTree = "<group>"; };
 		8AF2AFD62016707F00696E08 /* joypad-glass-southwest.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joypad-glass-southwest.png"; sourceTree = "<group>"; };
 		8AF2AFD72016708000696E08 /* joypad-glass-north.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joypad-glass-north.png"; sourceTree = "<group>"; };
 		8AF2AFD82016708000696E08 /* joypad-glass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joypad-glass.png"; sourceTree = "<group>"; };
@@ -603,7 +611,6 @@
 		E700DC791A6E30A7006C8BE4 /* rect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rect.h; path = ../rect.h; sourceTree = "<group>"; };
 		E700DC7A1A6E30A7006C8BE4 /* schedule.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = schedule.cc; path = ../schedule.cc; sourceTree = "<group>"; };
 		E700DC7B1A6E30A7006C8BE4 /* schedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = schedule.h; path = ../schedule.h; sourceTree = "<group>"; };
-		E700DC7C1A6E30A7006C8BE4 /* sdl-compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "sdl-compat.h"; path = "../sdl-compat.h"; sourceTree = "<group>"; };
 		E700DC7D1A6E30A7006C8BE4 /* shapeid.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shapeid.cc; path = ../shapeid.cc; sourceTree = "<group>"; };
 		E700DC7E1A6E30A7006C8BE4 /* shapeid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shapeid.h; path = ../shapeid.h; sourceTree = "<group>"; };
 		E700DC7F1A6E30A7006C8BE4 /* singles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = singles.h; path = ../singles.h; sourceTree = "<group>"; };
@@ -614,8 +621,6 @@
 		E700DC861A6E30A7006C8BE4 /* txtscroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = txtscroll.h; path = ../txtscroll.h; sourceTree = "<group>"; };
 		E700DC871A6E30A7006C8BE4 /* version.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = version.cc; path = ../version.cc; sourceTree = "<group>"; };
 		E700DC881A6E30A7006C8BE4 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = ../version.h; sourceTree = "<group>"; };
-		E700DC891A6E30A7006C8BE4 /* windrag.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = windrag.cc; path = ../windrag.cc; sourceTree = "<group>"; };
-		E700DC8A1A6E30A7006C8BE4 /* windrag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = windrag.h; path = ../windrag.h; sourceTree = "<group>"; };
 		E700DCB51A6E30D8006C8BE4 /* animate.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = animate.cc; path = ../objs/animate.cc; sourceTree = "<group>"; };
 		E700DCB61A6E30D8006C8BE4 /* animate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = animate.h; path = ../objs/animate.h; sourceTree = "<group>"; };
 		E700DCB71A6E30D8006C8BE4 /* barge.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = barge.cc; path = ../objs/barge.cc; sourceTree = "<group>"; };
@@ -880,8 +885,6 @@
 		E700DF981A6E36D6006C8BE4 /* objserial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = objserial.h; path = ../server/objserial.h; sourceTree = "<group>"; };
 		E700DF991A6E36D6006C8BE4 /* servemsg.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = servemsg.cc; path = ../server/servemsg.cc; sourceTree = "<group>"; };
 		E700DF9A1A6E36D6006C8BE4 /* servemsg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = servemsg.h; path = ../server/servemsg.h; sourceTree = "<group>"; };
-		E700DF9B1A6E36D6006C8BE4 /* server.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = server.cc; path = ../server/server.cc; sourceTree = "<group>"; };
-		E700DF9C1A6E36D6006C8BE4 /* server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = server.h; path = ../server/server.h; sourceTree = "<group>"; };
 		E700DFA71A6E372A006C8BE4 /* Astar.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Astar.cc; sourceTree = "<group>"; };
 		E700DFA81A6E372A006C8BE4 /* Astar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Astar.h; sourceTree = "<group>"; };
 		E700DFAC1A6E372A006C8BE4 /* path.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = path.cc; sourceTree = "<group>"; };
@@ -1213,6 +1216,8 @@
 		E700DC331A6E302F006C8BE4 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				8ADFFDF425DE791000FC4D3A /* verify.cc */,
+				8ADFFDF525DE791000FC4D3A /* verify.h */,
 				E700DC341A6E30A7006C8BE4 /* actions.cc */,
 				E700DC351A6E30A7006C8BE4 /* actions.h */,
 				E700DC361A6E30A7006C8BE4 /* actorio.cc */,
@@ -1281,7 +1286,6 @@
 				E700DC791A6E30A7006C8BE4 /* rect.h */,
 				E700DC7A1A6E30A7006C8BE4 /* schedule.cc */,
 				E700DC7B1A6E30A7006C8BE4 /* schedule.h */,
-				E700DC7C1A6E30A7006C8BE4 /* sdl-compat.h */,
 				E700DC7D1A6E30A7006C8BE4 /* shapeid.cc */,
 				E700DC7E1A6E30A7006C8BE4 /* shapeid.h */,
 				E700DC7F1A6E30A7006C8BE4 /* singles.h */,
@@ -1294,8 +1298,6 @@
 				E700DC861A6E30A7006C8BE4 /* txtscroll.h */,
 				E700DC871A6E30A7006C8BE4 /* version.cc */,
 				E700DC881A6E30A7006C8BE4 /* version.h */,
-				E700DC891A6E30A7006C8BE4 /* windrag.cc */,
-				E700DC8A1A6E30A7006C8BE4 /* windrag.h */,
 			);
 			name = main;
 			sourceTree = "<group>";
@@ -1669,8 +1671,6 @@
 				E700DF981A6E36D6006C8BE4 /* objserial.h */,
 				E700DF991A6E36D6006C8BE4 /* servemsg.cc */,
 				E700DF9A1A6E36D6006C8BE4 /* servemsg.h */,
-				E700DF9B1A6E36D6006C8BE4 /* server.cc */,
-				E700DF9C1A6E36D6006C8BE4 /* server.h */,
 			);
 			name = server;
 			sourceTree = "<group>";
@@ -1806,6 +1806,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				8ABE809025DE9B58005B3BC7 /* PBXTargetDependency */,
 				8A38FFF41DE6F68400B942F9 /* PBXTargetDependency */,
 			);
 			name = Exult;
@@ -2052,7 +2053,6 @@
 				8AC797C81C8D0E4F001AF014 /* zip.cc in Sources */,
 				E700DC161A6E2CE7006C8BE4 /* timidity_readmidi.cpp in Sources */,
 				E700DF441A6E34C6006C8BE4 /* debugserver.cc in Sources */,
-				E700DCB31A6E30A7006C8BE4 /* windrag.cc in Sources */,
 				E700DE2F1A6E344D006C8BE4 /* scale_hq2x.cc in Sources */,
 				E700DF751A6E34C6006C8BE4 /* useval.cc in Sources */,
 				E700DD5E1A6E3121006C8BE4 /* sfxinf.cc in Sources */,
@@ -2221,7 +2221,6 @@
 				E700DCDE1A6E30D8006C8BE4 /* jawbone.cc in Sources */,
 				E700DE811A6E3497006C8BE4 /* Enabled_button.cc in Sources */,
 				E700DD641A6E3121006C8BE4 /* u7drag.cc in Sources */,
-				E700DF9F1A6E36D6006C8BE4 /* server.cc in Sources */,
 				E700DE1F1A6E344D006C8BE4 /* BilinearScaler.cpp in Sources */,
 				E700DD381A6E3121006C8BE4 /* fontgen.cc in Sources */,
 				E700DD371A6E3121006C8BE4 /* font.cc in Sources */,
@@ -2251,6 +2250,7 @@
 				E700DD941A6E3161006C8BE4 /* U7file.cc in Sources */,
 				E700E02B1A6E4074006C8BE4 /* gamemap.cc in Sources */,
 				E700DC961A6E30A7006C8BE4 /* dir.cc in Sources */,
+				8ADFFDF625DE791000FC4D3A /* verify.cc in Sources */,
 				E700DC0E1A6E2CE7006C8BE4 /* timidity.cpp in Sources */,
 				E700DCDC1A6E30D8006C8BE4 /* egg.cc in Sources */,
 				E700DC8F1A6E30A7006C8BE4 /* actors.cc in Sources */,
@@ -2294,6 +2294,11 @@
 			target = 8A7F1F711DE5B72A0066F6FC /* expack */;
 			targetProxy = 8A38FFF31DE6F68400B942F9 /* PBXContainerItemProxy */;
 		};
+		8ABE809025DE9B58005B3BC7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Static Library-iOS";
+			targetProxy = 8ABE808F25DE9B58005B3BC7 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -2329,13 +2334,14 @@
 					./mt32emu/src,
 				);
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = info.exult;
 				PRODUCT_NAME = Exult;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
+				VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS = OpenGLES;
 			};
 			name = Debug;
 		};
@@ -2369,13 +2375,13 @@
 					./mt32emu/src,
 				);
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = info.exult;
 				PRODUCT_NAME = Exult;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
+				VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS = OpenGLES;
 			};
 			name = Release;
 		};
@@ -2467,6 +2473,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
 				SDKROOT = iphoneos;
@@ -2504,6 +2511,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				OTHER_CFLAGS = "";
 				SDKROOT = iphoneos;
 			};

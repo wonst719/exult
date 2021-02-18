@@ -41,6 +41,8 @@
 
 #define USE_FMOPL_MIDI
 
+#define USE_MT32EMU_MIDI
+
 #ifndef MT32EMU_CONFIG_H
 #define MT32EMU_CONFIG_H
 

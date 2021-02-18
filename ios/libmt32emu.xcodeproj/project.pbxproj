@@ -290,7 +290,7 @@
 					./mt32emu/srchelper/srctools/include,
 					./mt32emu/srchelper/srctools/include/src,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -335,7 +335,7 @@
 					./mt32emu/srchelper/srctools/include,
 					./mt32emu/srchelper/srctools/include/src,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
