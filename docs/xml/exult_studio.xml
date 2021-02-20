@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE studiodoc SYSTEM "docs.dtd">
-<studiodoc title="Exult" changed="13 March 2016(GMT)">
+<studiodoc title="Exult" changed="20 February 2021 (GMT)">
 	<section title="Introduction">
 		<sub name="whatis_studio">
 			<header>What is <Studio/>?</header>
@@ -47,7 +47,7 @@
 				<para>
 					Of course the terms explained in <extref doc="docs" target="terms"/> are
 					also used in this Documentation but we will list them along with the terms
-					that additionally need to be explained for the usage of <Studio/>
+					that additionally need to be explained for the usage of <Studio/>.
 				</para>
 				<ul>
 					<li><strong>tile</strong>:<br/>
@@ -59,16 +59,16 @@
 					<li><strong>world</strong>:<br/>
 						12x12 superchunks</li>
 					<li><strong>NPC schedules</strong>:<br/>
-						NPCs can have schedules which make them do certain things at certain times.</li>
+						NPCs can have schedules which make them do things at certain times and locations.</li>
 					<li><strong>BG</strong>, <strong>SI</strong>, <strong>FoV</strong>
 					or <strong>SS</strong>:<br/>
 						we refer to "Ultima 7: The Black Gate" as BG and to "Ultima 7: Serpent Isle"
 						as SI. The add-ons "Forge of Virtue" and "Silver Seed" are called FoV and SS.</li>
 					<li><strong>eggs</strong>:<br/>
-						 these are trip-wires that can cause monsters to spawn, execute scripts, play 
-						 music, change weather, trigger traps or teleport when you get near them.</li>
+						these are trip-wires that can cause monsters to spawn, execute scripts, play 
+						music, change weather, trigger traps or teleport when you get near them.</li>
 					<li><strong>flex files</strong>:<br/>
-						 also known as flexes, these are used by the original to store the data files.
+						also known as flexes, these are used by the original to store the data files.
 						Also when you choose to not use compressed save games (see save_compression_level in
 						<extref doc="docs" target="exult_config"/>) our save games are also "flexed".</li>
 					<li><strong>gumps</strong>:<br/>
@@ -105,13 +105,13 @@
 						you are using the <strong>latest snapshot</strong> of <Exult/>.<br/>
 						<Studio/> <strong>only</strong> works with the latest snapshot, not the latest release.</li>
 					<li>For U*ix platforms you need to build <Studio/> from the source available from our
-						source snapshot at <extref target="http://exult.sourceforge.net/download.php"/>.<br/>
-						You will also need the GTK+ library installed as well as
-				<extref target="http://developer.gnome.org/doc/API/libglade/libglade.html">libglade</extref>.<br/></li>
-					<li>For Windows platforms (98,98SE,ME,2k,XP,Vista,7) you need to download
-						<extref target="http://exult.sourceforge.net/snapshots/ExultStudio.exe"/>
-						and install it in the same folder where you installed <Exult/>. 
-						<Studio/> does not run Windows 95</li>
+						source snapshot at <extref target="http://exult.info/download.php"/>.</li>
+					<li>For Windows platforms (XP,Vista,7,8,10) you need to download <Studio/> from our 
+						<extref target="http://exult.info/download.php">download page</extref>
+						and install it in the same folder where you installed <Exult/>.</li>
+					<li>For macOS we also provide a snapshot on our
+						<extref target="http://exult.info/download.php">download page</extref>. Download the disk image
+						and move the app to the Applications.</li>
 				</ul>
 			</body>
 		</sub>
@@ -123,31 +123,29 @@
 					as it uses <Exult/> as a server. What you really want to do is:
 				</para>
 				<ul>
-   				<li>Put 'exult_studio.glade' in the <Exult/> 'data' folder.</li>
-   				<li>Be sure 'exult_studio' is in your path. (on Windows
-   					'exult_studio.exe' needs to be in the same folder as exult.exe)</li>
-				<li>On U*ix platforms you need to be running <Exult/> on X.</li>
-   				<li>Run <Exult/> in <strong>windowed mode</strong> (not fullscreen).</li>
-   				<li>Enable the <Exult/> cheat mode (see <extref doc="docs" target="gameplay_gump"/>).</li>
-   				<li>Press 'alt+ctrl+m' to go into 'map-editor' mode. If all is set
-					up correctly, exult_studio will start up, and will have a list of files
-					on the left side of its window.</li>
+					<li>Put 'exult_studio.glade' in the <Exult/> 'data' folder (not needed if you use the 
+						snapshot for Windows or macOS).</li>
+					<li>Be sure 'exult_studio' is in your path. (on Windows
+						'exult_studio.exe' needs to be in the same folder as exult.exe)</li>
+					<li>Run <Exult/> in <strong>windowed mode</strong> (not fullscreen).</li>
+					<li>Enable the <Exult/> cheat mode (see <extref doc="docs" target="gameplay_gump"/>).</li>
+					<li>Press 'alt+ctrl+m' to go into 'map-editor' mode. If all is set
+						up correctly, exult_studio will start up, and will have a list of files
+						on the left side of its window.</li>
 				</ul>
 				<para>
 					Starting up one or the other separately will reconnect them:
 				</para>
 				<ul>
-    			<li>If <Exult/> isn't running, start it up. Then, in <Studio/>,
-					use the 'File' menu to choose the static folder (for the game you're
-					playing).</li>
-   				<li>If <Studio/> isn't running start it up with:
-        			exult_studio -x (path to the folder containing exult_studio.glade) -gGAME
-        			(GAME is the same string (ie, 'blackgate') that we use in .exult.cfg or that
-        			you've given to your own game).</li>
+					<li>If <Exult/> isn't running, start it up. Then, in <Studio/>,
+						use the 'File' menu to choose the static folder (for the game you're
+						playing).</li>
+					<li>If <Studio/> isn't running start it up and select the game to edit in the 
+						"File-Open Game" dialog.</li>
 				</ul>
 				<para>
-					You can also reconnect by selecting File-Connect in <Studio/>'s
-					menus.
+					You can also reconnect by selecting "File-Connect" in <Studio/>'s
+					menu.
 				</para>
 			</body>
 		</sub>
@@ -160,28 +158,28 @@
 					very far with your world building.
 				</para>
 				<ol>
-				<li>While it is not explicitly needed it is useful to have a working copy of either
-					BG or SI properly installed onto your computer.</li>
-				<li>Next, you need to have the latest <Exult/> snapshotinstalled properly
-					onto your computer and working correctly. If you are currently playing either BG or SI
-					on your machine this is probably done right. To make sure you have the correct version,
-					ensure that it says X.XX GIT (X.XX stands for some version number) during <Exult/>'s 
-					start-up screen (for example see 
-					<extref target="http://exult.sourceforge.net/images/screenshots/mainmenu.png"/>).</li>
-				<li>You need to make sure the newest version of <Studio/> is installed properly onto your
-					computer as well. <Studio/> should be installed in the same folder as the <Exult/> 
-					snapshot.</li>
-				<li>The patch folder <strong>needs</strong> to be in folder which you are allowed to write, 
-					so <Studio/> can save any changes to existing games. See <ref1 target="can_do_atm"/> on 
-					how to change exult.cfg accordingly.</li>
-				<li>In order for <Studio/> to work properly, you need to have <Exult/> running in windowed mode.
-					If you can see your desktop while playing, then you're doing it right.</li>
-				<li>Make sure you have Cheats enabled. This can be enabled in the Gameplay options of the Game
-					 see (see <extref doc="docs" target="gameplay_gump"/>).</li>
-				<li>While running <Exult/> in windowed mode, hit <key>ctrl+alt+m</key> to enter map-editing mode.
-					<Studio/> should open up if you did everything correctly. In map-editing mode the world is
-					frozen, but you are still able to move your characters around in order to place objects.
-					You're now ready to start your world editing. You should be seeing something like this:</li>
+					<li>While it is not explicitly needed it is useful to have a working copy of either
+						BG or SI properly installed onto your computer.</li>
+					<li>Next, you need to have the latest <Exult/> snapshotinstalled properly
+						onto your computer and working correctly. If you are currently playing either BG or SI
+						on your machine this is probably done right. To make sure you have the correct version,
+						ensure that it says X.XX GIT (X.XX stands for some version number) during <Exult/>'s 
+						start-up screen (for example see 
+						<extref target="http://exult.info/images/screenshots/mainmenu.png"/>).</li>
+					<li>You need to make sure the newest version of <Studio/> is installed properly onto your
+						computer as well. <Studio/> should be installed in the same folder as the <Exult/> 
+						snapshot.</li>
+					<li>The patch folder <strong>needs</strong> to be in folder which you are allowed to write, 
+						so <Studio/> can save any changes to existing games. See <ref1 target="can_do_atm"/> on 
+						how to change exult.cfg accordingly.</li>
+					<li>In order for <Studio/> to work properly, you need to have <Exult/> running in windowed mode.
+						If you can see your desktop while playing, then you're doing it right.</li>
+					<li>Make sure you have Cheats enabled. This can be enabled in the Gameplay options of the Game
+						see (see <extref doc="docs" target="gameplay_gump"/>).</li>
+					<li>While running <Exult/> in windowed mode, hit <key>ctrl+alt+m</key> to enter map-editing mode.
+						<Studio/> should open up if you did everything correctly. In map-editing mode the world is
+						frozen, but you are still able to move your characters around in order to place objects.
+						You're now ready to start your world editing. You should be seeing something like this:</li>
 				</ol>
 				<para>	
 					<img alt="game window with red grid" src="images/studio01.png"/>
@@ -191,41 +189,38 @@
 		<sub name="can_do_atm">
 			<header>What you can do at the moment</header>
 			<body>
-				<para>
-					With the latest source you can
-				</para>
-					<ul>
-						<li>browse shapes in the main window.</li>
-   						<li>drag a shape from the shape browser to <Exult/>, and that
-							object will be placed in the game.</li>
-   						<li>edit an 'egg' by double-clicking on it. An edit box
-							should appear.</li>
-   						<li>create a new 'egg' using the pull-down menu in <Studio/>.
-							In the Egg edit box, after you hit 'Apply', you'll be prompted to
-							click in <Exult/> where you want the egg to appear.</li>
-   						<li>if editing a 'monster' egg, you can set the monster by dragging
-							the shape from the browser to the area that displays the monster.</li>
-						<li>edit an NPC by double-clicking on it, and also create a new
-							NPC using the pull-down menu. Attributes, flags, and schedules can
-							all be viewed and modified.</li>
-						<li>edit other objects' position and quality by double-clicking on them.</li>
-						<li>browse the 'u7chunks' file, and drag them into <Exult/> to change
-							the terrain. In this browser, you can also create new terrains and
-							modify their order.</li>
-						<li>select a chunk, choose 'Paint with chunks' from the 'Mode' menu, and then
-							paint terrain with that whole chunk.</li>
-						<li>edit a 'terrain' (stored in 'u7chunks') by clicking the "Edit
-							terrain" checkbox in <Studio/>. This is a special mode where
-							dragging with the left mouse button 'paints' the currently-selected
-							shape (generally one of the flat tiles near the top of the shapes
-							browser). Note that a 'terrain' is generally used in multiple places
-							in the map and changing it in one place changes it in all the others as well.</li>
-						<li>save the map using <Studio/>'s "File-Save map" pulldown menu.
-							In order to avoid writing over files inadvertently, the files that
-							would normally go into the 'static' folder, will, instead, go into
-							a 'patch' folder that you specify in your 'exult.cfg' file. Here's
-							an example for editing BG:</li>
-					</ul>
+				<ul>
+					<li>browse shapes in the main window.</li>
+					<li>drag a shape from the shape browser to <Exult/>, and that
+						object will be placed in the game.</li>
+					<li>edit an 'egg' by double-clicking on it. An edit box
+						should appear.</li>
+					<li>create a new 'egg' using the pull-down menu in <Studio/>.
+						In the Egg edit box, after you hit 'Apply', you'll be prompted to
+						click in <Exult/> where you want the egg to appear.</li>
+					<li>if editing a 'monster' egg, you can set the monster by dragging
+						the shape from the browser to the area that displays the monster.</li>
+					<li>edit an NPC by double-clicking on it, and also create a new
+						NPC using the pull-down menu. Attributes, flags, and schedules can
+						all be viewed and modified.</li>
+					<li>edit other objects' position and quality by double-clicking on them.</li>
+					<li>browse the 'u7chunks' file, and drag them into <Exult/> to change
+						the terrain. In this browser, you can also create new terrains and
+						modify their order.</li>
+					<li>select a chunk, choose 'Paint with chunks' from the 'Mode' menu, and then
+						paint terrain with that whole chunk.</li>
+					<li>edit a 'terrain' (stored in 'u7chunks') by clicking the "Edit
+						terrain" checkbox in <Studio/>. This is a special mode where
+						dragging with the left mouse button 'paints' the currently-selected
+						shape (generally one of the flat tiles near the top of the shapes
+						browser). Note that a 'terrain' is generally used in multiple places
+						in the map and changing it in one place changes it in all the others as well.</li>
+					<li>save the map using <Studio/>'s "File-Save map" pulldown menu.
+						In order to avoid writing over files inadvertently, the files that
+						would normally go into the 'static' folder, will, instead, go into
+						a 'patch' folder that you specify in your 'exult.cfg' file. Here's
+						an example for editing BG:</li>
+				</ul>
 				<configdesc>
 					<configtag name="game" closing-tag="no">
 						<configtag name="blackgate">
@@ -247,7 +242,7 @@
 				</para>
 				<para>
 					<Exult/> will also read files from 'patch' if it exists on starting a new game. The patch 
-					folder is expected to be within the main game folder, parallel to the static and gamedat folders.
+					folder is expected to be within the main game folder, parallel to the static folder.
 				</para>
 				<para>
 					In any mode, you can add the currently selected shape by shift-clicking.
@@ -281,8 +276,7 @@
 							</configtag>
 							<configtag name="image_editor">
 							gimp-remote -n
-							<comment>** command that calls the image editor. Only useful on Unix/Linux</comment>
-							<comment>platforms for now.</comment>
+							<comment>** command that calls the image editor.</comment>
 							</configtag>
 							<configtag name="background_color">
 							0
@@ -301,25 +295,32 @@
 					<Studio/> offers some "hidden" command line options:
 				</para>
 				<ul>
-					<li>-c configfile<br/>
+					<li>(--help) -h<br/>
+						Shows these command line options.</li>
+					<li>(--silent) -s<br/>
+						Do not display the state of the games.</li>
+					<li>(--config) -c configfile<br/>
 						Specify alternate config file (relative or absolute paths work).</li>
-					<li>-p<br/>
+					<li>(--portable) -p<br/>
 						Portable option for Windows only. <Studio/> will read cfg file from the folder <Exult/> got 
 						installed to.</li>	
-					<li>-g GAMENAME<br/>
+					<li>(--game) -g GAMENAME<br/>
 						specifies GAMENAME and <Studio/> will read the game base folder from exult.cfg.
 						GAMENAME can be chosen from the games specified in &lt;game&gt; part of exult.cfg.</li>
-					<li>-m modname<br/>
+					<li>(--mod) -m modname<br/>
 						Must be used together with '-g gamename'; runs the specified 
 						game using the mod with title equal to 'modname'. 'modname' is the name of the mod 
 						cfg file (e.g. keyring.cfg means 'modname' 'keyring'.</li>
-					<li>-x FOLDER<br/>
+					<li>(--xmldir) -x FOLDER<br/>
 						tells exult_studio to look in FOLDER for its user-interface specification
 						(exult_studio.glade).<br/>
 						You can enter the full path (e.g. "exult_studio -xc:\exult\data") to the glade file
 						or you can use the relative path (e.g. exult_studio -x./data).<br/>
-  						This option is only useful to developers who want to edit exult_studio.glade
-  						themselves.</li>
+						This option is only useful to developers who want to edit exult_studio.glade
+						themselves.</li>
+					<li>(--cssdir) -y FOLDER<br/>
+						tells exult_studio to look in FOLDER for css file that customizes the look of <Studio/>
+						(exult_studio.css).</li>
 				</ul>
 			</body>
 		</sub>
@@ -380,7 +381,6 @@
 					<li><strong>Combos.flx</strong><br/>
 						where custom made combos will be stored.</li>
 				</ul>
-
 			</body>
 		</sub>
 		<sub name="map_files">
@@ -401,7 +401,7 @@
 					Right clicking on a chunk gives you another two options
 					(also the File-save/revert option):
 				</para>
-				<ul>					
+				<ul>
 					<li><strong>New...</strong><br/>
 						<strong>Empty</strong><br/>
 						Creates a new chunk. Drag the new chunk onto the game and edit it by dragging
@@ -525,7 +525,10 @@
 						This lets you begin the work on a new game. Jeff wrote an extensive description of
 						how to use this and how it works.<br/>
 						See
-						<extref target="http://exult.sourceforge.net/newgame.txt">New Game manual</extref>.</li>
+						<extref target="http://exult.info/newgame.txt">New Game manual</extref>.</li>
+					<li><strong>New Mod...</strong><br/>
+						Easily start a new mod for an existing game. The dialog that opens lets you select 
+						the game you want to mod, the name of the mod and its name in the Exult menu (menu string).</li>
 					<li><strong>Open Game...</strong><br/>
 						Choose the Game folder of the game you that you have been working on.</li>
 					<li><strong>Save all</strong><key>Ctrl+S</key><br/>
@@ -556,6 +559,9 @@
 						<strong>Usecode</strong><br/>
 						Very useful when you edit the usecode of a game or add new usecode to an
 						existing game. Normally this would require a restart of Exult.</li>
+						<strong>Style CSS</strong><br/>
+						<Studio/> now supports customization via a CSS file (exult_studio.css) and if you 
+						changed that you can reload it without having to restart <Studio/>.<br/>
 					<li><strong>Connect</strong><br/>
 						Connects <Exult/> and <Studio/> if one of them had to be restarted.</li>
 					<li><strong>Preferences</strong><br/>
@@ -573,8 +579,8 @@
 						Exits <Studio/>.</li>
 				</ul>
 				<para>
-					Note that the default location for saving and creation of new files is the STATIC folder
-					of a game if there is no PATCH folder specified. See <ref1 target="can_do_atm"/>.
+					Note that the default location for saving and creation of new files is the PATCH folder
+					of a game. If there is no PATCH folder specified <Studi/> will create one. See <ref1 target="can_do_atm"/>.
 				</para>
 			</body>
 		</sub>
@@ -583,32 +589,34 @@
 			<body>
 				<ul>
 					<li><strong>Cut  </strong><key>Ctrl+X</key><br/>
-					Removes the selected object(s) and puts it into memory.</li>
+						Removes the selected object(s) and puts it into memory.</li>
 					<li><strong>Copy  </strong><key>Ctrl+C</key><br/>
-					Copies the selected object(s) into memory.</li>
+						Copies the selected object(s) into memory.</li>
 					<li><strong>Paste  </strong><key>Ctrl+V</key><br/>
-					Shows the crosshair cursor and copies the object(s) from the memory into the game
-					where you left click the crosshair.</li>
+						Shows the crosshair cursor and copies the object(s) from the memory into the game
+						where you left click the crosshair.</li>
 					<li><strong>Properties...</strong><br/>
-					Shows the properties of the selected object. If more than one object is selected
-					it shows the properties of the last selected object.<br/>
-					Only NPCs and eggs show different properties than if you select Basic properties.</li>
+						Shows the properties of the selected object. If more than one object is selected
+						it shows the properties of the last selected object.<br/>
+						Only NPCs and eggs show different properties than if you select Basic properties.</li>
 					<li><strong>Basic properties...</strong><br/>
-					Shows the properties of the selected object. If more than one object is selected
-					it shows the properties of the last selected object.</li>
+						Shows the properties of the selected object. If more than one object is selected
+						it shows the properties of the last selected object.</li>
 					<li><strong>Create egg...</strong><br/>
-					Create or edit eggs with this.
-					See <section_ref target="Egg editing"/> for detailed information.</li>
+						Create or edit eggs with this.
+						See <section_ref target="Egg editing"/> for detailed information.</li>
 					<li><strong>Create NPC...</strong><br/>
-					Create or edit NPCs with this.
-					See <section_ref target="NPC editing"/> for more information.</li>
+						Create or edit NPCs with this.
+						See <section_ref target="NPC editing"/> for more information.</li>
 					<li><strong>Create Barge...</strong><br/>
-					Create a barge such as a magic carpet or a horse drawn carriage.
-					See <ref target="barge_edit"/> for more information.</li>
+						Create a barge such as a magic carpet or a horse drawn carriage.
+						See <ref target="barge_edit"/> for more information.</li>
+					<li><strong>Set Game Information</strong><br/>
+						Edit the game information shwon in the Exult menu.</li>
 				</ul>
 				<para>
-				When in map-edit mode, you can select shapes in Exult by left-clicking, or multiple shapes by 
-				ctrl+left-clicking.
+					When in map-edit mode, you can select shapes in Exult by left-clicking, or multiple shapes by 
+					ctrl+left-clicking.
 				</para>
 			</body>
 		</sub>
@@ -616,29 +624,33 @@
 			<header>Mode</header>
 			<body>
 				<para>
-				It describes how the mouse behaves inside <Exult/> when map-editing.
+					It describes how the mouse behaves inside <Exult/> when map-editing.
 				</para>
 				<ul>
 					<li><strong>Move</strong><br/>
-					This is the normal mode where you can drag things with the mouse, or single-click
-					to identify objects. In this mode you also select objects. A selected object is
-					shown with a red outline. To select more than one object hold down <key>Ctrl</key>
-					while selecting. Move the selection <key>Ctrl+arrow</key> (x,y coordinates) and
-					<key>Ctrl+page</key> keys (z coordinates).</li>
+						This is the normal mode where you can drag things with the mouse, or single-click
+						to identify objects. In this mode you also select objects. A selected object is
+						shown with a red outline. To select more than one object hold down <key>Ctrl</key>
+						while selecting. Move the selection <key>Ctrl+arrow</key> (x,y coordinates) and
+						<key>Ctrl+page</key> keys (z coordinates).</li>
 					<li><strong>Paint</strong><br/>
-					a single-left-click inserts the last-selected shape from 'shapes.vga', and dragging
-					with the left-button inserts that shape in every tile (so you'd probably only want
-					to do this with 8x8 flat shapes). Also, in 'Paint' mode, the footprint at ground
-					level is shown (though this may be changed in the future).<br/>
-					If you hold the alt key down, random frames from the currently-selected shape will
-					be painted (handy for grassy areas).</li>
+						a single-left-click inserts the last-selected shape from 'shapes.vga', and dragging
+						with the left-button inserts that shape in every tile (so you'd probably only want
+						to do this with 8x8 flat shapes). Also, in 'Paint' mode, the footprint at ground
+						level is shown (though this may be changed in the future).<br/>
+						If you hold the alt key down, random frames from the currently-selected shape will
+						be painted (handy for grassy areas).</li>
 					<li><strong>Paint with chunks</strong><br/>
-					works the same as the normal Paint mode only with chunks. Left-clicking the mouse
-					paints the current chunk onto the map.<br/>
-					Take a look at <ref1 target="change_chunks"/>.</li>
+						works the same as the normal Paint mode only with chunks. Left-clicking the mouse
+						paints the current chunk onto the map.<br/>
+						Take a look at <ref1 target="change_chunks"/>.</li>
 					<li><strong>Pick for Combo</strong><br/>
-					Picks objects for a new combo file. Double-left-click to add objects to the combo,
-					single-left-click to identify object. See <ref1 target="combo_edit"/></li>
+						Picks objects for a new combo file. Double-left-click to add objects to the combo,
+						single-left-click to identify object. See <ref1 target="combo_edit"/></li>
+					<li><strong>Select chunks</strong><br/>
+						You can select chunks and move them around with ctrl+arrow keys. This will leave 
+						generic chunks where the original chunks were, and is probably better used for moving 
+						parts of a map because you misjudged the position it needed to be in.</li>
 				</ul>
 				<para>
 					Note that you can only drag objects in the game window when you are in "Move" mode.
@@ -650,16 +662,19 @@
 			<body>
 				<ul>
 					<li><strong>Locator...</strong><key>Ctrl+L</key><br/>
-					shows where the current game window is within the entire map, and lets you move
-					the view by double-clicking a location or by dragging the little box</li>
+						shows where the current game window is within the entire map, and lets you move
+						the view by double-clicking a location or by dragging the little box</li>
 					<li><strong>New Combo..</strong><br/>
-					Creates a new Combo file. See <ref1 target="combo_edit"/>.</li>
+						Creates a new Combo file. See <ref1 target="combo_edit"/>.</li>
 					<li><strong>Unused shapes...</strong><br/>
-					searches the entire world being created to see if any of the shapes in shapes.vga
-					are not in use. Have patience when doing this and treat the results with caution.</li>
+						searches the entire world being created to see if any of the shapes in shapes.vga
+						are not in use. Have patience when doing this and treat the results with caution.</li>
 					<li><strong>Compile Usecode...</strong><br/>
-					Compiles the usecode script usecode.uc in the patch folder
-					(see <ref target="usecode_edit"/>)</li>
+						Compiles the usecode script usecode.uc in the patch folder
+						(see <ref target="usecode_edit"/>)</li>
+					<li><strong>Fix old shape info</strong><br/>
+						Old versions of <Studi/> discarded some shpe info data on saving. This option adds 
+						the discarded information back to old mods and patches.</li>
 				</ul>
 			</body>
 		</sub>
@@ -668,9 +683,10 @@
 			<body>
 				<ul>
 					<li><strong>New</strong><br/>
-					Used to create a new map to use for multi-map support (see <ref1 target="multi_map"/>).</li>
-					<li><strong>Main</strong><br/>
-					The default map or the map that is loaded upon starting of a new game.</li>
+						Used to create a new map to use for multi-map support (see <ref1 target="multi_map"/>).</li>
+					<li><strong>Main/Map #xx</strong><br/>
+						The default map or the map that is currently being worked on. The game needs to be started in 
+						<Exult/> to see the other maps.</li>
 				</ul>
 			</body>
 		</sub>
@@ -679,18 +695,18 @@
 			<body>
 				<ul>
 					<li><strong>Play</strong><br/>
-					This is the same as pressing <key>Alt+Ctrl+M</key> in Exult. It exits the Map Edit Mode
-					and lets you play the game. By pressing it again you enter Map Edit Mode again.</li>
+						This is the same as pressing <key>Alt+Ctrl+M</key> in Exult. It exits the Map Edit Mode
+						and lets you play the game. By pressing it again you enter Map Edit Mode again.</li>
 					<li><strong>Grid</strong><br/>
-					Shows a grid of white lines in the game window for better control on placing objects.</li>
+						Shows a grid of white lines in the game window for better control on placing objects.</li>
 					<li><strong>Edit lift:</strong><br/>
-					Changes the lift of a selected object in the game window. Lift means the distance of
-					an object from the ground.</li>
+						Changes the lift of a selected object in the game window. Lift means the distance of
+						an object from the ground.</li>
 					<li><strong>Hide lift:</strong><br/>
-					Hides objects that are above the chosen height.</li>
+						Hides objects that are above the chosen height.</li>
 					<li><strong>Edit terrain</strong><br/>
-					See <ref1 target="can_do_atm"/>. Note that a terrain is used in multiple instances of the
-					map and changing it in one place changes it in all the others as well.</li>
+						See <ref1 target="can_do_atm"/>. Note that a terrain is used in multiple instances of the
+						map and changing it in one place changes it in all the others as well.</li>
 				</ul>
 			</body>
 		</sub>
@@ -704,8 +720,6 @@
 					get some options of how to edit the shapes.
 				</para>
 				<ul>
-					<li><strong>Add to group...</strong><br/>
-						If you set up groups you can add shapes to them with this.</li>
 					<li><strong>Info...</strong><br/>
 						Displays the information of an object. You can change a lot of stuff there and
 						caution is advised. The information is saved by
@@ -723,8 +737,16 @@
 					<li><strong>New frame</strong>:<br/>
 						Creates a new frame after the currently-selected one. The 'insert' key
 						also does this (and the 'del' key deletes a frame, though it's
-						buggy if there's just one frame left).</li>					
-					<li><strong>Import/Export frame</strong>:<br/>
+						buggy if there's just one frame left).</li>
+					<li><strong>Export/Import frame</strong>:<br/>
+						Let's you import a single frame from a .png file or
+						export to a .png.</li>
+					<li><strong>Export/Import all frames</strong>:<br/>
+						Let's you import all frames from .png files or
+						export to a .png. To import the .png files need to be named with the same basename 
+						followed by the frame number (e.g. shape00.png, shape01.png). On export <Studio/> 
+						will ask you for a basename and folder to export to.</li>
+					<li><strong>Export/Import shape</strong>:<br/>
 						Let's you import a single frame from a .png file or
 						export to a .png.</li>
 					<li><strong>New shape</strong>:<br/>
@@ -771,7 +793,7 @@
 				</para>
 				<para>
 					For an example of how Usecode may look like download our experimental patch for BG at
-					<extref target="http://exult.sourceforge.net/snapshots/patch.zip"/>.<br/>
+					<extref target="http://exult.info/snapshots/patch.zip"/>.<br/>
 					In that zip you'll find a readme.txt which tells you how to run it.<br/>
 					You will also see two files called usecode.uc and usecode.
 				</para>
@@ -789,7 +811,7 @@
 					Pertex has written some documentation at 
 					<extref target="http://web.archive.org/web/20071217233843/http://www.sophen.de/exult/"/> 
 					(unfortunately Pertex original documentation has vanished but at least the wayback machine
-					 can be of great help)
+					can be of great help)
 					that might be able help you.
 				</para>
 			</body>
@@ -825,7 +847,10 @@
 					<li><strong>Jukebox</strong><br/>
 						sets the background music when the character enters a certain area.</li>
 					<li><strong>Sound Effect</strong> and <strong>Voice</strong><br/>
-						will play a selected sound or voice when the character meets the required values
+						will play a selected sound when the character meets the required values
+						set in the egg creation menu.</li>
+					<li><strong>Voice</strong> and <strong>Voice</strong><br/>
+						will play a speech track when the character meets the required values
 						set in the egg creation menu.</li>
 					<li><strong>Usecode</strong><br/>
 						allows for the activation of custom usecode when an egg's requirements are met.
@@ -903,17 +928,16 @@
 						<strong>Something on</strong> - This egg is activated whenever an object is placed 
 						<strong>AND</strong> removed within the area specified by an egg.<br/>
 						<strong>External</strong> - Eggs set to the external characteristic will be activated
-						by button eggs in the vicinity.
-						</li>
+						by button eggs in the vicinity.</li>
 					<li><strong>Flag</strong><br/>
 						final attribute you can give an egg to determine whether it will be activated or not.
 						As a note you can mix and match flags, you can set an egg to nocturnal once only or
 						nocturnal auto-reset.Not that an egg will be reactivated after you walk about a 
 						screenful away and then return if the the flags "once-only" or "auto-reset" are not 
 						set.<br/>
-					 	<strong>Nocturnal</strong> - Any egg with this setting will only be activated during
-					 	the nighttime. Great for setting the spawning of creatures of the night, or giving
-					 	some nice night time music.<br/>
+						<strong>Nocturnal</strong> - Any egg with this setting will only be activated during
+						the nighttime. Great for setting the spawning of creatures of the night, or giving
+						some nice night time music.<br/>
 						<strong>Hatched</strong> - This creates an egg that has already been activated. It
 						is inactive and will not do anything.<br/>
 						<strong>Once-Only</strong> - Any egg with this flag applied will only hatch once and
@@ -935,24 +959,31 @@
 					isn't overly important when placing a monster, but for placing an object it can be very
 					important. Enter these attributes into their respective form. You next have to set the
 					monster's schedule. The various schedules that are important for a monster spawn are
-					discussed next. You also have to set the spawned monster's alignment.<br/>
-					Any creature set to a neutral alignment will ignore the Avatar and friends, following their
-					schedule until attacked. Any creature set to hostile will immediately attack the Avatar if
-					you get too close. Using the friendly alignment naturally evil creatures such as ethereal
-					monsters will still attack, but good or neutral characters such as stone golems will continue
-					out their assigned schedule if given the friendly alignment.<br/>
-					As a final monster spawn option, you can set the number of creatures you want to appear using
-					the count option. You can set anywhere from 1 to 31 monsters. When you're finished setting
-					the egg how you want, simply press "Apply" and place the egg on the world map.<br/>
+					discussed next.<br/> 
+					You also have to set the spawned monster's alignment.
+					Any creature set to a <strong>Neutral</strong> alignment will ignore the Avatar and friends, 
+					following their schedule until attacked. Any creature set to <strong>Evil</strong> will 
+					immediately attack the Avatar if you get too close. A <strong>Good</strong> creature will 
+					help the avatar in fights, but will also attack the Avatar if he is caught stealing or 
+					killing "good" NPCs. It will also attack evil Monsters or NPCs regardless of the Avatar. 
+					And finally <strong>Chaotic</strong> creatures or monsters will attack anyone, regardless 
+					of their alignement<br/>
+					Next you can set the number of creatures you want to appear using the count option. You 
+					can set anywhere from 1 to 31 monsters.<br/>
+					Finally you can assign a Usecode number or name to the spawned monster (leave this blank if 
+					you don't want to set one).<br/>
+					When you're finished setting the egg the way you want, simply press "Apply" and place the 
+					egg on the world map.<br/>
 					<img alt="Exult Egg window" src="images/studio03.png"/><br/>
 				</para>
 			</body>
 		</sub>
 		<sub name="creature_schedules">
-			<header>Schedules of Creatures</header>
+			<header>Schedules of Monsters and Creatures</header>
 			<body>
 				<para>
-					When setting a monster spawn you will most like want to use one of the following schedules.
+					You can have the full set of schedules that NPCs can have but for a spawned  monster you will 
+					most like want to use one of the following schedules.<br/>
 				</para>
 				<ul>
 					<li><strong>Horiz. Pace</strong><br/>
@@ -1172,7 +1203,10 @@
 					<li><strong>NPC #</strong><br/>
 						This cannot be changed.</li>
 					<li><strong>Ident</strong><br/>
-						I (Dominus) have no idea what this means.</li>
+						This is a number used in usecode in SI to differentiate between different NPC possibilities.
+						It can be used to decide which set of conversation options some party members have, as well 
+						as making some ¨monster¨ NPCs have a more persistent identity despite not having a set NPC 
+						number</li>
 					<li><strong>Shape #</strong><br/>
 						Either drag and drop a shape from shapes.vga into the line (or the black box to the 
 						right of it) or enter a shape number.</li>
@@ -1180,14 +1214,17 @@
 						The frame of the above given shape the NPC starts with.</li>
 					<li><strong>Alignment</strong><br/>
 						Any NPC set to a neutral alignment will ignore the Avatar and friends, following their
-						schedule until attacked. Any NPC set to hostile will immediately be attacked by the Avatar
-						when you go into combat mode. Some NPCs will not talk to you or will even attack you on sight 
-						when set to hostile.</li>
+						schedule until attacked. A "good" NPC will help the avatar in fights, but will also attack 
+						the Avatar if he is caught stealing or killing "good" NPCs. It will also attack evil Monsters 
+						or NPCs regardless of the Avatar.<br/>
+						Any NPC set to hostile will immediately be attacked by the Avatar when you go into combat mode. 
+						Some NPCs will not talk to you or will even attack you on sight when set to hostile.<br/>
+					</li>
 					<li><strong>Attack Mode</strong><br/>
 						You can choose the mode in which the NPC attacks when it goes into combat. Choose
-						between Nearest, Weakest, Strongest, Berserk, Protect, Defend, Flank, Flee Random 
-						and Manual. I don't advice using Manual as for most NPCs you will not be able to
-						actually change the attack mode manually.</li>					
+						between Nearest, Weakest, Strongest, Berserk, Protect, Defend, Flank, Flee, Random 
+						and Manual. We don't advice using Manual as for most NPCs you will not be able to
+						actually change the attack mode manually.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1215,7 +1252,7 @@
 					<li><strong>Experience</strong></li>
 					<li><strong>Food Level</strong><br/>
 						How hungry is the NPC. Only relevant for party members. Normal NPCs don't starve 
-						and need to be fed.</li>					
+						and need to be fed.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1232,6 +1269,7 @@
 					<li><strong>Confused</strong></li>
 					<li><strong>Dancing</strong></li>
 					<li><strong>Fly</strong></li>
+					<li><strong>In motion</strong></li>
 					<li><strong>Invisible</strong></li>
 					<li><strong>No Magic</strong></li>
 					<li><strong>Petra</strong></li>
@@ -1239,19 +1277,22 @@
 						When you cast the protection spell on an NPC this flag gets set.</li>
 					<li><strong>Swim</strong><br/>
 						Allows an NPC to walk on water.</li>
-					<li><strong>Tremor</strong></li>
+					<li><strong>Might</strong><br/></li>
 					<li><strong>Bleeding</strong><br/>
 						The NPC looses blood, and leaves a trail of blood when he moves.</li>
 					<li><strong>Conjured</strong></li>
-					<li><strong>Don't move</strong><br/>
-						Causes an NPC to become invisible</li>
+					<li><strong>Don't render (BG) - Don't move (SI)</strong><br/>
+						Causes an NPC to become invisible or can't move</li>
 					<li><strong>Freeze</strong><br/>
 						The NPC is cold and needs warmer clothing.</li>
 					<li><strong>In party</strong><br/>
 						The NPC is a member of the party.</li>
 					<li><strong>Met</strong><br/>
 						The Avatar has previously spoken to the NPC.</li>
+					<li><strong>Don't move (BG) - Don't render (SI)</strong><br/>
+						Causes an NPC to become invisible or can't move</li>
 					<li><strong>Poisoned</strong></li>
+					<li><strong>Female</strong></li>
 					<li><strong>Tattooed</strong></li>
 					<li><strong>Walk</strong><br/>
 						An NPC without this flag set cannot move</li>
@@ -1261,13 +1302,16 @@
 						This makes it possible for the NPC to behave like a ghost 
 						(walk through walls, walk on water...)</li>
 					<li><strong>In action</strong></li>
+					<li><strong>Read</strong><br/>
+					This NPC can read runic or ophidian (useful for the Avatar so 
+					signs can be read directly)</li>
 					<li><strong>Naked</strong></li>
 					<li><strong>Paralyzed</strong></li>
 					<li><strong>Polymorph</strong></li>
 					<li><strong>Summoned</strong></li>
 					<li><strong>Tournament</strong><br/>
 						In combat this NPC is unable to die.</li>
-					<li><strong>Zombie</strong></li>					
+					<li><strong>Zombie</strong></li>
 				</ul>
 			</body>
 		</sub>
@@ -1279,19 +1323,19 @@
 				</para>
 				<ul>
 					<li><strong>Activity</strong><br/>
-					 	With the button Set you can choose the schedule. Keep in mind that some schedules also 
-					 	require items, e.g. for the Blacksmith activity you need a smithy to work in. If there
-					 	is no such item near the location you set, the NPC will use the next near item in the 
-					 	vicinity, for example the sleep activity will have the NPC wander to the next available 
-					 	bed.<br/>
-					 	To clear the activity set it to --None--.</li>
-					 <li><strong>Location</strong><br/>
-					 	Enter the x and y coordinates of the place you want the NPC to follow his schedule at.
-					 	Unfortunately you cannot (yet) set the z coordinate (on which floor of a house the 
-					 	schedule begins). By placing the Avatar at the spot for the scheduled activity and 
-					 	pressing the Game button, <Studio/> will fill out the coordinates.<br/>
-					 	Also by pressing <key>F2</key> at a place, the cheat screen will show you the coordinates 
-					 	in hex and decimal and you can use either system to enter the location.</li>					 	
+						With the button Set you can choose the schedule. Keep in mind that some schedules also 
+						require items, e.g. for the Blacksmith activity you need a smithy to work in. If there
+						is no such item near the location you set, the NPC will use the next near item in the 
+						vicinity, for example the sleep activity will have the NPC wander to the next available 
+						bed.<br/>
+						To clear the activity set it to --None--.</li>
+					<li><strong>Location</strong><br/>
+						Enter the x and y coordinates of the place you want the NPC to follow his schedule at.
+						Unfortunately you cannot (yet) set the z coordinate (on which floor of a house the 
+						schedule begins). By placing the Avatar at the spot for the scheduled activity and 
+						pressing the <strong>Game</strong> button, <Studio/> will fill out the coordinates.<br/>
+						Also by pressing <key>F2</key> at a place, the cheat screen will show you the coordinates 
+						in hex and decimal and you can use either system to enter the location.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1334,10 +1378,12 @@
 				<para>
 					This could not be simpler in <Studio/>. Simply select a shape from the shapes.vga menu and
 					drag it into <Exult/>. In Windows I personally prefer to drag the item onto the taskbar, hovering
-					over the <Exult/> window, wait for the window to switch and then place the item. You will get a
-					green grid that will show you exactly where you can expect the object to show up. Once you
+					over the <Exult/> window, wait for the window to switch and then place the item. Once you
 					found where you would like the object to appear, simply let go of the mouse and the object is
 					placed. If you're unhappy where you placed the object, simply drag and drop it somewhere else.<br/>
+					On Windows you will get a green grid that will show you exactly where you can expect the object 
+					to show up. With the switch to SDL2's dropfile function we lost the green grid on other Operating 
+					Systems.<br/>
 					<img alt="green grid" src="images/studio06.png"/>
 				</para>
 			</body>
@@ -1472,7 +1518,7 @@
 		</sub>
 	</section>
 	<section title="Miscellaneous">
-		<sub name="barge_edit">		
+		<sub name="barge_edit">
 			<header>Creating a boat, flying carpet, or horse drawn carriage</header>
 			<body>
 				<para>
@@ -1481,7 +1527,7 @@
 					the size of a currently existing barge. By increasing the size of the Magic Carpet you can use 
 					the added space to create some sort of a flying battleship. Theoretically the maximum size of a 
 					barge is 100x100, but an object that large will fill the entire screen and become extremely 
-					difficult to steer.  
+					difficult to steer.
 				</para>
 				<para>
 					To create your own barge, you first need to chose Create Barge, select the dimensions of your 
@@ -1555,34 +1601,42 @@
 					tools that might help in editing/making a game.<br/>
 					These can be built from the <Exult/> source or you can download
 					the Windows binary snapshot. The source and binary snapshot can be found at
-					<extref target="http://exult.sourceforge.net/download.php"/>.<br/>
+					<extref target="http://exult.info/download.php"/>.<br/>
 					The tools are:
 				</para>
 				<ul>
+					<li><strong>mockup</strong>:<br/>
+						This is a simple program that converts a 8 bpp indexed file into a u7map based on a colour and u7chunk association.
+						See the
+						<extref target="https://raw.githubusercontent.com/exult/exult/master/mapedit/tools/mockup/README">manual</extref>.</li>
+					<li><strong>smooth</strong>:<br/>
+						More advanced companion of mockup.
+						See the
+						<extref target="https://raw.githubusercontent.com/exult/exult/master/mapedit/tools/smooth/README">manual</extref>.</li>
 					<li><strong>expack</strong>:<br/>
 						lets you extract and create Flex files.
 						See the
-						<extref target="http://exult.sourceforge.net/expack.txt">manual</extref>.</li>
+						<extref target="https://raw.githubusercontent.com/exult/exult/master/tools/expack.txt">manual</extref>.</li>
 					<li><strong>ipack</strong>:<br/>
 						a tool for creating and updating <Exult/> and U7 image archives, such as 'shapes.vga'.
 						See the
-						<extref target="http://exult.sourceforge.net/ipack.txt">manual</extref>.</li>
+						<extref target="https://raw.githubusercontent.com/exult/exult/master/tools/ipack.txt">manual</extref>.</li>
 					<li><strong>shp2pcx</strong>:<br/>
 						converts all frames contained in a Shape file into PCX-format image files.
 						See the
-						<extref target="http://exult.sourceforge.net/shp2pcx.txt">manual</extref>.</li>
+						<extref target="https://raw.githubusercontent.com/exult/exult/master/tools/shp2pcx.txt">manual</extref>.</li>
 					<li><strong>splitshp</strong>:<br/>
 						can be used to combine frames of a Shape file into one file, or split a Shape
 						file into its component frames.
 						See the
-						<extref target="http://exult.sourceforge.net/splitshp.txt">manual</extref>.</li>
+						<extref target="https://raw.githubusercontent.com/exult/exult/master/tools/splitshp.txt">manual</extref>.</li>
 					<li><strong>textpack</strong>:<br/>
 						can be used edit text flex files.
-						See <extref target="http://exult.sourceforge.net/textpack.txt">manual</extref>.</li>
+						See <extref target="https://raw.githubusercontent.com/exult/exult/master/tools/textpack.txt">manual</extref>.</li>
 					<li><strong>ucc</strong>:<br/>
 						can be used to create custom usecode (see <ref target="usecode_edit"/>).<br/>
 						See the
-						<extref target="http://exult.sourceforge.net/ucc.txt">manual</extref>.</li>
+						<extref target="https://raw.githubusercontent.com/exult/exult/master/docs/ucc.txt">manual</extref>.</li>
 					<li><strong>The GIMP Plug-in</strong>:<br/>
 						can be used for editing shapes in the GIMP. Handles multiframe Shape files.
 						See <extref target="http://www.gimp.org"/> for information on the GIMP.</li>
@@ -1601,18 +1655,17 @@
 					it was successfully ported to Windows.
 				</para>
 				<para>
-					A port to other platforms depends on when someone volunteers to do the work :-)
+					A port to other platforms depends on when someone volunteers to do the work.
 					There are three issues:
 				</para>
 				<ul>
-   				<li>GTK has to be ported to the platform.</li>
-   				<li><Studio/> uses sockets to communicate with <Exult/>.</li>
-   				<li>X drag-n-drop is used to put new objects on the landscape. The
-					'drop' part of this had to be rewritten for Windows <Exult/>, OR,
-					drag-n-drop could be an enhancement to SDL someday.<br/>
-					As an alternative to dragging objects, you can now select a shape,
-					then insert it into the game window by left-clicking while holding the
-					Shift key down.</li>
+					<li>GTK+3 has to be ported to the platform.</li>
+					<li><Studio/> uses sockets to communicate with <Exult/>.</li>
+					<li>Recently we switched from using X drag'n'drop to SDL2's DropFile. For Windows 
+						<Exult/> we are still using our own code.<br/>
+						As an alternative to dragging objects, you can now select a shape,
+						then insert it into the game window by left-clicking while holding the
+						Shift key down.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1639,7 +1692,7 @@
 		</sub>
 		<sub name="terrain_stuff">
 			<header>About this 'terrain-editing' stuff and why you can't just
-  					drag objects to where you want.</header>
+				drag objects to where you want.</header>
 			<body>
 				<para>
 					This confused me too, and I originally planned on doing away with it.
@@ -1663,10 +1716,10 @@
 				</para>
 				<ol>
 					<li>The 'terrain' (flat landscape, rocks, shrubs, and first-story
-    					buildings) specified in 'u7chunks' and 'u7map'.</li>
-    				<li>Other non-moveable objects (second-floor structures, trees) specified in
-    					the 'ifixnn' files.</li>
-    				<li>Moveable and changeable objects specified in the 'iregnn' files.</li>
+						buildings) specified in 'u7chunks' and 'u7map'.</li>
+					<li>Other non-moveable objects (second-floor structures, trees) specified in
+						the 'ifixnn' files.</li>
+					<li>Moveable and changeable objects specified in the 'iregnn' files.</li>
 				</ol>
 				<para>
 					The challenge of writing a map-editor is keeping the above straight,
@@ -1674,8 +1727,9 @@
 					working now :-)
 				</para>
 				<para>
-					For a more detailed explanation, see Gary Thompson's paper,
-					'u7edit.txt' in our 'docs' folder.
+					For a more detailed explanation, see Gary Thompson's paper, 
+					<extref target="https://raw.githubusercontent.com/exult/exult/master/docs/u7edit.txt">u7edit.txt</extref>, 
+					in our 'docs' folder.
 				</para>
 			</body>
 		</sub>
@@ -1701,56 +1755,51 @@
 					The next things to be implemented are:
 				</para>
 				<ul>
-				<li><Studio/> needs to be able to automatically create palettes 1-n from palette 0
-					using the code from ipack.</li>
-				<li>It will also be very nice to have a Usecode debugger someday as well
-					(Willem is actually working on it).</li>
-   				<li>A 'flags' editor for viewing and editing the global Usecode flags by name.</li>
+					<li><Studio/> needs to be able to automatically create palettes 1-n from palette 0
+						using the code from ipack.</li>
+					<li>It will also be very nice to have a Usecode debugger someday as well
+						(Willem is actually working on it).</li>
+					<li>A 'flags' editor for viewing and editing the global Usecode flags by name.</li>
 				</ul>
-			</body>
-		</sub>		
-		<sub name="win32_bugs">
-			<header>Known Bugs with the Windows port</header>
-			<body>
-				<para>
-					<Studio/> runs fine on all versions of Windows, except Windows 95 (and of course 
-					Windows 3.x). However there may still be unexpected crashes. If you can reproduce 
-					a crash, please contact us.
-				</para>
 			</body>
 		</sub>
 		<sub name="linux_bugs">
 			<header>Known Bugs with the Linux port</header>
 			<body>
-				<para>
-					On Linux two issues have surfaced:
-				</para>
 				<ul>
-					<li>on case sensitive OS the static folder of the games need to be lower case 
-						or <Studio/> won't find the files in it.</li>
 					<li>when you load games or mods with more than one map, <Studio/> has problems 
-					creating and saving the extra maps.</li>
+						creating and saving the extra maps. This may no longer be an issue.</li>
 				</ul>
 			</body>
 		</sub>
 	</section>
-  	<section title="Credits">
+	<section title="Credits">
 		<sub name="thanks">
 			<header>Thanks</header>
 			<body>
 				<ul>
 					<li>Colourless, Kirben and Mark Siewart invested a lot of effort to port
-					<Studio/> to Windows.</li>
+						<Studio/> to Windows.</li>
 				</ul>
 			</body>
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
+		<sub name="20022021">
+			<header>- 20 February 2021</header>
+			<body>
+				<ul>
+					<li>Changed links to our homepage to exult.info, SDL to SDL2, Mac OS X to macOS.</li>
+					<li>Updated all the menus and editors descriptions.</li>
+					<li>Many little changes to wordings and indentation.</li>
+				</ul>
+			</body>
+		</sub>
 		<sub name="13032016">
 			<header>- 13 March 2016</header>
 			<body>
 				<ul>
-				<li><ref1 target="run_steps"/> GIT vs SVN.</li>
+					<li><ref1 target="run_steps"/> GIT vs SVN.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1758,7 +1807,7 @@
 			<header>- 21 November 2013</header>
 			<body>
 				<ul>
-				<li><ref1 target="ifix_iregs"/> finally added Crowley's ifix/ireg chart.</li>
+					<li><ref1 target="ifix_iregs"/> finally added Crowley's ifix/ireg chart.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1766,8 +1815,8 @@
 			<header>- 19 February 2011</header>
 			<body>
 				<ul>
-				<li><ref1 target="command_line"/> added -c -m, added space between -x -g, 
-				even though it works without space as well.</li>
+					<li><ref1 target="command_line"/> added -c -m, added space between -x -g, 
+					even though it works without space as well.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1775,8 +1824,8 @@
 			<header>- 23 January 2011</header>
 			<body>
 				<ul>
-				<li><section_ref target="Changes to the Documentation"/> moved to the bottom.</li>
-				<li><ref1 target="command_line"/> added portable option.</li>
+					<li><section_ref target="Changes to the Documentation"/> moved to the bottom.</li>
+					<li><ref1 target="command_line"/> added portable option.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1784,8 +1833,8 @@
 			<header>- 18 December 2010</header>
 			<body>
 				<ul>
-				<li><ref1 target="usecode_edit"/> added intriniscs docs from TFL and fixed the link to Pertex' site.</li>
-				<li><ref1 target="linux_bugs"/> the patch folder NEEDS to be writeable.</li>
+					<li><ref1 target="usecode_edit"/> added intriniscs docs from TFL and fixed the link to Pertex' site.</li>
+					<li><ref1 target="linux_bugs"/> the patch folder NEEDS to be writeable.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1793,9 +1842,9 @@
 			<header>- 11 March 2010</header>
 			<body>
 				<ul>
-				<li><ref1 target="installation"/> added Vista/W7 to the Windows list, Windows 95 is not supported.</li>
-				<li><ref1 target="can_do_atm"/> the patch folder NEEDS to be writeable.</li>
-				<li><ref1 target="win32_bugs"/> Windows 95 is not supported.</li>
+					<li><ref1 target="installation"/> added Vista/W7 to the Windows list, Windows 95 is not supported.</li>
+					<li><ref1 target="can_do_atm"/> the patch folder NEEDS to be writeable.</li>
+					<li><ref1 target="win32_bugs"/> Windows 95 is not supported.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1803,14 +1852,14 @@
 			<header>- 01 March 2005</header>
 			<body>
 				<ul>
-				<li><ref1 target="edit_menu"/> Create Barg added.</li>
-				<li><ref1 target="map_menu"/> added this menu option.</li>
-				<li><ref1 target="eggs_type"/> intermap egg added.</li>
-				<li><ref1 target="intermap_eggs"/> explains how to use this egg type.</li>
-				<li><ref1 target="multi_map"/> explained.</li>
-				<li><ref1 target="barge_edit"/> added.</li>
-				<li><ref1 target="custom_shapes"/> added.</li>
-				<li><ref1 target="custom_font"/> explained.</li>
+					<li><ref1 target="edit_menu"/> Create Barg added.</li>
+					<li><ref1 target="map_menu"/> added this menu option.</li>
+					<li><ref1 target="eggs_type"/> intermap egg added.</li>
+					<li><ref1 target="intermap_eggs"/> explains how to use this egg type.</li>
+					<li><ref1 target="multi_map"/> explained.</li>
+					<li><ref1 target="barge_edit"/> added.</li>
+					<li><ref1 target="custom_shapes"/> added.</li>
+					<li><ref1 target="custom_font"/> explained.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1818,11 +1867,11 @@
 			<header>- 23 May 2004</header>
 			<body>
 				<ul>
-				<li><ref1 target="palettes_files"/> palette files are compatible with the Gimp.</li>
-				<li><ref1 target="edit_menu"/> note about map-editing operations.</li>
-				<li><ref1 target="eggs_properties"/> some more infos.</li>
-				<li><ref1 target="creature_schedules"/> more on the patrol schedule.</li>
-				<li><ref1 target="npc_flags"/> removed some unused flags.</li>
+					<li><ref1 target="palettes_files"/> palette files are compatible with the Gimp.</li>
+					<li><ref1 target="edit_menu"/> note about map-editing operations.</li>
+					<li><ref1 target="eggs_properties"/> some more infos.</li>
+					<li><ref1 target="creature_schedules"/> more on the patrol schedule.</li>
+					<li><ref1 target="npc_flags"/> removed some unused flags.</li>
 				</ul>
 			</body>
 		</sub>
@@ -1830,11 +1879,11 @@
 			<header>- 06 February 2004</header>
 			<body>
 				<ul>
-				<li><ref1 target="studio_terms"/> some corrections by Willem.</li>
-				<li><ref1 target="run_steps"/> some corrections.</li>
-				<li><ref1 target="studio_run"/> some corrections.</li>
-				<li><ref1 target="map_files"/> More right click options.</li>
-				<li><section_ref target="NPC editing"/> finally took on that task.</li>
+					<li><ref1 target="studio_terms"/> some corrections by Willem.</li>
+					<li><ref1 target="run_steps"/> some corrections.</li>
+					<li><ref1 target="studio_run"/> some corrections.</li>
+					<li><ref1 target="map_files"/> More right click options.</li>
+					<li><section_ref target="NPC editing"/> finally took on that task.</li>
 				</ul>
 			</body>
 		</sub>
