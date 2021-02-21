@@ -14,9 +14,9 @@ jobs:
         with:
           msystem: MINGW64
           install:
-            base-devel git mingw-w64-x86_64-toolchain mingw-w64-x86_64-binutils mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 \
-            mingw-w64-x86_64-fluidsynth mingw-w64-x86_64-libogg mingw-w64-x86_64-libvorbis mingw-w64-x86_64-munt-mt32emu \
-            mingw-w64-x86_64-zlib mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-gtk3 mingw-w64-x86_64-adwaita-icon-theme \
+            base-devel git mingw-w64-x86_64-toolchain mingw-w64-x86_64-binutils mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2
+            mingw-w64-x86_64-fluidsynth mingw-w64-x86_64-libogg mingw-w64-x86_64-libvorbis mingw-w64-x86_64-munt-mt32emu
+            mingw-w64-x86_64-zlib mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-gtk3 mingw-w64-x86_64-adwaita-icon-theme
             mingw-w64-x86_64-libxml2 mingw-w64-x86_64-freetype mingw-w64-x86_64-gtk2 mingw-w64-x86_64-gimp
       - name: Checkout code
         uses: actions/checkout@master

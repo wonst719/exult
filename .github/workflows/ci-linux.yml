@@ -2,10 +2,6 @@ name: ci-linux
 
 on: [push, pull_request]
 
-env:
-  OVERRIDE_CC: ${{ matrix.cc }}
-  OVERRIDE_CXX: ${{ matrix.cxx }}
-
 jobs:
   ci-linux:
     runs-on: ubuntu-latest
@@ -33,6 +29,9 @@ jobs:
           chmod a+x ./autogen.sh
           ./autogen.sh
       - name: Configure
+        env:
+          OVERRIDE_CC: ${{ matrix.cc }}
+          OVERRIDE_CXX: ${{ matrix.cxx }}
         run: |
           ./configure --with-debug=extreme --enable-exult-studio --enable-exult-studio-support --enable-compiler --enable-gimp-plugin \
             --enable-zip-support --enable-shared --enable-midi-sfx --enable-gnome-shp-thumbnailer --enable-data --enable-mods \

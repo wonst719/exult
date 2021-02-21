@@ -8,8 +8,8 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
+          brew install automake hg libtool pkg-config libpng zlib libogg libvorbis freetype gtk+3 libxml2 bison flex
           brew install sdl2 --head
-          brew install automake libtool pkg-config libpng zlib libogg libvorbis freetype gtk+3 libxml2 bison flex
       - name: Checkout code
         uses: actions/checkout@master
       - name: Run autogen

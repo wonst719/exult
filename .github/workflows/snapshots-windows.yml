@@ -27,9 +27,9 @@ jobs:
         with:
           msystem: MINGW32
           install:
-            base-devel git p7zip mingw-w64-i686-toolchain mingw-w64-i686-binutils mingw-w64-i686-ntldd mingw-w64-i686-SDL2 \
-            mingw-w64-i686-fluidsynth mingw-w64-i686-libogg mingw-w64-i686-libvorbis mingw-w64-i686-munt-mt32emu \
-            mingw-w64-i686-zlib mingw-w64-i686-SDL2_image mingw-w64-i686-gtk3 mingw-w64-i686-adwaita-icon-theme \
+            base-devel git p7zip mingw-w64-i686-toolchain mingw-w64-i686-binutils mingw-w64-i686-ntldd mingw-w64-i686-SDL2
+            mingw-w64-i686-fluidsynth mingw-w64-i686-libogg mingw-w64-i686-libvorbis mingw-w64-i686-munt-mt32emu
+            mingw-w64-i686-zlib mingw-w64-i686-SDL2_image mingw-w64-i686-gtk3 mingw-w64-i686-adwaita-icon-theme
             mingw-w64-i686-libxml2 mingw-w64-i686-freetype mingw-w64-i686-gtk2 mingw-w64-i686-gimp
       - name: Checkout code
         if: env.EXULT_REPO_ALIVE == 'true'
