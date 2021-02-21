@@ -18,6 +18,8 @@ endif
 
 u7shp_SOURCES = u7shp.cc
 
+u7shp_CFLAGS = -I$(srcdir)/../shapes -I$(srcdir)/../imagewin -I$(srcdir)/../files $(DEBUG_FLAGS) $(CPPFLAGS)
+
 u7shp_LDADD = \
 	../imagewin/libimagewin.la	\
 	../shapes/libshapes.la \
@@ -89,7 +91,7 @@ mapedit_DATA =
 endif
 
 u7shp$(EXEEXT): u7shp.cc $(top_builddir)/config.h
-	CXXFLAGS="-O2 -I$(top_srcdir) -DHAVE_CONFIG_H" $(GIMPTOOL) --build $<
+	CPPFLAGS="$(u7shp_CFLAGS)" CXXFLAGS="-O2 -I$(top_srcdir) -DHAVE_CONFIG_H" $(GIMPTOOL) --build $<
 
 EXTRA_DIST=	\
 	exult_studio.glade \

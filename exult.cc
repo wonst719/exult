@@ -1721,6 +1721,7 @@ static void Handle_event(
 			if (combo_cnt >= 0 && combo) {
 				Drop_dragged_combo(combo_cnt, combo, x, y, nullptr);
 			}
+			delete[] combo;
 		}
 #ifdef DEBUG
 		cout << "(EXULT) SDL_DROPFILE Event complete" << endl;

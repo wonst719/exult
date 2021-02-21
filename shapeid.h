@@ -204,13 +204,18 @@ public:
 		return shapefile;
 	}
 	inline Shape_frame *get_shape() const {
-		return (shape != nullptr) ? shape : cache_shape();
+		if (shape == nullptr) {
+			cache_shape();
+		}
+		return shape;
 	}
 	inline void set_translucent(bool trans) {
 		has_trans = trans;
 	}
 	inline bool is_translucent() const {
-		if (shape == nullptr) cache_shape();
+		if (shape == nullptr) {
+			cache_shape();
+		}
 		return has_trans;
 	}
 	// Set to given shape.

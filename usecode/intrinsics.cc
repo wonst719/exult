@@ -3432,7 +3432,8 @@ USECODE_INTRINSIC(create_barge_object) {
 	auto b = std::make_shared<Barge_object>(961, 0, 0, 0, 0,
 	                                   parms[0].get_int_value(), parms[1].get_int_value(),
 	                                   num_parms >= 3 ? ((parms[2].get_int_value() >> 1) & 3) : 0);
-
+	if (!b)
+		return Usecode_value(0);
 	b->set_invalid();       // Not in world yet.
 	b->set_flag(Obj_flags::okay_to_take);
 	last_created.push_back(b);

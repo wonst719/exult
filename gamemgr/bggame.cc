@@ -16,56 +16,56 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "exult_constants.h"
-#include "fnames.h"
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
+
+#include "bggame.h"
+
+#include "Audio.h"
+#include "AudioMixer.h"
+#include "Configuration.h"
+#include "array_size.h"
+#include "data/bg/introsfx_mt32_flx.h"
+#include "data/exult_bg_flx.h"
+#include "databuf.h"
+#include "exult.h"
+#include "exult_constants.h"
+#include "files/U7file.h"
+#include "files/utils.h"
+#include "flic/playfli.h"
+#include "fnames.h"
+#include "font.h"
+#include "gamewin.h"
+#include "gump_utils.h"
+#include "imagewin/ArbScaler.h"
+#include "imagewin/imagewin.h"
+#include "items.h"
+#include "mappatch.h"
+#include "miscinf.h"
+#include "modmgr.h"
+#include "palette.h"
+#include "shapeid.h"
+#include "sigame.h"
+#include "touchui.h"
+#include "txtscroll.h"
 
 #include <SDL.h>
 #include <SDL_events.h>
 
-#include <typeinfo>
-#include <vector>
-#include <utility>
-#include <string>
-#include "array_size.h"
-#include "items.h"
-#include "files/U7file.h"
-#include "files/utils.h"
-#include "flic/playfli.h"
-#include "gamewin.h"
-#include "Audio.h"
-#include "bggame.h"
-#include "sigame.h"
-#include "palette.h"
-#include "databuf.h"
-#include "font.h"
-#include "txtscroll.h"
-#include "data/exult_bg_flx.h"
-#include "data/bg/introsfx_mt32_flx.h"
-#include "exult.h"
-#include "Configuration.h"
-#include "shapeid.h"
-#include "modmgr.h"
-#include "miscinf.h"
-#include "gump_utils.h"
-#include "AudioMixer.h"
-#include "mappatch.h"
-#include "touchui.h"
-
-#include "imagewin/imagewin.h"
-#include "imagewin/ArbScaler.h"
-
 #include <cctype>
 #include <cstring>
+#include <string>
+#include <typeinfo>
+#include <utility>
+#include <vector>
 
 using std::abs;
+using std::make_unique;
 using std::rand;
 using std::strchr;
 using std::strlen;
 using std::unique_ptr;
-using std::make_unique;
 
 enum {
     ultima_text_shp = 0x0D,
@@ -1180,8 +1180,10 @@ bool Hand_Handler::draw_frame() {
 			restore_shape_bkgnd(handFrame, handBackup);
 		}
 		handFrame = handshp->get_frame(handFrNum);
-		backup_shape_bkgnd(handFrame, handBackup);
-		sman->paint_shape(centerx - 167, centery + 78, handFrame);
+		if (handFrame) {
+			backup_shape_bkgnd(handFrame, handBackup);
+			sman->paint_shape(centerx - 167, centery + 78, handFrame);
+		}
 	}
 	// Lets now handle backgrounds.
 	switch (currOp) {
