@@ -174,7 +174,7 @@ Run Exult.exe and enjoy the game :-)
         gmodule/.libs/libgmodule-2.0-0.dll
         gobject/.libs/libgobject-2.0-0.dll
 
-    For Eult Studio, we will need to do a few more things. First, we need a
+    For Exult Studio, we will need to do a few more things. First, we need a
     version of libHarfBuzz without DWRITE support. Here is how to build it:
         wget https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-2.1.3.tar.bz2
         tar -xf harfbuzz-2.1.3.tar.bz2

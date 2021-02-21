@@ -1,11 +1,26 @@
+# Badges
+
+[![Chat on IRC](https://img.shields.io/badge/irc.freenode.net-%23exult-blue?logo=LiveChat&logoColor=white)](https://webchat.freenode.net/#exult)
+
 [![GitHub](https://img.shields.io/github/license/exult/exult?label=License&logo=GNU)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![Travis (.com)](https://img.shields.io/travis/com/exult/exult?label=Travis%20CI%20Build&logo=Travis%20CI&logoColor=white)](https://www.travis-ci.com/exult/exult)
-[![Coverity Scan](https://scan.coverity.com/projects/10872/badge.svg)](https://scan.coverity.com/projects/exult-exult)
+
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/exult/exult?label=codefactor&logo=codefactor&logoColor=white)](https://www.codefactor.io/repository/github/exult/exult)
 [![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/exult/exult?logo=LGTM)](https://lgtm.com/projects/g/exult/exult/alerts/)
 [![LGTM Grade](https://img.shields.io/lgtm/grade/cpp/github/exult/exult?logo=LGTM)](https://lgtm.com/projects/g/exult/exult/context:cpp)
 
-What is Exult?
+[![Travis (.com)](https://img.shields.io/travis/com/exult/exult?label=Travis%20CI%20Build&logo=Travis%20CI&logoColor=white)](https://www.travis-ci.com/exult/exult)
+
+[![CI Ubuntu](https://img.shields.io/github/workflow/status/exult/exult/ci-linux?label=CI%20Ubuntu&logo=Ubuntu&logoColor=white)](https://github.com/exult/exult/actions?query=workflow%3Aci-linux)
+[![CI Mac OS X](https://img.shields.io/github/workflow/status/exult/exult/ci-windows?label=CI%20Mac%20OS%20X&logo=Apple&logoColor=white)](https://github.com/exult/exult/actions?query=workflow%3Aci-macos)
+[![CI Windows](https://img.shields.io/github/workflow/status/exult/exult/ci-windows?label=CI%20Windows&logo=Windows&logoColor=white)](https://github.com/exult/exult/actions?query=workflow%3Aci-windows)
+
+[![Coverity Scan Analysis](https://img.shields.io/github/workflow/status/exult/exult/ci-windows?label=Coverity%20Scan%20Analysis&logo=data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjU2IDI1MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjYuOTUgMTA5LjA4bC0zLjUyLTkuNDUgMzcuOTYgNzAuODloLjg1bDQ3LjMzLTExOC4xM2MuODMtMi41NiA4LjI2LTIxLjc0IDguNTEtMzAuMi42My0yMS44NC0xNC4xLTIzLjgxLTI5Ljc3LTE5LjM5QzM2Ljg3IDE5LjQ2LS4yNCA2Ny44My4wMSAxMjQuNzhjLjIgNTIuOTcgMzIuNjQgOTguMjQgNzguNjUgMTE3LjM4TDI2Ljk1IDEwOS4wOE0xNzQuMzMgNS40OGMtNi4zMiAxMi43LTEzLjEgMjYuMzctMjEuNjggNDguMDhMNzkuMjIgMjQyLjM5YzE1LjA5IDYuMiAzMS42MyA5LjYgNDguOTYgOS41MiA3MC41LS4yNyAxMjcuNDItNTcuNjcgMTI3LjEzLTEyOC4xOC0uMjItNTMuODMtMzMuNzYtOTkuNy04MC45OC0xMTguMjYiIGZpbGw9IiNmZmYiLz48L3N2Zz4=)](https://github.com/exult/exult/actions?query=workflow%3Acoverity-scan)
+[![Coverity Scan](https://img.shields.io/coverity/scan/10872?label=Coverity%20Scan%20Results&logo=data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjU2IDI1MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjYuOTUgMTA5LjA4bC0zLjUyLTkuNDUgMzcuOTYgNzAuODloLjg1bDQ3LjMzLTExOC4xM2MuODMtMi41NiA4LjI2LTIxLjc0IDguNTEtMzAuMi42My0yMS44NC0xNC4xLTIzLjgxLTI5Ljc3LTE5LjM5QzM2Ljg3IDE5LjQ2LS4yNCA2Ny44My4wMSAxMjQuNzhjLjIgNTIuOTcgMzIuNjQgOTguMjQgNzguNjUgMTE3LjM4TDI2Ljk1IDEwOS4wOE0xNzQuMzMgNS40OGMtNi4zMiAxMi43LTEzLjEgMjYuMzctMjEuNjggNDguMDhMNzkuMjIgMjQyLjM5YzE1LjA5IDYuMiAzMS42MyA5LjYgNDguOTYgOS41MiA3MC41LS4yNyAxMjcuNDItNTcuNjcgMTI3LjEzLTEyOC4xOC0uMjItNTMuODMtMzMuNzYtOTkuNy04MC45OC0xMTguMjYiIGZpbGw9IiNmZmYiLz48L3N2Zz4=)](https://scan.coverity.com/projects/exult-exult)
+
+[![Windows Snapshots](https://img.shields.io/github/workflow/status/exult/exult/snapshots-windows?label=Windows%20Snapshots)](https://github.com/exult/exult/actions?query=workflow%3Asnapshots-windows)
+
+## What is Exult?
+
 ----
 
 Ultima 7, an RPG from the early 1990's, still has a huge following. But, being a DOS game with a very nonstandard memory manager, it is difficult to run it on the latest computers. Exult is a project to create an Ultima 7 game engine that runs on modern operating systems, capable of using the data and graphics files that come with the game.
