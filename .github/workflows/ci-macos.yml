@@ -14,12 +14,14 @@ jobs:
         uses: actions/checkout@master
       - name: Run autogen
         run: |
-          export PATH="/usr/local/bin:$PATH"
           chmod a+x ./autogen.sh
           ./autogen.sh
       - name: Configure
         run: |
-          export PATH="/usr/local/bin:$PATH"
+          export LDFLAGS="-L/usr/local/opt/bison/lib -L/usr/local/opt/flex/lib -L/usr/local/opt/zlib/lib"
+          export CPPFLAGS="-I/usr/local/opt/flex/include -I/usr/local/opt/zlib/include"
+          export PATH="/usr/local/opt/bison/bin:/usr/local/opt/flex/bin:/usr/local/opt/libxml2/bin:$PATH"
+          export PKG_CONFIG_PATH="/usr/local/opt/zlib/lib/pkgconfig:/usr/local/opt/libxml2/lib/pkgconfig"
           ./configure --with-debug=extreme --enable-exult-studio --enable-exult-studio-support --enable-compiler \
             --enable-zip-support --enable-shared --enable-gnome-shp-thumbnailer --enable-data --enable-mods \
             --disable-alsa --disable-fluidsynth --disable-timidity-midi --disable-oggtest --disable-vorbistest
