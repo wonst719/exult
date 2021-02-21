@@ -20,24 +20,16 @@ addons:
     sources: &common_sources
       - ubuntu-toolchain-r-test
     packages: &common_depends
-      - libx11-dev
       - zlib1g-dev
       - libogg-dev
       - libvorbis-dev
       - libasound2-dev
       - libfluidsynth-dev
       - libsdl2-dev
-      - libsdl-ttf2.0-dev
       - libpng-dev
-      - libfreetype6-dev
       - libgtk2.0-dev
       - libgtk-3-dev
-      - libpango1.0-dev
-      - libatk1.0-dev
-      - libcairo2-dev
       - libgdk-pixbuf2.0-dev
-      - libglib2.0-dev
-      - libfontconfig1-dev
       - libfreetype6-dev
       - libxml2-dev
       - bison
