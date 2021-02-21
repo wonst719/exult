@@ -278,3 +278,8 @@ data/u7siintrinsics.data
 exult_studio.exp
 msys2.patch
 
+ios/data
+ios/SDL2
+ios/mt32emu
+ios/libogg
+ios/libvorbis
