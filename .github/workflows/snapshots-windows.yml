@@ -79,8 +79,8 @@ jobs:
           release_name: Snapshot ${{ env.EXULT_SNAPSHOT_VERSION }}
           body: |
             Snapshots for commit SHA1 ${{ github.sha }}
-          draft: false
-          prerelease: true
+          draft: true
+          prerelease: false
       # Theses pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`.
       # See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
       - name: Upload Exult snapshot
@@ -91,7 +91,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/Exultwin32.exe
-          asset_name: Exult snapshot
+          asset_name: Exultwin32.exe
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Exult Studio snapshot
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
@@ -101,7 +101,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/ExultStudio.exe
-          asset_name: Exult Studio snapshot
+          asset_name: ExultStudio.exe
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Tools snapshot
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
@@ -111,7 +111,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/ExultTools.exe
-          asset_name: Tools snapshot
+          asset_name: ExultTools.exe
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Gimp Plugin snapshot
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
@@ -121,7 +121,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/Gimp20Plugin.exe
-          asset_name: Gimp 2.x Plugin snapshot
+          asset_name: Gimp20Plugin.exe
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Keyring snapshot
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
@@ -131,7 +131,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/Keyring.zip
-          asset_name: Keyring snapshot
+          asset_name: Keyring.zip
           asset_content_type: application/zip
       - name: Upload SourceForge Island snapshot
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
@@ -141,7 +141,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/SFisland.zip
-          asset_name: SourceForge Island snapshot
+          asset_name: SFisland.zip
           asset_content_type: application/zip
       - name: Upload SI Fixes snapshot
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
@@ -151,7 +151,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/Sifixes.zip
-          asset_name: Serpent Isle Fixes snapshot
+          asset_name: Sifixes.zip
           asset_content_type: application/zip
       - name: Finish release
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
