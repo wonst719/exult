@@ -3,6 +3,7 @@ name: snapshots-windows
 on:
   schedule:
     - cron: "0 00 * * *" # Daily at 00:00 UTC
+  workflow_dispatch:
 
 jobs:
   snapshot-windows:
@@ -11,18 +12,26 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
+      - name: Setup base msys2 for activity check
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW32
       - name: Activity check
         run: |
           DATEUTC=$(curl -sL https://api.github.com/repos/exult/exult/commits | jq -r '[.[]][0]' | jq -r '.commit.author.date')
           TIMESTAMP=$(date --utc -d "$DATEUTC" +%s)
           DAYS=$(( ($(date --utc +%s) - $TIMESTAMP) / 86400 ))
-          if [ $DAYS -gt 0 ]; then
-            echo ::set-env name=EXULT_REPO_ALIVE::true
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
           else
-            echo ::set-env name=EXULT_REPO_ALIVE::false
+            if [ $DAYS -gt 0 ]; then
+              echo EXULT_REPO_ALIVE=false >> $GITHUB_ENV
+            else
+              echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
+            fi
           fi
       - name: Install dependencies
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW32
@@ -32,10 +41,10 @@ jobs:
             mingw-w64-i686-zlib mingw-w64-i686-SDL2_image mingw-w64-i686-gtk3 mingw-w64-i686-adwaita-icon-theme
             mingw-w64-i686-libxml2 mingw-w64-i686-freetype mingw-w64-i686-gtk2 mingw-w64-i686-gimp
       - name: Checkout code
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/checkout@master
       - name: Build
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           mkdir ~/Exult-dist
           make -j2 -f Makefile.mingw DISTPATH=~/Exult-dist DEBUG=1 USECODE_CONTAINER=1 USECODE_DEBUGGER=1 SHOW_NONREADIED_OBJECTS=1 dist studiodist toolsdist plugindist
@@ -49,7 +58,7 @@ jobs:
           make -j2 -f Makefile.mingw sifixesdir=~/Exult-dist/sifixes install
           popd
       - name: Create installers
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           cd ~/Exult-dist
           "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" Exult/exult_installer.iss
@@ -59,23 +68,24 @@ jobs:
           "/c/Program Files/7-Zip/7z.exe" -tzip a Keyring.zip -mx9 -mmt bgkeyring/*
           "/c/Program Files/7-Zip/7z.exe" -tzip a SFisland.zip -mx9 -mmt islefaq/*
           "/c/Program Files/7-Zip/7z.exe" -tzip a Sifixes.zip -mx9 -mmt sifixes/*
+          echo "EXULT_SNAPSHOT_VERSION=v1.7.0.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
       - name: Create release
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Snapshot ${{ github.ref }}
+          tag_name: snapshot-${{ env.EXULT_SNAPSHOT_VERSION }}
+          release_name: Snapshot ${{ env.EXULT_SNAPSHOT_VERSION }}
           body: |
-            Snapshot for ${{ github.sha }}
+            Snapshots for commit SHA1 ${{ github.sha }}
           draft: false
           prerelease: true
       # Theses pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`.
       # See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
       - name: Upload Exult snapshot
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -85,7 +95,7 @@ jobs:
           asset_name: Exult snapshot
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Exult Studio snapshot
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -95,7 +105,7 @@ jobs:
           asset_name: Exult Studio snapshot
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Tools snapshot
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -105,7 +115,7 @@ jobs:
           asset_name: Tools snapshot
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Gimp Plugin snapshot
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -115,7 +125,7 @@ jobs:
           asset_name: Gimp 2.x Plugin snapshot
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Keyring snapshot
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -125,7 +135,7 @@ jobs:
           asset_name: Keyring snapshot
           asset_content_type: application/zip
       - name: Upload SourceForge Island snapshot
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -135,7 +145,7 @@ jobs:
           asset_name: SourceForge Island snapshot
           asset_content_type: application/zip
       - name: Upload SI Fixes snapshot
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -145,7 +155,7 @@ jobs:
           asset_name: Serpent Isle Fixes snapshot
           asset_content_type: application/zip
       - name: Finish release
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: eregon/publish-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

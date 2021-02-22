@@ -3,6 +3,7 @@ name: coverity-scan
 on:
   schedule:
     - cron: "0 00 * * *" # Daily at 00:00 UTC
+  workflow_dispatch:
 
 env:
   TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
@@ -20,45 +21,49 @@ jobs:
           DATEUTC=$(curl -sL https://api.github.com/repos/exult/exult/commits | jq -r '[.[]][0]' | jq -r '.commit.author.date')
           TIMESTAMP=$(date --utc -d "$DATEUTC" +%s)
           DAYS=$(( ($(date --utc +%s) - $TIMESTAMP) / 86400 ))
-          if [ $DAYS -gt 0 ]; then
-            echo ::set-env name=EXULT_REPO_ALIVE::true
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
           else
-            echo ::set-env name=EXULT_REPO_ALIVE::false
+            if [ $DAYS -gt 0 ]; then
+              echo EXULT_REPO_ALIVE=false >> $GITHUB_ENV
+            else
+              echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
+            fi
           fi
       - name: Install dependencies
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           sudo apt-fast update
           sudo apt-fast install -y \
           zlib1g-dev libogg-dev libvorbis-dev libasound2-dev libfluidsynth-dev libsdl2-dev libpng-dev libfreetype6-dev libgtk2.0-dev libgtk-3-dev \
           libgdk-pixbuf2.0-dev libxml2-dev bison flex timidity libgimp2.0-dev
       - name: Download Coverity Build Tool
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           wget -q https://scan.coverity.com/download/Linux --post-data "token=$TOKEN&project=$PROJ" -O /tmp/cov-analysis-linux64.tar.gz
           mkdir /tmp/cov-analysis-linux64
           tar xzf cov-analysis-linux64.tar.gz --strip 1 -C /tmp/cov-analysis-linux64
       - name: Checkout code
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/checkout@master
       - name: Run autogen
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           chmod a+x ./autogen.sh
           ./autogen.sh
       - name: Configure
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           ./configure --with-debug=extreme --enable-exult-studio --enable-exult-studio-support --enable-compiler --enable-gimp-plugin \
             --enable-zip-support --enable-shared --enable-midi-sfx --enable-gnome-shp-thumbnailer --enable-data --enable-mods \
             --with-usecode-debugger=yes --enable-usecode-container --enable-nonreadied-objects --disable-oggtest --disable-vorbistest
       - name: Build with cov-build
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           export PATH=/tmp/cov-analysis-linux64/bin:$PATH
           cov-build --dir cov-int make -j2
       - name: Submit the result to Coverity Scan
-        if: env.EXULT_REPO_ALIVE == 'true'
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           tar czvf $FILE cov-int
           curl \
