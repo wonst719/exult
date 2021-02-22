@@ -12,13 +12,8 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - name: Setup base msys2 for activity check
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          install:
-            mingw-w64-x86_64-jq
       - name: Activity check
+        shell: bash
         run: |
           DATEUTC=$(curl -sL https://api.github.com/repos/exult/exult/commits | jq -r '[.[]][0]' | jq -r '.commit.author.date')
           TIMESTAMP=$(date --utc -d "$DATEUTC" +%s)
