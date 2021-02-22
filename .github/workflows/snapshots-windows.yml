@@ -91,7 +91,7 @@ jobs:
           analysis="${{ steps.scan_files.outputs.analysis }}"
           while read -d, -r pair; do
             IFS='=' read -r filename analysisURL <<<"$pair"
-            echo "* [$filename]($analysisURL)" >> ${{ env.EXULT_SNAPSHOT_PATH }}/body.txt
+            echo "* [$(basename $filename)]($analysisURL)" >> ${{ env.EXULT_SNAPSHOT_PATH }}/body.txt
           done <<<"$analysis,"
       - name: Create release
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
