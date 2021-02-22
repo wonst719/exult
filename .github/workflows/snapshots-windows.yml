@@ -67,7 +67,7 @@ jobs:
           "/c/Program Files/7-Zip/7z.exe" -tzip a Keyring.zip -mx9 -mmt bgkeyring/*
           "/c/Program Files/7-Zip/7z.exe" -tzip a SFisland.zip -mx9 -mmt islefaq/*
           "/c/Program Files/7-Zip/7z.exe" -tzip a Sifixes.zip -mx9 -mmt sifixes/*
-          echo "EXULT_SNAPSHOT_VERSION=v1.7.0.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
+          echo "GITHUB_REF=v1.7.0.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
       - name: Create release
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         id: create_release
@@ -75,8 +75,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: snapshot-${{ env.EXULT_SNAPSHOT_VERSION }}
-          release_name: Snapshot ${{ env.EXULT_SNAPSHOT_VERSION }}
+          tag_name: snapshot-${{ env.GITHUB_REF }}
+          release_name: Snapshot ${{ env.GITHUB_REF }}
           body: |
             Snapshots for commit SHA1 ${{ github.sha }}
           draft: true
@@ -160,3 +160,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ steps.create_release.outputs.id }}
+      - name: VirusTotal Scan
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
+        uses: crazy-max/ghaction-virustotal@v2
+        with:
+          vt_api_key: ${{ secrets.VT_API_KEY }}
+          github_token: ${{ github.token }}
+          update_release_body: true
+          files: |
+            .exe$
