@@ -42,7 +42,7 @@ jobs:
         run: |
           wget -q https://scan.coverity.com/download/Linux --post-data "token=$TOKEN&project=$PROJ" -O /tmp/cov-analysis-linux64.tar.gz
           mkdir /tmp/cov-analysis-linux64
-          tar xzf cov-analysis-linux64.tar.gz --strip 1 -C /tmp/cov-analysis-linux64
+          tar xzf /tmp/cov-analysis-linux64.tar.gz --strip 1 -C /tmp/cov-analysis-linux64
       - name: Checkout code
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/checkout@master
