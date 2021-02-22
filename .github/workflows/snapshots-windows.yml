@@ -58,9 +58,9 @@ jobs:
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           cd ~/Exult-dist
-          "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" Exult/exult_installer.iss
-          "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" Studio/exult_studio_installer.iss
-          "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" Tools/exult_tools_installer.iss
+          "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_installer.iss
+          "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_studio_installer.iss
+          "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_tools_installer.iss
           "/c/Program Files/7-Zip/7z.exe" a Gimp20Plugin.exe -mx9 -mmt -sfx7z.sfx GimpPlugin
           "/c/Program Files/7-Zip/7z.exe" -tzip a Keyring.zip -mx9 -mmt bgkeyring/*
           "/c/Program Files/7-Zip/7z.exe" -tzip a SFisland.zip -mx9 -mmt islefaq/*
