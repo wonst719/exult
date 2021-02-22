@@ -12,16 +12,12 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - name: Install dependencies
+      - name: Setup base msys2 for activity check
         uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW32
+          msystem: MINGW64
           install:
-            base-devel git p7zip mingw-w64-i686-toolchain mingw-w64-i686-binutils mingw-w64-i686-ntldd mingw-w64-i686-SDL2
-            mingw-w64-i686-fluidsynth mingw-w64-i686-libogg mingw-w64-i686-libvorbis mingw-w64-i686-munt-mt32emu
-            mingw-w64-i686-zlib mingw-w64-i686-SDL2_image mingw-w64-i686-gtk3 mingw-w64-i686-adwaita-icon-theme
-            mingw-w64-i686-libxml2 mingw-w64-i686-freetype mingw-w64-i686-gtk2 mingw-w64-i686-gimp
-            mingw-w64-i686-jq
+            mingw-w64-x86_64-jq
       - name: Activity check
         run: |
           DATEUTC=$(curl -sL https://api.github.com/repos/exult/exult/commits | jq -r '[.[]][0]' | jq -r '.commit.author.date')
@@ -36,6 +32,16 @@ jobs:
               echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
             fi
           fi
+      - name: Install dependencies
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW32
+          install:
+            base-devel git p7zip mingw-w64-i686-toolchain mingw-w64-i686-binutils mingw-w64-i686-ntldd mingw-w64-i686-SDL2
+            mingw-w64-i686-fluidsynth mingw-w64-i686-libogg mingw-w64-i686-libvorbis mingw-w64-i686-munt-mt32emu
+            mingw-w64-i686-zlib mingw-w64-i686-SDL2_image mingw-w64-i686-gtk3 mingw-w64-i686-adwaita-icon-theme
+            mingw-w64-i686-libxml2 mingw-w64-i686-freetype mingw-w64-i686-gtk2 mingw-w64-i686-gimp
       - name: Checkout code
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/checkout@master
