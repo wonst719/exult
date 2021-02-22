@@ -43,21 +43,23 @@ jobs:
       - name: Build
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
-          mkdir ~/Exult-dist
-          make -j2 -f Makefile.mingw DISTPATH=~/Exult-dist DEBUG=1 USECODE_CONTAINER=1 USECODE_DEBUGGER=1 SHOW_NONREADIED_OBJECTS=1 dist studiodist toolsdist plugindist
+          SNAPSHOT_PATH=$(cygpath -m ~/Exult-dist)
+          mkdir -p ${SNAPSHOT_PATH}
+          make -j2 -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} DEBUG=1 USECODE_CONTAINER=1 USECODE_DEBUGGER=1 SHOW_NONREADIED_OBJECTS=1 dist studiodist toolsdist plugindist
           pushd content/bgkeyring
-          make -j2 -f Makefile.mingw bgkeyringdir=~/Exult-dist/bgkeyring install
+          make -j2 -f Makefile.mingw bgkeyringdir=${SNAPSHOT_PATH}/bgkeyring install
           popd
           pushd content/islefaq
-          make -j2 -f Makefile.mingw islefaqdir=~/Exult-dist/islefaq install
+          make -j2 -f Makefile.mingw islefaqdir=${SNAPSHOT_PATH}/islefaq install
           popd
           pushd content/sifixes
-          make -j2 -f Makefile.mingw sifixesdir=~/Exult-dist/sifixes install
+          make -j2 -f Makefile.mingw sifixesdir=${SNAPSHOT_PATH}/sifixes install
           popd
+          echo "EXULT_SNAPSHOT_PATH=${SNAPSHOT_PATH}" >> $GITHUB_ENV
       - name: Create installers
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
-          cd ~/Exult-dist
+          cd ${{ env.EXULT_SNAPSHOT_PATH }}
           "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_installer.iss
           "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_studio_installer.iss
           "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_tools_installer.iss
@@ -88,7 +90,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ~/Exult-dist/Exultwin32.exe
+          asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/Exultwin32.exe
           asset_name: Exult snapshot
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Exult Studio snapshot
@@ -98,7 +100,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ~/Exult-dist/ExultStudio.exe
+          asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/ExultStudio.exe
           asset_name: Exult Studio snapshot
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Tools snapshot
@@ -108,7 +110,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ~/Exult-dist/ExultTools.exe
+          asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/ExultTools.exe
           asset_name: Tools snapshot
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Gimp Plugin snapshot
@@ -118,7 +120,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ~/Exult-dist/Gimp20Plugin.exe
+          asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/Gimp20Plugin.exe
           asset_name: Gimp 2.x Plugin snapshot
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload Keyring snapshot
@@ -128,7 +130,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ~/Exult-dist/Keyring.zip
+          asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/Keyring.zip
           asset_name: Keyring snapshot
           asset_content_type: application/zip
       - name: Upload SourceForge Island snapshot
@@ -138,7 +140,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ~/Exult-dist/SFisland.zip
+          asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/SFisland.zip
           asset_name: SourceForge Island snapshot
           asset_content_type: application/zip
       - name: Upload SI Fixes snapshot
@@ -148,7 +150,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ~/Exult-dist/Sifixes.zip
+          asset_path: ${{ env.EXULT_SNAPSHOT_PATH }}/Sifixes.zip
           asset_name: Serpent Isle Fixes snapshot
           asset_content_type: application/zip
       - name: Finish release
