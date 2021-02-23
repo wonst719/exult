@@ -84,7 +84,7 @@ jobs:
           cd $GITHUB_WORKSPACE/exult-$ARCH
           mkdir -p ${SNAPSHOT_PATH}
           make -j2 -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} dist studiodist toolsdist plugindist
-          for ff in bgkeyring islefaq sifixes
+          for ff in bgkeyring islefaq sifixes; do
             pushd content/${ff}
             make -j2 -f Makefile.mingw ${ff}dir=${SNAPSHOT_PATH}/${ff} install
             popd
