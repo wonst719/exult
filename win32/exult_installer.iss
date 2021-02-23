@@ -14,7 +14,7 @@ DisableDirPage=no
 DefaultDirName={code:GetExultInstDir|{autopf}\Exult}
 DisableProgramGroupPage=no
 DefaultGroupName={code:GetExultGroupDir|Exult}
-OutputBaseFilename=Exultwin32
+OutputBaseFilename=Exult
 Compression=lzma
 SolidCompression=yes
 InternalCompressLevel=max
@@ -38,38 +38,39 @@ Name: Paths; Description: Setup Game Paths; Types: full compact custom pathsonly
 Name: Icons; Description: Create Start Menu Icons; Types: full compact
 
 [Files]
-Source: Exult\Exult.exe; DestDir: {app}; Flags: ignoreversion; Components: Exult
-
-Source: Exult\COPYING.txt; DestDir: {app}; Flags: ignoreversion; Components: GPL
-
-Source: Exult\*.dll; DestDir: {app};  Flags: ignoreversion; Components: Exult
-Source: Exult\README-SDL.txt; DestDir: {app}; Flags: ignoreversion; Components: Exult
-
-Source: Exult\AUTHORS.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
-Source: Exult\bgdefaultkeys.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
-Source: Exult\ChangeLog.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
-Source: Exult\faq.html; DestDir: {app}; Flags: ignoreversion; Components: Docs
-Source: Exult\FAQ.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
-Source: Exult\NEWS.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
-Source: Exult\ReadMe.html; DestDir: {app}; Flags: ignoreversion isreadme; Components: Docs
-Source: Exult\README.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
-Source: Exult\README.win32.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
-Source: Exult\sidefaultkeys.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
-Source: Exult\images\back.gif; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult\images\docs01.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult\images\docs02.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult\images\docs03.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult\images\docs04.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult\images\docs05.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult\images\docs06.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult\images\exult_logo.gif; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-
-Source: Exult\Data\exult.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult
-Source: Exult\Data\exult_bg.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult
-Source: Exult\Data\exult_si.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult
-
-Source: exconfig.dll; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+; 32-bit files
+Source: Exult-i686\Exult.exe; DestDir: {app}; Flags: ignoreversion; Components: Exult; Check: not Is64BitInstallMode
+Source: Exult-i686\*.dll; DestDir: {app};  Flags: ignoreversion; Components: Exult; Check: not Is64BitInstallMode
+; 64-bit files
+Source: Exult-x86_64\Exult.exe; DestDir: {app}; Flags: ignoreversion; Components: Exult; Check: Is64BitInstallMode
+Source: Exult-x86_64\*.dll; DestDir: {app};  Flags: ignoreversion; Components: Exult; Check: Is64BitInstallMode
+; Architecture-neutral files
+Source: Exult-i686\COPYING.txt; DestDir: {app}; Flags: ignoreversion; Components: GPL
+Source: Exult-i686\README-SDL.txt; DestDir: {app}; Flags: ignoreversion; Components: Exult
+Source: Exult-i686\AUTHORS.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
+Source: Exult-i686\bgdefaultkeys.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
+Source: Exult-i686\ChangeLog.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
+Source: Exult-i686\faq.html; DestDir: {app}; Flags: ignoreversion; Components: Docs
+Source: Exult-i686\FAQ.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
+Source: Exult-i686\NEWS.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
+Source: Exult-i686\ReadMe.html; DestDir: {app}; Flags: ignoreversion isreadme; Components: Docs
+Source: Exult-i686\README.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
+Source: Exult-i686\README.win32.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
+Source: Exult-i686\sidefaultkeys.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
+Source: Exult-i686\images\back.gif; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
+Source: Exult-i686\images\docs01.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
+Source: Exult-i686\images\docs02.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
+Source: Exult-i686\images\docs03.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
+Source: Exult-i686\images\docs04.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
+Source: Exult-i686\images\docs05.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
+Source: Exult-i686\images\docs06.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
+Source: Exult-i686\images\exult_logo.gif; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
+Source: Exult-i686\Data\exult.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult
+Source: Exult-i686\Data\exult_bg.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult
+Source: Exult-i686\Data\exult_si.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult
+; Always the 32-bit version
+Source: exconfig-i686.dll; Flags: dontcopy
 
 [Icons]
 Name: {group}\Exult; Filename: {app}\Exult.exe; WorkingDir: {app}; Flags: createonlyiffileexists; Components: Icons
@@ -98,20 +99,19 @@ var
 
 // Get Paths from Exult.cfg
 procedure GetExultGamePaths(sExultDir, sBGPath, sSIPath: AnsiString; iMaxPath: Integer);
-external 'GetExultGamePaths@files:exconfig.dll stdcall';
+external 'GetExultGamePaths@files:exconfig-i686.dll stdcall';
 
 // Write Paths into Exult.cfg
 procedure SetExultGamePaths(sExultDir, sBGPath, sSIPath: AnsiString);
-external 'SetExultGamePaths@files:exconfig.dll stdcall';
+external 'SetExultGamePaths@files:exconfig-i686.dll stdcall';
 
 // Verify BG Dir
 function VerifyBGDirectory(sPath: AnsiString) : Integer;
-external 'VerifyBGDirectory@files:exconfig.dll stdcall';
+external 'VerifyBGDirectory@files:exconfig-i686.dll stdcall';
 
 // Verify SI Dir
 function VerifySIDirectory(sPath: AnsiString) : Integer;
-external 'VerifySIDirectory@files:exconfig.dll stdcall';
-
+external 'VerifySIDirectory@files:exconfig-i686.dll stdcall';
 
 // Get the Previous Exult Installation Dir
 // This is done in a manner that is compatible with the old InstallShield setup

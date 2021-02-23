@@ -1,4 +1,4 @@
-# Exult makefile for use in Windows with mingw using gcc 3.2 and msys shell
+# Exult makefile for use in Windows with mingw using gcc 10.2 and msys2 shell
 # It may require a little tweaking. (paths)
 
 # Where is Ultima 7 installed
@@ -374,7 +374,7 @@ debug: $(EXEC)
 	cp data/exult_bg.flx $(U7PATH)/data
 	cp data/exult_si.flx $(U7PATH)/data
 
-dist:   U7PATH:=$(DISTPATH)/Exult
+dist:   U7PATH:=$(DISTPATH)/Exult-$(MSYSTEM_CARCH)
 dist:   $(EXEC) exconfig.dll install
 	mkdir -p $(DISTPATH)
 	cp AUTHORS $(U7PATH)/AUTHORS.txt
@@ -393,7 +393,7 @@ dist:   $(EXEC) exconfig.dll install
 	cp data/bg/defaultkeys.txt $(U7PATH)/bgdefaultkeys.txt
 	cp data/si/defaultkeys.txt $(U7PATH)/sidefaultkeys.txt
 	u2d $(U7PATH)/*.txt
-	strip exconfig.dll -o $(DISTPATH)/exconfig.dll
+	strip exconfig.dll -o $(DISTPATH)/exconfig-$(MSYSTEM_CARCH).dll
 	cp win32/exult_installer.iss $(DISTPATH)
 
 toolsinstall: tools
@@ -413,7 +413,7 @@ toolsinstall: tools
 	cp data/u7siintrinsics.data $(U7PATH)/data
 	cp data/u7sibetaintrinsics.data $(U7PATH)/data
 
-toolsdist: U7PATH:=$(DISTPATH)/Tools
+toolsdist: U7PATH:=$(DISTPATH)/Tools-$(MSYSTEM_CARCH)
 toolsdist: tools toolsinstall
 	mkdir -p $(DISTPATH)
 	cp tools/expack.txt $(U7PATH)/tools
@@ -456,7 +456,7 @@ studioinstall: exult_studio$(EXEEXT)
 	mkdir -p $(U7PATH)/share/gtk-3.0
 	echo "[Settings]" > $(U7PATH)/share/gtk-3.0/settings.ini
 
-studiodist: U7PATH:=$(DISTPATH)/Studio
+studiodist: U7PATH:=$(DISTPATH)/Studio-$(MSYSTEM_CARCH)
 studiodist: exult_studio$(EXEEXT) studioinstall
 	mkdir -p $(DISTPATH)
 	cp docs/exult_studio.html $(U7PATH)
@@ -475,13 +475,16 @@ plugin: u7shp$(EXEEXT)
 plugininstall: plugin
 	mkdir -p $(GIMPPATH)
 	strip u7shp$(EXEEXT) -o $(GIMPPATH)/u7shp$(EXEEXT)
-	$(call copy_dlls_for_exe, u7shp$(EXEEXT), $(GIMPPATH))
+	# Note: Gimp has everything a plugin needs already, so we don't
+	# need to ship anything else really.
+	#$(call copy_dlls_for_exe, u7shp$(EXEEXT), $(GIMPPATH))
 
-plugindist: GIMPPATH:=$(DISTPATH)/GimpPlugin
+plugindist: GIMPPATH:=$(DISTPATH)/GimpPlugin-$(MSYSTEM_CARCH)
 plugindist: plugin plugininstall
 	mkdir -p $(DISTPATH)
 	cp mapedit/gimpwin32.txt $(GIMPPATH)
 	u2d $(GIMPPATH)/*.txt
+	cp win32/exult_shpplugin_installer.iss $(DISTPATH)
 
 allclean: clean toolsclean studioclean
 	rm -f exconfig.dll exconfig_rc.o win32/exconfig.o

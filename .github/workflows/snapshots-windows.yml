@@ -6,11 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  snapshot-windows:
+  activity-check:
     runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
     steps:
       - name: Activity check
         shell: bash
@@ -27,23 +24,52 @@ jobs:
               echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
             fi
           fi
+  build-snapshots-windows:
+    if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
+    needs: activity-check
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          [{ msystem: MINGW64, arch: x86_64" }, { msystem: MINGW32, arch: i686 }]
+    steps:
       - name: Install dependencies
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW32
+          msystem: MSYS
           install:
-            base-devel git p7zip mingw-w64-i686-toolchain mingw-w64-i686-binutils mingw-w64-i686-ntldd mingw-w64-i686-SDL2
-            mingw-w64-i686-fluidsynth mingw-w64-i686-libogg mingw-w64-i686-libvorbis mingw-w64-i686-munt-mt32emu
-            mingw-w64-i686-zlib mingw-w64-i686-SDL2_image mingw-w64-i686-gtk3 mingw-w64-i686-adwaita-icon-theme
-            mingw-w64-i686-libxml2 mingw-w64-i686-freetype mingw-w64-i686-gtk2 mingw-w64-i686-gimp
+            base-devel
+            git
+            p7zip
+            mingw-w64-${{ matrix.arch }}-toolchain
+            mingw-w64-${{ matrix.arch }}-binutils
+            mingw-w64-${{ matrix.arch }}-ntldd
+            mingw-w64-${{ matrix.arch }}-SDL2
+            mingw-w64-${{ matrix.arch }}-fluidsynth
+            mingw-w64-${{ matrix.arch }}-libogg
+            mingw-w64-${{ matrix.arch }}-libvorbis
+            mingw-w64-${{ matrix.arch }}-munt-mt32emu
+            mingw-w64-${{ matrix.arch }}-zlib
+            mingw-w64-${{ matrix.arch }}-SDL2_image
+            mingw-w64-${{ matrix.arch }}-gtk3
+            mingw-w64-${{ matrix.arch }}-adwaita-icon-theme
+            mingw-w64-${{ matrix.arch }}-libxml2
+            mingw-w64-${{ matrix.arch }}-freetype
+            mingw-w64-${{ matrix.arch }}-gtk2
+            mingw-w64-${{ matrix.arch }}-gimp
       - name: Checkout code
-        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/checkout@master
+        with:
+          path: exult-${{ matrix.arch }}
       - name: Build
-        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           SNAPSHOT_PATH=$(cygpath -m ~/Exult-dist)
+          cd $GITHUB_WORKSPACE/exult-${{ matrix.arch }}
           mkdir -p ${SNAPSHOT_PATH}
           make -j2 -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} DEBUG=1 USECODE_CONTAINER=1 USECODE_DEBUGGER=1 SHOW_NONREADIED_OBJECTS=1 dist studiodist toolsdist plugindist
           pushd content/bgkeyring
@@ -56,20 +82,26 @@ jobs:
           make -j2 -f Makefile.mingw sifixesdir=${SNAPSHOT_PATH}/sifixes install
           popd
           echo "EXULT_SNAPSHOT_PATH=${SNAPSHOT_PATH}" >> $GITHUB_ENV
+  create-installers:
+    if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
+    needs: [activity-check, build-snapshots-windows]
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
       - name: Create installers
-        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           cd ${{ env.EXULT_SNAPSHOT_PATH }}
           "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_installer.iss
           "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_studio_installer.iss
           "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_tools_installer.iss
-          "/c/Program Files/7-Zip/7z.exe" a Gimp20Plugin.exe -mx9 -mmt -sfx7z.sfx GimpPlugin
+          "/c/Program Files/7-Zip/7z.exe" a Gimp20Plugin.exe -mx9 -mmt -sfx7z.sfx GimpPlugin-${{ matrix.arch }}
           "/c/Program Files/7-Zip/7z.exe" -tzip a Keyring.zip -mx9 -mmt bgkeyring/*
           "/c/Program Files/7-Zip/7z.exe" -tzip a SFisland.zip -mx9 -mmt islefaq/*
           "/c/Program Files/7-Zip/7z.exe" -tzip a Sifixes.zip -mx9 -mmt sifixes/*
           echo "GITHUB_REF=v1.7.0.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
       - name: VirusTotal Scan
-        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         id: scan_files
         uses: crazy-max/ghaction-virustotal@v2
         with:
@@ -82,7 +114,6 @@ jobs:
             ${{ env.EXULT_SNAPSHOT_PATH }}/ExultTools.exe
             ${{ env.EXULT_SNAPSHOT_PATH }}/Gimp20Plugin.exe
       - name: Generate VirusTotal Body
-        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
           echo "Snapshot ${{ env.GITHUB_REF }}" > ${{ env.EXULT_SNAPSHOT_PATH }}/body.txt
           echo "" >> ${{ env.EXULT_SNAPSHOT_PATH }}/body.txt
