@@ -25,12 +25,15 @@
  */
 
 #include "exconfig.h"
+
 #include "Configuration.h"
-#include "utils.h"
-#include <string>
-#include <cstring>
-#include <cstdio>
 #include "fnames.h"
+#include "headers/ignore_unused_variable_warning.h"
+#include "utils.h"
+
+#include <cstdio>
+#include <cstring>
+#include <string>
 
 #define MAX_STRLEN  512
 
@@ -66,7 +69,7 @@ const char *config_defaults[] = {
 	"config/video/gamma/red",       "1.00",
 	"config/video/gamma/green",     "1.00",
 	"config/video/gamma/blue",      "1.00",
-	0
+	nullptr
 };
 
 const char *BASE_Files[] = {
@@ -76,17 +79,17 @@ const char *BASE_Files[] = {
 	FONTS_VGA,
 	INITGAME,
 	USECODE,
-	0
+	nullptr
 };
 
 const char *BG_Files[] = {
 	ENDGAME,
-	0
+	nullptr
 };
 
 const char *SI_Files[] = {
 	PAPERDOL,
-	0
+	nullptr
 };
 
 //
@@ -95,23 +98,23 @@ const char *SI_Files[] = {
 class Path {
 	struct Directory {
 		char        name[256];
-		Directory   *next;
+		Directory   *next{};
 
-		Directory() : next(0) {
+		Directory() {
 			name[0] = 0;
 		}
 	};
 
-	bool        network;// Networked?
-	char        drive;  // Drive letter (if set)
-	Directory   *dirs;  // Directories
+	bool        network = false;    // Networked?
+	char        drive   = 0;        // Drive letter (if set)
+	Directory   *dirs   = nullptr;  // Directories
 
 	void RemoveAll();
 	int Addit(const char *p);
-public:
 
-	Path() : network(false), drive(0), dirs(0) { }
-	Path(const char *p) : network(false), drive(0), dirs(0) {
+public:
+	Path() = default;
+	Path(const char *p) {
 		AddString(p);
 	}
 	~Path();
@@ -121,7 +124,6 @@ public:
 	}
 	void AddString(const char *p);
 	void GetString(char *p, int max_strlen = MAX_STRLEN);
-
 };
 
 // Destructor
@@ -138,13 +140,13 @@ void Path::RemoveAll() {
 		delete d;
 		d = next;
 	}
-	dirs = 0;
+	dirs = nullptr;
 }
 
 int Path::Addit(const char *p) {
 	Directory *d = dirs;
-	Directory *prev = 0;
-	Directory *prevprev = 0;
+	Directory *prev = nullptr;
+	Directory *prevprev = nullptr;
 	int i;
 
 	// Check for . and ..
@@ -173,12 +175,11 @@ int Path::Addit(const char *p) {
 	// Check for . and ..
 	if (!std::strcmp(d->name, ".")) {
 		delete d;
-		prev->next = 0;
+		prev->next = nullptr;
 	} else if (!std::strcmp(d->name, "..")) {
 		delete d;
 		delete prev;
-		prevprev->next = 0;
-
+		prevprev->next = nullptr;
 	}
 
 	return i;
@@ -186,8 +187,6 @@ int Path::Addit(const char *p) {
 
 // Add path
 void Path::AddString(const char *p) {
-	int len = std::strlen(p);
-
 	// Root dir of this drive
 	if (*p == '\\' || *p == '/') {
 		// Remove all the entires
@@ -200,7 +199,6 @@ void Path::AddString(const char *p) {
 			network = true;
 			p++;
 		}
-
 	} else if (p[0] && p[1] == ':') { // Drive
 		RemoveAll();
 		drive = *p;
@@ -209,7 +207,9 @@ void Path::AddString(const char *p) {
 	}
 
 	// Skip all slashes
-	while (*p && (*p == '\\' || *p == '/')) p++;
+	while (*p && (*p == '\\' || *p == '/')) {
+		p++;
+	}
 
 	while (*p) {
 		p += Addit(p);
@@ -219,27 +219,29 @@ void Path::AddString(const char *p) {
 void Path::GetString(char *p, int max_strlen) {
 	p[0] = 0;
 
-	if (network) std::strncat(p, "\\\\", max_strlen);
-	else if (drive) _snprintf(p, max_strlen, "%c:\\", drive);
-	else std::strncat(p, "\\", max_strlen);
+	if (network) {
+		std::strncat(p, "\\\\", max_strlen);
+	} else if (drive) {
+		_snprintf(p, max_strlen, "%c:\\", drive);
+	} else {
+		std::strncat(p, "\\", max_strlen);
+	}
 
 	Directory *d = dirs;
 	while (d) {
 		std::strncat(p, d->name, max_strlen);
 		d = d->next;
-		if (d) std::strncat(p, "\\", max_strlen);
+		if (d) {
+			std::strncat(p, "\\", max_strlen);
+		}
 	}
-
 }
-
 
 //             //
 // The exports //
 //             //
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 //
 // Get the Game paths from the config file
@@ -266,11 +268,11 @@ extern "C" {
 		try {
 			// Open config file
 			Configuration config;
-			if (get_system_path("<CONFIG>") == ".")
+			if (get_system_path("<CONFIG>") == ".") {
 				config.read_config_file(p);
-			else
+			} else {
 				config.read_config_file("exult.cfg");
-
+			}
 			std::string dir;
 
 			// SI Path
@@ -330,23 +332,25 @@ extern "C" {
 
 			// Set BG Path
 			MessageBoxDebug(nullptr, p, "WriteConfig: BG", MB_OK);
-			if (BGPath)
+			if (BGPath) {
 				config.set("config/disk/game/blackgate/path", BGPath, true);
-			else
+			} else {
 				config.set("config/disk/game/blackgate/path", "blackgate", true);
-
+			}
 			// Set SI Path
 			MessageBoxDebug(nullptr, p, "WriteConfig: SI", MB_OK);
-			if (SIPath)
+			if (SIPath) {
 				config.set("config/disk/game/serpentisle/path", SIPath, true);
-			else
+			} else {
 				config.set("config/disk/game/serpentisle/path", "serpentisle", true);
-
+			}
 			// Set Defaults
 			std::string s;
 			for (i = 0; config_defaults[i]; i += 2) {
 				config.value(config_defaults[i], s, "");
-				if (s.empty()) config.set(config_defaults[i], config_defaults[i + 1], true);
+				if (s.empty()) {
+					config.set(config_defaults[i], config_defaults[i + 1], true);
+				}
 			}
 
 			// Fix broken SI SFX stuff
@@ -383,23 +387,31 @@ extern "C" {
 		add_system_path("<STATIC>", s + "/static");
 
 		// Check all the BASE files
-		for (i = 0; BASE_Files[i]; i++) if (!U7exists(BASE_Files[i])) return false;
+		for (i = 0; BASE_Files[i]; i++) {
+			if (!U7exists(BASE_Files[i])) {
+				return false;
+			}
+		}
 
 		// Check all the IFIX files
-		//for (i = 0; i < 144; i++)
-		//{
+		//for (i = 0; i < 144; i++) {
 		//  char num[4];
 		//  std::sprintf(num, "%02X", i);
 		//
 		//  string s(U7IFIX);
 		//  s += num;
 		//
-		//  if (!U7exists(s.c_str()))
+		//  if (!U7exists(s.c_str())) {
 		//      return false;
+		//  }
 		//}
 
 		// Check all the BG files
-		for (i = 0; BG_Files[i]; i++) if (!U7exists(BG_Files[i])) return false;
+		for (i = 0; BG_Files[i]; i++) {
+			if (!U7exists(BG_Files[i])) {
+				return false;
+			}
+		}
 
 		return true;
 	}
@@ -414,36 +426,41 @@ extern "C" {
 		add_system_path("<STATIC>", s + "/static");
 
 		// Check all the BASE files
-		for (i = 0; BASE_Files[i]; i++) if (!U7exists(BASE_Files[i])) return false;
+		for (i = 0; BASE_Files[i]; i++) {
+			if (!U7exists(BASE_Files[i])) {
+				return false;
+			}
+		}
 
 		// Check all the IFIX files
-		//for (i = 0; i < 144; i++)
-		//{
+		//for (i = 0; i < 144; i++) {
 		//  char num[4];
 		//  std::sprintf(num, "%02X", i);
 		//
 		//  string s(U7IFIX);
 		//  s += num;
 		//
-		//  if (!U7exists(s.c_str()))
+		//  if (!U7exists(s.c_str())) {
 		//      return false;
+		//  }
 		//}
 
 		// Check all the SI files
-		for (i = 0; SI_Files[i]; i++) if (!U7exists(SI_Files[i]))   return false;
+		for (i = 0; SI_Files[i]; i++) {
+			if (!U7exists(SI_Files[i])) {
+				return false;
+			}
+		}
 
 		return true;
 	}
-
-
-#ifdef __cplusplus
 }
-#endif
 
 BOOL APIENTRY DllMain(HINSTANCE hModule,
                       DWORD  ul_reason_for_call,
                       LPVOID lpReserved
                      ) {
+	ignore_unused_variable_warning(hModule, lpReserved);
 	switch (ul_reason_for_call) {
 	case DLL_PROCESS_ATTACH:
 	case DLL_THREAD_ATTACH:
