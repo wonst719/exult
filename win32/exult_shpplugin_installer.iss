@@ -308,7 +308,7 @@ begin
 	end;
 end;
 
-procedure Is64BitGIMP(): boolean;
+function Is64BitGIMP(): boolean;
 begin
 	Result := InstallType = itNew64;
 end;
