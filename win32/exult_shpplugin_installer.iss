@@ -310,7 +310,7 @@ end;
 
 procedure Is64BitGIMP(): boolean;
 begin
-	Result := InstallType = itNew64
+	Result := InstallType = itNew64;
 end;
 
 procedure CurStepChanged(pCurStep: TSetupStep);
