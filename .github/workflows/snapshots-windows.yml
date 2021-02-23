@@ -68,34 +68,44 @@ jobs:
             mingw-w64-i686-freetype
             mingw-w64-i686-gtk2
             mingw-w64-i686-gimp
-      - name: Checkout code
+      - name: Checkout code for i686 build
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/checkout@master
         with:
           path: exult-i686
-      - name: Checkout code
+      - name: Build i686
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
+        env:
+          MSYSTEM: MINGW32
+          ARCH: i686
+        run: |
+          env | grep MSYSTEM
+          SNAPSHOT_PATH=$(cygpath -m ~/Exult-dist)
+          cd $GITHUB_WORKSPACE/exult-$ARCH
+          mkdir -p ${SNAPSHOT_PATH}
+          make -j2 -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} dist studiodist toolsdist plugindist
+          for ff in bgkeyring islefaq sifixes
+            pushd content/${ff}
+            make -j2 -f Makefile.mingw ${ff}dir=${SNAPSHOT_PATH}/${ff} install
+            popd
+          done
+          echo "EXULT_SNAPSHOT_PATH=${SNAPSHOT_PATH}" >> $GITHUB_ENV
+      - name: Checkout code for x86_64 build
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/checkout@master
         with:
           path: exult-x86_64
-      - name: Build
+      - name: Build x86_64
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
+        env:
+          MSYSTEM: MINGW64
+          ARCH: x86_64
         run: |
+          env | grep MSYSTEM
           SNAPSHOT_PATH=$(cygpath -m ~/Exult-dist)
-          for arch in i686 x86_64; do
-            cd $GITHUB_WORKSPACE/exult-$arch
-            mkdir -p ${SNAPSHOT_PATH}
-            make -j2 -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} DEBUG=1 USECODE_CONTAINER=1 USECODE_DEBUGGER=1 SHOW_NONREADIED_OBJECTS=1 dist studiodist toolsdist plugindist
-            pushd content/bgkeyring
-            make -j2 -f Makefile.mingw bgkeyringdir=${SNAPSHOT_PATH}/bgkeyring install
-            popd
-            pushd content/islefaq
-            make -j2 -f Makefile.mingw islefaqdir=${SNAPSHOT_PATH}/islefaq install
-            popd
-            pushd content/sifixes
-            make -j2 -f Makefile.mingw sifixesdir=${SNAPSHOT_PATH}/sifixes install
-            popd
-          done
+          cd $GITHUB_WORKSPACE/exult-$ARCH
+          mkdir -p ${SNAPSHOT_PATH}
+          make -j2 -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} dist studiodist toolsdist plugindist
           echo "EXULT_SNAPSHOT_PATH=${SNAPSHOT_PATH}" >> $GITHUB_ENV
       - name: Create installers
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
