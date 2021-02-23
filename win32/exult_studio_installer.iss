@@ -35,7 +35,7 @@ Source: Studio-x86_64\exult_studio.exe; DestDir: {app}; Flags: ignoreversion; Ch
 Source: Studio-x86_64\*.dll; DestDir: {app}; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: Studio-x86_64\lib\*; DestDir: {app}\lib\; Flags: ignoreversion recursesubdirs; Check: Is64BitInstallMode
 ; Architecture-neutral files
-Source: Studio\share\*; DestDir: {app}\share\; Flags: ignoreversion recursesubdirs
+Source: Studio-i686\share\*; DestDir: {app}\share\; Flags: ignoreversion recursesubdirs
 Source: Exult-i686\COPYING.txt; DestDir: {app}; Flags: onlyifdoesntexist
 Source: Exult-i686\AUTHORS.txt; DestDir: {app}; Flags: onlyifdoesntexist
 Source: Studio-i686\images\*.gif; DestDir: {app}\images\; Flags: ignoreversion
