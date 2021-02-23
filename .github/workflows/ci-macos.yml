@@ -1,6 +1,60 @@
 name: ci-macos
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'msvc*/**'
+      - 'win32/**'
+      - 'AUTHORS'
+      - 'ChangeLog'
+      - 'COPYING'
+      - 'FAQ'
+      - 'INSTALL'
+      - 'NEWS'
+      - '**README**'
+      - '**.ico'
+      - '**.md'
+      - '**.png'
+      - 'mapedit/**.txt'
+      - 'tools/**.txt'
+      - 'usecode/**.txt'
+      - 'win32/**.txt'
+      - '.clang*'
+      - '.gitignore'
+      - '.gitattributes'
+      - '.github/workflows/ci-linux.yml'
+      - '.github/workflows/ci-windows.yml'
+      - '.github/workflows/coverity-scan.yml'
+      - '.github/workflows/snapshot-released.yml'
+      - '.github/workflows/snapshots-windows.yml'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'msvc*/**'
+      - 'win32/**'
+      - 'AUTHORS'
+      - 'ChangeLog'
+      - 'COPYING'
+      - 'FAQ'
+      - 'INSTALL'
+      - 'NEWS'
+      - '**README**'
+      - '**.ico'
+      - '**.md'
+      - '**.png'
+      - 'mapedit/**.txt'
+      - 'tools/**.txt'
+      - 'usecode/**.txt'
+      - 'win32/**.txt'
+      - '.clang*'
+      - '.gitignore'
+      - '.gitattributes'
+      - '.github/workflows/ci-linux.yml'
+      - '.github/workflows/ci-windows.yml'
+      - '.github/workflows/coverity-scan.yml'
+      - '.github/workflows/snapshot-released.yml'
+      - '.github/workflows/snapshots-windows.yml'
 
 jobs:
   ci-macos:
