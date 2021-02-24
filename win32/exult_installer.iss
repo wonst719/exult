@@ -58,14 +58,8 @@ Source: Exult-i686\ReadMe.html; DestDir: {app}; Flags: ignoreversion isreadme; C
 Source: Exult-i686\README.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
 Source: Exult-i686\README.win32.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
 Source: Exult-i686\sidefaultkeys.txt; DestDir: {app}; Flags: ignoreversion; Components: Docs
-Source: Exult-i686\images\back.gif; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult-i686\images\docs01.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult-i686\images\docs02.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult-i686\images\docs03.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult-i686\images\docs04.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult-i686\images\docs05.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult-i686\images\docs06.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
-Source: Exult-i686\images\exult_logo.gif; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
+Source: Exult-i686\images\*.gif; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
+Source: Exult-i686\images\docs*.png; DestDir: {app}\images; Flags: ignoreversion nocompression; Components: Docs
 Source: Exult-i686\Data\exult.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult
 Source: Exult-i686\Data\exult_bg.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult
 Source: Exult-i686\Data\exult_si.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult

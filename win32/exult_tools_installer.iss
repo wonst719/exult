@@ -61,9 +61,9 @@ Source: Tools-x86_64\tools\ucc.exe; DestDir: {app}\tools\; Flags: ignoreversion;
 Source: Tools-x86_64\tools\wuc.exe; DestDir: {app}\tools\; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: Tools-x86_64\tools\*.dll; DestDir: {app}\tools\; Flags: ignoreversion; Check: Is64BitInstallMode
 ; Architecture-neutral files
-Source: Exult-i686\AUTHORS.txt; DestDir: {app}; Flags: onlyifdoesntexist
-Source: Exult-i686\COPYING.txt; DestDir: {app}; Flags: onlyifdoesntexist
-Source: Exult-i686\README-SDL.txt; DestDir: {app}\tools\; Flags: ignoreversion
+Source: Tools-i686\AUTHORS.txt; DestDir: {app}; Flags: onlyifdoesntexist
+Source: Tools-i686\COPYING.txt; DestDir: {app}; Flags: onlyifdoesntexist
+Source: Tools-i686\tools\README-SDL.txt; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools-i686\data\bginclude.uc; DestDir: {app}\data\; Flags: ignoreversion
 Source: Tools-i686\data\events.data; DestDir: {app}\data\; Flags: ignoreversion
 Source: Tools-i686\data\flags.data; DestDir: {app}\data\; Flags: ignoreversion
@@ -82,6 +82,14 @@ Source: Tools-i686\tools\textpack.txt; DestDir: {app}\tools\; Flags: ignoreversi
 Source: Tools-i686\tools\u7bgflag.txt; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools-i686\tools\u7siflag.txt; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools-i686\tools\ucformat.txt; DestDir: {app}\tools\; Flags: ignoreversion
+Source: Tools-i686\tools\ucc.txt; DestDir: {app}\tools\; Flags: ignoreversion
+Source: Tools-i686\tools\mockup.txt; DestDir: {app}\tools\; Flags: ignoreversion
+Source: Tools-i686\tools\mappings.txt; DestDir: {app}\tools\; Flags: ignoreversion
+Source: Tools-i686\tools\mappings_alternative.txt; DestDir: {app}\tools\; Flags: ignoreversion
+Source: Tools-i686\tools\map.png; DestDir: {app}\tools\; Flags: ignoreversion
+Source: Tools-i686\tools\smooth.txt; DestDir: {app}\tools\; Flags: ignoreversion
+Source: Tools-i686\tools\rough.bmp; DestDir: {app}\tools\; Flags: ignoreversion
+Source: Tools-i686\tools\smoothed.bmp; DestDir: {app}\tools\; Flags: ignoreversion
 
 [Dirs]
 Name: {app}\data

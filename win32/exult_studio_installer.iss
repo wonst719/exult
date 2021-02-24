@@ -36,10 +36,10 @@ Source: Studio-x86_64\*.dll; DestDir: {app}; Flags: ignoreversion; Check: Is64Bi
 Source: Studio-x86_64\lib\*; DestDir: {app}\lib\; Flags: ignoreversion recursesubdirs; Check: Is64BitInstallMode
 ; Architecture-neutral files
 Source: Studio-i686\share\*; DestDir: {app}\share\; Flags: ignoreversion recursesubdirs
-Source: Exult-i686\COPYING.txt; DestDir: {app}; Flags: onlyifdoesntexist
-Source: Exult-i686\AUTHORS.txt; DestDir: {app}; Flags: onlyifdoesntexist
+Source: Studio-i686\COPYING.txt; DestDir: {app}; Flags: onlyifdoesntexist
+Source: Studio-i686\AUTHORS.txt; DestDir: {app}; Flags: onlyifdoesntexist
 Source: Studio-i686\images\*.gif; DestDir: {app}\images\; Flags: ignoreversion
-Source: Studio-i686\images\*.png; DestDir: {app}\images\; Flags: ignoreversion
+Source: Studio-i686\images\studio*.png; DestDir: {app}\images\; Flags: ignoreversion
 Source: Studio-i686\exult_studio.html; DestDir: {app}; Flags: ignoreversion
 Source: Studio-i686\exult_studio.txt; DestDir: {app}; Flags: ignoreversion
 Source: Studio-i686\data\estudio\new\*.flx; DestDir: {app}\data\estudio\new; Flags: ignoreversion

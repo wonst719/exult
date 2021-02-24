@@ -426,7 +426,18 @@ toolsdist: tools toolsinstall
 	cp tools/u7bgflag.txt $(U7PATH)/tools
 	cp tools/u7siflag.txt $(U7PATH)/tools
 	cp tools/ucformat.txt $(U7PATH)/tools
+	cp docs/ucc.txt $(U7PATH)/tools
+	cp mapedit/tools/mockup/README $(U7PATH)/tools/mockup.txt
+	cp mapedit/tools/mockup/mappings.txt $(U7PATH)/tools
+	cp mapedit/tools/mockup/mappings_alternative.txt $(U7PATH)/tools
+	cp mapedit/tools/mockup/map.png $(U7PATH)/tools
+	cp mapedit/tools/smooth/README $(U7PATH)/tools/smooth.txt
+	cp mapedit/tools/smooth/rough.bmp $(U7PATH)/tools
+	cp mapedit/tools/smooth/smoothed.bmp $(U7PATH)/tools
+	cp AUTHORS $(U7PATH)/AUTHORS.txt
+	cp COPYING $(U7PATH)/COPYING.txt
 	cp win32/README-SDL.txt $(U7PATH)/tools/README-SDL.txt
+	u2d $(U7PATH)/*.txt
 	u2d $(U7PATH)/tools/*.txt
 	cp win32/exult_tools_installer.iss $(DISTPATH)
 
@@ -464,6 +475,8 @@ studiodist: exult_studio$(EXEEXT) studioinstall
 	mkdir -p $(U7PATH)/images
 	cp docs/images/*.gif $(U7PATH)/images
 	cp docs/images/studio*.png $(U7PATH)/images
+	cp AUTHORS $(U7PATH)/AUTHORS.txt
+	cp COPYING $(U7PATH)/COPYING.txt
 	u2d $(U7PATH)/*.txt
 	cp win32/exult_studio_installer.iss $(DISTPATH)
 
