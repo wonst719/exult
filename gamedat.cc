@@ -962,8 +962,8 @@ static bool Save_level1(zipFile zipfile, const char *fname) {
 		throw file_read_exception(fname);
 	}
 
-	unsigned int size = ds.getSize();
-	auto buf = ds.readN(size);
+	const size_t size = ds.getSize();
+	const auto buf = ds.readN(size);
 
 	zipOpenNewFileInZip(zipfile, remove_dir(fname), nullptr, nullptr, 0,
 	                    nullptr, 0, nullptr, Z_DEFLATED, Z_BEST_COMPRESSION);
@@ -998,8 +998,8 @@ static bool Save_level2(zipFile zipfile, const char *fname) {
 		throw file_read_exception(fname);
 	}
 
-	size_t size = ds.getSize();
-	char *buf = new char[size < 13 ? 13 : size]; // We want at least 13 bytes
+	const size_t size = ds.getSize();
+	char * const buf = new char[size < 13 ? 13 : size]; // We want at least 13 bytes
 
 	// Filename first
 	memset(buf, 0, 13);

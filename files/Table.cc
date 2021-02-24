@@ -61,8 +61,8 @@ void Table::index_file() {
  *  @return Whether or not the DataSource is a table file.
  */
 bool Table::is_table(IDataSource *in) {
-	size_t pos = in->getPos();
-	size_t file_size = in->getSize();
+	const size_t pos = in->getPos();
+	const size_t file_size = in->getSize();
 
 	in->seek(0);
 	while (true) {

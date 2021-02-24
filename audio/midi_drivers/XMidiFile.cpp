@@ -1097,12 +1097,11 @@ int XMidiFile::ConvertFiletoList (IDataSource *source, const bool is_xmi, first_
 	int		end = 0;
 	uint32	status = 0;
 	int		play_size = 2;
-	uint32	file_size = source->getSize();
 	int		retval = 0;
 
 	if (is_xmi) play_size = 3;
 
-	while (!end && source->getPos() < file_size)
+	while (!end && source->getAvail() > 0)
 	{
 		if (!is_xmi)
 		{
@@ -1190,7 +1189,7 @@ int XMidiFile::ExtractTracksFromXmi (IDataSource *source)
 
 	first_state	fs;
 
-	while (source->getPos() < source->getSize() && num != num_tracks)
+	while (source->getAvail() > 0 && num != num_tracks)
 	{
 		// Read first 4 bytes of name
 		source->read (buf, 4);
@@ -1262,7 +1261,7 @@ int XMidiFile::ExtractTracksFromMid (IDataSource *source, const uint32 ppqn, con
 	x_patch_bank_first = nullptr;
 	x_patch_bank_cur = nullptr;
 
-	while (source->getPos() < source->getSize() && num != num_tracks)
+	while (source->getAvail() > 0 && num != num_tracks)
 	{
 		// Read first 4 bytes of name
 		source->read (buf, 4);

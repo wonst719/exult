@@ -108,8 +108,8 @@ int verify_files(BaseGameInfo *game) {
 			errors++;
 			continue;
 		}
-		auto length = ds.getSize();
-		auto data = ds.readN(length);
+		const auto length = ds.getSize();
+		const auto data = ds.readN(length);
 		const auto hash_str = sha1::toHexString(sha1::calc(data.get(), length));
 		if (strcmp(hash, hash_str.data()) != 0) {
 			errors++;

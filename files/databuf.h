@@ -63,6 +63,11 @@ public:
 	virtual void skip(std::streamoff) = 0;
 	virtual size_t getSize() const = 0;
 	virtual size_t getPos() const = 0;
+	size_t getAvail() const {
+		size_t const msize = getSize();
+		size_t const mpos = getPos();
+		return msize >= mpos ? msize - mpos : 0;
+	}
 	virtual bool eof() const = 0;
 	virtual bool good() const {
 		return true;
@@ -401,7 +406,7 @@ public:
 	}
 
 	size_t getSize() const final {
-		return std::numeric_limits<size_t>::max();
+		return out->tellp();
 	}
 
 	size_t getPos() const final {
@@ -536,7 +541,7 @@ inline std::unique_ptr<IDataSource> IStreamDataSource::makeSource(size_t len) {
 }
 
 inline std::unique_ptr<IDataSource> IBufferDataView::makeSource(size_t len) {
-	size_t avail = getSize() - getPos();
+	size_t avail = getAvail();
 	if (avail < len) {
 		len = avail;
 	}
@@ -546,7 +551,7 @@ inline std::unique_ptr<IDataSource> IBufferDataView::makeSource(size_t len) {
 }
 
 inline void IBufferDataView::copy_to(ODataSource& dest) {
-	size_t len = getSize() - getPos();
+	size_t len = getAvail();
 	dest.write(getPtr(), len);
 	skip(len);
 }

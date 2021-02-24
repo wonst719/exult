@@ -1779,7 +1779,7 @@ void LowLevelMidiDriver::loadXMidiTimbreLibrary(IDataSource *ds)
 	uint32 i;
 
 	// Read all the timbres
-	for (i = 0; ds->getPos() < ds->getSize(); i++) {
+	for (i = 0; ds->getAvail() > 0; i++) {
 		// Seek to the entry
 		ds->seek(i*6);
 

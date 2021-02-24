@@ -1400,8 +1400,8 @@ void Shape_chooser::import_shape(
 		// Check to see if it is a valid shape file.
 		// We never get here through a flat, so we don't deal
 		// with that case. These tests aren't perfect!
-		int size = ds.getSize();
-		int len = ds.read4();
+		const int size = ds.getSize();
+		const int len = ds.read4();
 		int first;
 		if (len != size || (first = ds.read4()) > size || (first % 4) != 0)
 			return;

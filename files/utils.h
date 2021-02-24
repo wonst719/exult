@@ -394,6 +394,7 @@ inline void WriteNhigh(
  */
 inline size_t get_file_size(std::istream& in) {
 	const auto start = in.tellg();
+	in.seekg(0);
 	in.ignore(std::numeric_limits<std::streamsize>::max());
 	size_t len = in.gcount();
 	in.seekg(start);

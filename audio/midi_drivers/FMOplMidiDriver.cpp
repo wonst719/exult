@@ -765,7 +765,7 @@ void FMOplMidiDriver::loadTimbreLibrary(IDataSource *ds, TimbreLibraryType type)
 void FMOplMidiDriver::loadXMIDITimbres(IDataSource *ds)
 {
 	// Read all the timbres
-	for (uint32 i = 0; ds->getPos() < ds->getSize(); i++) {
+	for (uint32 i = 0; ds->getAvail() > 0; i++) {
 		// Seek to the entry
 		ds->seek(i*6);
 

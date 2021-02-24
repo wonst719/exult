@@ -490,7 +490,7 @@ bool Flex_file_info::revert(
 		lengths.resize(entries.size());
 	} else {            // Single palette.
 		IFileDataSource in(pathname);
-		int sz = in.getSize();
+		const int sz = in.getSize();
 		cnt = sz > 0 ? 1 : 0;
 		entries.resize(cnt);
 		lengths.resize(entries.size());

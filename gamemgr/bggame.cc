@@ -615,26 +615,23 @@ void BG_Game::scene_butterfly() {
 
 class LipSynchReader {
 	std::unique_ptr<IBufferDataView> data;
-	const unsigned char *ptr;
-	const unsigned char *eptr;
+
 public:
 	LipSynchReader()
-		: data(std::make_unique<IExultDataSource>(MAINSHP_FLX, PATCH_MAINSHP, 0x0F)),
-		  ptr(data->getPtr()), eptr(ptr + data->getSize()) {}
+		: data(std::make_unique<IExultDataSource>(MAINSHP_FLX, PATCH_MAINSHP, 0x0F)) {}
 	LipSynchReader(char const *pp, int len)
-		: data(std::make_unique<IBufferDataView>(pp, len)),
-		  ptr(data->getPtr()), eptr(ptr + data->getSize()) {}
+		: data(std::make_unique<IBufferDataView>(pp, len)) {}
 	bool have_events() const {
-		return ptr < eptr;
+		return data->getAvail() > 0;
 	}
 	void get_event(int &time, int &code) {
-		if (ptr >= eptr) {
+		if (have_events()) {
+			int curr_time = data->read2();
+			time = curr_time * 1000.0 / 60.0;
+			code = data->read1();
+		} else {
 			time = 0;
 			code = 0;
-		} else {
-			int curr_time = Read2(ptr);
-			time = curr_time * 1000.0 / 60.0;
-			code = Read1(ptr);
 		}
 	}
 	void translate_code(int code, int &mouth, int &eyes, int &lasteyes) {

@@ -83,8 +83,8 @@ void Flex_header::write(
  *  @return Whether or not the DataSource is a FLEX file.
  */
 bool Flex_header::is_flex(IDataSource *in) {
-	size_t pos = in->getPos();        // Fill to data (past table at 0x80).
-	size_t len = in->getSize();   // Check length.
+	const size_t pos = in->getPos();        // Fill to data (past table at 0x80).
+	const size_t len = in->getSize();   // Check length.
 	uint32 magic = 0;
 	if (len >= FLEX_HEADER_LEN) {      // Has to be at least this long.
 		in->seek(FLEX_TITLE_LEN);

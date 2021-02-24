@@ -751,7 +751,7 @@ Usecode_script *Usecode_script::restore(
 			return nullptr;
 		}
 	}
-	if (in->getSize() - in->getPos() < 8) { // Enough room left?
+	if (in->getAvail() < 8) { // Enough room left?
 		delete code;
 		return nullptr;
 	}
