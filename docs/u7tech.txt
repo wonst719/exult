@@ -354,7 +354,36 @@ Content for Black Gate/Forge of Virtue - palette from INTROPAL.DAT
   $17       shape ("female")
   $18       ???
   $19-$1D   empty
-  
+
+The Guardian Face animation events have the following format:
+  Array of face animation entries
+  entry = time, code
+  time      = int16 time, in milliseconds, from beginning of voice playback
+  code      = byte
+          $00         End of data
+          $01         Set eyebrows to "angry", keep eyes unchanged (frames 1/2/3)
+          $02         Set eyebrows to "neutral", keep eyes unchanged (frames 4/5/6)
+          $03         Set eyebrows to "raised", keep eyes unchanged (frames 7/8/9)
+          $04         Fully open eyes, keep eyebrows unchanged (frames 1/4/7)
+          $05         Partially open eyes, keep eyebrows unchanged (frames 2/5/8)
+          $06         Fully closed eyes, keep eyebrows unchanged (frames 3/6/9)
+                      Eye frame descriptions:
+                       1  "Angry" eyebrows, eyes fully opened, looking ahead
+                       2  "Angry" eyebrows, eyes half-opened, looking ahead
+                       3  "Angry" eyebrows, eyes closed, looking ahead
+                       4  "Neutral" eyebrows, eyes fully opened, looking ahead
+                       5  "Neutral" eyebrows, eyes half-opened, looking ahead
+                       6  "Neutral" eyebrows, eyes closed, looking ahead
+                       7  "Raised" eyebrows, eyes fully opened, looking ahead
+                       8  "Raised" eyebrows, eyes half-opened, looking ahead
+                       9  "Raised" eyebrows, eyes closed, looking ahead
+                      10  "Raised" eyebrows, eyes fully opened, looking down
+          $07         Sets eyes to frame 10, but does not change last eye frame
+                      for the purposes of codes $01 to $06
+          $08 to $16  Set mouth frame to code-8. Frame 0 is background, and it
+                      should not be used here.
+          Above $17   Invalid/do not use
+
 Content for Serpent Isle/Silver Seed
   $0        shape (the "warp" screen)
   $1        palette (to be used with the previous screen)

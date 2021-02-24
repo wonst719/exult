@@ -647,7 +647,7 @@ public:
 			{3, 3, 3, 6, 6, 6, 9, 9, 9},	// 6: Change eyes to fully closed
 		};
 		// Set based on code read
-		if (code > 8) {
+		if (code >= 8 && code < 23) {
 			// This changes mouth frame
 			mouth = code - 8;
 		} else if (code == 7) {
