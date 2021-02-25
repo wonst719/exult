@@ -241,7 +241,7 @@ int Schedule::try_street_maintenance(
 		return 0;
 	// Get to within 1 tile.
 	Game_object *found = nullptr;     // Find one we can get to.
-	Actor_action *pact;     // Gets ->action to walk there.
+	Actor_action *pact = nullptr;     // Gets ->action to walk there.
 	for (size_t i = 0; !found && i < array_size(night); i++) {
 		Game_object_vector objs;// Find nearby.
 		int cnt = npc->find_nearby(objs, shapes[i], 20, 0);
@@ -269,7 +269,7 @@ int Schedule::try_street_maintenance(
 			street_maintenance_failures++;
 		}
 	}
-	if (!found)
+	if (!found || !pact)
 		return 0;       // Failed.
 	// Set actor to walk there.
 	npc->set_schedule_type(Schedule::street_maintenance,
