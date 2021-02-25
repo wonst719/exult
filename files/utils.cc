@@ -463,7 +463,7 @@ int U7mkdir(
 class shell32_wrapper {
 protected:
 	HMODULE hLib;
-	using SHGetFolderPathFunc = HRESULT (*)(
+	using SHGetFolderPathFunc = HRESULT (WINAPI*)(
 	    HWND hwndOwner,
 	    int nFolder,
 	    HANDLE hToken,
@@ -473,7 +473,7 @@ protected:
 	SHGetFolderPathFunc      SHGetFolderPath;
 	/*
 	// Will leave this for someone with Vista/W7 to implement.
-	using SHGetKnownFolderPathFunc = HRESULT (*) (
+	using SHGetKnownFolderPathFunc = HRESULT (WINAPI*) (
 	    REFKNOWNFOLDERID rfid,
 	    DWORD dwFlags,
 	    HANDLE hToken,
