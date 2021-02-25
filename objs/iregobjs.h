@@ -26,8 +26,8 @@
 #include "objs.h"
 
 inline uint8_t nibble_swap(uint8_t val) {
-	constexpr const size_t shift = 4;
-	constexpr const size_t mask = (8 * sizeof(uint8) - 1);
+	constexpr const int shift = 4;
+	constexpr const int mask = (8 * sizeof(uint8) - 1);
 	return (val << shift) | (val>>( (-shift) & mask));
 }
 
