@@ -71,17 +71,9 @@
 		1E5DC7DEB0BB4A00A67CA284 = {
 			isa = PBXGroup;
 			children = (
-				B078F5406D8C415A9ED4D5DC /* mt32emu */,
+				B078F5406D8C415A9ED4D5DC /* Sources */,
 				BC93D915CE764FFB8FFC19EF /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		B078F5406D8C415A9ED4D5DC /* mt32emu */ = {
-			isa = PBXGroup;
-			children = (
-				EA7AB4EDA8B841C4BE2D95C1 /* Source Files */,
-			);
-			path = mt32emu;
 			sourceTree = "<group>";
 		};
 		BC93D915CE764FFB8FFC19EF /* Products */ = {
@@ -92,7 +84,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		EA7AB4EDA8B841C4BE2D95C1 /* Source Files */ = {
+		B078F5406D8C415A9ED4D5DC /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				8A599BBA246015EC006E3252 /* Analog.cpp */,
@@ -123,7 +115,8 @@
 				8A599BD2246015ED006E3252 /* TVF.cpp */,
 				8A599BCB246015ED006E3252 /* TVP.cpp */,
 			);
-			name = "Source Files";
+			name = "Sources";
+			path = libmt32emu/mt32emu;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -226,7 +219,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./include,
-					./mt32emu/src,
+					./libmt32emu/mt32emu/src,
 				);
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = STATIC;
@@ -283,12 +276,12 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./include,
-					./mt32emu/src,
-					./mt32emu/srchelper,
-					./mt32emu/src/sha1,
-					./mt32emu/src/c_interface,
-					./mt32emu/srchelper/srctools/include,
-					./mt32emu/srchelper/srctools/include/src,
+					./libmt32emu/mt32emu/src,
+					./libmt32emu/mt32emu/srchelper,
+					./libmt32emu/mt32emu/src/sha1,
+					./libmt32emu/mt32emu/src/c_interface,
+					./libmt32emu/mt32emu/srchelper/srctools/include,
+					./libmt32emu/mt32emu/srchelper/srctools/include/src,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = YES;
@@ -328,12 +321,12 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./include,
-					./mt32emu/src,
-					./mt32emu/srchelper,
-					./mt32emu/src/sha1,
-					./mt32emu/src/c_interface,
-					./mt32emu/srchelper/srctools/include,
-					./mt32emu/srchelper/srctools/include/src,
+					./libmt32emu/mt32emu/src,
+					./libmt32emu/mt32emu/srchelper,
+					./libmt32emu/mt32emu/src/sha1,
+					./libmt32emu/mt32emu/src/c_interface,
+					./libmt32emu/mt32emu/srchelper/srctools/include,
+					./libmt32emu/mt32emu/srchelper/srctools/include/src,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = YES;
@@ -360,12 +353,12 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./include,
-					./mt32emu/src,
-					./mt32emu/srchelper,
-					./mt32emu/src/sha1,
-					./mt32emu/src/c_interface,
-					./mt32emu/srchelper/srctools/include,
-					./mt32emu/srchelper/srctools/include/src,
+					./libmt32emu/mt32emu/src,
+					./libmt32emu/mt32emu/srchelper,
+					./libmt32emu/mt32emu/src/sha1,
+					./libmt32emu/mt32emu/src/c_interface,
+					./libmt32emu/mt32emu/srchelper/srctools/include,
+					./libmt32emu/mt32emu/srchelper/srctools/include/src,
 				);
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = STATIC;

@@ -2213,7 +2213,7 @@
 					./libogg/include,
 					../objs,
 					../files,
-					./mt32emu/src,
+					./libmt32emu/mt32emu/src,
 				);
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -2254,7 +2254,7 @@
 					./libogg/include,
 					../objs,
 					../files,
-					./mt32emu/src,
+					./libmt32emu/mt32emu/src,
 				);
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
