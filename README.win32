@@ -187,33 +187,21 @@ Run Exult.exe and enjoy the game :-)
     And that's all: Exult, Tools, and Exult Studio will now work on Windows XP.
 
 
-To build in Windows using MSVC 6.0
-----------------------------------
+To build in Windows using Visual Studio 2019
+--------------------------------------------
 
-NOTE: These instructions probably don't work anymore.
-      We need to create new solutions for more modern Visual Studio
-      and get Exult compiling.
+NOTE: This has only been tested with Visual Studio 2019 16.9.0 Preview 4. At this stage only projects for expack and exult are included.
+There are no projects for the other exult tools including no exult studio.
 
-1) Download SDL and ZLib for Win32/MSVC6. Add their Include and Library
-directories to MSVC's Search Directories (Tools->Options->Directories).
+1) Install visual studio 2019 community edition
 
-SDL: http://www.libsdl.org/
-ZLib: http://www.gzip.org/zlib/
+2) open the solution included in the exult source msvcstuff\vs2019\Exult.sln
 
-2) Set The environment variable EXULT_INSTALL_PATH to the directory where you
-want the Exult binaries to be copied to when doing an Install Build. This is
-optional and is only required for when doing an Install build.
+3) restore nuget packages. (nuget packages are used for all the dependencies needed by exult: sdl2, ogg, vorbis, ZLib)
 
-3) Load the Exult Project Workspace "msvcstuff/Exult.dsw" in MSVC 6.0
-(File->Load Workspace)
-
-4) If required, enter the correct "Working Directory" in the "Debug tab" of the
-Exult project settings for all Configurations.
-
-5) Select and Build Exult using one of the 4 Configuration (Win32 Debug,
-Win32 Release, Win32 Debug Install or Win32 Release Install).
-
-6) Have Fun!
+4) Build the exult project using a win32 Configuration. x64 is not supported at this time. 
+Exult.exe will be placed in the root of the source tree. 
+The build process will generate expack.exe and the flx files needed by exult in the data directory.
 
 
 To cross-build from Linux
