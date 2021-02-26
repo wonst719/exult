@@ -80,9 +80,10 @@ private:
 		int vol;
 		int expression;
 		int nshift;
-		int on;
+		int enabled;
 		int pitchbend;
 		int pan;
+		int sustain;
 	};
 
 	struct xmidibank {
@@ -94,6 +95,7 @@ private:
 		int note;
 		int counter;
 		int velocity;
+		bool sustained;
 	};
 
 	enum {
@@ -106,7 +108,7 @@ private:
 	int  midi_calc_volume(int chan, int vel);
 	void midi_update_volume(int chan);
 	void midi_fm_volume(int voice, int volume);
-	void midi_fm_playnote(int voice, int note, int volume, int pitchbend);
+	void midi_fm_playnote(int voice, int note, int volume, int pitchbend, int pan);
 	void midi_fm_endnote(int voice);
 	unsigned char adlib_data[256];
 

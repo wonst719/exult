@@ -220,7 +220,7 @@ int FMOplMidiDriver::open()
 		i.vol = 127;
 		i.expression = 127;
 		i.nshift = -13;//-13;
-		i.on = 1;
+		i.enabled = 1;
 		i.pitchbend = 0x2000;
 		i.pan = 64;
 	}
@@ -305,11 +305,16 @@ void FMOplMidiDriver::send(uint32 b)
 			// First send a note off, if it's found
 			for (int i = 0; i < 9; i++)
 				if ((chp[i].channel == channel) && (chp[i].note == note)) {
-					midi_fm_endnote(i);
-					chp[i].channel = -1;
+					if (ch[channel].sustain < 63) {
+						midi_fm_endnote(i);
+						chp[i].channel = -1;
+					} else {
+						chp[i].sustained = true;
+						chp[i].counter += 10; // artificially age the chp 
+					}
 				}
 
-			if (vel != 0 && ch[channel].on != 0) {
+			if (vel != 0 && ch[channel].enabled != 0) {
 
 				// Increment each counter
 				for (auto& i : chp)
@@ -329,11 +334,13 @@ void FMOplMidiDriver::send(uint32 b)
 				// If we didn't find a free chan, use the oldest chan
 				if (on == -1) {
 					onl = 0;
-					for (int i = 0; i < 9; i++)
+					for (int i = 0; i < 9; i++) {
+
 						if (chp[i].counter > onl) {
 							onl = chp[i].counter;
-							on = i;
+							on  = i;
 						}
+					}
 				}
 
 				// If we didn't find a free note, send a note off to the Adlib for the chan we are using
@@ -351,12 +358,10 @@ void FMOplMidiDriver::send(uint32 b)
 				int nv = midi_calc_volume(channel, vel);
 
 				// Send note on
-				midi_fm_playnote(on, note + ch[channel].nshift, nv * 2, ch[channel].pitchbend);
-
-				FMOpl_Pentagram::OPLSetPan(opl,on,ch[channel].pan);
+				midi_fm_playnote(on, note + ch[channel].nshift, nv * 2, ch[channel].pitchbend, ch[channel].pan);
 
 				// Update the shadows
-				chp[on] = {channel, note, 0, vel};
+				chp[on] = {channel, note, 0, vel, false};
 			}
 		}
 		break;
@@ -403,9 +408,12 @@ void FMOplMidiDriver::send(uint32 b)
 				midi_update_volume(channel);
 				break;
 			case 0x40:								/* Sustain on/off */
-				for (int i = 0; i < 9; i++)
-					if (chp[i].channel == channel)
-						midi_write_adlib(0x80 + adlib_opadd[i], vel);
+				ch[channel].sustain = vel;
+
+				// if sustain ending turn off voices as needed
+				if (vel <63)for (int i = 0; i < 9; i++)
+					if (chp[i].channel == channel &&chp[i].sustained)
+							midi_fm_endnote(i);
 				break;
 			case 0x5B:								/* Extended depth effect */
 				//debug(1,
@@ -454,10 +462,10 @@ void FMOplMidiDriver::send(uint32 b)
 			//
 			case 0x7B:								/* All notes off */
 				for (int i = 0; i < 9; i++) {
-					if (chp[i].channel == channel) {
+					//if (chp[i].channel == channel) {
 						midi_fm_endnote(i);
 						chp[i].channel = -1;
-					}
+					//}
 				}
 				break;
 			default:
@@ -508,7 +516,7 @@ void FMOplMidiDriver::send(uint32 b)
 			for (int i = 0; i < 9; i++) {
 				if (chp[i].channel == channel) {
 					int nv = midi_calc_volume(channel, chp[i].velocity);
-					midi_fm_playnote(i, chp[i].note + ch[channel].nshift, nv * 2, pitchbend);
+					midi_fm_playnote(i, chp[i].note + ch[channel].nshift, nv * 2, pitchbend, ch[channel].pan);
 				}
 			}
 		}
@@ -706,7 +714,7 @@ const double FMOplMidiDriver::bend_coarse[128] = {
 	1290.1591550923506, 1366.8760106701147, 1448.1546878700494, 1534.2664467217226
 };
 
-void FMOplMidiDriver::midi_fm_playnote(int voice, int note, int volume, int pitchbend)
+void FMOplMidiDriver::midi_fm_playnote(int voice, int note, int volume, int pitchbend, int pan)
 {
 	int freq = fnums[note % 12];
 	int oct = note / 12;
@@ -733,6 +741,7 @@ void FMOplMidiDriver::midi_fm_playnote(int voice, int note, int volume, int pitc
 		}
 	}
 
+	FMOpl_Pentagram::OPLSetPan(opl, voice, pan);
 	midi_fm_volume(voice, volume);
 	midi_write_adlib(0xa0 + voice, static_cast<unsigned char>(freq & 0xff));
 
@@ -742,6 +751,10 @@ void FMOplMidiDriver::midi_fm_playnote(int voice, int note, int volume, int pitc
 
 void FMOplMidiDriver::midi_fm_endnote(int voice)
 {
+	chp[voice].channel = -1;
+	chp[voice].note    = 0;
+	chp[voice].sustained = false;
+	chp[voice].velocity  = 0;
 	midi_write_adlib(0xb0 + voice, static_cast<unsigned char>(adlib_data[0xb0 + voice] & (255 - 32)));
 }
 
