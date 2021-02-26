@@ -283,3 +283,5 @@ ios/SDL2
 ios/mt32emu
 ios/libogg
 ios/libvorbis
+*.ilk
+*.pdb
