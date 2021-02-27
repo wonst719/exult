@@ -667,7 +667,7 @@ void setup_data_dir(
 		if (CFURLGetFileSystemRepresentation(fileUrl.get(), true, buf, sizeof(buf))) {
 			string path(reinterpret_cast<const char *>(buf));
 			path += "/data";
-			add_system_path("<BUNDLE>", path.c_str());
+			add_system_path("<BUNDLE>", path);
 			if (!U7exists(BUNDLE_EXULT_FLX))
 				clear_system_path("<BUNDLE>");
 		}
@@ -679,7 +679,7 @@ void setup_data_dir(
 		// But lets use <DATA> in the iTunes file sharing.
 		string path(ios_get_documents_dir());
 		path += "/data";
-		add_system_path("<DATA>", path.c_str());
+		add_system_path("<DATA>", path);
 		return;
 	}
 #endif
@@ -806,7 +806,7 @@ void setup_program_paths() {
 		unsigned char buf[MAXPATHLEN];
 		if (CFURLGetFileSystemRepresentation(fileUrl.get(), true, buf, sizeof(buf))) {
 			string path(reinterpret_cast<const char *>(buf));
-			add_system_path("<APPBUNDLE>", path.c_str());
+			add_system_path("<APPBUNDLE>", path);
 			// test whether it is actually an app bundle
 			path += "/Contents/Info.plist";
 			if (!U7exists(path))
