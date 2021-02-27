@@ -300,25 +300,23 @@ void Shape_manager::load(
 
 // Read in files needed to display gumps.
 bool Shape_manager::load_gumps_minimal() {
-	bool ok = false;
 	try {
-		ok = files[SF_GUMPS_VGA].load(GUMPS_VGA, PATCH_GUMPS, true);
-	} catch (exult_exception &) {
-	}
-
-	if (!ok) {
-		std::cerr << "Couldn't open 'gumps.vga'." << std::endl;
+		if (!files[SF_GUMPS_VGA].load(GUMPS_VGA, PATCH_GUMPS, true)) {
+			std::cerr << "Couldn't open 'gumps.vga'." << std::endl;
+			return false;
+		}
+	} catch (exult_exception &ex) {
+		std::cerr << ex.what() << std::endl;
 		return false;
 	}
 
-	ok = false;
 	try {
-		ok = files[SF_EXULT_FLX].load(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX));
-	} catch (exult_exception &) {
-	}
-
-	if (!ok) {
-		std::cerr << "Couldn't open 'exult.flx'." << std::endl;
+		if (!files[SF_EXULT_FLX].load(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX))) {
+			std::cerr << "Couldn't open 'exult.flx'." << std::endl;
+			return false;
+		}
+	} catch (exult_exception &ex) {
+		std::cerr << ex.what() << std::endl;
 		return false;
 	}
 

@@ -1052,25 +1052,35 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 
 		// Check to see if we need to change menus
 		if (activate) {
+			mode = CP_Command;
 			if (command == '-') {   // Decrement
 				num--;
-				if (num < 0) num = 0;
+				if (num < 0) {
+					num = 0;
+				}
 			} else if (command == '+') { // Increment
 				num++;
-				if (num > c_last_gflag) num = c_last_gflag;
+				if (num > c_last_gflag) {
+					num = c_last_gflag;
+				}
 			} else if (command == '*') { // Change Flag
 				i = std::atoi(input);
-				if (i < -1 || i > c_last_gflag) mode = CP_InvalidValue;
-				else if (i == -1) mode = CP_Canceled;
-				else if (input[0]) num = i;
+				if (i < -1 || i > c_last_gflag) {
+					mode = CP_InvalidValue;
+				} else if (i == -1) {
+					mode = CP_Canceled;
+				} else if (input[0]) {
+					num = i;
+				}
 			} else if (command == 's') { // Set
 				usecode->set_global_flag(num, 1);
 			} else if (command == 'u') { // Unset
 				usecode->set_global_flag(num, 0);
 			}
 
-			for (i = 0; i < 17; i++) input[i] = 0;
-			mode = CP_Command;
+			for (i = 0; i < 17; i++) {
+				input[i] = 0;
+			}
 			command = 0;
 			activate = false;
 			continue;
@@ -2593,17 +2603,26 @@ CheatScreen::Cheat_Prompt CheatScreen::AdvancedFlagLoop(int num, Actor *actor) {
 
 		// Check to see if we need to change menus
 		if (activate) {
+			mode = CP_Command;
 			if (command == '-') {   // Decrement
 				num--;
-				if (num < 0) num = 0;
+				if (num < 0) {
+					num = 0;
+				}
 			} else if (command == '+') { // Increment
 				num++;
-				if (num > 63) num = 63;
+				if (num > 63) {
+					num = 63;
+				}
 			} else if (command == '*') { // Change Flag
 				i = std::atoi(input);
-				if (i < -1 || i > 63) mode = CP_InvalidValue;
-				else if (i == -1) mode = CP_Canceled;
-				else if (input[0]) num = i;
+				if (i < -1 || i > 63) {
+					mode = CP_InvalidValue;
+				} else if (i == -1) {
+					mode = CP_Canceled;
+				} else if (input[0]) {
+					num = i;
+				}
 			} else if (command == 's') { // Set
 				actor->set_flag(num);
 				if (num == Obj_flags::in_party) {
@@ -2618,8 +2637,9 @@ CheatScreen::Cheat_Prompt CheatScreen::AdvancedFlagLoop(int num, Actor *actor) {
 				actor->clear_flag(num);
 			}
 
-			for (i = 0; i < 17; i++) input[i] = 0;
-			mode = CP_Command;
+			for (i = 0; i < 17; i++) {
+				input[i] = 0;
+			}
 			command = 0;
 			activate = false;
 			continue;

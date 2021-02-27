@@ -856,8 +856,7 @@ void Game_map::read_special_ireg(
     IDataSource *ireg,
     Game_object *obj        // Last object read.
 ) {
-	unsigned char entlen;
-	while ((entlen = ireg->peek()) == IREG_SPECIAL && !ireg->eof()) {
+	while (ireg->peek() == IREG_SPECIAL && !ireg->eof()) {
 		ireg->read1();      // Eat the IREG_SPECIAL.
 		unsigned char type = ireg->peek();
 		if (type == IREG_ENDMARK) {

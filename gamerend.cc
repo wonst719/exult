@@ -291,15 +291,13 @@ int Game_render::paint_map(
 
 static int Get_light_strength(const Game_object *obj, const Game_object *av, int brightness) {
 	// Note: originals do not seem to use center tile.
-	Tile_coord t1 = obj->get_center_tile();
-	Tile_coord t2 = av->get_center_tile();
-	int dx = Tile_coord::delta(t1.tx, t2.tx);
-	int dy = Tile_coord::delta(t1.ty, t2.ty);
+	const Tile_coord t1 = obj->get_center_tile();
+	const Tile_coord t2 = av->get_center_tile();
 	// Note: originals do not care about distance in Z. Maybe we should?
-	dx = std::abs(Tile_coord::delta(t1.tx, t2.tx));
-	dy = std::abs(Tile_coord::delta(t1.ty, t2.ty));
+	const int dx = std::abs(Tile_coord::delta(t1.tx, t2.tx));
+	const int dy = std::abs(Tile_coord::delta(t1.ty, t2.ty));
 	// This seems to match the originals as far as distance effects go.
-	int dist_decay_factor = std::max(0, 75 - 2 * dx - 3 * dy);
+	const int dist_decay_factor = std::max(0, 75 - 2 * dx - 3 * dy);
 	// Finally, return how bright this light is.
 	return dist_decay_factor * brightness;
 }

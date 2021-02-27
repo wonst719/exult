@@ -1042,7 +1042,7 @@ static bool End_level2(zipFile zipfile) {
 	if (err == ZIP_OK) err = zipWriteInFileInZip(zipfile, &zeros, 4);
 	if (err == ZIP_OK) err = zipWriteInFileInZip(zipfile, &zeros, 4);
 
-	return zipCloseFileInZip(zipfile) == ZIP_OK;
+	return zipCloseFileInZip(zipfile) == ZIP_OK && err == ZIP_OK;
 }
 
 

@@ -123,6 +123,7 @@ void getVersionInfo(std::ostream &out) {
 	out << "ENABLE_MIDISFX";
 #endif
 
+	if (firstoption) out << "(none)";
 	out << std::endl;
 
 	/*

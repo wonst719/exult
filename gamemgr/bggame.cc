@@ -543,11 +543,10 @@ void BG_Game::scene_butterfly() {
 		//
 		frame = 0;
 		Sint32 delay = frame_duration;
-		Sint32 ticks = SDL_GetTicks();
 		for (int i = 0; i < butterfly_num_coords - 1; ++i) {
 			for (int j = 0; j < frame_count; ++j) {
 
-				ticks = SDL_GetTicks();
+				Sint32 ticks = SDL_GetTicks();
 				int x = butterfly_x[i] + j * (butterfly_x[i + 1] - butterfly_x[i]) / frame_count;
 				int y = butterfly_y[i] + j * (butterfly_y[i + 1] - butterfly_y[i]) / frame_count;
 				DrawButterfly(x, y, frame, delay, backup.get(), butterfly);
@@ -1723,7 +1722,7 @@ void BG_Game::end_game(bool success) {
 		// Fade out for 1 sec (50 cycles)
 		pal->fade(50, 0, 0);
 
-		next = fli3.play(win, 0, 0, next);
+		fli3.play(win, 0, 0, next);
 		pal = fli3.get_palette();
 		next = SDL_GetTicks();
 		for (unsigned int i = 1000 + next; next < i; next += 10) {

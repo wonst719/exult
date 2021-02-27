@@ -1428,13 +1428,13 @@ void LowLevelMidiDriver::extractTimbreLibrary(XMidiEventList *eventlist)
 			if ((actual_address+sysex_size) >= timbre_add_start && actual_address < timbre_add_end)
 			{
 				uint32 start = actual_address;
-				uint32 size = sysex_size;
+				// uint32 size = sysex_size;
 				if (actual_address < timbre_add_start)
 				{
 					sysex_size -= timbre_add_start-actual_address;
 					actual_address = timbre_add_start;
 				}
-				if ((start+size) > timbre_add_end) size = timbre_add_end-start;
+				// if ((start+size) > timbre_add_end) size = timbre_add_end-start;
 				start -= timbre_add_start;
 				start /= 256;
 
@@ -1493,7 +1493,7 @@ void LowLevelMidiDriver::extractTimbreLibrary(XMidiEventList *eventlist)
 				uint32 size = sysex_size;
 				if (actual_address < rhythm_add_start)
 				{
-					sysex_size -= rhythm_add_start-actual_address;
+					// sysex_size -= rhythm_add_start-actual_address;
 					actual_address = rhythm_add_start;
 				}
 				if ((start+size) > rhythm_add_end) size = rhythm_add_end-start;

@@ -512,7 +512,7 @@ void SI_Game::play_intro() {
 				throw UserBreakException();
 
 
-		next = fli2.play(win, j, j, next);
+		fli2.play(win, j, j, next);
 
 		if (!speech || jive  || speech_n_subs) {
 			const char *and_a[2] = { get_text_msg(and_a0), get_text_msg(and_a0 + 1) };

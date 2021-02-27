@@ -232,9 +232,8 @@ int Path_walking_actor_action::handle_event(
 			// "Tire" a bit from retrying.
 			persistence--;
 			Game_object *block = Game_object::find_blocking(blocked_tile);
-			Actor *blk;
 			// Being blocked by an NPC?
-			if (block && (blk = block->as_actor()) != nullptr) {
+			if (block && block->as_actor() != nullptr) {
 				// Try to create a new path -- the old one might be blocked
 				// due to (say) the previously 'non-blocking' NPC now being
 				// in a blocking state.

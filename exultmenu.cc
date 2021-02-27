@@ -220,7 +220,7 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 	}
 
 	create_scroller_menu(menu.get(), navfonton, navfont, first, pagesize, num_choices,
-	                     centerx, ypos = gwin->get_win()->get_end_y() - 5 * font->get_text_height());
+	                     centerx, gwin->get_win()->get_end_y() - 5 * font->get_text_height());
 
 	const char *menuchoices[] = {
 		"SETUP",
@@ -278,7 +278,7 @@ std::unique_ptr<MenuList> ExultMenu::create_mods_menu(ModManager *selgame, int f
 	}
 
 	create_scroller_menu(menu.get(), navfonton, navfont, first, pagesize, num_choices,
-	                     centerx, ypos = gwin->get_win()->get_end_y() - 5 * font->get_text_height());
+	                     centerx, gwin->get_win()->get_end_y() - 5 * font->get_text_height());
 
 	const char *menuchoices[] = {
 		"RETURN TO MAIN MENU"

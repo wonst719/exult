@@ -243,5 +243,5 @@ void Stats_gump::paint(
 	if (act->get_flag(Obj_flags::cursed))
 		attsx += Show_atts(x + attsx, y + attsy, CURSED);
 	if (act->get_flag(Obj_flags::paralyzed))
-		attsx += Show_atts(x + attsx, y + attsy, PARALYZED);
+		Show_atts(x + attsx, y + attsy, PARALYZED);
 }

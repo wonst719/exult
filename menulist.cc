@@ -386,7 +386,6 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 		if (mouse_updated) {
 			mouse->show();
 			mouse->blit_dirty();
-			mouse_updated = false;
 		}
 	} while (!exit_loop);
 	mouse->hide();

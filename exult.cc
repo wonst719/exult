@@ -1558,7 +1558,7 @@ static void Handle_event(
 		    if (gwin->get_touch_pathfind() && !click_handled &&
 			        (curtime - last_b1down_click > 500) && avatar_can_act &&
 			        gwin->main_actor_can_act_charmed() && !dragging &&
-			        !(gump = gump_man->find_gump(x, y, false))) {
+			        !gump_man->find_gump(x, y, false)) {
 				gwin->start_actor_along_path(x, y, Mouse::mouse->avatar_speed);
 				dragging = dragged = false;
 				break;

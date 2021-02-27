@@ -674,7 +674,6 @@ void Usecode_script::step(
     int dir,            // 0-7.
     int dz
 ) {
-	Barge_object *barge;
 	Game_object_shared optr = obj.lock();
 	Actor *act = usecode->as_actor(optr.get());
 	if (act) {
@@ -689,7 +688,7 @@ void Usecode_script::step(
 		if (tile.tz < 0)
 			tile.tz = 0;
 		optr->step(tile, frame, true);
-	} else if (optr && (barge = optr->as_barge()) != nullptr) {
+	} else if (optr && optr->as_barge() != nullptr) {
 		for (int i = 0; i < 4; i++) {
 			Tile_coord t = optr->get_tile();
 			if (dir != -1)

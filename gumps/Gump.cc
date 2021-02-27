@@ -383,7 +383,6 @@ void Gump::paint(
 			}
 		}
 		obj->paint_shape(box.x + obj->get_tx(), box.y + obj->get_ty());
-		obj = obj->get_next();
 	}
 	// Outline selections in this gump.
 	const Game_object_shared_vector &sel = cheat.get_selected();

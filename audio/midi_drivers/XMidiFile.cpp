@@ -1431,7 +1431,8 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 			}
 
 			// Now read length of this track
-			len = source->read4high();
+			// len = source->read4high();
+			source->skip(4);
 
 			// Read 4 bytes of type
 			source->read (buf, 4);
@@ -1702,7 +1703,7 @@ int XMidiFile::ExtractTracksFromXMIDIMT (IDataSource *source)
 
 	// Reverb settings
 	CreateMT32SystemMessage(time, system_base, 1, 3, system_init_reverb);
-	time += time_inc;
+	// time += time_inc;
 
 	// Add tempo
 	static const unsigned char tempo_buf[5] = { 0x51, 0x03, 0x07, 0xA1, 0x20 };
