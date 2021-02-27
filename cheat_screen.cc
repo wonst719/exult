@@ -1277,37 +1277,41 @@ void CheatScreen::NPCMenu(Actor *actor, int &num) {
 #endif
 	// Left Column
 
-	// Business Activity
-	if (actor) font->paint_text_fixedwidth(ibuf, "[B]usiness Activity", offsetx, maxy - offsety1 - 99, 8);
+	if (actor) {
+		// Business Activity
+		font->paint_text_fixedwidth(ibuf, "[B]usiness Activity", offsetx, maxy - offsety1 - 99, 8);
 
-	// Change Shape
-	if (actor) font->paint_text_fixedwidth(ibuf, "[C]hange Shape", offsetx, maxy - offsety1 - 90, 8);
+		// Change Shape
+		font->paint_text_fixedwidth(ibuf, "[C]hange Shape", offsetx, maxy - offsety1 - 90, 8);
 
-	// XP
-	if (actor) font->paint_text_fixedwidth(ibuf, "[E]xperience", offsetx, maxy - offsety1 - 81, 8);
+		// XP
+		font->paint_text_fixedwidth(ibuf, "[E]xperience", offsetx, maxy - offsety1 - 81, 8);
 
-	// NPC Flags
-	if (actor) font->paint_text_fixedwidth(ibuf, "[N]pc Flags", offsetx, maxy - offsety1 - 72, 8);
+		// NPC Flags
+		font->paint_text_fixedwidth(ibuf, "[N]pc Flags", offsetx, maxy - offsety1 - 72, 8);
 
-	// Name
-	if (actor) font->paint_text_fixedwidth(ibuf, "[1] Name", offsetx, maxy - offsety1 - 63, 8);
+		// Name
+		font->paint_text_fixedwidth(ibuf, "[1] Name", offsetx, maxy - offsety1 - 63, 8);
+	}
 
 	// eXit
 	font->paint_text_fixedwidth(ibuf, "[X]it", offsetx2, offsety2, 8);
 
 	// Right Column
 
-	// Stats
-	if (actor) font->paint_text_fixedwidth(ibuf, "[S]tats", offsetx + 160, maxy - offsety1 - 99, 8);
+	if (actor) {
+		// Stats
+		font->paint_text_fixedwidth(ibuf, "[S]tats", offsetx + 160, maxy - offsety1 - 99, 8);
 
-	// Training Points
-	if (actor) font->paint_text_fixedwidth(ibuf, "[2] Training Points", offsetx + 160, maxy - offsety1 - 90, 8);
+		// Training Points
+		font->paint_text_fixedwidth(ibuf, "[2] Training Points", offsetx + 160, maxy - offsety1 - 90, 8);
 
-	// Teleport
-	if (actor) font->paint_text_fixedwidth(ibuf, "[T]eleport", offsetx + 160, maxy - offsety1 - 81, 8);
+		// Teleport
+		font->paint_text_fixedwidth(ibuf, "[T]eleport", offsetx + 160, maxy - offsety1 - 81, 8);
 
-	// Change NPC
-	font->paint_text_fixedwidth(ibuf, "[*] Change NPC", offsetx3, offsety3, 8);
+		// Change NPC
+		font->paint_text_fixedwidth(ibuf, "[*] Change NPC", offsetx3, offsety3, 8);
+	}
 
 	// Change NPC
 	font->paint_text_fixedwidth(ibuf, "[+-] Scroll NPCs", offsetx3, offsety4, 8);
