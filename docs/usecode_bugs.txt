@@ -51,7 +51,7 @@ Date:   12-14-01 10:12
 The French BG's usecode mixes up Dupre with and without an accent on the e.
 This way some conversation options are unreachable.
 
-[Note: fixed by jhoeksma. Need to disassemble fix to include here.]
+[TODO: fixed by jhoeksma. Need to disassemble fix to include here.]
 
 (BG) liquer conversation bug:
 ==============================
@@ -59,7 +59,7 @@ This way some conversation options are unreachable.
 BG has a conversation in which there are two conversation options named
 'liquer'. This prevents the second one from being chosen.
 
-[Note: fixed by jhoeksma. Need to disassemble fix to include here.]
+[TODO: fixed by jhoeksma. Need to disassemble fix to include here.]
 
 
 (SI) disappearing pikeman:
@@ -298,4 +298,19 @@ with
 
 With this, the function calls make sense without any further changes.
 
+(SI) Balance Serpent never solid without speech enabled.
+========================================================
+
+If you have speech disabled, then the Balance Serpent will never appear as being
+fully solid during speech. This happens because the usecode checks for the wrong
+frame of the Serpent Ring.
+
+Usecode function 0614:
+
+replace
+005B: 1F 02 00          pushi   0002H
+with
+005B: 1F 01 00          pushi   0001H
+
+Frame 2 is aninvalid frame, while frame 1 is the correct Serpent Ring frame.
 

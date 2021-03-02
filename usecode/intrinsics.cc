@@ -17,57 +17,57 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include <cmath>
-#include <map>
-#include <memory>
-
-#include "gamemap.h"
-#include "chunks.h"
 #include "Audio.h"
 #include "Book_gump.h"
 #include "Gump.h"
 #include "Gump_manager.h"
 #include "Scroll_gump.h"
 #include "Sign_gump.h"
-#include "items.h"
+#include "actions.h"
+#include "animate.h"
+#include "array_size.h"
 #include "barge.h"
 #include "cheat.h"
+#include "chunks.h"
+#include "combat.h"
 #include "conversation.h"
 #include "effects.h"
+#include "egg.h"
 #include "exult.h"
+#include "frflags.h"
 #include "game.h"
-#include "gamewin.h"
 #include "gameclk.h"
+#include "gamemap.h"
+#include "gamewin.h"
+#include "gump_utils.h"
+#include "ignore_unused_variable_warning.h"
+#include "items.h"
 #include "keyring.h"
+#include "monsters.h"
+#include "monstinf.h"
 #include "mouse.h"
+#include "palette.h"
+#include "party.h"
+#include "ready.h"
 #include "rect.h"
 #include "schedule.h"
 #include "spellbook.h"
+#include "stackframe.h"
+#include "touchui.h"
+#include "ucfunction.h"
 #include "ucinternal.h"
 #include "ucsched.h"
+#include "ucscriptop.h"
+#include "ucsymtbl.h"
 #include "useval.h"
 #include "virstone.h"
-#include "barge.h"
-#include "egg.h"
-#include "monsters.h"
-#include "monstinf.h"
-#include "frflags.h"
-#include "actions.h"
-#include "ucscriptop.h"
-#include "ucfunction.h"
-#include "palette.h"
-#include "stackframe.h"
-#include "party.h"
-#include "ucsymtbl.h"
-#include "animate.h"
-#include "combat.h"
-#include "ready.h"
-#include "ignore_unused_variable_warning.h"
-#include "array_size.h"
-#include "touchui.h"
+
+#include <cmath>
+#include <map>
+#include <memory>
 
 using std::cerr;
 using std::cout;
@@ -2173,39 +2173,63 @@ USECODE_INTRINSIC(restart_game) {
 	return no_ret;
 }
 
+static int get_speech_face(int speech_track) {
+	// TODO: de-hard-code this.
+	if (!GAME_SI) {
+		return -1;
+	}
+	if (speech_track < 21) {
+		// Balance Serpent.
+		Actor *ava = Game_window::get_instance()->get_main_actor();
+		// Wearing serpent ring?
+		Game_object *obj = ava->get_readied(lfinger);
+		if (obj && obj->get_shapenum() == 0x377 &&
+				obj->get_framenum() == 1) {
+			// Solid.
+			return 295;
+		} else if ((obj = ava->get_readied(rfinger)) != nullptr &&
+					obj->get_shapenum() == 0x377 &&
+					obj->get_framenum() == 1) {
+			// Solid.
+			return 295;
+		}
+		// Translucent.
+		return 300;
+	}
+	if (speech_track < 23) {
+		// Guardian.
+		return 296;
+	}
+	if (speech_track < 25) {
+		// Arcadion.
+		return 256;
+	}
+	if (speech_track == 25) {
+		// Chaos serpent.
+		return 293;
+	}
+	if (speech_track == 26) {
+		// Order serpent.
+		return 294;
+	}
+	return -1;
+}
+
 USECODE_INTRINSIC(start_speech) {
 	ignore_unused_variable_warning(num_parms);
 	// Start_speech(num).  Also sets speech_track.
 	bool okay = false;
 	speech_track = parms[0].get_int_value();
-	if (speech_track >= 0)
+	if (speech_track >= 0) {
 		okay = Audio::get_ptr()->start_speech(speech_track);
-	if (!okay)          // Failed?  Clear faces.  (Fixes SI).
+	}
+	if (!okay) {
+		// Failed?  Clear faces.  (Fixes SI).
 		init_conversation();
-	else if (GAME_SI) {
+	} else {
 		// Show guardian, serpent.
-		int face = 0;
-		if (speech_track < 21) { // Serpent?
-			Actor *ava = gwin->get_main_actor();
-			face = 300; // Translucent.
-			// Wearing serpent ring?
-			Game_object *obj = ava->get_readied(lfinger);
-			if (obj && obj->get_shapenum() == 0x377 &&
-			        obj->get_framenum() == 1)
-				face = 295; // Solid.
-			else if ((obj = ava->get_readied(rfinger)) != nullptr &&
-			         obj->get_shapenum() == 0x377 &&
-			         obj->get_framenum() == 1)
-				face = 295; // Solid.
-		} else if (speech_track < 23)
-			face = 296;     // Batlin.
-		else if (speech_track < 25)
-			face = 256;     // Goblin?
-		else if (speech_track == 25)
-			face = 293;     // Chaos serpent.
-		else if (speech_track == 26)
-			face = 294;     // Order serpent.
-		if (face > 0) {
+		const int face = get_speech_face(speech_track);
+		if (face >= 0) {
 			Usecode_value sh(face);
 			Usecode_value fr(0);
 			show_npc_face(sh, fr);
@@ -2213,6 +2237,74 @@ USECODE_INTRINSIC(start_speech) {
 			int y;       // Wait for click.
 			Get_click(x, y, Mouse::hand);
 			remove_npc_face(sh);
+		}
+	}
+	return Usecode_value(okay ? 1 : 0);
+}
+
+USECODE_INTRINSIC(start_blocking_speech) {
+	ignore_unused_variable_warning(num_parms);
+	// Start_speech(num).  Also sets speech_track.
+	bool okay = false;
+	speech_track = parms[0].get_int_value();
+	if (speech_track >= 0) {
+		okay = Audio::get_ptr()->start_speech(speech_track);
+	}
+	if (!okay) {
+		// Failed?  Clear faces.  (Fixes SI).
+		init_conversation();
+	} else {
+		// Show guardian, serpent.
+		eman->remove_text_effects();
+		const int face = get_speech_face(speech_track);
+		Usecode_value sh(face);
+		if (face >= 0) {
+			Usecode_value fr(0);
+			show_npc_face(sh, fr);
+		}
+
+		const bool os = Mouse::mouse->is_onscreen();
+		uint32 last_repaint = 0;    // For insuring animation repaints.
+		do {
+			Delay();        // Wait a fraction of a second.
+			Mouse::mouse->hide();       // Turn off mouse.
+			Mouse::mouse_update = false;
+			SDL_Event event;
+			while (SDL_PollEvent(&event)) {
+				if (event.type == SDL_MOUSEMOTION) {
+					// Mouse scale factor
+					int mx;
+					int my;
+					gwin->get_win()->screen_to_game(event.motion.x, event.motion.y, gwin->get_fastmouse(), mx, my);
+					Mouse::mouse->move(mx, my);
+					Mouse::mouse_update = true;
+				}
+			}
+			// Get current time, & animate.
+			uint32 ticks = SDL_GetTicks();
+			Game::set_ticks(ticks);
+			// Show animation every 1/20 sec.
+			if (ticks > last_repaint + 50 || gwin->was_painted()) {
+				gwin->paint_dirty();
+				while (ticks > last_repaint + 50)last_repaint += 50;
+			}
+
+			Mouse::mouse->show();       // Re-display mouse.
+			// Blit to screen if necessary, or if mouse changed.
+			if (!gwin->show() && Mouse::mouse_update) {
+				Mouse::mouse->blit_dirty();
+			}
+		} while (Audio::get_ptr()->is_voice_playing());
+
+		if (face >= 0) {
+			int x;
+			int y;       // Wait for click.
+			Get_click(x, y, Mouse::hand);
+			remove_npc_face(sh);
+		}
+
+		if (!os) {
+			Mouse::mouse->hide();
 		}
 	}
 	return Usecode_value(okay ? 1 : 0);

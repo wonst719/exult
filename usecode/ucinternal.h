@@ -310,6 +310,7 @@ class Usecode_internal : public Usecode_machine {
 	USECODE_INTRINSIC_DECL(get_readied);
 	USECODE_INTRINSIC_DECL(restart_game);
 	USECODE_INTRINSIC_DECL(start_speech);
+	USECODE_INTRINSIC_DECL(start_blocking_speech);
 	USECODE_INTRINSIC_DECL(is_water);
 	USECODE_INTRINSIC_DECL(run_endgame);
 	USECODE_INTRINSIC_DECL(fire_projectile);

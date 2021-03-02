@@ -599,6 +599,21 @@ bool UI_start_speech(int track)
     Returns false if failed to play the requested speech track (for example, if
     speech is disabled), true otherwise.
 
+bool UI_start_blocking_speech(int track)                             [BG, Exult]
+
+    Plays the specified speech track. Blocks until the speech finishes.
+
+    ****** SI SPECIFIC ******
+    In SI, speech also displays a full-screen face from 'FACES.VGA'.
+    **** END SI SPECIFIC ****
+
+  Parameters:
+    track    Number indicating what speech track is to be played.
+
+  Return:
+    Returns false if failed to play the requested speech track (for example, if
+    speech is disabled), true otherwise.
+
 int UI_get_speech_track()
 
     Determines the currently playing speech track.
