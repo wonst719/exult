@@ -75,6 +75,9 @@ public:
 			delete this;
 	}
 	uint32			getRefCount() { return refcount; }
+	virtual bool isVocSample() const {
+		return false;
+	}
 
 	static AudioSample *createAudioSample(std::unique_ptr<uint8[]> data, uint32 size);
 };

@@ -840,13 +840,18 @@ void Audio::set_audio_enabled(bool ena)
 	}
 }
 
-bool Audio::is_track_playing(int num)
+bool Audio::is_track_playing(int num) const
 {
-	MyMidiPlayer *midi = mixer?mixer->getMidiPlayer():nullptr;
+	MyMidiPlayer *midi = get_midi();
 	return midi && midi->is_track_playing(num);
 }
 
-MyMidiPlayer *Audio::get_midi()
+bool Audio::is_voice_playing() const
 {
-	return mixer?mixer->getMidiPlayer():nullptr;
+	return mixer && mixer->isPlayingVoice();
+}
+
+MyMidiPlayer *Audio::get_midi() const
+{
+	return mixer ? mixer->getMidiPlayer() : nullptr;
 }

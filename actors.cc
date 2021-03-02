@@ -4207,6 +4207,11 @@ void Actor::die(
 		if (npc->is_in_party() && !is_in_party() && alignment >= evil)
 			Combat_schedule::monster_died();
 	}
+	// TODO: De-hard-code this.
+	if (GAME_BG && is_in_party() && !Audio::get_ptr()->is_voice_playing()
+		&& (rand() % 4) == 0) {
+		Audio::get_ptr()->start_speech(22);
+	}
 	// Move party member to 'dead' list.
 	partyman->update_party_status(this);
 }

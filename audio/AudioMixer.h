@@ -47,6 +47,7 @@ public:
 	sint32			playSample(AudioSample *sample, int loop, int priority, bool paused=false, uint32 pitch_shift=AUDIO_DEF_PITCH, int lvol=AUDIO_MAX_VOLUME, int rvol=AUDIO_MAX_VOLUME);
 	bool			isPlaying(sint32 instance_id) const;
 	bool			isPlaying(AudioSample *sample) const;
+	bool			isPlayingVoice() const;
 	void			stopSample(sint32 instance_id);
 	void			stopSample(AudioSample *sample);
 	

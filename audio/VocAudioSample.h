@@ -31,6 +31,9 @@ public:
 	void initDecompressor(void *DecompData) const override;
 	uint32 decompressFrame(void *DecompData, void *samples) const override;
 	void freeDecompressor(void *DecompData) const override;
+	bool isVocSample() const override {
+		return true;
+	}
 
 	static bool isThis(IDataSource *ds);
 protected:

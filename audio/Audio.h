@@ -177,14 +177,15 @@ public:
 	static bool have_config_sfx(const std::string &game, std::string *out = nullptr);
 	static void	channel_complete_callback(int chan);
 
-	bool	is_track_playing(int num);
+	bool	is_track_playing(int num) const;
+	bool	is_voice_playing() const;
 
 	Flex *get_sfx_file()
 		{ return sfx_file.get(); }
 	SFX_cache_manager *get_sfx_cache() const
 		{ return sfxs.get(); }
 
-	MyMidiPlayer *get_midi();
+	MyMidiPlayer *get_midi() const;
 };
 
 #endif

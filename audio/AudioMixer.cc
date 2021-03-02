@@ -183,6 +183,17 @@ bool AudioMixer::isPlaying(AudioSample *sample) const
 	return it != channels.end();
 }
 
+bool AudioMixer::isPlayingVoice() const
+{
+	if (channels.empty() || !audio_ok) return false;
+
+	std::lock_guard<SDLAudioDevice> lock(*device);
+	auto it = std::find_if(channels.cbegin(), channels.cend(), [](auto& channel) {
+		return channel.isPlaying() && channel.getSample()->isVocSample();
+	});
+	return it != channels.end();
+}
+
 void AudioMixer::stopSample(sint32 instance_id)
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return;
