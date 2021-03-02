@@ -2779,7 +2779,7 @@ int Actor::reduce_health(
 			say(first_ouch, last_ouch);
 	}
 	Game_object_vector vec;     // Create blood.
-	const int blood = 912;      // ++++TAG for future de-hard-coding.
+	const int blood = 912;      // TODO: de-hard-code this.
 	// Bleed only for normal damage.
 	if (type == Weapon_data::normal_damage && !minf->cant_bleed()
 	        // Trying something new. Seems to match originals better, but

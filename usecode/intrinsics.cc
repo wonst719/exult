@@ -3347,7 +3347,7 @@ USECODE_INTRINSIC(begin_casting_mode) {
 	Actor *npc = as_actor(get_item(parms[0]));
 	if (npc) {
 		// Have custom casting frames been specified?
-		// ++++TAG: Need to de-hard-code.
+		// TODO: Need to de-hard-code.
 		int cframes = num_parms > 1 ? parms[1].need_int_value() : 859;
 		npc->begin_casting(cframes);
 	}

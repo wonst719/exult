@@ -44,7 +44,7 @@
  *      And the MAINSHP font (36)
  *  However, their values are set elsewhere
  */
-// +++++TAG: This shouldn't be hard-coded.
+// +TODO: This shouldn't be hard-coded.
 static int hlead[] = { -2, -1, 0, -1, 0, 0, -1, -2, -1, -1};
 /*
  *  Initialize.

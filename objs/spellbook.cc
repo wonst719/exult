@@ -44,7 +44,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using std::memcpy;
 using std::ostream;
 
-// ++++TAG: De-hard-code reagent shape and costs.
+// TODO: De-hard-code reagent shape and costs.
 const int REAGENTS = 842;       // Shape #.
 
 /*
@@ -206,7 +206,7 @@ bool Spellbook_object::can_do_spell(
 	if ((cflags & (1 << (spell % 8))) == 0)
 		return false;       // We don't have that spell.
 	int mana = act->get_property(Actor::mana);
-	// ++++TAG: Need to de-hard-code cost.
+	// TODO: Need to de-hard-code cost.
 	int cost = circle + (GAME_SI ? 1 : 0);
 	int level = act->get_level();
 	if ((mana < cost) || (level < circle))
@@ -242,7 +242,7 @@ bool Spellbook_object::do_spell(
 		if (cheat.in_wizard_mode())
 			circle = 0;
 		int mana = act->get_property(Actor::mana);
-		// ++++TAG: Need to de-hard-code cost.
+		// TODO: Need to de-hard-code cost.
 		act->set_property(Actor::mana, mana - circle - (GAME_SI ? 1 : 0));
 		// Figure what we used.
 		unsigned short flags = reagents[spell];
@@ -270,7 +270,7 @@ void Spellbook_object::execute_spell(
     int spell,
     bool in_combat          // Being used in combat.
 ) {
-	act->begin_casting(859);    // ++++TAG: Need to de-hard-code.
+	act->begin_casting(859);    // TODO: Need to de-hard-code.
 
 	// We use intercept_item for spells cast from readied spellbook
 	// while in combat.
