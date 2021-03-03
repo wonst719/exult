@@ -7,7 +7,7 @@ The latest version of this document can be found at http://exult.sourceforge.net
 1. Introduction
 1.1. What is Exult Studio?
 1.2. About this Documentation.
-1.3. Terms we use in regard to Exult and Ultima 7
+1.3. Terms we use in regard to Exult and Ultima VII
 
 2. Configurations
 2.1. Installation
@@ -109,8 +109,8 @@ The latest version of this document can be found at http://exult.sourceforge.net
 1. Introduction
 1.1. What is Exult Studio?
 
-Exult is not only capable of playing Ultima 7 but it is also intended as an engine in the style of the one used by Ultima 7. Exult Studio started it's life as a simple map editor but it is slowly developing into a full fledged editor enabling users to create a new game. Tristan came up with the cool name!
-The main purpose of Exult Studio is the ability to create an entirely original game world without using the original Ultima 7 data files. Its semi-possible already but still requires a lot of work. Not the least of which is that an entire games worth of art needs to be created.
+Exult is not only capable of playing Ultima VII but it is also intended as an engine in the style of the one used by Ultima VII. Exult Studio started it's life as a simple map editor but it is slowly developing into a full fledged editor enabling users to create a new game. Tristan came up with the cool name!
+The main purpose of Exult Studio is the ability to create an entirely original game world without using the original Ultima VII data files. Its semi-possible already but still requires a lot of work. Not the least of which is that an entire games worth of art needs to be created.
 Editing a copyrighted game may or may not be allowed. Please exercise caution especially if you want to distribute your changes.
 
 
@@ -120,7 +120,7 @@ Exult Studio is work in progress. How things work may change and new features ar
 This guide is what we hope will be an ongoing effort to provide up to date and in-depth information on how to get the most out of Exult Studio. Accuracy is an essential part of this guide. If you find something that could be clearer or doesn't seem worded properly please tell us, we will be happy to change this guide. Tips and tricks by other users will be appreciated as well and will of course be credited.
 
 
-1.3. Terms we use in regard to Exult and Ultima 7
+1.3. Terms we use in regard to Exult and Ultima VII
 
 Of course the terms explained in ReadMe.txt are also used in this Documentation but we will list them along with the terms that additionally need to be explained for the usage of Exult Studio.
 * tile:
@@ -134,7 +134,7 @@ Of course the terms explained in ReadMe.txt are also used in this Documentation 
 * NPC schedules:
  NPCs can have schedules which make them do things at certain times and locations.
 * BG, SI, FoV or SS:
- we refer to "Ultima 7: The Black Gate" as BG and to "Ultima 7: Serpent Isle" as SI. The add-ons "Forge of Virtue" and "Silver Seed" are called FoV and SS.
+ we refer to "Ultima VII: The Black Gate" as BG and to "Ultima VII - Part 2: Serpent Isle" as SI. The add-ons "Forge of Virtue" and "Silver Seed" are called FoV and SS.
 * eggs:
  these are trip-wires that can cause monsters to spawn, execute scripts, play music, change weather, trigger traps or teleport when you get near them.
 * flex files:
@@ -564,7 +564,7 @@ When you right click on a shape in the Shape browser (e.g. Files-Shapes.vga) you
  Let's you import a single frame from a .png file or export to a .png.
 * New shape:
  Gives you a dialog for choosing the shape #, as well as the initial # of frames.
- You can also create a new font shape from TrueType or Type1 font files. It's mainly a convenience for someone creating a whole new game, as their only single-colored. Maybe in the future we'll have some functions to create two-colored fonts like the main one in U7, although it might take hand-editing to make the letters look that nice.
+ You can also create a new font shape from TrueType or Type1 font files. It's mainly a convenience for someone creating a whole new game, as their only single-colored. Maybe in the future we'll have some functions to create two-colored fonts like the main one in Ultima VII, although it might take hand-editing to make the letters look that nice.
 
 Note:Edit... doesn't work on Windows system. It stores the shape as PNG file in GAMEDIR/itmp/ (e.g. blackgate/itmp). If you manually open the file with an image editor of your liking and then save it, ES doesn't read the changes back.
 
@@ -577,7 +577,7 @@ Create 'combination shapes', like a fence or an entire roof by selecting "Tools-
 
 5.3. Custom Usecode
 
-As hinted at (see 1.3.) Usecode is actually what runs Ultima 7 and therefore any game created with Exult Studio.
+As hinted at (see 1.3.) Usecode is actually what runs Ultima VII and therefore any game created with Exult Studio.
  As of yet we do not have a Usecode editor/debugger. So writing your own Usecode is not that easy.
 For an example of how Usecode may look like download our experimental patch for BG at http://exult.info/snapshots/patch.zip.
  In that zip you'll find a readme.txt which tells you how to run it.
@@ -989,7 +989,7 @@ In the process of creating Exult the team came up with some useful tools that mi
 * expack:
  lets you extract and create Flex files. See the manual.
 * ipack:
- a tool for creating and updating Exult and U7 image archives, such as 'shapes.vga'. See the manual.
+ a tool for creating and updating Exult and Ultima VII image archives, such as 'shapes.vga'. See the manual.
 * shp2pcx:
  converts all frames contained in a Shape file into PCX-format image files. See the manual.
 * splitshp:
@@ -1026,8 +1026,8 @@ Also, I (Jeff) wanted to get a little experience programming with sockets:-)
 
 9.7. About this 'terrain-editing' stuff and why you can't just drag objects to where you want.
 
-This confused me too, and I originally planned on doing away with it. But do a little arithmetic: U7's world has 3072x3072 tiles; that's over 9 million that need to be set. My guess is that they came up with the idea behind 'u7chunks' to save artists time and to give the map a consistent look.
-The basic idea is that each 'chunk' of flat terrain, 16x16 tiles, is stored in 'u7chunks', and is indexed by its position in this file (0, 1, 2, ...). The 'u7map' file specifies, for each 'chunk' in the U7 map, which of the terrains is to be used. Since the entire map has 192x192 chunks, or a total of 36,864, and since 'u7chunks' has 3072 entries, each terrain is shared an average of over 10 times. When you go into map-editing mode in Exult, the numbers displayed are the indices from 'u7chunks'.
+This confused me too, and I originally planned on doing away with it. But do a little arithmetic: Ultima VII's world has 3072x3072 tiles; that's over 9 million that need to be set. My guess is that they came up with the idea behind 'u7chunks' to save artists time and to give the map a consistent look.
+The basic idea is that each 'chunk' of flat terrain, 16x16 tiles, is stored in 'u7chunks', and is indexed by its position in this file (0, 1, 2, ...). The 'u7map' file specifies, for each 'chunk' in the Ultima VII map, which of the terrains is to be used. Since the entire map has 192x192 chunks, or a total of 36,864, and since 'u7chunks' has 3072 entries, each terrain is shared an average of over 10 times. When you go into map-editing mode in Exult, the numbers displayed are the indices from 'u7chunks'.
 So here are the three sorts of scenery that you can see and edit:
 1. The 'terrain' (flat landscape, rocks, shrubs, and first-story buildings) specified in 'u7chunks' and 'u7map'.
 2. Other non-moveable objects (second-floor structures, trees) specified in the 'ifixnn' files.
@@ -1148,7 +1148,7 @@ The next things to be implemented are:
 
 11.10. - 06 February 2004
 
-* 1.3. Terms we use in regard to Exult and Ultima 7 some corrections by Willem.
+* 1.3. Terms we use in regard to Exult and Ultima VII some corrections by Willem.
 * 2.3. Step-by-step instructions to run Exult Studio some corrections.
 * 2.2. Running Exult Studio some corrections.
 * 3.3. Map files More right click options.

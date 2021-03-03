@@ -15,33 +15,33 @@
 			<header>What is <Exult/>?</header>
 			<body>
 				<para>
-					Ultima 7, an RPG from the early 1990's, still has a huge following. But,
+					Ultima VII, an RPG from the early 1990's, still has a huge following. But,
 					being a DOS game with a very nonstandard memory manager, it is difficult
 					to run it on the latest computers. <Exult/> is a project to create
-					an Ultima 7 game engine that runs on modern operating systems, capable of
+					an Ultima VII game engine that runs on modern operating systems, capable of
 					using the data and graphics files that come with the game.
 				</para>
 				<para>
 					<Exult/> is written in C++ and runs on, at least, Linux, macOS and Windows
 					using the SDL2 library to make porting to other platforms relatively easy.
-					The current version supports all of &quot;Ultima 7: The Black Gate&quot;
-					and &quot;Ultima 7 part 2: The Serpent Isle&quot;, allowing you to
+					The current version supports all of &quot;Ultima VII: The Black Gate&quot;
+					and &quot;Ultima VII - Part 2: The Serpent Isle&quot;, allowing you to
 					finish both games. This is only possible due to the work done
-					by other fans who have decoded the various Ultima 7 data files,
+					by other fans who have decoded the various Ultima VII data files,
 					especially Gary Thompson, Maxim Shatskih, Jakob Schonberg, and Wouter Dijkslag.
 				</para>
 				<para>
-					<Exult/> aims to let those people who own Ultima 7 (copyright 1993)
+					<Exult/> aims to let those people who own Ultima VII (copyright 1993)
 					play the game on modern hardware, in as close to (or perhaps even surpassing)
 					its original splendor as is possible. You need to <strong>own</strong>
-					"Ultima 7: The Black Gate" and/or "Ultima 7: Serpent Isle" and optionally
+					"Ultima VII: The Black Gate" and/or "Ultima VII: Serpent Isle" and optionally
 					the add-ons (not required to run) in order to use <Exult/>,
 					and we encourage you to buy a legal copy.
 				</para>
 			</body>
 		</sub>
 		<sub name="terms">
-			<header>Terms we use in regard to Exult and Ultima 7</header>
+			<header>Terms we use in regard to Exult and Ultima VII</header>
 			<body>
 				<para>
 					We are using many terms in this documentation, the FAQ and other documentation
@@ -51,7 +51,7 @@
 				<ul>
 					<li><strong>BG</strong>, <strong>SI</strong>, <strong>FoV</strong>
 					or <strong>SS</strong>:<br/>
-						we refer to "Ultima 7: The Black Gate" as BG and to "Ultima 7: Serpent Isle"
+						we refer to "Ultima VII: The Black Gate" as BG and to "Ultima VII - Part 2: Serpent Isle"
 						as SI. The add-ons "Forge of Virtue" and "Silver Seed" are called FoV and SS.</li>
 					<li><strong>eggs</strong>:<br/>
 						these are trip-wires that can cause monsters to spawn, execute scripts, play 
@@ -76,7 +76,7 @@
 						see <extref doc="faq" target="whatis_snapshot"/>.<br/>
 						Please note that our documentation usually refers to the latest snapshot.</li>
 					<li><strong>usecode</strong>:<br/>
-						that's the scripting language that drives all of U7 (conversations, objects...).</li>
+						that's the scripting language that drives all of Ultima VII (conversations, objects...).</li>
 					<li><strong>Exult data folder</strong>:<br/>
 						that's the folder where <Exult/> stores its data files (exult.flx, exult_bg.flx and
 						exult_si.flx).</li>
@@ -93,12 +93,12 @@
 			<header>Installation</header>
 			<body>
 				<ul>
-					<li>First you need to get Ultima 7. Either you own it already, or
+					<li>First you need to get Ultima VII. Either you own it already, or
 						you buy it somewhere.</li>
-					<li>You need an installed version of Ultima 7 to run <Exult/> with.
+					<li>You need an installed version of Ultima VII to run <Exult/> with.
 						At <section_ref target="Installing the original Ultima VII games for use with Exult"/>
 						we have a guide on how to install the original games or use the version offered by GOG.com.</li>
-					<li>Copy the installed Ultima7 folder to an appropriate folder</li>
+					<li>Copy the installed Ultima VII folder to an appropriate folder</li>
 					<li>Download <Exult/> from our 
 						<extref target="http://exult.info/download.php">download page</extref>
 						and install it. The Windows version comes with an installer that asks for the 
@@ -115,7 +115,7 @@
 					<strong>Word of advice:</strong> Don't mix the files from BG and SI.
 				</para>
 				<para>
-					<strong>Note:</strong> If you run <Exult/> on an original Ultima7
+					<strong>Note:</strong> If you run <Exult/> on an original Ultima VII
 					game which you're actually in the middle of playing, your game
 					will be overwritten. Since <Exult/>'s files
 					have a different format, there is no way to convert those
@@ -1134,7 +1134,7 @@
 					FluidSynth. Another way is Digital Music encoded into OGG (similar to MP3) which was 
 					recorded directly from a Roland MT-32. The third option is FMOpl which emulates 
 					Opl2/Adlib.<br/>
-					The MIDI files are converted on-the-fly from the original Ultima 7 MT-32 files to 
+					The MIDI files are converted on-the-fly from the original Ultima VII MT-32 files to 
 					General MIDI format so that they will be playable on modern General MIDI and 
 					General MIDI/GS supporting sound cards.
 				</para>
@@ -1371,7 +1371,7 @@
 			<header>Digital Wave Sound Effects</header>
 			<body>
 				<para>
-					<Exult/> needs the so called SFX packs to enable sound effects for Ultima 7.
+					<Exult/> needs the so called SFX packs to enable sound effects for Ultima VII.
 					You have to download separate packs for each game as order of the SFX in BG
 					and SI varies a bit and otherwise will sound odd. However there is a little
 					issue with SFX playback in SI: In combat the SFX may be a little wrong as we
@@ -2706,7 +2706,7 @@
 			<header>Using the version for Windows from GOG.com</header>
 			<body>
 				<para>
-					Since November 2011 you can buy Ultima 7 from <extref target="http://www.gog.com">GOG</extref>.
+					Since November 2011 you can buy Ultima VII from <extref target="http://www.gog.com">GOG</extref>.
 					Unfortunately GOG only offers a Windows installer that you can't easily circumvent, which makes 
 					it a challenge for users that use a different OS than Windows.
 				</para>

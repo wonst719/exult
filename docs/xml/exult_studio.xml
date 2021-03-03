@@ -6,14 +6,14 @@
 			<header>What is <Studio/>?</header>
 			<body>
 				<para>
-					<Exult/> is not only capable of playing Ultima 7 but it is also intended as
-					an engine in the style of the one used by Ultima 7. <Studio/> started it's life
+					<Exult/> is not only capable of playing Ultima VII but it is also intended as
+					an engine in the style of the one used by Ultima VII. <Studio/> started it's life
 					as a simple map editor but it is slowly developing into a full fledged editor
 					enabling users to create a new game. Tristan came up with the cool name!
 				</para>
 				<para>
 					The main purpose of <Studio/> is the ability to create an entirely original
-					game world without using the original Ultima 7 data files. Its semi-possible
+					game world without using the original Ultima VII data files. Its semi-possible
 					already but still requires a lot of work. Not the least of which is that an entire
 					games worth of art needs to be created.
 				</para>
@@ -42,7 +42,7 @@
 			</body>
 		</sub>
 		<sub name="studio_terms">
-			<header>Terms we use in regard to Exult and Ultima 7</header>
+			<header>Terms we use in regard to Exult and Ultima VII</header>
 			<body>
 				<para>
 					Of course the terms explained in <extref doc="docs" target="terms"/> are
@@ -62,7 +62,7 @@
 						NPCs can have schedules which make them do things at certain times and locations.</li>
 					<li><strong>BG</strong>, <strong>SI</strong>, <strong>FoV</strong>
 					or <strong>SS</strong>:<br/>
-						we refer to "Ultima 7: The Black Gate" as BG and to "Ultima 7: Serpent Isle"
+						we refer to "Ultima VII: The Black Gate" as BG and to "Ultima VII - Part 2: Serpent Isle"
 						as SI. The add-ons "Forge of Virtue" and "Silver Seed" are called FoV and SS.</li>
 					<li><strong>eggs</strong>:<br/>
 						these are trip-wires that can cause monsters to spawn, execute scripts, play 
@@ -755,7 +755,7 @@
 						You can also create a new font shape from TrueType or Type1 font files.
 						It's mainly a convenience for someone creating a whole new game, as their
 						only single-colored. Maybe in the future we'll have some functions to
-						create two-colored fonts like the main one in U7, although it might take
+						create two-colored fonts like the main one in Ultima VII, although it might take
 						hand-editing to make the letters look that nice.</li>
 				</ul>
 				<para>
@@ -786,7 +786,7 @@
 			<header>Custom Usecode</header>
 			<body>
 				<para>
-					As hinted at (see <ref target="studio_terms"/>) Usecode is actually what runs Ultima 7
+					As hinted at (see <ref target="studio_terms"/>) Usecode is actually what runs Ultima VII
 					and therefore any game created with <Studio/>.<br/>
 					As of yet we do not have a Usecode editor/debugger. So writing your own Usecode is not
 					that easy.
@@ -1618,7 +1618,7 @@
 						See the
 						<extref target="https://raw.githubusercontent.com/exult/exult/master/tools/expack.txt">manual</extref>.</li>
 					<li><strong>ipack</strong>:<br/>
-						a tool for creating and updating <Exult/> and U7 image archives, such as 'shapes.vga'.
+						a tool for creating and updating <Exult/> and Ultima VII image archives, such as 'shapes.vga'.
 						See the
 						<extref target="https://raw.githubusercontent.com/exult/exult/master/tools/ipack.txt">manual</extref>.</li>
 					<li><strong>shp2pcx</strong>:<br/>
@@ -1696,7 +1696,7 @@
 			<body>
 				<para>
 					This confused me too, and I originally planned on doing away with it.
-					But do a little arithmetic:  U7's world has 3072x3072 tiles; that's
+					But do a little arithmetic:  Ultima VII's world has 3072x3072 tiles; that's
 					over 9 million that need to be set. My guess is that they came up
 					with the idea behind 'u7chunks' to save artists time and to give the
 					map a consistent look.
@@ -1704,7 +1704,7 @@
 				<para>
 					The basic idea is that each 'chunk' of flat terrain, 16x16 tiles, is
 					stored in 'u7chunks', and is indexed by its position in this file (0,
-					1, 2, ...). The 'u7map' file specifies, for each 'chunk' in the U7
+					1, 2, ...). The 'u7map' file specifies, for each 'chunk' in the Ultima VII
 					map, which of the terrains is to be used. Since the entire map has
 					192x192 chunks, or a total of 36,864, and since 'u7chunks' has 3072
 					entries, each terrain is shared an average of over 10 times. When you

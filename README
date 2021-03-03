@@ -7,7 +7,7 @@ The latest version of this document can be found at http://exult.sourceforge.net
 1. Introduction
 1.1. Exult Version
 1.2. What is Exult?
-1.3. Terms we use in regard to Exult and Ultima 7
+1.3. Terms we use in regard to Exult and Ultima VII
 
 2. Configurations
 2.1. Installation
@@ -149,16 +149,16 @@ This documentation is for the snapshot version of Exult. If you have another Exu
 
 1.2. What is Exult?
 
-Ultima 7, an RPG from the early 1990's, still has a huge following. But, being a DOS game with a very nonstandard memory manager, it is difficult to run it on the latest computers. Exult is a project to create an Ultima 7 game engine that runs on modern operating systems, capable of using the data and graphics files that come with the game.
-Exult is written in C++ and runs on, at least, Linux, macOS and Windows using the SDL2 library to make porting to other platforms relatively easy. The current version supports all of "Ultima 7: The Black Gate" and "Ultima 7 part 2: The Serpent Isle", allowing you to finish both games. This is only possible due to the work done by other fans who have decoded the various Ultima 7 data files, especially Gary Thompson, Maxim Shatskih, Jakob Schonberg, and Wouter Dijkslag.
-Exult aims to let those people who own Ultima 7 (copyright 1993) play the game on modern hardware, in as close to (or perhaps even surpassing) its original splendor as is possible. You need to own "Ultima 7: The Black Gate" and/or "Ultima 7: Serpent Isle" and optionally the add-ons (not required to run) in order to use Exult, and we encourage you to buy a legal copy.
+Ultima VII, an RPG from the early 1990's, still has a huge following. But, being a DOS game with a very nonstandard memory manager, it is difficult to run it on the latest computers. Exult is a project to create an Ultima VII game engine that runs on modern operating systems, capable of using the data and graphics files that come with the game.
+Exult is written in C++ and runs on, at least, Linux, macOS and Windows using the SDL2 library to make porting to other platforms relatively easy. The current version supports all of "Ultima VII: The Black Gate" and "Ultima VII - Part 2: The Serpent Isle", allowing you to finish both games. This is only possible due to the work done by other fans who have decoded the various Ultima VII data files, especially Gary Thompson, Maxim Shatskih, Jakob Schonberg, and Wouter Dijkslag.
+Exult aims to let those people who own Ultima VII (copyright 1993) play the game on modern hardware, in as close to (or perhaps even surpassing) its original splendor as is possible. You need to own "Ultima VII: The Black Gate" and/or "Ultima VII: Serpent Isle" and optionally the add-ons (not required to run) in order to use Exult, and we encourage you to buy a legal copy.
 
 
-1.3. Terms we use in regard to Exult and Ultima 7
+1.3. Terms we use in regard to Exult and Ultima VII
 
 We are using many terms in this documentation, the FAQ and other documentation files that people may have difficulties to understand. Here we will try to give some explanations.
 * BG, SI, FoV or SS:
- we refer to "Ultima 7: The Black Gate" as BG and to "Ultima 7: Serpent Isle" as SI. The add-ons "Forge of Virtue" and "Silver Seed" are called FoV and SS.
+ we refer to "Ultima VII: The Black Gate" as BG and to "Ultima VII - Part 2: Serpent Isle" as SI. The add-ons "Forge of Virtue" and "Silver Seed" are called FoV and SS.
 * eggs:
  these are trip-wires that can cause monsters to spawn, execute scripts, play music, change weather, trigger traps or teleport when you get near them.
 * flex files:
@@ -173,7 +173,7 @@ We are using many terms in this documentation, the FAQ and other documentation f
  see FAQ.txt.
  Please note that our documentation usually refers to the latest snapshot.
 * usecode:
- that's the scripting language that drives all of U7 (conversations, objects...).
+ that's the scripting language that drives all of Ultima VII (conversations, objects...).
 * Exult data folder:
  that's the folder where Exult stores its data files (exult.flx, exult_bg.flx and exult_si.flx).
 * gamename
@@ -187,16 +187,16 @@ We are using many terms in this documentation, the FAQ and other documentation f
 2. Configurations
 2.1. Installation
 
-* First you need to get Ultima 7. Either you own it already, or you buy it somewhere.
-* You need an installed version of Ultima 7 to run Exult with. At 10. Installing the original Ultima VII games for use with Exult we have a guide on how to install the original games or use the version offered by GOG.com.
-* Copy the installed Ultima7 folder to an appropriate folder
+* First you need to get Ultima VII. Either you own it already, or you buy it somewhere.
+* You need an installed version of Ultima VII to run Exult with. At 10. Installing the original Ultima VII games for use with Exult we have a guide on how to install the original games or use the version offered by GOG.com.
+* Copy the installed Ultima VII folder to an appropriate folder
 * Download Exult from our download page and install it. The Windows version comes with an installer that asks for the location of both BG and SI. If you entered the correct location the next two steps are not necessary.
 * Now run exult (exult.exe on Windows) and quit it immediately.
 * Edit the configuration file with a text editor (e.g. on Windows use Notepad) and enter the correct paths for the game folders - see 2.3. for details
 * Run exult and enjoy the game :-)
 
 Word of advice: Don't mix the files from BG and SI.
-Note: If you run Exult on an original Ultima7 game which you're actually in the middle of playing, your game will be overwritten. Since Exult's files have a different format, there is no way to convert those original save games.
+Note: If you run Exult on an original Ultima VII game which you're actually in the middle of playing, your game will be overwritten. Since Exult's files have a different format, there is no way to convert those original save games.
 
 
 2.2. Location of exult.cfg
@@ -853,7 +853,7 @@ On macOS Exult uses a couple of different folders to follow Apple's guidelines:
         </patch>
       </gamename>
 Note that on macOS Exult also has a default folder (/Library/Application Support/Exult/) for Exult's data and the files of the games. On purpose this folder is not in the User-only space, so other users on the same mac can play the games and use the Exult.app.
-But you will need to follow our gamename standard when you name the game folders, see 1.3. Terms we use in regard to Exult and Ultima 7 , otherwise Exult will not find them there.
+But you will need to follow our gamename standard when you name the game folders, see 1.3. Terms we use in regard to Exult and Ultima VII , otherwise Exult will not find them there.
  Another specialty on macOS is that the Exult.app comes bundled with the Exult data, so Exult will first use the data in the Exult.app and then use the data in the default location (/Library/Application Support/Exult/data) or the location written down in exult.cfg's <data_path>. This means that you can copy the sfx files and the digital music folder into the app bundle (Exult.app/Contents/Resources/data) and Exult will automatically use these.
 Example: User named FooBar on macOS 10.15. BG is installed to /Library/Application Support/Exult/blackgate and SI is installed to /Library/Application Support/Exult/serpentisle. The app Exult.app is saved to /Applications. When you run Exult it will automatically recognize that BG and SI are installed. You do not need to edit exult.cfg, which is saved to /Users/FooBar/Library/Preferences/exult.cfg. When you save a game in BG the savegame will be saved to /Users/FooBar/Library/Application Support/exult/blackgate/exult00bg.sav, for SI to Users/FooBar/Library/Application Support/exult/serpentisle/exult00si.sav.
  If you install for example the keyring mod, you copy the contents of the Keyring.zip to /Library/Application Support/Exult/blackgate/mods. When you save a game with the Keyring mod, this savegame will be found in /Users/FooBar/Library/Application Support/exult/blackgate/mods/keyring/exult00bg.sav.
@@ -893,7 +893,7 @@ On *nix based systems Exult uses:
         </patch>
       </gamename>
 As on macOS, Exult uses on *nix systems a default path for its data folder and the game files. Unless you use a different path in exult.cfg, Exult will look for these in /usr/local/share/exult.
-But you will need to follow our gamename standard when you name the game folders, see 1.3. Terms we use in regard to Exult and Ultima 7 , otherwise Exult will not find them there.
+But you will need to follow our gamename standard when you name the game folders, see 1.3. Terms we use in regard to Exult and Ultima VII , otherwise Exult will not find them there.
 Example: User named FooBar on Ubuntu. BG is installed to /usr/local/share/exult/blackgate and SI is installed to /usr/local/share/exult/serpentisle. When you run Exult it will automatically recognize that BG and SI are installed. You do not need to edit exult.cfg, which is saved to $HOME/.exult.cfg.
  When you save a game in BG the savegame will be saved to $HOME/.exult/blackgate/exult00bg.sav, for SI to $HOME/.exult/serpentisle/exult00si.sav.
  If you install for example the keyring mod, you copy the contents of the Keyring.zip to /usr/local/share/Exult/blackgate/mods. When you save a game with the Keyring mod, this savegame will be found in $HOME/.exult/blackgate/mods/keyring/exult00bg.sav.
@@ -999,7 +999,7 @@ Exult generates the files 'stdout.txt' and 'stderr.txt'. These may give you some
 3.1. Music
 
 There are three general ways that music is played in Exult. One is using MIDI, which plays the music through any MIDI device, or software synthesizers like TiMidity and FluidSynth. Another way is Digital Music encoded into OGG (similar to MP3) which was recorded directly from a Roland MT-32. The third option is FMOpl which emulates Opl2/Adlib.
- The MIDI files are converted on-the-fly from the original Ultima 7 MT-32 files to General MIDI format so that they will be playable on modern General MIDI and General MIDI/GS supporting sound cards.
+ The MIDI files are converted on-the-fly from the original Ultima VII MT-32 files to General MIDI format so that they will be playable on modern General MIDI and General MIDI/GS supporting sound cards.
 The Music driver options can be changed in the in-game menu that you open by hitting 'ESC'.
  There you can enable Digital Music and change the MIDI driver, through which you can also select the FMOpl emulation. When you enable Digital Music, it takes precedence over the MIDI driver.
 
@@ -1111,7 +1111,7 @@ The digital music pack seems to have two issue, though, some tracks seem to have
 
 3.7. Digital Wave Sound Effects
 
-Exult needs the so called SFX packs to enable sound effects for Ultima 7. You have to download separate packs for each game as order of the SFX in BG and SI varies a bit and otherwise will sound odd. However there is a little issue with SFX playback in SI: In combat the SFX may be a little wrong as we still haven't figured out all the data in the 'weapons.dat'.
+Exult needs the so called SFX packs to enable sound effects for Ultima VII. You have to download separate packs for each game as order of the SFX in BG and SI varies a bit and otherwise will sound odd. However there is a little issue with SFX playback in SI: In combat the SFX may be a little wrong as we still haven't figured out all the data in the 'weapons.dat'.
  Also Exult doesn't yet playback all the SFX that the original did.
 
 
@@ -1882,7 +1882,7 @@ On macOS select both game folders, bring up info, go to Ownership and Permission
 
 10.9. Using the version for Windows from GOG.com
 
-Since November 2011 you can buy Ultima 7 from GOG. Unfortunately GOG only offers a Windows installer that you can't easily circumvent, which makes it a challenge for users that use a different OS than Windows.
+Since November 2011 you can buy Ultima VII from GOG. Unfortunately GOG only offers a Windows installer that you can't easily circumvent, which makes it a challenge for users that use a different OS than Windows.
 Right now the only way to get at the game files is to run the installer on Windows (or in WINE if you are not a Windows user). After the installation you will find the game files in C:\GOG Games\Ultima 7 and C:\GOG Games\Ultima 7 - Serpent Isle.
 After installation you can just run our installer and when asked where the games are installed enter or browse to the above paths.
  Unfortunately GOG changes the download of the games for some unknown reason again and again. So our instructions are sometimes out of date. These ones are for the latest GOG release at the time of writing. If it doesn't work, please visit our forum and tell us.
