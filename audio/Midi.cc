@@ -90,6 +90,29 @@ using std::string;
 #define SEQ_NUM_MUSIC	0
 #define SEQ_NUM_SFX		1
 
+static std::unique_ptr<IDataSource> open_music_flex(const std::string& flex, int num) {
+	// Try in patch dir first.
+	string pflex("<PATCH>/");
+	size_t prefix_len = 0;
+	if (flex[0] == '<')
+	{
+		prefix_len = flex.find(">/");
+		if (prefix_len != string::npos)
+			prefix_len += 2;
+		else
+			prefix_len = 0;
+	}
+
+	pflex += flex.c_str() + prefix_len;
+	if (is_system_path_defined("<BUNDLE>")) {
+		string bflex("<BUNDLE>/");
+		bflex += flex.c_str() + prefix_len;
+		return std::make_unique<IExultDataSource>(flex, bflex, pflex, num);
+	} else {
+		return std::make_unique<IExultDataSource>(flex, pflex, num);
+	}
+}
+
 void	MyMidiPlayer::start_music(int num,bool repeat,std::string flex)
 {
 	// No output device
@@ -152,28 +175,7 @@ void	MyMidiPlayer::start_music(int num,bool repeat,std::string flex)
 		else if (flex == MAINSHP_FLX) num--;
 	}
 
-	// Try in patch dir first.
-	string pflex("<PATCH>/");
-	size_t prefix_len = 0;
-	if (flex[0] == '<')
-	{
-		prefix_len = flex.find(">/");
-		if (prefix_len != string::npos)
-			prefix_len += 2;
-		else
-			prefix_len = 0;
-	}
-
-	pflex += flex.c_str() + prefix_len;
-	std::unique_ptr<IDataSource> mid_data;
-	if (is_system_path_defined("<BUNDLE>")) {
-		string bflex("<BUNDLE>/");
-		bflex += flex.c_str() + prefix_len;
-		mid_data = std::make_unique<IExultDataSource>(flex, bflex, pflex, num);
-	} else {
-		mid_data = std::make_unique<IExultDataSource>(flex, pflex, num);
-	}
-
+	std::unique_ptr<IDataSource> mid_data = open_music_flex(flex, num);
 	// Extra safety.
 	if (!mid_data->getSize())
 	{
@@ -811,30 +813,30 @@ bool MyMidiPlayer::ogg_play_track(const std::string& filename, int num, bool rep
 		basepath = "<STATIC>/music/";
 		}
 
-	if (ogg_name.empty()) return false;
+	if (ogg_name.empty()) {
+		return false;
+	}
 
 	const bool flex_source = ogg_name == filename;
-	if (flex_source)
-		ogg_name = get_system_path(ogg_name);
-	else if (U7exists("<PATCH>/music/" + ogg_name))
-		ogg_name = get_system_path("<PATCH>/music/" + ogg_name);
-	else if (is_system_path_defined("<BUNDLE>") &&
-	         U7exists("<BUNDLE>/music/" + ogg_name))
-		ogg_name = get_system_path("<BUNDLE>/music/" + ogg_name);
-	else
-		ogg_name = get_system_path(basepath + ogg_name);
+	auto ds = [&ogg_name, &basepath, num, flex_source]() -> std::unique_ptr<IDataSource> {
+		if (flex_source) {
+			return open_music_flex(ogg_name, num);
+		}
+		if (U7exists("<PATCH>/music/" + ogg_name)) {
+			ogg_name = get_system_path("<PATCH>/music/" + ogg_name);
+		} else if (is_system_path_defined("<BUNDLE>") &&
+				U7exists("<BUNDLE>/music/" + ogg_name)) {
+			ogg_name = get_system_path("<BUNDLE>/music/" + ogg_name);
+		} else {
+			ogg_name = get_system_path(basepath + ogg_name);
+		}
+		return std::make_unique<IFileDataSource>(ogg_name);
+	}();
 
 #ifdef DEBUG
 	cout << "OGG audio: Music track " << ogg_name << endl;
 #endif
 
-	auto ds = [flex_source, &ogg_name, num]() -> std::unique_ptr<IDataSource> {
-		if (flex_source) {
-			return std::make_unique<IExultDataSource>(ogg_name, num);
-		} else {
-			return std::make_unique<IFileDataSource>(ogg_name);
-		}
-	}();
 	if (!ds->good()) {
 		return false;
 	}
