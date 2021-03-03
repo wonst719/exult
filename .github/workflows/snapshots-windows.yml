@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  activity-check:
+  snapshots-windows:
+    if: github.repository_owner == 'exult'
     runs-on: windows-latest
     defaults:
       run:
