@@ -125,7 +125,8 @@ jobs:
           "/c/Program Files/7-Zip/7z.exe" -tzip a Keyring.zip -mx9 -mmt bgkeyring/*
           "/c/Program Files/7-Zip/7z.exe" -tzip a SFisland.zip -mx9 -mmt islefaq/*
           "/c/Program Files/7-Zip/7z.exe" -tzip a Sifixes.zip -mx9 -mmt sifixes/*
-          chmod -r 0600 ~/.ssh
+          mkdir -p ~/.ssh
+          chmod 0600 ~/.ssh
           cp $(cygpath "$HOMEDRIVE$HOMEPATH")/.ssh/* ~/.ssh/
           scp_files="Exult.exe ExultStudio.exe ExultTools.exe Gimp20Plugin.exe Keyring.zip SFisland.zip Sifixes.zip"
           scp -i ~/.ssh/id_rsa $scp_files ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/exult-web-master/snapshots/
