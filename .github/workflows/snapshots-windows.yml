@@ -90,6 +90,7 @@ jobs:
             popd
           done
           echo "EXULT_SNAPSHOT_PATH=${SNAPSHOT_PATH}" >> $GITHUB_ENV
+          echo "MSYSHOME=${HOME}" >> $GITHUB_ENV
       - name: Checkout code for x86_64 build
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: actions/checkout@master
@@ -107,7 +108,10 @@ jobs:
           make -j2 -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} dist studiodist toolsdist plugindist
           echo "EXULT_SNAPSHOT_PATH=${SNAPSHOT_PATH}" >> $GITHUB_ENV
       - name: Install SSH key
+        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         uses: shimataro/ssh-key-action@v2
+        env:
+          HOME: ${{ env.MSYSHOME }}
         with:
           key: "${{ secrets.SSH_PRIVATE_KEY }}"
           name: id_rsa
