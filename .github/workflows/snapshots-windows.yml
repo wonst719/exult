@@ -107,13 +107,6 @@ jobs:
           mkdir -p ${SNAPSHOT_PATH}
           make -j2 -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} dist studiodist toolsdist plugindist
           echo "EXULT_SNAPSHOT_PATH=${SNAPSHOT_PATH}" >> $GITHUB_ENV
-      - name: Install SSH key
-        if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: "${{ secrets.SSH_PRIVATE_KEY }}"
-          name: id_rsa
-          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
       - name: Create installers
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
         run: |
@@ -125,11 +118,6 @@ jobs:
           "/c/Program Files/7-Zip/7z.exe" -tzip a Keyring.zip -mx9 -mmt bgkeyring/*
           "/c/Program Files/7-Zip/7z.exe" -tzip a SFisland.zip -mx9 -mmt islefaq/*
           "/c/Program Files/7-Zip/7z.exe" -tzip a Sifixes.zip -mx9 -mmt sifixes/*
-          mkdir -p ~/.ssh
-          chmod 0600 ~/.ssh
-          cp $(cygpath "$HOMEDRIVE$HOMEPATH")/.ssh/* ~/.ssh/
-          scp_files="Exult.exe ExultStudio.exe ExultTools.exe Gimp20Plugin.exe Keyring.zip SFisland.zip Sifixes.zip"
-          scp -i ~/.ssh/id_rsa $scp_files ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/exult-web-master/snapshots/
           echo "GITHUB_REF=v1.7.0.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
       - name: VirusTotal Scan
         if: ${{ env.EXULT_REPO_ALIVE }} == 'true'
