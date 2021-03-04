@@ -3,6 +3,7 @@ name: ci-linux
 on:
   push:
     paths:
+      - '**'
       - '!docs/**'
       - 'docs/Makefile.am'
       - '!ios/**'
@@ -27,6 +28,7 @@ on:
       - '.github/workflows/ci-linux.yml'
   pull_request:
     paths:
+      - '**'
       - '!docs/**'
       - 'docs/Makefile.am'
       - '!ios/**'

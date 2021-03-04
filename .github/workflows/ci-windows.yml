@@ -3,6 +3,7 @@ name: ci-windows
 on:
   push:
     paths:
+      - '**'
       - '!docs/**'
       - 'docs/Makefile.am'
       - '!ios/**'
@@ -26,6 +27,7 @@ on:
       - '.github/workflows/ci-windows.yml'
   pull_request:
     paths:
+      - '**'
       - '!docs/**'
       - 'docs/Makefile.am'
       - '!ios/**'

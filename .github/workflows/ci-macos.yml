@@ -3,6 +3,7 @@ name: ci-macos
 on:
   push:
     paths:
+      - '**'
       - '!docs/**'
       - 'docs/Makefile.am'
       - '!msvcstuff/**'
@@ -25,6 +26,7 @@ on:
       - '.github/workflows/ci-macos.yml'
   pull_request:
     paths:
+      - '**'
       - '!docs/**'
       - 'docs/Makefile.am'
       - '!msvcstuff/**'
