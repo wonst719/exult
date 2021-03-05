@@ -315,6 +315,12 @@ if WITH_OSX_CODE_SIGNATURE
 	codesign --options runtime --deep -f -s "$(OSX_CODE_SIGNATURE)" $(bundle_name)
 endif
 
+bundle_shared: bundle
+	dylibbundler -od -b -x $(bundle_name)/Contents/MacOS/$(bin_PROGRAMS) -d $(bundle_name)/Contents/Resources/lib -p @executable_path/../Resources/lib -i /usr/lib
+if WITH_OSX_CODE_SIGNATURE
+	codesign --options runtime -f -s "$(OSX_CODE_SIGNATURE)" $(bundle_name)/contents/resources/lib/*.dylib
+endif
+
 studiobundle: ${EXE_TARGET}
 	$(eval export SOURCE=$(shell pwd))
 	gtk-mac-bundler ./macosx/exult_studio.bundle
@@ -328,7 +334,7 @@ install-exec-local: bundle
 	mkdir -p $(DESTDIR)/Applications/
 	cp -r $(bundle_name) $(DESTDIR)/Applications/
 
-osxdmg: bundle
+osxdmg: bundle_shared
 	mkdir -p Exult-snapshot
 	mkdir -p ./Exult-snapshot/images
 	cp $(srcdir)/AUTHORS ./Exult-snapshot/Authors

@@ -43,6 +43,7 @@ With MacPorts install:
   libsdl2
   libvorbis
   munt-mt32emu
+  dylibbundler
 
 Installing these packages with MacPorts will actually install many other
 packages these depend on.
@@ -68,17 +69,13 @@ a nice Exult.app (double clickable from the Finder and all), enter this
 command:
   make bundle
 
-Be warned, the binary created this way is not static linked, that means 
-if you copy it to another machine it will most likely NOT work. So you 
-can only use it on your own computer (see the instructions further down 
-for a static build)
+To use this bundle on another machine run
+  make bundle_shared
 
 
 How to compile a static version of Exult on Mac OS X
 ----------------------------------------------------
 
-If you want a version of Exult for using it on another OS X machine you need to 
-compile a static version.
 You need to follow the above instructions on how to compile Exult. Then you have to
 re-run configure and make
   ./configure --enable-static-libraries --with-macosx-static-lib-path=path/to/static/libs
