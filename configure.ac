@@ -399,7 +399,7 @@ if test x$HAVEALSA = xyes; then
 	if test x$enable_alsa = xyes; then
 		AC_MSG_RESULT(yes)
 		AC_DEFINE(USE_ALSA_MIDI, 1, [Enable ALSA midi])
-		LIBS="$LIBS -lasound"
+		ALSA_LIBS="-lasound"
 	else
 		AC_MSG_RESULT(no)
 	fi
@@ -415,7 +415,7 @@ if test x$HAVEFLUIDSYNTH = xyes; then
 		if test x$enable_fluidsynth = xyes; then
 				AC_MSG_RESULT(yes)
 				AC_DEFINE(USE_FLUIDSYNTH_MIDI, 1, [Enable fluidsynth midi])
-				LIBS="$LIBS -lfluidsynth"
+				FLUIDSYNTH_LIBS="-lfluidsynth"
 		else
 				AC_MSG_RESULT(no)
 		fi
@@ -1083,6 +1083,8 @@ AC_SUBST(DEBUG_FLAGS)
 AC_SUBST(ZLIB_LIBS)
 AC_SUBST(MT32EMU_LIBS)
 AC_SUBST(MT32EMU_CFLAGS)
+AC_SUBST(FLUIDSYNTH_LIBS)
+AC_SUBST(ALSA_LIBS)
 AC_SUBST(WARNINGS)
 AC_SUBST(AR_FLAGS)
 
