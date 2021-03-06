@@ -54,7 +54,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          brew install automake hg libtool pkg-config libpng zlib libogg libvorbis fluid-synth freetype gtk+3 libxml2 bison flex
+          brew install automake libtool pkg-config libpng zlib libogg libvorbis fluid-synth freetype gtk+3 libxml2 bison flex
           brew install sdl2 --head
       - name: Checkout code
         uses: actions/checkout@master
