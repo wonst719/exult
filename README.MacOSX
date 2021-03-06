@@ -28,7 +28,7 @@ The following guide is only for people that want to compile Exult on their own.
 This is not needed if there is a current snapshot for macOS available on our 
 download page.
 
-Make sure you have Apple's Xcode installed, which canbe downloaded for free from 
+Make sure you have Apple's Xcode, which can be installed for free from 
 the App Store (https://apps.apple.com/de/app/xcode/id497799835?l=en&mt=12).
 
 In order to compile Exult, you need to install several Unix packages.
