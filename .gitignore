@@ -285,6 +285,7 @@ ios/SDL2
 ios/libmt32emu
 ios/libogg
 ios/libvorbis
+project.xcworkspace
 
 *.ilk
 *.pdb
