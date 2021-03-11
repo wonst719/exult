@@ -790,6 +790,11 @@ void Usecode_internal::set_item_shape(
 	gwin->add_dirty(item);
 	// Get chunk it's in.
 	Map_chunk *chunk = item->get_chunk();
+	if (!chunk) {
+		CERR("Object " << item << " not in chunk and not owned by another object");
+		item->set_shape(shape);
+		return;
+	}
 	Game_object_shared keep = item->shared_from_this();
 	chunk->remove(item);        // Remove and add to update cache.
 	item->set_shape(shape);
