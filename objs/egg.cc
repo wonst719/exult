@@ -1266,7 +1266,7 @@ bool Field_object::field_effect(
 		return false;
 	}
 
-	if (!del)
+	if (!del && animator)
 		// Tell animator to keep checking.
 		animator->activate_animator();
 	return del;
@@ -1302,7 +1302,8 @@ void Field_object::activate(
 	npcs.push_back(gwin->get_main_actor()); // Include Avatar.
 	Rectangle eggfoot = get_footprint();
 	// Clear flag to check.
-	animator->deactivate_animator();
+	if (animator)
+		animator->deactivate_animator();
 	for (auto *actor : npcs) {
 		if (actor->is_dead() || Game_object::distance(actor) > 4)
 			continue;
