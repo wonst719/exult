@@ -296,13 +296,13 @@ void Mouse::set_speed_cursor() {
 			}
 
 		const int base_speed = 200 * gwin->get_std_delay();
-		if (speed_section < 0.4) {
+		if (speed_section < 0.4f) {
 			if (gwin->in_combat())
 				cursor = get_short_combat_arrow(dir);
 			else
 				cursor = get_short_arrow(dir);
 			avatar_speed = base_speed / slow_speed_factor;
-		} else if (speed_section < 0.8 || gwin->in_combat() || nearby_hostile
+		} else if (speed_section < 0.8f || gwin->in_combat() || nearby_hostile
 		           || has_active_nohalt_scr) {
 			if (gwin->in_combat())
 				cursor = get_medium_combat_arrow(dir);

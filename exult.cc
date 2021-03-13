@@ -1115,7 +1115,7 @@ static void Handle_events(
 		Game::set_ticks(ticks);
 #ifdef DEBUG
 		if (last_fps == 0 || ticks >= last_fps + 10000) {
-			double fps = (gwin->blits * 1000.0f) / (ticks - last_fps);
+			double fps = (gwin->blits * 1000.0) / (ticks - last_fps);
 			cerr << "***#ticks = " << ticks - last_fps <<
 			     ", blits = " << gwin->blits << ", ";
 			cerr << "FPS:  " << fps << endl;

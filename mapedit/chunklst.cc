@@ -606,7 +606,7 @@ void Chunk_chooser::scroll(
     bool upwards
 ) {
 	GtkAdjustment *adj = gtk_range_get_adjustment(GTK_RANGE(vscroll));
-	float delta = gtk_adjustment_get_step_increment(adj);
+	gdouble delta = gtk_adjustment_get_step_increment(adj);
 	if (upwards)
 		delta = -delta;
 	gtk_adjustment_set_value(adj, gtk_adjustment_get_value(adj) + delta);
