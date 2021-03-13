@@ -186,7 +186,7 @@ int current_scaleval = 1;
 
 #ifdef _WIN32
 static HWND hgwin;
-static class Windnd *windnd = nullptr;
+static Windnd *windnd = nullptr;
 #endif
 
 

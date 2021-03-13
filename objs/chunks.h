@@ -43,6 +43,7 @@ class Npc_actor;
 class Image_buffer8;
 class Chunk_terrain;
 class ODataSource;
+class Ordering_info;
 
 /*
  *  Data cached for a chunk to speed up processing, but which doesn't need
@@ -143,9 +144,9 @@ class Map_chunk : public Game_singletons {
 	bool selected;          // For 'select_chunks' mode.
 	void add_dungeon_levels(Rectangle &tiles, unsigned int lift);
 	void add_dependencies(Game_object *newobj,
-	                      class Ordering_info &newinfo);
+	                      Ordering_info &newinfo);
 	static Map_chunk *add_outside_dependencies(int cx,
-	        int cy, Game_object *newobj, class Ordering_info &newinfo);
+	        int cy, Game_object *newobj, Ordering_info &newinfo);
 public:
 	friend class Npc_actor;
 	friend class Game_object;

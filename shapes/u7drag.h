@@ -93,8 +93,7 @@ using Drop_shape_handler_fun = void (*)(int shape, int frame, int x, int y,
                                         void *data);
 using Drop_chunk_handler_fun = void (*)(int chunk, int x, int y, void *data);
 using Drop_npc_handler_fun = void (*)(int npc, int x, int y, void *data);
-using Drop_combo_handler_fun = void (*)(int cnt, struct U7_combo_data *combo,
+using Drop_combo_handler_fun = void (*)(int cnt, U7_combo_data *combo,
                                         int x, int y, void *data);
 
 #endif
-

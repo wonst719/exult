@@ -85,7 +85,7 @@ struct u7frame {
 
 struct u7shape {
 	int num_frames;
-	struct u7frame *frames;
+	u7frame *frames;
 	int width, height;
 };
 

@@ -555,7 +555,7 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 	int optchr;
 	auto get_next_option = [&]() {
 #ifdef HAVE_GETOPT_LONG
-		static const struct option optarray[] = {
+		static const option optarray[] = {
 			{ "help",           no_argument, nullptr, 'h' },
 			{ "silent",         no_argument, nullptr, 's' },
 			{ "config",   required_argument, nullptr, 'c' },
@@ -1050,7 +1050,7 @@ void ExultStudio::create_new_game(
 		EStudio::Alert("'%s' for initial data files not found",
 		               esdir.c_str());
 	else {
-		struct dirent *entry;
+		dirent *entry;
 		while ((entry = readdir(dirrd))) {
 			char *fname = entry->d_name;
 			// Ignore case of extension.
@@ -1462,7 +1462,7 @@ void ExultStudio::set_game_path(const string &gamename, const string &modname) {
 /*  Note:  Args after extcnt are in (name, file_type) pairs.    */
 void add_to_tree(GtkTreeStore *model, const char *folderName,
                  const char *files, ExultFileTypes file_type, int extra_cnt, ...) {
-	struct dirent *entry;
+	dirent *entry;
 	GtkTreeIter iter;
 
 	// First, we add the folder

@@ -2,8 +2,9 @@
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma GCC diagnostic ignored "-Wredundant-tags"
 #pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif  // __GNUC__
 }
 
@@ -13,10 +14,6 @@
  **
  **	Written: 12/30/2000 - JSF
  **/
-
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif  // __GNUC__
 
 /*
 Copyright (C) 2000 The Exult Team
@@ -43,6 +40,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ucparse.h"
 #include "ucloc.h"
 #include "ucfun.h"
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif  // __GNUC__
 
 using std::string;
 
@@ -248,6 +249,7 @@ char *Handle_string
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wredundant-tags"
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #if !defined(__llvm__) && !defined(__clang__)

@@ -22,11 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <memory>
 #include "shapeid.h"
 
-template<class T>
+template <class T>
 class T_Object_iterator;
-template<class T, class L>
+template <class T, class L>
 class T_Flat_object_iterator;
-template<class T, class L>
+template <class T, class L>
 class T_Object_iterator_backwards;
 
 /*
@@ -36,8 +36,6 @@ class T_Object_iterator_backwards;
 template<class T>
 class T_Object_list {
 	friend class T_Object_iterator<T>;
-	friend class T_Flat_object_iterator<T *, class L>;
-	friend class T_Object_iterator_backwards<T *, class L>;
 	using TShared = std::shared_ptr<T>;
 	TShared first;        // ->first in (circular) chain.
 	unsigned short iter_count = 0;  // # of iterators.

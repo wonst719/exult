@@ -54,6 +54,7 @@ class Object_client;
 class Spellbook_object;
 class Virtue_stone_object;
 class Dead_body;
+class Ordering_info;
 
 template<class T>
 class T_Object_list;
@@ -169,7 +170,7 @@ public:
 		return prev;
 	}
 	// Compare for render order.
-	static int compare(class Ordering_info &inf1, Game_object *obj2);
+	static int compare(Ordering_info &inf1, Game_object *obj2);
 	int lt(Game_object &obj2);  // Is this less than another in pos.?
 	void set_invalid() {    // Set to invalid position.
 		chunk = nullptr;

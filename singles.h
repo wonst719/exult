@@ -19,22 +19,31 @@
 #ifndef SINGLES_H
 #define SINGLES_H   1
 
+class Game_window;
+class Game_map;
+class Effects_manager;
+class Shape_manager;
+class Usecode_machine;
+class Game_clock;
+class Palette;
+class Gump_manager;
+class Party_manager;
 /*
  *  'Singletons' used throughout the code.
  *  NOTE:  For now, the implementation is in shapeid.cc.
  */
 class Game_singletons {
 protected:
-	static class Game_window *gwin;
-	static class Game_map *gmap;
-	static class Effects_manager *eman;
-	static class Shape_manager *sman;
-	static class Usecode_machine *ucmachine;
-	static class Game_clock *gclock;
-	static class Palette *pal;
-	static class Gump_manager *gumpman;
-	static class Party_manager *partyman;
-	friend class Game_window;
+	static Game_window *gwin;
+	static Game_map *gmap;
+	static Effects_manager *eman;
+	static Shape_manager *sman;
+	static Usecode_machine *ucmachine;
+	static Game_clock *gclock;
+	static Palette *pal;
+	static Gump_manager *gumpman;
+	static Party_manager *partyman;
+	friend Game_window;
 
 public:
 	static void init(Game_window *g);

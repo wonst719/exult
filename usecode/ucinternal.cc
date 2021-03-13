@@ -1591,21 +1591,21 @@ using UsecodeIntrinsicFn = Usecode_value(Usecode_internal::*)(int num_parms, Use
 
 #define USECODE_INTRINSIC_PTR(NAME) { &Usecode_internal::UI_ ## NAME, TO_STRING(NAME) }
 
-struct Usecode_internal::IntrinsicTableEntry
+Usecode_internal::IntrinsicTableEntry
 		Usecode_internal::intrinsic_table[] = {
 #include "bgintrinsics.h"
 };
 
 // Serpent Isle Intrinsic Function Tablee
 // It's different to the Black Gate one.
-struct Usecode_internal::IntrinsicTableEntry
+Usecode_internal::IntrinsicTableEntry
 		Usecode_internal::serpent_table[] = {
 #include "siintrinsics.h"
 };
 
 // Serpent Isle Beta Intrinsic Function Tablee
 // It's different to the Black Gate and Seroent Isle one.
-struct Usecode_internal::IntrinsicTableEntry
+Usecode_internal::IntrinsicTableEntry
 		Usecode_internal::serpentbeta_table[] = {
 #include "sibetaintrinsics.h"
 };
@@ -1625,7 +1625,7 @@ Usecode_value Usecode_internal::call_intrinsic(
 		parms[i] = val;
 	}
 	if (intrinsic <= max_bundled_intrinsics) {
-		struct Usecode_internal::IntrinsicTableEntry *table_entry;
+		Usecode_internal::IntrinsicTableEntry *table_entry;
 
 		if (Game::get_game_type() == SERPENT_ISLE) {
 			if (Game::is_si_beta())

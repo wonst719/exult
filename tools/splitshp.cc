@@ -47,7 +47,7 @@ struct u7frame {
 
 struct u7shape {
 	int num_frames;
-	struct u7frame *frames;
+	u7frame *frames;
 };
 
 unsigned int read1(FILE *f) {

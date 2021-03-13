@@ -896,7 +896,7 @@ void Newfile_gump::LoadSaveGameDetails() {
 	cur_details->game_minute = gclock->get_minute();
 
 	time_t t = time(nullptr);
-	struct tm *timeinfo = localtime(&t);
+	tm *timeinfo = localtime(&t);
 
 	cur_details->real_day = timeinfo->tm_mday;
 	cur_details->real_hour = timeinfo->tm_hour;

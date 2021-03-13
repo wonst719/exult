@@ -81,7 +81,7 @@ using namespace std;
 #define SIZECENTRALHEADER (0x2e) /* 46 */
 
 struct linkedlist_datablock_internal {
-	struct linkedlist_datablock_internal *next_datablock;
+	linkedlist_datablock_internal *next_datablock;
 	uLong  avail_in_this_block;
 	uLong  filled_in_this_block;
 	uLong  unused; /* for future use and alignement */
