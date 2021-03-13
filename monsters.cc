@@ -580,9 +580,12 @@ void Slime_actor::remove_this(
     Game_object_shared *keep     // Non-null to not delete.
 ) {
 	Tile_coord pos = get_tile();
-	Monster_actor::remove_this(keep);
+	Game_object_shared keep_this;
+	Monster_actor::remove_this(&keep_this);
 	// Update surrounding slimes.
 	update_frames(pos, Tile_coord(-1, -1, -1));
+	if (keep)
+		*keep = std::move(keep_this);
 }
 
 /*

@@ -5104,11 +5104,14 @@ void Npc_actor::remove_this(
 	gwin->remove_nearby_npc(this);  // Remove from nearby list.
 	// Store old chunk list.
 	Map_chunk *olist = get_chunk();
-	Actor::remove_this(keep);  // Remove, but don't ever delete an NPC
+	Game_object_shared keep_this;
+	Actor::remove_this(&keep_this);  // Remove, but don't ever delete an NPC
 	Npc_actor::switched_chunks(olist, nullptr);
 	set_invalid();
 	if (!keep && npc_num > 0)  // Really going?
 		unused = true;      // Mark unused if a numbered NPC.
+	if (keep)
+		*keep = std::move(keep_this);
 }
 
 /*
