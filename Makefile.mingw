@@ -142,46 +142,72 @@ endif
 WARNINGS := \
 	-Wall \
 	-Wextra \
-	-pedantic \
-	-Walloc-zero \
-	-Walloca \
-	-Wbool-compare \
-	-Wbool-operation \
+	-Wpedantic \
 	-Wc++14-compat \
 	-Wc++17-compat \
+	-Wc++20-compat \
+	-Walloc-zero \
+	-Walloca \
+	-Wanalyzer-too-complex \
+	-Warith-conversion \
+	-Wcast-align \
 	-Wcast-align=strict \
-	-Wcast-function-type \
 	-Wcast-qual \
-	-Wcatch-value=3 \
+	-Wcomma-subscript \
 	-Wconditionally-supported \
 	-Wctor-dtor-privacy \
+	-Wdate-time \
+	-Wdeprecated-copy-dtor \
 	-Wdisabled-optimization \
+	-Wdouble-promotion \
 	-Wduplicated-branches \
 	-Wduplicated-cond \
 	-Wextra-semi \
 	-Wformat-nonliteral \
 	-Wformat-security \
-	-Wlogical-not-parentheses \
+	-Wformat-y2k \
+	-Winvalid-pch \
 	-Wlogical-op \
+	-Wmismatched-tags \
 	-Wmissing-include-dirs \
+	-Wmultichar \
+	-Wnoexcept \
 	-Wno-deprecated-declarations \
 	-Wno-maybe-uninitialized \
 	-Wnon-virtual-dtor \
 	-Wnull-dereference \
 	-Wold-style-cast \
 	-Woverloaded-virtual \
-	-Wplacement-new \
+	-Wpacked \
 	-Wredundant-decls \
-	-Wshift-negative-value \
-	-Wshift-overflow \
-	-Wstringop-truncation \
-	-Wtrigraphs \
+	-Wredundant-tags \
+	-Wregister \
+	-Wstack-protector \
+	-Wstrict-null-sentinel \
+	-Wsuggest-final-methods \
+	-Wsuggest-final-types \
+	-Wsuggest-override \
+	-Wsynth \
+	-Wtrampolines \
 	-Wundef \
-	-Wuninitialized \
-	-Wunused-variable \
 	-Wuseless-cast \
-	-Wwrite-strings \
-	-Wzero-as-null-pointer-constant
+	-Wvector-operation-performance \
+	-Wvirtual-inheritance \
+	-Wvolatile \
+	-Wzero-as-null-pointer-constant \
+	-Warray-bounds=2 \
+	-Wattribute-alias=2 \
+	-Wcatch-value=3 \
+	-Wformat-overflow=2 \
+	-Wformat-truncation=2 \
+	-Wformat=2 \
+	-Wimplicit-fallthrough=3 \
+	-Wplacement-new=2 \
+	-Wshift-overflow=2 \
+	-Wstrict-aliasing=3 \
+	-Wstrict-overflow=2 \
+	-Wstringop-overflow=4 \
+	-Wunused-const-variable=1
 
 CXXFLAGS:=-MMD -std=c++14 $(ARCHFLAGS) $(strip $(OPT_LEVEL) $(WARNINGS) -mms-bitfields)
 
