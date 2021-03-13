@@ -30,7 +30,7 @@
  *  Hash function for strings:
  */
 struct hashstr {
-	uint32 operator()(const char *str) const {
+	uint32 operator()(const char *str) const noexcept {
 		const uint32 m = 4294967291u;
 		uint32 result = 0;
 		for (; *str != '\0'; ++str) {

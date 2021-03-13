@@ -53,7 +53,7 @@ public:
 	Neighbor_iterator(Tile_coord const &t) : tile(t), index(0)
 	{  }
 	// Get next neighbor.
-	int operator()(Tile_coord &newt) {
+	int operator()(Tile_coord &newt) noexcept {
 		if (index < 8) {
 			newt = Tile_coord(tile.tx + coords[2 * index],
 			                  tile.ty + coords[2 * index + 1], tile.tz);
@@ -217,7 +217,7 @@ public:
  */
 class Hash_node {
 public:
-	size_t operator()(const Search_node *a) const {
+	size_t operator()(const Search_node *a) const noexcept {
 		const Tile_coord t = a->get_tile();
 		return (t.tz << 24) + (t.ty << 12) + t.tx;
 	}
@@ -228,7 +228,7 @@ public:
  */
 class Equal_nodes {
 public:
-	bool operator()(const Search_node *a, const Search_node *b) const {
+	bool operator()(const Search_node *a, const Search_node *b) const noexcept {
 		Tile_coord ta = a->get_tile();
 		Tile_coord tb = b->get_tile();
 		return ta == tb;
