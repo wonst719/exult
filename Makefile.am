@@ -370,7 +370,7 @@ studiodmg:
 	cp $(srcdir)/docs/images/studio*.* ./Studio-snapshot/images
 	cp $(srcdir)/docs/images/*.gif ./Studio-snapshot/images
 	cp $(srcdir)/macosx/diskback.png ./Studio-snapshot/images/diskback.png
-	cp $(srcdir)/macosx/DS_Store ./Studio-snapshot/.DS_Store
+	cp $(srcdir)/macosx/exult_studio_DS_Store ./Studio-snapshot/.DS_Store
 	SetFile -a V ./Studio-snapshot/.DS_Store
 	SetFile -a V ./Studio-snapshot/images
 	SetFile -t ttro -c ttxt ./Studio-snapshot/Authors
