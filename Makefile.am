@@ -347,6 +347,11 @@ osxdmg: bundle
 	cp $(srcdir)/docs/images/*.gif ./Exult-snapshot/images
 	cp $(srcdir)/macosx/diskback.png ./Exult-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/DS_Store ./Exult-snapshot/.DS_Store
+	ln -s /Applications "./Exult-snapshot/Drag'n'drop here"
+	touch "./Exult-snapshot/Git $(REVISION)"
+	echo "read 'icns' (-16455) \"$(srcdir)/macosx/clear.icns\";" >> tmpicnsE.rsrc
+	Rez -a tmpicnsE.rsrc -o "./Exult-snapshot/Git $(REVISION)"
+	SetFile -a C "./Exult-snapshot/Git $(REVISION)"
 	SetFile -a V ./Exult-snapshot/.DS_Store
 	SetFile -a V ./Exult-snapshot/images
 	SetFile -t ttro -c ttxt ./Exult-snapshot/Authors
@@ -356,7 +361,7 @@ osxdmg: bundle
 	cp -R $(bundle_name) ./Exult-snapshot/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 					-srcfolder Exult-snapshot \
-					-volname "Exult Git snapshot$(REVISION)" \
+					-volname "Exult Git snapshot" \
 					Exult-snapshot.dmg
 	rm -rf Exult-snapshot
 
@@ -371,6 +376,11 @@ studiodmg:
 	cp $(srcdir)/docs/images/*.gif ./Studio-snapshot/images
 	cp $(srcdir)/macosx/diskback.png ./Studio-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/exult_studio_DS_Store ./Studio-snapshot/.DS_Store
+	ln -s /Applications "./Studio-snapshot/Drag'n'drop here"
+	touch "./Studio-snapshot/Git $(REVISION)"
+	echo "read 'icns' (-16455) \"$(srcdir)/macosx/clear.icns\";" >> tmpicnsES.rsrc
+	Rez -a tmpicnsES.rsrc -o "./Studio-snapshot/Git $(REVISION)"
+	SetFile -a C "./Studio-snapshot/Git $(REVISION)"
 	SetFile -a V ./Studio-snapshot/.DS_Store
 	SetFile -a V ./Studio-snapshot/images
 	SetFile -t ttro -c ttxt ./Studio-snapshot/Authors
@@ -378,13 +388,15 @@ studiodmg:
 	cp -R $(studio_name) ./Studio-snapshot/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 					-srcfolder Studio-snapshot \
-					-volname "Exult Studio Git snapshot$(REVISION)" \
+					-volname "Exult Studio Git snapshot" \
 					ExultStudio-snapshot.dmg
 	rm -rf Studio-snapshot
 
 clean-local:
 	-rm -f Exult-snapshot.dmg
 	-rm -f ExultStudio-snapshot.dmg
+	-rm -f tmpicnsE.rsrc
+	-rm -f tmpicnsES.rsrc
 	-rm -rf $(bundle_name)
 	-rm -rf $(studio_name)
 
