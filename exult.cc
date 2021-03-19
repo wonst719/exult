@@ -736,9 +736,9 @@ static void Init(
 		config->value("config/video/gamma/red", gr, "1.0");
 		config->value("config/video/gamma/green", gg, "1.0");
 		config->value("config/video/gamma/blue", gb, "1.0");
-		Image_window8::set_gamma(static_cast<float>(atof(gr.c_str())),
-		                         static_cast<float>(atof(gg.c_str())),
-		                         static_cast<float>(atof(gb.c_str())));
+		Image_window8::set_gamma(atof(gr.c_str()),
+		                         atof(gg.c_str()),
+		                         atof(gb.c_str()));
 		string  fullscreenstr;      // Check config. for fullscreen mode.
 		config->value("config/video/fullscreen", fullscreenstr, "no");
 		bool    fullscreen = (fullscreenstr == "yes");
@@ -2210,11 +2210,11 @@ void make_screenshot(bool silent) {
 }
 
 void change_gamma(bool down) {
-	float r;
-	float g;
-	float b;
+	double r;
+	double g;
+	double b;
 	char text[256];
-	float delta = down ? 0.05f : -0.05f;
+	const double delta = down ? 0.05 : -0.05;
 	Image_window8::get_gamma(r, g, b);
 	Image_window8::set_gamma(r + delta, g + delta, b + delta);
 	gwin->get_pal()->apply(true);   // So new brightness applies.

@@ -27,18 +27,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 template <class T> class GammaTable {
 private:
 	unsigned    size;
-	float       sizef;
+	double      sizef;
 	T           *table;
-	float       gamma;
+	double      gamma;
 
 public:
 
-	inline const float &get_gamma() {
+	inline const double &get_gamma() {
 		return gamma;
 	}
 
-	inline void set_gamma(float g) {
-		if (g < 0.001f) g = 0.001f;
+	inline void set_gamma(double g) {
+		if (g < 0.001) g = 0.001;
 		if (g == gamma) return;
 		gamma = g;
 

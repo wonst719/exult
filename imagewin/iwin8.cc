@@ -51,13 +51,13 @@ Image_window8::Image_window8(unsigned int w, unsigned int h, unsigned int gwidth
 	ib8 = static_cast<Image_buffer8 *>(ibuf);
 }
 
-void Image_window8::get_gamma(float &r, float &g, float &b) {
+void Image_window8::get_gamma(double &r, double &g, double &b) {
 	r = GammaRed.get_gamma();
 	g = GammaGreen.get_gamma();
 	b = GammaBlue.get_gamma();
 }
 
-void Image_window8::set_gamma(float r, float g, float b) {
+void Image_window8::set_gamma(double r, double g, double b) {
 	GammaRed.set_gamma(r);
 	GammaGreen.set_gamma(g);
 	GammaBlue.set_gamma(b);
