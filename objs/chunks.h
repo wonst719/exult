@@ -135,7 +135,7 @@ class Map_chunk : public Game_singletons {
 	//    chunks below, to right.
 	unsigned char from_below, from_right, from_below_right;
 	unsigned char ice_dungeon;  // For SI, chunk split into 4 quadrants
-	unsigned char *dungeon_levels;  // A 'dungeon' level value for each tile (4 bit).
+	unsigned char *dungeon_levels;  // A 'dungeon' level value for each tile.
 	Chunk_cache *cache;     // Data for chunks near player.
 	unsigned char roof;     // 1 if a roof present.
 	// # light sources in chunk.
@@ -292,9 +292,9 @@ public:
 
 	// NOTE:  The following should only be
 	//   called if has_dungeon()==1.
-	inline int is_dungeon(int tx, int ty) { // Is object within dungeon? (returns height)
-		int tnum = ty * c_tiles_per_chunk + tx;
-		return (tnum % 2) ? dungeon_levels[tnum / 2] >> 4 : dungeon_levels[tnum / 2] & 0xF;
+	inline int is_dungeon(int tx, int ty) {
+		// Is object within dungeon? (returns height)
+		return dungeon_levels[ty * c_tiles_per_chunk + tx];
 	}
 	// Is the dungeon an ICE dungeon.NOTE: This is a
 	// Hack and splits the chunk into 4 parts. Only if

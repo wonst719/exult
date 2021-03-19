@@ -1296,23 +1296,17 @@ void Map_chunk::add_dungeon_levels(
 ) {
 	if (!dungeon_levels) {
 		// First one found.
-		dungeon_levels = new unsigned char[256 / 2];
-		memset(dungeon_levels, 0, 256 / 2);
+		dungeon_levels = new unsigned char[256]{};
 	}
 	int endy = tiles.y + tiles.h;
 	int endx = tiles.x + tiles.w;
 	for (int ty = tiles.y; ty < endy; ty++) {
 		for (int tx = tiles.x; tx < endx; tx++) {
-			int tnum = (ty * c_tiles_per_chunk + tx) / 2;
-			if (GAME_SI)    // SI has roofs at random levels!!
+			if (GAME_SI) {
+				// SI has roofs at random levels!!
 				lift = 5;
-			if (tx % 2) {
-				dungeon_levels[tnum] &= 0x0F;
-				dungeon_levels[tnum] |= lift << 4;
-			} else {
-				dungeon_levels[tnum] &= 0xF0;
-				dungeon_levels[tnum] |= lift;
 			}
+			dungeon_levels[ty * c_tiles_per_chunk + tx] = lift;
 		}
 	}
 }
