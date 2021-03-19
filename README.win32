@@ -16,6 +16,8 @@ installed Exult in (you will likely have to create the sub folders yourself).
 Run "exult.exe".
 Have fun!
 
+(In depth instructions can be read in our documentation and FAQ)
+
 
 Notes
 ------
@@ -28,16 +30,7 @@ Notes
 	When Exult Studio suddenly quits, sometimes these files can help.
 
 *	If you're interested in building Exult for windows yourself, there are two
-	sections below describing how. In the instructions below, reference is made
-	to changing environment variables; how this is done exactly depends on the
-	version of Windows you use. Here are some instructions:
-	-	For Windows NT/2000:
-		http://support.microsoft.com/kb/100843
-	-	For Windows XP/Server/Vista:
-		http://support.microsoft.com/kb/310519
-	(incidentally, the XP instructions are good for all of those systems)
-	-	For Windows 9x/Me:
-		You have to set them in autoexec.bat using the "set" command.
+	sections below describing how.
 
 
 To build in Windows using MSYS2/MinGW64
@@ -58,6 +51,10 @@ the shell. Do so.
 Now it is time to make a choice: whether to build Exult on 32- or 64-bit: start
 the corresponding shell ("MSYS2 MinGW 32-bit" or "MSYS2 MinGW 64-bit") from the
 start menu.
+
+    **Warning**
+    It is IMPORTANT that you use either of these two shells and NOT the 
+    "MSYS2 MSYS" shell.
 
 When the shell starts, issue the following commands:
     pacman -S --noconfirm --needed base-devel git \
@@ -101,14 +98,11 @@ You now have everything needed to build any of the components you want.
     of Gimp which you use. That is: if you use 32-bit Gimp, you must compile
     the 32-bit version of the plug-in, and likewise for 64-bit Gimp.
 
-Change to the directory where you unpacked the Exult source code.
-(ie cd C:/exult)
-
-Open Makefile.mingw from the Exult directory in a text editor and change
-C:/Ultima7 to the directory you want Exult to be installed to.
+Open Makefile.mingw from the Exult source code directory in a text editor and 
+change C:/Ultima7 to the directory you want Exult to be installed to.
 (ie C:/Games/Ultima7)
 
-You can also change C:/GimpPlugin to the direcroty you want the Gimp Plug-in
+You can also change C:/GimpPlugin to the directory you want the Gimp Plug-in
 to be installed to. This depends on the version of Gimp you use:
     Gimp 2.8:
         C:/Users/<username>/.gimp-2.8/plug-ins
@@ -117,6 +111,14 @@ to be installed to. This depends on the version of Gimp you use:
 
 If you are compiling Exult Studio, it will be installed to the same directory
 that Exult when you compile it. You can change that directory in the same way.
+
+Remain in the shell ("MSYS2 MinGW 32-bit" or "MSYS2 MinGW 64-bit") 
+and type the command
+    git clone https://github.com/exult/exult.git c:\exult
+
+Then change to the directory where you cloned the Exult source code to by
+typing the command
+    cd C:/exult
 
 To compile and install Exult, type the command
     make -f Makefile.mingw install
