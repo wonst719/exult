@@ -53,32 +53,22 @@ using std::vector;
  */
 
 Chunk_cache::Chunk_cache(
-) : egg_objects(4) {
-	memset(&eggs[0], 0, sizeof(eggs));
-}
-
-/*
- *  Delete cache.
- */
-
-Chunk_cache::~Chunk_cache(
-) {
-	for (auto *it : blocked)
-		delete[] it;
+) : egg_objects(4), eggs{} {
 }
 
 /*
  *  This mask gives the low bits (b0) for a given # of ztiles.
  */
-unsigned long tmasks[8] = {     0x0L,
-                                0x1L,
-                                0x5L,
-                                0x15L,
-                                0x55L,
-                                0x155L,
-                                0x555L,
-                                0x1555L
-                          };
+unsigned long tmasks[8] = {
+    0x0L,
+    0x1L,
+    0x5L,
+    0x15L,
+    0x55L,
+    0x155L,
+    0x555L,
+    0x1555L
+};
 
 /*
  *  Set (actually, increment count) for a given tile.
@@ -88,7 +78,7 @@ unsigned long tmasks[8] = {     0x0L,
  *      newb1 =  b1 OR b0
  */
 inline void Set_blocked_tile(
-    uint16 *blocked,        // 16x16 flags,
+    Chunk_cache::blocked8z &blocked,        // 16x16 flags,
     int tx, int ty,         // Tile #'s (0-15).
     int lift,           // Starting lift to set.
     int ztiles          // # tiles along z-axis.
@@ -113,7 +103,7 @@ inline void Set_blocked_tile(
  *      newb1 =  b1 AND  b0
  */
 inline void Clear_blocked_tile(
-    uint16 *blocked,        // 16x16 flags,
+    Chunk_cache::blocked8z &blocked,        // 16x16 flags,
     int tx, int ty,         // Tile #'s (0-15).
     int lift,           // Starting lift to set.
     int ztiles          // # tiles along z-axis.
@@ -135,16 +125,13 @@ inline void Clear_blocked_tile(
  *  covers 8 lifts.
  */
 
-Chunk_cache::blocked8z Chunk_cache::new_blocked_level(
+Chunk_cache::blocked8z &Chunk_cache::new_blocked_level(
     int zlevel
 ) {
 	if (static_cast<unsigned>(zlevel) >= blocked.size())
 		blocked.resize(zlevel + 1);
-	blocked8z block = blocked[zlevel] = new uint16[256];
-//	std::cout << "***Creating block for level " << zlevel << ", cache = "
-//		<< (void*)this << std::endl;
-	memset(block, 0, 256 * sizeof(uint16));
-	return block;
+	blocked[zlevel] = std::make_unique<uint16[]>(256);
+	return blocked[zlevel];
 }
 
 /*
@@ -163,7 +150,7 @@ void Chunk_cache::set_blocked(
 		int zcnt = 8 - thisz;
 		if (ztiles < zcnt)
 			zcnt = ztiles;
-		uint16 *block = need_blocked_level(zlevel);
+		auto &block = need_blocked_level(zlevel);
 		for (int y = starty; y <= endy; y++)
 			for (int x = startx; x <= endx; x++)
 				Set_blocked_tile(block, x, y, thisz, zcnt);
@@ -186,7 +173,7 @@ void Chunk_cache::clear_blocked(
 			break;      // All done.
 		if (ztiles < zcnt)
 			zcnt = ztiles;
-		uint16 *block = blocked[zlevel];
+		auto &block = blocked[zlevel];
 		if (block) {
 			for (int y = starty; y <= endy; y++)
 				for (int x = startx; x <= endx; x++)
@@ -384,7 +371,7 @@ inline void Chunk_cache::set_tflags(
 		zlevel = bsize - 1;
 	}
 	while (zlevel >= 0) {
-		uint16 *block = blocked[zlevel];
+		auto &block = blocked[zlevel];
 		tflags[zlevel--] = block ? block[ty * c_tiles_per_chunk + tx] : 0;
 	}
 	tflags_maxz = maxz;
@@ -590,6 +577,8 @@ void Chunk_cache::activate_eggs(
     unsigned short eggbits,     // Eggs[tile].
     bool now            // Do them immediately.
 ) {
+	// Ensure we exist until the end of the function.
+	auto ownHandle = shared_from_this();
 	size_t i;               // Go through eggs.
 	for (i = 0; i < 8 * sizeof(eggbits) - 1 && eggbits;
 	        i++, eggbits = eggbits >> 1) {
@@ -643,16 +632,6 @@ Map_chunk::Map_chunk(
 	from_right(0), from_below_right(0), ice_dungeon(0x00),
 	dungeon_levels(nullptr), cache(nullptr), roof(0),
 	cx(chunkx), cy(chunky),  selected(false) {
-}
-
-/*
- *  Delete all objects contained within.
- */
-
-Map_chunk::~Map_chunk(
-) {
-	delete cache;
-	delete [] dungeon_levels;
 }
 
 /*
@@ -1074,32 +1053,36 @@ bool Map_chunk::is_blocked(
  *         clockwise.  List is on heap.
  */
 
-static Tile_coord *Get_square(
-    Tile_coord &pos,        // Center of square.
+static auto Get_square(
+    Tile_coord &pos,    // Center of square.
     int dist            // Distance to perimeter (>0)
 ) {
-	auto *square = new Tile_coord[8 * dist];
+	std::vector<Tile_coord> square;
+	square.reserve(8 * dist);
 	// Upper left corner:
-	square[0] = Tile_coord(DECR_TILE(pos.tx, dist),
-	                       DECR_TILE(pos.ty, dist), pos.tz);
-	int i;              // Start with top row.
-	int len = 2 * dist + 1;
+	square.emplace_back(DECR_TILE(pos.tx, dist),
+	                    DECR_TILE(pos.ty, dist), pos.tz);
+	const int len = 2 * dist + 1;
 	int out = 1;
-	for (i = 1; i < len; i++, out++)
-		square[out] = Tile_coord(INCR_TILE(square[out - 1].tx),
-		                         square[out - 1].ty, pos.tz);
+	for (int i = 1; i < len; i++, out++) {
+		const auto &back = square.back();
+		square.emplace_back(INCR_TILE(back.tx), back.ty, pos.tz);
+	}
 	// Down right side.
-	for (i = 1; i < len; i++, out++)
-		square[out] = Tile_coord(square[out - 1].tx,
-		                         INCR_TILE(square[out - 1].ty), pos.tz);
+	for (int i = 1; i < len; i++, out++) {
+		const auto &back = square.back();
+		square.emplace_back(back.tx, INCR_TILE(back.ty), pos.tz);
+	}
 	// Bottom, going back to left.
-	for (i = 1; i < len; i++, out++)
-		square[out] = Tile_coord(DECR_TILE(square[out - 1].tx),
-		                         square[out - 1].ty, pos.tz);
+	for (int i = 1; i < len; i++, out++) {
+		const auto &back = square.back();
+		square.emplace_back(DECR_TILE(back.tx), back.ty, pos.tz);
+	}
 	// Left side, going up.
-	for (i = 1; i < len - 1; i++, out++)
-		square[out] = Tile_coord(square[out - 1].tx,
-		                         DECR_TILE(square[out - 1].ty), pos.tz);
+	for (int i = 1; i < len - 1; i++, out++) {
+		const auto &back = square.back();
+		square.emplace_back(back.tx, DECR_TILE(back.ty), pos.tz);
+	}
 	return square;
 }
 
@@ -1159,24 +1142,21 @@ Tile_coord Map_chunk::find_spot(
 	for (int d = 1; d <= dist; d++) { // Look outwards.
 		int square_cnt = 8 * d    ; // # tiles in square's perim.
 		// Get square (starting in NW).
-		Tile_coord *square = Get_square(pos, d);
+		const auto square = Get_square(pos, d);
 		int index = dir * d; // Get index of preferred spot.
 		// Get start of preferred range.
 		index = (index - d / 2 + square_cnt) % square_cnt;
 		for (int cnt = square_cnt; cnt; cnt--, index++) {
-			Tile_coord &p = square[index % square_cnt];
+			const Tile_coord &p = square[index % square_cnt];
 			if (!Map_chunk::is_blocked(zs, p.tz, p.tx - xs + 1,
 			                           p.ty - ys + 1, xs, ys, new_lift, mflags,
 			                           max_drop) &&
 			        (where == anywhere ||
 			         Check_spot(where, p.tx, p.ty, new_lift))) {
 				// Use tile before deleting.
-				Tile_coord ret(p.tx, p.ty, new_lift);
-				delete [] square;
-				return ret;
+				return Tile_coord(p.tx, p.ty, new_lift);
 			}
 		}
-		delete [] square;
 	}
 	return Tile_coord(-1, -1, -1);
 }
@@ -1296,7 +1276,7 @@ void Map_chunk::add_dungeon_levels(
 ) {
 	if (!dungeon_levels) {
 		// First one found.
-		dungeon_levels = new unsigned char[256]{};
+		dungeon_levels = std::make_unique<unsigned char[]>(256);
 	}
 	int endy = tiles.y + tiles.h;
 	int endx = tiles.x + tiles.w;
@@ -1450,16 +1430,16 @@ int Map_chunk::is_roof(int tx, int ty, int lift) {
 
 void Map_chunk::kill_cache() {
 	// Get rid of terrain
-	if (terrain) terrain->remove_client();
+	if (terrain) {
+		terrain->remove_client();
+	}
 	terrain = nullptr;
 
 	// Now remove the cachce
-	delete cache;
-	cache = nullptr;
+	cache.reset();
 
 	// Delete dungeon bits
-	delete [] dungeon_levels;
-	dungeon_levels = nullptr;
+	dungeon_levels.reset();
 }
 
 int Map_chunk::get_obj_actors(vector<Game_object *> &removes,

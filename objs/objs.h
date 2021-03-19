@@ -71,7 +71,7 @@ using Game_object_shared_vector = std::vector<Game_object_shared>;
  *  position within its chunk.
  */
 class Game_object : public ShapeID,
-	  			  public std::enable_shared_from_this<Game_object> {
+					public std::enable_shared_from_this<Game_object> {
 protected:
 	static Game_object_shared editing;    // Obj. being edited by ExultStudio.
 	Map_chunk *chunk = nullptr;       // Chunk we're in, or nullptr.

@@ -22,18 +22,18 @@
 #ifndef GAMEMAP_H
 #define GAMEMAP_H
 
+#include "chunks.h"
 #include "exult_constants.h"
 #include "flags.h"
 #include "tiles.h"
 
 #include <cassert>
-#include <string>   // STL string
+#include <fstream>
 #include <iostream>
 #include <memory>
-#include <fstream>
+#include <string>    // STL string
 #include <vector>
 
-class Map_chunk;
 class Chunk_terrain;
 class Map_patch_collection;
 class Game_object;
@@ -68,7 +68,7 @@ class Game_map {
 	// Chunk_terrain index for each chunk:
 	short terrain_map[c_num_chunks][c_num_chunks];
 	// A list of objects in each chunk:
-	Map_chunk *objects[c_num_chunks][c_num_chunks];
+	std::unique_ptr<Map_chunk> objects[c_num_chunks][c_num_chunks];
 	bool schunk_read[144];      // Flag for reading in each "ifix".
 	bool schunk_modified[144];  // Flag for modified "ifix".
 	char *schunk_cache[144];
@@ -134,19 +134,27 @@ public:
 		schunk_modified[12 * (cy / c_chunks_per_schunk) +
 		                cx / c_chunks_per_schunk] = true;
 	}
+	// Get objs. list for a chunk.
+	Map_chunk *get_chunk_unsafe(int cx, int cy) {
+		return objects[cx][cy].get();
+	}
+	// Get/create objs. list for a chunk.
+	Map_chunk *get_chunk_unchecked(int cx, int cy) {
+		Map_chunk *list = get_chunk_unsafe(cx, cy);
+		return list ? list : create_chunk(cx, cy);
+	}
 	// Get/create objs. list for a chunk.
 	Map_chunk *get_chunk(int cx, int cy) {
 		assert((cx >= 0) && (cx < c_num_chunks) &&
 		       (cy >= 0) && (cy < c_num_chunks));
-		Map_chunk *list = objects[cx][cy];
-		return list ? list : create_chunk(cx, cy);
+		return get_chunk_unchecked(cx, cy);
 	}
 	Map_chunk *get_chunk_safely(int cx, int cy) {
-		Map_chunk *list;
-		return cx >= 0 && cx < c_num_chunks &&
-		       cy >= 0 && cy < c_num_chunks ?
-		       ((list = objects[cx][cy]) != nullptr ? list :
-		        create_chunk(cx, cy)) : nullptr;
+		if (cx >= 0 && cx < c_num_chunks &&
+		    cy >= 0 && cy < c_num_chunks) {
+			return get_chunk_unchecked(cx, cy);
+		}
+		return nullptr;
 	}
 	// Get "map" superchunk objs/scenery.
 	void get_map_objects(int schunk);

@@ -94,7 +94,8 @@ static char v2hdr[] = {static_cast<char>(0xff), static_cast<char>(0xff),
 Map_chunk *Game_map::create_chunk(
     int cx, int cy
 ) {
-	return objects[cx][cy] = new Map_chunk(this, cx, cy);
+	objects[cx][cy] = std::make_unique<Map_chunk>(this, cx, cy);
+	return get_chunk_unsafe(cx, cy);
 }
 
 /*
@@ -232,7 +233,9 @@ void Game_map::init(
 	u7map.close();
 	// Clear object lists, flags.
 	for (auto& row : objects) {
-		std::fill(std::begin(row), std::end(row), nullptr);
+		for (auto& obj : row) {
+			obj.reset();
+		}
 	}
 	std::fill(std::begin(schunk_read), std::end(schunk_read), false);
 	std::fill(std::begin(schunk_modified), std::end(schunk_modified), false);
@@ -271,17 +274,14 @@ void Game_map::clear(
 
 	if (didinit) {
 		// Delete all chunks (& their objs).
-		for (auto& row : objects) {
-			for (auto& obj : row) {
-				delete obj;
-			}
-		}
 		for (auto *i : schunk_cache) {
 			delete [] i;
 		}
 	}
 	for (auto& row : objects) {
-		std::fill(std::begin(row), std::end(row), nullptr);
+		for (auto& obj : row) {
+			obj.reset();
+		}
 	}
 	didinit = false;
 	map_modified = false;
@@ -1444,7 +1444,7 @@ void Game_map::commit_terrain_edits(
 			continue;
 		for (int cy = 0; cy < c_num_chunks; cy++)
 			for (int cx = 0; cx < c_num_chunks; cx++) {
-				Map_chunk *chunk = map->objects[cx][cy];
+				Map_chunk *chunk = map->get_chunk_unsafe(cx, cy);
 				if (chunk && ters[map->terrain_map[cx][cy]]
 				        != 0 && chunk->get_terrain())
 					// Reload objects.
@@ -1500,7 +1500,7 @@ void Game_map::find_unused_shapes(
 	// Go through chunks.
 	for (int cy = 0; cy < c_num_chunks; cy++)
 		for (int cx = 0; cx < c_num_chunks; cx++) {
-			Map_chunk *chunk = get_chunk(cx, cy);
+			Map_chunk *chunk = get_chunk_unchecked(cx, cy);
 			Recursive_object_iterator all(chunk->get_objects());
 			Game_object *obj;
 			while ((obj = all.get_next()) != nullptr) {
@@ -1758,17 +1758,18 @@ void Game_map::cache_out_schunk(int schunk) {
 	std::cout << "Killing superchunk: " << schunk << std::endl;
 #endif
 	// Go through chunks and get all the items
-	for (cy = 0; cy < 16; cy++) for (cx = 0; cx < 16; cx++) {
-		int size = objects[scx + cx][scy + cy]->get_obj_actors(removes, actors);
+	for (cy = 0; cy < 16; cy++) {
+		for (cx = 0; cx < 16; cx++) {
+			int size = get_chunk_unsafe(scx + cx, scy + cy)->get_obj_actors(removes, actors);
 
-		if (size < 0) {
+			if (size < 0) {
 #ifdef DEBUG
-			std::cerr << "Failed attempting to kill superchunk" << std::endl;
+				std::cerr << "Failed attempting to kill superchunk" << std::endl;
 #endif
-			return;
+				return;
+			}
+			buf_size += size + 2;
 		}
-
-		buf_size += size + 2;
 	}
 
 	schunk_read[schunk] = false;
@@ -1809,8 +1810,10 @@ void Game_map::cache_out_schunk(int schunk) {
 	}
 
 	// Go through chunks and finish up
-	for (cy = 0; cy < 16; cy++) for (cx = 0; cx < 16; cx++) {
-		objects[scx + cx][scy + cy]->kill_cache();
+	for (cy = 0; cy < 16; cy++) {
+		for (cx = 0; cx < 16; cx++) {
+			get_chunk_unsafe(scx + cx, scy + cy)->kill_cache();
+		}
 	}
 	// Removing objs. sets these flags.
 	schunk_modified[schunk] = false;
