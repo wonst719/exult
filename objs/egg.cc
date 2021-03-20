@@ -1048,11 +1048,14 @@ void Egg_object::hatch(
 	if (roll <= probability) {
 		// Time to hatch the egg.
 		// Watch it in case it gets deleted.
-		Game_object_weak watch = weak_from_this();;
+		Game_object_weak watch = weak_from_this();
 		hatch_now(obj, must);
+		if (watch.expired()) {
+			// We have been deleted, so just leave.
+			return;
+		}
 		if (flags & (1 << static_cast<int>(once))) {
-		    if (!watch.expired())
-			    remove_this(nullptr);
+		    remove_this(nullptr);
 			return;
 		}
 	}
