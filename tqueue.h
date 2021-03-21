@@ -96,12 +96,12 @@ public:
 	}
 	void add(uint32 t, Time_sensitive *obj, uintptr ud);
 	// Remove object's entry.
-	int remove(Time_sensitive *obj);
+	bool remove(Time_sensitive *obj);
 	void remove(Time_sensitive *obj, void *ud) {
 		remove(obj, reinterpret_cast<uintptr>(ud));
 	}
-	int remove(Time_sensitive *obj, uintptr udata);
-	int find(Time_sensitive const *obj) const;  // Find an entry.
+	bool remove(Time_sensitive *obj, uintptr udata);
+	bool find(Time_sensitive const *obj) const;  // Find an entry.
 	// Find delay when obj. is due.
 	long find_delay(Time_sensitive const *obj, uint32 curtime) const;
 	// Activate entries that are 'due'.
@@ -128,7 +128,7 @@ public:
 	Time_queue_iterator(Time_queue *tq, Time_sensitive *obj)
 		: iter(tq->data.begin()), tqueue(tq), this_obj(obj)
 	{  }
-	int operator()(Time_sensitive  *&obj, uintptr &data);
+	bool operator()(Time_sensitive  *&obj, uintptr &data);
 };
 
 #endif  /* TQUEUE_H */

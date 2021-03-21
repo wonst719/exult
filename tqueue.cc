@@ -67,7 +67,7 @@ bool    operator <(const Queue_entry &q1, const Queue_entry &q2) {
  *  Output: 1 if found, else 0.
  */
 
-int Time_queue::remove(
+bool Time_queue::remove(
     Time_sensitive *obj
 ) {
 	auto toRemove = std::find_if(data.begin(), data.end(),
@@ -86,15 +86,15 @@ int Time_queue::remove(
  *  Output: 1 if found, else 0.
  */
 
-int Time_queue::remove(
+bool Time_queue::remove(
     Time_sensitive *obj,
     uintptr udata
 ) {
-    auto it = std::find_if(data.begin(), data.end(),
-            [&](const auto& el) { return el.handler == obj && el.udata == udata; }
-    );
-    bool found = it != data.end();
-    if (found) {
+	auto it = std::find_if(data.begin(), data.end(),
+			[&](const auto& el) { return el.handler == obj && el.udata == udata; }
+	);
+	bool found = it != data.end();
+	if (found) {
 		obj->queue_cnt--;
 		data.erase(it);
 	}
@@ -104,10 +104,10 @@ int Time_queue::remove(
 /*
  *  See if a given entry is in the queue.
  *
- *  Output: 1 if found, else 0.
+ *  Output: true if found, else false.
  */
 
-int Time_queue::find(
+bool Time_queue::find(
     Time_sensitive const *obj
 ) const {
 	return std::find_if(data.begin(), data.end(),
@@ -201,7 +201,7 @@ void Time_queue::resume(
  *  Get next element in queue.
  */
 
-int Time_queue_iterator::operator()(
+bool Time_queue_iterator::operator()(
     Time_sensitive  *&obj,      // Main object.
     uintptr &data          // Data that was added with it.
 ) {
@@ -213,10 +213,10 @@ int Time_queue_iterator::operator()(
 		}
 	);
 	if (iter == tqueue->data.end())
-		return 0;
+		return false;
 	obj = (*iter).handler;      // Return fields.
 	data = (*iter).udata;
 	++iter;             // On to the next.
-	return 1;
+	return true;
 }
 
