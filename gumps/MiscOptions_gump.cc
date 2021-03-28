@@ -145,7 +145,7 @@ void MiscOptions_gump::load_settings() {
 
 MiscOptions_gump::MiscOptions_gump()
 	: Modal_gump(nullptr, EXULT_FLX_MISCOPTIONS_SHP, SF_EXULT_FLX) {
-	set_object_area(Rectangle(0, 0, 0, 0), 8, 184);//++++++ ???
+	set_object_area(TileRect(0, 0, 0, 0), 8, 184);//++++++ ???
 
 	load_settings();
 	build_buttons();

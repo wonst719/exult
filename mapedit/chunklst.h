@@ -41,10 +41,10 @@ class Shape_group;
 class Chunk_info {
 	friend class Chunk_chooser;
 	int num;
-	Rectangle box;          // Box where drawn.
+	TileRect box;          // Box where drawn.
 	void set(int n, int rx, int ry, int rw, int rh) {
 		num = n;
-		box = Rectangle(rx, ry, rw, rh);
+		box = TileRect(rx, ry, rw, rh);
 	}
 };
 

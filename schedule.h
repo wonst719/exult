@@ -28,14 +28,9 @@
 #include <vector>
 #include "ignore_unused_variable_warning.h"
 
-#ifdef _WIN32
-#include <windows.h>
-#define Rectangle RECTX
-#endif
-
 class Game_object;
 class Actor;
-class Rectangle;
+class TileRect;
 class Actor_action;
 class Usecode_value;
 
@@ -707,7 +702,7 @@ class Walk_to_schedule : public Schedule {
 	int retries;            // # failures at finding path.
 	int legs;           // # times restarted walk.
 	// Set to walk off screen.
-	void walk_off_screen(Rectangle &screen, Tile_coord &goal);
+	void walk_off_screen(TileRect &screen, Tile_coord &goal);
 public:
 	Walk_to_schedule(Actor *n, Tile_coord const &d, int new_sched,
 	                 int delay = -1);

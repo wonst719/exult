@@ -1140,13 +1140,13 @@ void Game_window::show_game_location(
  *  Get screen area used by object.
  */
 
-Rectangle Game_window::get_shape_rect(const Game_object *obj) const {
+TileRect Game_window::get_shape_rect(const Game_object *obj) const {
 	if (!obj->get_chunk()) {    // Not on map?
 		Gump *gump = gump_man->find_gump(obj);
 		if (gump)
 			return gump->get_shape_rect(obj);
 		else
-			return Rectangle(0, 0, 0, 0);
+			return TileRect(0, 0, 0, 0);
 	}
 	Shape_frame *s = obj->get_shape();
 	if (!s) {
@@ -1155,7 +1155,7 @@ Rectangle Game_window::get_shape_rect(const Game_object *obj) const {
 		std::cerr << "DEATH! get_shape() returned a nullptr pointer: " << __FILE__ << ":" << __LINE__ << std::endl;
 		std::cerr << "Betcha it's a little doggie." << std::endl;
 #endif
-		return Rectangle(0, 0, 0, 0);
+		return TileRect(0, 0, 0, 0);
 	}
 	Tile_coord t = obj->get_tile(); // Get tile coords.
 	int lftpix = (c_tilesize * t.tz) / 2;

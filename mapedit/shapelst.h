@@ -44,12 +44,12 @@ class Editing_file;
 class Shape_entry {
 	friend class Shape_chooser;
 	short shapenum, framenum;   // The given shape/frame.
-	Rectangle box;          // Box where drawn.
+	TileRect box;          // Box where drawn.
 public:
 	void set(int shnum, int frnum, int rx, int ry, int rw, int rh) {
 		shapenum = static_cast<short>(shnum);
 		framenum = static_cast<short>(frnum);
-		box = Rectangle(rx, ry, rw, rh);
+		box = TileRect(rx, ry, rw, rh);
 	}
 };
 

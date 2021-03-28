@@ -217,12 +217,12 @@ class Text_effect : public Time_sensitive, public Game_singletons {
 	std::string msg;        // What to print.
 	Game_object_weak item;      // Item text is on.  May be null.
 	Tile_coord tpos;        // Position to display it at.
-	Rectangle pos;
+	TileRect pos;
 	short width, height;        // Dimensions of rectangle.
 	int num_ticks;          // # ticks passed.
 	void add_dirty();
 	void init();
-	Rectangle Figure_text_pos();
+	TileRect Figure_text_pos();
 public:
 	Text_effect(const std::string &m, Game_object *it, Game_window* gwin_);
 	Text_effect(const std::string &m, int t_x, int t_y, Game_window* gwin_);

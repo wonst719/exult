@@ -1508,7 +1508,7 @@ static void Handle_event(
 			if (gump_man->gump_mode()) {
 				if (right_on_gump &&
 				        (gump = gump_man->find_gump(x, y, false))) {
-					Rectangle dirty = gump->get_dirty();
+					TileRect dirty = gump->get_dirty();
 					gwin->add_dirty(dirty);
 					gump_man->close_gump(gump);
 					gump = nullptr;
@@ -2511,10 +2511,10 @@ static void Move_grid(
 			return;     // Will be in same tile.
 		// Repaint over old area.
 		const int pad = 8;
-		Rectangle r((ptx - xtiles + 1)*c_tilesize - pad,
-		            (pty - ytiles + 1)*c_tilesize - pad,
-		            xtiles * c_tilesize + 2 * pad,
-		            ytiles * c_tilesize + 2 * pad);
+		TileRect r((ptx - xtiles + 1)*c_tilesize - pad,
+		           (pty - ytiles + 1)*c_tilesize - pad,
+		           xtiles * c_tilesize + 2 * pad,
+		           ytiles * c_tilesize + 2 * pad);
 		r = gwin->clip_to_win(r);
 		gwin->add_dirty(r);
 		gwin->paint_dirty();

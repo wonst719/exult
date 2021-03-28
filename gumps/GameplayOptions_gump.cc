@@ -167,7 +167,7 @@ void GameplayOptions_gump::load_settings() {
 }
 
 GameplayOptions_gump::GameplayOptions_gump() : Modal_gump(nullptr, EXULT_FLX_GAMEPLAYOPTIONS_SHP, SF_EXULT_FLX) {
-	set_object_area(Rectangle(0, 0, 0, 0), 8, 162);//++++++ ???
+	set_object_area(TileRect(0, 0, 0, 0), 8, 162);//++++++ ???
 
 	for (auto& btn : buttons)
 		btn.reset();

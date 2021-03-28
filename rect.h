@@ -22,11 +22,6 @@
 #ifndef RECT_H
 #define RECT_H  1
 
-#ifdef _WIN32
-#include <windows.h>
-#define Rectangle RECTX
-#endif
-
 #include "exult_constants.h"
 #include <algorithm>
 
@@ -52,14 +47,14 @@ static inline bool Point_in_strip(int start, int end, int pt) noexcept {
 /*
  *  A rectangle:
  */
-class Rectangle {
+class TileRect {
 public:                 // Let's make it all public.
 	int x, y;           // Position.
 	int w, h;           // Dimensions.
-	Rectangle(int xin, int yin, int win, int hin) noexcept
+	TileRect(int xin, int yin, int win, int hin) noexcept
 		: x(xin), y(yin), w(win), h(hin)
 	{  }
-	Rectangle() noexcept = default;         // An uninitialized one.
+	TileRect() noexcept = default;         // An uninitialized one.
 	// Is this point in it?
 	bool has_point(int px, int py) const noexcept {
 		return px >= x && px < x + w && py >= y && py < y + h;
@@ -72,12 +67,12 @@ public:                 // Let's make it all public.
 	}
 	// Add another to this one to get
 	//  a rect. that encloses both.
-	Rectangle add(Rectangle const &r2) const noexcept {
+	TileRect add(TileRect const &r2) const noexcept {
 		int xend = x + w;
 		int yend = y + h;
 		int xend2 = r2.x + r2.w;
 		int yend2 = r2.y + r2.h;
-		Rectangle r;        // Return this.
+		TileRect r;        // Return this.
 		r.x = std::min(x, r2.x);
 		r.y = std::min(y, r2.y);
 		r.w = std::max(xend, xend2) - r.x;
@@ -85,12 +80,12 @@ public:                 // Let's make it all public.
 		return r;
 	}
 	// Intersect another with this.
-	Rectangle intersect(Rectangle const &r2) const noexcept {
+	TileRect intersect(TileRect const &r2) const noexcept {
 		int xend = x + w;
 		int yend = y + h;
 		int xend2 = r2.x + r2.w;
 		int yend2 = r2.y + r2.h;
-		Rectangle r;        // Return this.
+		TileRect r;        // Return this.
 		r.x = std::max(x, r2.x);
 		r.y = std::max(y, r2.y);
 		r.w = std::min(xend, xend2) - r.x;
@@ -98,7 +93,7 @@ public:                 // Let's make it all public.
 		return r;
 	}
 	// Does it intersect another?
-	bool intersects(Rectangle const &r2) const noexcept {
+	bool intersects(TileRect const &r2) const noexcept {
 		return x < r2.x + r2.w && r2.x < x + w &&
 		       y < r2.y + r2.h && r2.y < y + h;
 	}
@@ -106,7 +101,7 @@ public:                 // Let's make it all public.
 		x += deltax;
 		y += deltay;
 	}
-	Rectangle &enlarge(int delta) noexcept { // Add delta in each dir.
+	TileRect &enlarge(int delta) noexcept { // Add delta in each dir.
 		x -= delta;
 		y -= delta;
 		w += 2 * delta;
@@ -121,11 +116,11 @@ public:                 // Let's make it all public.
 		int dist = xdist > ydist ? xdist : ydist;
 		return dist < 0 ? 0 : dist;
 	}
-	bool operator==(Rectangle const &rect2) const noexcept {
+	bool operator==(TileRect const &rect2) const noexcept {
 		return x == rect2.x && y == rect2.y &&
 		       w == rect2.w && h == rect2.h;
 	}
-	bool operator!=(Rectangle const &rect2) const noexcept {
+	bool operator!=(TileRect const &rect2) const noexcept {
 		return !(*this == rect2);
 	}
 };

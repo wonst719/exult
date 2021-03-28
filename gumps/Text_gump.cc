@@ -58,7 +58,7 @@ void Text_gump::add_text(
  */
 
 int Text_gump::paint_page(
-    Rectangle const &box,           // Display box rel. to gump.
+    TileRect const &box,           // Display box rel. to gump.
     int start           // Starting offset into text.
 ) {
 	const int vlead = 1;        // Extra inter-line spacing.

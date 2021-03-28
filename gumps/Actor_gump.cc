@@ -92,7 +92,7 @@ Actor_gump::Actor_gump(
     int initx, int inity,       // Coords. on screen.
     int shnum           // Shape #.
 ) : Gump(cont, initx, inity, shnum) {
-	set_object_area(Rectangle(26, 0, 104, 132), 6, 136);
+	set_object_area(TileRect(26, 0, 104, 132), 6, 136);
 	Actor *npc = cont->as_actor();
 	add_elem(new Heart_button(this, heart.x, heart.y));
 	if (npc->get_npc_num() == 0) {

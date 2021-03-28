@@ -117,18 +117,18 @@ public:
 	//
 
 	// Generic Paint Object Method
-	void paint_object(const Rectangle &box, const Paperdoll_npc *info, int spot,
+	void paint_object(const TileRect &box, const Paperdoll_npc *info, int spot,
 	                  int sx, int sy, int frame = 0, int itemtype = -1);
 
 	// Generic Paint Object Method for something that is armed dependant
-	void paint_object_arms(const Rectangle &box, const Paperdoll_npc *info, int spot,
+	void paint_object_arms(const TileRect &box, const Paperdoll_npc *info, int spot,
 	                       int sx, int sy, int start = 0, int itemtype = -1);
 
 	// Special 'Constant' Paint Methods
-	void paint_body(const Rectangle &box, const Paperdoll_npc *info);
-	void paint_belt(const Rectangle &box, const Paperdoll_npc *info);
-	void paint_head(const Rectangle &box, const Paperdoll_npc *info);
-	void paint_arms(const Rectangle &box, const Paperdoll_npc *info);
+	void paint_body(const TileRect &box, const Paperdoll_npc *info);
+	void paint_belt(const TileRect &box, const Paperdoll_npc *info);
+	void paint_head(const TileRect &box, const Paperdoll_npc *info);
+	void paint_arms(const TileRect &box, const Paperdoll_npc *info);
 
 	// What are we holding?
 	int get_arm_type();

@@ -185,12 +185,12 @@ inline void Barge_object::swap_dims(
  *  Get footprint in tiles.
  */
 
-Rectangle Barge_object::get_tile_footprint(
+TileRect Barge_object::get_tile_footprint(
 ) {
 	Tile_coord pos = get_tile();
 	int xts = get_xtiles();
 	int yts = get_ytiles();
-	Rectangle foot((pos.tx - xts + 1 + c_num_tiles) % c_num_tiles,
+	TileRect foot((pos.tx - xts + 1 + c_num_tiles) % c_num_tiles,
 	               (pos.ty - yts + 1 + c_num_tiles) % c_num_tiles, xts, yts);
 	return foot;
 }
@@ -218,11 +218,11 @@ int Barge_object::okay_to_rotate(
 	// Special case for carpet.
 	int move_type = (lift > 0) ? (MOVE_LEVITATE) : MOVE_ALL_TERRAIN;
 	// Get footprint in tiles.
-	Rectangle foot = get_tile_footprint();
+	TileRect foot = get_tile_footprint();
 	int xts = get_xtiles();
 	int yts = get_ytiles();
 	// Get where new footprint will be.
-	Rectangle newfoot(pos.tx - yts + 1, pos.ty - xts + 1, yts, xts);
+	TileRect newfoot(pos.tx - yts + 1, pos.ty - xts + 1, yts, xts);
 	int new_lift;
 	if (newfoot.y < foot.y)     // Got a piece above the old one?
 		// Check area.  (No dropping allowed.)
@@ -273,11 +273,11 @@ void Barge_object::gather(
 	ice_raft = false;       // We'll just detect it each time.
 	objects.resize(perm_count); // Start fresh.
 	// Get footprint in tiles.
-	Rectangle foot = get_tile_footprint();
+	TileRect foot = get_tile_footprint();
 	int lift = get_lift();      // How high we are.
 	// Go through intersected chunks.
 	Chunk_intersect_iterator next_chunk(foot);
-	Rectangle tiles;
+	TileRect tiles;
 	int cx;
 	int cy;
 	while (next_chunk.get_next(tiles, cx, cy)) {
@@ -339,7 +339,7 @@ void Barge_object::add_dirty(
 	gwin->get_shape_location(this, x, y);
 	int w = xtiles * c_tilesize;
 	int h = ytiles * c_tilesize;
-	Rectangle box(x - w, y - h, w, h);
+	TileRect box(x - w, y - h, w, h);
 	const int barge_enlarge = (c_tilesize + c_tilesize / 4);
 	const int barge_stretch = (4 * c_tilesize + c_tilesize / 2);
 	box.enlarge(barge_enlarge);     // Make it a bit bigger.
@@ -550,11 +550,11 @@ void Barge_object::done(
 
 int Barge_object::okay_to_land(
 ) {
-	Rectangle foot = get_tile_footprint();
+	TileRect foot = get_tile_footprint();
 	int lift = get_lift();      // How high we are.
 	// Go through intersected chunks.
 	Chunk_intersect_iterator next_chunk(foot);
-	Rectangle tiles;
+	TileRect tiles;
 	int cx;
 	int cy;
 	while (next_chunk.get_next(tiles, cx, cy)) {

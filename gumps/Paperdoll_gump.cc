@@ -184,7 +184,7 @@ Paperdoll_gump::Paperdoll_gump(
     int shnum           // Shape #.
 ) : Gump(cont, initx, inity, 123, SF_PAPERDOL_VGA) {
 	ignore_unused_variable_warning(shnum);
-	set_object_area(Rectangle(26, 0, 104, 140), 6, 145);
+	set_object_area(TileRect(26, 0, 104, 140), 6, 145);
 
 	// Create Heart button
 	heart_button = new Heart_button(this, heart.x, heart.y);
@@ -348,7 +348,7 @@ void Paperdoll_gump::paint(
 	const Game_object *obj;
 
 	// Paint Objects
-	Rectangle box = object_area;    // Paint objects inside.
+	TileRect box = object_area;    // Paint objects inside.
 	box.shift(x, y);        // Set box to screen location.
 
 	paint_shape(x, y);
@@ -519,7 +519,7 @@ static inline bool Get_ammo_frame(
  */
 
 void Paperdoll_gump::paint_object(
-    const Rectangle &box,       // box
+    const TileRect &box,       // box
     const Paperdoll_npc *info,        // info
     int spot,           // belt
     int sx, int sy,         // back2x, back2y
@@ -572,7 +572,7 @@ void Paperdoll_gump::paint_object(
  *  Paint with arms frame
  */
 void Paperdoll_gump::paint_object_arms(
-    const Rectangle &box,
+    const TileRect &box,
     const Paperdoll_npc *info,
     int spot,
     int sx, int sy,
@@ -586,7 +586,7 @@ void Paperdoll_gump::paint_object_arms(
  *  Paint the body
  */
 void Paperdoll_gump::paint_body(
-    const Rectangle &box,
+    const TileRect &box,
     const Paperdoll_npc *info
 ) {
 	ShapeID s(info->get_body_shape(), info->get_body_frame(), SF_PAPERDOL_VGA);
@@ -597,7 +597,7 @@ void Paperdoll_gump::paint_body(
  *  Paint the belt
  */
 void Paperdoll_gump::paint_belt(
-    const Rectangle &box,
+    const TileRect &box,
     const Paperdoll_npc *info
 ) {
 	ShapeID s(10, 0, SF_PAPERDOL_VGA);
@@ -611,7 +611,7 @@ void Paperdoll_gump::paint_belt(
  *  Paint the head
  */
 void Paperdoll_gump::paint_head(
-    const Rectangle &box,
+    const TileRect &box,
     const Paperdoll_npc *info
 ) {
 	const Game_object *obj = container->get_readied(head);
@@ -635,7 +635,7 @@ void Paperdoll_gump::paint_head(
  *  Paint the arms
  */
 void Paperdoll_gump::paint_arms(
-    const Rectangle &box,
+    const TileRect &box,
     const Paperdoll_npc *info
 ) {
 	int frnum = info->get_arms_frame(get_arm_type());
@@ -673,7 +673,7 @@ Game_object *Paperdoll_gump::find_object(
 
 
 	// Check Objects
-	Rectangle box = object_area;    // Paint objects inside.
+	TileRect box = object_area;    // Paint objects inside.
 	box.shift(x, y);        // Set box to screen location.
 	mx -= box.x;
 	my -= box.y;
@@ -957,7 +957,7 @@ bool Paperdoll_gump::check_shape(
 	// If no shape, return
 	if (!s) return false;
 
-	Rectangle r = gwin->get_shape_rect(s, 0, 0);
+	TileRect r = gwin->get_shape_rect(s, 0, 0);
 
 	// If point not in rectangle, return
 	if (!r.has_point(px, py)) return false;

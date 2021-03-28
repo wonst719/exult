@@ -81,7 +81,7 @@ bool Yesno_button::activate(
 Yesno_gump::Yesno_gump(
     const std::string &txt, const char *font
 ) : Modal_gump(nullptr, game->get_shape("gumps/yesnobox")), text(txt), fontname(font), answer(-1) {
-	set_object_area(Rectangle(6, 5, 116, 32));
+	set_object_area(TileRect(6, 5, 116, 32));
 	add_elem(new Yesno_button(this, yesx, yesnoy, 1));
 	add_elem(new Yesno_button(this, nox, yesnoy, 0));
 }

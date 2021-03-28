@@ -139,7 +139,7 @@ protected:
 	int qsteps;             // # steps since last quake.
 
 	Npc_timer_list *timers;     // Timers for poison, hunger, etc.
-	Rectangle weapon_rect;      // Screen area weapon was drawn in.
+	TileRect weapon_rect;      // Screen area weapon was drawn in.
 	long rest_time;         // # msecs. of not doing anything.
 	void init();            // Clear stuff during construction.
 	// Move and change frame.

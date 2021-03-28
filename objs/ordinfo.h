@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 class Ordering_info {
 public:
-	Rectangle area;         // Area (pixels) rel. to screen.
+	TileRect area;         // Area (pixels) rel. to screen.
 	const Shape_info &info;       // Info. about shape.
 	int tx, ty, tz;         // Absolute tile coords.
 	int xs, ys, zs;         // Tile dimensions.
@@ -67,7 +67,7 @@ public:
 		  info(obj->get_info()) {
 		init(obj);
 	}
-	Ordering_info(const Game_window *gwin, const Game_object *obj, Rectangle &a)
+	Ordering_info(const Game_window *gwin, const Game_object *obj, TileRect &a)
 		: area(a),
 		  info(obj->get_info()) {
 		ignore_unused_variable_warning(gwin);

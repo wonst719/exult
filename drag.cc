@@ -185,7 +185,7 @@ bool Dragging_info::start(
 	//rect.enlarge(c_tilesize + obj ? 0 : c_tilesize/2);
 	rect.enlarge(deltax > deltay ? deltax : deltay);
 
-	Rectangle crect = gwin->clip_to_win(rect);
+	TileRect crect = gwin->clip_to_win(rect);
 	gwin->paint(crect);     // Paint over obj's. area.
 	return true;
 }
@@ -636,7 +636,7 @@ int Game_window::drop_at_lift(
 
 	to_drop->set_invalid();
 	to_drop->move(tx, ty, lift);
-	Rectangle rect = get_shape_rect(to_drop);
+	TileRect rect = get_shape_rect(to_drop);
 	// Avoid dropping behind walls.
 	if (Is_inaccessible(this, to_drop, rect.x + 2, rect.y + 2) &&
 	        Is_inaccessible(this, to_drop,

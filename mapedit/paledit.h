@@ -50,7 +50,7 @@ class Palette_edit: public Object_browser {
 	GtkWidget *pspin;       // Spin button for palette #.
 	GtkAdjustment *palnum_adj;  // For palette #.
 	guint sbar_sel;         // Status bar context for selection.
-	Rectangle selected_box;     // Location of selected color.
+	TileRect selected_box;     // Location of selected color.
 	GtkWidget *insert_btn, *remove_btn, *up_btn, *down_btn;
 	// Blit onto screen.
 	void show(int x, int y, int w, int h) override;

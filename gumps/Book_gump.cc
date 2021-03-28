@@ -44,7 +44,7 @@ void Book_gump::paint(
 	// Paint the gump itself.
 	paint_shape(x, y);
 	// Paint left page.
-	curend = paint_page(Rectangle(36, 10, 122, 130), curtop);
+	curend = paint_page(TileRect(36, 10, 122, 130), curtop);
 	// Paint right page.
-	curend = paint_page(Rectangle(174, 10, 122, 130), curend);
+	curend = paint_page(TileRect(174, 10, 122, 130), curend);
 }

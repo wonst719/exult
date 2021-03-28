@@ -148,7 +148,7 @@ public:
 
 	bool on_button(int mx, int my) const override;
 
-	Rectangle get_rect() override;
+	TileRect get_rect() override;
 
 	bool is_draggable() override {
 		return false;
@@ -211,7 +211,7 @@ void Portrait_button::update_widget() {
 	        para != actor->get_flag(Obj_flags::paralyzed) ||
 	        charm != actor->get_flag(Obj_flags::charmed) ||
 	        curse != actor->get_flag(Obj_flags::cursed)) {
-		Rectangle r = get_rect();
+		TileRect r = get_rect();
 		gwin->add_dirty(r);
 		hit = actor->was_hit();
 		pois = actor->get_flag(Obj_flags::poisoned);
@@ -263,17 +263,17 @@ void Portrait_button::paint() {
 		mana->paint();
 }
 
-Rectangle Portrait_button::get_rect() {
-	Rectangle rect = Face_button::get_rect();
+TileRect Portrait_button::get_rect() {
+	TileRect rect = Face_button::get_rect();
 	if (hit || pois || prot || para || charm || curse)
 		rect.enlarge(2);
 
 	if (hp) {
-		Rectangle r = hp->get_rect();
+		TileRect r = hp->get_rect();
 		rect = rect.add(r);
 	}
 	if (mana) {
-		Rectangle r = mana->get_rect();
+		TileRect r = mana->get_rect();
 		rect = rect.add(r);
 	}
 
@@ -412,7 +412,7 @@ void Face_stats::create_buttons() {
 
 	for (i = 0; i < 8; i++)
 		if (party[i]) {
-			Rectangle r = party[i]->get_rect();
+			TileRect r = party[i]->get_rect();
 			region = region.add(r);
 		}
 }

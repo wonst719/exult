@@ -61,7 +61,7 @@ void Npc_chooser::show(
 ) {
 	Shape_draw::show(x, y, w, h);
 	if ((selected >= 0) && (drawgc != nullptr)) {    // Show selected.
-		Rectangle b = info[selected].box;
+		TileRect b = info[selected].box;
 		// Draw yellow box.
 		cairo_set_line_width(drawgc, 1.0);
 		cairo_set_source_rgb(drawgc,
@@ -367,7 +367,7 @@ void Npc_chooser::goto_index(
 	Npc_entry &inf = info[index];   // Already in view?
 	int midx = inf.box.x + inf.box.w / 2;
 	int midy = inf.box.y + inf.box.h / 2;
-	Rectangle winrect(0, voffset, config_width, config_height);
+	TileRect winrect(0, voffset, config_width, config_height);
 	if (winrect.has_point(midx, midy))
 		return;
 	unsigned start = 0;

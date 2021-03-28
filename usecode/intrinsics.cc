@@ -668,7 +668,7 @@ USECODE_INTRINSIC(find_object) {
 	int oval  = parms[0].get_int_value();
 	if (oval == -359) {     // Find on map (?)
 		Game_object_vector vec;
-		Rectangle scr = gwin->get_win_tile_rect();
+		TileRect scr = gwin->get_win_tile_rect();
 		Game_object::find_nearby(vec,
 		                         Tile_coord(scr.x + scr.w / 2, scr.y + scr.h / 2, 0),
 		                         shnum, scr.h / 2, 0, qual, frnum);
@@ -1760,7 +1760,7 @@ USECODE_INTRINSIC(is_pc_female) {
 	return u;
 }
 
-static inline void Armageddon_death(Actor *npc, bool barks, Rectangle const &screen) {
+static inline void Armageddon_death(Actor *npc, bool barks, TileRect const &screen) {
 	// Leave a select few alive (like LB, Batlin).
 	if (npc && !npc->is_dead() && !npc->get_info().survives_armageddon()) {
 		const char *text[] = {"Aiiiieee!", "Noooo!", "#!?*#%!"};
@@ -1782,7 +1782,7 @@ static inline void Armageddon_death(Actor *npc, bool barks, Rectangle const &scr
 USECODE_INTRINSIC(armageddon) {
 	ignore_unused_variable_warning(num_parms, parms);
 	int cnt = gwin->get_num_npcs();
-	Rectangle screen = gwin->get_win_tile_rect();
+	TileRect screen = gwin->get_win_tile_rect();
 	for (int i = 1; i < cnt; i++)   // Almost everyone dies.
 		Armageddon_death(gwin->get_npc(i), true, screen);
 	Actor_vector vec;       // Get any monsters nearby.
@@ -2043,7 +2043,7 @@ USECODE_INTRINSIC(on_barge) {
 	Barge_object *barge = Get_barge(gwin->get_main_actor());
 	if (barge) {
 		// See if party is on barge.
-		Rectangle foot = barge->get_tile_footprint();
+		TileRect foot = barge->get_tile_footprint();
 		Actor *party[9];
 		int cnt = gwin->get_party(party, 1);
 		for (int i = 0; i < cnt; i++) {
@@ -2496,7 +2496,7 @@ USECODE_INTRINSIC(is_not_blocked) {
 	int framenum = parms[2].get_int_value();
 	// Find out about given shape.
 	const Shape_info &info = ShapeID::get_info(shapenum);
-	Rectangle footprint(
+	TileRect footprint(
 	    tile.tx - info.get_3d_xtiles(framenum) + 1,
 	    tile.ty - info.get_3d_ytiles(framenum) + 1,
 	    info.get_3d_xtiles(framenum), info.get_3d_ytiles(framenum));
@@ -3101,7 +3101,7 @@ USECODE_INTRINSIC(add_removed_npc) {
 
 
 	// Get the tiles around the edge of the screen
-	Rectangle rect = gwin->get_win_tile_rect();
+	TileRect rect = gwin->get_win_tile_rect();
 
 	int sx = rect.x;        // Tile coord of x start
 	int ex = rect.x + rect.w;   // Tile coord of x end
@@ -3268,7 +3268,7 @@ USECODE_INTRINSIC(remove_from_area) {
 	int fromy = parms[2].get_elem(1).get_int_value();
 	int tox   = parms[3].get_elem(0).get_int_value();
 	int toy   = parms[3].get_elem(1).get_int_value();
-	Rectangle area(fromx, fromy, tox - fromx + 1, toy - fromy + 1);
+	TileRect area(fromx, fromy, tox - fromx + 1, toy - fromy + 1);
 	if (area.w <= 0 || area.h <= 0)
 		return no_ret;
 	Game_object_vector vec;     // Find objects.

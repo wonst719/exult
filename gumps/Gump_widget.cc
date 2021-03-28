@@ -59,7 +59,7 @@ void Gump_widget::paint(
  *  Get screen area used by a gump.
  */
 
-Rectangle Gump_widget::get_rect() {
+TileRect Gump_widget::get_rect() {
 	int px = x;
 	int py = y;
 
@@ -70,8 +70,8 @@ Rectangle Gump_widget::get_rect() {
 
 	Shape_frame *s = get_shape();
 
-	if (!s) return Rectangle(0, 0, 0, 0);
+	if (!s) return TileRect(0, 0, 0, 0);
 
-	return Rectangle(px - s->get_xleft(),   py - s->get_yabove(),
+	return TileRect(px - s->get_xleft(),   py - s->get_yabove(),
 	                 s->get_width(), s->get_height());
 }

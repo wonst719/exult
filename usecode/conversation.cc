@@ -50,8 +50,8 @@ public:
 	//int frame;
 	bool text_pending;      // Text has been written, but user
 	//   has not yet been prompted.
-	Rectangle face_rect;    // Rectangle where face is shown.
-	Rectangle text_rect;    // Rectangle NPC statement is shown in.
+	TileRect face_rect;     // Rectangle where face is shown.
+	TileRect text_rect;     // Rectangle NPC statement is shown in.
 	bool large_face;        // Guardian, snake.
 	int last_text_height;   // Height of last text painted.
 	string cur_text;        // Current text being shown.
@@ -176,11 +176,11 @@ void Conversation::set_face_rect(
 		starty = 1;
 		extrah = 4;
 	}
-	info->face_rect = gwin->clip_to_win(Rectangle(startx, starty,
+	info->face_rect = gwin->clip_to_win(TileRect(startx, starty,
 	                                    face_w + extraw, face_h + extrah));
-	Rectangle &fbox = info->face_rect;
+	TileRect &fbox = info->face_rect;
 	// This is where NPC text will go.
-	info->text_rect = gwin->clip_to_win(Rectangle(
+	info->text_rect = gwin->clip_to_win(TileRect(
 	                                        fbox.x + fbox.w + 3, fbox.y + 3,
 	                                        screenw - fbox.x - fbox.w - 6, 4 * text_height));
 	// No room?  (Serpent?)
@@ -188,7 +188,7 @@ void Conversation::set_face_rect(
 		// Show in lower center.
 		int x = screenw / 5;
 		int y = 3 * (screenh / 4);
-		info->text_rect = Rectangle(x, y,
+		info->text_rect = TileRect(x, y,
 		                            screenw - (2 * x), screenh - y - 4);
 	}
 	info->last_text_height = info->text_rect.h;
@@ -341,7 +341,7 @@ void Conversation::show_npc_message(const char *msg) {
 	Npc_face_info *info = face_info[last_face_shown];
 	int font = info->large_face ? 7 : 0;    // Use red for Guardian, snake.
 	info->cur_text = "";
-	Rectangle &box = info->text_rect;
+	TileRect &box = info->text_rect;
 //	gwin->paint(box);        // Clear what was there before.
 //	paint_faces();
 	gwin->paint();
@@ -401,7 +401,7 @@ void Conversation::show_avatar_choices(int num_choices, char **choices) {
 	Main_actor *main_actor = gwin->get_main_actor();
 	const int max_faces = array_size(face_info);
 	// Get screen rectangle.
-	Rectangle sbox = gwin->get_game_rect();
+	TileRect sbox = gwin->get_game_rect();
 	int x = 0;
 	int y = 0;       // Keep track of coords. in box.
 	int height = sman->get_text_height(0);
@@ -446,21 +446,19 @@ void Conversation::show_avatar_choices(int num_choices, char **choices) {
 			fy = prev->face_rect.y + prev->face_rect.h;
 		fy += height;
 	}
-	Rectangle mbox(fx, fy, face->get_width(), face->get_height());
+	TileRect mbox(fx, fy, face->get_width(), face->get_height());
 	mbox = mbox.intersect(sbox);
 	avatar_face = mbox;     // Repaint entire width.
 	// Set to where to draw sentences.
-	Rectangle tbox(mbox.x + mbox.w + 8, mbox.y + 4,
-	               sbox.w - mbox.x - mbox.w - 16,
-//				sbox.h - mbox.y - 16);
-	               5 * height); // Try 5 lines.
+	TileRect tbox(mbox.x + mbox.w + 8, mbox.y + 4,
+	              sbox.w - mbox.x - mbox.w - 16,
+	              5 * height); // Try 5 lines.
 	tbox = tbox.intersect(sbox);
-//	gwin->paint(tbox);              // Paint background.
 	// Draw portrait.
 	sman->paint_shape(mbox.x + face->get_xleft(),
 	                  mbox.y + face->get_yabove(), face);
 	delete [] conv_choices;     // Set up new list of choices.
-	conv_choices = new Rectangle[num_choices + 1];
+	conv_choices = new TileRect[num_choices + 1];
 	for (int i = 0; i < num_choices; i++) {
 		char text[256];
 		text[0] = 127;      // A circle.
@@ -472,7 +470,7 @@ void Conversation::show_avatar_choices(int num_choices, char **choices) {
 			y += height - 1;
 		}
 		// Store info.
-		conv_choices[i] = Rectangle(tbox.x + x, tbox.y + y,
+		conv_choices[i] = TileRect(tbox.x + x, tbox.y + y,
 		                            width, height);
 		conv_choices[i] = conv_choices[i].intersect(sbox);
 		avatar_face = avatar_face.add(conv_choices[i]);
@@ -484,7 +482,7 @@ void Conversation::show_avatar_choices(int num_choices, char **choices) {
 	avatar_face.enlarge((3 * c_tilesize) / 4);  // Encloses entire area.
 	avatar_face = avatar_face.intersect(sbox);
 	// Terminate the list.
-	conv_choices[num_choices] = Rectangle(0, 0, 0, 0);
+	conv_choices[num_choices] = TileRect(0, 0, 0, 0);
 	clear_text_pending();
 	gwin->set_painted();
 }
@@ -585,7 +583,7 @@ void Conversation::paint_faces(
 			sman->paint_shape(fx, fy, face, true);
 		}
 		if (text) {     // Show text too?
-			Rectangle &box = finfo->text_rect;
+			TileRect &box = finfo->text_rect;
 			// Use red for Guardian, snake.
 			int font = finfo->large_face ? 7 : 0;
 			sman->paint_text_box(font, finfo->cur_text.c_str(),

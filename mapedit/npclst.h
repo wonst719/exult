@@ -45,12 +45,12 @@ class Estudio_npc;
 class Npc_entry {
 	friend class Npc_chooser;
 	short npcnum, framenum; // The given npc/frame.
-	Rectangle box;          // Box where drawn.
+	TileRect box;          // Box where drawn.
 public:
 	void set(int num, int frnum, int rx, int ry, int rw, int rh) {
 		npcnum   = static_cast<short>(num);
 		framenum = static_cast<short>(frnum);
-		box = Rectangle(rx, ry, rw, rh);
+		box = TileRect(rx, ry, rw, rh);
 	}
 };
 

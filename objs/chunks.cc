@@ -222,10 +222,10 @@ void Chunk_cache::update_object(
 			                   endx, endy, lift % 8, ztiles);
 		return;
 	}
-	Rectangle footprint = obj->get_footprint();
+	TileRect footprint = obj->get_footprint();
 	// Go through interesected chunks.
 	Chunk_intersect_iterator next_chunk(footprint);
-	Rectangle tiles;
+	TileRect tiles;
 	int cx;
 	int cy;
 	while (next_chunk.get_next(tiles, cx, cy))
@@ -241,7 +241,7 @@ void Chunk_cache::update_object(
 
 void Chunk_cache::set_egged(
     Egg_object *egg,
-    Rectangle &tiles,       // Range of tiles within chunk.
+    TileRect &tiles,       // Range of tiles within chunk.
     bool add                // 1 to add, 0 to remove.
 ) {
 	// Egg already there?
@@ -302,10 +302,10 @@ void Chunk_cache::update_egg(
 ) {
 	ignore_unused_variable_warning(chunk);
 	// Get footprint with abs. tiles.
-	Rectangle foot = egg->get_area();
+	TileRect foot = egg->get_area();
 	if (!foot.w)
 		return;         // Empty (probability = 0).
-	Rectangle crect;        // Gets tiles within each chunk.
+	TileRect crect;        // Gets tiles within each chunk.
 	int cx;
 	int cy;
 	if (egg->is_solid_area()) {
@@ -316,10 +316,10 @@ void Chunk_cache::update_egg(
 		return;
 	}
 	// Just do the perimeter.
-	Rectangle top(foot.x, foot.y, foot.w, 1);
-	Rectangle bottom(foot.x, foot.y + foot.h - 1, foot.w, 1);
-	Rectangle left(foot.x, foot.y + 1, 1, foot.h - 2);
-	Rectangle right(foot.x + foot.w - 1, foot.y + 1, 1, foot.h - 2);
+	TileRect top(foot.x, foot.y, foot.w, 1);
+	TileRect bottom(foot.x, foot.y + foot.h - 1, foot.w, 1);
+	TileRect left(foot.x, foot.y + 1, 1, foot.h - 2);
+	TileRect right(foot.x + foot.w - 1, foot.y + 1, 1, foot.h - 2);
 	// Go through intersected chunks.
 	Chunk_intersect_iterator tops(top);
 	while (tops.get_next(crect, cx, cy))
@@ -1191,14 +1191,14 @@ Tile_coord Map_chunk::find_spot(
 
 int Map_chunk::find_in_area(
     Game_object_vector &vec,    // Returned here.
-    Rectangle const &area,          // Area to search.
+    TileRect const &area,          // Area to search.
     int shapenum,
     int framenum
 ) {
 	int savesize = vec.size();
 	// Go through interesected chunks.
 	Chunk_intersect_iterator next_chunk(area);
-	Rectangle tiles;        // (Tiles within intersected chunk).
+	TileRect tiles;        // (Tiles within intersected chunk).
 	int eachcx;
 	int eachcy;
 	Game_map *gmap = gwin->get_map();
@@ -1235,10 +1235,10 @@ void Map_chunk::try_all_eggs(
 	Game_map *gmap = gwin->get_map();
 	Tile_coord pos = obj->get_tile();
 	const int dist = 32;        // See if this works okay.
-	Rectangle area(pos.tx - dist, pos.ty - dist, 2 * dist, 2 * dist);
+	TileRect area(pos.tx - dist, pos.ty - dist, 2 * dist, 2 * dist);
 	// Go through interesected chunks.
 	Chunk_intersect_iterator next_chunk(area);
-	Rectangle tiles;        // (Ignored).
+	TileRect tiles;        // (Ignored).
 	int eachcx;
 	int eachcy;
 	Egg_vector eggs;        // Get them here first, as activating
@@ -1272,7 +1272,7 @@ void Map_chunk::try_all_eggs(
  */
 
 void Map_chunk::add_dungeon_levels(
-    Rectangle &tiles, unsigned int lift
+    TileRect &tiles, unsigned int lift
 ) {
 	if (!dungeon_levels) {
 		// First one found.
@@ -1307,18 +1307,18 @@ void Map_chunk::setup_dungeon_levels(
 		if (shinf.get_shape_class() == Shape_info::building &&
 		        shinf.get_mountain_top_type() == Shape_info::normal_mountain_top) {
 			// SI shape 941, frame 0 => do whole chunk (I think).
-			Rectangle area =
+			TileRect area =
 			    (shinf.has_translucency()
 			     && each->get_framenum() == 0)
-			    ? Rectangle(cx * c_tiles_per_chunk,
-			                cy * c_tiles_per_chunk,
-			                c_tiles_per_chunk,
-			                c_tiles_per_chunk)
+			    ? TileRect(cx * c_tiles_per_chunk,
+			               cy * c_tiles_per_chunk,
+			               c_tiles_per_chunk,
+			               c_tiles_per_chunk)
 			    : each->get_footprint();
 
 			// Go through interesected chunks.
 			Chunk_intersect_iterator next_chunk(area);
-			Rectangle tiles;// Rel. tiles.
+			TileRect tiles;// Rel. tiles.
 			int cx;
 			int cy;
 			while (next_chunk.get_next(tiles, cx, cy))
@@ -1331,11 +1331,11 @@ void Map_chunk::setup_dungeon_levels(
 			// This is not exactly accurate.
 			ice_dungeon |= 1 << ((each->get_tx() >> 3) + 2 * (each->get_ty() >> 3));
 
-			Rectangle area = each->get_footprint();
+			TileRect area = each->get_footprint();
 
 			// Go through interesected chunks.
 			Chunk_intersect_iterator next_chunk(area);
-			Rectangle tiles;// Rel. tiles.
+			TileRect tiles;// Rel. tiles.
 			int cx;
 			int cy;
 			while (next_chunk.get_next(tiles, cx, cy))
@@ -1363,14 +1363,14 @@ void Map_chunk::setup_dungeon_levels(
  */
 
 void Map_chunk::gravity(
-    Rectangle const &area,          // Unblocked tiles (in abs. coords).
+    TileRect const &area,          // Unblocked tiles (in abs. coords).
     int lift            // Lift where tiles are free.
 ) {
 	Game_object_vector dropped; // Gets list of objs. that dropped.
 	dropped.reserve(20);
 	// Go through interesected chunks.
 	Chunk_intersect_iterator next_chunk(area);
-	Rectangle tiles;        // Rel. tiles.  Not used.
+	TileRect tiles;        // Rel. tiles.  Not used.
 	int cx;
 	int cy;
 	int new_lift;
@@ -1385,7 +1385,7 @@ void Map_chunk::gravity(
 				continue;
 			Tile_coord t = obj->get_tile();
 			// Get footprint.
-			Rectangle foot = obj->get_footprint();
+			TileRect foot = obj->get_footprint();
 			// Above area?
 			if (t.tz >= lift && foot.intersects(area) &&
 			        // Unblocked below itself?
@@ -1400,7 +1400,7 @@ void Map_chunk::gravity(
 	for (auto *obj : dropped) {
 		Tile_coord t = obj->get_tile();
 		// Get footprint.
-		Rectangle foot = obj->get_footprint();
+		TileRect foot = obj->get_footprint();
 		// Let drop as far as possible.
 		if (!is_blocked(1, t.tz - 1, foot.x, foot.y,
 		                foot.w, foot.h, new_lift, MOVE_ALL_TERRAIN, 100) && new_lift < t.tz) {

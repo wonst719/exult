@@ -44,8 +44,8 @@ class Barge_object;
 class Game_window;
 class Npc_actor;
 class PathFinder;
-class Rectangle;
 class Schedule;
+class TileRect;
 class Usecode_machine;
 class Vga_file;
 class ODataSource;
@@ -264,7 +264,7 @@ public:
 	                                 int dist = 24) {
 		return find_closest(pos, &shapenum, 1, dist);
 	}
-	Rectangle get_footprint();  // Get tile footprint.
+	TileRect get_footprint();  // Get tile footprint.
 	Block get_block() const;
 	bool blocks(Tile_coord const &tile) const;    // Do we block a given tile?
 	// Find object blocking given tile.

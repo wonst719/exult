@@ -57,7 +57,7 @@ class Notebook_gump : public Gump {
 	Gump_button *leftpage, *rightpage;
 	// Add new note.
 	static void add_new(const std::string &text, int gflag = -1);
-	bool paint_page(Rectangle const &box, One_note *note, int &offset,
+	bool paint_page(TileRect const &box, One_note *note, int &offset,
 	                int pagenum);
 	bool need_next_page() const {
 		return curpage % 2 == 1 && curpage < static_cast<int>(page_info.size()) - 1 &&

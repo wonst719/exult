@@ -230,7 +230,7 @@ void ShortcutBar_gump::createButtons() {
 		int dY = frame->get_yabove() + (height - frame->get_height()) / 2;
 		buttonItems[i].mx = x + dX;
 		buttonItems[i].my = starty + dY;
-		buttonItems[i].rect = Rectangle(x, starty, barItemWidth, height);
+		buttonItems[i].rect = TileRect(x, starty, barItemWidth, height);
 		// this is safe to do since it only effects certain palette colors
 		// which will be color cycling otherwise
 		if (trlucent)

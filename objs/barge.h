@@ -70,7 +70,7 @@ public:
 		first_step(true), taking_2nd_step(false),
 		boat(-1), frame_time(0), path(nullptr)
 	{  }
-	Rectangle get_tile_footprint();
+	TileRect get_tile_footprint();
 	bool is_moving() const {
 		return frame_time > 0;
 	}

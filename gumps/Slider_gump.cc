@@ -100,7 +100,7 @@ Slider_gump::Slider_gump(
 	min_val(mival), max_val(mxval), step_val(step),
 	val(defval), dragging(0), prev_dragx(0) {
 	diamond = ShapeID(game->get_shape("gumps/slider_diamond"), 0, SF_GUMPS_VGA);
-	set_object_area(Rectangle(0, 0, 0, 0), 6, 30);
+	set_object_area(TileRect(0, 0, 0, 0), 6, 30);
 
 #ifdef DEBUG
 	cout << "Slider:  " << min_val << " to " << max_val << " by " << step << endl;

@@ -235,7 +235,7 @@ int Schedule::try_street_maintenance(
 		return 0;       // Dusk or dawn.
 	Tile_coord npcpos = npc->get_tile();
 	// Look at screen + 1/2.
-	Rectangle winrect = gwin->get_win_tile_rect();
+	TileRect winrect = gwin->get_win_tile_rect();
 	winrect.enlarge(winrect.w / 4);
 	if (!winrect.has_world_point(npcpos.tx, npcpos.ty))
 		return 0;
@@ -361,7 +361,7 @@ bool Schedule_with_objects::walk_to_random_item(int dist) {
 bool Schedule_with_objects::drop_item(Game_object *to_drop, Game_object *table)
 {
 	Tile_coord spot = npc->get_tile();
-	Rectangle foot = table->get_footprint();
+	TileRect foot = table->get_footprint();
 	// East/West of table?
 	if (spot.ty >= foot.y && spot.ty < foot.y + foot.h)
 		spot.tx = spot.tx <= foot.x ? foot.x
@@ -614,7 +614,7 @@ void Follow_avatar_schedule::now_what(
 	// On screen (roughly)?
 	int ok;
 	// Get window rect. in tiles.
-	Rectangle wrect = gwin->get_win_tile_rect();
+	TileRect wrect = gwin->get_win_tile_rect();
 	if (wrect.has_world_point(pos.tx - pos.tz / 2, pos.ty - pos.tz / 2))
 		// Try walking off-screen.
 		ok = npc->walk_path_to_tile(Tile_coord(-1, -1, -1),
@@ -2149,7 +2149,7 @@ bool Sleep_schedule::is_bed_occupied(
 	// Check if someone is already in the bed.
 	Actor_vector occ;   // Unless there's another occupant.
 	bed->find_nearby_actors(occ, c_any_shapenum, 2);
-	Rectangle foot = bed->get_footprint();
+	TileRect foot = bed->get_footprint();
 	int bedz = bed->get_tile().tz / 5;
 	for (auto *it : occ) {
 		if (npc == it)
@@ -2824,10 +2824,10 @@ void Desk_schedule::ending(
  *  A class for indexing the perimeter of a rectangle.
  */
 class Perimeter {
-	Rectangle perim;        // Outside given rect.
+	TileRect perim;        // Outside given rect.
 	int sz;             // # squares.
 public:
-	Perimeter(Rectangle &r) : sz(2 * r.w + 2 * r.h + 4) {
+	Perimeter(TileRect &r) : sz(2 * r.w + 2 * r.h + 4) {
 		perim = r;
 		perim.enlarge(1);
 	}
@@ -2894,7 +2894,7 @@ void Lab_schedule::init(
 	for (int i = 0; (!book_obj || !chair_obj) && i < cnt; i++) {
 		Game_object *table = table_objs[i];
 		tables[i] = weak_from_obj(table);
-		Rectangle foot = table->get_footprint();
+		TileRect foot = table->get_footprint();
 		// Book on table?
 		if (!book_obj && (book_obj = table->find_closest(642, 4)) != nullptr) {
 			Tile_coord p = book_obj->get_tile();
@@ -3012,7 +3012,7 @@ void Lab_schedule::now_what(
 		if (!table) {
 			break;
 		}
-		Rectangle r = table->get_footprint();
+		TileRect r = table->get_footprint();
 		Perimeter p(r);     // Find spot adjacent to table.
 		Tile_coord spot;    // Also get closest spot on table.
 		p.get(rand() % p.size(), spot, spot_on_table);
@@ -3420,7 +3420,7 @@ Game_object *Waiter_schedule::create_customer_plate(
 			// will be cleared next time through this function.
 			continue;
 		}
-		Rectangle foot = table->get_footprint();
+		TileRect foot = table->get_footprint();
 		if (foot.distance(cpos.tx, cpos.ty) > 2) {
 			continue;
 		}
@@ -3969,7 +3969,7 @@ void Sew_schedule::now_what(
 		Actor_action *pact = Path_walking_actor_action::create_path(
 		                         npcpos, tpos, cost);
 		// Find where to put cloth.
-		Rectangle foot = work_table_obj->get_footprint();
+		TileRect foot = work_table_obj->get_footprint();
 		const Shape_info &info = work_table_obj->get_info();
 		Tile_coord cpos(foot.x + foot.w / 2, foot.y + foot.h / 2,
 		                work_table_obj->get_lift() + info.get_3d_height());
@@ -4075,7 +4075,7 @@ void Sew_schedule::now_what(
 		Actor_action *pact = Path_walking_actor_action::create_path(
 		                         npcpos, tpos, cost);
 		// Find where to put cloth.
-		Rectangle foot = wares_table_obj->get_footprint();
+		TileRect foot = wares_table_obj->get_footprint();
 		const Shape_info &info = wares_table_obj->get_info();
 		Tile_coord cpos(foot.x + rand() % foot.w, foot.y + rand() % foot.h,
 		                wares_table_obj->get_lift() + info.get_3d_height());
@@ -4294,7 +4294,7 @@ void Bake_schedule::now_what() {
 			break;
 		}
 		// Find where to put dough.
-		Rectangle foot = worktable_obj->get_footprint();
+		TileRect foot = worktable_obj->get_footprint();
 		const Shape_info &info = worktable_obj->get_info();
 		Tile_coord cpos(foot.x + rand() % foot.w, foot.y + rand() % foot.h,
 		                worktable_obj->get_lift() + info.get_3d_height());
@@ -4451,7 +4451,7 @@ void Bake_schedule::now_what() {
 			break;
 		}
 
-		Rectangle r = displaytable_obj->get_footprint();
+		TileRect r = displaytable_obj->get_footprint();
 		Perimeter p(r);     // Find spot adjacent to table.
 		Tile_coord spot;    // Also get closest spot on table.
 		Tile_coord spot_on_table;
@@ -4584,7 +4584,7 @@ void Bake_schedule::now_what() {
 			offY = 0;
 			offZ = -2;
 		}
-		Rectangle foot = oven_obj->get_footprint();
+		TileRect foot = oven_obj->get_footprint();
 		const Shape_info &info = oven_obj->get_info();
 		Tile_coord cpos(foot.x + offX, foot.y + offY,
 		                oven_obj->get_lift() + info.get_3d_height() + offZ);
@@ -4668,7 +4668,7 @@ void Forge_schedule::now_what(
 		Actor_action *pact = Path_walking_actor_action::create_path(
 		                         npcpos, tpos, cost);
 
-		Rectangle foot = firepit_obj->get_footprint();
+		TileRect foot = firepit_obj->get_footprint();
 		const Shape_info &info = firepit_obj->get_info();
 		Tile_coord bpos(foot.x + foot.w / 2 + 1, foot.y + foot.h / 2,
 		                firepit_obj->get_lift() + info.get_3d_height());
@@ -4777,7 +4777,7 @@ void Forge_schedule::now_what(
 		Actor_action *pact2 = Path_walking_actor_action::create_path(
 		                          tpos, tpos2, cost);
 
-		Rectangle foot = anvil_obj->get_footprint();
+		TileRect foot = anvil_obj->get_footprint();
 		const Shape_info &info = anvil_obj->get_info();
 		Tile_coord bpos(foot.x + 2, foot.y,
 		                anvil_obj->get_lift() + info.get_3d_height());
@@ -5112,7 +5112,7 @@ void Eat_schedule::ending(int new_type) { // new schedule type
  */
 
 void Walk_to_schedule::walk_off_screen(
-    Rectangle &screen,      // In tiles, area slightly larger than
+    TileRect &screen,      // In tiles, area slightly larger than
     //   actual screen.
     Tile_coord &goal        // Modified for path offscreen.
 ) {
@@ -5168,7 +5168,7 @@ void Walk_to_schedule::now_what(
 		return;
 	}
 	// Get screen rect. in tiles.
-	Rectangle screen = gwin->get_win_tile_rect();
+	TileRect screen = gwin->get_win_tile_rect();
 	screen.enlarge(6);      // Enlarge in all dirs.
 	// Might do part of it first.
 	Tile_coord from = npc->get_tile();

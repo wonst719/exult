@@ -98,7 +98,7 @@ void Npc_proximity_handler::handle_event(
 	auto *npc = reinterpret_cast<Npc_actor *>(udata);
 	int extra_delay = 5;        // For next time.
 	// See if still on visible screen.
-	Rectangle tiles = gwin->get_win_tile_rect().enlarge(10);
+	TileRect tiles = gwin->get_win_tile_rect().enlarge(10);
 	Tile_coord t = npc->get_tile();
 	if (!tiles.has_world_point(t.tx, t.ty) ||   // No longer visible?
 	        // Not on current map?

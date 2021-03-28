@@ -57,7 +57,7 @@ public:
 	}
 	virtual void paint();
 
-	virtual Rectangle get_rect();
+	virtual TileRect get_rect();
 	// update the widget, if required
 	virtual void update_widget() { }
 

@@ -74,7 +74,7 @@ public:
  *  Only the tz coord. of the dest. is used.
  */
 class Offscreen_pathfinder_client : public Actor_pathfinder_client {
-	Rectangle screen;       // Screen rect. in tiles.
+	TileRect screen;       // Screen rect. in tiles.
 	Tile_coord best;        // Best offscreen pt. to aim for.
 public:
 	Offscreen_pathfinder_client(Actor *n, bool ign = false);
@@ -91,7 +91,7 @@ public:
  *  This class provides A* cost methods for going to an object.
  */
 class Approach_object_pathfinder_client : public Actor_pathfinder_client {
-	Rectangle destbox;      // Got to intersect this box.
+	TileRect destbox;      // Got to intersect this box.
 public:
 	Approach_object_pathfinder_client(Actor *from, Tile_coord const &dest,
 	                                  int dist);
@@ -105,7 +105,7 @@ public:
  *  test for when an object can be grabbed.
  */
 class Fast_pathfinder_client : public Pathfinder_client {
-	Rectangle destbox;      // Got to intersect this box.
+	TileRect destbox;      // Got to intersect this box.
 	int axtiles, aytiles, aztiles;  // NPC's dims. in tiles.
 	void init(Game_object *from, Game_object *to, int dist);
 	static bool is_grabable_internal(Game_object *from, Tile_coord const &ct,

@@ -38,8 +38,8 @@ private:
 	Npc_face_info *face_info[2] = {nullptr, nullptr};    // NPC's on-screen faces in convers.
 	int num_faces = 0;
 	int last_face_shown = 0;        // Index of last npc face shown.
-	Rectangle avatar_face = {0, 0, 0, 0};      // Area take by Avatar in conversation.
-	Rectangle *conv_choices = nullptr;    // Choices during a conversation.
+	TileRect avatar_face = {0, 0, 0, 0};      // Area take by Avatar in conversation.
+	TileRect *conv_choices = nullptr;    // Choices during a conversation.
 
 	std::vector<std::string> answers;
 	std::deque< std::vector<std::string> > answer_stack;

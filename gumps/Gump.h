@@ -41,12 +41,12 @@ protected:
 	Gump() = default;
 	Container_game_object *container;// What this gump shows.
 	int x, y;           // Location on screen.
-	Rectangle object_area{};      // Area to paint objects in, rel. to
+	TileRect object_area{};      // Area to paint objects in, rel. to
 	using Gump_elems = std::vector<Gump_widget *>;
 	Gump_elems elems;       // Includes 'checkmark'.
 	bool handles_kbd;       // Kbd can be handled by gump.
-	void set_object_area(Rectangle const &area, int checkx, int checky);
-	void set_object_area(Rectangle const &area) {
+	void set_object_area(TileRect const &area, int checkx, int checky);
+	void set_object_area(TileRect const &area) {
 		object_area = area;
 	}
 	void add_elem(Gump_widget *w) {
@@ -93,12 +93,12 @@ public:
 		return get_container();
 	}
 	// Get screen rect. of obj. in here.
-	Rectangle get_shape_rect(const Game_object *obj) const;
+	TileRect get_shape_rect(const Game_object *obj) const;
 	// Get screen loc. of object.
 	void get_shape_location(const Game_object *obj, int &ox, int &oy) const;
 	// Find obj. containing mouse point.
 	virtual Game_object *find_object(int mx, int my);
-	virtual Rectangle get_dirty();      // Get dirty rect. for gump+contents.
+	virtual TileRect get_dirty();      // Get dirty rect. for gump+contents.
 	virtual Game_object *get_owner();// Get object this belongs to.
 	// Is a given point on a button?
 	virtual Gump_button *on_button(int mx, int my);
@@ -131,7 +131,7 @@ public:
 	}
 
 	virtual bool has_point(int x, int y) const;
-	virtual Rectangle get_rect() const;
+	virtual TileRect get_rect() const;
 	virtual bool handle_kbd_event(void *ev) {
 		ignore_unused_variable_warning(ev);
 		return false;

@@ -971,7 +971,7 @@ void Homing_projectile::paint(
  *  Figure text position.
  */
 
-Rectangle Text_effect::Figure_text_pos() {
+TileRect Text_effect::Figure_text_pos() {
 	Game_object_shared item_obj = item.lock();
 	if (item_obj) {
 		Gump_manager *gumpman = gwin->get_gump_man();
@@ -982,7 +982,7 @@ Rectangle Text_effect::Figure_text_pos() {
 		else {
 			Game_object *outer = item_obj->get_outermost();
 			if (!outer->get_chunk()) return pos;
-			Rectangle r = gwin->get_shape_rect(outer);
+			TileRect r = gwin->get_shape_rect(outer);
 			r.x -= gwin->get_scrolltx_lo();
 			r.y -= gwin->get_scrollty_lo();
 			return r;
@@ -991,7 +991,7 @@ Rectangle Text_effect::Figure_text_pos() {
 		int x;
 		int y;
 		gwin->get_shape_location(tpos, x, y);
-		return Rectangle(x, y, c_tilesize, c_tilesize);
+		return TileRect(x, y, c_tilesize, c_tilesize);
 	}
 }
 
@@ -1002,9 +1002,9 @@ Rectangle Text_effect::Figure_text_pos() {
 void Text_effect::add_dirty(
 ) {
 	// Repaint slightly bigger rectangle.
-	Rectangle rect(pos.x - c_tilesize,
-	               pos.y - c_tilesize,
-	               width + 2 * c_tilesize, height + 2 * c_tilesize);
+	TileRect rect(pos.x - c_tilesize,
+	              pos.y - c_tilesize,
+	              width + 2 * c_tilesize, height + 2 * c_tilesize);
 	gwin->add_dirty(gwin->clip_to_win(rect));
 }
 
@@ -1080,7 +1080,7 @@ void Text_effect::handle_event(
 void Text_effect::update_dirty(
 ) {
 	// See if moved.
-	Rectangle npos = Figure_text_pos();
+	TileRect npos = Figure_text_pos();
 	if (npos == pos)        // No change?
 		return;
 	add_dirty();            // Force repaint of old area.

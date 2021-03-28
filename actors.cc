@@ -744,7 +744,7 @@ bool Actor::add_dirty(
 			weapon_rect.w = 0;
 	}
 	if (weapon_rect.w > 0) {    // Repaint weapon area too.
-		Rectangle r = weapon_rect;
+		TileRect r = weapon_rect;
 		int xoff;
 		int yoff;
 		gwin->get_shape_location(this, xoff, yoff);
@@ -824,8 +824,8 @@ Game_object *Actor::find_blocking(
     int dir
 ) {
 	ignore_unused_variable_warning(tile);
-	Rectangle footprint = get_footprint();
-	Rectangle base = get_footprint();
+	TileRect footprint = get_footprint();
+	TileRect base = get_footprint();
 	switch (dir) {
 	case north:
 		footprint.shift(0, -1);
@@ -1399,7 +1399,7 @@ void Actor::follow(
 	if (goaldist - leaderdist >= 5)
 		speed -= 20;        // Speed up if too far.
 	// Get window rect. in tiles.
-	Rectangle wrect = gwin->get_win_tile_rect();
+	TileRect wrect = gwin->get_win_tile_rect();
 	int dist2lead = leader->distance(pos);
 	// Getting kind of far away?
 	if (dist2lead > wrect.w + wrect.w / 2 &&
@@ -1926,7 +1926,7 @@ void Actor::set_schedule_and_loc(int new_schedule_type, Tile_coord const &dest,
 static bool in_goblin_village(Actor const *npc) {
 	// These boundaries are exact, as far as I can tell; hack-move to the
 	// rescue.
-	static const Rectangle gobvillage(576, 1200, 256, 336);
+	static const TileRect gobvillage(576, 1200, 256, 336);
 	Tile_coord loc = npc->get_tile();
 	return GAME_SI && gobvillage.has_world_point(loc.tx, loc.ty);
 }

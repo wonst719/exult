@@ -77,12 +77,12 @@ int Game_object::find_nearby(
 	int vecsize = vec.size();
 	Game_window *gwin = Game_window::get_instance();
 	Game_map *gmap = gwin->get_map();
-	Rectangle bounds((pos.tx - delta + c_num_tiles) % c_num_tiles,
+	TileRect bounds((pos.tx - delta + c_num_tiles) % c_num_tiles,
 	                 (pos.ty - delta + c_num_tiles) % c_num_tiles,
 	                 1 + 2 * delta, 1 + 2 * delta);
 	// Stay within world.
 	Chunk_intersect_iterator next_chunk(bounds);
-	Rectangle tiles;
+	TileRect tiles;
 	int cx;
 	int cy;
 	while (next_chunk.get_next(tiles, cx, cy)) {

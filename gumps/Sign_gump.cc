@@ -47,16 +47,16 @@ Sign_gump::Sign_gump(
 	}
 
 	if (shapenum == game->get_shape("gumps/woodsign")) {
-		set_object_area(Rectangle(0, 4, 196, 92));
+		set_object_area(TileRect(0, 4, 196, 92));
 	} else if (shapenum == game->get_shape("gumps/tombstone")) {
-		set_object_area(Rectangle(0, 8, 200, 112));
+		set_object_area(TileRect(0, 8, 200, 112));
 	} else if (shapenum == game->get_shape("gumps/goldsign")) {
 		if (Game::get_game_type() == BLACK_GATE)
-			set_object_area(Rectangle(0, 4, 232, 96));
+			set_object_area(TileRect(0, 4, 232, 96));
 		else            // SI
-			set_object_area(Rectangle(4, 4, 312, 96));
+			set_object_area(TileRect(4, 4, 312, 96));
 	} else if (shapenum == game->get_shape("gumps/scroll"))
-		set_object_area(Rectangle(48, 30, 146, 118));
+		set_object_area(TileRect(48, 30, 146, 118));
 	lines = new std::string[num_lines];
 }
 

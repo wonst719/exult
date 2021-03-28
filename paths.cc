@@ -86,7 +86,7 @@ int Actor_pathfinder_client::check_blocking(
 	        block->get_framenum() % 4 >= 2)
 		return -1;
 	// Can't be either end of door.
-	Rectangle foot = block->get_footprint();
+	TileRect foot = block->get_footprint();
 	if (foot.h == 1 && (to.tx == foot.x ||
 	                    to.tx == FIX_COORD(foot.x + foot.w - 1)))
 		return -1;
@@ -257,7 +257,7 @@ Offscreen_pathfinder_client::Offscreen_pathfinder_client(
 	    Game_window::get_instance()->get_win_tile_rect().enlarge(3)),
 	best(b) {
 	if (best.tx != -1) {    // Scale (roughly) to edge of screen.
-		Rectangle scr =
+		TileRect scr =
 		    Game_window::get_instance()->get_win_tile_rect();
 		// Get center.
 		int cx = scr.x + scr.w / 2;
@@ -357,7 +357,7 @@ Approach_object_pathfinder_client::Approach_object_pathfinder_client(
     Tile_coord const &dest,
     int dist
 ) : Actor_pathfinder_client(from, dist, false),
-	destbox(Rectangle(dest.tx, dest.ty, 0, 0).enlarge(dist)) {
+	destbox(TileRect(dest.tx, dest.ty, 0, 0).enlarge(dist)) {
 }
 
 /*
@@ -398,7 +398,7 @@ Fast_pathfinder_client::Fast_pathfinder_client(
     int dist,
     int mf
 ) : Pathfinder_client(mf),
-	destbox(Rectangle(dest.tx, dest.ty, 0, 0).enlarge(dist)) {
+	destbox(TileRect(dest.tx, dest.ty, 0, 0).enlarge(dist)) {
 	init(from, nullptr, dist);
 }
 
@@ -426,7 +426,7 @@ Fast_pathfinder_client::Fast_pathfinder_client(
     Tile_coord const &dest,
     int dist
 ) : Pathfinder_client(from->get_type_flags()),
-	destbox(Rectangle(dest.tx, dest.ty, 0, 0).enlarge(dist)) {
+	destbox(TileRect(dest.tx, dest.ty, 0, 0).enlarge(dist)) {
 	init(from, nullptr, dist);
 }
 
@@ -523,8 +523,8 @@ bool Fast_pathfinder_client::at_goal(
 	int dz = tile.tz - goal.tz; // Got to be on same floor.
 	if (dz > 5 || dz < -5)
 		return false;
-	Rectangle abox(tile.tx - axtiles + 1, tile.ty - aytiles + 1,
-	               axtiles, aytiles);
+	TileRect abox(tile.tx - axtiles + 1, tile.ty - aytiles + 1,
+	              axtiles, aytiles);
 	return abox.intersects(destbox);
 }
 

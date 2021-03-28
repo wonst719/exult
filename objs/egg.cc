@@ -566,7 +566,7 @@ Egg_object::Egg_object(
     short d1, short d2, short d3
 ) : Egglike_game_object(shapenum, framenum, tilex, tiley, lft),
 	probability(prob), data1(d1), data2(d2), data3(d3),
-	area(Rectangle(0, 0, 0, 0)), animator(nullptr) {
+	area(TileRect(0, 0, 0, 0)), animator(nullptr) {
 	type = itype & 0xf;
 	// Teleport destination?
 	if (type == teleport && framenum == 6 && shapenum == 275)
@@ -599,7 +599,7 @@ inline void Egg_object::init_field(
 	type = ty;
 	probability = 100;
 	data1 = data2 = 0;
-	area = Rectangle(0, 0, 0, 0);
+	area = TileRect(0, 0, 0, 0);
 	criteria = party_footpad;
 	distance = 0;
 	solid_area = 0;
@@ -637,13 +637,13 @@ Egg_object::~Egg_object(
 void Egg_object::set_area(
 ) {
 	if (!probability || type == path) { // No chance of normal activation?
-		area = Rectangle(0, 0, 0, 0);
+		area = TileRect(0, 0, 0, 0);
 		return;
 	}
 	Tile_coord t = get_tile();  // Get absolute tile coords.
 	switch (criteria) {     // Set up active area.
 	case cached_in:         // Make it really large.
-		area = Rectangle(t.tx - 32, t.ty - 32, 64, 64);
+		area = TileRect(t.tx - 32, t.ty - 32, 64, 64);
 		break;
 	case avatar_footpad:
 	case party_footpad: {
@@ -651,12 +651,12 @@ void Egg_object::set_area(
 		int frame = get_framenum();
 		int xtiles = info.get_3d_xtiles(frame);
 		int ytiles = info.get_3d_ytiles(frame);
-		area = Rectangle(t.tx - xtiles + 1, t.ty - ytiles + 1,
+		area = TileRect(t.tx - xtiles + 1, t.ty - ytiles + 1,
 		                 xtiles, ytiles);
 		break;
 	}
 	case avatar_far:        // Make it 1 tile bigger each dir.
-		area = Rectangle(t.tx - distance - 1, t.ty - distance - 1,
+		area = TileRect(t.tx - distance - 1, t.ty - distance - 1,
 		                 2 * distance + 3, 2 * distance + 3);
 		break;
 	default: {
@@ -667,13 +667,13 @@ void Egg_object::set_area(
 			if (criteria == external_criteria)
 				width += 2;
 		}
-		area = Rectangle(t.tx - distance, t.ty - distance,
+		area = TileRect(t.tx - distance, t.ty - distance,
 		                 width, width);
 		break;
 	}
 	}
 	// Don't go outside the world.
-	Rectangle world(0, 0, c_num_chunks * c_tiles_per_chunk,
+	TileRect world(0, 0, c_num_chunks * c_tiles_per_chunk,
 	                c_num_chunks * c_tiles_per_chunk);
 	area = area.intersect(world);
 }
@@ -773,7 +773,7 @@ bool Egg_object::is_active(
 	case avatar_far: {      // New tile is outside, old is inside.
 		if (obj != gwin->get_main_actor() || !area.has_world_point(tx, ty))
 			return false;
-		Rectangle inside(area.x + 1, area.y + 1,
+		TileRect inside(area.x + 1, area.y + 1,
 		                 area.w - 2, area.h - 2);
 		return inside.has_world_point(from_tx, from_ty) &&
 		       !inside.has_world_point(tx, ty);
@@ -1303,7 +1303,7 @@ void Field_object::activate(
 	Actor_vector npcs;      // Find all nearby NPC's.
 	gwin->get_nearby_npcs(npcs);
 	npcs.push_back(gwin->get_main_actor()); // Include Avatar.
-	Rectangle eggfoot = get_footprint();
+	TileRect eggfoot = get_footprint();
 	// Clear flag to check.
 	if (animator)
 		animator->deactivate_animator();
@@ -1403,13 +1403,13 @@ bool Mirror_object::is_active(Game_object *obj, int tx, int ty, int tz, int from
 // Set up active area.
 void Mirror_object::set_area() {
 	// These are broken, so dont touch
-	if ((get_framenum() % 3) == 2) area = Rectangle(0, 0, 0, 0);
+	if ((get_framenum() % 3) == 2) area = TileRect(0, 0, 0, 0);
 
 	Tile_coord t = get_tile();  // Get absolute tile coords.
 
 	// To left or above?
-	if (get_shapenum() == 268) area = Rectangle(t.tx - 1, t.ty - 3, 6, 6);
-	else  area = Rectangle(t.tx - 3 , t.ty - 1, 6, 6);
+	if (get_shapenum() == 268) area = TileRect(t.tx - 1, t.ty - 3, 6, 6);
+	else  area = TileRect(t.tx - 3 , t.ty - 1, 6, 6);
 }
 
 void Mirror_object::paint() {

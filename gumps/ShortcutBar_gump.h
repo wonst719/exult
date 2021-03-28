@@ -52,7 +52,7 @@ struct ShortcutBarButtonItem {
 	const char *name;
 	ShortcutBarButtonItemType type;
 	ShapeID *shapeId;
-	Rectangle rect; // Shortcut bar button click area
+	TileRect rect; // Shortcut bar button click area
 	int mx, my;		// Coordinates where shape is to be drawn
 	bool pushed;
 	bool translucent;

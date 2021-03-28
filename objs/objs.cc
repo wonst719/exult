@@ -314,7 +314,7 @@ int Game_object::get_facing_direction(
     Game_object *o2
 ) const {
 	Tile_coord t1 = get_tile();
-	Rectangle torect = o2->get_footprint();
+	TileRect torect = o2->get_footprint();
 	if (torect.x + torect.w <= t1.tx &&
 	        t1.ty >= torect.y && t1.ty < torect.y + torect.h)
 		return static_cast<int>(west);
@@ -811,7 +811,7 @@ Game_object *Game_object::find_closest(
  *  Get footprint in absolute tiles.
  */
 
-Rectangle Game_object::get_footprint(
+TileRect Game_object::get_footprint(
 ) {
 	const Shape_info &info = get_info();
 	// Get footprint.
@@ -819,7 +819,7 @@ Rectangle Game_object::get_footprint(
 	int xtiles = info.get_3d_xtiles(frame);
 	int ytiles = info.get_3d_ytiles(frame);
 	Tile_coord t = get_tile();
-	Rectangle foot((t.tx - xtiles + 1 + c_num_tiles) % c_num_tiles,
+	TileRect foot((t.tx - xtiles + 1 + c_num_tiles) % c_num_tiles,
 	               (t.ty - ytiles + 1 + c_num_tiles) % c_num_tiles,
 	               xtiles, ytiles);
 	return foot;
@@ -1231,7 +1231,7 @@ static void Debug_lt(
 #ifdef DEBUG_COMPARE
 #include <iomanip>
 using std::setw;
-static inline std::ostream &operator<<(std::ostream &out, Rectangle const &rc) {
+static inline std::ostream &operator<<(std::ostream &out, TileRect const &rc) {
 	out << "Rectangle { x = " << setw(4) << rc.x << ", y = " << setw(4) << rc.y << ", w = " << setw(4) << rc.w << ", h = " << setw(4) << rc.h << "}";
 	return out;
 }
@@ -1306,7 +1306,7 @@ int Game_object::compare(
     Game_object *obj2
 ) {
 	// See if there's no overlap.
-	Rectangle r2 = gwin->get_shape_rect(obj2);
+	TileRect r2 = gwin->get_shape_rect(obj2);
 	if (!inf1.area.intersects(r2))
 		return 0;     // No overlap on screen.
 	Ordering_info inf2(gwin, obj2, r2);

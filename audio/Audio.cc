@@ -726,7 +726,7 @@ void Audio::get_2d_position_for_tile(const Tile_coord &tile, int &distance, int 
 	balance = 0;
 
 	Game_window *gwin = Game_window::get_instance();
-	Rectangle size = gwin->get_win_tile_rect();
+	TileRect size = gwin->get_win_tile_rect();
 	Tile_coord apos(size.x+size.w/2,size.y+size.h/2,gwin->get_camera_actor()->get_lift());
 
 	int sqr_dist = apos.square_distance_screen_space(tile);

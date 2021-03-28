@@ -60,7 +60,7 @@ protected:
 	unsigned distance: 6;       // Distance for activation (0-31).
 	unsigned flags: 4;      // Formed from below flags.
 	unsigned short data1, data2, data3; // More data, dep. on type.
-	Rectangle area;         // Active area.
+	TileRect area;         // Active area.
 	unsigned char solid_area;   // 1 if area is solid, 0 if outline.
 	Animator *animator;     // Controls animation.
 	void init_field(unsigned char ty);
@@ -145,7 +145,7 @@ public:
 	virtual bool is_active(Game_object *obj,
 	                      int tx, int ty, int tz, int from_tx, int from_ty);
 
-	Rectangle get_area() const { // Get active area.
+	TileRect get_area() const { // Get active area.
 		return area;
 	}
 	int is_solid_area() const {

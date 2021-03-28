@@ -548,7 +548,7 @@ void Game_window::paint_dirty() {
 
 	effects->update_dirty_text();
 
-	Rectangle box = clip_to_win(dirty);
+	TileRect box = clip_to_win(dirty);
 	if (box.w > 0 && box.h > 0)
 		paint(box); // (Could create new dirty rects.)
 	clear_dirty();

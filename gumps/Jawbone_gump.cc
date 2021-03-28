@@ -42,7 +42,7 @@ Jawbone_gump::Jawbone_gump(
     int initx, int inity        // Coords. on screen.
 ) : Gump(cont, initx, inity, game->get_shape("gumps/jawbone")),
 	jawbone(cont) {
-	set_object_area(Rectangle(0, 0, 138, 116), 10, 109);
+	set_object_area(TileRect(0, 0, 138, 116), 10, 109);
 }
 
 
@@ -113,7 +113,7 @@ bool Jawbone_gump::on_tooth(int sx, int sy, int index) {
 	int objx = toothx[index];
 	int objy = toothy[index];
 
-	Rectangle r = gwin->get_shape_rect(shape, 0, 0);
+	TileRect r = gwin->get_shape_rect(shape, 0, 0);
 
 	return r.has_point(sx - objx, sy - objy) &&
 	        shape->has_point(sx - objx, sy - objy);

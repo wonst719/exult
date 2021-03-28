@@ -341,7 +341,7 @@ bool Path_walking_actor_action::open_door(
 ) {
 	Tile_coord cur = actor->get_tile();
 	// Get door's footprint in tiles.
-	Rectangle foot = door->get_footprint();
+	TileRect foot = door->get_footprint();
 	// Open it, but kludge quality to
 	//   avoid unwanted usecode.
 	int savequal = door->get_quality();

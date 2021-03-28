@@ -63,9 +63,9 @@ class Combo {
 	//   use.
 	short starttx, startty;     // Offset represented by top-left.
 	std::string name;       // Name given by user.
-	Rectangle tilefoot;     // Footprint in tiles.
+	TileRect tilefoot;     // Footprint in tiles.
 	// Get footprint of given member.
-	Rectangle get_member_footprint(int i);
+	TileRect get_member_footprint(int i);
 public:
 	friend class Combo_editor;
 	friend class Combo_chooser;
@@ -135,10 +135,10 @@ public:
 class Combo_info {
 	friend class Combo_chooser;
 	int num;
-	Rectangle box;          // Box where drawn.
+	TileRect box;          // Box where drawn.
 	void set(int n, int rx, int ry, int rw, int rh) {
 		num = n;
-		box = Rectangle(rx, ry, rw, rh);
+		box = TileRect(rx, ry, rw, rh);
 	}
 };
 

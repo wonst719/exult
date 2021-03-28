@@ -43,7 +43,7 @@ class Face_stats : public Gump {
 	void        create_buttons();
 	void        delete_buttons();
 
-	Rectangle   region;
+	TileRect   region;
 
 public:
 	~Face_stats() override;
@@ -63,7 +63,7 @@ public:
 		return true;
 	}
 
-	Rectangle get_rect() const override {
+	TileRect get_rect() const override {
 		return region;
 	}
 	bool has_point(int x, int y) const override;

@@ -143,14 +143,14 @@ void One_note::write(
  *  Get left/right text area.
  */
 
-inline Rectangle Get_text_area(bool right, bool startnote) {
+inline TileRect Get_text_area(bool right, bool startnote) {
 	const int ninf = 12;        // Space for note info.
 	if (!startnote)
-		return right ? Rectangle(rpagex, pagey, 122, 130)
-		       : Rectangle(lpagex, pagey, 122, 130);
+		return right ? TileRect(rpagex, pagey, 122, 130)
+		       : TileRect(lpagex, pagey, 122, 130);
 	else
-		return right ? Rectangle(rpagex, pagey + ninf, 122, 130 - ninf)
-		       : Rectangle(lpagex, pagey + ninf, 122, 130 - ninf);
+		return right ? TileRect(rpagex, pagey + ninf, 122, 130 - ninf)
+		       : TileRect(lpagex, pagey + ninf, 122, 130 - ninf);
 }
 
 /*
@@ -244,7 +244,7 @@ Notebook_gump::Notebook_gump(
 	cursor.x = cursor.y = -1;
 	cursor.line = cursor.nlines = 0;
 	// (Obj. area doesn't matter.)
-	set_object_area(Rectangle(36, 10, 100, 100), 7, 40);
+	set_object_area(TileRect(36, 10, 100, 100), 7, 40);
 	if (page_info.empty())
 		page_info.emplace_back(0, 0);
 	// Where to paint page marks:
@@ -306,7 +306,7 @@ Notebook_gump::~Notebook_gump(
  */
 
 bool Notebook_gump::paint_page(
-    Rectangle const &box,           // Display box rel. to gump.
+    TileRect const &box,           // Display box rel. to gump.
     One_note *note,         // Note to print.
     int &offset,            // Starting offset into text.  Updated.
     int pagenum
@@ -409,7 +409,7 @@ Gump_button *Notebook_gump::on_button(
 	if (notenum < 0)
 		return nullptr;
 	int offset = page_info[topleft].offset;
-	Rectangle box = Get_text_area(false, offset == 0);  // Left page.
+	TileRect box = Get_text_area(false, offset == 0);  // Left page.
 	One_note *note = notes[notenum];
 	int coff = sman->find_cursor(font, note->text.c_str() + offset, x + box.x,
 	                             y + box.y, box.w, box.h, mx, my, vlead);
@@ -548,7 +548,7 @@ bool Notebook_gump::on_first_page_line(
 void Notebook_gump::down_arrow(
 ) {
 	int offset = page_info[curpage].offset;
-	Rectangle box = Get_text_area((curpage % 2) != 0, offset == 0);
+	TileRect box = Get_text_area((curpage % 2) != 0, offset == 0);
 	int ht = sman->get_text_height(font);
 	if (on_last_page_line()) {
 		if (curpage >= static_cast<int>(page_info.size()) - 1)
@@ -592,7 +592,7 @@ void Notebook_gump::up_arrow(
 		offset = pinfo2.offset;
 		cursor.y += ht / 2;     // Past bottom line.
 	}
-	Rectangle box = Get_text_area((curpage % 2) != 0, offset == 0);
+	TileRect box = Get_text_area((curpage % 2) != 0, offset == 0);
 	box.shift(x, y);        // Window coords.
 	int mx = box.x + updnx + 1;
 	int my = cursor.y - ht / 2;

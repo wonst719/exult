@@ -51,7 +51,7 @@ static inline bool Get_sfx_out_of_range(
     Game_window *gwin,
     Tile_coord const &opos
 ) {
-	Rectangle size = gwin->get_win_tile_rect();
+	TileRect size = gwin->get_win_tile_rect();
 	Tile_coord apos(size.x + size.w / 2, size.y + size.h / 2, gwin->get_camera_actor()->get_lift());
 
 	return apos.square_distance_screen_space(opos) > (MAX_SOUND_FALLOFF * MAX_SOUND_FALLOFF);
@@ -485,7 +485,7 @@ void Sfx_animator::handle_event(
 	const int delay = 100;      // Guessing this will be enough.
 
 	auto *gwin = reinterpret_cast<Game_window *>(udata);
-	Rectangle rect = gwin->clip_to_win(gwin->get_shape_rect(obj));
+	TileRect rect = gwin->clip_to_win(gwin->get_shape_rect(obj));
 	if (rect.w <= 0 || rect.h <= 0) {
 		// No longer on screen.
 		animating = false;

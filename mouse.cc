@@ -281,7 +281,7 @@ void Mouse::set_speed_cursor() {
 		int dy = ay - mousey;
 		int dx = mousex - ax;
 		Direction dir = Get_direction_NoWrap(dy, dx);
-		Rectangle gamewin_dims = gwin->get_game_rect();
+		TileRect gamewin_dims = gwin->get_game_rect();
 		float speed_section = max(max(-static_cast<float>(dx) / ax, static_cast<float>(dx) / (gamewin_dims.w - ax)), max(static_cast<float>(dy) / ay, -static_cast<float>(dy) / (gamewin_dims.h - ay)));
 		bool nearby_hostile = gwin->is_hostile_nearby();
 		bool has_active_nohalt_scr = false;

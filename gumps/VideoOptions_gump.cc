@@ -292,7 +292,7 @@ VideoOptions_gump::VideoOptions_gump()
 		: Modal_gump(nullptr, EXULT_FLX_VIDEOOPTIONS_SHP, SF_EXULT_FLX),
 		  startup_fill_mode(static_cast<Image_window::FillMode>(0)) {
 	video_options_gump = this;
-	set_object_area(Rectangle(0, 0, 0, 0), 8, 170);
+	set_object_area(TileRect(0, 0, 0, 0), 8, 170);
 
 	const std::vector<std::string> enabledtext = {"Disabled", "Enabled"};
 

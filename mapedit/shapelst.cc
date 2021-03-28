@@ -50,6 +50,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <iostream>
 #include <memory>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 using EStudio::Add_menu_item;
 using EStudio::Alert;
 using EStudio::Prompt;
@@ -116,7 +120,7 @@ void Shape_chooser::show(
 ) {
 	Shape_draw::show(x, y, w, h);
 	if ((selected >= 0) && (drawgc != nullptr)) {    // Show selected.
-		Rectangle b = info[selected].box;
+		TileRect b = info[selected].box;
 		// Draw yellow box.
 		cairo_set_line_width(drawgc, 1.0);
 		cairo_set_source_rgb(drawgc,
@@ -425,7 +429,7 @@ void Shape_chooser::goto_index(
 	Shape_entry &inf = info[index]; // Already in view?
 	unsigned midx = inf.box.x + inf.box.w / 2;
 	unsigned midy = inf.box.y + inf.box.h / 2;
-	Rectangle winrect(hoffset, voffset, config_width, config_height);
+	TileRect winrect(hoffset, voffset, config_width, config_height);
 	if (winrect.has_point(midx, midy))
 		return;
 	unsigned start = 0;

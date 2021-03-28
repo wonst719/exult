@@ -785,8 +785,6 @@ void Usecode_internal::set_item_shape(
 		}
 		return;
 	}
-	// Figure area to repaint.
-//	Rectangle rect = gwin->get_shape_rect(item);
 	gwin->add_dirty(item);
 	// Get chunk it's in.
 	Map_chunk *chunk = item->get_chunk();

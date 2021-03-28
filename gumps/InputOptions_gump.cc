@@ -94,7 +94,7 @@ void InputOptions_gump::load_settings() {
 
 InputOptions_gump::InputOptions_gump()
 	: Modal_gump(nullptr, EXULT_FLX_GAMEPLAYOPTIONS_SHP, SF_EXULT_FLX) {
-	set_object_area(Rectangle(0, 0, 0, 0), 8, 162);//++++++ ???
+	set_object_area(TileRect(0, 0, 0, 0), 8, 162);//++++++ ???
 
 	load_settings();
 	build_buttons();

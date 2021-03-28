@@ -41,14 +41,14 @@ class Dragging_info : public Game_singletons {
 	Gump_button *button;
 	Tile_coord old_pos;     // Original pos. of object if it wasn't
 	//   in a container.
-	Rectangle old_foot;     // Original footprint.
+	TileRect old_foot;     // Original footprint.
 	int old_lift;           // Lift of obj OR its owner.
 	int quantity;           // Amount of object being moved.
 	int readied_index;      // If it was a 'readied' item.
 	// Last mouse, paint positions:
 	int mousex, mousey, paintx, painty;
 	Mouse::Mouse_shapes mouse_shape;// Save starting mouse shape.
-	Rectangle rect;         // Rectangle to repaint.
+	TileRect rect;         // Rectangle to repaint.
 	bool okay;          // True if drag constructed okay.
 	bool possible_theft;        // Moved enough to be 'theft'.
 

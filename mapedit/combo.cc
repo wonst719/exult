@@ -227,7 +227,7 @@ int hot_spot_compare(
  *  Get footprint of given member.
  */
 
-Rectangle Combo::get_member_footprint(
+TileRect Combo::get_member_footprint(
     int i               // i'th member.
 ) {
 	Combo_member *m = members[i];
@@ -236,8 +236,8 @@ Rectangle Combo::get_member_footprint(
 	int xtiles = info.get_3d_xtiles(m->framenum);
 	int ytiles = info.get_3d_ytiles(m->framenum);
 	// Get tile footprint.
-	Rectangle box(m->tx - xtiles + 1, m->ty - ytiles + 1,
-	              xtiles, ytiles);
+	TileRect box(m->tx - xtiles + 1, m->ty - ytiles + 1,
+	             xtiles, ytiles);
 	return box;
 }
 
@@ -304,7 +304,7 @@ void Combo::add(
 	int ytiles = info.get_3d_ytiles(frnum);
 	int ztiles = info.get_3d_height();
 	// Get tile footprint.
-	Rectangle box(tx - xtiles + 1, ty - ytiles + 1, xtiles, ytiles);
+	TileRect box(tx - xtiles + 1, ty - ytiles + 1, xtiles, ytiles);
 	if (members.empty())        // First one?
 		tilefoot = box;     // Init. total footprint.
 	else {
@@ -350,12 +350,12 @@ void Combo::remove(
 	members.erase(it);
 	delete m;
 	hot_index = -1;         // Figure new hot-spot, footprint.
-	tilefoot = Rectangle(0, 0, 0, 0);
+	tilefoot = TileRect(0, 0, 0, 0);
 	for (auto it = members.begin();
 	        it != members.end(); ++it) {
 		Combo_member *m = *it;
 		int index = it - members.begin();
-		Rectangle box = get_member_footprint(index);
+		TileRect box = get_member_footprint(index);
 		if (hot_index == -1) {  // First?
 			hot_index = 0;
 			tilefoot = box;
@@ -495,7 +495,7 @@ const unsigned char *Combo::read(
 		auto *memb = new Combo_member(tx, ty, tz,
 		                              shapenum, framenum);
 		members.push_back(memb);
-		Rectangle box = get_member_footprint(i);
+		TileRect box = get_member_footprint(i);
 		if (i == 0)     // Figure footprint.
 			tilefoot = box;
 		else
@@ -766,7 +766,7 @@ void Combo_chooser::show(
 ) {
 	Shape_draw::show(x, y, w, h);
 	if ((selected >= 0) && (drawgc != nullptr)) {    // Show selected.
-		Rectangle b = info[selected].box;
+		TileRect b = info[selected].box;
 		// Draw yellow box.
 		cairo_set_line_width(drawgc, 1.0);
 		cairo_set_source_rgb(drawgc,
@@ -985,7 +985,7 @@ void Combo_chooser::drag_data_get(
 		ents[i].shape = m->shapenum;
 		ents[i].frame = m->framenum;
 	}
-	Rectangle foot = combo->tilefoot;
+	TileRect foot = combo->tilefoot;
 	int len = Store_u7_comboid(buf, foot.w, foot.h,
 	                           foot.x + foot.w - 1 - hot->tx,
 	                           foot.y + foot.h - 1 - hot->ty, cnt, ents);

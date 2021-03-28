@@ -90,7 +90,7 @@ private:
 	void update_object(Map_chunk *chunk,
 	                   Game_object *obj, bool add);
 	// Set area within egg's influence.
-	void set_egged(Egg_object *egg, Rectangle &tiles, bool add);
+	void set_egged(Egg_object *egg, TileRect &tiles, bool add);
 	// Add egg.
 	void update_egg(Map_chunk *chunk, Egg_object *egg, bool add);
 	// Set up with chunk's data.
@@ -157,7 +157,7 @@ class Map_chunk : public Game_singletons {
 	std::set<Game_object*> non_dungeon_lights;
 	unsigned char cx, cy;       // Absolute chunk coords. of this.
 	bool selected;          // For 'select_chunks' mode.
-	void add_dungeon_levels(Rectangle &tiles, unsigned int lift);
+	void add_dungeon_levels(TileRect &tiles, unsigned int lift);
 	void add_dependencies(Game_object *newobj,
 	                      Ordering_info &newinfo);
 	static Map_chunk *add_outside_dependencies(int cx,
@@ -179,7 +179,7 @@ public:
 	void remove_egg(Egg_object *egg);
 	void remove(Game_object *remove);  // Remove an object.
 	// Apply gravity over given area.
-	static void gravity(Rectangle const &area, int lift);
+	static void gravity(TileRect const &area, int lift);
 	// Is there a roof? Returns height
 	int is_roof(int tx, int ty, int lift);
 
@@ -283,7 +283,7 @@ public:
 	                            Game_object *obj, int max_drop = 0,
 	                            Find_spot_where where = anywhere);
 	// Set area within egg's influence.
-	void set_egged(Egg_object *egg, Rectangle &tiles, bool add) {
+	void set_egged(Egg_object *egg, TileRect &tiles, bool add) {
 		need_cache()->set_egged(egg, tiles, add);
 	}
 	void activate_eggs(Game_object *obj, int tx, int ty, int tz,
@@ -295,7 +295,7 @@ public:
 	Game_object *find_door(Tile_coord const &t) {
 		return need_cache()->find_door(t);
 	}
-	static int find_in_area(std::vector<Game_object *> &vec, Rectangle const &area,
+	static int find_in_area(std::vector<Game_object *> &vec, TileRect const &area,
 	                        int shapenum, int framenum);
 	// Use this when teleported in.
 	static void try_all_eggs(Game_object *obj, int tx, int ty, int tz,

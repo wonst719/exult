@@ -71,7 +71,7 @@ Itemmenu_gump::Itemmenu_gump(Game_object_map_xy *mobjxy, int cx, int cy)
 	objectSelected = nullptr;
 	objectSelectedClickXY = {-1, -1};
 	objectAction = no_action;
-	//set_object_area(Rectangle(0, 0, 0, 0), -1, -1);//++++++ ???
+	//set_object_area(TileRect(0, 0, 0, 0), -1, -1);//++++++ ???
 	int btop = 0;
 	int maxh = Game_window::get_instance()->get_height() - 2 * button_spacing_y;
 	for (auto it = mobjxy->begin(); it != mobjxy->end() && btop < maxh; it++) {
