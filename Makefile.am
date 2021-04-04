@@ -348,10 +348,7 @@ osxdmg: bundle
 	cp $(srcdir)/macosx/diskback.png ./Exult-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/DS_Store ./Exult-snapshot/.DS_Store
 	ln -s /Applications "./Exult-snapshot/Drag'n'drop here"
-	touch "./Exult-snapshot/Git $(REVISION)"
-	echo "read 'icns' (-16455) \"$(srcdir)/macosx/clear.icns\";" >> tmpicnsE.rsrc
-	Rez -a tmpicnsE.rsrc -o "./Exult-snapshot/Git $(REVISION)"
-	SetFile -a C "./Exult-snapshot/Git $(REVISION)"
+	echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Exult-snapshot/Git $(REVISION).url"
 	SetFile -a V ./Exult-snapshot/.DS_Store
 	SetFile -a V ./Exult-snapshot/images
 	SetFile -t ttro -c ttxt ./Exult-snapshot/Authors
@@ -377,10 +374,7 @@ studiodmg:
 	cp $(srcdir)/macosx/diskback.png ./Studio-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/exult_studio_DS_Store ./Studio-snapshot/.DS_Store
 	ln -s /Applications "./Studio-snapshot/Drag'n'drop here"
-	touch "./Studio-snapshot/Git $(REVISION)"
-	echo "read 'icns' (-16455) \"$(srcdir)/macosx/clear.icns\";" >> tmpicnsES.rsrc
-	Rez -a tmpicnsES.rsrc -o "./Studio-snapshot/Git $(REVISION)"
-	SetFile -a C "./Studio-snapshot/Git $(REVISION)"
+	echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Studio-snapshot/Git $(REVISION).url"
 	SetFile -a V ./Studio-snapshot/.DS_Store
 	SetFile -a V ./Studio-snapshot/images
 	SetFile -t ttro -c ttxt ./Studio-snapshot/Authors
