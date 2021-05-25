@@ -1228,84 +1228,102 @@ Exult 1.5.0git text message file.  Written by ExultStudio.
 0x11c:to enter other worlds!
 0x11d:Perhaps your puny Earth shall be
 0x11e:my NEXT target!
-0x11f:In the months following the climactic
-0x120:battle at The Black Gate, Britannia
-0x121:is set upon the long road to recovery
-0x122:from its various plights.
-0x123: 
-0x124:Upon your return to Britain,
-0x125:Lord British decreed that
-0x126:The Fellowship be outlawed
-0x127:and all of the branches were
-0x128:soon destroyed.
-0x129:The frustration you feel at having been
-0x12a:stranded in Britannia is somewhat
-0x12b:alleviated by the satisfaction that you
-0x12c:solved the gruesome murders committed
-0x12d:by The Fellowship and even avenged the
-0x12e:death of Spark's father.
-0x12f:And although you are, at the moment,
-0x130:helpless to do anything about
-0x131:The Guardian's final threat,
-0x132:another thought nags at you...
-0x133:what became of Batlin, the fiend
-0x134:who got away?
-0x135:That is another story...
-0x136:one that will take you
-0x137:to a place called
-0x138:The Serpent Isle...
-0x139:Lord British's Castle
-0x13a:Dick British's Castle
-0x13b:Eighteen months after the destruction
-0x13c:of the Black Gate and the
-0x13d:dismantling of The Fellowship
-0x13e:My liege
-0x13f:Yo, homes
-0x140:All we found among Batlin's
-0x141:belongings was this enchanted scroll...
-0x142:and a map showing the way to
-0x143:a place called the Serpent Isle.
-0x144:Indeed.
-0x145:Put it on the table.
-0x146:Iree. Slap it down there!
-0x147:Stand Back!
-0x148:Jump Back!
-0x149:Batlin! In the event that the
-0x14a:Avatar destroys the Black Gate
-0x14b:you shall follow the unwitting
-0x14c:human Gwenno to the Serpent Isle
-0x14d:There I shall outline my plan
-0x14e:to destroy Britannia!
-0x14f:Batlin! Know that my face is most
-0x150:muppet like!
-0x151:You must go to the Serpent Isle
-0x152:to learn the secret of Acne Medication
-0x153:Soon I and my horde of muppets will
-0x154:destroy Britannia!
-0x155:'Tis my worst fear!
-0x156:I must send the Avatar through
-0x157:the pillars to the Serpent Isle!
-0x158:There, we are done.
-0x159:Balance is restored
-0x15a:Serpent Isle, Britannia, your Earth,
-0x15b:the entire universe, all are saved.
-0x15c:Worry not about your friend Dupre.
-0x15d:He is one with us, and content.
-0x15e:Goodbye, Avatar.
-0x15f:We thank you.
-0x160:Well well well, Avatar. You
-0x161:have managed to thwart me once again.
-0x162:By restoring balance where
-0x163:once chaos reigned, you have
-0x164:saved your accursed world.
-0x165:But now here you are, poised
-0x166:at the edge of Eternity.
-0x167:Where would you go?
-0x168:Back to Britannia?
-0x169:To Earth?
-0x16a:Perhaps you would join me in
-0x16b:another world alltogether?
-0x16c:We do have a score to settle!
+0x11f:
+0x120:
+0x121:In the months following the climactic
+0x122:battle at The Black Gate, Britannia
+0x123:is set upon the long road to recovery
+0x124:from its various plights.
+0x125: 
+0x126:Upon your return to Britain,
+0x127:Lord British decreed that
+0x128:The Fellowship be outlawed
+0x129:and all of the branches were
+0x12a:soon destroyed.
+0x12b:
+0x12c:The frustration you feel at having been
+0x12d:stranded in Britannia is somewhat
+0x12e:alleviated by the satisfaction that you
+0x12f:solved the gruesome murders committed
+0x130:by The Fellowship and even avenged the
+0x131:death of Spark's father.
+0x132:
+0x133:
+0x134:
+0x135:And although you are, at the moment,
+0x136:helpless to do anything about
+0x137:The Guardian's final threat,
+0x138:another thought nags at you...
+0x139:what became of Batlin, the fiend
+0x13a:who got away?
+0x13b:
+0x13c:
+0x13d:That is another story...
+0x13e:one that will take you
+0x13f:to a place called
+0x140:The Serpent Isle...
+0x141:
+0x142:Congratulations!
+0x143:You have completed Ultima VII in
+0x144:%d year s ,  %d month s , &  %d day s .
+0x145:Please write Lord British,
+0x146:in care of Origin Systems Inc.,
+0x147:telling him of your
+0x148:accomplishment!
+0x149:
+0x14a:
+0x14b:Lord British's Castle
+0x14c:Dick British's Castle
+0x14d:Eighteen months after the destruction
+0x14e:of the Black Gate and the
+0x14f:dismantling of The Fellowship
+0x150:My liege
+0x151:Yo, homes
+0x152:All we found among Batlin's
+0x153:belongings was this enchanted scroll...
+0x154:and a map showing the way to
+0x155:a place called the Serpent Isle.
+0x156:Indeed.
+0x157:Put it on the table.
+0x158:Iree. Slap it down there!
+0x159:Stand Back!
+0x15a:Jump Back!
+0x15b:Batlin! In the event that the
+0x15c:Avatar destroys the Black Gate
+0x15d:you shall follow the unwitting
+0x15e:human Gwenno to the Serpent Isle
+0x15f:There I shall outline my plan
+0x160:to destroy Britannia!
+0x161:Batlin! Know that my face is most
+0x162:muppet like!
+0x163:You must go to the Serpent Isle
+0x164:to learn the secret of Acne Medication
+0x165:Soon I and my horde of muppets will
+0x166:destroy Britannia!
+0x167:'Tis my worst fear!
+0x168:I must send the Avatar through
+0x169:the pillars to the Serpent Isle!
+0x16a:There, we are done.
+0x16b:Balance is restored
+0x16c:Serpent Isle, Britannia, your Earth,
+0x16d:the entire universe, all are saved.
+0x16e:Worry not about your friend Dupre.
+0x16f:He is one with us, and content.
+0x170:Goodbye, Avatar.
+0x171:We thank you.
+0x172:Well well well, Avatar. You
+0x173:have managed to thwart me once again.
+0x174:By restoring balance where
+0x175:once chaos reigned, you have
+0x176:saved your accursed world.
+0x177:But now here you are, poised
+0x178:at the edge of Eternity.
+0x179:Where would you go?
+0x17a:Back to Britannia?
+0x17b:To Earth?
+0x17c:Perhaps you would join me in
+0x17d:another world alltogether?
+0x17e:We do have a score to settle!
 %%endsection msgs
 %%section miscnames
 0x0:a/black pearl//s
