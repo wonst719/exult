@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Activity check
         run: |
-          DATEUTC=$(curl -sL https://api.github.com/repos/exult/exult/commits | jq -r '[.[]][0]' | jq -r '.commit.author.date')
+          DATEUTC=$(curl -sL https://api.github.com/repos/exult/exult/commits | jq -r '[.[]][0]' | jq -r '.commit.committer.date')
           TIMESTAMP=$(date --utc -d "$DATEUTC" +%s)
           DAYS=$(( ($(date --utc +%s) - $TIMESTAMP) / 86400 ))
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
