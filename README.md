@@ -1,6 +1,6 @@
 # Badges
 
-[![Chat on IRC](https://img.shields.io/badge/irc.freenode.net-%23exult-blue?logo=LiveChat&logoColor=white)](https://webchat.freenode.net/#exult)
+[![Chat on IRC](https://img.shields.io/badge/web.libera.chat-%23exult-blue?logo=LiveChat&logoColor=white)](https://web.libera.chat/#exult)
 
 [![GitHub](https://img.shields.io/github/license/exult/exult?label=License&logo=GNU)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
