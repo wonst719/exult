@@ -138,6 +138,6 @@ notifications:
     on_success: change
   irc:
     channels:
-      - "chat.freenode.net/#exult"
+      - "ircs://irc.libera.chat:6697/#exult"
     on_failure: always
     on_success: change
