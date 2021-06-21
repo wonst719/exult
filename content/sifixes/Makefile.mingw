@@ -77,6 +77,15 @@ SHAPES_VGA_OBJECTS = \
 	src/graphics/shapes.in	\
 	src/graphics/shapes/sails.shp	
 
+PAPERDOL_VGA_OBJECTS = \
+	src/graphics/paperdol.in	\
+	src/graphics/paperdol/152_moonsilk_stockings.shp	\
+	src/graphics/paperdol/153_fishnet_stockings.shp	
+
+SPRITES_VGA_OBJECTS = \
+	src/graphics/sprites.in	\
+	src/graphics/sprites/sprite_07_teleport_here.shp	
+
 CLEANFILES = \
 	data/usecode	\
 	data/gumps.vga	\
@@ -84,7 +93,11 @@ CLEANFILES = \
 	data/mainshp.flx	\
 	data/mainshp_flx.h	\
 	data/shapes.vga	\
-	data/shapes_vga.h	
+	data/shapes_vga.h	\
+	data/paperdol.vga	\
+	data/paperdol_vga.h	\
+	data/sprites.vga	\
+	data/sprites_vga.h	
 
 $(EXPACK):
 	+(cd $(EXPACKDIR);$(MAKE) -f Makefile.mingw expack.exe)
@@ -105,6 +118,12 @@ data/mainshp.flx: $(EXPACK) $(MAINSHP_FLX_OBJECTS)
 data/shapes.vga: $(EXPACK) $(SHAPES_VGA_OBJECTS)
 	$(EXPACK) -i src/graphics/shapes.in
 
+data/paperdol.vga: $(EXPACK) $(PAPERDOL_VGA_OBJECTS)
+	$(EXPACK) -i src/graphics/paperdol.in
+
+data/sprites.vga: $(EXPACK) $(SPRITES_VGA_OBJECTS)
+	$(EXPACK) -i src/graphics/sprites.in
+
 clean:
 	rm -f $(CLEANFILES)
 
@@ -118,6 +137,8 @@ install: all
 	cp data/gumps.vga $(sifixesdir)/sifixes/data/gumps.vga
 	cp data/mainshp.flx $(sifixesdir)/sifixes/data/mainshp.flx
 	cp data/shapes.vga $(sifixesdir)/sifixes/data/shapes.vga
+	cp data/paperdol.vga $(sifixesdir)/sifixes/data/paperdol.vga
+	cp data/sprites.vga $(sifixesdir)/sifixes/data/sprites.vga
 	cp data/initgame.dat $(sifixesdir)/sifixes/data/initgame.dat
 
 uninstall:

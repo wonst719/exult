@@ -84,6 +84,15 @@ SHAPES_VGA_OBJECTS = \
 	src/graphics/shapes.in	\
 	src/graphics/shapes/sails.shp	
 
+PAPERDOL_VGA_OBJECTS = \
+	src/graphics/paperdol.in	\
+	src/graphics/paperdol/152_moonsilk_stockings.shp	\
+	src/graphics/paperdol/153_fishnet_stockings.shp	
+
+SPRITES_VGA_OBJECTS = \
+	src/graphics/sprites.in	\
+	src/graphics/sprites/sprite_07_teleport_here.shp	
+
 sifixesdir = $(datadir)/exult/silverseed/mods
 
 sifixes_DATA = \
@@ -95,7 +104,9 @@ nodist_sifixesdata_DATA = \
 	data/usecode	\
 	data/gumps.vga	\
 	data/mainshp.flx	\
-	data/shapes.vga
+	data/shapes.vga	\
+	data/paperdol.vga	\
+	data/sprites.vga	
 
 sifixesdata_DATA = \
 	data/initgame.dat	
@@ -112,7 +123,9 @@ EXTRA_DIST = \
 	$(USECODE_OBJECTS) \
 	$(GUMPS_VGA_OBJECTS) \
 	$(MAINSHP_FLX_OBJECTS) \
-	$(SHAPES_VGA_OBJECTS)
+	$(SHAPES_VGA_OBJECTS) \
+	$(PAPERDOL_VGA_OBJECTS) \
+	$(SPRITES_VGA_OBJECTS)
 
 CLEANFILES = \
 	data/usecode	\
@@ -121,7 +134,11 @@ CLEANFILES = \
 	data/mainshp.flx	\
 	data/mainshp_flx.h	\
 	data/shapes.vga	\
-	data/shapes_vga.h	
+	data/shapes_vga.h	\
+	data/paperdol.vga	\
+	data/paperdol_vga.h	\
+	data/sprites.vga	\
+	data/sprites_vga.h	
 
 $(EXPACK):
 	+(cd $(EXPACKDIR);$(MAKE) expack)
@@ -141,4 +158,10 @@ data/mainshp.flx: $(EXPACK) $(MAINSHP_FLX_OBJECTS)
 
 data/shapes.vga: $(EXPACK) $(SHAPES_VGA_OBJECTS)
 	$(EXPACK) -i $(srcdir)/src/graphics/shapes.in
+
+data/paperdol.vga: $(EXPACK) $(PAPERDOL_VGA_OBJECTS)
+	$(EXPACK) -i $(srcdir)/src/graphics/paperdol.in
+
+data/sprites.vga: $(EXPACK) $(SPRITES_VGA_OBJECTS)
+	$(EXPACK) -i $(srcdir)/src/graphics/sprites.in
 

@@ -44,6 +44,10 @@ content/sifixes/data/mainshp.flx
 content/sifixes/data/mainshp_flx.h
 content/sifixes/data/shapes.vga
 content/sifixes/data/shapes_vga.h
+content/sifixes/data/paperdol.vga
+content/sifixes/data/paperdol_vga.h
+content/sifixes/data/sprites.vga
+content/sifixes/data/sprites_vga.h
 content/sifixes/data/usecode
 data/bg/bg_mr_faces.vga
 data/bg/bg_mr_faces_vga.h
