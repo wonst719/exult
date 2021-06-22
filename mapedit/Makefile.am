@@ -18,7 +18,7 @@ endif
 
 u7shp_SOURCES = u7shp.cc
 
-u7shp_CFLAGS = -I$(srcdir)/../shapes -I$(srcdir)/../imagewin -I$(srcdir)/../files $(DEBUG_FLAGS) $(CPPFLAGS)
+u7shp_CFLAGS = -I$(top_srcdir) -I$(top_srcdir)/headers -I$(top_srcdir)/shapes -I$(top_srcdir)/imagewin -I$(top_srcdir)/files $(DEBUG_FLAGS) $(CPPFLAGS)
 
 u7shp_LDADD = \
 	../imagewin/libimagewin.la	\
@@ -90,7 +90,7 @@ mapedit_DATA =
 endif
 
 u7shp$(EXEEXT): u7shp.cc $(top_builddir)/config.h
-	CPPFLAGS="$(u7shp_CFLAGS)" CXXFLAGS="-O2 -I$(top_srcdir) -DHAVE_CONFIG_H" $(GIMPTOOL) --build $<
+	CFLAGS="-O2 -DHAVE_CONFIG_H $(u7shp_CFLAGS)" $(GIMPTOOL) --build $<
 
 EXTRA_DIST=	\
 	gimpwin32.txt \
