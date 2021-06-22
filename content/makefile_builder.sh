@@ -218,7 +218,7 @@ $datafiles_mingw"
 	else
 		if [[ -n "$nodist_datafiles_am" ]]; then
 			# We do not have a known patch dir.
-			echo -e "nodist_${moddir}patch_DATA = \\${n}${nodist_datafiles_am%\\*}${n}" >> "$modmakefile_am"
+			echo -e "nodist_${moddir}patch_DATA = $nodist_datafiles_am${n}" >> "$modmakefile_am"
 			nodist_datafiles_am=""
 		fi
 

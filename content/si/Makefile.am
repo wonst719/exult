@@ -19,7 +19,7 @@ si_DATA = \
 	curecantra.cfg
 
 nodist_sipatch_DATA = \
-
+	usecode	
 
 EXTRA_DIST = \
 	Makefile.mingw	\

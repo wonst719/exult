@@ -19,7 +19,7 @@ bg_DATA = \
 	lbjoin.cfg
 
 nodist_bgpatch_DATA = \
-
+	usecode	
 
 EXTRA_DIST = \
 	Makefile.mingw	\
