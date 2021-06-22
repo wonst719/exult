@@ -26,12 +26,12 @@ islefaqdir = $(datadir)/exult/forgeofvirtue/mods
 islefaq_DATA = \
 	islefaq.cfg
 
+islefaqpatchdir = $(islefaqdir)/islefaq/patch
+
 nodist_islefaqpatch_DATA = \
 	patch/usecode	\
 	patch/faces.vga	\
 	patch/shapes.vga	
-
-islefaqpatchdir = $(islefaqdir)/islefaq/patch
 
 islefaqpatch_DATA = \
 	patch/initgame.dat	\

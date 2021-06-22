@@ -18,6 +18,8 @@ sidir = $(datadir)/exult/silverseed/mods
 si_DATA = \
 	curecantra.cfg
 
+sipatchdir = $(sidir)/curecantra/patch
+
 nodist_sipatch_DATA = \
 	usecode	
 

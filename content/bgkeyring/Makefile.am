@@ -253,6 +253,8 @@ bgkeyringdir = $(datadir)/exult/forgeofvirtue/mods
 bgkeyring_DATA = \
 	Keyring.cfg
 
+bgkeyringdatadir = $(bgkeyringdir)/Keyring/data
+
 nodist_bgkeyringdata_DATA = \
 	data/usecode	\
 	data/faces.vga	\
@@ -260,8 +262,6 @@ nodist_bgkeyringdata_DATA = \
 	data/mainshp.flx	\
 	data/paperdol.vga	\
 	data/shapes.vga	
-
-bgkeyringdatadir = $(bgkeyringdir)/Keyring/data
 
 bgkeyringdata_DATA = \
 	data/armor.dat	\

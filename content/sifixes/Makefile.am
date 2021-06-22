@@ -98,6 +98,8 @@ sifixesdir = $(datadir)/exult/silverseed/mods
 sifixes_DATA = \
 	sifixes.cfg
 
+sifixesdatadir = $(sifixesdir)/sifixes/data
+
 nodist_sifixesdata_DATA = \
 	data/usecode	\
 	data/gumps.vga	\
@@ -105,8 +107,6 @@ nodist_sifixesdata_DATA = \
 	data/paperdol.vga	\
 	data/shapes.vga	\
 	data/sprites.vga	
-
-sifixesdatadir = $(sifixesdir)/sifixes/data
 
 sifixesdata_DATA = \
 	data/initgame.dat	

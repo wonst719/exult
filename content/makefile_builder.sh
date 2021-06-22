@@ -184,12 +184,6 @@ $datafiles_mingw"
 	# Generate install locations of all patch data files.
 	if [[ -n "$patchdir" ]]; then
 		# We have a known patch dir.
-		if [[ -n "$nodist_datafiles_am" ]]; then
-			# We do not have a known patch dir.
-			echo -e "nodist_${moddir}${patchdir%/}_DATA = $nodist_datafiles_am${n}" >> "$modmakefile_am"
-			nodist_datafiles_am=""
-		fi
-
 		# Search this dir, all mapXX subdirs and music subdir, if present.
 		for dirname in "$moddir/${patchdir%/}" $(find "$moddir/$patchdir" -type d -regex "$moddir/${patchdir}map[0-9A-Fa-f][0-9A-Fa-f]") $(find "$moddir/$patchdir" -type d -name "$moddir/${patchdir}music"); do
 			# Compute automake rule name.
@@ -197,8 +191,11 @@ $datafiles_mingw"
 			dirrule="${dirrule//[^a-zA-Z0-9]/}"
 			# Gather files. Maybe replace with a more targetted list?
 			dirfiles=$(find "$dirname" -maxdepth 1 -type f \( \! -iname "*.h" -a \! -iname "*~" -a \! -iname "usecode" -a \! -iname "*.flx" -a \! -iname "*.vga" \) -o -iname "combos.flx" -o -iname "minimaps.vga" | sort)
-			if [[ -n "$dirfiles" || -n "$datafiles_am" ]]; then
+			if [[ -n "$dirfiles" || -n "$datafiles_am" || -n "$nodist_datafiles_am" ]]; then
 				echo -e "${moddir}${dirrule}dir = $destdir_am/${dirname#$moddir/}${n}" >> "$modmakefile_am"
+				if [[ -n "$nodist_datafiles_am" ]]; then
+					echo -e "nodist_${moddir}${dirrule}_DATA = $nodist_datafiles_am${n}" >> "$modmakefile_am"
+				fi
 				if [[ "$didpatchroot" == "no" || "$dirname" != "$moddir/${patchdir%/}" ]]; then
 					datafiles_mingw="$datafiles_mingw${n}\tmkdir -p $destdir_mingw/${dirname#$moddir/}${n}"
 				fi
@@ -208,14 +205,21 @@ $datafiles_mingw"
 				infiles_am=$(echo "$dirfiles" | while read -r f; do echo -e "${t}${f#$moddir/}${t}\\"; done | sort)
 				datafiles_am="$datafiles_am$infiles_am"
 				datafiles_am="${datafiles_am%\\*}"
-				echo -e "$datafiles_am${n}" >> "$modmakefile_am"
+				if [[ -n "$datafiles_am" ]]; then
+					echo -e "$datafiles_am${n}" >> "$modmakefile_am"
+				fi
 				# Format and sort file list for MinGW makefile.
 				infiles_mingw=$(echo "$dirfiles" | while read -r f; do dest="${f#$moddir/}"; echo -e "${t}cp $dest $destdir_mingw/$dest"; done | sort)
 				datafiles_mingw="$datafiles_mingw$infiles_mingw"
 			fi
 			datafiles_am=""
+			nodist_datafiles_am=""
 		done
 	else
+		# We do not have a known patch dir.
+		if [[ -n "$nodist_datafiles_am" || -n "$datafiles_am" ]]; then
+			echo -e "${moddir}patchdir = $destdir_am/patch${n}" >> "$modmakefile_am"
+		fi
 		if [[ -n "$nodist_datafiles_am" ]]; then
 			# We do not have a known patch dir.
 			echo -e "nodist_${moddir}patch_DATA = $nodist_datafiles_am${n}" >> "$modmakefile_am"
@@ -223,8 +227,6 @@ $datafiles_mingw"
 		fi
 
 		if [[ -n "$datafiles_am" ]]; then
-			# We do not have a known patch dir.
-			echo -e "${moddir}patchdir = $destdir_am/patch${n}" >> "$modmakefile_am"
 			echo -e "${moddir}patch_DATA = \\${n}${datafiles_am%\\*}${n}" >> "$modmakefile_am"
 			datafiles_am=""
 		fi

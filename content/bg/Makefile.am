@@ -18,6 +18,8 @@ bgdir = $(datadir)/exult/forgeofvirtue/mods
 bg_DATA = \
 	lbjoin.cfg
 
+bgpatchdir = $(bgdir)/lbjoin/patch
+
 nodist_bgpatch_DATA = \
 	usecode	
 
