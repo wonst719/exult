@@ -26,12 +26,12 @@ islefaqdir = $(datadir)/exult/forgeofvirtue/mods
 islefaq_DATA = \
 	islefaq.cfg
 
-islefaqpatchdir = $(islefaqdir)/islefaq/patch
-
 nodist_islefaqpatch_DATA = \
 	patch/usecode	\
 	patch/faces.vga	\
-	patch/shapes.vga
+	patch/shapes.vga	
+
+islefaqpatchdir = $(islefaqdir)/islefaq/patch
 
 islefaqpatch_DATA = \
 	patch/initgame.dat	\
@@ -45,12 +45,12 @@ islefaqpatch_DATA = \
 	patch/wihh.dat	
 
 EXTRA_DIST = \
-	Makefile.mingw \
-	$(islefaqpatch_DATA) \
-	$(islefaq_DATA) \
-	$(USECODE_OBJECTS) \
-	$(FACES_VGA_OBJECTS) \
-	$(SHAPES_VGA_OBJECTS)
+	Makefile.mingw	\
+	$(USECODE_OBJECTS)	\
+	$(FACES_VGA_OBJECTS)	\
+	$(SHAPES_VGA_OBJECTS)	\
+	$(islefaq_DATA)	\
+	$(islefaqpatch_DATA)
 
 CLEANFILES = \
 	patch/usecode	\

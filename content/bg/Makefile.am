@@ -18,15 +18,13 @@ bgdir = $(datadir)/exult/forgeofvirtue/mods
 bg_DATA = \
 	lbjoin.cfg
 
-bgpatchdir = $(bgdir)/lbjoin/patch
+nodist_bgpatch_DATA = \
 
-bgpatch_DATA = \
-	usecode	
 
 EXTRA_DIST = \
-	$(bg_DATA) \
-	Makefile.mingw \
-	$(USECODE_OBJECTS)
+	Makefile.mingw	\
+	$(USECODE_OBJECTS)	\
+	$(bg_DATA)
 
 CLEANFILES = \
 	usecode	

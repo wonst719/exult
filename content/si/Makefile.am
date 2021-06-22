@@ -18,15 +18,13 @@ sidir = $(datadir)/exult/silverseed/mods
 si_DATA = \
 	curecantra.cfg
 
-sipatchdir = $(sidir)/curecantra/patch
+nodist_sipatch_DATA = \
 
-sipatch_DATA = \
-	usecode	
 
 EXTRA_DIST = \
-	$(si_DATA) \
-	Makefile.mingw \
-	$(USECODE_OBJECTS)
+	Makefile.mingw	\
+	$(USECODE_OBJECTS)	\
+	$(si_DATA)
 
 CLEANFILES = \
 	usecode	
