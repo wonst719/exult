@@ -76,14 +76,6 @@
 			);
 			sourceTree = "<group>";
 		};
-		BC93D915CE764FFB8FFC19EF /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4F58F7AA67A348AC99788A8C /* libmt32emu.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		B078F5406D8C415A9ED4D5DC /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -115,8 +107,16 @@
 				8A599BD2246015ED006E3252 /* TVF.cpp */,
 				8A599BCB246015ED006E3252 /* TVP.cpp */,
 			);
-			name = "Sources";
+			name = Sources;
 			path = libmt32emu/mt32emu;
+			sourceTree = "<group>";
+		};
+		BC93D915CE764FFB8FFC19EF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4F58F7AA67A348AC99788A8C /* libmt32emu.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -211,10 +211,6 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
-					MT32EMU_WITH_INTERNAL_RESAMPLER,
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -277,14 +273,13 @@
 					"$(inherited)",
 					./include,
 					./libmt32emu/mt32emu/src,
-					./libmt32emu/mt32emu/srchelper,
+					./libmt32emu/mt32emu/src/srchelper,
 					./libmt32emu/mt32emu/src/sha1,
 					./libmt32emu/mt32emu/src/c_interface,
-					./libmt32emu/mt32emu/srchelper/srctools/include,
-					./libmt32emu/mt32emu/srchelper/srctools/include/src,
+					./libmt32emu/mt32emu/src/srchelper/srctools/include,
+					./libmt32emu/mt32emu/src/srchelper/srctools/include/src,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				ONLY_ACTIVE_ARCH = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -322,14 +317,13 @@
 					"$(inherited)",
 					./include,
 					./libmt32emu/mt32emu/src,
-					./libmt32emu/mt32emu/srchelper,
+					./libmt32emu/mt32emu/src/srchelper,
 					./libmt32emu/mt32emu/src/sha1,
 					./libmt32emu/mt32emu/src/c_interface,
-					./libmt32emu/mt32emu/srchelper/srctools/include,
-					./libmt32emu/mt32emu/srchelper/srctools/include/src,
+					./libmt32emu/mt32emu/src/srchelper/srctools/include,
+					./libmt32emu/mt32emu/src/srchelper/srctools/include/src,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
 			name = Release;
@@ -345,10 +339,6 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
-					MT32EMU_WITH_INTERNAL_RESAMPLER,
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

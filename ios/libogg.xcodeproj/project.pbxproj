@@ -24,7 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E700E0351A6E41C5006C8BE4 /* liblibogg.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibogg.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E700E0351A6E41C5006C8BE4 /* libogg.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libogg.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E700E0501A6E4215006C8BE4 /* bitwise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bitwise.c; path = libogg/src/bitwise.c; sourceTree = "<group>"; };
 		E700E0511A6E4215006C8BE4 /* framing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = framing.c; path = libogg/src/framing.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -51,7 +51,7 @@
 		E700E0361A6E41C5006C8BE4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E700E0351A6E41C5006C8BE4 /* liblibogg.a */,
+				E700E0351A6E41C5006C8BE4 /* libogg.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,9 +68,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E700E0341A6E41C5006C8BE4 /* libogg */ = {
+		E700E0341A6E41C5006C8BE4 /* ogg */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E700E0491A6E41C5006C8BE4 /* Build configuration list for PBXNativeTarget "libogg" */;
+			buildConfigurationList = E700E0491A6E41C5006C8BE4 /* Build configuration list for PBXNativeTarget "ogg" */;
 			buildPhases = (
 				E700E0311A6E41C5006C8BE4 /* Sources */,
 				E700E0321A6E41C5006C8BE4 /* Frameworks */,
@@ -80,9 +80,9 @@
 			);
 			dependencies = (
 			);
-			name = libogg;
+			name = ogg;
 			productName = libogg;
-			productReference = E700E0351A6E41C5006C8BE4 /* liblibogg.a */;
+			productReference = E700E0351A6E41C5006C8BE4 /* libogg.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -112,7 +112,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E700E0341A6E41C5006C8BE4 /* libogg */,
+				E700E0341A6E41C5006C8BE4 /* ogg */,
 			);
 		};
 /* End PBXProject section */
@@ -182,7 +182,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					./libogg/include,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -234,7 +234,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					./libogg/include,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -271,7 +271,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E700E0491A6E41C5006C8BE4 /* Build configuration list for PBXNativeTarget "libogg" */ = {
+		E700E0491A6E41C5006C8BE4 /* Build configuration list for PBXNativeTarget "ogg" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E700E04A1A6E41C5006C8BE4 /* Debug */,

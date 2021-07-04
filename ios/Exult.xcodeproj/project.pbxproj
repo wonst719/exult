@@ -256,7 +256,7 @@
 		E71BBD9C1A725E1E0003F662 /* dpadglass-southwest.png in Resources */ = {isa = PBXBuildFile; fileRef = E71BBD911A725E1E0003F662 /* dpadglass-southwest.png */; };
 		E71BBD9D1A725E1E0003F662 /* dpadglass-west.png in Resources */ = {isa = PBXBuildFile; fileRef = E71BBD921A725E1E0003F662 /* dpadglass-west.png */; };
 		E71BBD9E1A725E1E0003F662 /* dpadglass.png in Resources */ = {isa = PBXBuildFile; fileRef = E71BBD931A725E1E0003F662 /* dpadglass.png */; };
-		E738C8551A6FFF71003A950D /* liblibogg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E738C84E1A6FFF58003A950D /* liblibogg.a */; };
+		E738C8551A6FFF71003A950D /* libogg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E738C84E1A6FFF58003A950D /* libogg.a */; };
 		E738C8561A6FFF75003A950D /* libvorbis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E738C8541A6FFF65003A950D /* libvorbis.a */; };
 		E738C8611A71DEA1003A950D /* touchui.cc in Sources */ = {isa = PBXBuildFile; fileRef = E738C85F1A71DEA1003A950D /* touchui.cc */; };
 		FDB8BFC60E5A0F6A00980157 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FDB8BFC50E5A0F6A00980157 /* CoreGraphics.framework */; };
@@ -893,7 +893,7 @@
 				8A8340D11F897827000696C7 /* AVFoundation.framework in Frameworks */,
 				8A8340D51F8979D3000696C7 /* AudioToolbox.framework in Frameworks */,
 				E738C8561A6FFF75003A950D /* libvorbis.a in Frameworks */,
-				E738C8551A6FFF71003A950D /* liblibogg.a in Frameworks */,
+				E738C8551A6FFF71003A950D /* libogg.a in Frameworks */,
 				E700E0261A6E3EE9006C8BE4 /* CoreMIDI.framework in Frameworks */,
 				8A1C58211FE7D91B00738E40 /* libz.tbd in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
@@ -1669,7 +1669,7 @@
 		E738C84A1A6FFF58003A950D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E738C84E1A6FFF58003A950D /* liblibogg.a */,
+				E738C84E1A6FFF58003A950D /* libogg.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1884,10 +1884,10 @@
 			remoteRef = 8A599C20246058A9006E3252 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		E738C84E1A6FFF58003A950D /* liblibogg.a */ = {
+		E738C84E1A6FFF58003A950D /* libogg.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = liblibogg.a;
+			path = libogg.a;
 			remoteRef = E738C84D1A6FFF58003A950D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -2214,9 +2214,14 @@
 					../objs,
 					../files,
 					./libmt32emu/mt32emu/src,
+					./libmt32em/mt32emu/src/srchelper,
+					./libmt32em/mt32emu/src/sha1,
+					./libmt32em/mt32emu/src/c_interface,
+					./libmt32em/mt32emu/src/srchelper/srctools/src,
+					./libmt32em/mt32emu/src/srchelper/srctools/include,
 				);
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = info.exult;
@@ -2255,6 +2260,11 @@
 					../objs,
 					../files,
 					./libmt32emu/mt32emu/src,
+					./libmt32em/mt32emu/src/srchelper,
+					./libmt32em/mt32emu/src/sha1,
+					./libmt32em/mt32emu/src/c_interface,
+					./libmt32em/mt32emu/src/srchelper/srctools/src,
+					./libmt32em/mt32emu/src/srchelper/srctools/include,
 				);
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
