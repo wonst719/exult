@@ -700,6 +700,7 @@ static void Init(
 	init_flags |= SDL_INIT_JOYSTICK;
 #endif
 #ifdef __IPHONEOS__
+	Mouse::use_touch_input = true;
 	SDL_SetHint(SDL_HINT_IOS_HIDE_HOME_INDICATOR, "2");
 #endif
 	if (SDL_Init(init_flags) < 0) {
@@ -1260,7 +1261,8 @@ static void Handle_event(
 	// We want this
 	Gump_manager *gump_man = gwin->get_gump_man();
 	Gump *gump = nullptr;
-
+	
+	static sint64 last_finger_id = 0;
 	// For detecting double-clicks.
 	static uint32 last_b1_click = 0;
 	static uint32 last_b3_click = 0;
@@ -1369,6 +1371,18 @@ static void Handle_event(
 				joy_aim_y = (gwin->get_height() / 2) + aim_dy;
 			}
 		}
+		break;
+	}
+	// FIXME: it is a bug in SDL2 that real mouse devices have a fingerId. A real fingerId changes on each touch
+	// but the erroneous real mouse fingerId stays the same for both left and right clicks. But a left click produces
+	// two fingerId events with the first always having the value 0.
+	case SDL_FINGERDOWN: {
+		if ((Mouse::use_touch_input == false) && (event.tfinger.fingerId != last_finger_id) && (event.tfinger.fingerId != 0)) {
+			Mouse::use_touch_input = true;
+			gwin->set_painted();
+		}
+		if (event.tfinger.fingerId != 0)
+			last_finger_id = event.tfinger.fingerId;
 		break;
 	}
 	case SDL_MOUSEBUTTONDOWN: {
@@ -1585,6 +1599,8 @@ static void Handle_event(
 	case SDL_MOUSEMOTION: {
 		int mx ;
 		int my;
+		if ((Mouse::use_touch_input == true) && (event.motion.which != SDL_TOUCH_MOUSEID))
+			Mouse::use_touch_input = false;
 		gwin->get_win()->screen_to_game(event.motion.x, event.motion.y, gwin->get_fastmouse(), mx, my);
 
 		Mouse::mouse->move(mx, my);

@@ -452,12 +452,29 @@ bool Gump_manager::handle_modal_gump_event(
 	//int scale_factor = gwin->get_fastmouse() ? 1
 	//          : gwin->get_win()->get_scale();
 	static bool rightclick;
+	static sint64 last_finger_id = 0;
 
 	int gx;
 	int gy;
 	Uint16 keysym_unicode = 0;
 
 	switch (event.type) {
+	// FIXME: it is a bug in SDL2 that real mouse devices have a fingerId. A real fingerId changes on each touch
+	// but the erroneous real mouse fingerId stays the same for both left and right clicks. But a left click produces
+	// two fingerId events with the first always having the value 0.
+	case SDL_FINGERDOWN: {
+		if ((Mouse::use_touch_input == false) && (event.tfinger.fingerId != last_finger_id) && (event.tfinger.fingerId != 0)) {
+			cout << "in if Finger_ID: " << last_finger_id << endl;
+			cout << "in if FingerID: " << event.tfinger.fingerId << endl;
+			Mouse::use_touch_input = true;
+			gwin->set_painted();
+		}
+		if (event.tfinger.fingerId != 0) {
+			last_finger_id = event.tfinger.fingerId;
+			cout << "Saved FingerID: " << last_finger_id << endl;
+		}
+		break;
+	}
 	case SDL_MOUSEBUTTONDOWN:
 		gwin->get_win()->screen_to_game(event.button.x, event.button.y, gwin->get_fastmouse(), gx, gy);
 
@@ -522,6 +539,8 @@ bool Gump_manager::handle_modal_gump_event(
 		break;
 	}
 	case SDL_MOUSEMOTION:
+		if ((Mouse::use_touch_input == true) && (event.motion.which != SDL_TOUCH_MOUSEID))
+			Mouse::use_touch_input = false;
 		gwin->get_win()->screen_to_game(event.motion.x, event.motion.y, gwin->get_fastmouse(), gx, gy);
 
 		Mouse::mouse->move(gx, gy);

@@ -288,6 +288,7 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 	gwin->show(true);
 	mouse->show();
 
+	static sint64 last_finger_id = 0;
 	bool exit_loop = false;
 	do {
 		Delay();
@@ -309,6 +310,8 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 			int gx;
 			int gy;
 			if (event.type == SDL_MOUSEMOTION) {
+				if ((Mouse::use_touch_input == true) && (event.motion.which != SDL_TOUCH_MOUSEID))
+					Mouse::use_touch_input = false;
 				gwin->get_win()->screen_to_game(event.motion.x, event.motion.y, gwin->get_fastmouse(), gx, gy);
 				if (!mouse_updated) mouse->hide();
 				mouse_updated = true;
@@ -381,6 +384,17 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 				}
 			} else if (event.type == SDL_QUIT) {
 				return -1;
+			// FIXME: it is a bug in SDL2 that real mouse devices have a fingerId. A real fingerId changes on each touch
+			// but the erroneous real mouse fingerId stays the same for both left and right clicks. But a left click produces
+			// two fingerId events with the first always having the value 0.
+			} else if (event.type == SDL_FINGERDOWN) {
+				if ((Mouse::use_touch_input == false) && (event.tfinger.fingerId != last_finger_id) && (event.tfinger.fingerId != 0)) {
+					Mouse::use_touch_input = true;
+					gwin->set_painted();
+				}
+				if (event.tfinger.fingerId != 0) {
+					last_finger_id = event.tfinger.fingerId;
+				}
 			}
 		}
 		if (mouse_updated) {

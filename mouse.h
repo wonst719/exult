@@ -154,6 +154,9 @@ public:
 
 	// Sets hand or speed cursors
 	void set_speed_cursor();
+	
+	// only use touch input?
+	static bool use_touch_input;
 };
 
 #endif

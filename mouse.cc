@@ -22,6 +22,7 @@
 #  include <config.h>
 #endif
 
+#include <SDL.h>
 #include "SDL_mouse.h"
 #include "SDL_timer.h"
 #include "mouse.h"
@@ -41,13 +42,18 @@
 using std::max;
 #endif
 
+bool Mouse::use_touch_input = false;
+
 static inline bool should_hide_frame(int frame) {
-#ifdef __IPHONEOS__
-	return frame == 0 || (frame >=8 && frame <= 47);
-#else
-	ignore_unused_variable_warning(frame);
-	return false;
-#endif
+	// on touch input only we hide the cursor
+	if (Mouse::use_touch_input == true) {
+		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
+		return frame == 0 || (frame >=8 && frame <= 47);
+	} else {
+		// FIXME: it is a bug in SDL2 that real mouse devices need this hint to work correctly on a touch device
+		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
+		return false;
+	}
 }
 
 short Mouse::short_arrows[8] = {8, 9, 10, 11, 12, 13, 14, 15};
