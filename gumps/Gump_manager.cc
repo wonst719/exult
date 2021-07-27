@@ -464,15 +464,11 @@ bool Gump_manager::handle_modal_gump_event(
 	// two fingerId events with the first always having the value 0.
 	case SDL_FINGERDOWN: {
 		if ((Mouse::use_touch_input == false) && (event.tfinger.fingerId != last_finger_id) && (event.tfinger.fingerId != 0)) {
-			cout << "in if Finger_ID: " << last_finger_id << endl;
-			cout << "in if FingerID: " << event.tfinger.fingerId << endl;
 			Mouse::use_touch_input = true;
 			gwin->set_painted();
 		}
-		if (event.tfinger.fingerId != 0) {
+		if (event.tfinger.fingerId != 0)
 			last_finger_id = event.tfinger.fingerId;
-			cout << "Saved FingerID: " << last_finger_id << endl;
-		}
 		break;
 	}
 	case SDL_MOUSEBUTTONDOWN:
