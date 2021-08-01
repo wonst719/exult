@@ -279,7 +279,7 @@
 					./libmt32emu/mt32emu/src/srchelper/srctools/include,
 					./libmt32emu/mt32emu/src/srchelper/srctools/include/src,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
