@@ -445,7 +445,7 @@ extern int ZEXPORT zipWriteInFileInZip(zipFile file, voidpc buf, unsigned len) {
 	if (file->in_opened_file_inzip == 0)
 		return ZIP_PARAMERROR;
 
-	file->ci.stream.next_in = static_cast<const Bytef *>(buf);
+	file->ci.stream.next_in = const_cast<Bytef *>(static_cast<const Bytef *>(buf));
 	file->ci.stream.avail_in = len;
 	file->ci.crc32 = crc32(file->ci.crc32, static_cast<const Bytef *>(buf), len);
 
