@@ -28,6 +28,8 @@
 #include "exceptions.h"
 #include "ignore_unused_variable_warning.h"
 
+#include "korean/korean.h"
+
 using std::size_t;
 using std::string;
 using std::strncmp;
@@ -236,6 +238,9 @@ int Font::paint_text_box(
 		return cury - y;
 }
 
+// FIXME: Temporary color
+static int koreanColor = 254;
+
 /*
  *  Draw text at a given location (which is the upper-left corner of the
  *  place to draw.
@@ -250,19 +255,31 @@ int Font::paint_text(
     unsigned char *trans
 ) {
 	ignore_unused_variable_warning(win);
+	printf("Font::paint_text() type 1: %s\n", text);
 	int x = xoff;
 	yoff += get_text_baseline();
 	if (font_shapes) {
 		int chr;
 		while ((chr = *text++) != 0) {
-			Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
-			if (!shape)
-				continue;
-			if (trans)
-				shape->paint_rle_remapped(x, yoff, trans);
-			else
-				shape->paint_rle(x, yoff);
-			x += shape->get_width() + hor_lead;
+			unsigned int chr = static_cast<unsigned char>(*text++);
+			if (chr & 0x80) {
+				chr |= static_cast<unsigned char>(*text++) << 8;
+				drawKorean(
+						win, x + 1,
+						(yoff - get_text_baseline()) + (get_text_baseline() - 9) - 1,
+						koreanColor, getKoreanPtr(chr));
+
+				x += _2byteWidth + 1;
+			} else {
+				Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
+				if (!shape)
+					continue;
+				if (trans)
+					shape->paint_rle_remapped(x, yoff, trans);
+				else
+					shape->paint_rle(x, yoff);
+				x += shape->get_width() + hor_lead;
+			}
 		}
 	}
 	return x - xoff;
@@ -281,16 +298,30 @@ int Font::paint_text(
     int xoff, int yoff      // Upper-left corner of where to start.
 ) {
 	ignore_unused_variable_warning(win);
+	printf("Font::paint_text() type 2: %d %s\n", textlen, text);
 	int x = xoff;
 	yoff += get_text_baseline();
-	if (font_shapes)
+	if (font_shapes) {
 		while (textlen--) {
-			Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(*text++));
-			if (!shape)
-				continue;
-			shape->paint_rle(x, yoff);
-			x += shape->get_width() + hor_lead;
+			unsigned int chr = static_cast<unsigned char>(*text++);
+			if (chr & 0x80) {
+				chr |= static_cast<unsigned char>(*text++) << 8;
+				textlen--;
+				drawKorean(
+						win, x + 1,
+						(yoff - get_text_baseline()) + (get_text_baseline() - 9) - 1,
+						koreanColor, getKoreanPtr(chr));
+
+				x += _2byteWidth + 1;
+			} else {
+				Shape_frame *shape = font_shapes->get_frame(chr);
+				if (!shape)
+					continue;
+				shape->paint_rle(x, yoff);
+				x += shape->get_width() + hor_lead;
+			}
 		}
+	}
 	return x - xoff;
 }
 
@@ -322,6 +353,7 @@ int Font::paint_text_box_fixedwidth(
     int vert_lead,          // Extra spacing between lines.
     int pbreak          // End at punctuation.
 ) {
+	// printf("Font::paint_text_box_fixedwidth() type 1: %s\n", text);
 	const char *start = text;   // Remember the start.
 	win->set_clip(x, y, w, h);
 	int endx = x + w;       // Figure where to stop.
@@ -439,17 +471,32 @@ int Font::paint_text_fixedwidth(
     int width           // Width of each character
 ) {
 	ignore_unused_variable_warning(win);
+	printf("Font::paint_text_fixedwidth() type 2: %s\n", text);
 	int x = xoff;
 	int w;
-	int chr;
+	unsigned int chr;
 	yoff += get_text_baseline();
 	while ((chr = *text++) != 0) {
-		Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
-		if (!shape)
-			continue;
-		x += w = (width - shape->get_width()) / 2;
-		shape->paint_rle(x, yoff);
-		x += width - w;
+		if (chr & 0x80) {
+			chr = static_cast<unsigned char>(*text++);
+			chr |= static_cast<unsigned char>(*text++) << 8;
+
+			x += w = (width - _2byteWidth) / 2;
+			drawKorean(
+					win, x,
+					(yoff - get_text_baseline()) + (get_text_baseline() - 9)
+							+ 2,
+					koreanColor, getKoreanPtr(chr));
+
+			x += (_2byteWidth + 1) - w;
+		} else {
+			Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
+			if (!shape)
+				continue;
+			x += w = (width - shape->get_width()) / 2;
+			shape->paint_rle(x, yoff);
+			x += width - w;
+		}
 	}
 	return x - xoff;
 }
@@ -469,16 +516,32 @@ int Font::paint_text_fixedwidth(
     int width           // Width of each character
 ) {
 	ignore_unused_variable_warning(win);
+	printf("Font::paint_text_fixedwidth() type 3: %s\n", text);
 	int w;
 	int x = xoff;
 	yoff += get_text_baseline();
 	while (textlen--) {
-		Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(*text++));
-		if (!shape)
-			continue;
-		x += w = (width - shape->get_width()) / 2;
-		shape->paint_rle(x, yoff);
-		x += width - w;
+		if (*text & 0x80) {
+			unsigned int chr;
+			chr = static_cast<unsigned char>(*text++);
+			chr |= static_cast<unsigned char>(*text++) << 8;
+			textlen--;
+			x += w = (width - _2byteWidth) / 2;
+			drawKorean(
+					win, x,
+					(yoff - get_text_baseline()) + (get_text_baseline() - 9)
+							+ 2,
+					koreanColor, getKoreanPtr(chr));
+
+			x += (_2byteWidth + 1) - w;
+		} else {
+			Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(*text++));
+			if (!shape)
+				continue;
+			x += w = (width - shape->get_width()) / 2;
+			shape->paint_rle(x, yoff);
+			x += width - w;
+		}
 	}
 	return x - xoff;
 }
@@ -494,9 +557,15 @@ int Font::get_text_width(
 	if (font_shapes) {
 		short chr;
 		while ((chr = *text++) != 0) {
-			Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
-			if (shape)
-				width += shape->get_width() + hor_lead;
+			if (chr & 0x80) {
+				text++;
+				// width += _2byteWidth + 1;
+				width += _2byteWidth + 3;    // FIXME: 한글이 아예 잘리는 현상을 방지하기 위해서...
+			} else {
+				Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
+				if (shape)
+					width += shape->get_width() + hor_lead;
+			}
 		}
 	}
 	return width;
@@ -513,10 +582,16 @@ int Font::get_text_width(
 	int width = 0;
 	if (font_shapes)
 		while (textlen--) {
-			Shape_frame *shape = font_shapes->get_frame(
-			                         static_cast<unsigned char>(*text++));
-			if (shape)
-				width += shape->get_width() + hor_lead;
+			if (*text & 0x80) {
+				text += 2;
+				textlen--;
+				width += _2byteWidth + 1;
+			} else {
+				Shape_frame *shape = font_shapes->get_frame(
+						static_cast<unsigned char>(*text++));
+				if (shape)
+					width += shape->get_width() + hor_lead;
+			}
 		}
 	return width;
 }
@@ -530,7 +605,8 @@ int Font::get_text_height(
 	// Note, I wont assume the fonts exist
 	//Shape_frame *A = font_shapes->get_frame('A');
 	//Shape_frame *y = font_shapes->get_frame('y');
-	return highest + lowest + 1;
+	int tmp = highest + lowest + 1;
+	return _2byteHeight > tmp ? _2byteHeight : tmp;
 }
 
 /*
