@@ -1,6 +1,6 @@
 #include "ucs2kstable.h"
 
-static wchar_t UCS2KSTABLE[] = {
+static wchar_t unicodeToKsTable[] = {
 	0xb0a1,0xb0a2,0x0000,0x0000,0xb0a3,0x0000,0x0000,0xb0a4,
 	0xb0a5,0xb0a6,0xb0a7,0x0000,0x0000,0x0000,0x0000,0x0000,
 	0xb0a8,0xb0a9,0xb0aa,0xb0ab,0xb0ac,0xb0ad,0xb0ae,0xb0af,
@@ -1400,11 +1400,15 @@ static wchar_t UCS2KSTABLE[] = {
 	0x0000,0x0000,0x0000,0x0000,
 };
 
-wchar_t UCS2KS(wchar_t ucs)
+wchar_t UnicodeToKS(wchar_t codepoint)
 {
-	if (ucs < 0xac00 || ucs > 0xd7a3)
-	{
-		return 0;
+	// Hangul Compatibility Jamo
+	if (codepoint >= 0x3131 && codepoint <= 0x3163) {
+		return 0xa4a1 + (codepoint - 0x3131);
 	}
-	return UCS2KSTABLE[ucs - 0xac00];
+	// Hangul Syllables
+	if (codepoint >= 0xac00 && codepoint <= 0xd7a3)	{
+		return unicodeToKsTable[codepoint - 0xac00];
+	}
+	return 0;
 }
