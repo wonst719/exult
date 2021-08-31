@@ -53,15 +53,17 @@ public:
 
 	bool load(const std::string& fontName);
 	int drawGlyph(Image_buffer8* dst, uint16 codepoint, int dx, int dy);
+	int getGlyphWidth(uint16 codepoint);
+	int getFontHeight();
 };
 
-extern int _2byteWidth;
-extern int _2byteHeight;
+//extern int _2byteWidth;
+//extern int _2byteHeight;
 
-extern bool loadKoreanFont();
-extern byte *getKoreanPtr(int idx);
-extern int drawKorean(Image_buffer8* dst, uint16 cp, int dx, int dy);
-extern void drawKorean(Image_buffer8 *dst, int dx, int dy, byte _color, byte *src);
+//extern bool loadKoreanFont();
+//extern byte *getKoreanPtr(int idx);
+//extern int drawKorean(Image_buffer8* dst, uint16 cp, int dx, int dy);
+//extern void drawKorean(Image_buffer8 *dst, int dx, int dy, byte _color, byte *src);
 
 static inline bool checkKSCode(byte hi, byte lo) {
 	//hi : xx
