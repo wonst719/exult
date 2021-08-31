@@ -47,6 +47,11 @@
 #include "touchui.h"
 #include "txtscroll.h"
 
+#include "korean/ucs2kstable.h"
+
+#include <SDL.h>
+#include <SDL_events.h>
+
 #include <array>
 #include <cstring>
 #include <string>
@@ -58,23 +63,23 @@ using std::strchr;
 using std::unique_ptr;
 
 enum {
-	ultima_text_shp  = 0x0D,
-	butterfly_shp    = 0x0E,
-	lord_british_shp = 0x11,
-	trees_shp        = 0x12,
+    ultima_text_shp = 0x0D,
+    butterfly_shp = 0x0E,
+    lord_british_shp = 0x11,
+    trees_shp = 0x12,
 
-	guardian_mouth_shp    = 0x1E,
-	guardian_forehead_shp = 0x1F,
-	guardian_eyes_shp     = 0x20
+    guardian_mouth_shp = 0x1E,
+    guardian_forehead_shp = 0x1F,
+    guardian_eyes_shp = 0x20
 };
 
 enum {
-	bird_song_midi = 0,
-	home_song_midi = 1,
-	guardian_midi  = 2,
-	menu_midi      = 3,
-	credits_midi   = 4,
-	quotes_midi    = 5
+    bird_song_midi = 0,
+    home_song_midi = 1,
+    guardian_midi = 2,
+    menu_midi = 3,
+    credits_midi = 4,
+    quotes_midi = 5
 };
 
 BG_Game::BG_Game() : shapes(ENDSHAPE_FLX, -1, PATCH_ENDSHAPE) {
@@ -233,8 +238,8 @@ BG_Game::BG_Game() : shapes(ENDSHAPE_FLX, -1, PATCH_ENDSHAPE) {
 			"EXULT_END_FONT", File_spec(EXULT_FLX, EXULT_FLX_ENDFONT_SHP),
 			PATCH_ENDFONT, 0, -1);
 	auto& mp = gwin->get_map_patches();
-	// Sawdust in Iolo's hut is at lift 2, should be 0
-	// FIXME - the original had some way to deal with this
+			// Sawdust in Iolo's hut is at lift 2, should be 0
+			// FIXME - the original had some way to deal with this
 	mp.add(std::make_unique<Map_patch_modify>(
 			Object_spec(Tile_coord(481, 599, 2), 224, 7, 0),
 			Object_spec(Tile_coord(480, 598, 0), 224, 7, 0)));
@@ -280,10 +285,10 @@ BG_Game::BG_Game() : shapes(ENDSHAPE_FLX, -1, PATCH_ENDSHAPE) {
 	mp.add(std::make_unique<Map_patch_modify>(
 			Object_spec(Tile_coord(467, 601, 2), 224, 7, 0),
 			Object_spec(Tile_coord(466, 600, 0), 224, 7, 0)));
-	// pure BG shape 874 only has an empty frame. For FoV's Test of Truth
-	// it was changed for creating a dungeon chasm while obviously forgetting
-	// that frame #0 was used in two occassions:
-	//       hole in Despise's rebel base to invisible stairway
+			// pure BG shape 874 only has an empty frame. For FoV's Test of Truth
+			// it was changed for creating a dungeon chasm while obviously forgetting
+			// that frame #0 was used in two occassions:
+			//       hole in Despise's rebel base to invisible stairway
 	mp.add(std::make_unique<Map_patch_remove>(
 			Object_spec(Tile_coord(681, 1192, 5), 874, 0, 0)));
 	mp.add(std::make_unique<Map_patch_remove>(
@@ -292,7 +297,7 @@ BG_Game::BG_Game() : shapes(ENDSHAPE_FLX, -1, PATCH_ENDSHAPE) {
 			Object_spec(Tile_coord(681, 1195, 5), 874, 0, 0)));
 	mp.add(std::make_unique<Map_patch_remove>(
 			Object_spec(Tile_coord(682, 1195, 5), 874, 0, 0)));
-	//       stairways hole in Shame's 2nd floor
+			//       stairways hole in Shame's 2nd floor
 	mp.add(std::make_unique<Map_patch_remove>(
 			Object_spec(Tile_coord(807, 951, 5), 874, 0, 0)));
 	mp.add(std::make_unique<Map_patch_remove>(
@@ -465,7 +470,7 @@ void BG_Game::scene_lord_british() {
 	 */
 
 	try {
-		WAITDELAY(1500);    // - give a little space between exult title music
+		WAITDELAY(1500); // - give a little space between exult title music
 		//     and LB presents screen
 
 		// Lord British presents...  (sh. 0x11)
@@ -531,7 +536,7 @@ void BG_Game::scene_butterfly() {
 				topy + y - butterfly->get_yabove());
 	};
 
-	int  dir           = 0;
+	int dir = 0;
 	auto ButterflyFlap = [&]() {
 		if ((rand() % 5) < 4) {
 			if (frame == 3) {
@@ -561,7 +566,7 @@ void BG_Game::scene_butterfly() {
 				topx + 160, topy + 50, shapes.get_shape(ultima_text_shp, 0));
 
 		// Keep it dark for some more time, playing the music
-		WAITDELAY(4500);    //  - was WAITDELAY(3500);
+		WAITDELAY(4500); //  - was WAITDELAY(3500);
 
 		// Finally fade in
 		pal->fade_in(c_fade_in_time);
@@ -575,11 +580,11 @@ void BG_Game::scene_butterfly() {
 		//
 		// Move the butterfly along its path
 		//
-		frame        = 0;
+		frame = 0;
 		Sint32 delay = frame_duration;
 		for (size_t i = 0; i < butterfly_num_coords - 1; ++i) {
 			for (int j = 0; j < frame_count; ++j) {
-				Sint32    ticks = SDL_GetTicks();
+				Sint32 ticks = SDL_GetTicks();
 				const int x     = butterfly_x[i]
 							  + j * (butterfly_x[i + 1] - butterfly_x[i])
 										/ frame_count;
@@ -601,10 +606,10 @@ void BG_Game::scene_butterfly() {
 				// ... but maybe we also have to skip frames..
 				if (delay < 0) {
 					// Calculate how many frames we should skip
-					int       frames_to_skip = (-delay) / frame_duration + 1;
+					int frames_to_skip = (-delay) / frame_duration + 1;
 					const int new_index = i * frame_count + j + frames_to_skip;
-					i                   = new_index / frame_count;
-					j                   = new_index % frame_count;
+					i = new_index / frame_count;
+					j = new_index % frame_count;
 
 					// Did we skip over the end?
 					if (i >= butterfly_num_coords - 1) {
@@ -624,9 +629,9 @@ void BG_Game::scene_butterfly() {
 		for (int i = 0; i < 8; i++) {
 			DrawButterfly(
 					butterfly_x[butterfly_num_coords - 1],
-					butterfly_y[butterfly_num_coords - 1],
+			              butterfly_y[butterfly_num_coords - 1],
 					butterfly_end_frames[i], butterfly_end_delay[i],
-					backup.get(), butterfly);
+						  backup.get(), butterfly);
 		}
 
 		WAITDELAY(1000);
@@ -634,7 +639,7 @@ void BG_Game::scene_butterfly() {
 		// Wait till the music finished playing
 		while (Audio::get_ptr()->is_track_playing(bird_song_midi)) {
 			WAITDELAY(20);
-		}
+	}
 	} catch (const UserSkipException& /*x*/) {
 	}
 }
@@ -642,16 +647,16 @@ void BG_Game::scene_butterfly() {
 #define FLASH_SHAPE1(x, y, shape, frame, delay)                              \
 	do {                                                                     \
 		sman->paint_shape((x), (y), shapes.get_shape((shape), (frame)));     \
-		win->show();                                                         \
-		WAITDELAYCYCLE1((delay));                                            \
+		win->show();  \
+		WAITDELAYCYCLE1((delay));    \
 		win->put(backup.get(), (x) - s->get_xleft(), (y) - s->get_yabove()); \
 	} while (0)
 
 #define FLASH_SHAPE2(x, y, shape, frame, delay)                              \
 	do {                                                                     \
 		sman->paint_shape((x), (y), shapes.get_shape((shape), (frame)));     \
-		win->show();                                                         \
-		WAITDELAYCYCLE4((delay));                                            \
+		win->show();  \
+		WAITDELAYCYCLE4((delay));    \
 		win->put(backup.get(), (x) - s->get_xleft(), (y) - s->get_yabove()); \
 	} while (0)
 
@@ -664,7 +669,7 @@ public:
 					  MAINSHP_FLX, PATCH_MAINSHP, 0x0F)) {}
 
 	LipSynchReader(const char* pp, int len)
-			: data(std::make_unique<IBufferDataView>(pp, len)) {}
+		: data(std::make_unique<IBufferDataView>(pp, len)) {}
 
 	bool have_events() const {
 		return data->getAvail() > 0;
@@ -673,8 +678,8 @@ public:
 	void get_event(int& time, int& code) {
 		if (have_events()) {
 			const int curr_time = data->read2();
-			time                = curr_time * 1000.0 / 60.0;
-			code                = data->read1();
+			time = curr_time * 1000.0 / 60.0;
+			code = data->read1();
 		} else {
 			time = 0;
 			code = 0;
@@ -688,10 +693,10 @@ public:
 				//   1, 2, 3, 4, 5, 6, 7, 8, 9		// Last eye frame (or the
 				//   one before, if it was 10)
 				{1, 2, 3, 1, 2, 3, 1, 2,3                                        }, // 1: Change eyebrows to angry
-				{4, 5, 6, 4, 5, 6, 4, 5, 6}, // 2: Change eyebrows to neutral
-				{7, 8, 9, 7, 8, 9, 7, 8, 9}, // 3: Change eyebrows to raised
-				{1, 1, 1, 4, 4, 4, 7, 7, 7}, // 4: Change eyes to fully open
-				{2, 2, 2, 5, 5, 5, 8, 8, 8}, // 5: Change eyes to half-open
+			{4, 5, 6, 4, 5, 6, 4, 5, 6},	// 2: Change eyebrows to neutral
+			{7, 8, 9, 7, 8, 9, 7, 8, 9},	// 3: Change eyebrows to raised
+			{1, 1, 1, 4, 4, 4, 7, 7, 7},	// 4: Change eyes to fully open
+			{2, 2, 2, 5, 5, 5, 8, 8, 8},	// 5: Change eyes to half-open
 				{3, 3, 3, 6, 6, 6, 9, 9,
 				 9						}, // 6: Change eyes to fully closed
 		};
@@ -738,7 +743,7 @@ class WinClip {
 
 public:
 	WinClip(Image_window8* win, int cx, int cy, int wid, int hgt)
-			: window(win) {
+		: window(win) {
 		window->set_clip(cx, cy, wid, hgt);
 	}
 
@@ -762,7 +767,7 @@ struct SpeechManager {
 };
 
 void BG_Game::scene_guardian() {
-	constexpr static const int Eyes_Dist     = 12;
+	constexpr static const int Eyes_Dist = 12;
 	constexpr static const int Forehead_Dist = 49;
 
 	constexpr static const std::array text_times{
@@ -772,15 +777,15 @@ void BG_Game::scene_guardian() {
 	constexpr static const size_t text_num_frames = text_times.size();
 
 	constexpr static const char surfacing_data[]{
-			0x03, 0x00, 0x02,    // Eyebrows -> neutral
-			0x03, 0x00, 0x05,    // Eyes -> half-open
-			0x15, 0x00, 0x04,    // Eyes -> fully open
-			0x33, 0x00, 0x07,    // Eyes -> Look down
-			0x54, 0x00, 0x04,    // Eyes -> fully open
+		0x03, 0x00, 0x02,	// Eyebrows -> neutral
+		0x03, 0x00, 0x05,	// Eyes -> half-open
+		0x15, 0x00, 0x04,	// Eyes -> fully open
+		0x33, 0x00, 0x07,	// Eyes -> Look down
+		0x54, 0x00, 0x04,	// Eyes -> fully open
 			0x77, 0x00, 0x00};
 
 	try {
-		Uint32          ticks;
+		Uint32 ticks;
 		const File_spec sfxfile = get_sfx_subflex();
 		{
 			// create buffer containing a blue 'plasma' screen
@@ -815,7 +820,7 @@ void BG_Game::scene_guardian() {
 				WAITDELAYCYCLE1(2);
 				if (SDL_GetTicks() > ticks + 400) {    // 400)
 					break;
-				}
+			}
 			}
 
 			Audio::get_ptr()->play_sound_effect(
@@ -832,7 +837,7 @@ void BG_Game::scene_guardian() {
 				WAITDELAYCYCLE1(2);
 				if (SDL_GetTicks() > ticks + 200) {
 					break;
-				}
+			}
 			}
 
 			Audio::get_ptr()->play_sound_effect(
@@ -849,7 +854,7 @@ void BG_Game::scene_guardian() {
 				WAITDELAYCYCLE1(2);
 				if (SDL_GetTicks() > ticks + 100) {
 					break;
-				}
+			}
 			}
 
 			win->put(plasma.get(), win->get_start_x(), win->get_start_y());
@@ -880,7 +885,7 @@ void BG_Game::scene_guardian() {
 					centery - 68 - s->get_yabove());
 			for (int i = 8; i >= -8; i--) {
 				FLASH_SHAPE2(centerx - 53, centery - 68, 0x21, 1 + abs(i), 80);
-			}
+		}
 		}
 		WAITDELAYCYCLE1(2000);
 
@@ -899,7 +904,7 @@ void BG_Game::scene_guardian() {
 					centery - 45 - s->get_yabove());
 			for (int i = 9; i >= -9; i--) {
 				FLASH_SHAPE2(centerx, centery - 45, 0x22, 9 - abs(i), 80);
-			}
+		}
 		}
 		WAITDELAYCYCLE1(2000);
 
@@ -952,7 +957,7 @@ void BG_Game::scene_guardian() {
 			win->get(
 					cbackup.get(), centerx - s->get_xleft(),
 					centery - s->get_yabove());
-			sman->paint_shape(centerx, centery, s);    // frame 0 is background
+			sman->paint_shape(centerx, centery, s); // frame 0 is background
 			win->get(
 					backup.get(), centerx - s->get_xleft(),
 					centery - s->get_yabove());
@@ -986,15 +991,15 @@ void BG_Game::scene_guardian() {
 			{
 				std::shared_ptr<Font> font = fontManager.get_font("GUARDIAN_FONT");
 				const U7multiobject textobj(MAINSHP_FLX, PATCH_MAINSHP, 0x0D);
-				size_t              txt_len;
-				auto                txt = textobj.retrieve(txt_len);
+				size_t txt_len;
+				auto txt = textobj.retrieve(txt_len);
 				char*               txt_ptr;
 				char*               txt_end;
 				char*               next_txt;
 				next_txt = txt_ptr = reinterpret_cast<char*>(txt.get());
 
 				const int txt_height = font->get_text_height();
-				int       txt_ypos   = gwin->get_height() - txt_height - 16;
+				int txt_ypos = gwin->get_height() - txt_height - 16;
 
 				// backup text area
 				unique_ptr<Image_buffer> backup3(
@@ -1002,17 +1007,17 @@ void BG_Game::scene_guardian() {
 				win->get(backup3.get(), win->get_start_x(), txt_ypos);
 
 				// Lipsynching
-				int            eye_frame      = 3;
-				int            last_eye_frame = 3;
-				int            mouth_frame    = 1;
-				int            text_index     = -1;
-				int            next_time;
-				int            next_code;
+				int eye_frame = 3;
+				int last_eye_frame = 3;
+				int mouth_frame = 1;
+				int text_index = -1;
+				int next_time;
+				int next_code;
 				LipSynchReader lipsync;
 				LipSynchReader surfacing(
 						surfacing_data, sizeof(surfacing_data));
 
-				int           time  = 0;
+				int time = 0;
 				unsigned long start = SDL_GetTicks();
 
 				const bool speech = Audio::get_ptr()->is_audio_enabled()
@@ -1021,8 +1026,8 @@ void BG_Game::scene_guardian() {
 						= !speech || Audio::get_ptr()->is_speech_with_subs();
 
 				auto AdvanceTextPointer = [&]() {
-					txt_ptr  = next_txt;
-					txt_end  = strchr(txt_ptr, '\r');
+					txt_ptr = next_txt;
+					txt_end = strchr(txt_ptr, '\r');
 					*txt_end = '\0';
 					next_txt = txt_end + 2;
 				};
@@ -1030,10 +1035,10 @@ void BG_Game::scene_guardian() {
 										int shnum, int frnum, int dist) {
 					win->put(
 							backup, centerx - fra->get_xleft(),
-							centery - dist - fra->get_yabove());
+									centery - dist - fra->get_yabove());
 					sman->paint_shape(
 							centerx, centery - dist,
-							shapes.get_shape(shnum, frnum));
+									shapes.get_shape(shnum, frnum));
 				};
 				auto DrawSpeech = [&]() {
 					// Erase text
@@ -1075,7 +1080,7 @@ void BG_Game::scene_guardian() {
 				}
 
 				const SpeechManager mngr(INTROSND, PATCH_INTROSND, false);
-				time  = 0;
+				time = 0;
 				start = SDL_GetTicks();
 
 				// First event needs to be read here
@@ -1083,7 +1088,7 @@ void BG_Game::scene_guardian() {
 				if (subtitles) {
 					text_index = 0;
 				} else {
-					text_index = text_num_frames;    // Disable subtitles
+					text_index = text_num_frames;	// Disable subtitles
 				}
 				// start speech
 				while (time < 47537) {
@@ -1148,7 +1153,7 @@ void BG_Game::scene_guardian() {
 						centery - s->get_yabove());
 				for (int i = 15; i > 0; i--) {
 					FLASH_SHAPE2(centerx, centery, 0x23, i, 70);
-				}
+			}
 				win->put(
 						cbackup.get(), centerx - s->get_xleft(),
 						centery - s->get_yabove());
@@ -1173,7 +1178,7 @@ void BG_Game::scene_guardian() {
 			WAITDELAYCYCLE1(2);
 			if (SDL_GetTicks() > ticks + 400) {
 				break;
-			}
+		}
 		}
 
 		gwin->clear_screen(true);
@@ -1197,8 +1202,8 @@ void BG_Game::scene_guardian() {
 			WAITDELAYCYCLE1(2);
 			if (SDL_GetTicks() - ticks > 800) {
 				break;
-			}
 		}
+	}
 	} catch (const UserSkipException& /*x*/) {
 	}
 }
@@ -1206,14 +1211,14 @@ void BG_Game::scene_guardian() {
 namespace {    // anonymous
 
 	enum HandlerScriptOps {
-		eNOP,             // Does nothing except redraw static if needed
-		eHAND_HIT,        // Move hand to frame 3, and redraw static if needed
-		eHAND_RECOIL,     // Decrement hand frame, and redraw static if needed
-		eBLACK_SCREEN,    // Draw black screen
-		eSHOW_STATIC,     // Draw static
+		eNOP,                   // Does nothing except redraw static if needed
+		eHAND_HIT,              // Move hand to frame 3, and redraw static if needed
+		eHAND_RECOIL,           // Decrement hand frame, and redraw static if needed
+		eBLACK_SCREEN,          // Draw black screen
+		eSHOW_STATIC,           // Draw static
 		eFLASH_FAKE_TITLE,    // Draw fake title screen for 1 frame, then revert
 							  // to black screen
-		eSHOW_FAKE_TITLE,     // Draw fake title screen permanently
+		eSHOW_FAKE_TITLE,       // Draw fake title screen permanently
 	};
 
 	constexpr const std::array HandlerScript{
@@ -1230,16 +1235,16 @@ namespace {    // anonymous
 	private:
 		Image_window8*                win;
 		Shape_manager*                sman;
-		std::unique_ptr<Shape_file>   handshp;
-		std::unique_ptr<Image_buffer> handBackup;
-		std::unique_ptr<Image_buffer> staticScreen;
+	std::unique_ptr<Shape_file> handshp;
+	std::unique_ptr<Image_buffer> handBackup;
+	std::unique_ptr<Image_buffer> staticScreen;
 		Shape_frame*                  screenShape;
 		Shape_frame*                  handFrame;
-		size_t                        scriptPosition;
-		int                           centerx, centery;
-		int                           handFrNum;
-		HandlerScriptOps              currBackground;
-		bool                          playedStaticSFX;
+	size_t scriptPosition;
+	int centerx, centery;
+	int handFrNum;
+	HandlerScriptOps currBackground;
+	bool playedStaticSFX;
 
 	public:
 		Hand_Handler(
@@ -1247,51 +1252,51 @@ namespace {    // anonymous
 				Shape_manager* _sman, int _centerx, int _centery)
 				: win(_win), sman(_sman),
 				  staticScreen(win->create_buffer(160, 99)),
-				  screenShape(shapes.get_shape(0x1D, 0)), handFrame(nullptr),
+		  screenShape(shapes.get_shape(0x1D, 0)), handFrame(nullptr),
 				  scriptPosition(0), centerx(_centerx), centery(_centery),
 				  handFrNum(-1), currBackground(eBLACK_SCREEN),
 				  playedStaticSFX(false) {
 			const str_int_pair& resource
 					= game->get_resource("files/intro_hand");
 			const U7object  shpobj(resource.str, resource.num);
-			std::size_t     len;
-			auto            handBuffer = shpobj.retrieve(len);
+		std::size_t len;
+		auto handBuffer = shpobj.retrieve(len);
 			IBufferDataView ds(handBuffer, len);
-			handshp = std::make_unique<Shape_file>(&ds);
-		}
+		handshp = std::make_unique<Shape_file>(&ds);
+	}
 
-		// Returns true to keep going.
-		bool draw_frame();
+	// Returns true to keep going.
+	bool draw_frame();
 
 		void backup_shape_bkgnd(
 				Shape_frame* fra, std::unique_ptr<Image_buffer>& backup) {
-			backup = win->create_buffer(fra->get_width(), fra->get_height());
+		backup = win->create_buffer(fra->get_width(), fra->get_height());
 
 			win->get(
 					backup.get(), centerx - 156 - fra->get_xleft(),
-					centery + 78 - fra->get_yabove());
-		}
+		         centery + 78 - fra->get_yabove());
+	}
 
 		void restore_shape_bkgnd(
 				Shape_frame* fra, std::unique_ptr<Image_buffer>& backup) {
 			win->put(
 					backup.get(), centerx - 156 - fra->get_xleft(),
-					centery + 78 - fra->get_yabove());
-			backup.reset();
-		}
+		         centery + 78 - fra->get_yabove());
+		backup.reset();
+	}
 	};
 
 	bool Hand_Handler::draw_frame() {
 		if (scriptPosition >= HandlerScript.size()) {
-			return false;
-		}
+		return false;
+	}
 		const HandlerScriptOps currOp   = HandlerScript[scriptPosition];
-		bool                   drawHand = false;
-		// Do hand first
-		switch (currOp) {
+	bool drawHand = false;
+	// Do hand first
+	switch (currOp) {
 		case eHAND_HIT:
 			// TODO: SFX for hand hitting monitor
-			drawHand  = true;
+			drawHand = true;
 			handFrNum = 3;
 			break;
 		case eHAND_RECOIL:
@@ -1303,77 +1308,77 @@ namespace {    // anonymous
 		default:
 			break;
 		}
-		if (drawHand) {
-			if (handFrame && handBackup) {
-				restore_shape_bkgnd(handFrame, handBackup);
-			}
-			handFrame = handshp->get_frame(handFrNum);
-			if (handFrame) {
-				backup_shape_bkgnd(handFrame, handBackup);
-				sman->paint_shape(centerx - 167, centery + 78, handFrame);
-			}
+	if (drawHand) {
+		if (handFrame && handBackup) {
+			restore_shape_bkgnd(handFrame, handBackup);
 		}
-		// Lets now handle backgrounds.
-		switch (currOp) {
-		case eHAND_HIT:
-		case eHAND_RECOIL:
-			// Special case for hand opcodes: redraw static
-			// if it is the current background.
-			if (currBackground != eSHOW_STATIC) {
-				break;
-			}
+		handFrame = handshp->get_frame(handFrNum);
+		if (handFrame) {
+			backup_shape_bkgnd(handFrame, handBackup);
+			sman->paint_shape(centerx - 167, centery + 78, handFrame);
+		}
+	}
+	// Lets now handle backgrounds.
+	switch (currOp) {
+	case eHAND_HIT:
+	case eHAND_RECOIL:
+		// Special case for hand opcodes: redraw static
+		// if it is the current background.
+		if (currBackground != eSHOW_STATIC) {
+			break;
+		}
 			[[fallthrough]];
-		case eSHOW_STATIC:
-		case eNOP:
-			if (currOp == eSHOW_STATIC) {
-				currBackground = currOp;
-				if (!playedStaticSFX) {
-					playedStaticSFX = true;
+	case eSHOW_STATIC:
+	case eNOP:
+		if (currOp == eSHOW_STATIC) {
+			currBackground = currOp;
+			if (!playedStaticSFX) {
+				playedStaticSFX = true;
 					// play static SFX
-					const File_spec sfxfile = BG_Game::get_sfx_subflex();
+				const File_spec sfxfile = BG_Game::get_sfx_subflex();
 					Audio::get_ptr()->play_sound_effect(
 							sfxfile,
 							INTROSFX_MT32_FLX_INTRO_MT_MONITORSLAP_WAV);
-				}
 			}
-			staticScreen->fill_static(0, 7, 15);
+		}
+		staticScreen->fill_static(0, 7, 15);
 			win->put(
 					staticScreen.get(),
 					centerx + 12 - screenShape->get_width() / 2,
 					centery - 22 - screenShape->get_height() / 2);
-			win->show();
-			drawHand = false;
+		win->show();
+		drawHand = false;
+		break;
+	case eFLASH_FAKE_TITLE:
+	case eSHOW_FAKE_TITLE:
+		sman->paint_shape(centerx + 12, centery - 22, screenShape);
+		win->show();
+		drawHand = false;
+		if (currOp == eSHOW_FAKE_TITLE) {
+			currBackground = currOp;
 			break;
-		case eFLASH_FAKE_TITLE:
-		case eSHOW_FAKE_TITLE:
-			sman->paint_shape(centerx + 12, centery - 22, screenShape);
-			win->show();
-			drawHand = false;
-			if (currOp == eSHOW_FAKE_TITLE) {
-				currBackground = currOp;
-				break;
-			}
+		}
 			[[fallthrough]];
-		case eBLACK_SCREEN:
+	case eBLACK_SCREEN:
 			win->fill8(
 					0, screenShape->get_width(), screenShape->get_height(),
 					centerx + 12 - screenShape->get_width() / 2,
 					centery - 22 - screenShape->get_height() / 2);
-			if (currOp == eBLACK_SCREEN) {
-				currBackground = currOp;
-				win->show();
-				drawHand = false;
-			}
-			break;
-		default:    // Just in case
-			return false;
-		}
-
-		if (drawHand) {
+		if (currOp == eBLACK_SCREEN) {
+			currBackground = currOp;
 			win->show();
+			drawHand = false;
+		}
+		break;
+	default:        // Just in case
+		return false;
 		}
 
-		scriptPosition++;
+	if (drawHand) {
+		win->show();
+	}
+
+	scriptPosition++;
 		return scriptPosition < HandlerScript.size();
 	}
 }    // End of anonymous namespace
@@ -1515,7 +1520,7 @@ void BG_Game::scene_desk() {
 					centerx - 194, centery - i, shapes.get_shape(0x0A, 0));
 			sman->paint_shape(
 					centerx - 194 + 12, centery - 22 - i,
-					shapes.get_shape(0x1D, 0));
+			                  shapes.get_shape(0x1D, 0));
 			sman->paint_shape(
 					topx + 319 - 194, topy - i, shapes.get_shape(0x06, 0));
 			sman->paint_shape(
@@ -1570,7 +1575,7 @@ void BG_Game::scene_moongate() {
 	WAITDELAY(4000);
 
 	// Bushes move out of the way
-	for (int i = 50; i >= -170; i -= 2) {    // was for(i=120;i>=-170;i-=6)
+	for (int i = 50; i >= -170; i -= 2) { // was for(i=120;i>=-170;i-=6)
 		sman->paint_shape(centerx + 1, centery + 1, shapes.get_shape(0x02, 0));
 		sman->paint_shape(centerx + 1, centery + 1, shapes.get_shape(0x03, 0));
 		sman->paint_shape(centerx + 1, centery + 1, shapes.get_shape(0x04, 0));
@@ -1677,7 +1682,7 @@ class ExVoiceBuffer {
 private:
 	const char* file;
 	const char* patch;
-	int         index;
+	int index;
 	bool        played = false;
 
 public:
@@ -1692,9 +1697,9 @@ public:
 };
 
 bool ExVoiceBuffer::play_it() {
-	size_t              size;
+	size_t  size;
 	const U7multiobject voc(file, patch, index);
-	auto                buffer = voc.retrieve(size);
+	auto buffer = voc.retrieve(size);
 	uint8*              buf    = buffer.get();
 	if (!memcmp(buf, "voc", sizeof("voc") - 1)) {
 		// IFF junk.
@@ -1814,16 +1819,16 @@ void BG_Game::end_game(bool success, bool within_game) {
 					= (gwin->get_width() - endfont2->get_text_width(message))
 					  / 2;
 
-			for (unsigned int i = 150; i < 204; i++) {
-				next = fli1.play(win, i, i, next);
+		for (unsigned int i = 150; i < 204; i++) {
+			next = fli1.play(win, i, i, next);
 				if (subtitles) {
-					endfont2->draw_text(ibuf, width, height, message);
+				endfont2->draw_text(ibuf, width, height, message);
 				}
-				win->show();
-				if (wait_delay(0, 0, 1)) {
-					throw UserSkipException();
-				}
+			win->show();
+			if (wait_delay(0, 0, 1)) {
+				throw UserSkipException();
 			}
+		}
 		}
 
 		// Set new music
@@ -1842,20 +1847,20 @@ void BG_Game::end_game(bool success, bool within_game) {
 					= (gwin->get_width() - endfont2->get_text_width(message))
 					  / 2;
 
-			for (unsigned int i = 0; i < 100; i++) {
-				next = fli2.play(win, i, i, next);
+		for (unsigned int i = 0; i < 100; i++) {
+			next = fli2.play(win, i, i, next);
 				if (subtitles) {
-					endfont2->draw_text(ibuf, width, height, message);
+				endfont2->draw_text(ibuf, width, height, message);
 				}
-				win->show();
-				if (wait_delay(0, 0, 1)) {
-					throw UserSkipException();
-				}
+			win->show();
+			if (wait_delay(0, 0, 1)) {
+				throw UserSkipException();
 			}
+		}
 		}
 
 		Palette* pal = fli2.get_palette();
-		next         = SDL_GetTicks();
+		next = SDL_GetTicks();
 		for (const unsigned int i = 1000 + next; next < i; next += 10) {
 			// Speed related frame skipping detection
 			const bool skip_frame
@@ -1886,7 +1891,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 			const int width
 					= (gwin->get_width() - normal->get_text_width(message)) / 2;
 
-			normal->draw_text(ibuf, width, height, message);
+		normal->draw_text(ibuf, width, height, message);
 		}
 
 		// Fade in for 1 sec (50 cycles)
@@ -1914,7 +1919,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 					= (gwin->get_height() - normal->get_text_height()) / 2;
 			const int width
 					= (gwin->get_width() - normal->get_text_width(message)) / 2;
-			normal->draw_text(ibuf, width, height, message);
+		normal->draw_text(ibuf, width, height, message);
 		}
 
 		// Fade in for 1 sec (50 cycles)
@@ -1931,7 +1936,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 		pal->fade(50, 0, 0);
 
 		fli3.play(win, 0, 0, next);
-		pal  = fli3.get_palette();
+		pal = fli3.get_palette();
 		next = SDL_GetTicks();
 		for (const unsigned int i = 1000 + next; next < i; next += 10) {
 			// Speed related frame skipping detection
@@ -1970,7 +1975,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 								ibuf, centerx,
 								starty + endfont3->get_text_height() * m,
 								get_text_msg(txt_screen0 + m));
-					}
+				}
 				}
 				win->show();
 				if (wait_delay(10, 0, 1)) {
@@ -2124,12 +2129,12 @@ void BG_Game::end_game(bool success, bool within_game) {
 		// show only when finishing a game and not when viewed from menu
 		if (within_game) {
 			show_congratulations(pal);
-		}
+			}
 	} catch (const UserSkipException& /*x*/) {
 		pal->set_brightness(80);    // Set readable brightness
-		win->fill8(0);
+			win->fill8(0);
 		win->show();
-	}
+					}
 
 	if (midi) {
 		midi->stop_music();
@@ -2157,7 +2162,7 @@ void BG_Game::show_credits() {
 	TextScroller credits(
 			MAINSHP_FLX, 0x0E, fontManager.get_font("MENU_FONT"),
 			menushapes.extract_shape(0x14));
-	if (credits.run(gwin)) {    // Watched through the entire sequence?
+	if (credits.run(gwin)) { // Watched through the entire sequence?
 		U7open_out("<SAVEGAME>/quotes.flg");
 	}
 }
@@ -2170,7 +2175,7 @@ bool BG_Game::new_game(Vga_file& shapes) {
 	// Need to know if SI is installed
 	const bool si_installed
 			= (gamemanager->is_si_installed() || gamemanager->is_ss_installed())
-			  && U7exists("<SERPENT_STATIC>/shapes.vga");
+	    && U7exists("<SERPENT_STATIC>/shapes.vga");
 
 	// List of files to load.
 	std::vector<std::pair<std::string, int>> source;
@@ -2182,21 +2187,21 @@ bool BG_Game::new_game(Vga_file& shapes) {
 	faces_vga.load(source);
 
 	const int max_name_len = 16;
-	char      npc_name[max_name_len + 1];
-	char      disp_name[max_name_len + 2];
+	char npc_name[max_name_len + 1];
+	char disp_name[max_name_len + 2];
 	npc_name[0] = 0;
 
-	int       selected    = 0;
+	int selected = 0;
 	const int num_choices = 4;
 	SDL_Event event;
-	bool      editing = true;
-	bool      redraw  = true;
-	bool      ok      = true;
+	bool editing = true;
+	bool redraw = true;
+	bool ok = true;
 
 	// Skin info
 	Avatar_default_skin* defskin  = Shapeinfo_lookup::GetDefaultAvSkin();
 	Skin_data*           skindata = Shapeinfo_lookup::GetSkinInfoSafe(
-            defskin->default_skin, defskin->default_female, si_installed);
+	        defskin->default_skin, defskin->default_female, si_installed);
 
 	Palette* pal = gwin->get_pal();
 	// This should work because the palette in exult_bg.flx is
@@ -2206,7 +2211,7 @@ bool BG_Game::new_game(Vga_file& shapes) {
 			File_spec(
 					get_resource("files/gameflx").str,
 					EXULT_BG_FLX_U7MENUPAL_PAL),
-			File_spec(PATCH_INTROPAL, 6), 0);
+	          File_spec(PATCH_INTROPAL, 6), 0);
 	auto* oldpal = new Palette();
 	oldpal->load(INTROPAL_DAT, PATCH_INTROPAL, 6);
 
@@ -2248,7 +2253,9 @@ bool BG_Game::new_game(Vga_file& shapes) {
 					centerx + 10, topy + 180,
 					shapes.get_shape(0x7, selected == 3), false, transto);
 			if (selected == 0) {
-				snprintf(disp_name, max_name_len + 2, "%s_", npc_name);
+				char candidate[16] = { 0, };
+				// TODO: Process IME candidate
+				snprintf(disp_name, max_name_len + 2, "%s%s_", npc_name, candidate);
 			} else {
 				snprintf(disp_name, max_name_len + 2, "%s", npc_name);
 			}
@@ -2259,14 +2266,14 @@ bool BG_Game::new_game(Vga_file& shapes) {
 
 		while (SDL_PollEvent(&event)) {
 			Uint16 keysym_unicode = 0;
-			bool   isTextInput    = false;
+			bool isTextInput = false;
 			if (event.type == SDL_MOUSEBUTTONDOWN
 				|| event.type == SDL_MOUSEBUTTONUP) {
 				const SDL_Rect rectName   = {topx + 10, menuy + 10, 130, 16};
 				const SDL_Rect rectSex    = {topx + 10, menuy + 25, 130, 16};
 				const SDL_Rect rectOnward = {topx + 10, topy + 180, 130, 16};
 				const SDL_Rect rectReturn = {centerx + 10, topy + 180, 130, 16};
-				SDL_Point      point;
+				SDL_Point point;
 				gwin->get_win()->screen_to_game(
 						event.button.x, event.button.y, gwin->get_fastmouse(),
 						point.x, point.y);
@@ -2290,7 +2297,7 @@ bool BG_Game::new_game(Vga_file& shapes) {
 						selected = 2;
 					} else if (selected == 2) {
 						editing = false;
-						ok      = true;
+						ok = true;
 					}
 					redraw = true;
 				} else if (SDL_EnclosePoints(&point, 1, &rectReturn, nullptr)) {
@@ -2298,7 +2305,7 @@ bool BG_Game::new_game(Vga_file& shapes) {
 						selected = 3;
 					} else if (selected == 3) {
 						editing = false;
-						ok      = false;
+						ok = false;
 					}
 					redraw = true;
 				}
@@ -2313,19 +2320,48 @@ bool BG_Game::new_game(Vga_file& shapes) {
 					}
 				}
 			} else if (event.type == SDL_TEXTINPUT) {
-				isTextInput          = true;
+				// TODO: Process IME events
+				isTextInput = true;
 				keysym_unicode       = event.text.text[0];
-				event.type           = SDL_KEYDOWN;
+				event.type = SDL_KEYDOWN;
 				event.key.keysym.sym = SDLK_UNKNOWN;
+				if (strlen(event.text.text) == 3) {
+					// Decode UTF-8
+					unsigned int codepoint = 0;
+					unsigned char* text = reinterpret_cast<unsigned char*>(event.text.text);
+					if ((text[0] & 0x80) == 0) {
+						// 0xxxxxxx
+						codepoint = text[0];
+					} else if (
+							(text[0] & 0xE0) == 0xC0
+							&& (text[1] & 0xC0) == 0x80) {
+						// 110xxxxx 10xxxxxx
+						codepoint = (text[0] & 0x1F) << 6 | (text[1] & 0x3F);
+					} else if (
+							(text[0] & 0xE0) == 0xE0 && (text[1] & 0xC0) == 0x80
+							&& (text[2] & 0xC0) == 0x80) {
+						// 1110xxxx 10xxxxxx 10xxxxxx
+						codepoint = (text[0] & 0x0F) << 12 | (text[1] & 0x3F) << 6 | (text[2] & 0x3F);
+					}
+
+					// TODO: process jamo
+					if (codepoint < 0xac00 || codepoint > 0xd7a3) {
+						codepoint = 0;
+					}
+					keysym_unicode = codepoint;
+				} else {
+					keysym_unicode = event.text.text[0];
+				}
 			}
 			if (event.type == SDL_KEYDOWN) {
 				redraw = true;
 				switch (event.key.keysym.sym) {
 				case SDLK_SPACE:
+					// TODO: Process IME candidate / IM change
 					if (selected == 0) {
 						const int len = strlen(npc_name);
 						if (len < max_name_len) {
-							npc_name[len]     = ' ';
+							npc_name[len] = ' ';
 							npc_name[len + 1] = 0;
 						}
 					} else if (selected == 1) {
@@ -2333,35 +2369,40 @@ bool BG_Game::new_game(Vga_file& shapes) {
 								skindata, si_installed, true);
 					} else if (selected == 2) {
 						editing = false;
-						ok      = true;
+						ok = true;
 					} else if (selected == 3) {
 						editing = ok = false;
 					}
 					break;
 				case SDLK_LEFT:
+					// TODO: Process IME candidate
 					if (selected == 1) {
 						skindata = Shapeinfo_lookup::GetPrevSelSkin(
 								skindata, si_installed, true);
 					}
 					break;
 				case SDLK_RIGHT:
+					// TODO: Process IME candidate
 					if (selected == 1) {
 						skindata = Shapeinfo_lookup::GetNextSelSkin(
 								skindata, si_installed, true);
 					}
 					break;
 				case SDLK_ESCAPE:
+					// TODO: Process IME candidate
 					editing = false;
-					ok      = false;
+					ok = false;
 					break;
 				case SDLK_TAB:
 				case SDLK_DOWN:
+					// TODO: Process IME candidate
 					++selected;
 					if (selected == num_choices) {
 						selected = 0;
 					}
 					break;
 				case SDLK_UP:
+					// TODO: Process IME candidate
 					--selected;
 					if (selected < 0) {
 						selected = num_choices - 1;
@@ -2369,33 +2410,48 @@ bool BG_Game::new_game(Vga_file& shapes) {
 					break;
 				case SDLK_RETURN:
 				case SDLK_KP_ENTER:
+					// TODO: Process IME candidate
 					if (selected < 2) {
 						++selected;
 					} else if (selected == 2) {
 						editing = false;
-						ok      = true;
+						ok = true;
 					} else {
 						editing = ok = false;
 					}
 					break;
 				case SDLK_BACKSPACE:
+					// TODO: Process IME candidate
 					if (selected == 0 && strlen(npc_name) > 0) {
-						npc_name[strlen(npc_name) - 1] = 0;
+						int len = strlen(npc_name);
+						if (len >= 2 && npc_name[len - 2] & 0x80) {
+							npc_name[len - 1] = 0;
+							npc_name[len - 2] = 0;
+						}
+						npc_name[len - 1] = 0;
 					}
 					break;
 				default: {
 					if ((isTextInput && selected == 0)
 						|| (!isTextInput && keysym_unicode > +'~'
 							&& selected == 0)) {
-						const int len = strlen(npc_name);
-						char      chr = 0;
+						unsigned short chr = 0;
 						if ((keysym_unicode & 0xFF80) == 0) {
 							chr = keysym_unicode & 0x7F;
+						} else {
+							chr = UCS2KS(keysym_unicode);
 						}
 
-						if (chr >= ' ' && len < max_name_len) {
-							npc_name[len]     = chr;
-							npc_name[len + 1] = 0;
+						int len = strlen(npc_name);
+						if (chr >= ' ' && len + 1 < max_name_len) {
+							if (chr > 0xff) {
+								npc_name[len] = static_cast<unsigned char>(chr >> 8);
+								npc_name[len + 1] = static_cast<unsigned char>(chr);
+								npc_name[len + 2] = 0;
+							} else {
+								npc_name[len]     = chr;
+								npc_name[len + 1] = 0;
+							}
 						}
 					} else {
 						redraw = false;
