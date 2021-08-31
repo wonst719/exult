@@ -738,9 +738,6 @@
     <ClCompile Include="..\..\server\servemsg.cc">
       <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\korean\automata.cc">
-      <Filter>korean</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\korean\korean.cc">
       <Filter>korean</Filter>
     </ClCompile>
@@ -1438,9 +1435,6 @@
     </ClInclude>
     <ClInclude Include="msvc_include.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\korean\automata.h">
-      <Filter>korean</Filter>
     </ClInclude>
     <ClInclude Include="..\..\korean\korean.h">
       <Filter>korean</Filter>

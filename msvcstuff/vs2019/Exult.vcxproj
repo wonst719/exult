@@ -405,7 +405,6 @@
     <ClCompile Include="..\..\istring.cc" />
     <ClCompile Include="..\..\keyactions.cc" />
     <ClCompile Include="..\..\keys.cc" />
-    <ClCompile Include="..\..\korean\automata.cc" />
     <ClCompile Include="..\..\korean\korean.cc" />
     <ClCompile Include="..\..\korean\ucs2kstable.cc" />
     <ClCompile Include="..\..\menulist.cc" />
@@ -627,7 +626,6 @@
     <ClInclude Include="..\..\istring.h" />
     <ClInclude Include="..\..\keyactions.h" />
     <ClInclude Include="..\..\keys.h" />
-    <ClInclude Include="..\..\korean\automata.h" />
     <ClInclude Include="..\..\korean\korean.h" />
     <ClInclude Include="..\..\korean\ucs2kstable.h" />
     <ClInclude Include="..\..\menulist.h" />
