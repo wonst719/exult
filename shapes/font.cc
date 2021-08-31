@@ -238,8 +238,8 @@ int Font::paint_text_box(
 		return cury - y;
 }
 
-// FIXME: Temporary color
-static int koreanColor = 254;
+// FIXME: Temporary variables
+static int koreanColor = 127;
 const int koreanBaselineOffset = 9;
 
 /*
@@ -260,9 +260,8 @@ int Font::paint_text(
 	int x = xoff;
 	yoff += get_text_baseline();
 	if (font_shapes) {
-		int chr;
-		while ((chr = *text++) != 0) {
-			unsigned int chr = static_cast<unsigned char>(*text++);
+		unsigned int chr;
+		while ((chr = static_cast<unsigned char>(*text++)) != 0) {
 			if (chr & 0x80) {
 				chr |= static_cast<unsigned char>(*text++) << 8;
 				drawKorean(win, x + 1, (yoff - koreanBaselineOffset) - 1, koreanColor, getKoreanPtr(chr));
@@ -471,7 +470,7 @@ int Font::paint_text_fixedwidth(
 	int w;
 	unsigned int chr;
 	yoff += get_text_baseline();
-	while ((chr = *text++) != 0) {
+	while ((chr = static_cast<unsigned char>(*text++)) != 0) {
 		if (chr & 0x80) {
 			chr = static_cast<unsigned char>(*text++);
 			chr |= static_cast<unsigned char>(*text++) << 8;
