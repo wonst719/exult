@@ -28,6 +28,8 @@ class IDataSource;
 struct File_spec;
 class U7multiobject;
 
+class KoreanFont;
+
 /*
  *  Cursor info. filled in by paint_text_box.
  */
@@ -53,6 +55,8 @@ private:
 	std::unique_ptr<Shape_file> font_shapes;
 	int  highest = 0, lowest = 0;
 
+	std::unique_ptr<KoreanFont> korean_font;
+
 	void calc_highlow();
 	void clean_up();
 	int load_internal(IDataSource& data, int hlead, int vlead);
@@ -62,9 +66,9 @@ public:
 	Font(const File_spec &fname0, int index, int hlead = 0, int vlead = 1);
 	Font(const File_spec &fname0, const File_spec &fname1, int index,
 	     int hlead = 0, int vlead = 1);
-	Font(Font&&) noexcept = default;
-	Font& operator=(Font&&) noexcept = default;
-	~Font() noexcept = default;
+	Font(Font&&) noexcept;
+	Font& operator=(Font&&) noexcept;
+	~Font() noexcept;
 	int load(const File_spec &fname0, int index, int hlead = 0, int vlead = 1);
 	int load(const File_spec &fname0, const File_spec &fname1, int index,
 	         int hlead = 0, int vlead = 1);

@@ -37,6 +37,16 @@ using std::toupper;
 
 FontManager fontManager;
 
+static int MapKoreanFont(const std::string& name, int index) {
+	// FIXME: 하드코딩
+	if (name == "<STATIC>/fonts.vga" && index == 0) {
+		return 0;
+	} else if (name == "<STATIC>/mainshp.flx" && index == 9) {
+		return 1;
+	}
+	return 1;
+}
+
 //	Want a more restrictive test for space.
 inline bool Is_space(char c) {
 	return c == ' ' || c == '\n' || c == '\t';
@@ -238,10 +248,6 @@ int Font::paint_text_box(
 		return cury - y;
 }
 
-// FIXME: Temporary variables
-static int koreanColor = 127;
-const int koreanBaselineOffset = 9;
-
 /*
  *  Draw text at a given location (which is the upper-left corner of the
  *  place to draw.
@@ -263,10 +269,8 @@ int Font::paint_text(
 		unsigned int chr;
 		while ((chr = static_cast<unsigned char>(*text++)) != 0) {
 			if (chr & 0x80) {
-				chr |= static_cast<unsigned char>(*text++) << 8;
-				drawKorean(win, x + 1, (yoff - koreanBaselineOffset) - 1, koreanColor, getKoreanPtr(chr));
-
-				x += _2byteWidth + 1;
+				chr = (chr << 8) | static_cast<unsigned char>(*text++);
+				x += korean_font->drawGlyph(win, chr, x, yoff - get_text_baseline());
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
 				if (!shape)
@@ -302,11 +306,9 @@ int Font::paint_text(
 		while (textlen--) {
 			unsigned int chr = static_cast<unsigned char>(*text++);
 			if (chr & 0x80) {
-				chr |= static_cast<unsigned char>(*text++) << 8;
+				chr = (chr << 8) | static_cast<unsigned char>(*text++);
 				textlen--;
-				drawKorean(win, x + 1, (yoff - koreanBaselineOffset) - 1, koreanColor, getKoreanPtr(chr));
-
-				x += _2byteWidth + 1;
+				x += korean_font->drawGlyph(win, chr, x, yoff - get_text_baseline());
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(chr);
 				if (!shape)
@@ -473,12 +475,13 @@ int Font::paint_text_fixedwidth(
 	while ((chr = static_cast<unsigned char>(*text++)) != 0) {
 		if (chr & 0x80) {
 			chr = static_cast<unsigned char>(*text++);
-			chr |= static_cast<unsigned char>(*text++) << 8;
+			chr = (chr << 8) | static_cast<unsigned char>(*text++);
 
-			x += w = (width - _2byteWidth) / 2;
-			drawKorean(win, x, (yoff - koreanBaselineOffset) + 2, koreanColor, getKoreanPtr(chr));
+			int glyphWidth = korean_font->getGlyphWidth(chr);
+			x += w = (width - glyphWidth) / 2;
+			korean_font->drawGlyph(win, chr, x - 1, (yoff - get_text_baseline()) + 3);
 
-			x += (_2byteWidth + 1) - w;
+			x += glyphWidth - w;
 		} else {
 			Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
 			if (!shape)
@@ -514,12 +517,13 @@ int Font::paint_text_fixedwidth(
 		if (*text & 0x80) {
 			unsigned int chr;
 			chr = static_cast<unsigned char>(*text++);
-			chr |= static_cast<unsigned char>(*text++) << 8;
-			textlen--;
-			x += w = (width - _2byteWidth) / 2;
-			drawKorean(win, x, (yoff - koreanBaselineOffset) + 2, koreanColor, getKoreanPtr(chr));
+			chr = (chr << 8) | static_cast<unsigned char>(*text++);
 
-			x += (_2byteWidth + 1) - w;
+			int glyphWidth = korean_font->getGlyphWidth(chr);
+			x += w = (width - glyphWidth) / 2;
+			korean_font->drawGlyph(win, chr, x - 1, (yoff - get_text_baseline()) + 3);
+
+			x += glyphWidth - w;
 		} else {
 			Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(*text++));
 			if (!shape)
@@ -541,12 +545,11 @@ int Font::get_text_width(
 ) {
 	int width = 0;
 	if (font_shapes) {
-		short chr;
-		while ((chr = *text++) != 0) {
+		unsigned short chr;
+		while ((chr = static_cast<unsigned char>(*text++)) != 0) {
 			if (chr & 0x80) {
-				text++;
-				// width += _2byteWidth + 1;
-				width += _2byteWidth + 3;    // FIXME: 한글이 아예 잘리는 현상을 방지하기 위해서...
+				chr = (chr << 8) | static_cast<unsigned char>(*text++);
+				width += korean_font->getGlyphWidth(chr) + 2;    // FIXME: 한글이 아예 잘리는 현상을 방지하기 위해서...
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
 				if (shape)
@@ -566,19 +569,21 @@ int Font::get_text_width(
     int textlen         // Length of text.
 ) {
 	int width = 0;
-	if (font_shapes)
+	if (font_shapes) {
+		unsigned short chr;
 		while (textlen--) {
-			if (*text & 0x80) {
-				text += 2;
+			chr = static_cast<unsigned char>(*text++);
+			if (chr & 0x80) {
+				chr = (chr << 8) | static_cast<unsigned char>(*text++);
 				textlen--;
-				width += _2byteWidth + 1;
+				width += korean_font->getGlyphWidth(chr);
 			} else {
-				Shape_frame *shape = font_shapes->get_frame(
-						static_cast<unsigned char>(*text++));
+				Shape_frame *shape = font_shapes->get_frame(chr);
 				if (shape)
 					width += shape->get_width() + hor_lead;
 			}
 		}
+	}
 	return width;
 }
 
@@ -591,8 +596,7 @@ int Font::get_text_height(
 	// Note, I wont assume the fonts exist
 	//Shape_frame *A = font_shapes->get_frame('A');
 	//Shape_frame *y = font_shapes->get_frame('y');
-	int tmp = highest + lowest + 1;
-	return _2byteHeight > tmp ? _2byteHeight : tmp;
+	return std::max(korean_font->getFontHeight(), highest + lowest + 1);
 }
 
 /*
@@ -730,6 +734,9 @@ int Font::find_xcursor(
 
 Font::Font() = default;
 
+Font::Font(Font&&) noexcept = default;
+Font& Font::operator=(Font&&) noexcept = default;
+
 Font::Font(
     const File_spec &fname0,
     int index,
@@ -748,6 +755,8 @@ Font::Font(
 ) {
 	load(fname0, fname1, index, hlead, vlead);
 }
+
+Font::~Font() noexcept = default;
 
 void Font::clean_up() {
 	font_shapes.reset();
@@ -783,6 +792,16 @@ int Font::load_internal(
 	return 0;
 }
 
+// DUMMY
+std::unique_ptr<KoreanFont> loadKoreanFont(const std::string& fontName, int index) {
+	printf("Font::loadKoreanFont(%s, %d)\n", fontName.c_str(), index);
+	MapKoreanFont(fontName, index);
+
+	std::unique_ptr<KoreanFont> koreanFont(new KoreanFont);
+	koreanFont->load("FONT.FNT");
+	return koreanFont;
+}
+
 /**
  *  Loads a font from a File_spec.
  *  @param fname0   First file spec.
@@ -796,7 +815,11 @@ int Font::load(
     int hlead,
     int vlead
 ) {
+	printf("Font::load - %s (%d) (%d)\n", fname0.name.c_str(), fname0.index, index);
 	clean_up();
+
+	korean_font = loadKoreanFont(fname0.name, index);
+
 	IExultDataSource data(fname0, index);
 	return load_internal(data, hlead, vlead);
 }
@@ -816,7 +839,12 @@ int Font::load(
     int hlead,
     int vlead
 ) {
+	printf("Font::load - 0 %s (%d) (%d)\n", fname0.name.c_str(), fname0.index, index);
+	printf("Font::load - 1 %s (%d)\n", fname1.name.c_str(), fname1.index);
 	clean_up();
+
+	korean_font = loadKoreanFont(fname0.name, index);
+
 	IExultDataSource data(fname0, fname1, index);
 	return load_internal(data, hlead, vlead);
 }
@@ -888,6 +916,8 @@ void FontManager::add_font(
     int hlead,
     int vlead
 ) {
+	printf("FontManager::add_font - %s %s/%s (%d) hl=%d/vl=%d\n", name,
+		   fname0.name.c_str(), fname1.name.c_str(), index, hlead, vlead);
 	remove_font(name);
 
 	Font *font = new Font(fname0, fname1, index, hlead, vlead);
