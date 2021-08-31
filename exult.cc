@@ -117,6 +117,7 @@ static const SDL_TouchID EXSDL_MOUSE_TOUCHID = SDL_MOUSE_TOUCHID;
 #	include <csignal>
 #endif
 
+#include "korean/korean.h"
 using namespace Pentagram;
 
 #ifdef __IPHONEOS__
@@ -892,6 +893,8 @@ static void Init() {
 	SDL_SetEventFilter(nullptr, nullptr);
 	// Show the banner
 	game = nullptr;
+	
+	loadKoreanFont(); // korean
 
 	do {
 		reset_system_paths();
