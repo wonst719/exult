@@ -846,6 +846,22 @@
 						RelativePath="..\windrag.h">
 					</File>
 				</Filter>
+				<Filter
+					Name="Hangul Automata"
+					Filter="">
+					<File
+						RelativePath="..\automata.cc">
+					</File>
+					<File
+						RelativePath="..\automata.h">
+					</File>
+					<File
+						RelativePath="..\ucs2kstable.cc">
+					</File>
+					<File
+						RelativePath="..\ucs2kstable.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Files"

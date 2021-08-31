@@ -39,6 +39,9 @@
 #include "Configuration.h"
 #include "shapeid.h"
 
+#include "automata.h"
+#include "ucs2kstable.h"
+
 #ifndef ALPHA_LINUX_CXX
 #  include <cctype>
 #  include <cstring>
@@ -1388,6 +1391,43 @@ void BG_Game::show_credits()
 	gwin->get_pal()->load("<STATIC>/intropal.dat",0);
 }
 
+void CommitChars(Automata& automata, char* npc_name, int max_name_len)
+{
+	// 지금까지 조합되던 글자를 모두 커밋
+	automata.CompleteChar();
+
+	std::queue< wchar_t >& completedChars = automata.GetCompletedChars();
+
+	while (!completedChars.empty())
+	{
+		int len = strlen(npc_name);
+
+		wchar_t nextChar = completedChars.front();
+		completedChars.pop();
+
+		if (nextChar > 0x80)	// 한글
+		{
+			if(len + (len & 1) < max_name_len)
+			{
+				// nextChar
+				npc_name[len] = ' ';
+				npc_name[len] = ' ';
+				npc_name[len + 1] = 0;
+			}
+		}
+		else
+		{
+			if(len < max_name_len)
+			{
+				npc_name[len] = (char)nextChar;
+				npc_name[len + 1] = 0;
+			}
+		}
+	}
+
+	automata.CancelAllInputs();
+}
+
 bool BG_Game::new_game(Vga_file &shapes)
 {
 	SDL_EnableUNICODE(1);
@@ -1406,7 +1446,7 @@ bool BG_Game::new_game(Vga_file &shapes)
 
 	const int max_name_len = 16;
 	char npc_name[max_name_len+1];
-	char disp_name[max_name_len+2];
+	char disp_name[max_name_len+1+1+16];
 	npc_name[0] = 0;
 	int sex = 0;
 	int selected = 0;
@@ -1416,6 +1456,10 @@ bool BG_Game::new_game(Vga_file &shapes)
 	bool editing = true;
 	bool redraw = true;
 	bool ok = true;
+
+	Automata automata;
+	bool koreanMode = false;
+
 	do
 	{
 		if (redraw)
@@ -1449,7 +1493,19 @@ bool BG_Game::new_game(Vga_file &shapes)
 			sman->paint_shape(topx+10,topy+180,shapes.get_shape(0x8,selected==2?1:0));
 			sman->paint_shape(centerx+10,topy+180,shapes.get_shape(0x7,selected==3?1:0));
 			if(selected==0)
-				snprintf(disp_name, max_name_len+2, "%s_", npc_name);
+			{
+				char ch[16] = {0,};
+
+				if (automata.IsCompositing())
+				{
+					wchar_t ksChar = UCS2KS(automata.GetCompositingChar());
+					ch[0] = ksChar >> 8;
+					ch[1] = ksChar & 0xff;
+					ch[2] = 0;
+				}
+
+				snprintf(disp_name, max_name_len+2, "%s%s_", npc_name, ch);
+			}
 			else
 				snprintf(disp_name, max_name_len+2, "%s", npc_name);
 			font->draw_text(ibuf, topx+60, menuy+10, disp_name);
@@ -1465,11 +1521,23 @@ bool BG_Game::new_game(Vga_file &shapes)
 			case SDLK_SPACE:
 				if(selected==0)
 				{
-					int len = strlen(npc_name);
-					if(len<max_name_len)
+					if (event.key.keysym.mod & KMOD_SHIFT)
 					{
-						npc_name[len] = ' ';
-						npc_name[len+1] = 0;
+						koreanMode = !koreanMode;
+
+						if (!koreanMode)
+						{
+							CommitChars(automata, npc_name, max_name_len);
+						}
+					}
+					else
+					{
+						int len = strlen(npc_name);
+						if(len<max_name_len)
+						{
+							npc_name[len] = ' ';
+							npc_name[len+1] = 0;
+						}
 					}
 				}
 				else if(selected==1)
@@ -1519,11 +1587,16 @@ bool BG_Game::new_game(Vga_file &shapes)
 				}
 				break;
 			case SDLK_ESCAPE:
+				automata.CancelAllInputs();
 				editing = false;
 				ok = false;
 				break;
 			case SDLK_TAB:
 			case SDLK_DOWN:
+				if (selected == 0)
+				{
+					CommitChars(automata, npc_name, max_name_len);
+				}
 				++selected;
 				if(selected==num_choices)
 					selected = 0;
@@ -1534,6 +1607,10 @@ bool BG_Game::new_game(Vga_file &shapes)
 					selected = num_choices-1;
 				break;
 			case SDLK_RETURN:
+				if (selected == 0)
+				{
+					CommitChars(automata, npc_name, max_name_len);
+				}
 				if(selected<2) 
 					++selected;
 				else if(selected==2)
@@ -1550,24 +1627,79 @@ bool BG_Game::new_game(Vga_file &shapes)
 			case SDLK_BACKSPACE:
 				if(selected==0)
 				{
-					if(strlen(npc_name)>0)
-						npc_name[strlen(npc_name)-1] = 0;
+					if (koreanMode && automata.IsCompositing())
+					{
+						automata.RollbackState();
+					}
+					else
+					{
+						if(strlen(npc_name)>0)
+						{
+							npc_name[strlen(npc_name)-1] = 0;
+						}
+					}
 				}
 				break;
 			default:
 				{
 					if (selected == 0) // on the text input field?
 					{
-						int len = strlen(npc_name);
+						//
+						//koreanMode;
+						//
+
 						char chr = 0;
 
 						if ((event.key.keysym.unicode & 0xFF80) == 0)
 							chr = event.key.keysym.unicode & 0x7F;
 
-						if (chr >= ' ' && len < max_name_len)
+						if (koreanMode)
 						{
-							npc_name[len] = chr;
-							npc_name[len+1] = 0;
+							if (event.key.keysym.mod & KMOD_SHIFT)
+							{
+								chr = toupper(chr);
+							}
+
+							automata.ProcessInput(chr);
+
+							std::queue< wchar_t >& completedChars = automata.GetCompletedChars();
+
+							while (!completedChars.empty())
+							{
+								int len = strlen(npc_name);
+
+								wchar_t koreanChr = completedChars.front();
+
+								if (koreanChr >= 0x80)
+								{
+									koreanChr = UCS2KS(koreanChr);
+									if (len + (len & 1) < max_name_len)
+									{
+										npc_name[len] = koreanChr >> 8;
+										npc_name[len + 1] = koreanChr & 0xff;
+										npc_name[len + 2] = 0;
+									}
+								}
+								else
+								{
+									if (koreanChr >= ' ' && len < max_name_len)
+									{
+										npc_name[len] = koreanChr;
+										npc_name[len + 1] = 0;
+									}
+								}
+
+								completedChars.pop();
+							}
+						}
+						else
+						{
+							int len = strlen(npc_name);
+							if (chr >= ' ' && len < max_name_len)
+							{
+								npc_name[len] = chr;
+								npc_name[len+1] = 0;
+							}
 						}
 					}
 					else
