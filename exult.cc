@@ -881,8 +881,6 @@ static void Init() {
 	// Show the banner
 	game = nullptr;
 	
-	loadKoreanFont(); // korean
-
 	do {
 		reset_system_paths();
 		fontManager.reset();
