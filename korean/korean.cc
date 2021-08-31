@@ -32,6 +32,67 @@ typedef signed short int16;
 typedef signed int int32;
 
 #include "ibuf8.h"
+#include "files/databuf.h"
+
+KoreanFont::KoreanFont() {
+}
+
+bool KoreanFont::load(const std::string& fontName) {
+	IFileDataSource ifs(File_spec(fontName.c_str()));
+
+	uint32 magic = ifs.read4();
+	_bitmapWidth = ifs.read1();
+	_bitmapHeight = ifs.read1();
+	_xOffset = ifs.read1();
+	_yOffset = ifs.read1();
+	_advance = ifs.read2();
+
+	ifs.read(_pal, 4);
+
+	uint16 glyphCount = ifs.read2();
+
+	int glyphLen = (int)(_bitmapWidth * _bitmapHeight) / 4;
+
+	for (uint16 i = 0; i < glyphCount; i++) {
+		_glyphOffsetMap.emplace(ifs.read2(), glyphLen * i);
+	}
+
+	_fontPtr = new byte[glyphLen * glyphCount];
+	ifs.read(_fontPtr, glyphLen * glyphCount);
+
+	return true;
+}
+
+KoreanFont::~KoreanFont() {
+	delete[] _fontPtr;
+}
+
+int KoreanFont::drawGlyph(Image_buffer8* dst, uint16 codepoint, int dx, int dy) {
+	if (!_fontPtr)
+		return 0;
+
+	auto glyphIter = _glyphOffsetMap.find(codepoint);
+	if (glyphIter == _glyphOffsetMap.end()) {
+		return 0;
+	}
+	byte* src = _fontPtr + glyphIter->second;
+
+	byte bits = 0;
+
+	for (int y = 0; y < _bitmapHeight; y++) {
+		for (int x = 0; x < _bitmapWidth; x++) {
+			if ((x % 4) == 0)
+				bits = *src++;
+			byte c = (bits >> 6) & 0x3;
+			bits <<= 2;
+			if (c != 0) {
+				dst->put_pixel8(_pal[c], dx + x, dy + y);
+			}
+		}
+	}
+
+	return _advance;
+}
 
 int _2byteWidth = 0;
 int _2byteHeight = 0;
@@ -45,7 +106,10 @@ bool _useCJKMode = false;
 bool _useMultiFont = false;
 int _numLoadedFont = 0;
 
+KoreanFont kf;
 bool loadKoreanFont() {
+	kf.load("FONT.FNT");
+
 	FILE *fp;
 	_useCJKMode = false;
 	int numChar = 0;
@@ -131,6 +195,10 @@ byte *getKoreanPtr(int idx)
 
 static const byte revBitMask[8] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
 
+int drawKorean(Image_buffer8* dst, uint16 cp, int dx, int dy) {
+	return kf.drawGlyph(dst, cp, dx, dy);
+}
+
 void drawKorean(Image_buffer8 *dst, int dx, int dy, uint8 _color, byte *src) {
 	if (!src)
 		return;
@@ -139,10 +207,6 @@ void drawKorean(Image_buffer8 *dst, int dx, int dy, uint8 _color, byte *src) {
 	byte bits = 0;
 
 	int height = _2byteHeight, width = _2byteWidth;
-
-//	int offsetX[7] = { -1,  0, 1, 0, 1, 2, 0 };
-//	int offsetY[7] = {  0, -1, 0, 1, 2, 1, 0 };
-//	int cTable[7] =  {  0,  0, 0, 0, 0, 0, _color };
 
 	// A bit slow method. but, well, don't care :)
 	int offsetX[14] = { -1,  0,  1, -1, 1, -1, 0, 1, 0, 1, 2, 2, 2, 0 };
