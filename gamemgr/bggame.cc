@@ -51,7 +51,7 @@
 #include "touchui.h"
 #include "txtscroll.h"
 
-#include "korean/ucs2kstable.h"
+#include "korean/korean.h"
 
 #include <SDL.h>
 #include <SDL_events.h>
@@ -2052,6 +2052,9 @@ bool BG_Game::new_game(Vga_file &shapes) {
 	char disp_name[max_name_len + 2];
 	npc_name[0] = 0;
 
+	char ime_candidate[16];
+	ime_candidate[0] = 0;
+
 	int selected = 0;
 	int num_choices = 4;
 	SDL_Event event;
@@ -2099,9 +2102,7 @@ bool BG_Game::new_game(Vga_file &shapes) {
 			sman->paint_shape(topx + 10, topy + 180, shapes.get_shape(0x8, selected == 2), false, transto);
 			sman->paint_shape(centerx + 10, topy + 180, shapes.get_shape(0x7, selected == 3), false, transto);
 			if (selected == 0) {
-				char candidate[16] = { 0, };
-				// TODO: Process IME candidate
-				snprintf(disp_name, max_name_len + 2, "%s%s_", npc_name, candidate);
+				snprintf(disp_name, max_name_len + 2, "%s%s_", npc_name, ime_candidate);
 			} else
 				snprintf(disp_name, max_name_len + 2, "%s", npc_name);
 			font->draw_text(ibuf, topx + 60, menuy + 10, disp_name, transto);
@@ -2159,38 +2160,21 @@ bool BG_Game::new_game(Vga_file &shapes) {
 						redraw = true;
 					}
 				}
+			} else if (event.type == SDL_TEXTEDITING) {
+				// TODO: Process IME events
+				isTextInput = true;
+				event.type = SDL_KEYDOWN;
+				event.key.keysym.sym = SDLK_UNKNOWN;
+				unsigned short candidate = UnicodeToKS(DecodeUtf8Codepoint(event.text.text));
+				ime_candidate[0] = static_cast<unsigned char>(candidate >> 8);
+				ime_candidate[1] = static_cast<unsigned char>(candidate & 0xff);
+				ime_candidate[2] = 0;
 			} else if (event.type == SDL_TEXTINPUT) {
 				// TODO: Process IME events
 				isTextInput = true;
 				event.type = SDL_KEYDOWN;
 				event.key.keysym.sym = SDLK_UNKNOWN;
-				if (strlen(event.text.text) == 3) {
-					// Decode UTF-8
-					unsigned int codepoint = 0;
-					unsigned char* text = reinterpret_cast<unsigned char*>(event.text.text);
-					if ((text[0] & 0x80) == 0) {
-						// 0xxxxxxx
-						codepoint = text[0];
-					} else if (
-							(text[0] & 0xE0) == 0xC0
-							&& (text[1] & 0xC0) == 0x80) {
-						// 110xxxxx 10xxxxxx
-						codepoint = (text[0] & 0x1F) << 6 | (text[1] & 0x3F);
-					} else if (
-							(text[0] & 0xE0) == 0xE0 && (text[1] & 0xC0) == 0x80
-							&& (text[2] & 0xC0) == 0x80) {
-						// 1110xxxx 10xxxxxx 10xxxxxx
-						codepoint = (text[0] & 0x0F) << 12 | (text[1] & 0x3F) << 6 | (text[2] & 0x3F);
-					}
-
-					// TODO: process jamo
-					if (codepoint < 0xac00 || codepoint > 0xd7a3) {
-						codepoint = 0;
-					}
-					keysym_unicode = codepoint;
-				} else {
-					keysym_unicode = event.text.text[0];
-				}
+				keysym_unicode = DecodeUtf8Codepoint(event.text.text);
 			}
 			if (event.type == SDL_KEYDOWN) {
 				redraw = true;
@@ -2268,13 +2252,13 @@ bool BG_Game::new_game(Vga_file &shapes) {
 						if ((keysym_unicode & 0xFF80) == 0)
 							chr = keysym_unicode & 0x7F;
 						else
-							chr = UCS2KS(keysym_unicode);
+							chr = UnicodeToKS(keysym_unicode);
 
 						int len = strlen(npc_name);
 						if (chr >= ' ' && len + 1 < max_name_len) {
 							if (chr > 0xff) {
 								npc_name[len] = static_cast<unsigned char>(chr >> 8);
-								npc_name[len + 1] = static_cast<unsigned char>(chr);
+								npc_name[len + 1] = static_cast<unsigned char>(chr & 0xff);
 								npc_name[len + 2] = 0;
 							} else {
 								npc_name[len] = chr;
@@ -2283,8 +2267,8 @@ bool BG_Game::new_game(Vga_file &shapes) {
 						}
 					} else
 						redraw = false;
-				}
-				break;
+					}
+					break;
 				}
 			}
 		}
