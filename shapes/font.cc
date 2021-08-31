@@ -832,7 +832,7 @@ static int MapKoreanFont(const std::string& name, int index) {
 	} else if (name == "<STATIC>/mainshp.flx" && index == 9) {
 		return 1;
 	}
-	return 1;
+	return 0;
 }
 
 // DUMMY
