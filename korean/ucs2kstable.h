@@ -1,3 +1,3 @@
 #pragma once
 
-wchar_t UCS2KS(wchar_t ucs);
+wchar_t UnicodeToKS(wchar_t ucs);
