@@ -1506,6 +1506,9 @@
 				RelativePath="..\data\exult_si_flx.h">
 			</File>
 			<File
+				RelativePath="..\korean.h">
+			</File>
+			<File
 				RelativePath="..\tools\uctools.h">
 			</File>
 			<File
@@ -1757,6 +1760,9 @@
 		</File>
 		<File
 			RelativePath="..\gamerend.h">
+		</File>
+		<File
+			RelativePath="..\korean.cc">
 		</File>
 		<File
 			RelativePath="..\singles.h">

@@ -89,6 +89,8 @@
 #include "exult_si_flx.h"
 #include "crc.h"
 
+#include "korean.h"
+
 #ifndef UNDER_CE
 using std::atof;
 using std::cerr;
@@ -709,6 +711,8 @@ static void Init
 		// paths.
 		get_game_paths(arg_gamename);
 	}
+
+	loadKoreanFont(); // korean
 
 	store_system_paths();
 

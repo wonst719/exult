@@ -245,18 +245,18 @@ Exult_Game ExultMenu::run()
 	if(!bg_installed && !si_installed) {
 		gpal->load("<DATA>/exult.flx",EXULT_FLX_EXULT0_PAL);
 		font->center_text(gwin->get_win()->get_ib8(),
-				  centerx, topy+20, "WARNING");
+				  centerx, topy+20, "경고");
 		font->center_text(gwin->get_win()->get_ib8(),
-				  centerx, topy+40, "Could not find the data files for either");
+				  centerx, topy+43, "\"The Black Gate\" 이나 \"Serpent Isle\"의");
 		font->center_text(gwin->get_win()->get_ib8(),
-				  centerx, topy+50, "\"The Black Gate\" or \"Serpent Isle\".");
+				  centerx, topy+66, "데이터 파일을 찾지 못했습니다.");
 		font->center_text(gwin->get_win()->get_ib8(),
-				  centerx, topy+60, "Please edit the configuration file");
+				  centerx, topy+89, "설정 파일을 수정하고,");
 		font->center_text(gwin->get_win()->get_ib8(),
-				  centerx, topy+70, "and restart Exult");
+				  centerx, topy+112, "Exult를 다시 시작해 주세요.");
 		gpal->apply();
 		while(!wait_delay(200))
-			;	
+			;
 		throw quit_exception(1);
 
 	}
