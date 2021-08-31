@@ -51,6 +51,8 @@
 #include "touchui.h"
 #include "txtscroll.h"
 
+#include "korean/ucs2kstable.h"
+
 #include <SDL.h>
 #include <SDL_events.h>
 
@@ -2098,9 +2100,11 @@ bool BG_Game::new_game(Vga_file &shapes) {
 
 			sman->paint_shape(topx + 10, topy + 180, shapes.get_shape(0x8, selected == 2), false, transto);
 			sman->paint_shape(centerx + 10, topy + 180, shapes.get_shape(0x7, selected == 3), false, transto);
-			if (selected == 0)
-				snprintf(disp_name, max_name_len + 2, "%s_", npc_name);
-			else
+			if (selected == 0) {
+				char candidate[16] = { 0, };
+				// TODO: Process IME candidate
+				snprintf(disp_name, max_name_len + 2, "%s%s_", npc_name, candidate);
+			} else
 				snprintf(disp_name, max_name_len + 2, "%s", npc_name);
 			font->draw_text(ibuf, topx + 60, menuy + 10, disp_name, transto);
 			gwin->get_win()->show();
@@ -2158,15 +2162,43 @@ bool BG_Game::new_game(Vga_file &shapes) {
 					}
 				}
 			} else if (event.type == SDL_TEXTINPUT) {
+				// TODO: Process IME events
 				isTextInput = true;
 				event.type = SDL_KEYDOWN;
 				event.key.keysym.sym = SDLK_UNKNOWN;
-				keysym_unicode = event.text.text[0];
+				if (strlen(event.text.text) == 3) {
+					// Decode UTF-8
+					unsigned int codepoint = 0;
+					unsigned char* text = reinterpret_cast<unsigned char*>(event.text.text);
+					if ((text[0] & 0x80) == 0) {
+						// 0xxxxxxx
+						codepoint = text[0];
+					} else if (
+							(text[0] & 0xE0) == 0xC0
+							&& (text[1] & 0xC0) == 0x80) {
+						// 110xxxxx 10xxxxxx
+						codepoint = (text[0] & 0x1F) << 6 | (text[1] & 0x3F);
+					} else if (
+							(text[0] & 0xE0) == 0xE0 && (text[1] & 0xC0) == 0x80
+							&& (text[2] & 0xC0) == 0x80) {
+						// 1110xxxx 10xxxxxx 10xxxxxx
+						codepoint = (text[0] & 0x0F) << 12 | (text[1] & 0x3F) << 6 | (text[2] & 0x3F);
+					}
+
+					// TODO: process jamo
+					if (codepoint < 0xac00 || codepoint > 0xd7a3) {
+						codepoint = 0;
+					}
+					keysym_unicode = codepoint;
+				} else {
+					keysym_unicode = event.text.text[0];
+				}
 			}
 			if (event.type == SDL_KEYDOWN) {
 				redraw = true;
 				switch (event.key.keysym.sym) {
 				case SDLK_SPACE:
+					// TODO: Process IME candidate / IM change
 					if (selected == 0) {
 						int len = strlen(npc_name);
 						if (len < max_name_len) {
@@ -2182,30 +2214,36 @@ bool BG_Game::new_game(Vga_file &shapes) {
 						editing = ok = false;
 					break;
 				case SDLK_LEFT:
+					// TODO: Process IME candidate
 					if (selected == 1)
 						skindata = Shapeinfo_lookup::GetPrevSelSkin(skindata, si_installed, true);
 					break;
 				case SDLK_RIGHT:
+					// TODO: Process IME candidate
 					if (selected == 1)
 						skindata = Shapeinfo_lookup::GetNextSelSkin(skindata, si_installed, true);
 					break;
 				case SDLK_ESCAPE:
+					// TODO: Process IME candidate
 					editing = false;
 					ok = false;
 					break;
 				case SDLK_TAB:
 				case SDLK_DOWN:
+					// TODO: Process IME candidate
 					++selected;
 					if (selected == num_choices)
 						selected = 0;
 					break;
 				case SDLK_UP:
+					// TODO: Process IME candidate
 					--selected;
 					if (selected < 0)
 						selected = num_choices - 1;
 					break;
 				case SDLK_RETURN:
 				case SDLK_KP_ENTER:
+					// TODO: Process IME candidate
 					if (selected < 2)
 						++selected;
 					else if (selected == 2) {
@@ -2215,20 +2253,35 @@ bool BG_Game::new_game(Vga_file &shapes) {
 						editing = ok = false;
 					break;
 				case SDLK_BACKSPACE:
-					if (selected == 0 && strlen(npc_name) > 0)
-						npc_name[strlen(npc_name) - 1] = 0;
+					// TODO: Process IME candidate
+					if (selected == 0 && strlen(npc_name) > 0) {
+						int len = strlen(npc_name);
+						if (len >= 2 && npc_name[len - 2] & 0x80) {
+							npc_name[len - 1] = 0;
+							npc_name[len - 2] = 0;
+						}
+						npc_name[len - 1] = 0;
+					}
 					break;
 				default: {
 					if ((isTextInput && selected == 0) || (!isTextInput && keysym_unicode > +'~' && selected == 0))
 					{
-						int len = strlen(npc_name);
-						char chr = 0;
+						unsigned short chr = 0;
 						if ((keysym_unicode & 0xFF80) == 0)
 							chr = keysym_unicode & 0x7F;
+						else
+							chr = UCS2KS(keysym_unicode);
 
-						if (chr >= ' ' && len < max_name_len) {
-							npc_name[len] = chr;
-							npc_name[len + 1] = 0;
+						int len = strlen(npc_name);
+						if (chr >= ' ' && len + 1 < max_name_len) {
+							if (chr > 0xff) {
+								npc_name[len] = static_cast<unsigned char>(chr >> 8);
+								npc_name[len + 1] = static_cast<unsigned char>(chr);
+								npc_name[len + 2] = 0;
+							} else {
+								npc_name[len] = chr;
+								npc_name[len + 1] = 0;
+							}
 						}
 					} else
 						redraw = false;
