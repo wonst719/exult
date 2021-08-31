@@ -98,6 +98,7 @@
 #include "ignore_unused_variable_warning.h"
 #include "touchui.h"
 #include "verify.h"
+#include "korean/korean.h"
 using namespace Pentagram;
 
 #ifdef __IPHONEOS__
@@ -783,6 +784,8 @@ static void Init(
 	SDL_SetEventFilter(nullptr, nullptr);
 	// Show the banner
 	game = nullptr;
+	
+	loadKoreanFont(); // korean
 
 	do {
 		reset_system_paths();
