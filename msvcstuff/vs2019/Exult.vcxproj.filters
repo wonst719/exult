@@ -71,6 +71,9 @@
     <Filter Include="server">
       <UniqueIdentifier>{b4c91118-cb90-4065-85b8-0ea12378c322}</UniqueIdentifier>
     </Filter>
+    <Filter Include="korean">
+      <UniqueIdentifier>{45ad2bfa-c14c-4166-a69f-89b5edc8322f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -735,6 +738,15 @@
     </ClCompile>
     <ClCompile Include="..\..\gumps\Modal_gump.cc">
       <Filter>gumps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\korean\automata.cc">
+      <Filter>korean</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\korean\korean.cc">
+      <Filter>korean</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\korean\ucs2kstable.cc">
+      <Filter>korean</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1445,6 +1457,15 @@
     </ClInclude>
     <ClInclude Include="..\..\gumps\Slider_widget.h">
       <Filter>gumps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\korean\automata.h">
+      <Filter>korean</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\korean\korean.h">
+      <Filter>korean</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\korean\ucs2kstable.h">
+      <Filter>korean</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
