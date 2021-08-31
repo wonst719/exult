@@ -262,6 +262,7 @@ int Font::paint_text_box(
 
 // FIXME: Temporary color
 static int koreanColor = 254;
+const int koreanBaselineOffset = 9;
 
 /*
  *  Draw text at a given location (which is the upper-left corner of the
@@ -285,10 +286,7 @@ int Font::paint_text(
 			unsigned int chr = static_cast<unsigned char>(*text++);
 			if (chr & 0x80) {
 				chr |= static_cast<unsigned char>(*text++) << 8;
-				drawKorean(
-						win, x + 1,
-						(yoff - get_text_baseline()) + (get_text_baseline() - 9) - 1,
-						koreanColor, getKoreanPtr(chr));
+				drawKorean(win, x + 1, (yoff - koreanBaselineOffset) - 1, koreanColor, getKoreanPtr(chr));
 
 				x += _2byteWidth + 1;
 			} else {
@@ -331,10 +329,7 @@ int Font::paint_text(
 			if (chr & 0x80) {
 				chr |= static_cast<unsigned char>(*text++) << 8;
 				textlen--;
-				drawKorean(
-						win, x + 1,
-						(yoff - get_text_baseline()) + (get_text_baseline() - 9) - 1,
-						koreanColor, getKoreanPtr(chr));
+				drawKorean(win, x + 1, (yoff - koreanBaselineOffset) - 1, koreanColor, getKoreanPtr(chr));
 
 				x += _2byteWidth + 1;
 			} else {
@@ -517,11 +512,7 @@ int Font::paint_text_fixedwidth(
 			chr |= static_cast<unsigned char>(*text++) << 8;
 
 			x += w = (width - _2byteWidth) / 2;
-			drawKorean(
-					win, x,
-					(yoff - get_text_baseline()) + (get_text_baseline() - 9)
-							+ 2,
-					koreanColor, getKoreanPtr(chr));
+			drawKorean(win, x, (yoff - koreanBaselineOffset) + 2, koreanColor, getKoreanPtr(chr));
 
 			x += (_2byteWidth + 1) - w;
 		} else {
@@ -564,11 +555,7 @@ int Font::paint_text_fixedwidth(
 			chr |= static_cast<unsigned char>(*text++) << 8;
 			textlen--;
 			x += w = (width - _2byteWidth) / 2;
-			drawKorean(
-					win, x,
-					(yoff - get_text_baseline()) + (get_text_baseline() - 9)
-							+ 2,
-					koreanColor, getKoreanPtr(chr));
+			drawKorean(win, x, (yoff - koreanBaselineOffset) + 2, koreanColor, getKoreanPtr(chr));
 
 			x += (_2byteWidth + 1) - w;
 		} else {
