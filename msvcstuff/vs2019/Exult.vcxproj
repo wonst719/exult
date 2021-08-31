@@ -30,34 +30,28 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <VCToolsVersion>
-    </VCToolsVersion>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <VCToolsVersion>
-    </VCToolsVersion>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-    <VCToolsVersion>
-    </VCToolsVersion>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -408,6 +402,9 @@
     <ClCompile Include="..\..\istring.cc" />
     <ClCompile Include="..\..\keyactions.cc" />
     <ClCompile Include="..\..\keys.cc" />
+    <ClCompile Include="..\..\korean\automata.cc" />
+    <ClCompile Include="..\..\korean\korean.cc" />
+    <ClCompile Include="..\..\korean\ucs2kstable.cc" />
     <ClCompile Include="..\..\menulist.cc" />
     <ClCompile Include="..\..\monsters.cc" />
     <ClCompile Include="..\..\mouse.cc" />
@@ -624,6 +621,9 @@
     <ClInclude Include="..\..\istring.h" />
     <ClInclude Include="..\..\keyactions.h" />
     <ClInclude Include="..\..\keys.h" />
+    <ClInclude Include="..\..\korean\automata.h" />
+    <ClInclude Include="..\..\korean\korean.h" />
+    <ClInclude Include="..\..\korean\ucs2kstable.h" />
     <ClInclude Include="..\..\menulist.h" />
     <ClInclude Include="..\..\monsters.h" />
     <ClInclude Include="..\..\mouse.h" />
