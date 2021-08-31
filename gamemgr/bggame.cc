@@ -2200,11 +2200,12 @@ bool BG_Game::new_game(Vga_file& shapes) {
 
 	const int max_name_len = 16;
 	char      npc_name[max_name_len + 1];
-	char      disp_name[max_name_len + 2];
+	char      disp_name[max_name_len + 16];
 	npc_name[0] = 0;
 
 	char ime_candidate[16];
 	ime_candidate[0] = 0;
+	bool ime_compositing = false;
 
 	int       selected    = 0;
 	const int num_choices = 4;
@@ -2274,9 +2275,9 @@ bool BG_Game::new_game(Vga_file& shapes) {
 					shapes.get_shape(0x7, selected == 3), false,
 					transto.data());
 			if (selected == 0) {
-				snprintf(disp_name, max_name_len + 2, "%s%s_", npc_name, ime_candidate);
+				snprintf(disp_name, max_name_len + 16, "%s%s_", npc_name, ime_candidate);
 			} else {
-				snprintf(disp_name, max_name_len + 2, "%s", npc_name);
+				snprintf(disp_name, max_name_len + 16, "%s", npc_name);
 			}
 			font->draw_text(
 					ibuf, topx + 60, menuy + 10, disp_name, transto.data());
@@ -2285,8 +2286,6 @@ bool BG_Game::new_game(Vga_file& shapes) {
 		}
 
 		while (SDL_PollEvent(&event)) {
-			Uint16 keysym_unicode = 0;
-			bool   isTextInput    = false;
 			if (event.type == SDL_MOUSEBUTTONDOWN
 				|| event.type == SDL_MOUSEBUTTONUP) {
 				const SDL_Rect rectName   = {topx + 10, menuy + 10, 130, 16};
@@ -2340,34 +2339,61 @@ bool BG_Game::new_game(Vga_file& shapes) {
 					}
 				}
 			} else if (event.type == SDL_TEXTEDITING) {
-				// TODO: Process IME events
-				isTextInput = true;
-				event.type = SDL_KEYDOWN;
-				event.key.keysym.sym = SDLK_UNKNOWN;
-				unsigned short candidate = UnicodeToKS(DecodeUtf8Codepoint(event.text.text));
-				ime_candidate[0] = static_cast<unsigned char>(candidate >> 8);
-				ime_candidate[1] = static_cast<unsigned char>(candidate & 0xff);
-				ime_candidate[2] = 0;
+				redraw = true;
+				if (event.text.text[0] == 0) {
+					ime_compositing = false;
+					ime_candidate[0] = 0;
+					printf("SDL_TEXTEDITING %d\n", 0);
+				} else {
+					ime_compositing = true;
+					unsigned short candidate = DecodeUtf8Codepoint(event.text.text);
+					if (candidate > 0xff) {
+						unsigned short ksCandidate = UnicodeToKS(candidate);
+						ime_candidate[0] = static_cast<unsigned char>(ksCandidate >> 8);
+						ime_candidate[1] = static_cast<unsigned char>(ksCandidate & 0xff);
+						ime_candidate[2] = 0;
+					} else if (candidate >= ' ') {
+						ime_candidate[0] = static_cast<unsigned char>(candidate);
+						ime_candidate[1] = 0;
+					} else {
+						ime_candidate[0] = 0;
+					}
+					printf("SDL_TEXTEDITING %d\n", candidate);
+				}
 			} else if (event.type == SDL_TEXTINPUT) {
-				// TODO: Process IME events
-				isTextInput = true;
-				keysym_unicode       = event.text.text[0];
-				event.type           = SDL_KEYDOWN;
-				event.key.keysym.sym = SDLK_UNKNOWN;
-				keysym_unicode = DecodeUtf8Codepoint(event.text.text);
-			}
-			if (event.type == SDL_KEYDOWN) {
+				redraw = true;
+				ime_compositing = false;
+				ime_candidate[0] = 0;
+				Uint16 codepoint = DecodeUtf8Codepoint(event.text.text);
+				printf("SDL_TEXTINPUT %d\n", codepoint);
+
+				unsigned short chr = 0;
+				if ((codepoint & 0xFF80) == 0)
+					chr = codepoint & 0x7F;
+				else
+					chr = UnicodeToKS(codepoint);
+
+				int len = strlen(npc_name);
+				if (selected == 0) {
+					if (chr > 0xff && len + 1 < max_name_len) {
+						npc_name[len] = static_cast<unsigned char>(chr >> 8);
+						npc_name[len + 1] = static_cast<unsigned char>(chr & 0xff);
+						npc_name[len + 2] = 0;
+					} else if (chr >= ' ' && len < max_name_len) {
+						npc_name[len] = chr;
+						npc_name[len + 1] = 0;
+					}
+				}
+			} else if (event.type == SDL_KEYDOWN) {
+				if (ime_compositing) {
+					printf("SDL_KEYDOWN %d (Skip)\n", event.key.keysym.sym);
+					break;
+				}
+				printf("SDL_KEYDOWN %d\n", event.key.keysym.sym);
 				redraw = true;
 				switch (event.key.keysym.sym) {
 				case SDLK_SPACE:
-					// TODO: Process IME candidate / IM change
-					if (selected == 0) {
-						const int len = strlen(npc_name);
-						if (len < max_name_len) {
-							npc_name[len]     = ' ';
-							npc_name[len + 1] = 0;
-						}
-					} else if (selected == 1) {
+					if (selected == 1) {
 						skindata = Shapeinfo_lookup::GetNextSelSkin(
 								skindata, si_installed, true);
 					} else if (selected == 2) {
@@ -2378,34 +2404,29 @@ bool BG_Game::new_game(Vga_file& shapes) {
 					}
 					break;
 				case SDLK_LEFT:
-					// TODO: Process IME candidate
 					if (selected == 1) {
 						skindata = Shapeinfo_lookup::GetPrevSelSkin(
 								skindata, si_installed, true);
 					}
 					break;
 				case SDLK_RIGHT:
-					// TODO: Process IME candidate
 					if (selected == 1) {
 						skindata = Shapeinfo_lookup::GetNextSelSkin(
 								skindata, si_installed, true);
 					}
 					break;
 				case SDLK_ESCAPE:
-					// TODO: Process IME candidate
 					editing = false;
 					ok      = false;
 					break;
 				case SDLK_TAB:
 				case SDLK_DOWN:
-					// TODO: Process IME candidate
 					++selected;
 					if (selected == num_choices) {
 						selected = 0;
 					}
 					break;
 				case SDLK_UP:
-					// TODO: Process IME candidate
 					--selected;
 					if (selected < 0) {
 						selected = num_choices - 1;
@@ -2413,7 +2434,6 @@ bool BG_Game::new_game(Vga_file& shapes) {
 					break;
 				case SDLK_RETURN:
 				case SDLK_KP_ENTER:
-					// TODO: Process IME candidate
 					if (selected < 2) {
 						++selected;
 					} else if (selected == 2) {
@@ -2424,42 +2444,29 @@ bool BG_Game::new_game(Vga_file& shapes) {
 					}
 					break;
 				case SDLK_BACKSPACE:
-					// TODO: Process IME candidate
 					if (selected == 0 && strlen(npc_name) > 0) {
 						int len = strlen(npc_name);
-						if (len >= 2 && npc_name[len - 2] & 0x80) {
-							npc_name[len - 1] = 0;
-							npc_name[len - 2] = 0;
-						}
-						npc_name[len - 1] = 0;
-					}
-					break;
-				default: {
-					if ((isTextInput && selected == 0)
-						|| (!isTextInput && keysym_unicode > +'~'
-							&& selected == 0)) {
-						unsigned short chr = 0;
-						if ((keysym_unicode & 0xFF80) == 0) {
-							chr = keysym_unicode & 0x7F;
-						} else {
-							chr = UnicodeToKS(keysym_unicode);
-						}
-
-						int len = strlen(npc_name);
-						if (chr >= ' ' && len + 1 < max_name_len) {
-							if (chr > 0xff) {
-								npc_name[len] = static_cast<unsigned char>(chr >> 8);
-								npc_name[len + 1] = static_cast<unsigned char>(chr & 0xff);
-								npc_name[len + 2] = 0;
+						int last = 0;
+						// Traverse codepoints
+						for (int i = 0; i < len;) {
+							if (npc_name[i] & 0x80) {
+								last = i;
+								i += 2;
 							} else {
-								npc_name[len] = chr;
-								npc_name[len + 1] = 0;
+								last = i;
+								i++;
 							}
 						}
-					} else {
-						redraw = false;
+						if (npc_name[last] & 0x80) {
+							npc_name[last] = 0;
+							npc_name[last + 1] = 0;
+						} else {
+							npc_name[last] = 0;
+						}
 					}
-				} break;
+					break;
+				default:
+					break;
 				}
 			}
 		}
