@@ -752,9 +752,6 @@
     <ClCompile Include="..\..\win32\crash.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\korean\automata.cc">
-      <Filter>korean</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\korean\korean.cc">
       <Filter>korean</Filter>
     </ClCompile>
@@ -1497,9 +1494,6 @@
     </ClInclude>
     <ClInclude Include="..\..\gumps\IterableGump_widget.h">
       <Filter>gumps</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\korean\automata.h">
-      <Filter>korean</Filter>
     </ClInclude>
     <ClInclude Include="..\..\korean\korean.h">
       <Filter>korean</Filter>
