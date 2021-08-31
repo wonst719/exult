@@ -37,16 +37,6 @@ using std::toupper;
 
 FontManager fontManager;
 
-static int MapKoreanFont(const std::string& name, int index) {
-	// FIXME: 하드코딩
-	if (name == "<STATIC>/fonts.vga" && index == 0) {
-		return 0;
-	} else if (name == "<STATIC>/mainshp.flx" && index == 9) {
-		return 1;
-	}
-	return 1;
-}
-
 //	Want a more restrictive test for space.
 inline bool Is_space(char c) {
 	return c == ' ' || c == '\n' || c == '\t';
@@ -792,13 +782,25 @@ int Font::load_internal(
 	return 0;
 }
 
+static int MapKoreanFont(const std::string& name, int index) {
+	// FIXME: 하드코딩
+	if (name == "<STATIC>/fonts.vga" && index == 0) {
+		return 0;
+	} else if (name == "<STATIC>/mainshp.flx" && index == 9) {
+		return 1;
+	}
+	return 1;
+}
+
 // DUMMY
 std::unique_ptr<KoreanFont> loadKoreanFont(const std::string& fontName, int index) {
 	printf("Font::loadKoreanFont(%s, %d)\n", fontName.c_str(), index);
-	MapKoreanFont(fontName, index);
+	int fontIdx = MapKoreanFont(fontName, index);
 
+	char fileName[256];
+	sprintf(fileName, "FONT%d.FNT", fontIdx);
 	std::unique_ptr<KoreanFont> koreanFont(new KoreanFont);
-	koreanFont->load("FONT.FNT");
+	koreanFont->load(fileName);
 	return koreanFont;
 }
 
