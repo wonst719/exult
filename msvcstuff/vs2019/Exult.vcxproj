@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-    <OutDir>$(SolutionDir)..\..\</OutDir>
+    <OutDir>$(SolutionDir)\Output\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
@@ -82,7 +82,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-    <OutDir>$(SolutionDir)..\..\</OutDir>
+    <OutDir>$(SolutionDir)\Output\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>G:\Programming\munt\mt32emu\out\build\x86-Release\include;$(IncludePath)</IncludePath>
     <LibraryPath>G:\Programming\munt\mt32emu\out\build\x86-Release;$(LibraryPath)</LibraryPath>
@@ -90,14 +90,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\</OutDir>
+    <OutDir>$(SolutionDir)\Output\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
     <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     <Linkage-zlib_static>static</Linkage-zlib_static>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\</OutDir>
+    <OutDir>$(SolutionDir)\Output\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
     <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     <Linkage-zlib_static>static</Linkage-zlib_static>
