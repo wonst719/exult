@@ -2102,9 +2102,9 @@ bool BG_Game::new_game(Vga_file &shapes) {
 
 			sman->paint_shape(topx + 10, topy + 180, shapes.get_shape(0x8, selected == 2), false, transto);
 			sman->paint_shape(centerx + 10, topy + 180, shapes.get_shape(0x7, selected == 3), false, transto);
-			if (selected == 0) {
+			if (selected == 0)
 				snprintf(disp_name, max_name_len + 16, "%s%s_", npc_name, ime_candidate);
-			} else
+			else
 				snprintf(disp_name, max_name_len + 16, "%s", npc_name);
 			font->draw_text(ibuf, topx + 60, menuy + 10, disp_name, transto);
 			gwin->get_win()->show();
