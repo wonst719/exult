@@ -829,6 +829,10 @@ static int MapKoreanFont(const std::string& name, int index) {
 		return 0;
 	} else if (name == "<STATIC>/fonts.vga" && index == 4) {
 		return 4;
+	} else if (name == "<STATIC>/fonts.vga" && index == 7) {
+		return 7;
+	} else if (name == "<STATIC>/mainshp.flx" && index == 3) {
+		return 13;
 	} else if (name == "<STATIC>/mainshp.flx" && index == 9) {
 		return 1;
 	}
