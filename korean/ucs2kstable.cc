@@ -1400,7 +1400,7 @@ static wchar_t unicodeToKsTable[] = {
 	0x0000,0x0000,0x0000,0x0000,
 };
 
-wchar_t UnicodeToKS(wchar_t codepoint)
+unsigned short UnicodeToKS(unsigned int codepoint)
 {
 	// Hangul Compatibility Jamo
 	if (codepoint >= 0x3131 && codepoint <= 0x3163) {

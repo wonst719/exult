@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2001  The Exult Team
+ *  Copyright (C) 2021 The Exult Team, wonst719
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ public:
 };
 
 // UCS-2 범위에서만 작동함
-static inline wchar_t DecodeUtf8Codepoint(const char* text, int& out_len) {
+static inline uint32 DecodeUtf8Codepoint(const char* text, int& out_len) {
 	// Decode UTF-8
 	uint32 codepoint = 0;
 	const byte* bytes = reinterpret_cast<const byte*>(text);
@@ -79,7 +79,7 @@ static inline wchar_t DecodeUtf8Codepoint(const char* text, int& out_len) {
 	return codepoint;
 }
 
-static inline wchar_t DecodeUtf8Codepoint(const char* text) {
+static inline uint32 DecodeUtf8Codepoint(const char* text) {
 	int _;
 	return DecodeUtf8Codepoint(text, _);
 }

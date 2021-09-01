@@ -2345,12 +2345,12 @@ bool BG_Game::new_game(Vga_file& shapes) {
 				redraw = true;
 				ime_compositing = false;
 				ime_candidate[0] = 0;
-				Uint16 codepoint = DecodeUtf8Codepoint(event.text.text);
+				unsigned int codepoint = DecodeUtf8Codepoint(event.text.text);
 				printf("SDL_TEXTINPUT %d\n", codepoint);
 
 				unsigned short chr = 0;
 				if ((codepoint & 0xFF80) == 0)
-					chr = codepoint & 0x7F;
+					chr = static_cast<unsigned short>(codepoint);
 				else
 					chr = UnicodeToKS(codepoint);
 
@@ -2361,7 +2361,7 @@ bool BG_Game::new_game(Vga_file& shapes) {
 						npc_name[len + 1] = static_cast<unsigned char>(chr & 0xff);
 						npc_name[len + 2] = 0;
 					} else if (chr >= ' ' && len < max_name_len) {
-						npc_name[len] = chr;
+						npc_name[len] = static_cast<unsigned char>(chr);
 						npc_name[len + 1] = 0;
 					}
 				}
