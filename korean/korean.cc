@@ -18,23 +18,11 @@
  */
 
 #include "korean.h"
-#include <string.h>
-#include <stdio.h>
-#include <stdarg.h>
-
-typedef unsigned char byte;
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-typedef unsigned int uint;
-typedef signed char int8;
-typedef signed short int16;
-typedef signed int int32;
 
 #include "ibuf8.h"
 #include "files/databuf.h"
 
-KoreanFont::KoreanFont() {
+KoreanFont::KoreanFont() : _pal() {
 }
 
 bool KoreanFont::load(const std::string& fontName) {
