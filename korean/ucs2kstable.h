@@ -1,3 +1,3 @@
 #pragma once
 
-wchar_t UnicodeToKS(wchar_t ucs);
+unsigned short UnicodeToKS(unsigned int codepoint);
