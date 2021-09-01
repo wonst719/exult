@@ -543,7 +543,7 @@ int Font::get_text_width(
 		while ((chr = static_cast<unsigned char>(*text++)) != 0) {
 			if (chr & 0x80) {
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
-				width += korean_font->getGlyphWidth(chr);    // FIXME: 한글이 아예 잘리는 현상을 방지하기 위해서...
+				width += korean_font->getGlyphWidth(chr);
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
 				if (shape)
