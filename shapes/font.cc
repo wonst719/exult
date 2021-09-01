@@ -254,13 +254,14 @@ int Font::paint_text(
 	ignore_unused_variable_warning(win);
 	printf("Font::paint_text() type 1: %s\n", text);
 	int x = xoff;
+	int korean_yoff = yoff;
 	yoff += get_text_baseline();
 	if (font_shapes) {
 		unsigned int chr;
 		while ((chr = static_cast<unsigned char>(*text++)) != 0) {
 			if (chr & 0x80) {
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
-				x += korean_font->drawGlyph(win, chr, x, yoff - get_text_baseline());
+				x += korean_font->drawGlyph(win, chr, x, korean_yoff);
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
 				if (!shape)
@@ -291,6 +292,7 @@ int Font::paint_text(
 	ignore_unused_variable_warning(win);
 	printf("Font::paint_text() type 2: %d %s\n", textlen, text);
 	int x = xoff;
+	int korean_yoff = yoff;
 	yoff += get_text_baseline();
 	if (font_shapes) {
 		while (textlen--) {
@@ -298,7 +300,7 @@ int Font::paint_text(
 			if (chr & 0x80) {
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
 				textlen--;
-				x += korean_font->drawGlyph(win, chr, x, yoff - get_text_baseline());
+				x += korean_font->drawGlyph(win, chr, x, korean_yoff);
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(chr);
 				if (!shape)
@@ -459,6 +461,7 @@ int Font::paint_text_fixedwidth(
 	ignore_unused_variable_warning(win);
 	printf("Font::paint_text_fixedwidth() type 2: %s\n", text);
 	int x = xoff;
+	int korean_yoff = yoff;
 	int w;
 	unsigned int chr;
 	yoff += get_text_baseline();
@@ -469,7 +472,7 @@ int Font::paint_text_fixedwidth(
 
 			int glyphWidth = korean_font->getGlyphWidth(chr);
 			x += w = (width - glyphWidth) / 2;
-			korean_font->drawGlyph(win, chr, x - 1, (yoff - get_text_baseline()) + 3);
+			korean_font->drawGlyph(win, chr, x - 1, korean_yoff + 3);	// FIXME: hardcoded offset
 
 			x += glyphWidth - w;
 		} else {
@@ -502,6 +505,7 @@ int Font::paint_text_fixedwidth(
 	printf("Font::paint_text_fixedwidth() type 3: %s\n", text);
 	int w;
 	int x = xoff;
+	int korean_yoff = yoff;
 	yoff += get_text_baseline();
 	while (textlen--) {
 		if (*text & 0x80) {
@@ -511,7 +515,7 @@ int Font::paint_text_fixedwidth(
 
 			int glyphWidth = korean_font->getGlyphWidth(chr);
 			x += w = (width - glyphWidth) / 2;
-			korean_font->drawGlyph(win, chr, x - 1, (yoff - get_text_baseline()) + 3);
+			korean_font->drawGlyph(win, chr, x - 1, korean_yoff + 3);	// FIXME: hardcoded offset
 
 			x += glyphWidth - w;
 		} else {
