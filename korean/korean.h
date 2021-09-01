@@ -57,31 +57,11 @@ public:
 	int getFontHeight();
 };
 
-//extern int _2byteWidth;
-//extern int _2byteHeight;
-
-//extern bool loadKoreanFont();
-//extern byte *getKoreanPtr(int idx);
-//extern int drawKorean(Image_buffer8* dst, uint16 cp, int dx, int dy);
-//extern void drawKorean(Image_buffer8 *dst, int dx, int dy, byte _color, byte *src);
-
-static inline bool checkKSCode(byte hi, byte lo) {
-	//hi : xx
-	//lo : yy
-	if ((0xA1 > lo) || (0xFE < lo)) {
-		return false;
-	}
-	if ((hi >= 0xB0) && (hi <= 0xC8)) {
-		return true;
-	}
-	return false;
-}
-
 // UCS-2 범위에서만 작동함
 static inline wchar_t DecodeUtf8Codepoint(const char* text, int& out_len) {
 	// Decode UTF-8
-	unsigned int codepoint = 0;
-	const unsigned char* bytes = reinterpret_cast<const unsigned char*>(text);
+	uint32 codepoint = 0;
+	const byte* bytes = reinterpret_cast<const byte*>(text);
 	if ((bytes[0] & 0x80) == 0) {
 		// 0xxxxxxx
 		codepoint = bytes[0];
