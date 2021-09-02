@@ -786,29 +786,34 @@ int Font::load_internal(
 	return 0;
 }
 
-static int MapKoreanFont(const std::string& name, int index) {
+static int mapKoreanFont(const std::string& name, int index) {
 	// FIXME: 하드코딩
-	if (name == "<STATIC>/fonts.vga" && index == 0) {
-		return 0;
-	} else if (name == "<STATIC>/fonts.vga" && index == 4) {
-		return 4;
-	} else if (name == "<STATIC>/fonts.vga" && index == 7) {
-		return 7;
-	} else if (name == "<STATIC>/mainshp.flx" && index == 3) {
-		return 13;
-	} else if (name == "<STATIC>/mainshp.flx" && index == 9) {
-		return 19;
-	}
+	if (name == "<STATIC>/fonts.vga")
+		return index;
+	else if (name == "<STATIC>/mainshp.flx")
+		return 10 + index;
+	else if (name == "<STATIC>/endgame.dat")
+		return 20 + index;
+
 	return 0;
 }
 
-// DUMMY
-std::unique_ptr<KoreanFont> loadKoreanFont(const std::string& fontName, int index) {
+// TODO: Font 클래스에 포함하기
+static std::unique_ptr<KoreanFont> loadKoreanFont(const std::string& fontName, int index) {
 	printf("Font::loadKoreanFont(%s, %d)\n", fontName.c_str(), index);
-	int fontIdx = MapKoreanFont(fontName, index);
+	int fontIdx = mapKoreanFont(fontName, index);
 
 	char fileName[256];
-	sprintf(fileName, "FONT%d.FNT", fontIdx);
+	sprintf(fileName, "<PATCH>/FONT%d.FNT", fontIdx);
+	if (!U7exists(fileName)) {
+		// Fallback
+		fontIdx = 0;
+		sprintf(fileName, "<PATCH>/FONT%d.FNT", fontIdx);
+		if (!U7exists(fileName)) {
+			// Fail
+			return nullptr;
+		}
+	}
 	std::unique_ptr<KoreanFont> koreanFont(new KoreanFont);
 	koreanFont->load(fileName);
 	return koreanFont;
