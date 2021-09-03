@@ -147,7 +147,7 @@ void Sign_gump::paint(
 			sman->paint_text(1, koreanText.c_str(),
 				                x + object_area.x +
 				                (object_area.w - sman->get_text_width(0, koreanText.c_str())) / 2,
-				                y + object_area.y + object_area.h + 30);
+				                y + object_area.y + object_area.h + 10);
 		}
 		sman->paint_text(font, txt.c_str(),
 			                x + object_area.x +
