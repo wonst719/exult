@@ -85,7 +85,12 @@ void Sign_gump::add_text(int line, const std::string& txt) {
 	Main_actor* avatar = gwin->get_main_actor();
 
 	if (!serpentine && avatar->get_flag(Obj_flags::read)) {
-		for (const auto& ch : txt) {
+		size_t delimiterPos = txt.find('%');
+		if (delimiterPos == std::string::npos) {
+			delimiterPos = txt.size();
+		}
+		for (size_t i = 0; i < delimiterPos; i++) {
+			const auto& ch = txt[i]; 
 			if (ch == '(') {
 				lines[line] += "TH";
 			} else if (ch == ')') {
@@ -103,6 +108,7 @@ void Sign_gump::add_text(int line, const std::string& txt) {
 						std::toupper(static_cast<unsigned char>(ch)));
 			}
 		}
+		lines[line] += txt.substr(delimiterPos);
 	} else {
 		lines[line] = txt;
 	}
@@ -137,11 +143,24 @@ void Sign_gump::paint() {
 		if (lines[i].empty()) {
 			continue;
 		}
-		sman->paint_text(
-				font, lines[i].c_str(),
+		std::string txt = lines[i];
+		size_t delimiterPos = txt.find('%');
+		if (i == 0 && delimiterPos != std::string::npos) {
+			std::string koreanText = txt.substr(delimiterPos + 1);
+			txt = txt.substr(0, delimiterPos);
+			sman->paint_text(
+				1, koreanText.c_str(),
 				x + object_area.x
 						+ (object_area.w
-						   - sman->get_text_width(font, lines[i].c_str()))
+						   - sman->get_text_width(0, koreanText.c_str()))
+								  / 2,
+				y + object_area.y + object_area.h + 30);
+		}
+		sman->paint_text(
+				font, txt.c_str(),
+				x + object_area.x
+						+ (object_area.w
+						   - sman->get_text_width(font, txt.c_str()))
 								  / 2,
 				ypos);
 		ypos += lheight;
