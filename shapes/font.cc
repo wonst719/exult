@@ -630,7 +630,7 @@ int Font::get_text_height() {
 	// Note, I wont assume the fonts exist
 	// Shape_frame *A = font_shapes->get_frame('A');
 	// Shape_frame *y = font_shapes->get_frame('y');
-	return std::max(korean_font->getFontHeight(), highest + lowest + 1);
+	return std::max(korean_font ? korean_font->getFontHeight() : 0, highest + lowest + 1);
 }
 
 /*
