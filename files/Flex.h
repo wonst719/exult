@@ -139,7 +139,7 @@ public:
 	}
 	void write_name(const std::string& fullname) {
 		std::string name = base_name(fullname);
-		name.resize(8+1+3, 0);	// DOS filename
+		name.resize(8+1+3+1, 0);	// DOS filename
 		dout.write(name);
 	}
 	void write_object(const File_spec &spec) {
