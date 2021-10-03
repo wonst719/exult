@@ -1053,7 +1053,7 @@ void BG_Game::scene_guardian() {
 							0);
 					if (text_index > 0
 						&& static_cast<unsigned>(text_index)
-								   < text_num_frames) {
+								   <= text_num_frames) {
 						// Draw text
 						font->center_text(
 								win->get_ib8(), centerx, txt_ypos, txt_ptr);
