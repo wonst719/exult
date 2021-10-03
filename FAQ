@@ -1,5 +1,5 @@
 Exult F.A.Q. (frequently asked questions)
-last changed: 20 February 2021 (GMT)
+last changed: 03 October 2021 (GMT)
 
 The latest version of this document can be found at http://exult.sourceforge.net/faq.php
 
@@ -92,34 +92,35 @@ The latest version of this document can be found at http://exult.sourceforge.net
 7.2. Thanks
 
 8. Changes to the FAQ
-8.1. - 20 February 2021
-8.2. - 08 December 2018
-8.3. - 13 March 2016
-8.4. - 19 March 2015
-8.5. - 17 July 2014
-8.6. - 21 April 2014
-8.7. - 21 November 2013
-8.8. - 28 October 2012
-8.9. - 01 December 2011
-8.10. - 19 February 2011
-8.11. - 19 January 2011
-8.12. - 18 December 2010
-8.13. - 13 October 2010
-8.14. - 23 August 2010
-8.15. - 15 August 2010
-8.16. - 12 March 2010
-8.17. - 10 March 2010
-8.18. - 16 July 2009
-8.19. - 03 June 2009
-8.20. - 20 May 2009
-8.21. - 30 April 2009
-8.22. - 21 October 2007
-8.23. - 08 April 2006
-8.24. - 04 October 2004
-8.25. - 14 August 2004
-8.26. - 23 May 2004
-8.27. - 27 January 2004
-8.28. - 12 December 2003
+8.1. - 03 October 2021
+8.2. - 20 February 2021
+8.3. - 08 December 2018
+8.4. - 13 March 2016
+8.5. - 19 March 2015
+8.6. - 17 July 2014
+8.7. - 21 April 2014
+8.8. - 21 November 2013
+8.9. - 28 October 2012
+8.10. - 01 December 2011
+8.11. - 19 February 2011
+8.12. - 19 January 2011
+8.13. - 18 December 2010
+8.14. - 13 October 2010
+8.15. - 23 August 2010
+8.16. - 15 August 2010
+8.17. - 12 March 2010
+8.18. - 10 March 2010
+8.19. - 16 July 2009
+8.20. - 03 June 2009
+8.21. - 20 May 2009
+8.22. - 30 April 2009
+8.23. - 21 October 2007
+8.24. - 08 April 2006
+8.25. - 04 October 2004
+8.26. - 14 August 2004
+8.27. - 23 May 2004
+8.28. - 27 January 2004
+8.29. - 12 December 2003
 
 
 --------------------------------------------------------------------------------
@@ -695,8 +696,8 @@ The best way to get answers to questions about Exult is to go to our discussion 
 http://exult.info/forum/
 To get answers concerning Ultima VII in general go to the Ultima Dragons group o FaceBook:
 https://www.facebook.com/groups/UltimaDragons
-Some Exult developers like to hang out on IRC on irc.freenode.net, channel #exult.
- The logs of #exult can be found at http://log.usecode.org/exultlog.php.
+Some Exult developers like to hang out on IRC on irc.libera.chat, channel #exult.
+ The logs of #exult can be found at http://log.usecode.org/exultlog.php, but currently these are not updated as our recording bot has gone missing.
 
 
 6.2. How do I contact the author of this FAQ?
@@ -730,7 +731,13 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 --------------------------------------------------------------------------------
 
 8. Changes to the FAQ
-8.1. - 20 February 2021
+8.1. - 03 October 2021
+
+* 6.1. How can I get answers concerning Ultima VII/Exult? we are now using irc.libera.chat and exultbot went missing.
+
+
+
+8.2. - 20 February 2021
 
 * Changed links to our homepage to exult.info, SDL to SDL2, Mac OS X to macOS.
 * Removed references to Windows CE/Pocket PC.
@@ -742,7 +749,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.2. - 08 December 2018
+8.3. - 08 December 2018
 
 * 1.14. Platforms Exult used to run on added as we removed some ports from source.
 * 3.2. Where do I find the configuration file? old Windows versions references deleted.
@@ -751,13 +758,13 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.3. - 13 March 2016
+8.4. - 13 March 2016
 
 * 1.9. Where do I find Exult? Switched to GIT on GitHub.
 
 
 
-8.4. - 19 March 2015
+8.5. - 19 March 2015
 
 * 1.5. Does Origin or EA support Exult? Origin is long gone.
 * 1.13. On what platform does Exult run? added the iOS port and moved the PocketPC mention in there.
@@ -767,19 +774,19 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.5. - 17 July 2014
+8.6. - 17 July 2014
 
 * Fixed links to our bug tracker.
 
 
 
-8.6. - 21 April 2014
+8.7. - 21 April 2014
 
 * 5.24. Left or right on the Altar of Discipline (SI-SS) the altar is now bug free.
 
 
 
-8.7. - 21 November 2013
+8.8. - 21 November 2013
 
 * 1.9. Where do I find Exult? added the Ubuntu PPA and deleted the PocketPC one.
 * 1.12. What is the latest version of Exult? use snapshots rather than release.
@@ -788,26 +795,26 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.8. - 28 October 2012
+8.9. - 28 October 2012
 
 * 2.8. Where do I find Ultima VII on the net to download? at GOG.com.
 * 3.17. Are there patches or Mods for Exult link to the Ultima 6 remake added.
 
 
 
-8.9. - 01 December 2011
+8.10. - 01 December 2011
 
 * 1.9. Where do I find Exult? Link to our SVN added.
 
 
 
-8.10. - 19 February 2011
+8.11. - 19 February 2011
 
 * 1.13. On what platform does Exult run? added native Android port and restructured it.
 
 
 
-8.11. - 19 January 2011
+8.12. - 19 January 2011
 
 * 8. Changes to the FAQ moved to the bottom.
 * 1.13. On what platform does Exult run? news about ports for Android, Dingoo, XBox 360 and PSP.
@@ -815,7 +822,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.12. - 18 December 2010
+8.13. - 18 December 2010
 
 * 1.1. Exult Version back to snapshot.
 * 3.3. I updated Exult to the new version. Where have my savegames gone? since 1.4.9rc1 savegames location changed.
@@ -825,7 +832,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.13. - 13 October 2010
+8.14. - 13 October 2010
 
 * 1.1. Exult Version new official version.
 * 1.10. What is a snapshot? Are these screenshots or what? this FAQis not mainly about the snapshot atm.
@@ -836,7 +843,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.14. - 23 August 2010
+8.15. - 23 August 2010
 
 * 1.12. What is the latest version of Exult? better use the snapshots than the ooooold version.
 * 2.2. Does Exult work on all versions of the game? cleaned up a bit.
@@ -847,7 +854,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.15. - 15 August 2010
+8.16. - 15 August 2010
 
 * 1.9. Where do I find Exult? also OS X snapshots available.
 * 1.13. On what platform does Exult run? The Amiga port homepage is only available in the Wayback Machine these days.
@@ -857,13 +864,13 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.16. - 12 March 2010
+8.17. - 12 March 2010
 
 * 1.1. No more 8bit scaler issues.
 
 
 
-8.17. - 10 March 2010
+8.18. - 10 March 2010
 
 * 3.2. Where do I find the configuration file? On Windows this changed.
 * 1.1. added.
@@ -871,20 +878,20 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.18. - 16 July 2009
+8.19. - 16 July 2009
 
 * 4.4. Known Issues re-added some things that are fixed in snapshots.
 
 
 
-8.19. - 03 June 2009
+8.20. - 03 June 2009
 
 * Spell checked the whole FAQ
 * 1.15. Will there be a port of Exult for <insert platform here>? added.
 
 
 
-8.20. - 20 May 2009
+8.21. - 20 May 2009
 
 * 1.1. Exult Version leveled up.
 * 2.3. Can you play through Ultima VII yet? yes you can.
@@ -907,7 +914,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.21. - 30 April 2009
+8.22. - 30 April 2009
 
 * 3.17. Are there patches or Mods for Exult eguides disappeared, but Marzo's Seven Towers takes its place (as well as TFL url fix).
 * 4.4. Known Issues added that we were wrong with spell requirements and costs.
@@ -916,7 +923,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.22. - 21 October 2007
+8.23. - 21 October 2007
 
 * 1.9. Where do I find Exult? neither the BeOS nor the Amiga port are available anymore, but we do have the PocketPC snapshots.
 * 1.11. How do I compile a source code snapshot for my OS? compile instructions for Linux are in INSTALL.
@@ -928,7 +935,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.23. - 08 April 2006
+8.24. - 08 April 2006
 
 * 3.17. Are there patches or Mods for Exult a list of where to find those.
 * 5.1. Why is there a gameplay FAQ? explained the mark in the questions.
@@ -936,7 +943,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.24. - 04 October 2004
+8.25. - 04 October 2004
 
 * 5.1. Why is there a gameplay FAQ? walkthroughs, the source of evil.
 * 5.9. Multiple problems with the tetrahedron generator and prism (BG)? two issues come up from time to time.
@@ -944,7 +951,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.25. - 14 August 2004
+8.26. - 14 August 2004
 
 * 1.3. Is Exult free ? contact us via the forum.
 * 1.7. But isn't Pentagram some kind of Exult for U8? the homepage is actually informative now.
@@ -955,7 +962,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.26. - 23 May 2004
+8.27. - 23 May 2004
 
 * 1.12. What is the latest version of Exult? 1.2 now.
 * 1.4. Do you accept donations? No we don't but SF would be happy.
@@ -964,7 +971,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.27. - 27 January 2004
+8.28. - 27 January 2004
 
 * 1.12. What is the latest version of Exult? 1.1.9rc1 now.
 * 4.4. Known Issues Items descriptions in SI-only work now.
@@ -973,7 +980,7 @@ Thanks go to Matt0 who really got me thinking about doing this FAQ (though he ju
 
 
 
-8.28. - 12 December 2003
+8.29. - 12 December 2003
 
 * 5.7. Why can't I get the sacrifice in Skara Brae to work (BG)? Stuart told me another workaround.
 * 6.1. How can I get answers concerning Ultima VII/Exult? still used the old invalid address for irc and #exultlog (thanks Lars).

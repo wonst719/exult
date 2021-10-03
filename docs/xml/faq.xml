@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE faqs SYSTEM "docs.dtd">
-<faqs title="Exult" changed="20 February 2021 (GMT)">
+<faqs title="Exult" changed="03 October 2021 (GMT)">
 	<section title="Introduction">
 		<sub name="exult_version">
 			<header>Exult Version</header>
@@ -1224,10 +1224,11 @@
 					<extref target="https://www.facebook.com/groups/UltimaDragons"/>
 				</para>
 				<para>
-					Some <Exult/> developers like to hang out on IRC on irc.freenode.net,
+					Some <Exult/> developers like to hang out on IRC on irc.libera.chat,
 					channel #exult.<br/>
 					The logs of #exult can be found at
-					<extref target="http://log.usecode.org/exultlog.php"/>.
+					<extref target="http://log.usecode.org/exultlog.php"/>, but currently these are not updated as 
+					our recording bot has gone missing.
 				</para>
 			</body>
 		</sub>
@@ -1281,6 +1282,14 @@
 		</sub>
 	</section>
 	<section title="Changes to the FAQ">
+		<sub name="03102021">
+			<header>- 03 October 2021</header>
+			<body>
+				<ul>
+					<li><ref1 target="howto_get_answers"/> we are now using irc.libera.chat and exultbot went missing.</li>
+				</ul>
+			</body>
+		</sub>
 		<sub name="20022021">
 			<header>- 20 February 2021</header>
 			<body>
