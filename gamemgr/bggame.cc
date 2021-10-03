@@ -941,7 +941,7 @@ void BG_Game::scene_guardian() {
 					EraseAndDraw(backup2.get(), s2, guardian_eyes_shp, eye_frame, Eyes_Dist);
 					// Erase and redraw mouth
 					EraseAndDraw(backup.get(), s, guardian_mouth_shp, mouth_frame, 0);
-					if (text_index > 0 && text_index < text_num_frames) {
+					if (text_index > 0 && text_index <= text_num_frames) {
 						// Draw text
 						font->center_text(win->get_ib8(), centerx, txt_ypos, txt_ptr);
 					}
