@@ -787,12 +787,11 @@ int Font::load_internal(
 }
 
 static int mapKoreanFont(const std::string& name, int index) {
-	// FIXME: 하드코딩
 	if (name == "<STATIC>/fonts.vga")
 		return index;
 	else if (name == "<STATIC>/mainshp.flx")
 		return 10 + index;
-	else if (name == "<STATIC>/endgame.dat")
+	else if (name == "<STATIC>/endgame.dat" || name == "<STATIC>/intro.dat")
 		return 20 + index;
 
 	return 0;
