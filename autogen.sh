@@ -75,7 +75,7 @@ rm -f audio/midi_drivers/Makefile audio/Makefile conf/Makefile data/Makefile \
       usecode/ucxt/Makefile usecode/Makefile gamemgr/Makefile Makefile
 
 # Regenerate everything
-aclocal "$aclocalincludes"
+aclocal $aclocalincludes
 $libtoolize --copy
 autoconf
 autoheader
