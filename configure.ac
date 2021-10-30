@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_PREREQ([2.63])
-AC_INIT([Exult], [1.7.0git], ,[exult], [http://exult.sourceforge.net/])
+AC_PREREQ([2.69])
+AC_INIT([Exult],[1.7.0git],[],[exult],[http://exult.sourceforge.net/])
 AC_CONFIG_SRCDIR([exult.cc])
 
 
@@ -148,9 +148,9 @@ AM_PROG_LEX
 AC_PROG_YACC
 AM_CONDITIONAL(LEXYACC, test -n "$YACC")
 
-AM_DISABLE_SHARED
+AC_DISABLE_SHARED([])
 
-AM_PROG_LIBTOOL
+LT_INIT
 AC_SUBST(LIBTOOL_DEPS)
 
 # ---------------------------------------------------------------------
@@ -193,7 +193,7 @@ AC_FUNC_MEMCMP
 AC_CHECK_FUNCS([atexit dup2 getcwd isascii memchr memmove memset mkdir pow select socket strcasecmp strchr strstr strtol strtoul getopt_long])
 
 AC_MSG_CHECKING([for getaddrinfo()])
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -203,30 +203,24 @@ AC_TRY_COMPILE([
 #if HAVE_NETDB_H
 #include <netdb.h>
 #endif
-],
-[
+]], [[
 	struct addrinfo a;
 	//getaddrinfo(0, 0, 0, 0);
-],
-	ac_cv_func_getaddrinfo=yes,
-	ac_cv_func_getaddrinfo=no)
+]])],[ac_cv_func_getaddrinfo=yes],[ac_cv_func_getaddrinfo=no])
 AC_MSG_RESULT($ac_cv_func_getaddrinfo)
 if test x$ac_cv_func_getaddrinfo = xyes ; then
 	AC_DEFINE(HAVE_GETADDRINFO, 1, [Have addrinfo/getaddrinfo])
 fi
 
 AC_MSG_CHECKING([for mkstemp()])
-AC_TRY_LINK([
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #include <stdlib.h>
-],
-[
+]], [[
 	mkstemp(0);
-],
-	ac_cv_func_mkstemp=yes,
-	ac_cv_func_mkstemp=no)
+]])],[ac_cv_func_mkstemp=yes],[ac_cv_func_mkstemp=no])
 AC_MSG_RESULT($ac_cv_func_mkstemp)
 if test x$ac_cv_func_mkstemp = xyes ; then
 	AC_DEFINE(HAVE_MKSTEMP, 1, [Have mkstemp])
@@ -1088,7 +1082,7 @@ AC_SUBST(ALSA_LIBS)
 AC_SUBST(WARNINGS)
 AC_SUBST(AR_FLAGS)
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 exult.spec
 Info.plist
 macosx/exult_studio_info.plist
@@ -1128,6 +1122,7 @@ usecode/ucxt/src/Makefile
 mapedit/Makefile
 server/Makefile
 ])
+AC_OUTPUT
 
 dnl ****************
 dnl Configure Status
