@@ -23,7 +23,7 @@ if [[ -e "usecode.uc" ]] ; then
 		echo "and run this script again."
 		exit 127
 	fi
-	
+
 	echo "Compiling Usecode..."
 	if ucc -o ../data/usecode usecode.uc; then
 		echo "Usecode has been successfully compiled!"
