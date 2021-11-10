@@ -143,7 +143,7 @@
 		012B6900D32242C09DDD1112 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1240;
+				LastUpgradeCheck = 1300;
 			};
 			buildConfigurationList = 80C13AF6579C4CEFB4A790D1 /* Build configuration list for PBXProject "libmt32emu" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -280,6 +280,7 @@
 					./libmt32emu/mt32emu/src/srchelper/srctools/include/src,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
