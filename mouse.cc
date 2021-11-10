@@ -47,11 +47,8 @@ bool Mouse::use_touch_input = false;
 static inline bool should_hide_frame(int frame) {
 	// on touch input only we hide the cursor
 	if (Mouse::use_touch_input == true) {
-		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
 		return frame == 0 || (frame >=8 && frame <= 47);
 	} else {
-		// FIXME: it is a bug in SDL2 that real mouse devices need this hint to work correctly on a touch device
-		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
 		return false;
 	}
 }

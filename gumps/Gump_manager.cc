@@ -452,23 +452,17 @@ bool Gump_manager::handle_modal_gump_event(
 	//int scale_factor = gwin->get_fastmouse() ? 1
 	//          : gwin->get_win()->get_scale();
 	static bool rightclick;
-	static sint64 last_finger_id = 0;
 
 	int gx;
 	int gy;
 	Uint16 keysym_unicode = 0;
 
 	switch (event.type) {
-	// FIXME: it is a bug in SDL2 that real mouse devices have a fingerId. A real fingerId changes on each touch
-	// but the erroneous real mouse fingerId stays the same for both left and right clicks. But a left click produces
-	// two fingerId events with the first always having the value 0.
 	case SDL_FINGERDOWN: {
-		if ((Mouse::use_touch_input == false) && (event.tfinger.fingerId != last_finger_id) && (event.tfinger.fingerId != 0)) {
+		if ((!Mouse::use_touch_input) && (event.tfinger.fingerId != 0)) {
 			Mouse::use_touch_input = true;
 			gwin->set_painted();
 		}
-		if (event.tfinger.fingerId != 0)
-			last_finger_id = event.tfinger.fingerId;
 		break;
 	}
 	case SDL_MOUSEBUTTONDOWN:

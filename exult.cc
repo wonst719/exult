@@ -1262,7 +1262,6 @@ static void Handle_event(
 	Gump_manager *gump_man = gwin->get_gump_man();
 	Gump *gump = nullptr;
 	
-	static sint64 last_finger_id = 0;
 	// For detecting double-clicks.
 	static uint32 last_b1_click = 0;
 	static uint32 last_b3_click = 0;
@@ -1373,16 +1372,11 @@ static void Handle_event(
 		}
 		break;
 	}
-	// FIXME: it is a bug in SDL2 that real mouse devices have a fingerId. A real fingerId changes on each touch
-	// but the erroneous real mouse fingerId stays the same for both left and right clicks. But a left click produces
-	// two fingerId events with the first always having the value 0.
 	case SDL_FINGERDOWN: {
-		if ((Mouse::use_touch_input == false) && (event.tfinger.fingerId != last_finger_id) && (event.tfinger.fingerId != 0)) {
+		if ((!Mouse::use_touch_input) && (event.tfinger.fingerId != 0)) {
 			Mouse::use_touch_input = true;
 			gwin->set_painted();
 		}
-		if (event.tfinger.fingerId != 0)
-			last_finger_id = event.tfinger.fingerId;
 		break;
 	}
 	case SDL_MOUSEBUTTONDOWN: {
