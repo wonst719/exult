@@ -625,17 +625,16 @@ void Usecode_internal::say_string(
 			continue;
 		}
 		char *eol = strchr(str, '~');
-		if (!eol) {     // Not found?
+		if (eol && *(eol + 1) == '~') {    // 2 in a row.
+			*eol = 0;
+			conv->show_npc_message(str);
+			click_to_continue();
+			str = eol + 2;
+		} else {    // Not found?
 			conv->show_npc_message(str);
 			click_to_continue();
 			break;
 		}
-		*eol = 0;
-		conv->show_npc_message(str);
-		click_to_continue();
-		str = eol + 1;
-		if (*str == '~')
-			str++;      // 2 in a row.
 	}
 	delete [] String;
 	String = nullptr;
