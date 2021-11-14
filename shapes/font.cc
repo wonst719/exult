@@ -43,6 +43,14 @@ inline bool Is_space(char c) {
 	return c == ' ' || c == '\n' || c == '\t';
 }
 
+static bool Is_control(char c) {
+	return c == '*' || c == '^' || c == '~';
+}
+
+static bool Is_punctuation(char c) {
+	return c == '.' || c == '?' || c == '!' || c == ',' || c == '"' || c == '*' || c == '~';
+}
+
 /*
  *  Pass space.
  */
@@ -67,7 +75,7 @@ static const char* Pass_space(const char* text) {
  */
 
 static const char* Pass_word(const char* text) {
-	while (*text && (*text != '^')
+	while (*text && !Is_control(*text)
 		   && (!Is_space(*text) || (*text == '\f') || (*text == '\v'))) {
 		text++;
 	}
@@ -122,6 +130,7 @@ int Font::paint_text_box(
 		}
 		switch (*text) {    // Special cases.
 		case '\n':          // Next line.
+		case '~':
 			curx = x;
 			text++;
 			cur_line++;
@@ -137,22 +146,20 @@ int Font::paint_text_box(
 		case '\t': {
 			// Pass space.
 			const char* wrd = Pass_space(text);
-			if (wrd != text) {
-				int w = get_text_width(text, static_cast<uint32>(wrd - text));
-				if (w <= 0) {
-					w = space_width;
-				}
-				const int nsp = w / space_width;
-				lines[cur_line].append(nsp, ' ');
-				if (cursor && coff > text - start && coff < wrd - start) {
-					cursor->set_found(
-							curx
-									+ static_cast<uint32>(coff - (text - start))
-											  * space_width,
-							cury, cur_line);
-				}
-				curx += nsp * space_width;
+			int w = get_text_width(text, static_cast<uint32>(wrd - text));
+			if (w <= 0) {
+				w = space_width;
 			}
+			const int nsp = w / space_width;
+			lines[cur_line].append(nsp, ' ');
+			if (cursor && coff > text - start && coff < wrd - start) {
+				cursor->set_found(
+						curx
+								+ static_cast<uint32>(coff - (text - start))
+										  * space_width,
+						cury, cur_line);
+			}
+			curx += nsp * space_width;
 			text = wrd;
 			break;
 		}
@@ -163,9 +170,10 @@ int Font::paint_text_box(
 
 		if (*text == '*') {
 			text++;
-			if (cur_line) {
-				break;
-			}
+			last_punct_end = text;
+			last_punct_line = cur_line;
+			last_punct_offset = static_cast<int>(lines[cur_line].length());
+			break;
 		}
 		const bool ucase_next = *text == '^';
 		if (ucase_next) {    // Skip it.
@@ -213,8 +221,7 @@ int Font::paint_text_box(
 		curx += width;
 		text = ewrd;    // Continue past the word.
 		// Keep loc. of punct. endings.
-		if (text[-1] == '.' || text[-1] == '?' || text[-1] == '!'
-			|| text[-1] == ',' || text[-1] == '"') {
+		if (Is_punctuation(text[-1])) {
 			last_punct_end    = text;
 			last_punct_line   = cur_line;
 			last_punct_offset = static_cast<int>(lines[cur_line].length());
