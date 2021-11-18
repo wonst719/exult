@@ -288,7 +288,6 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 	gwin->show(true);
 	mouse->show();
 
-	static sint64 last_finger_id = 0;
 	bool exit_loop = false;
 	do {
 		Delay();
