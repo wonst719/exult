@@ -67,10 +67,8 @@ void MiscOptions_gump::build_buttons() {
 	int y_index = 0;
 	int small_size = 44;
 	int large_size = 85;
-#ifndef __IPHONEOS__
 	buttons[id_scroll_mouse] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_scroll_mouse,
 	        yesNo, scroll_mouse, colx[5], rowy[y_index], small_size);
-#endif
 	buttons[id_menu_intro] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_menu_intro,
 	        yesNo, menu_intro, colx[5], rowy[++y_index], small_size);
 	buttons[id_usecode_intro] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_usecode_intro,
@@ -152,11 +150,9 @@ MiscOptions_gump::MiscOptions_gump()
 }
 
 void MiscOptions_gump::save_settings() {
-#ifndef __IPHONEOS__
 	config->set("config/gameplay/scroll_with_mouse",
 	            scroll_mouse ? "yes" : "no", false);
 	gwin->set_mouse_with_scroll(scroll_mouse);
-#endif
 	config->set("config/gameplay/skip_intro",
 	            usecode_intro ? "yes" : "no", false);
 	config->set("config/gameplay/skip_splash",
@@ -207,9 +203,7 @@ void MiscOptions_gump::paint() {
 	Font *font = fontManager.get_font("SMALL_BLACK_FONT");
 	Image_window8 *iwin = gwin->get_win();
 	int y_index = 0;
-#ifndef __IPHONEOS__
 	font->paint_text(iwin->get_ib8(), "Scroll game view with mouse:", x + colx[0], y + rowy[y_index] + 1);
-#endif
 	font->paint_text(iwin->get_ib8(), "Skip intro:", x + colx[0], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "Skip scripted first scene:", x + colx[0], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "Alternate drag'n'drop:", x + colx[0], y + rowy[++y_index] + 1);

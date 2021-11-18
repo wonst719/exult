@@ -62,9 +62,7 @@ static string framestring(int fr) {
 	return buf;
 }
 
-#ifndef __IPHONEOS__
 static const char *pathfind_texts[3] = {"no", "single", "double"};
-#endif
 
 using GameplayOptions_button = CallbackTextButton<GameplayOptions_gump>;
 using GameplayTextToggle = CallbackToggleTextButton<GameplayOptions_gump>;
@@ -97,22 +95,18 @@ void GameplayOptions_gump::build_buttons() {
 	                                   Game::get_game_type() == EXULT_DEVEL_GAME))
 		buttons[id_paperdolls] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_paperdolls,
 		        paperdolls, colx[3], rowy[12], 59);
-#ifndef __IPHONEOS__
 	buttons[id_fastmouse] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_fastmouse,
 	        fastmouse, colx[3], rowy[3], 59);
 	buttons[id_mouse3rd] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_mouse3rd,
 	        mouse3rd, colx[3], rowy[4], 59);
-#endif
 	buttons[id_doubleclick] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_doubleclick,
 	        doubleclick, colx[3], rowy[5], 59);
-#ifndef __IPHONEOS__
 	buttons[id_rightclick_close] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_rightclick_close,
 	        rightclick_close, colx[3], rowy[6], 59);
 
 	std::vector<std::string> pathfind_text = {"Disabled", "Single", "Double"};
 	buttons[id_right_pathfind] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_right_pathfind,
 	        std::move(pathfind_text), right_pathfind, colx[3], rowy[7], 59);
-#endif
 	buttons[id_gumps_pause] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_gumps_pause,
 	        gumps_pause, colx[3], rowy[8], 59);
 	buttons[id_cheats] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_cheats,
@@ -215,10 +209,8 @@ void GameplayOptions_gump::save_settings() {
 		            paperdolls ? "yes" : "no", false);
 	}
 
-#ifndef __IPHONEOS__
 	gwin->set_allow_right_pathfind(right_pathfind);
 	config->set("config/gameplay/allow_right_pathfind", pathfind_texts[right_pathfind], false);
-#endif
 
 	gumpman->set_gumps_dont_pause_game(!gumps_pause);
 	config->set("config/gameplay/gumps_dont_pause_game", gumps_pause ? "no" : "yes", false);
@@ -248,10 +240,8 @@ void GameplayOptions_gump::paint() {
 	font->paint_text(iwin->get_ib8(), "Use Middle Mouse Button:", x + colx[0], y + rowy[4] + 1);
 #endif
 	font->paint_text(iwin->get_ib8(), "Doubleclick closes Gumps:", x + colx[0], y + rowy[5] + 1);
-#ifndef __IPHONEOS__
 	font->paint_text(iwin->get_ib8(), "Right click closes Gumps:", x + colx[0], y + rowy[6] + 1);
 	font->paint_text(iwin->get_ib8(), "Right click Pathfinds:", x + colx[0], y + rowy[7] + 1);
-#endif
 	font->paint_text(iwin->get_ib8(), "Gumps pause game:", x + colx[0], y + rowy[8] + 1);
 	font->paint_text(iwin->get_ib8(), "Cheats:", x + colx[0], y + rowy[9] + 1);
 	font->paint_text(iwin->get_ib8(), "Speed:", x + colx[0], y + rowy[10] + 1);
