@@ -72,9 +72,9 @@ ES_LIBS:=$(GTK_LIBS) $(FREETYPE2_LIBS) $(ZIP_LIBS) -lpng -luuid -lole32 -lwinmm 
 
 ### GIMP libs and includes, for the GIMP plugin.
 # If this doesn't work, insert output of 'gimptool --cflags' manually
-GIMP_INCLUDES:=$(shell gimptool --cflags) $(shell pkg-config --cflags gtk+-2.0)
+GIMP_INCLUDES:=$(shell pkg-config --cflags gimpui-2.0 gtk+-2.0)
 # If this doesn't work, insert output of 'gimptool --libs' manually
-GIMP_LIBS:=$(shell gimptool --libs)
+GIMP_LIBS:=$(shell pkg-config --libs gimpui-2.0)
 
 ### Ogg vorbis inclides
 OGG_INCLUDES:=$(shell pkg-config --cflags ogg vorbis vorbisfile)
