@@ -470,6 +470,8 @@ toolsdist: tools toolsinstall
 studioclean:
 	rm -f $(ES_OBJS) $(ES_OBJS:%.o=%.d) $(EXP_FILE) exult_studio$(EXEEXT)
 
+studio: exult_studio$(EXEEXT)
+
 studioinstall: exult_studio$(EXEEXT)
 	mkdir -p $(U7PATH)
 	strip exult_studio$(EXEEXT) -o $(U7PATH)/exult_studio$(EXEEXT)
