@@ -550,19 +550,41 @@ std::string Get_home();
 // Pulled from exult_studio.cc.
 void redirect_output(const char *prefix) {
 	if (GetFileType(GetStdHandle(STD_OUTPUT_HANDLE)) == FILE_TYPE_PIPE) {
-		// If we are at a msys/msys2 shell, do not redirect the output, and
-		// print it to console instead.
+		// If we are at a msys/msys2 shell running in MinTTY, do not redirect the output,
+		// and print it to console instead.
 		return;
 	}
+	if (AttachConsole(ATTACH_PARENT_PROCESS)) {
+		// If we are in something like Windows Terminal, we need to connect to
+		// the parent terminal and manually redirect stdout/stderr to the
+		// console. Note: in powershell or cmd.exe, this will give the
+		// impression of being stuck when exult/ES exits because they return to
+		// prompt immediately after exult/ES start, and this gets lost in the
+		// stdout/stderr output.
+		// Another possibility is to compile as a console application. We will
+		// always have an attached terminal in this case, even when starting
+		// from Windows Explorer. This console can be destroyed, but it will
+		// cause it to flash into view, then disappear right away.
+		// TODO: Figure out a way to make Exult/ES "return" the terminal.
+		HANDLE stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+		HANDLE stderr_handle = GetStdHandle(STD_ERROR_HANDLE);
+		if (stdout_handle != INVALID_HANDLE_VALUE
+			&& stderr_handle != INVALID_HANDLE_VALUE) {
+			// We will only redirect outputs if both calls succeed.
+			FILE* newstdout = freopen("CONOUT$", "w", stdout);
+			FILE* newstderr = freopen("CONOUT$", "w", stderr);
+			// If either freopen fails, lets just go on through to write to
+			// files instead.
+			if (newstdout != nullptr && newstderr != nullptr) {
+				// Set correct buffer mode: line-buffered for stdout, unbuffered
+				// for stderr.
+				setvbuf(stdout, nullptr, _IOLBF, 0);
+				setvbuf(stderr, nullptr, _IONBF, 0);
+				return;
+			}
+		}
+	}
 	// Starting from GUI, or from cmd.exe, we will need to redirect the output.
-	// It is possible to connect to the parent cmd.exe console using WinAPI
-	// (namely, AttachConsole(ATTACH_PARENT_PROCESS)). However, cmd.exe detaches
-	// the program since it (correctly) thinks we are a GUI application, and
-	// returns to the prompt. Thus, when we exit, it seems like we are stuck.
-	// Another possibility is to compile as a console application. We will
-	// always have an attached terminal in this case, even when starting from
-	// Windows Explorer. This console can be destroyed, but it will cause it
-	// to flash into view, then disappear right away.
 
 	// Flush the output in case anything is queued
 	fclose(stdout);
