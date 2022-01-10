@@ -367,36 +367,37 @@ BaseGameInfo *ExultMenu::run() {
 	navfonton = fontManager.get_font("HOT_NAV_FONT");
 
 	if (!gamemanager->get_game_count()) {
-		int center_offset = 40; //this is the last line /2 to put the entire message centered on screen
-		int topy = centery - center_offset; 
-		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy, "WARNING");
-		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 20, "Could not find the static data for either");
-		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 30, R"("The Black Gate" or "Serpent Isle".)");
-#ifndef __IPHONEOS__
-		const char games_missing_msg[] = "Please edit the configuration file";
-#else
-		const char games_missing_msg[] = "Please add the games in iTunes File Sharing";
-#endif
-		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 40, games_missing_msg);
-		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 50, "and restart Exult.");
+//OS Specific messages
 #ifdef __IPHONEOS__
-		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 80, "Touch screen for help!");
+		const char game_missing_msg[] = "Please add the games in iTunes File Sharing";
+		const char close_screen_msg[] = "Touch screen for help!";
 #else
-		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 80, "Press ESC to Close.");
+		const char game_missing_msg[] = "Please edit the configuration file.";
+		const char close_screen_msg[] = "Press ESC to Exit!";
 #endif
+//Create our message and programatically center it.
+		const char *message[8] = 
+		{
+			"WARNING",
+			"",
+			"Could not find the static data for either",
+			R"("The Black Gate" or "Serpent Isle".)",
+			game_missing_msg,
+			"",
+			"",
+			close_screen_msg,
+		};
+		int total_lines = sizeof(message)/sizeof(message[0]); //While this method is no longer "proper" it fits the rest of the coding style.
+		int topy = centery - ( total_lines*10 )/2;
+		for (int line_num = 0;line_num < total_lines; line_num++)
+		{
+			font->center_text(gwin->get_win()->get_ib8(),
+		                  centerx, topy + (line_num*10), message[line_num]);
+		}
 		gpal->apply();
 		while (!wait_delay(200)) {
 		}
-#ifndef __IPHONEOS__
-		throw quit_exception(1);
-#else
+#ifdef __IPHONEOS__
 		// Never quits because Apple doesn't allow you to.
 #if SDL_VERSION_ATLEAST(2,0,13)
 		SDL_OpenURL("http://exult.info/docs.php#ios_games");
@@ -406,6 +407,8 @@ BaseGameInfo *ExultMenu::run() {
 		while (1) {
 			wait_delay(1000);
 		}
+#else
+		throw quit_exception(1);
 #endif
 	}
 	IExultDataSource mouse_data(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX),
