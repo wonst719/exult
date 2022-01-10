@@ -367,25 +367,29 @@ BaseGameInfo *ExultMenu::run() {
 	navfonton = fontManager.get_font("HOT_NAV_FONT");
 
 	if (!gamemanager->get_game_count()) {
-		int topy = centery - 25;
+		int center_offset = 40; //this is the last line /2 to put the entire message centered on screen
+		int topy = centery - center_offset; 
 		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 20, "WARNING");
+		                  centerx, topy, "WARNING");
 		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 40, "Could not find the static data for either");
+		                  centerx, topy + 20, "Could not find the static data for either");
 		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 50, R"("The Black Gate" or "Serpent Isle".)");
+		                  centerx, topy + 30, R"("The Black Gate" or "Serpent Isle".)");
 #ifndef __IPHONEOS__
 		const char games_missing_msg[] = "Please edit the configuration file";
 #else
 		const char games_missing_msg[] = "Please add the games in iTunes File Sharing";
 #endif
 		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 60, games_missing_msg);
+		                  centerx, topy + 40, games_missing_msg);
 		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 70, "and restart Exult.");
+		                  centerx, topy + 50, "and restart Exult.");
 #ifdef __IPHONEOS__
 		font->center_text(gwin->get_win()->get_ib8(),
-		                  centerx, topy + 100, "Touch screen for help!");
+		                  centerx, topy + 80, "Touch screen for help!");
+#else
+		font->center_text(gwin->get_win()->get_ib8(),
+		                  centerx, topy + 80, "Press ESC to Close.");
 #endif
 		gpal->apply();
 		while (!wait_delay(200)) {
