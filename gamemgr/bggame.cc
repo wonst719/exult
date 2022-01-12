@@ -1917,22 +1917,26 @@ void BG_Game::end_game(bool success) {
 				if (i == 2) {
 					//initialize to make sure there is no garbage.
 					char buffer[50] = {0};
-					// this is how you would calculate years but since UltimaVII has 13 months per year and IV has 12 months
-					// it was decided to keep only months as we don't know which year is correct.
-					// int year = total_time/8760;
-					// total_time %= 8760;
-					int month = total_time/672;
-					total_time %= 672;
-					int day = total_time/24;
-					total_time %= 24;
-					int hour = total_time;
-					// as per comment above
-					// if(year > 0) sprintf(buffer,"%d year(s) , ",year);
-					// message = buffer;
-					if(month > 0) sprintf(buffer,"%s%d month(s) & ",message,month);
-					message = buffer;
-					sprintf(buffer,"%s%d day(s)",message,day);
-					message = buffer;
+					if (total_time >= 24) {
+						// this is how you would calculate years but since UltimaVII has 13 months per year and IV has 12 months
+						// it was decided to keep only months as we don't know which year is correct.
+						// int year = total_time/8760;
+						// total_time %= 8760;
+						int month = total_time/672;
+						total_time %= 672;
+						int day = total_time/24;
+						total_time %= 24;
+						int hour = total_time;
+						// as per comment above
+						// if(year > 0) sprintf(buffer,"%d year(s) , ",year);
+						// message = buffer;
+						if(month > 0) sprintf(buffer,"%s%d month(s) & ",message,month);
+						message = buffer;
+						sprintf(buffer,"%s%d day(s)",message,day);
+						message = buffer;
+					} else {
+						sprintf(buffer,"only %d hour(s).",total_time);
+						message = buffer;
 					}
 				}
 				//Update the mailing address(great idea DominusExult)
