@@ -399,11 +399,7 @@ BaseGameInfo *ExultMenu::run() {
 		}
 #ifdef __IPHONEOS__
 		// Never quits because Apple doesn't allow you to.
-#if SDL_VERSION_ATLEAST(2,0,13)
 		SDL_OpenURL("http://exult.info/docs.php#ios_games");
-#else
-		ios_open_url("http://exult.info/docs.php#ios_games");
-#endif
 		while (1) {
 			wait_delay(1000);
 		}
@@ -497,11 +493,7 @@ BaseGameInfo *ExultMenu::run() {
 		break;
 		case -1: // Exit
 #ifdef __IPHONEOS__
-#if SDL_VERSION_ATLEAST(2,0,13)
 			SDL_OpenURL("http://exult.info/docs.php#iOS%20Guide");
-#else
-			ios_open_url("http://exult.info/docs.php#iOS%20Guide");
-#endif
 			break;
 #else
 			gpal->fade_out(c_fade_out_time);

@@ -256,12 +256,3 @@ const char* ios_get_documents_dir()
 	}
 	return docs_dir;
 }
-
-/* not needed for SDL 2.0.13 because of SDL_OpenURL()*/
-#if !SDL_VERSION_ATLEAST(2,0,13)
-void ios_open_url(const char *sUrl)
-{
-	NSURL *url = [NSURL URLWithString:[NSString stringWithUTF8String:sUrl]];
-	[[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-}
-#endif
