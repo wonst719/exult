@@ -1928,7 +1928,7 @@ void BG_Game::end_game(bool success) {
 						int hour = total_time;
 						if(year > 0) sprintf(buffer,"%d year(s) , ",year);
 						message = buffer;
-						if(month > 0) sprintf(buffer,"%s%d month(s) , & ",message,month);
+						if(month > 0) sprintf(buffer,"%s%d month(s) & ",message,month);
 						message = buffer;
 						sprintf(buffer,"%s%d day(s)",message,day);
 						message = buffer;
@@ -1959,7 +1959,7 @@ void BG_Game::end_game(bool success) {
 			pal->fade(50, 0, 0);
 		}
 
-	 } catch (const UserSkipException &/*x*/) {
+	} catch (const UserSkipException &/*x*/) {
 	}
 
 	if (midi) {
