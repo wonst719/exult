@@ -34,8 +34,5 @@ public:
 };
 
 const char* ios_get_documents_dir();
-#if !SDL_VERSION_ATLEAST(2,0,13)
-void ios_open_url(const char *);
 
-#endif
 #endif

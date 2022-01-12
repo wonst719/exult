@@ -22,8 +22,6 @@ if ((x) > 1.0) { \
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor clearColor];
 		self.backgroundImage = [UIImage imageNamed:@"joythumb-glass.png"];
-
-#if SDL_VERSION_ATLEAST(2,0,13)
 		int vjoy_index = SDL_JoystickAttachVirtual(
 			SDL_JOYSTICK_TYPE_GAMECONTROLLER,
 			SDL_CONTROLLER_AXIS_MAX,
@@ -41,7 +39,6 @@ if ((x) > 1.0) { \
 		}
 		[self reset];
 		// printf("VJOY INIT, controller=%p\n", vjoy_controller);
-#endif
 	}
 	return self;
 }
@@ -54,7 +51,6 @@ if ((x) > 1.0) { \
 }
 
 - (void)dealloc {
-#if SDL_VERSION_ATLEAST(2,0,13)
 	if (vjoy_controller) {
 		const SDL_JoystickID vjoy_controller_id = SDL_JoystickInstanceID(
 			SDL_GameControllerGetJoystick(vjoy_controller)
@@ -69,7 +65,6 @@ if ((x) > 1.0) { \
 			}
 		}
 	}
-#endif
 
 	[backgroundImage release];
 	[images release];
@@ -123,7 +118,6 @@ if ((x) > 1.0) { \
 	UITouch *touch = [touches anyObject];
 	// printf("touchesBegan, %p\n", touch);
 
-#if SDL_VERSION_ATLEAST(2,0,13)
 	if (!vjoy_is_active && touch != nil) {
 		vjoy_input_source = touch;
 		vjoy_center = vjoy_current = [touch locationInView:self];
@@ -141,14 +135,12 @@ if ((x) > 1.0) { \
 		[self updateViewTransform];
 		// printf("VJOY START\n");
 	}
-#endif
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
 //    printf("touchesMoved, vjoy_input_source:%p, touch:%p\n", vjoy_input_source, touch);
 
-#if SDL_VERSION_ATLEAST(2,0,13)
 	UITouch * __strong current_input_source = vjoy_input_source;
 	if (vjoy_is_active && [touches containsObject:current_input_source]) {
 
@@ -190,19 +182,16 @@ if ((x) > 1.0) { \
 		
 		// printf("VJOY MOVE: %d, %d\n", (int)joy_axis_x_raw, (int)joy_axis_y_raw);
 	}
-#endif
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	// printf("touchesEnded, vjoy_input_source:%p, touch:%p\n", vjoy_input_source, touch);
 
-#if SDL_VERSION_ATLEAST(2,0,13)
 	if ([touches containsObject:vjoy_input_source]) {
 		// Mark vjoy as inactive
 		[self reset];
 	}
-#endif
 }
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
