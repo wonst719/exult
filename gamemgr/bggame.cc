@@ -1896,9 +1896,8 @@ void BG_Game::end_game(bool success) {
 		// Congratulations screen
 		
 		// show only when finishing a game and not when viewed from menu
-		// game starts off with 6.. this a bug? or maybe its the time of morning...
-		// perhaps this should be gotten from the save game file creation date, not sure if the method below is accurate to realtime(or if thats the point)
-		// also im sure there is a better way to find out if a game has started... someone want to re-write this entire engine with a state machine? lol
+		// game starts off with 6 hours as its 6am, should we be removing those 6hours?
+		// perhaps this should be gotten from the save game file creation date
 		if (total_time > 6) {
 			if (wait_delay(100)) {
 				throw UserSkipException();
@@ -1918,15 +1917,18 @@ void BG_Game::end_game(bool success) {
 				if (i == 2) {
 					//initialize to make sure there is no garbage.
 					char buffer[50] = {0};
-					int year = total_time/8760;
-					total_time %= 8760;
+					// this is how you would calculate years but since UltimaVII has 13 months per year and IV has 12 months
+					// it was decided to keep only months as we don't know which year is correct.
+					// int year = total_time/8760;
+					// total_time %= 8760;
 					int month = total_time/672;
 					total_time %= 672;
 					int day = total_time/24;
 					total_time %= 24;
 					int hour = total_time;
-					if(year > 0) sprintf(buffer,"%d year(s) , ",year);
-					message = buffer;
+					// as per comment above
+					// if(year > 0) sprintf(buffer,"%d year(s) , ",year);
+					// message = buffer;
 					if(month > 0) sprintf(buffer,"%s%d month(s) & ",message,month);
 					message = buffer;
 					sprintf(buffer,"%s%d day(s)",message,day);
