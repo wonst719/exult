@@ -1918,23 +1918,19 @@ void BG_Game::end_game(bool success) {
 				if (i == 2) {
 					//initialize to make sure there is no garbage.
 					char buffer[50] = {0};
-					if (total_time >= 24) {
-						int year = total_time/8760;
-						total_time %= 8760;
-						int month = total_time/672;
-						total_time %= 672;
-						int day = total_time/24;
-						total_time %= 24;
-						int hour = total_time;
-						if(year > 0) sprintf(buffer,"%d year(s) , ",year);
-						message = buffer;
-						if(month > 0) sprintf(buffer,"%s%d month(s) & ",message,month);
-						message = buffer;
-						sprintf(buffer,"%s%d day(s)",message,day);
-						message = buffer;
-					} else {
-						sprintf(buffer,"only %d hour(s). Suspicious.",total_time);
-						message = buffer;
+					int year = total_time/8760;
+					total_time %= 8760;
+					int month = total_time/672;
+					total_time %= 672;
+					int day = total_time/24;
+					total_time %= 24;
+					int hour = total_time;
+					if(year > 0) sprintf(buffer,"%d year(s) , ",year);
+					message = buffer;
+					if(month > 0) sprintf(buffer,"%s%d month(s) & ",message,month);
+					message = buffer;
+					sprintf(buffer,"%s%d day(s)",message,day);
+					message = buffer;
 					}
 				}
 				//Update the mailing address(great idea DominusExult)
