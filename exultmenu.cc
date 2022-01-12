@@ -373,7 +373,7 @@ BaseGameInfo *ExultMenu::run() {
 		const char close_screen_msg[] = "Touch screen for help!";
 #else
 		const char game_missing_msg[] = "Please edit the configuration file.";
-		const char close_screen_msg[] = "Press ESC to Exit!";
+		const char close_screen_msg[] = "Press ESC to exit.;
 #endif
 //Create our message and programatically center it.
 		const char *message[8] = 
