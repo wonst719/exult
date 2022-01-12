@@ -37,6 +37,7 @@
 #include "fnames.h"
 #include "font.h"
 #include "gamewin.h"
+#include "gameclk.h"
 #include "gump_utils.h"
 #include "imagewin/ArbScaler.h"
 #include "imagewin/imagewin.h"
@@ -1889,23 +1890,57 @@ void BG_Game::end_game(bool success) {
 
 		// Fade out for 1 sec (50 cycles)
 		pal->fade(50, 0, 0);
-#if 0
-		//TODO: only when finishing a game and not when viewed from menu
-		if (when not in menu) {
-			if (wait_delay(10)) break;
 
-			// Congratulations
+		Game_clock *clock = gwin->get_clock();
+		int total_time = clock->get_total_hours();
+		// Congratulations screen
+		
+		// show only when finishing a game and not when viewed from menu
+		// game starts off with 6.. this a bug? or maybe its the time of morning...
+		// perhaps this should be gotten from the save game file creation date, not sure if the method below is accurate to realtime(or if thats the point)
+		// also im sure there is a better way to find out if a game has started... someone want to re-write this entire engine with a state machine? lol
+		if (total_time > 6) {
+			if (wait_delay(100)) {
+				throw UserSkipException();
+			}
 
 			// Paint backgound black
 			win->fill8(0);
 
 			starty = (gwin->get_height() - normal->get_text_height() * 6) / 2;
 
-			//TODO: figure out the time it took to complete the game
+			// calculate the time it took to complete the game
 			// in exultmsg.txt it is "%d year s ,  %d month s , &  %d day s"
 			// only showing years or months if there were any
 			for (unsigned int i = 0; i < 9; i++) {
 				message = get_text_msg(congrats + i);
+				// if we are on the line with the time played
+				if (i == 2) {
+					char buffer[50];
+					if (total_time >= 24) {
+						int year = total_time/8760;
+						total_time %= 8760;
+						int month = total_time/672;
+						total_time %= 672;
+						int day = total_time/24;
+						total_time %= 24;
+						int hour = total_time;
+						if(year > 0) sprintf(buffer,"%d year(s) , ",year);
+						message = buffer;
+						if(month > 0) sprintf(buffer,"%s%d month(s) , & ",message,month);
+						message = buffer;
+						sprintf(buffer,"%s%d day(s)",message,day);
+						message = buffer;
+					} else {
+						sprintf(buffer,"Suspiciously Quick in... %d hour(s)",total_time);
+						message = buffer;
+					}
+				}
+				//Update the mailing address(great idea DominusExult)
+				if (i == 4) {
+					//fun fact the @ symbol was used to represent quotes :p
+					message = "at RichardGarriott on Twitter";
+				}
 				normal->draw_text(ibuf, centerx - normal->get_text_width(message) / 2, starty + normal->get_text_height()*i, message);
 			}
 
@@ -1922,9 +1957,8 @@ void BG_Game::end_game(bool success) {
 			// Fade out for 1 sec (50 cycles)
 			pal->fade(50, 0, 0);
 		}
-#endif
 
-	} catch (const UserSkipException &/*x*/) {
+	 } catch (const UserSkipException &/*x*/) {
 	}
 
 	if (midi) {
