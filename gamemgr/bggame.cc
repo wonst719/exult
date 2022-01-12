@@ -1933,7 +1933,7 @@ void BG_Game::end_game(bool success) {
 						sprintf(buffer,"%s%d day(s)",message,day);
 						message = buffer;
 					} else {
-						sprintf(buffer,"Suspiciously Quick in... %d hour(s)",total_time);
+						sprintf(buffer,"only %d hour(s). Suspicious.",total_time);
 						message = buffer;
 					}
 				}
