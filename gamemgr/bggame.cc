@@ -1949,6 +1949,9 @@ void BG_Game::end_game(bool success) {
 						// so 112 days at 2am would display "4 month's & 2 hour's", 113 days at 2am would display "4 month's & 1 day"
 						else if(day == 0 && hour > 1) sprintf(buffer,"%s%d hour's",message,hour);
 						else if(day == 0 && hour == 1) sprintf(buffer,"%s%d hour",message,hour);
+						
+						// in the remote chance a player finishes on exactly 0 hours, 0 days and X month(s)
+						if(day == 0 && hour == 0) sprintf(buffer,"%s & 0 day's",message);
 						message = buffer;
 					} else {
 						// if only displaying hours remove the initial 6
