@@ -1917,11 +1917,15 @@ void BG_Game::end_game(bool success) {
 				if (i == 2) {
 					//initialize to make sure there is no garbage.
 					char buffer[50] = {0};
-					if (total_time >= 24) {
-						// this is how you would calculate years but since UltimaVII has 13 months per year and IV has 12 months
-						// it was decided to keep only months as we don't know which year is correct.
-						// int year = total_time/8760;
-						// total_time %= 8760;
+					message = buffer;
+					// since we start at 6am we use hours if below 30 of them(30-6=1day), otherwise we don't display hours unless over a month so offset doesnt matter.
+					if (total_time >= 30) {
+						// this is how you would calculate years but since UltimaVII congrats screen has 13 months per year
+						// and VI in game calendar states 12 months per year
+						// it was decided to keep only months as we don't know which year is correct
+						// 8064 hours = 336 days, 672 hours = 28 days
+						// int year = total_time/8064;
+						// total_time %= 8064;
 						int month = total_time/672;
 						total_time %= 672;
 						int day = total_time/24;
@@ -1930,12 +1934,27 @@ void BG_Game::end_game(bool success) {
 						// as per comment above
 						// if(year > 0) sprintf(buffer,"%d year(s) , ",year);
 						// message = buffer;
-						if(month > 0) sprintf(buffer,"%s%d month(s) & ",message,month);
+						if(month == 1) sprintf(buffer,"%s%d month",message,month);
+						else if(month > 0) sprintf(buffer,"%s%d month's",message,month);
 						message = buffer;
-						sprintf(buffer,"%s%d day(s)",message,day);
+
+						// add amperstand only if there is more to display.
+						if(day != 0 || hour != 0) sprintf(buffer,"%s & ",message);
+						message = buffer;
+
+						if(day == 1) sprintf(buffer,"%s%d day",message,day);
+						else if(day > 1) sprintf(buffer,"%s%d day's",message,day);
+						// if no days, display hours(this would only happen on exactly 1,2,3 etc months)
+						// Here so the player doesnt think we didn't track the hours/days.
+						// so 112 days at 2am would display "4 month's & 2 hour's", 113 days at 2am would display "4 month's & 1 day"
+						else if(day == 0 && hour > 1) sprintf(buffer,"%s%d hour's",message,hour);
+						else if(day == 0 && hour == 1) sprintf(buffer,"%s%d hour",message,hour);
 						message = buffer;
 					} else {
-						sprintf(buffer,"only %d hour(s).",total_time);
+						// if only displaying hours remove the initial 6
+						total_time -= 6;
+						if(total_time == 1) sprintf(buffer,"only %d hour.",total_time);
+						else sprintf(buffer,"only %d hour's.",total_time);
 						message = buffer;
 					}
 				}
