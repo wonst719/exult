@@ -1935,7 +1935,7 @@ void BG_Game::end_game(bool success) {
 						// if(year > 0) sprintf(buffer,"%d year(s) , ",year);
 						// message = buffer;
 						if(month == 1) sprintf(buffer,"%s%d month",message,month);
-						else if(month > 0) sprintf(buffer,"%s%d month's",message,month);
+						else if(month > 1) sprintf(buffer,"%s%d month's",message,month);
 						message = buffer;
 
 						// add amperstand only if there is more to display.
