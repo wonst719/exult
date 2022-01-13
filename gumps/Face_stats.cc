@@ -36,9 +36,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PALETTE_INDEX_GREEN 64
 #define PALETTE_INDEX_BLUE  79
 
-#define PORTRAIT_NUM_MODES  3
+#define PORTRAIT_NUM_MODES  5
 
 #define PORTRAIT_WIDTH      40
+#define PORTRAIT_HEIGHT     35
 
 class Stat_bar : public Gump_button {
 	Actor       *actor;
@@ -351,8 +352,12 @@ void Face_stats::delete_buttons() {
 
 void Face_stats::create_buttons() {
 	int i;
-	int pos = 0;
+	int posx = 0;
+	int posy = 0;
 	int width = PORTRAIT_WIDTH;
+	int black_bar_width = 0;
+	int height = 0;
+	bool vertical = false;
 
 	resx = gwin->get_win()->get_full_width();
 	resy = gwin->get_win()->get_full_height();
@@ -360,6 +365,8 @@ void Face_stats::create_buttons() {
 	gamey = gwin->get_game_height();
 	x = 0;
 	y = gwin->get_win()->get_end_y();
+	black_bar_width = (resx - gamex)/2;
+	std::cout << "Black Bar Width: " << black_bar_width << std::endl;
 
 	party_size = partyman->get_count();
 
@@ -378,21 +385,38 @@ void Face_stats::create_buttons() {
 	}
 
 	if (mode == 0)
-		pos = 0;
+		posx = 0;
 	else if (mode == 1)
-		pos = (resx - (num_to_paint + 1) * PORTRAIT_WIDTH) / 2;
+		posx = (resx - (num_to_paint + 1) * PORTRAIT_WIDTH) / 2;
 	else if (mode == 2) {
-		pos = resx - PORTRAIT_WIDTH;
+		posx = resx - PORTRAIT_WIDTH;
 		width = - PORTRAIT_WIDTH;
 	}
+	else if (mode == 3) {
+		// center potrait in blank space
+		if (black_bar_width > PORTRAIT_WIDTH) posx = black_bar_width/2 - PORTRAIT_WIDTH/2;
+		else posx = 0;
+		posy = PORTRAIT_HEIGHT;
+		width = 0;
+		height = PORTRAIT_HEIGHT;
+		y = 0;
+		vertical = true;
+	}
 
-	pos += gwin->get_win()->get_start_x();
+	posx += gwin->get_win()->get_start_x();
 
 	std::memset(party, 0, sizeof(party));
 
-	party[0] = new Portrait_button(this, pos, 0, gwin->get_main_actor());
+	party[0] = new Portrait_button(this, posx, posy, gwin->get_main_actor());
 
 	for (i = 0; i < party_size; i++) {
+		// if vertical display first 4 on left and last 4 on right
+		// I chose this over squishing them in tightly
+		if (vertical && i == 3) {
+			if (black_bar_width > PORTRAIT_WIDTH) posx = black_bar_width + gamex - black_bar_width/2 - PORTRAIT_WIDTH/2;
+			else posx = black_bar_width + gamex - PORTRAIT_WIDTH;
+			posy = 0;
+		}
 		npc_nums[i + 1] = partyman->get_member(i);
 		Actor *act = gwin->get_npc(npc_nums[i + 1]);
 		assert(act != nullptr);
@@ -401,8 +425,11 @@ void Face_stats::create_buttons() {
 		        // Otherwise, show faces also if the character
 		        // has paperdoll information
 		        act->get_info().get_npc_paperdoll()) {
-			pos += width;
-			party[i + 1] = new Portrait_button(this, pos, 0, gwin->get_npc(npc_nums[i + 1]));
+		
+			posx += width;
+			posy += height;
+			party[i + 1] = new Portrait_button(this, posx, posy, gwin->get_npc(npc_nums[i + 1]));
+			std::cout << "ResX:" << resx << "  Portrait Position: " << i+1 << " - " << posx << "," << posy << std::endl;
 		} else {
 			party[i + 1] = nullptr;
 		}
