@@ -366,7 +366,6 @@ void Face_stats::create_buttons() {
 	x = 0;
 	y = gwin->get_win()->get_end_y();
 	black_bar_width = (resx - gamex)/2;
-	std::cout << "Black Bar Width: " << black_bar_width << std::endl;
 
 	party_size = partyman->get_count();
 
@@ -393,8 +392,11 @@ void Face_stats::create_buttons() {
 		width = - PORTRAIT_WIDTH;
 	}
 	else if (mode == 3) {
+
+		// if large black bars we dont want potraits floating in space so put them next to the game window
+		if (black_bar_width > (PORTRAIT_WIDTH *2)) posx = black_bar_width - PORTRAIT_WIDTH - 5;
 		// center potrait in blank space
-		if (black_bar_width > PORTRAIT_WIDTH) posx = black_bar_width/2 - PORTRAIT_WIDTH/2;
+		else if (black_bar_width > PORTRAIT_WIDTH) posx = black_bar_width/2 - PORTRAIT_WIDTH/2;
 		else posx = 0;
 		posy = PORTRAIT_HEIGHT;
 		width = 0;
@@ -413,7 +415,10 @@ void Face_stats::create_buttons() {
 		// if vertical display first 4 on left and last 4 on right
 		// I chose this over squishing them in tightly
 		if (vertical && i == 3) {
-			if (black_bar_width > PORTRAIT_WIDTH) posx = black_bar_width + gamex - black_bar_width/2 - PORTRAIT_WIDTH/2;
+			// if large black bars we dont want potraits floating in space so put them next to the game window
+			if (black_bar_width > (PORTRAIT_WIDTH *2)) posx = gamex + 5;
+			// center potrait in blank space
+			else if (black_bar_width > PORTRAIT_WIDTH) posx = black_bar_width + gamex - black_bar_width/2 - PORTRAIT_WIDTH/2;
 			else posx = black_bar_width + gamex - PORTRAIT_WIDTH;
 			posy = 0;
 		}
@@ -429,7 +434,6 @@ void Face_stats::create_buttons() {
 			posx += width;
 			posy += height;
 			party[i + 1] = new Portrait_button(this, posx, posy, gwin->get_npc(npc_nums[i + 1]));
-			std::cout << "ResX:" << resx << "  Portrait Position: " << i+1 << " - " << posx << "," << posy << std::endl;
 		} else {
 			party[i + 1] = nullptr;
 		}
