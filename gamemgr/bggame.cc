@@ -1938,8 +1938,8 @@ void BG_Game::end_game(bool success) {
 						else if(month > 1) sprintf(buffer,"%s%d month's",message,month);
 						message = buffer;
 
-						// add amperstand only if there is more to display.
-						if(day != 0 || hour != 0) sprintf(buffer,"%s & ",message);
+						// add amperstand only if month(s) and there is more to display.
+						if(day != 0 || hour != 0 && month > 0) sprintf(buffer,"%s & ",message);
 						message = buffer;
 
 						if(day == 1) sprintf(buffer,"%s%d day",message,day);
@@ -1947,8 +1947,8 @@ void BG_Game::end_game(bool success) {
 						// if no days, display hours(this would only happen on exactly 1,2,3 etc months)
 						// Here so the player doesnt think we didn't track the hours/days.
 						// so 112 days at 2am would display "4 month's & 2 hour's", 113 days at 2am would display "4 month's & 1 day"
-						else if(day == 0 && hour > 1) sprintf(buffer,"%s%d hour's",message,hour);
 						else if(day == 0 && hour == 1) sprintf(buffer,"%s%d hour",message,hour);
+						else if(day == 0 && hour > 1) sprintf(buffer,"%s%d hour's",message,hour);
 						
 						// in the remote chance a player finishes on exactly 0 hours, 0 days and X month(s)
 						if(day == 0 && hour == 0) sprintf(buffer,"%s & 0 day's",message);
