@@ -351,35 +351,35 @@ void Face_stats::delete_buttons() {
 }
 
 void Face_stats::create_buttons() {
-	int i;
-	int posx = 0;
-	int posy = 0;
-	int width = PORTRAIT_WIDTH;
-	int black_bar_width = 0;
-	int height = 0;
-	bool vertical = false;
+	int  i;
+	int  posx            = 0;
+	int  posy            = 0;
+	int  width           = PORTRAIT_WIDTH;
+	int  black_bar_width = 0;
+	int  height          = 0;
+	bool vertical        = false;
 
-	resx = gwin->get_win()->get_full_width();
-	resy = gwin->get_win()->get_full_height();
-	gamex = gwin->get_game_width();
-	gamey = gwin->get_game_height();
-	x = 0;
-	y = gwin->get_win()->get_end_y();
-	black_bar_width = (resx - gamex)/2;
+	resx            = gwin->get_win()->get_full_width();
+	resy            = gwin->get_win()->get_full_height();
+	gamex           = gwin->get_game_width();
+	gamey           = gwin->get_game_height();
+	x               = 0;
+	y               = gwin->get_win()->get_end_y();
+	black_bar_width = (resx - gamex) / 2;
 
 	party_size = partyman->get_count();
 
 	int num_to_paint = 0;
 
 	for (i = 0; i < party_size; i++) {
-		int num = partyman->get_member(i);
-		Actor *act = gwin->get_npc(num);
+		int    num = partyman->get_member(i);
+		Actor* act = gwin->get_npc(num);
 		assert(act != nullptr);
 		// Show faces if in SI, or if paperdolls are allowed
 		if (sman->can_use_paperdolls() ||
-		        // Otherwise, show faces also if the character
-		        // has paperdoll information
-		        act->get_info().get_npc_paperdoll())
+			// Otherwise, show faces also if the character
+			// has paperdoll information
+			act->get_info().get_npc_paperdoll())
 			++num_to_paint;
 	}
 
@@ -388,20 +388,22 @@ void Face_stats::create_buttons() {
 	else if (mode == 1)
 		posx = (resx - (num_to_paint + 1) * PORTRAIT_WIDTH) / 2;
 	else if (mode == 2) {
-		posx = resx - PORTRAIT_WIDTH;
-		width = - PORTRAIT_WIDTH;
-	}
-	else if (mode == 3) {
+		posx  = resx - PORTRAIT_WIDTH;
+		width = -PORTRAIT_WIDTH;
+	} else if (mode == 3) {
 		// if large black bars we dont want potraits floating in space so put them next to the game window
-		if (black_bar_width > (PORTRAIT_WIDTH *2)) posx = black_bar_width - PORTRAIT_WIDTH - 5;
+		if (black_bar_width > (PORTRAIT_WIDTH * 2))
+			posx = black_bar_width - PORTRAIT_WIDTH - 5;
 		// center potrait in blank space
-		else if (black_bar_width > PORTRAIT_WIDTH) posx = black_bar_width/2 - PORTRAIT_WIDTH/2;
-		else posx = 0;
-		posy = PORTRAIT_HEIGHT;
-		width = 0;
+		else if (black_bar_width > PORTRAIT_WIDTH)
+			posx = black_bar_width / 2 - PORTRAIT_WIDTH / 2;
+		else
+			posx = 0;
+		posy   = PORTRAIT_HEIGHT;
+		width  = 0;
 		height = PORTRAIT_HEIGHT;
 		// center potraits in Y, mainly to avoid conflicting with other on screeen controls
-		y = gamey/2 - (PORTRAIT_HEIGHT*4)/2;
+		y        = gamey / 2 - (PORTRAIT_HEIGHT * 4) / 2;
 		vertical = true;
 	}
 
@@ -412,15 +414,18 @@ void Face_stats::create_buttons() {
 	party[0] = new Portrait_button(this, posx, posy, gwin->get_main_actor());
 
 	for (i = 0; i < party_size; i++) {
-		// if vertical display first 4 on left and last 4 on right 
+		// if vertical display first 4 on left and last 4 on right
 		if (vertical && i == 3) {
-			if (black_bar_width > (PORTRAIT_WIDTH *2)) posx = gamex + 5;
-			else if (black_bar_width > PORTRAIT_WIDTH) posx = black_bar_width + gamex - black_bar_width/2 - PORTRAIT_WIDTH/2;
-			else posx = black_bar_width + gamex - PORTRAIT_WIDTH;
+			if (black_bar_width > (PORTRAIT_WIDTH * 2))
+				posx = gamex + 5;
+			else if (black_bar_width > PORTRAIT_WIDTH)
+				posx = black_bar_width + gamex - black_bar_width / 2 - PORTRAIT_WIDTH / 2;
+			else
+				posx = black_bar_width + gamex - PORTRAIT_WIDTH;
 			posy = 0;
 		}
 		npc_nums[i + 1] = partyman->get_member(i);
-		Actor *act = gwin->get_npc(npc_nums[i + 1]);
+		Actor* act      = gwin->get_npc(npc_nums[i + 1]);
 		assert(act != nullptr);
 		// Show faces if in SI, or if paperdolls are allowed
 		// Otherwise, show faces also if the character has paperdoll information
@@ -438,7 +443,7 @@ void Face_stats::create_buttons() {
 	for (i = 0; i < 8; i++)
 		if (party[i]) {
 			TileRect r = party[i]->get_rect();
-			region = region.add(r);
+			region     = region.add(r);
 		}
 }
 
