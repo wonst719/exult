@@ -392,7 +392,6 @@ void Face_stats::create_buttons() {
 		width = - PORTRAIT_WIDTH;
 	}
 	else if (mode == 3) {
-
 		// if large black bars we dont want potraits floating in space so put them next to the game window
 		if (black_bar_width > (PORTRAIT_WIDTH *2)) posx = black_bar_width - PORTRAIT_WIDTH - 5;
 		// center potrait in blank space
@@ -401,7 +400,8 @@ void Face_stats::create_buttons() {
 		posy = PORTRAIT_HEIGHT;
 		width = 0;
 		height = PORTRAIT_HEIGHT;
-		y = 0;
+		// center potraits in Y, mainly to avoid conflicting with other on screeen controls
+		y = gamey/2 - (PORTRAIT_HEIGHT*4)/2;
 		vertical = true;
 	}
 
@@ -412,12 +412,9 @@ void Face_stats::create_buttons() {
 	party[0] = new Portrait_button(this, posx, posy, gwin->get_main_actor());
 
 	for (i = 0; i < party_size; i++) {
-		// if vertical display first 4 on left and last 4 on right
-		// I chose this over squishing them in tightly
+		// if vertical display first 4 on left and last 4 on right 
 		if (vertical && i == 3) {
-			// if large black bars we dont want potraits floating in space so put them next to the game window
 			if (black_bar_width > (PORTRAIT_WIDTH *2)) posx = gamex + 5;
-			// center potrait in blank space
 			else if (black_bar_width > PORTRAIT_WIDTH) posx = black_bar_width + gamex - black_bar_width/2 - PORTRAIT_WIDTH/2;
 			else posx = black_bar_width + gamex - PORTRAIT_WIDTH;
 			posy = 0;
@@ -426,11 +423,8 @@ void Face_stats::create_buttons() {
 		Actor *act = gwin->get_npc(npc_nums[i + 1]);
 		assert(act != nullptr);
 		// Show faces if in SI, or if paperdolls are allowed
-		if (sman->can_use_paperdolls() ||
-		        // Otherwise, show faces also if the character
-		        // has paperdoll information
-		        act->get_info().get_npc_paperdoll()) {
-		
+		// Otherwise, show faces also if the character has paperdoll information
+		if (sman->can_use_paperdolls() || act->get_info().get_npc_paperdoll()) {
 			posx += width;
 			posy += height;
 			party[i + 1] = new Portrait_button(this, posx, posy, gwin->get_npc(npc_nums[i + 1]));
@@ -452,7 +446,6 @@ bool Face_stats::has_point(int x, int y) const {
 	for (auto *act : party)
 		if (act && act->on_button(x, y))
 			return true;
-
 	return false;
 }
 
