@@ -1896,8 +1896,7 @@ void BG_Game::end_game(bool success) {
 		// Congratulations screen
 
 		// show only when finishing a game and not when viewed from menu
-		// game starts off with 6 hours as its 6am, should we be removing those 6hours?
-		// perhaps this should be gotten from the save game file creation date
+		// game starts off with 6 hours as its 6am
 		if (total_time > 6) {
 			if (wait_delay(100)) {
 				throw UserSkipException();
@@ -1918,8 +1917,8 @@ void BG_Game::end_game(bool success) {
 					// initialize to make sure there is no garbage.
 					char buffer[50] = {0};
 					message         = buffer;
-					// since we start at 6am we use hours if below 30 of them(30-6=1day), otherwise we don't display hours unless over a month so offset doesnt
-					// matter.
+					// since we start at 6am we use hours if below 30 of them(30-6=1day), otherwise we don't display hours 
+					// unless over a month so offset doesn't matter.
 					if (total_time >= 30) {
 						// this is how you would calculate years but since UltimaVII congrats screen has 13 months per year
 						// and VI in game calendar states 12 months per year
@@ -1941,7 +1940,7 @@ void BG_Game::end_game(bool success) {
 							sprintf(buffer, "%s%d months", message, month);
 						message = buffer;
 
-						// add amperstand only if month(s) and there is more to display.
+						// add ampersand only if month(s) and there is more to display.
 						if (day != 0 || hour != 0 && month > 0)
 							sprintf(buffer, "%s & ", message);
 						message = buffer;
@@ -1972,9 +1971,8 @@ void BG_Game::end_game(bool success) {
 						message = buffer;
 					}
 				}
-				// Update the mailing address(great idea DominusExult)
+				// Update the mailing address
 				if (i == 4) {
-					// fun fact the @ symbol was used to represent quotes :p
 					message = "at RichardGarriott on Twitter";
 				}
 				normal->draw_text(ibuf, centerx - normal->get_text_width(message) / 2, starty + normal->get_text_height() * i, message);
