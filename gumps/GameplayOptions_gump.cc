@@ -78,7 +78,8 @@ void GameplayOptions_gump::cancel() {
 }
 
 void GameplayOptions_gump::build_buttons() {
-	std::vector<std::string> stats = {"Disabled", "Left", "Middle", "Right"};
+	//Status Bar Positions
+	std::vector<std::string> stats = {"Disabled", "Left", "Middle", "Right", "Vertical"};
 	buttons[id_facestats] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_facestats,
 	        std::move(stats), facestats, colx[3], rowy[0], 59);
 
