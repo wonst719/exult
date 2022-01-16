@@ -37,6 +37,7 @@
 #include "fnames.h"
 #include "font.h"
 #include "gamewin.h"
+#include "gameclk.h"
 #include "gump_utils.h"
 #include "imagewin/ArbScaler.h"
 #include "imagewin/imagewin.h"
@@ -1889,24 +1890,94 @@ void BG_Game::end_game(bool success) {
 
 		// Fade out for 1 sec (50 cycles)
 		pal->fade(50, 0, 0);
-#if 0
-		//TODO: only when finishing a game and not when viewed from menu
-		if (when not in menu) {
-			if (wait_delay(10)) break;
 
-			// Congratulations
+		Game_clock *clock = gwin->get_clock();
+		int total_time = clock->get_total_hours();
+		// Congratulations screen
+
+		// show only when finishing a game and not when viewed from menu
+		// game starts off with 6 hours as its 6am, should we be removing those 6hours?
+		// perhaps this should be gotten from the save game file creation date
+		if (total_time > 6) {
+			if (wait_delay(100)) {
+				throw UserSkipException();
+			}
 
 			// Paint backgound black
 			win->fill8(0);
 
 			starty = (gwin->get_height() - normal->get_text_height() * 6) / 2;
 
-			//TODO: figure out the time it took to complete the game
+			// calculate the time it took to complete the game
 			// in exultmsg.txt it is "%d year s ,  %d month s , &  %d day s"
 			// only showing years or months if there were any
 			for (unsigned int i = 0; i < 9; i++) {
 				message = get_text_msg(congrats + i);
-				normal->draw_text(ibuf, centerx - normal->get_text_width(message) / 2, starty + normal->get_text_height()*i, message);
+				// if we are on the line with the time played
+				if (i == 2) {
+					// initialize to make sure there is no garbage.
+					char buffer[50] = {0};
+					message         = buffer;
+					// since we start at 6am we use hours if below 30 of them(30-6=1day), otherwise we don't display hours unless over a month so offset doesnt
+					// matter.
+					if (total_time >= 30) {
+						// this is how you would calculate years but since UltimaVII congrats screen has 13 months per year
+						// and VI in game calendar states 12 months per year
+						// it was decided to keep only months as we don't know which year is correct
+						// 8064 hours = 336 days, 672 hours = 28 days
+						// int year = total_time/8064;
+						// total_time %= 8064;
+						int month = total_time / 672;
+						total_time %= 672;
+						int day = total_time / 24;
+						total_time %= 24;
+						int hour = total_time;
+						// as per comment above
+						// if(year > 0) sprintf(buffer,"%d year(s) , ",year);
+						// message = buffer;
+						if (month == 1)
+							sprintf(buffer, "%s%d month", message, month);
+						else if (month > 1)
+							sprintf(buffer, "%s%d months", message, month);
+						message = buffer;
+
+						// add amperstand only if month(s) and there is more to display.
+						if (day != 0 || hour != 0 && month > 0)
+							sprintf(buffer, "%s & ", message);
+						message = buffer;
+
+						if (day == 1)
+							sprintf(buffer, "%s%d day", message, day);
+						else if (day > 1)
+							sprintf(buffer, "%s%d days", message, day);
+						// if no days, display hours(this would only happen on exactly 1,2,3 etc months)
+						// Here so the player doesnt think we didn't track the hours/days.
+						// so 112 days at 2am would display "4 months & 2 hours", 113 days at 2am would display "4 months & 1 day"
+						else if (day == 0 && hour == 1)
+							sprintf(buffer, "%s%d hour", message, hour);
+						else if (day == 0 && hour > 1)
+							sprintf(buffer, "%s%d hours", message, hour);
+
+						// in the remote chance a player finishes on exactly 0 hours, 0 days and X month(s)
+						if (day == 0 && hour == 0)
+							sprintf(buffer, "%s & 0 days", message);
+						message = buffer;
+					} else {
+						// if only displaying hours remove the initial 6
+						total_time -= 6;
+						if (total_time == 1)
+							sprintf(buffer, "only %d hour.", total_time);
+						else
+							sprintf(buffer, "only %d hours.", total_time);
+						message = buffer;
+					}
+				}
+				// Update the mailing address(great idea DominusExult)
+				if (i == 4) {
+					// fun fact the @ symbol was used to represent quotes :p
+					message = "at RichardGarriott on Twitter";
+				}
+				normal->draw_text(ibuf, centerx - normal->get_text_width(message) / 2, starty + normal->get_text_height() * i, message);
 			}
 
 			// Fade in for 1 sec (50 cycles)
@@ -1922,7 +1993,6 @@ void BG_Game::end_game(bool success) {
 			// Fade out for 1 sec (50 cycles)
 			pal->fade(50, 0, 0);
 		}
-#endif
 
 	} catch (const UserSkipException &/*x*/) {
 	}
