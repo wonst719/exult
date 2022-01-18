@@ -45,7 +45,7 @@
 	<p>last changed: <xsl:value-of select="@changed"/></p>
 	<hr/>
 	<p>
-		A text only version can be found <a href="http://exult.sourceforge.net/faq.txt">here</a>
+		A text only version can be found <a href="http://exult.info/faq.txt">here</a>
 	</p>
 	<br/>
 
@@ -65,7 +65,7 @@
 	<p>last changed: <xsl:value-of select="@changed"/></p>
 	<hr/>
 	<p>
-		A text only version can be found <a href="http://exult.sourceforge.net/docs.txt">here</a>
+		A text only version can be found <a href="http://exult.info/docs.txt">here</a>
 	</p>
 	<br/>
 
@@ -85,7 +85,7 @@
 	<p>last changed: <xsl:value-of select="@changed"/></p>
 	<hr/>
 	<p>
-		A text only version can be found <a href="http://exult.sourceforge.net/exult_studio.txt">here</a>
+		A text only version can be found <a href="http://exult.info/exult_studio.txt">here</a>
 	</p>
 	<br/>
 

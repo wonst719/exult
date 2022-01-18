@@ -19,7 +19,7 @@
 #define PACKAGE_STRING "Exult 1.7.0git-iOS"
 
 /* Define to the home page for this package. */
-#define PACKAGE_URL "http://exult.sourceforge.net/"
+#define PACKAGE_URL "http://exult.info/"
 
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT ""

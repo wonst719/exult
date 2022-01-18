@@ -76,7 +76,7 @@
 				</tr>
 				<tr>
 					<td align="center">
-						<address><font size="-1">Problems with Exult or this webpage? <a href="http://exult.sourceforge.net/forum/post.php?f=1">Contact us.</a></font></address>
+						<address><font size="-1">Problems with Exult or this webpage? <a href="http://exult.info/forum/post.php?f=1">Contact us.</a></font></address>
 					</td>
 				</tr>
 			</table>
@@ -112,7 +112,7 @@
 						<p>last changed: <xsl:value-of select="@changed"/></p>
 						<hr/>
 						<p>
-							The latest version of this document can be found <a href="http://exult.sourceforge.net/faq.php">here</a>
+							The latest version of this document can be found <a href="http://exult.info/faq.php">here</a>
 						</p>
 						<br/>
 
@@ -150,7 +150,7 @@
 						<p>last changed: <xsl:value-of select="@changed"/></p>
 						<hr/>
 						<p>
-							The latest version of this document can be found <a href="http://exult.sourceforge.net/docs.php">here</a>
+							The latest version of this document can be found <a href="http://exult.info/docs.php">here</a>
 						</p>
 						<br/>
 
@@ -189,7 +189,7 @@
 						<p>last changed: <xsl:value-of select="@changed"/></p>
 						<hr/>
 						<p>
-							The latest version of this document can be found <a href="http://exult.sourceforge.net/studio.php">here</a>
+							The latest version of this document can be found <a href="http://exult.info/studio.php">here</a>
 						</p>
 						<br/>
 
