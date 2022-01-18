@@ -272,12 +272,6 @@ begin
   bSetPaths := False;
 
   DownloadPage := CreateDownloadPage(SetupMessage(msgWizardPreparing), SetupMessage(msgPreparingDesc), @OnDownloadProgress);
-
-// Wine doesn't support the Windows built-in unzip method hence will crash at installing the downloads
-  if RegKeyExists(HKEY_LOCAL_MACHINE, 'Software\Wine') then
-  begin
-     MsgBox('Warning: You seem to be using Wine. Do not select additional downloads!', mbInformation, MB_OK);
-  end;
 end;
 
 //
@@ -415,7 +409,9 @@ begin
     if WizardIsComponentSelected('Icons') then
       RegWriteStringValue(HKEY_LOCAL_MACHINE, 'Software\Exult', 'ShellObjectFolder', ExpandConstant('{groupname}'));
     
-// again check if component was selected and game paths are verified, and there reate the mods sub folder
+// Wine doesn't support the Windows built-in unzip method hence will crash at installing the downloads
+    if not RegKeyExists(HKEY_LOCAL_MACHINE, 'Software\Wine') then begin     
+// again check if component was selected and game paths are verified, and there create the mods sub folder
     if PrevItemAChecked <> WizardIsComponentSelected('downloads\audio') then
       ExtractMe('{tmp}\exult_audio.zip','{app}\data\');
     if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\keyring')) AND (iBGVerified = 1) then begin
@@ -430,5 +426,8 @@ begin
       ForceDirectories(sSImods);
       ExtractMe('{tmp}\Sifixes.zip',sSImods);
     end;
-  end
+    end else if RegKeyExists(HKEY_LOCAL_MACHINE, 'Software\Wine') then begin
+      MsgBox('Warning: You seem to be using Wine. Unfortunately the installer cannnot install the extra downloads on Wine!', mbInformation, MB_OK);
+    end;
+  end;
 end;
