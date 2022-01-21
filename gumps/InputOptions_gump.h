@@ -27,6 +27,34 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class Gump_button;
 
 class InputOptions_gump : public Modal_gump {
+private:
+	int doubleclick;
+	int rightclick_close;
+	int right_pathfind;
+	bool scroll_mouse;
+	int mouse3rd;
+	int fastmouse;
+	bool item_menu;
+	int dpad_location;
+	bool touch_pathfind;
+
+	enum button_ids {
+	    id_first = 0,
+	    id_ok = id_first,
+	    id_cancel,
+	    id_doubleclick,
+	    id_rightclick_close,
+	    id_right_pathfind,
+	    id_scroll_mouse,
+	    id_mouse3rd,
+	    id_fastmouse,
+	    id_item_menu,
+	    id_dpad_location,
+	    id_touch_pathfind,
+	    id_count
+	};
+	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
+
 public:
 	InputOptions_gump();
 
@@ -79,34 +107,5 @@ public:
 	void toggle_touch_pathfind(int state) {
 		touch_pathfind = state;
 	}
-
-private:
-	enum button_ids {
-	    id_first = 0,
-	    id_ok = id_first,
-	    id_cancel,
-	    id_doubleclick,
-	    id_rightclick_close,
-	    id_right_pathfind,
-	    id_scroll_mouse,
-	    id_mouse3rd,
-	    id_fastmouse,
-	    id_item_menu,
-	    id_dpad_location,
-	    id_touch_pathfind,
-	    id_count
-	};
-	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
-	
-	int doubleclick;
-	int rightclick_close;
-	int right_pathfind;
-	bool scroll_mouse;
-	int mouse3rd;
-	int fastmouse;
-	bool item_menu;
-	int dpad_location;
-	bool touch_pathfind;
 };
-
 #endif
