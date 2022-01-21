@@ -42,10 +42,12 @@
 using std::string;
 
 static const int rowy[] = { 4, 16, 28, 40, 52, 64, 76, 88, 100, 112, 124, 136, 148 };
-static const int colx[] = { 35, 50, 120, 170, 192, 215 };
+static const int colx[] = { 35, 50, 120, 170, 192, 211 };
 
 static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
+
+static const char *pathfind_texts[3] = {"no", "single", "double"};
 
 static const char *dpad_texts[3] = {"no", "left", "right"};
 
@@ -63,30 +65,60 @@ void InputOptions_gump::cancel() {
 }
 
 void InputOptions_gump::build_buttons() {
-	std::vector<string> dpad_text = {"Disabled"};
+	const std::vector<std::string> yesNo = {"No", "Yes"};
+	
+	int y_index = 0;
+
+	std::vector<string> dpad_text = {"None"};
 	if (touchui != nullptr) {
 		dpad_text.emplace_back("Left");
 		dpad_text.emplace_back("Right");
 	}
+	buttons[id_doubleclick] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_doubleclick,
+	        yesNo, doubleclick, colx[5], rowy[y_index], 44);
 
-	buttons[id_item_menu] = std::make_unique<InputEnabledToggle>(this, &InputOptions_gump::toggle_item_menu,
-	        item_menu, colx[4], rowy[0], 59);
+	buttons[id_rightclick_close] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_rightclick_close,
+	        yesNo, rightclick_close, colx[5], rowy[++y_index], 44);
+
+	std::vector<std::string> pathfind_text = {"No", "Single", "Double"};
+	buttons[id_right_pathfind] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_right_pathfind,
+	        std::move(pathfind_text), right_pathfind, colx[5], rowy[++y_index], 44);
+
+	buttons[id_scroll_mouse] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_scroll_mouse,
+	        yesNo, scroll_mouse, colx[5], rowy[++y_index], 44);
+
+#ifndef __IPHONEOS__
+	buttons[id_mouse3rd] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_mouse3rd,
+	        yesNo, mouse3rd, colx[5], rowy[++y_index], 44);
+
+	buttons[id_fastmouse] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_fastmouse,
+	        yesNo, fastmouse, colx[5], rowy[++y_index], 44);
+#endif
+
+	buttons[id_item_menu] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_item_menu,
+	        yesNo, item_menu, colx[5], rowy[++y_index], 44);
 
 	buttons[id_dpad_location] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_dpad_location,
-	        dpad_text, dpad_location, colx[4], rowy[1], 59);
+	        dpad_text, dpad_location, colx[5], rowy[++y_index], 44);
 
-	buttons[id_touch_pathfind] = std::make_unique<InputEnabledToggle>(this, &InputOptions_gump::toggle_touch_pathfind,
-	        touch_pathfind, colx[4], rowy[2], 59);
+	buttons[id_touch_pathfind] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_touch_pathfind,
+	        yesNo, touch_pathfind, colx[5], rowy[++y_index], 44);
 	// Ok
 	buttons[id_ok] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::close,
-	        oktext, colx[0], rowy[12], 59, 11);
+	        oktext, colx[0], rowy[12]);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::cancel,
-	        canceltext, colx[4], rowy[12], 59, 11);
+	        canceltext, colx[4], rowy[12]);
 }
 
 void InputOptions_gump::load_settings() {
-	//string yn;
+	doubleclick = 0;
+	doubleclick = gwin->get_double_click_closes_gumps();
+	rightclick_close = gumpman->can_right_click_close();
+	right_pathfind = gwin->get_allow_right_pathfind();
+	scroll_mouse = gwin->can_scroll_with_mouse();
+	fastmouse = gwin->get_fastmouse(true);
+	mouse3rd = gwin->get_mouse3rd();
 	item_menu = gwin->get_item_menu();
 	dpad_location = gwin->get_dpad_location();
 	touch_pathfind = gwin->get_touch_pathfind();
@@ -101,9 +133,29 @@ InputOptions_gump::InputOptions_gump()
 }
 
 void InputOptions_gump::save_settings() {
+	gwin->set_double_click_closes_gumps(doubleclick != 0);
+	config->set("config/gameplay/double_click_closes_gumps",
+	            doubleclick ? "yes" : "no", false);
+
+	gumpman->set_right_click_close(rightclick_close != 0);
+	config->set("config/gameplay/right_click_closes_gumps",
+	            rightclick_close ? "yes" : "no" , false);
+
+	gwin->set_allow_right_pathfind(right_pathfind);
+	config->set("config/gameplay/allow_right_pathfind", pathfind_texts[right_pathfind], false);
+	
+	config->set("config/gameplay/scroll_with_mouse",
+	            scroll_mouse ? "yes" : "no", false);
+	gwin->set_mouse_with_scroll(scroll_mouse);
 	gwin->set_item_menu(item_menu != 0);
 	config->set("config/touch/item_menu",
 	            item_menu ? "yes" : "no", false);
+
+	gwin->set_mouse3rd(mouse3rd != 0);
+	config->set("config/gameplay/mouse3rd", mouse3rd ? "yes" : "no", false);
+
+	gwin->set_fastmouse(fastmouse != 0);
+	config->set("config/gameplay/fastmouse", fastmouse ? "yes" : "no", false);
 
 	gwin->set_dpad_location(dpad_location);
 	config->set("config/touch/dpad_location", dpad_texts[dpad_location], false);
@@ -128,9 +180,18 @@ void InputOptions_gump::paint() {
 	}
 	Font *font = fontManager.get_font("SMALL_BLACK_FONT");
 	Image_window8 *iwin = gwin->get_win();
-	font->paint_text(iwin->get_ib8(), "Item helper menu:", x + colx[0], y + rowy[0] + 1);
-	font->paint_text(iwin->get_ib8(), "D-Pad screen location:", x + colx[0], y + rowy[1] + 1);
-	font->paint_text(iwin->get_ib8(), "Long touch pathfind:", x + colx[0], y + rowy[2] + 1);
+	int y_index = 0;
+	font->paint_text(iwin->get_ib8(), "Doubleclick closes Gumps:", x + colx[0], y + rowy[y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Right click closes Gumps:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Pathfind with Right Click:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Scroll game view with mouse:", x + colx[0], y + rowy[++y_index] + 1);
+#ifndef __IPHONEOS__
+	font->paint_text(iwin->get_ib8(), "Use Middle Mouse Button:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Fullscreen Fast Mouse:", x + colx[0], y + rowy[++y_index] + 1);
+#endif
+	font->paint_text(iwin->get_ib8(), "Item helper menu:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "D-Pad screen location:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Pathfind with Long Touch:", x + colx[0], y + rowy[++y_index] + 1);
 
 	gwin->set_painted();
 }

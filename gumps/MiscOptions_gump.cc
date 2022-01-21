@@ -67,10 +67,8 @@ void MiscOptions_gump::build_buttons() {
 	int y_index = 0;
 	int small_size = 44;
 	int large_size = 85;
-	buttons[id_scroll_mouse] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_scroll_mouse,
-	        yesNo, scroll_mouse, colx[5], rowy[y_index], small_size);
 	buttons[id_menu_intro] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_menu_intro,
-	        yesNo, menu_intro, colx[5], rowy[++y_index], small_size);
+	        yesNo, menu_intro, colx[5], rowy[y_index], small_size);
 	buttons[id_usecode_intro] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_usecode_intro,
 	        yesNo, usecode_intro, colx[5], rowy[++y_index], small_size);
 	buttons[id_alternate_drop] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_alternate_drop,
@@ -108,15 +106,14 @@ void MiscOptions_gump::build_buttons() {
 	        std::move(charmedDiff), charmDiff, colx[3], rowy[++y_index], large_size);
 	// Ok
 	buttons[id_ok] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::close,
-	        oktext, colx[0], rowy[++y_index]);
+	        oktext, colx[0], rowy[14]);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::cancel,
-	        canceltext, colx[4], rowy[y_index]);
+	        canceltext, colx[4], rowy[14]);
 }
 
 void MiscOptions_gump::load_settings() {
 	string yn;
-	scroll_mouse = gwin->can_scroll_with_mouse();
 	config->value("config/gameplay/skip_intro", yn, "no");
 	usecode_intro = (yn == "yes");
 	config->value("config/gameplay/skip_splash", yn, "no");
@@ -150,9 +147,6 @@ MiscOptions_gump::MiscOptions_gump()
 }
 
 void MiscOptions_gump::save_settings() {
-	config->set("config/gameplay/scroll_with_mouse",
-	            scroll_mouse ? "yes" : "no", false);
-	gwin->set_mouse_with_scroll(scroll_mouse);
 	config->set("config/gameplay/skip_intro",
 	            usecode_intro ? "yes" : "no", false);
 	config->set("config/gameplay/skip_splash",
@@ -203,11 +197,10 @@ void MiscOptions_gump::paint() {
 	Font *font = fontManager.get_font("SMALL_BLACK_FONT");
 	Image_window8 *iwin = gwin->get_win();
 	int y_index = 0;
-	font->paint_text(iwin->get_ib8(), "Scroll game view with mouse:", x + colx[0], y + rowy[y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Skip intro:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Skip intro:", x + colx[0], y + rowy[y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "Skip scripted first scene:", x + colx[0], y + rowy[++y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Alternate drag'n'drop:", x + colx[0], y + rowy[++y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Allow Autonotes:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Alternate drag and drop:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Take automatic notes:", x + colx[0], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "Use ShortcutBar :", x + colx[0], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "Use outline color :", x + colx[1], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "Hide missing items:", x + colx[1], y + rowy[++y_index] + 1);

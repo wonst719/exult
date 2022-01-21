@@ -30,15 +30,10 @@ class Gump_button;
 class GameplayOptions_gump : public Modal_gump {
 private:
 	int facestats;
-	int fastmouse;
-	int mouse3rd;
-	int doubleclick;
-	int rightclick_close;
 	int cheats;
 	int paperdolls;
 	int text_bg;
 	int frames;
-	int right_pathfind;
 	int gumps_pause;
 
 	std::vector<std::string> frametext;
@@ -50,11 +45,6 @@ private:
 	    id_cancel,
 	    id_facestats,
 	    id_text_bg,
-	    id_fastmouse,
-	    id_mouse3rd,
-	    id_doubleclick,
-	    id_rightclick_close,
-	    id_right_pathfind,
 	    id_gumps_pause,
 	    id_cheats,
 	    id_frames,
@@ -85,18 +75,6 @@ public:
 		facestats = state;
 	}
 
-	void toggle_fastmouse(int state) {
-		fastmouse = state;
-	}
-
-	void toggle_mouse3rd(int state) {
-		mouse3rd = state;
-	}
-
-	void toggle_doubleclick(int state) {
-		doubleclick = state;
-	}
-
 	void toggle_cheats(int state) {
 		cheats = state;
 	}
@@ -111,14 +89,6 @@ public:
 
 	void toggle_frames(int state) {
 		frames = state;
-	}
-
-	void toggle_rightclick_close(int state) {
-		rightclick_close = state;
-	}
-
-	void toggle_right_pathfind(int state) {
-		right_pathfind = state;
 	}
 
 	void toggle_gumps_pause(int state) {

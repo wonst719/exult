@@ -32,7 +32,6 @@ private:
 	int show_hits;
 	int mode;
 	bool charmDiff;
-	bool scroll_mouse;
 	bool usecode_intro;
 	bool menu_intro;
 	bool alternate_drop;
@@ -47,7 +46,6 @@ private:
 	    id_first = 0,
 	    id_ok = id_first,
 	    id_cancel,
-	    id_scroll_mouse,
 	    id_menu_intro,
 	    id_usecode_intro,
 	    id_alternate_drop,
@@ -77,10 +75,6 @@ public:
 	void load_settings();
 	void save_settings();
 	void cancel();
-
-	void toggle_scroll_mouse(int state) {
-		scroll_mouse = state;
-	}
 
 	void toggle_menu_intro(int state) {
 		menu_intro = state;
