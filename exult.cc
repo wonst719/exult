@@ -184,11 +184,10 @@ int num_res = array_size(res_list);
 int current_res = 0;
 int current_scaleval = 1;
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(USE_EXULTSTUDIO)
 static HWND hgwin;
 static Windnd *windnd = nullptr;
 #endif
-
 
 /*
  *  Local functions:
