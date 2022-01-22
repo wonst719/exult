@@ -39,14 +39,29 @@
 #include "font.h"
 #include "gamewin.h"
 #include "Notebook_gump.h"
-#include "ShortcutBar_gump.h"
+#include "cheat.h"
+
+#include "array_size.h"
+
 using std::string;
 
-static const int rowy[] = { 4, 16, 28, 40, 52, 64, 76, 88, 100, 112, 124, 136, 148, 160, 172 };
-static const int colx[] = { 35, 50, 120, 170, 192, 211 };
+static const int rowy[] = { 5, 17, 29, 41, 53, 65, 77, 89,
+                            101, 113, 125, 137, 146 };
+static const int colx[] = { 35, 50, 120, 170, 192, 209 };
 
 static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
+
+static int framerates[] = { 2, 4, 6, 8, 10, -1 };
+// -1 is placeholder for custom framerate
+static const int num_default_rates = array_size(framerates) - 1;
+
+
+static string framestring(int fr) {
+	char buf[100];
+	sprintf(buf, "%i fps", fr);
+	return buf;
+}
 
 using MiscOptions_button = CallbackTextButton<MiscOptions_gump>;
 using MiscTextToggle = CallbackToggleTextButton<MiscOptions_gump>;
@@ -67,62 +82,44 @@ void MiscOptions_gump::build_buttons() {
 	int y_index = 0;
 	int small_size = 44;
 	int large_size = 85;
-	buttons[id_menu_intro] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_menu_intro,
-	        yesNo, menu_intro, colx[5], rowy[y_index], small_size);
-	buttons[id_usecode_intro] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_usecode_intro,
-	        yesNo, usecode_intro, colx[5], rowy[++y_index], small_size);
+	
+	buttons[id_allow_autonotes] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_allow_autonotes,
+	        yesNo, allow_autonotes, colx[5], rowy[y_index], small_size);
+
+	buttons[id_gumps_pause] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_gumps_pause,
+	        yesNo, gumps_pause, colx[5], rowy[++y_index], small_size);
+
 	buttons[id_alternate_drop] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_alternate_drop,
 	        yesNo, alternate_drop, colx[5], rowy[++y_index], small_size);
-	buttons[id_allow_autonotes] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_allow_autonotes,
-	        yesNo, allow_autonotes, colx[5], rowy[++y_index], small_size);
 
-	std::vector<std::string> sc_enabled_txt = {"No", "transparent", "Yes"};
-	buttons[id_sc_enabled] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_sc_enabled,
-	        std::move(sc_enabled_txt), sc_enabled, colx[3], rowy[++y_index], large_size);
+	buttons[id_frames] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_frames,
+	        frametext, frames, colx[5], rowy[++y_index], small_size);
 
-	// keep in order of Pixel_colors
-	// "No" needs to be last.
-	sc_outline_txt = std::vector<std::string>{"green", "white", "yellow", "blue", "red", "purple", "black", "No"};
-	buttons[id_sc_outline] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_sc_outline,
-	        sc_outline_txt, sc_outline, colx[5], rowy[++y_index], small_size);
-	buttons[id_sb_hide_missing] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_sb_hide_missing,
-	        yesNo, sb_hide_missing, colx[5], rowy[++y_index], small_size);
-	// two row gap
-	std::vector<std::string> diffs = {
-	    "Easiest (-3)", "Easier (-2)", "Easier (-1)",
-		"Normal",
-		"Harder (+1)", "Harder (+2)", "Hardest (+3)"};
-	buttons[id_difficulty] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_difficulty,
-	        std::move(diffs), difficulty, colx[3], rowy[y_index+=3], large_size);
-	buttons[id_show_hits] = std::make_unique<MiscEnabledToggle>(this, &MiscOptions_gump::toggle_show_hits,
-	        show_hits, colx[3], rowy[++y_index], large_size);
+	buttons[id_show_hits] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_show_hits,
+	        yesNo, show_hits, colx[5], rowy[++y_index], small_size);
 
-	std::vector<std::string> modes = {"Original", "Space pauses"};
+	//std::vector<std::string> modes = {"Original", "Space pauses"};
 	buttons[id_mode] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_mode,
-	        std::move(modes), mode, colx[3], rowy[++y_index], large_size);
+	        yesNo, mode, colx[5], rowy[++y_index], small_size);
 
 	std::vector<std::string> charmedDiff = {"Normal", "Hard"};
 	buttons[id_charmDiff] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_charmDiff,
-	        std::move(charmedDiff), charmDiff, colx[3], rowy[++y_index], large_size);
-	// Ok
-	buttons[id_ok] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::close,
-	        oktext, colx[0], rowy[14]);
-	// Cancel
-	buttons[id_cancel] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::cancel,
-	        canceltext, colx[4], rowy[14]);
+	        std::move(charmedDiff), charmDiff, colx[5], rowy[++y_index], small_size);
+
+	std::vector<std::string> diffs = {
+	    "Easiest (-3)", "Easier (-2)", "Easier (-1)",
+	    "Normal",
+	    "Harder (+1)", "Harder (+2)", "Hardest (+3)"};
+	buttons[id_difficulty] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_difficulty,
+	        std::move(diffs), difficulty, colx[5] - 41, rowy[++y_index], large_size);
+
+	buttons[id_cheats] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_cheats,
+	        yesNo, cheats, colx[5], rowy[++y_index], small_size);
 }
 
 void MiscOptions_gump::load_settings() {
 	string yn;
-	config->value("config/gameplay/skip_intro", yn, "no");
-	usecode_intro = (yn == "yes");
-	config->value("config/gameplay/skip_splash", yn, "no");
-	menu_intro = (yn == "yes");
-
-	sc_enabled = gwin->get_shortcutbar_type();
-	sc_outline = gwin->get_outline_color();
-	sb_hide_missing = gwin->sb_hide_missing_items();
-
+	cheats = cheat();
 	difficulty = Combat::difficulty;
 	if (difficulty < -3)
 		difficulty = -3;
@@ -136,37 +133,47 @@ void MiscOptions_gump::load_settings() {
 	charmDiff = Combat::charmed_more_difficult;
 	alternate_drop = gwin->get_alternate_drop();
 	allow_autonotes = gwin->get_allow_autonotes();
+	gumps_pause = !gumpman->gumps_dont_pause_game();
+	int realframes = 1000 / gwin->get_std_delay();
+
+	frames = -1;
+	framerates[num_default_rates] = realframes;
+	for (int i = 0; i < num_default_rates; i++) {
+		if (realframes == framerates[i]) {
+			frames = i;
+			break;
+		}
+	}
+
+	int num_framerates = num_default_rates;
+	if (frames == -1) {
+		num_framerates++;
+		frames = num_default_rates;
+	}
+	frametext.clear();
+	for (int i = 0; i < num_framerates; i++) {
+		frametext.emplace_back(framestring(framerates[i]));
+	}
 }
 
 MiscOptions_gump::MiscOptions_gump()
-	: Modal_gump(nullptr, EXULT_FLX_MISCOPTIONS_SHP, SF_EXULT_FLX) {
-	set_object_area(TileRect(0, 0, 0, 0), 8, 184);//++++++ ???
+	: Modal_gump(nullptr, EXULT_FLX_GAMEPLAYOPTIONS_SHP, SF_EXULT_FLX) {
+	set_object_area(TileRect(0, 0, 0, 0), 8, 162);//++++++ ???
 
 	load_settings();
 	build_buttons();
+	
+	// Ok
+	buttons[id_ok] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::close,
+	        oktext, colx[0] - 2, rowy[12]);
+	// Cancel
+	buttons[id_cancel] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::cancel,
+	        canceltext, colx[5] - 3, rowy[12]);
 }
 
 void MiscOptions_gump::save_settings() {
-	config->set("config/gameplay/skip_intro",
-	            usecode_intro ? "yes" : "no", false);
-	config->set("config/gameplay/skip_splash",
-	            menu_intro ? "yes" : "no", false);
 
 	string str = "no";
-	if(sc_enabled == 1)
-		str = "transparent";
-	else if(sc_enabled == 2)
-		str = "yes";
-	config->set("config/shortcutbar/use_shortcutbar", str, false);
-	config->set("config/shortcutbar/use_outline_color", sc_outline_txt[sc_outline], false);
-	config->set("config/shortcutbar/hide_missing_items", sb_hide_missing ? "yes" : "no", false);
-
-	gwin->set_outline_color(static_cast<Pixel_colors>(sc_outline));
-	gwin->set_sb_hide_missing_items(sb_hide_missing);
-	gwin->set_shortcutbar(static_cast<uint8>(sc_enabled));
-	if(g_shortcutBar)
-		g_shortcutBar->set_changed();
-
 	Combat::difficulty = difficulty - 3;
 	config->set("config/gameplay/combat/difficulty",
 	            Combat::difficulty, false);
@@ -186,6 +193,12 @@ void MiscOptions_gump::save_settings() {
 	gwin->set_allow_autonotes(allow_autonotes);
 	config->set("config/gameplay/allow_autonotes",
 	            allow_autonotes ? "yes" : "no", false);
+	int fps = framerates[frames];
+	gwin->set_std_delay(1000 / fps);
+	config->set("config/video/fps", fps, false);
+	cheat.set_enabled(cheats != 0);
+	gumpman->set_gumps_dont_pause_game(!gumps_pause);
+	config->set("config/gameplay/gumps_dont_pause_game", gumps_pause ? "no" : "yes", false);
 	config->write_back();
 }
 
@@ -197,19 +210,15 @@ void MiscOptions_gump::paint() {
 	Font *font = fontManager.get_font("SMALL_BLACK_FONT");
 	Image_window8 *iwin = gwin->get_win();
 	int y_index = 0;
-	font->paint_text(iwin->get_ib8(), "Skip intro:", x + colx[0], y + rowy[y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Skip scripted first scene:", x + colx[0], y + rowy[++y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Alternate drag and drop:", x + colx[0], y + rowy[++y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Take automatic notes:", x + colx[0], y + rowy[++y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Use ShortcutBar :", x + colx[0], y + rowy[++y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Use outline color :", x + colx[1], y + rowy[++y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Hide missing items:", x + colx[1], y + rowy[++y_index] + 1);
-	// 1 row gap
-	font->paint_text(iwin->get_ib8(), "Combat Options:", x + colx[0], y + rowy[y_index+=2] + 1);
-	font->paint_text(iwin->get_ib8(), "Difficulty:", x + colx[1], y + rowy[++y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Show Hits:", x + colx[1], y + rowy[++y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Mode:", x + colx[1], y + rowy[++y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Charmed Difficulty:", x + colx[1], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Take automatic notes:", x + colx[0], y + rowy[y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Gumps pause game:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Alternative drag and drop:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Speed:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Combat Show Hits:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Combat paused with Space:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Combat Charmed Difficulty:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Combat Difficulty:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Cheats:", x + colx[0], y + rowy[++y_index] + 1);
 	gwin->set_painted();
 }
 
