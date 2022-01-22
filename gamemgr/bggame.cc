@@ -1941,7 +1941,7 @@ void BG_Game::end_game(bool success) {
 						message = buffer;
 
 						// add ampersand only if month(s) and there is more to display.
-						if (day != 0 || hour != 0 && month > 0)
+						if (month > 0 && (day != 0 || hour != 0))
 							sprintf(buffer, "%s & ", message);
 						message = buffer;
 
