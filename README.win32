@@ -189,19 +189,19 @@ Run Exult.exe and enjoy the game :-)
     And that's all: Exult, Tools, and Exult Studio will now work on Windows XP.
 
 
-To build in Windows using Visual Studio 2019
---------------------------------------------
-
-NOTE: This has only been tested with Visual Studio 2019 16.9.0 Preview 4. At this stage only projects for expack and exult are included.
+To build in Windows using Visual Studio
+---------------------------------------
+NOTE: This has only been tested with Visual Studio 2019 and Visual Studio 2022 
+At this stage only projects for expack and exult are included.
 There are no projects for the other exult tools including no exult studio.
 
-1) Install visual studio 2019 community edition
+1) Install visual studio community edition 2019 or newer make sure MSVC v142 VS 2019 C++ x86 build tools are selected for install
 
 2) open the solution included in the exult source msvcstuff\vs2019\Exult.sln
 
 3) restore nuget packages. (nuget packages are used for all the dependencies needed by exult: sdl2, ogg, vorbis, ZLib)
 
-4) Build the exult project using a win32 Configuration. x64 is not supported at this time. 
+4) Build the exult project using a x86 Configuration. x64 is not supported at this time. 
 Exult.exe will be placed in the root of the source tree. 
 The build process will generate expack.exe and the flx files needed by exult in the data directory.
 
