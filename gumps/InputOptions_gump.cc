@@ -41,8 +41,9 @@
 
 using std::string;
 
-static const int rowy[] = { 4, 16, 28, 40, 52, 64, 76, 88, 100, 112, 124, 136, 148 };
-static const int colx[] = { 35, 50, 120, 170, 192, 211 };
+static const int rowy[] = { 5, 17, 29, 41, 53, 65, 77, 89,
+                            101, 113, 125, 137, 146 };
+static const int colx[] = { 35, 50, 120, 170, 192, 209 };
 
 static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
@@ -103,12 +104,6 @@ void InputOptions_gump::build_buttons() {
 
 	buttons[id_touch_pathfind] = std::make_unique<InputTextToggle>(this, &InputOptions_gump::toggle_touch_pathfind,
 	        yesNo, touch_pathfind, colx[5], rowy[++y_index], 44);
-	// Ok
-	buttons[id_ok] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::close,
-	        oktext, colx[0], rowy[12]);
-	// Cancel
-	buttons[id_cancel] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::cancel,
-	        canceltext, colx[4], rowy[12]);
 }
 
 void InputOptions_gump::load_settings() {
@@ -130,6 +125,13 @@ InputOptions_gump::InputOptions_gump()
 
 	load_settings();
 	build_buttons();
+
+	// Ok
+	buttons[id_ok] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::close,
+	        oktext, colx[0] - 2, rowy[12]);
+	// Cancel
+	buttons[id_cancel] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::cancel,
+	        canceltext, colx[5] - 3, rowy[12]);
 }
 
 void InputOptions_gump::save_settings() {
@@ -185,10 +187,10 @@ void InputOptions_gump::paint() {
 	font->paint_text(iwin->get_ib8(), "Right click closes Gumps:", x + colx[0], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "Pathfind with Right Click:", x + colx[0], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "Scroll game view with mouse:", x + colx[0], y + rowy[++y_index] + 1);
-#ifndef __IPHONEOS__
-	font->paint_text(iwin->get_ib8(), "Use Middle Mouse Button:", x + colx[0], y + rowy[++y_index] + 1);
-	font->paint_text(iwin->get_ib8(), "Fullscreen Fast Mouse:", x + colx[0], y + rowy[++y_index] + 1);
-#endif
+	if (buttons[id_mouse3rd])
+		font->paint_text(iwin->get_ib8(), "Use Middle Mouse Button:", x + colx[0], y + rowy[++y_index] + 1);
+	if (buttons[iid_fastmouse])
+		font->paint_text(iwin->get_ib8(), "Fullscreen Fast Mouse:", x + colx[0], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "Item helper menu:", x + colx[0], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "D-Pad screen location:", x + colx[0], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "Pathfind with Long Touch:", x + colx[0], y + rowy[++y_index] + 1);
