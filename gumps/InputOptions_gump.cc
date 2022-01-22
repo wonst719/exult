@@ -189,7 +189,7 @@ void InputOptions_gump::paint() {
 	font->paint_text(iwin->get_ib8(), "Scroll game view with mouse:", x + colx[0], y + rowy[++y_index] + 1);
 	if (buttons[id_mouse3rd])
 		font->paint_text(iwin->get_ib8(), "Use Middle Mouse Button:", x + colx[0], y + rowy[++y_index] + 1);
-	if (buttons[iid_fastmouse])
+	if (buttons[id_fastmouse])
 		font->paint_text(iwin->get_ib8(), "Fullscreen Fast Mouse:", x + colx[0], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "Item helper menu:", x + colx[0], y + rowy[++y_index] + 1);
 	font->paint_text(iwin->get_ib8(), "D-Pad screen location:", x + colx[0], y + rowy[++y_index] + 1);
