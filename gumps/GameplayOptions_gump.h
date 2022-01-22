@@ -30,25 +30,28 @@ class Gump_button;
 class GameplayOptions_gump : public Modal_gump {
 private:
 	int facestats;
-	int cheats;
-	int paperdolls;
+	int sc_enabled;
+	int sc_outline;
+	bool sb_hide_missing;
+	std::vector<std::string> sc_outline_txt;
 	int text_bg;
-	int frames;
-	int gumps_pause;
-
-	std::vector<std::string> frametext;
 	int smooth_scrolling;
+	bool usecode_intro;
+	bool menu_intro;
+	int paperdolls;
 
 	enum button_ids {
 	    id_first = 0,
 	    id_ok = id_first,
 	    id_cancel,
 	    id_facestats,
+	    id_sc_enabled,
+	    id_sc_outline,
+	    id_sb_hide_missing,
 	    id_text_bg,
-	    id_gumps_pause,
-	    id_cheats,
-	    id_frames,
 	    id_smooth_scrolling,
+	    id_menu_intro,
+	    id_usecode_intro,
 	    id_paperdolls,
 	    id_count
 	};
@@ -75,28 +78,36 @@ public:
 		facestats = state;
 	}
 
-	void toggle_cheats(int state) {
-		cheats = state;
+	void toggle_sc_enabled(int state) {
+		sc_enabled = state;
 	}
 
-	void toggle_paperdolls(int state) {
-		paperdolls = state;
+	void toggle_sc_outline(int state) {
+		sc_outline = state;
+	}
+
+	void toggle_sb_hide_missing(int state) {
+		sb_hide_missing = state;
 	}
 
 	void toggle_text_bg(int state) {
 		text_bg = state;
 	}
 
-	void toggle_frames(int state) {
-		frames = state;
-	}
-
-	void toggle_gumps_pause(int state) {
-		gumps_pause = state;
-	}
-
 	void toggle_smooth_scrolling(int state) {
 		smooth_scrolling = state;
+	}
+
+	void toggle_menu_intro(int state) {
+		menu_intro = state;
+	}
+
+	void toggle_usecode_intro(int state) {
+		usecode_intro = state;
+	}
+
+	void toggle_paperdolls(int state) {
+		paperdolls = state;
 	}
 };
 

@@ -35,32 +35,20 @@
 #include "game.h"
 #include "gamewin.h"
 #include "mouse.h"
-#include "cheat.h"
 #include "Face_stats.h"
 #include "Text_button.h"
 #include "Enabled_button.h"
 #include "font.h"
-#include "array_size.h"
+#include "ShortcutBar_gump.h"
 
 using std::string;
 
-static const int rowy[] = { 4, 16, 124, 28, 40, 52, 64, 76, 88, 100, 112, 148, 136 };
-
-static const int colx[] = { 35, 50, 120, 195, 192 };
+static const int rowy[] = { 5, 17, 29, 41, 53, 65, 77, 89,
+                            101, 113, 125, 137, 146 };
+static const int colx[] = { 35, 50, 120, 170, 192, 209 };
 
 static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
-
-static int framerates[] = { 2, 4, 6, 8, 10, -1 };
-// -1 is placeholder for custom framerate
-static const int num_default_rates = array_size(framerates) - 1;
-
-
-static string framestring(int fr) {
-	char buf[100];
-	sprintf(buf, "%i fps", fr);
-	return buf;
-}
 
 using GameplayOptions_button = CallbackTextButton<GameplayOptions_gump>;
 using GameplayTextToggle = CallbackToggleTextButton<GameplayOptions_gump>;
@@ -76,38 +64,66 @@ void GameplayOptions_gump::cancel() {
 }
 
 void GameplayOptions_gump::build_buttons() {
+	const std::vector<std::string> yesNo = {"No", "Yes"};
+
+	int y_index = 0;
+	int small_size = 44;
+	int large_size = 85;
+	
 	//Status Bar Positions
 	std::vector<std::string> stats = {"Disabled", "Left", "Middle", "Right", "Vertical"};
 	buttons[id_facestats] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_facestats,
-	        std::move(stats), facestats, colx[3], rowy[0], 59);
+	        std::move(stats), facestats, colx[5] - 41, rowy[y_index], large_size);
+
+	std::vector<std::string> sc_enabled_txt = {"No", "Transparent", "Yes"};
+	buttons[id_sc_enabled] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_sc_enabled,
+	        std::move(sc_enabled_txt), sc_enabled, colx[5] - 41, rowy[++y_index], large_size);
+
+	// keep in order of Pixel_colors
+	// "No" needs to be last.
+	sc_outline_txt = std::vector<std::string>{"Green", "White", "Yellow", "Blue", "Red", "Purple", "Black", "No"};
+	buttons[id_sc_outline] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_sc_outline,
+	        sc_outline_txt, sc_outline, colx[5], rowy[++y_index], small_size);
+
+	buttons[id_sb_hide_missing] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_sb_hide_missing,
+	        yesNo, sb_hide_missing, colx[5], rowy[++y_index], small_size);
 
 	std::vector<std::string> textbgcolor = {
 		"Disabled",
-		"Solid Light Gray", "Dark Purple", "Bright Yellow", "Light Blue",
-		"Dark Green", "Dark Red", "Purple", "Orange", "Light Gray", "Green",
+		"Solid Gray", "Dark Purple", "Bright Yellow", "Light Blue",
+		"Light Green", "Dark Red", "Purple", "Orange", "Light Gray", "Green",
 		"Yellow", "Pale Blue", "Dark Green", "Red", "Bright White",
-		"Dark gray", "White"
+		"Dark Gray", "White"
 	};
 	buttons[id_text_bg] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_text_bg,
-	        std::move(textbgcolor), text_bg, colx[3] - 41, rowy[1], 100);
+	        std::move(textbgcolor), text_bg, colx[5] - 41, rowy[++y_index], large_size);
+
+	std::vector<std::string> smooth_text = {"No", "25%", "50%", "75%", "100%"};
+	buttons[id_smooth_scrolling] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_smooth_scrolling,
+	        std::move(smooth_text), smooth_scrolling, colx[5], rowy[++y_index], small_size);
+
+	buttons[id_menu_intro] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_menu_intro,
+	        yesNo, menu_intro, colx[5], rowy[++y_index], small_size);
+
+	if (GAME_BG)
+		buttons[id_usecode_intro] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_usecode_intro,
+		       yesNo, usecode_intro, colx[5], rowy[++y_index], small_size);
+
 	if (sman->can_use_paperdolls() && (GAME_BG ||
 	                                   Game::get_game_type() == EXULT_DEVEL_GAME))
-		buttons[id_paperdolls] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_paperdolls,
-		        paperdolls, colx[3], rowy[12], 59);
-	buttons[id_gumps_pause] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_gumps_pause,
-	        gumps_pause, colx[3], rowy[8], 59);
-	buttons[id_cheats] = std::make_unique<GameplayEnabledToggle>(this, &GameplayOptions_gump::toggle_cheats,
-	        cheats, colx[3], rowy[9], 59);
-	buttons[id_frames] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_frames,
-	        frametext, frames, colx[3], rowy[10], 59);
-
-	std::vector<std::string> smooth_text = {"Disabled", "25%", "50%", "75%", "100%"};
-	buttons[id_smooth_scrolling] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_smooth_scrolling,
-	        std::move(smooth_text), smooth_scrolling, colx[3], rowy[2], 59);
+		buttons[id_paperdolls] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_paperdolls,
+		        yesNo, paperdolls, colx[5], rowy[++y_index], small_size);
 }
 
 void GameplayOptions_gump::load_settings() {
-	cheats = cheat();
+	string yn;
+	config->value("config/gameplay/skip_intro", yn, "no");
+	usecode_intro = (yn == "yes");
+	config->value("config/gameplay/skip_splash", yn, "no");
+	menu_intro = (yn == "yes");
+	sc_enabled = gwin->get_shortcutbar_type();
+	sc_outline = gwin->get_outline_color();
+	sb_hide_missing = gwin->sb_hide_missing_items();
 	if (gwin->is_in_exult_menu()) {
 		config->value("config/gameplay/facestats", facestats, -1);
 		facestats += 1;
@@ -117,55 +133,28 @@ void GameplayOptions_gump::load_settings() {
 	string pdolls;
 	paperdolls = sman->are_paperdolls_enabled();
 	text_bg = gwin->get_text_bg() + 1;
-	gumps_pause = !gumpman->gumps_dont_pause_game();
-	int realframes = 1000 / gwin->get_std_delay();
-
-	frames = -1;
-	framerates[num_default_rates] = realframes;
-	for (int i = 0; i < num_default_rates; i++) {
-		if (realframes == framerates[i]) {
-			frames = i;
-			break;
-		}
-	}
-
-	int num_framerates = num_default_rates;
-	if (frames == -1) {
-		num_framerates++;
-		frames = num_default_rates;
-	}
-	frametext.clear();
-	for (int i = 0; i < num_framerates; i++) {
-		frametext.emplace_back(framestring(framerates[i]));
-	}
 	smooth_scrolling = gwin->is_lerping_enabled() / 25;
 }
 
-GameplayOptions_gump::GameplayOptions_gump() : Modal_gump(nullptr, EXULT_FLX_GAMEPLAYOPTIONS_SHP, SF_EXULT_FLX) {
+GameplayOptions_gump::GameplayOptions_gump()
+	: Modal_gump(nullptr, EXULT_FLX_GAMEPLAYOPTIONS_SHP, SF_EXULT_FLX) {
 	set_object_area(TileRect(0, 0, 0, 0), 8, 162);//++++++ ???
 
 	for (auto& btn : buttons)
 		btn.reset();
 
 	load_settings();
-
 	build_buttons();
 
 	// Ok
 	buttons[id_ok] = std::make_unique<GameplayOptions_button>(this, &GameplayOptions_gump::close,
-	        oktext, colx[0], rowy[11]);
+	        oktext, colx[0] -2 , rowy[12]);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<GameplayOptions_button>(this, &GameplayOptions_gump::cancel,
-	        canceltext, colx[4], rowy[11]);
+	        canceltext, colx[5] - 3, rowy[12]);
 }
 
 void GameplayOptions_gump::save_settings() {
-	gwin->set_text_bg(text_bg - 1);
-	config->set("config/gameplay/textbackground", text_bg - 1, false);
-	int fps = framerates[frames];
-	gwin->set_std_delay(1000 / fps);
-	config->set("config/video/fps", fps, false);
-	cheat.set_enabled(cheats != 0);
 	if (gwin->is_in_exult_menu())
 		config->set("config/gameplay/facestats", facestats - 1 , false);
 	else {
@@ -173,20 +162,35 @@ void GameplayOptions_gump::save_settings() {
 			Face_stats::AdvanceState();
 		Face_stats::save_config(config);
 	}
+	string str = "no";
+	if(sc_enabled == 1)
+		str = "transparent";
+	else if(sc_enabled == 2)
+		str = "yes";
+	config->set("config/shortcutbar/use_shortcutbar", str, false);
+	config->set("config/shortcutbar/use_outline_color", sc_outline_txt[sc_outline], false);
+	config->set("config/shortcutbar/hide_missing_items", sb_hide_missing ? "yes" : "no", false);
+	gwin->set_outline_color(static_cast<Pixel_colors>(sc_outline));
+	gwin->set_sb_hide_missing_items(sb_hide_missing);
+	gwin->set_shortcutbar(static_cast<uint8>(sc_enabled));
+	if(g_shortcutBar)
+		g_shortcutBar->set_changed();
+	gwin->set_text_bg(text_bg - 1);
+	config->set("config/gameplay/textbackground", text_bg - 1, false);
+	if (smooth_scrolling < 0) smooth_scrolling = 0;
+	else if (smooth_scrolling > 4) smooth_scrolling = 4;
+	gwin->set_lerping_enabled(smooth_scrolling * 25);
+	config->set("config/gameplay/smooth_scrolling", smooth_scrolling * 25, false);
+	config->set("config/gameplay/skip_intro",
+	            usecode_intro ? "yes" : "no", false);
+	config->set("config/gameplay/skip_splash",
+	            menu_intro ? "yes" : "no", false);
 	if (sman->can_use_paperdolls() && (GAME_BG ||
 	                                   Game::get_game_type() == EXULT_DEVEL_GAME)) {
 		sman->set_paperdoll_status(paperdolls != 0);
 		config->set("config/gameplay/bg_paperdolls",
 		            paperdolls ? "yes" : "no", false);
 	}
-
-	gumpman->set_gumps_dont_pause_game(!gumps_pause);
-	config->set("config/gameplay/gumps_dont_pause_game", gumps_pause ? "no" : "yes", false);
-
-	if (smooth_scrolling < 0) smooth_scrolling = 0;
-	else if (smooth_scrolling > 4) smooth_scrolling = 4;
-	gwin->set_lerping_enabled(smooth_scrolling * 25);
-	config->set("config/gameplay/smooth_scrolling", smooth_scrolling * 25, false);
 	config->write_back();
 }
 
@@ -198,15 +202,18 @@ void GameplayOptions_gump::paint() {
 
 	Font *font = fontManager.get_font("SMALL_BLACK_FONT");
 	Image_window8 *iwin = gwin->get_win();
-
-	font->paint_text(iwin->get_ib8(), "Status Bars:", x + colx[0], y + rowy[0] + 1);
-	font->paint_text(iwin->get_ib8(), "Text Background:", x + colx[0], y + rowy[1] + 1);
+	int y_index = 0;
+	font->paint_text(iwin->get_ib8(), "Status Bars:", x + colx[0], y + rowy[y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Use ShortcutBar :", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Use outline color :", x + colx[1], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Hide missing items:", x + colx[1], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Text Background:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Smooth scrolling:", x + colx[0], y + rowy[++y_index] + 1);
+	font->paint_text(iwin->get_ib8(), "Skip intro:", x + colx[0], y + rowy[++y_index] + 1);
+	if (buttons[id_usecode_intro])
+		font->paint_text(iwin->get_ib8(), "Skip scripted first scene:", x + colx[0], y + rowy[++y_index] + 1);
 	if (buttons[id_paperdolls])
-		font->paint_text(iwin->get_ib8(), "Paperdolls:", x + colx[0], y + rowy[12] + 1);
-	font->paint_text(iwin->get_ib8(), "Gumps pause game:", x + colx[0], y + rowy[8] + 1);
-	font->paint_text(iwin->get_ib8(), "Cheats:", x + colx[0], y + rowy[9] + 1);
-	font->paint_text(iwin->get_ib8(), "Speed:", x + colx[0], y + rowy[10] + 1);
-	font->paint_text(iwin->get_ib8(), "Smooth scrolling:", x + colx[0], y + rowy[2] + 1);
+		font->paint_text(iwin->get_ib8(), "Paperdolls:", x + colx[0], y + rowy[++y_index] + 1);
 	gwin->set_painted();
 }
 
