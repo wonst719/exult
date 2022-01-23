@@ -79,7 +79,9 @@ void MiscOptions_gump::cancel() {
 }
 
 void MiscOptions_gump::help() {
+#if SDL_VERSION_ATLEAST(2,0,14)
 	SDL_OpenURL("http://exult.info/docs.php#misc_gump");
+#endif
 }
 
 void MiscOptions_gump::build_buttons() {
@@ -175,9 +177,11 @@ MiscOptions_gump::MiscOptions_gump()
 	// Cancel
 	buttons[id_cancel] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::cancel,
 	        canceltext, colx[5] - 6, rowy[12], 50);
+#if SDL_VERSION_ATLEAST(2,0,14)
 	// Help
 	buttons[id_help] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::help,
 	        helptext, colx[2] - 3, rowy[12], 50);
+#endif
 }
 
 void MiscOptions_gump::save_settings() {

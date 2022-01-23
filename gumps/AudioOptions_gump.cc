@@ -70,7 +70,9 @@ void AudioOptions_gump::cancel() {
 }
 
 void AudioOptions_gump::help() {
+#if SDL_VERSION_ATLEAST(2,0,14)
 	SDL_OpenURL("http://exult.info/docs.php#audio_gump");
+#endif
 }
 
 void AudioOptions_gump::toggle_sfx_pack(int state) {
@@ -412,9 +414,11 @@ AudioOptions_gump::AudioOptions_gump() : Modal_gump(nullptr, EXULT_FLX_AUDIOOPTI
 	// Cancel
 	buttons[id_cancel] = std::make_unique<AudioOptions_button>(this, &AudioOptions_gump::cancel,
 	        canceltext, colx[2] + 9, rowy[14], 50);
+#if SDL_VERSION_ATLEAST(2,0,14)
 	// Help
 	buttons[id_help] = std::make_unique<AudioOptions_button>(this, &AudioOptions_gump::help,
 	        helptext, colx[2] - 46, rowy[14], 50);
+#endif
 }
 
 void AudioOptions_gump::save_settings() {

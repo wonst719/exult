@@ -93,7 +93,9 @@ void VideoOptions_gump::cancel() {
 }
 
 void VideoOptions_gump::help() {
+#if SDL_VERSION_ATLEAST(2,0,14)
 	SDL_OpenURL("http://exult.info/docs.php#video_gump");
+#endif
 }
 
 void VideoOptions_gump::rebuild_buttons() {
@@ -325,9 +327,11 @@ VideoOptions_gump::VideoOptions_gump()
 	// Cancel
 	buttons[id_cancel] = std::make_unique<VideoOptions_button>(this, &VideoOptions_gump::cancel,
 	        canceltext, colx[5] - 10, rowy[12], 50);
+#if SDL_VERSION_ATLEAST(2,0,14)
 	// Help
 	buttons[id_help] = std::make_unique<VideoOptions_button>(this, &VideoOptions_gump::help,
 	        helptext, colx[2] - 31, rowy[12], 50);
+#endif
 	load_settings(fullscreen);
 
 	rebuild_buttons();

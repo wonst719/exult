@@ -67,7 +67,9 @@ void InputOptions_gump::cancel() {
 }
 
 void InputOptions_gump::help() {
+#if SDL_VERSION_ATLEAST(2,0,14)
 	SDL_OpenURL("http://exult.info/docs.php#input_gump");
+#endif
 }
 
 void InputOptions_gump::build_buttons() {
@@ -137,9 +139,11 @@ InputOptions_gump::InputOptions_gump()
 	// Cancel
 	buttons[id_cancel] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::cancel,
 	        canceltext, colx[5] - 6, rowy[12], 50);
+#if SDL_VERSION_ATLEAST(2,0,14)
 	// Help
 	buttons[id_help] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::help,
 	        helptext, colx[2] - 3, rowy[12], 50);
+#endif
 }
 
 void InputOptions_gump::save_settings() {

@@ -64,7 +64,9 @@ void GameplayOptions_gump::cancel() {
 }
 
 void GameplayOptions_gump::help() {
+#if SDL_VERSION_ATLEAST(2,0,14)
 	SDL_OpenURL("http://exult.info/docs.php#gameplay_gump");
+#endif
 }
 
 void GameplayOptions_gump::build_buttons() {
@@ -156,9 +158,11 @@ GameplayOptions_gump::GameplayOptions_gump()
 	// Cancel
 	buttons[id_cancel] = std::make_unique<GameplayOptions_button>(this, &GameplayOptions_gump::cancel,
 	        canceltext, colx[5] - 6, rowy[12], 50);
+#if SDL_VERSION_ATLEAST(2,0,14)
 	// Help
 	buttons[id_help] = std::make_unique<GameplayOptions_button>(this, &GameplayOptions_gump::help,
 	        helptext, colx[2] - 3, rowy[12], 50);
+#endif
 }
 
 void GameplayOptions_gump::save_settings() {
