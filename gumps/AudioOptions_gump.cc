@@ -147,6 +147,8 @@ void AudioOptions_gump::rebuild_buttons() {
 	// speech on/off
 	buttons[id_speech_enabled] = std::make_unique<AudioEnabledToggle>(this, &AudioOptions_gump::toggle_speech_enabled,
 	        speech_enabled, colx[2], rowy[11], 59);
+	if (speech_enabled)
+		rebuild_speech_buttons();
 }
 
 void AudioOptions_gump::rebuild_midi_buttons() {
@@ -206,6 +208,17 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 #endif
 }
 
+void AudioOptions_gump::rebuild_speech_buttons() {
+	buttons[id_speech_subtitles].reset();
+
+	if (!speech_enabled)
+		return;
+	else {
+		buttons[id_speech_subtitles] = std::make_unique<AudioEnabledToggle>(this, &AudioOptions_gump::toggle_speech_subtitles,
+		        speech_subtitles, colx[2], rowy[12], 59);
+	}
+}
+
 void AudioOptions_gump::rebuild_mididriveroption_buttons() {
 	std::string s = "Default";
 	if (midi_driver != MidiDriver::getDriverCount()) s = MidiDriver::getDriverName(midi_driver);
@@ -248,6 +261,7 @@ void AudioOptions_gump::load_settings() {
 	midi_enabled = (Audio::get_ptr()->is_music_enabled() ? 1 : 0);
 	bool sfx_on = (Audio::get_ptr()->are_effects_enabled());
 	speech_enabled = (Audio::get_ptr()->is_speech_enabled() ? 1 : 0);
+	speech_subtitles = (Audio::get_ptr()->is_speech_with_subs() ? 1 : 0);
 	midi_looping = (Audio::get_ptr()->is_music_looping_allowed() ? 1 : 0);
 	speaker_type = true; // stereo
 	sample_rate = 22050;
@@ -445,12 +459,14 @@ void AudioOptions_gump::save_settings() {
 	if (!sfx_enabled)       // Stop what's playing.
 		Audio::get_ptr()->stop_sound_effects();
 	Audio::get_ptr()->set_speech_enabled(speech_enabled == 1);
+	Audio::get_ptr()->set_speech_with_subs(speech_subtitles == 1);
 	Audio::get_ptr()->set_allow_music_looping(midi_looping == 1);
 
 	config->set("config/audio/enabled", audio_enabled ? "yes" : "no", false);
 	config->set("config/audio/midi/enabled", midi_enabled ? "yes" : "no", false);
 	config->set("config/audio/effects/enabled", sfx_enabled ? "yes" : "no", false);
 	config->set("config/audio/speech/enabled", speech_enabled ? "yes" : "no", false);
+	config->set("config/audio/speech/with_subs", speech_subtitles ? "yes" : "no", false);
 
 	config->set("config/audio/midi/chorus/enabled", (midi_reverb_chorus & 2) ? "yes" : "no", false);
 	config->set("config/audio/midi/reverb/enabled", (midi_reverb_chorus & 1) ? "yes" : "no", false);
@@ -560,6 +576,8 @@ void AudioOptions_gump::paint() {
 		}
 #endif
 		font->paint_text(iwin->get_ib8(), "Speech:", x + colx[0], y + rowy[11] + 1);
+		if (speech_enabled == 1)
+			font->paint_text(iwin->get_ib8(), "subtitles", x + colx[1], y + rowy[12] + 1);
 	}
 	gwin->set_painted();
 }
