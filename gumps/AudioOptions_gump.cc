@@ -144,7 +144,7 @@ void AudioOptions_gump::rebuild_buttons() {
 
 	// speech on/off
 	buttons[id_speech_enabled] = std::make_unique<AudioEnabledToggle>(this, &AudioOptions_gump::toggle_speech_enabled,
-	        speech_enabled, colx[2], rowy[13], 59);
+	        speech_enabled, colx[2], rowy[11], 59);
 }
 
 void AudioOptions_gump::rebuild_midi_buttons() {
