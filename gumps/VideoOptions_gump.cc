@@ -47,8 +47,10 @@ using std::string;
 VideoOptions_gump *VideoOptions_gump::video_options_gump = nullptr;
 
 static const int rowy[] = { 5, 17, 29, 41, 53, 65, 77, 89, 101, 113, 130, 139, 156 };
-static const int colx[] = { 35, 50, 115, 127, 130, 148 };
+static const int colx[] = { 35, 50, 119, 127, 131, 153 };
 static const char *applytext = "APPLY";
+static const char *canceltext = "CANCEL";
+static const char *helptext = "HELP";
 
 static inline uint32 make_resolution(uint16 width, uint16 height) {
 	return (uint32(width) << 16) | uint32(height);
@@ -88,6 +90,10 @@ void VideoOptions_gump::close() {
 
 void VideoOptions_gump::cancel() {
 	done = true;
+}
+
+void VideoOptions_gump::help() {
+	SDL_OpenURL("http://exult.info/docs.php#video_gump");
 }
 
 void VideoOptions_gump::rebuild_buttons() {
@@ -207,7 +213,7 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 	if (fill_mode == Image_window::Fit || fill_mode == Image_window::AspectCorrectFit || fill_mode == Image_window::Centre || fill_mode == Image_window::AspectCorrectCentre) {
 		std::vector<std::string> ac_text = {"Disabled", "Enabled"};
 		buttons[id_has_ac] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_aspect_correction,
-		        std::move(ac_text), has_ac ? 1 : 0, colx[3], rowy[9], 62);
+		        std::move(ac_text), has_ac ? 1 : 0, colx[4], rowy[9], 62);
 	}
 }
 
@@ -313,9 +319,15 @@ VideoOptions_gump::VideoOptions_gump()
 #endif
 	o_share_settings = share_settings;
 
+	// Apply
 	buttons[id_apply] = std::make_unique<VideoOptions_button>(this, &VideoOptions_gump::save_settings,
-	        applytext, colx[4], rowy[12], 59);
-
+	        applytext, colx[0] - 2, rowy[12], 50);
+	// Cancel
+	buttons[id_cancel] = std::make_unique<VideoOptions_button>(this, &VideoOptions_gump::cancel,
+	        canceltext, colx[5] - 10, rowy[12], 50);
+	// Help
+	buttons[id_help] = std::make_unique<VideoOptions_button>(this, &VideoOptions_gump::help,
+	        helptext, colx[2] - 31, rowy[12], 50);
 	load_settings(fullscreen);
 
 	rebuild_buttons();
@@ -405,7 +417,7 @@ void VideoOptions_gump::paint() {
 	if (buttons[id_has_ac] != nullptr) font->paint_text(iwin->get_ib8(), "AR Correction:", x + colx[0], y + rowy[9] + 1);
 #ifndef __IPHONEOS__
 	font->paint_text(iwin->get_ib8(), "Same settings for window", x + colx[0], y + rowy[10] + 1);
-	font->paint_text(iwin->get_ib8(), "    and fullscreen:", x + colx[0], y + rowy[11] + 1);
+	font->paint_text(iwin->get_ib8(), "and fullscreen:", x + colx[0], y + rowy[11] + 1);
 #endif
 	gwin->set_painted();
 }

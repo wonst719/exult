@@ -24,6 +24,7 @@
 #include <cstring>
 
 #include "SDL_events.h"
+#include <SDL.h>
 
 #include "Gump_manager.h"
 #include "Configuration.h"
@@ -32,12 +33,12 @@
 #include "MiscOptions_gump.h"
 #include "exult.h"
 #include "exult_flx.h"
+#include "game.h"
 #include "gamewin.h"
 #include "combat_opts.h"
 #include "Text_button.h"
 #include "Enabled_button.h"
 #include "font.h"
-#include "gamewin.h"
 #include "Notebook_gump.h"
 #include "cheat.h"
 
@@ -51,6 +52,7 @@ static const int colx[] = { 35, 50, 120, 170, 192, 209 };
 
 static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
+static const char *helptext = "HELP";
 
 static int framerates[] = { 2, 4, 6, 8, 10, -1 };
 // -1 is placeholder for custom framerate
@@ -74,6 +76,10 @@ void MiscOptions_gump::close() {
 
 void MiscOptions_gump::cancel() {
 	done = true;
+}
+
+void MiscOptions_gump::help() {
+	SDL_OpenURL("http://exult.info/docs.php#misc_gump");
 }
 
 void MiscOptions_gump::build_buttons() {
@@ -165,10 +171,13 @@ MiscOptions_gump::MiscOptions_gump()
 	
 	// Ok
 	buttons[id_ok] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::close,
-	        oktext, colx[0] - 2, rowy[12]);
+	        oktext, colx[0] - 2, rowy[12], 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::cancel,
-	        canceltext, colx[5] - 3, rowy[12]);
+	        canceltext, colx[5] - 6, rowy[12], 50);
+	// Help
+	buttons[id_help] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::help,
+	        helptext, colx[2] - 3, rowy[12], 50);
 }
 
 void MiscOptions_gump::save_settings() {

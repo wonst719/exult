@@ -47,10 +47,11 @@ using namespace Pentagram;
 static const int rowy[] = { 5, 17, 29, 41, 53, 65, 77, 89,
                             101, 113, 125, 137, 149, 161, 173
                           };
-static const int colx[] = { 35, 50, 132 };
+static const int colx[] = { 35, 50, 134 };
 
 static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
+static const char *helptext = "HELP";
 
 uint32 AudioOptions_gump::sample_rates[5] = {11025, 22050, 44100, 48000, 0};
 int AudioOptions_gump::num_sample_rates = 0;
@@ -66,6 +67,10 @@ void AudioOptions_gump::close() {
 
 void AudioOptions_gump::cancel() {
 	done = true;
+}
+
+void AudioOptions_gump::help() {
+	SDL_OpenURL("http://exult.info/docs.php#audio_gump");
 }
 
 void AudioOptions_gump::toggle_sfx_pack(int state) {
@@ -133,7 +138,7 @@ void AudioOptions_gump::rebuild_buttons() {
 #endif
 
 	buttons[id_sfx_enabled] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_sfx_enabled,
-	        std::move(sfx_options), sfx_enabled, colx[2], rowy[10], 59);
+	        std::move(sfx_options), sfx_enabled, colx[2], rowy[9], 59);
 	if (sfx_enabled)
 		rebuild_sfx_buttons();
 
@@ -186,7 +191,7 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 		if (have_custom_pack)
 			sfx_digitalpacks.emplace_back("Custom");
 		buttons[id_sfx_pack] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_sfx_pack,
-		        std::move(sfx_digitalpacks), sfx_package, colx[2] - 33, rowy[11], 92);
+		        std::move(sfx_digitalpacks), sfx_package, colx[2] - 33, rowy[10], 92);
 	}
 #ifdef ENABLE_MIDISFX
 	else if (sfx_enabled == midi_state) {
@@ -194,7 +199,7 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 
 		// sfx conversion
 		buttons[id_sfx_pack] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_sfx_pack,
-		        std::move(sfx_conversiontext), sfx_conversion == 5 ? 1 : 0, colx[2], rowy[11], 59);
+		        std::move(sfx_conversiontext), sfx_conversion == 5 ? 1 : 0, colx[2], rowy[10], 59);
 	}
 #endif
 }
@@ -403,10 +408,13 @@ AudioOptions_gump::AudioOptions_gump() : Modal_gump(nullptr, EXULT_FLX_AUDIOOPTI
 	        audio_enabled, colx[2], rowy[0], 59);
 	// Ok
 	buttons[id_ok] = std::make_unique<AudioOptions_button>(this, &AudioOptions_gump::close,
-	        oktext, colx[0], rowy[14]);
+	        oktext, colx[0] - 2, rowy[14], 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<AudioOptions_button>(this, &AudioOptions_gump::cancel,
-	        canceltext, colx[2], rowy[14]);
+	        canceltext, colx[2] + 9, rowy[14], 50);
+	// Help
+	buttons[id_help] = std::make_unique<AudioOptions_button>(this, &AudioOptions_gump::help,
+	        helptext, colx[2] - 46, rowy[14], 50);
 }
 
 void AudioOptions_gump::save_settings() {
@@ -538,18 +546,16 @@ void AudioOptions_gump::paint() {
 			if (buttons[id_midi_conv] != nullptr) font->paint_text(iwin->get_ib8(), "device type", x + colx[1], y + rowy[7] + 1);
 			if (buttons[id_midi_effects] != nullptr) font->paint_text(iwin->get_ib8(), "effects", x + colx[1], y + rowy[8] + 1);
 		}
-		font->paint_text(iwin->get_ib8(), "SFX options:", x + colx[0], y + rowy[9] + 1);
-		font->paint_text(iwin->get_ib8(), "SFX", x + colx[1], y + rowy[10] + 1);
+		font->paint_text(iwin->get_ib8(), "SFX:", x + colx[0], y + rowy[9] + 1);
 		if (sfx_enabled == 1 && have_digital_sfx() && !gwin->is_in_exult_menu()) {
-			font->paint_text(iwin->get_ib8(), "pack", x + colx[1], y + rowy[11] + 1);
+			font->paint_text(iwin->get_ib8(), "pack", x + colx[1], y + rowy[10] + 1);
 		}
 #ifdef ENABLE_MIDISFX
 		else if (sfx_enabled == midi_state) {
 			font->paint_text(iwin->get_ib8(), "conversion", x + colx[1], y + rowy[11] + 1);
 		}
 #endif
-		font->paint_text(iwin->get_ib8(), "Speech options:", x + colx[0], y + rowy[12] + 1);
-		font->paint_text(iwin->get_ib8(), "speech", x + colx[1], y + rowy[13] + 1);
+		font->paint_text(iwin->get_ib8(), "Speech:", x + colx[0], y + rowy[11] + 1);
 	}
 	gwin->set_painted();
 }

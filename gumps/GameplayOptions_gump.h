@@ -44,6 +44,7 @@ private:
 	    id_first = 0,
 	    id_ok = id_first,
 	    id_cancel,
+	    id_help,
 	    id_facestats,
 	    id_sc_enabled,
 	    id_sc_outline,
@@ -73,6 +74,7 @@ public:
 	void load_settings();
 	void save_settings();
 	void cancel();
+	void help();
 
 	void toggle_facestats(int state) {
 		facestats = state;

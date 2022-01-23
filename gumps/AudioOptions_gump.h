@@ -32,6 +32,7 @@ private:
 	    id_first = 0,
 	    id_ok = id_first,
 	    id_cancel,
+	    id_help,
 	    id_audio_enabled,
 	    id_sample_rate,
 	    id_speaker_type,
@@ -104,6 +105,7 @@ public:
 	void load_settings();
 	void save_settings();
 	void cancel();
+	void help();
 
 	void toggle_audio_enabled(int state) {
 		audio_enabled = state;

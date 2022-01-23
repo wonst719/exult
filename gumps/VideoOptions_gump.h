@@ -59,6 +59,8 @@ private:
 	enum button_ids {
 	    id_first = 0,
 	    id_apply = id_first,
+	    id_help,
+	    id_cancel,
 	    id_fullscreen,
 	    id_share_settings,
 	    id_high_dpi,
@@ -94,6 +96,7 @@ public:
 	void load_settings(bool Fullscreen);
 	void save_settings();
 	void cancel();
+	void help();
 
 	void set_scaling(int scaleVal) {
 		scaling = scaleVal;

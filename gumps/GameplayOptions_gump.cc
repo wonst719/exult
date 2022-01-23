@@ -34,7 +34,6 @@
 #include "exult_flx.h"
 #include "game.h"
 #include "gamewin.h"
-#include "mouse.h"
 #include "Face_stats.h"
 #include "Text_button.h"
 #include "Enabled_button.h"
@@ -49,6 +48,7 @@ static const int colx[] = { 35, 50, 120, 170, 192, 209 };
 
 static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
+static const char *helptext = "HELP";
 
 using GameplayOptions_button = CallbackTextButton<GameplayOptions_gump>;
 using GameplayTextToggle = CallbackToggleTextButton<GameplayOptions_gump>;
@@ -61,6 +61,10 @@ void GameplayOptions_gump::close() {
 
 void GameplayOptions_gump::cancel() {
 	done = true;
+}
+
+void GameplayOptions_gump::help() {
+	SDL_OpenURL("http://exult.info/docs.php#gameplay_gump");
 }
 
 void GameplayOptions_gump::build_buttons() {
@@ -148,10 +152,13 @@ GameplayOptions_gump::GameplayOptions_gump()
 
 	// Ok
 	buttons[id_ok] = std::make_unique<GameplayOptions_button>(this, &GameplayOptions_gump::close,
-	        oktext, colx[0] -2 , rowy[12]);
+	        oktext, colx[0] -2 , rowy[12], 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<GameplayOptions_button>(this, &GameplayOptions_gump::cancel,
-	        canceltext, colx[5] - 3, rowy[12]);
+	        canceltext, colx[5] - 6, rowy[12], 50);
+	// Help
+	buttons[id_help] = std::make_unique<GameplayOptions_button>(this, &GameplayOptions_gump::help,
+	        helptext, colx[2] - 3, rowy[12], 50);
 }
 
 void GameplayOptions_gump::save_settings() {

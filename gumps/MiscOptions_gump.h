@@ -43,6 +43,7 @@ private:
 	    id_first = 0,
 	    id_ok = id_first,
 	    id_cancel,
+	    id_help,
 	    id_allow_autonotes,
 	    id_gumps_pause,
 	    id_alternate_drop,
@@ -72,6 +73,7 @@ public:
 	void load_settings();
 	void save_settings();
 	void cancel();
+	void help();
 
 	void toggle_allow_autonotes(int state) {
 		allow_autonotes = state;
