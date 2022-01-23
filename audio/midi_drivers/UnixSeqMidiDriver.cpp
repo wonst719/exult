@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cerrno>
 
 const MidiDriver::MidiDriverDesc UnixSeqMidiDriver::desc =
-		MidiDriver::MidiDriverDesc ("UnixSeqDevice", createInstance);
+		MidiDriver::MidiDriverDesc ("UnixSeq", createInstance);
 
 #define SEQ_MIDIPUTC 5
 #define SEQ_DEVICE "/dev/sequencer"
