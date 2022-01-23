@@ -50,9 +50,9 @@ static const int colx = 31;
 static const char *loadsavetext = "Load/Save Game";
 static const char *videoopttext = "Video Options";
 static const char *audioopttext = "Audio Options";
-static const char *gameopttext = "Gameplay Options";
-static const char *misctext = "Misc Options";
-static const char *inputtext = "Input Options";
+static const char *gameopttext = "Game Display";
+static const char *misctext = "Game Engine";
+static const char *inputtext = "Game Input";
 #ifndef __IPHONEOS__
 static const char *quitmenutext = "Quit to Menu";
 static const char *quittext = "Quit";
@@ -71,10 +71,10 @@ Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, EXULT_FLX_GAMEMENU_SHP, SF_
 	        videoopttext, colx, rowy[y++], 108, 11);
 	buttons[id_audio_options] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::audio_options,
 	        audioopttext, colx, rowy[y++], 108, 11);
-	buttons[id_gameplay_options] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::gameplay_options,
-	        gameopttext, colx, rowy[y++], 108, 11);
 	buttons[id_misc_options] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::misc_options,
 	        misctext, colx, rowy[y++], 108, 11);
+	buttons[id_gameplay_options] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::gameplay_options,
+	        gameopttext, colx, rowy[y++], 108, 11);
 	buttons[id_input] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::input_options,
 	        inputtext, colx, rowy[y++], 108, 11);
 #ifndef __IPHONEOS__
