@@ -44,8 +44,8 @@
 
 using namespace Pentagram;
 
-static const int rowy[] = { 5, 17, 29, 41, 53, 65, 77, 89,
-                            101, 113, 125, 137, 149, 161, 173
+static const int rowy[] = { 5, 17, 29, 45, 57, 69, 81, 93,
+                            105, 121, 133, 149, 161, 173
                           };
 static const int colx[] = { 35, 50, 134 };
 
@@ -410,14 +410,14 @@ AudioOptions_gump::AudioOptions_gump() : Modal_gump(nullptr, EXULT_FLX_AUDIOOPTI
 	        audio_enabled, colx[2], rowy[0], 59);
 	// Ok
 	buttons[id_ok] = std::make_unique<AudioOptions_button>(this, &AudioOptions_gump::close,
-	        oktext, colx[0] - 2, rowy[14], 50);
+	        oktext, colx[0] - 2, rowy[13], 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<AudioOptions_button>(this, &AudioOptions_gump::cancel,
-	        canceltext, colx[2] + 9, rowy[14], 50);
+	        canceltext, colx[2] + 9, rowy[13], 50);
 #if SDL_VERSION_ATLEAST(2,0,14)
 	// Help
 	buttons[id_help] = std::make_unique<AudioOptions_button>(this, &AudioOptions_gump::help,
-	        helptext, colx[2] - 46, rowy[14], 50);
+	        helptext, colx[2] - 46, rowy[13], 50);
 #endif
 }
 
@@ -542,7 +542,7 @@ void AudioOptions_gump::paint() {
 	if (audio_enabled) {
 		font->paint_text(iwin->get_ib8(), "sample rate", x + colx[1], y + rowy[1] + 1);
 		font->paint_text(iwin->get_ib8(), "speaker type", x + colx[1], y + rowy[2] + 1);
-		font->paint_text(iwin->get_ib8(), "Music options:", x + colx[0], y + rowy[3] + 1);
+		font->paint_text(iwin->get_ib8(), "Music:", x + colx[0], y + rowy[3] + 1);
 		if (midi_enabled) {
 			font->paint_text(iwin->get_ib8(), "looping", x + colx[1], y + rowy[4] + 1);
 			font->paint_text(iwin->get_ib8(), "digital music", x + colx[1], y + rowy[5] + 1);
