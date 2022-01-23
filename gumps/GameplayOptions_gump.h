@@ -37,6 +37,7 @@ private:
 	int text_bg;
 	int smooth_scrolling;
 	bool usecode_intro;
+	bool extended_intro;
 	bool menu_intro;
 	int paperdolls;
 
@@ -53,6 +54,7 @@ private:
 	    id_smooth_scrolling,
 	    id_menu_intro,
 	    id_usecode_intro,
+	    id_extended_intro,
 	    id_paperdolls,
 	    id_count
 	};
@@ -106,6 +108,10 @@ public:
 
 	void toggle_usecode_intro(int state) {
 		usecode_intro = state;
+	}
+
+	void toggle_extended_intro(int state) {
+		extended_intro = state;
 	}
 
 	void toggle_paperdolls(int state) {

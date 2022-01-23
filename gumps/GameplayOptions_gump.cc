@@ -111,9 +111,12 @@ void GameplayOptions_gump::build_buttons() {
 	buttons[id_menu_intro] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_menu_intro,
 	        yesNo, menu_intro, colx[5], rowy[++y_index], small_size);
 
-	if (GAME_BG)
+	if (GAME_BG || gwin->is_in_exult_menu())
 		buttons[id_usecode_intro] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_usecode_intro,
 		       yesNo, usecode_intro, colx[5], rowy[++y_index], small_size);
+	if (GAME_SI || gwin->is_in_exult_menu())
+		buttons[id_extended_intro] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_extended_intro,
+		       yesNo, extended_intro, colx[5], rowy[++y_index], small_size);
 
 	if (sman->can_use_paperdolls() && (GAME_BG ||
 	                                   Game::get_game_type() == EXULT_DEVEL_GAME))
@@ -125,6 +128,8 @@ void GameplayOptions_gump::load_settings() {
 	string yn;
 	config->value("config/gameplay/skip_intro", yn, "no");
 	usecode_intro = (yn == "yes");
+	config->value("config/gameplay/extended_intro", yn, "no");
+	extended_intro = (yn == "yes");
 	config->value("config/gameplay/skip_splash", yn, "no");
 	menu_intro = (yn == "yes");
 	sc_enabled = gwin->get_shortcutbar_type();
@@ -194,6 +199,8 @@ void GameplayOptions_gump::save_settings() {
 	config->set("config/gameplay/smooth_scrolling", smooth_scrolling * 25, false);
 	config->set("config/gameplay/skip_intro",
 	            usecode_intro ? "yes" : "no", false);
+	config->set("config/gameplay/extended_intro",
+	            extended_intro ? "yes" : "no", false);
 	config->set("config/gameplay/skip_splash",
 	            menu_intro ? "yes" : "no", false);
 	if (sman->can_use_paperdolls() && (GAME_BG ||
@@ -223,6 +230,8 @@ void GameplayOptions_gump::paint() {
 	font->paint_text(iwin->get_ib8(), "Skip intro:", x + colx[0], y + rowy[++y_index] + 1);
 	if (buttons[id_usecode_intro])
 		font->paint_text(iwin->get_ib8(), "Skip scripted first scene:", x + colx[0], y + rowy[++y_index] + 1);
+	if (buttons[id_extended_intro])
+		font->paint_text(iwin->get_ib8(), "Use extended SI intro:", x + colx[0], y + rowy[++y_index] + 1);
 	if (buttons[id_paperdolls])
 		font->paint_text(iwin->get_ib8(), "Paperdolls:", x + colx[0], y + rowy[++y_index] + 1);
 	gwin->set_painted();
