@@ -65,7 +65,7 @@ void GameplayOptions_gump::cancel() {
 
 void GameplayOptions_gump::help() {
 #if SDL_VERSION_ATLEAST(2,0,14)
-	SDL_OpenURL("http://exult.info/docs.php#gameplay_gump");
+	SDL_OpenURL("http://exult.info/docs.php#game_display_gump");
 #endif
 }
 

@@ -80,7 +80,7 @@ void MiscOptions_gump::cancel() {
 
 void MiscOptions_gump::help() {
 #if SDL_VERSION_ATLEAST(2,0,14)
-	SDL_OpenURL("http://exult.info/docs.php#misc_gump");
+	SDL_OpenURL("http://exult.info/docs.php##game_engine_gump");
 #endif
 }
 

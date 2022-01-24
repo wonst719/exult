@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE faqs SYSTEM "docs.dtd">
-<faqs title="Exult" changed="03 October 2021 (GMT)">
+<faqs title="Exult" changed="24 January 2022 (GMT)">
 	<section title="Introduction">
 		<sub name="exult_version">
 			<header>Exult Version</header>
@@ -75,8 +75,8 @@
 					that EA has decided to ignore <Exult/>.
 				</para>
 				<para>
-					On the other hand former Origin employees contacted the team and congratulated the
-					team on their effort. Most noticeable are Lord British himself and Ken Demarest
+					On the other hand former Origin employees contacted the team and congratulated
+					on their effort. Most noticeable are Lord British himself and Ken Demarest
 					(Programming Manager of Ultima VII)(hint:spell his name backwards).
 				</para>
 			</body>
@@ -168,10 +168,10 @@
 					A release is very time consuming that's why there are so few.
 				</para>
 				<para>
-					The snapshot is the newest source code of the program. It is updated almost
-					daily, sometimes twice a day. There is information on how to build your
-					own binary in the source but there is also the newest pre-compiled Windows and 
-                    macOS executables.
+					The snapshot is the newest source code of the program. It is updated every
+					night if commits landed in our repository on that day. There is information on how to
+					build your own binary in the source but there is also the newest pre-compiled Windows  
+					and macOS executables.<br/>
 					If there is no new one this means that either there were no changes to the code
 					or the source failed to compile.
 				</para>
@@ -227,9 +227,9 @@
 					<extref target="http://goo.gl/VJCNG">forum</extref> thread.</li>
 
 					<li><strong>Android, native</strong><br/>
-					KenC ported <Exult/> directly to Android, without rewriting it in Java. He has 
-					posted about it in our
-					<extref target="http://goo.gl/E2y7Z">forum</extref> but it has been abandoned.</li>
+					KenC ported <Exult/> directly to Android, without rewriting it in Java. After a long 
+					hiatus he continued his work and his working fork and test release can be found on 
+					<extref target="https://github.com/ceckak/exult/tree/android-port">github</extref>.</li>
 				</ul>
 			</body>
 		</sub>
@@ -466,9 +466,14 @@
 			<header>Will you implement the extended intro for SI?</header>
 			<body>
 				<para>
-					The extended intro for Serpent Isle can be found at
-					<extref target="http://www.io.com/~dloubet/"/>. At this moment we don't
-					even think about implementing this extended intro.<br/>
+					In February 2021 we did implement the extended intro in Exult and it is now the 
+					default intro played when you start a SI game in <Exult/>.<br/>
+					Below you can find our old view on implementing it.
+				</para>
+				<para>
+					Information on the extended intro for Serpent Isle can be found at
+					<extref target="https://ultimacodex.com/2011/11/the-original-serpent-isle-introduction/"/>. 
+					At this moment we don't even think about implementing this extended intro.<br/>
 					Why not?<br/>
 					It sure would be nice to use it. But you may have noticed some effects
 					missing from the intro. You may have noticed that there is no sound. You may
@@ -799,7 +804,7 @@
 				<para>
 					You can also use our
 					<extref target="http://exult.info/forum/">forum</extref>
-					to report bugs. But if you do please follow the guidelines mentioned above (you can't
+					to report bugs. But if you do, please follow the guidelines mentioned above (you can't
 					include a save game). Though be aware that bugs submitted to the bug tracker
 					are more likely to get attention than bugs submitted to the forum.<br/>
 					And if you report to the forum, also follow the "one bug per report" rule, a post with 
@@ -1253,7 +1258,7 @@
 			<body>
 				<ul>
 					<li><Exult/> homepage at <extref target="http://exult.info/"/></li>
-					<li>Daily code snapshot at <extref target="http://exult.info/download.php"/></li>
+					<li>Code snapshot at <extref target="http://exult.info/download.php"/></li>
 					<li>Our forum at <extref target="http://exult.info/forum/"/></li>
 					<li>Bug reports to <extref target="https://github.com/exult/exult/issues"/></li>
 				</ul>
@@ -1282,6 +1287,16 @@
 		</sub>
 	</section>
 	<section title="Changes to the FAQ">
+		<sub name="24012022">
+			<header>- 24 January 2022</header>
+			<body>
+				<ul>
+					<li><ref1 target="whatis_snapshot"/> Snapshots are done every night if there were code changes.</li>
+					<li><ref1 target="what_platforms"/> The Android port lives again.</li>
+					<li><ref1 target="si_ext_intro"/> We did implement the extended intro.</li>
+				</ul>
+			</body>
+		</sub>
 		<sub name="03102021">
 			<header>- 03 October 2021</header>
 			<body>

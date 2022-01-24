@@ -68,7 +68,7 @@ void InputOptions_gump::cancel() {
 
 void InputOptions_gump::help() {
 #if SDL_VERSION_ATLEAST(2,0,14)
-	SDL_OpenURL("http://exult.info/docs.php#input_gump");
+	SDL_OpenURL("http://exult.info/docs.php#game_input_gump");
 #endif
 }
 

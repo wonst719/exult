@@ -1,5 +1,5 @@
 Exult Documentation
-last changed: 20 February 2021 (GMT)
+last changed: 24 January 2022 (GMT)
 
 The latest version of this document can be found at http://exult.info/docs.php
 
@@ -59,9 +59,9 @@ The latest version of this document can be found at http://exult.info/docs.php
 7.2. Load/Save Game
 7.3. Video Options
 7.4. Audio Options
-7.5. Gameplay Options
-7.6. Misc Options
-7.7. Input Options
+7.5. Game Engine
+7.6. Game Display
+7.7. Game Input
 7.8. Quit
 
 8. Mods and Patches
@@ -96,47 +96,48 @@ The latest version of this document can be found at http://exult.info/docs.php
 11.2. Contacting us
 
 12. Changes to the Documentation
-12.1. - 20 February 2021
-12.2. - 08 December 2018
-12.3. - 14 April 2016
-12.4. - 17 March 2016
-12.5. - 13 March 2016
-12.6. - 19 March 2015
-12.7. - 09 May 2014
-12.8. - 19 December 2013
-12.9. - 21 November 2013
-12.10. - 11 February 2013
-12.11. - 15 January 2013
-12.12. - 01 January 2013
-12.13. - 16 December 2012
-12.14. - 14 November 2012
-12.15. - 28 October 2012
-12.16. - 01 December 2011
-12.17. - 16 March 2011
-12.18. - 19 February 2011
-12.19. - 24 January 2011
-12.20. - 23 January 2011
-12.21. - 13 October 2010
-12.22. - 30 August 2010
-12.23. - 25 August 2010
-12.24. - 15 August 2010
-12.25. - 28 April 2010
-12.26. - 11 March 2010
-12.27. - 10 March 2010
-12.28. - 08 March 2010
-12.29. - 16 July 2009
-12.30. - 03 June 2009
-12.31. - 20 May 2009
-12.32. - 19 May 2009
-12.33. - 18 May 2009
-12.34. - 28 April 2009
-12.35. - 21 October 2007
-12.36. - 08 April 2006
-12.37. - 14 March 2005
-12.38. - 14 August 2004
-12.39. - 23 May 2004
-12.40. - 11 February 2004
-12.41. - 12 December 2003
+12.1. - 24 January 2022
+12.2. - 20 February 2021
+12.3. - 08 December 2018
+12.4. - 14 April 2016
+12.5. - 17 March 2016
+12.6. - 13 March 2016
+12.7. - 19 March 2015
+12.8. - 09 May 2014
+12.9. - 19 December 2013
+12.10. - 21 November 2013
+12.11. - 11 February 2013
+12.12. - 15 January 2013
+12.13. - 01 January 2013
+12.14. - 16 December 2012
+12.15. - 14 November 2012
+12.16. - 28 October 2012
+12.17. - 01 December 2011
+12.18. - 16 March 2011
+12.19. - 19 February 2011
+12.20. - 24 January 2011
+12.21. - 23 January 2011
+12.22. - 13 October 2010
+12.23. - 30 August 2010
+12.24. - 25 August 2010
+12.25. - 15 August 2010
+12.26. - 28 April 2010
+12.27. - 11 March 2010
+12.28. - 10 March 2010
+12.29. - 08 March 2010
+12.30. - 16 July 2009
+12.31. - 03 June 2009
+12.32. - 20 May 2009
+12.33. - 19 May 2009
+12.34. - 18 May 2009
+12.35. - 28 April 2009
+12.36. - 21 October 2007
+12.37. - 08 April 2006
+12.38. - 14 March 2005
+12.39. - 14 August 2004
+12.40. - 23 May 2004
+12.41. - 11 February 2004
+12.42. - 12 December 2003
 
 
 --------------------------------------------------------------------------------
@@ -431,6 +432,10 @@ Note: yes means enabled, no means disabled
 				"hard" will neither allow the player to control the Avatar nor access his inventory.
       </charmDifficulty>
     </combat>
+    <extended_intro>
+    yes
+				**The implementation of the extended intro is now default for an SI game. 
+    </extended_intro>
   </gameplay>
   <audio>
     <enabled>
@@ -1118,7 +1123,8 @@ Exult needs the so called SFX packs to enable sound effects for Ultima VII. You 
 3.8. All-in-One Audio Data pack and installers
 
 We've combined all the audio data we offer, Digital Music and Digital Wave Sound Effects, into an all-in-one pack which saves you downloading several smaller zip files. You can download a zip file for manual installation or an installer for either Windows or macOS. Chose the one you want to use on our download page at http://exult.info/download.php.
- On Windows or macOS, we recommend you download and run the installer.
+ The Windows installer for Exult gives you the option to download and install the zip automatically, so we recommend you use this method.
+ On macOS, we recommend you download and run the installer.
  On *nix or if you want to install the all-in-one pack, you will need to grab the zip file.
 To install the zip file, extract its content to the Exult data folder. On *nix systems this is by default /usr/local/share/exult. On macOS it is /Library/Applcation Support/Exult/data and on Windows it's in the folder data in the folder where you installed Exult to (by default C:\Program Files\Exult).
 Below you can read the instructions on how to use and install the individual packs for digital music and wave effects if. You don't need them if you downloaded the All-in-One zip or installer.
@@ -1166,6 +1172,7 @@ Extract the zip files into your Exult data folder. Exult will automatically find
 3.11. Speech
 
 You can toggle Ultima VII's speech via the in-game menu or change the settings in exult.cfg - see 2.3..
+Additionally you can have the subtitles show while speech is played. In the original the subtitles were only shown when speech was disabled.
 
 
 3.12. Toggle Audio
@@ -1415,9 +1422,9 @@ Ctrl-Alt-m : Toggle Map editor
 6. ShortcutBar, Notebook and Screenshots
 6.1. ShortcutBar for single or double click actions
 
-Especially on mobile devices it makes sense to have a shortcutbar that allows quick actions with just one or a double click. This was first implemented in the Exult for iOS fork but later back ported and improved in main Exult. By default the shortcutbar is disabled, but can be enabled and further configured in the 7.6. Misc Options .
+Especially on mobile devices it makes sense to have a shortcutbar that allows quick actions with just one or a double click. This was first implemented in the Exult for iOS fork but later back ported and improved in main Exult. By default the shortcutbar is disabled, but can be enabled and further configured in the 1.1. .
  You can make the bar transparent (only when drawn on the map) and select different colors for the outlines around the buttons. Some buttons only work when you have a certain item (spellbook, jawbone in SI). You can choose to hide those buttons or display them greyed out.
-The buttons have the following functions (cheat functions only work when you enabled cheats in 7.5. Gameplay Options ):
+The buttons have the following functions (cheat functions only work when you enabled cheats in 1.1. ):
 * Floppy Disk
  Single click opens the game menu, double click the 7.2. Load/Save Game 
  Additionally clicking it will close all Gumps that are open.
@@ -1452,7 +1459,7 @@ Additionally when you have cheats enabled you will see the coordinates (in decim
 6.3. The automatic Notebook
 
 If you want you can also have Exult automatically make some notes on its own when certain things happen in game. This feature has not yet progressed very far, especially for SI we have mostly basic pointers of what was noted.
- You can enable autonotes in the 7.6. Misc Options .
+ You can enable autonotes in the 1.1. .
 You can also write your own autonotes and override the ones that come with Exult.
  For BG download https://github.com/exult/exult/raw/master/data/bg/autonotes.txt.
  For SI download https://github.com/exult/exult/raw/master/data/si/autonotes.txt.
@@ -1491,6 +1498,7 @@ Exult Setup can only be opened on the Exult menu by selecting the "Setup" option
  And you can access the Game menu either by pressing the disk icon in the Avatar's inventory screen or by pressing 'Esc'.
  The following options are available for the Exult Setup menu and the Game menu:
 
+There is a HELP button on most options that will open your default browser and go to the online version of this documentation.
 
 
 7.2. Load/Save Game
@@ -1525,8 +1533,8 @@ In this option screen you are able to determine how Exult displays the game.
  Aspect Ratio Correction for the fill modes "Fit" and "Centre".
 * Same setting for window and fullscreen
  When you disable this you can select different settings for window and fullscreen mode by changing the settings while being in either mode.
-* APPLY
- Checks whether your changes can cause problems, applies your changes and gives you a countdown to confirm that the new settings are working correctly. If you don't want to apply your changes, click on the red checkmark to the left.
+* APPLY/HELP/CANCEL
+ Checks whether your changes can cause problems, applies your changes and gives you a countdown to confirm that the new settings are working correctly. If you don't want to apply your changes, click CANCEL.
 
 
 
@@ -1536,7 +1544,7 @@ Look at 3. Audio to see explanation on the settings.
 
 * Audio
  Enable or disable all Audio in Exult.
-* Music options
+* Music
  Enable or disable music.
 * looping
  Disable restores the (broken) way the original handled the music looping flag.
@@ -1553,86 +1561,88 @@ Look at 3. Audio to see explanation on the settings.
 * Pack
  choose between our standard SFX packs, Roland MT32 and Soundblaster, see 3.7.. This option is not available in the Exult Setup.
 * Speech
- enable or disable speech. When disabled you will see subtitles when the Guardian or the Great Earth Serpent speaks
+ enable or disable speech. When disabled you will see subtitles when the Guardian or the Great Earth Serpent speaks.
+* subtitles
+ Show subtitles while speech is being played. In the original the subtitles were only shown when speech was disabled.
 * OK/Cancel
  Ok accepts your changes, Cancel discards your changes.
 
 
 
-7.5. Gameplay Options
+7.5. Game Engine
+
+
+* Take automatic Notes
+ Toggle writing automatic notes to the notebook - see 6.3. The automatic Notebook .
+* Gumps pause games
+ In the original the game got paused when Gumps were shown. Enable/disable it.
+* Alternative drag and drop
+ When enabled dropping a stack of items (coins, bolts...) will drop the whole stack without asking for confirmation of the amount of items to drop. Hold 'Ctrl' while dropping if you need to split a stack.
+* Speed
+ if Exult seems too fast lower this setting. If it seems to sluggish raising this setting may help.
+* Combat options
+ As many people think that the U7 combat engine is far too easy, too hard or just can't stand the real-time-combat we put in some options to make combat more interesting:
+* Combat Show Hits
+ With this enabled you can see the hit points of NPCs in brackets after their name when you left-click on them.
+* Combat paused with Space
+ choose between Original and SpacePauses. SpacePauses gives you a little more control of combat. When you hit space the game pauses and you can direct a party member by right-clicking, then clicking on a target to attack. Or change weapons, choose a favorite spell.
+* Combat Charmed difficulty
+ choose between Normal and Hard. With Normal the Avatar can't be charmed. The original game allowed him to be charmed though that only highlighted him as charmed and the charmed status icon showed but you could control him as usual.
+ Hard will neither allow the player to control charmed party members, including the Avatar, nor access the inventory of a charmed party member. But you can still manipulate objects that are not in the charmed party members possessions even if the Avatar is the one who is charmed. Charmed party members will continue to attack, even if the player ends combat.
+* Combat Difficulty
+ Ranges from Easiest (-3) to Hardest (3). It affects the chance of a hit, and the HP that is lost if a hit occurs.
+* Cheats
+ Enables or disables all the cheats that we implemented in Exult. See 5.3. Cheat keys what those cheats are.
+
+
+
+7.6. Game Display
 
 
 * Status Bars
  You can either disable the status bars or choose its position on the bottom of the screen (left, middle, right).
-* Text Background
- shows a tinted background behind text in conversations to make it easier to read. Either disable it or choose between the colors purple, orange, light gray, green, yellow, pale blue, dark green, red, bright white, dark gray and white.
-* Fullscreen Fast Mouse
- makes the mouse cursor move faster in full screen modes. Enable or disable it.
-* Use middle mouse button
- In the normal game, the middle mouse button activates the target-function (which could also be accomplished by pressing 't'). For modal gumps, the middle mouse acts as 'return', the right button as 'escape', so you can now for example accept the default slider value by just pressing the middle button. The escape function is also available during most other actions like selecting a target or conversations. Enable or disable it.
-* Doubleclick closes gumps
- pretty straightforward, right?
-* Right click closes gumps
- the same but different.
-* Right click Pathfinds
- Right-clicking on a spot makes the avatar walk to it. Default is a double click but you can set it to a single one or disable it.
-* Gumps pause games
- In the original the game got paused when Gumps were shown. Enable/disable it.
-* Cheats
- Enables or disables all the cheats that we implemented in Exult. See 5.3. Cheat keys what those cheats are.
-* Speed
- if Exult seems too fast lower this setting. If it seems to sluggish raising this setting may help.
-* Smooth scrolling
- Disabled/25%/50%/75%/100% percentage of how smooth the game scrolls when the avatar moves. When disabled Exult uses the "jerky" scrolling of the original game.
-* Paperdolls
- only available in Black Gate and only if you have Serpent Isle installed as well. Enables or disable Paperdolls (inventory screen) in the style of Serpent Isle.
-* OK/Cancel
- Ok accepts your changes, Cancel discards your changes.
-
-
-
-7.6. Misc Options
-
-
-* Scroll game view with mouse
- When cheats are enabled you can scroll the game view with the scroll wheel of the mouse, when you hold down the 'Alt' you will scroll sideways (to the west or to the east).
-* Skip intro
- When enabled you don't have to watch the splash screen and intro when you select a game from the Exult menu.
-* Skip scripted first scene
- When you start a new game of BG or SI the game starts with a scripted scene during which you can't move the Avatar. Enable this to skip this part but only do this if you have already played the game and have seen this scene.
-* Alternate drag'n'drop
- When enabled dropping a stack of items (coins, bolts...) will drop the whole stack without asking for confirmation of the amount of items to drop. Hold 'Ctrl' while dropping if you need to split a stack.
-* Autonotes
- Toggle writing automatic notes to the notebook - see 6.3. The automatic Notebook .
 * Use ShortcutBar
  Toggle the ShortcutBar or make it transparent when on the map - see 6.1. ShortcutBar for single or double click actions .
 * Use outline color
  Choose a the color of the outline around the ShortcutBar buttons or disable it - see 6.1. ShortcutBar for single or double click actions .
 * Hide missing items
  hides ShortcutBar items the party doesn't have, otherwise missing items are greyed out - see 6.1. ShortcutBar for single or double click actions .
-* Combat options:
- As many people think that the U7 combat engine is far too easy, too hard or just can't stand the real-time-combat Jeff put in some options to make combat more interesting.
-* Difficulty
- Ranges from Easiest (-3) to Hardest (3). It affects the chance of a hit, and the HP that is lost if a hit occurs.
-* ShowHits
- With this enabled you can see the hit points of NPCs in brackets after their name when you left-click on them.
-* Mode
- choose between Original and SpacePauses. SpacePauses gives you a little more control of combat. When you hit space the game pauses and you can direct a party member by right-clicking, then clicking on a target to attack. Or change weapons, choose a favorite spell.
-* Charmed difficulty
- choose between Normal and Hard. With Normal the Avatar can't be charmed. The original game allowed him to be charmed though that only highlighted him as charmed and the charmed status icon showed but you could control him as usual.
- Hard will neither allow the player to control charmed party members, including the Avatar, nor access the inventory of a charmed party member. But you can still manipulate objects that are not in the charmed party members possessions even if the Avatar is the one who is charmed. Charmed party members will continue to attack, even if the player ends combat.
+* Text Background
+ shows a tinted background behind text in conversations to make it easier to read. Either disable it or choose between the colors purple, orange, light gray, green, yellow, pale blue, dark green, red, bright white, dark gray and white.
+* Smooth scrolling
+ Disabled/25%/50%/75%/100% percentage of how smooth the game scrolls when the avatar moves. When disabled Exult uses the "jerky" scrolling of the original game.
+* Skip intro
+ When enabled you don't have to watch the splash screen and intro when you select a game from the Exult menu.
+* Skip scripted first scene
+ When you start a new game of BG the game starts with a scripted scene during which you can't move the Avatar. Enable this to skip this part but only do this if you have already played the game and have seen this scene.
+* Use extended SI intro
+ To fit the intro of SI onto the constraints of floppy disks, it was cut and made much simpler than originally envisioned by Denis Loubet. We have restored the intro and made it possibel to watch it.
+* Paperdolls
+ only available in Black Gate and only if you have Serpent Isle installed as well. Enables or disable Paperdolls (inventory screen) in the style of Serpent Isle.
 
 
 
-7.7. Input Options
+7.7. Game Input
 
 
+* Doubleclick closes gumps
+ pretty straightforward, right?
+* Right click closes gumps
+ the same but different.
+* Pathfind with Right Click
+ Right-clicking on a spot makes the avatar walk to it. Default is a double click but you can set it to a single one or disable it.
+* Scroll game view with mouse
+ When cheats are enabled you can scroll the game view with the scroll wheel of the mouse, when you hold down the 'Alt' you will scroll sideways (to the west or to the east).
+* Use middle mouse button
+ In the normal game, the middle mouse button activates the target-function (which could also be accomplished by pressing 't'). For modal gumps, the middle mouse acts as 'return', the right button as 'escape', so you can now for example accept the default slider value by just pressing the middle button. The escape function is also available during most other actions like selecting a target or conversations. Enable or disable it.
+* Fullscreen Fast Mouse
+ makes the mouse cursor move faster in full screen modes. Enable or disable it.
 * Item helper menu
  Enabling this will pop up a menu on screen of objects you can click on and once you select one, it gives you further optios on how to iteract with the object. Only on iOS enabled by default.
 * D-Pad screen location
  On iOS we display a virtual D-Pad to move the Avatar with your finger (thumb). This toggles and selects the side of the screen this D-Pad is displayed on. For now this is only eabled on iOS
-* Long touch pathfind
- When you click or touch for a little while the Avatar will move to this location if it's possible to move there. Only on iOS enabled by default.
+* Pathfind with Long touch
+ When you click or touch for a little while the Avatar will move to this location if it's possible to move there. By default only enabled on iOS.
 
 
 
@@ -1722,7 +1732,7 @@ For now Exult is not on the App Store but there are two other ways to get it on 
 
 9.3. Installing the games on your iPhone/iPad
 
-Once you have the Exult app on your device, you will need to upload the games to your device using iTunes file sharing. But it needs a bit of preparing.
+Once you have the Exult app on your device, you will need to upload the games to your device using Finder or iTunes file sharing. But it needs a bit of preparing.
 First you will need to put the games into a folder called game and use the following folder structure:
 game
 +-- blackgate
@@ -1736,6 +1746,7 @@ game
 On Windows connect your device to your computer, start iTunes and select your device in it. Click "Apps", scroll down to "File Sharing" and select Exult. Now drag and drop the game folder you prepared in the first step. See Apple's guide.
 On macOS you have to use Finder, select your iOS device, click on "Files" and select Exult. Now drag and drop the game folder you prepared in the first step. See Apple's guide.
  On older macOS versions you have to use iTunnes as you would on Windows.
+Only use Finder or iTunes file sharing and not the iOS app Files. Otherwise you will probably end up with an incomplete game. The many small files of the games slow down the Files app and as soon as you switch to another app, the transfer is lkely to stop.
 Note: if you want to use mods just add them to the game folder structure before you drag and drop that in iTunes file sharing.
  Example with the BG keyring and SI fixes mods:
 game
@@ -1929,20 +1940,30 @@ http://sourceforge.net/projects/exult/
 --------------------------------------------------------------------------------
 
 12. Changes to the Documentation
-12.1. - 20 February 2021
+12.1. - 24 January 2022
+
+* 2.3. Settings in exult.cfg cfg setting to disable the extended SI intro.
+* 3.8. All-in-One Audio Data pack and installers The Windows installer will optionally install the audio pack.
+* 1.1. speech with subtitles is possible.
+* 7. Exult Setup and Game Menu Following the reorder of the options, this needed an overhaul.
+* 9.3. Installing the games on your iPhone/iPad Don't use the Files app on iOS to transfer the games.
+
+
+
+12.2. - 20 February 2021
 
 * Changed links to our homepage to exult.info, SDL to SDL2, Mac OS X to macOS.
 * Removed references to Windows CE/Pocket PC.
 * Many little changes to wordings and indentation.
 * 2.3. Settings in exult.cfg Added options for extended SI intro and Speech with subtitles.
 * 5.1. Movement iOS movement added.
-* 7.7. Input Options is new and needed a screenshot as well.
-* 9.3. Installing the games on your iPhone/iPad iTunes file sharing is donw differently on newer macOS systems.
+* 1.1. is new and needed a screenshot as well.
+* 9.3. Installing the games on your iPhone/iPad iTunes file sharing is done differently on newer macOS systems.
 * 10.10. Using the version for macOS from GOG.com again adapted to GOG changes of the Mac installer.
 
 
 
-12.2. - 08 December 2018
+12.3. - 08 December 2018
 
 * 2.1. Installation Pointing at our GOG instructions, too.
 * 2.2. Location of exult.cfg Windows 9x and 2k are no longer supported.
@@ -1957,7 +1978,7 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.3. - 14 April 2016
+12.4. - 14 April 2016
 
 * Removed Zaurus guide.
 * Removed mentions of MacOS or replaced with OS X if applicable.
@@ -1967,23 +1988,23 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.4. - 17 March 2016
+12.5. - 17 March 2016
 
 * 2.3. Settings in exult.cfg ShortcutBar cfg settings.
 * 6. ShortcutBar, Notebook and Screenshots added ShortcutBar documentation
-* 7.6. Misc Options ShortcutBar options added.
+* 1.1. ShortcutBar options added.
 * 9.2. Installing Exult on your iPhone/iPad changed a bit.
 
 
 
-12.5. - 13 March 2016
+12.6. - 13 March 2016
 
 * 1.1. Exult Version GIT instead of SVN.
 * 6.3. The automatic Notebook point at GIT instead of SVN.
 
 
 
-12.6. - 19 March 2015
+12.7. - 19 March 2015
 
 * 2.10. Error Log moved.
 * 9. iOS Guide added.
@@ -1991,7 +2012,7 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.7. - 09 May 2014
+12.8. - 09 May 2014
 
 * 2.3. Settings in exult.cfg added coremidi_device setting.
 * 3.2. MIDI Music added coremidi_device setting.
@@ -1999,19 +2020,19 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.8. - 19 December 2013
+12.9. - 19 December 2013
 
 * 10.10. Using the version for macOS from GOG.com paths in the disk image changed.
 
 
 
-12.9. - 21 November 2013
+12.10. - 21 November 2013
 
 * 10.9. Using the version for Windows from GOG.com default installation path changed.
 
 
 
-12.10. - 11 February 2013
+12.11. - 11 February 2013
 
 * 2.3. Settings in exult.cfg FluidSynth soundfont stack added.
 * 2.6. Path-Settings for macOS deleting exult.cfg might help.
@@ -2020,20 +2041,20 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.11. - 15 January 2013
+12.12. - 15 January 2013
 
 * 5.2. Keyboard commands orb of the moons keyboard command.
 
 
 
-12.12. - 01 January 2013
+12.13. - 01 January 2013
 
 * 3.2. MIDI Music timidity.cfg needs to be in ~/.exult on Linux systems.
 * 5.1. Movement and 5.2. Keyboard commands walk and run keys were switched.
 
 
 
-12.13. - 16 December 2012
+12.14. - 16 December 2012
 
 * 2.3. Settings in exult.cfg wrong height for windowed default.
 * 2.9. Command line options added --reset-video and --mapnum and sorted it a bit.
@@ -2042,43 +2063,43 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.14. - 14 November 2012
+12.15. - 14 November 2012
 
 * 1.1. Exult Version it's for the SVN of Exult.
 * 2.3. Settings in exult.cfg added autonotes options.
 * 6.2. Using the Notebook saved when saved game and when cheating you see the coordinates.
 * 6.3. The automatic Notebook Autonotes are bundled and can be toggled.
-* 7.6. Misc Options Autonotes option added.
+* 1.1. Autonotes option added.
 
 
 
-12.15. - 28 October 2012
+12.16. - 28 October 2012
 
 * 2.3. Settings in exult.cfg added right click pathfind, fixed the text backgrounds and some other small fixes.
 * 5.1. Movement righht click pathfinding can be single or double.
-* 7.5. Gameplay Options same as above and the paperdolls option needs SI installed.
+* 1.1. same as above and the paperdolls option needs SI installed.
 * 10.9. Using the version for Windows from GOG.com added.
 
 
 
-12.16. - 01 December 2011
+12.17. - 01 December 2011
 
 * 2.3. Settings in exult.cfg added alternate_drop setting.
 * 2.6. Path-Settings for macOS explained difference between the Library folders and how to access ~/Library on Lion.
 * 4.4. Scaler added HQ4x.
 * 5.1. Movement added the new way of dropping a whole stack of items without splitting.
-* 7.6. Misc Options Alternate drag'n'drop added.
+* 1.1. Alternate drag'n'drop added.
 
 
 
-12.17. - 16 March 2011
+12.18. - 16 March 2011
 
 * 2.3. Settings in exult.cfg added coreaudio_soundfont setting.
 * 3.2. MIDI Music as above.
 
 
 
-12.18. - 19 February 2011
+12.19. - 19 February 2011
 
 * 2.3. Settings in exult.cfg stereo/mono is switched by yes/no, facestats needed the setting for left status bars.
 * 3.7. Digital Wave Sound Effects split off the installation part.
@@ -2089,16 +2110,16 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.19. - 24 January 2011
+12.20. - 24 January 2011
 
 * 2.3. Settings in exult.cfg there is no extra border setting for windows mode settings.
 * 2.9. Command line options fixed copy/paste error and added more explanations.
 * 3.7. Digital Wave Sound Effects switching sfx works right away, removed note.
-* 7.6. Misc Options more information on the charmed combat options and on mouse wheel scroll.
+* 1.1. more information on the charmed combat options and on mouse wheel scroll.
 
 
 
-12.20. - 23 January 2011
+12.21. - 23 January 2011
 
 * 12. Changes to the Documentation moved to the bottom.
 * 2.3. Settings in exult.cfg new options for combat and windowed video settings and several other settings added.
@@ -2109,13 +2130,13 @@ http://sourceforge.net/projects/exult/
 * 7.1. Access to the Exult Setup and Game menu same and some explanation.
 * 7.2. Load/Save Game only available in the Game menu.
 * 7.4. Audio Options You cannot choose the SFX pack in the Exult setup.
-* 7.5. Gameplay Options reordered.
-* 7.6. Misc Options formerly named Combat Options but now added non combat options to it.
+* 1.1. reordered.
+* 1.1. formerly named Combat Options but now added non combat options to it.
 * 7.8. Quit only in the Game menu.
 
 
 
-12.21. - 13 October 2010
+12.22. - 13 October 2010
 
 * 1.1. Exult Version new official version.
 * 4.4. Scaler OpenGL is only available in snapshots.
@@ -2127,7 +2148,7 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.22. - 30 August 2010
+12.23. - 30 August 2010
 
 * 2.3. Settings in exult.cfg added the new config options for video.
 * 4.1. Resolution rewrote some more with Colourless' latest changes.
@@ -2136,7 +2157,7 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.23. - 25 August 2010
+12.24. - 25 August 2010
 
 * 2.3. Settings in exult.cfg added the new config options for video and audio.
 * 4.1. Resolution rewrote a bit to explain the new rendering.
@@ -2146,7 +2167,7 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.24. - 15 August 2010
+12.25. - 15 August 2010
 
 * 3.2. MIDI Music Fluidsynth support is not compiled into the snapshots, also MT32 is supported on OS X.
 * 3.4. Windows MIDI Mapper the log files are now where exult.cfg is saved to not necessarily where exult.exe is.
@@ -2156,13 +2177,13 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.25. - 28 April 2010
+12.26. - 28 April 2010
 
 * 2.3. Settings in exult.cfg audio options for sample rate and stereo added.
 
 
 
-12.26. - 11 March 2010
+12.27. - 11 March 2010
 
 * 2.6. Path-Settings for macOS we changed the default paths for OS X once more.
 * 3.7. Digital Wave Sound Effects the SFX pack can now be chosen in the Game Menu.
@@ -2171,7 +2192,7 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.27. - 10 March 2010
+12.28. - 10 March 2010
 
 * 2.4. Path-Settings I've split this up for all the different OS'.
 * added Path-Settings chapters for the most common OS with examples.
@@ -2182,7 +2203,7 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.28. - 08 March 2010
+12.29. - 08 March 2010
 
 * 1.2. What is Exult? fixed typo in Jakob Schonberg's name.
 * 2.2. Location of exult.cfg needs its own chapter now.
@@ -2194,20 +2215,20 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.29. - 16 July 2009
+12.30. - 16 July 2009
 
 * 3.2. MIDI Music MT32 device type is not supported on Mac OS X.
 
 
 
-12.30. - 03 June 2009
+12.31. - 03 June 2009
 
 * Spell checked the whole documentation.
 * 3.2. MIDI Music slightly rewrote the FluidSynth section and explained fakemt32 option a bit better.
 
 
 
-12.31. - 20 May 2009
+12.32. - 20 May 2009
 
 * 3.6. Digital Music mentioned two issues with it.
 * 3.9. Installation of the digital music packs cleaned up.
@@ -2215,7 +2236,7 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.32. - 19 May 2009
+12.33. - 19 May 2009
 
 * 2. Configurations coloured tags to differentiate between manual and in game settings.
 * 2.4. Path-Settings Exult and Exult Studio don't trust exult.cfg.
@@ -2227,7 +2248,7 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.33. - 18 May 2009
+12.34. - 18 May 2009
 
 * 1.1. Exult Version this docs are for the SVN version.
 * 2.1. Installation the Windows installer asks for BG/SI location.
@@ -2243,11 +2264,11 @@ http://sourceforge.net/projects/exult/
 * 5.4. Map Editing keys needed their own chapter.
 * 7.3. Video Options updated.
 * 7.4. Audio Options updated, also updated the screenshot.
-* 7.5. Gameplay Options updated, also updated the screenshot.
+* 1.1. updated, also updated the screenshot.
 
 
 
-12.34. - 28 April 2009
+12.35. - 28 April 2009
 
 * 2.3. Settings in exult.cfg tried to explain data_path a bit more.
 * 3.11. Speech can also be toggled via the in-game menu.
@@ -2255,14 +2276,14 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.35. - 21 October 2007
+12.36. - 21 October 2007
 
 * 1.1. added.
 * 10.8. Fixing permissions of Ultima Collection on *nix systems added.
 
 
 
-12.36. - 08 April 2006
+12.37. - 08 April 2006
 
 * 2.1. Installation needed some polishing.
 * 2.4. Path-Settings synched the path settings with the new Installation section.
@@ -2270,26 +2291,26 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.37. - 14 March 2005
+12.38. - 14 March 2005
 
 * 1. Newest ROM instructions updated.
 
 
 
-12.38. - 14 August 2004
+12.39. - 14 August 2004
 
 * 2.1. Installation on Windows you can use Notepad to edit exult.cfg.
 
 
 
-12.39. - 23 May 2004
+12.40. - 23 May 2004
 
 * 1.1. Exult Version I'm confident that the new Version will be 1.2.
 * 1.1. we shouldn't call our data files shared files..
 
 
 
-12.40. - 11 February 2004
+12.41. - 11 February 2004
 
 * A lot of clean up and small changes, too numerous to list.
 * 2.4. Path-Settings fixed some outdated instructions.
@@ -2301,7 +2322,7 @@ http://sourceforge.net/projects/exult/
 
 
 
-12.41. - 12 December 2003
+12.42. - 12 December 2003
 
 * 2.3. Settings in exult.cfg fixed bad path settings and updated audio settings.
 * 2.4. Path-Settings moved stuff over to next point.
