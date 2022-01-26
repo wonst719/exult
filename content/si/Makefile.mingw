@@ -27,7 +27,7 @@ CLEANFILES = \
 all: usecode
 
 install: all
-	mkdir $(sidir)
+	mkdir -p $(sidir)
 	cp curecantra.cfg $(sidir)/curecantra.cfg
 	mkdir -p $(sidir)/curecantra/
 	cp usecode $(sidir)/curecantra/usecode
