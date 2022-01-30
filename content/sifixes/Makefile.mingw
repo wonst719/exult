@@ -99,6 +99,7 @@ SHAPES_VGA_OBJECTS = \
 
 SPRITES_VGA_OBJECTS = \
 	src/graphics/sprites.in	\
+	src/graphics/sprites/map_en.shp	\
 	src/graphics/sprites/sprite_07_teleport_here.shp	
 
 CLEANFILES = \
@@ -117,7 +118,7 @@ CLEANFILES = \
 all: data/usecode data/gumps.vga data/mainshp.flx data/paperdol.vga data/shapes.vga data/sprites.vga
 
 install: all
-	mkdir $(sifixesdir)
+	mkdir -p $(sifixesdir)
 	cp sifixes.cfg $(sifixesdir)/sifixes.cfg
 	mkdir -p $(sifixesdir)/sifixes/data
 	cp data/usecode $(sifixesdir)/sifixes/data/usecode

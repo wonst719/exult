@@ -245,7 +245,7 @@ $datafiles_mingw"
 	fi
 
 	# Rules for MinGW 'make install' and 'make uninstall'.
-	echo -e "$targets_mingw${n}\ninstall: all${n}\tmkdir \$(${moddir}dir)${n}\tcp $(basename "$cfgfile") \$(${moddir}dir)/$(basename "$cfgfile")${n}$datafiles_mingw${n}\nuninstall:${n}\trm -f \$(${moddir}dir)/$(basename "$cfgfile")${n}\trm -rf $destdir_mingw${n}" >> "$modmakefile_mingw"
+	echo -e "$targets_mingw${n}\ninstall: all${n}\tmkdir -p \$(${moddir}dir)${n}\tcp $(basename "$cfgfile") \$(${moddir}dir)/$(basename "$cfgfile")${n}$datafiles_mingw${n}\nuninstall:${n}\trm -f \$(${moddir}dir)/$(basename "$cfgfile")${n}\trm -rf $destdir_mingw${n}" >> "$modmakefile_mingw"
 
 	# Output rule to build expack, if needed.
 	if [[ "$buildexpack" == "yes" ]]; then

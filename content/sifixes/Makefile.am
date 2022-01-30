@@ -91,6 +91,7 @@ SHAPES_VGA_OBJECTS = \
 
 SPRITES_VGA_OBJECTS = \
 	src/graphics/sprites.in	\
+	src/graphics/sprites/map_en.shp	\
 	src/graphics/sprites/sprite_07_teleport_here.shp	
 
 sifixesdir = $(datadir)/exult/silverseed/mods
