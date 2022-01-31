@@ -39,7 +39,7 @@ CLEANFILES = \
 all: patch/usecode patch/faces.vga patch/shapes.vga
 
 install: all
-	mkdir $(islefaqdir)
+	mkdir -p $(islefaqdir)
 	cp islefaq.cfg $(islefaqdir)/islefaq.cfg
 	mkdir -p $(islefaqdir)/islefaq/patch
 	cp patch/usecode $(islefaqdir)/islefaq/patch/usecode

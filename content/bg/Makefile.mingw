@@ -27,7 +27,7 @@ CLEANFILES = \
 all: usecode
 
 install: all
-	mkdir $(bgdir)
+	mkdir -p $(bgdir)
 	cp lbjoin.cfg $(bgdir)/lbjoin.cfg
 	mkdir -p $(bgdir)/lbjoin/
 	cp usecode $(bgdir)/lbjoin/usecode

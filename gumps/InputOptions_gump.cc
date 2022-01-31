@@ -47,6 +47,7 @@ static const int colx[] = { 35, 50, 120, 170, 192, 209 };
 
 static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
+static const char *helptext = "HELP";
 
 static const char *pathfind_texts[3] = {"no", "single", "double"};
 
@@ -63,6 +64,12 @@ void InputOptions_gump::close() {
 
 void InputOptions_gump::cancel() {
 	done = true;
+}
+
+void InputOptions_gump::help() {
+#if SDL_VERSION_ATLEAST(2,0,14)
+	SDL_OpenURL("http://exult.info/docs.php#game_input_gump");
+#endif
 }
 
 void InputOptions_gump::build_buttons() {
@@ -128,10 +135,15 @@ InputOptions_gump::InputOptions_gump()
 
 	// Ok
 	buttons[id_ok] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::close,
-	        oktext, colx[0] - 2, rowy[12]);
+	        oktext, colx[0] - 2, rowy[12], 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::cancel,
-	        canceltext, colx[5] - 3, rowy[12]);
+	        canceltext, colx[5] - 6, rowy[12], 50);
+#if SDL_VERSION_ATLEAST(2,0,14)
+	// Help
+	buttons[id_help] = std::make_unique<InputOptions_button>(this, &InputOptions_gump::help,
+	        helptext, colx[2] - 3, rowy[12], 50);
+#endif
 }
 
 void InputOptions_gump::save_settings() {

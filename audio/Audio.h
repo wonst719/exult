@@ -162,6 +162,7 @@ public:
 	bool	is_speech_enabled() const { return speech_enabled; }
 	void	set_speech_enabled(bool ena) { speech_enabled = ena; }
 	bool	is_speech_with_subs() const { return speech_with_subs; }
+	void	set_speech_with_subs(bool ena) { speech_with_subs = ena; }
 	bool	is_music_enabled() const { return music_enabled; }
 	void	set_music_enabled(bool ena) { music_enabled = ena; }
 	bool	are_effects_enabled() const { return effects_enabled; }

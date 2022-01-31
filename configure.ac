@@ -1132,6 +1132,14 @@ echo
 echo Exult v$VERSION
 echo
 echo SDL........................ : `$SDL_CONFIG --version`
+echo Ogg.........................: `$PKG_CONFIG --modversion ogg`
+echo Vorbis......................: `$PKG_CONFIG --modversion vorbis`
+if test x$enable_mt32emu = xyes; then
+echo MT32emu.................... : `$PKG_CONFIG --modversion mt32emu`
+fi
+if test x$enable_fluidsynth = xyes; then
+echo Fluidsynth................. : `$PKG_CONFIG --modversion fluidsynth`
+fi
 if test x$have_gtk = xyes; then
 echo GLIB....................... : `$PKG_CONFIG --modversion glib-2.0`
 echo GTK+....................... : `$PKG_CONFIG --modversion gtk+-3.0`

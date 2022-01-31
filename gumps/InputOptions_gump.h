@@ -42,6 +42,7 @@ private:
 	    id_first = 0,
 	    id_ok = id_first,
 	    id_cancel,
+	    id_help,
 	    id_doubleclick,
 	    id_rightclick_close,
 	    id_right_pathfind,
@@ -71,6 +72,7 @@ public:
 	void load_settings();
 	void save_settings();
 	void cancel();
+	void help();
 
 	void toggle_doubleclick(int state) {
 		doubleclick = state;
