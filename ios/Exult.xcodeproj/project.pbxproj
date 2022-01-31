@@ -12,6 +12,7 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
+		8A057F9227A8362E00948459 /* CoreAudioMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A057F8427A835AF00948459 /* CoreAudioMidiDriver.cpp */; };
 		8A1C58211FE7D91B00738E40 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A1C581B1FE7D91B00738E40 /* libz.tbd */; };
 		8A1FC3CC2571BEBC007B86DD /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A1FC3CB2571BEBC007B86DD /* CoreBluetooth.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		8A1FC4272571C747007B86DD /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A8340BF1F8977FB000696C7 /* CoreMotion.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -398,6 +399,8 @@
 		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		48254DD28D1E318C3881BC91 /* lightinf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lightinf.h; sourceTree = "<group>"; };
+		8A057F8427A835AF00948459 /* CoreAudioMidiDriver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CoreAudioMidiDriver.cpp; sourceTree = "<group>"; };
+		8A057F9127A835AF00948459 /* CoreAudioMidiDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreAudioMidiDriver.h; sourceTree = "<group>"; };
 		8A0C19E11D6D9F1800B9105A /* sibetaintrinsics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sibetaintrinsics.h; sourceTree = "<group>"; };
 		8A1C581B1FE7D91B00738E40 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		8A1FC3CB2571BEBC007B86DD /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/CoreBluetooth.framework; sourceTree = DEVELOPER_DIR; };
@@ -1073,6 +1076,8 @@
 		E700DB101A6E2CE7006C8BE4 /* midi_drivers */ = {
 			isa = PBXGroup;
 			children = (
+				8A057F8427A835AF00948459 /* CoreAudioMidiDriver.cpp */,
+				8A057F9127A835AF00948459 /* CoreAudioMidiDriver.h */,
 				E700DB2F1A6E2CE7006C8BE4 /* CoreMidiDriver.cpp */,
 				E700DB301A6E2CE7006C8BE4 /* CoreMidiDriver.h */,
 				E700DB351A6E2CE7006C8BE4 /* fmopl.cpp */,
@@ -1959,6 +1964,7 @@
 				E700DE241A6E344D006C8BE4 /* ibuf8.cc in Sources */,
 				E700DD511A6E3121006C8BE4 /* bodyinf.cc in Sources */,
 				E700DCDA1A6E30D8006C8BE4 /* chunkter.cc in Sources */,
+				8A057F9227A8362E00948459 /* CoreAudioMidiDriver.cpp in Sources */,
 				E700DD531A6E3121006C8BE4 /* effhpinf.cc in Sources */,
 				E700DCAC1A6E30A7006C8BE4 /* readnpcs.cc in Sources */,
 				E700DD3D1A6E3121006C8BE4 /* pngio.cc in Sources */,

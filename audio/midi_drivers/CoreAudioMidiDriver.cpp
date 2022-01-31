@@ -74,7 +74,11 @@ int CoreAudioMidiDriver::open() {
 
 		// The default output device
 		desc.componentType = kAudioUnitType_Output;
+#ifdef __IPHONEOS__
+		desc.componentSubType = kAudioUnitSubType_RemoteIO;
+#else
 		desc.componentSubType = kAudioUnitSubType_DefaultOutput;
+#endif
 		desc.componentManufacturer = kAudioUnitManufacturer_Apple;
 		desc.componentFlags = 0;
 		desc.componentFlagsMask = 0;
@@ -83,7 +87,11 @@ int CoreAudioMidiDriver::open() {
 
 		// The built-in default (softsynth) music device
 		desc.componentType = kAudioUnitType_MusicDevice;
+#ifdef __IPHONEOS__
+		desc.componentSubType = kAudioUnitSubType_MIDISynth;
+#else
 		desc.componentSubType = kAudioUnitSubType_DLSSynth;
+#endif
 		desc.componentManufacturer = kAudioUnitManufacturer_Apple;
 
 		RequireNoErr(AUGraphAddNode(_auGraph, &desc, &synthNode));
@@ -100,7 +108,11 @@ int CoreAudioMidiDriver::open() {
 
 		// Load custom soundfont, if specified
 		if (config->key_exists("config/audio/midi/coreaudio_soundfont")) {
+#ifdef __IPHONEOS__
+			std::string soundfont = get_system_path("<DATA>/") + getConfigSetting("coreaudio_soundfont", "");
+#else
 			std::string soundfont = getConfigSetting("coreaudio_soundfont", "");
+#endif
 			std::cout << "Loading SoundFont '" << soundfont << "'" << std::endl;
 			if (soundfont != "") {
 				OSErr err;
