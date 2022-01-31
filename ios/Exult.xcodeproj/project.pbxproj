@@ -341,27 +341,6 @@
 			remoteGlobalIDString = BECDF6BE0761BA81005FE872;
 			remoteInfo = "Standard DMG";
 		};
-		8A5252B225718897005AD385 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A52528E25718896005AD385 /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A75FDB8C23E4C74400529352;
-			remoteInfo = hidapi;
-		};
-		8A5252B425718897005AD385 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A52528E25718896005AD385 /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A75FDB4923E399AC00529352;
-			remoteInfo = "hidapi-iOS";
-		};
-		8A5252B625718897005AD385 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A52528E25718896005AD385 /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A75FDB6E23E3A2C900529352;
-			remoteInfo = "hidapi-tvOS";
-		};
 		8A599C20246058A9006E3252 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8A599C1C246058A9006E3252 /* libmt32emu.xcodeproj */;
@@ -1016,9 +995,6 @@
 				8A5252AD25718897005AD385 /* libSDL2.dylib */,
 				8A5252AF25718897005AD385 /* libSDL2.dylib */,
 				8A5252B125718897005AD385 /* SDL2 */,
-				8A5252B325718897005AD385 /* hidapi.framework */,
-				8A5252B525718897005AD385 /* hidapi.framework */,
-				8A5252B725718897005AD385 /* hidapi.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1859,27 +1835,6 @@
 			fileType = "compiled.mach-o.executable";
 			path = SDL2;
 			remoteRef = 8A5252B025718897005AD385 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8A5252B325718897005AD385 /* hidapi.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = hidapi.framework;
-			remoteRef = 8A5252B225718897005AD385 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8A5252B525718897005AD385 /* hidapi.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = hidapi.framework;
-			remoteRef = 8A5252B425718897005AD385 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8A5252B725718897005AD385 /* hidapi.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = hidapi.framework;
-			remoteRef = 8A5252B625718897005AD385 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		8A599C21246058A9006E3252 /* libmt32emu.a */ = {
