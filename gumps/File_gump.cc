@@ -20,6 +20,7 @@
 #  include <config.h>
 #endif
 
+#include <cctype>
 #include <cstring>
 
 #include "SDL_events.h"
@@ -573,7 +574,7 @@ bool File_gump::mouse_up(
  *  Handle character that was typed.
  */
 
-void File_gump::text_input(int chr, int unicode) {
+void File_gump::text_input(int chr, int unicode, bool shift_pressed) {
 	if (!focus)         // Text field?
 		return;
 	switch (chr) {
@@ -637,7 +638,10 @@ void File_gump::text_input(int chr, int unicode) {
 
 	if (chr < ' ')
 		return;         // Ignore other special chars.
-	if (chr < 256 && isascii(chr)) {
+	if (isascii(chr)) {
+		if (shift_pressed) {
+			chr = std::toupper(chr);
+		}
 		int old_length = focus->get_length();
 		focus->insert(chr);
 		// Added first character?  Need

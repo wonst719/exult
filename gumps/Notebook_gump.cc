@@ -680,7 +680,7 @@ bool Notebook_gump::handle_kbd_event(
 		change_page(1);
 		break;
 	default:
-		if (ev.key.keysym.mod & KMOD_SHIFT)
+		if (ev.key.keysym.mod & (KMOD_SHIFT | KMOD_CAPS))
 			chr = toupper(chr);
 		if (chr < ' ')
 			return false;       // Ignore other special chars.

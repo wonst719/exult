@@ -230,7 +230,7 @@ public:
 	bool mouse_down(int mx, int my, int button) override;
 	bool mouse_up(int mx, int my, int button) override;
 	void mouse_drag(int mx, int my) override;
-	void text_input(int chr, int unicode) override; // Character typed.
+	void text_input(int chr, int unicode, bool shift_pressed) override; // Character typed.
 
 	void mousewheel_up() override;
 	void mousewheel_down() override;

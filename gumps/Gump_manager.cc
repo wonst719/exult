@@ -479,7 +479,7 @@ bool Gump_manager::handle_modal_gump_event(
 		} else if (event.button.button == 2) {
 			if (!gump->mouse_down(gx, gy, event.button.button) && gwin->get_mouse3rd()) {
 				gump->key_down(SDLK_RETURN);
-				gump->text_input(SDLK_RETURN, SDLK_RETURN);
+				gump->text_input(SDLK_RETURN, SDLK_RETURN, false);
 			}
 		} else if (event.button.button == 3) {
 			rightclick = true;
@@ -564,7 +564,7 @@ bool Gump_manager::handle_modal_gump_event(
 		}
 		translate_numpad(event.key.keysym.sym, keysym_unicode, event.key.keysym.mod);
 		gump->key_down(event.key.keysym.sym);
-		gump->text_input(event.key.keysym.sym, keysym_unicode);
+		gump->text_input(event.key.keysym.sym, keysym_unicode, (event.key.keysym.mod & (KMOD_SHIFT | KMOD_CAPS)) != 0);
 
 		break;
 	}

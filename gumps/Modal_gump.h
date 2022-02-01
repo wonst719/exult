@@ -58,8 +58,8 @@ public:
 	virtual void key_down(int chr) { // Key pressed
 		ignore_unused_variable_warning(chr);
 	}
-	virtual void text_input(int chr, int unicode) { // Character typed (unicode)
-		ignore_unused_variable_warning(chr, unicode);
+	virtual void text_input(int chr, int unicode, bool shift_pressed) { // Character typed (unicode)
+		ignore_unused_variable_warning(chr, unicode, shift_pressed);
 	}
 	virtual void text_input(const char *text) { // complete string input
 		ignore_unused_variable_warning(text);

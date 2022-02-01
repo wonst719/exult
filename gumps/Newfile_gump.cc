@@ -20,6 +20,7 @@
 #  include <config.h>
 #endif
 
+#include <cctype>
 #include <cstring>
 #include <ctime>
 
@@ -727,7 +728,7 @@ void Newfile_gump::text_input(const char *text) {
  *  Handle character that was typed.
  */
 
-void Newfile_gump::text_input(int chr, int unicode) {
+void Newfile_gump::text_input(int chr, int unicode, bool shift_pressed) {
 	bool update_details = false;
 	int repaint = false;
 
@@ -798,7 +799,10 @@ void Newfile_gump::text_input(int chr, int unicode) {
 		if (chr < ' ')
 			return;         // Ignore other special chars.
 
-		if (chr < 256 && isascii(chr)) {
+		if (isascii(chr)) {
+			if (shift_pressed) {
+				chr = std::toupper(chr);
+			}
 			if (AddCharacter(chr)) {
 				// Added first character?  Need 'Save' button.
 				if (newname[0] && !buttons[id_save]) {
