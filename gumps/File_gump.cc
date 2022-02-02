@@ -638,7 +638,7 @@ void File_gump::text_input(int chr, int unicode, bool shift_pressed) {
 
 	if (chr < ' ')
 		return;         // Ignore other special chars.
-	if (isascii(chr)) {
+	if (chr < 256 && isascii(chr)) {
 		if (shift_pressed) {
 			chr = std::toupper(chr);
 		}

@@ -680,12 +680,12 @@ bool Notebook_gump::handle_kbd_event(
 		change_page(1);
 		break;
 	default:
-		if (ev.key.keysym.mod & (KMOD_SHIFT | KMOD_CAPS))
-			chr = toupper(chr);
 		if (chr < ' ')
 			return false;       // Ignore other special chars.
 		if (chr >= 256 || !isascii(chr))
 			return false;
+		if (ev.key.keysym.mod & (KMOD_SHIFT | KMOD_CAPS))
+			chr = toupper(chr);
 		note->insert(chr, cursor.offset);
 		++cursor.offset;
 		paint();        // (Not very efficient...)
