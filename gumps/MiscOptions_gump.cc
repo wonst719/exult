@@ -54,7 +54,7 @@ static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
 static const char *helptext = "HELP";
 
-static int framerates[] = { 2, 4, 6, 8, 10, -1 };
+static int framerates[] = { 2, 4, 6, 5, 8, 10, -1 };
 // -1 is placeholder for custom framerate
 static const int num_default_rates = array_size(framerates) - 1;
 
