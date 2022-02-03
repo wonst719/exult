@@ -53,7 +53,7 @@ Boston, MA  02111-1307, USA.
 
 #include "Configuration.h"
 
-bool SavePCX_RW(SDL_Surface *saveme, SDL_RWops *dst, bool freedst);
+bool SavePCX_RW(SDL_Surface *saveme, SDL_RWops *dst, bool freedst, int guardband);
 
 using std::cout;
 using std::cerr;
@@ -890,7 +890,8 @@ void Image_window::show(
 		w = display_surface->w;
 		h = display_surface->h;
 	}
-	// Phase 3 notify SDL
+	// Phase 3 blit high res draw surface on top of display_surface
+	// Phase 4 notify SDL
 	UpdateRect(display_surface, x, y, w, h);
 }
 
@@ -922,7 +923,7 @@ void Image_window::toggle_fullscreen() {
 
 bool Image_window::screenshot(SDL_RWops *dst) {
 	if (!paletted_surface) return false;
-	return SavePCX_RW(draw_surface, dst, true);
+	return SavePCX_RW(draw_surface, dst, true, guard_band);
 }
 
 void Image_window::set_title(const char *title) {

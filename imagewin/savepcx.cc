@@ -121,14 +121,13 @@ static void save_24(SDL_RWops *dst, int width, int height,
 	delete [] line;
 }
 
-static bool save_image(SDL_Surface *surface, SDL_RWops *dst) {
-	Uint8 *cmap = nullptr;
-	int colors = 0;
-
-	int width = surface->w;
-	int height = surface->h;
-	auto *pixels = static_cast<Uint8 *>(surface->pixels);
+static bool save_image(SDL_Surface* surface, SDL_RWops* dst, int guardband) {
+	Uint8* cmap   = nullptr;
+	int    colors = 0;
+	int    width  = surface->w - 2 * guardband;
+	int    height = surface->h - 2 * guardband;
 	int pitch = surface->pitch;
+	auto*  pixels = static_cast<Uint8*>(surface->pixels) + guardband + pitch*guardband;
 
 	PCX_Header header;
 	header.manufacturer = 0x0a;
@@ -193,7 +192,7 @@ static bool save_image(SDL_Surface *surface, SDL_RWops *dst) {
 	return true;
 }
 
-bool SavePCX_RW(SDL_Surface *saveme, SDL_RWops *dst, bool freedst) {
+bool SavePCX_RW(SDL_Surface* saveme, SDL_RWops* dst, bool freedst, int guardband) {
 	SDL_Surface *surface;
 	bool found_error = false;
 
@@ -252,7 +251,7 @@ bool SavePCX_RW(SDL_Surface *saveme, SDL_RWops *dst, bool freedst) {
 
 	if (surface && (SDL_LockSurface(surface) == 0)) {
 
-		found_error |= !save_image(surface, dst);
+		found_error |= !save_image(surface, dst, guardband);
 
 		/* Close it up.. */
 		SDL_UnlockSurface(surface);
