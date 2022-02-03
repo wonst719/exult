@@ -2185,17 +2185,16 @@ void set_scaleval(int new_scaleval) {
 }
 
 void make_screenshot(bool silent) {
-	// TODO: Maybe use <SAVEGAME>/exult%03i.pcx instead.
-	// Or maybe some form or "My Pictures" on Windows.
-	string homepath = get_system_path("<HOME>");
-	size_t strsize = homepath.size() + 20;
+	// TODO: Maybe some form of "My Pictures" on Windows.
+	string savegamepath = get_system_path("<SAVEGAME>");
+	size_t strsize = savegamepath.size() + 20;
 	char *fn = new char[strsize];
 	bool namefound = false;
 	Effects_manager *eman = gwin->get_effects();
 
 	// look for the next available exult???.pcx file
 	for (int i = 0; i < 1000 && !namefound; i++) {
-		snprintf(fn, strsize, "%s/exult%03i.pcx", homepath.c_str(), i);
+		snprintf(fn, strsize, "%s/exult%03i.pcx", savegamepath.c_str(), i);
 		FILE *f = fopen(fn, "rb");
 		if (f) {
 			fclose(f);
@@ -2287,16 +2286,19 @@ void BuildGameMap(BaseGameInfo *game, int mapnum) {
 		gwin->get_map()->init();// +++++Got to clean this up.
 		gwin->set_map(mapnum);
 		gwin->get_pal()->set(0);
+		string savegamepath = get_system_path("<SAVEGAME>");
 		for (int x = 0; x < c_num_chunks / c_chunks_per_schunk; x++) {
 			for (int y = 0; y < c_num_chunks / c_chunks_per_schunk; y++) {
 				gwin->paint_map_at_tile(0, 0, w, h, x * c_tiles_per_schunk, y * c_tiles_per_schunk, maplift);
-				char fn[15];
-				snprintf(fn, 15, "u7map%02x.pcx", (12*y)+x);
+				size_t strsize = savegamepath.size() + 20;
+				char *fn = new char[strsize];
+				snprintf(fn, strsize, "%s/u7map%02x.pcx", savegamepath.c_str(),(12*y)+x);
 				SDL_RWops *dst = SDL_RWFromFile(fn, "wb");
 				cerr << x << "," << y << ": ";
 				gwin->get_win()->screenshot(dst);
 			}
 		}
+		cout << "--buildmap saved the map screenshots in " << savegamepath << endl;
 		Audio::Destroy();
 		exit(0);
 	}
