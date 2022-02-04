@@ -212,11 +212,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					./include,
-					./libmt32emu/mt32emu/src,
-				);
+				HEADER_SEARCH_PATHS = ./include;
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = STATIC;
 				OTHER_CPLUSPLUSFLAGS = (
@@ -341,16 +337,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					./include,
-					./libmt32emu/mt32emu/src,
-					./libmt32emu/mt32emu/srchelper,
-					./libmt32emu/mt32emu/src/sha1,
-					./libmt32emu/mt32emu/src/c_interface,
-					./libmt32emu/mt32emu/srchelper/srctools/include,
-					./libmt32emu/mt32emu/srchelper/srctools/include/src,
-				);
+				HEADER_SEARCH_PATHS = ./include;
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = STATIC;
 				OTHER_CPLUSPLUSFLAGS = (

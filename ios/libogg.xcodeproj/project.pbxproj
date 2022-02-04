@@ -11,39 +11,17 @@
 		E700E0531A6E4215006C8BE4 /* framing.c in Sources */ = {isa = PBXBuildFile; fileRef = E700E0511A6E4215006C8BE4 /* framing.c */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		E700E0331A6E41C5006C8BE4 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 16;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		E700E0351A6E41C5006C8BE4 /* libogg.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libogg.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E700E0501A6E4215006C8BE4 /* bitwise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bitwise.c; path = libogg/src/bitwise.c; sourceTree = "<group>"; };
 		E700E0511A6E4215006C8BE4 /* framing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = framing.c; path = libogg/src/framing.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFrameworksBuildPhase section */
-		E700E0321A6E41C5006C8BE4 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
-
 /* Begin PBXGroup section */
 		E700E02C1A6E41C5006C8BE4 = {
 			isa = PBXGroup;
 			children = (
-				E700E04F1A6E41F7006C8BE4 /* src */,
+				E700E04F1A6E41F7006C8BE4 /* Sources */,
 				E700E0361A6E41C5006C8BE4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,13 +34,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E700E04F1A6E41F7006C8BE4 /* src */ = {
+		E700E04F1A6E41F7006C8BE4 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				E700E0501A6E4215006C8BE4 /* bitwise.c */,
 				E700E0511A6E4215006C8BE4 /* framing.c */,
 			);
-			name = src;
+			name = Sources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -73,8 +51,6 @@
 			buildConfigurationList = E700E0491A6E41C5006C8BE4 /* Build configuration list for PBXNativeTarget "ogg" */;
 			buildPhases = (
 				E700E0311A6E41C5006C8BE4 /* Sources */,
-				E700E0321A6E41C5006C8BE4 /* Frameworks */,
-				E700E0331A6E41C5006C8BE4 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -92,12 +68,6 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 1320;
-				ORGANIZATIONNAME = "";
-				TargetAttributes = {
-					E700E0341A6E41C5006C8BE4 = {
-						CreatedOnToolsVersion = 6.1;
-					};
-				};
 			};
 			buildConfigurationList = E700E0301A6E41C5006C8BE4 /* Build configuration list for PBXProject "libogg" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -108,7 +78,6 @@
 				Base,
 			);
 			mainGroup = E700E02C1A6E41C5006C8BE4;
-			productRefGroup = E700E0361A6E41C5006C8BE4 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -179,7 +148,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					./libogg/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -230,7 +198,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					./libogg/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
