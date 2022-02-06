@@ -53,7 +53,7 @@ void Time_queue::add(
 		// Messy, but we need to fix time.
 		t -= SDL_GetTicks() - pause_time;
 	newent.set(t, obj, ud);
-	auto insertionPoint = std::lower_bound(data.begin(), data.end(), newent);
+	auto insertionPoint = std::upper_bound(data.begin(), data.end(), newent);
 	data.insert(insertionPoint, newent);
 }
 
