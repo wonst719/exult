@@ -212,7 +212,7 @@ WARNINGS := \
 CXXFLAGS:=-MMD -std=c++14 -fdiagnostics-color=always $(ARCHFLAGS) $(strip $(OPT_LEVEL) $(WARNINGS) -mms-bitfields)
 
 LDFLAGS:=$(ARCHFLAGS)
-LIBS:=-lmingw32 $(SDL_LIBS) $(ZIP_LIBS) $(OGG_LIBS) $(FLUIDSYNTH_LIBS) $(MT32EMU_LIBS) -ldsound -luuid -lole32 -lwinmm -lws2_32 $(SUBSYSTEM) $(MTHREADS)
+LIBS:=-lmingw32 $(SDL_LIBS) $(ZIP_LIBS) -lpng $(OGG_LIBS) $(FLUIDSYNTH_LIBS) $(MT32EMU_LIBS) -ldsound -luuid -lole32 -lwinmm -lws2_32 $(SUBSYSTEM) $(MTHREADS)
 
 EXEC:=Exult.exe
 EXEEXT:=.exe

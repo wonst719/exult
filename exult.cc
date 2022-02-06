@@ -253,6 +253,12 @@ void do_cleanup_output() {
  *  Main program.
  */
 
+#ifdef HAVE_PNG_H
+#define EXULT_IMAGE_SUFFIX "png"
+#else
+#define EXULT_IMAGE_SUFFIX "pcx"
+#endif // HAVE_PNG_H
+
 int main(
     int argc,
     char *argv[]
@@ -318,7 +324,7 @@ int main(
 		     << "--mod <mod>\tMust be used together with '--bg', '--fov', '--si', '--ss', '--sib' or" << endl
 		     << "\t\t'--game <game>'; runs the specified game using the mod with" << endl
 		     << "\t\ttitle equal to '<mod>'" << endl
-		     << "--buildmap <N>\tCreate a fullsize map of the game world in u7map??.pcx" << endl
+		     << "--buildmap <N>\tCreate a fullsize map of the game world in u7map??." << EXULT_IMAGE_SUFFIX << endl
 		     << "\t\t(N=0: all roofs, 1: no level 2 roofs, 2: no roofs)" << endl
 		     << "\t\tOnly valid if used together with '--bg', '--fov', '--si', '--ss', '--sib'" << endl
 		     << "\t\tor '--game <game>'; you may optionally specify a mod with" << endl
@@ -2194,9 +2200,9 @@ void make_screenshot(bool silent) {
 	bool namefound = false;
 	Effects_manager *eman = gwin->get_effects();
 
-	// look for the next available exult???.pcx file
+	// look for the next available exult???.pcx or .png file
 	for (int i = 0; i < 1000 && !namefound; i++) {
-		snprintf(fn, strsize, "%s/exult%03i.pcx", savegamepath.c_str(), i);
+		snprintf(fn, strsize, "%s/exult%03i." EXULT_IMAGE_SUFFIX, savegamepath.c_str(), i);
 		FILE *f = fopen(fn, "rb");
 		if (f) {
 			fclose(f);
@@ -2294,7 +2300,7 @@ void BuildGameMap(BaseGameInfo *game, int mapnum) {
 				gwin->paint_map_at_tile(0, 0, w, h, x * c_tiles_per_schunk, y * c_tiles_per_schunk, maplift);
 				size_t strsize = savegamepath.size() + 20;
 				char *fn = new char[strsize];
-				snprintf(fn, strsize, "%s/u7map%02x.pcx", savegamepath.c_str(),(12*y)+x);
+				snprintf(fn, strsize, "%s/u7map%02x." EXULT_IMAGE_SUFFIX, savegamepath.c_str(),(12*y)+x);
 				SDL_RWops *dst = SDL_RWFromFile(fn, "wb");
 				cerr << x << "," << y << ": ";
 				gwin->get_win()->screenshot(dst);

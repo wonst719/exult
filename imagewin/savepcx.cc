@@ -35,9 +35,117 @@ It has been partly rewritten to use an SDL surface as input.
 #include "SDL_video.h"
 #include "SDL_endian.h"
 #include <iostream>
+#include "ignore_unused_variable_warning.h"
 
 using std::cout;
 using std::endl;
+
+#ifdef HAVE_PNG_H
+
+#include "png.h"
+
+/*
+ * SDL_SavePNG -- libpng-based SDL_Surface writer.
+ *
+ * This code is free software, available under zlib/libpng license.
+ * http://www.libpng.org/pub/png/src/libpng-LICENSE.txt
+ */
+
+#define USE_ROW_POINTERS
+
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+#define rmask 0x000000FF
+#define gmask 0x0000FF00
+#define bmask 0x00FF0000
+#define amask 0xFF000000
+#else
+#define rmask 0xFF000000
+#define gmask 0x00FF0000
+#define bmask 0x0000FF00
+#define amask 0x000000FF
+#endif
+
+/* libpng callbacks */
+static void png_error_SDL(png_structp ctx, png_const_charp str) {
+	ignore_unused_variable_warning(ctx);
+	SDL_SetError("libpng: %s\n", str);
+}
+static void png_write_SDL(png_structp png_ptr, png_bytep data, png_size_t length) {
+	SDL_RWops *rw = static_cast<SDL_RWops*>(png_get_io_ptr(png_ptr));
+	SDL_RWwrite(rw, data, sizeof(png_byte), length);
+}
+
+static bool save_image(SDL_Surface* surface, SDL_RWops* dst, int guardband) {
+	png_structp  png_ptr;
+	png_infop    info_ptr;
+	png_colorp   pal_ptr;
+	SDL_Palette *pal;
+	int          i, colortype;
+#ifdef USE_ROW_POINTERS
+	png_bytep   *row_pointers;
+#endif
+	int    width  = surface->w - 2 * guardband;
+	int    height = surface->h - 2 * guardband;
+	int    pitch  = surface->pitch;
+	auto*  pixels = static_cast<png_bytep>(surface->pixels) + guardband + pitch*guardband;
+
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, png_error_SDL, NULL); /* err_ptr, err_fn, warn_fn */
+	if (!png_ptr) {
+		SDL_SetError("Unable to png_create_write_struct on %s\n", PNG_LIBPNG_VER_STRING);
+		return false;
+	}
+	info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr) {
+		SDL_SetError("Unable to png_create_info_struct\n");
+		png_destroy_write_struct(&png_ptr, NULL);
+		return false;
+	}
+	if (setjmp(png_jmpbuf(png_ptr))) { /* All other errors, see also "png_error_SDL" */
+		png_destroy_write_struct(&png_ptr, &info_ptr);
+		return false;
+	}
+
+	/* Setup our RWops writer */
+	png_set_write_fn(png_ptr, dst, png_write_SDL, NULL); /* w_ptr, write_fn, flush_fn */
+
+	/* Prepare chunks */
+	colortype = PNG_COLOR_MASK_COLOR;
+	if ((surface->format->BytesPerPixel > 0) && (surface->format->BytesPerPixel <= 8) &&
+	    (pal = surface->format->palette)) {
+		colortype |= PNG_COLOR_MASK_PALETTE;
+		pal_ptr = static_cast<png_colorp>(malloc(pal->ncolors * sizeof(png_color)));
+		for (i = 0; i < pal->ncolors; i++) {
+			pal_ptr[i].red   = pal->colors[i].r;
+			pal_ptr[i].green = pal->colors[i].g;
+			pal_ptr[i].blue  = pal->colors[i].b;
+		}
+		png_set_PLTE(png_ptr, info_ptr, pal_ptr, pal->ncolors);
+		free(pal_ptr);
+	}
+	else if ((surface->format->BytesPerPixel > 3) || (surface->format->Amask))
+		colortype |= PNG_COLOR_MASK_ALPHA;
+
+	png_set_IHDR(png_ptr, info_ptr, width, height, 8, colortype,
+	             PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+
+	/* Write everything */
+	png_write_info(png_ptr, info_ptr);
+#ifdef USE_ROW_POINTERS
+	row_pointers = static_cast<png_bytep*>(malloc(sizeof(png_bytep)*height));
+	for (i = 0; i < height; i++) row_pointers[i] = pixels + i * pitch;
+	png_write_image(png_ptr, row_pointers);
+	free(row_pointers);
+#else
+	for (i = 0; i < height; i++) png_write_row(png_ptr, pixels + i * pitch);
+#endif
+	png_write_end(png_ptr, info_ptr);
+
+	/* Done */
+	png_destroy_write_struct(&png_ptr, &info_ptr);
+	return true;
+}
+
+#else
 
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 #define qtohl(x) (x)
@@ -126,7 +234,7 @@ static bool save_image(SDL_Surface* surface, SDL_RWops* dst, int guardband) {
 	int    colors = 0;
 	int    width  = surface->w - 2 * guardband;
 	int    height = surface->h - 2 * guardband;
-	int pitch = surface->pitch;
+	int    pitch  = surface->pitch;
 	auto*  pixels = static_cast<Uint8*>(surface->pixels) + guardband + pitch*guardband;
 
 	PCX_Header header;
@@ -191,6 +299,8 @@ static bool save_image(SDL_Surface* surface, SDL_RWops* dst, int guardband) {
 
 	return true;
 }
+
+#endif // HAVE_PNG_H
 
 bool SavePCX_RW(SDL_Surface* saveme, SDL_RWops* dst, bool freedst, int guardband) {
 	SDL_Surface *surface;
