@@ -2029,13 +2029,15 @@ void Wizard_eye(
 	uint32 stop_time = SDL_GetTicks() + msecs;
 	bool timeout = false;
 	while (!timeout) {
+		if (touchui != nullptr) {
+			touchui->hideGameControls();
+		}
+
 		Delay();        // Wait a fraction of a second.
 
 		Mouse::mouse->hide();       // Turn off mouse.
 		Mouse::mouse_update = false;
-		if (touchui != nullptr) {
-			touchui->hideGameControls();
-		}
+		
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 			switch (event.type) {
