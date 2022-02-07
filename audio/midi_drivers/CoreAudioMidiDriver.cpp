@@ -177,7 +177,35 @@ void CoreAudioMidiDriver::send(uint32 message) {
 	uint8 second_byte = (message & 0x00FF0000) >> 16;
 
 	assert(_auGraph != nullptr);
+#ifdef __IPHONEOS__
+	auto cmd = static_cast<uint32>(message & 0xF0);
+	switch (cmd){
+		case 0x80:
+			MusicDeviceMIDIEvent(_synth, status_byte, first_byte, 0, 0);
+			break;
+		case 0x90:	// Note On
+			MusicDeviceMIDIEvent(_synth, status_byte, first_byte, second_byte, 0);
+			break;
+		case 0xA0:	// Aftertouch
+			break;
+		case 0xB0:	// Control Change
+			MusicDeviceMIDIEvent(_synth, status_byte, first_byte, second_byte, 0);
+			break;
+		case 0xC0:	// Program Change
+			MusicDeviceMIDIEvent(_synth, status_byte, 0, 0, 0);
+			break;
+		case 0xD0:	// Channel Pressure
+			break;
+		case 0xE0:	// Pitch Bend (param2 << 7) | param1)
+			//MusicDeviceMIDIEvent(_synth, status_byte, (second_byte << 7) | (first_byte), 0, 0);
+			break;
+		default:
+			std::cout << "CoreAudioMidiDriver: Unknown send() command 0x" << std::hex << cmd << std::dec << std::endl;
+			break;
+	}
+#else
 	MusicDeviceMIDIEvent(_synth, status_byte, first_byte, second_byte, 0);
+#endif
 }
 
 void CoreAudioMidiDriver::send_sysex(uint8 status, const uint8 *msg, uint16 length) {
