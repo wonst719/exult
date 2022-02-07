@@ -2030,6 +2030,7 @@ void Wizard_eye(
 	bool timeout = false;
 	while (!timeout) {
 		if (touchui != nullptr) {
+			touchui->showButtonControls();
 			touchui->hideGameControls();
 		}
 
@@ -2037,7 +2038,6 @@ void Wizard_eye(
 
 		Mouse::mouse->hide();       // Turn off mouse.
 		Mouse::mouse_update = false;
-		
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 			switch (event.type) {
