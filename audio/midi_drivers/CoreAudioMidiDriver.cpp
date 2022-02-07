@@ -175,10 +175,20 @@ void CoreAudioMidiDriver::send(uint32 message) {
 	uint8 status_byte = (message & 0x000000FF);
 	uint8 first_byte = (message & 0x0000FF00) >> 8;
 	uint8 second_byte = (message & 0x00FF0000) >> 16;
-
+	// you need to preload the soundfont patches by setting
+	// kAUMIDISynthProperty_EnablePreload to true, load the pathc
+	// and then turn off kAUMIDISynthProperty_EnablePreload
+	uint32 enabled = 1;
+	uint32 disabled = 0;
+	AudioUnitSetProperty(
+	          _synth, kAUMIDISynthProperty_EnablePreload,
+	          kAudioUnitScope_Global, 0, &enabled, sizeof(enabled));
+	MusicDeviceMIDIEvent(_synth, uint32(0xC0 | status_byte), first_byte, 0, 0);
+	AudioUnitSetProperty(
+	          _synth, kAUMIDISynthProperty_EnablePreload,
+	          kAudioUnitScope_Global, 0, &disabled, sizeof(disabled));
 	assert(_auGraph != nullptr);
-#ifdef __IPHONEOS__
-	auto cmd = static_cast<uint32>(message & 0xF0);
+	auto cmd = static_cast<uint32>(status_byte & 0xF0);
 	switch (cmd){
 		case 0x80:
 			MusicDeviceMIDIEvent(_synth, status_byte, first_byte, 0, 0);
@@ -192,20 +202,22 @@ void CoreAudioMidiDriver::send(uint32 message) {
 			MusicDeviceMIDIEvent(_synth, status_byte, first_byte, second_byte, 0);
 			break;
 		case 0xC0:	// Program Change
-			MusicDeviceMIDIEvent(_synth, status_byte, 0, 0, 0);
+			MusicDeviceMIDIEvent(_synth, status_byte, first_byte, 0, 0);
 			break;
 		case 0xD0:	// Channel Pressure
 			break;
-		case 0xE0:	// Pitch Bend (param2 << 7) | param1)
-			//MusicDeviceMIDIEvent(_synth, status_byte, (second_byte << 7) | (first_byte), 0, 0);
+		case 0xE0:	// Pitch Bend
+			MusicDeviceMIDIEvent(_synth, status_byte, first_byte, second_byte, 0);
+			break;
+		case 0xF0:	// SysEx
+			// We should never get here! SysEx information has to be
+			// sent via high-level semantic methods.
+			std::cout << "CoreAudioMidiDriver: Receiving SysEx command on a send() call" << std::endl;
 			break;
 		default:
 			std::cout << "CoreAudioMidiDriver: Unknown send() command 0x" << std::hex << cmd << std::dec << std::endl;
 			break;
 	}
-#else
-	MusicDeviceMIDIEvent(_synth, status_byte, first_byte, second_byte, 0);
-#endif
 }
 
 void CoreAudioMidiDriver::send_sysex(uint8 status, const uint8 *msg, uint16 length) {
