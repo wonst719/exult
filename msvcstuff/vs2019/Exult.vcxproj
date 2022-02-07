@@ -395,7 +395,7 @@
     <ClCompile Include="..\..\imagewin\imagewin.cc" />
     <ClCompile Include="..\..\imagewin\iwin8.cc" />
     <ClCompile Include="..\..\imagewin\PointScaler.cpp" />
-    <ClCompile Include="..\..\imagewin\savepcx.cc" />
+    <ClCompile Include="..\..\imagewin\save_screenshot.cc" />
     <ClCompile Include="..\..\imagewin\scale_2x.cc" />
     <ClCompile Include="..\..\imagewin\scale_2xSaI.cc" />
     <ClCompile Include="..\..\imagewin\scale_bilinear.cc" />

@@ -13,7 +13,7 @@ libimagewin_la_SOURCES = \
 	imagewin.h \
 	iwin8.cc \
 	iwin8.h \
-	savepcx.cc \
+	save_screenshot.cc \
 	manip.h \
 	scale_2x.cc \
 	scale_2x.h \
