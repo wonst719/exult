@@ -176,10 +176,11 @@ void CoreAudioMidiDriver::send(uint32 message) {
 	uint8 first_byte = (message & 0x0000FF00) >> 8;
 	uint8 second_byte = (message & 0x00FF0000) >> 16;
 	// you need to preload the soundfont patches by setting
-	// kAUMIDISynthProperty_EnablePreload to true, load the pathc
+	// kAUMIDISynthProperty_EnablePreload to true, load the patch
 	// and then turn off kAUMIDISynthProperty_EnablePreload
 	uint32 enabled = 1;
 	uint32 disabled = 0;
+	assert(_auGraph != nullptr);
 	AudioUnitSetProperty(
 	          _synth, kAUMIDISynthProperty_EnablePreload,
 	          kAudioUnitScope_Global, 0, &enabled, sizeof(enabled));
@@ -187,7 +188,6 @@ void CoreAudioMidiDriver::send(uint32 message) {
 	AudioUnitSetProperty(
 	          _synth, kAUMIDISynthProperty_EnablePreload,
 	          kAudioUnitScope_Global, 0, &disabled, sizeof(disabled));
-	assert(_auGraph != nullptr);
 	auto cmd = static_cast<uint32>(status_byte & 0xF0);
 	switch (cmd){
 		case 0x80:
