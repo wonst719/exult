@@ -585,7 +585,7 @@ void AudioOptions_gump::paint() {
 		}
 #ifdef ENABLE_MIDISFX
 		else if (sfx_enabled == midi_state) {
-			font->paint_text(iwin->get_ib8(), "conversion", x + colx[1], y + rowy[11] + 1);
+			font->paint_text(iwin->get_ib8(), "conversion", x + colx[1], y + rowy[10] + 1);
 		}
 #endif
 		font->paint_text(iwin->get_ib8(), "Speech:", x + colx[0], y + rowy[11] + 1);
