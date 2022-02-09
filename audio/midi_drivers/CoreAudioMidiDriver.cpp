@@ -106,13 +106,31 @@ int CoreAudioMidiDriver::open() {
 		// Get the music device from the graph.
 		RequireNoErr(AUGraphNodeInfo(_auGraph, synthNode, nullptr, &_synth));
 
+#ifdef __IPHONEOS__
+		// on iOS we make sure there is a soundfont loaded for CoreAudio to work
+		if (!config->key_exists("config/audio/midi/coreaudio_soundfont"))
+			config->set("config/audio/midi/coreaudio_soundfont", "gs_instruments.dls", true);
+#endif
 		// Load custom soundfont, if specified
 		if (config->key_exists("config/audio/midi/coreaudio_soundfont")) {
-#ifdef __IPHONEOS__
-			std::string soundfont = get_system_path("<DATA>/") + getConfigSetting("coreaudio_soundfont", "");
-#else
 			std::string soundfont = getConfigSetting("coreaudio_soundfont", "");
-#endif
+		// is the full path entered or is it in the App bundle or the data folder
+			std::string options[] = {"", "<BUNDLE>", "<DATA>"};
+			for (auto& d : options) {
+				std::string f;
+				if (!d.empty()) {
+					if (!is_system_path_defined(d)) {
+						continue;
+					}
+					f = get_system_path(d);
+					f += '/';
+					f += soundfont;
+				} else {
+					f = soundfont;
+				}
+				if (U7exists(f.c_str()))
+					soundfont = f;
+			}
 			std::cout << "Loading SoundFont '" << soundfont << "'" << std::endl;
 			if (soundfont != "") {
 				OSErr err;
