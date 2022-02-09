@@ -101,6 +101,7 @@ public:
 	void toggle(Gump_button *btn, int state);
 	void rebuild_buttons();
 	void rebuild_midi_buttons();
+	void rebuild_midi_driver_buttons();
 	void rebuild_mididriveroption_buttons();
 	void rebuild_sfx_buttons();
 	void rebuild_speech_buttons();
@@ -126,6 +127,8 @@ public:
 	}
 	void toggle_music_digital(int state) {
 		midi_ogg_enabled = state;
+		rebuild_midi_driver_buttons();
+		paint();
 	}
 	void toggle_midi_driver(int state) {
 		midi_driver = state;

@@ -105,7 +105,8 @@ void AudioOptions_gump::rebuild_buttons() {
 		buttons[i].reset();
 	}
 
-	if (!audio_enabled) return;
+	if (!audio_enabled)
+		return;
 
 	std::vector<std::string> sampleRates = {"11025", "22050", "44100", "48000"};
 	if (std::find(sampleRates.cbegin(), sampleRates.cend(), sample_rate_str) != sampleRates.cend()) {
@@ -156,11 +157,27 @@ void AudioOptions_gump::rebuild_midi_buttons() {
 		buttons[i].reset();
 	}
 
-	if (!midi_enabled) return;
+	if (!midi_enabled)
+		return;
 
 	// ogg enabled/disabled
 	buttons[id_music_digital] = std::make_unique<AudioEnabledToggle>(this, &AudioOptions_gump::toggle_music_digital,
 	        midi_ogg_enabled, colx[2], rowy[5], 59);
+
+	// looping on/off
+	buttons[id_music_looping] = std::make_unique<AudioEnabledToggle>(this, &AudioOptions_gump::toggle_music_looping,
+	        midi_looping, colx[2], rowy[4], 59);
+
+	rebuild_midi_driver_buttons();
+}
+
+void AudioOptions_gump::rebuild_midi_driver_buttons() {
+	for (int i = id_midi_driver; i < id_sfx_enabled; i++) {
+		buttons[i].reset();
+	}
+
+	if (midi_ogg_enabled)
+		return;
 
 	unsigned int num_midi_drivers = MidiDriver::getDriverCount();
 	std::vector<std::string> midi_drivertext;
@@ -172,14 +189,8 @@ void AudioOptions_gump::rebuild_midi_buttons() {
 	buttons[id_midi_driver] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_midi_driver,
 	        std::move(midi_drivertext), midi_driver, colx[2] - 15, rowy[6], 74);
 
-	// looping on/off
-	buttons[id_music_looping] = std::make_unique<AudioEnabledToggle>(this, &AudioOptions_gump::toggle_music_looping,
-	        midi_looping, colx[2], rowy[4], 59);
-
 	rebuild_mididriveroption_buttons();
-
 }
-
 
 void AudioOptions_gump::rebuild_sfx_buttons() {
 	buttons[id_sfx_pack].reset();
@@ -562,9 +573,11 @@ void AudioOptions_gump::paint() {
 		if (midi_enabled) {
 			font->paint_text(iwin->get_ib8(), "looping", x + colx[1], y + rowy[4] + 1);
 			font->paint_text(iwin->get_ib8(), "digital music", x + colx[1], y + rowy[5] + 1);
-			font->paint_text(iwin->get_ib8(), "midi driver", x + colx[1], y + rowy[6] + 1);
-			if (buttons[id_midi_conv] != nullptr) font->paint_text(iwin->get_ib8(), "device type", x + colx[1], y + rowy[7] + 1);
-			if (buttons[id_midi_effects] != nullptr) font->paint_text(iwin->get_ib8(), "effects", x + colx[1], y + rowy[8] + 1);
+			if (!midi_ogg_enabled) {
+				font->paint_text(iwin->get_ib8(), "midi driver", x + colx[1], y + rowy[6] + 1);
+				if (buttons[id_midi_conv] != nullptr) font->paint_text(iwin->get_ib8(), "device type", x + colx[1], y + rowy[7] + 1);
+				if (buttons[id_midi_effects] != nullptr) font->paint_text(iwin->get_ib8(), "effects", x + colx[1], y + rowy[8] + 1);
+			}
 		}
 		font->paint_text(iwin->get_ib8(), "SFX:", x + colx[0], y + rowy[9] + 1);
 		if (sfx_enabled == 1 && have_digital_sfx() && !gwin->is_in_exult_menu()) {
