@@ -41,6 +41,7 @@ With MacPorts install:
   libsdl2
   libvorbis
   munt-mt32emu
+  libpng
   fluidsynth
   dylibbundler
 
