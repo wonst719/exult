@@ -168,7 +168,7 @@ IMAGEWIN_OBJS:=\
 	imagewin/imagebuf.o \
 	imagewin/imagewin.o \
 	imagewin/iwin8.o \
-	imagewin/savepcx.o \
+	imagewin/save_screenshot.o \
 	imagewin/scale_2x.o \
 	imagewin/scale_2xSaI.o \
 	imagewin/scale_bilinear.o \

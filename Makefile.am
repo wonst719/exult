@@ -13,6 +13,10 @@ CXXLINK = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) $(A
 if BUILD_MODS
 MODSDIR=content
 endif
+if HAVE_PNG
+PNG_LIBS=-lpng
+endif
+
 
 SUBDIRS =  files conf data shapes imagewin pathfinder \
 	gamemgr flic usecode tools audio gumps objs server \
@@ -131,7 +135,7 @@ EXULTLIBS = \
 	files/zip/libminizip.la
 
 exult_LDADD = \
-	$(EXULTLIBS) \
+	$(EXULTLIBS) $(PNG_LIBS) \
 	$(SDL_LIBS) $(SYSLIBS) $(x_libraries) $(ICON_FILE) \
 	$(ZLIB_LIBS) $(VORBIS_LIBS) $(VORBISFILE_LIBS) $(OGG_LIBS) $(MT32EMU_LIBS) $(FLUIDSYNTH_LIBS) $(ALSA_LIBS)
 

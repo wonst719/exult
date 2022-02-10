@@ -171,7 +171,7 @@
 		E700DE271A6E344D006C8BE4 /* imagewin.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DDED1A6E3425006C8BE4 /* imagewin.cc */; };
 		E700DE281A6E344D006C8BE4 /* iwin8.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DDEF1A6E3425006C8BE4 /* iwin8.cc */; };
 		E700DE291A6E344D006C8BE4 /* PointScaler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E700DDF21A6E3425006C8BE4 /* PointScaler.cpp */; };
-		E700DE2A1A6E344D006C8BE4 /* savepcx.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DDF41A6E3425006C8BE4 /* savepcx.cc */; };
+		E700DE2A1A6E344D006C8BE4 /* save_screenshot.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DDF41A6E3425006C8BE4 /* save_screenshot.cc */; };
 		E700DE2B1A6E344D006C8BE4 /* scale_2x.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DDF51A6E3425006C8BE4 /* scale_2x.cc */; };
 		E700DE2C1A6E344D006C8BE4 /* scale_2xSaI.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DDF71A6E3425006C8BE4 /* scale_2xSaI.cc */; };
 		E700DE2D1A6E344D006C8BE4 /* scale_bilinear.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DDF91A6E3425006C8BE4 /* scale_bilinear.cc */; };
@@ -676,7 +676,7 @@
 		E700DDF11A6E3425006C8BE4 /* manip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = manip.h; path = ../imagewin/manip.h; sourceTree = "<group>"; };
 		E700DDF21A6E3425006C8BE4 /* PointScaler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PointScaler.cpp; path = ../imagewin/PointScaler.cpp; sourceTree = "<group>"; };
 		E700DDF31A6E3425006C8BE4 /* PointScaler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PointScaler.h; path = ../imagewin/PointScaler.h; sourceTree = "<group>"; };
-		E700DDF41A6E3425006C8BE4 /* savepcx.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = savepcx.cc; path = ../imagewin/savepcx.cc; sourceTree = "<group>"; };
+		E700DDF41A6E3425006C8BE4 /* save_screenshot.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = save_screenshot.cc; path = ../imagewin/save_screenshot.cc; sourceTree = "<group>"; };
 		E700DDF51A6E3425006C8BE4 /* scale_2x.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = scale_2x.cc; path = ../imagewin/scale_2x.cc; sourceTree = "<group>"; };
 		E700DDF61A6E3425006C8BE4 /* scale_2x.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scale_2x.h; path = ../imagewin/scale_2x.h; sourceTree = "<group>"; };
 		E700DDF71A6E3425006C8BE4 /* scale_2xSaI.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = scale_2xSaI.cc; path = ../imagewin/scale_2xSaI.cc; sourceTree = "<group>"; };
@@ -1353,7 +1353,7 @@
 				E700DDF11A6E3425006C8BE4 /* manip.h */,
 				E700DDF21A6E3425006C8BE4 /* PointScaler.cpp */,
 				E700DDF31A6E3425006C8BE4 /* PointScaler.h */,
-				E700DDF41A6E3425006C8BE4 /* savepcx.cc */,
+				E700DDF41A6E3425006C8BE4 /* save_screenshot.cc */,
 				E700DDF51A6E3425006C8BE4 /* scale_2x.cc */,
 				E700DDF61A6E3425006C8BE4 /* scale_2x.h */,
 				E700DDF71A6E3425006C8BE4 /* scale_2xSaI.cc */,
@@ -2065,7 +2065,7 @@
 				E700E0291A6E4067006C8BE4 /* gamewin.cc in Sources */,
 				E700DE871A6E3497006C8BE4 /* Gump_button.cc in Sources */,
 				E700DE8B1A6E3497006C8BE4 /* Gump_ToggleButton.cc in Sources */,
-				E700DE2A1A6E344D006C8BE4 /* savepcx.cc in Sources */,
+				E700DE2A1A6E344D006C8BE4 /* save_screenshot.cc in Sources */,
 				E700DD4E1A6E3121006C8BE4 /* ammoinf.cc in Sources */,
 				E700DE7F1A6E3497006C8BE4 /* Book_gump.cc in Sources */,
 				E700DE851A6E3497006C8BE4 /* Gamemenu_gump.cc in Sources */,
