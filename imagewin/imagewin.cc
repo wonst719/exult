@@ -53,7 +53,7 @@ Boston, MA  02111-1307, USA.
 
 #include "Configuration.h"
 
-bool SavePCX_RW(SDL_Surface *saveme, SDL_RWops *dst, bool freedst, int guardband);
+bool SaveIMG_RW(SDL_Surface *saveme, SDL_RWops *dst, bool freedst, int guardband);
 
 using std::cout;
 using std::cerr;
@@ -923,7 +923,7 @@ void Image_window::toggle_fullscreen() {
 
 bool Image_window::screenshot(SDL_RWops *dst) {
 	if (!paletted_surface) return false;
-	return SavePCX_RW(draw_surface, dst, true, guard_band);
+	return SaveIMG_RW(draw_surface, dst, true, guard_band);
 }
 
 void Image_window::set_title(const char *title) {
