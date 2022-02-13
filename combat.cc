@@ -774,6 +774,11 @@ static int Swap_weapons(
 	return 1;
 }
 
+/* +++++++TODO: wander_for_attack needs more work, it breaks often
+essentially stopping the party from attacking their foes
+but it looked more organized.
+So disabled in start_strike() for now.
+*/
 // Just move around a bit.
 void Combat_schedule::wander_for_attack(
 ) {
@@ -861,7 +866,8 @@ void Combat_schedule::start_strike(
 	if (check_lof &&
 	        !Fast_pathfinder_client::is_straight_path(npc, opponent)) {
 		state = approach;
-		wander_for_attack();
+		approach_foe(true); // Try to get adjacent.
+		//wander_for_attack();
 		return;
 	}
 	if (!started_battle)
