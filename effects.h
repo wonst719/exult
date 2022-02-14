@@ -379,8 +379,9 @@ public:
  */
 class Fire_field_effect : public Special_effect {
 	Game_object_weak field;     // What we create.
+	int remaining_ticks;
 public:
-	Fire_field_effect(Tile_coord const &t);
+	Fire_field_effect(Tile_coord const &t, int base_lifespan, bool endless);
 	void handle_event(unsigned long curtime, uintptr udata) override;
 };
 

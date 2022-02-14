@@ -1762,13 +1762,19 @@ void Earthquake::handle_event(
  */
 
 Fire_field_effect::Fire_field_effect(
-    Tile_coord const &t         // Where to create it.
+    Tile_coord const &t,        // Where to create it.
+    int base_lifespan,
+    bool endless
 ) {
-    Game_object_shared field_shared = gmap->create_ireg_object(895, 0);
-	Game_object *field_obj = field_shared.get();
-	field = Game_object_weak(field_shared);
+    Game_object_shared field_obj = gmap->create_ireg_object(895, 0);
+	field = Game_object_weak(field_obj);
 	field_obj->set_flag(Obj_flags::is_temporary);
 	field_obj->move(t.tx, t.ty, t.tz);
+	if (endless || base_lifespan == 0) {
+		remaining_ticks = 10000;	// Guess
+	} else {
+		remaining_ticks = (rand() % base_lifespan) + base_lifespan + 10;
+	}
 	gwin->get_tqueue()->add(Game::get_ticks() + 3000 + rand() % 2000, this);
 }
 
@@ -1782,19 +1788,16 @@ void Fire_field_effect::handle_event(
 ) {
 	Game_object_shared field_obj = field.lock();
 	int frnum = field_obj ? field_obj->get_framenum() : 0;
-	if (frnum == 0) {       // All done?
-	    if (field_obj)
-		    field_obj->remove_this();
+	if (remaining_ticks-- <= 0) {       // All done?
+		if (field_obj) {
+			Game_object_shared dust_obj = gmap->create_ireg_object(224, 0);
+			dust_obj->set_flag(Obj_flags::is_temporary);
+			Tile_coord t = field_obj->get_tile();
+			dust_obj->move(t.tx, t.ty, t.tz);
+			field_obj->remove_this();
+		}
 		auto ownHandle = eman->remove_effect(this);
-		return;
 	} else {
-		if (frnum > 3) {    // Starting to wind down?
-			field_obj->as_egg()->stop_animation();
-			frnum = 3;
-		} else
-			frnum--;
-		gwin->add_dirty(field_obj.get());
-		field_obj->change_frame(frnum);
 		gwin->get_tqueue()->add(curtime + gwin->get_std_delay(), this, udata);
 	}
 }

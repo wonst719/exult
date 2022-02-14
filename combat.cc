@@ -18,6 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "shapeinf.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -231,7 +232,9 @@ bool Combat_schedule::teleport(
 	         src.tx % c_tiles_per_chunk, src.ty % c_tiles_per_chunk);
 	if (src.tz < 0)
 		src.tz = 0;
-	eman->add_effect(std::make_unique<Fire_field_effect>(src));
+	const Shape_info& inf = npc->get_info();
+	const bool fire_safe = inf.get_monster_info_safe()->get_immune() & (1 << Weapon_data::fire_damage);
+	eman->add_effect(std::make_unique<Fire_field_effect>(src, npc->get_property(Actor::intelligence), fire_safe));
 	int sfx = Audio::game_sfx(43);
 	Audio::get_ptr()->play_sound_effect(sfx, npc);  // The weird noise.
 	// check line of sight now to give it the appearance of the spell 
