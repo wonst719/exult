@@ -234,6 +234,10 @@ bool Combat_schedule::teleport(
 	eman->add_effect(std::make_unique<Fire_field_effect>(src));
 	int sfx = Audio::game_sfx(43);
 	Audio::get_ptr()->play_sound_effect(sfx, npc);  // The weird noise.
+	// check line of sight now to give it the appearance of the spell 
+	// failing as in the original
+	if (!Fast_pathfinder_client::is_straight_path(npc, trg))
+		return false;
 	npc->move(dest.tx, dest.ty, dest.tz);
 	// Show the stars.
 	eman->add_effect(std::make_unique<Sprites_effect>(7, npc, 0, 0, 0, 0));
@@ -246,6 +250,9 @@ bool Combat_schedule::teleport(
 
 bool Combat_schedule::summon(
 ) {
+	Game_object *trg = npc->get_target();
+	if (!Fast_pathfinder_client::is_straight_path(npc, trg))
+		return false;
 	ucmachine->call_usecode(SummonSpellUsecode,
 	                        npc, Usecode_machine::double_click);
 	npc->start_std();       // Back into queue.
