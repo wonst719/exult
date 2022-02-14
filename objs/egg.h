@@ -178,8 +178,9 @@ public:
 	// Get size of IREG. Returns -1 if can't write to buffer
 	int get_ireg_size() override;
 
-	virtual void reset() {
+	virtual bool reset() {
 		flags &= ~(1 << hatched);
+		return true;
 	}
 
 	Egg_object *as_egg() override {
@@ -205,6 +206,9 @@ public:
 	void write_ireg(ODataSource *out) override;
 	// Get size of IREG. Returns -1 if can't write to buffer
 	int get_ireg_size() override;
+	bool reset() override {
+		return false;
+	}
 	bool is_findable() override {
 		return Ireg_game_object::is_findable();
 	}
@@ -245,6 +249,9 @@ public:
 	void write_ireg(ODataSource *out) override;
 	// Get size of IREG. Returns -1 if can't write to buffer
 	int get_ireg_size() override;
+	bool reset() override {
+		return false;
+	}
 	bool edit() override {
 		return Ireg_game_object::edit();
 	}

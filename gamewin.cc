@@ -2894,8 +2894,8 @@ void Game_window::emulate_cache(Map_chunk *olist, Map_chunk *nlist) {
 			Object_iterator it(list->get_objects());
 			Game_object *each;
 			while ((each = it.get_next()) != nullptr) {
-				if (each->is_egg())
-					each->as_egg()->reset();
+				if (each->is_egg() && each->as_egg()->reset())
+					continue;
 				else if (each->get_flag(Obj_flags::is_temporary))
 					removes.push_back(each);
 			}
