@@ -237,7 +237,7 @@ bool Combat_schedule::teleport(
 	// check line of sight now to give it the appearance of the spell 
 	// failing as in the original
 	if (!Fast_pathfinder_client::is_straight_path(npc, trg))
-		return false;
+		return true;
 	npc->move(dest.tx, dest.ty, dest.tz);
 	// Show the stars.
 	eman->add_effect(std::make_unique<Sprites_effect>(7, npc, 0, 0, 0, 0));
