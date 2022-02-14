@@ -1775,6 +1775,16 @@ Fire_field_effect::Fire_field_effect(
 	} else {
 		remaining_ticks = (rand() % base_lifespan) + base_lifespan + 10;
 	}
+	constexpr const static int dir_frames[] = {2, 4, 1, 3};
+	for (int dir = 0; dir < 4; dir++) {
+		const Tile_coord pos = t.get_neighbor(dir * 2);
+		Game_object_shared dust_obj = gmap->create_ireg_object(224, dir_frames[dir]);
+		dust_obj->set_flag(Obj_flags::is_temporary);
+		dust_obj->move(pos.tx, pos.ty, pos.tz);
+	}
+	Game_object_shared dust_obj = gmap->create_ireg_object(224, 5);
+	dust_obj->set_flag(Obj_flags::is_temporary);
+	dust_obj->move(t.tx, t.ty, t.tz);
 	gwin->get_tqueue()->add(Game::get_ticks() + 3000 + rand() % 2000, this);
 }
 
@@ -1787,13 +1797,8 @@ void Fire_field_effect::handle_event(
     uintptr udata
 ) {
 	Game_object_shared field_obj = field.lock();
-	int frnum = field_obj ? field_obj->get_framenum() : 0;
 	if (remaining_ticks-- <= 0) {       // All done?
 		if (field_obj) {
-			Game_object_shared dust_obj = gmap->create_ireg_object(224, 0);
-			dust_obj->set_flag(Obj_flags::is_temporary);
-			Tile_coord t = field_obj->get_tile();
-			dust_obj->move(t.tx, t.ty, t.tz);
 			field_obj->remove_this();
 		}
 		auto ownHandle = eman->remove_effect(this);
