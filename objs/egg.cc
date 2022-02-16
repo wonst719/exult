@@ -790,6 +790,9 @@ bool Egg_object::is_active(
 			return area.has_world_point(tx, ty) && deltaz == 0 &&
 			       obj->get_flag(Obj_flags::in_party);;
 	case something_on:
+		// force close gumps when gumps pause game
+		if (!gumpman->gumps_dont_pause_game())
+			gumpman->close_all_gumps();
 		return          // Guessing.  At SI end, deltaz == -1.
 		    deltaz / 4 == 0 && area.has_world_point(tx, ty) && !obj->as_actor();
 	case external_criteria:
