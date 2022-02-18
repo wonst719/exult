@@ -1501,7 +1501,7 @@ Fog_effect::Fog_effect(
     int delay,          // In msecs.
     Game_object *egg        // Egg that caused it, or null.
 ) : Weather_effect(duration, delay, 4, egg), start(true) {
-		// SI adds sparkle/raindrops to the fog palaette shift
+		// SI adds sparkle/raindrops to the fog palette shift
 		// let's do that for all games
 		int rain_delay = 250 + rand() % 1000;
 		eman->add_effect(std::make_unique<Rain_effect<Sparkle>>(duration, rain_delay, MAXDROPS/2));
@@ -1513,7 +1513,7 @@ void Fog_effect::handle_event(unsigned long curtime, uintptr udata) {
 		start = false;
 		// Nothing more to do but end.
 		gwin->get_tqueue()->add(stop_time, this, udata);
-		gclock->set_fog(true);
+			gclock->set_fog(true);
 	} else {             // Must be time to stop.
 		auto ownHandle = eman->remove_effect(this);
 		return;
@@ -1692,7 +1692,7 @@ void Clouds_effect::handle_event(
 
 void Clouds_effect::paint(
 ) {
-	if (!gwin->is_main_actor_inside())
+	if (!gwin->is_main_actor_inside() && !gumpman->showing_gumps(true))
 		for (auto& cloud : clouds)
 			cloud->paint();
 }
