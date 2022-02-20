@@ -442,6 +442,7 @@ public:
 	void set_bed(Game_object *b) override;
 	void im_dormant() override;  // Just went dormant.
 	static bool is_bed_occupied(Game_object *bed, Actor *npc);
+	static bool sleep_interrupted;
 };
 
 /*

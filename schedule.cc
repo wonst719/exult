@@ -55,6 +55,7 @@ using std::vector;
 
 vector<std::string> Schedule_change::script_names;
 int Patrol_schedule::num_path_eggs = -1;
+bool Sleep_schedule::sleep_interrupted = false;
 
 /*
  *  Create.
@@ -2351,7 +2352,7 @@ void Sleep_schedule::ending(
 		npc->move(floorloc);
 	npc->clear_sleep();
 	npc->change_frame(npc->get_dir_framenum(Actor::standing));
-	if (makebed) {
+	if (makebed && !sleep_interrupted) {
 		// Animation for making bed.
 		auto *scr = new Usecode_script(npc);
 		(*scr) << Ucscript::dont_halt << Ucscript::face_dir << dir
@@ -2362,6 +2363,8 @@ void Sleep_schedule::ending(
 		scr->start();
 	}
 	gwin->set_all_dirty();      // Update all, since Av. stands up.
+	if (sleep_interrupted)
+		sleep_interrupted = false;
 	state = 0;          // In case we go back to sleep.
 }
 

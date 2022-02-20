@@ -120,6 +120,7 @@ void Npc_proximity_handler::handle_event(
 		// Trick:  Stand, but stay in
 		//   sleep_schedule.
 		npc->get_schedule()->ending(Schedule::stand);
+		Sleep_schedule::sleep_interrupted = true;
 		if (npc->is_goblin())
 			npc->say(goblin_awakened);
 		else if (npc->can_speak())
