@@ -467,7 +467,7 @@ Uc_function_symbol *Uc_function_symbol::create(
 				Uc_location::yyerror(buf);
 			}
 		} else if (sym->is_externed() || is_extern)
-			if (static_cast<size_t>(sym->get_num_parms()) == p.size()) {
+			if (sym->get_num_parms() == p.size()) {
 				// If the new symbol is not externed, then the function
 				// has been defined afterwards and we need to update
 				// sym to not be extern anymore.
@@ -508,10 +508,10 @@ Uc_function_symbol *Uc_function_symbol::create(
 		return sym;
 	}
 	sym = (*it).second;
-	if (sym->name != nm || static_cast<size_t>(sym->get_num_parms()) != p.size()) {
+	if (sym->name != nm || sym->get_num_parms() != p.size()) {
 		char buf[256];
 		sprintf(buf,
-		        "Function 0x%x already used for '%s' with %d params.",
+		        "Function 0x%x already used for '%s' with %zu params.",
 		        ucnum, sym->get_name(), sym->get_num_parms());
 		Uc_location::yyerror(buf);
 	}
@@ -543,13 +543,12 @@ int Uc_function_symbol::gen_call(
     Uc_class *scope_vtbl    // For method calls using a different scope.
 ) {
 	char buf[200];
-	unsigned long parmcnt = aparms->gen_values(out);   // Want to push parm. values.
+	size_t parmcnt = aparms->gen_values(out);   // Want to push parm. values.
 	parmcnt += (method_num >= 0);       // Count 'this'.
 	if (parmcnt != parms.size()) {
-		unsigned long protoparmcnt = parms.size();
 		sprintf(buf,
-		        "# parms. passed (%lu) doesn't match '%s' count (%lu)",
-		        parmcnt, get_name(), protoparmcnt);
+		        "# parms. passed (%zu) doesn't match '%s' count (%zu)",
+		        parmcnt, get_name(), parms.size());
 		Uc_location::yyerror(buf);
 	}
 	// See if expecting a return value from a function that has none.

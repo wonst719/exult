@@ -487,7 +487,7 @@ public:
 	int get_intrinsic_num() {
 		return intrinsic_num;
 	}
-	int get_num_parms() {   // ++++Not valid yet.
+	size_t get_num_parms() {   // ++++Not valid yet.
 		return num_parms;
 	}
 	// Generate function/procedure call.
@@ -562,7 +562,7 @@ public:
 	int get_shape_num() {
 		return shape_num;
 	}
-	int get_num_parms() {
+	size_t get_num_parms() {
 		return parms.size();
 	}
 	void clear_externed() {
