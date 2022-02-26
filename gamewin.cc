@@ -2317,16 +2317,26 @@ void Game_window::double_clicked(
 	        !Combat::is_paused() && main_actor_can_act_charmed() &&
 	        (!gump_man->gump_mode() || gump_man->gumps_dont_pause_game())) {
 		Actor *npc = obj->as_actor();
+		const Shape_info &info = obj->get_info();
+		const Shape_info::Shape_class cls = info.get_shape_class();
 		// But don't attack party members.
 		if ((!npc || !npc->is_in_party()) &&
 		        // Or bodies.
 		        !obj->get_info().is_body_shape()) {
-			// In combat mode.
-			// Want everyone to be in combat.
-			combat = false;
-			main_actor->set_target(obj);
-			toggle_combat();
-			return;
+			// And don't attack unlocked doors
+			if ((info.is_door() && !obj->get_framenum() % 4 < 2) ||
+			        // or unlocked containers
+			        (cls == Shape_info::container && !info.is_container_locked())) {
+				obj->activate();
+				return;
+			} else {
+				// In combat mode.
+				// Want everyone to be in combat.
+				combat = false;
+				main_actor->set_target(obj);
+				toggle_combat();
+				return;
+			}
 		}
 	}
 	effects->remove_text_effects(); // Remove text msgs. from screen.
