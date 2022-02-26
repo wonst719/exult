@@ -237,7 +237,6 @@ jobs:
         with:
           release_id: ${{ steps.create_release.outputs.id }}
       - name: save-artifacts
-        run: mkdir -p snapshot-files
         run: |
             cd $GITHUB_WORKSPACE
             mkdir -p snapshot-files
