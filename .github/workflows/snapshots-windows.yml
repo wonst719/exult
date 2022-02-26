@@ -272,7 +272,7 @@ jobs:
           scp -i ~/.ssh/id_rsa *.exe ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
           scp -i ~/.ssh/id_rsa *.zip ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
 # delete-artifact
-      - name: Install SSH key
+      - name: Delete artifact
         uses: geekyeggo/delete-artifact@v1
         with:
           name: 'snapshot files'
