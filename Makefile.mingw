@@ -328,7 +328,7 @@ CPPFLAGS:=$(strip -DVERSION=\"$(VERSION)\" -DEXULT_DATADIR=\"data\" \
 	-I$(SRC)/imagewin -I$(SRC)/ios/include -I$(SRC)/objs -I$(SRC)/pathfinder -I$(SRC)/server \
 	-I$(SRC)/shapes -I$(SRC)/tools -I$(SRC)/usecode -I$(SRC)/usecode/compiler \
 	-I$(SRC)/usecode/ucxt/include -I$(SRC)/mapedit -I$(SRC)/shapes/shapeinf \
-	$(subst -I, -isystem$(S), $(FLUIDSYNTH_CFLAGS) $(SDL_CFLAGS) $(ZIP_CFLAGS) $(MT32EMU_CFLAGS) $(ES_INCLUDES)) \
+	$(subst -I, -isystem$(S), $(subst -I$(MSYSTEM_PREFIX)/include$(S),,$(FLUIDSYNTH_CFLAGS) $(SDL_CFLAGS) $(ZIP_CFLAGS) $(MT32EMU_CFLAGS) $(ES_INCLUDES))) \
 	$(EXTRA_OPTIONS))
 
 PLUGIN_CPPFLAGS:=$(strip -DVERSION=\"$(VERSION)\" -DEXULT_DATADIR=\"data\" \
@@ -342,11 +342,11 @@ PLUGIN_CPPFLAGS:=$(strip -DVERSION=\"$(VERSION)\" -DEXULT_DATADIR=\"data\" \
 	-I$(SRC)/imagewin -I$(SRC)/ios/include -I$(SRC)/objs -I$(SRC)/pathfinder -I$(SRC)/server \
 	-I$(SRC)/shapes -I$(SRC)/tools -I$(SRC)/usecode -I$(SRC)/usecode/compiler \
 	-I$(SRC)/usecode/ucxt/include -I$(SRC)/mapedit -I$(SRC)/shapes/shapeinf \
-	$(subst -I, -isystem$(S), $(GIMP_INCLUDES)) \
+	$(subst -I, -isystem$(S), $(subst -I$(MSYSTEM_PREFIX)/include$(S),,$(GIMP_INCLUDES))) \
 	$(EXTRA_OPTIONS))
 
 CFLAGS:=-MMD -fdiagnostics-color=always $(ARCHFLAGS) $(strip $(OPT_LEVEL) -Wall -Wextra -pedantic -mms-bitfields) \
-	$(subst -I, -isystem$(S), $(GIMP_INCLUDES))
+	$(subst -I, -isystem$(S), $(subst -I$(MSYSTEM_PREFIX)/include$(S),,$(GIMP_INCLUDES)))
 
 OBJECTS:=$(OBJS) $(TOOL_OBJS) $(ES_OBJS) mapedit/u7shp.o
 
