@@ -270,8 +270,7 @@ jobs:
       - shell: bash
         run: |
           cd $GITHUB_WORKSPACE
-          scp -i ~/.ssh/id_rsa *.exe ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
-          scp -i ~/.ssh/id_rsa *.zip ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
+          scp -i ~/.ssh/id_rsa *.exe *.zip ${{ secrets.SCP_HOST }}:htdocs/snapshots/
 # delete-artifact
       - name: Delete artifact
         uses: geekyeggo/delete-artifact@v1
