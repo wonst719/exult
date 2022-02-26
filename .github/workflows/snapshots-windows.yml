@@ -236,3 +236,45 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ steps.create_release.outputs.id }}
+      - name: save-artifacts
+        run: mkdir -p snapshot-files
+        run: |
+            cd $GITHUB_WORKSPACE
+            mkdir -p snapshot-files
+            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Exult.exe ./snapshot-files 
+            cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultStudio.exe ./snapshot-files
+            cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultTools.exe ./snapshot-files
+            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Gimp20Plugin.exe ./snapshot-files
+            cp ${{ env.EXULT_SNAPSHOT_PATH }}Keyring.zip ./snapshot-files
+            cp ${{ env.EXULT_SNAPSHOT_PATH }}SFisland.zip ./snapshot-files
+            cp ${{ env.EXULT_SNAPSHOT_PATH }}Sifixes.zip ./snapshot-files
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'snapshot files'
+          path: snapshot-files
+# new job, now on Ubuntu
+  snapshot-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: "${{ secrets.SSH_PRIVATE_KEY }}"
+          name: id_rsa
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: 'snapshot files'
+      - shell: bash
+        run: |
+          cd snspshot-files
+          scp -i ~/.ssh/id_rsa *.exe ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
+          scp -i ~/.ssh/id_rsa *.zip ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
+# delete-artifact
+      - name: Install SSH key
+        uses: geekyeggo/delete-artifact@v1
+        with:
+          name: 'snapshot files'
+          failOnError: false
