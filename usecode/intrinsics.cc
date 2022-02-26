@@ -2695,9 +2695,9 @@ USECODE_INTRINSIC(fade_palette_sleep) {
 	int inout = parms[2].get_int_value();
 	if (inout == 0) {
 		show_pending_text();    // Make sure prev. text was seen.
-		Audio::get_ptr()->start_music(24);
+		Audio::get_ptr()->start_music(Audio::game_music(33));
 	} else {
-		Audio::get_ptr()->start_music(22);
+		Audio::get_ptr()->start_music(Audio::game_music(31));
 		gclock->reset_palette();
 	}
 	gwin->get_pal()->fade(cycles, inout);
