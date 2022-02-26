@@ -134,7 +134,6 @@ void consumeEdible (var food, var npc, var nutritional_value, var sound_effect)
 			npc->get_item_flag(PARALYZED))
 		return;
 
-
 	//Added in custom behavior for some NPCs, when faced with the daunting prospect
 	//of milk products
 	//In future, lactose-intolerance could be handled by a custom flag
@@ -180,12 +179,12 @@ void consumeEdible (var food, var npc, var nutritional_value, var sound_effect)
 		// Garlic has quantity
 		subtractQuantity(food);
 	else
-		food->remove_item();	
+		food->remove_item();
 
 	var rand = UI_get_random(10);	//Used for randomising the barks
 
 	//What the character will say when fed
-	var bark;					
+	var bark;
 
 	//measure the NPC's current food level and their resulting food level to
 	//determine barks
@@ -214,7 +213,7 @@ void consumeEdible (var food, var npc, var nutritional_value, var sound_effect)
 			bark = "@Belch@";
 
 		else
-			bark = "@Ahh, very tasty.@";	
+			bark = "@Ahh, very tasty.@";
 	}
 
 	//for the following cases, the character was hungry to start with
@@ -225,7 +224,7 @@ void consumeEdible (var food, var npc, var nutritional_value, var sound_effect)
 		if (rand > 5)
 			bark = "@That hit the spot!@";
 		else
-			bark = "@Burp@";	
+			bark = "@Burp@";
 	}
 
 	//character is now happily fed
@@ -234,7 +233,7 @@ void consumeEdible (var food, var npc, var nutritional_value, var sound_effect)
 		if (shapenum == SHAPE_REAGENT)
 			bark = "@Yum, garlic!@";
 		else
-			bark = "@Ah yes, much better.@";		
+			bark = "@Ah yes, much better.@";
 	}
 
 	//character is still peckish
@@ -243,7 +242,7 @@ void consumeEdible (var food, var npc, var nutritional_value, var sound_effect)
 		if (rand > 5 || isAvatar(npc))
 			bark = "@I am still hungry.@";
 		else
-			bark = "@May I have some more?@";	
+			bark = "@May I have some more?@";
 	}
 
 	//character is still starving
@@ -266,7 +265,7 @@ void consumeEdible (var food, var npc, var nutritional_value, var sound_effect)
 //the food to the target. This has been rewritten so that the
 //actual eating is handled by another function - this just
 //controls the click behavior
-void useEdible 0x813 (var sound_effect, var nutritional_value, var food)
+void useEdible 0x813 (var food, var nutritional_value, var sound_effect)
 {
 	var npc = UI_click_on_item();
 	consumeEdible(food, npc, nutritional_value, sound_effect);

@@ -34,7 +34,7 @@ void Bottle shape#(0x268) ()
 			gotoAndGet(item);
 		else
 		{
-			useEdible(SOUND_DRINK, BOTTLE_NUTRITION, item);
+			useEdible(item, BOTTLE_NUTRITION, SOUND_DRINK);
 			return;
 		}
 	}
@@ -48,6 +48,6 @@ void Bottle shape#(0x268) ()
 			gotoChurn(target, CHURN_WITH_BOTTLE);
 		//otherwise, just drink the damn milk already
 		else
-			consumeEdible(item, target, BOTTLE_NUTRITION, SOUND_DRINK);	
+			consumeEdible(item, target, BOTTLE_NUTRITION, SOUND_DRINK);
 	}
 }

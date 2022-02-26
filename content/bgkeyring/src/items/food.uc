@@ -98,5 +98,5 @@ void Food shape#(0x179) ()
 	}
 	//Use regular food normally
 	else
-		useEdible(SOUND_EAT, nutrition, item);
+		useEdible(item, nutrition, SOUND_EAT);
 }
