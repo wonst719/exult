@@ -244,9 +244,9 @@ jobs:
             cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultStudio.exe ./snapshot-files
             cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultTools.exe ./snapshot-files
             cp ${{ env.EXULT_SNAPSHOT_PATH }}/Gimp20Plugin.exe ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}Keyring.zip ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}SFisland.zip ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}Sifixes.zip ./snapshot-files
+            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Keyring.zip ./snapshot-files
+            cp ${{ env.EXULT_SNAPSHOT_PATH }}/SFisland.zip ./snapshot-files
+            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Sifixes.zip ./snapshot-files
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -255,6 +255,7 @@ jobs:
 # new job, now on Ubuntu
   snapshot-upload:
     runs-on: ubuntu-latest
+    needs: snapshots-windows
     steps:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -268,7 +269,7 @@ jobs:
           name: 'snapshot files'
       - shell: bash
         run: |
-          cd snspshot-files
+          cd snapshot-files
           scp -i ~/.ssh/id_rsa *.exe ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
           scp -i ~/.ssh/id_rsa *.zip ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
 # delete-artifact
