@@ -1,7 +1,7 @@
 /*
  *  ucsymtbl.cc - Usecode symbol table
  *
- *  Copyright (C) 2006  The Exult Team
+ *  Copyright (C) 2006-2022  The Exult Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

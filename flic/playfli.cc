@@ -6,6 +6,7 @@
 
 /*
 Copyright (C) 2000  Tristan Tarrant
+Copyright (C) 2000-2022  The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

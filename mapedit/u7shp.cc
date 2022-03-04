@@ -3,9 +3,10 @@
  *
  * (C) 2000-2001 Tristan Tarrant
  * (C) 2001-2004 Willem Jan Palenstijn
+ * (C) 2010-2022 The Exult Team
  *
  * You can find the most recent version of this file in the Exult sources,
- * available from http://exult.sf.net/
+ * available from http://exult.info/
  */
 
 #ifdef HAVE_CONFIG_H

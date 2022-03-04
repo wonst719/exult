@@ -8,7 +8,7 @@
 #define INCL_SHAPELST   1
 
 /*
-Copyright (C) 1999-2020 Jeffrey S. Freedman
+Copyright (C) 1999-2022 Jeffrey S. Freedman
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

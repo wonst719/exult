@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2008  The Exult Team
+ *  Copyright (C) 2008-2022  The Exult Team
  *
  *  Based on code by Dancer A.L Vesperman
  *

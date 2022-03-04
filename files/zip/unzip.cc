@@ -2,7 +2,7 @@
    Version 0.15 beta, Mar 19th, 1998,
 
    Modified by Ryan Nunn. Nov 9th 2001
-
+   Modified by the Exult Team. Nov 10th 2001 - 2022
    Read unzip.h for more info
 */
 

@@ -1,6 +1,6 @@
 /*
  *  Copyright (C) 2004  Ryan Nunn and The Pentagram Team
-*   Copyright (C) 2010 The Exult Team
+*   Copyright (C) 2010-2022 The Exult Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

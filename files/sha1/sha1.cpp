@@ -32,6 +32,10 @@
  Gregory Petrosyan
  */
 
+/*
+ Modified by the Exult Team. 2018-2022
+*/
+
 #include "sha1.h"
 
 #include <algorithm>

@@ -25,6 +25,10 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/*
+ Modified by the Exult Team. 2021-2022
+*/
+
 #ifndef SHA1_DEFINED
 #define SHA1_DEFINED
 

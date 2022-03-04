@@ -4,6 +4,7 @@
    Copyright (C) 1998 Gilles Vollant
 
    Modified by Ryan Nunn. Nov 9th 2001
+   Modified by the Exult Team. 2003-2022
 
    This unzip package allow creates .ZIP file, compatible with PKZip 2.04g
      WinZip, InfoZip tools and compatible.
