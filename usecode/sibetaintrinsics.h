@@ -239,8 +239,8 @@
 	USECODE_INTRINSIC_PTR(create_barge_object),           // 0xd5
 	USECODE_INTRINSIC_PTR(in_usecode_path),               // 0xd6
 	USECODE_INTRINSIC_PTR(start_blocking_speech),         // 0xd7
-	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xd8
-	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xd9
+	USECODE_INTRINSIC_PTR(close_gumps2),                  // 0xd8
+	USECODE_INTRINSIC_PTR(close_gump2),                   // 0xd9
 	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xda
 	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xdb
 	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xdc

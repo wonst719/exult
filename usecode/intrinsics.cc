@@ -2468,10 +2468,28 @@ USECODE_INTRINSIC(close_gump) {
 	return no_ret;
 }
 
+USECODE_INTRINSIC(close_gump2) {
+	ignore_unused_variable_warning(num_parms);
+	// close_gump(container)
+	Game_object *obj = get_item(parms[0]);
+	Gump *gump = gumpman->find_gump(obj, c_any_shapenum);
+	if (gump) {
+		gumpman->close_gump(gump);
+		gwin->set_all_dirty();
+	}
+	return no_ret;
+}
+
 USECODE_INTRINSIC(close_gumps) {
 	ignore_unused_variable_warning(num_parms, parms);
 	if (!gwin->is_dragging())   // NOT while dragging stuff.
 		gumpman->close_all_gumps();
+	return no_ret;
+}
+
+USECODE_INTRINSIC(close_gumps2) {
+	ignore_unused_variable_warning(num_parms, parms);
+	gumpman->close_all_gumps();
 	return no_ret;
 }
 

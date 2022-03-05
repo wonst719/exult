@@ -321,7 +321,9 @@ class Usecode_internal : public Usecode_machine {
 	USECODE_INTRINSIC_DECL(attack_avatar);
 	USECODE_INTRINSIC_DECL(path_run_usecode);
 	USECODE_INTRINSIC_DECL(close_gump);
+	USECODE_INTRINSIC_DECL(close_gump2);
 	USECODE_INTRINSIC_DECL(close_gumps);
+	USECODE_INTRINSIC_DECL(close_gumps2);
 	USECODE_INTRINSIC_DECL(in_gump_mode);
 	USECODE_INTRINSIC_DECL(set_light);
 	USECODE_INTRINSIC_DECL(set_time_palette);
