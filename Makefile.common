@@ -132,14 +132,14 @@ GUMPS_OBJS:= \
 	gumps/Actor_gump.o \
 	gumps/AudioOptions_gump.o \
 	gumps/Book_gump.o \
-	gumps/MiscOptions_gump.o \
+	gumps/GameEngineOptions_gump.o \
 	gumps/CombatStats_gump.o \
 	gumps/Enabled_button.o \
 	gumps/Face_button.o \
 	gumps/Face_stats.o \
 	gumps/File_gump.o \
 	gumps/Gamemenu_gump.o \
-	gumps/GameplayOptions_gump.o \
+	gumps/GameDisplayOptions_gump.o \
 	gumps/Gump.o \
 	gumps/Gump_button.o \
 	gumps/Gump_manager.o \

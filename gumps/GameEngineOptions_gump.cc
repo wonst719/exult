@@ -30,7 +30,7 @@
 #include "Configuration.h"
 #include "Gump_button.h"
 #include "Gump_ToggleButton.h"
-#include "MiscOptions_gump.h"
+#include "GameEngineOptions_gump.h"
 #include "exult.h"
 #include "exult_flx.h"
 #include "game.h"

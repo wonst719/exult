@@ -612,7 +612,7 @@
     <ClCompile Include="..\..\gumps\Gamemenu_gump.cc">
       <Filter>gumps</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\gumps\GameplayOptions_gump.cc">
+    <ClCompile Include="..\..\gumps\GameDisplayOptions_gump.cc">
       <Filter>gumps</Filter>
     </ClCompile>
     <ClCompile Include="..\..\gumps\Gump.cc">
@@ -642,7 +642,7 @@
     <ClCompile Include="..\..\gumps\misc_buttons.cc">
       <Filter>gumps</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\gumps\MiscOptions_gump.cc">
+    <ClCompile Include="..\..\gumps\GameEngineOptions_gump.cc">
       <Filter>gumps</Filter>
     </ClCompile>
     <ClCompile Include="..\..\gumps\Newfile_gump.cc">
@@ -1241,7 +1241,7 @@
     <ClInclude Include="..\..\gumps\Gamemenu_gump.h">
       <Filter>gumps</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\gumps\GameplayOptions_gump.h">
+    <ClInclude Include="..\..\gumps\GameDisplayOptions_gump.h">
       <Filter>gumps</Filter>
     </ClInclude>
     <ClInclude Include="..\..\gumps\Gump.h">
@@ -1277,7 +1277,7 @@
     <ClInclude Include="..\..\gumps\misc_buttons.h">
       <Filter>gumps</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\gumps\MiscOptions_gump.h">
+    <ClInclude Include="..\..\gumps\GameEngineOptions_gump.h">
       <Filter>gumps</Filter>
     </ClInclude>
     <ClInclude Include="..\..\gumps\Modal_gump.h">

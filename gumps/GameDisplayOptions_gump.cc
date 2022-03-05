@@ -29,7 +29,7 @@
 #include "Configuration.h"
 #include "Gump_button.h"
 #include "Gump_ToggleButton.h"
-#include "GameplayOptions_gump.h"
+#include "GameDisplayOptions_gump.h"
 #include "exult.h"
 #include "exult_flx.h"
 #include "game.h"

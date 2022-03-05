@@ -190,7 +190,7 @@
 		E700DE831A6E3497006C8BE4 /* Face_stats.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE421A6E3497006C8BE4 /* Face_stats.cc */; };
 		E700DE841A6E3497006C8BE4 /* File_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE441A6E3497006C8BE4 /* File_gump.cc */; };
 		E700DE851A6E3497006C8BE4 /* Gamemenu_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE461A6E3497006C8BE4 /* Gamemenu_gump.cc */; };
-		E700DE861A6E3497006C8BE4 /* GameplayOptions_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE481A6E3497006C8BE4 /* GameplayOptions_gump.cc */; };
+		E700DE861A6E3497006C8BE4 /* GameDisplayOptions_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE481A6E3497006C8BE4 /* GameDisplayOptions_gump.cc */; };
 		E700DE871A6E3497006C8BE4 /* Gump_button.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE4A1A6E3497006C8BE4 /* Gump_button.cc */; };
 		E700DE891A6E3497006C8BE4 /* Gump_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE4E1A6E3497006C8BE4 /* Gump_manager.cc */; };
 		E700DE8B1A6E3497006C8BE4 /* Gump_ToggleButton.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE521A6E3497006C8BE4 /* Gump_ToggleButton.cc */; };
@@ -199,7 +199,7 @@
 		E700DE8E1A6E3497006C8BE4 /* ItemMenu_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE5A1A6E3497006C8BE4 /* ItemMenu_gump.cc */; };
 		E700DE8F1A6E3497006C8BE4 /* Jawbone_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE5C1A6E3497006C8BE4 /* Jawbone_gump.cc */; };
 		E700DE911A6E3497006C8BE4 /* misc_buttons.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE601A6E3497006C8BE4 /* misc_buttons.cc */; };
-		E700DE921A6E3497006C8BE4 /* MiscOptions_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE621A6E3497006C8BE4 /* MiscOptions_gump.cc */; };
+		E700DE921A6E3497006C8BE4 /* GameEngineOptions_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE621A6E3497006C8BE4 /* GameEngineOptions_gump.cc */; };
 		E700DE931A6E3497006C8BE4 /* Newfile_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE651A6E3497006C8BE4 /* Newfile_gump.cc */; };
 		E700DE941A6E3497006C8BE4 /* Notebook_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE671A6E3497006C8BE4 /* Notebook_gump.cc */; };
 		E700DE951A6E3497006C8BE4 /* Paperdoll_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DE691A6E3497006C8BE4 /* Paperdoll_gump.cc */; };
@@ -714,8 +714,8 @@
 		E700DE451A6E3497006C8BE4 /* File_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = File_gump.h; path = ../gumps/File_gump.h; sourceTree = "<group>"; };
 		E700DE461A6E3497006C8BE4 /* Gamemenu_gump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Gamemenu_gump.cc; path = ../gumps/Gamemenu_gump.cc; sourceTree = "<group>"; };
 		E700DE471A6E3497006C8BE4 /* Gamemenu_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gamemenu_gump.h; path = ../gumps/Gamemenu_gump.h; sourceTree = "<group>"; };
-		E700DE481A6E3497006C8BE4 /* GameplayOptions_gump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameplayOptions_gump.cc; path = ../gumps/GameplayOptions_gump.cc; sourceTree = "<group>"; };
-		E700DE491A6E3497006C8BE4 /* GameplayOptions_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameplayOptions_gump.h; path = ../gumps/GameplayOptions_gump.h; sourceTree = "<group>"; };
+		E700DE481A6E3497006C8BE4 /* GameDisplayOptions_gump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameDisplayOptions_gump.cc; path = ../gumps/GameDisplayOptions_gump.cc; sourceTree = "<group>"; };
+		E700DE491A6E3497006C8BE4 /* GameDisplayOptions_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameDisplayOptions_gump.h; path = ../gumps/GameDisplayOptions_gump.h; sourceTree = "<group>"; };
 		E700DE4A1A6E3497006C8BE4 /* Gump_button.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Gump_button.cc; path = ../gumps/Gump_button.cc; sourceTree = "<group>"; };
 		E700DE4B1A6E3497006C8BE4 /* Gump_button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gump_button.h; path = ../gumps/Gump_button.h; sourceTree = "<group>"; };
 		E700DE4E1A6E3497006C8BE4 /* Gump_manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Gump_manager.cc; path = ../gumps/Gump_manager.cc; sourceTree = "<group>"; };
@@ -734,8 +734,8 @@
 		E700DE5D1A6E3497006C8BE4 /* Jawbone_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Jawbone_gump.h; path = ../gumps/Jawbone_gump.h; sourceTree = "<group>"; };
 		E700DE601A6E3497006C8BE4 /* misc_buttons.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = misc_buttons.cc; path = ../gumps/misc_buttons.cc; sourceTree = "<group>"; };
 		E700DE611A6E3497006C8BE4 /* misc_buttons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = misc_buttons.h; path = ../gumps/misc_buttons.h; sourceTree = "<group>"; };
-		E700DE621A6E3497006C8BE4 /* MiscOptions_gump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MiscOptions_gump.cc; path = ../gumps/MiscOptions_gump.cc; sourceTree = "<group>"; };
-		E700DE631A6E3497006C8BE4 /* MiscOptions_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiscOptions_gump.h; path = ../gumps/MiscOptions_gump.h; sourceTree = "<group>"; };
+		E700DE621A6E3497006C8BE4 /* GameEngineOptions_gump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameEngineOptions_gump.cc; path = ../gumps/GameEngineOptions_gump.cc; sourceTree = "<group>"; };
+		E700DE631A6E3497006C8BE4 /* GameEngineOptions_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameEngineOptions_gump.h; path = ../gumps/GameEngineOptions_gump.h; sourceTree = "<group>"; };
 		E700DE641A6E3497006C8BE4 /* Modal_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Modal_gump.h; path = ../gumps/Modal_gump.h; sourceTree = "<group>"; };
 		E700DE651A6E3497006C8BE4 /* Newfile_gump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Newfile_gump.cc; path = ../gumps/Newfile_gump.cc; sourceTree = "<group>"; };
 		E700DE661A6E3497006C8BE4 /* Newfile_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Newfile_gump.h; path = ../gumps/Newfile_gump.h; sourceTree = "<group>"; };
@@ -1402,8 +1402,8 @@
 				E700DE451A6E3497006C8BE4 /* File_gump.h */,
 				E700DE461A6E3497006C8BE4 /* Gamemenu_gump.cc */,
 				E700DE471A6E3497006C8BE4 /* Gamemenu_gump.h */,
-				E700DE481A6E3497006C8BE4 /* GameplayOptions_gump.cc */,
-				E700DE491A6E3497006C8BE4 /* GameplayOptions_gump.h */,
+				E700DE481A6E3497006C8BE4 /* GameDisplayOptions_gump.cc */,
+				E700DE491A6E3497006C8BE4 /* GameDisplayOptions_gump.h */,
 				E700DE4A1A6E3497006C8BE4 /* Gump_button.cc */,
 				E700DE4B1A6E3497006C8BE4 /* Gump_button.h */,
 				E700DE4E1A6E3497006C8BE4 /* Gump_manager.cc */,
@@ -1422,8 +1422,8 @@
 				E700DE5D1A6E3497006C8BE4 /* Jawbone_gump.h */,
 				E700DE601A6E3497006C8BE4 /* misc_buttons.cc */,
 				E700DE611A6E3497006C8BE4 /* misc_buttons.h */,
-				E700DE621A6E3497006C8BE4 /* MiscOptions_gump.cc */,
-				E700DE631A6E3497006C8BE4 /* MiscOptions_gump.h */,
+				E700DE621A6E3497006C8BE4 /* GameEngineOptions_gump.cc */,
+				E700DE631A6E3497006C8BE4 /* GameEngineOptions_gump.h */,
 				E700DE641A6E3497006C8BE4 /* Modal_gump.h */,
 				E700DE651A6E3497006C8BE4 /* Newfile_gump.cc */,
 				E700DE661A6E3497006C8BE4 /* Newfile_gump.h */,
@@ -2020,7 +2020,7 @@
 				E700DCDB1A6E30D8006C8BE4 /* contain.cc in Sources */,
 				E700DE821A6E3497006C8BE4 /* Face_button.cc in Sources */,
 				E700DC231A6E2CE7006C8BE4 /* OggAudioSample.cc in Sources */,
-				E700DE861A6E3497006C8BE4 /* GameplayOptions_gump.cc in Sources */,
+				E700DE861A6E3497006C8BE4 /* GameDisplayOptions_gump.cc in Sources */,
 				E700DD651A6E3121006C8BE4 /* vgafile.cc in Sources */,
 				E700DD3B1A6E3121006C8BE4 /* items.cc in Sources */,
 				E700DF4F1A6E34C6006C8BE4 /* ucmachine.cc in Sources */,
@@ -2030,7 +2030,7 @@
 				E700DFD21A6E3943006C8BE4 /* devgame.cc in Sources */,
 				E700DCAB1A6E30A7006C8BE4 /* paths.cc in Sources */,
 				E700DF511A6E34C6006C8BE4 /* ucserial.cc in Sources */,
-				E700DE921A6E3497006C8BE4 /* MiscOptions_gump.cc in Sources */,
+				E700DE921A6E3497006C8BE4 /* GameEngineOptions_gump.cc in Sources */,
 				E700DBBE1A6E2CE7006C8BE4 /* conv.cc in Sources */,
 				E700DE261A6E344D006C8BE4 /* imagebuf.cc in Sources */,
 				E700DBDC1A6E2CE7006C8BE4 /* CoreMidiDriver.cpp in Sources */,
