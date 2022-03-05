@@ -459,13 +459,13 @@ audio/Midi.o : audio/Midi.cc $(EXULT_FLX)
 
 gumps/AudioOptions_gump.o : gumps/AudioOptions_gump.cc $(EXULT_FLX)
 
-gumps/MiscOptions_gump.o : gumps/MiscOptions_gump.cc $(EXULT_FLX)
+gumps/GameEngineOptions_gump.o : gumps/GameEngineOptions_gump.cc $(EXULT_FLX)
 
 gumps/Face_stats.o : gumps/Face_stats.cc $(EXULT_FLX)
 
 gumps/Gamemenu_gump.o : gumps/Gamemenu_gump.cc $(EXULT_FLX)
 
-gumps/GameplayOptions_gump.o : gumps/GameplayOptions_gump.cc $(EXULT_FLX)
+gumps/GameDisplayOptions_gump.o : gumps/GameDisplayOptions_gump.cc $(EXULT_FLX)
 
 gumps/ItemMenu_gump.o : gumps/ItemMenu_gump.cc $(EXULT_FLX)
 
