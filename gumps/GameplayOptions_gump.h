@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef GAMEPLAYOPTIONS_GUMP_H
-#define GAMEPLAYOPTIONS_GUMP_H
+#ifndef GAMEDISPLAYOPTIONS_GUMP_H
+#define GAMEDISPLAYOPTIONS_GUMP_H
 
 #include "Modal_gump.h"
 
@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Gump_button;
 
-class GameplayOptions_gump : public Modal_gump {
+class GameDisplayOptions_gump : public Modal_gump {
 private:
 	int facestats;
 	int sc_enabled;
@@ -61,7 +61,7 @@ private:
 	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
 
 public:
-	GameplayOptions_gump();
+	GameDisplayOptions_gump();
 
 	// Paint it and its contents.
 	void paint() override;

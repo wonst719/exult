@@ -50,26 +50,26 @@ static const char *oktext = "OK";
 static const char *canceltext = "CANCEL";
 static const char *helptext = "HELP";
 
-using GameplayOptions_button = CallbackTextButton<GameplayOptions_gump>;
-using GameplayTextToggle = CallbackToggleTextButton<GameplayOptions_gump>;
-using GameplayEnabledToggle = CallbackEnabledButton<GameplayOptions_gump>;
+using GameDisplayOptions_button = CallbackTextButton<GameDisplayOptions_gump>;
+using GameDisplayTextToggle = CallbackToggleTextButton<GameDisplayOptions_gump>;
+using GameDisplayEnabledToggle = CallbackEnabledButton<GameDisplayOptions_gump>;
 
-void GameplayOptions_gump::close() {
+void GameDisplayOptions_gump::close() {
 	save_settings();
 	done = true;
 }
 
-void GameplayOptions_gump::cancel() {
+void GameDisplayOptions_gump::cancel() {
 	done = true;
 }
 
-void GameplayOptions_gump::help() {
+void GameDisplayOptions_gump::help() {
 #if SDL_VERSION_ATLEAST(2,0,14)
 	SDL_OpenURL("http://exult.info/docs.php#game_display_gump");
 #endif
 }
 
-void GameplayOptions_gump::build_buttons() {
+void GameDisplayOptions_gump::build_buttons() {
 	const std::vector<std::string> yesNo = {"No", "Yes"};
 
 	int y_index = 0;
@@ -78,20 +78,20 @@ void GameplayOptions_gump::build_buttons() {
 	
 	//Status Bar Positions
 	std::vector<std::string> stats = {"Disabled", "Left", "Middle", "Right", "Vertical"};
-	buttons[id_facestats] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_facestats,
+	buttons[id_facestats] = std::make_unique<GameDisplayTextToggle>(this, &GameDisplayOptions_gump::toggle_facestats,
 	        std::move(stats), facestats, colx[5] - 41, rowy[y_index], large_size);
 
 	std::vector<std::string> sc_enabled_txt = {"No", "Transparent", "Yes"};
-	buttons[id_sc_enabled] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_sc_enabled,
+	buttons[id_sc_enabled] = std::make_unique<GameDisplayTextToggle>(this, &GameDisplayOptions_gump::toggle_sc_enabled,
 	        std::move(sc_enabled_txt), sc_enabled, colx[5] - 41, rowy[++y_index], large_size);
 
 	// keep in order of Pixel_colors
 	// "No" needs to be last.
 	sc_outline_txt = std::vector<std::string>{"Green", "White", "Yellow", "Blue", "Red", "Purple", "Black", "No"};
-	buttons[id_sc_outline] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_sc_outline,
+	buttons[id_sc_outline] = std::make_unique<GameDisplayTextToggle>(this, &GameDisplayOptions_gump::toggle_sc_outline,
 	        sc_outline_txt, sc_outline, colx[5], rowy[++y_index], small_size);
 
-	buttons[id_sb_hide_missing] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_sb_hide_missing,
+	buttons[id_sb_hide_missing] = std::make_unique<GameDisplayTextToggle>(this, &GameDisplayOptions_gump::toggle_sb_hide_missing,
 	        yesNo, sb_hide_missing, colx[5], rowy[++y_index], small_size);
 
 	std::vector<std::string> textbgcolor = {
@@ -101,30 +101,30 @@ void GameplayOptions_gump::build_buttons() {
 		"Yellow", "Pale Blue", "Dark Green", "Red", "Bright White",
 		"Dark Gray", "White"
 	};
-	buttons[id_text_bg] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_text_bg,
+	buttons[id_text_bg] = std::make_unique<GameDisplayTextToggle>(this, &GameDisplayOptions_gump::toggle_text_bg,
 	        std::move(textbgcolor), text_bg, colx[5] - 41, rowy[++y_index], large_size);
 
 	std::vector<std::string> smooth_text = {"No", "25%", "50%", "75%", "100%"};
-	buttons[id_smooth_scrolling] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_smooth_scrolling,
+	buttons[id_smooth_scrolling] = std::make_unique<GameDisplayTextToggle>(this, &GameDisplayOptions_gump::toggle_smooth_scrolling,
 	        std::move(smooth_text), smooth_scrolling, colx[5], rowy[++y_index], small_size);
 
-	buttons[id_menu_intro] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_menu_intro,
+	buttons[id_menu_intro] = std::make_unique<GameDisplayTextToggle>(this, &GameDisplayOptions_gump::toggle_menu_intro,
 	        yesNo, menu_intro, colx[5], rowy[++y_index], small_size);
 
 	if (GAME_BG || gwin->is_in_exult_menu())
-		buttons[id_usecode_intro] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_usecode_intro,
+		buttons[id_usecode_intro] = std::make_unique<GameDisplayTextToggle>(this, &GameDisplayOptions_gump::toggle_usecode_intro,
 		       yesNo, usecode_intro, colx[5], rowy[++y_index], small_size);
 	if (GAME_SI || gwin->is_in_exult_menu())
-		buttons[id_extended_intro] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_extended_intro,
+		buttons[id_extended_intro] = std::make_unique<GameDisplayTextToggle>(this, &GameDisplayOptions_gump::toggle_extended_intro,
 		       yesNo, extended_intro, colx[5], rowy[++y_index], small_size);
 
 	if (sman->can_use_paperdolls() && (GAME_BG ||
 	                                   Game::get_game_type() == EXULT_DEVEL_GAME))
-		buttons[id_paperdolls] = std::make_unique<GameplayTextToggle>(this, &GameplayOptions_gump::toggle_paperdolls,
+		buttons[id_paperdolls] = std::make_unique<GameDisplayTextToggle>(this, &GameDisplayOptions_gump::toggle_paperdolls,
 		        yesNo, paperdolls, colx[5], rowy[++y_index], small_size);
 }
 
-void GameplayOptions_gump::load_settings() {
+void GameDisplayOptions_gump::load_settings() {
 	string yn;
 	config->value("config/gameplay/skip_intro", yn, "no");
 	usecode_intro = (yn == "yes");
@@ -147,7 +147,7 @@ void GameplayOptions_gump::load_settings() {
 	smooth_scrolling = gwin->is_lerping_enabled() / 25;
 }
 
-GameplayOptions_gump::GameplayOptions_gump()
+GameDisplayOptions_gump::GameDisplayOptions_gump()
 	: Modal_gump(nullptr, EXULT_FLX_GAMEPLAYOPTIONS_SHP, SF_EXULT_FLX) {
 	set_object_area(TileRect(0, 0, 0, 0), 8, 162);//++++++ ???
 
@@ -158,19 +158,19 @@ GameplayOptions_gump::GameplayOptions_gump()
 	build_buttons();
 
 	// Ok
-	buttons[id_ok] = std::make_unique<GameplayOptions_button>(this, &GameplayOptions_gump::close,
+	buttons[id_ok] = std::make_unique<GameDisplayOptions_button>(this, &GameDisplayOptions_gump::close,
 	        oktext, colx[0] -2 , rowy[12], 50);
 	// Cancel
-	buttons[id_cancel] = std::make_unique<GameplayOptions_button>(this, &GameplayOptions_gump::cancel,
+	buttons[id_cancel] = std::make_unique<GameDisplayOptions_button>(this, &GameDisplayOptions_gump::cancel,
 	        canceltext, colx[5] - 6, rowy[12], 50);
 #if SDL_VERSION_ATLEAST(2,0,14)
 	// Help
-	buttons[id_help] = std::make_unique<GameplayOptions_button>(this, &GameplayOptions_gump::help,
+	buttons[id_help] = std::make_unique<GameDisplayOptions_button>(this, &GameDisplayOptions_gump::help,
 	        helptext, colx[2] - 3, rowy[12], 50);
 #endif
 }
 
-void GameplayOptions_gump::save_settings() {
+void GameDisplayOptions_gump::save_settings() {
 	if (gwin->is_in_exult_menu())
 		config->set("config/gameplay/facestats", facestats - 1 , false);
 	else {
@@ -212,7 +212,7 @@ void GameplayOptions_gump::save_settings() {
 	config->write_back();
 }
 
-void GameplayOptions_gump::paint() {
+void GameDisplayOptions_gump::paint() {
 	Gump::paint();
 	for (auto& btn : buttons)
 		if (btn)
@@ -237,7 +237,7 @@ void GameplayOptions_gump::paint() {
 	gwin->set_painted();
 }
 
-bool GameplayOptions_gump::mouse_down(int mx, int my, int button) {
+bool GameDisplayOptions_gump::mouse_down(int mx, int my, int button) {
 	// Only left and right buttons
 	if (button != 1 && button != 3) return false;
 
@@ -263,7 +263,7 @@ bool GameplayOptions_gump::mouse_down(int mx, int my, int button) {
 	return button == 1 || pushed != nullptr;
 }
 
-bool GameplayOptions_gump::mouse_up(int mx, int my, int button) {
+bool GameDisplayOptions_gump::mouse_up(int mx, int my, int button) {
 	// Not Pushing a button?
 	if (!pushed) return false;
 
