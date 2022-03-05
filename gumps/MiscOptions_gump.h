@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MISCOPTIONS_GUMP_H
-#define MISCOPTIONS_GUMP_H
+#ifndef GAMEENGINEOPTIONS_GUMP_H
+#define GAMEENGINEOPTIONS_GUMP_H
 
 #include "Modal_gump.h"
 #include <array>
@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Gump_button;
 
-class MiscOptions_gump : public Modal_gump {
+class GameEngineOptions_gump : public Modal_gump {
 private:
 	bool allow_autonotes;
 	int gumps_pause;
@@ -58,7 +58,7 @@ private:
 	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
 
 public:
-	MiscOptions_gump();
+	GameEngineOptions_gump();
 
 	// Paint it and its contents.
 	void paint() override;

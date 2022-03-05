@@ -65,67 +65,67 @@ static string framestring(int fr) {
 	return buf;
 }
 
-using MiscOptions_button = CallbackTextButton<MiscOptions_gump>;
-using MiscTextToggle = CallbackToggleTextButton<MiscOptions_gump>;
-using MiscEnabledToggle = CallbackEnabledButton<MiscOptions_gump>;
+using GameEngineOptions_button = CallbackTextButton<GameEngineOptions_gump>;
+using GameEngineTextToggle = CallbackToggleTextButton<GameEngineOptions_gump>;
+using GameEngineEnabledToggle = CallbackEnabledButton<GameEngineOptions_gump>;
 
-void MiscOptions_gump::close() {
+void GameEngineOptions_gump::close() {
 	save_settings();
 	done = true;
 }
 
-void MiscOptions_gump::cancel() {
+void GameEngineOptions_gump::cancel() {
 	done = true;
 }
 
-void MiscOptions_gump::help() {
+void GameEngineOptions_gump::help() {
 #if SDL_VERSION_ATLEAST(2,0,14)
 	SDL_OpenURL("http://exult.info/docs.php#game_engine_gump");
 #endif
 }
 
-void MiscOptions_gump::build_buttons() {
+void GameEngineOptions_gump::build_buttons() {
 	const std::vector<std::string> yesNo = {"No", "Yes"};
 
 	int y_index = 0;
 	int small_size = 44;
 	int large_size = 85;
 	
-	buttons[id_allow_autonotes] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_allow_autonotes,
+	buttons[id_allow_autonotes] = std::make_unique<GameEngineTextToggle>(this, &GameEngineOptions_gump::toggle_allow_autonotes,
 	        yesNo, allow_autonotes, colx[5], rowy[y_index], small_size);
 
-	buttons[id_gumps_pause] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_gumps_pause,
+	buttons[id_gumps_pause] = std::make_unique<GameEngineTextToggle>(this, &GameEngineOptions_gump::toggle_gumps_pause,
 	        yesNo, gumps_pause, colx[5], rowy[++y_index], small_size);
 
-	buttons[id_alternate_drop] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_alternate_drop,
+	buttons[id_alternate_drop] = std::make_unique<GameEngineTextToggle>(this, &GameEngineOptions_gump::toggle_alternate_drop,
 	        yesNo, alternate_drop, colx[5], rowy[++y_index], small_size);
 
-	buttons[id_frames] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_frames,
+	buttons[id_frames] = std::make_unique<GameEngineTextToggle>(this, &GameEngineOptions_gump::toggle_frames,
 	        frametext, frames, colx[5], rowy[++y_index], small_size);
 
-	buttons[id_show_hits] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_show_hits,
+	buttons[id_show_hits] = std::make_unique<GameEngineTextToggle>(this, &GameEngineOptions_gump::toggle_show_hits,
 	        yesNo, show_hits, colx[5], rowy[++y_index], small_size);
 
 	//std::vector<std::string> modes = {"Original", "Space pauses"};
-	buttons[id_mode] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_mode,
+	buttons[id_mode] = std::make_unique<GameEngineTextToggle>(this, &GameEngineOptions_gump::toggle_mode,
 	        yesNo, mode, colx[5], rowy[++y_index], small_size);
 
 	std::vector<std::string> charmedDiff = {"Normal", "Hard"};
-	buttons[id_charmDiff] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_charmDiff,
+	buttons[id_charmDiff] = std::make_unique<GameEngineTextToggle>(this, &GameEngineOptions_gump::toggle_charmDiff,
 	        std::move(charmedDiff), charmDiff, colx[5], rowy[++y_index], small_size);
 
 	std::vector<std::string> diffs = {
 	    "Easiest (-3)", "Easier (-2)", "Easier (-1)",
 	    "Normal",
 	    "Harder (+1)", "Harder (+2)", "Hardest (+3)"};
-	buttons[id_difficulty] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_difficulty,
+	buttons[id_difficulty] = std::make_unique<GameEngineTextToggle>(this, &GameEngineOptions_gump::toggle_difficulty,
 	        std::move(diffs), difficulty, colx[5] - 41, rowy[++y_index], large_size);
 
-	buttons[id_cheats] = std::make_unique<MiscTextToggle>(this, &MiscOptions_gump::toggle_cheats,
+	buttons[id_cheats] = std::make_unique<GameEngineTextToggle>(this, &GameEngineOptions_gump::toggle_cheats,
 	        yesNo, cheats, colx[5], rowy[++y_index], small_size);
 }
 
-void MiscOptions_gump::load_settings() {
+void GameEngineOptions_gump::load_settings() {
 	string yn;
 	cheats = cheat();
 	difficulty = Combat::difficulty;
@@ -164,7 +164,7 @@ void MiscOptions_gump::load_settings() {
 	}
 }
 
-MiscOptions_gump::MiscOptions_gump()
+GameEngineOptions_gump::GameEngineOptions_gump()
 	: Modal_gump(nullptr, EXULT_FLX_GAMEPLAYOPTIONS_SHP, SF_EXULT_FLX) {
 	set_object_area(TileRect(0, 0, 0, 0), 8, 162);//++++++ ???
 
@@ -172,19 +172,19 @@ MiscOptions_gump::MiscOptions_gump()
 	build_buttons();
 	
 	// Ok
-	buttons[id_ok] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::close,
+	buttons[id_ok] = std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::close,
 	        oktext, colx[0] - 2, rowy[12], 50);
 	// Cancel
-	buttons[id_cancel] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::cancel,
+	buttons[id_cancel] = std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::cancel,
 	        canceltext, colx[5] - 6, rowy[12], 50);
 #if SDL_VERSION_ATLEAST(2,0,14)
 	// Help
-	buttons[id_help] = std::make_unique<MiscOptions_button>(this, &MiscOptions_gump::help,
+	buttons[id_help] = std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::help,
 	        helptext, colx[2] - 3, rowy[12], 50);
 #endif
 }
 
-void MiscOptions_gump::save_settings() {
+void GameEngineOptions_gump::save_settings() {
 
 	string str = "no";
 	Combat::difficulty = difficulty - 3;
@@ -215,7 +215,7 @@ void MiscOptions_gump::save_settings() {
 	config->write_back();
 }
 
-void MiscOptions_gump::paint() {
+void GameEngineOptions_gump::paint() {
 	Gump::paint();
 	for (auto& btn : buttons)
 		if (btn)
@@ -235,7 +235,7 @@ void MiscOptions_gump::paint() {
 	gwin->set_painted();
 }
 
-bool MiscOptions_gump::mouse_down(int mx, int my, int button) {
+bool GameEngineOptions_gump::mouse_down(int mx, int my, int button) {
 	// Only left and right buttons
 	if (button != 1 && button != 3) return false;
 
@@ -261,7 +261,7 @@ bool MiscOptions_gump::mouse_down(int mx, int my, int button) {
 	return button == 1 || pushed != nullptr;
 }
 
-bool MiscOptions_gump::mouse_up(int mx, int my, int button) {
+bool GameEngineOptions_gump::mouse_up(int mx, int my, int button) {
 	// Not Pushing a button?
 	if (!pushed) return false;
 

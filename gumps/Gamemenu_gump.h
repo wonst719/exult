@@ -34,7 +34,7 @@ private:
 	    id_video_options,
 	    id_audio_options,
 	    id_gameplay_options,
-	    id_misc_options,
+	    id_game_engine_options,
 	    id_input,
 	    id_quit,
 	    id_count
@@ -64,7 +64,7 @@ public:
 	void video_options();
 	void audio_options();
 	void gameplay_options();
-	void misc_options();
+	void game_engine_options();
 	void input_options();
 
 	static void do_exult_menu();
