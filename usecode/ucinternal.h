@@ -242,6 +242,7 @@ class Usecode_internal : public Usecode_machine {
 	USECODE_INTRINSIC_DECL(find_nearby);
 	USECODE_INTRINSIC_DECL(give_last_created);
 	USECODE_INTRINSIC_DECL(is_dead);
+	USECODE_INTRINSIC_DECL(game_day);
 	USECODE_INTRINSIC_DECL(game_hour);
 	USECODE_INTRINSIC_DECL(game_minute);
 	USECODE_INTRINSIC_DECL(get_npc_number);

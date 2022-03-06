@@ -576,13 +576,13 @@ int UI_get_music_track()
     If music is enabled and a song is playing, returns the track number of the
     current song. Otherwise, return is -1.
 
-     NOTES ABOUT ORIGINAL BG
+     NOTES ABOUT ORIGINAL BG 
     The return value in the original Black Gate was more complicated; the
     current song was the return value divided by 256, while the next song (the
     one that would be resumed after the current one ends) was the remainder of
     that same division. None of this behavior is true for Exult, which works as
     described above.
-     END NOTES ABOUT ORIGINAL BG
+     END NOTES ABOUT ORIGINAL BG 
 
 bool UI_start_speech(int track)
 
@@ -1832,7 +1832,7 @@ int npc->get_schedule_type()
         WAITER       = 23    SPECIAL            = 24    KID_GAMES        = 25
         TAG          = 25    EAT_AT_INN         = 26    DUEL             = 27
         SPAR         = 27    PREACH             = 28    PATROL           = 29
-        DESK_WORK    = 30    FOLLOW_AVATAR      = 31
+        DESK_WORK    = 30    FOLLOW_AVATAR      = 31    
 
     ****** SI SPECIFIC ******
     If the NPC is traversing a path created by a call to either,
@@ -2071,7 +2071,7 @@ int npc->get_alignment()
     one of the following values:
 
         NEUTRAL    = 0    GOOD    = 1    EVIL    = 2
-        CHAOTIC    = 3
+        CHAOTIC    = 3    
 
 UI_set_alignment(actor npc, int align)
 npc->set_alignment(int align)
@@ -2115,7 +2115,7 @@ int npc->get_attack_mode()
 
         NEAREST    = 0    WEAKEST    = 1    STRONGEST    = 2    BERSERK    = 3
         PROTECT    = 4    DEFEND     = 5    FLANK        = 6    FLEE       = 7
-        RANDOM     = 8    MANUAL     = 9
+        RANDOM     = 8    MANUAL     = 9    
 
 UI_set_attack_mode(actor npc, int mode)
 npc->set_attack_mode(int mode)
@@ -2215,7 +2215,7 @@ npc->is_readied(int spot, int shape, int frame)
     ****** BG SPECIFIC ******
     In BG, the 'spot' parameter is limited to the 0-12 range. It can take any of
     the following values:
-
+    
       BG_BACKPACK    =  0    Containers worn on the back, such as backpacks
       BG_WEAPON_HAND =  1    Item wielded in weapon hand
       BG_BOTH_HANDS  =  1    Item wielded with both hands
@@ -2241,13 +2241,13 @@ npc->is_readied(int spot, int shape, int frame)
       BG_BACK_2H     = 19    Exult-only. Weapon slung across the back
       BG_AMULET      = 22    Exult-only. Items worn on the neck such as a
                              collar.
-
+    
     **** END BG SPECIFIC ****
 
     ****** SI SPECIFIC ******
     In SI, the 'spot' parameter is limited to the 0-17 range. It can take any of
     the following values:
-
+    
       SI_OFF_HAND    =  0    Items wielded in the off-hand.
       SI_SHIELD_HAND =  0    Off-hand is also called shield hand.
       SI_WEAPON_HAND =  1    Items wielded in the weapon hand.
@@ -2271,7 +2271,7 @@ npc->is_readied(int spot, int shape, int frame)
       SI_BACKPACK    = 15    Containers worn on the back, such as backpacks
       SI_BACK_SHIELD = 16    Shield slung across the back
       SI_BACK_2H     = 17    Weapon slung across the back
-
+    
     **** END SI SPECIFIC ****
 
   Return:
@@ -2610,6 +2610,13 @@ UI_set_timer(int timer)
   Parameters:
     timer    Numeric value indicating the timer to be initialized.
 
+int UI_game_day()
+
+    Gets the game day.
+
+  Return:
+    The current game day, starting with day 0.
+
 int UI_game_hour()
 
     Gets the game hour.
@@ -2760,7 +2767,7 @@ UI_flash_mouse(int cursor)
 
         CURSOR_X              = 1    CURSOR_OUT_OF_RANGE    = 2
         CURSOR_OUT_OF_AMMO    = 3    CURSOR_TOO_HEAVY       = 4
-        CURSOR_WONT_FIT       = 5
+        CURSOR_WONT_FIT       = 5    
 
 UI_ambient_light(bool onoff)                                         [SI, Exult]
 

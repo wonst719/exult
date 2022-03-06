@@ -979,6 +979,12 @@ USECODE_INTRINSIC(is_dead) {
 	return u;
 }
 
+USECODE_INTRINSIC(game_day) {
+	ignore_unused_variable_warning(num_parms, parms);
+	Usecode_value u(gclock->get_day());
+	return u;
+}
+
 USECODE_INTRINSIC(game_hour) {
 	ignore_unused_variable_warning(num_parms, parms);
 	// Return. game time hour (0-23).

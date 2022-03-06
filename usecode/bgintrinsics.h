@@ -239,7 +239,7 @@
 	USECODE_INTRINSIC_PTR(fade_palette_sleep),            // 0xd7
 	USECODE_INTRINSIC_PTR(close_gumps2),                  // 0xd8
 	USECODE_INTRINSIC_PTR(close_gump2),                   // 0xd9
-	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xda
+	USECODE_INTRINSIC_PTR(game_day),                       // 0xda (Exult)
 	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xdb
 	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xdc
 	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xdd

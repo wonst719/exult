@@ -243,7 +243,7 @@
 	USECODE_INTRINSIC_PTR(start_blocking_speech),         // 0xd8
 	USECODE_INTRINSIC_PTR(close_gumps2),                  // 0xd9
 	USECODE_INTRINSIC_PTR(close_gump2),                   // 0xda
-	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xdb
+	USECODE_INTRINSIC_PTR(game_day),                       // 0xdb (Exult)
 	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xdc
 	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xdd
 	USECODE_INTRINSIC_PTR(UNKNOWN),                       // 0xde
