@@ -34,6 +34,7 @@
 		8A599BED246015ED006E3252 /* PartialManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A599BD1246015ED006E3252 /* PartialManager.cpp */; };
 		8A599BEE246015ED006E3252 /* TVF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A599BD2246015ED006E3252 /* TVF.cpp */; };
 		8A599BEF246015ED006E3252 /* Part.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A599BD3246015ED006E3252 /* Part.cpp */; };
+		8AFF3B2A279B597800521606 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AFF3B29279B597800521606 /* Display.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,6 +66,7 @@
 		8A599BD1246015ED006E3252 /* PartialManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PartialManager.cpp; path = src/PartialManager.cpp; sourceTree = "<group>"; };
 		8A599BD2246015ED006E3252 /* TVF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TVF.cpp; path = src/TVF.cpp; sourceTree = "<group>"; };
 		8A599BD3246015ED006E3252 /* Part.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Part.cpp; path = src/Part.cpp; sourceTree = "<group>"; };
+		8AFF3B29279B597800521606 /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Display.cpp; path = src/Display.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -83,6 +85,7 @@
 				8A599BC7246015ED006E3252 /* BReverbModel.cpp */,
 				8A599BCF246015ED006E3252 /* c_interface.cpp */,
 				8A599BB9246015EC006E3252 /* File.cpp */,
+				8AFF3B29279B597800521606 /* Display.cpp */,
 				8A599BD0246015ED006E3252 /* FileStream.cpp */,
 				8A599BC3246015EC006E3252 /* FIRResampler.cpp */,
 				8A599BC9246015ED006E3252 /* IIR2xResampler.cpp */,
@@ -189,6 +192,7 @@
 				8A599BD8246015ED006E3252 /* Tables.cpp in Sources */,
 				8A599BE3246015ED006E3252 /* BReverbModel.cpp in Sources */,
 				8A599BEE246015ED006E3252 /* TVF.cpp in Sources */,
+				8AFF3B2A279B597800521606 /* Display.cpp in Sources */,
 				8A599BE2246015ED006E3252 /* ROMInfo.cpp in Sources */,
 				8A599BD5246015ED006E3252 /* File.cpp in Sources */,
 				8A599BDF246015ED006E3252 /* FIRResampler.cpp in Sources */,
