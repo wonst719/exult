@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Move to autogen.sh's directory
-srcdir=`dirname $0`
+srcdir=$(dirname $0)
 test -n "$srcdir" && cd "$srcdir"
 
 DIE=0
