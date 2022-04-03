@@ -21,8 +21,13 @@ SUBDIRS =  files conf data shapes imagewin pathfinder \
 	mapedit desktop docs $(MODSDIR)
 
 bin_PROGRAMS = exult
+if SDL_MAIN_NEEDED
+exult_SOURCES = sdl_main.cc
+else
+exult_SOURCES =
+endif
 
-exult_SOURCES =	\
+exult_SOURCES +=	\
 	actions.cc	\
 	actions.h	\
 	actorio.cc	\
