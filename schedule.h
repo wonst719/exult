@@ -374,6 +374,7 @@ public:
 class Farmer_schedule : public Tool_schedule {
 	Game_object_weak crop;
 	int grow_cnt;
+  	int frame_group0;		// First in group of 3 that's being cut.
 	enum {
 	    start,
 	    find_crop,
@@ -383,7 +384,7 @@ class Farmer_schedule : public Tool_schedule {
 	} state;
 public:
 	Farmer_schedule(Actor *n) : Tool_schedule(n, 618),
-		grow_cnt(0), state(start)
+		grow_cnt(0), frame_group0(-1), state(start)
 	{  }
 	void now_what() override;    // Now what should NPC do?
 };

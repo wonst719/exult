@@ -1799,7 +1799,7 @@ void Tool_schedule::ending(
 }
 
 static int cropshapes[] = {423};
-static void Grow_crops(Actor *npc)
+static void Grow_crops(Actor *npc, int frame_group0)
 {
 	Game_object_vector crops;
 	npc->find_closest(crops, cropshapes, array_size(cropshapes));
@@ -1811,7 +1811,7 @@ static void Grow_crops(Actor *npc)
 		Game_object *c = *it;
 		int frnum = c->get_framenum();
 		int growth = ((frnum&3) + 1) & 3;
-		if (growth != 3)
+		if ((frnum & ~3) == frame_group0 && growth != 3)
 			c->change_frame((frnum & ~3) | growth);
 	}
 }
@@ -1828,9 +1828,6 @@ void Farmer_schedule::now_what(
 		get_tool();
 	switch (state) {
 	case start:
-		// 'Grow' crops. :-)
-		Grow_crops(npc);
-		grow_cnt++;
 		state = find_crop;
 		/* FALL THROUGH */
 	case find_crop: {
@@ -1877,6 +1874,7 @@ void Farmer_schedule::now_what(
 		int cnt = npc->get_attack_frames(toolshape, false, dir,
 		                                 frames);
 		if (cnt) {
+		    frame_group0 = crop_obj.get()->get_framenum() & ~3;
 			frames[cnt++] = npc->get_dir_framenum(
 			                    dir, Actor::standing);
 			npc->set_action(new Frames_actor_action(frames, cnt));
@@ -1900,8 +1898,8 @@ void Farmer_schedule::now_what(
 			crop = Game_object_weak();
 			// Wander now and then.
 			state = (rand()%4 == 0) ? wander : find_crop;
-			if (grow_cnt < 4 && rand()%2) {
-				Grow_crops(npc);
+			if (frame_group0 >= 0 && grow_cnt < 4 && rand()%2) {
+				Grow_crops(npc, frame_group0);
 				++grow_cnt;
 			}
 			delay = 500 + rand() % 2000;
