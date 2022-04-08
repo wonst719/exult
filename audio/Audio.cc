@@ -207,7 +207,7 @@ void Audio::Init()
 	// Crate the Audio singleton object
 	if (!self)
 	{
-		int sample_rate = 22050;
+		int sample_rate = 44100;
 		bool stereo = true;
 
 		config->value("config/audio/sample_rate", sample_rate, sample_rate);
@@ -826,7 +826,7 @@ void Audio::set_audio_enabled(bool ena)
 	{
 		audio_enabled = true;
 
-		int sample_rate = 22050;
+		int sample_rate = 44100;
 		bool stereo = true;
 
 		config->value("config/audio/sample_rate", sample_rate, sample_rate);
