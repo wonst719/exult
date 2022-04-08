@@ -275,7 +275,7 @@ void AudioOptions_gump::load_settings() {
 	speech_subtitles = (Audio::get_ptr()->is_speech_with_subs() ? 1 : 0);
 	midi_looping = (Audio::get_ptr()->is_music_looping_allowed() ? 1 : 0);
 	speaker_type = true; // stereo
-	sample_rate = 22050;
+	sample_rate = 44100;
 	config->value("config/audio/stereo", speaker_type, speaker_type);
 	config->value("config/audio/sample_rate", sample_rate, sample_rate);
 	num_sample_rates = 4;
