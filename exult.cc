@@ -435,14 +435,14 @@ int exult_main(const char *runpath) {
 
 	// reset-video command line option
 	if (arg_reset_video) {
-		config->set("config/video/display/width", 640, false);
-		config->set("config/video/display/height", 480, false);
+		config->set("config/video/display/width", 1024, false);
+		config->set("config/video/display/height", 768, false);
 		config->set("config/video/game/width", 320, false);
 		config->set("config/video/game/height", 200, false);
 		config->set("config/video/scale", 2, false);
-		config->set("config/video/scale_method", "2xSaI" , false);
-		config->set("config/video/fill_mode", "center", false);
-		config->set("config/video/fill_scaler", "Bilinear", false);
+		config->set("config/video/scale_method", "point" , false);
+		config->set("config/video/fill_mode", "fit", false);
+		config->set("config/video/fill_scaler", "point", false);
 		config->set("config/video/share_video_settings", "yes", false);
 		config->set("config/video/fullscreen", "no", false);
 		config->set("config/video/force_bpp", 0, false);
@@ -2365,9 +2365,9 @@ void setup_video(bool fullscreen, int setup_video_type, int resx, int resy,
 		config->set("config/video/force_bpp", 32, true);
 #else
 		int sc = 2;
-		string default_scaler = "2xSaI";
-		string default_fill_scaler = "bilinear";
-		string default_fmode = "Centre";
+		string default_scaler = "point";
+		string default_fill_scaler = "point";
+		string default_fmode = "Fit";
 #endif
 		string fill_scaler_str;
 		if (video_init) {
@@ -2401,15 +2401,15 @@ void setup_video(bool fullscreen, int setup_video_type, int resx, int resy,
 		         scaler != Image_window::interlaced &&
 		         scaler != Image_window::bilinear)
 			scaleval = 2;
-		config->value(vidStr + "/display/width", resx, resx * scaleval);
-		config->value(vidStr + "/display/height", resy, resy * scaleval);
+		config->value(vidStr + "/display/width", resx, 1024);
+		config->value(vidStr + "/display/height", resy, 768);
 		config->value(vidStr + "/game/width", gw, 320);
 		config->value(vidStr + "/game/height", gh, 200);
 		SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, high_dpi ? "0" : "1");
 		config->value(vidStr + "/fill_mode", fmode_string, default_fmode);
 		fillmode = Image_window::string_to_fillmode(fmode_string.c_str());
 		if (fillmode == 0)
-			fillmode = Image_window::AspectCorrectCentre;
+			fillmode = Image_window::AspectCorrectFit;
 		config->value(vidStr + "/fill_scaler", fill_scaler_str, default_fill_scaler);
 		fill_scaler = Image_window::get_scaler_for_name(fill_scaler_str.c_str());
 		if (fill_scaler == Image_window::NoScaler)
