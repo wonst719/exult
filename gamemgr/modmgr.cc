@@ -438,7 +438,7 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 		switch (crc) {
 		case 0x96f66a7a:
 			// Spanish SI
-			language = FRENCH;
+			language = SPANISH;
 			path_prefix = to_uppercase(CFG_SI_ES_NAME);
 			if (needtitle)
 				new_title = CFG_SI_ES_TITLE;
