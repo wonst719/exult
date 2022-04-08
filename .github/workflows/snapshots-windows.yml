@@ -237,6 +237,7 @@ jobs:
         with:
           release_id: ${{ steps.create_release.outputs.id }}
       - name: save-artifacts
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: |
             cd $GITHUB_WORKSPACE
             mkdir -p snapshot-files
@@ -248,6 +249,7 @@ jobs:
             cp ${{ env.EXULT_SNAPSHOT_PATH }}/SFisland.zip ./snapshot-files
             cp ${{ env.EXULT_SNAPSHOT_PATH }}/Sifixes.zip ./snapshot-files
       - name: Upload artifacts
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: actions/upload-artifact@v2
         with:
           name: 'snapshot files'
