@@ -1,3 +1,29 @@
+xx/xx/xx	v1.8
+
+		Windows builds are by default 64bit
+		Exult Studio modernized by porting it to GTK+ 3 (thanks Dragon Baroque)
+		Exult Studio now offered as a download for macOS
+		Exult shows the proper ending screen for BG (you have beaten Ultima VII in nn days...)
+		Proper sound effects in BG intro
+		Extended intro for SI implemented
+		More crashes eliminated caused by cached out objects
+		"Gumps pause game" no longer delays usecode events
+		Smooth virtual joystick movement on iOS
+		iOS shows the mouse cursor when a real mouse device is used
+		Screenshots will now be saved in the PNG format
+		Status bars can now also be vertical on both sides of the screen
+		Updated Windows installer to download and install the audio packs and our mods
+		Our options have been reordered
+
+
+		Known issues:
+
+		Antimagic rain caused by the cube generator is not dissipating as fast as it should
+		Exult does not return to the game menu after beating the game (instead it quits)
+		Some schedules need more detailed love
+		Several bugs that need more in depth looking at but no plot stopping bugs
+
+
 04/13/20	v1.6
 
 		A Shortcut bar with important shortcuts right on top of the screen (thanks Litchie)
@@ -28,7 +54,7 @@
 		Fire Elemenatals cannot walk across lava
 		Some schedules need more detailed love
 		Several bugs that need more in depth looking at but no plot stopping bugs
-		When you disable "Gumps pause game", certain events might only happen after you close all gumps			
+		When you disable "Gumps pause game", certain events might only happen after you close all gumps
 
 
 10/21/10	v1.4.9rc1
