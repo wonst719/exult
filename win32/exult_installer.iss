@@ -3,13 +3,13 @@
 
 [Setup]
 AppName=Exult
-AppVerName=Exult 1.7.0git Snapshot
+AppVerName=Exult 1.8.0
 AppPublisher=The Exult Team
 AppPublisherURL=http://exult.info/
 AppSupportURL=http://exult.info/
 AppUpdatesURL=http://exult.info/
 ; Setup exe version number:
-VersionInfoVersion=1.7.0
+VersionInfoVersion=1.8.0
 DisableDirPage=no
 DefaultDirName={code:GetExultInstDir|{autopf}\Exult}
 DisableProgramGroupPage=no

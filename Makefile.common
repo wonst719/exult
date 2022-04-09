@@ -1,4 +1,4 @@
-VERSION:=1.7.0git
+VERSION:=1.8.0
 
 MAIN_OBJS:=actions.o \
 	actorio.o \

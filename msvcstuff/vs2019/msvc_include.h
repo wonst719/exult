@@ -2,7 +2,7 @@
 #pragma warning(disable : 4996)
 #define NOMINMAX
 
-#define VERSION       "1.7.0git"
+#define VERSION       "1.8.0"
 #define EXULT_DATADIR "data/"
 
 // Don't need everything in the windows headers

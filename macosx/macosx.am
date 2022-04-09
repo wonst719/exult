@@ -56,7 +56,7 @@ osxdmg: bundle
 	cp $(srcdir)/macosx/diskback.png ./Exult-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/DS_Store ./Exult-snapshot/.DS_Store
 	ln -s /Applications "./Exult-snapshot/Drag'n'drop here"
-	echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Exult-snapshot/Git $(REVISION).url"
+	#echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Exult-snapshot/Git $(REVISION).url"
 	SetFile -a V ./Exult-snapshot/.DS_Store
 	SetFile -a V ./Exult-snapshot/images
 	SetFile -t ttro -c ttxt ./Exult-snapshot/Authors
@@ -66,8 +66,8 @@ osxdmg: bundle
 	cp -R $(bundle_name) ./Exult-snapshot/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 					-srcfolder Exult-snapshot \
-					-volname "Exult Git snapshot" \
-					Exult-snapshot.dmg
+					-volname "Exult 1.8" \
+					Exult-1.8.dmg
 	rm -rf Exult-snapshot
 
 studiodmg:
@@ -82,7 +82,7 @@ studiodmg:
 	cp $(srcdir)/macosx/diskback.png ./Studio-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/exult_studio_DS_Store ./Studio-snapshot/.DS_Store
 	ln -s /Applications "./Studio-snapshot/Drag'n'drop here"
-	echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Studio-snapshot/Git $(REVISION).url"
+	#echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Studio-snapshot/Git $(REVISION).url"
 	SetFile -a V ./Studio-snapshot/.DS_Store
 	SetFile -a V ./Studio-snapshot/images
 	SetFile -t ttro -c ttxt ./Studio-snapshot/Authors
@@ -90,13 +90,13 @@ studiodmg:
 	cp -R $(studio_name) ./Studio-snapshot/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 					-srcfolder Studio-snapshot \
-					-volname "Exult Studio Git snapshot" \
-					ExultStudio-snapshot.dmg
+					-volname "Exult Studio 1.8" \
+					ExultStudio-1.8.dmg
 	rm -rf Studio-snapshot
 
 clean-local:
-	-rm -f Exult-snapshot.dmg
-	-rm -f ExultStudio-snapshot.dmg
+	-rm -f Exult-1.8.dmg
+	-rm -f ExultStudio-1.8.dmg
 	-rm -f tmpicnsE.rsrc
 	-rm -f tmpicnsES.rsrc
 	-rm -rf $(bundle_name)

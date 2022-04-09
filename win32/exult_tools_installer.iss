@@ -3,13 +3,13 @@
 
 [Setup]
 AppName=Exult Tools
-AppVerName=Exult Tools Git
+AppVerName=Exult Tools
 AppPublisher=The Exult Team
 AppPublisherURL=http://exult.info/
 AppSupportURL=http://exult.info/
 AppUpdatesURL=http://exult.info/
 ; Setup exe version number:
-VersionInfoVersion=1.7.0
+VersionInfoVersion=1.8.0
 DisableDirPage=no
 DefaultDirName={autopf}\Exult\Tools
 DisableProgramGroupPage=yes
