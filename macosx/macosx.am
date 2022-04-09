@@ -56,7 +56,7 @@ osxdmg: bundle
 	cp $(srcdir)/macosx/diskback.png ./Exult-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/DS_Store ./Exult-snapshot/.DS_Store
 	ln -s /Applications "./Exult-snapshot/Drag'n'drop here"
-	#echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Exult-snapshot/Git $(REVISION).url"
+	echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Exult-snapshot/Git $(REVISION).url"
 	SetFile -a V ./Exult-snapshot/.DS_Store
 	SetFile -a V ./Exult-snapshot/images
 	SetFile -t ttro -c ttxt ./Exult-snapshot/Authors
@@ -82,7 +82,7 @@ studiodmg:
 	cp $(srcdir)/macosx/diskback.png ./Studio-snapshot/images/diskback.png
 	cp $(srcdir)/macosx/exult_studio_DS_Store ./Studio-snapshot/.DS_Store
 	ln -s /Applications "./Studio-snapshot/Drag'n'drop here"
-	#echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Studio-snapshot/Git $(REVISION).url"
+	echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Studio-snapshot/Git $(REVISION).url"
 	SetFile -a V ./Studio-snapshot/.DS_Store
 	SetFile -a V ./Studio-snapshot/images
 	SetFile -t ttro -c ttxt ./Studio-snapshot/Authors
