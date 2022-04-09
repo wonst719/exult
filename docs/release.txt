@@ -8,16 +8,21 @@ Exult Release Checklist
         (FILEVERSION, PRODUCTVERSION, "FileVersion" and "ProductVersion")
   - win32/exult.exe.manifest, win32/exult_studio.exe.manifest
         (version)
-  - msvcstuff\msvc_kludges.h, msvc9\msvc_kludges.h
+  - win32/exult_installer.iss, win32/exult_studio_installer.iss, win32/exult_tools_installer.iss
+        (AppVerName, VersionInfoVersion)
+  - msvcstuff/vs2019/msvc_include.h
         (VERSION)
   - ios/includes/config.h
         (PACKAGE_STRING, PACKAGE_VERSION, VERSION)
+  - ios/info.plist
+        (CFBundleShortVersionString)
 
-* make sure the Windows installer doesn't refer to a Git snapshot
-  - win32/exult_installer.iss (AppVerName)
+* make sure the Windows installers doesn't refer to a Git snapshot
+  - win32/exult_installer.iss, win32/exult_studio_installer.iss, win32/exult_tools_installer.iss
+        (AppVerName)
   
 * make sure the osxdmg and clean-local target doesn't refer to a Git snapshot
-  - makefile.am (-volname "...", dmg filename)
+  - macosx/macosx.am (-volname "...", dmg filename)
 
 * update NEWS; make sure version and date are correct
 
@@ -25,6 +30,7 @@ Exult Release Checklist
   - version dialog in ActionAbout (keyactions.cc)
   - Info.plist.in
   - win32/exultico.rc, win32/exultstudioico.rc
+  - macosx/exult_studio_info.plist.in
 
 * documentation: make sure the readme/faq packaged are up to date
   - version numbers
@@ -40,4 +46,4 @@ Exult Release Checklist
 * make sure "make dist" produces a tarball from which you can
   succesfully build, install and run Exult
 
-* tag SVN
+* tag git
