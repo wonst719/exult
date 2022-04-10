@@ -94,12 +94,12 @@ case "$host_os" in
 		SYSLIBS="-lsocket -lX11"
 		;;
 	darwin*)
-		dnl We have a problem here: both Mac OS X and Darwin report 
+		dnl We have a problem here: both Mac OS X and Darwin report
 		dnl the same signature "powerpc-apple-darwin*" - so we have
 		dnl to do more to distinguish them. Plain Darwin will propably
 		dnl use X-Windows; and it is of course lacking Cocoa. For
 		dnl now I am lazy and do not add proper detection code.
-		
+
 		WINDOWING_SYSTEM="-DMACOSX"
 		AC_DEFINE(MACOSX, 1, [Using MacOSX])
 		AC_MSG_RESULT([Mac OS X])
@@ -565,7 +565,7 @@ if test x$enable_exult_studio_support = xyes ; then
 		fi
 	fi
 
-	# due to bug 2129731 and 3139441 some Linux distributions need -lX11 explicitly set 
+	# due to bug 2129731 and 3139441 some Linux distributions need -lX11 explicitly set
 	# when enabling Exult Studio support or linking fails
 	if test "$WINDOWING_SYSTEM" = -DXWIN ; then
 		SYSLIBS="$SYSLIBS -lX11"
@@ -768,7 +768,7 @@ case "${enable_sanitizers}" in
 	address|thread|memory|undefined|dataflow|safe-stack)
 		AC_MSG_RESULT($enable_sanitizers)
 		CHK_SAN="-fsanitize=$enable_sanitizers"
-	;;	
+	;;
 	*)
 		AC_MSG_RESULT(invalid)
 		echo "Invalid option given for --with-sanitizers: $enable_sanitizers."
@@ -995,40 +995,26 @@ AC_MSG_CHECKING([whether to build the GIMP plugin])
 if test x$enable_gimp_plugin = xyes; then
 	AC_MSG_RESULT(yes)
 	AC_MSG_CHECKING([for gimptool])
-	AC_CHECK_PROGS(GIMPTOOL, gimptool-2.0 gimptool-1.3 gimptool-1.2 gimptool)
+	AC_CHECK_PROGS(GIMPTOOL, gimptool-2.0)
 	if test -z "$GIMPTOOL"; then
 		AC_MSG_RESULT([no, not building GIMP plugin])
 	else
 		AC_MSG_CHECKING([for GIMP version])
 		gimp_version=`$GIMPTOOL --version | awk 'BEGIN { FS = "."; } { print $1 * 1000 + $2*100+$3;}'`
-		if test "$gimp_version" -ge 1312; then
-			AC_MSG_RESULT([found >= 1.3.12])
+		if test "$gimp_version" -ge 2800; then
+			AC_MSG_RESULT([found >= 2.8.0])
 			AC_SUBST(GIMPTOOL)
 			AM_CONDITIONAL(GIMP_PLUGIN, true)
 			GIMP_PLUGIN_PREFIX=`$GIMPTOOL --gimpplugindir`
 			GIMP_PLUGIN_PREFIX="$GIMP_PLUGIN_PREFIX/plug-ins"
 			AC_SUBST(GIMP_PLUGIN_PREFIX)
 			AC_DEFINE(HAVE_GIMP, 1, [Have GIMP])
-			GIMP_INCLUDES=`$GIMPTOOL --cflags`
-			GIMP_LIBS=`$GIMPTOOL --libs`
-			AC_SUBST(GIMP_INCLUDES)
-			AC_SUBST(GIMP_LIBS)
-		elif test "$gimp_version" -ge 1200 -a \
-				"$gimp_version" -lt 1300; then
-			AC_MSG_RESULT([found 1.2.x])
-			AC_SUBST(GIMPTOOL)
-			AM_CONDITIONAL(GIMP_PLUGIN, true)
-			GIMP_PLUGIN_PREFIX=`$GIMPTOOL --gimpplugindir`
-			GIMP_PLUGIN_PREFIX="$GIMP_PLUGIN_PREFIX/plug-ins"
-			AC_SUBST(GIMP_PLUGIN_PREFIX)
-			AC_DEFINE(HAVE_GIMP, 1, [Have GIMP])
-			AC_DEFINE(HAVE_GIMP_1_2, 1, [Have GIMP 1.2.x])
-			GIMP_INCLUDES=`$GIMPTOOL --cflags`
-			GIMP_LIBS=`$GIMPTOOL --libs`
+			GIMP_INCLUDES=`$PKG_CONFIG --cflags gimpui-2.0 gtk+-2.0`
+			GIMP_LIBS=`$PKG_CONFIG --libs gimpui-2.0 gtk+-2.0`
 			AC_SUBST(GIMP_INCLUDES)
 			AC_SUBST(GIMP_LIBS)
 		else
-			AC_MSG_RESULT([found < 1.2.00 - disabling plugin])
+			AC_MSG_RESULT([found < 2.8.00 - disabling plugin])
 		fi
 	fi
 else
@@ -1152,7 +1138,7 @@ fi
 if test x$have_gdk_pixbuf = xyes; then
 echo GDK-Pixbuf................. : `$PKG_CONFIG --modversion gdk-pixbuf-2.0`
 fi
-echo 
+echo
 echo Build tools................ : $enable_tools
 echo Build usecode compiler..... : $enable_compiler
 echo Build Exult mods........... : $enable_mods
