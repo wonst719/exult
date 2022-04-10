@@ -1,6 +1,6 @@
-AM_CPPFLAGS = -I$(srcdir)/../headers -I$(srcdir)/.. -I$(srcdir)/../files \
-	-I$(srcdir)/../imagewin -I$(srcdir)/../audio -I$(srcdir)/../shapes/shapeinf \
-	-I$(srcdir)/../data -I$(srcdir)/../usecode -I$(srcdir)/../objs \
+AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir) -I$(top_srcdir)/files \
+	-I$(top_srcdir)/imagewin -I$(top_srcdir)/audio -I$(top_srcdir)/shapes/shapeinf \
+	-I$(top_srcdir)/data -I$(top_srcdir)/usecode -I$(top_srcdir)/objs \
 	$(SDL_CFLAGS) $(FREETYPE2_INCLUDES) \
 	$(INCDIRS) $(WINDOWING_SYSTEM) $(DEBUG_FLAGS) $(CPPFLAGS)
 
@@ -35,4 +35,3 @@ libshapes_la_SOURCES = \
 	vgafile.h
 
 CLEANFILES = *~
-

@@ -1,6 +1,6 @@
-AM_CPPFLAGS = -I$(srcdir)/../headers -I$(srcdir)/.. -I$(srcdir)/../files \
-	-I$(srcdir)/../objs -I$(srcdir)/../imagewin -I$(srcdir)/../shapes \
-	-I$(srcdir)/../usecode -I$(srcdir)/../gumps \
+AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir) -I$(top_srcdir)/files \
+	-I$(top_srcdir)/objs -I$(top_srcdir)/imagewin -I$(top_srcdir)/shapes \
+	-I$(top_srcdir)/usecode -I$(top_srcdir)/gumps \
 	$(SDL_CFLAGS) $(INCDIRS) $(WINDOWING_SYSTEM) $(DEBUG_FLAGS) $(CPPFLAGS)
 
 noinst_LTLIBRARIES = libserver.la

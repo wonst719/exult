@@ -1,5 +1,5 @@
-AM_CPPFLAGS = -I$(srcdir)/../../headers -I$(srcdir)/include -I$(srcdir)/../../conf -I$(srcdir)/../.. \
-        -I$(srcdir)/../../.. -I$(srcdir)/.. $(INCDIRS) $(DEBUG_FLAGS) \
+AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir)/usecode/ucxt/include -I$(top_srcdir)/conf -I$(top_srcdir) \
+        -I$(top_srcdir)/usecode $(INCDIRS) $(DEBUG_FLAGS) \
         $(CPPFLAGS) -DEXULT_DATADIR=\"$(EXULT_DATADIR)\" $(WARNINGS)
 
 if BUILD_TOOLS

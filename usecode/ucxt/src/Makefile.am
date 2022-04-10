@@ -1,5 +1,5 @@
-AM_CPPFLAGS = -I$(srcdir)/../../../headers -I$(srcdir)/../include -I$(srcdir)/../../../conf -I$(srcdir)/../.. \
-	-I$(srcdir)/../../../usecode -I$(srcdir)/../../.. $(INCDIRS) $(DEBUG_FLAGS) $(CPPFLAGS) \
+AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir)/usecode/ucxt/include -I$(top_srcdir)/conf \
+	-I$(top_srcdir)/usecode -I$(top_srcdir) $(INCDIRS) $(DEBUG_FLAGS) $(CPPFLAGS) \
 	-DEXULT_DATADIR=\"$(EXULT_DATADIR)\" $(WARNINGS)
 
 ucxt_SOURCES = \
@@ -16,8 +16,6 @@ ucxt_LDADD = \
 	../../../usecode/libusecode.la \
 	$(ZLIB_LIBS) \
 	$(SYSLIBS)
-	
-
 
 if BUILD_TOOLS
 bin_PROGRAMS = ucxt
