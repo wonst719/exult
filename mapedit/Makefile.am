@@ -18,12 +18,15 @@ endif
 
 u7shp_SOURCES = u7shp.cc
 
-u7shp_CFLAGS = -I$(top_srcdir) -I$(top_srcdir)/headers -I$(top_srcdir)/shapes -I$(top_srcdir)/imagewin -I$(top_srcdir)/files $(DEBUG_FLAGS) $(CPPFLAGS)
+u7shp_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/files -I$(top_srcdir)/headers \
+	-I$(top_srcdir)/shapes -I$(top_srcdir)/imagewin -I$(top_srcdir)/files \
+	$(GIMP_INCLUDES) $(GTK_CFLAGS) $(INCDIRS) $(DEBUG_FLAGS) $(CPPFLAGS) -DHAVE_CONFIG_H
 
 u7shp_LDADD = \
 	../imagewin/libimagewin.la	\
 	../shapes/libshapes.la \
-	../files/libu7file.la
+	../files/libu7file.la \
+	$(GIMP_LIBS)
 
 exult_studio_SOURCES = \
 	bargeedit.cc \
@@ -88,9 +91,6 @@ mapedit_DATA = exult_studio.glade
 else
 mapedit_DATA =
 endif
-
-u7shp$(EXEEXT): u7shp.cc $(top_builddir)/config.h
-	CFLAGS="-O2 -DHAVE_CONFIG_H $(u7shp_CFLAGS)" $(GIMPTOOL) --build $<
 
 EXTRA_DIST=	\
 	gimpwin32.txt \
