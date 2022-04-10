@@ -1000,8 +1000,8 @@ if test x$enable_gimp_plugin = xyes; then
 		AC_MSG_RESULT([no, not building GIMP plugin])
 	else
 		AC_MSG_CHECKING([for GIMP version])
-		gimp_version=`$GIMPTOOL --version | awk 'BEGIN { FS = "."; } { print $1 * 1000 + $2*100+$3;}'`
-		if test "$gimp_version" -ge 2800; then
+		gimp_version=`$GIMPTOOL --version | awk 'BEGIN { FS = "."; } { print $1 * 10000 + $2 * 100 + $3;}'`
+		if test "$gimp_version" -ge 20800; then
 			AC_MSG_RESULT([found >= 2.8.0])
 			AC_SUBST(GIMPTOOL)
 			AM_CONDITIONAL(GIMP_PLUGIN, true)
