@@ -1,9 +1,9 @@
-AM_CPPFLAGS = -I$(srcdir)/../../../headers -I$(srcdir)/../../../conf \
-			-I$(srcdir)/../../.. -I$(srcdir)/../.. -I$(srcdir)/.. \
-			-I$(srcdir)/../../../files -I$(srcdir)/../../../imagewin \
-			-I$(srcdir)/../../../shapes \
+AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir)/conf \
+			-I$(top_srcdir) -I$(top_srcdir)/audio -I$(top_srcdir)/audio/midi_drivers \
+			-I$(top_srcdir)/files -I$(top_srcdir)/imagewin \
+			-I$(top_srcdir)/shapes \
 			$(SDL_CFLAGS) $(INCDIRS) $(WINDOWING_SYSTEM) \
-			$(DEBUG_FLAGS) $(CPPFLAGS) -I../../../conf -I../../../files
+			$(DEBUG_FLAGS) $(CPPFLAGS)
 
 noinst_LTLIBRARIES = libtimidity.la
 

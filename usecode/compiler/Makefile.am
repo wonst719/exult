@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I$(srcdir)/../../headers -I$(srcdir)/.. -I$(srcdir)/../../files -I$(srcdir)/../.. \
+AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir)/usecode -I$(top_srcdir)/files -I$(top_srcdir) \
 	$(INCDIRS) $(DEBUG_FLAGS) $(CPPFLAGS)
 
 AM_YFLAGS = -d -v				# Want ucparse.h.

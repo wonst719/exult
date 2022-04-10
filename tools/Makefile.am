@@ -1,6 +1,6 @@
-AM_CPPFLAGS = -I$(srcdir)/../headers -I$(srcdir)/../files -I$(srcdir)/../usecode \
-	-I$(srcdir)/.. -I$(srcdir)/../shapes -I$(srcdir)/../imagewin \
-	-I$(srcdir)/../conf $(DEBUG_FLAGS) $(CPPFLAGS) $(SDL_CFLAGS) \
+AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir)/files -I$(top_srcdir)/usecode \
+	-I$(top_srcdir) -I$(top_srcdir)/shapes -I$(top_srcdir)/imagewin \
+	-I$(top_srcdir)/conf $(DEBUG_FLAGS) $(CPPFLAGS) $(SDL_CFLAGS) \
 	$(GDK_PIXBUF_CFLAGS)
 
 if HAVE_PNG

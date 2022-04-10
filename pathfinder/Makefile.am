@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I$(srcdir)/.. -I$(srcdir)/../headers -I$(srcdir)/../objs $(SDL_CFLAGS) $(INCDIRS) \
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/headers -I$(top_srcdir)/objs $(SDL_CFLAGS) $(INCDIRS) \
 		$(WINDOWING_SYSTEM) $(DEBUG_FLAGS) $(CPPFLAGS)
 
 noinst_LTLIBRARIES = libpathfinder.la
