@@ -27,9 +27,22 @@
 #include <vector>
 
 #ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif  // __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#	if !defined(__llvm__) && !defined(__clang__)
+#		pragma GCC diagnostic ignored "-Wuseless-cast"
+#	else
+#		pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#	endif
+#endif    // __GNUC__
+#ifdef USE_STRICT_GTK
+#	define GTK_DISABLE_SINGLE_INCLUDES
+#	define GSEAL_ENABLE
+#	define GNOME_DISABLE_DEPRECATED
+#	define GTK_DISABLE_DEPRECATED
+#	define GDK_DISABLE_DEPRECATED
+#endif    // USE_STRICT_GTK
 #include <gtk/gtk.h>
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
