@@ -73,7 +73,6 @@ To build Exult, you must install the following:
             mingw-w64-${MSYSTEM_CARCH}-libogg \
             mingw-w64-${MSYSTEM_CARCH}-libvorbis \
             mingw-w64-${MSYSTEM_CARCH}-munt-mt32emu \
-            mingw-w64-${MSYSTEM_CARCH}-munt-libpng \
             mingw-w64-${MSYSTEM_CARCH}-libpng \
             mingw-w64-${MSYSTEM_CARCH}-zlib
 
