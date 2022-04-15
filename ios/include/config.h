@@ -10,13 +10,13 @@
 #define PACKAGE_TARNAME "exult"
 
 /* Package Version */
-#define VERSION "1.7.0git-iOS"
+#define VERSION "1.9.0git"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.7.0git-iOS"
+#define PACKAGE_VERSION "1.9.0git"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Exult 1.7.0git-iOS"
+#define PACKAGE_STRING "Exult 1.9.0git"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL "http://exult.info/"
