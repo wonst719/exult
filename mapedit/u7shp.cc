@@ -38,12 +38,21 @@
 #		pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #	endif
 #endif    // __GNUC__
+#ifdef USE_STRICT_GTK
+#	define GTK_DISABLE_SINGLE_INCLUDES
+#	define GSEAL_ENABLE
+#	define GNOME_DISABLE_DEPRECATED
+#	define GTK_DISABLE_DEPRECATED
+#	define GDK_DISABLE_DEPRECATED
+#endif    // USE_STRICT_GTK
 #include <gtk/gtk.h>
 #include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif  // __GNUC__
+
+#include "gtk_redefines.h"
 
 /* Declare some local functions.
  */
@@ -286,42 +295,26 @@ static void load_palette(const std::string& filename) {
 	}
 }
 
-static void file_sel_delete(GtkWidget *widget, GtkWidget **file_sel) {
-	ignore_unused_variable_warning(widget);
-	gtk_widget_destroy(*file_sel);
-	*file_sel = nullptr;
-}
-
-static void file_selected(GtkWidget *widget, gboolean *selected) {
-	ignore_unused_variable_warning(widget);
-	*selected = TRUE;
-}
-
 std::string file_select(const gchar *title) {
-	GtkWidget *file_sel = gtk_file_selection_new(title);
-	gtk_window_set_modal(GTK_WINDOW(file_sel), TRUE);
-
-	gtk_signal_connect(GTK_OBJECT(file_sel), "destroy", GTK_SIGNAL_FUNC(file_sel_delete), &file_sel);
-	gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(file_sel)->cancel_button), "clicked", GTK_SIGNAL_FUNC(file_sel_delete), &file_sel);
-
-	gboolean selected = FALSE;
-	gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(file_sel)->ok_button), "clicked", GTK_SIGNAL_FUNC(file_selected), &selected);
-
-	gtk_widget_show(file_sel);
-
-	while (!selected && file_sel) {
-		gtk_main_iteration();
+	GtkFileChooser *fsel = GTK_FILE_CHOOSER(gtk_file_chooser_dialog_new(
+	        title, nullptr, GTK_FILE_CHOOSER_ACTION_OPEN,
+	        "_Cancel", GTK_RESPONSE_CANCEL,
+	        "_Open", GTK_RESPONSE_ACCEPT,
+	        nullptr));
+	GtkWidget *btn = gtk_dialog_get_widget_for_response(GTK_DIALOG(fsel), GTK_RESPONSE_CANCEL);
+	GtkWidget *img = gtk_image_new_from_icon_name("gtk-cancel", GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image(GTK_BUTTON(btn), img);
+	btn = gtk_dialog_get_widget_for_response(GTK_DIALOG(fsel), GTK_RESPONSE_ACCEPT);
+	img = gtk_image_new_from_icon_name("document-open", GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image(GTK_BUTTON(btn), img);
+	gtk_window_set_modal(GTK_WINDOW(fsel), true);
+	if (gtk_dialog_run(GTK_DIALOG(fsel)) == GTK_RESPONSE_ACCEPT) {
+		std::string filename(gtk_file_chooser_get_filename(fsel));
+		return filename;
 	}
-
-	/* canceled or window was closed */
-	if (!selected) {
+	else {
 		return "";
 	}
-
-	/* ok */
-	std::string filename(gtk_file_selection_get_filename(GTK_FILE_SELECTION(file_sel)));
-	gtk_widget_destroy(file_sel);
-	return filename;
 }
 
 static void choose_palette() {

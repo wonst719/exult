@@ -90,7 +90,7 @@ static bool save_image(SDL_Surface* surface, SDL_RWops* dst, int guardband) {
 
 	/* err_ptr, err_fn, warn_fn */
 	png_ptr = png_create_write_struct(
-	    PNG_LIBPNG_VER_STRING, NULL, png_error_SDL, NULL);
+	    PNG_LIBPNG_VER_STRING, nullptr, png_error_SDL, nullptr);
 	if (!png_ptr) {
 		SDL_SetError("Unable to png_create_write_struct on %s\n",
 		             PNG_LIBPNG_VER_STRING);
@@ -99,7 +99,7 @@ static bool save_image(SDL_Surface* surface, SDL_RWops* dst, int guardband) {
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr) {
 		SDL_SetError("Unable to png_create_info_struct\n");
-		png_destroy_write_struct(&png_ptr, NULL);
+		png_destroy_write_struct(&png_ptr, nullptr);
 		return false;
 	}
 	/* All other errors, see also "png_error_SDL" */
@@ -110,7 +110,7 @@ static bool save_image(SDL_Surface* surface, SDL_RWops* dst, int guardband) {
 
 	/* Setup our RWops writer */
 	/* w_ptr, write_fn, flush_fn */
-	png_set_write_fn(png_ptr, dst, png_write_SDL, NULL);
+	png_set_write_fn(png_ptr, dst, png_write_SDL, nullptr);
 
 	/* Prepare chunks */
 	colortype = PNG_COLOR_MASK_COLOR;
