@@ -244,6 +244,17 @@ else
 fi
 
 # ---------------------------------------------------------------------
+# Build Exult as a library?
+# ---------------------------------------------------------------------
+
+AC_ARG_ENABLE(libexult, AS_HELP_STRING([--enable-libexult], [Build Exult as a library @<:@default no@:>@]),,enable_libexult=no)
+if test x$enable_libexult = xno; then
+	AM_CONDITIONAL(BUILD_LIBEXULT, false)
+else
+	AM_CONDITIONAL(BUILD_LIBEXULT, true)
+fi
+
+# ---------------------------------------------------------------------
 # Statically link libraries?
 # ---------------------------------------------------------------------
 

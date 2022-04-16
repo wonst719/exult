@@ -20,14 +20,7 @@ SUBDIRS =  files conf data shapes imagewin pathfinder \
 	gamemgr flic usecode tools audio gumps objs server \
 	mapedit desktop docs $(MODSDIR)
 
-bin_PROGRAMS = exult
-if SDL_MAIN_NEEDED
-exult_SOURCES = sdl_main.cc
-else
-exult_SOURCES =
-endif
-
-exult_SOURCES +=	\
+EXULTSOURCES =	\
 	actions.cc	\
 	actions.h	\
 	actorio.cc	\
@@ -137,12 +130,35 @@ EXULTLIBS = \
 	files/sha1/libsha1.la \
 	files/zip/libminizip.la
 
-exult_LDADD = \
-	$(EXULTLIBS) $(PNG_LIBS) \
+EXULTLIBADD = \
+	$(EXULTLIBS) $(PNG_LIBS) $(FREETYPE2_LIBS) \
 	$(SDL_LIBS) $(SYSLIBS) $(x_libraries) $(ICON_FILE) \
 	$(ZLIB_LIBS) $(VORBIS_LIBS) $(VORBISFILE_LIBS) $(OGG_LIBS) $(MT32EMU_LIBS) $(FLUIDSYNTH_LIBS) $(ALSA_LIBS)
 
-exult_DEPENDENCIES = $(ICON_FILE) $(EXULTLIBS)
+EXULTDEPENDENCIES = $(ICON_FILE) $(EXULTLIBS)
+
+# If we've been asked to build exult as a library...
+if BUILD_LIBEXULT
+lib_LTLIBRARIES = libexult.la
+libexult_la_SOURCES = $(EXULTSOURCES)
+libexult_la_LIBADD = $(EXULTLIBADD)
+libexult_la_DEPENDENCIES = $(EXULTDEPENDENCIES)
+libexult_la_LDFLAGS=-release $(PACKAGE_VERSION)
+
+# Otherwise we must be building an executable
+else # !BUILD_LIBEXULT
+bin_PROGRAMS = exult
+exult_SOURCES = $(EXULTSOURCES)
+exult_LDADD = $(EXULTLIBADD)
+exult_DEPENDENCIES = $(EXULTDEPENDENCIES)
+if SDL_MAIN_NEEDED
+exult_SOURCES += sdl_main.cc
+endif
+
+# Workaround for automake issue with using the same sources for both a library and an executable.
+# See https://www.gnu.org/software/automake/manual/html_node/Objects-created-both-with-libtool-and-without.html
+exult_CPPFLAGS = $(AM_CPPFLAGS)
+endif
 
 EXTRA_DIST = 	\
 	autogen.sh \
