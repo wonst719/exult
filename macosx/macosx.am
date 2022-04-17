@@ -38,9 +38,12 @@ if WITH_OSX_CODE_SIGNATURE
 	codesign --options runtime --timestamp -f -s "$(OSX_CODE_SIGNATURE)" $(studio_name)/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.so
 endif
 
+# Don't try to build/install the MacOS bundle if we are building libexult
+if !BUILD_LIBEXULT
 install-exec-local: bundle
 	mkdir -p $(DESTDIR)/Applications/
 	cp -r $(bundle_name) $(DESTDIR)/Applications/
+endif
 
 osxdmg: bundle
 	mkdir -p Exult-snapshot
