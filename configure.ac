@@ -1123,13 +1123,31 @@ echo
 echo Exult v$VERSION
 echo
 echo SDL........................ : `$SDL_CONFIG --version`
-echo Ogg.........................: `$PKG_CONFIG --modversion ogg`
-echo Vorbis......................: `$PKG_CONFIG --modversion vorbis`
+if test "x$PKG_CONFIG" != "x"; then	
+	PKG_CHECK_EXISTS(ogg,
+		echo Ogg.........................: `$PKG_CONFIG --modversion ogg`)
+fi
+if test "x$PKG_CONFIG" != "x"; then	
+	PKG_CHECK_EXISTS(vorbis,
+		echo Vorbis......................: `$PKG_CONFIG --modversion vorbis`)
+fi
+if test x$ac_cv_header_png_h = xyes; then
+	if test "x$PKG_CONFIG" != "x"; then
+		PKG_CHECK_EXISTS(libpng, 
+			echo libpng..................... : `$PKG_CONFIG --modversion libpng`)
+	fi
+fi
 if test x$enable_mt32emu = xyes; then
-echo MT32emu.................... : `$PKG_CONFIG --modversion mt32emu`
+	if test "x$PKG_CONFIG" != "x"; then	
+		PKG_CHECK_EXISTS(mt32emu,
+			echo MT32emu.................... : `$PKG_CONFIG --modversion mt32emu`)
+	fi
 fi
 if test x$enable_fluidsynth = xyes; then
-echo Fluidsynth................. : `$PKG_CONFIG --modversion fluidsynth`
+	if test "x$PKG_CONFIG" != "x"; then	
+		PKG_CHECK_EXISTS(fluidsynth, 
+			echo Fluidsynth................. : `$PKG_CONFIG --modversion fluidsynth`)
+	fi
 fi
 if test x$have_gtk = xyes; then
 echo GLIB....................... : `$PKG_CONFIG --modversion glib-2.0`
