@@ -42,7 +42,7 @@ AC_DEFUN([EXULT_CHECK_SDL],[
 
   REQ_MAJOR=2
   REQ_MINOR=0
-  REQ_PATCHLEVEL=6
+  REQ_PATCHLEVEL=10
   REQ_VERSION=$REQ_MAJOR.$REQ_MINOR.$REQ_PATCHLEVEL
 
   AC_MSG_CHECKING([for SDL - version >= $REQ_VERSION])
@@ -69,7 +69,7 @@ AC_DEFUN([EXULT_CHECK_SDL],[
 
   if test x$exult_sdlok = xyes ; then
 
-    if test ! \( \( $sdl_major_version -gt $REQ_MAJOR \) -o \( \( $sdl_major_version -eq $REQ_MAJOR \) -a \( \( $sdl_minor_version -gt $REQ_MINOR \) -o \( \( $sdl_minor_version -eq $REQ_MINOR \) -a \( $sdl_patchlevel -gt $REQ_PATCHLEVEL \) \) \) \) \); then
+    if test ! \( \( $sdl_major_version -gt $REQ_MAJOR \) -o \( \( $sdl_major_version -eq $REQ_MAJOR \) -a \( \( $sdl_minor_version -gt $REQ_MINOR \) -o \( \( $sdl_minor_version -eq $REQ_MINOR \) -a \( $sdl_patchlevel -ge $REQ_PATCHLEVEL \) \) \) \) \); then
       exult_sdlok="no, version < $REQ_VERSION found"
     else
       AC_COMPILE_IFELSE([AC_LANG_SOURCE([[

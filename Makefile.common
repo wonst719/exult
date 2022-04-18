@@ -13,6 +13,9 @@ MAIN_OBJS:=actions.o \
 	effects.o \
 	exult.o \
 	exultmenu.o \
+	files/sdlrwopsstreambuf.o \
+	files/sdlrwopsistream.o \
+	files/sdlrwopsostream.o \
 	game.o \
 	gameclk.o \
 	gamedat.o \
