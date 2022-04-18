@@ -151,9 +151,6 @@ bin_PROGRAMS = exult
 exult_SOURCES = $(EXULTSOURCES)
 exult_LDADD = $(EXULTLIBADD)
 exult_DEPENDENCIES = $(EXULTDEPENDENCIES)
-if SDL_MAIN_NEEDED
-exult_SOURCES += sdl_main.cc
-endif
 
 # Workaround for automake issue with using the same sources for both a library and an executable.
 # See https://www.gnu.org/software/automake/manual/html_node/Objects-created-both-with-libtool-and-without.html
