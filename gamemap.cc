@@ -76,7 +76,7 @@ using std::vector;
 using std::pair;
 
 vector<Chunk_terrain *> *Game_map::chunk_terrains = nullptr;
-std::ifstream *Game_map::chunks = nullptr;
+std::unique_ptr<std::istream> Game_map::chunks;
 bool Game_map::v2_chunks = false;
 bool Game_map::read_all_terrain = false;
 bool Game_map::chunk_terrains_modified = false;
@@ -141,7 +141,6 @@ Game_map::Game_map(
 Game_map::~Game_map(
 ) {
 	clear();            // Delete all objects, chunks.
-	delete chunks;
 }
 
 /*
@@ -150,25 +149,25 @@ Game_map::~Game_map(
 
 void Game_map::init_chunks(
 ) {
-	delete chunks;
-	chunks = new ifstream;
 	int num_chunk_terrains;
 	bool patch_exists = is_system_path_defined("<PATCH>");
 	if (patch_exists && U7exists(PATCH_U7CHUNKS))
-		U7open(*chunks, PATCH_U7CHUNKS);
+		chunks = U7open_in(PATCH_U7CHUNKS);
 	else try {
-			U7open(*chunks, U7CHUNKS);
+			chunks = U7open_in(U7CHUNKS);
 		} catch (const file_exception &) {
 			if (!Game::is_editing() ||  // Ok if map-editing.
 			        !patch_exists)  // But only if patch exists.
 				throw;
-			ofstream ochunks;   // Create one in 'patch'.
-			U7open(ochunks, PATCH_U7CHUNKS);
+			auto pOchunks = U7open_out(PATCH_U7CHUNKS);   // Create one in 'patch'.
+			if (!pOchunks)
+				throw file_write_exception(PATCH_U7CHUNKS);
+			auto& ochunks = *pOchunks;
 			ochunks.write(v2hdr, sizeof(v2hdr));
 			unsigned char buf[16 * 16 * 3]{};
 			ochunks.write(reinterpret_cast<char *>(buf), sizeof(buf));
-			ochunks.close();
-			U7open(*chunks, PATCH_U7CHUNKS);
+			pOchunks.reset();
+			chunks = U7open_in(PATCH_U7CHUNKS);
 		}
 	char v2buf[V2_CHUNK_HDR_SIZE];  // Check for V2.
 	chunks->read(v2buf, sizeof(v2buf));
@@ -201,19 +200,22 @@ void Game_map::init(
 	if (num == 0)
 		init_chunks();
 	map_modified = false;
-	std::ifstream u7map;        // Read in map.
+	std::unique_ptr<std::istream> pU7map;        // Read in map.
 	bool nomap = false;
 	if (is_system_path_defined("<PATCH>") &&
 	        U7exists(get_mapped_name(PATCH_U7MAP, fname)))
-		U7open(u7map, fname);
+		pU7map = U7open_in(fname);
 	else try {
-			U7open(u7map, get_mapped_name(U7MAP, fname));
+			pU7map = U7open_in(get_mapped_name(U7MAP, fname));
 		} catch (const file_exception & /*f*/) {
 			if (!Game::is_editing())    // Ok if map-editing.
 				cerr << "Map file '" << fname << "' not found." <<
 				     endl;
 			nomap = true;
 		}
+	if (!pU7map)
+		nomap = true;
+	auto& u7map = *pU7map;
 	for (int schunk = 0; schunk < c_num_schunks * c_num_schunks; schunk++) {
 		// Read in the chunk #'s.
 		unsigned char buf[16 * 16 * 2];
@@ -229,7 +231,6 @@ void Game_map::init(
 			for (int cx = 0; cx < 16; cx++)
 				terrain_map[scx + cx][scy + cy] = Read2(mapdata);
 	}
-	u7map.close();
 	// Clear object lists, flags.
 	for (auto& row : objects) {
 		for (auto& obj : row) {
@@ -257,8 +258,7 @@ void Game_map::clear_chunks(
 		delete chunk_terrains;
 		chunk_terrains = nullptr;
 	}
-	delete chunks;          // Close 'u7chunks'.
-	chunks = nullptr;
+	chunks.reset();		 // Close 'u7chunks'.
 	read_all_terrain = false;
 }
 
@@ -443,9 +443,12 @@ void Game_map::write_chunk_terrains(
 			break;
 	if (i < cnt) {          // Got to update.
 		get_all_terrain();  // IMPORTANT:  Get all in memory.
-		ofstream ochunks;   // Open file for chunks data.
+		// Open file for chunks data.
 		// This truncates the file.
-		U7open(ochunks, PATCH_U7CHUNKS);
+		auto pOchunks = U7open_out(PATCH_U7CHUNKS);
+		if (!pOchunks) 
+			throw file_write_exception(U7CHUNKS);
+		auto& ochunks = *pOchunks;
 		v2_chunks = New_shapes();
 		int nbytes = v2_chunks ? 3 : 2;
 		if (v2_chunks)
@@ -466,7 +469,6 @@ void Game_map::write_chunk_terrains(
 		}
 		if (!ochunks.good())
 			throw file_write_exception(U7CHUNKS);
-		ochunks.close();
 	}
 	chunk_terrains_modified = false;
 }
@@ -489,8 +491,11 @@ void Game_map::write_static(
 			write_ifix_objects(schunk);
 	if (chunk_terrains_modified)
 		write_chunk_terrains();
-	std::ofstream u7map;        // Write out map.
-	U7open(u7map, get_mapped_name(PATCH_U7MAP, fname));
+	// Write out map.
+	auto pU7map = U7open_out(get_mapped_name(PATCH_U7MAP, fname));
+	if (!pU7map)
+		throw file_write_exception(U7MAP);
+	auto& u7map = *pU7map;
 	for (schunk = 0; schunk < c_num_schunks * c_num_schunks; schunk++) {
 		int scy = 16 * (schunk / 12); // Get abs. chunk coords.
 		int scx = 16 * (schunk % 12);
@@ -504,7 +509,6 @@ void Game_map::write_static(
 	}
 	if (!u7map.good())
 		throw file_write_exception(U7MAP);
-	u7map.close();
 	map_modified = false;
 }
 
@@ -722,9 +726,9 @@ void Game_map::write_ireg(
 		if (schunk_cache[schunk] && schunk_cache_sizes[schunk] >= 0) {
 			// It's loaded in a memory buffer
 			char fname[128];        // Set up name.
-			ofstream ireg_stream;
-			U7open(ireg_stream, get_schunk_file_name(U7IREG, schunk, fname));
-			ireg_stream.write(schunk_cache[schunk], schunk_cache_sizes[schunk]);
+			auto ireg_stream = U7open_out(get_schunk_file_name(U7IREG, schunk, fname));
+			if (ireg_stream)
+				ireg_stream->write(schunk_cache[schunk], schunk_cache_sizes[schunk]);
 		} else if (schunk_read[schunk]) {
 			// It's active
 			write_ireg_objects(schunk);

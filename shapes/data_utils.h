@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sstream>
 #include <string>
 #include <vector>
+#include "exceptions.h"
 #include "exult_constants.h"
 #include "utils.h"
 #include "U7obj.h"
@@ -195,7 +196,7 @@ inline int Read_count(std::istream &in) {
  *  Write # entries of binary data file (with Exult extension).
  */
 inline void Write_count(
-    std::ofstream &out,
+    std::ostream &out,
     int cnt
 ) {
 	if (cnt >= 255) {
@@ -244,10 +245,11 @@ public:
 	void read(const char *fname, bool patch, Exult_Game game) {
 		if (!U7exists(fname))
 			return;
-		std::ifstream fin;
-		U7open(fin, fname);
+		auto pFin = U7open_in(fname);
+		if (!pFin)
+			return;
+		auto& fin = *pFin;
 		read_binary_internal(fin, patch, game);
-		fin.close();
 	}
 	// Binary resource file.
 	void read(Exult_Game game, int resource) {
@@ -520,11 +522,12 @@ static void Read_text_data_file(
 	} else {
 		try {
 			snprintf(buf, 50, "<STATIC>/%s.txt", fname);
-			std::ifstream in;
-			U7open(in, buf, false);
+			auto pIn = U7open_in(buf, false);
+			if (!pIn)
+				throw file_open_exception(buf);
+			auto& in = *pIn;
 			static_version = Read_text_msg_file_sections(in,
 			                 static_strings, sections, numsections);
-			in.close();
 		} catch (std::exception &e) {
 			if (!editing) {
 				for (int i = 0; i < numsections; i++)
@@ -537,11 +540,12 @@ static void Read_text_data_file(
 	patch_strings.resize(numsections);
 	snprintf(buf, 50, "<PATCH>/%s.txt", fname);
 	if (U7exists(buf)) {
-		std::ifstream in;
-		U7open(in, buf, false);
+		auto pIn = U7open_in(buf, false);
+		if (!pIn)
+		    throw file_open_exception(buf);
+		auto& in = *pIn;
 		patch_version = Read_text_msg_file_sections(in, patch_strings,
 		                sections, numsections);
-		in.close();
 	}
 	for (int i = 0; i < numsections; i++) {
 		parsers[i]->parse(static_strings[i], static_version, false, game);
@@ -592,13 +596,14 @@ public:
 	) {
 		if (cnt <= 0)   // Nothing to do.
 			return;
-		std::ofstream fout; // Open file.
-		U7open(fout, name);
+		auto pFout = U7open_out(name);
+		if (!pFout)
+			return;
+		auto& fout = *pFout;
 		if (version >= 0)   // container.dat has version #.
 			fout.put(version);
 		Write_count(fout, cnt); // Object count, with Exult extension.
 		write_data(fout, game);
-		fout.close();
 	}
 };
 
@@ -851,10 +856,12 @@ static void Write_text_data_file(
 			delete writers[i];
 		return;
 	}
-	std::ofstream out;
 	char buf[50];
 	snprintf(buf, 50, "<PATCH>/%s.txt", fname);
-	U7open(out, buf, true); // (It's a text file.)
+	auto pOut = U7open_out(buf, true); // (It's a text file.)
+	if (!pOut)
+		return;
+	auto& out = *pOut;
 	out << "#\tExult " << VERSION << " text message file."
 	    << "\tWritten by ExultStudio." << std::endl;
 	out << "%%section version" << std::endl
@@ -864,7 +871,6 @@ static void Write_text_data_file(
 		writers[i]->write_text(out, game);
 		delete writers[i];
 	}
-	out.close();
 }
 
 #endif

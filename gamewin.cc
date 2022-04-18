@@ -1270,26 +1270,29 @@ bool Game_window::init_gamedat(bool create) {
 			Game::set_new_game();
 			restore_gamedat(INITGAME);
 		}
-		ofstream out;
 		// Editing, and no IDENTITY?
 		if (Game::is_editing() && !U7exists(IDENTITY)) {
-			U7open(out, IDENTITY);
+			auto pOut = U7open_out(IDENTITY);
+			if (!pOut)
+				return false;
+			auto& out = *pOut;
 			out << Game::get_gametitle() << endl;
-			out.close();
 		}
 
 		// log version of exult that was used to start this game
-		U7open(out, GNEWGAMEVER);
-		getVersionInfo(out);
-		out.close();
+		auto out = U7open_out(GNEWGAMEVER);
+		if (out)
+			getVersionInfo(*out);
 	}
 	//++++Maybe just test for IDENTITY+++:
 	else if ((U7exists(U7NBUF_DAT) || !U7exists(NPC_DAT)) &&
 	         !Game::is_editing()) {
 		return false;
 	} else {
-		ifstream identity_file;
-		U7open(identity_file, IDENTITY);
+		auto pIdentity_file = U7open_in(IDENTITY);
+		if (!pIdentity_file)
+		    return false;
+		auto& identity_file = *pIdentity_file;
 		char gamedat_identity[256];
 		identity_file.read(gamedat_identity, 256);
 		char *ptr = gamedat_identity;
@@ -1506,10 +1509,11 @@ void Game_window::reload_usecode(
 ) {
 	// Get custom usecode functions.
 	if (is_system_path_defined("<PATCH>") && U7exists(PATCH_USECODE)) {
-		ifstream file;
-		U7open(file, PATCH_USECODE);
+		auto pFile = U7open_in(PATCH_USECODE);
+		if (!pFile)
+			return;
+		auto& file = *pFile;
 		usecode->read_usecode(file, true);
-		file.close();
 	}
 }
 

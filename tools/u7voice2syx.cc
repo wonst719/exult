@@ -282,8 +282,11 @@ int main(int argc, char *argv[]) {
 				throw exult_exception("File size didn't match timbre count. Wont convert.");
 
 			std::cout << "Opening " << outname << " for writing..." << std::endl;
-			std::ofstream sysex_file;
-			U7open(sysex_file, outname, false);
+			auto pSysex_file = U7open_out(outname, false);
+			if (!pSysex_file) {
+				throw exult_exception(std::string("Failed to open ") + outname);
+			}
+			auto& sysex_file = *pSysex_file;
 
 			//
 			// All Dev Reset
@@ -425,9 +428,6 @@ int main(int argc, char *argv[]) {
 
 			// Write the 'real' Display
 			sysex_file.write(sysex_buffer, num_to_write);
-
-			// Close the file
-			sysex_file.close();
 
 		} catch (exult_exception &e) {
 			std::cerr << "Something went wrong: " << e.what() << std::endl;

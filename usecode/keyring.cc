@@ -31,36 +31,36 @@ using std::ifstream;
 using std::ofstream;
 
 void Keyring::read() {
-	ifstream in;
+	std::unique_ptr<std::istream> pIn;
 
 	// clear keyring first
 	keys.clear();
 
 	try {
-		U7open(in, KEYRINGDAT);
+		pIn = U7open_in(KEYRINGDAT);
 	} catch (exult_exception &/*e*/) {
 		// maybe an old savegame, just leave the keyring empty
 		return;
 	}
+	if (!pIn)
+		return;
+	auto& in = *pIn;
 
 	do {
 		int val = Read2(in);
 		if (in.good())
 			addkey(val);
 	} while (in.good());
-
-	in.close();
 }
 
 void Keyring::write() {
-	ofstream out;
-
-	U7open(out, KEYRINGDAT);
+	auto pOut = U7open_out(KEYRINGDAT);
+	if (!pOut)
+		throw file_open_exception(KEYRINGDAT);
+	auto& out = *pOut;
 
 	for (int key : keys)
 		Write2(out, key);
-
-	out.close();
 }
 
 void Keyring::clear() {
