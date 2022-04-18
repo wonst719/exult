@@ -312,8 +312,12 @@ void Usecode_browser::setup_list(
 ) {
 	ExultStudio *studio = ExultStudio::get_instance();
 	const char *ucfile = studio->get_text_entry("usecodes_file");
-	ifstream in;
-	U7open(in, ucfile);
+	auto pIn = U7open_in(ucfile);
+	if (!pIn) {
+		EStudio::Alert("Error opening '%s'.", ucfile);
+		return;
+	}
+	auto& in = *pIn;
 	Usecode_symbol_table symtbl;
 	if (!in.good()) {
 		EStudio::Alert("Error reading '%s'.", ucfile);

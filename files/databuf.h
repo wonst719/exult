@@ -162,7 +162,7 @@ public:
 		return ret;
 	}
 	bool good() const final {
-		return in->good();
+		return in && in->good();
 	}
 	void clear_error() final {
 		in->clear();
@@ -174,17 +174,20 @@ public:
  */
 
 class IFileDataSource : public IStreamDataSource {
-	std::ifstream fin;
+	std::unique_ptr<std::istream> pFin;
 
 public:
 	explicit IFileDataSource(const File_spec &spec, bool is_text = false)
-		: IStreamDataSource(&fin) {
+		: IStreamDataSource(nullptr) {
 		if (U7exists(spec.name)) {
-			U7open(fin, spec.name.c_str(), is_text);
+			pFin = U7open_in(spec.name.c_str(), is_text);
 		} else {
 			// Set fail bit
+			pFin = std::make_unique<std::ifstream>();
+			auto& fin = *pFin;
 			fin.seekg(0);
 		}
+		in = pFin.get();
 	}
 };
 
@@ -428,12 +431,13 @@ public:
  * File-based output data source which owns the stream.
  */
 class OFileDataSource : public OStreamDataSource {
-	std::ofstream fout;
+	std::unique_ptr<std::ostream> fout;
 
 public:
 	explicit OFileDataSource(const File_spec &spec, bool is_text = false)
-		: OStreamDataSource(&fout) {
-		U7open(fout, spec.name.c_str(), is_text);
+		: OStreamDataSource(nullptr) {
+		fout = U7open_out(spec.name.c_str(), is_text);
+		out = fout.get();
 	}
 };
 

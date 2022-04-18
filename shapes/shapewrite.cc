@@ -252,30 +252,38 @@ void Shapes_vga_file::write_info(
 
 	// ShapeDims
 	// Starts at 0x96'th shape.
-	ofstream shpdims;
-	U7open(shpdims, PATCH_SHPDIMS);
+	auto pShpdims = U7open_out(PATCH_SHPDIMS);
+	if (!pShpdims)
+		return;
+	auto& shpdims = *pShpdims;
 	for (size_t i = c_first_obj_shape; i < num_shapes; i++) {
 		shpdims.put(info[i].shpdims[0]);
 		shpdims.put(info[i].shpdims[1]);
 	}
 
 	// WGTVOL
-	ofstream wgtvol;
-	U7open(wgtvol, PATCH_WGTVOL);
+	auto pWgtvol = U7open_out(PATCH_WGTVOL);
+	if (!pWgtvol)
+		return;
+	auto& wgtvol = *pWgtvol;
 	for (size_t i = 0; i < num_shapes; i++) {
 		wgtvol.put(info[i].weight);
 		wgtvol.put(info[i].volume);
 	}
 
 	// TFA
-	ofstream tfa;
-	U7open(tfa, PATCH_TFA);
+	auto pTfa = U7open_out(PATCH_TFA);
+	if (!pTfa)
+		return;
+	auto& tfa = *pTfa;
 	for (size_t i = 0; i < num_shapes; i++)
 		tfa.write(reinterpret_cast<char *>(&info[i].tfa[0]), 3);
 
 	// Write data about drawing the weapon in an actor's hand
-	ofstream wihh;
-	U7open(wihh, PATCH_WIHH);
+	auto pWihh = U7open_out(PATCH_WIHH);
+	if (!pWihh)
+		return;
+	auto& wihh = *pWihh;
 	size_t cnt = 0;            // Keep track of actual entries.
 	for (size_t i = 0; i < num_shapes; i++)
 		if (info[i].weapon_offsets == nullptr)
@@ -286,10 +294,12 @@ void Shapes_vga_file::write_info(
 		if (info[i].weapon_offsets)
 			// There are two bytes per frame: 64 total
 			wihh.write(reinterpret_cast<char *>(info[i].weapon_offsets), 64);
-	wihh.close();
 
-	ofstream occ;          // Write occlude.dat.
-	U7open(occ, PATCH_OCCLUDE);
+	// Write occlude.dat.
+	auto pOcc = U7open_out(PATCH_OCCLUDE);
+	if (!pOcc)
+		return;
+	auto& occ = *pOcc;
 	unsigned char occbits[c_occsize];   // c_max_shapes bit flags.
 	// +++++This could be rewritten better!
 	memset(&occbits[0], 0, sizeof(occbits));
@@ -305,8 +315,11 @@ void Shapes_vga_file::write_info(
 	}
 	occ.write(reinterpret_cast<char *>(occbits), sizeof(occbits));
 
-	ofstream mfile;         // Now get monster info.
-	U7open(mfile, PATCH_EQUIP); // Write 'equip.dat'.
+	// Now get monster info.
+	auto pMfile = U7open_out(PATCH_EQUIP); // Write 'equip.dat'.
+	if (!pMfile)
+		return;
+	auto& mfile = *pMfile;
 	cnt = Monster_info::get_equip_cnt();
 	Write_count(mfile, cnt);    // Exult extension.
 	for (size_t i = 0; i < cnt; i++) {
@@ -320,7 +333,6 @@ void Shapes_vga_file::write_info(
 			Write2(mfile, 0);
 		}
 	}
-	mfile.close();
 
 	Functor_multidata_writer < Shape_info,
 	                         Class_writer_functor < Armor_info, Shape_info,

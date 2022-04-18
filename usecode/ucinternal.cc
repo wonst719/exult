@@ -1753,12 +1753,14 @@ Usecode_machine *Usecode_machine::create(
 Usecode_internal::Usecode_internal(
 ) : stack(new Usecode_value[1024]) {
 	sp = stack;
-	ifstream file;                // Read in usecode.
+	// Read in usecode.
 	std::cout << "Reading usecode file." << std::endl;
 	try {
-		U7open(file, USECODE);
+		auto pFile = U7open_in(USECODE);
+		if (!pFile)
+			throw file_open_exception(USECODE);
+		auto& file = *pFile;
 		read_usecode(file);
-		file.close();
 	} catch (const file_exception &f) {
 		if (!Game::is_editing())    // Ok if map-editing.
 			throw;
@@ -1768,9 +1770,11 @@ Usecode_internal::Usecode_internal(
 
 	// Get custom usecode functions.
 	if (is_system_path_defined("<PATCH>") && U7exists(PATCH_USECODE)) {
-		U7open(file, PATCH_USECODE);
+		auto pFile = U7open_in(PATCH_USECODE);
+		if (!pFile)
+			throw file_open_exception(PATCH_USECODE);
+		auto& file = *pFile;
 		read_usecode(file, true);
-		file.close();
 	}
 
 	//  set_breakpoint();
@@ -3174,9 +3178,12 @@ void Usecode_internal::read(
 	if (Game::get_game_type() != BLACK_GATE && !Game::is_si_beta())
 		keyring->read();    // read keyring data
 
-	ifstream in;
 	try {
-		U7open(in, FLAGINIT);   // Read global flags.
+		auto pIn = U7open_in(FLAGINIT);   // Read global flags.
+		if (!pIn) {
+			throw file_read_exception(FLAGINIT);
+		}
+		auto& in = *pIn;
 		in.seekg(0, ios::end);  // Get filesize.
 		size_t filesize = in.tellg();
 		in.seekg(0, ios::beg);
@@ -3184,7 +3191,6 @@ void Usecode_internal::read(
 			filesize = sizeof(gflags);
 		memset(&gflags[0], 0, sizeof(gflags));
 		in.read(reinterpret_cast<char *>(gflags), filesize);
-		in.close();
 	} catch (exult_exception const &e) {
 		if (!Game::is_editing())
 			throw;
@@ -3193,13 +3199,17 @@ void Usecode_internal::read(
 
 	clear_usevars(); // first clear all statics
 	read_usevars();
+	std::unique_ptr<std::istream> pIn;
 	try {
-		U7open(in, USEDAT);
+		pIn = U7open_in(USEDAT);
 	} catch (exult_exception &/*e*/) {
 		partyman->set_count(0);
 		partyman->link_party(); // Still need to do this.
 		return;         // Not an error if no saved game yet.
 	}
+	if (!pIn)
+		throw file_read_exception(USEDAT);
+	auto& in = *pIn;
 	partyman->set_count(Read2(in)); // Read party.
 	size_t i;   // Blame MSVC
 	for (i = 0; i < EXULT_PARTY_MAX; i++)

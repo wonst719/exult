@@ -117,8 +117,12 @@ long get_file_size(string &fname) {
 		return 0; // an empty entry
 
 	try {
-		ifstream fin;
-		U7open(fin, fname.c_str(), is_text_file(fname));
+		auto pFin = U7open_in(fname.c_str(), is_text_file(fname));
+		if (!pFin) {
+			cerr << "Failed to open " << fname << endl;
+			return 0;
+		}
+		auto& fin = *pFin;
 		// Lets avoid undefined behavior. See
 		// http://cpp.indi.frih.net/blog/2014/09/how-to-read-an-entire-file-into-memory-in-cpp/
 		fin.ignore(std::numeric_limits<std::streamsize>::max());
@@ -131,8 +135,12 @@ long get_file_size(string &fname) {
 
 bool Write_Object(U7object &obj, const char *fname) {
 	try {
-		ofstream out;
-		U7open(out, fname, false);
+		auto pOut = U7open_out(fname, false);
+		if (!pOut) {
+			cerr << "Failed to open " << fname << endl;
+			return false;
+		}
+		auto& out = *pOut;
 		size_t l;
 		auto n = obj.retrieve(l);
 		if (!n) {
@@ -181,18 +189,23 @@ int main(int argc, char **argv)
 			case 'i': {
 				string path_prefix;
 
-				ifstream respfile;
+				std::unique_ptr<std::istream> pRespfile;
 				size_t slash = fname.rfind('/');
 				if (slash != string::npos) {
 					path_prefix = fname.substr(0, slash + 1);
 				}
 				set_mode(mode, RESPONSE);
 				try {
-					U7open(respfile, fname.c_str(), true);
+					pRespfile = U7open_in(fname.c_str(), true);
 				} catch (const file_open_exception &e) {
 					cerr << e.what() << endl;
 					exit(1);
 				}
+				if (!pRespfile) {
+					cerr << "Failed to open " << fname << endl;
+					exit(1);
+				}
+				auto& respfile = *pRespfile;
 
 				// Read the output file name
 				string temp;
@@ -234,7 +247,6 @@ int main(int argc, char **argv)
 						linenum++;
 					}
 				}
-				respfile.close();
 			}
 			break;
 			case 'l':
@@ -312,7 +324,7 @@ int main(int argc, char **argv)
 		try {
 			OFileDataSource flex(fname.c_str());
 
-			ofstream header;
+			std::unique_ptr<std::ostream> pHeader;
 			if (hname.empty()) {    // Need header name.
 				hprefix = fname;
 				make_header_name(hprefix);
@@ -321,11 +333,16 @@ int main(int argc, char **argv)
 				make_uppercase(hprefix);
 			}
 			try {
-				U7open(header, hname.c_str(), true);
+				pHeader = U7open_out(hname.c_str(), true);
 			} catch (const file_open_exception &e) {
 				cerr << e.what() << endl;
 				exit(1);
 			}
+			if (!pHeader) {
+				cerr << "Failed to open " << hname << endl;
+				exit(1);
+			}
+			auto& header = *pHeader;
 
 			// The FLEX title
 			Flex_writer writer(flex, "Exult Archive", file_names.size());
@@ -365,7 +382,6 @@ int main(int argc, char **argv)
 			header << std::hex << crc32val << std::dec << "U" << std::endl;
 
 			header << std::endl << "#endif" << std::endl << std::endl;
-			header.close();
 
 		} catch (const file_open_exception &e) {
 			cerr << e.what() << endl;

@@ -803,19 +803,23 @@ int main(
 	char *imagename = nullptr;
 	char *palname = nullptr;
 	Shape_specs specs;      // Shape specs. stored here.
-	ifstream specin;
+	std::unique_ptr<std::istream> pSpecin;
 	try {
-		U7open(specin, scriptname, true);
+		pSpecin = U7open_in(scriptname, true);
 	} catch (exult_exception &e) {
 		cerr << e.what() << endl;
 		exit(1);
 	}
+	if (!pSpecin) {
+		cerr << "Failed to open " << scriptname << endl;
+		exit(1);
+	}
+	auto& specin = *pSpecin;
 	Read_script(specin, imagename, palname, specs);
 	if (!imagename) {
 		cerr << "No archive name (i.e., 'shapes.vga') given" << endl;
 		exit(1);
 	}
-	specin.close();
 	switch (argv[1][1]) {   // Which function?
 	case 'c':           // Create.
 		try {

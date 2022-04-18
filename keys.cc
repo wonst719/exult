@@ -771,9 +771,10 @@ void KeyBinder::ParseLine(char *line) {
 }
 
 void KeyBinder::LoadFromFileInternal(const char *filename) {
-	ifstream keyfile;
-
-	U7open(keyfile, filename, true);
+	auto pKeyfile = U7open_in(filename, true);
+	if (!pKeyfile)
+		return;
+	auto& keyfile = *pKeyfile;
 	char temp[1024]; // 1024 should be long enough
 	while (!keyfile.eof()) {
 		keyfile.getline(temp, 1024);
@@ -784,7 +785,6 @@ void KeyBinder::LoadFromFileInternal(const char *filename) {
 		}
 		ParseLine(temp);
 	}
-	keyfile.close();
 }
 
 void KeyBinder::LoadFromFile(const char *filename) {

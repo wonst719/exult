@@ -49,7 +49,6 @@ const string CLASSNAME = "class";
 UCData::UCData() = default;
 
 UCData::~UCData() {
-	_file.close();
 	for (auto *func : _funcs)
 		delete func;
 	delete _symtbl;
@@ -288,19 +287,20 @@ void UCData::dump_flags(ostream &o) {
 void UCData::file_open(const string &filename) {
 	/* Open a usecode file */
 	try {
-		_file.clear();
-		U7open(_file, filename.c_str(), false);
-	} catch (const std::exception &err) {
-		_file.setstate(std::ifstream::failbit);
-	}
+		_pFile = U7open_in(filename.c_str(), false);
+	} catch (const std::exception &err) {}
 }
 
 void UCData::load_globals(ostream &o) {
 	if (_global_flags_file.empty())
 		return;
 	try {
-		std::ifstream gflags;
-		U7open(gflags, _global_flags_file.c_str(), false);
+		auto pGflags = U7open_in(_global_flags_file.c_str(), false);
+		if (!pGflags) {
+			cout << "error. failed to open " << _global_flags_file << ". exiting." << endl;
+			exit(1);
+		}
+		auto& gflags = *pGflags;
 		std::map<unsigned int, std::string>& FlagMap = UCFunc::FlagMap;
 		std::set<std::string> flags;
 		unsigned int ii = 0;
@@ -338,6 +338,7 @@ void UCData::load_globals(ostream &o) {
 }
 
 void UCData::load_funcs(ostream &o) {
+	auto& _file = *_pFile;
 	if (options.game_u7() && Usecode_symbol_table::has_symbol_table(_file)) {
 		delete _symtbl;
 		if (options.verbose) o << "Loading symbol table..." << endl;

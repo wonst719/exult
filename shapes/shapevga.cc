@@ -68,23 +68,19 @@ using namespace std;
  *  given.
  */
 
-static bool U7open2(
-    ifstream &in,           // Stream to open.
+static std::unique_ptr<std::istream> U7open2(
     const char *pname,      // Patch name, or null.
     const char *fname,      // File name.
     bool editing
 ) {
 	ignore_unused_variable_warning(editing);
 	if (pname) {
-		U7open(in, pname);
-		return true;
+		return U7open_in(pname);
 	}
 	try {
-		U7open(in, fname);
-	} catch (const file_exception & /*f*/) {
-		return false;
-	}
-	return true;
+		return U7open_in(fname);
+	} catch (const file_exception & /*f*/) {}
+	return nullptr;
 }
 
 // Special case ID reader functors.
@@ -428,39 +424,46 @@ bool Shapes_vga_file::read_info(
 	// ShapeDims
 
 	// Starts at 0x96'th shape.
-	ifstream shpdims;
-	if (U7open2(shpdims, patch_name(PATCH_SHPDIMS), SHPDIMS, editing))
+	auto pShpdims = U7open2(patch_name(PATCH_SHPDIMS), SHPDIMS, editing);
+	if (pShpdims) {
+		auto& shpdims = *pShpdims;
 		for (size_t i = c_first_obj_shape;
 		        i < shapes.size() && !shpdims.eof(); i++) {
 			info[i].shpdims[0] = shpdims.get();
 			info[i].shpdims[1] = shpdims.get();
 		}
+	}
 
 	// WGTVOL
-	ifstream wgtvol;
-	if (U7open2(wgtvol, patch_name(PATCH_WGTVOL), WGTVOL, editing))
+	auto pWgtvol = U7open2(patch_name(PATCH_WGTVOL), WGTVOL, editing);
+	if (pWgtvol) {
+		auto& wgtvol = *pWgtvol;
 		for (size_t i = 0; i < shapes.size() && !wgtvol.eof(); i++) {
 			info[i].weight = wgtvol.get();
 			info[i].volume = wgtvol.get();
 		}
+	}
 
 	// TFA
-	ifstream tfa;
-	if (U7open2(tfa, patch_name(PATCH_TFA), TFA, editing))
+	auto pTfa = U7open2(patch_name(PATCH_TFA), TFA, editing);
+	if (pTfa) {
+		auto& tfa = *pTfa;
 		for (size_t i = 0; i < shapes.size() && !tfa.eof(); i++) {
 			tfa.read(reinterpret_cast<char *>(&info[i].tfa[0]), 3);
 			info[i].set_tfa_data();
 		}
+	}
 
 	if (game == BLACK_GATE || game == SERPENT_ISLE) {
 		// Animation data at the end of BG and SI TFA.DAT
-		ifstream stfa;
 		// We *should* blow up if TFA not there.
-		U7open(stfa, TFA);
+		auto pStfa = U7open_in(TFA);
+		if (!pStfa)
+		    throw file_open_exception(TFA);
+		auto& stfa = *pStfa;
 		stfa.seekg(3 * 1024);
 		unsigned char buf[512];
 		stfa.read(reinterpret_cast<char *>(buf), 512);
-		stfa.close();
 		unsigned char *ptr = buf;
 		for (int i = 0; i < 512; i++, ptr++) {
 			int val = *ptr;
@@ -478,8 +481,9 @@ bool Shapes_vga_file::read_info(
 	}
 
 	// Load data about drawing the weapon in an actor's hand
-	ifstream wihh;
-	if (U7open2(wihh, patch_name(PATCH_WIHH), WIHH, editing)) {
+	auto pWihh = U7open2(patch_name(PATCH_WIHH), WIHH, editing);
+	if (pWihh) {
+		auto& wihh = *pWihh;
 		size_t cnt = shapes.size();
 		unsigned short offsets[c_max_shapes];
 		for (size_t i = 0; i < cnt; i++)
@@ -504,11 +508,12 @@ bool Shapes_vga_file::read_info(
 					info[i].weapon_offsets[j * 2 + 1] = y;
 				}
 			}
-		wihh.close();
 	}
 
-	ifstream occ;          // Read flags from occlude.dat.
-	if (U7open2(occ, patch_name(PATCH_OCCLUDE), OCCLUDE, editing)) {
+	// Read flags from occlude.dat.
+	auto pOcc = U7open2(patch_name(PATCH_OCCLUDE), OCCLUDE, editing);
+	if (pOcc) {
+		auto& occ = *pOcc;
 		unsigned char occbits[c_occsize];   // c_max_shapes bit flags.
 		// Ensure sensible defaults.
 		memset(&occbits[0], 0, sizeof(occbits));
@@ -523,8 +528,9 @@ bool Shapes_vga_file::read_info(
 	}
 
 	// Get 'equip.dat'.
-	ifstream mfile;
-	if (U7open2(mfile, patch_name(PATCH_EQUIP), EQUIP, editing)) {
+	auto pMfile = U7open2(patch_name(PATCH_EQUIP), EQUIP, editing);
+	if (pMfile) {
+		auto& mfile = *pMfile;
 		// Get # entries (with Exult extension).
 		int num_recs = Read_count(mfile);
 		Monster_info::reserve_equip(num_recs);
@@ -540,7 +546,6 @@ bool Shapes_vga_file::read_info(
 			}
 			Monster_info::add_equip(equip);
 		}
-		mfile.close();
 	}
 
 	Functor_multidata_reader < Shape_info,
