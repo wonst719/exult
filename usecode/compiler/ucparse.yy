@@ -101,7 +101,9 @@ struct Member_selector
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wcast-qual"
+#if !defined(__llvm__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Wredundant-tags"
+#endif
 #endif  // __GNUC__
 
 %}
