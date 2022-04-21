@@ -60,7 +60,6 @@ case "$host_os" in
 		CXXFLAGS="$CXXFLAGS -D_USE_MATH_DEFINES"
 		SYSLIBS="-luuid -lole32 -lwinmm -lstdc++ -lws2_32"
 		ICON_FILE="win32/exultico.o"
-		enable_timidity="no"
 		;;
 	cygwin* )
 		WINDOWING_SYSTEM="-D_WIN32"
@@ -69,7 +68,6 @@ case "$host_os" in
 		CXXFLAGS="$CXXFLAGS -mno-cygwin"
 		SYSLIBS="-lwinmm"
 		ICON_FILE="win32/exultico.o"
-		enable_timidity="no"
 		;;
 	openbsd* )
 		WINDOWING_SYSTEM="-DXWIN"
@@ -132,12 +130,6 @@ AM_CONDITIONAL(ANDROID, test x$ARCH = xandroid)
 # ---------------------------------------------------------------------
 
 AC_PROG_AWK
-
-AC_ARG_WITH(cxx, AS_HELP_STRING([--with-cxx=COMMAND], [Explicitly specify the C++ compiler to use]),[WITHCXX="$withval"],[WITHCXX="$CXX"])
-
-if test "x$WITHCXX" != "x"; then
-	cxx_compilers="$WITHCXX"
-fi
 
 AC_PROG_CXX([$cxx_compilers])
 
@@ -869,7 +861,6 @@ AC_MSG_CHECKING([whether to build only the main program])
 if test x$enable_tools = xno; then
 	AC_MSG_RESULT(yes)
 	AM_CONDITIONAL(BUILD_TOOLS, false)
-	enable_gtk_interface=no
 	enable_gimp_plugin=no
 	enable_compiler=no
 else
@@ -1013,19 +1004,23 @@ if test x$enable_gimp_plugin = xyes; then
 		AC_MSG_CHECKING([for GIMP version])
 		gimp_version=`$GIMPTOOL --version | awk 'BEGIN { FS = "."; } { print $1 * 10000 + $2 * 100 + $3;}'`
 		if test "$gimp_version" -ge 20800; then
-			AC_MSG_RESULT([found >= 2.8.0])
-			AC_SUBST(GIMPTOOL)
-			AM_CONDITIONAL(GIMP_PLUGIN, true)
-			GIMP_PLUGIN_PREFIX=`$GIMPTOOL --gimpplugindir`
-			GIMP_PLUGIN_PREFIX="$GIMP_PLUGIN_PREFIX/plug-ins"
-			AC_SUBST(GIMP_PLUGIN_PREFIX)
-			AC_DEFINE(HAVE_GIMP, 1, [Have GIMP])
-			GIMP_INCLUDES=`$PKG_CONFIG --cflags gimpui-2.0 gtk+-2.0`
-			GIMP_LIBS=`$PKG_CONFIG --libs gimpui-2.0 gtk+-2.0`
-			AC_SUBST(GIMP_INCLUDES)
-			AC_SUBST(GIMP_LIBS)
+			if test "x$PKG_CONFIG" != "x"; then
+				AC_MSG_RESULT([found >= 2.8.0])
+				AC_SUBST(GIMPTOOL)
+				AM_CONDITIONAL(GIMP_PLUGIN, true)
+				GIMP_PLUGIN_PREFIX=`$GIMPTOOL --gimpplugindir`
+				GIMP_PLUGIN_PREFIX="$GIMP_PLUGIN_PREFIX/plug-ins"
+				AC_SUBST(GIMP_PLUGIN_PREFIX)
+				AC_DEFINE(HAVE_GIMP, 1, [Have GIMP])
+				GIMP_INCLUDES=`$PKG_CONFIG --cflags gimpui-2.0`
+				GIMP_LIBS=`$PKG_CONFIG --libs gimpui-2.0`
+				AC_SUBST(GIMP_INCLUDES)
+				AC_SUBST(GIMP_LIBS)
+			else
+				AC_MSG_RESULT([found >= 2.8.0 but missing pkg-config - disabling plugin])
+			fi
 		else
-			AC_MSG_RESULT([found < 2.8.00 - disabling plugin])
+			AC_MSG_RESULT([found < 2.8.0 - disabling plugin])
 		fi
 	fi
 else
@@ -1044,7 +1039,7 @@ AS_IF([ test $cross_compiling = yes ], [
 		echo "While cross compiling you need to have a build system native"
 		echo "expack in your path to generate Exult's data files."
 		echo "After you natively compiled Exult you will find expack in the tools subfolder."
-  		if test x$EXPACK = xno; then
+		if test x$EXPACK = xno; then
 			AC_MSG_ERROR([Could not find expack in your path, cannot generate data files.])
 		fi
 	fi
@@ -1133,30 +1128,38 @@ dnl ****************
 echo
 echo Exult v$VERSION
 echo
+echo C++ Compiler............... : $CXX
+if test "x$opt_level" != "x"; then
+	echo C++ optimization........... : $opt_level
+fi
+if test "x$dbg_level" != "x"; then
+	echo C++ debug.................. : $dbg_level
+fi
+echo
 echo SDL........................ : `$SDL_CONFIG --version`
-if test "x$PKG_CONFIG" != "x"; then	
+if test "x$PKG_CONFIG" != "x"; then
 	PKG_CHECK_EXISTS(ogg,
 		echo Ogg.........................: `$PKG_CONFIG --modversion ogg`)
 fi
-if test "x$PKG_CONFIG" != "x"; then	
+if test "x$PKG_CONFIG" != "x"; then
 	PKG_CHECK_EXISTS(vorbis,
 		echo Vorbis......................: `$PKG_CONFIG --modversion vorbis`)
 fi
 if test x$ac_cv_header_png_h = xyes; then
 	if test "x$PKG_CONFIG" != "x"; then
-		PKG_CHECK_EXISTS(libpng, 
+		PKG_CHECK_EXISTS(libpng,
 			echo libpng..................... : `$PKG_CONFIG --modversion libpng`)
 	fi
 fi
 if test x$enable_mt32emu = xyes; then
-	if test "x$PKG_CONFIG" != "x"; then	
+	if test "x$PKG_CONFIG" != "x"; then
 		PKG_CHECK_EXISTS(mt32emu,
 			echo MT32emu.................... : `$PKG_CONFIG --modversion mt32emu`)
 	fi
 fi
 if test x$enable_fluidsynth = xyes; then
-	if test "x$PKG_CONFIG" != "x"; then	
-		PKG_CHECK_EXISTS(fluidsynth, 
+	if test "x$PKG_CONFIG" != "x"; then
+		PKG_CHECK_EXISTS(fluidsynth,
 			echo Fluidsynth................. : `$PKG_CONFIG --modversion fluidsynth`)
 	fi
 fi
@@ -1182,6 +1185,32 @@ echo Build HQ3X scaler.......... : $enable_hq3x
 echo Build HQ4X scaler.......... : $enable_hq4x
 fi
 echo Build NxBR scalers......... : $enable_nxbr
+echo
+echo Audio :
+echo Enable ALSA midi........... : $enable_alsa
+echo Enable Fluidsynth midi..... : $enable_fluidsynth
+echo Enable mt32emu midi........ : $enable_mt32emu
+echo Enable Timidity midi....... : $enable_timidity_midi
+echo Enable SFX as midi......... : $enable_midi_sfx
+echo
+echo Addons :
+echo Create data files.......... : $enable_data
+echo Create zipped Savegames.... : $enable_zip_support
+echo Build GIMP plugin.......... : $enable_gimp_plugin
+echo Build Gnome SHP Thumbnailer : $enable_gnome_shp_thumbnailer
+echo
+echo Debug :
+echo Build Usecode debugger..... : $enable_usecode_debugger
+echo Debug Usecode Container.... : $enable_usecode_container
+echo Debug non Readied Objects.. : $enable_nonreadied_objects
+echo
+echo Compilation :
+echo Enable compiler sanitizers. : $enable_sanitizers
+echo Enable SDL parachute....... : $enable_sdl_parachute
+echo Build with static libraries : $enable_static_libs
+echo Build libexult library..... : $enable_libexult
+echo Turn all warnings to errors : $enable_warning_errors
+echo Turn pedantics to errors... : $enable_pedantic_errors
 
 if test x$ARCH = xmacosx; then
 	if test x$enable_static_libs != xno; then
