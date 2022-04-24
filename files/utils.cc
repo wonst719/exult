@@ -66,7 +66,6 @@ using std::ios;
 static void switch_slashes(string &name);
 static bool base_to_uppercase(string &str, int count);
 
-
 // Global factories for instantiating file streams
 static U7IstreamFactory istream_factory = [](const char* s, std::ios_base::openmode mode) {
 	return std::make_unique<std::ifstream>(s, mode);
@@ -75,17 +74,6 @@ static U7IstreamFactory istream_factory = [](const char* s, std::ios_base::openm
 static U7OstreamFactory ostream_factory = [](const char* s, std::ios_base::openmode mode) {
 	return std::make_unique<std::ofstream>(s, mode);
 };
-
-
-// Global factories for instantiating file streams
-static U7IstreamFactory istream_factory = [](const char* s, std::ios_base::openmode mode) {
-	return std::make_unique<std::ifstream>(s, mode);
-};
-
-static U7OstreamFactory ostream_factory = [](const char* s, std::ios_base::openmode mode) {
-	return std::make_unique<std::ofstream>(s, mode);
-};
-
 
 // Ugly hack for supporting different paths
 
