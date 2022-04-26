@@ -39,6 +39,9 @@
 		8A98326D27AD7A0C0028D9C9 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A98326C27AD7A0C0028D9C9 /* QuartzCore.framework */; };
 		8A98326F27AD7AE70028D9C9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A98326E27AD7AE70028D9C9 /* Foundation.framework */; };
 		8A98327127AD7C060028D9C9 /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A98327027AD7C060028D9C9 /* CoreHaptics.framework */; };
+		8A9EB725281878EC0025C639 /* sdlrwopsstreambuf.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A9EB713281878EC0025C639 /* sdlrwopsstreambuf.cc */; };
+		8A9EB726281878EC0025C639 /* sdlrwopsostream.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A9EB722281878EC0025C639 /* sdlrwopsostream.cc */; };
+		8A9EB727281878EC0025C639 /* sdlrwopsistream.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A9EB724281878EC0025C639 /* sdlrwopsistream.cc */; };
 		8AB479F822AD1A5500BB3562 /* iOS Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8AB479E422AD1A5500BB3562 /* iOS Launch Screen.storyboard */; };
 		8AB47A1922AD4D5D00BB3562 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AB47A1822AD4D5D00BB3562 /* Icon.png */; };
 		8AB53D8C1C9CA0A90084C69D /* ShortcutBar_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AB53D8A1C9CA0A90084C69D /* ShortcutBar_gump.cc */; };
@@ -396,6 +399,12 @@
 		8A98326C27AD7A0C0028D9C9 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8A98326E27AD7AE70028D9C9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8A98327027AD7C060028D9C9 /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
+		8A9EB713281878EC0025C639 /* sdlrwopsstreambuf.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sdlrwopsstreambuf.cc; path = ../files/sdlrwopsstreambuf.cc; sourceTree = "<group>"; };
+		8A9EB720281878EC0025C639 /* sdlrwopsstreambuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sdlrwopsstreambuf.h; path = ../files/sdlrwopsstreambuf.h; sourceTree = "<group>"; };
+		8A9EB721281878EC0025C639 /* sdlrwopsostream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sdlrwopsostream.h; path = ../files/sdlrwopsostream.h; sourceTree = "<group>"; };
+		8A9EB722281878EC0025C639 /* sdlrwopsostream.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sdlrwopsostream.cc; path = ../files/sdlrwopsostream.cc; sourceTree = "<group>"; };
+		8A9EB723281878EC0025C639 /* sdlrwopsistream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sdlrwopsistream.h; path = ../files/sdlrwopsistream.h; sourceTree = "<group>"; };
+		8A9EB724281878EC0025C639 /* sdlrwopsistream.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sdlrwopsistream.cc; path = ../files/sdlrwopsistream.cc; sourceTree = "<group>"; };
 		8AB0AE1B1CBEF522001DBB16 /* ignore_unused_variable_warning.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ignore_unused_variable_warning.h; sourceTree = "<group>"; };
 		8AB479E422AD1A5500BB3562 /* iOS Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "iOS Launch Screen.storyboard"; sourceTree = "<group>"; };
 		8AB47A1822AD4D5D00BB3562 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = Images/Icon.png; sourceTree = "<group>"; };
@@ -1314,6 +1323,12 @@
 				E700DD7D1A6E3161006C8BE4 /* U7obj.h */,
 				E700DD7E1A6E3161006C8BE4 /* utils.cc */,
 				E700DD7F1A6E3161006C8BE4 /* utils.h */,
+				8A9EB724281878EC0025C639 /* sdlrwopsistream.cc */,
+				8A9EB723281878EC0025C639 /* sdlrwopsistream.h */,
+				8A9EB722281878EC0025C639 /* sdlrwopsostream.cc */,
+				8A9EB721281878EC0025C639 /* sdlrwopsostream.h */,
+				8A9EB713281878EC0025C639 /* sdlrwopsstreambuf.cc */,
+				8A9EB720281878EC0025C639 /* sdlrwopsstreambuf.h */,
 				E700DD801A6E3161006C8BE4 /* zip */,
 			);
 			name = files;
@@ -1909,6 +1924,7 @@
 				E700DE241A6E344D006C8BE4 /* ibuf8.cc in Sources */,
 				E700DD511A6E3121006C8BE4 /* bodyinf.cc in Sources */,
 				E700DCDA1A6E30D8006C8BE4 /* chunkter.cc in Sources */,
+				8A9EB727281878EC0025C639 /* sdlrwopsistream.cc in Sources */,
 				8A057F9227A8362E00948459 /* CoreAudioMidiDriver.cpp in Sources */,
 				E700DD531A6E3121006C8BE4 /* effhpinf.cc in Sources */,
 				E700DCAC1A6E30A7006C8BE4 /* readnpcs.cc in Sources */,
@@ -1971,6 +1987,7 @@
 				E700DFD61A6E3943006C8BE4 /* modmgr.cc in Sources */,
 				E700DCA81A6E30A7006C8BE4 /* npctime.cc in Sources */,
 				E700DD541A6E3121006C8BE4 /* expinf.cc in Sources */,
+				8A9EB725281878EC0025C639 /* sdlrwopsstreambuf.cc in Sources */,
 				E700DE211A6E344D006C8BE4 /* BilinearScalerInternal_Arb.cpp in Sources */,
 				E700DBE01A6E2CE7006C8BE4 /* FMOplMidiDriver.cpp in Sources */,
 				E700DCA71A6E30A7006C8BE4 /* npcnear.cc in Sources */,
@@ -2008,6 +2025,7 @@
 				E700DCDF1A6E30D8006C8BE4 /* mappatch.cc in Sources */,
 				E700DE331A6E344D006C8BE4 /* scale_point.cc in Sources */,
 				E700DE941A6E3497006C8BE4 /* Notebook_gump.cc in Sources */,
+				8A9EB726281878EC0025C639 /* sdlrwopsostream.cc in Sources */,
 				E700DBC21A6E2CE7006C8BE4 /* Midi.cc in Sources */,
 				8AD4A9311A92B9DB0004762D /* InputOptions_gump.cc in Sources */,
 				E700DBBB1A6E2CE7006C8BE4 /* AudioChannel.cc in Sources */,
