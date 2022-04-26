@@ -18,7 +18,7 @@ AM_INIT_AUTOMAKE
 AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE", [Package Name])
 AC_DEFINE_UNQUOTED(VERSION, "$VERSION", [Package Version])
 
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 AH_BOTTOM([
@@ -142,7 +142,16 @@ fi
 AC_PROG_CXXCPP
 
 AC_PROG_INSTALL
-AM_PROG_LEX
+dnl autoconf 2.69 AC_PROG_LEX has no parameters
+dnl autoconf 2.70 AC_PROG_LEX prints a deprecation warning without params
+m4_if(m4_version_compare(m4_defn([AC_AUTOCONF_VERSION]), [2.70]), [-1], [dnl
+  dnl autoconf < 2.70
+  AM_PROG_LEX
+], [
+  dnl autoconf >= 2.70
+  AC_PROG_LEX([yywrap])
+])
+
 AC_PROG_YACC
 AM_CONDITIONAL(LEXYACC, test -n "$YACC")
 
@@ -165,7 +174,6 @@ AC_CHECK_TYPES([uint8_t, uint16_t, uint32_t, uint64_t, uintptr_t],
 # Checks for header files.
 # ---------------------------------------------------------------------
 AC_HEADER_DIRENT
-AC_HEADER_STDC
 AC_CHECK_HEADERS(limits.h sys/time.h unistd.h)
 AC_CHECK_HEADERS(sys/types.h sys/socket.h netdb.h)
 AC_CHECK_HEADERS(sys/wait.h signal.h getopt.h)
@@ -177,7 +185,7 @@ AC_CHECK_HEADERS(png.h, AM_CONDITIONAL(HAVE_PNG,true), AM_CONDITIONAL(HAVE_PNG, 
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
-AC_HEADER_TIME
+AC_CHECK_HEADERS([sys/time.h])
 AC_STRUCT_TM
 
 # ---------------------------------------------------------------------
@@ -275,14 +283,14 @@ EXULT_CHECK_SDL(:,AC_MSG_ERROR([[*** SDL not found!]]))
 
 if test "x$PKG_CONFIG" != "x"; then
 	PKG_CHECK_MODULES(OGG, ogg >= 1.0 vorbis >= 1.0.1 vorbisfile, , AC_MSG_ERROR([*** must have Ogg/Vorbis installed!]))
-else
-	dnl old school test
-	m4_ifdef([XIPH_PATH_OGG], [
-		XIPH_PATH_OGG(, AC_MSG_ERROR([*** must have Ogg installed!]))
+	else
+		dnl old school test
+		m4_ifdef([XIPH_PATH_OGG], [
+			XIPH_PATH_OGG(, AC_MSG_ERROR([*** must have Ogg installed!]))
 		], AC_MSG_ERROR([*** must have Ogg installed!]))
-	m4_ifdef([XIPH_PATH_VORBIS], [
-		XIPH_PATH_VORBIS(, AC_MSG_ERROR([*** must have Vorbis installed!]))
-	], AC_MSG_ERROR([*** must have Vorbis installed!]))
+		m4_ifdef([XIPH_PATH_VORBIS], [
+			XIPH_PATH_VORBIS(, AC_MSG_ERROR([*** must have Vorbis installed!]))
+		], AC_MSG_ERROR([*** must have Vorbis installed!]))
 fi
 
 # ---------------------------------------------------------------------
@@ -1263,11 +1271,11 @@ if test x$enable_fluidsynth = xyes; then
 	fi
 fi
 if test x$have_gtk = xyes; then
-echo GLIB....................... : `$PKG_CONFIG --modversion glib-2.0`
-echo GTK+....................... : `$PKG_CONFIG --modversion gtk+-3.0`
+	echo GLIB....................... : `$PKG_CONFIG --modversion glib-2.0`
+	echo GTK+....................... : `$PKG_CONFIG --modversion gtk+-3.0`
 fi
 if test x$have_gdk_pixbuf = xyes; then
-echo GDK-Pixbuf................. : `$PKG_CONFIG --modversion gdk-pixbuf-2.0`
+	echo GDK-Pixbuf................. : `$PKG_CONFIG --modversion gdk-pixbuf-2.0`
 fi
 echo
 echo Build tools................ : $enable_tools
@@ -1277,11 +1285,11 @@ echo Build Exult Studio......... : $enable_exult_studio
 echo Exult Studio support....... : $enable_exult_studio_support
 echo
 if test x$enable_all_hq_scalers = xyes; then
-echo Build all HQ scalers....... : $enable_all_hq_scalers
+	echo Build all HQ scalers....... : $enable_all_hq_scalers
 else
-echo Build HQ2X scaler.......... : $enable_hq2x
-echo Build HQ3X scaler.......... : $enable_hq3x
-echo Build HQ4X scaler.......... : $enable_hq4x
+	echo Build HQ2X scaler.......... : $enable_hq2x
+	echo Build HQ3X scaler.......... : $enable_hq3x
+	echo Build HQ4X scaler.......... : $enable_hq4x
 fi
 echo Build NxBR scalers......... : $enable_nxbr
 echo

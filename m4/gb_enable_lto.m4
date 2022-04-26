@@ -44,7 +44,7 @@
 #serial 4
 
 AC_DEFUN([GB_ENABLE_LTO], [
-	AC_ARG_ENABLE([lto], [AC_HELP_STRING([--enable-lto], [turn on link time optimizations (experimental) [default=no]])],
+	AC_ARG_ENABLE([lto], [AS_HELP_STRING([--enable-lto], [turn on link time optimizations (experimental) [default=no]])],
 				  [enable_lto=$enableval], [enable_lto=no])
 
 	AX_REQUIRE_DEFINED([AX_CHECK_COMPILE_FLAG])
