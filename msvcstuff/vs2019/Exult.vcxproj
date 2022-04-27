@@ -341,6 +341,9 @@
     <ClCompile Include="..\..\files\utils.cc" />
     <ClCompile Include="..\..\files\zip\unzip.cc" />
     <ClCompile Include="..\..\files\zip\zip.cc" />
+    <ClCompile Include="..\..\files\sdlrwopsistream.cc" />
+    <ClCompile Include="..\..\files\sdlrwopsostream.cc" />
+    <ClCompile Include="..\..\files\sdlrwopsstreambuf.cc" />
     <ClCompile Include="..\..\flic\playfli.cc" />
     <ClCompile Include="..\..\game.cc" />
     <ClCompile Include="..\..\gameclk.cc" />
@@ -546,6 +549,9 @@
     <ClInclude Include="..\..\files\utils.h" />
     <ClInclude Include="..\..\files\zip\unzip.h" />
     <ClInclude Include="..\..\files\zip\zip.h" />
+    <ClInclude Include="..\..\files\sdlrwopsistream.h" />
+    <ClInclude Include="..\..\files\sdlrwopsostream.h" />
+    <ClInclude Include="..\..\files\sdlrwopsstreambuf.h" />
     <ClInclude Include="..\..\flic\playfli.h" />
     <ClInclude Include="..\..\fnames.h" />
     <ClInclude Include="..\..\frameseq.h" />

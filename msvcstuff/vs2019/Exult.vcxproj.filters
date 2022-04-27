@@ -180,6 +180,15 @@
     <ClCompile Include="..\..\files\sha1\sha1.cpp">
       <Filter>files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\files\sdlrwopsistream.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\files\sdlrwopsostream.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\files\sdlrwopsstreambuf.cc">
+      <Filter>files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\actions.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1384,6 +1393,15 @@
     </ClInclude>
     <ClInclude Include="..\..\files\zip\unzip.h">
       <Filter>files\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\files\sdlrwopsistream.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\files\sdlrwopsostream.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\files\sdlrwopsstreambuf.h">
+      <Filter>files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\conf\XMLEntity.h">
       <Filter>conf</Filter>
