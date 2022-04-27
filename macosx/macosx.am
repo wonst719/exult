@@ -1,6 +1,10 @@
 
 bundle_name = Exult.app
 studio_name = Exult_Studio.app
+exult_studio = $(top_srcdir)/mapedit/exult_studio$(EXEEXT)
+
+$(top_srcdir)/mapedit/exult_studio$(EXEEXT):
+	+(cd $(top_srcdir)/mapedit;$(MAKE) exult_studio$(EXEEXT))
 
 bundle: ${EXE_TARGET}
 	mkdir -p $(bundle_name)/Contents/MacOS
@@ -29,9 +33,8 @@ if WITH_OSX_CODE_SIGNATURE
 	codesign --options runtime --timestamp -f -s "$(OSX_CODE_SIGNATURE)" $(bundle_name)/contents/resources/lib/*.dylib
 endif
 
-studiobundle: ${EXE_TARGET}
-	$(eval export SOURCE=$(shell pwd))
-	gtk-mac-bundler ./macosx/exult_studio.bundle
+studiobundle: $(exult_studio)
+	SOURCE=$(abs_top_srcdir) gtk-mac-bundler ./macosx/exult_studio.bundle
 if WITH_OSX_CODE_SIGNATURE
 	codesign --options runtime --deep --timestamp -f -s "$(OSX_CODE_SIGNATURE)" --entitlements ./macosx/exult_studio_entitlements.plist $(studio_name)
 	codesign --options runtime --timestamp -f -s "$(OSX_CODE_SIGNATURE)" $(studio_name)/contents/resources/lib/*.dylib
@@ -73,7 +76,7 @@ osxdmg: bundle
 					Exult-snapshot.dmg
 	rm -rf Exult-snapshot
 
-studiodmg:
+studiodmg: studiobundle
 	mkdir -p Studio-snapshot
 	mkdir -p ./Studio-snapshot/images
 	cp $(srcdir)/AUTHORS ./Studio-snapshot/Authors
