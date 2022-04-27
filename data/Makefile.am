@@ -202,8 +202,7 @@ EXULT_BG_MR_FACES_VGA =
 endif
 
 flex_DATA =  \
-		$(EXULT_FLX) $(EXULT_BG_FLX) $(EXULT_SI_FLX) midisfx.flx \
-		exultmsg.txt
+		$(EXULT_FLX) $(EXULT_BG_FLX) $(EXULT_SI_FLX) midisfx.flx
 
 if BUILD_STUDIO
 estudionew_DATA = $(ESTUDIO_NEW_FILES)
@@ -215,7 +214,6 @@ CLEANFILES = exult.flx exult_bg.flx exult_si.flx bg/bg_paperdol.vga bg/bg_mr_fac
 
 EXTRA_DIST = flx.in $(EXULT_FLX_OBJECTS) $(EXULT_BG_FLX_OBJECTS) \
 	$(EXULT_SI_FLX_OBJECTS) $(ESTUDIO_NEW_FILES) midisfx.flx \
-	$(ESTUDIO_NEW_FILES) \
 	$(EXULT_BG_INTROSFX_MT32_OBJECTS) $(EXULT_BG_INTROSFX_SB_OBJECTS) \
 	exultmsg.txt bginclude.uc marketpl.mid myusecode.uc \
 	$(EXULT_BG_PAPERDOL_VGA_OBJECTS) $(EXULT_BG_MR_FACES_VGA_OBJECTS)

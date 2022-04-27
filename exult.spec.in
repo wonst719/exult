@@ -121,7 +121,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-, root, root)
 %doc AUTHORS COPYING ChangeLog NEWS README FAQ
 %{_bindir}/exult
-%{_datadir}/exult/exultmsg.txt
 %{_datadir}/exult/exult_bg.flx
 %{_datadir}/exult/exult_si.flx
 %{_datadir}/exult/exult.flx
@@ -165,3 +164,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/exult/estudio/new/text.flx
 %{_datadir}/exult/estudio/new/fonts.vga
 %{_datadir}/exult/estudio/new/pointers.shp
+%{_datadir}/exult/estudio/new/avatar_data.txt
+%{_datadir}/exult/estudio/new/blends.dat
+%{_datadir}/exult/estudio/new/paperdol.vga
