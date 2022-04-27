@@ -38,7 +38,13 @@ libu7file_la_SOURCES =	\
 	crc.cc		\
 	crc.h		\
 	msgfile.cc	\
-	msgfile.h
+	msgfile.h	\
+	sdlrwopsstreambuf.cc \
+	sdlrwopsstreambuf.h \
+	sdlrwopsistream.cc \
+	sdlrwopsistream.h \
+	sdlrwopsostream.cc \
+	sdlrwopsostream.h
 
 EXTRA_DIST = 		\
 	module.mk	\

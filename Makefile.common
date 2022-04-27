@@ -13,9 +13,6 @@ MAIN_OBJS:=actions.o \
 	effects.o \
 	exult.o \
 	exultmenu.o \
-	files/sdlrwopsstreambuf.o \
-	files/sdlrwopsistream.o \
-	files/sdlrwopsostream.o \
 	game.o \
 	gameclk.o \
 	gamedat.o \
@@ -118,7 +115,10 @@ FILE_OBJS:= \
 	files/U7fileman.o \
 	files/U7obj.o \
 	files/utils.o \
-	files/sha1/sha1.o
+	files/sha1/sha1.o \
+	files/sdlrwopsstreambuf.o \
+	files/sdlrwopsistream.o \
+	files/sdlrwopsostream.o 
 
 # Zipfile support objs
 ZIP_OBJS:=\
