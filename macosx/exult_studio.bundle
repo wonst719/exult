@@ -30,11 +30,17 @@
 	<data dest="${bundle}/Contents/Resources">
 		${project}/exult_studio.icns
 	</data>
-	<data dest="${bundle}/Contents/Resources/data/*.flx">
-		${prefix:source}/data/*.flx
+	<data dest="${bundle}/Contents/Resources/data/exult.flx">
+		${prefix:source}/data/exult.flx
 	</data>
-	<data dest="${bundle}/Contents/Resources/data/*.glade">
-		${prefix:source}/mapedit/*.glade
+	<data dest="${bundle}/Contents/Resources/data/exult_bg.flx">
+		${prefix:source}/data/exult_bg.flx
+	</data>
+	<data dest="${bundle}/Contents/Resources/data/exult_si.flx">
+		${prefix:source}/data/exult_si.flx
+	</data>
+	<data dest="${bundle}/Contents/Resources/data/exult_studio.glade">
+		${prefix:source}/mapedit/exult_studio.glade
 	</data>
 	<data>
 		${prefix:source}/data/estudio
@@ -54,13 +60,10 @@
 	<data dest="${bundle}/Contents/Resources/Documents/README.MacOSX.txt">
 		${prefix:source}/README.MacOSX
 	</data>
-    <data>
-      ${prefix}/share/icons
-    </data>
-    <data>
-      ${prefix}/share/locale/en
-    </data>
-    <data>
-      ${prefix}/share/glib-2.0/schemas/gschemas.compiled
-    </data>
+	<data>
+		${prefix}/share/icons
+	</data>
+	<translations  name="gtk30">
+		${prefix}/share/locale/en
+	</translations>
 </app-bundle>
