@@ -570,9 +570,6 @@
     <ClCompile Include="..\..\imagewin\PointScaler.cpp">
       <Filter>imagewin</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\imagewin\savepcx.cc">
-      <Filter>imagewin</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\imagewin\scale_2x.cc">
       <Filter>imagewin</Filter>
     </ClCompile>
@@ -743,6 +740,9 @@
     </ClCompile>
     <ClCompile Include="..\..\korean\ucs2kstable.cc">
       <Filter>korean</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imagewin\save_screenshot.cc">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
