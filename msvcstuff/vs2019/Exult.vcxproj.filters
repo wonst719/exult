@@ -745,6 +745,9 @@
     <ClCompile Include="..\..\korean\ucs2kstable.cc">
       <Filter>korean</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\imagewin\save_screenshot.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\actions.h">
