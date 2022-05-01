@@ -298,8 +298,8 @@ std::unique_ptr<std::istream> U7open_in(
 		try {
 			//std::cout << "trying: " << name << std::endl;
  			in = istream_factory(name.c_str(), mode);
-		} catch (std::exception &)
-		{}
+		} catch (std::exception &) {
+		}
 		if (in && in->good() && !in->fail()) {
 			//std::cout << "got it!" << std::endl;
 			return in; // found it!
@@ -382,8 +382,8 @@ void U7remove(
 			} else {
 				in = std::make_unique<std::ifstream>(name.c_str(), std::ios_base::in);
 			}
-		} catch (std::exception &)
-		{}
+		} catch (std::exception &) {
+		}
 		if (in && in->good() && !in->fail()) {
 			in.reset();
 			std::remove(name.c_str());
@@ -410,15 +410,15 @@ std::unique_ptr<std::istream> U7open_static(
 		auto in = U7open_in(name.c_str(), is_text);
 		if (in)
 			return in;
-	} catch (std::exception &)
-	{}
+	} catch (std::exception &) {
+	}
 	name = string("<STATIC>/") + fname;
 	try {
 		auto in = U7open_in(name.c_str(), is_text);
 		if (in)
 			return in;
-	} catch (std::exception &)
-	{}
+	} catch (std::exception &) {
+	}
 	return nullptr;
 }
 
@@ -430,9 +430,21 @@ bool U7exists(
     const char *fname         // May be converted to upper-case.
 ) {
 	try {
-	    return U7open_in(fname) != nullptr;
-	} catch (std::exception &)
-	{}
+		// First check if we can open it as a file.
+		if (U7open_in(fname)) {
+			return true;
+		}
+	} catch (std::exception &) {
+	}
+	try {
+		// If not, try to open it as a directory.
+		auto* dir = U7opendir(fname);
+		if (dir) {
+			closedir(dir);
+			return true;
+		}
+	} catch (std::exception &) {
+	}
 	return false;
 }
 
