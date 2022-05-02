@@ -775,8 +775,12 @@ static int Swap_weapons(
 		}
 	}
 	Game_object *oldweap = npc->get_readied(lhand);
-	if (oldweap)
+	Game_object_shared oldweaponshared;
+	if (oldweap) {
+		oldweaponshared = oldweap->shared_from_this();
 		npc->remove(oldweap);
+	}
+	Game_object_shared bobjshared = bobj->shared_from_this();
 	npc->remove(bobj);
 	npc->add(bobj, true);      // Should go into weapon hand.
 	if (oldweap)            // Put old where new one was.
