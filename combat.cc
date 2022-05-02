@@ -18,7 +18,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "shapeinf.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -26,6 +25,7 @@
 #include <memory>
 
 #include "actors.h"
+#include "objs.h"
 #include "combat.h"
 #include "combat_opts.h"
 #include "gamewin.h"
@@ -41,7 +41,6 @@
 #include "game.h"
 #include "monstinf.h"
 #include "ucmachine.h"
-#include "game.h"
 #include "Gump_manager.h"
 #include "spellbook.h"
 #include "animate.h"
@@ -50,7 +49,7 @@
 #include "cheat.h"
 #include "ammoinf.h"
 #include "weaponinf.h"
-#include "ready.h"
+#include "shapeinf.h"
 #include "usefuns.h"
 
 using std::cout;
@@ -237,7 +236,7 @@ bool Combat_schedule::teleport(
 	eman->add_effect(std::make_unique<Fire_field_effect>(src, npc->get_property(Actor::intelligence), fire_safe));
 	int sfx = Audio::game_sfx(43);
 	Audio::get_ptr()->play_sound_effect(sfx, npc);  // The weird noise.
-	// check line of sight now to give it the appearance of the spell 
+	// check line of sight now to give it the appearance of the spell
 	// failing as in the original
 	if (!Fast_pathfinder_client::is_straight_path(npc, trg))
 		return true;
