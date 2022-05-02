@@ -560,7 +560,7 @@ void ModManager::gather_mods() {
 			auto modtitle = modcfg.stem();
 #else
 			auto filename = filenames[i];
-			auto pathend  = filename.find_last_of('/') + 1;
+			auto pathend  = filename.find_last_of("/\\") + 1;
 			auto modtitle = filename.substr(
 					pathend, filename.length() - pathend - strlen(".cfg"));
 #endif
