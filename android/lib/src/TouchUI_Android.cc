@@ -55,9 +55,8 @@ TouchUI_Android* TouchUI_Android::getInstance() {
 }
 
 void TouchUI_Android::setVirtualJoystick(Sint16 x, Sint16 y) {
-	auto joystick = SDL_GameControllerGetJoystick(m_gameController);
-	SDL_JoystickSetVirtualAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, x);
-	SDL_JoystickSetVirtualAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, y);
+	SDL_JoystickSetVirtualAxis(m_joystick, SDL_CONTROLLER_AXIS_LEFTX, x);
+	SDL_JoystickSetVirtualAxis(m_joystick, SDL_CONTROLLER_AXIS_LEFTY, y);
 }
 
 void TouchUI_Android::sendEscapeKeypress() {
@@ -96,9 +95,9 @@ TouchUI_Android::TouchUI_Android() {
 		std::cerr << "SDL_JoystickAttachVirtual failed: " << SDL_GetError()
 				  << std::endl;
 	} else {
-		m_gameController = SDL_GameControllerOpen(joystickDeviceIndex);
-		if (!m_gameController) {
-			std::cerr << "SDL_GameControllerOpen failed for virtual joystick: "
+		m_joystick = SDL_JoystickOpen(joystickDeviceIndex);
+		if (!m_joystick) {
+			std::cerr << "SDL_JoystickOpen failed for virtual joystick: "
 					  << SDL_GetError() << std::endl;
 			SDL_JoystickDetachVirtual(joystickDeviceIndex);
 		}
@@ -106,16 +105,13 @@ TouchUI_Android::TouchUI_Android() {
 }
 
 TouchUI_Android::~TouchUI_Android() {
-	if (m_gameController) {
-		if (m_gameController) {
-			const SDL_JoystickID joystickId = SDL_JoystickInstanceID(
-					SDL_GameControllerGetJoystick(m_gameController));
-			SDL_GameControllerClose(m_gameController);
-			for (int i = 0, n = SDL_NumJoysticks(); i < n; ++i) {
-				if (SDL_JoystickGetDeviceInstanceID(i) == joystickId) {
-					SDL_JoystickDetachVirtual(i);
-					break;
-				}
+	if (m_joystick) {
+		const auto joystickId = SDL_JoystickInstanceID(m_joystick);
+		SDL_JoystickClose(m_joystick);
+		for (int i = 0, n = SDL_NumJoysticks(); i < n; ++i) {
+			if (SDL_JoystickGetDeviceInstanceID(i) == joystickId) {
+				SDL_JoystickDetachVirtual(i);
+				break;
 			}
 		}
 	}
