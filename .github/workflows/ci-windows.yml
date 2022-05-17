@@ -59,25 +59,33 @@ jobs:
     if: ${{ always() && (github.repository_owner == 'exult') }}
     steps:
       - name: IRC success notification (ircs://irc.libera.chat:6697/#exult)
-        uses: Gottox/irc-message-action@v2
         if: needs.ci-windows.result == 'success'
+        uses: Wandalen/wretry.action@v1.0.11
         with:
-          server: irc.libera.chat
-          port: 6697
-          channel: "#exult"
-          nickname: github-actions
-          tls: true
-          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The Windows build \x033succeeded\x03."
+          action: Gottox/irc-message-action@v2
+          attempt_limit: 3
+          attempt_delay: 10000
+          with: |
+            server: irc.libera.chat
+            port: 6697
+            channel: "#exult"
+            nickname: github-actions
+            tls: true
+            message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The Windows build \x033succeeded\x03."
       - name: IRC failure notification (ircs://irc.libera.chat:6697/#exult)
-        uses: Gottox/irc-message-action@v2
         if: needs.ci-windows.result != 'success'
+        uses: Wandalen/wretry.action@v1.0.11
         with:
-          server: irc.libera.chat
-          port: 6697
-          channel: "#exult"
-          nickname: github-actions
-          tls: true
-          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The Windows build \x034failed\x03."
+          action: Gottox/irc-message-action@v2
+          attempt_limit: 3
+          attempt_delay: 10000
+          with: |
+            server: irc.libera.chat
+            port: 6697
+            channel: "#exult"
+            nickname: github-actions
+            tls: true
+            message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The Windows build \x034failed\x03."
   ci-windows:
     runs-on: windows-2019
     defaults:
