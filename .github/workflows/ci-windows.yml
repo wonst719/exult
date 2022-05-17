@@ -3,52 +3,52 @@ name: ci-windows
 on:
   push:
     paths:
-      - '**'
-      - '!docs/**'
-      - 'docs/Makefile.am'
-      - '!ios/**'
-      - '!macos/**'
-      - '!msvcstuff/**'
-      - '!AUTHORS'
-      - '!ChangeLog'
-      - '!COPYING'
-      - '!FAQ'
-      - '!INSTALL'
-      - '!NEWS'
-      - '!**README**'
-      - '!**.ico'
-      - '!**.md'
-      - '!**.png'
-      - '!**.txt'
-      - '!.clang*'
-      - '!.gitignore'
-      - '!.gitattributes'
-      - '!.github/workflows/*'
-      - '.github/workflows/ci-windows.yml'
+      - "**"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!ios/**"
+      - "!macos/**"
+      - "!msvcstuff/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-windows.yml"
   pull_request:
     paths:
-      - '**'
-      - '!docs/**'
-      - 'docs/Makefile.am'
-      - '!ios/**'
-      - '!macos/**'
-      - '!msvcstuff/**'
-      - '!AUTHORS'
-      - '!ChangeLog'
-      - '!COPYING'
-      - '!FAQ'
-      - '!INSTALL'
-      - '!NEWS'
-      - '!**README**'
-      - '!**.ico'
-      - '!**.md'
-      - '!**.png'
-      - '!**.txt'
-      - '!.clang*'
-      - '!.gitignore'
-      - '!.gitattributes'
-      - '!.github/workflows/*'
-      - '.github/workflows/ci-windows.yml'
+      - "**"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!ios/**"
+      - "!macos/**"
+      - "!msvcstuff/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-windows.yml"
 
 jobs:
   irc:

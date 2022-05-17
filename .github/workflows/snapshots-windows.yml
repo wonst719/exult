@@ -33,7 +33,7 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           msystem: MSYS
-          install:
+          install: |
             base-devel
             git
             p7zip
@@ -239,22 +239,22 @@ jobs:
       - name: save-artifacts
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: |
-            cd $GITHUB_WORKSPACE
-            mkdir -p snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Exult.exe ./snapshot-files 
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultStudio.exe ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultTools.exe ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Gimp20Plugin.exe ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Keyring.zip ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/SFisland.zip ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Sifixes.zip ./snapshot-files
+          cd $GITHUB_WORKSPACE
+          mkdir -p snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/Exult.exe ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultStudio.exe ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultTools.exe ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/Gimp20Plugin.exe ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/Keyring.zip ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/SFisland.zip ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/Sifixes.zip ./snapshot-files
       - name: Upload artifacts
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: actions/upload-artifact@v2
         with:
-          name: 'snapshot files'
+          name: "snapshot files"
           path: snapshot-files
-# new job, now on Ubuntu
+  # new job, now on Ubuntu
   snapshot-upload:
     runs-on: ubuntu-latest
     needs: snapshots-windows
@@ -268,14 +268,14 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
-          name: 'snapshot files'
+          name: "snapshot files"
       - shell: bash
         run: |
           cd $GITHUB_WORKSPACE
           scp -i ~/.ssh/id_rsa *.exe *.zip ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
-# delete-artifact
+      # delete-artifact
       - name: Delete artifact
         uses: geekyeggo/delete-artifact@v1
         with:
-          name: 'snapshot files'
+          name: "snapshot files"
           failOnError: false

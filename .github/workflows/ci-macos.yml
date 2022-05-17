@@ -3,50 +3,50 @@ name: ci-macos
 on:
   push:
     paths:
-      - '**'
-      - '!docs/**'
-      - 'docs/Makefile.am'
-      - '!msvcstuff/**'
-      - '!win32/**'
-      - '!AUTHORS'
-      - '!ChangeLog'
-      - '!COPYING'
-      - '!FAQ'
-      - '!INSTALL'
-      - '!NEWS'
-      - '!**README**'
-      - '!**.ico'
-      - '!**.md'
-      - '!**.png'
-      - '!**.txt'
-      - '!.clang*'
-      - '!.gitignore'
-      - '!.gitattributes'
-      - '!.github/workflows/*'
-      - '.github/workflows/ci-macos.yml'
+      - "**"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!msvcstuff/**"
+      - "!win32/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-macos.yml"
   pull_request:
     paths:
-      - '**'
-      - '!docs/**'
-      - 'docs/Makefile.am'
-      - '!msvcstuff/**'
-      - '!win32/**'
-      - '!AUTHORS'
-      - '!ChangeLog'
-      - '!COPYING'
-      - '!FAQ'
-      - '!INSTALL'
-      - '!NEWS'
-      - '!**README**'
-      - '!**.ico'
-      - '!**.md'
-      - '!**.png'
-      - '!**.txt'
-      - '!.clang*'
-      - '!.gitignore'
-      - '!.gitattributes'
-      - '!.github/workflows/*'
-      - '.github/workflows/ci-macos.yml'
+      - "**"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!msvcstuff/**"
+      - "!win32/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-macos.yml"
 
 jobs:
   irc:
