@@ -174,6 +174,8 @@ protected:
 	struct SDL_Window *screen_window;
 	struct SDL_Renderer *screen_renderer;
 	struct SDL_Texture *screen_texture;
+        // Returns 0 on failure, else highest bpp for resolution
+        // TODO: bpp and flags are currently ignored; fix or remove
 	static int VideoModeOK(int width, int height, int bpp, Uint32 flags);
 	void UpdateRect(SDL_Surface *surf, int x, int y, int w, int h);
 
