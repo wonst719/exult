@@ -276,8 +276,9 @@ int Image_window::Get_best_bpp(int w, int h, int bpp, uint32 flags) {
 			else if (bpp == 32 && windowed_32 != 0) return 32;
 		}
 
-		if (VideoModeOK(w, h, bpp, flags) == 0)
-			return bpp;
+		auto best_bpp = VideoModeOK(w, h, bpp, flags);
+		if (best_bpp != 0)
+			return best_bpp;
 
 		cerr << "SDL Reports " << w << "x" << h << " " << bpp << " bpp " << ((flags & SDL_WINDOW_FULLSCREEN_DESKTOP) ? "fullscreen" : "windowed") << " surface is not OK. Attmempting to use " << bpp << " bpp anyway." << endl;
 		return bpp;
