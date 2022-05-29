@@ -455,7 +455,7 @@ void Image_window::static_init() {
 		}
 	}
 
-#ifndef __IPHONEOS__
+#if !defined(__IPHONEOS__) && !defined(ANDROID)
 	if (windowed_16 == 0 && windowed_32 == 0)
 		cerr << "SDL Reports 640x400 16 bpp and 32 bpp windowed surfaces are not OK. Windowed scalers may not work properly." << endl;
 #endif
