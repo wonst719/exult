@@ -36,5 +36,7 @@ ExultAndroid_main(int argc, char* argv[]) {
 	std::cout.rdbuf(ndk_cout);
 	std::cerr.rdbuf(ndk_cerr);
 
-	return 0;
+	// note: `exit(0)` rather than `return 0` to ensure proper cleanup of resources
+	//	 between runs.
+	exit(0);
 }
