@@ -45,7 +45,7 @@ private:
 	jmethodID               m_hideGameControlsMethod;
 	jmethodID               m_showButtonControlsMethod;
 	jmethodID               m_hideButtonControlsMethod;
-	SDL_GameController*     m_gameController;
+	SDL_Joystick*           m_joystick;
 	jmethodID               m_promptForNameMethod;
 };
 
