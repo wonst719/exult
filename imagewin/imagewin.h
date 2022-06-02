@@ -94,9 +94,6 @@ public:
 	struct Resolution {
 		sint32 width;
 		sint32 height;
-		bool palette;
-		bool rgb16;
-		bool rgb32;
 	};
 
 	struct ScalerVector : public std::vector<Image_window::ScalerInfo> {

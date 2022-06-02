@@ -339,7 +339,7 @@ void Image_window::static_init() {
 	for (int j = 0; j < SDL_GetNumDisplayModes(0); j++) {
 		SDL_DisplayMode dispmode;
 		if (SDL_GetDisplayMode(0, j, &dispmode) == 0) {
-			Resolution res = { dispmode.w, dispmode.h, false, false, false};
+			Resolution res = { dispmode.w, dispmode.h };
 			p_resolutions[(res.width << 16) | res.height] = res;
 
 		} else {
@@ -350,7 +350,7 @@ void Image_window::static_init() {
 	// It's empty, so add in some basic resolutions that would be nice to support
 	if (p_resolutions.empty()) {
 
-		Resolution res = { 0, 0, false, false, false};
+		Resolution res = { 0, 0 };
 
 		res.width = 640;
 		res.height = 480;
@@ -413,9 +413,6 @@ void Image_window::static_init() {
 		bool ok = false;
 
 		if (VideoModeOK(res.width, res.height)) {
-			res.palette = true;
-			res.rgb16 = true;
-			res.rgb32 = true;
 			ok_pal = true;
 			ok_rgb = true;
 			ok = true;
@@ -425,9 +422,6 @@ void Image_window::static_init() {
 			p_resolutions.erase(it++);
 		} else {
 			cout << ' ' << res.width << "x" << res.height << '\t';
-			if (res.palette)  cout << ' ' << 8 << ' ' << "bpp ok";
-			if (res.rgb16) cout << ' ' << 16 << ' ' << "bpp ok";
-			if (res.rgb32) cout << ' ' << 32 << ' ' << "bpp ok";
 			cout << std::endl;
 			++it;
 		}
@@ -606,7 +600,7 @@ bool Image_window::create_scale_surfaces(int w, int h, int bpp) {
 		SDL_GetRendererOutputSize(screen_renderer, &dw, &dh);
 		w=dw;
 		h=dh;
-		Resolution res = { w, h, false, false, false};
+		Resolution res = { w, h };
 		p_resolutions[(w << 16) | h] = res;
 		//getting new native scale when highdpi is active
 		int sw;
