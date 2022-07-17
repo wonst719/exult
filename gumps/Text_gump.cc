@@ -50,8 +50,8 @@ void Text_gump::add_text(
 				DecomposeUnicode(uni, first, vowel, final);
 				if (first >= 0)
 					serpentine += 'c' + first;
-				if (vowel >= 0)
-					serpentine += 'a' + vowel;
+				//if (vowel >= 0)
+				//	serpentine += 'a' + vowel;
 				//if (final >= 0)
 				//	serpentine += 'a' + final;
 
