@@ -47,8 +47,8 @@ void Text_gump::add_text(const char* str) {
 				DecomposeUnicode(uni, first, vowel, final);
 				if (first >= 0)
 					serpentine += 'c' + first;
-				if (vowel >= 0)
-					serpentine += 'a' + vowel;
+				//if (vowel >= 0)
+				//	serpentine += 'a' + vowel;
 				//if (final >= 0)
 				//	serpentine += 'a' + final;
 
