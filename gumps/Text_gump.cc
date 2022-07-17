@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Text_gump.h"
 
 #include "gamewin.h"
+#include "korean/ucs2kstable.h"
 
 #include <cstring>
 
@@ -34,6 +35,32 @@ using std::strchr;
 
 void Text_gump::add_text(const char* str) {
 	const int slen = strlen(str);    // Length of new text.
+
+	std::string serpentine = "";
+	if (font == 8) {
+		for (int i = 0; i < slen; i++) {
+			if (str[i] & 0x80) {
+				unsigned char hi = str[i];
+				unsigned char lo = str[i + 1];
+				unsigned short uni = KSToUnicode((hi << 8) | lo);
+				int first, vowel, final;
+				DecomposeUnicode(uni, first, vowel, final);
+				if (first >= 0)
+					serpentine += 'c' + first;
+				if (vowel >= 0)
+					serpentine += 'a' + vowel;
+				//if (final >= 0)
+				//	serpentine += 'a' + final;
+
+				i++;
+			} else {
+				serpentine += str[i];
+			}
+		}
+		str = serpentine.c_str();
+		slen = strlen(str);
+	}
+
 	// Allocate new space.
 	char* newtext = new char[textlen + (textlen != 0) + slen + 1];
 	if (textlen) {    // Copy over old.
