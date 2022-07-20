@@ -27,8 +27,11 @@
 
 #ifdef _MSC_VER
 #  include <intrin0.h>
+inline uint8 rotl8(uint8 val, size_t shift) {
+	return _rotl8(val, shift);
+}
 #else
-inline uint8 _rotl8(uint8 val, size_t shift) {
+inline uint8 rotl8(uint8 val, size_t shift) {
 	const int mask = (8 * sizeof(uint8) - 1);
 	return (val << shift) | (val >> ((-shift) & mask));
 }
@@ -36,7 +39,7 @@ inline uint8 _rotl8(uint8 val, size_t shift) {
 
 inline uint8 nibble_swap(uint8 val) {
 	constexpr const int shift = 4;
-	return _rotl8(val, shift);
+	return rotl8(val, shift);
 }
 
 /*
