@@ -25,10 +25,18 @@
 #include "common_types.h"
 #include "objs.h"
 
-inline uint8_t nibble_swap(uint8_t val) {
+#ifdef _MSC_VER
+#  include <intrin0.h>
+#else
+inline uint8 _rotl8(uint8 val, size_t shift) {
+	const int mask = (8 * sizeof(uint8) - 1);
+	return (val << shift) | (val >> ((-shift) & mask));
+}
+#endif
+
+inline uint8 nibble_swap(uint8 val) {
 	constexpr const int shift = 4;
-	constexpr const int mask = (8 * sizeof(uint8) - 1);
-	return (val << shift) | (val>>( (-shift) & mask));
+	return _rotl8(val, shift);
 }
 
 /*
