@@ -278,12 +278,20 @@ int main(
 	// to the default std::fstream-based file I/O to avoid taking an SDL
 	// dependency.
 	U7set_istream_factory(
-		[](const char* s, std::ios_base::openmode mode) {
+		[](const char* s, std::ios_base::openmode mode) -> std::unique_ptr<std::istream> {
+			auto file = std::make_unique<std::ifstream>(s, mode);
+			if (file->good()) {
+				return file;
+			}
 			return std::make_unique<SdlRwopsIstream>(s, mode);
 		}
 	);
 	U7set_ostream_factory(
-		[](const char* s, std::ios_base::openmode mode) {
+		[](const char* s, std::ios_base::openmode mode) -> std::unique_ptr<std::ostream> {
+			auto file = std::make_unique<std::ofstream>(s, mode);
+			if (file->good()) {
+				return file;
+			}
 			return std::make_unique<SdlRwopsOstream>(s, mode);
 		}
 	);
@@ -1296,7 +1304,7 @@ static void Handle_event(
 	// We want this
 	Gump_manager *gump_man = gwin->get_gump_man();
 	Gump *gump = nullptr;
-	
+
 	// For detecting double-clicks.
 	static uint32 last_b1_click = 0;
 	static uint32 last_b3_click = 0;
