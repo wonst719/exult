@@ -42,7 +42,6 @@
 #include <utility>
 
 using std::cerr;
-using std::cout;
 using std::endl;
 using std::string;
 using std::vector;
@@ -331,10 +330,11 @@ bool Shape_manager::load_gumps_minimal() {
  */
 
 void Shape_manager::reload_shapes(
-    int dragtype            // Type from u7drag.h.
+    int shape_kind            // Type from u7drag.h.
 ) {
 	U7FileManager::get_ptr()->reset();  // Cache no longer valid.
-	switch (dragtype) {
+	shape_cache[shape_kind].clear();
+	switch (shape_kind) {
 	case U7_SHAPE_SHAPES:
 		read_shape_info();
 		// ++++Reread text?
@@ -355,7 +355,7 @@ void Shape_manager::reload_shapes(
 		files[SF_PAPERDOL_VGA].load(PAPERDOL, PATCH_PAPERDOL);
 		break;
 	default:
-		cerr << "Type not supported:  " << dragtype << endl;
+		cerr << "Type not supported:  " << shape_kind << endl;
 		break;
 	}
 }
@@ -423,28 +423,37 @@ Font *Shape_manager::get_font(int fontnum) {
 	return fonts->get_font(fontnum);
 }
 
+Shape_manager::Cached_shape Shape_manager::cache_shape(int shape_kind, int shapenum, int framenum) {
+	Cached_shape cache{nullptr, false};
+	if (framenum == -1) {
+		return cache;
+	}
+	using cache_key = std::pair<int, int>;
+	auto iter = shape_cache[shape_kind].find(cache_key(shapenum, framenum));
+	if (iter != shape_cache[shape_kind].cend()) {
+		return iter->second;
+	}
+	if (shape_kind == SF_SHAPES_VGA) {
+		cache.shape = sman->shapes.get_shape(shapenum, framenum);
+		cache.has_trans = sman->shapes.get_info(shapenum).has_translucency();
+	} else if (shape_kind < SF_OTHER) {
+		cache.shape = sman->files[static_cast<int>(shape_kind)].get_shape(
+		            shapenum, framenum);
+		if (shape_kind == SF_SPRITES_VGA)
+			cache.has_trans = true;
+	} else {
+		std::cerr << "Error! Wrong ShapeFile!" << std::endl;
+		return cache;
+	}
+	shape_cache[shape_kind][cache_key(shapenum, framenum)] = cache;
+	return cache;
+}
 
 /*
  *  Read in shape.
  */
-Shape_frame *ShapeID::cache_shape() const {
-	if (framenum == -1) return nullptr;
-
-	has_trans = false;
-	if (!shapefile) {
-		// Special case.
-		shape = sman->shapes.get_shape(shapenum, framenum);
-		has_trans = sman->shapes.get_info(shapenum).has_translucency();
-	} else if (shapefile < SF_OTHER) {
-		shape = sman->files[static_cast<int>(shapefile)].get_shape(
-		            shapenum, framenum);
-		if (shapefile == SF_SPRITES_VGA)
-			has_trans = true;
-	} else {
-		std::cerr << "Error! Wrong ShapeFile!" << std::endl;
-		return nullptr;
-	}
-	return shape;
+Shape_manager::Cached_shape ShapeID::cache_shape() const {
+	return sman->cache_shape(shapefile, shapenum, framenum);
 }
 
 int ShapeID::get_num_frames() const {
