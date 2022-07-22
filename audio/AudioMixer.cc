@@ -66,11 +66,11 @@ using namespace Pentagram;
 
 AudioMixer *AudioMixer::the_audio_mixer = nullptr;
 
-AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_) : 
-audio_ok(false), 
+AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_) :
+audio_ok(false),
 sample_rate(sample_rate_), stereo(stereo_),
 midi(nullptr), midi_volume(255),
-id_counter(0), device(nullptr)
+id_counter(0)
 {
 	the_audio_mixer = this;
 
@@ -98,7 +98,7 @@ id_counter(0), device(nullptr)
 	if (audio_ok) {
 		pout << "Audio opened using format: " << obtained.freq << " Hz "
 		     << static_cast<int>(obtained.channels) << " Channels" <<  std::endl;
-		device = new SDLAudioDevice(dev);
+		device = std::make_unique<SDLAudioDevice>(dev);
 		{
 			std::lock_guard<SDLAudioDevice> lock(*device);
 			sample_rate = obtained.freq;
@@ -119,8 +119,6 @@ AudioMixer::~AudioMixer()
 	std::cout << "Destroying AudioMixer..." << std::endl;
 
 	closeMidiOutput();
-
-	delete device;
 
 	the_audio_mixer = nullptr;
 }

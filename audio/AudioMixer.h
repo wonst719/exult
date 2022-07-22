@@ -50,7 +50,7 @@ public:
 	bool			isPlayingVoice() const;
 	void			stopSample(sint32 instance_id);
 	void			stopSample(AudioSample *sample);
-	
+
 	void			setPaused(sint32 instance_id, bool paused);
 	bool			isPaused(sint32 instance_id) const;
 
@@ -81,7 +81,7 @@ private:
 	std::vector<AudioChannel>	channels;
 	sint32			id_counter;
 
-	SDLAudioDevice	*device;
+	std::unique_ptr<SDLAudioDevice>	device;
 
 	void			init_midi();
 	static void		sdlAudioCallback(void *userdata, uint8 *stream, int len);
