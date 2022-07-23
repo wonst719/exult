@@ -305,6 +305,10 @@ EXULT_FLX_OBJECTS := \
 	data/sb_maps.shp \
 	data/sb_notebook.shp \
 	data/sb_backpack.shp \
+	data/exultmsg.txt \
+	data/exultmsg_de.txt \
+	data/exultmsg_es.txt \
+	data/exultmsg_fr.txt \
 	data/transparentmenu.shp
 
 EXULT_BG_FLX := data/exult_bg.flx data/exult_bg_flx.h
