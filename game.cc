@@ -23,6 +23,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <sstream>
 #include <unistd.h>
 #include "menulist.h"
 #include "Audio.h"
