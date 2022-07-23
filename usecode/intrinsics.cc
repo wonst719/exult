@@ -2341,7 +2341,7 @@ USECODE_INTRINSIC(is_water) {
 USECODE_INTRINSIC(run_endgame) {
 	ignore_unused_variable_warning(num_parms);
 	Audio::get_ptr()->stop_sound_effects();
-	game->end_game(parms[0].get_int_value() != 0);
+	game->end_game(parms[0].get_int_value() != 0, true);
 	// If successful enable menu entry and play credits afterwards
 	if (parms[0].get_int_value() != 0) {
 		U7open_out("<SAVEGAME>/endgame.flg");

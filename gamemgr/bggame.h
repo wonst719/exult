@@ -28,10 +28,11 @@ public:
 	BG_Game();
 
 	void play_intro() override;
-	void end_game(bool success) override;
+	void end_game(bool success, bool within_game) override;
 	void top_menu() override;
 	void show_quotes() override;
 	void show_credits() override;
+	std::vector<unsigned int> get_congratulations_messages() override;
 	bool new_game(Vga_file &shapes) override;
 	int  get_start_tile_x() override {
 		return 64 * c_tiles_per_chunk;

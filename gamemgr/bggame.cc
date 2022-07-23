@@ -27,6 +27,7 @@
 #include "Configuration.h"
 #include "array_size.h"
 #include "data/bg/introsfx_mt32_flx.h"
+#include "data/exult_flx.h"
 #include "data/exult_bg_flx.h"
 #include "databuf.h"
 #include "exult.h"
@@ -60,13 +61,9 @@
 #include <typeinfo>
 #include <utility>
 #include <vector>
-#include <memory>
 
-using std::abs;
-using std::make_unique;
 using std::rand;
 using std::strchr;
-using std::strlen;
 using std::unique_ptr;
 
 enum {
@@ -236,6 +233,7 @@ BG_Game::BG_Game()
 	fontManager.add_font("SMALL_BLACK_FONT", FONTS_VGA, PATCH_FONTS, 2, 0);
 	fontManager.add_font("TINY_BLACK_FONT", FONTS_VGA, PATCH_FONTS, 4, 0);
 	fontManager.add_font("GUARDIAN_FONT", MAINSHP_FLX, PATCH_MAINSHP, 3, -2);
+	fontManager.add_font("EXULT_END_FONT", File_spec(EXULT_FLX, EXULT_FLX_ENDFONT_SHP), PATCH_ENDFONT, 0, -1);
 	auto& mp = gwin->get_map_patches();
 			// Sawdust in Iolo's hut is at lift 2, should be 0
 			// FIXME - the original had some way to deal with this
@@ -321,10 +319,6 @@ BG_Game::BG_Game()
 			mp.add(std::make_unique<Map_patch_remove>(Object_spec(
 		                                     Tile_coord(811, 955, 5), 874, 0, 0)));
 }
-
-class UserSkipException : public UserBreakException {
-};
-
 
 #define WAITDELAY(x) switch(wait_delay(x)) { \
 	case 1: throw UserBreakException(); break; \
@@ -1510,12 +1504,12 @@ private:
 	const char *file;
 	const char *patch;
 	int index;
-	bool played;
+	bool played = false;
 public:
 	bool play_it();
 
 	ExVoiceBuffer(const char *f, const char *p, int i)
-		: file(f), patch(p), index(i), played(false)
+		: file(f), patch(p), index(i)
 	{ }
 	bool can_play() const {
 		return file || patch;
@@ -1538,7 +1532,13 @@ bool ExVoiceBuffer::play_it() {
 	return false;
 }
 
-void BG_Game::end_game(bool success) {
+std::vector<unsigned int> BG_Game::get_congratulations_messages() {
+	return {congrats + 0, congrats + 1, congrats + 2, congrats + 3,
+	        congrats + 4, congrats + 5, congrats + 6, congrats + 7,
+	        congrats + 8};
+}
+
+void BG_Game::end_game(bool success, bool within_game) {
 	Font *font = fontManager.get_font("MENU_FONT");
 
 	if (!success) {
@@ -1624,18 +1624,20 @@ void BG_Game::end_game(bool success) {
 		Font *endfont3 = fontManager.get_font("END3_FONT");
 		Font *normal = fontManager.get_font("NORMAL_FONT");
 
-		const char *message = get_text_msg(you_cannot_do_that);
-		int height = topy + 200 - endfont2->get_text_height() * 2;
-		int width = (gwin->get_width() - endfont2->get_text_width(message)) / 2;
+		{
+			const char *message = get_text_msg(you_cannot_do_that);
+			const int height = topy + 200 - endfont2->get_text_height() * 2;
+			const int width = (gwin->get_width() - endfont2->get_text_width(message)) / 2;
 
-		for (unsigned int i = 150; i < 204; i++) {
-			next = fli1.play(win, i, i, next);
-			if (want_subs)
-				endfont2->draw_text(ibuf, width, height, message);
-			win->show();
-			if (wait_delay(0, 0, 1)) {
-				throw UserSkipException();
-			}
+			for (unsigned int i = 150; i < 204; i++) {
+				next = fli1.play(win, i, i, next);
+				if (want_subs)
+					endfont2->draw_text(ibuf, width, height, message);
+				win->show();
+				if (wait_delay(0, 0, 1)) {
+					throw UserSkipException();
+				}
+		}
 		}
 
 		// Set new music
@@ -1645,16 +1647,19 @@ void BG_Game::end_game(bool success) {
 
 		if (speech) speech2.play_it();
 
-		message = get_text_msg(damn_avatar);
-		width = (gwin->get_width() - endfont2->get_text_width(message)) / 2;
+		{
+			const char *message = get_text_msg(damn_avatar);
+			const int height = topy + 200 - endfont2->get_text_height() * 2;
+			const int width = (gwin->get_width() - endfont2->get_text_width(message)) / 2;
 
-		for (unsigned int i = 0; i < 100; i++) {
-			next = fli2.play(win, i, i, next);
-			if (want_subs)
-				endfont2->draw_text(ibuf, width, height, message);
-			win->show();
-			if (wait_delay(0, 0, 1)) {
-				throw UserSkipException();
+			for (unsigned int i = 0; i < 100; i++) {
+				next = fli2.play(win, i, i, next);
+				if (want_subs)
+					endfont2->draw_text(ibuf, width, height, message);
+				win->show();
+				if (wait_delay(0, 0, 1)) {
+					throw UserSkipException();
+				}
 			}
 		}
 
@@ -1681,11 +1686,13 @@ void BG_Game::end_game(bool success) {
 		win->fill8(0);
 
 		// Paint text
-		message = get_text_msg(blackgate_destroyed);
-		width = (gwin->get_width() - normal->get_text_width(message)) / 2;
-		height = (gwin->get_height() - normal->get_text_height()) / 2;
+		{
+			const char *message = get_text_msg(blackgate_destroyed);
+			const int height = (gwin->get_height() - normal->get_text_height()) / 2;
+			const int width = (gwin->get_width() - normal->get_text_width(message)) / 2;
 
-		normal->draw_text(ibuf, width, height, message);
+			normal->draw_text(ibuf, width, height, message);
+		}
 
 		// Fade in for 1 sec (50 cycles)
 		pal->fade(50, 1, 0);
@@ -1706,10 +1713,12 @@ void BG_Game::end_game(bool success) {
 		win->fill8(0);
 
 		// Paint text
-		message = get_text_msg(guardian_has_stopped);
-		width = (gwin->get_width() - normal->get_text_width(message)) / 2;
-
-		normal->draw_text(ibuf, width, height, message);
+		{
+			const char *message = get_text_msg(guardian_has_stopped);
+			const int height = (gwin->get_height() - normal->get_text_height()) / 2;
+			const int width = (gwin->get_width() - normal->get_text_width(message)) / 2;
+			normal->draw_text(ibuf, width, height, message);
+		}
 
 		// Fade in for 1 sec (50 cycles)
 		pal->fade(50, 1, 0);
@@ -1790,7 +1799,7 @@ void BG_Game::end_game(bool success) {
 		starty = (gwin->get_height() - normal->get_text_height() * 11) / 2.5;
 
 		for (unsigned int i = 0; i < 11; i++) {
-			message = get_text_msg(txt_screen1 + i);
+			const char *message = get_text_msg(txt_screen1 + i);
 			normal->draw_text(ibuf, centerx - normal->get_text_width(message) / 2, starty + normal->get_text_height()*i, message);
 		}
 
@@ -1818,7 +1827,7 @@ void BG_Game::end_game(bool success) {
 		starty = (gwin->get_height() - normal->get_text_height() * 9) / 2;
 
 		for (unsigned int i = 0; i < 9; i++) {
-			message = get_text_msg(txt_screen2 + i);
+			const char *message = get_text_msg(txt_screen2 + i);
 			normal->draw_text(ibuf, centerx - normal->get_text_width(message) / 2, starty + normal->get_text_height()*i, message);
 		}
 
@@ -1846,7 +1855,7 @@ void BG_Game::end_game(bool success) {
 		starty = (gwin->get_height() - normal->get_text_height() * 8) / 2;
 
 		for (unsigned int i = 0; i < 8; i++) {
-			message = get_text_msg(txt_screen3 + i);
+			const char *message = get_text_msg(txt_screen3 + i);
 			normal->draw_text(ibuf, centerx - normal->get_text_width(message) / 2, starty + normal->get_text_height()*i, message);
 		}
 
@@ -1874,7 +1883,7 @@ void BG_Game::end_game(bool success) {
 		starty = (gwin->get_height() - normal->get_text_height() * 5) / 2;
 
 		for (unsigned int i = 0; i < 5; i++) {
-			message = get_text_msg(txt_screen4 + i);
+			const char *message = get_text_msg(txt_screen4 + i);
 			normal->draw_text(ibuf, centerx - normal->get_text_width(message) / 2, starty + normal->get_text_height()*i, message);
 		}
 
@@ -1889,110 +1898,17 @@ void BG_Game::end_game(bool success) {
 		}
 
 		// Fade out for 1 sec (50 cycles)
-		pal->fade(50, 0, 0);
+		pal->fade_out(50);
 
-		Game_clock *clock = gwin->get_clock();
-		int total_time = clock->get_total_hours();
 		// Congratulations screen
-
 		// show only when finishing a game and not when viewed from menu
-		// game starts off with 6 hours as its 6am
-		if (total_time > 6) {
-			if (wait_delay(100)) {
-				throw UserSkipException();
-			}
-
-			// Paint backgound black
-			win->fill8(0);
-
-			starty = (gwin->get_height() - normal->get_text_height() * 6) / 2;
-
-			// calculate the time it took to complete the game
-			// in exultmsg.txt it is "%d year s ,  %d month s , &  %d day s"
-			// only showing years or months if there were any
-			for (unsigned int i = 0; i < 9; i++) {
-				message = get_text_msg(congrats + i);
-				// if we are on the line with the time played
-				if (i == 2) {
-					// initialize to make sure there is no garbage.
-					char buffer[50] = {0};
-					message         = buffer;
-					// since we start at 6am we use hours if below 30 of them(30-6=1day), otherwise we don't display hours 
-					// unless over a month so offset doesn't matter.
-					if (total_time >= 30) {
-						// this is how you would calculate years but since UltimaVII congrats screen has 13 months per year
-						// and VI in game calendar states 12 months per year
-						// it was decided to keep only months as we don't know which year is correct
-						// 8064 hours = 336 days, 672 hours = 28 days
-						// int year = total_time/8064;
-						// total_time %= 8064;
-						int month = total_time / 672;
-						total_time %= 672;
-						int day = total_time / 24;
-						total_time %= 24;
-						int hour = total_time;
-						// as per comment above
-						// if(year > 0) sprintf(buffer,"%d year(s) , ",year);
-						// message = buffer;
-						if (month == 1)
-							sprintf(buffer, "%s%d month", message, month);
-						else if (month > 1)
-							sprintf(buffer, "%s%d months", message, month);
-						message = buffer;
-
-						// add ampersand only if month(s) and there is more to display.
-						if (month > 0 && (day != 0 || hour != 0))
-							sprintf(buffer, "%s & ", message);
-						message = buffer;
-
-						if (day == 1)
-							sprintf(buffer, "%s%d day", message, day);
-						else if (day > 1)
-							sprintf(buffer, "%s%d days", message, day);
-						// if no days, display hours(this would only happen on exactly 1,2,3 etc months)
-						// Here so the player doesnt think we didn't track the hours/days.
-						// so 112 days at 2am would display "4 months & 2 hours", 113 days at 2am would display "4 months & 1 day"
-						else if (day == 0 && hour == 1)
-							sprintf(buffer, "%s%d hour", message, hour);
-						else if (day == 0 && hour > 1)
-							sprintf(buffer, "%s%d hours", message, hour);
-
-						// in the remote chance a player finishes on exactly 0 hours, 0 days and X month(s)
-						if (day == 0 && hour == 0)
-							sprintf(buffer, "%s & 0 days", message);
-						message = buffer;
-					} else {
-						// if only displaying hours remove the initial 6
-						total_time -= 6;
-						if (total_time == 1)
-							sprintf(buffer, "only %d hour.", total_time);
-						else
-							sprintf(buffer, "only %d hours.", total_time);
-						message = buffer;
-					}
-				}
-				// Update the mailing address
-				if (i == 4) {
-					message = "at RichardGarriott on Twitter";
-				}
-				normal->draw_text(ibuf, centerx - normal->get_text_width(message) / 2, starty + normal->get_text_height() * i, message);
-			}
-
-			// Fade in for 1 sec (50 cycles)
-			pal->fade(50, 1, 0);
-
-			// Display text for 20 seonds (only 8 at the moment)
-			for (unsigned int i = 0; i < 80; i++) {
-				if (wait_delay(100)) {
-					throw UserSkipException();
-				}
-			}
-
-			// Fade out for 1 sec (50 cycles)
-			pal->fade(50, 0, 0);
+		if (within_game) {
+			show_congratulations(pal);
 		}
-
 	} catch (const UserSkipException &/*x*/) {
+		pal->set_brightness(80);    // Set readable brightness
+		win->fill8(0);
+		win->show();
 	}
 
 	if (midi) {

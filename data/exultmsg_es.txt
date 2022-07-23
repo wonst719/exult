@@ -24,7 +24,7 @@
 0x513:EL FIN DE ULTIMA VII
 0x514:EL FIN DE BRITANIA, COMO YA SABES...
 0x515:No! No lo hagas!
-0x516:No puedes Avatar...! 
+0x516:No puedes Avatar...!
 0x517:La Puerta esta destruida.
 0x518:El Guardian ha sido detenido.
 # End1
@@ -41,7 +41,7 @@
 0x522:batalla de la Puerta Negra,Britania
 0x523:emprendio el largo camino de la
 0x524:recuperacion.
-0x525: 
+0x525:
 0x526:Tras tu regreso a Britain,
 0x527:Lord British decreto que
 0x528:la Hermandad era ilegal,
@@ -76,10 +76,10 @@
 #Congratulations
 0x542:Felicidades!
 0x543:Has completado Ultima VII en
-0x544:%d agno s ,  %d mes   s , &  %d dia s .
-0x545:Felicidades!
-0x546:
-0x547:
+0x544: & |solamente |exactamente | agno| agnos| mes| meses| dia| dias| hora| horas|tiempo negativo!
+0x545:Escriba a Lord British,
+0x546:@RichardGarriott en Twitter,
+0x547:contandole de su logro!
 0x548:
 0x549:
 0x54A:
@@ -100,7 +100,7 @@
 0x558:Ahhh. Sueltalo ahi!
 0x559:Cuidado!
 0x55A:Oe, para atras!
-0x55B:Batlin!  Si el Avatar logra 
+0x55B:Batlin!  Si el Avatar logra
 0x55C:destruir la Puerta Negra,
 0x55D:ve junto con la humana llamada
 0x55E:Gweeno a la Isla de la Serpiente
@@ -137,3 +137,12 @@
 0x57C:O Puede que nos reunamos tu
 0x57D:y yo en algun otro lugar.
 0x57E:Tenemos cuentas pendientes!
+0x57F:Ha restablecido el equilibrio a
+0x580:la Isla de la Serpiente en
+0x581: & |solamente |exactamente | agno| agnos| mes| meses| dia| dias| hora| horas|tiempo negativo!
+0x582:Lamentablemente, el Guardián te ha secuestrado!
+0x583:Escriba a Lord British,
+0x584:@RichardGarriott en Twitter,
+0x585:contándole tu destino!
+0x586:
+0x587:

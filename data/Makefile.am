@@ -43,7 +43,8 @@ EXULT_FLX_OBJECTS = \
 	exultmsg.txt \
 	exultmsg_de.txt \
 	exultmsg_es.txt \
-	exultmsg_fr.txt
+	exultmsg_fr.txt \
+	endfont.shp
 
 EXULT_BG_FLX_OBJECTS = \
 	bg/flx.in \

@@ -41,7 +41,7 @@
 0x522:battle at The Black Gate, Britannia
 0x523:is set upon the long road to recovery
 0x524:from its various plights.
-0x525: 
+0x525:
 0x526:Upon your return to Britain,
 0x527:Lord British decreed that
 0x528:The Fellowship be outlawed
@@ -76,9 +76,9 @@
 #Congratulations
 0x542:Congratulations!
 0x543:You have completed Ultima VII in
-0x544:%d year s ,  %d month s , &  %d day s .
+0x544: & |only |exactly | year| years| month| months| day| days| hour| hours|negative time!
 0x545:Please write Lord British,
-0x546:in care of Origin Systems Inc.,
+0x546:@RichardGarriott on Twitter,
 0x547:telling him of your
 0x548:accomplishment!
 0x549:
@@ -137,3 +137,12 @@
 0x57C:Perhaps you would join me in
 0x57D:another world alltogether?
 0x57E:We do have a score to settle!
+0x57F:You have restored balance to
+0x580:the Serpent Isle in
+0x581: & |only |exactly | year| years| month| months| day| days| hour| hours|negative time!
+0x582:Unfortunately the Guardian has kidnapped you!
+0x583:Please write Lord British,
+0x584:@RichardGarriott on Twitter,
+0x585:telling him of your fate!
+0x586:
+0x587:

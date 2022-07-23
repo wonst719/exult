@@ -38,18 +38,17 @@
 #include "mappatch.h"
 #include "shapeid.h"
 #include "items.h"
+#include "data/exult_flx.h"
 #include "data/exult_si_flx.h"
 #include "miscinf.h"
 #include "gump_utils.h"
 #include "ignore_unused_variable_warning.h"
-#include "array_size.h"
 #include "exult.h"
 #include "touchui.h"
 
 using std::cout;
 using std::endl;
 using std::rand;
-using std::strlen;
 using std::unique_ptr;
 using std::make_unique;
 
@@ -195,6 +194,7 @@ SI_Game::SI_Game() {
 	fontManager.add_font("SIINTRO_FONT", INTRO_DAT, PATCH_INTRO, 14, 0);
 	fontManager.add_font("SMALL_BLACK_FONT", FONTS_VGA, PATCH_FONTS, 2, 0);
 	fontManager.add_font("TINY_BLACK_FONT", FONTS_VGA, PATCH_FONTS, 4, 0);
+	fontManager.add_font("EXULT_END_FONT", File_spec(EXULT_FLX, EXULT_FLX_ENDFONT_SHP), PATCH_ENDFONT, 0, -1);
 	// TODO: Verify if these map patches make sense for SI Beta, and come up
 	// with patches specific to it.
 	if (GAME_SI && !is_si_beta()) {
@@ -971,10 +971,16 @@ struct ExSubEvent {
 	}
 };
 
+std::vector<unsigned int> SI_Game::get_congratulations_messages() {
+	return {congrats_si + 0, congrats_si + 1, congrats_si + 2, congrats_si + 3,
+	        congrats_si + 4, congrats_si + 5, congrats_si + 6, congrats_si + 7,
+	        congrats_si + 8};
+}
+
 //
 // Serpent Isle Endgame
 //
-void SI_Game::end_game(bool success) {
+void SI_Game::end_game(bool success, bool within_game) {
 	ignore_unused_variable_warning(success);
 	Audio *audio = Audio::get_ptr();
 	audio->stop_music();
@@ -1094,7 +1100,7 @@ void SI_Game::end_game(bool success) {
 		ExCineFlic(70250, INTRO_DAT, PATCH_INTRO, 13, 0, 121, false, 75),
 		ExCineFlic(82300)
 	};
-	int last_flic = 7;
+	int last_flic = array_size(flics) - 1;
 	int cur_flic = -1;
 	ExCineFlic *flic = nullptr;
 	ExCineFlic *pal_flic = nullptr;
@@ -1227,6 +1233,20 @@ void SI_Game::end_game(bool success) {
 			if (pal_flic && pal_flic->can_play()) pal_flic->fade_out(20);
 			break;
 		}
+	}
+
+	try {
+		// Fade out for 1 sec (50 cycles)
+		pal->set_brightness(80);    // Set readable brightness
+		win->fill8(0);
+		win->show();
+
+		// Congratulations screen
+		// show only when finishing a game and not when viewed from menu
+		if (within_game) {
+			show_congratulations(pal);
+		}
+	} catch (const UserSkipException &/*x*/) {
 	}
 
 	gwin->clear_screen(true);

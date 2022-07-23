@@ -309,6 +309,7 @@ EXULT_FLX_OBJECTS := \
 	data/exultmsg_de.txt \
 	data/exultmsg_es.txt \
 	data/exultmsg_fr.txt \
+	data/endfont.shp \
 	data/transparentmenu.shp
 
 EXULT_BG_FLX := data/exult_bg.flx data/exult_bg_flx.h

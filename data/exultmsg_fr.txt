@@ -76,9 +76,9 @@
 #Congratulations
 0x542:Flicitations!
 0x543:Tu as accompli Ultima VII en
-0x544:%d anne s ,  %d mois  , &  %d jour s .
+0x544: & |seulement |exactement | anne| annes| mois| mois| jour| jours| heure| heures|temps négatif!
 0x545:S'il te plat crit  Lord British,
-0x546:Origin Systems Inc.,
+0x546:@RichardGarriott sur Twitter,
 0x547:pour lui communiquer ta
 0x548:russite!
 0x549:

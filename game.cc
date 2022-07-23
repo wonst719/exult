@@ -47,11 +47,12 @@
 #include "gamemgr/modmgr.h"
 #include "shapes/miscinf.h"
 #include "array_size.h"
+#include "gameclk.h"
+#include "items.h"
 
 using std::cout;
 using std::endl;
 using std::ifstream;
-using std::strcpy;
 using std::string;
 
 bool Game::new_game_flag = false;
@@ -155,6 +156,127 @@ Game *Game::create_game(BaseGameInfo *mygame) {
 	cout << endl;
 
 	return game;
+}
+
+void Game::show_congratulations(Palette *pal0) {
+	Game_clock *clock = gwin->get_clock();
+	int total_time = clock->get_total_hours();
+
+	if (wait_delay(100)) {
+		throw UserSkipException();
+	}
+
+	// Paint background black
+	gwin->clear_screen(true);
+	win->fill8(0);
+
+	Font *end_font = fontManager.get_font("EXULT_END_FONT");
+	int starty = (gwin->get_height() - end_font->get_text_height() * 8) / 2;
+
+	// calculate the time it took to complete the game
+	// in exultmsg.txt it is "%d year s ,  %d month s , &  %d day s"
+	// only showing years or months if there were any
+	auto messages = get_congratulations_messages();
+	for (unsigned i = 0; i < messages.size(); i++) {
+		const char *message = get_text_msg(messages[i]);
+		// if we are on the line with the time played
+		if (i == 2) {
+			enum TokenTypes {
+				TokenAnd,
+				TokenOnly,
+				TokenExactly,
+				TokenYear,
+				TokenYears,
+				TokenMonth,
+				TokenMonths,
+				TokenDay,
+				TokenDays,
+				TokenHour,
+				TokenHours,
+				TokenNegativeTime,
+				TokenCount
+			};
+			std::stringstream reader(message);
+			std::vector<std::string> tokens;
+			tokens.reserve(TokenCount);
+			std::string temp;
+			while (std::getline(reader, temp, '|')) {
+				tokens.emplace_back(std::move(temp));
+			}
+			tokens.resize(TokenCount);	// Just in case
+			// this is how you would calculate years but since UltimaVII congrats screen has 13 months per year
+			// and VI in game calendar states 12 months per year
+			// it was decided to keep only months as we don't know which year is correct
+			// 8064 hours = 336 days, 672 hours = 28 days
+			// const int year = total_time/8064;
+			// total_time %= 8064;
+			// remove the initial 6 hours
+			std::string displayMessage;
+			displayMessage.reserve(50);
+			total_time -= 6;
+			if (total_time < 0) {
+				displayMessage += tokens[TokenNegativeTime];
+			} else {
+				const int month = total_time / 672;
+				total_time %= 672;
+				const int day = total_time / 24;
+				total_time %= 24;
+				const int hour = total_time;
+				auto get_token = [&tokens](int value, TokenTypes one, TokenTypes many) {
+					return std::to_string(value) + tokens[value == 1 ? one : many];
+				};
+				// At least two of month, day, or hour is not zero because hour cannot be zero if day and month are both zero.
+				if (month > 0) {
+					if (day == 0 && hour == 0) {
+						// in the remote chance a player finishes on exactly 0 hours, 0 days and X month(s)
+						displayMessage += tokens[TokenExactly];
+					}
+					displayMessage += get_token(month, TokenMonth, TokenMonths);
+					// add ampersand only if there is more to display.
+					if (day > 0 || hour > 0) {
+						displayMessage += tokens[TokenAnd];
+					}
+				}
+				if (day > 0) {
+					if (month == 0 && hour == 0) {
+						displayMessage += tokens[TokenExactly];
+					}
+					displayMessage += get_token(day, TokenDay, TokenDays);
+					// add ampersand only if there is more to display.
+					if (hour > 0) {
+						displayMessage += tokens[TokenAnd];
+					}
+				}
+				if (hour > 0) {
+					// if no days, display hours(this would only happen on exactly 1,2,3 etc months)
+					// Here so the player doesnt think we didn't track the hours/days.
+					// so 112 days at 2am would display "4 months & 2 hours", 113 days at 2am would display "4 months & 1 day"
+					if (month == 0 && day == 0) {
+						displayMessage += tokens[TokenOnly];
+					}
+					displayMessage += get_token(hour, TokenHour, TokenHours);
+				}
+				displayMessage += '.';
+			}
+			message = displayMessage.c_str();
+			end_font->draw_text(ibuf, centerx - end_font->get_text_width(message) / 2, starty + end_font->get_text_height() * i, message);
+		} else {
+			end_font->draw_text(ibuf, centerx - end_font->get_text_width(message) / 2, starty + end_font->get_text_height() * i, message);
+		}
+	}
+
+	// Fade in for 1 sec (50 cycles)
+	pal0->fade(50, 1, 0);
+
+	// Display text for 20 seonds (only 8 at the moment)
+	for (unsigned int i = 0; i < 80; i++) {
+		if (wait_delay(100)) {
+			throw UserSkipException();
+		}
+	}
+
+	// Fade out for 1 sec (50 cycles)
+	pal0->fade(50, 0, 0);
 }
 
 const char *xml_root = "Game_config";
@@ -363,7 +485,7 @@ bool Game::show_menu(bool skip) {
 			if (game_type == EXULT_DEVEL_GAME)
 				break;
 			pal->fade_out(c_fade_out_time);
-			end_game(true);
+			end_game(true, false);
 			top_menu();
 			break;
 		case 6: // Return to Menu
