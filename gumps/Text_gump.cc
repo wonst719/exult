@@ -39,8 +39,10 @@ void Text_gump::add_text(
 ) {
 	int slen = strlen(str);     // Length of new text.
 
-	std::string serpentine = "";
-	if (font == 8) {
+	bool serpentine = font == 8;
+
+	std::string serpentineText = "";
+	if (serpentine) {
 		for (int i = 0; i < slen; i++) {
 			if (str[i] & 0x80) {
 				unsigned char hi = str[i];
@@ -49,7 +51,7 @@ void Text_gump::add_text(
 				int first, vowel, final;
 				DecomposeUnicode(uni, first, vowel, final);
 				if (first >= 0)
-					serpentine += 'c' + first;
+					serpentineText += 'c' + first;
 				//if (vowel >= 0)
 				//	serpentine += 'a' + vowel;
 				//if (final >= 0)
@@ -57,10 +59,10 @@ void Text_gump::add_text(
 
 				i++;
 			} else {
-				serpentine += str[i];
+				serpentineText += str[i];
 			}
 		}
-		str = serpentine.c_str();
+		str = serpentineText.c_str();
 		slen = strlen(str);
 	}
 
