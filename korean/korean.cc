@@ -93,3 +93,7 @@ int KoreanFont::getGlyphWidth(uint16 codepoint) {
 int KoreanFont::getFontHeight() {
 	return _height;
 }
+
+bool KoreanFont::hasGlyph(uint16 codepoint) {
+	return codepoint >= 0xff;
+}

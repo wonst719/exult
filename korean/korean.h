@@ -55,6 +55,7 @@ public:
 	int drawGlyph(Image_buffer8* dst, uint16 codepoint, int dx, int dy);
 	int getGlyphWidth(uint16 codepoint);
 	int getFontHeight();
+	bool hasGlyph(uint16 codepoint);
 };
 
 // UCS-2 범위에서만 작동함
