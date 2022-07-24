@@ -289,6 +289,8 @@ int Font::paint_text(
 		while ((chr = static_cast<unsigned char>(*text++)) != 0) {
 			if (chr & 0x80) {
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
+			}
+			if (korean_font->hasGlyph(chr)) {
 				x += korean_font->drawGlyph(win, chr, x, korean_yoff);
 			} else {
 				Shape_frame* shape
@@ -331,6 +333,8 @@ int Font::paint_text(
 			if (chr & 0x80) {
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
 				textlen--;
+			}
+			if (korean_font->hasGlyph(chr)) {
 				x += korean_font->drawGlyph(win, chr, x, korean_yoff);
 			} else {
 				Shape_frame* shape = font_shapes->get_frame(chr);
@@ -509,9 +513,9 @@ int Font::paint_text_fixedwidth(
 	yoff += get_text_baseline();
 	while ((chr = static_cast<unsigned char>(*text++)) != 0) {
 		if (chr & 0x80) {
-			chr = static_cast<unsigned char>(*text++);
 			chr = (chr << 8) | static_cast<unsigned char>(*text++);
-
+		}
+		if (korean_font->hasGlyph(chr)) {
 			int glyphWidth = korean_font->getGlyphWidth(chr);
 			x += w = (width - glyphWidth) / 2;
 			korean_font->drawGlyph(win, chr, x - 1, korean_yoff + 3);	// FIXME: hardcoded offset
@@ -552,11 +556,11 @@ int Font::paint_text_fixedwidth(
 	int korean_yoff = yoff;
 	yoff += get_text_baseline();
 	while (textlen--) {
-		if (*text & 0x80) {
-			unsigned int chr;
-			chr = static_cast<unsigned char>(*text++);
+		unsigned int chr = static_cast<unsigned char>(*text++);
+		if (chr & 0x80) {
 			chr = (chr << 8) | static_cast<unsigned char>(*text++);
-
+		}
+		if (korean_font->hasGlyph(chr)) {
 			int glyphWidth = korean_font->getGlyphWidth(chr);
 			x += w = (width - glyphWidth) / 2;
 			korean_font->drawGlyph(win, chr, x - 1, korean_yoff + 3);	// FIXME: hardcoded offset
@@ -564,7 +568,7 @@ int Font::paint_text_fixedwidth(
 			x += glyphWidth - w;
 		} else {
 			Shape_frame* shape
-					= font_shapes->get_frame(static_cast<unsigned char>(*text++));
+					= font_shapes->get_frame(static_cast<unsigned char>(chr));
 			if (!shape) {
 				continue;
 			}
@@ -587,6 +591,8 @@ int Font::get_text_width(const char* text) {
 		while ((chr = static_cast<unsigned char>(*text++)) != 0) {
 			if (chr & 0x80) {
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
+			}
+			if (korean_font->hasGlyph(chr)) {
 				width += korean_font->getGlyphWidth(chr);
 			} else {
 				Shape_frame* shape
@@ -616,6 +622,8 @@ int Font::get_text_width(
 			if (chr & 0x80) {
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
 				textlen--;
+			}
+			if (korean_font->hasGlyph(chr)) {
 				width += korean_font->getGlyphWidth(chr);
 			} else {
 				Shape_frame* shape = font_shapes->get_frame(
