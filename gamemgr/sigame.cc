@@ -1137,9 +1137,7 @@ void SI_Game::end_game(bool success, bool within_game) {
 	int cur_sub = -1;
 
 	// Start the music
-	if (audio) {
-		audio->start_music(R_SEND, 0, false);
-	}
+	audio->start_music(R_SEND, 0, false);
 
 	int start_time = SDL_GetTicks();
 	bool showing_subs = false;
@@ -1252,10 +1250,8 @@ void SI_Game::end_game(bool success, bool within_game) {
 	gwin->clear_screen(true);
 
 	// Stop all sounds
-	if (audio) {
-		audio->cancel_streams();
-		audio->stop_music();
-	}
+	audio->cancel_streams();
+	audio->stop_music();
 }
 
 void SI_Game::show_quotes() {
