@@ -656,8 +656,10 @@ static void SetIcon() {
 				ExultIcon::height,
 				32,
 				0, 0, 0, 0);
-	if (iconsurface == nullptr)
+	if (iconsurface == nullptr) {
 		cout << "Error creating icon surface: " << SDL_GetError() << std::endl;
+		return;
+	}
 	for (int y = 0; y < static_cast<int>(ExultIcon::height); ++y)
 	{
 		for (int x = 0; x < static_cast<int>(ExultIcon::width); ++x)

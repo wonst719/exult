@@ -215,14 +215,13 @@ void Game_map::init(
 		}
 	if (!pU7map)
 		nomap = true;
-	auto& u7map = *pU7map;
 	for (int schunk = 0; schunk < c_num_schunks * c_num_schunks; schunk++) {
 		// Read in the chunk #'s.
 		unsigned char buf[16 * 16 * 2];
 		if (nomap)
 			std::fill(std::begin(buf), std::end(buf), 0);
 		else
-			u7map.read(reinterpret_cast<char *>(buf), sizeof(buf));
+			pU7map->read(reinterpret_cast<char *>(buf), sizeof(buf));
 		int scy = 16 * (schunk / 12); // Get abs. chunk coords.
 		int scx = 16 * (schunk % 12);
 		const uint8 *mapdata = buf;
@@ -446,7 +445,7 @@ void Game_map::write_chunk_terrains(
 		// Open file for chunks data.
 		// This truncates the file.
 		auto pOchunks = U7open_out(PATCH_U7CHUNKS);
-		if (!pOchunks) 
+		if (!pOchunks)
 			throw file_write_exception(U7CHUNKS);
 		auto& ochunks = *pOchunks;
 		v2_chunks = New_shapes();
@@ -605,7 +604,7 @@ void Game_map::get_ifix_chunk_objects(
 			int frnum = ent[3] >> 2;
 			const Shape_info &info = ShapeID::get_info(shnum);
 			obj = (info.is_animated() || info.has_sfx()) ?
-			     std::make_shared<Animated_ifix_object>(shnum, frnum, 
+			     std::make_shared<Animated_ifix_object>(shnum, frnum,
 				  												tx, ty, tz)
 			     : std::make_shared<Ifix_game_object>(shnum, frnum, tx, ty, tz);
 			olist->add(obj.get());
@@ -1051,7 +1050,7 @@ void Game_map::read_ireg_objects(
 				obj = v;
 				type = 0;
 			} else if (info.get_shape_class() == Shape_info::barge) {
-				std::shared_ptr<Barge_object> b = 
+				std::shared_ptr<Barge_object> b =
 					std::make_shared<Barge_object>(
 				        shnum, frnum, tilex, tiley, lift,
 				    	entry[4], entry[5],
@@ -1150,10 +1149,10 @@ Ireg_game_object_shared Game_map::create_ireg_object(
 		newobj = std::make_shared<Egglike_game_object>(
 		           shnum, frnum, tilex, tiley, lift);
 	else if (info.is_mirror())  // Mirror
-		newobj = std::make_shared<Mirror_object>(shnum, frnum, 
+		newobj = std::make_shared<Mirror_object>(shnum, frnum,
 			   	 									   tilex, tiley, lift);
 	else if (info.is_body_shape())
-		newobj = std::make_shared<Dead_body>(shnum, frnum, 
+		newobj = std::make_shared<Dead_body>(shnum, frnum,
 			   	 								   	tilex, tiley, lift, -1);
 	else if (info.get_shape_class() == Shape_info::virtue_stone)
 		newobj = std::make_shared<Virtue_stone_object>(
@@ -1170,13 +1169,13 @@ Ireg_game_object_shared Game_map::create_ireg_object(
 				    8, 16, 0);
 	} else if (info.get_shape_class() == Shape_info::container) {
 		if (info.is_jawbone())
-			newobj = std::make_shared<Jawbone_object>(shnum, frnum, 
+			newobj = std::make_shared<Jawbone_object>(shnum, frnum,
 				   	 								tilex, tiley, lift);
 		else
 			newobj = std::make_shared<Container_game_object>(shnum, frnum,
 			                                 tilex, tiley, lift);
 	} else {
-	    newobj = std::make_shared<Ireg_game_object>(shnum, frnum, 
+	    newobj = std::make_shared<Ireg_game_object>(shnum, frnum,
 														  tilex, tiley, lift);
 	}
     return newobj;
