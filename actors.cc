@@ -275,8 +275,8 @@ std::set<string> *Actor_attributes::strings = nullptr;
 Npc_timer_list *Actor::need_timers(
 ) {
 	if (!timers)
-		timers = new Npc_timer_list(this);
-	return timers;
+		timers = std::make_unique<Npc_timer_list>(this);
+	return timers.get();
 }
 
 /**
@@ -904,19 +904,19 @@ Actor::Actor(
     int uc
 ) : name(nm), usecode(uc),
 	usecode_assigned(false), unused(false),
-	npc_num(num), face_num(num), party_id(-1), atts(nullptr), temperature(0),
+	npc_num(num), face_num(num), party_id(-1), temperature(0),
 	shape_save(-1), oppressor(-1),
 	casting_mode(not_casting), casting_shape(-1),
 	target_tile(Tile_coord(-1, -1, 0)), attack_weapon(-1),
 	attack_mode(nearest),
-	schedule_type(Schedule::loiter), next_schedule(255), schedule(nullptr),
+	schedule_type(Schedule::loiter), next_schedule(255),
 	restored_schedule(-1), dormant(true), hit(false), combat_protected(false),
 	user_set_attack(false), alignment(0), charmalign(0), two_handed(false),
 	two_fingered(false), use_scabbard(false), use_neck(false),
 	light_sources(0), usecode_dir(0), type_flags(0),
 	gear_immunities(0), gear_powers(0), ident(0),
 	skin_color(-1), action(nullptr),
-	frame_time(0), step_index(0), qsteps(0), timers(nullptr),
+	frame_time(0), step_index(0), qsteps(0),
 	weapon_rect(0, 0, 0, 0), rest_time(0) {
 	set_shape(shapenum, 0);
 	init();
@@ -932,10 +932,7 @@ Actor::~Actor(
 	purge_deleted_actions();
 	if (in_queue() && gwin->get_tqueue())
 		gwin->get_tqueue()->remove(this);
-	schedule.reset();
 	delete action;
-	delete timers;
-	delete atts;
 }
 
 /**
@@ -3036,7 +3033,7 @@ void Actor::set_attribute(
     int val
 ) {
 	if (!atts)
-		atts = new Actor_attributes;
+		atts = std::make_unique<Actor_attributes>();
 	atts->set(nm, val);
 }
 

@@ -59,7 +59,7 @@ protected:
 	short face_num;         // Which shape for conversations.
 	short party_id;         // Index in party, or -1.
 	int properties[12];     // Properties set/used in 'usecode'.
-	Actor_attributes *atts;     // Generic atts. (for new games/mods).
+	std::unique_ptr<Actor_attributes> atts;     // Generic atts. (for new games/mods).
 	unsigned char temperature;  // Measure of coldness (0-63).
 	short shape_save;       // Our old shape, or -1.
 	short oppressor;        // NPC ID (>= 0) of oppressor, or -1.
@@ -138,7 +138,7 @@ protected:
 	int step_index;         // Index into walking frames, 1 1st.
 	int qsteps;             // # steps since last quake.
 
-	Npc_timer_list *timers;     // Timers for poison, hunger, etc.
+	std::unique_ptr<Npc_timer_list> timers;     // Timers for poison, hunger, etc.
 	TileRect weapon_rect;      // Screen area weapon was drawn in.
 	long rest_time;         // # msecs. of not doing anything.
 	void init();            // Clear stuff during construction.
