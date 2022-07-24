@@ -313,12 +313,13 @@ bool Schedule::try_proximity_usecode(int odds) {
 
 void Schedule_with_objects::cleanup()
 {
-	while (!created.empty()) {
-		Game_object_shared item = created.back().lock();
-		created.pop_back();
-		if (item && item.get()->get_owner() == npc)
+	for (const Game_object_weak& elem : created) {
+		Game_object_shared item = elem.lock();
+		if (item && item->get_owner() == npc) {
 			item->remove_this();
+		}
 	}
+	created.clear();
 }
 
 void Schedule_with_objects::set_current_item(Game_object *obj) {
