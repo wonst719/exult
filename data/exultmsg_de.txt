@@ -80,6 +80,6 @@
 0x545:Bitte schreiben Sie Lord British und
 0x546:erzhlen Sie @RichardGarriott auf
 0x547:Twitter, von Ihrer groartigen und
-0x548:bewundernswerten Leistung! Wir
-0x549:wrden uns ber Post aus
+0x548:bewundernswerten Leistung! Er
+0x549:wrde sich ber Post aus
 0x54A:Deutschland freuen!
