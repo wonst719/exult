@@ -195,8 +195,6 @@ WARNINGS := \
 	-Wregister \
 	-Wstack-protector \
 	-Wstrict-null-sentinel \
-	-Wsuggest-final-methods \
-	-Wsuggest-final-types \
 	-Wsuggest-override \
 	-Wsynth \
 	-Wtrampolines \
