@@ -220,8 +220,8 @@ public:
 		: Schedule(n), which(dir), loc(pos), phase(0)
 	{  }
 	// Create common schedules:
-	static Pace_schedule *create_horiz(Actor *n);
-	static Pace_schedule *create_vert(Actor *n);
+	static std::unique_ptr<Pace_schedule> create_horiz(Actor *n);
+	static std::unique_ptr<Pace_schedule> create_vert(Actor *n);
 	static void pace(Actor *npc, char &which, int &phase, Tile_coord &blocked, int delay);
 	void now_what() override;    // Now what should NPC do?
 };
