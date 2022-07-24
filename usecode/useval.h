@@ -103,28 +103,30 @@ private:
 	}
 	template <typename T, typename U>
 	void replaceFrom(T var, U&& newval, Val_type newtype) {
-		replace(this->*var, std::forward<U>(newval).*var, newtype, newval.undefined);
+		const bool newundefined = newval.undefined;
+		replace(this->*var, std::forward<U>(newval).*var, newtype, newundefined);
 	}
 	template <typename T>
 	void copy_internal(T&& v2) noexcept(std::is_rvalue_reference<T>::value) {
-		switch (v2.type) {
+		const Val_type newtype = v2.type;
+		switch (newtype) {
 		case int_type:
-			replaceFrom(&Usecode_value::intval, std::forward<T>(v2), v2.type);
+			replaceFrom(&Usecode_value::intval, std::forward<T>(v2), newtype);
 			break;
 		case pointer_type:
-			replaceFrom(&Usecode_value::ptrval, std::forward<T>(v2), v2.type);
+			replaceFrom(&Usecode_value::ptrval, std::forward<T>(v2), newtype);
 			break;
 		case string_type:
-			replaceFrom(&Usecode_value::strval, std::forward<T>(v2), v2.type);
+			replaceFrom(&Usecode_value::strval, std::forward<T>(v2), newtype);
 			break;
 		case array_type:
-			replaceFrom(&Usecode_value::arrayval, std::forward<T>(v2), v2.type);
+			replaceFrom(&Usecode_value::arrayval, std::forward<T>(v2), newtype);
 			break;
 		case class_sym_type:
-			replaceFrom(&Usecode_value::clssym, std::forward<T>(v2), v2.type);
+			replaceFrom(&Usecode_value::clssym, std::forward<T>(v2), newtype);
 			break;
 		case class_obj_type:
-			replaceFrom(&Usecode_value::clsrefval, std::forward<T>(v2), v2.type);
+			replaceFrom(&Usecode_value::clsrefval, std::forward<T>(v2), newtype);
 			break;
 		}
 	}
