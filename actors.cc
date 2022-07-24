@@ -2283,7 +2283,6 @@ void Actor::update_from_studio(
 		if (lift == 12) {
 			if (client_socket >= 0)
 				Exult_server::Send_data(client_socket, Exult_server::cancel);
-			delete npc;
 			return;
 		}
 		gwin->add_npc(npc, npc_num);
