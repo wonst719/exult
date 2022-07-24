@@ -589,9 +589,8 @@ void Game_map::get_ifix_chunk_objects(
 	Game_object_shared obj;
 	ifix->seek(filepos);        // Get to actual shape.
 	// Get buffer to hold entries' indices.
-	auto *entries = new unsigned char[len];
-	unsigned char *ent = entries;   // Read them in.
-	ifix->read(reinterpret_cast<char *>(entries), len);
+	auto entries = ifix->readN(len);   // Read them in.
+	unsigned char *ent = entries.get();
 	// Get object list for chunk.
 	Map_chunk *olist = get_chunk(cx, cy);
 	if (static_cast<Flex_header::Flex_vers>(vers) == Flex_header::orig) {
@@ -626,7 +625,6 @@ void Game_map::get_ifix_chunk_objects(
 		}
 	} else
 		assert(0);
-	delete[] entries;       // Done with buffer.
 	olist->setup_dungeon_levels();  // Should have all dungeon pieces now.
 }
 
@@ -830,8 +828,14 @@ void Read_special_ireg(
 ) {
 	int type = ireg->read1();       // Get type.
 	int len = ireg->read2();        // Length of rest.
-	auto *buf = new unsigned char[len];
-	ireg->read(reinterpret_cast<char *>(buf), len);
+	auto data = ireg->readN(len);
+	if (!obj) {
+		// Something went wrong if we get here, but still.
+		// Just return discarding the data read.
+		cerr << "Special IREG entry attached to NULL object!" << endl;
+		return;
+	}
+	auto *buf = data.get();
 	if (type == IREG_UCSCRIPT) { // Usecode script?
 		IBufferDataView nbuf(buf, len);
 		Usecode_script *scr = Usecode_script::restore(obj, &nbuf);
@@ -847,7 +851,6 @@ void Read_special_ireg(
 	} else {
 		cerr << "Unknown special IREG entry: " << type << endl;
 	}
-	delete [] buf;
 }
 
 /*
@@ -1432,7 +1435,7 @@ void Game_map::commit_terrain_edits(
 ) {
 	int num_terrains = chunk_terrains->size();
 	// Create list of flags.
-	auto *ters = new unsigned char[num_terrains]{};
+	std::vector<unsigned char> ters(num_terrains, 0);
 	// Commit edits.
 	for (int i = 0; i < num_terrains; i++)
 		if ((*chunk_terrains)[i] &&
@@ -1454,7 +1457,6 @@ void Game_map::commit_terrain_edits(
 					    chunk->get_terrain());
 			}
 	}
-	delete [] ters;
 }
 
 /*
@@ -1618,22 +1620,18 @@ Game_object *Game_map::locate_shape(
  */
 
 void Game_map::create_minimap(Shape *minimaps, const unsigned char *chunk_pixels) {
-	int cx;
-	int cy;
-	auto *pixels = new unsigned char[c_num_chunks * c_num_chunks];
-
-	for (cy = 0; cy < c_num_chunks; ++cy) {
+	std::vector<unsigned char> pixels(c_num_chunks * c_num_chunks);
+	for (int cy = 0; cy < c_num_chunks; ++cy) {
 		int yoff = cy * c_num_chunks;
-		for (cx = 0; cx < c_num_chunks; ++cx) {
+		for (int cx = 0; cx < c_num_chunks; ++cx) {
 			int chunk_num = terrain_map[cx][cy];
 			pixels[yoff + cx] = chunk_pixels[chunk_num];
 		}
 	}
 	if (num >= minimaps->get_num_frames())
 		minimaps->resize(num + 1);
-	minimaps->set_frame(std::make_unique<Shape_frame>(pixels,
+	minimaps->set_frame(std::make_unique<Shape_frame>(pixels.data(),
 	                                     c_num_chunks, c_num_chunks, 0, 0, true), num);
-	delete [] pixels;
 }
 
 /*
