@@ -147,20 +147,22 @@ void Sign_gump::paint(
 			std::string koreanText = txt.substr(delimiterPos + 1);
 			txt = txt.substr(0, delimiterPos);
 
-			size_t lineBeginPos = 0;
-			size_t lineDelimiterPos = 0; 
-			for (int subl = 0; lineDelimiterPos != koreanText.length(); subl++) {
-				lineDelimiterPos = koreanText.find('*', lineBeginPos);
-				if (lineDelimiterPos == std::string::npos)
-					lineDelimiterPos = koreanText.length();
+			if (!serpentine) {
+				size_t lineBeginPos = 0;
+				size_t lineDelimiterPos = 0;
+				for (int subl = 0; lineDelimiterPos != koreanText.length(); subl++) {
+					lineDelimiterPos = koreanText.find('*', lineBeginPos);
+					if (lineDelimiterPos == std::string::npos)
+						lineDelimiterPos = koreanText.length();
 
-				std::string lineText = koreanText.substr(lineBeginPos, lineDelimiterPos - lineBeginPos);
-				lineBeginPos = lineDelimiterPos + 1;
+					std::string lineText = koreanText.substr(lineBeginPos, lineDelimiterPos - lineBeginPos);
+					lineBeginPos = lineDelimiterPos + 1;
 
-				sman->paint_text(koreanFontId, lineText.c_str(),
-					                x + object_area.x +
-					                (object_area.w - sman->get_text_width(koreanFontId, lineText.c_str())) / 2,
-					                y + object_area.y + object_area.h + 10 + subl * koreanFontHeight);
+					sman->paint_text(koreanFontId, lineText.c_str(),
+						                x + object_area.x +
+						                (object_area.w - sman->get_text_width(koreanFontId, lineText.c_str())) / 2,
+						                y + object_area.y + object_area.h + 10 + subl * koreanFontHeight);
+				}
 			}
 		}
 		sman->paint_text(font, txt.c_str(),
