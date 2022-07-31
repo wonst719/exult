@@ -26,9 +26,10 @@
 #include "objs.h"
 
 #ifdef _MSC_VER
-#  include <intrin0.h>
+#  include <intrin.h>
+#  pragma intrinsic(_rotl8)
 inline uint8 rotl8(uint8 val, size_t shift) {
-	return _rotl8(val, shift);
+	return _rotl8(val, (uint8)shift);
 }
 #else
 inline uint8 rotl8(uint8 val, size_t shift) {
