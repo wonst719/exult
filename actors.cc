@@ -275,8 +275,8 @@ std::set<string> *Actor_attributes::strings = nullptr;
 Npc_timer_list *Actor::need_timers(
 ) {
 	if (!timers)
-		timers = new Npc_timer_list(this);
-	return timers;
+		timers = std::make_unique<Npc_timer_list>(this);
+	return timers.get();
 }
 
 /**
@@ -904,19 +904,19 @@ Actor::Actor(
     int uc
 ) : name(nm), usecode(uc),
 	usecode_assigned(false), unused(false),
-	npc_num(num), face_num(num), party_id(-1), atts(nullptr), temperature(0),
+	npc_num(num), face_num(num), party_id(-1), temperature(0),
 	shape_save(-1), oppressor(-1),
 	casting_mode(not_casting), casting_shape(-1),
 	target_tile(Tile_coord(-1, -1, 0)), attack_weapon(-1),
 	attack_mode(nearest),
-	schedule_type(Schedule::loiter), next_schedule(255), schedule(nullptr),
+	schedule_type(Schedule::loiter), next_schedule(255),
 	restored_schedule(-1), dormant(true), hit(false), combat_protected(false),
 	user_set_attack(false), alignment(0), charmalign(0), two_handed(false),
 	two_fingered(false), use_scabbard(false), use_neck(false),
 	light_sources(0), usecode_dir(0), type_flags(0),
 	gear_immunities(0), gear_powers(0), ident(0),
 	skin_color(-1), action(nullptr),
-	frame_time(0), step_index(0), qsteps(0), timers(nullptr),
+	frame_time(0), step_index(0), qsteps(0),
 	weapon_rect(0, 0, 0, 0), rest_time(0) {
 	set_shape(shapenum, 0);
 	init();
@@ -932,10 +932,7 @@ Actor::~Actor(
 	purge_deleted_actions();
 	if (in_queue() && gwin->get_tqueue())
 		gwin->get_tqueue()->remove(this);
-	delete schedule;
 	delete action;
-	delete timers;
-	delete atts;
 }
 
 /**
@@ -1713,7 +1710,7 @@ void Actor::restore_schedule(
 
 void Actor::set_schedule_type(
     int new_schedule_type,
-    Schedule *newsched      // New sched., or nullptr to create here.
+    std::unique_ptr<Schedule> newsched      // New sched., or nullptr to create here.
 ) {
 	// Don't stop path_run_usecode unless it is done.
 	If_else_path_actor_action *act = action ? action->as_usecode_path() : nullptr;
@@ -1726,12 +1723,12 @@ void Actor::set_schedule_type(
 	// Save old for a moment.
 	auto old_schedule =
 	    static_cast<Schedule::Schedule_types>(schedule_type);
-	delete schedule;        // Done with the old.
-	schedule = newsched;
-	if (!schedule)
+	if (newsched) {
+		schedule = std::move(newsched);
+	} else {
 		switch (static_cast<Schedule::Schedule_types>(new_schedule_type)) {
 		case Schedule::combat:
-			schedule = new Combat_schedule(this, old_schedule);
+			schedule = std::make_unique<Combat_schedule>(this, old_schedule);
 			break;
 		case Schedule::horiz_pace:
 			ready_best_weapon();
@@ -1742,114 +1739,115 @@ void Actor::set_schedule_type(
 			schedule = Pace_schedule::create_vert(this);
 			break;
 		case Schedule::talk:
-			schedule = new Talk_schedule(this);
+			schedule = std::make_unique<Talk_schedule>(this);
 			break;
 		case Schedule::dance:
 			empty_hands();
-			schedule = new Dance_schedule(this);
+			schedule = std::make_unique<Dance_schedule>(this);
 			break;
 		case Schedule::farm:    // Use a scythe.
-			schedule = new Farmer_schedule(this);
+			schedule = std::make_unique<Farmer_schedule>(this);
 			break;
 		case Schedule::tend_shop:// For now.
 			empty_hands();
-			schedule = new Loiter_schedule(this, 3);
+			schedule = std::make_unique<Loiter_schedule>(this, 3);
 			break;
 		case Schedule::miner:   // Use a pick.
-			schedule = new Miner_schedule(this);
+			schedule = std::make_unique<Miner_schedule>(this);
 			break;
 		case Schedule::hound:
 			ready_best_weapon();
-			schedule = new Hound_schedule(this);
+			schedule = std::make_unique<Hound_schedule>(this);
 			break;
 		case Schedule::loiter:
-			schedule = new Loiter_schedule(this);
+			schedule = std::make_unique<Loiter_schedule>(this);
 			break;
 		case Schedule::graze:   // For now.
-			schedule = new Graze_schedule(this);
+			schedule = std::make_unique<Graze_schedule>(this);
 			break;
 		case Schedule::wander:
-			schedule = new Wander_schedule(this);
+			schedule = std::make_unique<Wander_schedule>(this);
 			break;
 		case Schedule::blacksmith:
-			schedule = new Forge_schedule(this);
+			schedule = std::make_unique<Forge_schedule>(this);
 			break;
 		case Schedule::sleep:
 			if (party_id < 0 && npc_num != 0)
 				empty_hands();
-			schedule = new Sleep_schedule(this);
+			schedule = std::make_unique<Sleep_schedule>(this);
 			break;
 		case Schedule::wait:
-			schedule = new Wait_schedule(this);
+			schedule = std::make_unique<Wait_schedule>(this);
 			break;
 		case Schedule::eat:
 			empty_hands();
-			schedule = new Eat_schedule(this);
+			schedule = std::make_unique<Eat_schedule>(this);
 			break;
 		case Schedule::sit:
 			empty_hands();
-			schedule = new Sit_schedule(this);
+			schedule = std::make_unique<Sit_schedule>(this);
 			break;
 		case Schedule::bake:
-			schedule = new Bake_schedule(this);
+			schedule = std::make_unique<Bake_schedule>(this);
 			break;
 		case Schedule::sew:
-			schedule = new Sew_schedule(this);
+			schedule = std::make_unique<Sew_schedule>(this);
 			break;
 		case Schedule::shy:
 			empty_hands();
-			schedule = new Shy_schedule(this);
+			schedule = std::make_unique<Shy_schedule>(this);
 			break;
 		case Schedule::lab:
-			schedule = new Lab_schedule(this);
+			schedule = std::make_unique<Lab_schedule>(this);
 			break;
 		case Schedule::thief:
 			empty_hands();
-			schedule = new Thief_schedule(this);
+			schedule = std::make_unique<Thief_schedule>(this);
 			break;
 		case Schedule::waiter:
 			empty_hands();
-			schedule = new Waiter_schedule(this);
+			schedule = std::make_unique<Waiter_schedule>(this);
 			break;
 		case Schedule::kid_games:
 			empty_hands();
-			schedule = new Kid_games_schedule(this);
+			schedule = std::make_unique<Kid_games_schedule>(this);
 			break;
 		case Schedule::eat_at_inn:
 			empty_hands();
-			schedule = new Eat_at_inn_schedule(this);
+			schedule = std::make_unique<Eat_at_inn_schedule>(this);
 			break;
 		case Schedule::duel:
-			schedule = new Duel_schedule(this);
+			schedule = std::make_unique<Duel_schedule>(this);
 			break;
 		case Schedule::preach:
 			ready_best_weapon();    // Fellowship staff.
-			schedule = new Preach_schedule(this);
+			schedule = std::make_unique<Preach_schedule>(this);
 			break;
 		case Schedule::patrol:
 			ready_best_weapon();
-			schedule = new Patrol_schedule(this);
+			schedule = std::make_unique<Patrol_schedule>(this);
 			break;
 		case Schedule::desk_work:
 			empty_hands();
-			schedule = new Desk_schedule(this);
+			schedule = std::make_unique<Desk_schedule>(this);
 			break;
 		case Schedule::follow_avatar:
-			schedule = new Follow_avatar_schedule(this);
+			schedule = std::make_unique<Follow_avatar_schedule>(this);
 			break;
 		case Schedule::walk_to_schedule:
 			cerr << "Attempted to set a \"walk to schedule\" activity for NPC " << get_npc_num() << endl;
 			break;
 		case Schedule::arrest_avatar:
-			schedule = new Arrest_avatar_schedule(this);
+			schedule = std::make_unique<Arrest_avatar_schedule>(this);
 			break;
 		default:
 			if (new_schedule_type >=
 			        Schedule::first_scripted_schedule)
-				schedule = new Scripted_schedule(this,
+				schedule = std::make_unique<Scripted_schedule>(this,
 				                                 new_schedule_type);
 			break;
 		}
+	}
 	// Set AFTER creating new schedule.
 	schedule_type = new_schedule_type;
 
@@ -1917,8 +1915,7 @@ void Actor::set_schedule_and_loc(int new_schedule_type, Tile_coord const &dest,
 	if (schedule_type == Schedule::walk_to_schedule)
 		set_action(nullptr);  // Force NPC to go to the right place.
 	schedule_type = Schedule::walk_to_schedule;
-	delete schedule;
-	schedule = new Walk_to_schedule(this, dest, next_schedule, delay);
+	schedule = std::make_unique<Walk_to_schedule>(this, dest, next_schedule, delay);
 	dormant = false;
 	schedule->now_what();
 }
@@ -2286,7 +2283,6 @@ void Actor::update_from_studio(
 		if (lift == 12) {
 			if (client_socket >= 0)
 				Exult_server::Send_data(client_socket, Exult_server::cancel);
-			delete npc;
 			return;
 		}
 		gwin->add_npc(npc, npc_num);
@@ -3036,7 +3032,7 @@ void Actor::set_attribute(
     int val
 ) {
 	if (!atts)
-		atts = new Actor_attributes;
+		atts = std::make_unique<Actor_attributes>();
 	atts->set(nm, val);
 }
 
@@ -4075,8 +4071,7 @@ void Actor::die(
 	if (is_dead())
 		return;
 	set_action(nullptr);
-	delete schedule;
-	schedule = nullptr;
+	schedule.reset();
 	gwin->get_tqueue()->remove(this);// Remove from time queue.
 	Actor::set_flag(Obj_flags::dead);// IMPORTANT:  Set this before moving
 	//   objs. so Usecode(eventid=6) isn't called.

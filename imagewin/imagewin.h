@@ -94,9 +94,6 @@ public:
 	struct Resolution {
 		sint32 width;
 		sint32 height;
-		bool palette;
-		bool rgb16;
-		bool rgb32;
 	};
 
 	struct ScalerVector : public std::vector<Image_window::ScalerInfo> {
@@ -174,7 +171,8 @@ protected:
 	struct SDL_Window *screen_window;
 	struct SDL_Renderer *screen_renderer;
 	struct SDL_Texture *screen_texture;
-	static int VideoModeOK(int width, int height, int bpp, Uint32 flags);
+        // Returns 0 on failure, else highest bpp for resolution
+	static int VideoModeOK(int width, int height);
 	void UpdateRect(SDL_Surface *surf, int x, int y, int w, int h);
 
 	SDL_Surface *paletted_surface;  // Surface that palette is set on   (Example res)
@@ -280,9 +278,7 @@ protected:
 
 	static int force_bpp;
 	static int desktop_depth;
-	static int windowed_8;
-	static int windowed_16;
-	static int windowed_32;
+	static int windowed;
 	static float nativescale;
 
 public:

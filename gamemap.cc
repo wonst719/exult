@@ -215,14 +215,13 @@ void Game_map::init(
 		}
 	if (!pU7map)
 		nomap = true;
-	auto& u7map = *pU7map;
 	for (int schunk = 0; schunk < c_num_schunks * c_num_schunks; schunk++) {
 		// Read in the chunk #'s.
 		unsigned char buf[16 * 16 * 2];
 		if (nomap)
 			std::fill(std::begin(buf), std::end(buf), 0);
 		else
-			u7map.read(reinterpret_cast<char *>(buf), sizeof(buf));
+			pU7map->read(reinterpret_cast<char *>(buf), sizeof(buf));
 		int scy = 16 * (schunk / 12); // Get abs. chunk coords.
 		int scx = 16 * (schunk % 12);
 		const uint8 *mapdata = buf;
@@ -446,7 +445,7 @@ void Game_map::write_chunk_terrains(
 		// Open file for chunks data.
 		// This truncates the file.
 		auto pOchunks = U7open_out(PATCH_U7CHUNKS);
-		if (!pOchunks) 
+		if (!pOchunks)
 			throw file_write_exception(U7CHUNKS);
 		auto& ochunks = *pOchunks;
 		v2_chunks = New_shapes();
@@ -590,9 +589,8 @@ void Game_map::get_ifix_chunk_objects(
 	Game_object_shared obj;
 	ifix->seek(filepos);        // Get to actual shape.
 	// Get buffer to hold entries' indices.
-	auto *entries = new unsigned char[len];
-	unsigned char *ent = entries;   // Read them in.
-	ifix->read(reinterpret_cast<char *>(entries), len);
+	auto entries = ifix->readN(len);   // Read them in.
+	unsigned char *ent = entries.get();
 	// Get object list for chunk.
 	Map_chunk *olist = get_chunk(cx, cy);
 	if (static_cast<Flex_header::Flex_vers>(vers) == Flex_header::orig) {
@@ -605,7 +603,7 @@ void Game_map::get_ifix_chunk_objects(
 			int frnum = ent[3] >> 2;
 			const Shape_info &info = ShapeID::get_info(shnum);
 			obj = (info.is_animated() || info.has_sfx()) ?
-			     std::make_shared<Animated_ifix_object>(shnum, frnum, 
+			     std::make_shared<Animated_ifix_object>(shnum, frnum,
 				  												tx, ty, tz)
 			     : std::make_shared<Ifix_game_object>(shnum, frnum, tx, ty, tz);
 			olist->add(obj.get());
@@ -627,7 +625,6 @@ void Game_map::get_ifix_chunk_objects(
 		}
 	} else
 		assert(0);
-	delete[] entries;       // Done with buffer.
 	olist->setup_dungeon_levels();  // Should have all dungeon pieces now.
 }
 
@@ -831,8 +828,14 @@ void Read_special_ireg(
 ) {
 	int type = ireg->read1();       // Get type.
 	int len = ireg->read2();        // Length of rest.
-	auto *buf = new unsigned char[len];
-	ireg->read(reinterpret_cast<char *>(buf), len);
+	auto data = ireg->readN(len);
+	if (!obj) {
+		// Something went wrong if we get here, but still.
+		// Just return discarding the data read.
+		cerr << "Special IREG entry attached to NULL object!" << endl;
+		return;
+	}
+	auto *buf = data.get();
 	if (type == IREG_UCSCRIPT) { // Usecode script?
 		IBufferDataView nbuf(buf, len);
 		Usecode_script *scr = Usecode_script::restore(obj, &nbuf);
@@ -848,7 +851,6 @@ void Read_special_ireg(
 	} else {
 		cerr << "Unknown special IREG entry: " << type << endl;
 	}
-	delete [] buf;
 }
 
 /*
@@ -1051,7 +1053,7 @@ void Game_map::read_ireg_objects(
 				obj = v;
 				type = 0;
 			} else if (info.get_shape_class() == Shape_info::barge) {
-				std::shared_ptr<Barge_object> b = 
+				std::shared_ptr<Barge_object> b =
 					std::make_shared<Barge_object>(
 				        shnum, frnum, tilex, tiley, lift,
 				    	entry[4], entry[5],
@@ -1150,10 +1152,10 @@ Ireg_game_object_shared Game_map::create_ireg_object(
 		newobj = std::make_shared<Egglike_game_object>(
 		           shnum, frnum, tilex, tiley, lift);
 	else if (info.is_mirror())  // Mirror
-		newobj = std::make_shared<Mirror_object>(shnum, frnum, 
+		newobj = std::make_shared<Mirror_object>(shnum, frnum,
 			   	 									   tilex, tiley, lift);
 	else if (info.is_body_shape())
-		newobj = std::make_shared<Dead_body>(shnum, frnum, 
+		newobj = std::make_shared<Dead_body>(shnum, frnum,
 			   	 								   	tilex, tiley, lift, -1);
 	else if (info.get_shape_class() == Shape_info::virtue_stone)
 		newobj = std::make_shared<Virtue_stone_object>(
@@ -1170,13 +1172,13 @@ Ireg_game_object_shared Game_map::create_ireg_object(
 				    8, 16, 0);
 	} else if (info.get_shape_class() == Shape_info::container) {
 		if (info.is_jawbone())
-			newobj = std::make_shared<Jawbone_object>(shnum, frnum, 
+			newobj = std::make_shared<Jawbone_object>(shnum, frnum,
 				   	 								tilex, tiley, lift);
 		else
 			newobj = std::make_shared<Container_game_object>(shnum, frnum,
 			                                 tilex, tiley, lift);
 	} else {
-	    newobj = std::make_shared<Ireg_game_object>(shnum, frnum, 
+	    newobj = std::make_shared<Ireg_game_object>(shnum, frnum,
 														  tilex, tiley, lift);
 	}
     return newobj;
@@ -1433,7 +1435,7 @@ void Game_map::commit_terrain_edits(
 ) {
 	int num_terrains = chunk_terrains->size();
 	// Create list of flags.
-	auto *ters = new unsigned char[num_terrains]{};
+	std::vector<unsigned char> ters(num_terrains, 0);
 	// Commit edits.
 	for (int i = 0; i < num_terrains; i++)
 		if ((*chunk_terrains)[i] &&
@@ -1455,7 +1457,6 @@ void Game_map::commit_terrain_edits(
 					    chunk->get_terrain());
 			}
 	}
-	delete [] ters;
 }
 
 /*
@@ -1619,22 +1620,18 @@ Game_object *Game_map::locate_shape(
  */
 
 void Game_map::create_minimap(Shape *minimaps, const unsigned char *chunk_pixels) {
-	int cx;
-	int cy;
-	auto *pixels = new unsigned char[c_num_chunks * c_num_chunks];
-
-	for (cy = 0; cy < c_num_chunks; ++cy) {
+	std::vector<unsigned char> pixels(c_num_chunks * c_num_chunks);
+	for (int cy = 0; cy < c_num_chunks; ++cy) {
 		int yoff = cy * c_num_chunks;
-		for (cx = 0; cx < c_num_chunks; ++cx) {
+		for (int cx = 0; cx < c_num_chunks; ++cx) {
 			int chunk_num = terrain_map[cx][cy];
 			pixels[yoff + cx] = chunk_pixels[chunk_num];
 		}
 	}
 	if (num >= minimaps->get_num_frames())
 		minimaps->resize(num + 1);
-	minimaps->set_frame(std::make_unique<Shape_frame>(pixels,
+	minimaps->set_frame(std::make_unique<Shape_frame>(pixels.data(),
 	                                     c_num_chunks, c_num_chunks, 0, 0, true), num);
-	delete [] pixels;
 }
 
 /*

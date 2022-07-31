@@ -3,50 +3,50 @@ name: ci-macos
 on:
   push:
     paths:
-      - '**'
-      - '!docs/**'
-      - 'docs/Makefile.am'
-      - '!msvcstuff/**'
-      - '!win32/**'
-      - '!AUTHORS'
-      - '!ChangeLog'
-      - '!COPYING'
-      - '!FAQ'
-      - '!INSTALL'
-      - '!NEWS'
-      - '!**README**'
-      - '!**.ico'
-      - '!**.md'
-      - '!**.png'
-      - '!**.txt'
-      - '!.clang*'
-      - '!.gitignore'
-      - '!.gitattributes'
-      - '!.github/workflows/*'
-      - '.github/workflows/ci-macos.yml'
+      - "**"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!msvcstuff/**"
+      - "!win32/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-macos.yml"
   pull_request:
     paths:
-      - '**'
-      - '!docs/**'
-      - 'docs/Makefile.am'
-      - '!msvcstuff/**'
-      - '!win32/**'
-      - '!AUTHORS'
-      - '!ChangeLog'
-      - '!COPYING'
-      - '!FAQ'
-      - '!INSTALL'
-      - '!NEWS'
-      - '!**README**'
-      - '!**.ico'
-      - '!**.md'
-      - '!**.png'
-      - '!**.txt'
-      - '!.clang*'
-      - '!.gitignore'
-      - '!.gitattributes'
-      - '!.github/workflows/*'
-      - '.github/workflows/ci-macos.yml'
+      - "**"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!msvcstuff/**"
+      - "!win32/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-macos.yml"
 
 jobs:
   irc:
@@ -82,7 +82,7 @@ jobs:
       - name: Install dependencies
         run: |
           brew install automake libtool pkg-config libpng zlib libogg libvorbis fluid-synth freetype gtk+3 libxml2 bison flex
-          brew install sdl2 --head
+          brew install sdl2
       - name: Checkout code
         uses: actions/checkout@master
       - name: Run autogen

@@ -980,7 +980,6 @@ void Egg_object::update_from_studio(
 			if (client_socket >= 0)
 				Exult_server::Send_data(client_socket,
 				                        Exult_server::cancel);
-			egg = nullptr;
 			return;
 		}
 		if (client_socket >= 0)

@@ -149,7 +149,7 @@ m4_if(m4_version_compare(m4_defn([AC_AUTOCONF_VERSION]), [2.70]), [-1], [dnl
   AM_PROG_LEX
 ], [
   dnl autoconf >= 2.70
-  AC_PROG_LEX([yywrap])
+  AC_PROG_LEX([noyywrap])
 ])
 
 AC_PROG_YACC
@@ -1078,7 +1078,7 @@ if test x$enable_android_apk != xno; then
 	else
 		AC_MSG_ERROR([found < 6.8.2])
 	fi
-	
+
 	# Use sdkmanager to check Android package versions.
 	AC_PATH_PROGS(SDKMANAGER, sdkmanager)
 
@@ -1195,6 +1195,8 @@ macosx/exult_studio_info.plist
 Makefile
 android/Makefile
 android/app/build.gradle
+android/lib/Makefile
+android/lib/src/Makefile
 audio/Makefile
 audio/midi_drivers/Makefile
 audio/midi_drivers/timidity/Makefile

@@ -33,7 +33,7 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           msystem: MSYS
-          install:
+          install: |
             base-devel
             git
             p7zip
@@ -239,43 +239,63 @@ jobs:
       - name: save-artifacts
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: |
-            cd $GITHUB_WORKSPACE
-            mkdir -p snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Exult.exe ./snapshot-files 
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultStudio.exe ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultTools.exe ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Gimp20Plugin.exe ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Keyring.zip ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/SFisland.zip ./snapshot-files
-            cp ${{ env.EXULT_SNAPSHOT_PATH }}/Sifixes.zip ./snapshot-files
+          cd $GITHUB_WORKSPACE
+          mkdir -p snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/Exult.exe ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultStudio.exe ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/ExultTools.exe ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/Gimp20Plugin.exe ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/Keyring.zip ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/SFisland.zip ./snapshot-files
+          cp ${{ env.EXULT_SNAPSHOT_PATH }}/Sifixes.zip ./snapshot-files
       - name: Upload artifacts
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: actions/upload-artifact@v2
         with:
-          name: 'snapshot files'
+          name: "snapshot files"
           path: snapshot-files
-# new job, now on Ubuntu
+  # new job, now on Ubuntu
   snapshot-upload:
     runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'exult' }}
     needs: snapshots-windows
     steps:
+      - name: Activity check
+        shell: bash
+        run: |
+          DATEUTC=$(curl -sL https://api.github.com/repos/exult/exult/commits | jq -r '[.[]][0]' | jq -r '.commit.committer.date')
+          TIMESTAMP=$(date --utc -d "$DATEUTC" +%s)
+          DAYS=$(( ($(date --utc +%s) - $TIMESTAMP) / 86400 ))
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
+          else
+            if [ $DAYS -gt 0 ]; then
+              echo EXULT_REPO_ALIVE=false >> $GITHUB_ENV
+            else
+              echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
+            fi
+          fi
       - name: Install SSH key
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: shimataro/ssh-key-action@v2
         with:
           key: "${{ secrets.SSH_PRIVATE_KEY }}"
           name: id_rsa
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
       - name: Download artifacts
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: actions/download-artifact@v2
         with:
-          name: 'snapshot files'
+          name: "snapshot files"
       - shell: bash
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: |
           cd $GITHUB_WORKSPACE
           scp -i ~/.ssh/id_rsa *.exe *.zip ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
-# delete-artifact
+      # delete-artifact
       - name: Delete artifact
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: geekyeggo/delete-artifact@v1
         with:
-          name: 'snapshot files'
+          name: "snapshot files"
           failOnError: false

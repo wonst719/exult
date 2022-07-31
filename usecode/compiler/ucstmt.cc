@@ -887,7 +887,7 @@ void Uc_switch_statement::gen(
 	Basic_block *def_case = nullptr;
 	for (auto *it : cases) {
 		auto *stmt =
-		    dynamic_cast<Uc_switch_case_statement *>(it);
+		    static_cast<Uc_switch_case_statement *>(it);
 		if (stmt->is_default()) { // Store the default case iterator.
 			def_case = new Basic_block();
 			case_blocks.push_back(def_case);

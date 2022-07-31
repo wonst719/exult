@@ -133,6 +133,7 @@
 #define PATCH_OCCLUDE   "<PATCH>/occlude.dat"
 #define CONTAINER   "<STATIC>/container.dat"
 #define PATCH_CONTAINER "<PATCH>/container.dat"
+#define PATCH_ENDFONT "<PATCH>/endfont.shp"
 
 #define GSCRNSHOT   "<GAMEDAT>/scrnshot.shp"
 #define GSAVEINFO   "<GAMEDAT>/saveinfo.dat"

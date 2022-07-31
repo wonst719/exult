@@ -274,7 +274,7 @@ int Schedule::try_street_maintenance(
 		return 0;       // Failed.
 	// Set actor to walk there.
 	npc->set_schedule_type(Schedule::street_maintenance,
-	                       new Street_maintenance_schedule(npc, pact, found));
+	                       std::make_unique<Street_maintenance_schedule>(npc, pact, found));
 	// Warning: we are deleted here
 	return 1;
 }
@@ -313,12 +313,13 @@ bool Schedule::try_proximity_usecode(int odds) {
 
 void Schedule_with_objects::cleanup()
 {
-	while (!created.empty()) {
-		Game_object_shared item = created.back().lock();
-		created.pop_back();
-		if (item && item.get()->get_owner() == npc)
+	for (const Game_object_weak& elem : created) {
+		Game_object_shared item = elem.lock();
+		if (item && item->get_owner() == npc) {
 			item->remove_this();
+		}
 	}
+	created.clear();
 }
 
 void Schedule_with_objects::set_current_item(Game_object *obj) {
@@ -638,22 +639,22 @@ void Wait_schedule::now_what(
  *  Create a horizontal pace schedule.
  */
 
-Pace_schedule *Pace_schedule::create_horiz(
+std::unique_ptr<Pace_schedule> Pace_schedule::create_horiz(
     Actor *n
 ) {
 	Tile_coord t = n->get_tile();   // Get his position.
-	return new Pace_schedule(n, 1, t);
+	return std::make_unique<Pace_schedule>(n, 1, t);
 }
 
 /*
  *  Create a vertical pace schedule.
  */
 
-Pace_schedule *Pace_schedule::create_vert(
+std::unique_ptr<Pace_schedule> Pace_schedule::create_vert(
     Actor *n
 ) {
 	Tile_coord t = n->get_tile();   // Get his position.
-	return new Pace_schedule(n, 0, t);
+	return std::make_unique<Pace_schedule>(n, 0, t);
 }
 
 void Pace_schedule::pace(
@@ -3471,7 +3472,7 @@ static void Ready_food(Actor *npc)
 		// Acquire some food.
 		int nfoods = ShapeID(377, 0).get_num_frames();
 		int frame = rand() % nfoods;
-		food_keep = 
+		food_keep =
 		     std::make_shared<Ireg_game_object>(377, frame, 0, 0, 0);
 	    food = food_keep.get();
 		food->set_flag(Obj_flags::is_temporary);

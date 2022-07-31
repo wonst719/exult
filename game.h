@@ -120,7 +120,7 @@ public:
 	}
 
 	virtual void play_intro() = 0;
-	virtual void end_game(bool success) = 0;
+	virtual void end_game(bool success, bool within_game) = 0;
 	virtual void top_menu() = 0;
 	virtual void show_quotes() = 0;
 	virtual void show_credits() = 0;
@@ -129,6 +129,8 @@ public:
 	virtual int  get_start_tile_y() = 0;
 	virtual void show_journey_failed() = 0;
 	virtual Shape_frame *get_menu_shape() = 0;
+	void show_congratulations(Palette *pal0);
+	virtual std::vector<unsigned int> get_congratulations_messages() = 0;
 
 	void add_shape(const char *name, int shapenum);
 	int get_shape(const char *name);

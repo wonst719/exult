@@ -56,6 +56,13 @@ enum Pixel_colors {POISON_PIXEL = 0, PROTECT_PIXEL, CURSED_PIXEL,
  *  Manage the set of shape files.
  */
 class Shape_manager : public Game_singletons {
+public:
+	struct Cached_shape {
+		Shape_frame *shape;
+		bool has_trans;
+	};
+
+private:
 	static Shape_manager *instance; // There shall be only one.
 	Shapes_vga_file shapes;     // Main 'shapes.vga' file.
 	Vga_file files[static_cast<int>(SF_COUNT)]; // The files we manage.
@@ -69,6 +76,8 @@ class Shape_manager : public Game_singletons {
 	bool paperdolls_enabled = false;    // True if paperdolls are on.
 	bool got_si_shapes = false; // Set true if the SI shapes file
 	//   is found when playing BG
+	using Shape_cache = std::map<std::pair<int, int>, Cached_shape>;
+	Shape_cache shape_cache[static_cast<int>(SF_COUNT)];
 	void read_shape_info();
 
 public:
@@ -80,7 +89,7 @@ public:
 	}
 	void load();            // Read in files.
 	bool load_gumps_minimal();          // Read in files needed to display gumps.
-	void reload_shapes(int dragtype);   // Reload a shape file.
+	void reload_shapes(int shape_kind);   // Reload a shape file.
 	void reload_shape_info();
 	Vga_file &get_file(ShapeFile f) {
 		return files[static_cast<int>(f)];
@@ -156,6 +165,7 @@ public:
 	size_t get_xforms_cnt() const {
 		return xforms.size();
 	}
+	Cached_shape cache_shape(int shape_kind, int shapenum, int framenum);
 };
 
 /*
@@ -165,12 +175,9 @@ public:
 class ShapeID : public Game_singletons {
 	short shapenum = -1;             // Shape #.
 	signed char framenum = -1;       // Frame # within shape.
-	mutable bool has_trans = false;
 	ShapeFile shapefile = SF_SHAPES_VGA;
-	mutable Shape_frame *shape = nullptr;
-	mutable Shape_info *info = nullptr;
 
-	Shape_frame *cache_shape() const;
+	Shape_manager::Cached_shape cache_shape() const;
 
 public:
 	// Read from buffer & incr. ptr.
@@ -206,26 +213,15 @@ public:
 		return shapefile;
 	}
 	inline Shape_frame *get_shape() const {
-		if (shape == nullptr) {
-			cache_shape();
-		}
-		return shape;
-	}
-	inline void set_translucent(bool trans) {
-		has_trans = trans;
+		return cache_shape().shape;
 	}
 	inline bool is_translucent() const {
-		if (shape == nullptr) {
-			cache_shape();
-		}
-		return has_trans;
+		return cache_shape().has_trans;
 	}
 	// Set to given shape.
 	void set_shape(int shnum, int frnum) {
 		shapenum = shnum;
 		framenum = frnum;
-		shape = nullptr;
-		info = nullptr;
 	}
 	ShapeID(int shnum, int frnum, ShapeFile shfile = SF_SHAPES_VGA) :
 		shapenum(shnum), framenum(frnum), shapefile(shfile)
@@ -233,21 +229,18 @@ public:
 
 	void set_shape(int shnum) { // Set shape, but keep old frame #.
 		shapenum = shnum;
-		shape = nullptr;
-		info = nullptr;
 	}
 	void set_frame(int frnum) { // Set to new frame.
 		framenum = frnum;
-		shape = nullptr;
 	}
 	void set_file(ShapeFile shfile) { // Set to new flex
 		shapefile = shfile;
-		shape = nullptr;
 	}
 
 	void paint_shape(int xoff, int yoff, bool force_trans = false) {
-		sman->paint_shape(xoff, yoff, get_shape(),
-		                  has_trans || force_trans);
+		auto cache = cache_shape();
+		sman->paint_shape(xoff, yoff, cache.shape,
+		                  cache.has_trans || force_trans);
 	}
 	void paint_invisible(int xoff, int yoff) {
 		sman->paint_invisible(xoff, yoff, get_shape());
@@ -259,12 +252,10 @@ public:
 	int get_num_frames() const;
 	bool is_frame_empty() const;
 	const Shape_info &get_info() const {  // Get info. about shape.
-		return *(info ? info : info =
-		             &Shape_manager::instance->shapes.get_info(shapenum));
+		return Shape_manager::instance->shapes.get_info(shapenum);
 	}
 	Shape_info &get_info() { // Get info. about shape.
-		return *(info ? info : info =
-		             &Shape_manager::instance->shapes.get_info(shapenum));
+		return Shape_manager::instance->shapes.get_info(shapenum);
 	}
 	static Shape_info &get_info(int shnum) { // Get info. about shape.
 		return Shape_manager::instance->shapes.get_info(shnum);

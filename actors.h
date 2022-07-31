@@ -59,7 +59,7 @@ protected:
 	short face_num;         // Which shape for conversations.
 	short party_id;         // Index in party, or -1.
 	int properties[12];     // Properties set/used in 'usecode'.
-	Actor_attributes *atts;     // Generic atts. (for new games/mods).
+	std::unique_ptr<Actor_attributes> atts;     // Generic atts. (for new games/mods).
 	unsigned char temperature;  // Measure of coldness (0-63).
 	short shape_save;       // Our old shape, or -1.
 	short oppressor;        // NPC ID (>= 0) of oppressor, or -1.
@@ -107,7 +107,7 @@ protected:
 	Tile_coord old_schedule_loc;    // Location (x,y) of old Shedule
 	unsigned char next_schedule;    // Used so correct schedule type
 	//   will be saved
-	Schedule *schedule;     // Current schedule.
+	std::unique_ptr<Schedule> schedule;     // Current schedule.
 	int restored_schedule;  // Just restored schedule type.
 	bool dormant;           // I.e., off-screen.
 	bool hit;           // Just hit in combat.
@@ -138,7 +138,7 @@ protected:
 	int step_index;         // Index into walking frames, 1 1st.
 	int qsteps;             // # steps since last quake.
 
-	Npc_timer_list *timers;     // Timers for poison, hunger, etc.
+	std::unique_ptr<Npc_timer_list> timers;     // Timers for poison, hunger, etc.
 	TileRect weapon_rect;      // Screen area weapon was drawn in.
 	long rest_time;         // # msecs. of not doing anything.
 	void init();            // Clear stuff during construction.
@@ -317,7 +317,7 @@ public:
 		return true;
 	}
 	Schedule *get_schedule() const {
-		return schedule;
+		return schedule.get();
 	}
 	int get_frame_time() const { // Return frame time if moving.
 		return frame_time;
@@ -399,7 +399,7 @@ public:
 	}
 	// Set new schedule.
 	void set_schedule_type(int new_schedule_type,
-	                       Schedule *newsched = nullptr);
+	                       std::unique_ptr<Schedule> newsched = nullptr);
 	// Change to new schedule at loc
 	virtual void set_schedule_and_loc(int new_schedule_type,
 	                                  Tile_coord const &dest, int delay = -1);

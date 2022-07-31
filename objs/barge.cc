@@ -834,7 +834,6 @@ void Barge_object::update_from_studio(
 			if (client_socket >= 0)
 				Exult_server::Send_data(client_socket,
 				                        Exult_server::cancel);
-			delete barge;
 			return;
 		}
 		if (client_socket >= 0)

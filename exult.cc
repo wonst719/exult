@@ -106,6 +106,7 @@ using namespace Pentagram;
 #  include "ios_utils.h"
 #elif defined(ANDROID)
 #  include <SDL_system.h>
+#  include "TouchUI_Android.h"
 #endif
 
 using std::atof;
@@ -277,12 +278,20 @@ int main(
 	// to the default std::fstream-based file I/O to avoid taking an SDL
 	// dependency.
 	U7set_istream_factory(
-		[](const char* s, std::ios_base::openmode mode) {
+		[](const char* s, std::ios_base::openmode mode) -> std::unique_ptr<std::istream> {
+			auto file = std::make_unique<std::ifstream>(s, mode);
+			if (file->good()) {
+				return file;
+			}
 			return std::make_unique<SdlRwopsIstream>(s, mode);
 		}
 	);
 	U7set_ostream_factory(
-		[](const char* s, std::ios_base::openmode mode) {
+		[](const char* s, std::ios_base::openmode mode) -> std::unique_ptr<std::ostream> {
+			auto file = std::make_unique<std::ofstream>(s, mode);
+			if (file->good()) {
+				return file;
+			}
 			return std::make_unique<SdlRwopsOstream>(s, mode);
 		}
 	);
@@ -588,6 +597,8 @@ int exult_main(const char *runpath) {
 
 #ifdef __IPHONEOS__
 	touchui = new TouchUI_iOS();
+#elif defined(ANDROID)
+	touchui = new TouchUI_Android();
 #endif
 	Init();             // Create main window.
 
@@ -645,8 +656,10 @@ static void SetIcon() {
 				ExultIcon::height,
 				32,
 				0, 0, 0, 0);
-	if (iconsurface == nullptr)
+	if (iconsurface == nullptr) {
 		cout << "Error creating icon surface: " << SDL_GetError() << std::endl;
+		return;
+	}
 	for (int y = 0; y < static_cast<int>(ExultIcon::height); ++y)
 	{
 		for (int x = 0; x < static_cast<int>(ExultIcon::width); ++x)
@@ -729,8 +742,10 @@ static void Init(
 #if 0
 	init_flags |= SDL_INIT_JOYSTICK;
 #endif
-#ifdef __IPHONEOS__
+#if defined(__IPHONEOS__) || defined(ANDROID)
 	Mouse::use_touch_input = true;
+#endif
+#ifdef __IPHONEOS__
 	SDL_SetHint(SDL_HINT_IOS_HIDE_HOME_INDICATOR, "2");
 #endif
 	if (SDL_Init(init_flags) < 0) {
@@ -1291,7 +1306,7 @@ static void Handle_event(
 	// We want this
 	Gump_manager *gump_man = gwin->get_gump_man();
 	Gump *gump = nullptr;
-	
+
 	// For detecting double-clicks.
 	static uint32 last_b1_click = 0;
 	static uint32 last_b3_click = 0;

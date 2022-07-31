@@ -462,7 +462,7 @@ void ActionSIIntro(int const *params) {
 // params[0] = -1,0 = won, 1 = lost
 void ActionEndgame(int const *params) {
 	Game_window *gwin = Game_window::get_instance();
-	game->end_game(params[0] != 1);
+	game->end_game(params[0] != 1, true);
 	gwin->clear_screen(true);
 	gwin->get_pal()->set(0);
 	gwin->paint();

@@ -106,4 +106,7 @@ public:
 class UserBreakException {
 };
 
+class UserSkipException : public UserBreakException {
+};
+
 #endif

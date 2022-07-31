@@ -76,10 +76,10 @@
 #Congratulations
 0x542:Herzlichen Glckwunsch! Sie haben
 0x543:Ultima VII gemeistert! Sie brauchten
-0x544:%d Jahr e ,  %d Monat e , und  %d Tag e .
+0x544: und |nur |genau | Jahr| Jahre| Monat| Monate| Tag| Tage| Stunde| Stunden|negative Zeit!
 0x545:Bitte schreiben Sie Lord British und
-0x546:erzhlen Sie ihm und Origin Systems
-0x547:Inc., von Ihrer groartigen und
-0x548:bewundernswerten Leistung! Wir
-0x549:wrden uns ber Post aus
+0x546:erzhlen Sie @RichardGarriott auf
+0x547:Twitter, von Ihrer groartigen und
+0x548:bewundernswerten Leistung! Er
+0x549:wrde sich ber Post aus
 0x54A:Deutschland freuen!
