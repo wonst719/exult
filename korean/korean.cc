@@ -21,38 +21,86 @@
 #include "ibuf8.h"
 #include "files/databuf.h"
 
+struct KoreanGlyph {
+	int xOffset;
+	int yOffset;
+	int advance;
+	byte* glyphPtr;
+};
+
 KoreanFont::KoreanFont() : _pal() {
 }
 
 bool KoreanFont::load(const std::string& fontName) {
 	IFileDataSource ifs(File_spec(fontName.c_str()));
 
+	uint16 glyphCount;
 	uint32 magic = ifs.read4();
-	_width = ifs.read1();
-	_height = ifs.read1();
-	_bitmapWidth = ifs.read1();
-	_bitmapHeight = ifs.read1();
-	_xOffset = ifs.read1();
-	_yOffset = ifs.read1();
-	_advance = ifs.read2();
+	if (magic == 0x11223345) {
+		_width = ifs.read1();
+		_height = ifs.read1();
+		_bitmapWidth = ifs.read1();
+		_bitmapHeight = ifs.read1();
 
-	ifs.read(_pal, 4);
+		ifs.read(_pal, 4);
 
-	uint16 glyphCount = ifs.read2();
+		glyphCount = ifs.read2();
 
-	int glyphLen = (int)(_bitmapWidth * _bitmapHeight) / 4;
+		int glyphLen = (int)(_bitmapWidth * _bitmapHeight) / 4;
+		_fontPtr = new byte[glyphLen * glyphCount];
 
-	for (uint16 i = 0; i < glyphCount; i++) {
-		_glyphOffsetMap.emplace(ifs.read2(), glyphLen * i);
+		for (int i = 0; i < glyphCount; i++) {
+			uint16 codepoint = ifs.read2();
+			int8 xOffset = ifs.read1();
+			int8 yOffset = ifs.read1();
+			int16 advance = ifs.read1();
+			KoreanGlyph* glyph = new KoreanGlyph;
+			glyph->xOffset = xOffset;
+			glyph->yOffset = yOffset;
+			glyph->advance = advance;
+			glyph->glyphPtr = _fontPtr + glyphLen * i;
+			_glyphMap.emplace(codepoint, glyph);
+		}
+
+		ifs.read(_fontPtr, glyphLen * glyphCount);
+	} else if (magic == 0x11223344) {
+		_width = ifs.read1();
+		_height = ifs.read1();
+		_bitmapWidth = ifs.read1();
+		_bitmapHeight = ifs.read1();
+		int8 xOffset = ifs.read1();
+		int8 yOffset = ifs.read1();
+		int16 advance = ifs.read2();
+
+		ifs.read(_pal, 4);
+
+		glyphCount = ifs.read2();
+
+		int glyphLen = (int)(_bitmapWidth * _bitmapHeight) / 4;
+		_fontPtr = new byte[glyphLen * glyphCount];
+
+		for (uint16 i = 0; i < glyphCount; i++) {
+			KoreanGlyph* glyph = new KoreanGlyph;
+			glyph->xOffset = xOffset;
+			glyph->yOffset = yOffset;
+			glyph->advance = advance;
+			glyph->glyphPtr = _fontPtr + glyphLen * i;
+			_glyphMap.emplace(ifs.read2(), glyph);
+		}
+
+		ifs.read(_fontPtr, glyphLen * glyphCount);
+	} else {
+		return false;
 	}
-
-	_fontPtr = new byte[glyphLen * glyphCount];
-	ifs.read(_fontPtr, glyphLen * glyphCount);
 
 	return true;
 }
 
 KoreanFont::~KoreanFont() {
+	for (auto pair : _glyphMap) {
+		delete pair.second;
+	}
+	_glyphMap.clear();
 	delete[] _fontPtr;
 }
 
@@ -60,16 +108,17 @@ int KoreanFont::drawGlyph(Image_buffer8* dst, uint16 codepoint, int dx, int dy) 
 	if (!_fontPtr)
 		return 0;
 
-	auto glyphIter = _glyphOffsetMap.find(codepoint);
-	if (glyphIter == _glyphOffsetMap.end()) {
+	auto glyphIter = _glyphMap.find(codepoint);
+	if (glyphIter == _glyphMap.end()) {
 		return 0;
 	}
-	byte* src = _fontPtr + glyphIter->second;
+	KoreanGlyph* glyph = glyphIter->second;
+	byte* src = glyph->glyphPtr;
 
 	byte bits = 0;
 
-	dx += _xOffset;
-	dy += _yOffset;
+	dx += glyph->xOffset;
+	dy += glyph->yOffset;
 
 	for (int y = 0; y < _bitmapHeight; y++) {
 		for (int x = 0; x < _bitmapWidth; x++) {
@@ -83,11 +132,14 @@ int KoreanFont::drawGlyph(Image_buffer8* dst, uint16 codepoint, int dx, int dy) 
 		}
 	}
 
-	return _advance;
+	return glyphIter->second->advance;
 }
 
-int KoreanFont::getGlyphWidth(uint16 codepoint) {
-	return _width;
+int KoreanFont::getGlyphAdvance(uint16 codepoint) {
+	auto iter = _glyphMap.find(codepoint);
+	if (iter == _glyphMap.end())
+		return 0;
+	return iter->second->advance;
 }
 
 int KoreanFont::getFontHeight() {
@@ -95,5 +147,5 @@ int KoreanFont::getFontHeight() {
 }
 
 bool KoreanFont::hasGlyph(uint16 codepoint) {
-	return codepoint >= 0xff;
+	return _glyphMap.find(codepoint) != _glyphMap.end();
 }
