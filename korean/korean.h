@@ -32,18 +32,17 @@ typedef signed char int8;
 typedef signed short int16;
 typedef signed int int32;
 
+struct KoreanGlyph;
+
 class KoreanFont {
 	int _width = 0;
 	int _height = 0;
 	byte* _fontPtr = nullptr;
 
-	std::map<uint16, int> _glyphOffsetMap;
+	std::map<uint16, KoreanGlyph*> _glyphMap;
 
 	uint8 _bitmapWidth = 0;
 	uint8 _bitmapHeight = 0;
-	int8 _xOffset = 0;
-	int8 _yOffset = 0;
-	int16 _advance = 0;
 
 	uint8 _pal[4];
 
@@ -53,7 +52,7 @@ public:
 
 	bool load(const std::string& fontName);
 	int drawGlyph(Image_buffer8* dst, uint16 codepoint, int dx, int dy);
-	int getGlyphWidth(uint16 codepoint);
+	int getGlyphAdvance(uint16 codepoint);
 	int getFontHeight();
 	bool hasGlyph(uint16 codepoint);
 };

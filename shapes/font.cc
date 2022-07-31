@@ -482,7 +482,7 @@ int Font::paint_text_fixedwidth(
 			chr = (chr << 8) | static_cast<unsigned char>(*text++);
 		}
 		if (korean_font->hasGlyph(chr)) {
-			int glyphWidth = korean_font->getGlyphWidth(chr);
+			int glyphWidth = korean_font->getGlyphAdvance(chr);
 			x += w = (width - glyphWidth) / 2;
 			korean_font->drawGlyph(win, chr, x - 1, korean_yoff + 3);	// FIXME: hardcoded offset
 
@@ -525,7 +525,7 @@ int Font::paint_text_fixedwidth(
 			chr = (chr << 8) | static_cast<unsigned char>(*text++);
 		}
 		if (korean_font->hasGlyph(chr)) {
-			int glyphWidth = korean_font->getGlyphWidth(chr);
+			int glyphWidth = korean_font->getGlyphAdvance(chr);
 			x += w = (width - glyphWidth) / 2;
 			korean_font->drawGlyph(win, chr, x - 1, korean_yoff + 3);	// FIXME: hardcoded offset
 
@@ -557,7 +557,7 @@ int Font::get_text_width(
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
 			}
 			if (korean_font->hasGlyph(chr)) {
-				width += korean_font->getGlyphWidth(chr);
+				width += korean_font->getGlyphAdvance(chr);
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
 				if (shape)
@@ -586,7 +586,7 @@ int Font::get_text_width(
 				textlen--;
 			}
 			if (korean_font->hasGlyph(chr)) {
-				width += korean_font->getGlyphWidth(chr);
+				width += korean_font->getGlyphAdvance(chr);
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(chr);
 				if (shape)
