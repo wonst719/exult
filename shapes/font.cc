@@ -270,7 +270,7 @@ int Font::paint_text(
 			if (chr & 0x80) {
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
 			}
-			if (korean_font->hasGlyph(chr)) {
+			if (korean_font && korean_font->hasGlyph(chr)) {
 				x += korean_font->drawGlyph(win, chr, x, korean_yoff);
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
@@ -311,7 +311,7 @@ int Font::paint_text(
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
 				textlen--;
 			}
-			if (korean_font->hasGlyph(chr)) {
+			if (korean_font && korean_font->hasGlyph(chr)) {
 				x += korean_font->drawGlyph(win, chr, x, korean_yoff);
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(chr);
@@ -481,7 +481,7 @@ int Font::paint_text_fixedwidth(
 		if (chr & 0x80) {
 			chr = (chr << 8) | static_cast<unsigned char>(*text++);
 		}
-		if (korean_font->hasGlyph(chr)) {
+		if (korean_font && korean_font->hasGlyph(chr)) {
 			int glyphWidth = korean_font->getGlyphAdvance(chr);
 			x += w = (width - glyphWidth) / 2;
 			korean_font->drawGlyph(win, chr, x - 1, korean_yoff + 3);	// FIXME: hardcoded offset
@@ -524,7 +524,7 @@ int Font::paint_text_fixedwidth(
 		if (chr & 0x80) {
 			chr = (chr << 8) | static_cast<unsigned char>(*text++);
 		}
-		if (korean_font->hasGlyph(chr)) {
+		if (korean_font && korean_font->hasGlyph(chr)) {
 			int glyphWidth = korean_font->getGlyphAdvance(chr);
 			x += w = (width - glyphWidth) / 2;
 			korean_font->drawGlyph(win, chr, x - 1, korean_yoff + 3);	// FIXME: hardcoded offset
@@ -556,7 +556,7 @@ int Font::get_text_width(
 			if (chr & 0x80) {
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
 			}
-			if (korean_font->hasGlyph(chr)) {
+			if (korean_font && korean_font->hasGlyph(chr)) {
 				width += korean_font->getGlyphAdvance(chr);
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(static_cast<unsigned char>(chr));
@@ -585,7 +585,7 @@ int Font::get_text_width(
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
 				textlen--;
 			}
-			if (korean_font->hasGlyph(chr)) {
+			if (korean_font && korean_font->hasGlyph(chr)) {
 				width += korean_font->getGlyphAdvance(chr);
 			} else {
 				Shape_frame *shape = font_shapes->get_frame(chr);
