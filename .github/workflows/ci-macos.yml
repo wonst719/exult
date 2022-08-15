@@ -65,7 +65,7 @@ jobs:
           channel: "#exult"
           nickname: github-actions
           tls: true
-          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The Mac OSX build \x033succeeded\x03."
+          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The macOS build \x033succeeded\x03."
       - name: IRC failure notification (ircs://irc.libera.chat:6697/#exult)
         uses: Gottox/irc-message-action@v2
         if: needs.ci-macos.result != 'success'
@@ -75,7 +75,21 @@ jobs:
           channel: "#exult"
           nickname: github-actions
           tls: true
-          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The Mac OSX build \x034failed\x03."
+          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The macOS build \x034failed\x03."
+      - name: Discord success notification
+        uses: sebastianpopp/discord-action@releases/v1
+        if: needs.ci-macos.result == 'success'
+        with:
+          username: github-actions
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The macOS build \x033succeeded\x03."
+      - name: Discord failure notification
+        uses: sebastianpopp/discord-action@releases/v1
+        if: needs.ci-macos.result != 'success'
+        with:
+          username: github-actions
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The macOS build \x034failed\x03."
   ci-macos:
     runs-on: macos-latest
     steps:
