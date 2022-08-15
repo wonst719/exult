@@ -83,7 +83,7 @@ jobs:
           severity: info
           username: github-actions
           webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
-          description: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           details: 'The macOS build succeeded.'
       - name: Discord failure notification
         uses: rjstone/discord-webhook-notify@v1
@@ -92,8 +92,8 @@ jobs:
           severity: error
           username: github-actions
           webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
-          description: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-          details: 'The macOS build succeeded.'
+          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          details: 'The macOS build failed.'
   ci-macos:
     runs-on: macos-latest
     steps:
