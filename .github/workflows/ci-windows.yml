@@ -51,8 +51,8 @@ on:
       - ".github/workflows/ci-windows.yml"
 
 jobs:
-  irc:
-    name: Exult-CI (IRC notification)
+  notify:
+    name: Exult-CI (IRC & Discord notification)
     runs-on: ubuntu-latest
     needs:
       - ci-windows
@@ -78,6 +78,24 @@ jobs:
           nickname: github-actions
           tls: true
           message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The Windows build \x034failed\x03."
+      - name: Discord success notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: needs.ci-windows.result == 'success'
+        with:
+          severity: info
+          username: github-actions
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          details: 'The Windows build succeeded.'
+      - name: Discord failure notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: needs.ci-windows.result != 'success'
+        with:
+          severity: error
+          username: github-actions
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          details: 'The Windows build failed.'
   ci-windows:
     runs-on: windows-2019
     defaults:

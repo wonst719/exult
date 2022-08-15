@@ -53,8 +53,8 @@ on:
       - ".github/workflows/ci-linux.yml"
 
 jobs:
-  irc:
-    name: Exult-CI (IRC notification)
+  notify:
+    name: Exult-CI (IRC & Discord notification)
     runs-on: ubuntu-18.04
     needs:
       - ci-linux
@@ -80,6 +80,24 @@ jobs:
           nickname: github-actions
           tls: true
           message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The Linux build \x034failed\x03."
+      - name: Discord success notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: needs.ci-linux.result == 'success'
+        with:
+          severity: info
+          username: github-actions
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          details: 'The Linux build succeeded.'
+      - name: Discord failure notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: needs.ci-linux.result != 'success'
+        with:
+          severity: error
+          username: github-actions
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          details: 'The Linux build failed.'
   ci-linux:
     runs-on: ubuntu-latest
     strategy:
