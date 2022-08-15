@@ -49,8 +49,8 @@ on:
       - ".github/workflows/ci-macos.yml"
 
 jobs:
-  irc:
-    name: Exult-CI (IRC notification)
+  notify:
+    name: Exult-CI (IRC & Discord notification)
     runs-on: ubuntu-latest
     needs:
       - ci-macos
@@ -77,19 +77,23 @@ jobs:
           tls: true
           message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The macOS build \x034failed\x03."
       - name: Discord success notification
-        uses: sebastianpopp/discord-action@releases/v1
+        uses: rjstone/discord-webhook-notify@v1
         if: needs.ci-macos.result == 'success'
         with:
+          severity: info
           username: github-actions
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The macOS build \x033succeeded\x03."
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          description: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          details: 'The macOS build succeeded.'
       - name: Discord failure notification
-        uses: sebastianpopp/discord-action@releases/v1
+        uses: rjstone/discord-webhook-notify@v1
         if: needs.ci-macos.result != 'success'
         with:
+          severity: error
           username: github-actions
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The macOS build \x034failed\x03."
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          description: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          details: 'The macOS build succeeded.'
   ci-macos:
     runs-on: macos-latest
     steps:
