@@ -666,7 +666,7 @@ GameManager::GameManager(bool silent) {
 	string game_title;
 	std::vector<string> gamestrs = config->listkeys(config_path, false);
 	std::vector<string> checkgames;
-	checkgames.reserve(checkgames.size()+5);	// +5 in case the four below are not in the cfg.
+	checkgames.reserve(gamestrs.size()+5);	// +5 in case the four below are not in the cfg.
 	// The original games plus expansions.
 	checkgames.emplace_back(CFG_BG_NAME);
 	checkgames.emplace_back(CFG_FOV_NAME);
