@@ -408,13 +408,13 @@ AC_CHECK_HEADER(fluidsynth.h, HAVEFLUIDSYNTH=yes, HAVEFLUIDSYNTH=no)
 AC_ARG_ENABLE(fluidsynth, AS_HELP_STRING([--disable-fluidsynth], [Disable fluidsynth midi support]),,enable_fluidsynth=yes)
 AC_MSG_CHECKING([if we want to use fluidsynth midi])
 if test x$HAVEFLUIDSYNTH = xyes; then
-		if test x$enable_fluidsynth = xyes; then
-				AC_MSG_RESULT(yes)
-				AC_DEFINE(USE_FLUIDSYNTH_MIDI, 1, [Enable fluidsynth midi])
-				FLUIDSYNTH_LIBS="-lfluidsynth"
-		else
-				AC_MSG_RESULT(no)
-		fi
+	if test x$enable_fluidsynth = xyes; then
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(USE_FLUIDSYNTH_MIDI, 1, [Enable fluidsynth midi])
+		FLUIDSYNTH_LIBS="-lfluidsynth"
+	else
+		AC_MSG_RESULT(no)
+	fi
 else
 		AC_MSG_RESULT([no; fluidsynth.h not found])
 fi
@@ -642,42 +642,42 @@ else
 
 	if test x$opt_level = xnone; then
 		AC_MSG_RESULT(none)
-		DEBUG_FLAGS="$DEBUG_FLAGS -O0"
+		OPT_LEVEL="$OPT_LEVEL -O0"
 	elif test x$opt_level = xsize; then
 		AC_MSG_RESULT(size)
-		AX_CHECK_COMPILE_FLAG([-Os], [have_os_opt=yes], [have_os_opt=no], [$DEBUG_FLAGS -Werror])
+		AX_CHECK_COMPILE_FLAG([-Os], [have_os_opt=yes], [have_os_opt=no], [$OPT_LEVEL -Werror])
 		if test x$have_os_opt = xyes; then
-			DEBUG_FLAGS="$DEBUG_FLAGS -Os"
+			OPT_LEVEL="$OPT_LEVEL -Os"
 		else
 			# Sane default if compiler does not support -Os
-			DEBUG_FLAGS="$DEBUG_FLAGS -O2"
+			OPT_LEVEL="$OPT_LEVEL -O2"
 			for opt_flag in -falign-functions -falign-jumps -falign-loops -falign-labels -freorder-blocks -freorder-blocks-and-partition -fprefetch-loop-arrays -ftree-vect-loop-version
 			do
-				AX_CHECK_COMPILE_FLAG([$opt_flag], [DEBUG_FLAGS="$DEBUG_FLAGS $opt_flag"], [], [$DEBUG_FLAGS -Werror])
+				AX_CHECK_COMPILE_FLAG([$opt_flag], [OPT_LEVEL="$OPT_LEVEL $opt_flag"], [], [$OPT_LEVEL -Werror])
 			done
 		fi
 	elif test x$opt_level = xdebug; then
 		AC_MSG_RESULT(debug)
-		AX_CHECK_COMPILE_FLAG([-Og], [have_og_opt=yes], [have_og_opt=no], [$DEBUG_FLAGS -Werror])
+		AX_CHECK_COMPILE_FLAG([-Og], [have_og_opt=yes], [have_og_opt=no], [$OPT_LEVEL -Werror])
 		if test x$have_og_opt = xyes; then
-			DEBUG_FLAGS="$DEBUG_FLAGS -Og"
+			OPT_LEVEL="$OPT_LEVEL -Og"
 		else
 			# Sane default if compiler does not support -Og
-			DEBUG_FLAGS="$DEBUG_FLAGS -O1"
+			OPT_LEVEL="$OPT_LEVEL -O1"
 			for opt_flag in -fno-branch-count-reg -fno-if-conversion -fno-if-conversion2 -fno-inline-functions-called-once -fno-move-loop-invariants -fno-ssa-phiopt -fno-tree-bit-ccp -fno-tree-pta -fno-tree-sra
 			do
-				AX_CHECK_COMPILE_FLAG([$opt_flag], [DEBUG_FLAGS="$DEBUG_FLAGS $opt_flag"], [], [$DEBUG_FLAGS -Werror])
+				AX_CHECK_COMPILE_FLAG([$opt_flag], [OPT_LEVEL="$OPT_LEVEL $opt_flag"], [], [$OPT_LEVEL -Werror])
 			done
 		fi
 	elif test x$opt_level = xlight; then
 		AC_MSG_RESULT(light)
-		DEBUG_FLAGS="$DEBUG_FLAGS -O1"
+		OPT_LEVEL="$OPT_LEVEL -O1"
 	elif test x$opt_level = xnormal; then
 		AC_MSG_RESULT(normal)
-		DEBUG_FLAGS="$DEBUG_FLAGS -O2"
+		OPT_LEVEL="$OPT_LEVEL -O2"
 	elif test x$opt_level = xheavy; then
 		AC_MSG_RESULT(heavy)
-		DEBUG_FLAGS="$DEBUG_FLAGS -O3"
+		OPT_LEVEL="$OPT_LEVEL -O3"
 	else
 		AC_MSG_RESULT(invalid)
 		echo "Invalid option given for --with-optimization: $opt_level."
@@ -688,7 +688,7 @@ fi
 
 # link-time optimization
 GB_ENABLE_LTO
-DEBUG_FLAGS="$DEBUG_FLAGS $LTO_CFLAGS"
+DEBUG_LEVEL="$DEBUG_LEVEL $LTO_CFLAGS"
 
 
 # ---------------------------------------------------------------------
@@ -731,9 +731,9 @@ else
 			AC_DEFINE(DEBUG, 1, [Enable debug mode])
 		fi
 		if test x$dbg_level = xextreme; then
-			DEBUG_FLAGS="$DEBUG_FLAGS -g3"
+			DEBUG_LEVEL="$DEBUG_LEVEL -g3"
 		else
-			DEBUG_FLAGS="$DEBUG_FLAGS -g"
+			DEBUG_LEVEL="$DEBUG_LEVEL -g"
 		fi
 		# TODO: Maybe add warning that -O0 and -Og work better for debug symbols?
 	else
@@ -831,10 +831,8 @@ fi
 WARNINGS=""
 for cxx_flag in $CHK_WARN
 do
-	AX_CHECK_COMPILE_FLAG([$cxx_flag], [WARNINGS="$WARNINGS $cxx_flag"], [], [$DEBUG_FLAGS -Werror])
+	AX_CHECK_COMPILE_FLAG([$cxx_flag], [WARNINGS="$WARNINGS $cxx_flag"], [], [$DEBUG_LEVEL -Werror])
 done
-
-DEBUG_FLAGS="$DEBUG_FLAGS $WARNINGS"
 
 
 # --------------------
@@ -1153,13 +1151,14 @@ AC_SUBST(EXE_TARGET)
 AC_SUBST(EXULT_DATADIR)
 AC_SUBST(SYSLIBS)
 AC_SUBST(ICON_FILE)
-AC_SUBST(DEBUG_FLAGS)
+AC_SUBST(DEBUG_LEVEL)
+AC_SUBST(OPT_LEVEL)
+AC_SUBST(WARNINGS)
 AC_SUBST(ZLIB_LIBS)
 AC_SUBST(MT32EMU_LIBS)
 AC_SUBST(MT32EMU_CFLAGS)
 AC_SUBST(FLUIDSYNTH_LIBS)
 AC_SUBST(ALSA_LIBS)
-AC_SUBST(WARNINGS)
 AC_SUBST(AR_FLAGS)
 
 AC_CONFIG_FILES([

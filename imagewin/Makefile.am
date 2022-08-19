@@ -1,6 +1,6 @@
 AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir) -I$(top_srcdir)/files $(SDL_CFLAGS) $(INCDIRS) $(WINDOWING_SYSTEM) \
 		-I$(top_srcdir)/conf \
-		$(DEBUG_FLAGS) $(CPPFLAGS)
+		$(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS)
 
 noinst_LTLIBRARIES = libimagewin.la
 

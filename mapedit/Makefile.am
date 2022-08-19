@@ -2,7 +2,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir) -I$(top_srcdir)/shapes \
 	-I$(top_srcdir)/imagewin -I$(top_srcdir)/conf -I$(top_srcdir)/gamemgr \
 	-I$(top_srcdir)/files -I$(top_srcdir)/server  -I$(top_srcdir)/usecode \
 	-I$(top_srcdir)/shapes/shapeinf \
-	$(GTK_CFLAGS) $(INCDIRS) $(WINDOWING_SYSTEM) $(DEBUG_FLAGS) $(CPPFLAGS) -DEXULT_DATADIR=\"$(EXULT_DATADIR)\"
+	$(GTK_CFLAGS) $(INCDIRS) $(WINDOWING_SYSTEM) \
+	$(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS) -DEXULT_DATADIR=\"$(EXULT_DATADIR)\"
 
 if GIMP_PLUGIN
 GIMP_PLUGINS=u7shp
@@ -20,7 +21,8 @@ u7shp_SOURCES = u7shp.cc
 
 u7shp_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/files -I$(top_srcdir)/headers \
 	-I$(top_srcdir)/shapes -I$(top_srcdir)/imagewin -I$(top_srcdir)/files \
-	$(GIMP_INCLUDES) $(GTK_CFLAGS) $(INCDIRS) $(DEBUG_FLAGS) $(CPPFLAGS) -DHAVE_CONFIG_H
+	$(GIMP_INCLUDES) $(GTK_CFLAGS) $(INCDIRS) \
+	$(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS) -DHAVE_CONFIG_H
 
 u7shp_LDADD = \
 	../imagewin/libimagewin.la	\

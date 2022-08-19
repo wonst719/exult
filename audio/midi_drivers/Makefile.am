@@ -10,7 +10,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir)/conf -I$(top_srcdir) \
 		-I$(top_srcdir)/objs -I$(top_srcdir)/shapes \
 		$(SDL_CFLAGS) $(MT32EMU_CFLAGS) $(INCDIRS) $(WINDOWING_SYSTEM) \
 		$(MT32EMUFLAGS) \
-		$(DEBUG_FLAGS) $(CPPFLAGS)
+		$(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS)
 
 SUBDIRS = timidity
 

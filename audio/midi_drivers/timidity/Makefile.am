@@ -3,7 +3,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir)/conf \
 			-I$(top_srcdir)/files -I$(top_srcdir)/imagewin \
 			-I$(top_srcdir)/shapes \
 			$(SDL_CFLAGS) $(INCDIRS) $(WINDOWING_SYSTEM) \
-			$(DEBUG_FLAGS) $(CPPFLAGS)
+			$(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS)
 
 noinst_LTLIBRARIES = libtimidity.la
 

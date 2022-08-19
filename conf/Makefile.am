@@ -1,5 +1,5 @@
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/headers -I$(top_srcdir)/files $(SDL_CFLAGS) $(INCDIRS) \
-		 $(WINDOWING_SYSTEM) $(DEBUG_FLAGS) $(CPPFLAGS) $(WARNINGS)
+		 $(WINDOWING_SYSTEM) $(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS)
 
 if BUILD_TOOLS
 noinst_PROGRAMS = confregress
