@@ -36,10 +36,10 @@ using namespace std;
 
 // The U7* functions here map the U7 std::istream API back to standard std:fopen
 // semantics to better match the original unzip source code.
-static void* U7fopen(const char* filename, const char* mode) {
-	auto handle = new std::unique_ptr<std::istream>;
+static void* U7fopen(const char* filename, bool is_text) {
+	auto *handle = new std::unique_ptr<std::istream>;
 	try {
-		*handle = U7open_in(filename, mode);
+		*handle = U7open_in(filename, is_text);
 	} catch (...) {
 		delete handle;
 		return nullptr;
@@ -47,18 +47,18 @@ static void* U7fopen(const char* filename, const char* mode) {
 	return handle;
 }
 
-static std::size_t U7fread( void* buffer, std::size_t size, std::size_t count, void* handle ) {
+static std::size_t U7fread(void* buffer, std::size_t size, std::size_t count, void* handle) {
 	std::unique_ptr<std::istream>& stream = *static_cast<std::unique_ptr<std::istream>*>(handle);
 	stream->read(static_cast<char *>(buffer), size * count);
 	return stream->gcount() / size;
 }
 
-static int U7ferror( void* handle ) {
+static int U7ferror(void* handle) {
 	std::unique_ptr<std::istream>& stream = *static_cast<std::unique_ptr<std::istream>*>(handle);
 	return stream->fail();
 }
 
-static int U7fseek( void* handle, long offset, int origin ) {
+static int U7fseek(void* handle, long offset, int origin) {
 	std::unique_ptr<std::istream>& stream = *static_cast<std::unique_ptr<std::istream>*>(handle);
 	std::ios_base::seekdir dir;
 	switch (origin) {
@@ -73,18 +73,18 @@ static int U7fseek( void* handle, long offset, int origin ) {
 		break;
 	default:
 		return -1;
-	 }
+	}
 	stream->seekg(offset, dir);
 	return !stream->good();
 }
 
-static long U7ftell( void* handle ) {
+static long U7ftell(void* handle) {
 	std::unique_ptr<std::istream>& stream = *static_cast<std::unique_ptr<std::istream>*>(handle);
 	return stream->tellg();
 }
 
-static int U7fclose( void* handle ) {
-	std::unique_ptr<std::istream>* streamPointer = static_cast<std::unique_ptr<std::istream>*>(handle);
+static int U7fclose(void* handle) {
+	auto* streamPointer = static_cast<std::unique_ptr<std::istream>*>(handle);
 	delete streamPointer;
 	return 0;
 }
@@ -96,7 +96,6 @@ static int U7fclose( void* handle ) {
 #define ferror U7ferror
 #define fseek U7fseek
 #define ftell U7ftell
-#define fopen U7fopen
 #define fclose U7fclose
 
 
@@ -390,7 +389,7 @@ extern unzFile ZEXPORT unzOpen(const char *path) {
 	if (unz_copyright[0] != ' ')
 		return nullptr;
 
-	fin = fopen(path, "rb");
+	fin = U7fopen(path, false);
 	if (fin == nullptr)
 		return nullptr;
 
