@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "**"
+      - "!android"
       - "!docs/**"
       - "docs/Makefile.am"
       - "!ios/**"
@@ -28,6 +29,7 @@ on:
   pull_request:
     paths:
       - "**"
+      - "!android"
       - "!docs/**"
       - "docs/Makefile.am"
       - "!ios/**"
