@@ -1,0 +1,150 @@
+name: ci-android
+
+on:
+  push:
+    paths:
+      - "**"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!ios/**"
+      - "!macos/**"
+      - "!msvcstuff/**"
+      - "!win32/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-android.yml"
+  pull_request:
+    paths:
+      - "**"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!ios/**"
+      - "!macos/**"
+      - "!msvcstuff/**"
+      - "!win32/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-android.yml"
+
+jobs:
+  notify:
+    name: Exult-CI (IRC & Discord notification)
+    runs-on: ubuntu-18.04
+    needs:
+      - ci-android
+    if: ${{ always() && (github.repository_owner == 'exult' && github.event_name != 'pull_request') }}
+    steps:
+      - name: IRC success notification (ircs://irc.libera.chat:6697/#exult)
+        uses: Gottox/irc-message-action@v2
+        if: needs.ci-android.result == 'success'
+        with:
+          server: irc.libera.chat
+          port: 6697
+          channel: "#exult"
+          nickname: github-actions
+          tls: true
+          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The Android build \x033succeeded\x03."
+      - name: IRC failure notification (ircs://irc.libera.chat:6697/#exult)
+        uses: Gottox/irc-message-action@v2
+        if: needs.ci-android.result != 'success'
+        with:
+          server: irc.libera.chat
+          port: 6697
+          channel: "#exult"
+          nickname: github-actions
+          tls: true
+          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The Android build \x034failed\x03."
+      - name: Discord success notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: needs.ci-android.result == 'success'
+        with:
+          severity: info
+          username: github-actions
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          details: 'The Android build succeeded.'
+      - name: Discord failure notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: needs.ci-android.result != 'success'
+        with:
+          severity: error
+          username: github-actions
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          details: 'The Android build failed.'
+  ci-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          if ! apt-fast --help &> /dev/null; then
+            sudo add-apt-repository -u -y ppa:apt-fast/stable
+            echo debconf apt-fast/maxdownloads string 16 | sudo debconf-set-selections
+            echo debconf apt-fast/dlflag boolean true | sudo debconf-set-selections
+            echo debconf apt-fast/aptmanager string apt-get | sudo debconf-set-selections
+            DEBIAN_FRONTEND=noninteractive sudo apt install -y apt-fast
+          else
+            sudo apt-fast update
+          fi
+          sudo apt-fast install -y \
+          zlib1g-dev libogg-dev libvorbis-dev libasound2-dev libfluidsynth-dev libsdl2-dev libpng-dev libfreetype6-dev \
+          libxml2-dev bison flex timidity
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: 'temurin'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: current
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Run autogen
+        run: |
+          chmod a+x ./autogen.sh
+          ./autogen.sh
+      - name: Compile host tools
+        run: |
+          ./configure --disable-exult --disable-data --enable-tools --enable-compiler
+          make -j
+          sudo make install
+          make clean distclean -j
+      - name: Configure
+        run: |
+          if gradle --version &> /dev/null; then
+            GRADLE_PATH=$(ls -d /root/gradle-installations/installs/gradle-*/bin | head -n1)
+          fi
+          export PATH="$GRADLE_PATH:$PATH"
+          ./configure --enable-zip-support --enable-midi-sfx --enable-data --enable-mods \
+            --enable-usecode-container --enable-nonreadied-objects --disable-oggtest --disable-vorbistest \
+            --disable-tools --enable-libexult --enable-android-apk=debug
+      - name: Build
+        run: make -j
