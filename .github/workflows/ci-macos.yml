@@ -126,4 +126,4 @@ jobs:
           export CPPFLAGS="-I$(brew --prefix flex)/include -I$(brew --prefix zlib)/include"
           export PATH="$(brew --prefix bison)/bin:$(brew --prefix flex)/bin:$(brew --prefix libxml2)/bin:$PATH"
           export PKG_CONFIG_PATH="$(brew --prefix zlib)/lib/pkgconfig:$(brew --prefix libxml2)/lib/pkgconfig"
-          make -j2
+          make -j
