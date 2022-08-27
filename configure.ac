@@ -144,12 +144,12 @@ AC_PROG_CXXCPP
 AC_PROG_INSTALL
 dnl autoconf 2.69 AC_PROG_LEX has no parameters
 dnl autoconf 2.70 AC_PROG_LEX prints a deprecation warning without params
-m4_if(m4_version_compare(m4_defn([AC_AUTOCONF_VERSION]), [2.70]), [-1], [dnl
-  dnl autoconf < 2.70
-  AM_PROG_LEX
-], [
+m4_if(m4_version_compare(m4_defn([AC_AUTOCONF_VERSION]), [2.70]), [1], [dnl
   dnl autoconf >= 2.70
   AC_PROG_LEX([noyywrap])
+], [
+  dnl autoconf < 2.70
+  AM_PROG_LEX
 ])
 
 AC_PROG_YACC
@@ -1013,9 +1013,10 @@ if test x$enable_gimp_plugin = xyes; then
 		AC_MSG_RESULT([no, not building GIMP plugin])
 	else
 		AC_MSG_CHECKING([for GIMP version])
-		gimp_version=`$GIMPTOOL --version | awk 'BEGIN { FS = "."; } { print $1 * 10000 + $2 * 100 + $3;}'`
-		if test "$gimp_version" -ge 20800; then
-			AC_MSG_RESULT([found >= 2.8.0])
+		gimp_version=`$GIMPTOOL --version`
+		AX_COMPARE_VERSION([$gimp_version], [ge], [2.8.0], [dnl
+			dnl $gimp_version >= 2.8.0
+			AC_MSG_RESULT([found $gimp_version >= 2.8.0])
 			AC_SUBST(GIMPTOOL)
 			AM_CONDITIONAL(GIMP_PLUGIN, true)
 			GIMP_PLUGIN_PREFIX=`$GIMPTOOL --gimpplugindir`
@@ -1026,9 +1027,10 @@ if test x$enable_gimp_plugin = xyes; then
 			GIMP_LIBS=`$PKG_CONFIG --libs gimpui-2.0`
 			AC_SUBST(GIMP_INCLUDES)
 			AC_SUBST(GIMP_LIBS)
-		else
-			AC_MSG_RESULT([found < 2.8.0 - disabling plugin])
-		fi
+		], [
+			dnl $gimp_version < 2.8.0
+			AC_MSG_RESULT([found $gimp_version < 2.8.0 - disabling plugin])
+		])
 	fi
 else
 	AC_MSG_RESULT(no)
@@ -1065,12 +1067,14 @@ if test x$enable_android_apk != xno; then
 
 	# Checking against a known-good baseline gradle version
 	AC_MSG_CHECKING([gradle version])
-	gradle_version=`$GRADLE --version | grep Gradle | awk '{print $2;}' | awk -F. '{ print 0$1 * 10000 + 0$2*100 + 0$3;}'`
-	if test "$gradle_version" -ge 60802; then
-		AC_MSG_RESULT([found >= 6.8.2])
-	else
-		AC_MSG_ERROR([found < 6.8.2])
-	fi
+	gradle_version=`$GRADLE --version | grep Gradle | awk '{print $2;}' | tr -d '\r\n'`
+	AX_COMPARE_VERSION([$gradle_version], [ge], [6.8.2], [dnl
+		dnl $gradle_version >= 6.8.2
+		AC_MSG_RESULT([found $gradle_version >= 6.8.2])
+	], [
+		dnl $gradle_version < 6.8.2
+		AC_MSG_ERROR([found $gradle_version < 6.8.2])
+	])
 
 	# Use sdkmanager to check Android package versions.
 	AC_PATH_PROGS(SDKMANAGER, sdkmanager)
@@ -1099,9 +1103,9 @@ if test x$enable_android_apk != xno; then
 	ANDROID_NDK_VERSION=21.4.7075529
 	AC_MSG_CHECKING([for Android NDK $ANDROID_NDK_VERSION])
 	if $SDKMANAGER --list|grep -q "ndk;$ANDROID_NDK_VERSION"; then
-	   AC_MSG_RESULT([yes])
+		AC_MSG_RESULT([yes])
 	else
-	   AC_MSG_ERROR([no])
+		AC_MSG_ERROR([no])
 	fi
 	AC_SUBST(ANDROID_NDK_VERSION, $ANDROID_NDK_VERSION)
 
@@ -1109,9 +1113,9 @@ if test x$enable_android_apk != xno; then
 	ANDROID_CMAKE_VERSION=3.18.1
 	AC_MSG_CHECKING([for Android CMake $ANDROID_CMAKE_VERSION])
 	if $SDKMANAGER --list|grep -q "cmake;$ANDROID_CMAKE_VERSION"; then
-	   AC_MSG_RESULT([yes])
+		AC_MSG_RESULT([yes])
 	else
-	   AC_MSG_ERROR([no])
+		AC_MSG_ERROR([no])
 	fi
 	AC_SUBST(ANDROID_CMAKE_VERSION, $ANDROID_CMAKE_VERSION)
 
