@@ -244,14 +244,35 @@ else
 fi
 
 # ---------------------------------------------------------------------
+# Build Exult at all
+# This is meant to facilitate building the tools on the host
+# system for posterior cross-compilation
+# ---------------------------------------------------------------------
+
+AC_ARG_ENABLE(exult, AS_HELP_STRING([--enable-exult], [Build Exult @<:@default yes@:>@]),,enable_exult=yes)
+
+# ---------------------------------------------------------------------
 # Build Exult as a library?
 # ---------------------------------------------------------------------
 
 AC_ARG_ENABLE(libexult, AS_HELP_STRING([--enable-libexult], [Build Exult as a library @<:@default no@:>@]),,enable_libexult=no)
-if test x$enable_libexult = xno; then
-	AM_CONDITIONAL(BUILD_LIBEXULT, false)
+if test x$enable_libexult = xyes -a x$enable_exult = xno; then
+	AC_MSG_ERROR([*** It is not possible build Exult as a library if building Exult is disabled ***])
 else
-	AM_CONDITIONAL(BUILD_LIBEXULT, true)
+	AC_MSG_CHECKING([whether to build Exult])
+	if test x$enable_libexult = xyes; then
+		AC_MSG_RESULT(as a library)
+		AM_CONDITIONAL(BUILD_EXULT, true)
+		AM_CONDITIONAL(BUILD_LIBEXULT, true)
+	elif test x$enable_exult = xyes; then
+		AC_MSG_RESULT(yes)
+		AM_CONDITIONAL(BUILD_EXULT, true)
+		AM_CONDITIONAL(BUILD_LIBEXULT, false)
+	else
+		AC_MSG_RESULT(no)
+		AM_CONDITIONAL(BUILD_EXULT, false)
+		AM_CONDITIONAL(BUILD_LIBEXULT, false)
+	fi
 fi
 
 # ---------------------------------------------------------------------
@@ -1285,7 +1306,14 @@ echo Compilation :
 echo Enable compiler sanitizers. : $enable_sanitizers
 echo Enable SDL parachute....... : $enable_sdl_parachute
 echo Build with static libraries : $enable_static_libs
-echo Build libexult library..... : $enable_libexult
+echo -n "Build Exult................ : "
+if test x$enable_libexult = xyes; then
+	echo as library
+elif test x$enable_exult = xyes; then
+	echo yes
+else
+	echo no
+fi
 echo Turn all warnings to errors : $enable_warning_errors
 echo Turn pedantics to errors... : $enable_pedantic_errors
 

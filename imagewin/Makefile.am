@@ -9,10 +9,13 @@ libimagewin_la_SOURCES = \
 	ibuf8.h \
 	imagebuf.cc \
 	imagebuf.h \
+	iwin8.cc \
+	iwin8.h
+
+if BUILD_EXULT
+libimagewin_la_SOURCES += \
 	imagewin.cc \
 	imagewin.h \
-	iwin8.cc \
-	iwin8.h \
 	save_screenshot.cc \
 	manip.h \
 	scale_2x.cc \
@@ -44,5 +47,6 @@ libimagewin_la_SOURCES = \
 	PointScaler.h \
 	scale_xbr.cc \
 	scale_xbr.h
+endif
 
 EXTRA_DIST =

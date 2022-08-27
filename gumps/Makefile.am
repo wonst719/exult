@@ -6,6 +6,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir) -I$(top_srcdir)/files \
 		$(SDL_CFLAGS) $(VORBIS_CFLAGS) $(OGG_CFLAGS) $(INCDIRS)	\
 		$(WINDOWING_SYSTEM) $(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS)
 
+if BUILD_EXULT
 noinst_LTLIBRARIES = libgumps.la
 
 libgumps_la_SOURCES = \
@@ -78,5 +79,6 @@ libgumps_la_SOURCES = \
 	ItemMenu_gump.h	\
 	InputOptions_gump.cc	\
 	InputOptions_gump.h
+endif
 
 CLEANFILES = *~

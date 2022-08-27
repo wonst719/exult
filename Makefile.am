@@ -8,17 +8,17 @@ AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/headers -I$(srcdir)/imagewin -I$(srcdir)/s
 	$(SDL_CFLAGS) $(VORBIS_CFLAGS) $(OGG_CFLAGS) $(INCDIRS) $(WINDOWING_SYSTEM) \
 	$(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS) -DEXULT_DATADIR=\"$(EXULT_DATADIR)\"
 
-if BUILD_MODS
-MODSDIR=content
-endif
 if HAVE_PNG
 PNG_LIBS=-lpng
 endif
 
-
-SUBDIRS =  files conf data shapes imagewin pathfinder \
+SUBDIRS = files conf data shapes imagewin pathfinder \
 	gamemgr flic usecode tools audio gumps objs server \
-	mapedit desktop docs $(MODSDIR)
+	mapedit desktop docs
+
+if BUILD_MODS
+SUBDIRS += content
+endif
 
 # Build top-level android dir when building the apk with a native build.
 if ANDROID_APK
@@ -160,6 +160,7 @@ libexult_la_LDFLAGS=-release $(PACKAGE_VERSION)
 
 # Otherwise we must be building an executable
 else # !BUILD_LIBEXULT
+if BUILD_EXULT
 bin_PROGRAMS = exult
 exult_SOURCES = $(EXULTSOURCES)
 exult_LDADD = $(EXULTLIBADD)
@@ -168,6 +169,9 @@ exult_DEPENDENCIES = $(EXULTDEPENDENCIES)
 # Workaround for automake issue with using the same sources for both a library and an executable.
 # See https://www.gnu.org/software/automake/manual/html_node/Objects-created-both-with-libtool-and-without.html
 exult_CPPFLAGS = $(AM_CPPFLAGS)
+else # !BUILD_EXULT
+bin_PROGRAMS =
+endif
 endif
 
 EXTRA_DIST = 	\

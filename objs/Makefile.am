@@ -5,6 +5,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir) -I$(top_srcdir)/imagewin -
 		$(SDL_CFLAGS) $(VORBIS_CFLAGS) $(OGG_CFLAGS) \
 		$(INCDIRS) $(WINDOWING_SYSTEM) $(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS)
 
+if BUILD_EXULT
 noinst_LTLIBRARIES = libobjs.la
 
 libobjs_la_SOURCES = \
@@ -40,5 +41,6 @@ libobjs_la_SOURCES = \
 	jawbone.cc \
 	jawbone.h \
 	objnames.cc
+endif
 
 CLEANFILES = *~

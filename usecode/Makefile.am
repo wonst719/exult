@@ -13,6 +13,12 @@ libusecode_la_SOURCES = \
 	bgintrinsics.h	\
 	siintrinsics.h	\
 	sibetaintrinsics.h	\
+	ucsymtbl.cc	\
+	ucsymtbl.h	\
+	usefuns.h
+
+if BUILD_EXULT
+libusecode_la_SOURCES += \
 	intrinsics.cc	\
 	ucinternal.cc	\
 	ucinternal.h	\
@@ -38,9 +44,7 @@ libusecode_la_SOURCES = \
 	ucserial.h	\
 	ucserial.cc	\
 	ucfunction.h	\
-	ucfunction.cc	\
-	ucsymtbl.cc	\
-	ucsymtbl.h	\
-	usefuns.h
+	ucfunction.cc
+endif
 
 CLEANFILES = *~
