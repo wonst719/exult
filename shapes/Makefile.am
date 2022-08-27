@@ -4,11 +4,22 @@ AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir) -I$(top_srcdir)/files \
 	$(SDL_CFLAGS) $(FREETYPE2_INCLUDES) \
 	$(INCDIRS) $(WINDOWING_SYSTEM) $(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS)
 
+if BUILD_EXULT
 SUBDIRS = shapeinf
+else
+SUBDIRS =
+endif
 
 noinst_LTLIBRARIES = libshapes.la
 
 libshapes_la_SOURCES = \
+	pngio.cc \
+	pngio.h \
+	vgafile.cc \
+	vgafile.h
+
+if BUILD_EXULT
+libshapes_la_SOURCES += \
 	baseinf.h \
 	data_utils.h \
 	font.cc \
@@ -21,8 +32,6 @@ libshapes_la_SOURCES = \
 	items.h \
 	miscinf.cc \
 	miscinf.h \
-	pngio.cc \
-	pngio.h \
 	ready.h \
 	shapeinf.cc \
 	shapeinf.h \
@@ -30,8 +39,7 @@ libshapes_la_SOURCES = \
 	shapevga.h \
 	shapewrite.cc \
 	u7drag.cc \
-	u7drag.h \
-	vgafile.cc \
-	vgafile.h
+	u7drag.h
+endif
 
 CLEANFILES = *~
