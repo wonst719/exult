@@ -8,13 +8,17 @@ AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/headers -I$(top_srcdir)/files	\
 noinst_LTLIBRARIES = libgamemgr.la
 
 libgamemgr_la_SOURCES =	\
+	modmgr.cc	\
+	modmgr.h
+
+if BUILD_EXULT
+libgamemgr_la_SOURCES +=	\
 	bggame.cc	\
 	bggame.h	\
 	sigame.cc	\
 	sigame.h	\
 	devgame.cc	\
-	devgame.h	\
-	modmgr.cc	\
-	modmgr.h
+	devgame.h
+endif
 
 CLEANFILES = *~
