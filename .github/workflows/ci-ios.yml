@@ -1,0 +1,130 @@
+name: ci-ios
+
+on:
+  push:
+    paths:
+      - "**"
+      - "!android"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!msvcstuff/**"
+      - "!win32/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-ios.yml"
+  pull_request:
+    paths:
+      - "**"
+      - "!android"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!msvcstuff/**"
+      - "!win32/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-ios.yml"
+
+jobs:
+  notify:
+    name: Exult-CI (IRC & Discord notification)
+    runs-on: ubuntu-latest
+    needs:
+      - ci-ios
+    if: ${{ always() && (github.repository_owner == 'exult' && github.event_name != 'pull_request') }}
+    steps:
+      - name: IRC success notification (ircs://irc.libera.chat:6697/#exult)
+        uses: Gottox/irc-message-action@v2
+        if: needs.ci-ios.result == 'success'
+        with:
+          server: irc.libera.chat
+          port: 6697
+          channel: "#exult"
+          nickname: github-actions
+          tls: true
+          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The iOS build \x033succeeded\x03."
+      - name: IRC failure notification (ircs://irc.libera.chat:6697/#exult)
+        uses: Gottox/irc-message-action@v2
+        if: needs.ci-ios.result != 'success'
+        with:
+          server: irc.libera.chat
+          port: 6697
+          channel: "#exult"
+          nickname: github-actions
+          tls: true
+          message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The iOS build \x034failed\x03."
+      - name: Discord success notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: needs.ci-ios.result == 'success'
+        with:
+          severity: info
+          username: github-actions
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          details: 'The iOS build succeeded.'
+      - name: Discord failure notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: needs.ci-ios.result != 'success'
+        with:
+          severity: error
+          username: github-actions
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          details: 'The iOS build failed.'
+  ci-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: clone xiph/ogg
+        uses: actions/checkout@master
+        with:
+          repository: 'xiph/ogg'
+          ref: 'v1.3.5'
+          path: './ios/libogg'
+      - name: clone xiph/vorbis
+        uses: actions/checkout@master
+        with:
+          repository: 'xiph/vorbis'
+          ref: 'v1.3.7'
+          path: './ios/libvorbis'
+      - name: clone libsdl-org/sdl
+        uses: actions/checkout@master
+        with:
+          repository: 'libsdl-org/sdl'
+          ref: 'release-2.24.0'
+          path: './ios/SDL2'
+      - name: clone munt/munt
+        uses: actions/checkout@master
+        with:
+          repository: 'munt/munt'
+          ref: 'munt_2_7_0'
+          path: './ios/libmt32emu'
+      - name: Build
+        run: |
+          xcodebuild build  -scheme Exult -project ./ios/Exult.xcodeproj CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED="NO"
