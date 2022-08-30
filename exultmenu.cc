@@ -244,6 +244,7 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 		menu->add_entry(entry);
 		xpos += max_width;
 	}
+	menu->set_selection(0);
 	return menu;
 }
 
@@ -295,6 +296,8 @@ std::unique_ptr<MenuList> ExultMenu::create_mods_menu(ModManager *selgame, int f
 		menu->add_entry(entry);
 		xpos += max_width;
 	}
+	menu->set_selection(0);
+	menu->set_cancel(-4);
 	return menu;
 }
 
@@ -310,7 +313,6 @@ BaseGameInfo *ExultMenu::show_mods_menu(ModManager *selgame) {
 	int num_choices = selgame->get_mod_list().size() - 1;
 	int last_page = num_choices - num_choices % pagesize;
 	auto menu = create_mods_menu(selgame, first_mod);
-	menu->set_selection(0);
 	BaseGameInfo *sel_mod = nullptr;
 
 	Shape_frame *exultlogo = exult_flx.get_shape(EXULT_FLX_EXULT_LOGO_SHP, 1);
@@ -376,7 +378,7 @@ BaseGameInfo *ExultMenu::run() {
 		const char close_screen_msg[] = "Press ESC to exit.";
 #endif
 //Create our message and programatically center it.
-		const char *message[8] = 
+		const char *message[8] =
 		{
 			"WARNING",
 			"",
@@ -441,7 +443,6 @@ BaseGameInfo *ExultMenu::run() {
 
 	auto menu = create_main_menu(first_game);;
 	BaseGameInfo *sel_game = nullptr;
-	menu->set_selection(0);
 
 	do {
 		// Interferes with the menu.
@@ -465,7 +466,6 @@ BaseGameInfo *ExultMenu::run() {
 			logoy = centery - exultlogo->get_height() / 2;
 			first_game = 0;
 			menu = create_main_menu(first_game);
-			menu->set_selection(0);
 			break;
 		case -3: { // Exult Credits
 			gpal->fade_out(c_fade_out_time);

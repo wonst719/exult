@@ -156,6 +156,8 @@ private:
 	std::vector<std::unique_ptr<MenuObject>> entries;
 	bool selected = false;
 	int selection = 0;
+	bool has_cancel = false;
+	int cancel_id = 0;
 public:
 	int add_entry(MenuObject *entry) {
 		entries.emplace_back(entry);
@@ -168,6 +170,7 @@ public:
 	}
 	void set_selection(int sel);
 	void set_selection(int x, int y);
+	void set_cancel(int val);
 };
 
 #endif

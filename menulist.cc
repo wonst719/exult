@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <SDL_keycode.h>
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -280,6 +281,11 @@ void MenuList::set_selection(int x, int y) {
 	selected = false;
 }
 
+void MenuList::set_cancel(int val) {
+	cancel_id = val;
+	has_cancel = true;
+}
+
 int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 	int count = entries.size();
 	for (int i = 0; i < count; i++)
@@ -339,6 +345,11 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 				mouse->hide();
 				mouse->blit_dirty();
 				switch (event.key.keysym.sym) {
+				case SDLK_ESCAPE:
+					if (has_cancel) {
+						return cancel_id;
+					}
+					break;
 				case SDLK_q:
 				case SDLK_x:
 					if (event.key.keysym.mod & KMOD_ALT
