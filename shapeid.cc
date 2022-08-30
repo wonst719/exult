@@ -116,6 +116,11 @@ void Shape_manager::read_shape_info(
 
 void Shape_manager::load(
 ) {
+	// Reset all caches, just in case.
+	for (auto& cache : shape_cache) {
+		cache.clear();
+	}
+
 	shapes.reset_imports();
 
 	// Determine some colors based on the default palette
@@ -298,6 +303,9 @@ void Shape_manager::load(
 
 // Read in files needed to display gumps.
 bool Shape_manager::load_gumps_minimal() {
+	U7FileManager::get_ptr()->reset();  // Cache no longer valid.
+	shape_cache[SF_GUMPS_VGA].clear();
+	shape_cache[SF_EXULT_FLX].clear();
 	try {
 		if (!files[SF_GUMPS_VGA].load(GUMPS_VGA, PATCH_GUMPS, true)) {
 			std::cerr << "Couldn't open 'gumps.vga'." << std::endl;
