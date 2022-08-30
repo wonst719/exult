@@ -62,7 +62,7 @@ jobs:
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: |
           export PATH=/tmp/cov-analysis-linux64/bin:$PATH
-          cov-build --dir cov-int make -j
+          cov-build --dir cov-int make -j2
       - name: Submit the result to Coverity Scan
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: |
