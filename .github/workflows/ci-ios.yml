@@ -7,6 +7,7 @@ on:
       - "!android"
       - "!docs/**"
       - "docs/Makefile.am"
+      - "!macosx/**"
       - "!msvcstuff/**"
       - "!win32/**"
       - "!AUTHORS"
@@ -31,6 +32,7 @@ on:
       - "!android"
       - "!docs/**"
       - "docs/Makefile.am"
+      - "!macosx/**"
       - "!msvcstuff/**"
       - "!win32/**"
       - "!AUTHORS"
@@ -101,30 +103,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@master
-      - name: clone xiph/ogg
-        uses: actions/checkout@master
-        with:
-          repository: 'xiph/ogg'
-          ref: 'v1.3.5'
-          path: './ios/libogg'
-      - name: clone xiph/vorbis
-        uses: actions/checkout@master
-        with:
-          repository: 'xiph/vorbis'
-          ref: 'v1.3.7'
-          path: './ios/libvorbis'
-      - name: clone libsdl-org/sdl
-        uses: actions/checkout@master
-        with:
-          repository: 'libsdl-org/sdl'
-          ref: 'release-2.24.0'
-          path: './ios/SDL2'
-      - name: clone munt/munt
-        uses: actions/checkout@master
-        with:
-          repository: 'munt/munt'
-          ref: 'munt_2_7_0'
-          path: './ios/libmt32emu'
       - name: Build
         run: |
-          xcodebuild build  -scheme Exult -project ./ios/Exult.xcodeproj CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED="NO"
+          xcodebuild build -scheme git_clone_release_dependencies -project ./ios/Exult.xcodeproj CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED="NO"
