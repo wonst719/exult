@@ -213,7 +213,7 @@ void getVersionInfo(std::ostream &out) {
 		out << " Version " << info.dwMajorVersion << "." << info.dwMinorVersion << " Build " << LOWORD(info.dwBuildNumber & 0xFFFF);
 	}
 #elif (defined(FREEBSD))
-out << "FreeBSD";
+	out << "FreeBSD";
 #elif (defined(MACOSX))
 	out << "Mac OS X";
 #elif (defined(__IPHONEOS__))
