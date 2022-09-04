@@ -502,10 +502,14 @@ void Image_window::create_surface(
 		if (screen_window == nullptr)
 			cout << "Couldn't create window: " << SDL_GetError() << std::endl;
 
-		screen_renderer = SDL_CreateRenderer(screen_window, -1, 0);
-		if (screen_renderer == nullptr)
+		screen_renderer = SDL_CreateRenderer(screen_window, -1, SDL_RENDERER_PRESENTVSYNC);
+		if (screen_renderer == nullptr) {
+			// Just in case.
+			screen_renderer = SDL_CreateRenderer(screen_window, -1, 0);
+		}
+		if (screen_renderer == nullptr) {
 			cout << "Couldn't create renderer: " << SDL_GetError() << std::endl;
-
+		}
 		// Do an initial draw/fill
 		SDL_SetRenderDrawColor(screen_renderer, 0, 0, 0, 255);
 		SDL_RenderClear(screen_renderer);
