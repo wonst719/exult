@@ -5,18 +5,18 @@
          <ExecutionAction
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
-               title = "delete libraries folders and clone the libraries' releases"
-               scriptText = "rm -r -f ${WORKSPACE_PATH}/../../libogg&#10;git -c advice.detachedHead=false clone -b v1.3.5 --depth 1 https://github.com/xiph/ogg ${WORKSPACE_PATH}/../../libogg&#10;rm -r -f ${WORKSPACE_PATH}/../../libvorbis&#10;git -c advice.detachedHead=false clone -b v1.3.7 --depth 1 https://github.com/xiph/vorbis ${WORKSPACE_PATH}/../../libvorbis&#10;rm -r -f ${WORKSPACE_PATH}/../../libmt32emu&#10;git -c advice.detachedHead=false clone -b munt_2_7_0 --depth 1 https://github.com/munt/munt ${WORKSPACE_PATH}/../../libmt32emu&#10;rm -r -f ${WORKSPACE_PATH}/../../SDL2&#10;git -c advice.detachedHead=false clone -b release-2.24.0 --depth 1 https://github.com/libsdl-org/sdl ${WORKSPACE_PATH}/../../SDL2&#10;">
+               title = "clone the libraries&apos; releases"
+               scriptText = "git -c advice.detachedHead=false clone -b v1.3.5 --depth 1 https://github.com/xiph/ogg ${WORKSPACE_PATH}/../../libogg&#10;git -c advice.detachedHead=false clone -b v1.3.7 --depth 1 https://github.com/xiph/vorbis ${WORKSPACE_PATH}/../../libvorbis&#10;git -c advice.detachedHead=false clone -b munt_2_7_0 --depth 1 https://github.com/munt/munt ${WORKSPACE_PATH}/../../libmt32emu&#10;git -c advice.detachedHead=false clone -b release-2.24.0 --depth 1 https://github.com/libsdl-org/sdl ${WORKSPACE_PATH}/../../SDL2&#10;">
             </ActionContent>
          </ExecutionAction>
       </PreActions>
       <BuildActionEntries>
          <BuildActionEntry
-            buildForTesting = "YES"
+
             buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BuildableName = "Exult.app"
@@ -26,4 +26,33 @@
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
+   <LaunchAction>
+      <BuildableProductRunnable>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BuildableName = "Exult.app"
+            BlueprintName = "Exult"
+            ReferencedContainer = "container:Exult.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </LaunchAction>
+   <ProfileAction
+      buildConfiguration = "Release">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BuildableName = "Exult.app"
+            BlueprintName = "Exult"
+            ReferencedContainer = "container:Exult.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </ProfileAction>
+   <AnalyzeAction
+      buildConfiguration = "Debug">
+   </AnalyzeAction>
+   <ArchiveAction
+      buildConfiguration = "Release"
+      revealArchiveInOrganizer = "YES">
+   </ArchiveAction>
 </Scheme>
