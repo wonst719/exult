@@ -32,7 +32,9 @@ Checks: >
   -readability-make-member-function-const,
   -readability-named-parameter,
   -readability-redundant-declaration,
-  -readability-uppercase-literal-suffix
+  -readability-uppercase-literal-suffix,
+  -readability-function-cognitive-complexity,
+  -readability-identifier-length
 CheckOptions:
     - key: bugprone-argument-comment.StrictMode
       value: 1

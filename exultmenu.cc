@@ -42,7 +42,6 @@
 #include "fnames.h"
 #include "gamemgr/modmgr.h"
 #include "gumps/Gamemenu_gump.h"
-#include "shapeid.h"
 #include "ignore_unused_variable_warning.h"
 #include "array_size.h"
 #ifdef __IPHONEOS__

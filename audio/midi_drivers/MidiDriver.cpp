@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MidiDriver.h"
 #include <vector>
 
-#include "MidiDriver.h"
 #include "WindowsMidiDriver.h"
 #include "CoreAudioMidiDriver.h"
 #include "CoreMidiDriver.h"
@@ -36,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static MidiDriver *Disabled_CreateInstance() { return nullptr; }
 
-static const MidiDriver::MidiDriverDesc Disabled_desc = 
+static const MidiDriver::MidiDriverDesc Disabled_desc =
 		MidiDriver::MidiDriverDesc ("Disabled", Disabled_CreateInstance);
 
 static std::vector<const MidiDriver::MidiDriverDesc*> midi_drivers;

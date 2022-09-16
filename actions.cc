@@ -34,7 +34,6 @@
 #include "dir.h"
 #include "ucmachine.h"
 #include "frameseq.h"
-#include "ucmachine.h"
 #include "cheat.h"
 #include "party.h"
 #include "monstinf.h"

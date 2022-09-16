@@ -28,7 +28,6 @@
 
 #include <cassert>
 #include <cstdio>
-#include <cstdio>
 #include <iostream>
 #include <cstdlib>
 #include <cctype>

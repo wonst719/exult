@@ -28,7 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Gump_manager.h"
 #include "Gump_button.h"
 #include "exult_flx.h"
-#include "gamewin.h"
 #include "Text_button.h"
 #include "cheat.h"
 #include "shapeinf.h"
