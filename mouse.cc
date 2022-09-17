@@ -52,7 +52,7 @@ bool Mouse::use_touch_input = false;
 
 static inline bool should_hide_frame(int frame) {
 	// on touch input only we hide the cursor
-	if (Mouse::use_touch_input == true) {
+	if (Mouse::use_touch_input) {
 		return frame == 0 || (frame >=8 && frame <= 47);
 	} else {
 		return false;
@@ -103,10 +103,10 @@ void Mouse::Init() {
 	int maxabove = 0;
 	int maxbelow = 0;
 	for (auto& frame : pointers) {
-		int xleft = frame->get_xleft();
-		int xright = frame->get_xright();
-		int yabove = frame->get_yabove();
-		int ybelow = frame->get_ybelow();
+		const int xleft = frame->get_xleft();
+		const int xright = frame->get_xright();
+		const int yabove = frame->get_yabove();
+		const int ybelow = frame->get_ybelow();
 		if (xleft > maxleft)
 			maxleft = xleft;
 		if (xright > maxright)
@@ -116,8 +116,8 @@ void Mouse::Init() {
 		if (ybelow > maxbelow)
 			maxbelow = ybelow;
 	}
-	int maxw = maxleft + maxright;
-	int maxh = maxabove + maxbelow;
+	const int maxw = maxleft + maxright;
+	const int maxh = maxabove + maxbelow;
 	// Create backup buffer.
 	backup = iwin->create_buffer(maxw, maxh);
 	box.w = maxw;
@@ -217,7 +217,7 @@ void Mouse::set_location(
 void Mouse::flash_shape(
     Mouse_shapes flash
 ) {
-	Mouse_shapes saveshape = get_shape();
+	const Mouse_shapes saveshape = get_shape();
 	hide();
 	set_shape(flash);
 	show();
@@ -287,12 +287,12 @@ void Mouse::set_speed_cursor() {
 		} else
 			gwin->get_shape_location(gwin->get_main_actor(), ax, ay);
 
-		int dy = ay - mousey;
-		int dx = mousex - ax;
-		Direction dir = Get_direction_NoWrap(dy, dx);
-		TileRect gamewin_dims = gwin->get_game_rect();
-		float speed_section = max(max(-static_cast<float>(dx) / ax, static_cast<float>(dx) / (gamewin_dims.w - ax)), max(static_cast<float>(dy) / ay, -static_cast<float>(dy) / (gamewin_dims.h - ay)));
-		bool nearby_hostile = gwin->is_hostile_nearby();
+		const int dy = ay - mousey;
+		const int dx = mousex - ax;
+		const Direction dir = Get_direction_NoWrap(dy, dx);
+		const TileRect gamewin_dims = gwin->get_game_rect();
+		const float speed_section = max(max(-static_cast<float>(dx) / ax, static_cast<float>(dx) / (gamewin_dims.w - ax)), max(static_cast<float>(dy) / ay, -static_cast<float>(dy) / (gamewin_dims.h - ay)));
+		const bool nearby_hostile = gwin->is_hostile_nearby();
 		bool has_active_nohalt_scr = false;
 		Usecode_script *scr = nullptr;
 		Actor *act = gwin->get_main_actor();

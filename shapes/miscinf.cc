@@ -288,7 +288,7 @@ public:
 		entry.face_frame = ReadInt(src);
 		entry.alter_face_shape = ReadInt(src);
 		entry.alter_face_frame = ReadInt(src);
-		entry.copy_info = !(version == 2 && !src.eof() && ReadInt(src) == 0);
+		entry.copy_info = version != 2 || src.eof() || ReadInt(src) != 0;
 		if (for_patch && !table.empty()) {
 			unsigned int i;
 			int found = -1;

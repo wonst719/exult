@@ -62,10 +62,10 @@ static inline bool Can_be_added(
 ) {
 	const Shape_info &continfo = cont->get_info();
 	const Shape_info &add_info = ShapeID::get_info(shapenum);
-	return !(cont->get_shapenum() == shapenum   // Shape can't be inside itself.
-	         || (!allow_locked && continfo.is_container_locked())   // Locked container.
-	         || !continfo.is_shape_accepted(shapenum)  // Shape can't be inside.
-	         || (!add_info.is_spell() && add_info.is_on_fire()));	// Object is on fire, and can't be inside others
+	return cont->get_shapenum() != shapenum   // Shape can't be inside itself.
+	         && (allow_locked || !continfo.is_container_locked())   // Locked container.
+	         && continfo.is_shape_accepted(shapenum)  // Shape can't be inside.
+	         && (add_info.is_spell() || !add_info.is_on_fire());	// Object is on fire, and can't be inside others
 }
 
 // Max. we'll hold.  (Guessing).

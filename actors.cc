@@ -502,8 +502,8 @@ bool Actor::ready_ammo(
 	const int ammo = winf->get_ammo_consumed();
 	if (ammo < 0) {
 		// Ammo not needed.
-		return !(winf->uses_charges() && info.has_quality() &&
-		        weapon->get_quality() <= 0);   // Uses charges, but none left.
+		return !winf->uses_charges() || !info.has_quality() ||
+		        weapon->get_quality() > 0;   // Uses charges, but none left.
 	}
 	Game_object *found = nullptr;
 	// Try non-recursive search for ammo first.
@@ -2525,7 +2525,7 @@ bool Actor::can_act() {
 }
 
 bool Actor::can_act_charmed() {
-	return !(Combat::charmed_more_difficult && get_effective_alignment() != good);
+	return !Combat::charmed_more_difficult || get_effective_alignment() == good;
 }
 
 /*

@@ -47,7 +47,7 @@ class Basic_block;
 
 inline bool is_int_32bit(int val) {
 	const int high = val >> 16;
-	return !(high == -1 || high == 0);
+	return high != -1 && high != 0;
 }
 
 inline bool is_sint_32bit(int val) {

@@ -788,7 +788,7 @@ static void Init(
 	// Load games and mods; also stores system paths:
 	gamemanager = new GameManager();
 
-	if (arg_buildmap < 0 && arg_verify_files == false) {
+	if (arg_buildmap < 0 && !arg_verify_files) {
 		string gr;
 		string gg;
 		string gb;
@@ -1355,8 +1355,8 @@ static void Handle_event(
 	case SDL_CONTROLLERAXISMOTION: {
 		// Ignore axis changes on anything but a specific thumb-stick
 		// on the game-controller.
-		if (!(event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX ||
-			  event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY)) {
+		if (event.caxis.axis != SDL_CONTROLLER_AXIS_LEFTX &&
+			  event.caxis.axis != SDL_CONTROLLER_AXIS_LEFTY) {
 			break;
 		}
 
@@ -1650,7 +1650,7 @@ static void Handle_event(
 	case SDL_MOUSEMOTION: {
 		int mx ;
 		int my;
-		if ((Mouse::use_touch_input == true) && (event.motion.which != EXSDL_TOUCH_MOUSEID))
+		if (Mouse::use_touch_input && event.motion.which != EXSDL_TOUCH_MOUSEID)
 			Mouse::use_touch_input = false;
 		gwin->get_win()->screen_to_game(event.motion.x, event.motion.y, gwin->get_fastmouse(), mx, my);
 

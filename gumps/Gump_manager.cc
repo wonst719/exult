@@ -535,7 +535,7 @@ bool Gump_manager::handle_modal_gump_event(
 		break;
 	}
 	case SDL_MOUSEMOTION:
-		if ((Mouse::use_touch_input == true) && (event.motion.which != EXSDL_TOUCH_MOUSEID))
+		if (Mouse::use_touch_input && event.motion.which != EXSDL_TOUCH_MOUSEID)
 			Mouse::use_touch_input = false;
 		gwin->get_win()->screen_to_game(event.motion.x, event.motion.y, gwin->get_fastmouse(), gx, gy);
 

@@ -721,7 +721,7 @@ bool Egg_object::is_active(
 	if (flags & (1 << static_cast<int>(nocturnal))) {
 		// Nocturnal.
 		const int hour = gclock->get_hour();
-		if (!(hour >= 21 || hour <= 4))
+		if (hour < 21 && hour > 4)
 			return false; // It's not night.
 	}
 	auto cri = static_cast<Egg_criteria>(get_criteria());

@@ -167,7 +167,7 @@ void getline(ifstream &file, string &buf) {
 		file.get(c);
 	}
 
-	while (!(file.peek() >= ' ' || file.peek() == '\t') && file.good())
+	while (file.peek() < ' ' && file.peek() != '\t' && file.good())
 		file.get(c);
 }
 

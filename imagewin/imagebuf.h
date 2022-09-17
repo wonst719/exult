@@ -138,8 +138,8 @@ public:
 	}
 	// Is rect. visible within clip?
 	bool is_visible(int x, int y, int w, int h) {
-		return !(x >= clipx + clipw || y >= clipy + cliph ||
-		          x + w <= clipx || y + h <= clipy);
+		return x < clipx + clipw && y < clipy + cliph &&
+		          x + w > clipx && y + h > clipy;
 	}
 	/*
 	 *  16-bit color methods.  Default is to ignore them.

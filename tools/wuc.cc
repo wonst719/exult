@@ -125,9 +125,9 @@ int find_intrinsic(const char * const *func_table, unsigned funsize, const char 
 void read_token(FILE *fi) {
 	int i = 0;
 	int c = 32;
-	while (((c == ' ') || (c == '\t') || (c == '\n') || (c == ',')) && (!feof(fi)))
+	while (((c == ' ') || (c == '\t') || (c == '\n') || (c == ',')) && !feof(fi))
 		c = fgetc(fi);
-	while (!((c == ' ') || (c == '\t') || (c == '\n') || (c == ',')) && (!feof(fi))) {
+	while ((c != ' ') && (c != '\t') && (c != '\n') && (c != ',') && !feof(fi)) {
 		if (i >= TOKEN_LENGTH - 1) {
 			fprintf(stderr, "Error: token too long!\n");
 			exit(-1);

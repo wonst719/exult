@@ -32,13 +32,13 @@ static inline bool Point_in_strip(int start, int end, int pt) noexcept {
 	// Does the strip wrap around the world?
 	if (end >= c_num_tiles) {
 		// Yes. Check both halves of it.
-		if (!(pt >= start && pt < c_num_tiles) &&
-		        !(pt >= 0 && pt < (end % c_num_tiles))) {
+		if ((pt < start || pt >= c_num_tiles) &&
+		        (pt < 0 || pt >= (end % c_num_tiles))) {
 			return false;
 		}
 	}
 	// No; check whether the point is in or not.
-	else if (!(pt >= start && pt < end)) {
+	else if (pt < start || pt >= end) {
 		return false;   // It was not.
 	}
 	return true;
