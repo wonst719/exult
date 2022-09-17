@@ -159,7 +159,7 @@ static int U7ListFilesImp(const std::string &path, FileList &files) {
 	case 3:   //no matches
 		return 0;
 	default:  //error
-		cerr << "Glob error " << err << endl;
+		std::cerr << "Glob error " << err << std::endl;
 		return err;
 	}
 }
