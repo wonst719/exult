@@ -97,12 +97,12 @@ int Font::paint_text_box(
 ) {
 	const char *start = text;   // Remember the start.
 	win->set_clip(x, y, w, h);
-	int endx = x + w;       // Figure where to stop.
+	const int endx = x + w;       // Figure where to stop.
 	int curx = x;
 	int cury = y;
-	int height = get_text_height() + vert_lead + ver_lead;
-	int space_width = get_text_width(" ", 1);
-	int max_lines = h / height; // # lines that can be shown.
+	const int height = get_text_height() + vert_lead + ver_lead;
+	const int space_width = get_text_width(" ", 1);
+	const int max_lines = h / height; // # lines that can be shown.
 	auto *lines = new string[max_lines + 1];
 	int cur_line = 0;
 	const char *last_punct_end = nullptr;// ->last period, qmark, etc.
@@ -138,7 +138,7 @@ int Font::paint_text_box(
 				int w = get_text_width(text, static_cast<uint32>(wrd - text));
 				if (w <= 0)
 					w = space_width;
-				int nsp = w / space_width;
+				const int nsp = w / space_width;
 				lines[cur_line].append(nsp, ' ');
 				if (cursor && coff > text - start &&
 				        coff < wrd - start)
@@ -160,7 +160,7 @@ int Font::paint_text_box(
 			if (cur_line)
 				break;
 		}
-		bool ucase_next = *text == '^';
+		const bool ucase_next = *text == '^';
 		if (ucase_next) // Skip it.
 			text++;
 		// Pass word & get its width.
@@ -324,11 +324,11 @@ int Font::paint_text_box_fixedwidth(
 ) {
 	const char *start = text;   // Remember the start.
 	win->set_clip(x, y, w, h);
-	int endx = x + w;       // Figure where to stop.
+	const int endx = x + w;       // Figure where to stop.
 	int curx = x;
 	int cury = y;
-	int height = get_text_height() + vert_lead + ver_lead;
-	int max_lines = h / height; // # lines that can be shown.
+	const int height = get_text_height() + vert_lead + ver_lead;
+	const int max_lines = h / height; // # lines that can be shown.
 	auto *lines = new string[max_lines + 1];
 	int cur_line = 0;
 	const char *last_punct_end = nullptr;// ->last period, qmark, etc.
@@ -350,8 +350,8 @@ int Font::paint_text_box_fixedwidth(
 			// Pass space.
 			const char *wrd = Pass_space(text);
 			if (wrd != text) {
-				int w = static_cast<int>(wrd - text) * char_width;
-				int nsp = w / char_width;
+				const int w = static_cast<int>(wrd - text) * char_width;
+				const int nsp = w / char_width;
 				lines[cur_line].append(nsp, ' ');
 				curx += nsp * char_width;
 			}
@@ -368,12 +368,12 @@ int Font::paint_text_box_fixedwidth(
 			if (cur_line)
 				break;
 		}
-		bool ucase_next = *text == '^';
+		const bool ucase_next = *text == '^';
 		if (ucase_next) // Skip it.
 			text++;
 		// Pass word & get its width.
 		const char *ewrd = Pass_word(text);
-		int width = static_cast<int>(ewrd - text) * char_width;
+		const int width = static_cast<int>(ewrd - text) * char_width;
 		if (curx + width - hor_lead > endx) {
 			// Word-wrap.
 			if (ucase_next)
@@ -559,12 +559,12 @@ int Font::find_cursor(
     int vert_lead           // Extra spacing between lines.
 ) {
 	const char *start = text;   // Remember the start.
-	int endx = x + w;       // Figure where to stop.
+	const int endx = x + w;       // Figure where to stop.
 	int curx = x;
 	int cury = y;
-	int height = get_text_height() + vert_lead + ver_lead;
-	int space_width = get_text_width(" ", 1);
-	int max_lines = h / height; // # lines that can be shown.
+	const int height = get_text_height() + vert_lead + ver_lead;
+	const int space_width = get_text_width(" ", 1);
+	const int max_lines = h / height; // # lines that can be shown.
 	int cur_line = 0;
 	int chr;
 
@@ -601,7 +601,7 @@ int Font::find_cursor(
 			if (cur_line)
 				break;
 		}
-		bool ucase_next = *text == '^';
+		const bool ucase_next = *text == '^';
 		if (ucase_next) // Skip it.
 			text++;
 		// Pass word & get its width.
@@ -627,7 +627,7 @@ int Font::find_cursor(
 		}
 		if (cy >= cury && cy < cury + height &&
 		        cx >= curx && cx < curx + width) {
-			int woff = find_xcursor(text, static_cast<int>(ewrd - text), cx - curx);
+			const int woff = find_xcursor(text, static_cast<int>(ewrd - text), cx - curx);
 			if (woff >= 0)
 				return static_cast<int>(text - start) + woff;
 		}
@@ -657,7 +657,7 @@ int Font::find_xcursor(
 		Shape_frame *shape = font_shapes->get_frame(
 		                         static_cast<unsigned char>(*text++));
 		if (shape) {
-			int w = shape->get_width() + hor_lead;
+			const int w = shape->get_width() + hor_lead;
 			if (cx >= curx && cx < curx + w)
 				return static_cast<int>(text - 1 - start);
 			curx += w;

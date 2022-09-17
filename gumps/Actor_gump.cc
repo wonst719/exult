@@ -69,9 +69,9 @@ int Actor_gump::find_closest(
 	long closest_squared = 1000000; // Best distance squared.
 	int closest = -1;       // Best index.
 	for (size_t i = 0; i < array_size(coords); i++) {
-		int dx = mx - coords[i].x;
-		int dy = my - coords[i].y;
-		long dsquared = dx * dx + dy * dy;
+		const int dx = mx - coords[i].x;
+		const int dy = my - coords[i].y;
+		const long dsquared = dx * dx + dy * dy;
 		// Better than prev.?
 		if (dsquared < closest_squared && (!only_empty ||
 		                                   !container->get_readied(i))) {
@@ -131,7 +131,7 @@ bool Actor_gump::add(
 	if (cont && cont->add(obj, false, combine))
 		return true;
 
-	int index = find_closest(mx, my, 1);
+	const int index = find_closest(mx, my, 1);
 
 	if (index != -1 && container->add_readied(obj, index))
 		return true;
@@ -154,23 +154,23 @@ void Actor_gump::set_to_spot(
 	Shape_frame *shape = obj->get_shape();
 	if (!shape)
 		return;         // Not much we can do.
-	int w = shape->get_width();
-	int h = shape->get_height();
+	const int w = shape->get_width();
+	const int h = shape->get_height();
 	// Set object's position.
 	obj->set_shape_pos(
 	    coords[index].x + shape->get_xleft() - w / 2 - object_area.x,
 	    coords[index].y + shape->get_yabove() - h / 2 - object_area.y);
 	// Shift if necessary.
-	int x0 = obj->get_tx() - shape->get_xleft();
-	int y0 = obj->get_ty() - shape->get_yabove();
+	const int x0 = obj->get_tx() - shape->get_xleft();
+	const int y0 = obj->get_ty() - shape->get_yabove();
 	int newcx = obj->get_tx();
 	int newcy = obj->get_ty();
 	if (x0 < 0)
 		newcx -= x0;
 	if (y0 < 0)
 		newcy -= y0;
-	int x1 = x0 + w;
-	int y1 = y0 + h;
+	const int x1 = x0 + w;
+	const int y1 = y0 + h;
 	if (x1 > object_area.w)
 		newcx -= x1 - object_area.w;
 	if (y1 > object_area.h)
@@ -198,26 +198,26 @@ void Actor_gump::paint(
 	Actor *actor = container->as_actor();
 	if (actor) {
 		if (actor->is_two_fingered()) {
-			int sx = x + 36;
-			int // Note this is the right finger slot shifted slightly
-			    sy = y + 70;
+			const int sx = x + 36;
+			// Note this is the right finger slot shifted slightly
+			const int sy = y + 70;
 			ShapeID sid(TWO_FINGER_BROWN_SHAPE, TWO_FINGER_BROWN_FRAME, SF_GUMPS_VGA);
 			sid.paint_shape(sx, sy);
 		}
 		if (actor->is_two_handed()) {
-			int sx = x + 36;
-			int // Note this is the right hand slot shifted slightly
-			    sy = y + 55;
+			const int sx = x + 36;
+			 // Note this is the right hand slot shifted slightly
+			const int sy = y + 55;
 			ShapeID sid(TWO_HANDED_BROWN_SHAPE, TWO_HANDED_BROWN_FRAME, SF_GUMPS_VGA);
 			sid.paint_shape(sx, sy);
 		}
 	}
 	// Show weight.
-	int max_weight = container->get_max_weight();
-	int weight = container->get_weight() / 10;
+	const int max_weight = container->get_max_weight();
+	const int weight = container->get_weight() / 10;
 	char text[20];
 	snprintf(text, 20, "%d/%d", weight, max_weight);
-	int twidth = sman->get_text_width(2, text);
+	const int twidth = sman->get_text_width(2, text);
 	const int boxw = 102;
 	sman->paint_text(2, text, x + 28 + (boxw - twidth) / 2, y + 120);
 }

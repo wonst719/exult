@@ -123,9 +123,9 @@ void Sign_gump::paint(
 	else if (get_shapenum() == game->get_shape("gumps/tombstone"))
 		font = 3;
 	// Get height of 1 line.
-	int lheight = sman->get_text_height(font);
+	const int lheight = sman->get_text_height(font);
 	// Get space between lines.
-	int lspace = (object_area.h - num_lines * lheight) / (num_lines + 1);
+	const int lspace = (object_area.h - num_lines * lheight) / (num_lines + 1);
 	// Paint the gump itself.
 	paint_shape(x, y);
 	int ypos = y + object_area.y;   // Where to paint next line.

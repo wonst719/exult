@@ -51,7 +51,7 @@ const string    &XMLnode::reference(const string &h, bool &exists) {
 
 		string k;
 		k = h.substr(h.find('/') + 1);
-		string k2 = k.substr(0, k.find('/'));
+		const string k2 = k.substr(0, k.find('/'));
 		for (auto *node : nodelist) {
 			if (node->id == k2)
 				return node->reference(k, exists);
@@ -76,7 +76,7 @@ const XMLnode *XMLnode::subtree(const string &h) const {
 
 		string k;
 		k = h.substr(h.find('/') + 1);
-		string k2 = k.substr(0, k.find('/'));
+		const string k2 = k.substr(0, k.find('/'));
 		for (auto *node : nodelist) {
 			if (node->id == k2)
 				return node->subtree(k);
@@ -173,7 +173,7 @@ void    XMLnode::xmlassign(const string &key, const string &value) {
 	}
 	string k;
 	k = key.substr(key.find('/') + 1);
-	string k2 = k.substr(0, k.find('/'));
+	const string k2 = k.substr(0, k.find('/'));
 	for (auto* node : nodelist) {
 		if (node->id == k2) {
 			node->xmlassign(k, value);
@@ -203,7 +203,7 @@ void XMLnode::remove(const std::string &key, bool valueonly) {
 	} else {
 		string k;
 		k = key.substr(key.find('/') + 1);
-		string k2 = k.substr(0, k.find('/'));
+		const string k2 = k.substr(0, k.find('/'));
 		for (auto it = nodelist.begin(); it != nodelist.end(); ++it) {
 			XMLnode *node = (*it);
 			if (node->id == k2) {
@@ -236,7 +236,7 @@ void    XMLnode::listkeys(const string &key, vector<string> &vs, bool longformat
 string  encode_entity(const string &s) {
 	string  ret;
 
-	for (char ch : s) {
+	for (const char ch : s) {
 		switch (ch) {
 		case '<':
 			ret += "&lt;";
@@ -261,14 +261,14 @@ string  encode_entity(const string &s) {
 }
 
 static  string  decode_entity(const string &s, std::size_t &pos) {
-	std::size_t         old_pos = pos;
-	string::size_type   entity_name_len = s.find_first_of("; \t\r\n", pos) - pos - 1;
+	const std::size_t         old_pos = pos;
+	const string::size_type   entity_name_len = s.find_first_of("; \t\r\n", pos) - pos - 1;
 
 	/* Call me paranoid... but I don't think having an end-of-line or similar
 	    inside a &...; expression is 'good', valid though it may be. */
 	assert(s[pos + entity_name_len + 1] == ';');
 
-	string              entity_name = s.substr(pos + 1, entity_name_len);
+	const string              entity_name = s.substr(pos + 1, entity_name_len);
 
 	pos += entity_name_len + 2;
 

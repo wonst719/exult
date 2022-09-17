@@ -245,7 +245,7 @@ static void run(
 		if (run_mode != GIMP_RUN_NONINTERACTIVE) {
 			choose_palette();
 		}
-		gint32 image_ID = load_image(param[1].data.d_string);
+		const gint32 image_ID = load_image(param[1].data.d_string);
 
 		if (image_ID != -1) {
 			*nreturn_vals = 2;
@@ -255,9 +255,9 @@ static void run(
 			status = GIMP_PDB_EXECUTION_ERROR;
 		}
 	} else if (strcmp(name, "file_shp_save") == 0) {
-		gint32 orig_image_ID = param[1].data.d_int32;
-		gint32 image_ID    = orig_image_ID;
-		gint32 drawable_ID = param[2].data.d_int32;
+		const gint32 orig_image_ID = param[1].data.d_int32;
+		const gint32 image_ID    = orig_image_ID;
+		const gint32 drawable_ID = param[2].data.d_int32;
 		save_image(param[3].data.d_string,
 		           image_ID,
 		           drawable_ID,
@@ -269,7 +269,7 @@ static void run(
 }
 
 static void load_palette(const std::string& filename) {
-	U7object pal(filename, 0);
+	const U7object pal(filename, 0);
 	size_t len;
 	auto data = pal.retrieve(len);
 	if (!data || len == 0) {
@@ -362,7 +362,7 @@ static gint32 load_image(gchar *filename) {
 	gimp_image_set_colormap(image_ID, gimp_cmap, 256);
 	int framenum = 0;
 	for (auto& frame : shape) {
-		std::string framename = "Frame " + std::to_string(framenum);
+		const std::string framename = "Frame " + std::to_string(framenum);
 		const gint32 layer_ID = gimp_layer_new(image_ID, framename.c_str(),
 		                          frame->get_width(), frame->get_height(),
 		                          image_type, 100, GIMP_NORMAL_MODE);
@@ -489,7 +489,7 @@ static gint32 save_image(gchar  *filename,
 
 		std::vector<unsigned char> out;
 		unsigned char *outptr;
-		bool has_alpha = babl_format_has_alpha(format) != 0;
+		const bool has_alpha = babl_format_has_alpha(format) != 0;
 		if (has_alpha) {
 			out.reserve(pix.size() / bytes_per_pixel);
 			for (size_t ii = 0; ii < pix.size(); ii += bytes_per_pixel) {

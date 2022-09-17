@@ -61,7 +61,7 @@ void Npc_chooser::show(
 ) {
 	Shape_draw::show(x, y, w, h);
 	if ((selected >= 0) && (drawgc != nullptr)) {    // Show selected.
-		TileRect b = info[selected].box;
+		const TileRect b = info[selected].box;
 		// Draw yellow box.
 		cairo_set_line_width(drawgc, 1.0);
 		cairo_set_source_rgb(drawgc,
@@ -96,7 +96,7 @@ void Npc_chooser::render(
 	// Get drawing area dimensions.
 	GtkAllocation alloc = {0, 0, 0, 0};
 	gtk_widget_get_allocation(draw, &alloc);
-	gint winh = alloc.height;
+	const gint winh = alloc.height;
 	// Clear window first.
 	iwin->fill8(255);       // Set to background_color.
 	int curr_y = -row0_voffset;
@@ -104,17 +104,17 @@ void Npc_chooser::render(
 	//   filter (group).
 	for (unsigned rownum = row0; curr_y  < winh && rownum < rows.size();
 	        ++rownum) {
-		Npc_row &row = rows[rownum];
+		const Npc_row &row = rows[rownum];
 		unsigned cols = get_num_cols(rownum);
 		for (unsigned index = row.index0; cols; --cols, ++index) {
-			int npcnum = info[index].npcnum;
-			int shapenum = npcs[npcnum].shapenum;
-			int framenum = info[index].framenum;
+			const int npcnum = info[index].npcnum;
+			const int shapenum = npcs[npcnum].shapenum;
+			const int framenum = info[index].framenum;
 			Shape_frame *shape = ifile->get_shape(shapenum,
 			                                      framenum);
 			if (shape) {
-				int sx = info[index].box.x - hoffset;
-				int sy = info[index].box.y - voffset;
+				const int sx = info[index].box.x - hoffset;
+				const int sy = info[index].box.y - voffset;
 				shape->paint(iwin, sx + shape->get_xleft(),
 				             sy + shape->get_yabove());
 				if (npcs[npcnum].unused)
@@ -136,14 +136,14 @@ void Npc_chooser::render(
 static int Get_max_height(
     Shape *shape
 ) {
-	int cnt = shape->get_num_frames();
+	const int cnt = shape->get_num_frames();
 	int maxh = 0;
 	for (int i = 0; i < cnt; i++) {
 		Shape_frame *frame = shape->get_frame(i);
 		if (!frame) {
 			continue;
 		}
-		int ht = frame->get_height();
+		const int ht = frame->get_height();
 		if (ht > maxh)
 			maxh = ht;
 	}
@@ -162,7 +162,7 @@ static int Get_x_offset(
 ) {
 	if (!shape)
 		return 0;
-	int nframes = shape->get_num_frames();
+	const int nframes = shape->get_num_frames();
 	if (framenum >= nframes)
 		framenum = nframes - 1;
 	int xoff = 0;
@@ -182,7 +182,7 @@ static int Get_x_offset(
 void Npc_chooser::setup_info(
     bool savepos            // Try to keep current position.
 ) {
-	unsigned oldind = rows[row0].index0;
+	const unsigned oldind = rows[row0].index0;
 	info.resize(0);
 	rows.resize(0);
 	row0 = row0_voffset = 0;
@@ -219,29 +219,29 @@ void Npc_chooser::setup_shapes_info(
 	// Get drawing area dimensions.
 	GtkAllocation alloc = {0, 0, 0, 0};
 	gtk_widget_get_allocation(draw, &alloc);
-	gint winw = alloc.width;
+	const gint winw = alloc.width;
 	int x = 0;
 	int curr_y = 0;
 	int row_h = 0;
-	int total_cnt = get_count();
-	int num_shapes = ifile->get_num_shapes();
+	const int total_cnt = get_count();
+	const int num_shapes = ifile->get_num_shapes();
 	//   filter (group).
 	rows.resize(1);         // Start 1st row.
 	rows[0].index0 = 0;
 	rows[0].y = 0;
 	for (int index = 0; index < total_cnt; index++) {
-		int npcnum = group ? (*group)[index] : index;
+		const int npcnum = group ? (*group)[index] : index;
 		if (npcnum >= 356 && npcnum <= 359)
 			continue;
-		int shapenum = npcs[npcnum].shapenum;
-		int framenum = npcnum == selnpc ? selframe : framenum0;
+		const int shapenum = npcs[npcnum].shapenum;
+		const int framenum = npcnum == selnpc ? selframe : framenum0;
 		if (shapenum < 0 || shapenum >= num_shapes)
 			continue;
 		Shape_frame *shape = ifile->get_shape(shapenum, framenum);
 		if (!shape)
 			continue;
-		int sh = shape->get_height();
-		int sw = shape->get_width();
+		const int sh = shape->get_height();
+		const int sw = shape->get_width();
 		// Check if we've exceeded max width
 		if (x + sw > winw && x) {   // But don't leave row empty.
 			// Next line.
@@ -255,7 +255,7 @@ void Npc_chooser::setup_shapes_info(
 		}
 		if (sh > row_h)
 			row_h = sh;
-		int sy = curr_y + border; // Get top y-coord.
+		const int sy = curr_y + border; // Get top y-coord.
 		// Store info. about where drawn.
 		info.emplace_back();
 		info.back().set(npcnum, framenum, x, sy, sw, sh);
@@ -277,22 +277,22 @@ void Npc_chooser::setup_frames_info(
 	// Get drawing area dimensions.
 	int curr_y = 0;
 	int maxw = 0;
-	unsigned total_cnt = get_count();
-	int num_shapes = ifile->get_num_shapes();
+	const unsigned total_cnt = get_count();
+	const int num_shapes = ifile->get_num_shapes();
 	//   filter (group).
 	for (unsigned index = index0; index < total_cnt; index++) {
-		int npcnum = group ? (*group)[index] : index;
+		const int npcnum = group ? (*group)[index] : index;
 		if (npcnum >= 356 && npcnum <= 359)
 			continue;
-		int shapenum = npcs[npcnum].shapenum;
+		const int shapenum = npcs[npcnum].shapenum;
 		if (shapenum < 0 || shapenum >= num_shapes)
 			continue;
 		// Get all frames.
 		Shape *shape = ifile->extract_shape(shapenum);
-		int nframes = shape ? shape->get_num_frames() : 0;
+		const int nframes = shape ? shape->get_num_frames() : 0;
 		if (!nframes)
 			continue;
-		int row_h = Get_max_height(shape);
+		const int row_h = Get_max_height(shape);
 		rows.emplace_back();
 		rows.back().index0 = info.size();
 		rows.back().y = curr_y;
@@ -309,7 +309,7 @@ void Npc_chooser::setup_frames_info(
 			}
 			sh = frame->get_height();
 			sw = frame->get_width();
-			int sy = curr_y + border; // Get top y-coord.
+			const int sy = curr_y + border; // Get top y-coord.
 			// Store info. about where drawn.
 			info.emplace_back();
 			info.back().set(npcnum, framenum, x, sy, sw, sh);
@@ -332,19 +332,19 @@ void Npc_chooser::scroll_to_frame(
 ) {
 	if (selected >= 0) {    // Save selection info.
 		vector<Estudio_npc> &npcs = get_npcs();
-		int selnpc   = info[selected].npcnum;
-		int selframe = info[selected].framenum;
+		const int selnpc   = info[selected].npcnum;
+		const int selframe = info[selected].framenum;
 		Shape *shape = ifile->extract_shape(npcs[selnpc].shapenum);
-		int xoff = Get_x_offset(shape, selframe);
+		const int xoff = Get_x_offset(shape, selframe);
 		if (xoff < hoffset) // Left of visual area?
 			hoffset = xoff > border ? xoff - border : 0;
 		else {
 			GtkAllocation alloc = {0, 0, 0, 0};
 			gtk_widget_get_allocation(draw, &alloc);
-			gint winw = alloc.width;
+			const gint winw = alloc.width;
 			Shape_frame *fr = shape->get_frame(selframe);
 			if (fr) {
-				int sw = fr->get_width();
+				const int sw = fr->get_width();
 				if (xoff + sw + border - hoffset > winw)
 					hoffset = xoff + sw + border - winw;
 			}
@@ -364,16 +364,16 @@ void Npc_chooser::goto_index(
 ) {
 	if (index >= info.size())
 		return;         // Illegal index or empty chooser.
-	Npc_entry &inf = info[index];   // Already in view?
-	int midx = inf.box.x + inf.box.w / 2;
-	int midy = inf.box.y + inf.box.h / 2;
-	TileRect winrect(0, voffset, config_width, config_height);
+	const Npc_entry &inf = info[index];   // Already in view?
+	const int midx = inf.box.x + inf.box.w / 2;
+	const int midy = inf.box.y + inf.box.h / 2;
+	const TileRect winrect(0, voffset, config_width, config_height);
 	if (winrect.has_point(midx, midy))
 		return;
 	unsigned start = 0;
 	unsigned count = rows.size();
 	while (count > 1) {     // Binary search.
-		unsigned mid = start + count / 2;
+		const unsigned mid = start + count / 2;
 		if (index < rows[mid].index0)
 			count = mid - start;
 		else {
@@ -397,7 +397,7 @@ int Npc_chooser::find_npc(
     int npcnum
 ) {
 	if (group) {        // They're not ordered.
-		int cnt = info.size();
+		const int cnt = info.size();
 		for (int i = 0; i < cnt; ++i)
 			if (info[i].npcnum == npcnum)
 				return i;
@@ -406,7 +406,7 @@ int Npc_chooser::find_npc(
 	unsigned start = 0;
 	unsigned count = info.size();
 	while (count > 1) {     // Binary search.
-		unsigned mid = start + count / 2;
+		const unsigned mid = start + count / 2;
 		if (npcnum < info[mid].npcnum)
 			count = mid - start;
 		else {
@@ -504,12 +504,12 @@ gint Npc_chooser::mouse_press(
 		scroll_row_vertical(row0 + 1);
 		return TRUE;
 	}
-	int old_selected = selected;
+	const int old_selected = selected;
 	int new_selected = -1;
 	unsigned i;              // Search through entries.
-	unsigned infosz = info.size();
-	int absx = static_cast<int>(event->x);
-	int absy = static_cast<int>(event->y) + voffset;
+	const unsigned infosz = info.size();
+	const int absx = static_cast<int>(event->x);
+	const int absy = static_cast<int>(event->y) + voffset;
 	for (i = rows[row0].index0; i < infosz; i++) {
 		if (info[i].box.has_point(absx, absy)) {
 			// Found the box?
@@ -579,7 +579,7 @@ on_npc_draw_key_press(GtkEntry   *entry,
 void Npc_chooser::edit_npc(
 ) {
 	ExultStudio *studio = ExultStudio::get_instance();
-	int npcnum = info[selected].npcnum;
+	const int npcnum = info[selected].npcnum;
 	//Estudio_npc &npc = get_npcs()[npcnum];
 	unsigned char buf[Exult_server::maxlength];
 	unsigned char *ptr;
@@ -630,8 +630,8 @@ void Npc_chooser::drag_data_get(
 	if (chooser->selected < 0 || info != U7_TARGET_NPCID)
 		return;         // Not sure about this.
 	guchar buf[U7DND_DATA_LENGTH(1)];
-	int npcnum = chooser->info[chooser->selected].npcnum;
-	int len = Store_u7_npcid(buf, npcnum);
+	const int npcnum = chooser->info[chooser->selected].npcnum;
+	const int len = Store_u7_npcid(buf, npcnum);
 	cout << "Setting selection data (" << npcnum << ')' << endl;
 	// Set data.
 	gtk_selection_data_set(seldata,
@@ -654,8 +654,8 @@ gint Npc_chooser::drag_begin(
 	if (chooser->selected < 0)
 		return FALSE;       // ++++Display a halt bitmap.
 	// Get ->npc.
-	int npcnum = chooser->info[chooser->selected].npcnum;
-	Estudio_npc &npc = chooser->get_npcs()[npcnum];
+	const int npcnum = chooser->info[chooser->selected].npcnum;
+	const Estudio_npc &npc = chooser->get_npcs()[npcnum];
 	Shape_frame *shape = chooser->ifile->get_shape(npc.shapenum, 0);
 	if (!shape)
 		return FALSE;
@@ -747,7 +747,7 @@ void Npc_chooser::scroll_vertical(
 	int delta = newoffset - voffset;
 	while (delta > 0 && row0 < rows.size() - 1) {
 		// Going down.
-		int rowh = rows[row0].height - row0_voffset;
+		const int rowh = rows[row0].height - row0_voffset;
 		if (delta < rowh) {
 			// Part of current row.
 			voffset += delta;
@@ -835,7 +835,7 @@ void Npc_chooser::vscrolled(    // For vertical scrollbar.
 ) {
 	auto *chooser = static_cast<Npc_chooser *>(data);
 	cout << "Scrolled to " << gtk_adjustment_get_value(adj) << '\n';
-	gint newindex = static_cast<gint>(gtk_adjustment_get_value(adj));
+	const gint newindex = static_cast<gint>(gtk_adjustment_get_value(adj));
 	chooser->scroll_vertical(newindex);
 }
 void Npc_chooser::hscrolled(      // For horizontal scrollbar.
@@ -856,11 +856,11 @@ void Npc_chooser::frame_changed(
     gpointer data           // ->Npc_chooser.
 ) {
 	auto *chooser = static_cast<Npc_chooser *>(data);
-	gint newframe = static_cast<gint>(gtk_adjustment_get_value(adj));
+	const gint newframe = static_cast<gint>(gtk_adjustment_get_value(adj));
 	if (chooser->selected >= 0) {
 		Npc_entry &npcinfo = chooser->info[chooser->selected];
 		vector<Estudio_npc> &npcs = chooser->get_npcs();
-		int nframes = chooser->ifile->get_num_frames(npcs[npcinfo.npcnum].shapenum);
+		const int nframes = chooser->ifile->get_num_frames(npcs[npcinfo.npcnum].shapenum);
 		if (newframe >= nframes)    // Just checking
 			return;
 		npcinfo.framenum = newframe;
@@ -881,7 +881,7 @@ void Npc_chooser::all_frames_toggled(
 ) {
 	auto *chooser = static_cast<Npc_chooser *>(data);
 	if (chooser->info.empty()) return;
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	chooser->frames_mode = on;
 	if (on)             // Frame => show horiz. scrollbar.
 		gtk_widget_show(chooser->hscroll);
@@ -890,7 +890,7 @@ void Npc_chooser::all_frames_toggled(
 	// The old index is no longer valid, so we need to remember the shape.
 	int indx = chooser->selected >= 0 ? chooser->selected
 	           : static_cast<int>(chooser->rows[chooser->row0].index0);
-	int npcnum = chooser->info[indx].npcnum;
+	const int npcnum = chooser->info[indx].npcnum;
 	chooser->selected = -1;
 	chooser->setup_info();
 	indx = chooser->find_npc(npcnum);
@@ -924,7 +924,7 @@ void Npc_chooser::search(
     const char *srch,       // What to search for.
     int dir             // 1 or -1.
 ) {
-	int total = get_count();
+	const int total = get_count();
 	if (!total)
 		return;         // Empty.
 	vector<Estudio_npc> &npcs = get_npcs();
@@ -932,9 +932,9 @@ void Npc_chooser::search(
 	int start = selected >= 0 ? selected : static_cast<int>(rows[row0].index0);
 	int i;
 	start += dir;
-	int stop = dir == -1 ? -1 : static_cast<int>(info.size());
+	const int stop = dir == -1 ? -1 : static_cast<int>(info.size());
 	for (i = start; i != stop; i += dir) {
-		unsigned npcnum = info[i].npcnum;
+		const unsigned npcnum = info[i].npcnum;
 		const char *nm = npcnum < npcs.size() ?
 		                 npcs[npcnum].name.c_str() : nullptr;
 		if (nm && search_name(nm, srch))
@@ -957,7 +957,7 @@ void Npc_chooser::locate(
 	ignore_unused_variable_warning(upwards);
 	if (selected < 0)
 		return;         // Shouldn't happen.
-	int npcnum = info[selected].npcnum;
+	const int npcnum = info[selected].npcnum;
 	if (get_npcs()[npcnum].unused) {
 		EStudio::Alert("Npc %d is unused.", npcnum);
 		return;
@@ -1163,8 +1163,8 @@ void Npc_chooser::update_statusbar(
 	if (status_id >= 0)     // Remove prev. selection msg.
 		gtk_statusbar_remove(GTK_STATUSBAR(sbar), sbar_sel, status_id);
 	if (selected >= 0) {
-		int npcnum = info[selected].npcnum;
-		Estudio_npc &npc = get_npcs()[npcnum];
+		const int npcnum = info[selected].npcnum;
+		const Estudio_npc &npc = get_npcs()[npcnum];
 		g_snprintf(buf, sizeof(buf), "Npc %d:  '%s'%s",
 		           npcnum, npc.name.c_str(),
 		           npc.unused ? " (unused)" : "");

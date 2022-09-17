@@ -82,7 +82,7 @@ public:
 			len = 0;
 			return nullptr;
 		}
-		Reference ref = get_object_reference(objnum);
+		const Reference ref = get_object_reference(objnum);
 		data->seek(ref.offset);
 		if (!data->good()) {
 			len = 0;

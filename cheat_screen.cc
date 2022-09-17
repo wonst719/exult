@@ -454,7 +454,7 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 
 			if (event.type != SDL_KEYDOWN)
 				continue;
-			SDL_Keysym &key = event.key.keysym;
+			const SDL_Keysym &key = event.key.keysym;
 
 			if ((key.sym == SDLK_s) && (key.mod & KMOD_ALT) && (key.mod & KMOD_CTRL)) {
 				make_screenshot(true);
@@ -478,27 +478,27 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 				} else if ((key.sym == '-' || key.sym == SDLK_KP_MINUS) && !input[0]) {
 					input[0] = '-';
 				} else if (std::isxdigit(key.sym)) {
-					int curlen = std::strlen(input);
+					const int curlen = std::strlen(input);
 					if (curlen < (len - 1)) {
 						input[curlen] = std::tolower(key.sym);
 						input[curlen + 1] = 0;
 					}
 				} else if ((key.sym >= SDLK_KP_1 && key.sym <= SDLK_KP_9) || key.sym == SDLK_KP_0) {
-					int curlen = std::strlen(input);
+					const int curlen = std::strlen(input);
 					if (curlen < (len - 1)) {
-						int sym = SDLScanCodeToInt(key.sym);
+						const int sym = SDLScanCodeToInt(key.sym);
 						input[curlen] = sym;
 						input[curlen + 1] = 0;
 					}
 				} else if (key.sym == SDLK_BACKSPACE) {
-					int curlen = std::strlen(input);
+					const int curlen = std::strlen(input);
 					if (curlen) input[curlen - 1] = 0;
 				}
 			} else if (mode >= CP_Name) {      // Want Text input (len chars)
 				if (key.sym == SDLK_RETURN || key.sym == SDLK_KP_ENTER) {
 					activate = true;
 				} else if (std::isalnum(key.sym) || key.sym == ' ') {
-					int curlen = std::strlen(input);
+					const int curlen = std::strlen(input);
 					char chr = key.sym;
 					if (key.mod & KMOD_SHIFT) {
 						chr = static_cast<char>(std::toupper(static_cast<unsigned char>(chr)));
@@ -508,7 +508,7 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 						input[curlen + 1] = 0;
 					}
 				} else if (key.sym == SDLK_BACKSPACE) {
-					int curlen = std::strlen(input);
+					const int curlen = std::strlen(input);
 					if (curlen) input[curlen - 1] = 0;
 				}
 			} else if (mode >= CP_ChooseNPC) { // Need to grab numerical input
@@ -525,20 +525,20 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 				} else if ((key.sym == '-' || key.sym == SDLK_KP_MINUS) && !input[0]) {
 					input[0] = '-';
 				} else if (std::isdigit(key.sym)) {
-					int curlen = std::strlen(input);
+					const int curlen = std::strlen(input);
 					if (curlen < (len - 1)) {
 						input[curlen] = key.sym;
 						input[curlen + 1] = 0;
 					}
 				} else if ((key.sym >= SDLK_KP_1 && key.sym <= SDLK_KP_9) || key.sym == SDLK_KP_0) {
-					int curlen = std::strlen(input);
+					const int curlen = std::strlen(input);
 					if (curlen < (len - 1)) {
-						int sym = SDLScanCodeToInt(key.sym);
+						const int sym = SDLScanCodeToInt(key.sym);
 						input[curlen] = sym;
 						input[curlen + 1] = 0;
 					}
 				} else if (key.sym == SDLK_BACKSPACE) {
-					int curlen = std::strlen(input);
+					const int curlen = std::strlen(input);
 					if (curlen) input[curlen - 1] = 0;
 				}
 			} else if (mode) {      // Just want a key pressed
@@ -612,8 +612,8 @@ void CheatScreen::NormalDisplay() {
 	const int offsety2 = 0;
 	const int offsety3 = 45;
 #endif
-	int curmap = gwin->get_map()->get_num(); 
-	Tile_coord t = gwin->get_main_actor()->get_tile();
+	const int curmap = gwin->get_map()->get_num();
+	const Tile_coord t = gwin->get_main_actor()->get_tile();
 
 	font->paint_text_fixedwidth(ibuf, "Colourless' Advanced Option Cheat Screen", 0, offsety1, 8);
 
@@ -637,8 +637,8 @@ void CheatScreen::NormalDisplay() {
 	         clock->get_day());
 	font->paint_text_fixedwidth(ibuf, buf, offsetx, offsety3, 8);
 
-	int longi = ((t.tx - 0x3A5) / 10);
-	int lati = ((t.ty - 0x46E) / 10);
+	const int longi = ((t.tx - 0x3A5) / 10);
+	const int lati = ((t.ty - 0x46E) / 10);
 	snprintf(buf, 512, "Coordinates %d %s %d %s, Map #%d",
 		abs(lati), (lati < 0 ? "North" : "South"),
 		abs(longi), (longi < 0 ? "West" : "East"), curmap);
@@ -731,7 +731,7 @@ void CheatScreen::NormalMenu() {
 }
 
 void CheatScreen::NormalActivate(char *input, int &command, Cheat_Prompt &mode) {
-	int npc = std::atoi(input);
+	const int npc = std::atoi(input);
 	Shape_manager *sman = Shape_manager::get_instance();
 
 	mode = CP_Command;
@@ -943,7 +943,7 @@ CheatScreen::Cheat_Prompt CheatScreen::TimeSetLoop() {
 
 		// Check to see if we need to change menus
 		if (activate) {
-			int val = std::atoi(input);
+			const int val = std::atoi(input);
 
 			if (val == -1) {
 				return CP_Canceled;
@@ -1198,14 +1198,14 @@ void CheatScreen::NPCDisplay(Actor *actor, int &num) {
 	const int offsety1 = 0;
 #endif
 	if (actor) {
-		Tile_coord t = actor->get_tile();
+		const Tile_coord t = actor->get_tile();
 
 		// Paint the actors shape
 		Shape_frame *shape = actor->get_shape();
 		if (shape) actor->paint_shape(shape->get_xright() + 240, shape->get_yabove());
 
 		// Now the info
-		std::string namestr = actor->get_npc_name();
+		const std::string namestr = actor->get_npc_name();
 		snprintf(buf, 512, "NPC %i - %s", num, namestr.c_str());
 		font->paint_text_fixedwidth(ibuf, buf, offsetx, 0, 8);
 
@@ -1317,8 +1317,7 @@ void CheatScreen::NPCMenu(Actor *actor, int &num) {
 
 void CheatScreen::NPCActivate(char *input, int &command, Cheat_Prompt &mode, Actor *actor, int &num) {
 	int i = std::atoi(input);
-	int nshapes =
-	    Shape_manager::get_instance()->get_shapes().get_num_shapes();
+	const int nshapes = Shape_manager::get_instance()->get_shapes().get_num_shapes();
 
 	mode = CP_Command;
 
@@ -1686,8 +1685,7 @@ void CheatScreen::FlagMenu(Actor *actor) {
 
 void CheatScreen::FlagActivate(char *input, int &command, Cheat_Prompt &mode, Actor *actor) {
 	int i = std::atoi(input);
-	int nshapes =
-	    Shape_manager::get_instance()->get_shapes().get_num_shapes();
+	const int nshapes = Shape_manager::get_instance()->get_shapes().get_num_shapes();
 
 	mode = CP_Command;
 	switch (command) {
@@ -2103,7 +2101,7 @@ void CheatScreen::BusinessLoop(Actor *actor) {
 
 void CheatScreen::BusinessDisplay(Actor *actor) {
 	char    buf[512];
-	Tile_coord t = actor->get_tile();
+	const Tile_coord t = actor->get_tile();
 #if defined(__IPHONEOS__) || defined(ANDROID)
 	const int offsetx = 10;
 	const int offsety1 = 20;
@@ -2117,7 +2115,7 @@ void CheatScreen::BusinessDisplay(Actor *actor) {
 #endif
 
 	// Now the info
-	std::string namestr = actor->get_npc_name();
+	const std::string namestr = actor->get_npc_name();
 	snprintf(buf, 512, "NPC %i - %s - Schedules:", actor->get_npc_num(), namestr.c_str());
 	font->paint_text_fixedwidth(ibuf, buf, offsetx, 0, 8);
 
@@ -2148,9 +2146,9 @@ void CheatScreen::BusinessDisplay(Actor *actor) {
 		actor->get_schedules(scheds, num);
 
 		for (int i = 0; i < num; i++) {
-			int time = scheds[i].get_time();
+			const int time = scheds[i].get_time();
 			types[time] = scheds[i].get_type();
-			Tile_coord tile = scheds[i].get_pos();
+			const Tile_coord tile = scheds[i].get_pos();
 			x[time] = tile.tx;
 			y[time] = tile.ty;
 		}
@@ -2198,7 +2196,7 @@ void CheatScreen::BusinessActivate(char *input, int &command, Cheat_Prompt &mode
 	int i = std::atoi(input);
 
 	mode = CP_Command;
-	int old = command;
+	const int old = command;
 	command = 0;
 	switch (old) {
 	case 'a':   // Set Activity
@@ -2747,9 +2745,9 @@ void CheatScreen::TeleportLoop() {
 
 void CheatScreen::TeleportDisplay() {
 	char    buf[512];
-	Tile_coord t = gwin->get_main_actor()->get_tile();
-	int curmap = gwin->get_map()->get_num();
-	int highest = Find_highest_map();
+	const Tile_coord t = gwin->get_main_actor()->get_tile();
+	const int curmap = gwin->get_map()->get_num();
+	const int highest = Find_highest_map();
 #if defined(__IPHONEOS__) || defined(ANDROID)
 	const int offsetx = 15;
 	const int offsety1 = 54;
@@ -2765,8 +2763,8 @@ void CheatScreen::TeleportDisplay() {
 	font->paint_text_fixedwidth(ibuf, "Dangerous - use with care!", offsetx, 18, 8);
 #endif
 
-	int longi = ((t.tx - 0x3A5) / 10);
-	int lati = ((t.ty - 0x46E) / 10);
+	const int longi = ((t.tx - 0x3A5) / 10);
+	const int lati = ((t.ty - 0x46E) / 10);
 #if defined(__IPHONEOS__) || defined(ANDROID)
 	snprintf(buf, 512, "Coords %d %s %d %s, Map #%d of %d",
 		abs(lati), (lati < 0 ? "North" : "South"),
@@ -2836,7 +2834,7 @@ void CheatScreen::TeleportActivate(char *input, int &command, Cheat_Prompt &mode
 	int i = std::atoi(input);
 	static int lat;
 	Tile_coord t = gwin->get_main_actor()->get_tile();
-	int highest = Find_highest_map();
+	const int highest = Find_highest_map();
 
 	mode = CP_Command;
 	switch (command) {

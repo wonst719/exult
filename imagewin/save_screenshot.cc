@@ -89,9 +89,9 @@ static bool save_image(SDL_Surface* surface, SDL_RWops* dst, int guardband) {
 	SDL_Palette* pal;
 	int          i, colortype;
 	png_bytep*   row_pointers;
-	int          width  = surface->w - 2 * guardband;
-	int          height = surface->h - 2 * guardband;
-	int          pitch  = surface->pitch;
+	const int    width  = surface->w - 2 * guardband;
+	const int    height = surface->h - 2 * guardband;
+	const int    pitch  = surface->pitch;
 	auto*        pixels = static_cast<png_bytep>(surface->pixels) + guardband
 	                    + pitch * guardband;
 

@@ -172,7 +172,7 @@ void Game::show_congratulations(Palette *pal0) {
 	win->fill8(0);
 
 	Font *end_font = fontManager.get_font("EXULT_END_FONT");
-	int starty = (gwin->get_height() - end_font->get_text_height() * 8) / 2;
+	const int starty = (gwin->get_height() - end_font->get_text_height() * 8) / 2;
 
 	// calculate the time it took to complete the game
 	// in exultmsg.txt it is "%d year s ,  %d month s , &  %d day s"
@@ -288,7 +288,7 @@ void Game::add_shape(const char *name, int shapenum) {
 
 int Game::get_shape(const char *name) {
 	if (xml) {
-		string key = string(xml_root) + "/shapes/" + name;
+		const string key = string(xml_root) + "/shapes/" + name;
 		int ret;
 		xml->value(key, ret, 0);
 		return ret;
@@ -331,18 +331,18 @@ const str_int_pair &Game::get_resource(const char *name) {
  *  Write out game resources/shapes to "patch/exultgame.xml".
 */
 void Game::write_game_xml() {
-	string name = get_system_path("<PATCH>/exultgame.xml");
+	const string name = get_system_path("<PATCH>/exultgame.xml");
 
 	U7mkdir("<PATCH>", 0755);   // Create dir. if not already there.
 	if (U7exists(name))
 		U7remove(name.c_str());
-	string root = xml_root;
+	const string root = xml_root;
 	Configuration xml(name, root);
 	for (auto& resource : resources) {
 		string key = root;
 		key += "/resources/";
 		key += resource.first;
-		str_int_pair &val = resource.second;
+		const str_int_pair &val = resource.second;
 		if (val.str)
 			xml.set(key.c_str(), val.str, false);
 		if (val.num != 0) {
@@ -355,7 +355,7 @@ void Game::write_game_xml() {
 		string key = root;
 		key += "/shapes/";
 		key += shape.first;
-		int num = shape.second;
+		const int num = shape.second;
 		xml.set(key.c_str(), num, false);
 	}
 	xml.write_back();
@@ -376,7 +376,7 @@ bool Game::read_game_xml(const char *name1) {
 			return false;
 	}
 	xml = new Configuration;
-	string namestr = get_system_path(nm);
+	const string namestr = get_system_path(nm);
 	xml->read_abs_config_file(namestr);
 	std::cout << "Reading game configuration from '" << namestr.c_str() <<
 	          "'." << std::endl;
@@ -385,10 +385,10 @@ bool Game::read_game_xml(const char *name1) {
 
 
 bool Game::show_menu(bool skip) {
-	int menuy = topy + 120;
+	const int menuy = topy + 120;
 	// Brand-new game in development?
 	if (skip || (is_editing() && !U7exists(MAINSHP_FLX))) {
-		bool first = !U7exists(IDENTITY);
+		const bool first = !U7exists(IDENTITY);
 		if (first)
 			set_avname("Newbie");
 		return gwin->init_gamedat(first);
@@ -400,10 +400,10 @@ bool Game::show_menu(bool skip) {
 	MenuList *menu = nullptr;
 
 
-	int menuchoices[] = { 0x04, 0x05, 0x08, 0x06, 0x11, 0x12, 0x07 };
-	int num_choices = array_size(menuchoices);
+	const int menuchoices[] = { 0x04, 0x05, 0x08, 0x06, 0x11, 0x12, 0x07 };
+	const int num_choices = array_size(menuchoices);
 
-	Vga_file exult_flx(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX));
+	const Vga_file exult_flx(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX));
 	char npc_name[16];
 	snprintf(npc_name, 16, "Exult");
 	bool play = false;
@@ -429,7 +429,7 @@ bool Game::show_menu(bool skip) {
 		}
 
 		bool created = false;
-		int choice = menu->handle_events(gwin, menu_mouse);
+		const int choice = menu->handle_events(gwin, menu_mouse);
 		switch (choice) {
 		case -1: // Exit
 #ifdef __IPHONEOS__
@@ -568,7 +568,7 @@ int wait_delay(int ms, int startcol, int ncol, int rotspd) {
 	unsigned long delay;
 	int loops;
 
-	int loopinterval = (ncol == 0) ? 50 : 10;
+	const int loopinterval = (ncol == 0) ? 50 : 10;
 	if (!ms) ms = 1;
 	if (ms <= 2 * loopinterval) {
 		delay = ms;
@@ -578,12 +578,12 @@ int wait_delay(int ms, int startcol, int ncol, int rotspd) {
 		loops = ms / static_cast<long>(delay);
 	}
 	Game_window *gwin = Game_window::get_instance();
-	int rot_speed = rotspd << (gwin->get_win()->fast_palette_rotate() ? 0 : 1);
+	const int rot_speed = rotspd << (gwin->get_win()->fast_palette_rotate() ? 0 : 1);
 
 	static unsigned long last_rotate = 0;
 
 	for (int i = 0; i < loops; i++) {
-		unsigned long ticks1 = SDL_GetTicks();
+		const unsigned long ticks1 = SDL_GetTicks();
 		// this may be a bit risky... How fast can events be generated?
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -630,7 +630,7 @@ int wait_delay(int ms, int startcol, int ncol, int rotspd) {
 				break;
 			}
 		}
-		unsigned long ticks2 = SDL_GetTicks();
+		const unsigned long ticks2 = SDL_GetTicks();
 		if (ticks2 - ticks1 > delay)
 			i += (ticks2 - ticks1) / delay - 1;
 		else

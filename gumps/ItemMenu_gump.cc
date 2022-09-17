@@ -56,9 +56,9 @@ int clamp(int val, int low, int high) {
 }
 
 void Itemmenu_gump::fix_position(int num_elements) {
-	int w = Game_window::get_instance()->get_width();
-	int h = Game_window::get_instance()->get_height();
-	int menu_height = clamp(num_elements * button_spacing_y, 0, h);
+	const int w = Game_window::get_instance()->get_width();
+	const int h = Game_window::get_instance()->get_height();
+	const int menu_height = clamp(num_elements * button_spacing_y, 0, h);
 	x = clamp(x, 0, w - 100);
 	y = clamp(y, 0, h - menu_height);
 }
@@ -70,7 +70,7 @@ Itemmenu_gump::Itemmenu_gump(Game_object_map_xy *mobjxy, int cx, int cy)
 	objectAction = no_action;
 	//set_object_area(TileRect(0, 0, 0, 0), -1, -1);//++++++ ???
 	int btop = 0;
-	int maxh = Game_window::get_instance()->get_height() - 2 * button_spacing_y;
+	const int maxh = Game_window::get_instance()->get_height() - 2 * button_spacing_y;
 	for (auto it = mobjxy->begin(); it != mobjxy->end() && btop < maxh; it++) {
 		Game_object *o = it->first;
 		std::string name = o->get_name();
@@ -208,9 +208,9 @@ void Itemmenu_gump::postCloseActions() {
 		break;
 	case pickup_item: {
 		Main_actor *ava = gwin->get_main_actor();
-		Tile_coord avaLoc = ava->get_tile();
-		int avaX = (avaLoc.tx - gwin->get_scrolltx()) * c_tilesize;
-		int avaY = (avaLoc.ty - gwin->get_scrollty()) * c_tilesize;
+		const Tile_coord avaLoc = ava->get_tile();
+		const int avaX = (avaLoc.tx - gwin->get_scrolltx()) * c_tilesize;
+		const int avaY = (avaLoc.ty - gwin->get_scrollty()) * c_tilesize;
 		auto *tmpObj = gwin->find_object(avaX, avaY);
 		if (tmpObj != ava) {
 			// Avatar isn't in a good spot...

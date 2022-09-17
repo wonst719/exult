@@ -46,7 +46,7 @@ class Uc_scope;
 class Basic_block;
 
 inline bool is_int_32bit(int val) {
-	int high = val >> 16;
+	const int high = val >> 16;
 	return !(high == -1 || high == 0);
 }
 

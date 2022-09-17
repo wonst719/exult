@@ -233,8 +233,8 @@ TileRect Combo::get_member_footprint(
 	Combo_member *m = members[i];
 	// Get tile dims.
 	const Shape_info &info = shapes_file->get_info(m->shapenum);
-	int xtiles = info.get_3d_xtiles(m->framenum);
-	int ytiles = info.get_3d_ytiles(m->framenum);
+	const int xtiles = info.get_3d_xtiles(m->framenum);
+	const int ytiles = info.get_3d_ytiles(m->framenum);
 	// Get tile footprint.
 	TileRect box(m->tx - xtiles + 1, m->ty - ytiles + 1,
 	             xtiles, ytiles);
@@ -302,11 +302,11 @@ void Combo::add(
 	}
 	// Get tile dims.
 	const Shape_info &info = shapes_file->get_info(shnum);
-	int xtiles = info.get_3d_xtiles(frnum);
-	int ytiles = info.get_3d_ytiles(frnum);
-	int ztiles = info.get_3d_height();
+	const int xtiles = info.get_3d_xtiles(frnum);
+	const int ytiles = info.get_3d_ytiles(frnum);
+	const int ztiles = info.get_3d_height();
 	// Get tile footprint.
-	TileRect box(tx - xtiles + 1, ty - ytiles + 1, xtiles, ytiles);
+	const TileRect box(tx - xtiles + 1, ty - ytiles + 1, xtiles, ytiles);
 	if (members.empty())        // First one?
 		tilefoot = box;     // Init. total footprint.
 	else {
@@ -326,8 +326,8 @@ void Combo::add(
 	members.push_back(memb);
 	// Figure visible top-left tile, with
 	//   1 to spare.
-	int vtx = tx - xtiles - 2 - (tz + ztiles + 1) / 2;
-	int vty = ty - ytiles - 2 - (tz + ztiles + 1) / 2;
+	const int vtx = tx - xtiles - 2 - (tz + ztiles + 1) / 2;
+	const int vty = ty - ytiles - 2 - (tz + ztiles + 1) / 2;
 	if (vtx < starttx)      // Adjust our starting point.
 		starttx = vtx;
 	if (vty < startty)
@@ -356,8 +356,8 @@ void Combo::remove(
 	for (auto it = members.begin();
 	        it != members.end(); ++it) {
 		Combo_member *m = *it;
-		int index = it - members.begin();
-		TileRect box = get_member_footprint(index);
+		const int index = it - members.begin();
+		const TileRect box = get_member_footprint(index);
 		if (hot_index == -1) {  // First?
 			hot_index = 0;
 			tilefoot = box;
@@ -385,10 +385,10 @@ void Combo::draw(
 	        it != members.end(); ++it) {
 		Combo_member *m = *it;
 		// Figure pixels up-left for lift.
-		int lft = m->tz * (c_tilesize / 2);
+		const int lft = m->tz * (c_tilesize / 2);
 		// Figure relative tile.
-		int mtx = m->tx - starttx;
-		int mty = m->ty - startty;
+		const int mtx = m->tx - starttx;
+		const int mty = m->ty - startty;
 		// Hot spot:
 		int x = mtx * c_tilesize - lft;
 		int y = mty * c_tilesize - lft;
@@ -425,16 +425,16 @@ void Combo::draw(
 int Combo::find(
     int mx, int my          // Mouse position in draw area.
 ) {
-	int cnt = members.size();
+	const int cnt = members.size();
 	for (int i = cnt - 1; i >= 0; i--) {
 		Combo_member *m = members[i];
 		// Figure pixels up-left for lift.
-		int lft = m->tz * (c_tilesize / 2);
+		const int lft = m->tz * (c_tilesize / 2);
 		// Figure relative tile.
-		int mtx = m->tx - starttx;
-		int mty = m->ty - startty;
-		int x = mtx * c_tilesize - lft;
-		int y = mty * c_tilesize - lft;
+		const int mtx = m->tx - starttx;
+		const int mty = m->ty - startty;
+		const int x = mtx * c_tilesize - lft;
+		const int y = mty * c_tilesize - lft;
 		Shape_frame *frame = shapes_file->get_shape(
 		                         m->shapenum, m->framenum);
 		if (frame && frame->has_point(mx - x, my - y))
@@ -453,7 +453,7 @@ unique_ptr<unsigned char[]> Combo::write(
     int &datalen            // Actual length of data in buf. is
     //   returned here.
 ) {
-	int namelen = name.length();    // Name length.
+	const int namelen = name.length();    // Name length.
 	// Room for our data + members.
 	auto buf = make_unique<unsigned char[]>(namelen + 1 +
 	                                        7 * 4 + members.size() * (5 * 4));
@@ -497,7 +497,7 @@ const unsigned char *Combo::read(
 		auto *memb = new Combo_member(tx, ty, tz,
 		                              shapenum, framenum);
 		members.push_back(memb);
-		TileRect box = get_member_footprint(i);
+		const TileRect box = get_member_footprint(i);
 		if (i == 0)     // Figure footprint.
 			tilefoot = box;
 		else
@@ -611,8 +611,8 @@ void Combo_editor::set_controls(
 	} else {
 		GtkAllocation alloc = {0, 0, 0, 0};
 		gtk_widget_get_allocation(draw, &alloc);
-		int draww = alloc.width;
-		int drawh = alloc.height;
+		const int draww = alloc.width;
+		const int drawh = alloc.height;
 		studio->set_sensitive("combo_locx", true);
 		studio->set_spin("combo_locx", m->tx - combo->starttx,
 		                 0, draww / c_tilesize);
@@ -639,8 +639,8 @@ gint Combo_editor::mouse_press(
 	if (event->button != 1)
 		return FALSE;       // Handling left-click.
 	// Get mouse position, draw dims.
-	int mx = static_cast<int>(event->x);
-	int my = static_cast<int>(event->y);
+	const int mx = static_cast<int>(event->x);
+	const int my = static_cast<int>(event->y);
 	selected = combo->find(mx, my); // Find it (or -1 if not found).
 	set_controls();
 	render();
@@ -656,10 +656,10 @@ void Combo_editor::set_order(
 	if (setting_controls || selected < 0)
 		return;
 	ExultStudio *studio = ExultStudio::get_instance();
-	int newi = studio->get_spin("combo_order");
+	const int newi = studio->get_spin("combo_order");
 	if (selected == newi)
 		return;         // Already correct.
-	int dir = newi > selected ? 1 : -1;
+	const int dir = newi > selected ? 1 : -1;
 	while (newi != selected) {
 		Combo_member *tmp = combo->members[selected + dir];
 		combo->members[selected + dir] = combo->members[selected];
@@ -768,7 +768,7 @@ void Combo_chooser::show(
 ) {
 	Shape_draw::show(x, y, w, h);
 	if ((selected >= 0) && (drawgc != nullptr)) {    // Show selected.
-		TileRect b = info[selected].box;
+		const TileRect b = info[selected].box;
 		// Draw yellow box.
 		cairo_set_line_width(drawgc, 1.0);
 		cairo_set_source_rgb(drawgc,
@@ -792,14 +792,14 @@ void Combo_chooser::select(
 		return;         // Bad value.
 	selected = new_sel;
 	enable_controls();
-	int num = info[selected].num;
+	const int num = info[selected].num;
 	Combo *combo = combos[num];
 	// Remove prev. selection msg.
 	//gtk_statusbar_pop(GTK_STATUSBAR(sbar), sbar_sel);
 	char buf[150];          // Show new selection.
 	g_snprintf(buf, sizeof(buf), "Combo %d", num);
 	if (combo && !combo->name.empty()) {
-		int len = strlen(buf);
+		const int len = strlen(buf);
 		g_snprintf(buf + len, sizeof(buf) - len,
 		           ":  '%s'", combo->name.c_str());
 	}
@@ -839,7 +839,7 @@ void Combo_chooser::unselect(
 
 void Combo_chooser::load_internal(
 ) {
-	unsigned cnt = combos.size();
+	const unsigned cnt = combos.size();
 	for (unsigned i = 0; i < cnt; i++)   // Delete all the combos.
 		delete combos[i];
 	unsigned num_combos = flex_info->size();
@@ -878,8 +878,8 @@ void Combo_chooser::render(
 	// Get drawing area dimensions.
 	GtkAllocation alloc = {0, 0, 0, 0};
 	gtk_widget_get_allocation(draw, &alloc);
-	gint winw = alloc.width;
-	gint winh = alloc.height;
+	const gint winw = alloc.width;
+	const gint winh = alloc.height;
 	// Provide more than enough room.
 	info = new Combo_info[256];
 	info_cnt = 0;           // Count them.
@@ -889,15 +889,15 @@ void Combo_chooser::render(
 	// We'll always show 128x128.
 	const int combow = 128;
 	const int comboh = 128;
-	int total_cnt = get_count();
+	const int total_cnt = get_count();
 	int y = border;
 	// Show bottom if at least 1/2 vis.
 	while (index < total_cnt && y + comboh / 2 + border <= winh) {
 		int x = border;
-		int cliph = y + comboh <= winh ? comboh : (winh - y);
+		const int cliph = y + comboh <= winh ? comboh : (winh - y);
 		while (index < total_cnt && x + combow + border <= winw) {
 			iwin->set_clip(x, y, combow, cliph);
-			int combonum = group ? (*group)[index] : index;
+			const int combonum = group ? (*group)[index] : index;
 			combos[combonum]->draw(this, -1, x, y);
 			iwin->clear_clip();
 			// Store info. about where drawn.
@@ -925,7 +925,7 @@ void Combo_chooser::render(
 void Combo_chooser::scroll(
     int newindex            // Abs. index of leftmost to show.
 ) {
-	int total = combos.size();
+	const int total = combos.size();
 	if (index0 < newindex)  // Going forwards?
 		index0 = newindex < total ? newindex : total;
 	else if (index0 > newindex) // Backwards?
@@ -969,11 +969,11 @@ void Combo_chooser::drag_data_get(
 	if (chooser->selected < 0 || info != U7_TARGET_COMBOID)
 		return;         // Not sure about this.
 	// Get combo #.
-	int num = chooser->info[chooser->selected].num;
+	const int num = chooser->info[chooser->selected].num;
 	Combo *combo = chooser->combos[num];
 	// Get enough memory.
-	int cnt = combo->members.size();
-	int buflen = U7DND_DATA_LENGTH(5 + cnt * 5);
+	const int cnt = combo->members.size();
+	const int buflen = U7DND_DATA_LENGTH(5 + cnt * 5);
 	cout << "Buflen = " << buflen << endl;
 	auto *buf = new unsigned char[buflen];
 	auto *ents = new U7_combo_data[cnt];
@@ -987,8 +987,8 @@ void Combo_chooser::drag_data_get(
 		ents[i].shape = m->shapenum;
 		ents[i].frame = m->framenum;
 	}
-	TileRect foot = combo->tilefoot;
-	int len = Store_u7_comboid(buf, foot.w, foot.h,
+	const TileRect foot = combo->tilefoot;
+	const int len = Store_u7_comboid(buf, foot.w, foot.h,
 	                           foot.x + foot.w - 1 - hot->tx,
 	                           foot.y + foot.h - 1 - hot->ty, cnt, ents);
 	assert(len <= buflen);
@@ -1015,7 +1015,7 @@ gint Combo_chooser::drag_begin(
 	if (chooser->selected < 0)
 		return FALSE;       // ++++Display a halt bitmap.
 	// Get ->combo.
-	int num = chooser->info[chooser->selected].num;
+	const int num = chooser->info[chooser->selected].num;
 	Combo *combo = chooser->combos[num];
 	// Show 'hot' member as icon.
 	Combo_member *hot = combo->members[combo->hot_index];
@@ -1035,7 +1035,7 @@ void Combo_chooser::scrolled(
     gpointer data           // ->Combo_chooser.
 ) {
 	auto *chooser = static_cast<Combo_chooser *>(data);
-	gint newindex = static_cast<gint>(gtk_adjustment_get_value(adj));
+	const gint newindex = static_cast<gint>(gtk_adjustment_get_value(adj));
 	chooser->scroll(newindex);
 }
 
@@ -1188,7 +1188,7 @@ Combo_chooser::~Combo_chooser(
 	gtk_widget_destroy(get_widget());
 	delete [] info;
 	int i;
-	int cnt = combos.size();
+	const int cnt = combos.size();
 	for (i = 0; i < cnt; i++)   // Delete all the combos.
 		delete combos[i];
 }
@@ -1228,7 +1228,7 @@ void Combo_chooser::remove(
 ) {
 	if (selected < 0)
 		return;
-	int tnum = info[selected].num;
+	const int tnum = info[selected].num;
 	Combo_editor *combowin = ExultStudio::get_instance()->get_combowin();
 	if (combowin && combowin->is_visible() && combowin->file_index == tnum) {
 		EStudio::Alert("Can't remove the combo you're editing");
@@ -1263,7 +1263,7 @@ void Combo_chooser::edit(
 		EStudio::Alert("You're already editing a combo");
 		return;
 	}
-	int tnum = info[selected].num;
+	const int tnum = info[selected].num;
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->open_combo_window();    // Open it.
 	Combo_editor *ed = studio->get_combowin();
@@ -1286,11 +1286,11 @@ gint Combo_chooser::configure(
 	chooser->Shape_draw::configure();
 	chooser->render();
 	// Set new scroll amounts.
-	int w = event->width;
-	int h = event->height;
-	int per_row = (w - border) / (128 + border);
-	int num_rows = (h - border) / (128 + border);
-	int page_size = per_row * num_rows;
+	const int w = event->width;
+	const int h = event->height;
+	const int per_row = (w - border) / (128 + border);
+	const int num_rows = (h - border) / (128 + border);
+	const int page_size = per_row * num_rows;
 	GtkAdjustment *adj = gtk_range_get_adjustment(GTK_RANGE(
 	                         chooser->vscroll));
 	gtk_adjustment_set_step_increment(adj, per_row);
@@ -1352,7 +1352,7 @@ gint Combo_chooser::mouse_press(
 		return TRUE;
 	}
 
-	int old_selected = chooser->selected;
+	const int old_selected = chooser->selected;
 	int i;              // Search through entries.
 	for (i = 0; i < chooser->info_cnt; i++)
 		if (chooser->info[i].box.has_point(
@@ -1432,14 +1432,14 @@ void Combo_chooser::search(
     const char *srch,       // What to search for.
     int dir             // 1 or -1.
 ) {
-	int total = get_count();
+	const int total = get_count();
 	if (!total)
 		return;         // Empty.
 	// Start with selection, or top.
 	int start = selected >= 0 ? info[selected].num : 0;
 	int i;
 	start += dir;
-	int stop = dir == -1 ? -1 : total;
+	const int stop = dir == -1 ? -1 : total;
 	for (i = start; i != stop; i += dir) {
 		//int num = group ? (*group)[i] : i;
 		const char *nm = combos[i]->name.c_str();
@@ -1452,7 +1452,7 @@ void Combo_chooser::search(
 		scroll(true);
 	while (i >= index0 + info_cnt)  // Below?
 		scroll(false);
-	int newsel = i - index0;    // New selection.
+	const int newsel = i - index0;    // New selection.
 	if (newsel >= 0 && newsel < info_cnt)
 		select(newsel);
 	render();

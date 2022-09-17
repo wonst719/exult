@@ -350,7 +350,7 @@ void ExultStudio::init_new_npc(
 	Exult_server::Receive_data(server_socket, id, data, sizeof(data));
 	const unsigned char *ptr = &data[0];
 	Read2(ptr); // Snip number of NPCs
-	int first_unused = Read2(ptr);
+	const int first_unused = Read2(ptr);
 	npc_num = first_unused;
 	set_entry("npc_num_entry", npc_num, true, false);
 	// Usually, usecode = 0x400 + num.
@@ -437,7 +437,7 @@ int ExultStudio::init_npc_window(
 	// Store address with window.
 	g_object_set_data(G_OBJECT(npcwin), "user_data", addr);
 	// Store name, ident, num.
-	utf8Str utf8name(name.c_str());
+	const utf8Str utf8name(name.c_str());
 	set_entry("npc_name_entry", utf8name);
 	// (Not allowed to change npc#.).
 	set_entry("npc_num_entry", npc_num, true, false);
@@ -489,8 +489,8 @@ int ExultStudio::init_npc_window(
 	for (int i = 0; i < 24 / 3; i++) // First init. to empty.
 		Set_schedule_line(this, i, -1, 0, 0, 0);
 	for (int i = 0; i < num_schedules; i++) {
-		Serial_schedule &sched = schedules[i];
-		int time = sched.time;  // 0-7.
+		const Serial_schedule &sched = schedules[i];
+		const int time = sched.time;  // 0-7.
 		if (time < 0 || time > 7)
 			continue;   // Invalid.
 		Set_schedule_line(this, time, sched.type, sched.tx, sched.ty,
@@ -508,7 +508,7 @@ int ExultStudio::init_npc_window(
 void ExultStudio::update_npc() { // update npc browser display (if open)
 	auto *npcchoose = dynamic_cast<Npc_chooser *>(browser);
 	if (npcchoose) {
-		short npc_num = get_num_entry("npc_num_entry");
+		const short npc_num = get_num_entry("npc_num_entry");
 		npcchoose->update_npc(npc_num);
 	}
 }
@@ -543,23 +543,23 @@ int ExultStudio::save_npc_window(
 	cout << "In save_npc_window()" << endl;
 	// Get npc (null if creating new).
 	auto *addr = static_cast<Actor *>(g_object_get_data(G_OBJECT(npcwin), "user_data"));
-	int tx = -1;
-	int ty = -1;
-	int tz = -1;  // +++++For now.
-	codepageStr locname(get_text_entry("npc_name_entry"));
-	std::string name(locname);
-	short npc_num = get_num_entry("npc_num_entry");
-	short ident = get_num_entry("npc_ident_entry");
-	int shape = get_num_entry("npc_shape");
-	int frame = get_num_entry("npc_frame");
+	const int tx = -1;
+	const int ty = -1;
+	const int tz = -1;  // +++++For now.
+	const codepageStr locname(get_text_entry("npc_name_entry"));
+	const std::string name(locname);
+	const short npc_num = get_num_entry("npc_num_entry");
+	const short ident = get_num_entry("npc_ident_entry");
+	const int shape = get_num_entry("npc_shape");
+	const int frame = get_num_entry("npc_frame");
 	GtkWidget *fw = get_widget("npc_face_frame");
-	int face = reinterpret_cast<sintptr>(g_object_get_data(G_OBJECT(fw), "user_data"));
-	int usecode = get_num_entry("npc_usecode_entry");
+	const int face = reinterpret_cast<sintptr>(g_object_get_data(G_OBJECT(fw), "user_data"));
+	const int usecode = get_num_entry("npc_usecode_entry");
 	std::string usecodefun;
 	if (!usecode)
 		usecodefun = get_text_entry("npc_usecode_entry");
-	short attack_mode = get_optmenu("npc_attack_mode");
-	short alignment = get_optmenu("npc_alignment");
+	const short attack_mode = get_optmenu("npc_attack_mode");
+	const short alignment = get_optmenu("npc_alignment");
 
 	unsigned long oflags = 0;   // Object flags.
 	unsigned long xflags = 0;   // Extra object flags.
@@ -638,7 +638,7 @@ void ExultStudio::schedule_btn_clicked(
 	// Get name assigned in Glade.
 	const char *name = gtk_buildable_get_name(GTK_BUILDABLE(btn));
 	const char *numptr = name + 5;  // Past "sched".
-	int num = atoi(numptr);
+	const int num = atoi(numptr);
 	auto *schedwin = static_cast<GtkWidget *>(data);
 	auto *label = static_cast<GtkLabel *>(g_object_get_data(
 	        G_OBJECT(schedwin), "user_data"));
@@ -706,9 +706,9 @@ static void Game_loc_response(
 		return;
 	// Get box with loc. spin btns.
 	auto *box = static_cast<GtkBox *>(client);
-	int tx = Read2(data);
-	int ty = Read2(data);
-	int tz = Read2(data);
+	const int tx = Read2(data);
+	const int ty = Read2(data);
+	const int tz = Read2(data);
 	GList *children = g_list_first(gtk_container_get_children(GTK_CONTAINER(box)));
 	GList *list = children;
 	GtkWidget *spin = GTK_WIDGET(list->data);

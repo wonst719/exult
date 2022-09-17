@@ -49,7 +49,7 @@ Direction Get_direction_NoWrap(
 ) {
 	if (deltax == 0)
 		return deltay > 0 ? north : south;
-	int dydx = (1024 * deltay) / deltax; // Figure 1024*tan.
+	const int dydx = (1024 * deltay) / deltax; // Figure 1024*tan.
 	if (dydx >= 0)
 		if (deltax >= 0)    // Top-right quadrant?
 			return dydx <= 424 ? east : dydx <= 2472 ? northeast
@@ -112,8 +112,8 @@ int Get_direction16(
 	deltay = Wrap_Delta(deltay);
 	if (deltax == 0)
 		return deltay > 0 ? 0 : 8;
-	int dydx = (1024 * deltay) / deltax; // Figure 1024*tan.
-	int adydx = dydx < 0 ? -dydx : dydx;
+	const int dydx = (1024 * deltay) / deltax; // Figure 1024*tan.
+	const int adydx = dydx < 0 ? -dydx : dydx;
 	int angle = 0;
 	if (adydx < 1533) {     // 1024*tan(5*11.25)
 		if (adydx < 204)    // 1024*tan(11.25).

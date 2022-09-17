@@ -79,7 +79,7 @@ constexpr inline int DECR_TILE(int x, int amt = 1) {
 }
 // Return x - y with wrapping.
 constexpr inline int SUB_TILE(int x, int y) {
-	int delta = x - y;
+	const int delta = x - y;
 	return delta < -c_num_tiles / 2 ? delta + c_num_tiles :
 	       delta >= c_num_tiles / 2 ? delta - c_num_tiles : delta;
 }

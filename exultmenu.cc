@@ -81,7 +81,7 @@ int maximum_size(Font *font, const char *options[], int num_choices, int centerx
 	ignore_unused_variable_warning(centerx);
 	int max_width = 0;
 	for (int i = 0; i < num_choices; i++) {
-		int width = font->get_text_width(options[i]);
+		const int width = font->get_text_width(options[i]);
 		if (width > max_width)
 			max_width = width;
 	}
@@ -96,13 +96,13 @@ void create_scroller_menu(MenuList *menu, Font *fonton, Font *font, int first, i
 		"NEXT",
 		"LAST"
 	};
-	int ncount = array_size(menuscroller);
+	const int ncount = array_size(menuscroller);
 	assert(ncount == 4);
-	int max_width = maximum_size(font, menuscroller, ncount, xpos);
+	const int max_width = maximum_size(font, menuscroller, ncount, xpos);
 	xpos = xpos - max_width * 3 / 2;
 
 	num_choices--;
-	int lastpage = num_choices - num_choices % pagesize;
+	const int lastpage = num_choices - num_choices % pagesize;
 
 	for (int i = 0; i < ncount; i++) {
 		//Check to see if this entry is needed at all:
@@ -191,12 +191,12 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 	}
 	int xpos = (gwin->get_win()->get_full_width() / 2 + fr->get_width()) / 2;
 	std::vector<ModManager> &game_list = gamemanager->get_game_list();
-	int num_choices = game_list.size();
-	int last = num_choices > first + pagesize ? first + pagesize : num_choices;
+	const int num_choices = game_list.size();
+	const int last = num_choices > first + pagesize ? first + pagesize : num_choices;
 	for (int i = first; i < last; i++) {
-		int menux = xpos + (i % 2) * gwin->get_win()->get_full_width() / 2 + gwin->get_win()->get_start_x();
-		ModManager &exultgame = game_list[i];
-		bool have_sfx = Audio::have_config_sfx(exultgame.get_cfgname()) ||
+		const int menux = xpos + (i % 2) * gwin->get_win()->get_full_width() / 2 + gwin->get_win()->get_start_x();
+		const ModManager &exultgame = game_list[i];
+		const bool have_sfx = Audio::have_config_sfx(exultgame.get_cfgname()) ||
 		                Audio::have_roland_sfx(exultgame.get_game_type()) ||
 		                Audio::have_sblaster_sfx(exultgame.get_game_type()) ||
 		                Audio::have_midi_sfx();
@@ -231,8 +231,8 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 		"EXIT"
 #endif
 	};
-	int num_entries = array_size(menuchoices);
-	int max_width = maximum_size(font, menuchoices, num_entries, centerx);
+	const int num_entries = array_size(menuchoices);
+	const int max_width = maximum_size(font, menuchoices, num_entries, centerx);
 	xpos = centerx - max_width * (num_entries - 1) / 2;
 	ypos = gwin->get_win()->get_end_y() - 3 * font->get_text_height();
 	for (int i = 0; i < 4; i++) {
@@ -254,11 +254,11 @@ std::unique_ptr<MenuList> ExultMenu::create_mods_menu(ModManager *selgame, int f
 	int xpos = gwin->get_win()->get_full_width() / 4;
 
 	std::vector<ModInfo> &mod_list = selgame->get_mod_list();
-	int num_choices = mod_list.size();
-	int last = num_choices > first + pagesize ? first + pagesize : num_choices;
+	const int num_choices = mod_list.size();
+	const int last = num_choices > first + pagesize ? first + pagesize : num_choices;
 	for (int i = first; i < last; i++) {
-		int menux = xpos + (i % 2) * gwin->get_win()->get_full_width() / 2 + gwin->get_win()->get_start_x();
-		ModInfo &exultmod = mod_list[i];
+		const int menux = xpos + (i % 2) * gwin->get_win()->get_full_width() / 2 + gwin->get_win()->get_start_x();
+		const ModInfo &exultmod = mod_list[i];
 		auto *entry = new MenuGameEntry(fonton, font,
 		        exultmod.get_menu_string().c_str(),
 		        nullptr, menux, ypos);
@@ -283,8 +283,8 @@ std::unique_ptr<MenuList> ExultMenu::create_mods_menu(ModManager *selgame, int f
 	const char *menuchoices[] = {
 		"RETURN TO MAIN MENU"
 	};
-	int num_entries = array_size(menuchoices);
-	int max_width = maximum_size(font, menuchoices, num_entries, centerx);
+	const int num_entries = array_size(menuchoices);
+	const int max_width = maximum_size(font, menuchoices, num_entries, centerx);
 	xpos = centerx - max_width * (num_entries - 1) / 2;
 	ypos = gwin->get_win()->get_end_y() - 3 * font->get_text_height();
 	for (int i = 0; i < num_entries; i++) {
@@ -309,8 +309,8 @@ BaseGameInfo *ExultMenu::show_mods_menu(ModManager *selgame) {
 	gpal->apply();
 
 	int first_mod = 0;
-	int num_choices = selgame->get_mod_list().size() - 1;
-	int last_page = num_choices - num_choices % pagesize;
+	const int num_choices = selgame->get_mod_list().size() - 1;
+	const int last_page = num_choices - num_choices % pagesize;
 	auto menu = create_mods_menu(selgame, first_mod);
 	BaseGameInfo *sel_mod = nullptr;
 
@@ -330,7 +330,7 @@ BaseGameInfo *ExultMenu::show_mods_menu(ModManager *selgame) {
 		font->draw_text(gwin->get_win()->get_ib8(),
 						gwin->get_win()->get_end_x() - font->get_text_width(VERSION),
 						gwin->get_win()->get_end_y() - font->get_text_height() - 5, VERSION);
-		int choice = menu->handle_events(gwin, menu_mouse);
+		const int choice = menu->handle_events(gwin, menu_mouse);
 		switch (choice) {
 		case -10: // The incompatibility notice; do nothing
 			break;
@@ -377,7 +377,7 @@ BaseGameInfo *ExultMenu::run() {
 		const char close_screen_msg[] = "Press ESC to exit.";
 #endif
 //Create our message and programatically center it.
-		const char *message[8] =
+		const char * const message[8] =
 		{
 			"WARNING",
 			"",
@@ -388,8 +388,8 @@ BaseGameInfo *ExultMenu::run() {
 			"",
 			close_screen_msg,
 		};
-		int total_lines = sizeof(message)/sizeof(message[0]); //While this method is no longer "proper" it fits the rest of the coding style.
-		int topy = centery - ( total_lines*10 )/2;
+		const int total_lines = sizeof(message)/sizeof(message[0]); //While this method is no longer "proper" it fits the rest of the coding style.
+		const int topy = centery - ( total_lines*10 )/2;
 		for (int line_num = 0;line_num < total_lines; line_num++)
 		{
 			font->center_text(gwin->get_win()->get_ib8(),
@@ -435,8 +435,8 @@ BaseGameInfo *ExultMenu::run() {
 	exultlogo = exult_flx.get_shape(EXULT_FLX_EXULT_LOGO_SHP, 1);
 
 	int first_game = 0;
-	int num_choices = gamemanager->get_game_count() - 1;
-	int last_page = num_choices - num_choices % pagesize;
+	const int num_choices = gamemanager->get_game_count() - 1;
+	const int last_page = num_choices - num_choices % pagesize;
 	// Erase the old logo.
 	gwin->clear_screen(true);
 
@@ -449,7 +449,7 @@ BaseGameInfo *ExultMenu::run() {
 		font->draw_text(gwin->get_win()->get_ib8(),
 						gwin->get_win()->get_end_x() - font->get_text_width(VERSION),
 						gwin->get_win()->get_end_y() - font->get_text_height() - 5, VERSION);
-		int choice = menu->handle_events(gwin, menu_mouse);
+		const int choice = menu->handle_events(gwin, menu_mouse);
 		switch (choice) {
 		case -4: // Setup
 			gpal->fade_out(c_fade_out_time);

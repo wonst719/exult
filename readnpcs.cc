@@ -51,7 +51,7 @@ using std::vector;
 void Game_window::read_npcs(
 ) {
 	npcs.resize(1);         // Create main actor.
-	Main_actor_shared ava = std::make_shared<Main_actor>("", 0);
+	const Main_actor_shared ava = std::make_shared<Main_actor>("", 0);
 	npcs[0] = ava;
 	camera_actor = main_actor = ava.get();
 	bool fix_unused = false;    // Get set for old savegames.
@@ -103,13 +103,13 @@ void Game_window::read_npcs(
 			while (okay && cnt--) {
 				// Read ahead to get shape.
 				nfile.skip(2);
-				unsigned short shnum = nfile.read2() & 0x3ff;
+				const unsigned short shnum = nfile.read2() & 0x3ff;
 				okay = nfile.good();
 				nfile.skip(-4);
-				ShapeID sid(shnum, 0);
+				const ShapeID sid(shnum, 0);
 				if (!okay || sid.get_num_frames() < 16)
 					break;  // Watch for corrupted file.
-				Game_object_shared new_monster = Monster_actor::create(shnum);
+				const Game_object_shared new_monster = Monster_actor::create(shnum);
 				auto *act = static_cast<Monster_actor*>(new_monster.get());
 				act->read(&nfile, -1, false, fix_unused);
 				act->set_schedule_loc(act->get_tile());
@@ -140,7 +140,7 @@ void Game_window::read_npcs(
 
 void Game_window::write_npcs(
 ) {
-	int num_npcs = npcs.size();
+	const int num_npcs = npcs.size();
 	{
 		OFileDataSource nfile(NPC_DAT);
 
@@ -214,7 +214,7 @@ void Read_a_schedule(
     int entsize,
     const short *offsets
 ) {
-	int cnt = offsets[index] - offsets[index - 1];
+	const int cnt = offsets[index] - offsets[index - 1];
 	// Read schedules into this array.
 	Schedule_change *schedules = cnt ? new Schedule_change[cnt] : nullptr;
 	unsigned char ent[10];
@@ -265,7 +265,7 @@ void Game_window::read_schedules(
 		sfile->read2();   // Skip past total size.
 		script_names.reserve(num_script_names);
 		for (int i = 0; i < num_script_names; ++i) {
-			int sz = sfile->read2();
+			const int sz = sfile->read2();
 			std::string nm;
 			sfile->read(nm, sz);
 			script_names.push_back(std::move(nm));
@@ -296,7 +296,7 @@ void Game_window::write_schedules() {
 	num = npcs.size();
 
 	OFileDataSource sfile(GSCHEDULE);
-	vector<std::string> &script_names = Schedule_change::get_script_names();
+	const vector<std::string> &script_names = Schedule_change::get_script_names();
 
 	sfile.write4(static_cast<unsigned int>(-2));        // Exult version #.
 	sfile.write4(num);      // # of NPC's, not include Avatar.
@@ -342,7 +342,7 @@ void Game_window::revert_schedules(Actor *npc) {
 	int num_script_names;
 	auto offsets = Set_to_read_schedules(sfile, num_npcs, entsize, num_script_names);
 	if (num_script_names) {
-		int sz = sfile.read2();
+		const int sz = sfile.read2();
 		sfile.skip(sz);
 	}
 	// Seek to the right place

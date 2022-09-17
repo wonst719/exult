@@ -49,7 +49,7 @@ class AudioChannel
 	int				distance;		// 0 - 256
 	int				balance;		// -256 - 256
 	uint32			pitch_shift;	// 0x10000 = no shift
-	int				priority;		// anything. 
+	int				priority;		// anything.
 	bool			paused = false;		// true/false
 
 	sint32			instance_id = -1;	// Unique id for this channel
@@ -113,18 +113,18 @@ private:
 		protected:
 			int x0 = 0, x1 = 0, x2 = 0, x3 = 0;
 			int a, b, c, d;
-			
+
 		public:
 			CubicInterpolator()
-			{ 
+			{
 				updateCoefficients();
 			}
-			
+
 			CubicInterpolator(int a0, int a1, int a2, int a3) : x0(a0), x1(a1), x2(a2), x3(a3)
 			{
 				updateCoefficients();
 			}
-			
+
 			CubicInterpolator(int a1, int a2, int a3) : x0(2*a1-a2), x1(a1), x2(a2), x3(a3)
 			{
 				// We use a simple linear interpolation for x0
@@ -139,7 +139,7 @@ private:
 				x3 = a3;
 				updateCoefficients();
 			}
-			
+
 			inline void init(int a1, int a2, int a3)
 			{
 				// We use a simple linear interpolation for x0
@@ -167,20 +167,20 @@ private:
 				x3 = xNew;
 				updateCoefficients();
 			}
-			
+
 			/* t must be a 16.16 fixed point number between 0 and 1 */
 			inline int interpolate(uint32 fp_pos)
 			{
 				int result = 0;
-				int t = fp_pos >> 8;
+				const int t = fp_pos >> 8;
 				result = (a*t + b) >> 8;
 				result = (result * t + c) >> 8;
 				result = (result * t + d) >> 8;
 				result = (result/3 + 1) >> 1;
-				
+
 				return result;
 			}
-				
+
 		protected:
 			inline void updateCoefficients()
 			{

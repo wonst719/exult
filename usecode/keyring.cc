@@ -47,7 +47,7 @@ void Keyring::read() {
 	auto& in = *pIn;
 
 	do {
-		int val = Read2(in);
+		const int val = Read2(in);
 		if (in.good())
 			addkey(val);
 	} while (in.good());
@@ -59,7 +59,7 @@ void Keyring::write() {
 		throw file_open_exception(KEYRINGDAT);
 	auto& out = *pOut;
 
-	for (int key : keys)
+	for (const int key : keys)
 		Write2(out, key);
 }
 

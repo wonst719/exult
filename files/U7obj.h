@@ -48,7 +48,7 @@ struct File_spec {
 	File_spec(std::string n, int i = -1)
 		: name(std::move(n)), index(i) {}
 	bool operator<(const File_spec &other) const {
-		int cmp = name.compare(other.name);
+		const int cmp = name.compare(other.name);
 		return cmp < 0 || (cmp == 0 && index < other.index);
 	}
 };

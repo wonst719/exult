@@ -266,8 +266,8 @@ inline uint8 MRead1(
 inline uint16 MRead2(
     uint8 *& in
 ) {
-	uint16 b0 = MRead1(in);
-	uint16 b1 = MRead1(in);
+	const uint16 b0 = MRead1(in);
+	const uint16 b1 = MRead1(in);
 	return (b1 << 8) | b0;
 }
 
@@ -398,7 +398,7 @@ inline size_t get_file_size(std::istream& in) {
 	const auto start = in.tellg();
 	in.seekg(0);
 	in.ignore(std::numeric_limits<std::streamsize>::max());
-	size_t len = in.gcount();
+	const size_t len = in.gcount();
 	in.seekg(start);
 	return len;
 }

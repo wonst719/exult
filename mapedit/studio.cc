@@ -680,8 +680,8 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 	}
 	// Setup virtual directories
 	string data_path;
-	string app_path;
 #ifdef MACOSX
+	string app_path;
 	if (is_system_path_defined("<APPBUNDLE>")) {
 		app_path = get_system_path("<APPBUNDLE>");
 		if (U7exists(app_path)) {
@@ -692,7 +692,6 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 #endif
 	config->value("config/disk/data_path", data_path, EXULT_DATADIR);
 	setup_data_dir(data_path, argv[0]);
-	string dirstr;
 	string datastr;
 #ifdef MACOSX
 	if (U7exists(app_path)) {
@@ -792,7 +791,7 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 	gamemanager = new GameManager(silent);
 
 	if (gamemanager->get_game_count() == 0) {
-		int choice = prompt("Exult Studio could not find any games to edit.\n\n"
+		const int choice = prompt("Exult Studio could not find any games to edit.\n\n"
 		                    "Do you wish to create a new game to edit?",
 		                    "Yes", "No");
 		if (choice == 0)
@@ -830,8 +829,8 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 
 ExultStudio::~ExultStudio() {
 	// Store main window size.
-	int w = w_at_close;
-	int h = h_at_close;
+	const int w = w_at_close;
+	const int h = h_at_close;
 	// Finish up external edits.
 	Shape_chooser::clear_editing_files();
 
@@ -930,7 +929,7 @@ bool ExultStudio::okay_to_close(
 	h_at_close = alloc.height;
 
 	if (need_to_save()) {
-		int choice = prompt("File(s) modified.  Save?",
+		const int choice = prompt("File(s) modified.  Save?",
 		                    "Yes", "No", "Cancel");
 		if (choice == 2)    // Cancel?
 			return false;
@@ -1048,9 +1047,9 @@ void ExultStudio::create_new_game(
 		EStudio::Alert("Can't find base game name in '%s'", dir);
 		return;
 	}
-	string gamestr(ptr, eptr - ptr);
-	string dirstr(dir);
-	string static_path = dirstr + "/static";
+	const string gamestr(ptr, eptr - ptr);
+	const string dirstr(dir);
+	const string static_path = dirstr + "/static";
 	if (U7exists(static_path)) {
 		string msg("Directory '");
 		msg += static_path;
@@ -1063,11 +1062,11 @@ void ExultStudio::create_new_game(
 	U7mkdir(dir, 0755);     // Create "game", "game/static",
 	//   "game/patch".
 	U7mkdir(static_path.c_str(), 0755);
-	string patch_path = dirstr + "/patch";
+	const string patch_path = dirstr + "/patch";
 	U7mkdir(patch_path.c_str(), 0755);
 	// Set .exult.cfg.
 	string d("config/disk/game/");
-	string gameconfig = d + gamestr;
+	const string gameconfig = d + gamestr;
 	d = gameconfig + "/path";
 	config->set(d.c_str(), dirstr, false);
 	d = gameconfig + "/editing";    // We are editing.
@@ -1088,8 +1087,8 @@ void ExultStudio::create_new_game(
 			// Ignore case of extension.
 			if (!strcmp(fname, ".") || !strcmp(fname, ".."))
 				continue;
-			string src = esdir + '/' + fname;
-			string dest = static_path + '/' + fname;
+			const string src = esdir + '/' + fname;
+			const string dest = static_path + '/' + fname;
 			EStudio::Copy_file(src.c_str(), dest.c_str());
 		}
 		closedir(dirrd);
@@ -1152,8 +1151,8 @@ C_EXPORT void on_gameselect_ok_clicked(
 		GtkTextIter endpos;
 		gtk_text_buffer_get_bounds(buff, &startpos, &endpos);
 		gchar *modmenu = gtk_text_iter_get_text(&startpos, &endpos);
-		codepageStr menu(modmenu, "CP437");
-		string modmenustr = menu.get_str();
+		const codepageStr menu(modmenu, "CP437");
+		const string modmenustr = menu.get_str();
 		g_free(modmenu);
 		if (modmenustr.empty())
 			return;
@@ -1170,7 +1169,7 @@ C_EXPORT void on_gameselect_ok_clicked(
 		d = pathname + "/gamedat";
 		U7mkdir(d.c_str(), 0755);
 		// Create mod cfg file:
-		string cfgfile = pathname + ".cfg";
+		const string cfgfile = pathname + ".cfg";
 		Configuration modcfg(cfgfile, "modinfo");
 		modcfg.set("mod_info/display_string", modmenustr, true);
 		modcfg.set("mod_info/required_version", VERSION, true);
@@ -1243,15 +1242,15 @@ C_EXPORT void on_gameselect_gamelist_cursor_changed(
 	                   -1);
 
 	for (size_t j = 0; j < mods.size(); j++) {
-		ModInfo &currmod = mods[j];
+		const ModInfo &currmod = mods[j];
 		string modname = currmod.get_menu_string();
-		string::size_type t = modname.find('\n', 0);
+		const string::size_type t = modname.find('\n', 0);
 		if (t != string::npos)
 			modname.replace(t, 1, " ");
 
 		// Titles need to be displayable in Exult menu, hence should not
 		// have any extra characters.
-		utf8Str title(modname.c_str(), "CP437");
+		const utf8Str title(modname.c_str(), "CP437");
 		gtk_tree_store_append(model, &iter, nullptr);
 		gtk_tree_store_set(model, &iter,
 		                   0, title.get_str(),
@@ -1268,15 +1267,15 @@ void fill_game_tree(GtkTreeView *treeview, int curr_game) {
 	GtkTreeIter iter;
 	GtkTreePath *path = nullptr;
 	for (size_t j = 0; j < games.size(); j++) {
-		ModManager &currgame = games[j];
+		const ModManager &currgame = games[j];
 		string gamename = currgame.get_menu_string();
-		string::size_type t = gamename.find('\n', 0);
+		const string::size_type t = gamename.find('\n', 0);
 		if (t != string::npos)
 			gamename.replace(t, 1, " ");
 
 		// Titles need to be displayable in Exult menu, hence should not
 		// have any extra characters.
-		utf8Str title(gamename.c_str(), "CP437");
+		const utf8Str title(gamename.c_str(), "CP437");
 		gtk_tree_store_append(model, &iter, nullptr);
 		gtk_tree_store_set(model, &iter,
 		                   0, title.get_str(),
@@ -1393,7 +1392,7 @@ void ExultStudio::set_game_path(const string &gamename, const string &modname) {
 		if (gamemanager->get_game_count() > 0)
 			dlg += "browse for a different game, ";
 		dlg += "create a new game or exit?";
-		int choice = (gamemanager->get_game_count() > 0) ?
+		const int choice = (gamemanager->get_game_count() > 0) ?
 		             prompt(dlg.c_str(), "Browse", "Create New", "Quit") :
 		             (prompt(dlg.c_str(), "Create New", "Quit") + 1);
 		if (choice == 0) {
@@ -1425,7 +1424,7 @@ void ExultStudio::set_game_path(const string &gamename, const string &modname) {
 		g_free(static_path);
 	// Set up path to static.
 	static_path = g_strdup(get_system_path("<STATIC>").c_str());
-	string patch_path = get_system_path("<PATCH>");
+	const string patch_path = get_system_path("<PATCH>");
 	if (!U7exists(patch_path))  // Create patch if not there.
 		U7mkdir(patch_path.c_str(), 0755);
 	// Reset EVERYTHING.
@@ -1462,7 +1461,7 @@ void ExultStudio::set_game_path(const string &gamename, const string &modname) {
 		gtk_widget_hide(gameinfowin);
 
 	gtk_notebook_prev_page(mainnotebook);
-	U7multiobject palobj(PALETTES_FLX, PATCH_PALETTES, 0);
+	const U7multiobject palobj(PALETTES_FLX, PATCH_PALETTES, 0);
 	size_t len;
 	palbuf = palobj.retrieve(len);
 	if (!palbuf || !len) {
@@ -1522,8 +1521,8 @@ void add_to_tree(GtkTreeStore *model, const char *folderName,
 			startpos = commapos + 1;
 		}
 
-		string spath("<STATIC>");
-		string ppath("<PATCH>");
+		const string spath("<STATIC>");
+		const string ppath("<PATCH>");
 		const char *ext = strstr(pattern, "*");
 		if (!ext)
 			ext = pattern;
@@ -1533,7 +1532,7 @@ void add_to_tree(GtkTreeStore *model, const char *folderName,
 		if (dir) {
 			while ((entry = readdir(dir))) {
 				char *fname = entry->d_name;
-				int flen = strlen(fname);
+				const int flen = strlen(fname);
 				// Ignore case of extension.
 				if (!strcmp(fname, ".") || !strcmp(fname, "..") ||
 				        strcasecmp(fname + flen - strlen(ext), ext) != 0)
@@ -1551,7 +1550,7 @@ void add_to_tree(GtkTreeStore *model, const char *folderName,
 		if (dir) {
 			while ((entry = readdir(dir))) {
 				char *fname = entry->d_name;
-				int flen = strlen(fname);
+				const int flen = strlen(fname);
 				// Ignore case of extension.
 				if (!strcmp(fname, ".") || !strcmp(fname, "..") ||
 				        strcasecmp(fname + flen - strlen(ext), ext) != 0)
@@ -1587,7 +1586,7 @@ void add_to_tree(GtkTreeStore *model, const char *folderName,
 	va_start(ap, extra_cnt);
 	while (extra_cnt--) {
 		char *nm = va_arg(ap, char *);
-		int ty = va_arg(ap, int);
+		const int ty = va_arg(ap, int);
 		gtk_tree_store_append(model, &child_iter, &iter);
 		gtk_tree_store_set(model, &child_iter,
 		                   FOLDER_COLUMN, nullptr,
@@ -1699,7 +1698,7 @@ bool ExultStudio::need_to_save(
 		unsigned char data[Exult_server::maxlength];
 		Exult_server::Msg_type id;
 		Exult_server::wait_for_response(server_socket, 100);
-		int len = Exult_server::Receive_data(server_socket,
+		const int len = Exult_server::Receive_data(server_socket,
 		                                     id, data, sizeof(data));
 		int vers;
 		int edlift;
@@ -1879,7 +1878,7 @@ void ExultStudio::show_unused_shapes(
     const unsigned char *data,        // Bits set for unused shapes.
     int datalen         // #bytes.
 ) {
-	int nshapes = datalen * 8;
+	const int nshapes = datalen * 8;
 	GtkTextView *text = GTK_TEXT_VIEW(get_widget("msg_text"));
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(text);
 	gtk_text_buffer_set_text(buffer, "", 0);    // Clear out old text
@@ -1943,7 +1942,7 @@ void ExultStudio::create_shape_file(
     const char *pathname,         // Full path.
     gpointer udata          // 1 if NOT a FLEX file.
 ) {
-	bool oneshape = reinterpret_cast<uintptr>(udata) != 0;
+	const bool oneshape = reinterpret_cast<uintptr>(udata) != 0;
 	try {               // Write file.
 		if (oneshape) {         // Single-shape?
 			// Create one here.
@@ -2477,7 +2476,7 @@ on_prefs_background_choose_clicked(GtkButton *button,
 	                                      gtk_color_chooser_dialog_new("Background color", nullptr));
 	gtk_window_set_modal(GTK_WINDOW(colorsel), true);
 	// Get color.
-	guint32 c = ExultStudio::get_instance()->get_background_color();
+	const guint32 c = ExultStudio::get_instance()->get_background_color();
 	GdkRGBA  rgba;
 	rgba.red   = ((c >> 16) & 0xff) / 255.0;
 	rgba.green = ((c >>  8) & 0xff) / 255.0;
@@ -2660,7 +2659,7 @@ void ExultStudio::read_from_server(
 ) {
 #ifdef _WIN32
 	// Nothing
-	int len = Exult_server::peek_pipe();
+	const int len = Exult_server::peek_pipe();
 
 	//Do_Drop_Callback(&len);
 
@@ -2678,7 +2677,7 @@ void ExultStudio::read_from_server(
 #endif
 	unsigned char data[Exult_server::maxlength];
 	Exult_server::Msg_type id;
-	int datalen = Exult_server::Receive_data(server_socket, id, data,
+	const int datalen = Exult_server::Receive_data(server_socket, id, data,
 	              sizeof(data));
 	if (datalen < 0) {
 		cout << "Error reading from server" << endl;
@@ -2897,11 +2896,11 @@ int ExultStudio::find_palette_color(int r, int g, int b) {
 	long best_distance = 0xfffffff;
 	for (int i = 0; i < 256; i++) {
 		// Get deltas.
-		long dr = r - palbuf[3 * i];
-		long dg = g - palbuf[3 * i + 1];
-		long db = b - palbuf[3 * i + 2];
+		const long dr = r - palbuf[3 * i];
+		const long dg = g - palbuf[3 * i + 1];
+		const long db = b - palbuf[3 * i + 2];
 		// Figure distance-squared.
-		long dist = dr * dr + dg * dg + db * db;
+		const long dist = dr * dr + dg * dg + db * db;
 		if (dist < best_distance) { // Better than prev?
 			best_index = i;
 			best_distance = dist;
@@ -2993,7 +2992,7 @@ C_EXPORT void on_gameinfo_apply_clicked(
 	gchar *modmenu = gtk_text_iter_get_text(&startpos, &endpos);
 	// Titles need to be displayable in Exult menu, hence should not
 	// have any extra characters.
-	codepageStr menu(modmenu, "CP437");
+	const codepageStr menu(modmenu, "CP437");
 	string menustr = menu.get_str();
 	for (size_t i = 0; i < strlen(menustr.c_str()); i++)
 		if ((static_cast<unsigned char>(menustr[i]) & 0x80) != 0)
@@ -3007,7 +3006,7 @@ C_EXPORT void on_gameinfo_apply_clicked(
 
 	Configuration *cfg;
 	string root;
-	bool ismod = gameinfo->get_config_file(cfg, root);
+	const bool ismod = gameinfo->get_config_file(cfg, root);
 	cfg->set(root + (ismod ? "display_string" : "title"), menustr, true);
 	cfg->set(root + "codepage", enc, true);
 	if (ismod)
@@ -3052,7 +3051,7 @@ void ExultStudio::show_charset(
 		"F0\t\xF0\t\xF1\t\xF2\t\xF3\t\xF4\t\xF5\t\xF6\t\xF7\t\xF8\t\xF9\t\xFA\t\xFB\t\xFC\t\xFD\t\xFE\t\xFF\n\0"
 	};
 
-	utf8Str codechars(charset, enc);
+	const utf8Str codechars(charset, enc);
 	GtkTextBuffer *buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(
 	                          get_widget("gameinfo_codepage_display")));
 	gtk_text_buffer_set_text(buff, codechars, -1);
@@ -3077,7 +3076,7 @@ void ExultStudio::set_game_information(
 	}
 
 	// game_encoding should equal gameinfo->get_codepage().
-	int index = Find_Encoding_Index(game_encoding.c_str());
+	const int index = Find_Encoding_Index(game_encoding.c_str());
 
 	// Override 'unknown' encodings.
 	set_optmenu("gameinfo_charset", index >= 0 ? index : 0);
@@ -3088,7 +3087,7 @@ void ExultStudio::set_game_information(
 	                          get_widget("gameinfo_menustring")));
 	// Titles need to be displayable in Exult menu, hence should not
 	// have any extra characters.
-	utf8Str title(gameinfo->get_menu_string().c_str(), "CP437");
+	const utf8Str title(gameinfo->get_menu_string().c_str(), "CP437");
 	gtk_text_buffer_set_text(buff, title.get_str(), -1);
 
 	gtk_widget_show(gameinfowin);
@@ -3152,14 +3151,14 @@ void convertFromUTF8::convert(gchar *&_convstr, const char *str, const char *enc
 			*end = 0;
 			// Must always be < 5, but just to be safe...
 			//int len = end - ptr;
-			std::ptrdiff_t len = end - ptr;
+			const std::ptrdiff_t len = end - ptr;
 			size_t pos;
 
 			while ((pos = force.find(illegal)) != string::npos)
 				force.replace(pos, len, 1, '?');
 
 			CONV_ERROR("UTF-8", enc);
-			char fallback = '?';
+			const char fallback = '?';
 			_convstr = g_convert_with_fallback(force.c_str(), -1, "UTF-8", enc,
 			                                   &fallback, &bytes_read, &bytes_written, &error);
 		}
@@ -3167,7 +3166,7 @@ void convertFromUTF8::convert(gchar *&_convstr, const char *str, const char *enc
 		if (!_convstr) {
 			CONV_ERROR(enc, "UTF-8");
 			// Conversion still failed; try lossy conversion.
-			char fallback = '?';
+			const char fallback = '?';
 			_convstr = g_convert_with_fallback(force.c_str(), -1, "UTF-8", enc,
 			                                   &fallback, &bytes_read, &bytes_written, &error);
 		}
@@ -3209,7 +3208,7 @@ void convertToUTF8::convert(gchar *&_convstr, const char *str, const char *enc) 
 		// Need to clean string.
 		string force(str);
 		while (!_convstr && error->code == G_CONVERT_ERROR_ILLEGAL_SEQUENCE) {
-			char illegal = force[bytes_read];
+			const char illegal = force[bytes_read];
 			size_t pos;
 
 			while ((pos = force.find(illegal)) != string::npos)
@@ -3223,7 +3222,7 @@ void convertToUTF8::convert(gchar *&_convstr, const char *str, const char *enc) 
 		if (!_convstr) {
 			CONV_ERROR(enc, "UTF-8");
 			// Conversion still failed; try lossy conversion.
-			char fallback = '?';
+			const char fallback = '?';
 			_convstr = g_convert_with_fallback(force.c_str(), -1, "UTF-8", enc,
 			                                   &fallback, &bytes_read, &bytes_written, &error);
 		}

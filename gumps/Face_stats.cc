@@ -270,11 +270,11 @@ TileRect Portrait_button::get_rect() {
 		rect.enlarge(2);
 
 	if (hp) {
-		TileRect r = hp->get_rect();
+		const TileRect r = hp->get_rect();
 		rect = rect.add(r);
 	}
 	if (mana) {
-		TileRect r = mana->get_rect();
+		const TileRect r = mana->get_rect();
 		rect = rect.add(r);
 	}
 
@@ -372,7 +372,7 @@ void Face_stats::create_buttons() {
 	int num_to_paint = 0;
 
 	for (i = 0; i < party_size; i++) {
-		int    num = partyman->get_member(i);
+		const int num = partyman->get_member(i);
 		Actor* act = gwin->get_npc(num);
 		assert(act != nullptr);
 		// Show faces if in SI, or if paperdolls are allowed
@@ -442,7 +442,7 @@ void Face_stats::create_buttons() {
 
 	for (i = 0; i < 8; i++)
 		if (party[i]) {
-			TileRect r = party[i]->get_rect();
+			const TileRect r = party[i]->get_rect();
 			region     = region.add(r);
 		}
 }

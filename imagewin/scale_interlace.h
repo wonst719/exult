@@ -49,13 +49,13 @@ void Scale_interlace(
 	Source_pixel *from = source + srcy * sline_pixels + srcx;
 	Source_pixel *limit_x = from + srcw;
 	Source_pixel *limit_y = from + srch * sline_pixels;
-	int sdiff = sline_pixels - srcw;
+	const int sdiff = sline_pixels - srcw;
 
 	// Dest buffer pointers
 	Dest_pixel *to = (dest + factor * srcy * dline_pixels + factor * srcx);
 
 	if (factor == 2) {
-		int pdiff = 2 * dline_pixels - 2 * srcw;
+		const int pdiff = 2 * dline_pixels - 2 * srcw;
 		// Src loop Y
 		do {
 			// Src loop X
@@ -76,9 +76,9 @@ void Scale_interlace(
 		Dest_pixel *px_end = to + factor;
 		Dest_pixel *py_end = to + factor * dline_pixels;
 
-		int block_h = dline_pixels * factor;
-		int block_xdiff = dline_pixels - factor;
-		int pdiff = block_h - factor * srcw;
+		const int block_h = dline_pixels * factor;
+		const int block_xdiff = dline_pixels - factor;
+		const int pdiff = block_h - factor * srcw;
 		// Src loop Y
 		do {
 			// Src loop X

@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef USE_WINDOWS_MIDI
 
-const MidiDriver::MidiDriverDesc WindowsMidiDriver::desc = 
+const MidiDriver::MidiDriverDesc WindowsMidiDriver::desc =
 		MidiDriver::MidiDriverDesc("Windows", createInstance);
 
 using std::endl;
@@ -56,7 +56,7 @@ int WindowsMidiDriver::open()
 {
 	int i;
 	// Get Win32 Midi Device num
-	std::string device = getConfigSetting("win32_device", "-1");
+	const std::string device = getConfigSetting("win32_device", "-1");
 
 	const char *begin = device.c_str();
 	char *end;
@@ -73,7 +73,7 @@ int WindowsMidiDriver::open()
 
 	// List all the midi devices.
 	MIDIOUTCAPS caps;
-	auto dev_count = static_cast<signed long>(midiOutGetNumDevs()); 
+	auto dev_count = static_cast<signed long>(midiOutGetNumDevs());
 	pout << dev_count << " Midi Devices Detected" << endl;
 	pout << "Listing midi devices:" << endl;
 
@@ -98,7 +98,7 @@ int WindowsMidiDriver::open()
 	pout << "Using device " << dev_num << ": "<< caps.szPname << endl;
 
 	_streamEvent = CreateEvent(nullptr, true, true, nullptr);
-	UINT mmsys_err = midiOutOpen(&midi_port, dev_num, reinterpret_cast<uintptr>(_streamEvent), 0, CALLBACK_EVENT);
+	const UINT mmsys_err = midiOutOpen(&midi_port, dev_num, reinterpret_cast<uintptr>(_streamEvent), 0, CALLBACK_EVENT);
 
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
 	if (dev_num2 != -2 && mmsys_err != MMSYSERR_NOERROR)
@@ -119,7 +119,7 @@ int WindowsMidiDriver::open()
 
 	// Set Win32 Midi Device num
 	//config->set("config/audio/midi/win32_device", dev_num, true);
-	
+
 	return 0;
 }
 
@@ -141,7 +141,7 @@ void WindowsMidiDriver::close()
 void WindowsMidiDriver::send(uint32 message)
 {
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
-	if (message & 0x1 && midi_port2 != nullptr) 
+	if (message & 0x1 && midi_port2 != nullptr)
 		midiOutShortMsg(midi_port2,  message);
 	else
 		midiOutShortMsg(midi_port,  message);
@@ -178,7 +178,7 @@ void WindowsMidiDriver::send_sysex(uint8 status, const uint8 *msg, uint16 length
 	}
 
 	if (_streamBuffer) {
-		MMRESULT result = midiOutUnprepareHeader(midi_port, &_streamHeader, sizeof(_streamHeader));
+		const MMRESULT result = midiOutUnprepareHeader(midi_port, &_streamHeader, sizeof(_streamHeader));
 		if (doMCIError(result)) {
 			//check_error(result);
 			perr << "Error: Could not send SysEx - midiOutUnprepareHeader failed." << std::endl;

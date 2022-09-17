@@ -101,7 +101,7 @@ bool Time_queue::remove(
 	auto it = std::find_if(data.begin(), data.end(),
 			[&](const auto& el) { return el.handler == obj && el.udata == udata; }
 	);
-	bool found = it != data.end();
+	const bool found = it != data.end();
 	if (found) {
 		obj->queue_cnt--;
 		data.erase(it);
@@ -141,7 +141,7 @@ long Time_queue::find_delay(
 	if (pause_time) { // Watch for case when paused.
 		curtime = pause_time;
 	}
-	long delay = (*found).time - curtime;
+	const long delay = (*found).time - curtime;
 	return delay >= 0 ? delay : 0;
 }
 
@@ -157,7 +157,7 @@ void Time_queue::activate0(
 	do {
 		ent = data.front();
 		Time_sensitive *obj = ent.handler;
-		uintptr udata = ent.udata;
+		const uintptr udata = ent.udata;
 		data.pop_front();   // Remove from chain.
 		obj->queue_cnt--;
 		obj->handle_event(curtime, udata);
@@ -183,7 +183,7 @@ void Time_queue::activate_always(
 		Time_sensitive *obj = ent.handler;
 		if (obj->always) {
 			obj->queue_cnt--;
-			uintptr udata = ent.udata;
+			const uintptr udata = ent.udata;
 			data.erase(it);
 			obj->handle_event(curtime, udata);
 		}
@@ -200,7 +200,7 @@ void Time_queue::resume(
 ) {
 	if (!paused || --paused > 0)    // Only unpause when stack empty.
 		return;         // Not paused.
-	int diff = curtime - pause_time;
+	const int diff = curtime - pause_time;
 	pause_time = 0;
 	if (diff < 0)           // Should not happen.
 		return;

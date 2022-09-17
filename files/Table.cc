@@ -66,13 +66,13 @@ bool Table::is_table(IDataSource *in) {
 
 	in->seek(0);
 	while (true) {
-		uint16 size = in->read2();
+		const uint16 size = in->read2();
 
 		// End of table marker.
 		if (size == 65535) {
 			break;
 		}
-		uint32 offset = in->read4();
+		const uint32 offset = in->read4();
 		if (size > file_size || offset > file_size) {
 			in->seek(pos);
 			return false;

@@ -224,7 +224,7 @@ int Usecode_value::add_values(
     int index,
     Usecode_value &val2
 ) {
-	int size = get_array_size();
+	const int size = get_array_size();
 	if (!val2.is_array()) {     // Simple case?
 		if (index >= size) {
 			arrayval.push_back(val2);
@@ -234,7 +234,7 @@ int Usecode_value::add_values(
 		return 1;
 	}
 	// Add each element.
-	int size2 = val2.get_array_size();
+	const int size2 = val2.get_array_size();
 	if (index + size2 > size) {
 		arrayval.resize(index + size2);
 	}
@@ -267,8 +267,8 @@ void Usecode_value::print(
 			out << ", ... (size " << count << ")";
 		out << " ]";
 	};
-	boost::io::ios_flags_saver flags(out);
-	boost::io::ios_fill_saver fill(out);
+	const boost::io::ios_flags_saver flags(out);
+	const boost::io::ios_fill_saver fill(out);
 	switch (type) {
 	case int_type:
 		out << hex << setfill('0') << setw(4);
@@ -415,7 +415,7 @@ bool Usecode_value::save(
 		break;
 	case class_sym_type: {
 		const char *classname = clssym->get_name();
-		int len = std::strlen(classname);
+		const int len = std::strlen(classname);
 		out->write2(len);
 		out->write(classname, len);
 		break;
@@ -436,7 +436,7 @@ bool Usecode_value::save(
 		// TODO: This creates many copies without need, as every class
 		// instance points to the same array.
 		// Need to serialize this properly.
-		int len = clsrefval.cnt;
+		const int len = clsrefval.cnt;
 		out->write2(len); // first length, then length Usecode_values
 		for (int i = 0; i < len; i++) {
 			if (!clsrefval.elems[i].save(out))
@@ -472,7 +472,7 @@ bool Usecode_value::restore(
 		// Maybe add a new type "serialized_pointer" to prevent "accidents"?
 		return true;
 	case class_sym_type: {
-		int len = in->read2();
+		const int len = in->read2();
 		char *nm = new char[len + 1];
 		in->read(nm, len);
 		nm[len] = 0;
@@ -481,7 +481,7 @@ bool Usecode_value::restore(
 		return true;
 	}
 	case string_type: {
-		int len = in->read2();
+		const int len = in->read2();
 		construct(strval);
 		in->read(strval, len);
 		return true;
@@ -500,7 +500,7 @@ bool Usecode_value::restore(
 		// This will duplicate the instance variables, and they will no
 		// longer point to the same instance.
 		// Need to deserialize this properly.
-		int len = in->read2();
+		const int len = in->read2();
 		clsrefval.cnt = len;  // Stores class, class vars.
 		clsrefval.elems = new Usecode_value[clsrefval.cnt];
 		for (int i = 0; i < len; i++)

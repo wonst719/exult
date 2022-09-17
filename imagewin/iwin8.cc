@@ -81,7 +81,7 @@ inline unsigned char Get_color8(
     int maxval,
     int brightness          // 100=normal.
 ) {
-	uint32 c = (static_cast<uint32>(val) * brightness * 255L) / (100 * maxval);
+	const uint32 c = (static_cast<uint32>(val) * brightness * 255L) / (100 * maxval);
 	return c <= 255L ? static_cast<unsigned char>(c) : 255;
 }
 
@@ -118,7 +118,7 @@ void Image_window8::rotate_colors(
 ) {
 	first *= 3;
 	num *= 3;
-	int cnt = abs(num);
+	const int cnt = abs(num);
 	unsigned char  *start = colors + first;
 	unsigned char  *finish = start + cnt;
 	if (num > 0) {
@@ -158,7 +158,7 @@ unique_ptr<unsigned char[]> Image_window8::mini_screenshot() {
 	const int w = 3 * 96;
 	const int h = 3 * 60;
 	const unsigned char *pixels = ibuf->get_bits();
-	int pitch = ibuf->get_line_width();
+	const int pitch = ibuf->get_line_width();
 
 	for (int y = 0; y < h; y += 3)
 		for (int x = 0; x < w; x += 3) {
@@ -168,7 +168,7 @@ unique_ptr<unsigned char[]> Image_window8::mini_screenshot() {
 			int b = 0;
 			for (i = 0; i < 3; i++)
 				for (int j = 0; j < 3; j++) {
-					int pix = pixels[pitch * (j + y + (get_game_height() - h) / 2) +
+					const int pix = pixels[pitch * (j + y + (get_game_height() - h) / 2) +
 					                 i + x + (get_game_width()  - w) / 2 ];
 					r += colors[3 * pix + 0];
 					g += colors[3 * pix + 1];
@@ -182,7 +182,7 @@ unique_ptr<unsigned char[]> Image_window8::mini_screenshot() {
 			int bestdist = INT_MAX;
 			int bestindex = -1;
 			for (i = 0; i < 224; i++) {
-				int dist = pow2(colors[3 * i + 0] - r)
+				const int dist = pow2(colors[3 * i + 0] - r)
 				           + pow2(colors[3 * i + 1] - g)
 				           + pow2(colors[3 * i + 2] - b);
 				if (dist < bestdist) {

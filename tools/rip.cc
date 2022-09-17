@@ -45,7 +45,7 @@ void rebuild() {
 				exit(0);
 			}
 			while (!feof(fi2)) {
-				unsigned c = fgetc(fi2);
+				const unsigned c = fgetc(fi2);
 				if (!feof(fi2))
 					fputc(c, fo);
 			}
@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
 		} else {
 			extended = false;
 			unsigned short temp;
-			size_t err = fread(&temp, 2, 1, fi);
+			const size_t err = fread(&temp, 2, 1, fi);
 			assert(err == 1);
 			fs = temp;
 		}

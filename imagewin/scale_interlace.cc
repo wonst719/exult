@@ -35,7 +35,7 @@
 void Image_window::show_scaled8to8_interlace(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to8 manip(paletted_surface->format->palette->colors,
+	const Manip8to8 manip(paletted_surface->format->palette->colors,
 	                paletted_surface->format);
 	Scale_interlace<unsigned char, uint8, Manip8to8>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -48,7 +48,7 @@ void Image_window::show_scaled8to8_interlace(
 void Image_window::show_scaled8to16_interlace(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to16 manip(paletted_surface->format->palette->colors,
+	const Manip8to16 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_interlace<unsigned char, uint16, Manip8to16>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -62,7 +62,7 @@ void Image_window::show_scaled8to16_interlace(
 void Image_window::show_scaled8to555_interlace(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to555 manip(paletted_surface->format->palette->colors,
+	const Manip8to555 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_interlace<unsigned char, uint16, Manip8to555>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -76,7 +76,7 @@ void Image_window::show_scaled8to555_interlace(
 void Image_window::show_scaled8to565_interlace(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to565 manip(paletted_surface->format->palette->colors,
+	const Manip8to565 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_interlace<unsigned char, uint16, Manip8to565>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -90,7 +90,7 @@ void Image_window::show_scaled8to565_interlace(
 void Image_window::show_scaled8to32_interlace(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to32 manip(paletted_surface->format->palette->colors,
+	const Manip8to32 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_interlace<unsigned char, uint32, Manip8to32>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,

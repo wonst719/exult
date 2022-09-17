@@ -48,9 +48,9 @@ void Game_window::paint_map_at_tile(
     int toptx, int topty,
     int skip_above          // Don't display above this lift.
 ) {
-	int savescrolltx = scrolltx;
-	int savescrollty = scrollty;
-	int saveskip = skip_lift;
+	const int savescrolltx = scrolltx;
+	const int savescrollty = scrollty;
+	const int saveskip = skip_lift;
 	scrolltx = toptx;
 	scrollty = topty;
 	skip_lift = skip_above;
@@ -107,10 +107,10 @@ static void Paint_grid(
 ) {
 	Image_window8 *win = gwin->get_win();
 	// Paint grid at edit height.
-	int xtiles = gwin->get_width() / c_tilesize;
-	int ytiles = gwin->get_height() / c_tilesize;
-	int lift = cheat.get_edit_lift();
-	int liftpixels = lift * (c_tilesize / 2) + 1;
+	const int xtiles = gwin->get_width() / c_tilesize;
+	const int ytiles = gwin->get_height() / c_tilesize;
+	const int lift = cheat.get_edit_lift();
+	const int liftpixels = lift * (c_tilesize / 2) + 1;
 	for (int y = 0; y < ytiles; y++)
 		win->fill_translucent8(0, xtiles * c_tilesize, 1,
 		                       -liftpixels, y * c_tilesize - liftpixels, xform);
@@ -135,12 +135,12 @@ static void Paint_selected_chunks(
 	int cy;         // Chunk #'s.
 	// Paint all the flat scenery.
 	for (cy = start_chunky; cy != stop_chunky; cy = INCR_CHUNK(cy)) {
-		int yoff = Figure_screen_offset(cy, gwin->get_scrollty()) - gwin->get_scrollty_lo();
+		const int yoff = Figure_screen_offset(cy, gwin->get_scrollty()) - gwin->get_scrollty_lo();
 		for (cx = start_chunkx; cx != stop_chunkx; cx = INCR_CHUNK(cx)) {
 			Map_chunk *chunk = map->get_chunk(cx, cy);
 			if (!chunk->is_selected())
 				continue;
-			int xoff = Figure_screen_offset(
+			const int xoff = Figure_screen_offset(
 			               cx, gwin->get_scrolltx()) - gwin->get_scrolltx_lo();
 			win->fill_translucent8(0, c_chunksize, c_chunksize,
 			                       xoff, yoff, xform);
@@ -163,9 +163,9 @@ void Game_render::paint_terrain_only(
 	int cy;         // Chunk #'s.
 	// Paint all the flat scenery.
 	for (cy = start_chunky; cy != stop_chunky; cy = INCR_CHUNK(cy)) {
-		int yoff = Figure_screen_offset(cy, gwin->scrollty) - gwin->get_scrollty_lo();
+		const int yoff = Figure_screen_offset(cy, gwin->scrollty) - gwin->get_scrollty_lo();
 		for (cx = start_chunkx; cx != stop_chunkx; cx = INCR_CHUNK(cx)) {
-			int xoff = Figure_screen_offset(cx, gwin->scrolltx) - gwin->get_scrolltx_lo();
+			const int xoff = Figure_screen_offset(cx, gwin->scrolltx) - gwin->get_scrolltx_lo();
 			Map_chunk *chunk = map->get_chunk(cx, cy);
 			chunk->get_terrain()->render_all(cx, cy);
 			if (cheat.in_map_editor())
@@ -195,8 +195,8 @@ int Game_render::paint_map(
 	render_seq++;           // Increment sequence #.
 	gwin->painted = true;
 
-	int scrolltx = gwin->scrolltx;
-	int scrollty = gwin->scrollty;
+	const int scrolltx = gwin->scrolltx;
+	const int scrollty = gwin->scrollty;
 	int light_sources = 0;      // Count light sources found.
 	// Get chunks to start with, starting
 	//   1 tile left/above.
@@ -222,9 +222,9 @@ int Game_render::paint_map(
 	int cy;         // Chunk #'s.
 	// Paint all the flat scenery.
 	for (cy = start_chunky; cy != stop_chunky; cy = INCR_CHUNK(cy)) {
-		int yoff = Figure_screen_offset(cy, scrollty) - gwin->get_scrollty_lo();
+		const int yoff = Figure_screen_offset(cy, scrollty) - gwin->get_scrollty_lo();
 		for (cx = start_chunkx; cx != stop_chunkx; cx = INCR_CHUNK(cx)) {
-			int xoff = Figure_screen_offset(cx, scrolltx) - gwin->get_scrolltx_lo();
+			const int xoff = Figure_screen_offset(cx, scrolltx) - gwin->get_scrolltx_lo();
 			paint_chunk_flats(cx, cy, xoff, yoff);
 			if (cheat.in_map_editor())
 				Paint_chunk_outline(gwin,
@@ -234,9 +234,9 @@ int Game_render::paint_map(
 	}
 	// Now the flat RLE terrain.
 	for (cy = start_chunky; cy != stop_chunky; cy = INCR_CHUNK(cy)) {
-		int yoff = Figure_screen_offset(cy, scrollty) -  - gwin->get_scrollty_lo();
+		const int yoff = Figure_screen_offset(cy, scrollty) -  - gwin->get_scrollty_lo();
 		for (cx = start_chunkx; cx != stop_chunkx; cx = INCR_CHUNK(cx)) {
-			int xoff = Figure_screen_offset(cx, scrolltx) -  - gwin->get_scrolltx_lo();
+			const int xoff = Figure_screen_offset(cx, scrolltx) -  - gwin->get_scrolltx_lo();
 			paint_chunk_flat_rles(cx, cy, xoff, yoff);
 
 			if (cheat.in_map_editor())
@@ -247,7 +247,7 @@ int Game_render::paint_map(
 	}
 	// Draw the chunks' objects
 	//   diagonally NE.
-	int tmp_stopy = DECR_CHUNK(start_chunky);
+	const int tmp_stopy = DECR_CHUNK(start_chunky);
 	for (cy = start_chunky; cy != stop_chunky; cy = INCR_CHUNK(cy)) {
 		for (int dx = start_chunkx, dy = cy;
 		        dx != stop_chunkx && dy != tmp_stopy;
@@ -270,7 +270,7 @@ int Game_render::paint_map(
 
 	// Outline selected objects.
 	const Game_object_shared_vector &sel = cheat.get_selected();
-	int render_skip = gwin->get_render_skip_lift();
+	const int render_skip = gwin->get_render_skip_lift();
 	for (const auto& it : sel) {
 		Game_object *obj = it.get();
 		if (!obj->get_owner() && obj->get_lift() < render_skip)
@@ -355,7 +355,7 @@ void Game_window::paint(
 	if (!gx && !gy && gw == get_width() && gh == get_height() && main_actor) {
 		// Look for lights.
 		Actor *party[9];    // Get party, including Avatar.
-		int cnt = get_party(party, 1);
+		const int cnt = get_party(party, 1);
 		int carried_light = 0;
 		for (int i = 0; i < cnt; i++)
 			carried_light += Get_light_strength(party[i], main_actor, party[i]->get_light_source());
@@ -391,8 +391,8 @@ void Game_window::paint_lerped(int factor) {
 	if (factor < 0) factor = 0;
 	if (factor > 0x10000) factor = 0x10000;
 
-	int saved_scrolltx = scrolltx;
-	int saved_scrollty = scrollty;
+	const int saved_scrolltx = scrolltx;
+	const int saved_scrollty = scrollty;
 
 	scrolltx = scrolltx_l;
 	scrollty = scrollty_l;
@@ -525,11 +525,11 @@ int Game_render::paint_chunk_objects(
 void Game_render::paint_object(
     Game_object *obj
 ) {
-	int lift = obj->get_lift();
+	const int lift = obj->get_lift();
 	if (lift >= skip)
 		return;
 	obj->render_seq = render_seq;
-	Game_object::Game_object_set &deps = obj->get_dependencies();
+	const Game_object::Game_object_set &deps = obj->get_dependencies();
 	for (auto *dep : deps) {
 		if (dep && dep->render_seq != render_seq)
 			paint_object(dep);

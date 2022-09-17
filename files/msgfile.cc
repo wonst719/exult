@@ -135,7 +135,7 @@ bool Search_text_msg_section(IDataSource *in, const char *section) {
 	static const string sectionStart("%%section");
 	while (!in->eof()) {
 		std::string line;
-		size_t pos = in->getPos();
+		const size_t pos = in->getPos();
 		in->readline(line);
 		if (line.empty())
 			continue;   // Empty line.
@@ -216,7 +216,7 @@ void Write_msg_file_section(
     const char *section,
     vector<string> &items
 ) {
-	boost::io::ios_flags_saver flags(out);
+	const boost::io::ios_flags_saver flags(out);
 	out << "%%section " << section << hex << endl;
 	for (unsigned i = 0; i < items.size(); ++i)
 		if (!items[i].empty())

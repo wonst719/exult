@@ -177,7 +177,7 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 	buttons[id_has_ac].reset();
 
 	const auto& resolutionsref = fullscreen ? resolutions : win_resolutions;
-	uint32 current_res = make_resolution(gwin->get_win()->get_display_width(), gwin->get_win()->get_display_height());
+	const uint32 current_res = make_resolution(gwin->get_win()->get_display_width(), gwin->get_win()->get_display_height());
 
 	std::vector<std::string> restext;
 	restext.reserve(resolutionsref.size());
@@ -320,7 +320,7 @@ VideoOptions_gump::VideoOptions_gump()
 	buttons[id_high_dpi] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_high_dpi,
 	        enabledtext, highdpi, colx[2], rowy[2], 74);
 	config->value("config/video/share_video_settings", share_settings, false);
-	
+
 	std::vector<std::string> yesNO = {"No", "Yes"};
 #if !defined(__IPHONEOS__) && !defined(ANDROID)
 	buttons[id_share_settings] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_share_settings,

@@ -44,7 +44,7 @@ bool Frame_usecode_info::read(
 		quality = -1;
 	else
 		quality &= 255;
-	bool type = ReadInt(in) != 0;
+	const bool type = ReadInt(in) != 0;
 	if (type) {
 		usecode_name = ReadStr(in);
 		usecode = -1;

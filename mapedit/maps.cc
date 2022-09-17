@@ -88,7 +88,7 @@ void ExultStudio::new_map_dialog(
 ) {
 	GtkWidget *win = get_widget("newmap_dialog");
 	gtk_window_set_modal(GTK_WINDOW(win), true);
-	int highest = Find_highest_map();
+	const int highest = Find_highest_map();
 	set_spin("newmap_num", highest + 1, 1, 100);
 	set_entry("newmap_name", "", false);    // LATER.
 	set_spin("newmap_copy_num", 0, 0, highest);
@@ -132,7 +132,7 @@ C_EXPORT void on_newmap_ok_clicked(
 	char sname[128];
 	ExultStudio *studio = ExultStudio::get_instance();
 	GtkWidget *win = studio->get_widget("newmap_dialog");
-	int num = studio->get_spin("newmap_num");
+	const int num = studio->get_spin("newmap_num");
 
 	if (U7exists(Get_mapped_name("<PATCH>/", num, fname)) ||
 	        U7exists(Get_mapped_name("<STATIC>/", num, sname))) {
@@ -140,7 +140,7 @@ C_EXPORT void on_newmap_ok_clicked(
 		return;         // Leave dialog open.
 	}
 	U7mkdir(fname, 0755);       // Create map directory in 'patch'.
-	int frommap = studio->get_spin("newmap_copy_num");
+	const int frommap = studio->get_spin("newmap_copy_num");
 	if (studio->get_toggle("newmap_copy_flats"))
 		Copy_static_file(U7MAP, PATCH_U7MAP, frommap, num);
 	if (studio->get_toggle("newmap_copy_fixed")) {

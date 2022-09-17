@@ -63,7 +63,7 @@ void Gump_ToggleButton::unpush(
 
 bool Gump_ToggleTextButton::activate(int button) {
 	int delta;
-	int numselections = selections.size();
+	const int numselections = selections.size();
 	if (button == 1)
 		delta = 1;
 	else if (button == 3)

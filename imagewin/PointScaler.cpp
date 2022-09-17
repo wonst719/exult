@@ -36,23 +36,23 @@ public:
 	                  uint8 *pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src) {
 		ignore_unused_variable_warning(clamp_src);
 		// Source buffer pointers
-		int tpitch = tex->pitch / sizeof(uintS);
+		const int tpitch = tex->pitch / sizeof(uintS);
 		uintS *texel = static_cast<uintS *>(tex->pixels) + (sy * tpitch + sx);
 		uintS *tline_end = texel + sw;
 		uintS *tex_end = texel + sh * tpitch;
-		int tex_diff = tpitch - sw;
+		const int tex_diff = tpitch - sw;
 
 
 		// First detect integer up scalings, since they are 'easy'
-		bool x_intscale = ((dw / sw) * sw) == dw;
-		bool y_intscale = ((dh / sh) * sh) == dh;
+		const bool x_intscale = ((dw / sw) * sw) == dw;
+		const bool y_intscale = ((dh / sh) * sh) == dh;
 
 		//
 		// 2x
 		//
 		if ((sw * 2 == dw) && (sh * 2 == dh)) {
 			uint8 *pixel2 = pixel + pitch;
-			int p_diff    = (pitch * 2) - (dw * sizeof(uintX));
+			const int p_diff    = (pitch * 2) - (dw * sizeof(uintX));
 
 			// Src Loop Y
 			do {
@@ -81,16 +81,16 @@ public:
 		// Integer scaling, x and y
 		//
 		else if (x_intscale && y_intscale) {
-			int xf = dw / sw;
-			int yf = dh / sh;
+			const int xf = dw / sw;
+			const int yf = dh / sh;
 
 			uint8 *px_end = pixel + xf * sizeof(uintX);
 			uint8 *py_end = pixel + yf * pitch;
 
-			int block_w = xf * sizeof(uintX);
-			int block_h = pitch * yf;
-			int block_xdiff = pitch - block_w;
-			int p_diff = block_h - dw * sizeof(uintX);
+			const int block_w = xf * sizeof(uintX);
+			const int block_h = pitch * yf;
+			const int block_xdiff = pitch - block_w;
+			const int p_diff = block_h - dw * sizeof(uintX);
 
 			// Src Loop Y
 			do {

@@ -186,7 +186,7 @@ void AudioOptions_gump::rebuild_midi_driver_buttons() {
 	if (midi_ogg_enabled)
 		return;
 
-	unsigned int num_midi_drivers = MidiDriver::getDriverCount();
+	const unsigned int num_midi_drivers = MidiDriver::getDriverCount();
 	std::vector<std::string> midi_drivertext;
 	for (unsigned int i = 0; i < num_midi_drivers; i++)
 		midi_drivertext.emplace_back(MidiDriver::getDriverName(i));
@@ -242,13 +242,15 @@ void AudioOptions_gump::rebuild_mididriveroption_buttons() {
 	if (midi_driver != MidiDriver::getDriverCount()) s = MidiDriver::getDriverName(midi_driver);
 
 	if (s != "FMOpl" && s != "MT32Emu" && s != "Disabled") {
-		int string_size = 5;
 #ifdef MACOSX
+		int string_size = 5;
 		if (s == "Default" || s == "CoreAudio") {
 			if (midi_conversion > 3)
 				midi_conversion = 0;
 			string_size = 4;
 		}
+#else
+		const int string_size = 5;
 #endif
 		std::vector<std::string> midi_conversiontext = {"Fake MT32", "GM", "GS", "GS127"};
 		if (string_size == 5) {
@@ -277,7 +279,7 @@ void AudioOptions_gump::load_settings() {
 	std::string s;
 	audio_enabled = (Audio::get_ptr()->is_audio_enabled() ? 1 : 0);
 	midi_enabled = (Audio::get_ptr()->is_music_enabled() ? 1 : 0);
-	bool sfx_on = (Audio::get_ptr()->are_effects_enabled());
+	const bool sfx_on = (Audio::get_ptr()->are_effects_enabled());
 	speech_enabled = (Audio::get_ptr()->is_speech_enabled() ? 1 : 0);
 	speech_subtitles = (Audio::get_ptr()->is_speech_with_subs() ? 1 : 0);
 	midi_looping = (Audio::get_ptr()->is_music_looping_allowed() ? 1 : 0);
@@ -312,7 +314,7 @@ void AudioOptions_gump::load_settings() {
 
 		s = midi->get_midi_driver();
 		for (midi_driver = 0; midi_driver < MidiDriver::getDriverCount(); midi_driver++) {
-			std::string name = MidiDriver::getDriverName(midi_driver);
+			const std::string name = MidiDriver::getDriverName(midi_driver);
 			if (!Pentagram::strcasecmp(name.c_str(), s.c_str())) break;
 		}
 
@@ -353,8 +355,8 @@ void AudioOptions_gump::load_settings() {
 			config->set("config/audio/midi/use_oggs", "yes", true);
 			midi_driver = MidiDriver::getDriverCount();
 		} else for (midi_driver = 0; midi_driver < MidiDriver::getDriverCount(); midi_driver++) {
-				std::string name = MidiDriver::getDriverName(midi_driver);
-				if (!Pentagram::strcasecmp(name.c_str(), s.c_str())) break;
+			const std::string name = MidiDriver::getDriverName(midi_driver);
+			if (!Pentagram::strcasecmp(name.c_str(), s.c_str())) break;
 		}
 
 #ifdef ENABLE_MIDISFX
@@ -374,7 +376,7 @@ void AudioOptions_gump::load_settings() {
 	config->value("config/audio/midi/chorus/enabled", s, "no");
 	midi_reverb_chorus |= (s == "yes" ? 2 : 0);
 
-	std::string d = "config/disk/game/" + Game::get_gametitle() + "/waves";
+	const std::string d = "config/disk/game/" + Game::get_gametitle() + "/waves";
 	config->value(d.c_str(), s, "---");
 	if (have_roland_pack && s == rolandpack)
 		sfx_package = 0;
@@ -405,8 +407,8 @@ void AudioOptions_gump::load_settings() {
 
 AudioOptions_gump::AudioOptions_gump() : Modal_gump(nullptr, EXULT_FLX_AUDIOOPTIONS_SHP, SF_EXULT_FLX) {
 	set_object_area(TileRect(0, 0, 0, 0), 8, 187); //++++++ ???
-	Exult_Game game = Game::get_game_type();
-	std::string title = Game::get_gametitle();
+	const Exult_Game game = Game::get_game_type();
+	const std::string title = Game::get_gametitle();
 	have_config_pack  = Audio::have_config_sfx(title, &configpack);
 	have_roland_pack  = Audio::have_roland_sfx(game, &rolandpack);
 	have_blaster_pack = Audio::have_sblaster_sfx(game, &blasterpack);
@@ -490,7 +492,7 @@ void AudioOptions_gump::save_settings() {
 	config->set("config/audio/midi/reverb/enabled", (midi_reverb_chorus & 1) ? "yes" : "no", false);
 	config->set("config/audio/midi/looping", midi_looping ? "yes" : "no", false);
 
-	std::string d = "config/disk/game/" + Game::get_gametitle() + "/waves";
+	const std::string d = "config/disk/game/" + Game::get_gametitle() + "/waves";
 	std::string waves;
 	if (!gwin->is_in_exult_menu()) {
 		int i = 0;

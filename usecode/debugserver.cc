@@ -49,7 +49,7 @@ using std::ios;
 void Handle_client_debug_message(int &fd) {
 	unsigned char data[Exult_server::maxlength];
 	Exult_server::Msg_type id;
-	int datalen = Exult_server::Receive_data(fd, id, data, sizeof(data));
+	const int datalen = Exult_server::Receive_data(fd, id, data, sizeof(data));
 	if (datalen < 0)
 		return;
 	switch (id) {
@@ -97,7 +97,7 @@ void Handle_debug_message(unsigned char *data, int datalen) {
 			unsigned char d[3];
 			d[0] = static_cast<unsigned char>(Exult_server::dbg_callstack);
 			unsigned char *ptr = &d[1];
-			int callstacksize = uci->get_callstack_size();
+			const int callstacksize = uci->get_callstack_size();
 			Write2(ptr, callstacksize);
 			Exult_server::Send_data(client_socket,
 			                        Exult_server::usecode_debugging,
@@ -118,11 +118,11 @@ void Handle_debug_message(unsigned char *data, int datalen) {
 			break;
 		}
 		case Exult_server::dbg_get_stack: {
-			Usecode_value zeroval(0);
+			const Usecode_value zeroval(0);
 			stringstream dataio(ios::in|ios::out|ios::binary);
 			OStreamDataSource ds(&dataio);
 			ds.write1(static_cast<unsigned char>(Exult_server::dbg_stack));
-			int stacksize = uci->get_stack_size();
+			const int stacksize = uci->get_stack_size();
 			ds.write2(stacksize);
 			for (int i = 0; i < stacksize; i++) {
 				Usecode_value *val = uci->peek_stack(i);
@@ -140,7 +140,7 @@ void Handle_debug_message(unsigned char *data, int datalen) {
 			}
 			std::string data(dataio.str());
 			auto *dptr = reinterpret_cast<unsigned char *>(&data[0]);
-			int datalen = std::min(static_cast<int>(data.size()),
+			const int datalen = std::min(static_cast<int>(data.size()),
 			                       Exult_server::maxlength);
 			Exult_server::Send_data(client_socket,
 			                        Exult_server::usecode_debugging,
@@ -171,8 +171,8 @@ void Handle_debug_message(unsigned char *data, int datalen) {
 	}
 	case Exult_server::dbg_set_location_bp: {
 		ptr++;
-		int funcid = Read4(ptr);
-		int ip = Read4(ptr);
+		const int funcid = Read4(ptr);
+		const int ip = Read4(ptr);
 
 		std::cout << "Setting breakpoint at " << std::hex << std::setfill('0')
 		          << std::setw(4) << funcid << ", " << std::setw(4) << ip
@@ -180,7 +180,7 @@ void Handle_debug_message(unsigned char *data, int datalen) {
 
 		// +++++ check for duplicates?
 
-		int breakpoint_id = uci->set_location_breakpoint(funcid, ip);
+		const int breakpoint_id = uci->set_location_breakpoint(funcid, ip);
 		unsigned char d[13];
 		d[0] = static_cast<unsigned char>(Exult_server::dbg_set_location_bp);
 		unsigned char *dptr = &d[1];
@@ -194,8 +194,8 @@ void Handle_debug_message(unsigned char *data, int datalen) {
 	}
 	case Exult_server::dbg_clear_breakpoint: {
 		ptr++;
-		int breakpoint_id = Read4(ptr);
-		bool ok = uci->clear_breakpoint(breakpoint_id);
+		const int breakpoint_id = Read4(ptr);
+		const bool ok = uci->clear_breakpoint(breakpoint_id);
 		if (ok) {
 			// reply
 			Exult_server::Send_data(client_socket,

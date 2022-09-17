@@ -150,7 +150,7 @@ Game_map::~Game_map(
 void Game_map::init_chunks(
 ) {
 	int num_chunk_terrains;
-	bool patch_exists = is_system_path_defined("<PATCH>");
+	const bool patch_exists = is_system_path_defined("<PATCH>");
 	if (patch_exists && U7exists(PATCH_U7CHUNKS))
 		chunks = U7open_in(PATCH_U7CHUNKS);
 	else try {
@@ -222,8 +222,8 @@ void Game_map::init(
 			std::fill(std::begin(buf), std::end(buf), 0);
 		else
 			pU7map->read(reinterpret_cast<char *>(buf), sizeof(buf));
-		int scy = 16 * (schunk / 12); // Get abs. chunk coords.
-		int scx = 16 * (schunk % 12);
+		const int scy = 16 * (schunk / 12); // Get abs. chunk coords.
+		const int scx = 16 * (schunk % 12);
 		const uint8 *mapdata = buf;
 		// Go through chunks.
 		for (int cy = 0; cy < 16; cy++)
@@ -251,7 +251,7 @@ void Game_map::init(
 void Game_map::clear_chunks(
 ) {
 	if (chunk_terrains) {
-		int cnt = chunk_terrains->size();
+		const int cnt = chunk_terrains->size();
 		for (int i = 0; i < cnt; i++)
 			delete (*chunk_terrains)[i];
 		delete chunk_terrains;
@@ -297,28 +297,28 @@ void Game_map::clear(
 void Game_map::read_map_data(
 ) {
 	Game_window *gwin = Game_window::get_instance();
-	int scrolltx = gwin->get_scrolltx();
-	int scrollty = gwin->get_scrollty();
-	int w = gwin->get_width();
-	int h = gwin->get_height();
+	const int scrolltx = gwin->get_scrolltx();
+	const int scrollty = gwin->get_scrollty();
+	const int w = gwin->get_width();
+	const int h = gwin->get_height();
 	// Start one tile to left.
-	int firstsx = (scrolltx - 1) / c_tiles_per_schunk;
-	int firstsy = (scrollty - 1) / c_tiles_per_schunk;
+	const int firstsx = (scrolltx - 1) / c_tiles_per_schunk;
+	const int firstsy = (scrollty - 1) / c_tiles_per_schunk;
 	// End 8 tiles to right.
-	int lastsx = (scrolltx + (w + c_tilesize - 2) / c_tilesize +
+	const int lastsx = (scrolltx + (w + c_tilesize - 2) / c_tilesize +
 	              c_tiles_per_chunk / 2) / c_tiles_per_schunk;
-	int lastsy = (scrollty + (h + c_tilesize - 2) / c_tilesize +
+	const int lastsy = (scrollty + (h + c_tilesize - 2) / c_tilesize +
 	              c_tiles_per_chunk / 2) / c_tiles_per_schunk;
 	// Watch for wrapping.
-	int stopsx = (lastsx + 1) % c_num_schunks;
-	int stopsy = (lastsy + 1) % c_num_schunks;
+	const int stopsx = (lastsx + 1) % c_num_schunks;
+	const int stopsy = (lastsy + 1) % c_num_schunks;
 	// Read in "map", "ifix" objects for
 	//  all visible superchunks.
 	for (int sy = firstsy; sy != stopsy; sy = (sy + 1) % c_num_schunks)
 		for (int sx = firstsx; sx != stopsx;
 		        sx = (sx + 1) % c_num_schunks) {
 			// Figure superchunk #.
-			int schunk = 12 * sy + sx;
+			const int schunk = 12 * sy + sx;
 			// Read it if necessary.
 			if (!schunk_read[schunk])
 				get_superchunk_objects(schunk);
@@ -332,8 +332,8 @@ void Game_map::read_map_data(
 void Game_map::get_map_objects(
     int schunk          // Superchunk # (0-143).
 ) {
-	int scy = 16 * (schunk / 12); // Get abs. chunk coords.
-	int scx = 16 * (schunk % 12);
+	const int scy = 16 * (schunk / 12); // Get abs. chunk coords.
+	const int scx = 16 * (schunk % 12);
 	// Go through chunks.
 	for (int cy = 0; cy < 16; cy++)
 		for (int cx = 0; cx < 16; cx++)
@@ -350,7 +350,7 @@ void Game_map::get_chunk_objects(
 ) {
 	// Get list we'll store into.
 	Map_chunk *chunk = get_chunk(cx, cy);
-	int chunk_num = terrain_map[cx][cy];
+	const int chunk_num = terrain_map[cx][cy];
 	Chunk_terrain *ter = get_terrain(chunk_num);
 	chunk->set_terrain(ter);
 }
@@ -363,7 +363,7 @@ void Game_map::get_all_terrain(
 ) {
 	if (read_all_terrain)
 		return;         // Already done.
-	int num_chunk_terrains = chunk_terrains->size();
+	const int num_chunk_terrains = chunk_terrains->size();
 	for (int i = 0; i < num_chunk_terrains; i++)
 		if (!(*chunk_terrains)[i])
 			read_terrain(i);
@@ -408,7 +408,7 @@ char *Game_map::get_schunk_file_name(
     char *fname         // Name is stored here.
 ) {
 	get_mapped_name(prefix, fname);
-	int len = strlen(fname);
+	const int len = strlen(fname);
 	constexpr static const char hexLUT[] = "0123456789abcdef";
 	fname[len] = hexLUT[schunk / 16];
 	fname[len + 1] = hexLUT[schunk % 16];
@@ -421,8 +421,8 @@ char *Game_map::get_schunk_file_name(
  */
 
 static bool New_shapes() {
-	int u7nshapes = GAME_SI ? 1036 : 1024;
-	int nshapes =
+	const int u7nshapes = GAME_SI ? 1036 : 1024;
+	const int nshapes =
 	    Shape_manager::get_instance()->get_shapes().get_num_shapes();
 	return nshapes > u7nshapes;
 }
@@ -434,7 +434,7 @@ static bool New_shapes() {
 void Game_map::write_chunk_terrains(
 ) {
 	const int ntiles = c_tiles_per_chunk * c_tiles_per_chunk;
-	int cnt = chunk_terrains->size();
+	const int cnt = chunk_terrains->size();
 	int i;              // Any terrains modified?
 	for (i = 0; i < cnt; i++)
 		if ((*chunk_terrains)[i] &&
@@ -449,7 +449,7 @@ void Game_map::write_chunk_terrains(
 			throw file_write_exception(U7CHUNKS);
 		auto& ochunks = *pOchunks;
 		v2_chunks = New_shapes();
-		int nbytes = v2_chunks ? 3 : 2;
+		const int nbytes = v2_chunks ? 3 : 2;
 		if (v2_chunks)
 			ochunks.write(v2hdr, sizeof(v2hdr));
 		for (i = 0; i < cnt; i++) {
@@ -496,8 +496,8 @@ void Game_map::write_static(
 		throw file_write_exception(U7MAP);
 	auto& u7map = *pU7map;
 	for (schunk = 0; schunk < c_num_schunks * c_num_schunks; schunk++) {
-		int scy = 16 * (schunk / 12); // Get abs. chunk coords.
-		int scx = 16 * (schunk % 12);
+		const int scy = 16 * (schunk / 12); // Get abs. chunk coords.
+		const int scx = 16 * (schunk % 12);
 		uint8 buf[16 * 16 * 2];
 		uint8 *mapdata = buf;
 		// Go through chunks.
@@ -524,11 +524,11 @@ void Game_map::write_ifix_objects(
 	OFileDataSource ifix(get_schunk_file_name(PATCH_U7IFIX, schunk, fname));
 	// +++++Use game title.
 	const int count = c_chunks_per_schunk * c_chunks_per_schunk;
-	Flex_header::Flex_vers vers = !New_shapes() ? Flex_header::orig : Flex_header::exult_v2;
+	const Flex_header::Flex_vers vers = !New_shapes() ? Flex_header::orig : Flex_header::exult_v2;
 	bool v2 = vers == Flex_header::exult_v2;
 	Flex_writer writer(ifix, "Exult",  count, vers);
-	int scy = 16 * (schunk / 12); // Get abs. chunk coords.
-	int scx = 16 * (schunk % 12);
+	const int scy = 16 * (schunk / 12); // Get abs. chunk coords.
+	const int scx = 16 * (schunk % 12);
 	// Go through chunks.
 	for (int cy = 0; cy < 16; cy++) {
 		for (int cx = 0; cx < 16; cx++) {
@@ -558,16 +558,16 @@ void Game_map::get_ifix_objects(
 		return;
 	}
 	FlexFile flex(fname);
-	int vers = static_cast<int>(flex.get_vers());
-	int scy = 16 * (schunk / 12); // Get abs. chunk coords.
-	int scx = 16 * (schunk % 12);
+	const int vers = static_cast<int>(flex.get_vers());
+	const int scy = 16 * (schunk / 12); // Get abs. chunk coords.
+	const int scx = 16 * (schunk % 12);
 	// Go through chunks.
 	for (int cy = 0; cy < 16; cy++) {
 		for (int cx = 0; cx < 16; cx++) {
 			// Get to index entry for chunk.
-			int chunk_num = cy * 16 + cx;
+			const int chunk_num = cy * 16 + cx;
 			size_t len;
-			uint32 offset = flex.get_entry_info(chunk_num, len);
+			const uint32 offset = flex.get_entry_info(chunk_num, len);
 			if (len)
 				get_ifix_chunk_objects(&ifix, vers, offset,
 				                       len, scx + cx, scy + cy);
@@ -594,7 +594,7 @@ void Game_map::get_ifix_chunk_objects(
 	// Get object list for chunk.
 	Map_chunk *olist = get_chunk(cx, cy);
 	if (static_cast<Flex_header::Flex_vers>(vers) == Flex_header::orig) {
-		int cnt = len / 4;
+		const int cnt = len / 4;
 		for (int i = 0; i < cnt; i++, ent += 4) {
 			int tx = (ent[0] >> 4) & 0xf;
 			int ty = ent[0] & 0xf;
@@ -610,7 +610,7 @@ void Game_map::get_ifix_chunk_objects(
 		}
 	} else if (static_cast<Flex_header::Flex_vers>(vers) == Flex_header::exult_v2) {
 		// b0 = tx,ty, b1 = lift, b2-3 = shnum, b4=frnum
-		int cnt = len / 5;
+		const int cnt = len / 5;
 		for (int i = 0; i < cnt; i++, ent += 5) {
 			int tx = (ent[0] >> 4) & 0xf;
 			int ty = ent[0] & 0xf;
@@ -647,7 +647,7 @@ void Game_map::write_attributes(
 ) {
 	int len = 0;            // Figure total length.
 	int i;
-	int cnt = attlist.size();
+	const int cnt = attlist.size();
 	if (!cnt)
 		return;
 	for (i = 0; i < cnt; ++i) {
@@ -659,7 +659,7 @@ void Game_map::write_attributes(
 	ireg->write2(len);
 	for (i = 0; i < cnt; ++i) {
 		const char *att = attlist[i].first;
-		int val = attlist[i].second;
+		const int val = attlist[i].second;
 		ireg->write(att, strlen(att) + 1);
 		ireg->write2(val);
 	}
@@ -678,7 +678,7 @@ void Game_map::write_scheduled(
 	        scr = Usecode_script::find(obj, scr)) {
 		ostringstream outbuf(ios::out);
 		OStreamDataSource nbuf(&outbuf);
-		int len = scr->save(&nbuf);
+		const int len = scr->save(&nbuf);
 		if (len < 0)
 			cerr << "Error saving Usecode script" << endl;
 		else if (len > 0) {
@@ -701,7 +701,7 @@ int Game_map::write_string(
     ODataSource *ireg,       // Null if we just want length.
     const char *str
 ) {
-	int len = 1 + strlen(str);
+	const int len = 1 + strlen(str);
 	if (ireg) {
 		ireg->write1(IREG_SPECIAL);
 		ireg->write1(IREG_STRING);
@@ -758,8 +758,8 @@ void Game_map::write_ireg_objects(
     int schunk,         // Superchunk # (0-143).
     ODataSource *ireg
 ) {
-	int scy = 16 * (schunk / 12); // Get abs. chunk coords.
-	int scx = 16 * (schunk % 12);
+	const int scy = 16 * (schunk / 12); // Get abs. chunk coords.
+	const int scx = 16 * (schunk % 12);
 	// Go through chunks.
 	for (int cy = 0; cy < 16; cy++)
 		for (int cx = 0; cx < 16; cx++) {
@@ -800,8 +800,8 @@ void Game_map::get_ireg_objects(
 			return;         // Just don't show them.
 		}
 	}
-	int scy = 16 * (schunk / 12); // Get abs. chunk coords.
-	int scx = 16 * (schunk % 12);
+	const int scy = 16 * (schunk / 12); // Get abs. chunk coords.
+	const int scx = 16 * (schunk % 12);
 	read_ireg_objects(ireg.get(), scx, scy);
 	// A fixup:
 	if (schunk == 10 * 12 + 11 && Game::get_game_type() == SERPENT_ISLE) {
@@ -826,8 +826,8 @@ void Read_special_ireg(
     IDataSource *ireg,
     Game_object *obj        // Last object read.
 ) {
-	int type = ireg->read1();       // Get type.
-	int len = ireg->read2();        // Length of rest.
+	const int type = ireg->read1();       // Get type.
+	const int len = ireg->read2();        // Length of rest.
 	auto data = ireg->readN(len);
 	if (!obj) {
 		// Something went wrong if we get here, but still.
@@ -863,7 +863,7 @@ void Game_map::read_special_ireg(
 ) {
 	while (ireg->peek() == IREG_SPECIAL && !ireg->eof()) {
 		ireg->read1();      // Eat the IREG_SPECIAL.
-		unsigned char type = ireg->peek();
+		const unsigned char type = ireg->peek();
 		if (type == IREG_ENDMARK) {
 			// End of list.
 			ireg->read1();
@@ -929,10 +929,10 @@ void Game_map::read_ireg_objects(
 		}
 		// Get copy of flags.
 		unsigned long oflags = flags & ~(1 << Obj_flags::is_temporary);
-		int testlen = entlen - extended;
+		const int testlen = entlen - extended;
 		if (testlen != 6 && testlen != 10 && testlen != 12 &&
 		        testlen != 13 && testlen != 14 && testlen != 18) {
-			long pos = ireg->getPos();
+			const long pos = ireg->getPos();
 			cout << "Unknown entlen " << testlen << " at pos. " <<
 			     pos << endl;
 			ireg->seek(pos + entlen);
@@ -940,8 +940,8 @@ void Game_map::read_ireg_objects(
 		}
 		unsigned char *entry = &entbuf[0];  // Get entry.
 		ireg->read(reinterpret_cast<char *>(entry), entlen);
-		int cx = entry[0] >> 4; // Get chunk indices within schunk.
-		int cy = entry[1] >> 4;
+		const int cx = entry[0] >> 4; // Get chunk indices within schunk.
+		const int cy = entry[1] >> 4;
 		// Get coord. #'s where shape goes.
 		int tilex;
 		int tiley;
@@ -974,7 +974,7 @@ void Game_map::read_ireg_objects(
 		}
 
 		auto read_lift = [extended_lift](unsigned char val) {
-			unsigned int lift = nibble_swap(val);
+			const unsigned int lift = nibble_swap(val);
 			if (extended_lift) {
 				return lift;
 			}
@@ -982,9 +982,9 @@ void Game_map::read_ireg_objects(
 		};
 		// An "egg"?
 		if (info.get_shape_class() == Shape_info::hatchable) {
-			bool anim = info.is_animated() || info.has_sfx();
+			const bool anim = info.is_animated() || info.has_sfx();
 			const unsigned int lift = read_lift(entry[9]);
-			Egg_object_shared egg = Egg_object::create_egg(entry, entlen,
+			const Egg_object_shared egg = Egg_object::create_egg(entry, entlen,
 			                  anim, shnum, frnum, tilex, tiley, lift);
 			get_chunk(scx + cx, scy + cy)->add_egg(egg.get());
 			last_obj = egg.get();
@@ -1010,7 +1010,7 @@ void Game_map::read_ireg_objects(
 			}
 		} else if (info.is_body_shape()) {
 			// NPC's body.
-			int extbody = testlen == 13 ? 1 : 0;
+			const int extbody = testlen == 13 ? 1 : 0;
 			const unsigned int type = entry[4] + 256 * entry[5];
 			const unsigned int lift = read_lift(entry[9 + extbody]);
 			quality = entry[7];
@@ -1025,7 +1025,7 @@ void Game_map::read_ireg_objects(
 				npc_num = -1;
 			if (!npc_num)   // Avatar has no body.
 				npc_num = -1;
-			Dead_body_shared b = std::make_shared<Dead_body>(shnum, frnum,
+			const Dead_body_shared b = std::make_shared<Dead_body>(shnum, frnum,
 			                             tilex, tiley, lift, npc_num);
 			obj = b;
 			if (npc_num > 0)
@@ -1044,7 +1044,7 @@ void Game_map::read_ireg_objects(
 			    Get_quality_flags(entry[11]);
 			if (info.get_shape_class() == Shape_info::virtue_stone) {
 				// Virtue stone?
-				std::shared_ptr<Virtue_stone_object> v =
+				const std::shared_ptr<Virtue_stone_object> v =
 				    std::make_shared<Virtue_stone_object>(shnum, frnum, tilex,
 				                            tiley, lift);
 				v->set_target_pos(entry[4], entry[5], entry[6],
@@ -1053,7 +1053,7 @@ void Game_map::read_ireg_objects(
 				obj = v;
 				type = 0;
 			} else if (info.get_shape_class() == Shape_info::barge) {
-				std::shared_ptr<Barge_object> b =
+				const std::shared_ptr<Barge_object> b =
 					std::make_shared<Barge_object>(
 				        shnum, frnum, tilex, tiley, lift,
 				    	entry[4], entry[5],
@@ -1093,8 +1093,8 @@ void Game_map::read_ireg_objects(
 		} else {
 			// Just to shut up spurious warnings by compilers and static
 			// analyzers.
-			boost::io::ios_flags_saver sflags(cerr);
-			boost::io::ios_fill_saver sfill(cerr);
+			const boost::io::ios_flags_saver sflags(cerr);
+			const boost::io::ios_fill_saver sfill(cerr);
 			std::cerr << "Error: Invalid IREG entry on chunk (" << scx << ", "
 			          << scy << "): extended = " << extended
 			          << ", extended_lift = " << extended_lift << ", entlen = "
@@ -1265,8 +1265,8 @@ bool Game_map::locate_terrain(
 		cnum = (cx == -1) ? 0 : cy * c_num_chunks + cx + 1;
 	}
 	while (cnum != cstop) {
-		int chunky = cnum / c_num_chunks;
-		int chunkx = cnum % c_num_chunks;
+		const int chunky = cnum / c_num_chunks;
+		const int chunkx = cnum % c_num_chunks;
 		if (terrain_map[chunkx][chunky] == tnum) {
 			// Return chunk # found.
 			cx = chunkx;
@@ -1345,9 +1345,9 @@ bool Game_map::insert_terrain(
 		unsigned char *data = &buf[0];
 		for (int ty = 0; ty < c_tiles_per_chunk; ty++)
 			for (int tx = 0; tx < c_tiles_per_chunk; tx++) {
-				ShapeID id = ter->get_flat(tx, ty);
-				int shnum = id.get_shapenum();
-				int frnum = id.get_framenum();
+				const ShapeID id = ter->get_flat(tx, ty);
+				const int shnum = id.get_shapenum();
+				const int frnum = id.get_framenum();
 				if (v2_chunks) {
 					*data++ = shnum & 0xff;
 					*data++ = (shnum >> 8) & 0xff;
@@ -1364,7 +1364,7 @@ bool Game_map::insert_terrain(
 	// Insert in list.
 	chunk_terrains->insert(chunk_terrains->begin() + tnum + 1, new_terrain);
 	// Indicate terrains are modified.
-	int num_chunk_terrains = chunk_terrains->size();
+	const int num_chunk_terrains = chunk_terrains->size();
 	for (int i = tnum + 1; i < num_chunk_terrains; i++)
 		(*chunk_terrains)[i]->set_modified();
 	chunk_terrains_modified = true;
@@ -1399,7 +1399,7 @@ bool Game_map::delete_terrain(
 ) {
 	if (tnum < 0 || static_cast<unsigned>(tnum) >= chunk_terrains->size())
 		return false;       // Out of bounds.
-	int sz = chunk_terrains->size();
+	const int sz = chunk_terrains->size();
 	delete (*chunk_terrains)[tnum];
 	for (int i = tnum + 1; i < sz; i++) {
 		// Move the rest downwards.
@@ -1433,7 +1433,7 @@ bool Game_map::delete_terrain(
 
 void Game_map::commit_terrain_edits(
 ) {
-	int num_terrains = chunk_terrains->size();
+	const int num_terrains = chunk_terrains->size();
 	// Create list of flags.
 	std::vector<unsigned char> ters(num_terrains, 0);
 	// Commit edits.
@@ -1465,7 +1465,7 @@ void Game_map::commit_terrain_edits(
 
 void Game_map::abort_terrain_edits(
 ) {
-	int num_terrains = chunk_terrains->size();
+	const int num_terrains = chunk_terrains->size();
 	// Abort edits.
 	for (int i = 0; i < num_terrains; i++)
 		if ((*chunk_terrains)[i])
@@ -1498,7 +1498,7 @@ void Game_map::find_unused_shapes(
 	}
 	cout << endl;
 	int maxbits = foundlen * 8; // Total #bits in 'found'.
-	int nshapes = sman->get_shapes().get_num_shapes();
+	const int nshapes = sman->get_shapes().get_num_shapes();
 	if (maxbits > nshapes)
 		maxbits = nshapes;
 	// Go through chunks.
@@ -1508,7 +1508,7 @@ void Game_map::find_unused_shapes(
 			Recursive_object_iterator all(chunk->get_objects());
 			Game_object *obj;
 			while ((obj = all.get_next()) != nullptr) {
-				int shnum = obj->get_shapenum();
+				const int shnum = obj->get_shapenum();
 				if (shnum >= 0 && shnum < maxbits)
 					found[shnum / 8] |= (1 << (shnum % 8));
 			}
@@ -1521,7 +1521,7 @@ void Game_map::find_unused_shapes(
 			found[i / 8] |= (1 << (i % 8));
 		const Weapon_info *winf = info.get_weapon_info();
 		if (winf) {     // Get projectiles for weapons.
-			int proj = winf->get_projectile();
+			const int proj = winf->get_projectile();
 			if (proj > 0 && proj < maxbits)
 				found[proj / 8] |= (1 << (proj % 8));
 		}
@@ -1622,9 +1622,9 @@ Game_object *Game_map::locate_shape(
 void Game_map::create_minimap(Shape *minimaps, const unsigned char *chunk_pixels) {
 	std::vector<unsigned char> pixels(c_num_chunks * c_num_chunks);
 	for (int cy = 0; cy < c_num_chunks; ++cy) {
-		int yoff = cy * c_num_chunks;
+		const int yoff = cy * c_num_chunks;
 		for (int cx = 0; cx < c_num_chunks; ++cx) {
-			int chunk_num = terrain_map[cx][cy];
+			const int chunk_num = terrain_map[cx][cy];
 			pixels[yoff + cx] = chunk_pixels[chunk_num];
 		}
 	}
@@ -1644,7 +1644,7 @@ void Game_map::create_minimap(Shape *minimaps, const unsigned char *chunk_pixels
 bool Game_map::write_minimap() {
 	char msg[80];
 	// A pixel for each possible chunk.
-	int num_chunks = chunk_terrains->size();
+	const int num_chunks = chunk_terrains->size();
 	auto chunk_pixels = std::make_unique<unsigned char[]>(num_chunks);
 	unsigned char *ptr = chunk_pixels.get();
 	Game_window *gwin = Game_window::get_instance();
@@ -1659,8 +1659,8 @@ bool Game_map::write_minimap() {
 	for (auto *ter : *chunk_terrains) {
 		Image_buffer8 *ibuf = ter->get_rendered_flats();
 		unsigned char *terbits = ibuf->get_bits();
-		int w = ibuf->get_width();
-		int h = ibuf->get_height();
+		const int w = ibuf->get_width();
+		const int h = ibuf->get_height();
 		unsigned long r = 0;
 		unsigned long g = 0;
 		unsigned long b = 0;
@@ -1679,7 +1679,7 @@ bool Game_map::write_minimap() {
 	}
 	eman->remove_text_effects();
 	const vector<Game_map *> &maps = gwin->get_maps();
-	int nmaps = maps.size();
+	const int nmaps = maps.size();
 	Shape shape;
 	for (int i = 0; i < nmaps; ++i) {
 		snprintf(msg, sizeof(msg), "Creating minimap %d", i);
@@ -1732,7 +1732,7 @@ void Game_map::cache_out(int cx, int cy) {
 	for (sy = 0; sy < 12; sy++) for (sx = 0; sx < 12; sx++) {
 		if (chunk_flags[sy][sx]) continue;
 
-		int schunk = sy * 12 + sx;
+		const int schunk = sy * 12 + sx;
 		if (schunk_read[schunk] && !schunk_modified[schunk]) cache_out_schunk(schunk);
 	}
 }
@@ -1743,8 +1743,8 @@ void Game_map::cache_out_schunk(int schunk) {
 	const int scx = 16 * (schunk % 12);
 	int cy;
 	int cx;
-	bool save_map_modified = map_modified;
-	bool save_terrain_modified = chunk_terrains_modified;
+	const bool save_map_modified = map_modified;
+	const bool save_terrain_modified = chunk_terrains_modified;
 
 	if (schunk_modified[schunk])
 		return;         // NEVER cache out modified chunks.
@@ -1760,7 +1760,7 @@ void Game_map::cache_out_schunk(int schunk) {
 	// Go through chunks and get all the items
 	for (cy = 0; cy < 16; cy++) {
 		for (cx = 0; cx < 16; cx++) {
-			int size = get_chunk_unsafe(scx + cx, scy + cy)->get_obj_actors(removes, actors);
+			const int size = get_chunk_unsafe(scx + cx, scy + cy)->get_obj_actors(removes, actors);
 
 			if (size < 0) {
 #ifdef DEBUG

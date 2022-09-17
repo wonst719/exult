@@ -227,11 +227,11 @@ public:
 	}
 	// Clip rectangle to window's.
 	TileRect clip_to_game(TileRect const &r) const {
-		TileRect wr = get_game_rect();
+		const TileRect wr = get_game_rect();
 		return r.intersect(wr);
 	}
 	TileRect clip_to_win(TileRect const &r) const {
-		TileRect wr = get_full_rect();
+		const TileRect wr = get_full_rect();
 		return r.intersect(wr);
 	}
 	// Resize event occurred.

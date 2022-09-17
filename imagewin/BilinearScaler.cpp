@@ -46,11 +46,11 @@ public:
 		else if (!(sh % 4) && !(sw % 4)) {
 			return BilinearScalerInternal_Arb<uintX, Manip, uintS>(tex, sx, sy, sw, sh, pixel, dw, dh, pitch, clamp_src);
 		} else {
-			int ow = sw & 3;
+			const int ow = sw & 3;
 			dw -= ow * dw / sw;
 			sw -= ow;
 
-			int oh = sh & 3;
+			const int oh = sh & 3;
 			dh -= oh * dh / sh;
 			sh -= oh;
 

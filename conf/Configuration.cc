@@ -97,18 +97,18 @@ void    Configuration::set(const string &key, const string &value, bool write_ou
 }
 
 void    Configuration::set(const char *key, const char *value, bool write_out) {
-	string  k(key);
-	string  v(value);
-	set(k, v, write_out);
+	const string  k(key);
+	const string  v(value);
+	set(key, value, write_out);
 }
 
 void    Configuration::set(const char *key, const string &value, bool write_out) {
-	string  k(key);
+	const string  k(key);
 	set(k, value, write_out);
 }
 
 void    Configuration::set(const char *key, int value, bool write_out) {
-	string  k(key);
+	const string  k(key);
 	string  v;
 	char    buf[32];
 
@@ -184,10 +184,10 @@ bool    Configuration::read_config_file(const string &input_filename, const stri
 				     << "' is being copied to file '" << fname
 				     << "' and will no longer be used." << endl;
 				try {
-					size_t pos = fname.find_last_of("/\\");
+					const size_t pos = fname.find_last_of("/\\");
 					if (pos != string::npos) {
 						// First, try to make the directory.
-						std::string path = fname.substr(0, pos);
+						const std::string path = fname.substr(0, pos);
 						U7mkdir(path.c_str(), 0755);
 					}
 					U7copy(input_filename.c_str(), fname.c_str());
@@ -283,7 +283,7 @@ std::vector<string> Configuration::listkeys(const string &key, bool longformat) 
 }
 
 std::vector<string> Configuration::listkeys(const char *key, bool longformat) {
-	string s(key);
+	const string s(key);
 	return listkeys(s, longformat);
 }
 

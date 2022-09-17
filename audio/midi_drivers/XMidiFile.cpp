@@ -990,7 +990,7 @@ int XMidiFile::ConvertNote (const int time, const unsigned char status, IDataSou
 	// XMI Note On handling
 
 	// Get the duration
-	int i = GetVLQ (source, delta);
+	const int i = GetVLQ (source, delta);
 
 	// Set the duration
 	current->ex.note_on.duration = delta;
@@ -1155,7 +1155,7 @@ int XMidiFile::ConvertFiletoList (IDataSource *source, const bool is_xmi, first_
 			case MIDI_STATUS_SYSEX:
 			if (status == 0xFF)
 			{
-				int	pos = source->getPos();
+				const int	pos = source->getPos();
 				uint32	data = source->read1();
 
 				if (data == 0x2F)					// End, of track
@@ -1216,10 +1216,10 @@ int XMidiFile::ExtractTracksFromXmi (IDataSource *source)
 		x_patch_bank_cur = nullptr;
 		memset(&fs, 0, sizeof(fs));
 
-		int begin = source->getPos ();
+		const int begin = source->getPos ();
 
 		// Convert it
-		int chan_mask = ConvertFiletoList (source, true, fs);
+		const int chan_mask = ConvertFiletoList (source, true, fs);
 
 		// Apply the first state
 //		ApplyFirstState(fs, chan_mask);
@@ -1274,7 +1274,7 @@ int XMidiFile::ExtractTracksFromMid (IDataSource *source, const uint32 ppqn, con
 			continue;
 		}
 
-		int begin = source->getPos ();
+		const int begin = source->getPos ();
 
 		// Convert it
 		chan_mask |= ConvertFiletoList (source, false, fs);
@@ -1315,7 +1315,7 @@ int XMidiFile::ExtractTracksFromMid (IDataSource *source, const uint32 ppqn, con
 
 int XMidiFile::ExtractTracks (IDataSource *source)
 {
-	int format_hint = convert_type;
+	const int format_hint = convert_type;
 
 	if (convert_type >= XMIDIFILE_HINT_U7VOICE_MT_FILE)
 		convert_type = XMIDIFILE_CONVERT_NOCONVERSION;
@@ -1347,7 +1347,7 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 	config->value("config/audio/midi/volume_curve",s,"---");
 	if (s == "---") config->value("config/audio/midi/gamma",s,"1");
 	VolumeCurve.set_gamma (atof(s.c_str()));
-	int igam = std::lround(VolumeCurve.get_gamma()*10000);
+	const int igam = std::lround(VolumeCurve.get_gamma()*10000);
 	char buf[32];
 	snprintf (buf, 32, "%d.%04d", igam/10000, igam%10000);
 	config->set("config/audio/midi/volume_curve",buf,true);
@@ -1359,9 +1359,9 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 	if (!memcmp (buf, "FORM", 4))
 	{
 		// Read length of
-		uint32 len = source->read4high();
+		const uint32 len = source->read4high();
 
-		int start = source->getPos();
+		const int start = source->getPos();
 
 		// Read 4 bytes of type
 		source->read (buf, 4);
@@ -1389,7 +1389,7 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 				source->read (buf, 4);
 
 				// Read length of chunk
-				uint32 chunk_len = source->read4high();
+				const uint32 chunk_len = source->read4high();
 
 				// Add eight bytes
 				i+=8;
@@ -1449,7 +1449,7 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 
 		CreateEventList();
 		// Ok it's an XMID, so pass it to the ExtractCode
-		int count = ExtractTracksFromXmi (source);
+		const int count = ExtractTracksFromXmi (source);
 
 		if (count != num_tracks)
 		{
@@ -1464,7 +1464,7 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 	else if (!memcmp (buf, "MThd", 4))
 	{
 		// Simple read length of header
-		uint32 len = source->read4high();
+		const uint32 len = source->read4high();
 
 		if (len < 6)
 		{
@@ -1472,16 +1472,16 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 			return 0;
 		}
 
-		int type = source->read2high();
+		const int type = source->read2high();
 
-		int actual_num = num_tracks = source->read2high();
+		const int actual_num = num_tracks = source->read2high();
 
 		// Type 1 only has 1 track, even though it says it has more
 		if (type == 1) num_tracks = 1;
 
 		CreateEventList();
 		const uint32 ppqn = source->read2high();
-		int count = ExtractTracksFromMid (source, ppqn, actual_num, type == 1);
+		const int count = ExtractTracksFromMid (source, ppqn, actual_num, type == 1);
 
 		if (count != num_tracks)
 		{
@@ -1497,7 +1497,7 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 	else if (!memcmp (buf, "RIFF", 4))
 	{
 		// Read len
-		uint32 len = source->read4();
+		const uint32 len = source->read4();
 
 		// Read 4 bytes of type
 		source->read (buf, 4);
@@ -1516,7 +1516,7 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 			// Read 4 bytes of type
 			source->read (buf, 4);
 
-			uint32 chunk_len = source->read4();
+			const uint32 chunk_len = source->read4();
 
 			i+=8;
 
@@ -1553,7 +1553,7 @@ int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
 	uint32			 j;
 	int				num = 0;
 	int				time = 0;
-	int				time_inc = 32;
+	const int		time_inc = 32;
 
 
 	first_state	fs;
@@ -1563,10 +1563,10 @@ int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
 	memset(&fs, 0, sizeof(fs));
 
 	// Convert it
-	int chan_mask = 0;
+	const int chan_mask = 0;
 
 	source->seek(0);
-	uint32 num_timbres = source->read1();
+	const uint32 num_timbres = source->read1();
 	pout << num_timbres << " custom timbres..." << std::endl;
 
 	if (source->getSize() != 247*num_timbres+1) {
@@ -1624,7 +1624,7 @@ int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
 			if (U7PercussionNotes[j-1]+1 != U7PercussionNotes[j]) break;
 		}
 
-		int count = j-i;
+		const int count = j-i;
 
 		CreateMT32SystemMessage(time,
 				rhythm_base,
@@ -1672,7 +1672,7 @@ int XMidiFile::ExtractTracksFromXMIDIMT (IDataSource *source)
 {
 	int				num = 0;
 	int				time = 0;
-	int				time_inc = 32;
+	const int		time_inc = 32;
 
 
 	first_state	fs;
@@ -1682,7 +1682,7 @@ int XMidiFile::ExtractTracksFromXMIDIMT (IDataSource *source)
 	memset(&fs, 0, sizeof(fs));
 
 	// Convert it
-	int chan_mask = 0;
+	const int chan_mask = 0;
 
 	source->seek(0);
 

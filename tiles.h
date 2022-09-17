@@ -42,7 +42,7 @@ public:
 		return !(*this == t2);
 	}
 	int distance(Tile_coord const &t2) const {  // Distance to another tile?
-		int delta = distance_2d(t2);
+		const int delta = distance_2d(t2);
 		int dz = t2.tz - tz;
 		if (dz < 0) {
 			dz = -dz;
@@ -77,7 +77,7 @@ public:
 	int square_distance_3d(Tile_coord const &t2) const {
 		int dy = (t2.ty - ty + c_num_tiles) % c_num_tiles;
 		int dx = (t2.tx - tx + c_num_tiles) % c_num_tiles;
-		int dz = t2.tz - tz;
+		const int dz = t2.tz - tz;
 		if (dy >= c_num_tiles / 2) {
 			dy = c_num_tiles - dy;
 		}
@@ -89,7 +89,7 @@ public:
 	int square_distance_screen_space(Tile_coord const &t2) const {
 		int dy = (t2.ty - ty + c_num_tiles) % c_num_tiles;
 		int dx = (t2.tx - tx + c_num_tiles) % c_num_tiles;
-		int dz = t2.tz - tz;
+		const int dz = t2.tz - tz;
 		if (dy >= c_num_tiles / 2) {
 			dy = c_num_tiles - dy;
 		}
@@ -113,13 +113,13 @@ public:
 		ty = FIX_COORD(ty);
 	}
 	static bool gte(int t1, int t2) { // Ret. t1 >= t2 with wrapping.
-		int diff = t1 - t2;
+		const int diff = t1 - t2;
 		return diff >= 0 ? (diff < c_num_tiles / 2) :
 		       (diff < -c_num_tiles / 2);
 	}
 	// Ret. (to - from) with wrapping.
 	static int delta(int from, int to) {
-		int diff = to - from;
+		const int diff = to - from;
 		return diff >= c_num_tiles / 2 ? (diff - c_num_tiles) :
 		       (diff <= -c_num_tiles / 2 ? (diff + c_num_tiles) :
 		        diff);

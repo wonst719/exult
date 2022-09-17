@@ -171,7 +171,7 @@ bool Uc_fun_name_expression::eval_const(
 void Uc_fun_name_expression::gen_value(
     Basic_block *out
 ) {
-	int funid = fun->get_usecode_num();
+	const int funid = fun->get_usecode_num();
 	if (fun->has_high_id()) {
 		WriteOp(out, UC_PUSHI32);
 		WriteOpParam4(out, funid);
@@ -662,7 +662,7 @@ void Uc_array_expression::add_to(Uc_array_expression *arr) {
 void Uc_array_expression::gen_value(
     Basic_block *out
 ) {
-	int actual = Uc_array_expression::gen_values(out);
+	const int actual = Uc_array_expression::gen_values(out);
 	WriteOp(out, UC_ARRC);
 	WriteOpParam2(out, actual);
 }
@@ -748,11 +748,11 @@ void Uc_call_expression::check_params() {
 	}
 	const vector<Uc_var_symbol *> &protoparms = fun->get_parms();
 	const vector<Uc_expression *> &callparms = parms->get_exprs();
-	unsigned long ignore_this = fun->get_method_num() >= 0 ? 1 : 0;
-	unsigned long parmscnt = callparms.size() + ignore_this;
+	const unsigned long ignore_this = fun->get_method_num() >= 0 ? 1 : 0;
+	const unsigned long parmscnt = callparms.size() + ignore_this;
 	if (parmscnt != protoparms.size()) {
 		char buf[150];
-		unsigned long protoparmcnt = protoparms.size() - ignore_this;
+		const unsigned long protoparmcnt = protoparms.size() - ignore_this;
 		sprintf(buf,
 		        "# parms. passed (%lu) doesn't match '%s' count (%lu)",
 		        parmscnt - ignore_this, sym->get_name(), protoparmcnt);
@@ -796,7 +796,7 @@ void Uc_call_expression::gen_value(
     Basic_block *out
 ) {
 	if (ind) {          // Indirect?
-		size_t parmcnt = parms->gen_values(out);    // Want to push parm. values.
+		const size_t parmcnt = parms->gen_values(out);    // Want to push parm. values.
 		if (!itemref) {
 			Uc_item_expression item;
 			item.gen_value(out);
@@ -859,10 +859,10 @@ Uc_new_expression::Uc_new_expression(
 )
 	: Uc_class_expression(v), parms(p) {
 	Uc_class *cls = var->get_cls();
-	int pushed_parms = parms->get_exprs().size();
+	const int pushed_parms = parms->get_exprs().size();
 	if (cls->get_num_vars() > pushed_parms) {
 		char buf[180];
-		int missing = cls->get_num_vars() - pushed_parms;
+		const int missing = cls->get_num_vars() - pushed_parms;
 		sprintf(buf, "%d argument%s missing in constructor of class '%s'",
 		        missing, (missing > 1) ? "s" : "", cls->get_name());
 		yywarning(buf);

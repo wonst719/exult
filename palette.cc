@@ -101,7 +101,7 @@ void Palette::fade(
 
 void Palette::flash_red(
 ) {
-	int savepal = palette;
+	const int savepal = palette;
 	set(PALETTE_RED);       // Palette 8 is the red one.
 	win->show();
 	SDL_Delay(100);
@@ -161,9 +161,9 @@ void Palette::set(
 }
 
 void Palette::apply(bool repaint) {
-	uint8 r = pal1[255 * 3 + 0];
-	uint8 g = pal1[255 * 3 + 1];
-	uint8 b = pal1[255 * 3 + 2];
+	const uint8 r = pal1[255 * 3 + 0];
+	const uint8 g = pal1[255 * 3 + 1];
+	const uint8 b = pal1[255 * 3 + 2];
 
 	if (border255) {
 		pal1[255 * 3 + 0] = border[0] * 63 / 255;
@@ -189,14 +189,14 @@ void Palette::apply(bool repaint) {
  *  @param xindex   xform index.
  */
 void Palette::loadxform(const unsigned char *buf, const char *xfname, int &xindex) {
-	U7object xform(xfname, xindex);
+	const U7object xform(xfname, xindex);
 	size_t xlen;
 	auto xbuf = xform.retrieve(xlen);
 	if (!xbuf || xlen <= 0) {
 		xindex = -1;
 	} else {
 		for (int i = 0; i < 256; i++) {
-			int ix = xbuf[i];
+			const int ix = xbuf[i];
 			pal1[3 * i] = buf[3 * ix];
 			pal1[3 * i + 1] = buf[3 * ix + 1];
 			pal1[3 * i + 2] = buf[3 * ix + 2];
@@ -258,7 +258,7 @@ void Palette::load(
     const char *xfname,
     int xindex
 ) {
-	U7multiobject pal(fname0, index);
+	const U7multiobject pal(fname0, index);
 	set_loaded(pal, xfname, xindex);
 }
 
@@ -278,7 +278,7 @@ void Palette::load(
     const char *xfname,
     int xindex
 ) {
-	U7multiobject pal(fname0, fname1, index);
+	const U7multiobject pal(fname0, fname1, index);
 	set_loaded(pal, xfname, xindex);
 }
 
@@ -300,7 +300,7 @@ void Palette::load(
     const char *xfname,
     int xindex
 ) {
-	U7multiobject pal(fname0, fname1, fname2, index);
+	const U7multiobject pal(fname0, fname1, fname2, index);
 	set_loaded(pal, xfname, xindex);
 }
 
@@ -313,9 +313,9 @@ void Palette::fade_in(int cycles) {
 		unsigned char fade_pal[768];
 		unsigned int ticks = SDL_GetTicks() + 20;
 		for (int i = 0; i <= cycles; i++) {
-			uint8 r = pal1[255 * 3 + 0];
-			uint8 g = pal1[255 * 3 + 1];
-			uint8 b = pal1[255 * 3 + 2];
+			const uint8 r = pal1[255 * 3 + 0];
+			const uint8 g = pal1[255 * 3 + 1];
+			const uint8 b = pal1[255 * 3 + 2];
 
 			if (border255) {
 				pal1[255 * 3 + 0] = border[0] * 63 / 255;
@@ -341,9 +341,9 @@ void Palette::fade_in(int cycles) {
 			ticks += 20;
 		}
 	} else {
-		uint8 r = pal1[255 * 3 + 0];
-		uint8 g = pal1[255 * 3 + 1];
-		uint8 b = pal1[255 * 3 + 2];
+		const uint8 r = pal1[255 * 3 + 0];
+		const uint8 g = pal1[255 * 3 + 1];
+		const uint8 b = pal1[255 * 3 + 2];
 
 		if ((palette >= 0 && palette <= 12) && palette != 9) {
 			pal1[255 * 3 + 0] = border[0] * 63 / 255;
@@ -367,9 +367,9 @@ void Palette::fade_out(int cycles) {
 		unsigned char fade_pal[768];
 		unsigned int ticks = SDL_GetTicks() + 20;
 		for (int i = cycles; i >= 0; i--) {
-			uint8 r = pal1[255 * 3 + 0];
-			uint8 g = pal1[255 * 3 + 1];
-			uint8 b = pal1[255 * 3 + 2];
+			const uint8 r = pal1[255 * 3 + 0];
+			const uint8 g = pal1[255 * 3 + 1];
+			const uint8 b = pal1[255 * 3 + 2];
 
 			if (border255) {
 				pal1[255 * 3 + 0] = border[0] * 63 / 255;
@@ -407,11 +407,11 @@ int Palette::find_color(int r, int g, int b, int last) const {
 	// But don't search rotating colors.
 	for (int i = 0; i < last; i++) {
 		// Get deltas.
-		long dr = r - pal1[3 * i];
-		long dg = g - pal1[3 * i + 1];
-		long db = b - pal1[3 * i + 2];
+		const long dr = r - pal1[3 * i];
+		const long dg = g - pal1[3 * i + 1];
+		const long db = b - pal1[3 * i + 2];
 		// Figure distance-squared.
-		long dist = dr * dr + dg * dg + db * db;
+		const long dist = dr * dr + dg * dg + db * db;
 		if (dist < best_distance) { // Better than prev?
 			best_index = i;
 			best_distance = dist;
@@ -467,11 +467,11 @@ void Palette::create_trans_table(
     unsigned char *table        // 256 indices are stored here.
 ) const {
 	for (int i = 0; i < 256; i++) {
-		int newr = (static_cast<int>(br) * alpha) / 255 +
+		const int newr = (static_cast<int>(br) * alpha) / 255 +
 		           (static_cast<int>(pal1[i * 3]) * (255 - alpha)) / 255;
-		int newg = (static_cast<int>(bg) * alpha) / 255 +
+		const int newg = (static_cast<int>(bg) * alpha) / 255 +
 		           (static_cast<int>(pal1[i * 3 + 1]) * (255 - alpha)) / 255;
-		int newb = (static_cast<int>(bb) * alpha) / 255 +
+		const int newb = (static_cast<int>(bb) * alpha) / 255 +
 		           (static_cast<int>(pal1[i * 3 + 2]) * (255 - alpha)) / 255;
 		table[i] = find_color(newr, newg, newb);
 	}
@@ -537,7 +537,7 @@ Palette_transition::Palette_transition(
 
 bool Palette_transition::set_step(int hour, int min, int tick) {
 	int new_step = ticks_per_minute * (60 * hour + min) + tick;
-	int old_step = ticks_per_minute * (60 * start_hour + start_minute) + start_ticks;
+	const int old_step = ticks_per_minute * (60 * start_hour + start_minute) + start_ticks;
 	new_step -= old_step;
 	while (new_step < 0)
 		new_step += 60 * ticks_per_minute;

@@ -43,11 +43,11 @@ public:
 	int xleft, xright, ynear, yfar, zbot, ztop;
 private:
 	void init(const Game_object *obj) {
-		Tile_coord t = obj->get_tile();
+		const Tile_coord t = obj->get_tile();
 		tx = t.tx;
 		ty = t.ty;
 		tz = t.tz;
-		int frnum = obj->get_framenum();
+		const int frnum = obj->get_framenum();
 		xs = info.get_3d_xtiles(frnum);
 		ys = info.get_3d_ytiles(frnum);
 		zs = info.get_3d_height();

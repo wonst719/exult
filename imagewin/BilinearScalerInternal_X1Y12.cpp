@@ -28,11 +28,11 @@ bool BilinearScalerInternal_X1Y12(SDL_Surface *tex, sint32 sx, sint32 sy, sint32
                                   uint8 *pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src) {
 	ignore_unused_variable_warning(dh);
 	// Source buffer pointers
-	int tpitch = tex->pitch / sizeof(uintS);
+	const int tpitch = tex->pitch / sizeof(uintS);
 	uintS *texel = static_cast<uintS *>(tex->pixels) + (sy * tpitch + sx);
 	uintS *tline_end = texel + (sw);
 	uintS *tex_end = texel + (sh - 5) * tpitch;
-	int tex_diff = (tpitch * 5) - sw;
+	const int tex_diff = (tpitch * 5) - sw;
 
 	uint8 a[4];
 	uint8 b[4];

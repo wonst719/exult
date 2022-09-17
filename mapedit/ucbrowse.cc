@@ -168,7 +168,7 @@ static gint ucbrowser_compare_func(
     GtkTreeIter  *b,
     gpointer      userdata
 ) {
-	gint colnum = *static_cast<gint *>(userdata);
+	const gint colnum = *static_cast<gint *>(userdata);
 	gint ret = 0;
 	gchar *name1 = nullptr;
 	gchar *name2 = nullptr;
@@ -328,13 +328,13 @@ void Usecode_browser::setup_list(
 		return;
 	symtbl.read(in);
 	gtk_tree_store_clear(model);
-	bool show_funs = studio->get_toggle("view_uc_functions");
-	bool show_classes = studio->get_toggle("view_uc_classes");
-	bool show_shapes = studio->get_toggle("view_uc_shapes");
-	bool show_objects = studio->get_toggle("view_uc_objects");
+	const bool show_funs = studio->get_toggle("view_uc_functions");
+	const bool show_classes = studio->get_toggle("view_uc_classes");
+	const bool show_shapes = studio->get_toggle("view_uc_shapes");
+	const bool show_objects = studio->get_toggle("view_uc_objects");
 	const Usecode_symbol_table::Syms_vector &syms = symtbl.get_symbols();
 	for (auto *sym : syms) {
-		Usecode_symbol::Symbol_kind kind = sym->get_kind();
+		const Usecode_symbol::Symbol_kind kind = sym->get_kind();
 		const char *kindstr = nullptr;
 		const char *nm = sym->get_name();
 		if (!nm[0])

@@ -47,7 +47,7 @@ using std::string;
 #include <tchar.h>
 
 int U7ListFiles(const std::string &mask, FileList &files) {
-	string          path(get_system_path(mask));
+	const string    path(get_system_path(mask));
 	const TCHAR     *lpszT;
 	WIN32_FIND_DATA fileinfo;
 	HANDLE          handle;

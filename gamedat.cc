@@ -100,7 +100,7 @@ void Game_window::restore_flex_files(
     const char *basepath
 ) {
 	in.seek(0x54);          // Get to where file count sits.
-	int numfiles = in.read4();
+	const int numfiles = in.read4();
 	in.seek(0x80);          // Get to file info.
 	// Read pos., length of each file.
 	long *finfo = new long[2 * numfiles];
@@ -109,7 +109,7 @@ void Game_window::restore_flex_files(
 		finfo[2 * i] = in.read4();  // The position, then the length.
 		finfo[2 * i + 1] = in.read4();
 	}
-	int baselen = strlen(basepath);
+	const int baselen = strlen(basepath);
 	for (i = 0; i < numfiles; i++) { // Now read each file.
 		// Get file length.
 		size_t len = finfo[2 * i + 1];
@@ -177,7 +177,7 @@ void Game_window::restore_gamedat(
 ) {
 	// Check IDENTITY.
 	string id = get_game_identity(fname, Game::get_gametitle());
-	string static_identity = get_game_identity(INITGAME, Game::get_gametitle());
+	const string static_identity = get_game_identity(INITGAME, Game::get_gametitle());
 	// Note: "*" means an old game.
 	if (id.empty() || (id[0] != '*' && static_identity != id)) {
 		std::string msg("Wrong identity '");
@@ -192,8 +192,6 @@ void Game_window::restore_gamedat(
 	if (restore_gamedat_zip(fname))
 		return;
 #endif
-
-	ifstream in_stream;
 
 	// Display red plasma during load...
 	setup_load_palette();
@@ -335,7 +333,7 @@ void Game_window::save_gamedat(
 #endif
 
 	// setup correct file list
-	int numsavefiles = (Game::get_game_type() == BLACK_GATE) ?
+	const int numsavefiles = (Game::get_game_type() == BLACK_GATE) ?
 	                   bgnumsavefiles : sinumsavefiles;
 	const char **savefiles = (Game::get_game_type() == BLACK_GATE) ?
 	                         bgsavefiles : sisavefiles;
@@ -443,12 +441,12 @@ void Game_window::write_saveinfo() {
 		}
 	}
 
-	int party_size = party_man->get_count() + 1;
+	const int party_size = party_man->get_count() + 1;
 
 	{
 		OFileDataSource out(GSAVEINFO);   // Open file; throws an exception - Don't care
 
-		time_t t = time(nullptr);
+		const time_t t = time(nullptr);
 		tm *timeinfo = localtime(&t);
 
 		// This order must match struct SaveGame_Details
@@ -485,7 +483,7 @@ void Game_window::write_saveinfo() {
 				npc = get_npc(party_man->get_member(i - 1));
 
 			char name[18];
-			std::string namestr = npc->get_npc_name();
+			const std::string namestr = npc->get_npc_name();
 			strncpy(name, namestr.c_str(), 18);
 			out.write(name, 18);
 			out.write2(npc->get_shapenum());
@@ -621,7 +619,7 @@ bool Game_window::get_saveinfo(int num, char *&name, std::unique_ptr<Shape_file>
 
 	// Now get dir info
 	in.seek(0x54);          // Get to where file count sits.
-	size_t numfiles = in.read4();
+	const size_t numfiles = in.read4();
 	in.seek(0x80);          // Get to file info.
 	// Read pos., length of each file.
 	auto finfo = std::make_unique<uint32[]>(2 * numfiles);
@@ -641,7 +639,7 @@ bool Game_window::get_saveinfo(int num, char *&name, std::unique_ptr<Shape_file>
 		char fname[50];     // Set up name.
 		strcpy(fname, GAMEDAT);
 		in.read(&fname[sizeof(GAMEDAT) - 1], 13);
-		size_t namelen = strlen(fname);
+		const size_t namelen = strlen(fname);
 		// Watch for names ending in '.'.
 		if (fname[namelen - 1] == '.')
 			fname[namelen - 1] = 0;
@@ -696,7 +694,7 @@ bool Game_window::get_saveinfo_zip(const char *fname, char *&name, std::unique_p
 	// If a flex, so can't read it
 	if (Flex::is_flex(fname)) return false;
 
-	std::string filestr = get_system_path(fname);
+	const std::string filestr = get_system_path(fname);
 	unzFile unzipfile = unzOpen(filestr.c_str());
 	if (!unzipfile) return false;
 
@@ -782,11 +780,11 @@ bool Game_window::Restore_level2(
 			return false;
 		}
 		const unsigned char *ptr = size_buffer;
-		int size = Read4(ptr);
+		const int size = Read4(ptr);
 
 		if (size) {
 			// Watch for names ending in '.'.
-			int namelen = strlen(oname);
+			const int namelen = strlen(oname);
 			if (oname[namelen - 1] == '.')
 				oname[namelen - 1] = 0;
 
@@ -838,7 +836,7 @@ bool Game_window::restore_gamedat_zip(
 	}
 	// Display red plasma during load...
 	setup_load_palette();
-	std::string filestr = get_system_path(fname);
+	const std::string filestr = get_system_path(fname);
 	unzFile unzipfile = unzOpen(filestr.c_str());
 	if (!unzipfile) return false;
 
@@ -882,7 +880,7 @@ bool Game_window::restore_gamedat_zip(
 		                      nullptr, 0,
 		                      nullptr, 0);
 		// Get the needed buffer size.
-		int filenamelen = file_info.size_filename;
+		const int filenamelen = file_info.size_filename;
 		unzGetCurrentFileInfo(unzipfile, nullptr,
 		                      oname2, filenamelen,
 		                      nullptr, 0,
@@ -890,7 +888,7 @@ bool Game_window::restore_gamedat_zip(
 		oname2[filenamelen] = 0;
 
 		// Get file length.
-		int len = file_info.uncompressed_size;
+		const int len = file_info.uncompressed_size;
 		if (len <= 0)
 			continue;
 
@@ -912,7 +910,7 @@ bool Game_window::restore_gamedat_zip(
 		}
 
 		// Watch for names ending in '.'.
-		int namelen = strlen(oname);
+		const int namelen = strlen(oname);
 		if (oname[namelen - 1] == '.')
 			oname[namelen - 1] = 0;
 		// Watch out for multimap games.
@@ -1063,7 +1061,7 @@ bool Game_window::save_gamedat_zip(
 	if (save_compression < 1) return false;
 
 	// setup correct file list
-	int numsavefiles = (Game::get_game_type() == BLACK_GATE) ?
+	const int numsavefiles = (Game::get_game_type() == BLACK_GATE) ?
 	                   bgnumsavefiles : sinumsavefiles;
 	const char **savefiles = (Game::get_game_type() == BLACK_GATE) ?
 	                         bgsavefiles : sisavefiles;
@@ -1078,7 +1076,7 @@ bool Game_window::save_gamedat_zip(
 			out->write(title, 0x50);
 	}
 
-	std::string filestr = get_system_path(fname);
+	const std::string filestr = get_system_path(fname);
 	zipFile zipfile = zipOpen(filestr.c_str(), 1);
 
 	// Level 1 Compression

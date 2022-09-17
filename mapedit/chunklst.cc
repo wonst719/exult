@@ -55,7 +55,7 @@ void Chunk_chooser::show(
 ) {
 	Shape_draw::show(x, y, w, h);
 	if ((selected >= 0) && (drawgc != nullptr)) {    // Show selected.
-		TileRect b = info[selected].box;
+		const TileRect b = info[selected].box;
 		// Draw yellow box.
 		cairo_set_line_width(drawgc, 1.0);
 		cairo_set_source_rgb(drawgc,
@@ -96,7 +96,7 @@ void Chunk_chooser::select(
 	selected = new_sel;
 	tell_server();          // Tell Exult.
 	enable_controls();
-	int chunknum = info[selected].num;
+	const int chunknum = info[selected].num;
 	// Remove prev. selection msg.
 	//gtk_statusbar_pop(GTK_STATUSBAR(sbar), sbar_sel);
 	char buf[150];          // Show new selection.
@@ -121,8 +121,8 @@ void Chunk_chooser::render(
 	// Get drawing area dimensions.
 	GtkAllocation alloc = {0, 0, 0, 0};
 	gtk_widget_get_allocation(draw, &alloc);
-	gint winw = alloc.width;
-	gint winh = alloc.height;
+	const gint winw = alloc.width;
+	const gint winh = alloc.height;
 	// Provide more than enough room.
 	info = new Chunk_info[256];
 	info_cnt = 0;           // Count them.
@@ -132,15 +132,15 @@ void Chunk_chooser::render(
 	// 16x16 tiles, each 8x8 pixels.
 	const int chunkw = 128;
 	const int chunkh = 128;
-	int total_cnt = get_count();
+	const int total_cnt = get_count();
 	int y = border;
 	// Show bottom if at least 1/4 vis.
 	while (index < total_cnt && y + chunkh / 4 <= winh) {
 		int x = border;
-		int cliph = y + chunkh <= winh ? chunkh : (winh - y);
+		const int cliph = y + chunkh <= winh ? chunkh : (winh - y);
 		while (index < total_cnt && x + chunkw + border <= winw) {
 			iwin->set_clip(x, y, chunkw, cliph);
-			int chunknum = group ? (*group)[index] : index;
+			const int chunknum = group ? (*group)[index] : index;
 			render_chunk(chunknum, x, y);
 			iwin->clear_clip();
 			// Store info. about where drawn.
@@ -227,8 +227,8 @@ void Chunk_chooser::set_chunk(
     const unsigned char *data,        // Message from server.
     int datalen
 ) {
-	int tnum = Read2(data);     // First the terrain #.
-	int new_num_chunks = Read2(data);   // Always sends total.
+	const int tnum = Read2(data);     // First the terrain #.
+	const int new_num_chunks = Read2(data);   // Always sends total.
 	datalen -= 4;
 	if (datalen != chunksz) {
 		cout << "Set_chunk:  Wrong data length" << endl;
@@ -267,8 +267,8 @@ void Chunk_chooser::render_chunk(
 		        x += c_tilesize) {
 			int shapenum;
 			int framenum;
-			unsigned char l = *data++;
-			unsigned char h = *data++;
+			const unsigned char l = *data++;
+			const unsigned char h = *data++;
 			if (!headersz) {
 				shapenum = l + 256 * (h & 0x3);
 				framenum = h >> 2;
@@ -306,11 +306,11 @@ gint Chunk_chooser::configure(
 	chooser->Shape_draw::configure();
 	chooser->render();
 	// Set new scroll amounts.
-	int w = event->width;
-	int h = event->height;
-	int per_row = (w - border) / (128 + border);
-	int num_rows = (h - border) / (128 + border);
-	int page_size = per_row * num_rows;
+	const int w = event->width;
+	const int h = event->height;
+	const int per_row = (w - border) / (128 + border);
+	const int num_rows = (h - border) / (128 + border);
+	const int page_size = per_row * num_rows;
 	GtkAdjustment *adj = gtk_range_get_adjustment(GTK_RANGE(
 	                         chooser->vscroll));
 	gtk_adjustment_set_step_increment(adj, per_row);
@@ -435,8 +435,8 @@ void Chunk_chooser::drag_data_get(
 	if (chooser->selected < 0 || info != U7_TARGET_CHUNKID)
 		return;         // Not sure about this.
 	guchar buf[U7DND_DATA_LENGTH(1)];
-	Chunk_info &shinfo = chooser->info[chooser->selected];
-	int len = Store_u7_chunkid(buf, shinfo.num);
+	const Chunk_info &shinfo = chooser->info[chooser->selected];
+	const int len = Store_u7_chunkid(buf, shinfo.num);
 	cout << "Setting selection data (" << shinfo.num << ')' << endl;
 	// Set data.
 	gtk_selection_data_set(seldata,
@@ -528,7 +528,7 @@ void Chunk_chooser::enable_drop(
 void Chunk_chooser::scroll(
     int newindex            // Abs. index of leftmost to show.
 ) {
-	int total = get_count();
+	const int total = get_count();
 	if (index0 < newindex)  // Going forwards?
 		index0 = newindex < total ? newindex : total;
 	else if (index0 > newindex) // Backwards?
@@ -562,7 +562,7 @@ void Chunk_chooser::scrolled(
 ) {
 	auto *chooser = static_cast<Chunk_chooser *>(data);
 	cout << "Scrolled to " << gtk_adjustment_get_value(adj) << '\n';
-	gint newindex = static_cast<gint>(gtk_adjustment_get_value(adj));
+	const gint newindex = static_cast<gint>(gtk_adjustment_get_value(adj));
 	chooser->scroll(newindex);
 }
 
@@ -845,7 +845,7 @@ void Chunk_chooser::locate(
 	bool upwards = false;
 	unsigned char data[Exult_server::maxlength];
 	unsigned char *ptr = &data[0];
-	int tnum = info[selected].num;  // Terrain #.
+	const int tnum = info[selected].num;  // Terrain #.
 	int cx = locate_cx;
 	int cy = locate_cy;
 	if (dir == 0) {
@@ -878,7 +878,7 @@ void Chunk_chooser::locate_response(
 ) {
 	ignore_unused_variable_warning(datalen);
 	const unsigned char *ptr = data;
-	int tnum = Read2(ptr);
+	const int tnum = Read2(ptr);
 	if (selected < 0 || tnum != info[selected].num) {
 		to_del = -1;
 		return;         // Not the current selection.
@@ -916,7 +916,7 @@ void Chunk_chooser::insert(
 		return;         // Shouldn't happen.
 	unsigned char data[Exult_server::maxlength];
 	unsigned char *ptr = &data[0];
-	int tnum = selected >= 0 ? info[selected].num : -1;
+	const int tnum = selected >= 0 ? info[selected].num : -1;
 	Write2(ptr, tnum);
 	*ptr++ = dup ? 1 : 0;
 	ExultStudio *studio = ExultStudio::get_instance();
@@ -946,8 +946,8 @@ void Chunk_chooser::insert_response(
 ) {
 	ignore_unused_variable_warning(datalen);
 	const unsigned char *ptr = data;
-	int tnum = static_cast<short>(Read2(ptr));
-	bool dup = *ptr++ != 0;
+	const int tnum = static_cast<short>(Read2(ptr));
+	const bool dup = *ptr++ != 0;
 	if (!*ptr)
 		EStudio::Alert("Terrain insert failed.");
 	else {
@@ -976,7 +976,7 @@ void Chunk_chooser::delete_response(
 ) {
 	ignore_unused_variable_warning(datalen);
 	const unsigned char *ptr = data;
-	int tnum = static_cast<short>(Read2(ptr));
+	const int tnum = static_cast<short>(Read2(ptr));
 	if (!*ptr)
 		EStudio::Alert("Terrain delete failed.");
 	else {
@@ -1020,7 +1020,7 @@ void Chunk_chooser::swap_response(
 ) {
 	ignore_unused_variable_warning(datalen);
 	const unsigned char *ptr = data;
-	int tnum = static_cast<short>(Read2(ptr));
+	const int tnum = static_cast<short>(Read2(ptr));
 	if (!*ptr)
 		cout << "Terrain insert failed." << endl;
 	else if (tnum >= 0 && tnum < num_chunks - 1) {

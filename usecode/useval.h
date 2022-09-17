@@ -277,7 +277,7 @@ public:
 	}
 	// Get array elem. 0, or this.
 	const Usecode_value &get_elem0() const {
-		static Usecode_value zval(0);
+		static const Usecode_value zval(0);
 		return (type == array_type) ? (get_array_size() ? arrayval[0]
 		                               : zval) : *this;
 	}

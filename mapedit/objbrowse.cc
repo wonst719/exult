@@ -56,7 +56,7 @@ bool Object_browser::search_name(
 	auto safe_tolower = [](const char ch) {
 		return static_cast<char>(tolower(static_cast<unsigned char>(ch)));
 	};
-	char first = safe_tolower(*srch);
+	const char first = safe_tolower(*srch);
 	while (*nm) {
 		if (safe_tolower(*nm) == first) {
 			const char *np = nm + 1;
@@ -97,7 +97,7 @@ void Object_browser::on_browser_group_add(
 	auto *chooser = static_cast<Object_browser *>(udata);
 	auto *grp = static_cast<Shape_group *>(g_object_get_data(
 	        G_OBJECT(item), "user_data"));
-	int id = chooser->get_selected_id();
+	const int id = chooser->get_selected_id();
 	if (id >= 0) {          // Selected shape?
 		grp->add(id);       // Add & redisplay open windows.
 		ExultStudio::get_instance()->update_group_windows(grp);
@@ -115,7 +115,7 @@ void Object_browser::add_group_submenu(
 	//   the main window.
 	Shape_group_file *groups = group ? group->get_file()
 	                           : ExultStudio::get_instance()->get_cur_groups();
-	int gcnt = groups ? groups->size() : 0;
+	const int gcnt = groups ? groups->size() : 0;
 	if (gcnt > 1 ||         // Groups besides ours?
 	        (gcnt == 1 && !group)) {
 		GtkWidget *mitem = Add_menu_item(popup,
@@ -171,7 +171,7 @@ void Create_file_selection(
 	}
 	if (path != nullptr && is_system_path_defined(path)) {
 		// Default to a writable location.
-		std::string startdir = get_system_path(path);
+		const std::string startdir = get_system_path(path);
 		gtk_file_chooser_set_current_folder(fsel, startdir.c_str());
 	}
 	if (!filters.empty()) {

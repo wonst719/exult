@@ -125,13 +125,13 @@ void split_shape(char *filename) {
 		return;
 	}
 	fseek(shpfile, 0, SEEK_END);
-	int file_size = ftell(shpfile);
+	const int file_size = ftell(shpfile);
 	fseek(shpfile, 0, SEEK_SET);
 
-	int shape_size = read4(shpfile);
+	const int shape_size = read4(shpfile);
 
 	if (file_size != shape_size) { /* 8x8 tile */
-		int num_frames = file_size / 64;
+		const int num_frames = file_size / 64;
 		fseek(shpfile, 0, SEEK_SET);        /* Return to start of file */
 		cout << "num_frames = " << num_frames << endl;
 		auto *data = new uint8[64];
@@ -139,7 +139,7 @@ void split_shape(char *filename) {
 			char *framename = framefilename(filename, i);
 			cout << "writing " << framename << "..." << endl;
 			FILE *framefile = fopen(framename, "wb");
-			size_t err = fread(data, 1, 64, shpfile);
+			const size_t err = fread(data, 1, 64, shpfile);
 			assert(err == 64);
 			fwrite(data, 1, 64, framefile);
 			fclose(framefile);
@@ -147,8 +147,8 @@ void split_shape(char *filename) {
 		}
 		delete[] data;
 	} else {
-		int hdr_size = read4(shpfile);
-		int num_frames = (hdr_size - 4) / 4;
+		const int hdr_size = read4(shpfile);
+		const int num_frames = (hdr_size - 4) / 4;
 
 		cout << "num_frames = " << num_frames << endl;
 
@@ -159,7 +159,7 @@ void split_shape(char *filename) {
 
 			// Go to where frame offset is stored
 			fseek(shpfile, (i + 1) * 4, SEEK_SET);
-			int frame_offset = read4(shpfile);
+			const int frame_offset = read4(shpfile);
 			int next_frame_offset;
 
 			if (i + 1 < num_frames)
@@ -168,13 +168,13 @@ void split_shape(char *filename) {
 				next_frame_offset = shape_size;
 
 			fseek(shpfile, frame_offset, SEEK_SET);
-			size_t datalen = next_frame_offset - frame_offset;
+			const size_t datalen = next_frame_offset - frame_offset;
 
 			write4(framefile, datalen + 8);
 			write4(framefile, 8);
 
 			auto *data = new uint8[datalen];
-			size_t err = fread(data, 1, datalen, shpfile);
+			const size_t err = fread(data, 1, datalen, shpfile);
 			assert(err == datalen);
 			fwrite(data, 1, datalen, framefile);
 			fclose(framefile);
@@ -200,9 +200,9 @@ void merge_frames(char *shapefile, char **framefiles, int numframefiles) {
 		cout << "reading " << framefiles[i] << "..." << endl;
 
 		fseek(framefile, 0, SEEK_END);
-		int file_size = ftell(framefile);
+		const int file_size = ftell(framefile);
 		fseek(framefile, 0, SEEK_SET);
-		int shape_size = read4(framefile);
+		const int shape_size = read4(framefile);
 
 		if (file_size != shape_size) { // 8x8 tile
 			if (i > 0 && !tiles) {
@@ -217,7 +217,7 @@ void merge_frames(char *shapefile, char **framefiles, int numframefiles) {
 
 			auto *data = new uint8[64];
 
-			size_t err = fread(data, 1, 64, framefile);
+			const size_t err = fread(data, 1, 64, framefile);
 			assert(err == 64);
 			fwrite(data, 1, 64, shpfile);
 			fclose(framefile);
@@ -229,7 +229,7 @@ void merge_frames(char *shapefile, char **framefiles, int numframefiles) {
 				exit(1);
 			}
 
-			int hdr_size = read4(framefile);
+			const int hdr_size = read4(framefile);
 
 			size_t  frame_size;
 			if (hdr_size > 8) {
@@ -241,7 +241,7 @@ void merge_frames(char *shapefile, char **framefiles, int numframefiles) {
 
 			auto *data = new uint8[frame_size];
 			fseek(framefile, hdr_size, SEEK_SET);
-			size_t err = fread(data, 1, frame_size, framefile);
+			const size_t err = fread(data, 1, frame_size, framefile);
 			assert(err == frame_size);
 			fclose(framefile);
 
@@ -276,7 +276,7 @@ int main(int argc, char *argv[]) {
 	char *shapefile = argv[1];
 
 	if (argc > 2) {
-		int numframefiles = argc - 2;
+		const int numframefiles = argc - 2;
 		char *framefiles[255];
 		for (int i = 0; i < numframefiles; i++)
 			framefiles[i] = argv[i + 2];

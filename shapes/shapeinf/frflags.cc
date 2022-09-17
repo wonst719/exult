@@ -49,7 +49,7 @@ bool Frame_flags_info::read(
 	else
 		quality &= 0xff;
 
-	int size = 8 * sizeof(m_flags); // Bit count.
+	const int size = 8 * sizeof(m_flags); // Bit count.
 	int bit = 0;
 	unsigned int flags = 0;
 	while (in.good() && bit < size) {

@@ -87,8 +87,8 @@ void Image_buffer8::get(
 	unsigned char *to = dest->bits + desty * dest->line_width + destx;
 	unsigned char *from = bits + srcy * line_width + srcx;
 	// Figure # pixels to next line.
-	int to_next = dest->line_width - srcw;
-	int from_next = line_width - srcw;
+	const int to_next = dest->line_width - srcw;
+	const int from_next = line_width - srcw;
 	while (srch--) {        // Do each line.
 		for (int cnt = srcw; cnt; cnt--)
 			*to++ = *from++;
@@ -140,7 +140,7 @@ void Image_buffer8::fill8(
     unsigned char pix
 ) {
 	unsigned char *pixels = bits - offset_y * line_width - offset_x;
-	int cnt = line_width * height;
+	const int cnt = line_width * height;
 	for (int i = 0; i < cnt; i++)
 		*pixels++ = pix;
 }
@@ -160,7 +160,7 @@ void Image_buffer8::fill8(
 	if (!clip(srcx, srcy, srcw, srch, destx, desty))
 		return;
 	unsigned char *pixels = bits + desty * line_width + destx;
-	int to_next = line_width - srcw;// # pixels to next line.
+	const int to_next = line_width - srcw;// # pixels to next line.
 	while (srch--) {        // Do each line.
 		for (int cnt = srcw; cnt; cnt--)
 			*pixels++ = pix;
@@ -202,7 +202,7 @@ void Image_buffer8::copy8(
 
 	int srcx = 0;
 	int srcy = 0;
-	int src_width = srcw;       // Save full source width.
+	const int src_width = srcw;       // Save full source width.
 	// Constrain to window's space.
 	if (!clip(srcx, srcy, srcw, srch, destx, desty))
 		return;
@@ -302,7 +302,7 @@ void Image_buffer8::fill_translucent8(
 	if (!clip(srcx, srcy, srcw, srch, destx, desty))
 		return;
 	unsigned char *pixels = bits + desty * line_width + destx;
-	int to_next = line_width - srcw;// # pixels to next line.
+	const int to_next = line_width - srcw;// # pixels to next line.
 	while (srch--) {        // Do each line.
 		for (int cnt = srcw; cnt; cnt--, pixels++)
 			*pixels = xform[*pixels];
@@ -322,17 +322,17 @@ void Image_buffer8::copy_transparent8(
 ) {
 	int srcx = 0;
 	int srcy = 0;
-	int src_width = srcw;       // Save full source width.
+	const int src_width = srcw;       // Save full source width.
 	// Constrain to window's space.
 	if (!clip(srcx, srcy, srcw, srch, destx, desty))
 		return;
 	unsigned char *to = bits + desty * line_width + destx;
 	const unsigned char *from = src_pixels + srcy * src_width + srcx;
-	int to_next = line_width - srcw;// # pixels to next line.
-	int from_next = src_width - srcw;
+	const int to_next = line_width - srcw;// # pixels to next line.
+	const int from_next = src_width - srcw;
 	while (srch--) {        // Do each line.
 		for (int cnt = srcw; cnt; cnt--, to++) {
-			int chr = *from++;
+			const int chr = *from++;
 			if (chr)
 				*to = chr;
 		}
@@ -350,10 +350,10 @@ void Image_buffer8::paint_rle(int xoff, int yoff, const unsigned char *inptr) {
 
 	while ((scanlen = Read2(in)) != 0) {
 		// Get length of scan line.
-		int encoded = scanlen & 1; // Is it encoded?
+		const int encoded = scanlen & 1; // Is it encoded?
 		scanlen = scanlen >> 1;
 		int scanx = xoff + static_cast<sint16>(Read2(in));
-		int scany = yoff + static_cast<sint16>(Read2(in));
+		const int scany = yoff + static_cast<sint16>(Read2(in));
 
 		// Is there somthing on screen?
 		bool on_screen = true;
@@ -392,7 +392,7 @@ void Image_buffer8::paint_rle(int xoff, int yoff, const unsigned char *inptr) {
 			while (scanlen) {
 				unsigned char bcnt = *in++;
 				// Repeat next char. if odd.
-				int repeat = bcnt & 1;
+				const int repeat = bcnt & 1;
 				bcnt = bcnt >> 1; // Get count.
 
 				// Only do the complex calcs if we think it could be on screen
@@ -413,7 +413,7 @@ void Image_buffer8::paint_rle(int xoff, int yoff, const unsigned char *inptr) {
 
 						// Is there anything to put on the screen?
 						if (skip < bcnt) {
-							unsigned char col = *in++;
+							const unsigned char col = *in++;
 							unsigned char *end = dest + bcnt - skip;
 							while (dest < end) *dest++ = col;
 
@@ -494,10 +494,10 @@ void Image_buffer8::paint_rle_remapped(
 
 	while ((scanlen = Read2(in)) != 0) {
 		// Get length of scan line.
-		int encoded = scanlen & 1; // Is it encoded?
+		const int encoded = scanlen & 1; // Is it encoded?
 		scanlen = scanlen >> 1;
 		int scanx = xoff + static_cast<sint16>(Read2(in));
-		int scany = yoff + static_cast<sint16>(Read2(in));
+		const int scany = yoff + static_cast<sint16>(Read2(in));
 
 		// Is there somthing on screen?
 		bool on_screen = true;
@@ -536,7 +536,7 @@ void Image_buffer8::paint_rle_remapped(
 			while (scanlen) {
 				unsigned char bcnt = *in++;
 				// Repeat next char. if odd.
-				int repeat = bcnt & 1;
+				const int repeat = bcnt & 1;
 				bcnt = bcnt >> 1; // Get count.
 
 				// Only do the complex calcs if we think it could be on screen
@@ -557,7 +557,7 @@ void Image_buffer8::paint_rle_remapped(
 
 						// Is there anything to put on the screen?
 						if (skip < bcnt) {
-							unsigned char col = *in++;
+							const unsigned char col = *in++;
 							unsigned char *end = dest + bcnt - skip;
 							while (dest < end) *dest++ = trans[col];
 

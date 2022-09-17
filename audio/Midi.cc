@@ -509,7 +509,7 @@ bool MyMidiPlayer::init_device(bool timbre_load)
 	string	s;
 	string	driver_default = "default";
 
-	bool music = Audio::get_ptr()->is_music_enabled();
+	const bool music = Audio::get_ptr()->is_music_enabled();
 
 	if (!music) s = "no";
 	else s = "yes";
@@ -565,9 +565,8 @@ bool MyMidiPlayer::init_device(bool timbre_load)
 	else
 		std::cout << "Never" << std::endl;
 
-	bool sfx = false;
 #ifdef ENABLE_MIDISFX
-	sfx = Audio::get_ptr()->are_effects_enabled();
+	const bool sfx = Audio::get_ptr()->are_effects_enabled();
 
 	// Effects conversion
 	config->value("config/audio/effects/convert",s,"gs");
@@ -586,6 +585,8 @@ bool MyMidiPlayer::init_device(bool timbre_load)
 		effects_conversion = XMIDIFILE_CONVERT_GS127_TO_GS;
 		config->set("config/audio/effects/convert","gs",true);
 	}
+#else
+	const bool sfx = false;
 #endif
 
 	// no need for a MIDI device (for now)

@@ -109,8 +109,8 @@ void Scale2x_noblur(
 	Source_pixel *end_src = source + sheight * sline_pixels;
 
 	// Check for edge pixels.
-	int to_right_edge = srcx + srcw == sline_pixels ? 1 : 0;
-	int edge_off = srcx == 0 ? 0 : 1;
+	const int to_right_edge = srcx + srcw == sline_pixels ? 1 : 0;
+	const int edge_off = srcx == 0 ? 0 : 1;
 	int copy_width = srcw + 1 - to_right_edge + edge_off;
 	// Initial fill of the buffers.
 	if (ptr0 >= source)     // But don't go before row 0.

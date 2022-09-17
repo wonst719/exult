@@ -39,7 +39,7 @@
 
 inline void Delay(
 ) {
-	Uint32 expiration = DELAY_TOTAL_MS + SDL_GetTicks();
+	const Uint32 expiration = DELAY_TOTAL_MS + SDL_GetTicks();
 	for (;;) {
 		SDL_PumpEvents();
 		if ((SDL_PeepEvents(nullptr, 0, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT) != 0) ||

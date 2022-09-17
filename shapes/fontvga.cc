@@ -70,13 +70,13 @@ static int hlead[] = { -2, -1, 0, -1, 0, 0, -1, -2, -1, -1};
 
 void Fonts_vga_file::init(
 ) {
-	int cnt = array_size(hlead);
+	const int cnt = array_size(hlead);
 
 	FlexFile sfonts(FONTS_VGA);
 	FlexFile pfonts(PATCH_FONTS);
-	int sn = static_cast<int>(sfonts.number_of_objects());
-	int pn = static_cast<int>(pfonts.number_of_objects());
-	int numfonts = pn > sn ? pn : sn;
+	const int sn = static_cast<int>(sfonts.number_of_objects());
+	const int pn = static_cast<int>(pfonts.number_of_objects());
+	const int numfonts = pn > sn ? pn : sn;
 	fonts.resize(numfonts);
 
 	for (int i = 0; i < numfonts; i++)

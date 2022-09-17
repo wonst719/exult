@@ -96,16 +96,16 @@ unique_ptr<Shape_frame> Shape_frame::reflect(
 	Image_buffer8 ibuf(h, w);
 	ibuf.fill8(255);       // Fill with 'transparent' pixel.
 	// Figure origin.
-	int xoff = reflected->xleft;
-	int yoff = reflected->yabove;
+	const int xoff = reflected->xleft;
+	const int yoff = reflected->yabove;
 	const uint8 *in = data.get();   // Point to data, and draw.
 	int scanlen;
 	while ((scanlen = Read2(in)) != 0) {
 		// Get length of scan line.
-		int encoded = scanlen & 1; // Is it encoded?
+		const int encoded = scanlen & 1; // Is it encoded?
 		scanlen = scanlen >> 1;
-		short scanx = Read2(in);
-		short scany = Read2(in);
+		const short scanx = Read2(in);
+		const short scany = Read2(in);
 		if (!encoded) {     // Raw data?
 			ibuf.copy8(in, 1, scanlen,
 			            xoff + scany, yoff + scanx);
@@ -115,10 +115,10 @@ unique_ptr<Shape_frame> Shape_frame::reflect(
 		for (int b = 0; b < scanlen;) {
 			unsigned char bcnt = *in++;
 			// Repeat next char. if odd.
-			int repeat = bcnt & 1;
+			const int repeat = bcnt & 1;
 			bcnt = bcnt >> 1; // Get count.
 			if (repeat) {
-				unsigned char pix = *in++;
+				const unsigned char pix = *in++;
 				ibuf.fill8(pix, 1, bcnt,
 				            xoff + scany, yoff + scanx + b);
 			} else {    // Get that # of bytes.
@@ -204,7 +204,7 @@ unsigned char Shape_frame::get_topleft_pix(
 	else if (!rle)
 		return data[0];
 	unsigned char *ptr = data.get();
-	int scanlen = (ptr[1] << 8) | ptr[0];
+	const int scanlen = (ptr[1] << 8) | ptr[0];
 	if (!scanlen)
 		return def;
 	ptr += 2;
@@ -273,7 +273,7 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 			newx = Find_runs(runs, pixels, x, w);
 			// Just 1 non-repeated run?
 			if (!runs[1] && !(runs[0] & 1)) {
-				int len = runs[0] >> 1;
+				const int len = runs[0] >> 1;
 				Write2(out, runs[0]);
 				// Write position.
 				Write2(out, x - xoff);
@@ -293,7 +293,7 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 				// Check for repeated run.
 				if (runs[i] & 1) {
 					while (len) {
-						int c = len > 127 ? 127 : len;
+						const int c = len > 127 ? 127 : len;
 						*out++ = (c << 1) | 1;
 						*out++ = *pixels;
 						pixels += c;
@@ -301,7 +301,7 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 					}
 				} else {
 					while (len > 0) {
-						int c = len > 127 ? 127 : len;
+						const int c = len > 127 ? 127 : len;
 						*out++ = c << 1;
 						out = std::copy_n(pixels, c, out);
 						pixels += c;
@@ -378,12 +378,12 @@ unsigned int Shape_frame::read(
 	if (!shapelen && !shapeoff) return 0;
 	// Get to actual shape.
 	shapes->seek(shapeoff);
-	uint32 dlen = shapes->read4();
-	uint32 hdrlen = shapes->read4();
+	const uint32 dlen = shapes->read4();
+	const uint32 hdrlen = shapes->read4();
 	if (dlen == shapelen) {
 		rle = true;     // It's run-length-encoded.
 		// Figure # frames.
-		int nframes = (hdrlen - 4) / 4;
+		const int nframes = (hdrlen - 4) / 4;
 		if (framenum >= nframes)// Bug out if bad frame #.
 			return nframes;
 		// Get frame offset, lengeth.
@@ -453,8 +453,8 @@ void Shape_frame::paint_rle(
 ) {
 	assert(rle);
 
-	int w = get_width();
-	int h = get_height();
+	const int w = get_width();
+	const int h = get_height();
 	if (w >= c_tilesize || h >= c_tilesize)     // Big enough to check?  Off screen?
 		if (!win->is_visible(xoff - xleft, yoff - yabove, w, h))
 			return;
@@ -473,8 +473,8 @@ void Shape_frame::paint_rle_remapped(
 ) {
 	assert(rle);
 
-	int w = get_width();
-	int h = get_height();
+	const int w = get_width();
+	const int h = get_height();
 	if (w >= c_tilesize || h >= c_tilesize)     // Big enough to check?  Off screen?
 		if (!win->is_visible(xoff - xleft, yoff - yabove, w, h))
 			return;
@@ -509,8 +509,8 @@ void Shape_frame::paint_rle_translucent(
 ) {
 	assert(rle);
 
-	int w = get_width();
-	int h = get_height();
+	const int w = get_width();
+	const int h = get_height();
 	if (w >= c_tilesize || h >= c_tilesize)     // Big enough to check?  Off screen?
 		if (!win->is_visible(xoff - xleft,
 		                     yoff - yabove, w, h))
@@ -521,10 +521,10 @@ void Shape_frame::paint_rle_translucent(
 	int scanlen;
 	while ((scanlen = Read2(in)) != 0) {
 		// Get length of scan line.
-		int encoded = scanlen & 1; // Is it encoded?
+		const int encoded = scanlen & 1; // Is it encoded?
 		scanlen = scanlen >> 1;
-		short scanx = Read2(in);
-		short scany = Read2(in);
+		const short scanx = Read2(in);
+		const short scany = Read2(in);
 		if (!encoded) {     // Raw data?
 			win->copy_line_translucent8(in, scanlen,
 			                            xoff + scanx, yoff + scany,
@@ -535,10 +535,10 @@ void Shape_frame::paint_rle_translucent(
 		for (int b = 0; b < scanlen;) {
 			unsigned char bcnt = *in++;
 			// Repeat next char. if odd.
-			int repeat = bcnt & 1;
+			const int repeat = bcnt & 1;
 			bcnt = bcnt >> 1; // Get count.
 			if (repeat) {
-				unsigned char pix = *in++;
+				const unsigned char pix = *in++;
 				if (pix >= xfstart && pix <= 0xfe)
 					win->fill_line_translucent8(pix, bcnt,
 					                            xoff + scanx + b, yoff + scany,
@@ -569,8 +569,8 @@ void Shape_frame::paint_rle_transformed(
 ) {
 	assert(rle);
 
-	int w = get_width();
-	int h = get_height();
+	const int w = get_width();
+	const int h = get_height();
 	if (w >= c_tilesize || h >= c_tilesize)     // Big enough to check?  Off screen?
 		if (!win->is_visible(xoff - xleft,
 		                     yoff - yabove, w, h))
@@ -579,10 +579,10 @@ void Shape_frame::paint_rle_transformed(
 	int scanlen;
 	while ((scanlen = Read2(in)) != 0) {
 		// Get length of scan line.
-		int encoded = scanlen & 1; // Is it encoded?
+		const int encoded = scanlen & 1; // Is it encoded?
 		scanlen = scanlen >> 1;
-		short scanx = Read2(in);
-		short scany = Read2(in);
+		const short scanx = Read2(in);
+		const short scany = Read2(in);
 		if (!encoded) {     // Raw data?
 			// (Note: 1st parm is ignored).
 			win->fill_line_translucent8(0, scanlen,
@@ -593,7 +593,7 @@ void Shape_frame::paint_rle_transformed(
 		for (int b = 0; b < scanlen;) {
 			unsigned char bcnt = *in++;
 			// Repeat next char. if odd.
-			int repeat = bcnt & 1;
+			const int repeat = bcnt & 1;
 			bcnt = bcnt >> 1; // Get count.
 			in += repeat ? 1 : bcnt;
 			win->fill_line_translucent8(0, bcnt,
@@ -614,8 +614,8 @@ void Shape_frame::paint_rle_outline(
 ) {
 	assert(rle);
 
-	int w = get_width();
-	int h = get_height();
+	const int w = get_width();
+	const int h = get_height();
 	if (w >= c_tilesize || h >= c_tilesize)     // Big enough to check?  Off screen?
 		if (!win->is_visible(xoff - xleft,
 		                     yoff - yabove, w, h))
@@ -626,12 +626,12 @@ void Shape_frame::paint_rle_outline(
 	int scanlen;
 	while ((scanlen = Read2(in)) != 0) {
 		// Get length of scan line.
-		int encoded = scanlen & 1; // Is it encoded?
+		const int encoded = scanlen & 1; // Is it encoded?
 		scanlen = scanlen >> 1;
-		short scanx = Read2(in);
-		short scany = Read2(in);
-		int x = xoff + scanx;
-		int y = yoff + scany;
+		const short scanx = Read2(in);
+		const short scany = Read2(in);
+		const int x = xoff + scanx;
+		const int y = yoff + scany;
 		if (firsty == -10000) {
 			firsty = y;
 			lasty = y + h - 1;
@@ -650,7 +650,7 @@ void Shape_frame::paint_rle_outline(
 		for (int b = 0; b < scanlen;) {
 			unsigned char bcnt = *in++;
 			// Repeat next char. if odd.
-			int repeat = bcnt & 1;
+			const int repeat = bcnt & 1;
 			bcnt = bcnt >> 1; // Get count.
 			if (repeat) // Pass repetition byte.
 				in++;
@@ -680,10 +680,10 @@ bool Shape_frame::has_point(
 	int scanlen;
 	while ((scanlen = Read2(in)) != 0) {
 		// Get length of scan line.
-		int encoded = scanlen & 1; // Is it encoded?
+		const int encoded = scanlen & 1; // Is it encoded?
 		scanlen = scanlen >> 1;
-		short scanx = Read2(in);
-		short scany = Read2(in);
+		const short scanx = Read2(in);
+		const short scany = Read2(in);
 		// Be liberal by 1 pixel.
 		if (y == scany && x >= scanx - 1 && x <= scanx + scanlen)
 			return true;
@@ -694,7 +694,7 @@ bool Shape_frame::has_point(
 		for (int b = 0; b < scanlen;) {
 			unsigned char bcnt = *in++;
 			// Repeat next char. if odd.
-			int repeat = bcnt & 1;
+			const int repeat = bcnt & 1;
 			bcnt = bcnt >> 1; // Get count.
 			if (repeat)
 				in++;   // Skip pixel to repeat.
@@ -715,14 +715,14 @@ void Shape_frame::set_offset(
 ) {
 	if (!rle)
 		return;         // Can do it for 8x8 tiles.
-	int w = get_width();
-	int h = get_height();
+	const int w = get_width();
+	const int h = get_height();
 	if (new_xright > w)     // Limit to left edge.
 		new_xright = w;
 	if (new_ybelow > h)
 		new_ybelow = h;
-	int deltax = new_xright - xright;   // Get changes.
-	int deltay = new_ybelow - ybelow;
+	const int deltax = new_xright - xright;   // Get changes.
+	const int deltay = new_ybelow - ybelow;
 	xright = new_xright;
 	ybelow = new_ybelow;
 	xleft = w - xright - 1;     // Update other dims.
@@ -731,12 +731,12 @@ void Shape_frame::set_offset(
 	int scanlen;
 	while ((scanlen = MRead2(in)) != 0) {
 		// Get length of scan line.
-		int encoded = scanlen & 1; // Is it encoded?
+		const int encoded = scanlen & 1; // Is it encoded?
 		scanlen = scanlen >> 1;
-		short scanx = MRead2(in);
+		const short scanx = MRead2(in);
 		in -= 2;
 		Write2(in, scanx + deltax);
-		short scany = MRead2(in);
+		const short scany = MRead2(in);
 		in -= 2;
 		Write2(in, scany + deltay);
 		// Just need to scan past EOL.
@@ -745,7 +745,7 @@ void Shape_frame::set_offset(
 		else for (int b = 0; b < scanlen;) {
 				unsigned char bcnt = *in++;
 				// Repeat next char. if odd.
-				int repeat = bcnt & 1;
+				const int repeat = bcnt & 1;
 				bcnt = bcnt >> 1; // Get count.
 				if (repeat)
 					in++;   // Skip pixel to repeat.
@@ -836,7 +836,7 @@ Shape_frame *Shape::read(
 				IDataSource *ds = it->first.get();
 				ds->seek(shapeoff);
 				// Get location, length.
-				int s = ds->read4();
+				const int s = ds->read4();
 				shapelen = ds->read4();
 
 				if (s && shapelen) {
@@ -851,7 +851,7 @@ Shape_frame *Shape::read(
 		IDataSource *ds = shapes[src].first.get();
 		ds->seek(shapeoff);
 		// Get location, length.
-		int s = ds->read4();
+		const int s = ds->read4();
 		shapelen = ds->read4();
 
 		if (s && shapelen) {
@@ -867,7 +867,7 @@ Shape_frame *Shape::read(
 	}
 	// Read it in and get frame count.
 	auto frame = make_unique<Shape_frame>();
-	int nframes = frame->read(shp, shapeoff, shapelen, framenum);
+	const int nframes = frame->read(shp, shapeoff, shapelen, framenum);
 	if (!num_frames)        // 1st time?
 		create_frames_list(nframes);
 	if (!frame->is_rle())
@@ -892,9 +892,9 @@ void Shape::write(
 	if (!num_frames)
 		return;         // Empty.
 	assert(!frames.empty() && frames[0]);
-	bool flat = !frames[0]->is_rle();
+	const bool flat = !frames[0]->is_rle();
 	// Save starting position.
-	size_t startpos = out.getPos();
+	const size_t startpos = out.getPos();
 
 	if (!flat) {
 		out.write4(0);     // Place-holder for total length.
@@ -908,7 +908,7 @@ void Shape::write(
 		assert(frame != nullptr && flat == !frame->is_rle());
 		if (frame->is_rle()) {
 			// Get position of frame.
-			size_t pos = out.getPos();
+			const size_t pos = out.getPos();
 			out.seek(startpos + (frnum + 1) * 4);
 			out.write4(pos - startpos);    // Store pos.
 			out.seek(pos);         // Get back.
@@ -916,7 +916,7 @@ void Shape::write(
 		frame->write(out);
 	}
 	if (!flat) {
-		size_t pos = out.getPos();// Ending position.
+		const size_t pos = out.getPos();// Ending position.
 		out.seek(startpos);        // Store total length.
 		out.write4(pos - startpos);
 		out.seek(pos);         // And get back to end.
@@ -1163,7 +1163,7 @@ bool Vga_file::load(
 	reset();
 	if (resetimports)
 		reset_imports();
-	int count = sources.size();
+	const int count = sources.size();
 	shape_sources.reserve(count);
 	shape_cnts.reserve(count);
 	bool is_good = true;
@@ -1220,15 +1220,15 @@ bool Vga_file::import_shapes(
 	IDataSource *ds = U7load(source, imported_sources);
 	if (ds) {
 		ds->seek(0x54); // Get # of shapes.
-		int cnt = ds->read4();
+		const int cnt = ds->read4();
 		imported_cnts.push_back(cnt);
 		flex = Flex::is_flex(ds);
 		assert(flex);
 		imported_shapes.reserve(imported_shapes.size() + imports.size());
 		for (const auto& import : imports) {
-			int shpsize = imported_shapes.size();
-			int srcsize = imported_sources.size() - 1;
-			imported_map data = {
+			const int shpsize = imported_shapes.size();
+			const int srcsize = imported_sources.size() - 1;
+			const imported_map data = {
 				import.second,   // The real shape
 				shpsize,    // The index of the data pointer.
 				srcsize
@@ -1240,7 +1240,7 @@ bool Vga_file::import_shapes(
 	} else {
 		// Set up the import table anyway.
 		for (const auto& import : imports) {
-			imported_map data = {import.second, -1, -1};
+			const imported_map data = {import.second, -1, -1};
 			imported_shape_table[import.first] = data;
 		}
 	}

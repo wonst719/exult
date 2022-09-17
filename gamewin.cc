@@ -159,10 +159,10 @@ void Background_noise::handle_event(
 
 	unsigned long delay = 8000;
 	Song_states currentstate;
-	int bghour = gwin->get_clock()->get_hour();
-	int weather = gwin->get_effects()->get_weather();
-	bool nighttime = bghour < 6 || bghour > 20;
-	bool nearby_hostile = gwin->is_hostile_nearby();
+	const int bghour = gwin->get_clock()->get_hour();
+	const int weather = gwin->get_effects()->get_weather();
+	const bool nighttime = bghour < 6 || bghour > 20;
+	const bool nearby_hostile = gwin->is_hostile_nearby();
 	if (nearby_hostile && !gwin->in_combat())
 		currentstate = DangerNear;
 	else if (gwin->is_in_dungeon())
@@ -185,7 +185,7 @@ void Background_noise::handle_event(
 		delay = 1000;   //Quickly get back to this function check
 		//We've got OGG so play the background SFX tracks
 
-		int curr_track = player->get_current_track();
+		const int curr_track = player->get_current_track();
 
 		// Testing. Original seems to allow crickets for all songs at night,
 		// except when in a dungeon. Also, only do it sometimes.
@@ -198,7 +198,7 @@ void Background_noise::handle_event(
 		if ((curr_track == -1 || laststate != currentstate) &&
 		        Audio::get_ptr()->is_music_enabled()) {
 			// Don't override bee cave music with dungeon music.
-			bool notbees = !GAME_BG || curr_track != 54;
+			const bool notbees = !GAME_BG || curr_track != 54;
 			// ++++ TODO: Need to come up with a way to replace repeating songs
 			// here, just so they don't loop forever.
 			// Conditions: not playing music, playing a background music
@@ -248,12 +248,12 @@ void Background_noise::handle_event(
 		        // +++++SI SFX's don't sound right.
 		        Game::get_game_type() == BLACK_GATE) {
 			int sound;      // BG SFX #.
-			static unsigned char bgnight[] = {61, 61, 255};
-			static unsigned char bgday[] = {82, 85, 85};
+			static const unsigned char bgnight[] = {61, 61, 255};
+			static const unsigned char bgday[] = {82, 85, 85};
 			if (repeats > 0)    // Repeating?
 				sound = last_sound;
 			else {
-				int hour = gwin->get_clock()->get_hour();
+				const int hour = gwin->get_clock()->get_hour();
 				if (hour < 6 || hour > 20)
 					sound = bgnight[rand() % sizeof(bgnight)];
 				else
@@ -380,7 +380,7 @@ Game_window::Game_window(
 #if defined(__IPHONEOS__) || defined(ANDROID)
 	string default_scroll_with_mouse = "no";
 #else
-	string default_scroll_with_mouse = "yes";
+	const string default_scroll_with_mouse = "yes";
 #endif
 	config->value("config/gameplay/scroll_with_mouse", str, default_scroll_with_mouse);
 	scroll_with_mouse = str == "yes";
@@ -459,7 +459,7 @@ Game_window::Game_window(
 	sb_hide_missing = str != "no";
 	config->set("config/shortcutbar/hide_missing_items", sb_hide_missing ? "yes" : "no", false);
 	config->write_back();
-	
+
 	// default to SI extended intro
 	config->value("config/gameplay/extended_intro", str, "yes");
 	extended_intro = str == "yes";
@@ -543,7 +543,7 @@ void Game_window::init_files(bool cycle) {
 	shape_man->load();      // All the .vga files!
 	cycle_load_palette();
 
-	unsigned long timer = SDL_GetTicks();
+	const unsigned long timer = SDL_GetTicks();
 	srand(timer);           // Use time to seed rand. generator.
 	// Force clock to start.
 	tqueue->add(timer, clock, this);
@@ -699,7 +699,7 @@ void Game_window::set_time_stopped(
 	else if (!delay)
 		time_stopped = 0;
 	else {
-		long new_expire = Game::get_ticks() + delay;
+		const long new_expire = Game::get_ticks() + delay;
 		if (new_expire > time_stopped)  // Set expiration time.
 			time_stopped = new_expire;
 	}
@@ -713,7 +713,7 @@ long Game_window::check_time_stopped(
 ) {
 	if (time_stopped == -1)
 		return 3000;
-	long delay = time_stopped - Game::get_ticks();
+	const long delay = time_stopped - Game::get_ticks();
 	if (delay > 0)
 		return delay;
 	time_stopped = 0;       // Done.
@@ -729,15 +729,15 @@ void Game_window::toggle_combat(
 	combat = !combat;
 	// Change party member's schedules.
 	int newsched = combat ? Schedule::combat : Schedule::follow_avatar;
-	int cnt = party_man->get_count();
+	const int cnt = party_man->get_count();
 	for (int i = 0; i < cnt; i++) {
-		int party_member = party_man->get_member(i);
+		const int party_member = party_man->get_member(i);
 		Actor *person = get_npc(party_member);
 		if (!person)
 			continue;
 		if (!person->can_act_charmed())
 			newsched = Schedule::combat;
-		int sched = person->get_schedule_type();
+		const int sched = person->get_schedule_type();
 		if (sched != newsched && sched != Schedule::wait &&
 		        sched != Schedule::loiter)
 			person->set_schedule_type(newsched);
@@ -750,7 +750,7 @@ void Game_window::toggle_combat(
 		main_actor->ready_best_weapon();
 		set_moving_barge(nullptr);    // And get out of barge mode.
 		Actor *all[9];
-		int cnt = get_party(all, 1);
+		const int cnt = get_party(all, 1);
 		for (int i = 0; i < cnt; i++) {
 			// Did Usecode set to flee?
 			Actor *act = all[i];
@@ -815,13 +815,13 @@ void Game_window::locate_npc(
 		effects->center_text(msg);
 	} else {
 		// ++++WHAT IF on a different map???
-		Tile_coord pos = npc->get_tile();
+		const Tile_coord pos = npc->get_tile();
 		center_view(pos);
 		cheat.clear_selected();
 		cheat.append_selected(npc);
 		snprintf(msg, 80, "NPC %d: '%s'.", npc_num,
 		         npc->get_npc_name().c_str());
-		int above = pos.tz + npc->get_info().get_3d_height() - 1;
+		const int above = pos.tz + npc->get_info().get_3d_height() - 1;
 		if (skip_above_actor > above)
 			set_above_main_actor(above);
 		effects->center_text(msg);
@@ -895,7 +895,7 @@ void Game_window::resized(
 void Game_window::clear_world(
     bool restoremapedit
 ) {
-	bool edit = cheat.in_map_editor();
+	const bool edit = cheat.in_map_editor();
 	cheat.set_map_editor(false);
 	Combat::resume();
 	tqueue->clear();        // Remove all entries.
@@ -1030,12 +1030,12 @@ void Game_window::set_scrolls(
 		set_moving_barge(b);
 	}
 	// Set where to skip rendering.
-	int cx = camera_actor->get_cx();
-	int cy = camera_actor->get_cy();
+	const int cx = camera_actor->get_cx();
+	const int cy = camera_actor->get_cy();
 	Map_chunk *nlist = map->get_chunk(cx, cy);
 	nlist->setup_cache();
-	int tx = camera_actor->get_tx();
-	int ty = camera_actor->get_ty();
+	const int tx = camera_actor->get_tx();
+	const int ty = camera_actor->get_ty();
 	set_above_main_actor(nlist->is_roof(tx, ty,
 	                                    camera_actor->get_lift()));
 	set_in_dungeon(nlist->has_dungeon() ? nlist->is_dungeon(tx, ty) : 0);
@@ -1053,8 +1053,8 @@ void Game_window::set_scrolls(
 ) {
 	// Figure in tiles.
 	// OFFSET HERE
-	int tw = get_width() / c_tilesize;
-	int th = (get_height()) / c_tilesize;
+	const int tw = get_width() / c_tilesize;
+	const int th = (get_height()) / c_tilesize;
 	set_scrolls(DECR_TILE(cent.tx, tw / 2), DECR_TILE(cent.ty, th / 2));
 }
 
@@ -1085,7 +1085,7 @@ void Game_window::set_camera_actor(
 		emulate_cache(camera_actor->get_chunk(),
 		              main_actor->get_chunk());
 	camera_actor = a;
-	Tile_coord t = a->get_tile();
+	const Tile_coord t = a->get_tile();
 	set_scrolls(t);         // Set scrolling around position,
 	// and read in map there.
 	set_all_dirty();
@@ -1102,8 +1102,8 @@ bool Game_window::scroll_if_needed(
 ) {
 	bool scrolled = false;
 	// 1 lift = 1/2 tile.
-	int tx = t.tx - t.tz / 2;
-	int ty = t.ty - t.tz / 2;
+	const int tx = t.tx - t.tz / 2;
+	const int ty = t.ty - t.tz / 2;
 	if (Tile_coord::gte(DECR_TILE(scroll_bounds.x), tx)) {
 		view_left();
 		scrolled = true;
@@ -1158,7 +1158,7 @@ TileRect Game_window::get_shape_rect(const Game_object *obj) const {
 		return TileRect(0, 0, 0, 0);
 	}
 	Tile_coord t = obj->get_tile(); // Get tile coords.
-	int lftpix = (c_tilesize * t.tz) / 2;
+	const int lftpix = (c_tilesize * t.tz) / 2;
 	t.tx += 1 - get_scrolltx();
 	t.ty += 1 - get_scrollty();
 	// Watch for wrapping.
@@ -1180,7 +1180,7 @@ inline void Get_shape_location(
     int scrolltx, int scrollty,
     int &x, int &y
 ) {
-	int lft = 4 * t.tz;
+	const int lft = 4 * t.tz;
 	t.tx += 1 - scrolltx;
 	t.ty += 1 - scrollty;
 	// Watch for wrapping.
@@ -1301,7 +1301,7 @@ bool Game_window::init_gamedat(bool create) {
 			;
 		*ptr = 0;
 		cout << "Gamedat identity " << gamedat_identity << endl;
-		string static_identity = get_game_identity(INITGAME, Game::get_gametitle());
+		const string static_identity = get_game_identity(INITGAME, Game::get_gametitle());
 		if (static_identity != gamedat_identity) {
 			return false;
 		}
@@ -1321,12 +1321,12 @@ void Game_window::write(
 ) {
 	// Lets just show a nice message on screen first
 
-	int width = get_width();
-	int centre_x = width / 2;
-	int height = get_height();
-	int centre_y = height / 2;
-	int text_height = shape_man->get_text_height(0);
-	int text_width = shape_man->get_text_width(0, "Saving Game");
+	const int width = get_width();
+	const int centre_x = width / 2;
+	const int height = get_height();
+	const int centre_y = height / 2;
+	const int text_height = shape_man->get_text_height(0);
+	const int text_width = shape_man->get_text_width(0, "Saving Game");
 
 	win->fill_translucent8(0, width, height, 0, 0,
 	                       shape_man->get_xform(8));
@@ -1431,8 +1431,8 @@ void Game_window::read_gwin(
 		return;
 	}
 
-	int track_num = gin.read4();
-	int repeat = gin.read4();
+	const int track_num = gin.read4();
+	const int repeat = gin.read4();
 	if (!gin.good()) {
 		Audio::get_ptr()->stop_music();
 		return;
@@ -1523,10 +1523,10 @@ void Game_window::reload_usecode(
 
 void Game_window::view_right(
 ) {
-	int w = get_width();
-	int h = get_height();
+	const int w = get_width();
+	const int h = get_height();
 	// Get current rightmost chunk.
-	int old_rcx = ((scrolltx + (w - 1) / c_tilesize) / c_tiles_per_chunk) %
+	const int old_rcx = ((scrolltx + (w - 1) / c_tilesize) / c_tiles_per_chunk) %
 	              c_num_chunks;
 	scrolltx = INCR_TILE(scrolltx);
 	scroll_bounds.x = INCR_TILE(scroll_bounds.x);
@@ -1542,14 +1542,14 @@ void Game_window::view_right(
 	dirty.x -= c_tilesize;  // Shift dirty rect.
 	dirty = clip_to_win(dirty);
 	// New chunk?
-	int new_rcx = ((scrolltx + (w - 1) / c_tilesize) / c_tiles_per_chunk) %
+	const int new_rcx = ((scrolltx + (w - 1) / c_tilesize) / c_tiles_per_chunk) %
 	              c_num_chunks;
 	if (new_rcx != old_rcx)
 		Send_location(this);
 }
 void Game_window::view_left(
 ) {
-	int old_lcx = (scrolltx / c_tiles_per_chunk) % c_num_chunks;
+	const int old_lcx = (scrolltx / c_tiles_per_chunk) % c_num_chunks;
 	// Want to wrap.
 	scrolltx = DECR_TILE(scrolltx);
 	scroll_bounds.x = DECR_TILE(scroll_bounds.x);
@@ -1560,21 +1560,21 @@ void Game_window::view_left(
 	map->read_map_data();       // Be sure objects are present.
 	win->copy(0, 0, get_width() - c_tilesize, get_height(),
 				c_tilesize, 0);
-	int h = get_height();
+	const int h = get_height();
 	paint(0, 0, c_tilesize, h);
 	dirty.x += c_tilesize;      // Shift dirty rect.
 	dirty = clip_to_win(dirty);
 	// New chunk?
-	int new_lcx = (scrolltx / c_tiles_per_chunk) % c_num_chunks;
+	const int new_lcx = (scrolltx / c_tiles_per_chunk) % c_num_chunks;
 	if (new_lcx != old_lcx)
 		Send_location(this);
 }
 void Game_window::view_down(
 ) {
-	int w = get_width();
-	int h = get_height();
+	const int w = get_width();
+	const int h = get_height();
 	// Get current bottomost chunk.
-	int old_bcy = ((scrollty + (h - 1) / c_tilesize) / c_tiles_per_chunk) %
+	const int old_bcy = ((scrollty + (h - 1) / c_tilesize) / c_tiles_per_chunk) %
 	              c_num_chunks;
 	scrollty = INCR_TILE(scrollty);
 	scroll_bounds.y = INCR_TILE(scroll_bounds.y);
@@ -1588,14 +1588,14 @@ void Game_window::view_down(
 	dirty.y -= c_tilesize;      // Shift dirty rect.
 	dirty = clip_to_win(dirty);
 	// New chunk?
-	int new_bcy = ((scrollty + (h - 1) / c_tilesize) / c_tiles_per_chunk) %
+	const int new_bcy = ((scrollty + (h - 1) / c_tilesize) / c_tiles_per_chunk) %
 	              c_num_chunks;
 	if (new_bcy != old_bcy)
 		Send_location(this);
 }
 void Game_window::view_up(
 ) {
-	int old_tcy = (scrollty / c_tiles_per_chunk) % c_num_chunks;
+	const int old_tcy = (scrollty / c_tiles_per_chunk) % c_num_chunks;
 	// Want to wrap.
 	scrollty = DECR_TILE(scrollty);
 	scroll_bounds.y = DECR_TILE(scroll_bounds.y);
@@ -1604,13 +1604,13 @@ void Game_window::view_up(
 		return;
 	}
 	map->read_map_data();       // Be sure objects are present.
-	int w = get_width();
+	const int w = get_width();
 	win->copy(0, 0, w, get_height() - c_tilesize, 0, c_tilesize);
 	paint(0, 0, w, c_tilesize);
 	dirty.y += c_tilesize;      // Shift dirty rect.
 	dirty = clip_to_win(dirty);
 	// New chunk?
-	int new_tcy = (scrollty / c_tiles_per_chunk) % c_num_chunks;
+	const int new_tcy = (scrollty / c_tiles_per_chunk) % c_num_chunks;
 	if (new_tcy != old_tcy)
 		Send_location(this);
 }
@@ -1639,7 +1639,7 @@ void Game_window::start_actor_alt(
 
 	Tile_coord start = main_actor->get_tile();
 	int dir;
-	bool checkdrop = (main_actor->get_type_flags() & MOVE_LEVITATE) == 0;
+	const bool checkdrop = (main_actor->get_type_flags() & MOVE_LEVITATE) == 0;
 
 	for (dir = 0; dir < 8; dir++) {
 		Tile_coord dest = start.get_neighbor(dir);
@@ -1664,7 +1664,7 @@ void Game_window::start_actor_alt(
 			stop_actor();
 			if (main_actor->get_lift() % 5) { // Up on something?
 				// See if we're stuck in the air.
-				int savetz = start.tz;
+				const int savetz = start.tz;
 				if (!Map_chunk::is_blocked(start, 1,
 				                           MOVE_WALK, 100) &&
 				        start.tz < savetz)
@@ -1723,8 +1723,8 @@ void Game_window::start_actor_alt(
 		break;
 	}
 
-	int lift = main_actor->get_lift();
-	int liftpixels = 4 * lift;  // Figure abs. tile.
+	const int lift = main_actor->get_lift();
+	const int liftpixels = 4 * lift;  // Figure abs. tile.
 	int tx = get_scrolltx() + (ax + liftpixels) / c_tilesize;
 	int ty = get_scrollty() + (ay + liftpixels) / c_tilesize;
 	// Wrap:
@@ -1758,15 +1758,15 @@ void Game_window::start_actor(
 //	teleported = 0;
 	if (moving_barge) {
 		// Want to move center there.
-		int lift = main_actor->get_lift();
-		int liftpixels = 4 * lift;  // Figure abs. tile.
+		const int lift = main_actor->get_lift();
+		const int liftpixels = 4 * lift;  // Figure abs. tile.
 		int tx = get_scrolltx() + (winx + liftpixels) / c_tilesize;
 		int ty = get_scrollty() + (winy + liftpixels) / c_tilesize;
 		// Wrap:
 		tx = (tx + c_num_tiles) % c_num_tiles;
 		ty = (ty + c_num_tiles) % c_num_tiles;
-		Tile_coord atile = moving_barge->get_center();
-		Tile_coord btile = moving_barge->get_tile();
+		const Tile_coord atile = moving_barge->get_center();
+		const Tile_coord btile = moving_barge->get_tile();
 		// Go faster than walking.
 		moving_barge->travel_to_tile(
 		    Tile_coord(tx + btile.tx - atile.tx,
@@ -1778,7 +1778,7 @@ void Game_window::start_actor(
 		main_actor->get_followers();
 		*/
 		// Set schedule.
-		int sched = main_actor->get_schedule_type();
+		const int sched = main_actor->get_schedule_type();
 		if (sched != Schedule::follow_avatar &&
 		        sched != Schedule::combat &&
 		        !main_actor->get_flag(Obj_flags::asleep))
@@ -1805,9 +1805,9 @@ void Game_window::start_actor_along_path(
 	if (!cheat.in_map_editor() && main_actor->in_usecode_control())
 		return;
 //	teleported = 0;
-	int lift = main_actor->get_lift();
-	int liftpixels = 4 * lift;  // Figure abs. tile.
-	Tile_coord dest(get_scrolltx() + (winx + liftpixels) / c_tilesize,
+	const int lift = main_actor->get_lift();
+	const int liftpixels = 4 * lift;  // Figure abs. tile.
+	const Tile_coord dest(get_scrolltx() + (winx + liftpixels) / c_tilesize,
 	                get_scrollty() + (winy + liftpixels) / c_tilesize, lift);
 	if (!main_actor->walk_path_to_tile(dest, speed)) {
 		cout << "Couldn't find path for Avatar." << endl;
@@ -1847,12 +1847,12 @@ void Game_window::teleport_party(
     int newmap,         // New map #, or -1 for same map.
     bool no_status_check
 ) {
-	Tile_coord oldpos = main_actor->get_tile();
+	const Tile_coord oldpos = main_actor->get_tile();
 	main_actor->set_action(nullptr);  // Definitely need this, or you may
 	//   step back to where you came from.
 	moving_barge = nullptr;       // Calling 'done()' could be risky...
 	int i;
-	int cnt = party_man->get_count();
+	const int cnt = party_man->get_count();
 	if (newmap != -1)
 		set_map(newmap);
 	main_actor->move(t.tx, t.ty, t.tz, newmap); // Move Avatar.
@@ -1862,13 +1862,13 @@ void Game_window::teleport_party(
 	clock->reset_palette();
 	//   objs. exist.
 	for (i = 0; i < cnt; i++) {
-		int party_member = party_man->get_member(i);
+		const int party_member = party_man->get_member(i);
 		Actor *person = get_npc(party_member);
 		if (person && !person->is_dead() &&
 		        person->get_schedule_type() != Schedule::wait
 		        && (person->can_act() || no_status_check)) {
 			person->set_action(nullptr);
-			Tile_coord t1 = Map_chunk::find_spot(t, 8,
+			const Tile_coord t1 = Map_chunk::find_spot(t, 8,
 			                                     person->get_shapenum(), person->get_framenum(),
 			                                     1);
 			if (t1.tx != -1) {
@@ -1902,9 +1902,9 @@ int Game_window::get_party(
 	int n = 0;
 	if (avatar_too && main_actor)
 		a_list[n++] = main_actor;
-	int cnt = party_man->get_count();
+	const int cnt = party_man->get_count();
 	for (int i = 0; i < cnt; i++) {
-		int party_member = party_man->get_member(i);
+		const int party_member = party_man->get_member(i);
 		Actor *person = get_npc(party_member);
 		if (person)
 			a_list[n++] = person;
@@ -1925,7 +1925,7 @@ bool Game_window::activate_item(
     int qual            // Desired quality
 ) {
 	Actor *party[9];        // Get party.
-	int cnt = get_party(party, 1);
+	const int cnt = get_party(party, 1);
 	for (int i = 0; i < cnt; i++) {
 		Actor *person = party[i];
 		Game_object *obj = person->find_item(shnum, qual, frnum);
@@ -1950,16 +1950,16 @@ Game_object *Game_window::find_object(
 	cout << "Clicked at tile (" << get_scrolltx() + x / c_tilesize << ", " <<
 	     get_scrollty() + y / c_tilesize << ")" << endl;
 #endif
-	int not_above = get_render_skip_lift();
+	const int not_above = get_render_skip_lift();
 	// Figure chunk #'s.
-	int start_cx = ((scrolltx +
+	const int start_cx = ((scrolltx +
 	                 x / c_tilesize) / c_tiles_per_chunk) % c_num_chunks;
-	int start_cy = ((scrollty +
+	const int start_cy = ((scrollty +
 	                 y / c_tilesize) / c_tiles_per_chunk) % c_num_chunks;
 	// Check 1 chunk down & right too.
-	int stop_cx = (2 + (scrolltx +
+	const int stop_cx = (2 + (scrolltx +
 	                    (x + 4 * not_above) / c_tilesize) / c_tiles_per_chunk) % c_num_chunks;
-	int stop_cy = (2 + (scrollty +
+	const int stop_cy = (2 + (scrollty +
 	                    (y + 4 * not_above) / c_tilesize) / c_tiles_per_chunk) % c_num_chunks;
 
 	Game_object *best = nullptr;      // Find 'best' one.
@@ -2095,7 +2095,7 @@ void Game_window::show_items(
 	if (npc && cheat.number_npcs() &&
 	        (npc->get_npc_num() > 0 || npc == main_actor)) {
 		char str[64];
-		std::string namestr = Get_object_name(obj);
+		const std::string namestr = Get_object_name(obj);
 		snprintf(str, sizeof(str)-1, "(%i) %s", npc->get_npc_num(),
 		         namestr.c_str());
 		str[sizeof(str)-1] = 0;
@@ -2118,7 +2118,7 @@ void Game_window::show_items(
 		effects->add_text(namestr.c_str(), obj);
 	} else if (cheat.in_map_editor() && skip_lift > 0) {
 		// Show flat, but not when editing ter.
-		ShapeID id = get_flat(x, y);
+		const ShapeID id = get_flat(x, y);
 		char str[20];
 		snprintf(str, sizeof(str)-1, "Flat %d:%d",
 		         id.get_shapenum(), id.get_framenum());
@@ -2134,7 +2134,7 @@ void Game_window::show_items(
 	int shnum;
 	if (obj) {
 		shnum = obj->get_shapenum();
-		int frnum = obj->get_framenum();
+		const int frnum = obj->get_framenum();
 		const Shape_info &info = obj->get_info();
 		cout << "Object " << shnum << ':' << frnum <<
 		     " has 3d tiles (x, y, z): " <<
@@ -2150,7 +2150,7 @@ void Game_window::show_items(
 			      npc->get_npc_num();
 		cout << endl;
 		if (obj->get_chunk()) {
-			Tile_coord t = obj->get_tile();
+			const Tile_coord t = obj->get_tile();
 			cout << "tx = " << t.tx << ", ty = " << t.ty <<
 			     ", tz = " << t.tz << ", ";
 		}
@@ -2168,7 +2168,7 @@ void Game_window::show_items(
 		if (obj->is_egg())  // Show egg info. here.
 			obj->as_egg()->print_debug();
 	} else {            // Obj==0
-		ShapeID id = get_flat(x, y);
+		const ShapeID id = get_flat(x, y);
 		shnum = id.get_shapenum();
 		cout << "Clicked on flat shape " <<
 		     shnum << ':' << id.get_framenum() << endl;
@@ -2235,9 +2235,9 @@ void Game_window::paused_combat_select(
 	obj = find_object(x, y);    // Find it.
 	if (!obj) {         // Nothing?  Walk there.
 		// Needs work if lift > 0.
-		int lift = npc->get_lift();
-		int liftpixels = 4 * lift;
-		Tile_coord dest(scrolltx + (x + liftpixels) / c_tilesize,
+		const int lift = npc->get_lift();
+		const int liftpixels = 4 * lift;
+		const Tile_coord dest(scrolltx + (x + liftpixels) / c_tilesize,
 		                scrollty + (y + liftpixels) / c_tilesize, lift);
 		// Aim within 1 tile.
 		if (!npc->walk_path_to_tile(dest, std_delay, 0, 1))
@@ -2273,8 +2273,8 @@ ShapeID Game_window::get_flat(
 ) {
 	int tx = (get_scrolltx() + x / c_tilesize) % c_num_tiles;
 	int ty = (get_scrollty() + y / c_tilesize) % c_num_tiles;
-	int cx = tx / c_tiles_per_chunk;
-	int cy = ty / c_tiles_per_chunk;
+	const int cx = tx / c_tiles_per_chunk;
+	const int cy = ty / c_tiles_per_chunk;
 	tx = tx % c_tiles_per_chunk;
 	ty = ty % c_tiles_per_chunk;
 	Map_chunk *chunk = map->get_chunk(cx, cy);
@@ -2295,8 +2295,8 @@ void Game_window::double_clicked(
 	// Nothing going on?
 	// Look for obj. in open gump.
 	Game_object *obj = nullptr;
-	bool gump = gump_man->double_clicked(x, y, obj);
-	bool avatar_can_act = main_actor_can_act();
+	const bool gump = gump_man->double_clicked(x, y, obj);
+	const bool avatar_can_act = main_actor_can_act();
 
 	// If gump manager didn't handle it, we search the world for an object
 	if (!gump) {
@@ -2464,7 +2464,7 @@ Actor *Game_window::find_witness(
 	int closest_dist = 5000;
 	Actor *witness = nullptr;     // And closest facing us.
 	int closest_witness_dist = 5000;
-	int gshape = get_guard_shape();
+	const int gshape = get_guard_shape();
 	for (auto& npc : nearby) {
 		// Want non-party intelligent and not disabled NPCs only.
 		if (npc->is_in_party() || !npc->is_sentient() || !npc->can_act())
@@ -2475,16 +2475,16 @@ Actor *Game_window::find_witness(
 		if (npc->get_effective_alignment() != align ||
 		        (npc->get_shapenum() == gshape && align != Actor::neutral))
 			continue;
-		int dist = npc->distance(main_actor);
+		const int dist = npc->distance(main_actor);
 		if (dist >= closest_witness_dist ||
 		        !Fast_pathfinder_client::is_grabable(npc, main_actor))
 			continue;
 		// Looking toward Avatar?
 		auto sched =
 		    static_cast<Schedule::Schedule_types>(npc->get_schedule_type());
-		int dir = npc->get_direction(main_actor);
-		int facing = npc->get_dir_facing();
-		int dirdiff = (dir - facing + 8) % 8;
+		const int dir = npc->get_direction(main_actor);
+		const int facing = npc->get_dir_facing();
+		const int dirdiff = (dir - facing + 8) % 8;
 		if (dirdiff < 3 || dirdiff > 5 || sched == Schedule::hound) {
 			// Yes.
 			witness = npc;
@@ -2504,8 +2504,8 @@ Actor *Game_window::find_witness(
 void Game_window::theft(
 ) {
 	// See if in a new location.
-	int cx = main_actor->get_cx();
-	int cy = main_actor->get_cy();
+	const int cx = main_actor->get_cx();
+	const int cy = main_actor->get_cy();
 	if (cx != theft_cx || cy != theft_cy) {
 		theft_cx = cx;
 		theft_cy = cy;
@@ -2522,7 +2522,7 @@ void Game_window::theft(
 		}
 		return;         // Didn't get caught.
 	}
-	bool avainvisible = main_actor->get_flag(Obj_flags::invisible);
+	const bool avainvisible = main_actor->get_flag(Obj_flags::invisible);
 	if (avainvisible && !witness->can_see_invisible()) {
 		if (witness->is_goblin())
 			witness->say(goblin_invis_theft);
@@ -2530,7 +2530,7 @@ void Game_window::theft(
 			witness->say(first_invis_theft, last_invis_theft);
 		return;         // Didn't get caught because was invisible.
 	}
-	int dir = witness->get_direction(main_actor);
+	const int dir = witness->get_direction(main_actor);
 	// Face avatar.
 	witness->change_frame(witness->get_dir_framenum(dir,
 	                      Actor::standing));
@@ -2563,8 +2563,8 @@ void Game_window::call_guards(
 	Actor *closest;
 	if (armageddon || in_dungeon)
 		return;
-	int gshape = get_guard_shape();
-	int align = witness ? witness->get_effective_alignment() : Actor::neutral;
+	const int gshape = get_guard_shape();
+	const int align = witness ? witness->get_effective_alignment() : Actor::neutral;
 	if (witness || (witness = find_witness(closest, align)) != nullptr) {
 		if (witness->is_goblin()) {
 			if (gshape < 0)
@@ -2587,20 +2587,20 @@ void Game_window::call_guards(
 		return;
 	}
 
-	Tile_coord dest = Map_chunk::find_spot(main_actor->get_tile(), 5, gshape, 0, 1);
+	const Tile_coord dest = Map_chunk::find_spot(main_actor->get_tile(), 5, gshape, 0, 1);
 	if (dest.tx != -1) {
 		// Show guard running up.
 		// Create it off-screen.
-		int numguards = 1 + rand() % 3;
-		Tile_coord offscreen(main_actor->get_tile() + Tile_coord(128, 128, 0));
+		const int numguards = 1 + rand() % 3;
+		const Tile_coord offscreen(main_actor->get_tile() + Tile_coord(128, 128, 0));
 		// Start in combat if avatar is fighting.
 		// FIXME: Disabled for now, as causes guards to attack
 		// avatar if you break glass, when they should arrest
 		// instead.
-		Schedule::Schedule_types sched = /*combat ? Schedule::combat
+		const Schedule::Schedule_types sched = /*combat ? Schedule::combat
                                                 :*/ Schedule::arrest_avatar;
 		for (int i = 0; i < numguards; i++) {
-			Game_object_shared new_guard = Monster_actor::create(
+			const Game_object_shared new_guard = Monster_actor::create(
 							   gshape, offscreen, sched, Actor::chaotic);
 			auto *guard = static_cast<Monster_actor *>(
 													new_guard.get());
@@ -2624,7 +2624,7 @@ void Game_window::stop_arresting(
 ) {
 	if (armageddon || in_dungeon)
 		return;
-	int gshape = get_guard_shape();
+	const int gshape = get_guard_shape();
 	if (gshape < 0) { // No one to calm down.
 		return;
 	}
@@ -2650,11 +2650,11 @@ void Game_window::attack_avatar(
 ) {
 	if (armageddon)
 		return;
-	int gshape = get_guard_shape();
+	const int gshape = get_guard_shape();
 	if (gshape >= 0 && !in_dungeon) {
 		while (create_guards--) {
 			// Create it off-screen.
-			Game_object_shared new_guard = Monster_actor::create(gshape,
+			const Game_object_shared new_guard = Monster_actor::create(gshape,
 			                  main_actor->get_tile() + Tile_coord(128, 128, 0),
 			                  Schedule::combat, Actor::chaotic);
 			auto *guard = static_cast<Monster_actor *>(
@@ -2788,7 +2788,7 @@ void Game_window::setup_game(
 	// and activate_eggs may update the screen through usecode functions
 	// (Helm of Light, for example)
 	Actor *party[9];
-	int cnt = get_party(party, 1);  // Get entire party.
+	const int cnt = get_party(party, 1);  // Get entire party.
 	for (int i = 0; i < cnt; i++) { // Init. rings.
 		party[i]->init_readied();
 	}
@@ -2800,7 +2800,7 @@ void Game_window::setup_game(
 	Map_chunk *olist = main_actor->get_chunk();
 	olist->setup_cache();
 
-	Tile_coord t = main_actor->get_tile();
+	const Tile_coord t = main_actor->get_tile();
 	// Do them immediately.
 	if (!map_editing)       // (Unless map-editing.)
 		olist->activate_eggs(main_actor, t.tx, t.ty, t.tz, -1, -1, true);
@@ -2825,13 +2825,13 @@ void Game_window::plasma(int w, int h, int x, int y, int startc, int endc) {
 	ibuf->fill8(startc, w, h, x, y);
 
 	for (int i = 0; i < w * h; i++) {
-		Uint8 pc = startc + rand() % (endc - startc + 1);
-		int px = x + rand() % w;
-		int py = y + rand() % h;
+		const Uint8 pc = startc + rand() % (endc - startc + 1);
+		const int px = x + rand() % w;
+		const int py = y + rand() % h;
 
 		for (int j = 0; j < 6; j++) {
-			int px2 = px + rand() % 17 - 8;
-			int py2 = py + rand() % 17 - 8;
+			const int px2 = px + rand() % 17 - 8;
+			const int py2 = py + rand() % 17 - 8;
 			ibuf->fill8(pc, 3, 1, px2 - 1, py2);
 			ibuf->fill8(pc, 1, 3, px2, py2 - 1);
 		}
@@ -2849,10 +2849,10 @@ void Game_window::emulate_cache(Map_chunk *olist, Map_chunk *nlist) {
 	// Cancel weather from eggs that are
 	// far away.
 	effects->remove_weather_effects(120);
-	int newx = nlist->get_cx();
-	int newy = nlist->get_cy();
-	int oldx = olist->get_cx();
-	int oldy = olist->get_cy();
+	const int newx = nlist->get_cx();
+	const int newy = nlist->get_cy();
+	const int oldx = olist->get_cx();
+	const int oldy = olist->get_cy();
 	Game_map *omap = olist->get_map();
 	Game_map *nmap = nlist->get_map();
 	// Cancel scripts 4 chunks from this.
@@ -2862,30 +2862,30 @@ void Game_window::emulate_cache(Map_chunk *olist, Map_chunk *nlist) {
 	int x;
 	int y;
 	// Figure old range.
-	int old_minx = c_num_chunks + oldx - 2;
-	int old_maxx = c_num_chunks + oldx + 2;
-	int old_miny = c_num_chunks + oldy - 2;
-	int old_maxy = c_num_chunks + oldy + 2;
+	const int old_minx = c_num_chunks + oldx - 2;
+	const int old_maxx = c_num_chunks + oldx + 2;
+	const int old_miny = c_num_chunks + oldy - 2;
+	const int old_maxy = c_num_chunks + oldy + 2;
 	if (nmap == omap) {     // Same map?
 		// Set to 0
 		memset(nearby, 0, sizeof(nearby));
 		// Figure new range.
-		int new_minx = c_num_chunks + newx - 2;
-		int new_maxx = c_num_chunks + newx + 2;
-		int new_miny = c_num_chunks + newy - 2;
-		int new_maxy = c_num_chunks + newy + 2;
+		const int new_minx = c_num_chunks + newx - 2;
+		const int new_maxx = c_num_chunks + newx + 2;
+		const int new_miny = c_num_chunks + newy - 2;
+		const int new_maxy = c_num_chunks + newy + 2;
 		// Now we write what we are now near
 		for (y = new_miny; y <= new_maxy; y++) {
 			if (y > old_maxy)
 				break;      // Beyond the end.
-			int dy = y - old_miny;
+			const int dy = y - old_miny;
 			if (dy < 0)
 				continue;
 			assert(dy < 5);
 			for (x = new_minx; x <= new_maxx; x++) {
 				if (x > old_maxx)
 					break;
-				int dx = x - old_minx;
+				const int dx = x - old_minx;
 				if (dx >= 0) {
 					assert(dx < 5);
 					nearby[dx][dy] = 1;
@@ -2916,7 +2916,7 @@ void Game_window::emulate_cache(Map_chunk *olist, Map_chunk *nlist) {
 		}
 	for (auto *remove : removes) {
 #ifdef DEBUG
-		Tile_coord t = remove->get_tile();
+		const Tile_coord t = remove->get_tile();
 		cout << "Culling object: " << remove->get_name() <<
 		     '(' << remove << ")@" <<
 		     t.tx << "," << t.ty << "," << t.tz << endl;
@@ -2933,8 +2933,8 @@ void Game_window::emulate_cache(Map_chunk *olist, Map_chunk *nlist) {
 
 // Tests to see if a move goes out of range of the actors superchunk
 bool Game_window::emulate_is_move_allowed(int tx, int ty) {
-	int ax = camera_actor->get_cx() / c_chunks_per_schunk;
-	int ay = camera_actor->get_cy() / c_chunks_per_schunk;
+	const int ax = camera_actor->get_cx() / c_chunks_per_schunk;
+	const int ay = camera_actor->get_cy() / c_chunks_per_schunk;
 	tx /= c_tiles_per_schunk;
 	ty /= c_tiles_per_schunk;
 
@@ -3000,7 +3000,7 @@ void Game_window::setup_load_palette() {
 void Game_window::cycle_load_palette() {
 	if (load_palette_timer == 0)
 		return;
-	uint32 ticks = SDL_GetTicks();
+	const uint32 ticks = SDL_GetTicks();
 	if (ticks > load_palette_timer + 75) {
 		for (int i = 0; i < 4; ++i)
 			get_win()->rotate_colors(plasma_start_color, plasma_cycle_range, 1);
@@ -3044,8 +3044,8 @@ bool Game_window::is_hostile_nearby() const {
 }
 
 bool Game_window::failed_copy_protection() {
-	bool confused = main_actor->get_flag(Obj_flags::confused);
-	bool failureFlag = usecode->get_global_flag(56);
+	const bool confused = main_actor->get_flag(Obj_flags::confused);
+	const bool failureFlag = usecode->get_global_flag(56);
 	return (GAME_SI && confused) || (GAME_BG && failureFlag);
 }
 

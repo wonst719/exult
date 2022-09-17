@@ -50,7 +50,7 @@ WavAudioSample::WavAudioSample(std::unique_ptr<uint8[]> buffer_, uint32 size) : 
 	ds.read(buf,4);
 	if (std::memcmp(buf,"RIFF",4) != 0) return;
 
-	uint32 riff_size = ds.read4();
+	const uint32 riff_size = ds.read4();
 	if (riff_size != size-8) return;
 
 	ds.read(buf,4);
@@ -59,16 +59,16 @@ WavAudioSample::WavAudioSample(std::unique_ptr<uint8[]> buffer_, uint32 size) : 
 	while (ds.getPos() < riff_size+8)
 	{
 		ds.read(buf,4);
-		uint32 chunk_size = ds.read4();
+		const uint32 chunk_size = ds.read4();
 
-		if (!std::memcmp(buf,"fmt ",4)) 
+		if (!std::memcmp(buf,"fmt ",4))
 		{
 			pos_fmt = ds.getPos();
 			size_fmt = chunk_size;
 
 			if (pos_data) break;
 		}
-		else if (!std::memcmp(buf,"data",4)) 
+		else if (!std::memcmp(buf,"data",4))
 		{
 			pos_data = ds.getPos();
 			size_data = chunk_size;
@@ -82,13 +82,13 @@ WavAudioSample::WavAudioSample(std::unique_ptr<uint8[]> buffer_, uint32 size) : 
 	if (!pos_fmt || !pos_data || size_fmt < 0x10) return;
 
 	ds.seek(pos_fmt);
-	uint16 format_tag = ds.read2(); 
-	uint16 channels = ds.read2();
+	const uint16 format_tag = ds.read2();
+	const uint16 channels = ds.read2();
 	sample_rate = ds.read4();
 	//uint32 bytes_per_second = ds.read4();
 	//uint16 block_align = ds.read2();
 	ds.skip(6);
-	uint16 bits_per_sample = ds.read2();
+	const uint16 bits_per_sample = ds.read2();
 	//uint16 extra_bytes = ds.read2();
 	ds.skip(2);
 
@@ -119,7 +119,7 @@ bool WavAudioSample::isThis(IDataSource *ds)
 	ds->read(buf,4);
 	if (std::memcmp(buf,"RIFF",4) != 0) return false;
 
-	uint32 riff_size = ds->read4();
+	const uint32 riff_size = ds->read4();
 
 	if (riff_size != ds->getAvail()) return false;
 
@@ -135,7 +135,7 @@ bool WavAudioSample::isThis(IDataSource *ds)
 	while (ds->getAvail() > 0)
 	{
 		ds->read(buf,4);
-		uint32 chunk_size = ds->read4();
+		const uint32 chunk_size = ds->read4();
 
 		if (!std::memcmp(buf,"fmt ",4))
 		{
@@ -161,13 +161,13 @@ bool WavAudioSample::isThis(IDataSource *ds)
 
 	ds->seek(pos_fmt);
 
-	uint16 format_tag = ds->read2();
-	uint16 channels = ds->read2();
+	const uint16 format_tag = ds->read2();
+	const uint16 channels = ds->read2();
 	//uint32 sample_rate = ds->read4();
 	//uint32 bytes_per_second = ds->read4();;
 	//uint16 block_align = ds->read2();
 	ds->skip(10);
-	uint16 bits_per_sample = ds->read2();
+	const uint16 bits_per_sample = ds->read2();
 	//uint16 extra_bytes = ds->read2();
 	ds->skip(2);
 

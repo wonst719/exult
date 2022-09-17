@@ -150,9 +150,9 @@ int Paperdoll_gump::find_closest(
 	for (size_t i = 0; i < array_size(coords_hot); i++) {
 		int spot = i;
 
-		int dx = mx - coords_hot[spot].x;
-		int dy = my - coords_hot[spot].y;
-		long dsquared = dx * dx + dy * dy;
+		const int dx = mx - coords_hot[spot].x;
+		const int dy = my - coords_hot[spot].y;
+		const long dsquared = dx * dx + dy * dy;
 
 		// Map slots occupied by multi-slot items to the filled slot.
 		if ((i == back_shield || i == back_2h) && npc->is_scabbard_used())
@@ -293,7 +293,7 @@ bool Paperdoll_gump::add(
 		if (cont && cont->add(obj, false, combine))
 			break;
 
-		int index = find_closest(mx, my, 1);
+		const int index = find_closest(mx, my, 1);
 
 		if (index != -1 && container->add_readied(obj, index))
 			break;
@@ -330,8 +330,8 @@ void Paperdoll_gump::set_to_spot(
 		return;
 
 	// Height and width
-	int w = shape->get_width();
-	int h = shape->get_height();
+	const int w = shape->get_width();
+	const int h = shape->get_height();
 
 	// Set object's position.
 	obj->set_shape_pos(
@@ -480,14 +480,14 @@ void Paperdoll_gump::paint(
 	if (cmode_button) cmode_button->paint();
 
 	// Show weight.
-	int max_weight = actor->get_max_weight();
-	int weight = actor->get_weight() / 10;
+	const int max_weight = actor->get_max_weight();
+	const int weight = actor->get_weight() / 10;
 	char text[20];
 	if (gwin->failed_copy_protection())
 		snprintf(text, 6, "Oink!");
 	else
 		snprintf(text, 20, "%d/%d", weight, max_weight);
-	int twidth = sman->get_text_width(2, text);
+	const int twidth = sman->get_text_width(2, text);
 	sman->paint_text(2, text, x + 84 - (twidth / 2), y + 114);
 }
 
@@ -503,8 +503,8 @@ static inline bool Get_ammo_frame(
 		if (!winf)
 			return frame != 2;
 		const Ammo_info *ainf = obj->get_info().get_ammo_info();
-		int family = ainf ? ainf->get_family_shape() : obj->get_shapenum();
-		bool infamily = winf->get_ammo_consumed() == family;
+		const int family = ainf ? ainf->get_family_shape() : obj->get_shapenum();
+		const bool infamily = winf->get_ammo_consumed() == family;
 		if (frame == 2 && !infamily)
 			return false;
 		else if (!frame)
@@ -529,7 +529,7 @@ void Paperdoll_gump::paint_object(
 	Game_object *obj = container->get_readied(spot);
 	if (!obj) return;
 
-	int old_it = itemtype;
+	const int old_it = itemtype;
 	if (itemtype == -1) itemtype = spot;
 
 	const Paperdoll_item *item = obj->get_info().get_item_paperdoll(obj->get_framenum(), itemtype);
@@ -540,13 +540,13 @@ void Paperdoll_gump::paint_object(
 
 		set_to_spot(obj, spot);
 
-		int shnum = Shapeinfo_lookup::GetBlueShapeData(spot);
+		const int shnum = Shapeinfo_lookup::GetBlueShapeData(spot);
 		ShapeID s(shnum, 0, SF_GUMPS_VGA);
 
 		s.paint_shape(box.x + coords_blue[spot].x,
 		              box.y + coords_blue[spot].y);
-		int ox = box.x + obj->get_tx();
-		int oy = box.y + obj->get_ty();
+		const int ox = box.x + obj->get_tx();
+		const int oy = box.y + obj->get_ty();
 		obj->paint_shape(ox, oy);
 		if (cheat.is_selected(obj))
 			// Outline selected obj.
@@ -638,7 +638,7 @@ void Paperdoll_gump::paint_arms(
     const TileRect &box,
     const Paperdoll_npc *info
 ) {
-	int frnum = info->get_arms_frame(get_arm_type());
+	const int frnum = info->get_arms_frame(get_arm_type());
 	ShapeID s(info->get_arms_shape(), frnum, SF_PAPERDOL_VGA);
 	s.paint_shape(box.x + body.x, box.y + body.y, info->is_translucent());
 }
@@ -829,7 +829,7 @@ Game_object *Paperdoll_gump::check_object(
 	Game_object *obj = container->get_readied(spot);
 	if (!obj) return nullptr;
 
-	int old_it = itemtype;
+	const int old_it = itemtype;
 	if (itemtype == -1) itemtype = spot;
 
 	const Paperdoll_item *item = obj->get_info().get_item_paperdoll(obj->get_framenum(), itemtype);
@@ -855,8 +855,8 @@ Game_object *Paperdoll_gump::check_object(
 
 	if (check_shape(mx - sx, my - sy, item->get_paperdoll_shape(), f, SF_PAPERDOL_VGA)) {
 		Shape_frame *shape = obj->get_shape();
-		int w = shape->get_width();
-		int h = shape->get_height();
+		const int w = shape->get_width();
+		const int h = shape->get_height();
 		// Set object's position.
 		obj->set_shape_pos(mx + shape->get_xleft() - w / 2,
 		                   my + shape->get_yabove() - h / 2);
@@ -938,7 +938,7 @@ bool Paperdoll_gump::check_arms(
     int mx, int my,
     const Paperdoll_npc *info
 ) {
-	int frnum = info->get_arms_frame(get_arm_type());
+	const int frnum = info->get_arms_frame(get_arm_type());
 	return check_shape(mx - body.x, my - body.y,
 	                   info->get_arms_shape(), frnum, SF_PAPERDOL_VGA);
 }
@@ -951,13 +951,13 @@ bool Paperdoll_gump::check_shape(
     int shape, int frame,
     ShapeFile file
 ) {
-	ShapeID sid(shape, frame, file);
+	const ShapeID sid(shape, frame, file);
 	Shape_frame *s = sid.get_shape();
 
 	// If no shape, return
 	if (!s) return false;
 
-	TileRect r = gwin->get_shape_rect(s, 0, 0);
+	const TileRect r = gwin->get_shape_rect(s, 0, 0);
 
 	// If point not in rectangle, return
 	if (!r.has_point(px, py)) return false;
@@ -976,7 +976,7 @@ Container_game_object *Paperdoll_gump::find_actor(int mx, int my) {
 const Paperdoll_npc *Shape_info::get_npc_paperdoll_safe(bool sex) const {
 	if (npcpaperdoll)
 		return npcpaperdoll;
-	int shape = sex ? Shapeinfo_lookup::GetFemaleAvShape() :
+	const int shape = sex ? Shapeinfo_lookup::GetFemaleAvShape() :
 	            Shapeinfo_lookup::GetMaleAvShape();
 	const Shape_info &inf = ShapeID::get_info(shape);
 	return inf.get_npc_paperdoll();

@@ -79,9 +79,8 @@ void Gump_button::paint(
 		py = parent->get_y();
 	}
 
-	int prev_frame = get_framenum();
+	const int prev_frame = get_framenum();
 	set_frame(prev_frame + (is_pushed() ? 1 : 0));
 	paint_shape(x + px, y + py);
 	set_frame(prev_frame);
-
 }

@@ -157,7 +157,7 @@ string get_system_path(const string &path) {
 	while (pos != string::npos && pos2 == 0 && cnt-- > 0) {
 		pos += 1;
 		// See if we can translate this prefix
-		string syspath = new_path.substr(0, pos);
+		const string syspath = new_path.substr(0, pos);
 		if (is_system_path_defined(syspath)) {
 			string new_prefix = path_map[syspath];
 			new_prefix += new_path.substr(pos);
@@ -458,7 +458,7 @@ int U7mkdir(
 ) {
 	string name = get_system_path(dirname);
 	// remove any trailing slashes
-	string::size_type pos = name.find_last_not_of('/');
+	const string::size_type pos = name.find_last_not_of('/');
 	if (pos != string::npos)
 		name.resize(pos + 1);
 #if defined(_WIN32) && defined(UNICODE)
@@ -607,9 +607,9 @@ void redirect_output(const char *prefix) {
 	fclose(stdout);
 	fclose(stderr);
 
-	string folderPath = Get_home() + "/";
+	const string folderPath = Get_home() + "/";
 
-	string stdoutPath = folderPath + prefix + "out.txt";
+	const string stdoutPath = folderPath + prefix + "out.txt";
 	const char *stdoutfile = stdoutPath.c_str();
 
 	// Redirect standard input and standard output
@@ -625,7 +625,7 @@ void redirect_output(const char *prefix) {
 #endif
 	}
 
-	string stderrPath = folderPath + prefix + "err.txt";
+	const string stderrPath = folderPath + prefix + "err.txt";
 	const char *stderrfile = stderrPath.c_str();
 
 	newfp = freopen(stderrfile, "w", stderr);
@@ -644,15 +644,15 @@ void redirect_output(const char *prefix) {
 }
 
 void cleanup_output(const char *prefix) {
-	string folderPath = Get_home() + "/";
+	const string folderPath = Get_home() + "/";
 	if (!ftell(stdout)) {
 		fclose(stdout);
-		string stdoutPath = folderPath + prefix + "out.txt";
+		const string stdoutPath = folderPath + prefix + "out.txt";
 		remove(stdoutPath.c_str());
 	}
 	if (!ftell(stderr)) {
 		fclose(stderr);
-		string stderrPath = folderPath + prefix + "err.txt";
+		const string stderrPath = folderPath + prefix + "err.txt";
 		remove(stderrPath.c_str());
 	}
 }
@@ -753,7 +753,7 @@ void setup_data_dir(
 	const char *sep = std::strrchr(runpath, '/');
 	if (!sep) sep = std::strrchr(runpath, '\\');
 	if (sep) {
-		int plen = sep - runpath;
+		const int plen = sep - runpath;
 		std::string dpath(runpath, plen + 1);
 		dpath += "data";
 		add_system_path("<DATA>", dpath);
@@ -831,10 +831,10 @@ static string Get_gamehome_dir(const string& home_dir, const string& config_dir)
 }
 
 void setup_program_paths() {
-	string home_dir(Get_home());
-	string config_dir(Get_config_dir(home_dir));
-	string savehome_dir(Get_savehome_dir(home_dir, config_dir));
-	string gamehome_dir(Get_gamehome_dir(home_dir, config_dir));
+	const string home_dir(Get_home());
+	const string config_dir(Get_config_dir(home_dir));
+	const string savehome_dir(Get_savehome_dir(home_dir, config_dir));
+	const string gamehome_dir(Get_gamehome_dir(home_dir, config_dir));
 
 	if (get_system_path("<HOME>") != ".")
 		add_system_path("<HOME>", home_dir);
@@ -896,8 +896,8 @@ void U7copy(
 	auto& out = *pOut;
 	out << in.rdbuf();
 	out.flush();
-	bool inok = in.good();
-	bool outok = out.good();
+	const bool inok = in.good();
+	const bool outok = out.good();
 	if (!inok)
 		throw file_read_exception(src);
 	if (!outok)
@@ -942,7 +942,7 @@ uint32 msb32(uint32 x) {
  */
 
 int fgepow2(uint32 n) {
-	uint32 l = msb32(n);
+	const uint32 l = msb32(n);
 	return l < n ? (l << 1) : l;
 }
 

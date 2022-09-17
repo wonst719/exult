@@ -229,8 +229,8 @@ public:
 class Equal_nodes {
 public:
 	bool operator()(const Search_node *a, const Search_node *b) const noexcept {
-		Tile_coord ta = a->get_tile();
-		Tile_coord tb = b->get_tile();
+		const Tile_coord ta = a->get_tile();
+		const Tile_coord tb = b->get_tile();
 		return ta == tb;
 	}
 };
@@ -272,7 +272,7 @@ public:
 		open[pri] = nd;
 	}
 	void add_back(Search_node *nd) { // Add an existing node back to 'open'.
-		int total_cost = nd->get_total_cost();
+		const int total_cost = nd->get_total_cost();
 		Search_node *last = total_cost < static_cast<int>(open.size()) ?
 		                    open[total_cost] : nullptr;
 		nd->add_to_chain(last); // Add node to this chain.
@@ -288,7 +288,7 @@ public:
 	void remove_from_open(Search_node *nd) {
 		if (!nd->is_open())
 			return;     // Nothing to do.
-		int total_cost = nd->get_total_cost();
+		const int total_cost = nd->get_total_cost();
 		Search_node *last = total_cost < static_cast<int>(open.size()) ?
 		                    open[total_cost] : nullptr;
 		if (last) {
@@ -298,7 +298,7 @@ public:
 		}
 		if (!last) {    // Last in chain?
 			if (total_cost == best) {
-				int cnt = open.size();
+				const int cnt = open.size();
 				for (best++; best < cnt; best++)
 					if (open[best] != nullptr)
 						break;
@@ -314,7 +314,7 @@ public:
 		// Store updated 'last'.
 		add_open(best, last);
 		if (!last) {    // List now empty?
-			int cnt = open.size();
+			const int cnt = open.size();
 			for (best++; best < cnt; best++)
 				if (open[best] != nullptr)
 					break;
@@ -324,8 +324,9 @@ public:
 	// Find node for given tile.
 	Search_node *find(const Tile_coord& tile) {
 		Search_node key(tile);
+		Search_node * const pkey = &key;
 		auto it =
-		    lookup.find(&key);
+		    lookup.find(pkey);
 		if (it != lookup.end())
 			return *it;
 		else
@@ -359,7 +360,7 @@ Tile_coord *Find_path(
 			cout << "Goal: (" << goal.tx << ", " << goal.ty << ", " << goal.tz <<
 			     "), Node: (" << node->get_tile().tx << ", " <<
 			     node->get_tile().ty << ", " << node->get_tile().tz << ")" << endl;
-		Tile_coord curtile = node->get_tile();
+		const Tile_coord curtile = node->get_tile();
 		if (client->at_goal(curtile, goal))
 			// Success.
 			return node->create_path(pathlen);
@@ -368,18 +369,18 @@ Tile_coord *Find_path(
 		Tile_coord ntile(0, 0, 0);
 		while (get_next(ntile)) {
 			// Get cost to next tile.
-			int step_cost = client->get_step_cost(curtile, ntile);
+			const int step_cost = client->get_step_cost(curtile, ntile);
 			// Blocked?
 			if (step_cost == -1)
 				continue;
 			// Get cost from start to ntile.
-			int new_cost = node->get_start_cost() + step_cost;
+			const int new_cost = node->get_start_cost() + step_cost;
 			// See if next tile already seen.
 			Search_node *next = nodes.find(ntile);
 			// Already there, and cheaper?
 			if (next && next->get_start_cost() <= new_cost)
 				continue;
-			int new_goal_cost = client->estimate_cost(ntile, goal);
+			const int new_goal_cost = client->estimate_cost(ntile, goal);
 			// Skip nodes too far away.
 			if (new_cost + new_goal_cost >= max_cost)
 				continue;

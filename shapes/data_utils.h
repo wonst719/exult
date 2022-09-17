@@ -222,7 +222,7 @@ protected:
 		int vers = 0;
 		if (haveversion)
 			vers = Read1(in);
-		size_t cnt = Read_count(in);
+		const size_t cnt = Read_count(in);
 		for (size_t j = 0; j < cnt; j++)
 			read_data(in, j, vers, patch, game, true);
 	}
@@ -261,14 +261,14 @@ public:
 		str_int_pair resource = game->get_resource(buf);
 		U7object txtobj(resource.str, resource.num);
 		*/
-		bool bg = game == BLACK_GATE;
+		const bool bg = game == BLACK_GATE;
 		const char *flexfile =
 		    bg ? BUNDLE_CHECK(BUNDLE_EXULT_BG_FLX, EXULT_BG_FLX)
 		    : BUNDLE_CHECK(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX);
-		U7object txtobj(flexfile, resource);
+		const U7object txtobj(flexfile, resource);
 		std::size_t len;
 		auto txt = txtobj.retrieve(len);
-		std::string databuf(reinterpret_cast<char*>(txt.get()), len);
+		const std::string databuf(reinterpret_cast<char*>(txt.get()), len);
 		std::istringstream strin(databuf, std::ios::in | std::ios::binary);
 		read_binary_internal(strin, false, game);
 	}
@@ -385,7 +385,7 @@ public:
 	                Exult_Game game, Info &info) {
 		ignore_unused_variable_warning(version, patch, game);
 		// For backwards compatibility.
-		bool biton = ReadInt(in, 1) != 0;
+		const bool biton = ReadInt(in, 1) != 0;
 		if (biton)
 			info.*data |= (static_cast<T>(1) << bit);
 		else
@@ -512,7 +512,7 @@ static void Read_text_data_file(
 		str_int_pair resource = game->get_resource(buf);
 		U7object txtobj(resource.str, resource.num);
 		*/
-		bool bg = game == BLACK_GATE;
+		const bool bg = game == BLACK_GATE;
 		const char *flexfile =
 		    bg ? BUNDLE_CHECK(BUNDLE_EXULT_BG_FLX, EXULT_BG_FLX)
 		    : BUNDLE_CHECK(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX);

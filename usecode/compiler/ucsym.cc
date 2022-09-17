@@ -216,7 +216,7 @@ Uc_expression *Uc_static_class_symbol::create_expression(
 bool Uc_struct_symbol::is_dup(
     const char *nm
 ) {
-	int index = search(nm);
+	const int index = search(nm);
 	if (index >= 0) {       // Already declared?
 		char msg[180];
 		sprintf(msg, "Symbol '%s' already declared", nm);
@@ -425,7 +425,7 @@ Uc_function_symbol *Uc_function_symbol::create(
 		}
 	}
 
-	int shp = (kind == shape_fun) ? num : -1;
+	const int shp = (kind == shape_fun) ? num : -1;
 	if (shp >= 0x400)
 		num = new_auto_num ? -1 : 0xC00 + shp;
 	else if (shp != -1)
@@ -491,7 +491,7 @@ Uc_function_symbol *Uc_function_symbol::create(
 		Uc_location::yywarning(buf);
 	}
 
-	int ucnum = num >= 0 ? num : (last_num + 1);
+	const int ucnum = num >= 0 ? num : (last_num + 1);
 	// Set last_num if the function doesn't
 	// have a number:
 	if (num < 0 ||
@@ -603,7 +603,7 @@ int Uc_function_symbol::gen_call(
 	} else {            // Normal CALL.
 		// Called function sets return.
 		// Add to externs list.
-		int link = fun->link(this);
+		const int link = fun->link(this);
 		WriteOp(out, UC_CALL);
 		WriteOpParam2(out, link);
 	}

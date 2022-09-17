@@ -194,7 +194,7 @@ struct unz_s {
 
 static int unzlocal_getByte(FILE *fin, int *pi) {
 	unsigned char c;
-	int err = fread(&c, 1, 1, fin);
+	const int err = fread(&c, 1, 1, fin);
 	if (err == 1) {
 		*pi = c;
 		return UNZ_OK;
@@ -1040,7 +1040,7 @@ extern int ZEXPORT unzReadCurrentFile(unzFile file, voidp buf, unsigned len) {
 			uLong uTotalOutAfter;
 			const Bytef *bufBefore;
 			uLong uOutThis;
-			int flush = Z_SYNC_FLUSH;
+			const int flush = Z_SYNC_FLUSH;
 
 			uTotalOutBefore = pfile_in_zip_read_info->stream.total_out;
 			bufBefore = pfile_in_zip_read_info->stream.next_out;

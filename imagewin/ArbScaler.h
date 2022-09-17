@@ -68,52 +68,52 @@ public:
 	inline bool Scale(SDL_Surface *texture, sint32 sx, sint32 sy, sint32 sw, sint32 sh,
 	                  SDL_Surface *dest, sint32 dx, sint32 dy, sint32 dw, sint32 dh, bool clamp_src) const {
 		uint8 *pixel = static_cast<uint8 *>(dest->pixels) + dx * dest->format->BytesPerPixel + dy * dest->pitch;
-		sint32 pitch = dest->pitch;
+		const sint32 pitch = dest->pitch;
 
 		SDL_PixelFormat *src_format = texture->format;
 		SDL_PixelFormat *dst_format = dest->format;
 
 		if (dst_format->BytesPerPixel == 2) {
-			int r = dst_format->Rmask;
-			int g = dst_format->Gmask;
-			int b = dst_format->Bmask;
+			const int r = dst_format->Rmask;
+			const int g = dst_format->Gmask;
+			const int b = dst_format->Bmask;
 
 			if ((r == 0xf800 && g == 0x7e0 && b == 0x1f) || (b == 0xf800 && g == 0x7e0 && r == 0x1f)) {
 				if (src_format->BitsPerPixel == 8 && Scale8To565) {
-					Manip8to565 manip(src_format->palette->colors, dst_format);
+					const Manip8to565 manip(src_format->palette->colors, dst_format);
 					return Scale8To565(texture, sx, sy, sw, sh,  pixel, dw, dh, pitch, clamp_src);
 				} else if (src_format->BytesPerPixel == 2 && Scale565To565) {
-					Manip565to565 manip(nullptr, dst_format);
+					const Manip565to565 manip(nullptr, dst_format);
 					return Scale565To565(texture, sx, sy, sw, sh,  pixel, dw, dh, pitch, clamp_src);
 				}
 			} else if ((r == 0x7c00 && g == 0x3e0 && b == 0x1f) || (b == 0x7c00 && g == 0x3e0 && r == 0x1f)) {
 				if (src_format->BitsPerPixel == 8 && Scale8To555) {
-					Manip8to555 manip(src_format->palette->colors, dst_format);
+					const Manip8to555 manip(src_format->palette->colors, dst_format);
 					return Scale8To555(texture, sx, sy, sw, sh,  pixel, dw, dh, pitch, clamp_src);
 				} else if (src_format->BytesPerPixel == 2 && Scale555To555) {
-					Manip555to555 manip(nullptr, dst_format);
+					const Manip555to555 manip(nullptr, dst_format);
 					return Scale555To555(texture, sx, sy, sw, sh,  pixel, dw, dh, pitch, clamp_src);
 				}
 			}
 
 			if (src_format->BitsPerPixel == 8 && Scale8To16) {
-				Manip8to16 manip(src_format->palette->colors, dst_format);
+				const Manip8to16 manip(src_format->palette->colors, dst_format);
 				return Scale8To16(texture, sx, sy, sw, sh,  pixel, dw, dh, pitch, clamp_src);
 			} else if (src_format->BytesPerPixel == 2 && Scale16To16) {
-				Manip16to16 manip(nullptr, dst_format);
+				const Manip16to16 manip(nullptr, dst_format);
 				return Scale16To16(texture, sx, sy, sw, sh,  pixel, dw, dh, pitch, clamp_src);
 			}
 		} else if (dst_format->BitsPerPixel == 32) {
 			if (src_format->BitsPerPixel == 8 && Scale8To32) {
-				Manip8to32 manip(src_format->palette->colors, dst_format);
+				const Manip8to32 manip(src_format->palette->colors, dst_format);
 				return Scale8To32(texture, sx, sy, sw, sh,  pixel, dw, dh, pitch, clamp_src);
 			} else if (src_format->BytesPerPixel == 4 && Scale32To32) {
-				Manip32to32 manip(nullptr, dst_format);
+				const Manip32to32 manip(nullptr, dst_format);
 				return Scale32To32(texture, sx, sy, sw, sh,  pixel, dw, dh, pitch, clamp_src);
 			}
 		} else if (dst_format->BitsPerPixel == 8) {
 			if (src_format->BitsPerPixel == 8 && Scale8To8) {
-				Manip8to8 manip(nullptr, dst_format);
+				const Manip8to8 manip(nullptr, dst_format);
 				return Scale8To8(texture, sx, sy, sw, sh,  pixel, dw, dh, pitch, clamp_src);
 			}
 		}

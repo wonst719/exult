@@ -117,9 +117,9 @@ void Usecode_script::start(
     long d          // Start after this many msecs.
 ) {
 	Game_window *gwin = Game_window::get_instance();
-	int cnt = code->get_array_size();// Check initial elems.
+	const int cnt = code->get_array_size();// Check initial elems.
 	for (int i = 0; i < cnt; i++) {
-		int opval0 = code->get_elem(i).get_int_value();
+		const int opval0 = code->get_elem(i).get_int_value();
 		if (opval0 == Ucscript::dont_halt)
 			no_halt = true;
 		else if (opval0 == Ucscript::finish)
@@ -130,7 +130,7 @@ void Usecode_script::start(
 	if (!is_no_halt()) {      // If flag not set,
 		// Remove other entries that aren't
 		//   'no_halt'.
-		Game_object_shared o = obj.lock();
+		const Game_object_shared o = obj.lock();
 		if (o)
 		    Usecode_script::terminate(o.get());
 	}
@@ -171,7 +171,7 @@ void Usecode_script::add(int v1, int v2) {
 	cnt += 2;
 }
 void Usecode_script::add(int v1, std::string str) {
-	int sz = code->get_array_size();
+	const int sz = code->get_array_size();
 	code->resize(sz + 2);
 	(*code)[sz] = v1;
 	(*code)[sz + 1] = std::move(str);
@@ -194,7 +194,7 @@ Usecode_script *Usecode_script::find(
 ) {
 	Usecode_script *start = last_found ? last_found->next : first;
 	for (Usecode_script *each = start; each; each = each->next) {
-	    Game_object_shared obj = each->obj.lock();
+	    const Game_object_shared obj = each->obj.lock();
 		if (obj.get() == srch)
 			return each;    // Found it.
     }
@@ -213,7 +213,7 @@ Usecode_script *Usecode_script::find_active(
 ) {
 	Usecode_script *start = last_found ? last_found->next : first;
 	for (Usecode_script *each = start; each; each = each->next) {
-	    Game_object_shared obj = each->obj.lock();
+	    const Game_object_shared obj = each->obj.lock();
 		if (obj.get() == srch && each->is_activated())
 			return each;    // Found it.
     }
@@ -230,7 +230,7 @@ void Usecode_script::terminate(
 	Usecode_script *next = nullptr;
 	for (Usecode_script *each = first; each; each = next) {
 		next = each->next;  // Get next in case we delete 'each'.
-	    Game_object_shared each_obj = each->obj.lock();
+	   const Game_object_shared each_obj = each->obj.lock();
 		if (each_obj.get() == obj)
 			each->halt();
 	}
@@ -263,7 +263,7 @@ void Usecode_script::purge(
 	for (Usecode_script *each = first; each; each = next) {
 		next = each->next;  // Get next in case we delete 'each'.
 		// Only purge if not yet started.
-		Game_object_shared o = each->obj.lock();
+		const Game_object_shared o = each->obj.lock();
 		if (o && !each->i &&
 		        o->get_outermost()->distance(spot) > dist) {
 			// Force it to halt.
@@ -283,7 +283,7 @@ inline void Usecode_script::activate_egg(Usecode_internal *usecode,
 	if (!e || !e->is_egg())
 		return;
 	Egg_object *egg = e->as_egg();
-	int type = egg->get_type();
+	const int type = egg->get_type();
 	// Guess:  Only certain types:
 	if (type == Egg_object::monster || type == Egg_object::button ||
 	        type == Egg_object::missile)
@@ -299,7 +299,7 @@ void Usecode_script::handle_event(
     unsigned long curtime,      // Current time of day.
     uintptr udata          // ->usecode machine.
 ) {
-    Game_object_shared o = obj.lock();
+    const Game_object_shared o = obj.lock();
 	Actor *act = o ? o->as_actor() : nullptr;
 	if (act && act->get_casting_mode() == Actor::init_casting)
 		act->display_casting_frames();
@@ -310,7 +310,7 @@ void Usecode_script::handle_event(
 			 		  << o << ", time: " <<
 				 		  	   	   curtime << endl;
 #endif
-	int delay = exec(usecode, false);
+	const int delay = exec(usecode, false);
 	if (i < cnt) {          // More to do?
 		Usecode_internal::gwin->get_tqueue()->add(curtime + delay, this, udata);
 		return;
@@ -351,7 +351,7 @@ int Usecode_script::exec(
 	// If a 1 follows, keep going.
 	for (; i < cnt && ((opcode = code->get_elem(i).get_int_value())
 	                   == 0x1 || do_another); i++) {
-		Game_object_shared optr = obj.lock();
+		const Game_object_shared optr = obj.lock();
 		if (!optr) {
 		    i = cnt;
 			return delay;
@@ -371,14 +371,14 @@ int Usecode_script::exec(
 			// ++++ TESTING.
 			do_another = true;
 			Usecode_value &cntval = code->get_elem(i + 2);
-			int cnt = cntval.get_int_value();
+			const int cnt = cntval.get_int_value();
 			if (cnt <= 0)
 				// Done.
 				i += 2;
 			else {
 				// Decr. and loop.
 				cntval = Usecode_value(cnt - 1);
-				Usecode_value &offval = code->get_elem(i + 1);
+				const Usecode_value &offval = code->get_elem(i + 1);
 				i += offval.get_int_value() - 1;
 				if (i < -1) // Before start?
 					i = -1;
@@ -396,8 +396,8 @@ int Usecode_script::exec(
 
 			do_another = true;
 			Usecode_value &cntval = code->get_elem(i + 2);
-			Usecode_value &origval = code->get_elem(i + 3);
-			int cnt = cntval.get_int_value();
+			const Usecode_value &origval = code->get_elem(i + 3);
+			const int cnt = cntval.get_int_value();
 			if (cnt <= 0) {
 				// Done.
 				i += 3;
@@ -405,19 +405,19 @@ int Usecode_script::exec(
 			} else {
 				// Decr. and loop.
 				cntval = Usecode_value(cnt - 1);
-				Usecode_value &offval = code->get_elem(i + 1);
+				const Usecode_value &offval = code->get_elem(i + 1);
 				i += offval.get_int_value() - 1;
 			}
 			break;
 		}
 		case Ucscript::wait_while_near: {
-			int dist = code->get_elem(++i).get_int_value();
+			const int dist = code->get_elem(++i).get_int_value();
 			if (!finish && IsActorNear(gwin->get_main_actor(), optr.get(), dist))
 				i -= 2;     // Stay in this opcode.
 			break;
 		}
 		case Ucscript::wait_while_far: {
-			int dist = code->get_elem(++i).get_int_value();
+			const int dist = code->get_elem(++i).get_int_value();
 			if (!finish && !IsActorNear(gwin->get_main_actor(), optr.get(), dist))
 				i -= 2;     // Stay in this opcode.
 			break;
@@ -436,7 +436,7 @@ int Usecode_script::exec(
 			break;
 		case delay_ticks: { // 1 parm.
 			//   delay before next instruction.
-			Usecode_value &delayval = code->get_elem(++i);
+			const Usecode_value &delayval = code->get_elem(++i);
 			// It's # of ticks.
 			Actor *act = usecode->as_actor(optr.get());
 			if (act)
@@ -445,13 +445,13 @@ int Usecode_script::exec(
 			break;
 		}
 		case delay_minutes: { // 1 parm., game minutes.
-			Usecode_value &delayval = code->get_elem(++i);
+			const Usecode_value &delayval = code->get_elem(++i);
 			// Convert to real miliseconds.
 			delay = delay * ticks_per_minute * delayval.get_int_value();
 			break;
 		}
 		case delay_hours: { // 1 parm., game hours.
-			Usecode_value &delayval = code->get_elem(++i);
+			const Usecode_value &delayval = code->get_elem(++i);
 			// Convert to real miliseconds.
 			delay = delay * 60 * ticks_per_minute * delayval.get_int_value();
 			break;
@@ -481,22 +481,22 @@ int Usecode_script::exec(
 			activate_egg(usecode, optr.get());
 			break;
 		case set_egg: {     // Set_egg(criteria, dist).
-			int crit = code->get_elem(++i).get_int_value();
-			int dist = code->get_elem(++i).get_int_value();
+			const int crit = code->get_elem(++i).get_int_value();
+			const int dist = code->get_elem(++i).get_int_value();
 			Egg_object *egg = optr->as_egg();
 			if (egg)
 				egg->set(crit, dist);
 			break;
 		}
 		case next_frame_max: {  // Stop at last frame.
-			int nframes = optr->get_num_frames();
+			const int nframes = optr->get_num_frames();
 			if (optr->get_framenum() % 32 < nframes - 1)
 				usecode->set_item_frame(optr.get(),
 				                        1 + optr->get_framenum());
 			break;
 		}
 		case next_frame: {
-			int nframes = optr->get_num_frames();
+			const int nframes = optr->get_num_frames();
 			if (nframes > 0) {
 				usecode->set_item_frame(optr.get(),
 				                        (1 + optr->get_framenum()) % nframes);
@@ -509,9 +509,9 @@ int Usecode_script::exec(
 				                        optr->get_framenum() - 1);
 			break;
 		case prev_frame: {
-			int nframes = optr->get_num_frames();
+			const int nframes = optr->get_num_frames();
 			if (nframes > 0) {
-				int pframe = optr->get_framenum() - 1;
+				const int pframe = optr->get_framenum() - 1;
 				usecode->set_item_frame(optr.get(),
 				                        (pframe + nframes) % nframes);
 			}
@@ -526,12 +526,12 @@ int Usecode_script::exec(
 		}
 		case Ucscript::step: {  // Parm. is dir. (0-7).  0=north.
 			// Get dir.
-			int val = code->get_elem(++i).get_int_value();
+			const int val = code->get_elem(++i).get_int_value();
 			// Height change (verified).
-			int dz = size_t(i) < code->get_array_size() ?
+			const int dz = size_t(i) < code->get_array_size() ?
 			         code->get_elem(++i).get_int_value() : 0;
 			// Watch for buggy SI usecode!
-			int destz = optr->get_lift() + dz;
+			const int destz = optr->get_lift() + dz;
 			if (destz < 0 || dz > 15 || dz < -15) {
 				// Here, the originals would flash the step frame,
 				// but not step or change height. Not worth emulating.
@@ -544,15 +544,15 @@ int Usecode_script::exec(
 			break;
 		}
 		case music: {   // Unknown.
-			Usecode_value &val = code->get_elem(++i);
-			int song = val.get_int_value();
+			const Usecode_value &val = code->get_elem(++i);
+			const int song = val.get_int_value();
 			// Verified.
 			Audio::get_ptr()->start_music(song & 0xff, (song >> 8) != 0);
 			break;
 		}
 		case Ucscript::usecode: { // Call?
-			Usecode_value &val = code->get_elem(++i);
-			int fun = val.get_int_value();
+			const Usecode_value &val = code->get_elem(++i);
+			const int fun = val.get_int_value();
 			// HACK: Prevent function 0x6fb in FoV from triggering while
 			// the screen is faded out, as it can cause the screen to
 			// remain faded due to eliminating the script that does the
@@ -579,30 +579,30 @@ int Usecode_script::exec(
 			break;
 		}
 		case Ucscript::usecode2: { // Call(fun, eventid).
-			Usecode_value &val = code->get_elem(++i);
-			int evid = code->get_elem(++i).get_int_value();
+			const Usecode_value &val = code->get_elem(++i);
+			const int evid = code->get_elem(++i).get_int_value();
 			usecode->call_usecode(val.get_int_value(), optr.get(),
 			                      static_cast<Usecode_internal::Usecode_events>(evid));
 			break;
 		}
 		case speech: {      // Play speech track.
-			Usecode_value &val = code->get_elem(++i);
-			int track = val.get_int_value();
+			const Usecode_value &val = code->get_elem(++i);
+			const int track = val.get_int_value();
 			if (track >= 0)
 				Audio::get_ptr()->start_speech(track);
 			break;
 		}
 		case sfx: {     // Play sound effect!
-			Usecode_value &val = code->get_elem(++i);
+			const Usecode_value &val = code->get_elem(++i);
 			Audio::get_ptr()->play_sound_effect(
 			    val.get_int_value(), optr.get());
 			break;
 		}
 		case face_dir: {    // Parm. is dir. (0-7).  0=north.
 			// Look in that dir.
-			Usecode_value &val = code->get_elem(++i);
+			const Usecode_value &val = code->get_elem(++i);
 			// It may be 0x3x.  Face dir?
-			int dir = val.get_int_value() & 7;
+			const int dir = val.get_int_value() & 7;
 			Actor *npc = optr->as_actor();
 			if (npc)
 				npc->set_usecode_dir(dir);
@@ -613,16 +613,16 @@ int Usecode_script::exec(
 		}
 		case weather: {
 			// Set weather to that type.
-			Usecode_value &val = code->get_elem(++i);
-			int type = val.get_int_value() & 0xff;
+			const Usecode_value &val = code->get_elem(++i);
+			const int type = val.get_int_value() & 0xff;
 			// Seems to match the originals:
 			if (type == 0xff || gwin->get_effects()->get_weather() != 0)
 				Egg_object::set_weather(type == 0xff ? 0 : type);
 			break;
 		}
 		case hit: {     // Hit(hps, type).
-			Usecode_value hps = code->get_elem(++i);
-			Usecode_value type = code->get_elem(++i);
+			const Usecode_value hps = code->get_elem(++i);
+			const Usecode_value type = code->get_elem(++i);
 			optr->reduce_health(hps.get_int_value(), type.get_int_value());
 			break;
 		}
@@ -646,15 +646,15 @@ int Usecode_script::exec(
 			if (opcode >= 0x61 && opcode <= 0x70) {
 				// But don't show empty frames.
 				//Get the actor's actual facing:
-				int v = (optr->get_framenum() & 48) | (opcode - 0x61);
+				const int v = (optr->get_framenum() & 48) | (opcode - 0x61);
 				usecode->set_item_frame(optr.get(), v, 1, 1);
 			} else if (opcode >= 0x30 && opcode < 0x38) {
 				// Step in dir. opcode&7.
 				step(usecode, opcode & 7, 0);
 				do_another = true;  // Guessing.
 			} else {
-				boost::io::ios_flags_saver flags(cout);
-				boost::io::ios_fill_saver fill(cout);
+				const boost::io::ios_flags_saver flags(cout);
+				const boost::io::ios_fill_saver fill(cout);
 				cout << "Und sched. opcode " << hex
 				     << "0x" << setfill('0') << setw(2)
 				     << opcode << endl;
@@ -674,7 +674,7 @@ void Usecode_script::step(
     int dir,            // 0-7.
     int dz
 ) {
-	Game_object_shared optr = obj.lock();
+	const Game_object_shared optr = obj.lock();
 	Actor *act = usecode->as_actor(optr.get());
 	if (act) {
 		Tile_coord tile = optr->get_tile();
@@ -684,7 +684,7 @@ void Usecode_script::step(
 		act->clear_rest_time();
 		Frames_sequence *frames = act->get_frames(dir);
 		// Get frame (updates frame_index).
-		int frame = frames->get_next(frame_index);
+		const int frame = frames->get_next(frame_index);
 		if (tile.tz < 0)
 			tile.tz = 0;
 		optr->step(tile, frame, true);
@@ -711,7 +711,7 @@ int Usecode_script::save(
     ODataSource *out
 ) const {
 	// Get delay to when due.
-	long when = Game_window::get_instance()->get_tqueue()->find_delay(
+	const long when = Game_window::get_instance()->get_tqueue()->find_delay(
 	                this, SDL_GetTicks());
 	if (when < 0)
 		return -1;
@@ -739,8 +739,8 @@ Usecode_script *Usecode_script::restore(
     Game_object *item,      // Object this is executed for.
     IDataSource *in
 ) {
-	int cnt = in->read2();      // Get # instructions.
-	int curindex = in->read2(); // Where it is.
+	const int cnt = in->read2();      // Get # instructions.
+	const int curindex = in->read2(); // Where it is.
 	// Create empty array.
 	auto *code = new Usecode_value(cnt, nullptr);
 	for (int i = 0; i < cnt; i++) {
@@ -754,9 +754,9 @@ Usecode_script *Usecode_script::restore(
 		delete code;
 		return nullptr;
 	}
-	int frame_index = in->read2();
-	int no_halt = in->read2();
-	int delay = in->read4();
+	const int frame_index = in->read2();
+	const int no_halt = in->read2();
+	const int delay = in->read4();
 	auto *scr =
 	    new Usecode_script(item, code, frame_index, no_halt, delay);
 	scr->i = curindex;      // Set index.
@@ -770,8 +770,8 @@ Usecode_script *Usecode_script::restore(
 void Usecode_script::print(
     std::ostream &out
 ) const {
-	boost::io::ios_flags_saver flags(out);
-	boost::io::ios_fill_saver fill(out);
+	const boost::io::ios_flags_saver flags(out);
+	const boost::io::ios_fill_saver fill(out);
 	out << hex << "Obj = 0x" << setfill('0') << setw(2)
 	    << obj.lock().get() << ": " "(";
 	for (int i = 0; i < cnt; i++) {

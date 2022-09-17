@@ -38,7 +38,7 @@ void Image_window::show_scaled8to16_bilinear(
 ) {
 	increase_area(x, y, w, h, 1, 1, 1, 1, ibuf->width, ibuf->height);
 
-	Manip8to16 manip(paletted_surface->format->palette->colors,
+	const Manip8to16 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_2xBilinear<unsigned char, uint16, Manip8to16>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -54,7 +54,7 @@ void Image_window::show_scaled8to555_bilinear(
 ) {
 	increase_area(x, y, w, h, 1, 1, 1, 1, ibuf->width, ibuf->height);
 
-	Manip8to555 manip(paletted_surface->format->palette->colors,
+	const Manip8to555 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_2xBilinear<unsigned char, uint16, Manip8to555>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -70,7 +70,7 @@ void Image_window::show_scaled8to565_bilinear(
 ) {
 	increase_area(x, y, w, h, 1, 1, 1, 1, ibuf->width, ibuf->height);
 
-	Manip8to565 manip(paletted_surface->format->palette->colors,
+	const Manip8to565 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_2xBilinear<unsigned char, uint16, Manip8to565>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -86,7 +86,7 @@ void Image_window::show_scaled8to32_bilinear(
 ) {
 	increase_area(x, y, w, h, 1, 1, 1, 1, ibuf->width, ibuf->height);
 
-	Manip8to32 manip(paletted_surface->format->palette->colors,
+	const Manip8to32 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_2xBilinear<unsigned char, uint32, Manip8to32>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -105,7 +105,7 @@ void Image_window::show_scaled8to16_BilinearPlus(
 ) {
 	increase_area(x, y, w, h, 1, 1, 1, 1, ibuf->width, ibuf->height);
 
-	Manip8to16 manip(paletted_surface->format->palette->colors,
+	const Manip8to16 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_2xBilinearPlus<unsigned char, uint16, Manip8to16>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -121,7 +121,7 @@ void Image_window::show_scaled8to555_BilinearPlus(
 ) {
 	increase_area(x, y, w, h, 1, 1, 1, 1, ibuf->width, ibuf->height);
 
-	Manip8to555 manip(paletted_surface->format->palette->colors,
+	const Manip8to555 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_2xBilinearPlus<unsigned char, uint16, Manip8to555>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -137,7 +137,7 @@ void Image_window::show_scaled8to565_BilinearPlus(
 ) {
 	increase_area(x, y, w, h, 1, 1, 1, 1, ibuf->width, ibuf->height);
 
-	Manip8to565 manip(paletted_surface->format->palette->colors,
+	const Manip8to565 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_2xBilinearPlus<unsigned char, uint16, Manip8to565>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -153,7 +153,7 @@ void Image_window::show_scaled8to32_BilinearPlus(
 ) {
 	increase_area(x, y, w, h, 1, 1, 1, 1, ibuf->width, ibuf->height);
 
-	Manip8to32 manip(paletted_surface->format->palette->colors,
+	const Manip8to32 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_2xBilinearPlus<unsigned char, uint32, Manip8to32>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,

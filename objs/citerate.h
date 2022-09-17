@@ -68,7 +68,7 @@ public:
 				curcx = startcx;
 			}
 		}
-		TileRect cr(0, 0, c_tiles_per_chunk, c_tiles_per_chunk);
+		const TileRect cr(0, 0, c_tiles_per_chunk, c_tiles_per_chunk);
 		// Intersect given rect. with chunk.
 		intersect = cr.intersect(tiles);
 		cx = curcx;

@@ -124,7 +124,7 @@ void Uc_if_statement::gen(
 	auto *past_if = new Basic_block();
 	blocks.push_back(if_block);
 	int ival;
-	bool const_expr = !expr || expr->eval_const(ival);
+	const bool const_expr = !expr || expr->eval_const(ival);
 	if (!expr)
 		// IF body unreachable except by GOTO statements.
 		// Skip IF block.
@@ -672,7 +672,7 @@ void Uc_converse_case_statement::gen(
 	if (remove) {       // Remove answer?
 		if (string_offset.size() > 1) {
 			auto *strlist = new Uc_array_expression();
-			for (int it : string_offset) {
+			for (const int it : string_offset) {
 				auto *str = new Uc_string_expression(it);
 				strlist->add(str);
 			}
@@ -942,7 +942,7 @@ void Uc_message_statement::gen(
 	const std::vector<Uc_expression *> &exprs = msgs->get_exprs();
 	for (auto *msg : exprs) {
 			// A known string?
-		int offset = msg->get_string_offset();
+		const int offset = msg->get_string_offset();
 		if (offset >= 0) {
 			if (is_int_32bit(offset)) {
 				WriteOp(curr, UC_ADDSI32);

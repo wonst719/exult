@@ -49,7 +49,7 @@ static bool InitializeWinsock() {
 	if (gWSInitialized) return true;
 
 	WSADATA gWsaData;
-	int iResult = WSAStartup(MAKEWORD(2, 2), &gWsaData);
+	const int iResult = WSAStartup(MAKEWORD(2, 2), &gWsaData);
 	if (iResult != NO_ERROR)
 		cout << "Error at WSAStartup()" << std::endl;
 	else
@@ -64,7 +64,7 @@ bool OpenPortFile(const char *path, bool writing) {
 	char filename[MAX_PATH];
 	strcpy(filename, path);
 	// This flag is NT only, and causes CreateFile to fail in 9x.
-	int sharedel = is_win9x() ? 0 : FILE_SHARE_DELETE;
+	const int sharedel = is_win9x() ? 0 : FILE_SHARE_DELETE;
 
 	// The locking is setup to prevent two servers from running for the same gamedat dir
 	// it's also setup so the file is deleted when the server shuts down
@@ -255,7 +255,7 @@ int peek_pipe() {
 	tv.tv_usec = 20000;
 	if (select(0, &rfds, nullptr, nullptr, &tv)) {
 		char c;
-		int to_get = recv(gDataSocket, &c, 1, MSG_PEEK);
+		const int to_get = recv(gDataSocket, &c, 1, MSG_PEEK);
 		if (to_get == 0 || to_get == SOCKET_ERROR) {
 			closesocket(gDataSocket);
 			gDataSocket = INVALID_SOCKET;

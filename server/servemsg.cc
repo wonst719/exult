@@ -64,7 +64,7 @@ int Send_data(
 	buf[4] = id;
 	if (datalen > 0)
 		std::memcpy(&buf[5], data, datalen);    // The data itself.
-	int len = datalen + hdrlength;
+	const int len = datalen + hdrlength;
 
 	return write(socket, buf, len) == len ? 0 : -1;
 #else  /* USE_EXULTSTUDIO */
@@ -87,7 +87,7 @@ int Receive_data(
 ) {
 #ifdef USE_EXULTSTUDIO
 	unsigned char buf[hdrlength];
-	int len = read(socket, buf, 2); // Get magic.
+	const int len = read(socket, buf, 2); // Get magic.
 	if (!len) {         // Closed?
 		close(socket);
 		socket = -1;
@@ -95,7 +95,7 @@ int Receive_data(
 	}
 	if (len == -1)          // Nothing available?
 		return -1;
-	int magic = buf[0] + (buf[1] << 8);
+	const int magic = buf[0] + (buf[1] << 8);
 	if (magic != Exult_server::magic) {
 		cout << "Bad magic read" << endl;
 		return -1;
@@ -104,7 +104,7 @@ int Receive_data(
 		cout << "Couldn't read length+type" << endl;
 		return -1;
 	}
-	int dlen = buf[0] | (buf[1] << 8);
+	const int dlen = buf[0] | (buf[1] << 8);
 	// Message type.
 	id = static_cast<Exult_server::Msg_type>(buf[2]);
 	if (dlen > Exult_server::maxlength || dlen > datalen) {

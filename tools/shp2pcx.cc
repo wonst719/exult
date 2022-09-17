@@ -148,13 +148,13 @@ u7shape *load_shape(char *filename) {
 		return nullptr;
 	}
 	fseek(fp, 0, SEEK_END);
-	int file_size = ftell(fp);
+	const int file_size = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
 	auto *shape = new u7shape;
 	u7frame *frame;
 
-	int shape_size = read4(fp);
+	const int shape_size = read4(fp);
 
 	if (file_size != shape_size) { /* 8x8 tile */
 		shape->num_frames = file_size / 64;
@@ -173,11 +173,11 @@ u7shape *load_shape(char *filename) {
 			frame->leftX = 0;
 			frame->leftY = 0;
 			frame->pixels = new uint8[64];
-			size_t err = fread(frame->pixels, 1, 64, fp);
+			const size_t err = fread(frame->pixels, 1, 64, fp);
 			assert(err == 64);
 		}
 	} else {
-		int hdr_size = read4(fp);
+		const int hdr_size = read4(fp);
 		shape->num_frames = (hdr_size - 4) / 4;
 
 		cout << "num_frames = " << shape->num_frames << endl;
@@ -188,7 +188,7 @@ u7shape *load_shape(char *filename) {
 
 			// Go to where frame offset is stored
 			fseek(fp, (i + 1) * 4, SEEK_SET);
-			int frame_offset = read4(fp);
+			const int frame_offset = read4(fp);
 			fseek(fp, frame_offset, SEEK_SET);
 			frame->rightX = read2(fp);
 			frame->leftX = read2(fp);
@@ -213,13 +213,13 @@ u7shape *load_shape(char *filename) {
 			//eod = frame->pixels+frame->width*frame->height;
 			int slice;
 			while ((slice = read2(fp)) != 0) {
-				int slice_type = slice & 0x1;
+				const int slice_type = slice & 0x1;
 				int slice_length = slice >> 1;
 
-				int offsetX = read2signed(fp);
-				int offsetY = read2signed(fp);
+				const int offsetX = read2signed(fp);
+				const int offsetY = read2signed(fp);
 
-				int temp_int = (frame->leftY + offsetY) * frame->width +
+				const int temp_int = (frame->leftY + offsetY) * frame->width +
 				           (frame->leftX + offsetX);
 
 				uint8 *pixptr = frame->pixels;
@@ -229,17 +229,17 @@ u7shape *load_shape(char *filename) {
 					pixptr = frame->pixels;
 				if (slice_type) {   // Compressed
 					while (slice_length > 0) {
-						uint8 block = read1(fp);
-						int block_type = block & 0x1;
-						int block_length = block >> 1;
+						const uint8 block = read1(fp);
+						const int block_type = block & 0x1;
+						const int block_length = block >> 1;
 						if (block_type) {
-							uint8 pix = read1(fp);
+							const uint8 pix = read1(fp);
 							for (int j = 0; j < block_length; j++) {
 								*pixptr++ = pix;
 							}
 						} else {
 							for (int j = 0; j < block_length; j++) {
-								uint8 pix = read1(fp);
+								const uint8 pix = read1(fp);
 								*pixptr++ = pix;
 							}
 						}
@@ -248,7 +248,7 @@ u7shape *load_shape(char *filename) {
 				} else {        // Uncompressed
 					// Just read the pixels
 					for (int j = 0; j < slice_length; j++) {
-						uint8 pix = read1(fp);
+						const uint8 pix = read1(fp);
 						*pixptr++ = pix;
 					}
 				}
@@ -258,8 +258,8 @@ u7shape *load_shape(char *filename) {
 
 	cout << "origin: x = " << max_leftX << ", y = " << max_leftY << endl;
 
-	int width = max_leftX + max_rightX + 1;
-	int height = max_leftY + max_rightY + 1;
+	const int width = max_leftX + max_rightX + 1;
+	const int height = max_leftY + max_rightY + 1;
 
 	shape->width = width;
 	shape->height = height;
@@ -274,8 +274,8 @@ u7shape *load_shape(char *filename) {
 		int dsty = max_leftY - frame->leftY;
 
 		for (int srcy = 0; srcy < frame->height; srcy++, dsty++) {
-			int dstx = max_leftX - frame->leftX;
-			int srcx = 0;
+			const int dstx = max_leftX - frame->leftX;
+			const int srcx = 0;
 			memcpy(frame->pixels + dsty * width + dstx, pixptr + srcy * frame->width + srcx, frame->width);
 		}
 
@@ -295,7 +295,7 @@ uint8 *load_palette(char *filename) {
 	auto *palette = new uint8[768];
 
 	fseek(fp, 0, SEEK_END);
-	long len = ftell(fp);
+	const long len = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 	if (len == 768) {
 		for (int i = 0; i < 256; i++) {
@@ -327,7 +327,7 @@ static void writeline(FILE *dst, uint8 *buffer, int bytes) {
 	uint8 *finish = buffer + bytes;
 
 	while (buffer < finish) {
-		uint8 value = *(buffer++);
+		const uint8 value = *(buffer++);
 		uint8 count = 1;
 
 		while (buffer < finish && count < 63 && *buffer == value) {
@@ -338,7 +338,7 @@ static void writeline(FILE *dst, uint8 *buffer, int bytes) {
 		if (value < 0xc0 && count == 1) {
 			fputc(value, dst);
 		} else {
-			uint8 tmp = count + 0xc0;
+			const uint8 tmp = count + 0xc0;
 			fputc(tmp, dst);
 			fputc(value, dst);
 		}

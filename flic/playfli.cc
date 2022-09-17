@@ -88,8 +88,8 @@ void playfli::info(fliinfo *fi) {
 }
 
 int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned long ticks, int brightness) {
-	int xoffset = (win->get_game_width() - fli_width) / 2;
-	int yoffset = (win->get_game_height() - fli_height) / 2;
+	const int xoffset = (win->get_game_width() - fli_width) / 2;
+	const int yoffset = (win->get_game_height() - fli_height) / 2;
 	bool dont_show = false;
 
 	if (!fli_buf) {
@@ -120,19 +120,19 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 	// Play frames...
 	for (; frame < last_frame; frame++) {
 		fli_data.seek(streampos);
-		int frame_size = fli_data.read4();
+		const int frame_size = fli_data.read4();
 		//frame_magic = fli_data.read2();
 		fli_data.skip(2);
-		int frame_chunks = fli_data.read2();
+		const int frame_chunks = fli_data.read2();
 		fli_data.skip(8);
 		for (int chunk = 0; chunk < frame_chunks; chunk++) {
 			//chunk_size = fli_data.read4();
 			fli_data.skip(4);
-			int chunk_type = fli_data.read2();
+			const int chunk_type = fli_data.read2();
 
 			switch (chunk_type) {
 			case 11: {
-				int packets = fli_data.read2();
+				const int packets = fli_data.read2();
 				unsigned char colors[3 * 256];
 
 				memset(colors, 0, 3 * 256);
@@ -140,7 +140,7 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 
 				for (int p_count = 0; p_count < packets;
 				        p_count++) {
-					int skip = fli_data.read1();
+					const int skip = fli_data.read1();
 
 					current += skip;
 					int change = fli_data.read1();
@@ -162,19 +162,19 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 
 			case 12: {
 
-				int skip_lines = fli_data.read2();
-				int change_lines = fli_data.read2();
+				const int skip_lines = fli_data.read2();
+				const int change_lines = fli_data.read2();
 				for (int line = 0; line < change_lines; line++) {
-					int packets = fli_data.read1();
+					const int packets = fli_data.read1();
 					int pixpos = 0;
 					for (int p_count = 0; p_count < packets;
 					        p_count++) {
-						int skip_count = fli_data.read1();
+						const int skip_count = fli_data.read1();
 						pixpos += skip_count;
 						sint8 size_count = fli_data.read1();
 						if (size_count < 0) {
 							size_count = -size_count;
-							uint8 data = fli_data.read1();
+							const uint8 data = fli_data.read1();
 							memset(pixbuf, data, size_count);
 							fli_buf->copy8(pixbuf, size_count, 1,
 								               pixpos, skip_lines + line);
@@ -197,13 +197,13 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 
 			case 15: {
 				for (int line = 0; line < fli_height; line++) {
-					int packets = fli_data.read1();
+					const int packets = fli_data.read1();
 					int pixpos = 0;
 					for (int p_count = 0; p_count < packets;
 					        p_count++) {
-						sint8 size_count = fli_data.read1();
+						const sint8 size_count = fli_data.read1();
 						if (size_count > 0) {
-							uint8 data = fli_data.read1();
+							const uint8 data = fli_data.read1();
 							memset(&pixbuf[pixpos], data, size_count);
 							pixpos += size_count;
 						} else {
@@ -236,7 +236,7 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 			continue;
 
 		// Speed related frame skipping detection
-		bool skip_frame = Game_window::get_instance()->get_frame_skipping() && SDL_GetTicks() >= ticks;
+		const bool skip_frame = Game_window::get_instance()->get_frame_skipping() && SDL_GetTicks() >= ticks;
 
 		win->put(fli_buf.get(), xoffset, yoffset);
 
@@ -255,8 +255,8 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 }
 
 void playfli::put_buffer(Image_window *win) {
-	int xoffset = (win->get_game_width() - fli_width) / 2;
-	int yoffset = (win->get_game_height() - fli_height) / 2;
+	const int xoffset = (win->get_game_width() - fli_width) / 2;
+	const int yoffset = (win->get_game_height() - fli_height) / 2;
 
 	win->put(fli_buf.get(), xoffset, yoffset);
 }

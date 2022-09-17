@@ -209,8 +209,8 @@ void Scale_Hq4x(
 	int w[10];
 	int c[10];
 	int yuv[10];
-	int stopy = srcy + srch;
-	int stopx = srcx + srcw;
+	const int stopy = srcy + srch;
+	const int stopx = srcx + srcw;
 	unsigned char *from = source + srcy * sline_pixels + srcx;
 	Dest_pixel *to = dest + 4 * srcy * dline_pixels + 4 * srcx;
 

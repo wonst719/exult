@@ -424,7 +424,7 @@ inline void set_mul(FM_OPL *OPL, int slot, int v) {
 inline void set_ksl_tl(FM_OPL *OPL, int slot, int v) {
 	OPL_CH   *CH   = &OPL->P_CH[slot>>1];
 	OPL_SLOT *SLOT = &CH->SLOT[slot & 1];
-	int ksl = v >> 6; /* 0 / 1.5 / 3 / 6 db/OCT */
+	const int ksl = v >> 6; /* 0 / 1.5 / 3 / 6 db/OCT */
 
 	SLOT->ksl = ksl ? 3-ksl : 31;
 	SLOT->TL  = static_cast<int>((v & 0x3f) * (0.75 / EG_STEP)); /* 0.75db step */
@@ -438,8 +438,8 @@ inline void set_ksl_tl(FM_OPL *OPL, int slot, int v) {
 inline void set_ar_dr(FM_OPL *OPL, int slot, int v) {
 	OPL_CH   *CH   = &OPL->P_CH[slot>>1];
 	OPL_SLOT *SLOT = &CH->SLOT[slot & 1];
-	int ar = v >> 4;
-	int dr = v & 0x0f;
+	const int ar = v >> 4;
+	const int dr = v & 0x0f;
 
 	SLOT->AR = ar ? &OPL->AR_TABLE[ar << 2] : RATE_0;
 	SLOT->evsa = SLOT->AR[SLOT->ksr];
@@ -456,8 +456,8 @@ inline void set_ar_dr(FM_OPL *OPL, int slot, int v) {
 inline void set_sl_rr(FM_OPL *OPL, int slot, int v) {
 	OPL_CH   *CH   = &OPL->P_CH[slot>>1];
 	OPL_SLOT *SLOT = &CH->SLOT[slot & 1];
-	int sl = v >> 4;
-	int rr = v & 0x0f;
+	const int sl = v >> 4;
+	const int rr = v & 0x0f;
 
 	SLOT->SL = SL_TABLE[sl];
 	if (SLOT->evm == ENV_MOD_DR)
@@ -488,7 +488,7 @@ inline void OPL_CALC_CH(OPL_CH *CH) {
 			SLOT->Cnt += SLOT->Incr;
 		/* connection */
 		if (CH->FB) {
-			int feedback1 = (CH->op1_out[0] + CH->op1_out[1]) >> CH->FB;
+			const int feedback1 = (CH->op1_out[0] + CH->op1_out[1]) >> CH->FB;
 			CH->op1_out[1] = CH->op1_out[0];
 			*CH->connect1 += CH->op1_out[0] = OP_OUT(SLOT, env_out, feedback1);
 		} else {
@@ -523,7 +523,7 @@ inline void OPL_CALC_RH(OPL_CH *CH) {
 	// but EG_STEP = 96.0/EG_ENT, and WHITE_NOISE_db=6.0. So, that's equivalent to
 	// int(OPL->rnd.getRandomBit() * EG_ENT/16). We know that EG_ENT is 4096, or 1024,
 	// or 128, so we can safely avoid any FP ops.
-	int whitenoise = int((std::rand()&1)*(WHITE_NOISE_db/EG_STEP));
+	const int whitenoise = int((std::rand()&1)*(WHITE_NOISE_db/EG_STEP));
 
 	int tone8;
 
@@ -543,7 +543,7 @@ inline void OPL_CALC_RH(OPL_CH *CH) {
 			SLOT->Cnt += SLOT->Incr;
 		/* connection */
 		if (CH[6].FB) {
-			int feedback1 = (CH[6].op1_out[0] + CH[6].op1_out[1]) >> CH[6].FB;
+			const int feedback1 = (CH[6].op1_out[0] + CH[6].op1_out[1]) >> CH[6].FB;
 			CH[6].op1_out[1] = CH[6].op1_out[0];
 			feedback2 = CH[6].op1_out[0] = OP_OUT(SLOT, env_out, feedback1);
 		}
@@ -641,7 +641,7 @@ static int OPLOpenTable() {
 	ENV_CURVE = new int[2*EG_ENT+1];
 	/* make total level table */
 	for (uint32 t = 0; t < EG_ENT - 1; t++) {
-		double rate = ((1 << TL_BITS) - 1) / pow(10.0, EG_STEP * t / 20);	/* dB -> voltage */
+		const double rate = ((1 << TL_BITS) - 1) / pow(10.0, EG_STEP * t / 20);	/* dB -> voltage */
 		TL_TABLE[         t] =  static_cast<int>(rate);
 		TL_TABLE[TL_MAX + t] = -TL_TABLE[t];
 	}
@@ -656,7 +656,7 @@ static int OPLOpenTable() {
 	for (uint32 s = 1; s <= SIN_ENT / 4; s++) {
 		double pom = sin(2 * M_PI * s / SIN_ENT); /* sin     */
 		pom = 20 * log10(1 / pom);	   /* decibel */
-		int j = int(pom / EG_STEP);         /* TL_TABLE steps */
+		const int j = int(pom / EG_STEP);         /* TL_TABLE steps */
 
 		/* degree 0   -  90    , degree 180 -  90 : plus section */
 		SIN_TABLE[          s] = SIN_TABLE[SIN_ENT / 2 - s] = &TL_TABLE[j];
@@ -672,7 +672,7 @@ static int OPLOpenTable() {
 	/* envelope counter -> envelope output table */
 	for (uint32 i = 0; i < EG_ENT; i++) {
 		/* ATTACK curve */
-		double pom = pow((static_cast<double>(EG_ENT - 1 - i) / EG_ENT), 8) * EG_ENT;
+		const double pom = pow((static_cast<double>(EG_ENT - 1 - i) / EG_ENT), 8) * EG_ENT;
 		/* if (pom >= EG_ENT) pom = EG_ENT-1; */
 		ENV_CURVE[i] = static_cast<int>(pom);
 		/* DECAY ,RELEASE curve */
@@ -682,14 +682,14 @@ static int OPLOpenTable() {
 	ENV_CURVE[EG_OFF >> ENV_BITS]= EG_ENT - 1;
 	/* make LFO ams table */
 	for (uint32 i = 0; i < AMS_ENT; i++) {
-		double pom = (1.0 + sin(2 * M_PI * i / AMS_ENT)) / 2; /* sin */
+		const double pom = (1.0 + sin(2 * M_PI * i / AMS_ENT)) / 2; /* sin */
 		AMS_TABLE[i]         = static_cast<int>((1.0 / EG_STEP) * pom); /* 1dB   */
 		AMS_TABLE[AMS_ENT + i] = static_cast<int>((4.8 / EG_STEP) * pom); /* 4.8dB */
 	}
 	/* make LFO vibrate table */
 	for (uint32 i = 0; i < VIB_ENT; i++) {
 		/* 100cent = 1seminote = 6% ?? */
-		double pom = VIB_RATE * 0.06 * sin(2 * M_PI * i / VIB_ENT); /* +-100sect step */
+		const double pom = VIB_RATE * 0.06 * sin(2 * M_PI * i / VIB_ENT); /* +-100sect step */
 		VIB_TABLE[i]         = static_cast<int>(VIB_RATE + (pom * 0.07)); /* +- 7cent */
 		VIB_TABLE[VIB_ENT + i] = static_cast<int>(VIB_RATE + (pom * 0.14)); /* +-14cent */
 	}
@@ -772,20 +772,20 @@ void OPLWriteReg(FM_OPL *OPL, int r, int v) {
 			if (v & 0x80) {	/* IRQ flag clear */
 				OPL_STATUS_RESET(OPL, 0x7f);
 			} else {	/* set IRQ mask ,timer enable*/
-				uint8 st1 = v & 1;
-				uint8 st2 = (v >> 1) & 1;
+				const uint8 st1 = v & 1;
+				const uint8 st2 = (v >> 1) & 1;
 				/* IRQRST,T1MSK,t2MSK,EOSMSK,BRMSK,x,ST2,ST1 */
 				OPL_STATUS_RESET(OPL, v & 0x78);
 				OPL_STATUSMASK_SET(OPL,((~v) & 0x78) | 0x01);
 				/* timer 2 */
 				if (OPL->st[1] != st2) {
-					double interval = st2 ? (OPL->T[1] * OPL->TimerBase) : 0.0;
+					const double interval = st2 ? (OPL->T[1] * OPL->TimerBase) : 0.0;
 					OPL->st[1] = st2;
 					if (OPL->TimerHandler) (OPL->TimerHandler)(OPL->TimerParam + 1, interval);
 				}
 				/* timer 1 */
 				if (OPL->st[0] != st1) {
-					double interval = st1 ? (OPL->T[0] * OPL->TimerBase) : 0.0;
+					const double interval = st1 ? (OPL->T[0] * OPL->TimerBase) : 0.0;
 					OPL->st[0] = st1;
 					if (OPL->TimerHandler) (OPL->TimerHandler)(OPL->TimerParam + 0, interval);
 				}
@@ -822,7 +822,7 @@ void OPLWriteReg(FM_OPL *OPL, int r, int v) {
 		case 0xbd:
 			/* amsep,vibdep,r,bd,sd,tom,tc,hh */
 			{
-			uint8 rkey = OPL->rythm ^ v;
+			const uint8 rkey = OPL->rythm ^ v;
 			OPL->ams_table = &AMS_TABLE[v & 0x80 ? AMS_ENT : 0];
 			OPL->vib_table = &VIB_TABLE[v & 0x40 ? VIB_ENT : 0];
 			OPL->rythm  = v & 0x3f;
@@ -879,7 +879,7 @@ void OPLWriteReg(FM_OPL *OPL, int r, int v) {
 		if (!(r&0x10)) {	/* a0-a8 */
 			block_fnum  = (CH->block_fnum & 0x1f00) | v;
 		} else {	/* b0-b8 */
-			int keyon = (v >> 5) & 1;
+			const int keyon = (v >> 5) & 1;
 			block_fnum = ((v & 0x1f) << 8) | (CH->block_fnum & 0xff);
 			if (CH->keyon != keyon) {
 				if ((CH->keyon=keyon)) {
@@ -894,8 +894,8 @@ void OPLWriteReg(FM_OPL *OPL, int r, int v) {
 		}
 		/* update */
 		if (CH->block_fnum != block_fnum) {
-			int blockRv = 7 - (block_fnum >> 10);
-			int fnum = block_fnum & 0x3ff;
+			const int blockRv = 7 - (block_fnum >> 10);
+			const int fnum = block_fnum & 0x3ff;
 			CH->block_fnum = block_fnum;
 			CH->ksl_base = KSL_TABLE[block_fnum >> 6];
 			CH->fc = OPL->FN_TABLE[fnum] >> blockRv;
@@ -912,7 +912,7 @@ void OPLWriteReg(FM_OPL *OPL, int r, int v) {
 			return;
 		CH = &OPL->P_CH[r&0x0f];
 		{
-			int feedback = (v >> 1) & 7;
+			const int feedback = (v >> 1) & 7;
 			CH->FB = feedback ? (8 + 1) - feedback : 0;
 			CH->CON = v & 1;
 			set_algorythm(CH);
@@ -964,7 +964,7 @@ void YM3812UpdateOne_Mono(FM_OPL *OPL, sint16 *buffer, int length) {
 	sint16 *buf = buffer;
 	uint32 amsCnt = OPL->amsCnt;
 	uint32 vibCnt = OPL->vibCnt;
-	uint8 rythm = OPL->rythm & 0x20;
+	const uint8 rythm = OPL->rythm & 0x20;
 
 	if (OPL != cur_chip) {
 		cur_chip = OPL;
@@ -996,7 +996,7 @@ void YM3812UpdateOne_Mono(FM_OPL *OPL, sint16 *buffer, int length) {
 		if (rythm)
 			OPL_CALC_RH(S_CH);
 		/* limit check */
-		int data = CLIP(outd[0], OPL_MINOUT, OPL_MAXOUT);
+		const int data = CLIP(outd[0], OPL_MINOUT, OPL_MAXOUT);
 		/* store to sound buffer */
 		buf[i] = data >> OPL_OUTSB;
 	}
@@ -1009,7 +1009,7 @@ void YM3812UpdateOne_Stereo(FM_OPL *OPL, sint16 *buffer, int length) {
 	sint16 *buf = buffer;
 	uint32 amsCnt = OPL->amsCnt;
 	uint32 vibCnt = OPL->vibCnt;
-	uint8 rythm = OPL->rythm & 0x20;
+	const uint8 rythm = OPL->rythm & 0x20;
 
 	if (OPL != cur_chip) {
 		cur_chip = OPL;

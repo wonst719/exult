@@ -387,7 +387,7 @@ int main(
 
 		exit(1);
 	}
-	unsigned gameparam = static_cast<unsigned>(run_bg)
+	const unsigned gameparam = static_cast<unsigned>(run_bg)
 	                     + static_cast<unsigned>(run_si)
 	                     + static_cast<unsigned>(run_fov)
 	                     + static_cast<unsigned>(run_ss)
@@ -506,7 +506,7 @@ int exult_main(const char *runpath) {
 	config->value("config/disk/data_path", data_path, EXULT_DATADIR);
 	setup_data_dir(data_path, runpath);
 
-	std::string default_music = get_system_path("<DATA>/music");
+	const std::string default_music = get_system_path("<DATA>/music");
 	config->value("config/disk/music_path", music_path, default_music.c_str());
 
 	add_system_path("<MUSIC>", music_path);
@@ -528,7 +528,7 @@ int exult_main(const char *runpath) {
 	// Check CRCs of our .flx files
 	bool crc_ok = true;
 	const char *flexname = BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX);
-	uint32 crc = crc32(flexname);
+	const uint32 crc = crc32(flexname);
 	if (crc != EXULT_FLX_CRC32) {
 		crc_ok = false;
 		cerr << "exult.flx has a wrong checksum!" << endl;
@@ -562,7 +562,7 @@ int exult_main(const char *runpath) {
 
 
 	// Convert from old format if needed
-	vector<string> vs = config->listkeys("config/disk/game", false);
+	const vector<string> vs = config->listkeys("config/disk/game", false);
 	if (vs.empty() && config->key_exists("config/disk/u7path")) {
 		// Convert from the older format
 		string data_directory;
@@ -629,7 +629,7 @@ int exult_main(const char *runpath) {
 		}
 	}
 
-	int result = Play();        // start game
+	const int result = Play();        // start game
 
 #ifdef USE_EXULTSTUDIO
 	// Currently, leaving the game results in destruction of the window.
@@ -672,12 +672,12 @@ static void SetIcon() {
 	{
 		for (int x = 0; x < static_cast<int>(ExultIcon::width); ++x)
 		{
-			int idx = ExultIcon::header_data[(y*ExultIcon::height)+x];
-			Uint32 pix = SDL_MapRGB(iconsurface->format,
+			const int idx = ExultIcon::header_data[(y*ExultIcon::height)+x];
+			const Uint32 pix = SDL_MapRGB(iconsurface->format,
 					iconpal[idx].r,
 					iconpal[idx].g,
 					iconpal[idx].b);
-			SDL_Rect destRect = {x, y, 1, 1};
+			const SDL_Rect destRect = {x, y, 1, 1};
 			SDL_FillRect(iconsurface, &destRect, pix);
 		}
 	}
@@ -707,7 +707,7 @@ int Handle_device_connection_event(void *userdata, SDL_Event *event) {
 	// become connected or disconnected.
 	switch (event->type) {
 		case SDL_CONTROLLERDEVICEADDED: {
-			SDL_JoystickID joystick_id = SDL_JoystickGetDeviceInstanceID(event->cdevice.which);
+			const SDL_JoystickID joystick_id = SDL_JoystickGetDeviceInstanceID(event->cdevice.which);
 			if (!SDL_GameControllerFromInstanceID(joystick_id)) {
 				Open_game_controller(event->cdevice.which);
 			}
@@ -735,9 +735,11 @@ int Handle_device_connection_event(void *userdata, SDL_Event *event) {
  */
 static void Init(
 ) {
-	Uint32 init_flags = SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER;
+	const Uint32 init_flags = SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER;
 #ifdef NO_SDL_PARACHUTE
-	init_flags |= SDL_INIT_NOPARACHUTE;
+	const Uint32 parachute = SDL_INIT_NOPARACHUTE;
+#else
+	const Uint32 parachute = 0;
 #endif
 #ifdef _WIN32
 	SDL_putenv("SDL_AUDIODRIVER=DirectSound");
@@ -748,7 +750,9 @@ static void Init(
 #endif
 	SDL_SetHint(SDL_HINT_ORIENTATIONS, "Landscape");
 #if 0
-	init_flags |= SDL_INIT_JOYSTICK;
+	const Uint32 joyinit = SDL_INIT_JOYSTICK;
+#else
+	const Uint32 joyinit = 0;
 #endif
 #if defined(__IPHONEOS__) || defined(ANDROID)
 	Mouse::use_touch_input = true;
@@ -756,7 +760,7 @@ static void Init(
 #ifdef __IPHONEOS__
 	SDL_SetHint(SDL_HINT_IOS_HIDE_HOME_INDICATOR, "2");
 #endif
-	if (SDL_Init(init_flags) < 0) {
+	if (SDL_Init(init_flags|parachute|joyinit) < 0) {
 		cerr << "Unable to initialize SDL: " << SDL_GetError() << endl;
 		exit(-1);
 	}
@@ -796,7 +800,7 @@ static void Init(
 		                         atof(gb.c_str()));
 		string  fullscreenstr;      // Check config. for fullscreen mode.
 		config->value("config/video/fullscreen", fullscreenstr, "no");
-		bool    fullscreen = (fullscreenstr == "yes");
+		const bool fullscreen = (fullscreenstr == "yes");
 		config->set("config/video/fullscreen", fullscreen ? "yes" : "no", false);
 
 		int border_red;
@@ -1007,24 +1011,24 @@ static void Paint_with_shape(
 	int y;
 	gwin->get_win()->screen_to_game(event.button.x, event.button.y, false, x, y);
 
-	int tx = (gwin->get_scrolltx() + x / c_tilesize);
-	int ty = (gwin->get_scrollty() + y / c_tilesize);
+	const int tx = (gwin->get_scrolltx() + x / c_tilesize);
+	const int ty = (gwin->get_scrollty() + y / c_tilesize);
 	if (dragging) {         // See if moving to a new tile.
 		if (tx == lasttx && ty == lastty)
 			return;
 	}
 	lasttx = tx;
 	lastty = ty;
-	int shnum = cheat.get_edit_shape();
+	const int shnum = cheat.get_edit_shape();
 	int frnum;
-	SDL_Keymod mod = SDL_GetModState();
+	const SDL_Keymod mod = SDL_GetModState();
 	if (mod & KMOD_ALT) {   // ALT?  Pick random frame.
-		ShapeID id(shnum, 0);
+		const ShapeID id(shnum, 0);
 		frnum = std::rand() % id.get_num_frames();
 	} else if (mod & KMOD_CTRL) { // Cycle through frames.
 		frnum = cheat.get_edit_frame();
-		ShapeID id(shnum, 0);
-		int nextframe = (frnum + 1) % id.get_num_frames();
+		const ShapeID id(shnum, 0);
+		const int nextframe = (frnum + 1) % id.get_num_frames();
 		cheat.set_edit_shape(shnum, nextframe);
 	} else
 		frnum = cheat.get_edit_frame();
@@ -1044,15 +1048,15 @@ static void Paint_with_chunk(
 	int x;
 	int y;
 	gwin->get_win()->screen_to_game(event.button.x, event.button.y, false, x, y);
-	int cx = (gwin->get_scrolltx() + x / c_tilesize) / c_tiles_per_chunk;
-	int cy = (gwin->get_scrollty() + y / c_tilesize) / c_tiles_per_chunk;
+	const int cx = (gwin->get_scrolltx() + x / c_tilesize) / c_tiles_per_chunk;
+	const int cy = (gwin->get_scrollty() + y / c_tilesize) / c_tiles_per_chunk;
 	if (dragging) {         // See if moving to a new chunk.
 		if (cx == lastcx && cy == lastcy)
 			return;
 	}
 	lastcx = cx;
 	lastcy = cy;
-	int chnum = cheat.get_edit_chunknum();
+	const int chnum = cheat.get_edit_chunknum();
 	Drop_dragged_chunk(chnum, event.button.x, event.button.y);
 }
 
@@ -1070,8 +1074,8 @@ static void Select_chunks(
 	int x;
 	int y;
 	gwin->get_win()->screen_to_game(event.button.x, event.button.y, false, x, y);
-	int cx = (gwin->get_scrolltx() + x / c_tilesize) / c_tiles_per_chunk;
-	int cy = (gwin->get_scrollty() + y / c_tilesize) / c_tiles_per_chunk;
+	const int cx = (gwin->get_scrolltx() + x / c_tilesize) / c_tiles_per_chunk;
+	const int cy = (gwin->get_scrollty() + y / c_tilesize) / c_tiles_per_chunk;
 	if (dragging) {         // See if moving to a new chunk.
 		if (cx == lastcx && cy == lastcy)
 			return;
@@ -1110,9 +1114,9 @@ static void Select_for_combo(
 		last_obj = obj;
 	} else
 		return;
-	ShapeID id = *obj;
-	Tile_coord t = obj->get_tile();
-	std::string name = get_item_name(id.get_shapenum());
+	const ShapeID id = *obj;
+	const Tile_coord t = obj->get_tile();
+	const std::string name = get_item_name(id.get_shapenum());
 	if (toggle)
 		cheat.toggle_selected(obj);
 	else if (!cheat.is_selected(obj)) {
@@ -1159,7 +1163,7 @@ static void Handle_events(
 		Mouse::mouse_update = false;
 
 		// Get current time.
-		uint32 ticks = SDL_GetTicks();
+		const uint32 ticks = SDL_GetTicks();
 #if defined(_WIN32) && defined(USE_EXULTSTUDIO)
 		if (ticks - Game::get_ticks() < 10) {
 			// Reducing processor usage with a slight delay.
@@ -1170,7 +1174,7 @@ static void Handle_events(
 		Game::set_ticks(ticks);
 #ifdef DEBUG
 		if (last_fps == 0 || ticks >= last_fps + 10000) {
-			double fps = (gwin->blits * 1000.0) / (ticks - last_fps);
+			const double fps = (gwin->blits * 1000.0) / (ticks - last_fps);
 			cerr << "***#ticks = " << ticks - last_fps <<
 			     ", blits = " << gwin->blits << ", ";
 			cerr << "FPS:  " << fps << endl;
@@ -1194,20 +1198,20 @@ static void Handle_events(
 		        gwin->main_actor_can_act_charmed()) {
 			int x;
 			int y;// Check for 'stuck' Avatar.
-			int ms = SDL_GetMouseState(&x, &y);
+			const int ms = SDL_GetMouseState(&x, &y);
 			//mouse movement needs to be adjusted for HighDPI
 			gwin->get_win()->screen_to_game_hdpi(x, y, gwin->get_fastmouse(), x, y);
 			if ((SDL_BUTTON(3) & ms) && !right_on_gump)
 				gwin->start_actor(x, y,
 				                  Mouse::mouse->avatar_speed);
 			else if (ticks > last_rest) {
-				int resttime = ticks - last_rest;
+				const int resttime = ticks - last_rest;
 				gwin->get_main_actor()->resting(resttime);
 
 				Party_manager *party_man = gwin->get_party_man();
-				int cnt = party_man->get_count();
+				const int cnt = party_man->get_count();
 				for (int i = 0; i < cnt; i++) {
-					int party_member = party_man->get_member(i);
+					const int party_member = party_man->get_member(i);
 					Actor *person = gwin->get_npc(party_member);
 					if (!person)
 						continue;
@@ -1232,7 +1236,7 @@ static void Handle_events(
 		}
 
 		// Lerping stuff...
-		int lerp = gwin->is_lerping_enabled();
+		const int lerp = gwin->is_lerping_enabled();
 		bool didlerp = false;
 		if (lerp) {
 			// Always repaint,
@@ -1264,7 +1268,7 @@ static void Handle_events(
 		Mouse::mouse->show();   // Re-display mouse.
 		// Rotate less often if scaling and
 		//   not paletized.
-		int rot_speed = 100 << (gwin->get_win()->fast_palette_rotate() ? 0 : 1);
+		const int rot_speed = 100 << (gwin->get_win()->fast_palette_rotate() ? 0 : 1);
 
 		if (ticks > last_rotate + rot_speed) {
 			// (Blits in simulated 8-bit mode.)
@@ -1308,8 +1312,8 @@ static void Handle_event(
 ) {
 
 	// Mouse scale factor
-	bool dont_move_mode = gwin->main_actor_dont_move();
-	bool avatar_can_act = gwin->main_actor_can_act();
+	const bool dont_move_mode = gwin->main_actor_dont_move();
+	const bool avatar_can_act = gwin->main_actor_can_act();
 
 	// We want this
 	Gump_manager *gump_man = gwin->get_gump_man();
@@ -1534,7 +1538,7 @@ static void Handle_event(
 	// Mousewheel scrolling of view port with SDL2.
 	case SDL_MOUSEWHEEL: {
 		if (!cheat() || !gwin->can_scroll_with_mouse()) break;
-		SDL_Keymod mod = SDL_GetModState();
+		const SDL_Keymod mod = SDL_GetModState();
 		if(event.wheel.y > 0) {
 			if (mod & KMOD_ALT)
 				ActionScrollLeft(nullptr);
@@ -1564,12 +1568,12 @@ static void Handle_event(
 		gwin->get_win()->screen_to_game(event.button.x, event.button.y, gwin->get_fastmouse(), x, y);
 
 		if (event.button.button == 3) {
-			uint32 curtime = SDL_GetTicks();
+			const uint32 curtime = SDL_GetTicks();
 			// If showing gumps, ignore all double-right-click results
 			if (gump_man->gump_mode()) {
 				if (right_on_gump &&
 				        (gump = gump_man->find_gump(x, y, false))) {
-					TileRect dirty = gump->get_dirty();
+					const TileRect dirty = gump->get_dirty();
 					gwin->add_dirty(dirty);
 					gump_man->close_gump(gump);
 					gump = nullptr;
@@ -1594,7 +1598,7 @@ static void Handle_event(
 			}
 			last_b3_click = curtime;
 		} else if (event.button.button == 1) {
-			uint32 curtime = SDL_GetTicks();
+			const uint32 curtime = SDL_GetTicks();
 			bool click_handled = false;
 			if (dragging) {
 				click_handled = gwin->drop_dragged(x, y, dragged);
@@ -1816,13 +1820,13 @@ static bool Get_click(
 		SDL_Event event;
 		Delay();        // Wait a fraction of a second.
 
-		uint32 ticks = SDL_GetTicks();
+		const uint32 ticks = SDL_GetTicks();
 		Game::set_ticks(ticks);
 		Mouse::mouse->hide();       // Turn off mouse.
 		Mouse::mouse_update = false;
 
 		if (rotate_colors) {
-			int rot_speed = 100 << (gwin->get_win()->fast_palette_rotate() ? 0 : 1);
+			const int rot_speed = 100 << (gwin->get_win()->fast_palette_rotate() ? 0 : 1);
 			if (ticks > last_rotate + rot_speed) {
 				// (Blits in simulated 8-bit mode.)
 				gwin->get_win()->rotate_colors(0xfc, 3, 0);
@@ -1861,8 +1865,8 @@ static bool Get_click(
 					break;
 				if (event.button.button == 1) {
 					gwin->get_win()->screen_to_game(event.button.x, event.button.y, gwin->get_fastmouse(), x, y);
-					bool drg = dragging;
-					bool drged = dragged;
+					const bool drg = dragging;
+					const bool drged = dragged;
 					dragging = dragged = false;
 					if (!drg ||
 					        !gwin->drop_dragged(x, y, drged)) {
@@ -1894,7 +1898,7 @@ static bool Get_click(
 			}
 			case SDL_KEYDOWN: {
 				//+++++ convert to unicode first?
-				int c = event.key.keysym.sym;
+				const int c = event.key.keysym.sym;
 				switch (c) {
 				case SDLK_ESCAPE:
 					g_waiting_for_click = false;
@@ -1965,7 +1969,7 @@ bool Get_click(
 ) {
 	if (chr)
 		*chr = 0;       // Init.
-	Mouse::Mouse_shapes saveshape = Mouse::mouse->get_shape();
+	const Mouse::Mouse_shapes saveshape = Mouse::mouse->get_shape();
 	if (shape != Mouse::dontchange)
 		Mouse::mouse->set_shape(shape);
 	if (paint)
@@ -1973,7 +1977,7 @@ bool Get_click(
 	Mouse::mouse->show();
 	gwin->show(true);          // Want to see new mouse.
 	gwin->get_tqueue()->pause(Game::get_ticks());
-	bool ret = Get_click(x, y, chr, drag_ok, rotate_colors);
+	const bool ret = Get_click(x, y, chr, drag_ok, rotate_colors);
 	gwin->get_tqueue()->resume(Game::get_ticks());
 	Mouse::mouse->set_shape(saveshape);
 	return ret;
@@ -1993,10 +1997,10 @@ void Wait_for_arrival(
 	int mx;
 	int my;
 
-	bool os = Mouse::mouse->is_onscreen();
+	const bool os = Mouse::mouse->is_onscreen();
 	uint32 last_repaint = 0;    // For insuring animation repaints.
 	Actor_action *orig_action = actor->get_action();
-	uint32 stop_time = SDL_GetTicks() + maxticks;
+	const uint32 stop_time = SDL_GetTicks() + maxticks;
 	bool timeout = false;
 	while (actor->is_moving() && actor->get_action() == orig_action &&
 	        actor->get_tile() != dest && !timeout) {
@@ -2016,7 +2020,7 @@ void Wait_for_arrival(
 				break;
 			}
 		// Get current time, & animate.
-		uint32 ticks = SDL_GetTicks();
+		const uint32 ticks = SDL_GetTicks();
 		Game::set_ticks(ticks);
 		if (maxticks && ticks > stop_time)
 			timeout = true;
@@ -2047,16 +2051,16 @@ static void Shift_wizards_eye(
     int mx, int my
 ) {
 	// Figure dir. from center.
-	int cx = gwin->get_width() / 2;
-	int cy = gwin->get_height() / 2;
-	int dy = cy - my;
-	int dx = mx - cx;
-	Direction dir = Get_direction_NoWrap(dy, dx);
-	static int deltas[16] = {0, -1, 1, -1, 1, 0, 1, 1, 0, 1,
+	const int cx = gwin->get_width() / 2;
+	const int cy = gwin->get_height() / 2;
+	const int dy = cy - my;
+	const int dx = mx - cx;
+	const Direction dir = Get_direction_NoWrap(dy, dx);
+	static const int deltas[16] = {0, -1, 1, -1, 1, 0, 1, 1, 0, 1,
 	                         -1, 1, -1, 0, -1, -1
 	                        };
-	int dirx = deltas[2 * dir];
-	int diry = deltas[2 * dir + 1];
+	const int dirx = deltas[2 * dir];
+	const int diry = deltas[2 * dir + 1];
 	if (dirx == 1)
 		gwin->view_right();
 	else if (dirx == -1)
@@ -2075,12 +2079,12 @@ void Wizard_eye(
     long msecs          // Length of time in milliseconds.
 ) {
 	// Center of screen.
-	int cx = gwin->get_width() / 2;
-	int cy = gwin->get_height() / 2;
+	const int cx = gwin->get_width() / 2;
+	const int cy = gwin->get_height() / 2;
 
-	bool os = Mouse::mouse->is_onscreen();
+	const bool os = Mouse::mouse->is_onscreen();
+	const uint32 stop_time = SDL_GetTicks() + msecs;
 	uint32 last_repaint = 0;    // For insuring animation repaints.
-	uint32 stop_time = SDL_GetTicks() + msecs;
 	bool timeout = false;
 	while (!timeout) {
 		if (touchui != nullptr) {
@@ -2127,7 +2131,7 @@ void Wizard_eye(
 					timeout = true;
 			}
 		// Get current time, & animate.
-		uint32 ticks = SDL_GetTicks();
+		const uint32 ticks = SDL_GetTicks();
 		Game::set_ticks(ticks);
 		if (ticks > stop_time)
 			timeout = true;
@@ -2138,7 +2142,7 @@ void Wizard_eye(
 			// Right mouse button down?
 			int x;
 			int y;
-			int ms = SDL_GetMouseState(&x, &y);
+			const int ms = SDL_GetMouseState(&x, &y);
 			int mx;
 			int my;
 			//mouse movement of the eye needs to adjust for HighDPI
@@ -2151,16 +2155,16 @@ void Wizard_eye(
 			ShapeID eye(10, 0, SF_SPRITES_VGA);
 			Shape_frame *spr = eye.get_shape();
 			// Center it.
-			int w = gwin->get_width();
-			int h = gwin->get_height();
-			int sw = spr->get_width();
-			int sh = spr->get_height();
-			int topx = (w - sw) / 2;
-			int topy = (h - sh) / 2;
+			const int w = gwin->get_width();
+			const int h = gwin->get_height();
+			const int sw = spr->get_width();
+			const int sh = spr->get_height();
+			const int topx = (w - sw) / 2;
+			const int topy = (h - sh) / 2;
 			eye.paint_shape(topx + spr->get_xleft(),
 			                topy + spr->get_yabove());
-			int sizex = (w - 320) / 2;
-			int sizey = (h - 200) / 2;
+			const int sizex = (w - 320) / 2;
+			const int sizey = (h - 200) / 2;
 			if (sizey) { // Black-fill area outside original resolution.
 				gwin->get_win()->fill8(0, w, sizey, 0, 0);
 				gwin->get_win()->fill8(0, w, sizey, 0, h - sizey);
@@ -2169,7 +2173,7 @@ void Wizard_eye(
 				gwin->get_win()->fill8(0, sizex, 200, 0, sizey);
 				gwin->get_win()->fill8(0, sizex, 200, w - sizex, sizey);
 			}
-			while (ticks > last_repaint + 50)last_repaint += 50;
+			while (ticks > last_repaint + 50) last_repaint += 50;
 		}
 
 		Mouse::mouse->show();       // Re-display mouse.
@@ -2215,8 +2219,8 @@ void decrease_scaleval() {
 }
 
 void set_scaleval(int new_scaleval) {
-	int scaler = gwin->get_win()->get_scaler();
-	bool fullscreen = gwin->get_win()->is_fullscreen();
+	const int scaler = gwin->get_win()->get_scaler();
+	const bool fullscreen = gwin->get_win()->is_fullscreen();
 	if (new_scaleval >= 1 && !fullscreen && scaler == Image_window::point && cheat.in_map_editor()) {
 		current_scaleval = new_scaleval;
 		bool share_settings;
@@ -2242,8 +2246,8 @@ void set_scaleval(int new_scaleval) {
 
 void make_screenshot(bool silent) {
 	// TODO: Maybe some form of "My Pictures" on Windows.
-	string savegamepath = get_system_path("<SAVEGAME>");
-	size_t strsize = savegamepath.size() + 20;
+	const string savegamepath = get_system_path("<SAVEGAME>");
+	const size_t strsize = savegamepath.size() + 20;
 	char *fn = new char[strsize];
 	bool namefound = false;
 	Effects_manager *eman = gwin->get_effects();
@@ -2326,7 +2330,7 @@ void BuildGameMap(BaseGameInfo *game, int mapnum) {
 		sc = 1;
 		sclr = Image_window::point;
 		Image_window8::set_gamma(1, 1, 1);
-		Image_window::FillMode fillmode = Image_window::Fit;
+		const Image_window::FillMode fillmode = Image_window::Fit;
 
 		//string    fullscreenstr;      // Check config. for fullscreen mode.
 		//config->value("config/video/fullscreen",fullscreenstr,"no");
@@ -2342,11 +2346,11 @@ void BuildGameMap(BaseGameInfo *game, int mapnum) {
 		gwin->get_map()->init();// +++++Got to clean this up.
 		gwin->set_map(mapnum);
 		gwin->get_pal()->set(0);
-		string savegamepath = get_system_path("<SAVEGAME>");
+		const string savegamepath = get_system_path("<SAVEGAME>");
 		for (int x = 0; x < c_num_chunks / c_chunks_per_schunk; x++) {
 			for (int y = 0; y < c_num_chunks / c_chunks_per_schunk; y++) {
 				gwin->paint_map_at_tile(0, 0, w, h, x * c_tiles_per_schunk, y * c_tiles_per_schunk, maplift);
-				size_t strsize = savegamepath.size() + 20;
+				const size_t strsize = savegamepath.size() + 20;
 				char *fn = new char[strsize];
 				snprintf(fn, strsize, "%s/u7map%02x." EXULT_IMAGE_SUFFIX, savegamepath.c_str(),(12*y)+x);
 				SDL_RWops *dst = SDL_RWFromFile(fn, "wb");
@@ -2396,26 +2400,29 @@ void setup_video(bool fullscreen, int setup_video_type, int resx, int resy,
 #ifdef DEBUG
 		cout << "Reading video menu adjustable configuration options" << endl;
 #endif
-		// Default resolution is now 320x240 with 2x scaling
+#if defined(__IPHONEOS__) || defined(ANDROID)
+		// Default resolution is 320x240 with 1x scaling
 		int w = 320;
 		int h = 240;
-#if defined(__IPHONEOS__) || defined(ANDROID)
 		SDL_DisplayMode dispmode;
 		if (SDL_GetDesktopDisplayMode(0, &dispmode) == 0) {
 			w = dispmode.w;
 			h = dispmode.h;
 		}
-		int sc = 1;
-		string default_scaler = "point";
-		string default_fill_scaler = "point";
-		string default_fmode = "Fill";
+		const int sc = 1;
+		const string default_scaler = "point";
+		const string default_fill_scaler = "point";
+		const string default_fmode = "Fill";
 		fullscreen = true;
 		config->set("config/video/force_bpp", 32, true);
 #else
-		int sc = 2;
-		string default_scaler = "point";
-		string default_fill_scaler = "point";
-		string default_fmode = "Fit";
+		// Default resolution is 320x240 with 2x scaling
+		const int w = 320;
+		const int h = 240;
+		const int sc = 2;
+		const string default_scaler = "point";
+		const string default_fill_scaler = "point";
+		const string default_fmode = "Fit";
 #endif
 		string fill_scaler_str;
 		if (video_init) {
@@ -2559,7 +2566,7 @@ static void Move_grid(
 	//y /= scale;
 	gwin->get_win()->screen_to_game(x, y, false, x, y);
 
-	int lift = cheat.get_edit_lift();
+	const int lift = cheat.get_edit_lift();
 	x += lift * 4 - 1;      // Take lift into account, round.
 	y += lift * 4 - 1;
 	int tx = x / c_tilesize;    // Figure tile on ground.
@@ -2592,7 +2599,7 @@ static void Move_grid(
 	tx -= xtiles - 1;       // Get top-left of footprint.
 	ty -= ytiles - 1;
 	// Let's try a green outline.
-	int pix = Shape_manager::get_instance()->get_special_pixel(
+	const int pix = Shape_manager::get_instance()->get_special_pixel(
 	              POISON_PIXEL);
 	Image_window8 *win = gwin->get_win();
 	win->set_clip(0, 0, win->get_game_width(), win->get_game_height());
@@ -2624,11 +2631,11 @@ static void Move_dragged_shape(
 	}
 	const Shape_info &info = ShapeID::get_info(shape);
 	// Get footprint in tiles.
-	int xtiles = info.get_3d_xtiles(frame);
-	int ytiles = info.get_3d_ytiles(frame);
-	int sclass = info.get_shape_class();
+	const int xtiles = info.get_3d_xtiles(frame);
+	const int ytiles = info.get_3d_ytiles(frame);
+	const int sclass = info.get_shape_class();
 	// Is it an ireg (changeable) obj?
-	bool ireg = (sclass != Shape_info::unusable &&
+	const bool ireg = (sclass != Shape_info::unusable &&
 	             sclass != Shape_info::building);
 	Move_grid(x, y, prevx, prevy, ireg, xtiles, ytiles, 0, 0);
 	if (show)
@@ -2664,7 +2671,7 @@ static Game_object_shared Create_object(
     bool &ireg          // Rets. TRUE if ireg (moveable).
 ) {
 	const Shape_info &info = ShapeID::get_info(shape);
-	int sclass = info.get_shape_class();
+	const int sclass = info.get_shape_class();
 	// Is it an ireg (changeable) obj?
 	ireg = (sclass != Shape_info::unusable &&
 	        sclass != Shape_info::building);
@@ -2690,17 +2697,17 @@ static void Drop_dragged_shape(
 	cheat.clear_selected();     // Remove old selected.
 	gwin->get_map()->set_map_modified();
 	gwin->get_win()->screen_to_game(x, y, false, x, y);
-	ShapeID sid(shape, frame);
+	const ShapeID sid(shape, frame);
 	if (gwin->skip_lift == 0) { // Editing terrain?
 		int tx = (gwin->get_scrolltx() + x / c_tilesize) % c_num_tiles;
 		int ty = (gwin->get_scrollty() + y / c_tilesize) % c_num_tiles;
-		int cx = tx / c_tiles_per_chunk;
-		int cy = ty / c_tiles_per_chunk;
+		const int cx = tx / c_tiles_per_chunk;
+		const int cy = ty / c_tiles_per_chunk;
 		Map_chunk *chunk = gwin->get_map()->get_chunk(cx, cy);
 		Chunk_terrain *ter = chunk->get_terrain();
 		tx %= c_tiles_per_chunk;
 		ty %= c_tiles_per_chunk;
-		ShapeID curid = ter->get_flat(tx, ty);
+		const ShapeID curid = ter->get_flat(tx, ty);
 		if (sid.get_shapenum() != curid.get_shapenum() ||
 		        sid.get_framenum() != curid.get_framenum()) {
 			ter->set_flat(tx, ty, sid);
@@ -2716,7 +2723,7 @@ static void Drop_dragged_shape(
 	cout << "Create shape (" << shape << '/' << frame << ')' <<
 	     endl;
 	bool ireg;          // Create object.
-	Game_object_shared newobj = Create_object(shape, frame, ireg);
+	const Game_object_shared newobj = Create_object(shape, frame, ireg);
 	Dragging_info drag(newobj);
 	drag.drop(x, y, true);      // (Dels if it fails.)
 }
@@ -2735,10 +2742,10 @@ static void Drop_dragged_chunk(
 	cout << "Last drag pos: (" << x << ", " << y << ')' << endl;
 	cout << "Set chunk (" << chunknum << ')' << endl;
 	// Need chunk-coordinates.
-	int tx = (gwin->get_scrolltx() + x / c_tilesize) % c_num_tiles;
-	int ty = (gwin->get_scrollty() + y / c_tilesize) % c_num_tiles;
-	int cx = tx / c_tiles_per_chunk;
-	int cy = ty / c_tiles_per_chunk;
+	const int tx = (gwin->get_scrolltx() + x / c_tilesize) % c_num_tiles;
+	const int ty = (gwin->get_scrollty() + y / c_tilesize) % c_num_tiles;
+	const int cx = tx / c_tiles_per_chunk;
+	const int cy = ty / c_tiles_per_chunk;
 	gwin->get_map()->set_chunk_terrain(cx, cy, chunknum);
 	gwin->paint();
 }
@@ -2759,7 +2766,7 @@ static void Drop_dragged_npc(
 	Actor *npc = gwin->get_npc(npcnum);
 	if (!npc)
 		return;
-	Game_object_shared safe_npc = npc->shared_from_this();
+	const Game_object_shared safe_npc = npc->shared_from_this();
 	Game_object_shared npckeep;
 	if (npc->is_pos_invalid())  // Brand new?
 		npc->clear_flag(Obj_flags::dead);
@@ -2784,25 +2791,25 @@ void Drop_dragged_combo(
 		cheat.toggle_map_editor();
 	cheat.clear_selected();     // Remove old selected.
 	gwin->get_win()->screen_to_game(x, y, false, x, y);
-	int at_lift = cheat.get_edit_lift();
+	const int at_lift = cheat.get_edit_lift();
 	x += at_lift * 4 - 1;   // Take lift into account, round.
 	y += at_lift * 4 - 1;
 	// Figure tile at mouse pos.
-	int tx = (gwin->get_scrolltx() + x / c_tilesize) % c_num_tiles;
-	int ty = (gwin->get_scrollty() + y / c_tilesize) % c_num_tiles;
+	const int tx = (gwin->get_scrolltx() + x / c_tilesize) % c_num_tiles;
+	const int ty = (gwin->get_scrollty() + y / c_tilesize) % c_num_tiles;
 	for (int i = 0; i < cnt; i++) {
 		// Drop each shape.
-		U7_combo_data &elem = combo[i];
+		const U7_combo_data &elem = combo[i];
 		// Figure new tile coord.
 		int ntx = (tx + elem.tx) % c_num_tiles;
 		int nty = (ty + elem.ty) % c_num_tiles;
 		int ntz = at_lift + elem.tz;
 		if (ntz < 0)
 			ntz = 0;
-		ShapeID sid(elem.shape, elem.frame);
+		const ShapeID sid(elem.shape, elem.frame);
 		if (gwin->skip_lift == 0) { // Editing terrain?
-			int cx = ntx / c_tiles_per_chunk;
-			int cy = nty / c_tiles_per_chunk;
+			const int cx = ntx / c_tiles_per_chunk;
+			const int cy = nty / c_tiles_per_chunk;
 			Map_chunk *chunk = gwin->get_map()->get_chunk(cx, cy);
 			Chunk_terrain *ter = chunk->get_terrain();
 			ntx %= c_tiles_per_chunk;
@@ -2812,7 +2819,7 @@ void Drop_dragged_combo(
 			continue;
 		}
 		bool ireg;      // Create object.
-		Game_object_shared newobj = Create_object(elem.shape,
+		const Game_object_shared newobj = Create_object(elem.shape,
 		                                    elem.frame, ireg);
 		newobj->set_invalid();  // Not in world.
 		newobj->move(ntx, nty, ntz);

@@ -204,7 +204,7 @@ uint32 XMidiEventList::convertListToMTrk (ODataSource *dest)
 
 	if (dest)
 	{
-		int cur_pos = dest->getPos();
+		const int cur_pos = dest->getPos();
 		dest->seek (size_pos);
 		dest->write4high (i-8);
 		dest->seek (cur_pos);

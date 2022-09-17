@@ -181,7 +181,7 @@ void Gump_manager::add_gump(Gump *gump) {
  */
 
 bool Gump_manager::close_gump(Gump *gump) {
-	bool ret = remove_gump(gump);
+	const bool ret = remove_gump(gump);
 	Gump *dragged = gwin->get_dragging_gump();
 	if (dragged == gump)
 		gwin->stop_dragging();
@@ -270,7 +270,7 @@ void Gump_manager::add_gump(
 	int x = (1 + cnt) * gwin->get_width() / 10;
 	int y = (1 + cnt) * gwin->get_height() / 10;
 
-	ShapeID s_id(shapenum, 0, paperdoll ? SF_PAPERDOL_VGA : SF_GUMPS_VGA);
+	const ShapeID s_id(shapenum, 0, paperdoll ? SF_PAPERDOL_VGA : SF_GUMPS_VGA);
 	Shape_frame *shape = s_id.get_shape();
 
 	if (x + shape->get_xright() > gwin->get_width() ||
@@ -318,7 +318,7 @@ void Gump_manager::add_gump(
 	}
 	if (++cnt == 8)
 		cnt = 0;
-	int sfx = Audio::game_sfx(14);
+	const int sfx = Audio::game_sfx(14);
 	Audio::get_ptr()->play_sound_effect(sfx);   // The weird noise.
 	gwin->paint();          // Show everything.
 }
@@ -590,7 +590,7 @@ bool Gump_manager::handle_modal_gump_event(
 }
 
 void Gump_manager::translate_numpad(SDL_Keycode& code, uint16& unicode, uint16 mod) {
-	bool numlock_active = (mod & KMOD_NUM) != 0;
+	const bool numlock_active = (mod & KMOD_NUM) != 0;
 	unicode = 0;
 	switch (code) {
 	case SDLK_KP_0:
@@ -697,7 +697,7 @@ bool Gump_manager::do_modal_gump(
 	// Pause the game
 	gwin->get_tqueue()->pause(SDL_GetTicks());
 
-	Mouse::Mouse_shapes saveshape = Mouse::mouse->get_shape();
+	const Mouse::Mouse_shapes saveshape = Mouse::mouse->get_shape();
 	if (shape != Mouse::dontchange)
 		Mouse::mouse->set_shape(shape);
 	bool escaped = false;
@@ -763,8 +763,8 @@ int Gump_manager::prompt_for_number(
 ) {
 	auto *slider = new Slider_gump(minval, maxval,
 	                                      step, defval);
-	bool ok = do_modal_gump(slider, Mouse::hand, paint);
-	int ret = !ok ? 0 : slider->get_val();
+	const bool ok = do_modal_gump(slider, Mouse::hand, paint);
+	const int ret = !ok ? 0 : slider->get_val();
 	delete slider;
 	return ret;
 }

@@ -112,7 +112,7 @@ C_EXPORT void on_teleport_coord_toggled(
 ) {
 	ignore_unused_variable_warning(user_data);
 	ExultStudio *studio = ExultStudio::get_instance();
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	studio->set_sensitive("teleport_x", on);
 	studio->set_sensitive("teleport_y", on);
 	studio->set_sensitive("teleport_z", on);
@@ -268,10 +268,10 @@ int ExultStudio::init_egg_window(
 		set_spin("missile_delay", data2 >> 8);
 		break;
 	case 7: {           // Teleport:
-		int qual = data1 & 0xff;
+		const int qual = data1 & 0xff;
 		if (qual == 255) {
 			set_toggle("teleport_coord", true);
-			int schunk = data1 >> 8;
+			const int schunk = data1 >> 8;
 			set_entry("teleport_x",
 			          (schunk % 12)*c_tiles_per_schunk + (data2 & 0xff),
 			          true);
@@ -300,8 +300,8 @@ int ExultStudio::init_egg_window(
 		set_spin("btnegg_distance", data1 & 0xff);
 		break;
 	case 11: {          // Intermap:
-		int mapnum = data1 & 0xff;
-		int schunk = data1 >> 8;
+		const int mapnum = data1 & 0xff;
+		const int schunk = data1 >> 8;
 		set_spin("intermap_mapnum", mapnum);
 		set_entry("intermap_x",
 		          (schunk % 12)*c_tiles_per_schunk + (data2 & 0xff), true);
@@ -342,11 +342,11 @@ int ExultStudio::save_egg_window(
 ) {
 	cout << "In save_egg_window()" << endl;
 	// Get egg (null if creating new).
-	int tx = -1;
-	int ty = -1;
-	int tz = -1;  // +++++For now.
-	int shape = -1;
-	int frame = -1; // For now.
+	const int tx = -1;
+	const int ty = -1;
+	const int tz = -1;  // +++++For now.
+	const int shape = -1;
+	const int frame = -1; // For now.
 	int type = -1;
 	GtkWidget *notebook = get_widget("notebook1");
 	if (notebook)           // 1st is monster (1).
@@ -356,21 +356,21 @@ int ExultStudio::save_egg_window(
 		cout << "Can't find notebook widget" << endl;
 		return 0;
 	}
-	int criteria = get_optmenu("criteria");
-	int probability = get_spin("probability");
-	int distance = get_spin("distance");
-	bool nocturnal = get_toggle("nocturnal");
-	bool once = get_toggle("once");
-	bool hatched = get_toggle("hatched");
-	bool auto_reset = get_toggle("autoreset");
+	const int criteria = get_optmenu("criteria");
+	const int probability = get_spin("probability");
+	const int distance = get_spin("distance");
+	const bool nocturnal = get_toggle("nocturnal");
+	const bool once = get_toggle("once");
+	const bool hatched = get_toggle("hatched");
+	const bool auto_reset = get_toggle("autoreset");
 	int data1 = -1;
 	int data2 = -1;
 	int data3 = 0;
 	string str1;
 	switch (type) {         // Set notebook page.
 	case 1: {           // Monster:
-		int shnum = get_num_entry("monst_shape");
-		int frnum = get_num_entry("monst_frame");
+		const int shnum = get_num_entry("monst_shape");
+		const int frnum = get_num_entry("monst_frame");
 		if (shnum >= 1024 or frnum >= 64) {
 			data3 = shnum;
 			data2 = frnum & 0xff;
@@ -406,13 +406,13 @@ int ExultStudio::save_egg_window(
 	case 7:             // Teleport:
 		if (get_toggle("teleport_coord")) {
 			// Abs. coords.
-			int tx = get_num_entry("teleport_x");
-			int ty = get_num_entry("teleport_y");
-			int tz = get_num_entry("teleport_z");
+			const int tx = get_num_entry("teleport_x");
+			const int ty = get_num_entry("teleport_y");
+			const int tz = get_num_entry("teleport_z");
 			data3 = tz;
 			data2 = (tx & 0xff) + ((ty & 0xff) << 8);
-			int sx = tx / c_tiles_per_schunk;
-			int sy = ty / c_tiles_per_schunk;
+			const int sx = tx / c_tiles_per_schunk;
+			const int sy = ty / c_tiles_per_schunk;
 			data1 = 255 + ((sy * 12 + sx) << 8);
 		} else          // Egg #.
 			data1 = get_spin("teleport_eggnum") & 0xff;
@@ -428,14 +428,14 @@ int ExultStudio::save_egg_window(
 		data1 = get_spin("btnegg_distance") & 0xff;
 		break;
 	case 11: {          // Intermap.
-		int tx = get_num_entry("intermap_x");
-		int ty = get_num_entry("intermap_y");
-		int tz = get_num_entry("intermap_z");
-		int mapnum = get_spin("intermap_mapnum");
+		const int tx = get_num_entry("intermap_x");
+		const int ty = get_num_entry("intermap_y");
+		const int tz = get_num_entry("intermap_z");
+		const int mapnum = get_spin("intermap_mapnum");
 		data3 = tz;
 		data2 = (tx & 0xff) + ((ty & 0xff) << 8);
-		int sx = tx / c_tiles_per_schunk;
-		int sy = ty / c_tiles_per_schunk;
+		const int sx = tx / c_tiles_per_schunk;
+		const int sy = ty / c_tiles_per_schunk;
 		data1 = mapnum + ((sy * 12 + sx) << 8);
 		break;
 	}

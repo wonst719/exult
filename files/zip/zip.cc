@@ -460,7 +460,7 @@ extern int ZEXPORT zipWriteInFileInZip(zipFile file, voidpc buf, unsigned len) {
 		}
 
 		if (file->ci.method == Z_DEFLATED) {
-			uLong uTotalOutBefore = file->ci.stream.total_out;
+			const uLong uTotalOutBefore = file->ci.stream.total_out;
 			err = deflate(&file->ci.stream,  Z_NO_FLUSH);
 			file->ci.pos_in_buffered_data += (file->ci.stream.total_out - uTotalOutBefore) ;
 
@@ -536,7 +536,7 @@ extern int ZEXPORT zipCloseFileInZip(zipFile file) {
 	delete [] file->ci.central_header;
 
 	if (err == ZIP_OK) {
-		long cur_pos_inzip = ftell(file->filezip);
+		const long cur_pos_inzip = ftell(file->filezip);
 		if (fseek(file->filezip,
 		          file->ci.pos_local_header + 14, SEEK_SET) != 0)
 			err = ZIP_ERRNO;

@@ -275,15 +275,15 @@ sint32 XMidiSequence::timeTillNext()
 	// Time remaining on notes currently being played
 	XMidiEvent *note;
 	if ((note = notes_on.GetNotes())) {
-		sint32 diff = note->ex.note_on.note_time - getRealTime();
+		const sint32 diff = note->ex.note_on.note_time - getRealTime();
 		if (diff < sixthoToNext) sixthoToNext = diff;
 	}
 
 	// Time till the next event, if we are playing
 	if (speed > 0 && event && !paused)
 	{
-		sint32 aim = ((event->time-last_tick)*5000)/speed;
-		sint32 diff = aim - getTime ();
+		const sint32 aim = ((event->time-last_tick)*5000)/speed;
+		const sint32 diff = aim - getTime ();
 
 		if (diff < sixthoToNext) sixthoToNext = diff;
 	}
@@ -292,9 +292,9 @@ sint32 XMidiSequence::timeTillNext()
 
 void XMidiSequence::updateShadowForEvent(XMidiEvent *event)
 {
-	unsigned int chan = event->status & 0xF;
-	unsigned int type = event->status >> 4;
-	uint32 data = event->data[0] | (event->data[1] << 8);
+	const unsigned int chan = event->status & 0xF;
+	const unsigned int type = event->status >> 4;
+	const uint32 data = event->data[0] | (event->data[1] << 8);
 
 	// Shouldn't be required. XMidi should automatically detect all anyway
 	//evntlist->chan_mask |= 1 << chan;
@@ -363,7 +363,7 @@ void XMidiSequence::updateShadowForEvent(XMidiEvent *event)
 void XMidiSequence::sendEvent()
 {
 	//unsigned int chan = event->status & 0xF;
-	unsigned int type = event->status >> 4;
+	const unsigned int type = event->status >> 4;
 	uint32 data = event->data[0] | (event->data[1] << 8);
 
 	// Shouldn't be required. XMidi should automatically detect all anyway

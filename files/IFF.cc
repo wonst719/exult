@@ -52,7 +52,7 @@ void IFF::index_file() {
 #endif
 
 	data->skip(4);  // Skip past identifier.
-	size_t full_length = data->read4high();
+	const size_t full_length = data->read4high();
 
 #ifdef DEBUG
 	cout << "length looks like: " << full_length << endl;
@@ -99,7 +99,7 @@ void IFF::index_file() {
  */
 bool IFF::is_iff(IDataSource *in) {
 	char ckid[4];
-	size_t pos = in->getPos();
+	const size_t pos = in->getPos();
 	in->seek(0);
 	in->read(ckid, 4);
 	in->seek(pos);

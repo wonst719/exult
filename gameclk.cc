@@ -232,7 +232,7 @@ void Game_clock::check_hunger(
 ) const {
 	Game_window *gwin = Game_window::get_instance();
 	Actor *party[9];        // Get party + Avatar.
-	int cnt = gwin->get_party(party, 1);
+	const int cnt = gwin->get_party(party, 1);
 	for (int i = 0; i < cnt; i++)
 		party[i]->use_food();
 }
@@ -241,9 +241,9 @@ static void Check_freezing(
 ) {
 	Game_window *gwin = Game_window::get_instance();
 	// Avatar's flag applies to party.
-	bool freeze = gwin->get_main_actor()->get_flag(Obj_flags::freeze);
+	const bool freeze = gwin->get_main_actor()->get_flag(Obj_flags::freeze);
 	Actor *party[9];        // Get party + Avatar.
-	int cnt = gwin->get_party(party, 1);
+	const int cnt = gwin->get_party(party, 1);
 	for (int i = 0; i < cnt; i++)
 		party[i]->check_temperature(freeze);
 }
@@ -258,10 +258,10 @@ void Game_clock::increment(
     int num_minutes         // # of minutes to increment.
 ) {
 	Game_window *gwin = Game_window::get_instance();
-	int old_hour = hour;    // Remember current 3-hour period.
+	const int old_hour = hour;    // Remember current 3-hour period.
 	num_minutes += 7;       // Round to nearest 15 minutes.
 	num_minutes -= num_minutes % 15;
-	long new_min = minute + num_minutes;
+	const long new_min = minute + num_minutes;
 	hour += static_cast<short>(new_min / 60);   // Update hour.
 	minute = static_cast<short>(new_min % 60);
 	ticks = 0;
@@ -285,8 +285,8 @@ void Game_clock::handle_event(
 ) {
 	auto *gwin = reinterpret_cast<Game_window *>(udata);
 
-	int min_old = minute;
-	int hour_old = hour;
+	const int min_old = minute;
+	const int hour_old = hour;
 	// Time stopped?  Don't advance.
 	if (!gwin->is_time_stopped() && !cheat.in_map_editor()) {
 		ticks += time_rate;

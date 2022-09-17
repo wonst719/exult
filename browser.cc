@@ -78,10 +78,10 @@ void ShapeBrowser::browse_shapes() {
 	Image_buffer8 *ibuf = gwin->get_win()->get_ib8();
 	Font *font = fontManager.get_font("MENU_FONT");
 
-	int maxx = gwin->get_width();
-	int centerx = maxx / 2;
-	int maxy = gwin->get_height();
-	int centery = maxy / 2;
+	const int maxx = gwin->get_width();
+	const int centerx = maxx / 2;
+	const int maxy = gwin->get_height();
+	const int centery = maxy / 2;
 	Palette pal;
 	char buf[255];
 	const char *fname;
@@ -179,7 +179,7 @@ void ShapeBrowser::browse_shapes() {
 		SDL_WaitEvent(&event);
 		if (event.type == SDL_KEYDOWN) {
 			redraw = true;
-			bool shift = event.key.keysym.mod & KMOD_SHIFT;
+			const bool shift = event.key.keysym.mod & KMOD_SHIFT;
 			//int ctrl = event.key.keysym.mod & KMOD_CTRL;
 			switch (event.key.keysym.sym) {
 			case SDLK_ESCAPE:

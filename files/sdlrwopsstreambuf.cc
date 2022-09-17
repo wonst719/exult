@@ -63,7 +63,7 @@ SdlRwopsStreambuf*
 	}
 
 	const char* mdstr   = nullptr;
-	int         modeval = mode & ~std::ios_base::ate;
+	const int   modeval = mode & ~std::ios_base::ate;
 	switch (modeval) {
 	case std::ios_base::out:
 	case std::ios_base::out | std::ios_base::trunc:
@@ -216,7 +216,7 @@ typename SdlRwopsStreambuf::int_type SdlRwopsStreambuf::overflow(int_type c) {
 		pbump(1);
 	}
 	if (pptr() != pbase()) {
-		std::size_t nmemb = static_cast<std::size_t>(pptr() - pbase());
+		const std::size_t nmemb = static_cast<std::size_t>(pptr() - pbase());
 		if (SDL_RWwrite(m_context, pbase(), sizeof(char_type), nmemb) != nmemb)
 			return traits_type::eof();
 		setp(pb_save, epb_save);
@@ -226,7 +226,7 @@ typename SdlRwopsStreambuf::int_type SdlRwopsStreambuf::overflow(int_type c) {
 
 typename SdlRwopsStreambuf::pos_type SdlRwopsStreambuf::seekoff(
 		off_type off, std::ios_base::seekdir dir, std::ios_base::openmode) {
-	int width = 1;
+	const int width = 1;
 	if (!m_context || sync())
 		return pos_type(off_type(-1));
 	int whence;
@@ -245,7 +245,7 @@ typename SdlRwopsStreambuf::pos_type SdlRwopsStreambuf::seekoff(
 	}
 	if (SDL_RWseek(m_context, width * off, whence) == -1)
 		return pos_type(off_type(-1));
-	pos_type r = SDL_RWtell(m_context);
+	const pos_type r = SDL_RWtell(m_context);
 	return r;
 }
 

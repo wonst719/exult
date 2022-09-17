@@ -124,7 +124,7 @@ public:
 	}
 	void ensure_chunk_read(int cx, int cy) {
 		if (cx < c_num_chunks && cy < c_num_chunks) {
-			int sc = 12 * (cy/c_chunks_per_schunk) + cx/c_chunks_per_schunk;
+			const int sc = 12 * (cy/c_chunks_per_schunk) + cx/c_chunks_per_schunk;
 			if (!schunk_read[sc])
 				get_superchunk_objects(sc);
 		}

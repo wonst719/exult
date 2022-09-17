@@ -60,7 +60,7 @@ Stack_frame::Stack_frame(Usecode_function *fun,
 	num_vars = Read2(ip);
 
 	// Allocate locals.
-	int num_locals = num_vars + num_args;
+	const int num_locals = num_vars + num_args;
 	locals = new Usecode_value[num_locals];
 
 	num_externs = Read2(ip); // external function references

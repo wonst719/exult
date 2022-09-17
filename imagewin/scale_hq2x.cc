@@ -49,7 +49,7 @@
 void Image_window::show_scaled8to16_Hq2x(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to16 manip(paletted_surface->format->palette->colors,
+	const Manip8to16 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_Hq2x<uint16, Manip8to16>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -63,7 +63,7 @@ void Image_window::show_scaled8to16_Hq2x(
 void Image_window::show_scaled8to555_Hq2x(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to555 manip(paletted_surface->format->palette->colors,
+	const Manip8to555 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_Hq2x<uint16, Manip8to555>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -77,7 +77,7 @@ void Image_window::show_scaled8to555_Hq2x(
 void Image_window::show_scaled8to565_Hq2x(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to565 manip(paletted_surface->format->palette->colors,
+	const Manip8to565 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_Hq2x<uint16, Manip8to565>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -91,7 +91,7 @@ void Image_window::show_scaled8to565_Hq2x(
 void Image_window::show_scaled8to32_Hq2x(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to32 manip(paletted_surface->format->palette->colors,
+	const Manip8to32 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_Hq2x<uint32, Manip8to32>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,

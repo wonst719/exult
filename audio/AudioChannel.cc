@@ -36,9 +36,9 @@ sint16 ReadSample(uint8 *src) {
 // Obviously, it will be *bigger* than 65535 (it can get to about 80,000).
 // It is possibly to clamp it, but that leads to a distored wave form. Compare
 // this to turning up the volume of your stereo to much, it will start to sound
-// bad at a certain level (depending on the power of your stereo, your speakers 
+// bad at a certain level (depending on the power of your stereo, your speakers
 // etc, this can be quite loud, though ;-). Hence we reduce the original range.
-// A factor of roughly 1/1.2 = 0.8333 is sufficient. Since we want to avoid 
+// A factor of roughly 1/1.2 = 0.8333 is sufficient. Since we want to avoid
 // floating point, we approximate that by 27/32
 #define RANGE_REDUX(x)	(((x) * 27) >> 5)
 
@@ -58,7 +58,7 @@ AudioChannel::~AudioChannel()
 void AudioChannel::playSample(AudioSample *sample_, int loop_, int priority_, bool paused_, uint32 pitch_shift_, int lvol_, int rvol_, sint32 instance_id_)
 {
 	stop();
-	sample = sample_; 
+	sample = sample_;
 
 	loop = loop_;
 	priority = priority_;
@@ -95,7 +95,7 @@ void AudioChannel::playSample(AudioSample *sample_, int loop_, int priority_, bo
 	// Align decomp to required alignment.
 	std::align(decompressor_align, decompressor_size, decomp, avail_space);
 	// Align first frame.
-	size_t delta = playdata_size - avail_space;
+	const size_t delta = playdata_size - avail_space;
 	avail_space -= decompressor_size;
 	void *frameptr = playdata.get() + delta + decompressor_size;
 	std::align(alignof(std::max_align_t), frame_size, frameptr, avail_space);
@@ -125,7 +125,7 @@ void AudioChannel::playSample(AudioSample *sample_, int loop_, int priority_, bo
 		int a = *(src+0); a = (a|(a << 8))-32768;
 		int b = *(src+1); b = (a|(b << 8))-32768;
 		int c = *(src+2); c = (a|(c << 8))-32768;
-	
+
 		interp_l.init(RANGE_REDUX(a),RANGE_REDUX(b),RANGE_REDUX(c));
 	}
 
@@ -133,7 +133,7 @@ void AudioChannel::playSample(AudioSample *sample_, int loop_, int priority_, bo
 
 void AudioChannel::resampleAndMix(sint16 *stream, uint32 bytes)
 {
-	if (!sample || paused) 
+	if (!sample || paused)
 		return;
 
 	// Update fp_speed
@@ -194,7 +194,7 @@ void AudioChannel::DecompressNextFrame()
 	uint8 *src2 = frames[1-frame_evenodd];
 	frame1_size = sample->decompressFrame(decomp, src2);
 
-	// No stream, go back to beginning and get first frame 
+	// No stream, go back to beginning and get first frame
 	if (!frame1_size && loop) {
 		if (loop != -1) loop--;
 		sample->rewind(decomp);
@@ -223,7 +223,7 @@ void AudioChannel::resampleFrameM8toS(sint16 *&stream, uint32 &bytes)
 
 	int	lvol = this->lvol;
 	int rvol = this->rvol;
-	
+
 	calculate2DVolume(lvol,rvol);
 
 	do {
@@ -248,7 +248,7 @@ void AudioChannel::resampleFrameM8toS(sint16 *&stream, uint32 &bytes)
 
 		if (fp_pos < 0x10000) do {
 			// Do the interpolation
-			int result = interp_l.interpolate(fp_pos);
+			const int result = interp_l.interpolate(fp_pos);
 
 			int lresult = *(stream+0) + (result*lvol)/256;
 			int rresult = *(stream+1) + (result*rvol)/256;
@@ -269,7 +269,7 @@ void AudioChannel::resampleFrameM8toS(sint16 *&stream, uint32 &bytes)
 		} while (fp_pos < 0x10000 && bytes!=0);
 
 	} while (bytes!=0 && src != src_end);
-	
+
 	position = frame0_size - (src_end - src);
 }
 
@@ -289,8 +289,8 @@ void AudioChannel::resampleFrameM8toM(sint16 *&stream, uint32 &bytes)
 
 	calculate2DVolume(lvol,rvol);
 
-	int volume = (rvol + lvol)/2;
-	
+	const int volume = (rvol + lvol)/2;
+
 	do {
 		// Add a new src sample (if required)
 		if (fp_pos >= 0x10000)
@@ -329,7 +329,7 @@ void AudioChannel::resampleFrameM8toM(sint16 *&stream, uint32 &bytes)
 		} while (fp_pos < 0x10000 && bytes!=0);
 
 	} while (bytes!=0 && src != src_end);
-	
+
 	position = frame0_size - (src_end - src);
 }
 
@@ -354,13 +354,13 @@ void AudioChannel::resampleFrameS8toM(sint16 *&stream, uint32 &bytes)
 		if (fp_pos >= 0x10000)
 		{
 			if (src+4 < src_end) {
-				int c = *(src+4);
-				int c2 = *(src+5);
+				const int c = *(src+4);
+				const int c2 = *(src+5);
 				interp_l.feedData((c|(c << 8))-32768);
 				interp_r.feedData((c2|(c2 << 8))-32768);
 			} else if (src2 < src2_end) {
-				int c = *(src2);
-				int c2 = *(src2+1);
+				const int c = *(src2);
+				const int c2 = *(src2+1);
 				interp_l.feedData((c|(c << 8))-32768);
 				interp_r.feedData((c2|(c2 << 8))-32768);
 				src2+=2;
@@ -390,7 +390,7 @@ void AudioChannel::resampleFrameS8toM(sint16 *&stream, uint32 &bytes)
 		} while (fp_pos < 0x10000 && bytes!=0);
 
 	} while (bytes!=0 && src != src_end);
-	
+
 	position = frame0_size - (src_end - src);
 }
 
@@ -404,7 +404,7 @@ void AudioChannel::resampleFrameS8toS(sint16 *&stream, uint32 &bytes)
 	uint8 *src2_end = src2 + frame1_size;
 
 	src += position;
-	
+
 	int	lvol = this->lvol;
 	int rvol = this->rvol;
 
@@ -415,13 +415,13 @@ void AudioChannel::resampleFrameS8toS(sint16 *&stream, uint32 &bytes)
 		if (fp_pos >= 0x10000)
 		{
 			if (src+4 < src_end) {
-				int c = *(src+4);
-				int c2 = *(src+5);
+				const int c = *(src+4);
+				const int c2 = *(src+5);
 				interp_l.feedData((c|(c << 8))-32768);
 				interp_r.feedData((c2|(c2 << 8))-32768);
 			} else if (src2 < src2_end) {
-				int c = *(src2);
-				int c2 = *(src2+1);
+				const int c = *(src2);
+				const int c2 = *(src2+1);
 				interp_l.feedData((c|(c << 8))-32768);
 				interp_r.feedData((c2|(c2 << 8))-32768);
 				src2+=2;
@@ -454,7 +454,7 @@ void AudioChannel::resampleFrameS8toS(sint16 *&stream, uint32 &bytes)
 		} while (fp_pos < 0x10000 && bytes!=0);
 
 	} while (bytes!=0 && src != src_end);
-	
+
 	position = frame0_size - (src_end - src);
 }
 
@@ -484,10 +484,10 @@ void AudioChannel::resampleFrameM16toS(sint16 *&stream, uint32 &bytes)
 		if (fp_pos >= 0x10000)
 		{
 			if (src+4 < src_end) {
-				int c = ReadSample(src+4);
+				const int c = ReadSample(src+4);
 				interp_l.feedData(c);
 			} else if (src2 < src2_end) {
-				int c = ReadSample(src2);
+				const int c = ReadSample(src2);
 				interp_l.feedData(c);
 				src2+=2;
 			} else {
@@ -499,7 +499,7 @@ void AudioChannel::resampleFrameM16toS(sint16 *&stream, uint32 &bytes)
 
 		if (fp_pos < 0x10000) do {
 			// Do the interpolation
-			int result = interp_l.interpolate(fp_pos);
+			const int result = interp_l.interpolate(fp_pos);
 
 			int lresult = *(stream+0) + (result*lvol)/256;
 			int rresult = *(stream+1) + (result*rvol)/256;
@@ -520,7 +520,7 @@ void AudioChannel::resampleFrameM16toS(sint16 *&stream, uint32 &bytes)
 		} while (fp_pos < 0x10000 && bytes!=0);
 
 	} while (bytes!=0 && src != src_end);
-	
+
 	position = frame0_size - (src_end - src);
 }
 
@@ -540,17 +540,17 @@ void AudioChannel::resampleFrameM16toM(sint16 *&stream, uint32 &bytes)
 
 	calculate2DVolume(lvol,rvol);
 
-	int volume = (rvol + lvol)/2;
-	
+	const int volume = (rvol + lvol)/2;
+
 	do {
 		// Add a new src sample (if required)
 		if (fp_pos >= 0x10000)
 		{
 			if (src+4 < src_end) {
-				int c = ReadSample(src+4);
+				const int c = ReadSample(src+4);
 				interp_l.feedData(c);
 			} else if (src2 < src2_end) {
-				int c = ReadSample(src2);
+				const int c = ReadSample(src2);
 				interp_l.feedData(c);
 				src2+=2;
 			} else {
@@ -578,7 +578,7 @@ void AudioChannel::resampleFrameM16toM(sint16 *&stream, uint32 &bytes)
 		} while (fp_pos < 0x10000 && bytes!=0);
 
 	} while (bytes!=0 && src != src_end);
-	
+
 	position = frame0_size - (src_end - src);
 }
 
@@ -603,13 +603,13 @@ void AudioChannel::resampleFrameS16toM(sint16 *&stream, uint32 &bytes)
 		if (fp_pos >= 0x10000)
 		{
 			if (src+8 < src_end) {
-				int c  = ReadSample(src+8);
-				int c2 = ReadSample(src+10);
+				const int c  = ReadSample(src+8);
+				const int c2 = ReadSample(src+10);
 				interp_l.feedData(c);
 				interp_r.feedData(c2);
 			} else if (src2 < src2_end) {
-				int c  = ReadSample(src2);
-				int c2 = ReadSample(src2+2);
+				const int c  = ReadSample(src2);
+				const int c2 = ReadSample(src2+2);
 				interp_l.feedData(c);
 				interp_r.feedData(c2);
 				src2+=4;
@@ -639,7 +639,7 @@ void AudioChannel::resampleFrameS16toM(sint16 *&stream, uint32 &bytes)
 		} while (fp_pos < 0x10000 && bytes!=0);
 
 	} while (bytes!=0 && src != src_end);
-	
+
 	position = frame0_size - (src_end - src);
 }
 
@@ -653,7 +653,7 @@ void AudioChannel::resampleFrameS16toS(sint16 *&stream, uint32 &bytes)
 	uint8 *src2_end = src2 + frame1_size;
 
 	src += position;
-	
+
 	int	lvol = this->lvol;
 	int rvol = this->rvol;
 
@@ -664,13 +664,13 @@ void AudioChannel::resampleFrameS16toS(sint16 *&stream, uint32 &bytes)
 		if (fp_pos >= 0x10000)
 		{
 			if (src+8 < src_end) {
-				int c  = ReadSample(src+8);
-				int c2 = ReadSample(src+10);
+				const int c  = ReadSample(src+8);
+				const int c2 = ReadSample(src+10);
 				interp_l.feedData(c);
 				interp_r.feedData(c2);
 			} else if (src2 < src2_end) {
-				int c  = ReadSample(src2);
-				int c2 = ReadSample(src2+2);
+				const int c  = ReadSample(src2);
+				const int c2 = ReadSample(src2+2);
 				interp_l.feedData(c);
 				interp_r.feedData(c2);
 				src2+=4;
@@ -703,7 +703,7 @@ void AudioChannel::resampleFrameS16toS(sint16 *&stream, uint32 &bytes)
 		} while (fp_pos < 0x10000 && bytes!=0);
 
 	} while (bytes!=0 && src != src_end);
-	
+
 	position = frame0_size - (src_end - src);
 }
 
