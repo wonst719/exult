@@ -91,16 +91,11 @@ using std::exit;
 using std::ios;
 using std::dec;
 using std::hex;
-using std::memset;
 using std::setfill;
 using std::setw;
 using std::size_t;
 using std::string;
-using std::strcat;
 using std::strchr;
-using std::strcmp;
-using std::strcpy;
-using std::strlen;
 using std::vector;
 using std::ostream;
 

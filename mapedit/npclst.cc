@@ -45,7 +45,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cstdlib>
 
 using EStudio::Add_menu_item;
-using EStudio::Alert;
 using std::cout;
 using std::cerr;
 using std::endl;

@@ -44,7 +44,6 @@ using std::atoi;
 using std::size_t;
 using std::strchr;
 using std::string;
-using std::strlen;
 using std::strncmp;
 using std::unique_ptr;
 using std::make_unique;

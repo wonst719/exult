@@ -65,7 +65,6 @@
 #   define offsetof(type, field) reinterpret_cast<long>(&(static_cast<type *>(0)->field))
 #endif
 
-using std::cerr;
 using std::cout;
 using std::stringstream;
 using std::istream;
@@ -74,14 +73,11 @@ using std::string;
 using std::endl;
 using std::ifstream;
 using std::ios;
-using std::memset;
 using std::ofstream;
 using std::ostream;
 using std::size_t;
 using std::strchr;
 using std::strcmp;
-using std::strcpy;
-using std::strlen;
 using std::strncpy;
 using std::time_t;
 using std::tm;

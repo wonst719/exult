@@ -67,11 +67,9 @@ using std::istream;
 using std::ifstream;
 using std::istringstream;
 using std::ios;
-using std::memcpy;
 using std::ofstream;
 using std::ostringstream;
 using std::string;
-using std::strlen;
 using std::vector;
 using std::pair;
 

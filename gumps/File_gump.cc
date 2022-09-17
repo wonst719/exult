@@ -45,9 +45,7 @@
 
 using std::cout;
 using std::endl;
-using std::memmove;
 using std::string;
-using std::strlen;
 using std::strncpy;
 
 /*

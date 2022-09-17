@@ -16,6 +16,7 @@ Checks: >
   misc-*,
   -misc-non-private-member-variables-in-classes,
   -misc-unused-parameters,
+  -misc-no-recursion,
   modernize-*,
   -modernize-avoid-bind,
   -modernize-avoid-c-arrays,

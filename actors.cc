@@ -87,7 +87,6 @@
 using std::cerr;
 using std::cout;
 using std::endl;
-using std::memcpy;
 using std::rand;
 using std::string;
 using std::swap;

@@ -49,7 +49,6 @@
  #endif
 #include <memory>
 using std::unique_ptr;
-using std::make_unique;
 
 #define MAX_GAMES 100
 

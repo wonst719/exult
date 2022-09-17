@@ -50,7 +50,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AudioMixer.h"
 #include "OggAudioSample.h"
 
-using std::cerr;
 using std::cout;
 using std::endl;
 using std::string;

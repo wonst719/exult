@@ -33,7 +33,6 @@
 #include "touchui.h"
 
 using std::size_t;
-using std::strcpy;
 using std::string;
 
 //TODO: show_face & show_avatar_choices seem to share code?

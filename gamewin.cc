@@ -101,7 +101,6 @@ using std::istream;
 using std::ifstream;
 using std::ios;
 using std::make_unique;
-using std::memset;
 using std::ofstream;
 using std::rand;
 using std::string;

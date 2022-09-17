@@ -57,7 +57,6 @@
 #  include <sys/param.h> // for MAXPATHLEN
 #endif
 
-using std::cerr;
 using std::string;
 using std::ios;
 

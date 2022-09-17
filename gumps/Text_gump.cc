@@ -26,8 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Text_gump.h"
 
 using std::strchr;
-using std::strcpy;
-using std::strlen;
 
 /*
  *  Add to the text, starting a newline.
