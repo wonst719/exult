@@ -97,9 +97,9 @@ void    Configuration::set(const string &key, const string &value, bool write_ou
 }
 
 void    Configuration::set(const char *key, const char *value, bool write_out) {
-	const string  k(key);
-	const string  v(value);
-	set(key, value, write_out);
+	const string k(key);
+	const string v(value);
+	set(k, v, write_out);
 }
 
 void    Configuration::set(const char *key, const string &value, bool write_out) {
@@ -108,12 +108,8 @@ void    Configuration::set(const char *key, const string &value, bool write_out)
 }
 
 void    Configuration::set(const char *key, int value, bool write_out) {
-	const string  k(key);
-	string  v;
-	char    buf[32];
-
-	snprintf(buf, 32, "%d", value);
-	v = buf;
+	const string k(key);
+	const string v = std::to_string(value);
 	set(k, v, write_out);
 }
 
