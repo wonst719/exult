@@ -138,14 +138,14 @@ void Monster_actor::equip(
     bool temporary
 ) {
 	// Get equipment.
-	int equip_offset = inf->equip_offset;
+	const int equip_offset = inf->equip_offset;
 	vector<Equip_record> &equip = Monster_info::equip;
 	if (!equip_offset || equip_offset - 1 >= Monster_info::get_equip_cnt())
 		return;
-	Equip_record &rec = equip[equip_offset - 1];
+	const Equip_record &rec = equip[equip_offset - 1];
 	for (size_t i = 0; i < array_size(equip[0].elements); i++) {
 		// Give equipment.
-		Equip_element &elem = rec.elements[i];
+		const Equip_element &elem = rec.elements[i];
 		if (!elem.shapenum || 1 + rand() % 100 > elem.probability)
 			continue;// You lose.
 		int frnum = (elem.shapenum == 377) ?
@@ -160,7 +160,7 @@ void Monster_actor::equip(
 		else
 			create_quantity(elem.quantity,
 			                elem.shapenum, c_any_qual, frnum, temporary);
-		int ammo = winfo ? winfo->get_ammo_consumed() : -1;
+		const int ammo = winfo ? winfo->get_ammo_consumed() : -1;
 		if (ammo >= 0)      // Weapon requires ammo.
 			create_quantity(5 + rand() % 25, ammo, c_any_qual, 0,
 			                temporary);
@@ -228,7 +228,7 @@ Game_object_shared Monster_actor::create(
 	if ((inf->flags >> Monster_info::start_invisible) & 1)
 		monster->set_flag(Obj_flags::invisible);
 
-	int str = Randomize_initial_stat(inf->strength);
+	const int str = Randomize_initial_stat(inf->strength);
 	monster->set_property(Actor::strength, str);
 	// Max. health = strength.
 	monster->set_property(Actor::health, str);
@@ -239,14 +239,14 @@ Game_object_shared Monster_actor::create(
 	monster->set_property(Actor::combat,
 	                      Randomize_initial_stat(inf->combat));
 
-	static char monster_mode_odds[5][4] = {
+	static const char monster_mode_odds[5][4] = {
 		{20, 45, 70, 100},      // These are slightly off, but
 		{50, 100, 0, 0},        // are good enough that no one
 		{35, 70, 100, 0},       // will notice the difference
 		{35, 55, 70, 100},      // without serious statistics.
 		{50, 100, 0, 0}
 	};
-	static Actor::Attack_mode monster_modes[5][4] = {
+	static const Actor::Attack_mode monster_modes[5][4] = {
 		{nearest, random, flee, nearest},       // noncombatants
 		{weakest, nearest, nearest, nearest},   // opportunists
 		{nearest, random, nearest, nearest},    // unpredictable
@@ -254,7 +254,7 @@ Game_object_shared Monster_actor::create(
 		{berserk, nearest, nearest, nearest}
 	};  // berserkers
 
-	int prob = rand() % 100;
+	const int prob = rand() % 100;
 	int i;
 	for (i = 0; i < 3; i++)
 		if (prob < monster_mode_odds[static_cast<int>(inf->m_attackmode)][i])
@@ -319,8 +319,8 @@ bool Monster_actor::step(
 	// Get old chunk.
 	Map_chunk *olist = get_chunk();
 	// Get chunk.
-	int cx = t.tx / c_tiles_per_chunk;
-	int cy = t.ty / c_tiles_per_chunk;
+	const int cx = t.tx / c_tiles_per_chunk;
+	const int cy = t.ty / c_tiles_per_chunk;
 	// Get ->new chunk.
 	Map_chunk *nlist = gmap->get_chunk(cx, cy);
 	nlist->setup_cache();       // Setup cache if necessary.
@@ -338,8 +338,8 @@ bool Monster_actor::step(
 	add_dirty();            // Set to repaint old area.
 	// Move it.
 	// Get rel. tile coords.
-	int tx = t.tx % c_tiles_per_chunk;
-	int ty = t.ty % c_tiles_per_chunk;
+	const int tx = t.tx % c_tiles_per_chunk;
+	const int ty = t.ty % c_tiles_per_chunk;
 	movef(olist, nlist, tx, ty, frame, t.tz);
 	if (!add_dirty(true) &&
 	        // And > a screenful away?
@@ -462,7 +462,7 @@ static void Get_slime_neighbors(
     Tile_coord *neighbors       // N,E,S,W tiles returned.
 ) {
 	// Offsets to neighbors 2 tiles away.
-	static int offsets[8] = {0, -2, 2, 0, 0, 2, -2, 0};
+	static const int offsets[8] = {0, -2, 2, 0, 0, 2, -2, 0};
 	for (int dir = 0; dir < 4; dir++)
 		neighbors[dir] = pos + Tile_coord(offsets[2 * dir],
 		                                  offsets[2 * dir + 1], 0);
@@ -478,7 +478,7 @@ int Find_neighbor(
     Game_object *slime,
     Tile_coord *neighbors       // Neighboring spots to check.
 ) {
-	Tile_coord pos = slime->get_tile();
+	const Tile_coord pos = slime->get_tile();
 	for (int dir = 0; dir < 4; dir++)
 		if (pos == neighbors[dir])
 			return dir;
@@ -513,7 +513,7 @@ void Slime_actor::update_frames(
 		for (auto *slime : nearby) {
 			if (slime != this &&
 			        (dir = Find_neighbor(slime, neighbors)) >= 0) {
-				int ndir = (dir + 2) % 4;
+				const int ndir = (dir + 2) % 4;
 				// Turn off bit (1<<ndir)*2, and set
 				//   bit 0 randomly.
 				slime->change_frame((slime->get_framenum()&
@@ -529,7 +529,7 @@ void Slime_actor::update_frames(
 			        (dir = Find_neighbor(slime, neighbors)) >= 0) {
 				// In a neighboring spot?
 				frnum |= (1 << dir) * 2;
-				int ndir = (dir + 2) % 4;
+				const int ndir = (dir + 2) % 4;
 				// Turn on bit (1<<ndir)*2, and set
 				//   bit 0 randomly.
 				slime->change_frame((slime->get_framenum()&~1) |
@@ -554,16 +554,16 @@ bool Slime_actor::step(
 ) {
 	ignore_unused_variable_warning(frame);
 	// Save old pos.
-	Tile_coord oldpos = get_tile();
-	bool ret = Monster_actor::step(t, -1, force);
+	const Tile_coord oldpos = get_tile();
+	const bool ret = Monster_actor::step(t, -1, force);
 	// Update surrounding frames (& this).
-	Tile_coord newpos = get_tile();
+	const Tile_coord newpos = get_tile();
 	update_frames(oldpos, newpos);
 	Game_object_vector blood;   // Place blood in old spot.
 	if (newpos != oldpos && rand() % 9 == 0 &&
 	        !find_nearby(blood, oldpos, 912, 1, 0)) {
 		// Frames 4-11 are green.
-		Game_object_shared b = get_map()->create_ireg_object(
+		const Game_object_shared b = get_map()->create_ireg_object(
 											912, 4 + rand() % 8);
 		b->set_flag(Obj_flags::is_temporary);
 		b->move(oldpos);
@@ -579,7 +579,7 @@ bool Slime_actor::step(
 void Slime_actor::remove_this(
     Game_object_shared *keep     // Non-null to not delete.
 ) {
-	Tile_coord pos = get_tile();
+	const Tile_coord pos = get_tile();
 	Game_object_shared keep_this;
 	Monster_actor::remove_this(&keep_this);
 	// Update surrounding slimes.
