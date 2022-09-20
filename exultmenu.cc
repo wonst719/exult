@@ -105,10 +105,10 @@ void create_scroller_menu(MenuList *menu, Font *fonton, Font *font, int first, i
 
 	for (int i = 0; i < ncount; i++) {
 		//Check to see if this entry is needed at all:
-		if (!((i < 2 && first == 0) ||
-		        (i == 0 && first == pagesize) ||
-		        (i >= 2 && lastpage == first) ||
-		        (i == 3 && lastpage == first + pagesize))) {
+		if ((i >= 2 || first != 0) &&
+		        (i != 0 || first != pagesize) &&
+		        (i < 2 || lastpage != first) &&
+		        (i != 3 || lastpage != first + pagesize)) {
 			auto *entry = new MenuTextEntry(fonton, font, menuscroller[i],
 			        xpos, ypos);
 			//These commands have negative ids:
