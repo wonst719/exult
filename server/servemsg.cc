@@ -52,7 +52,7 @@ namespace Exult_server {
 int Send_data(
     int socket,
     Msg_type id,
-    unsigned char *data,
+    const unsigned char *data,
     int datalen
 ) {
 #ifdef USE_EXULTSTUDIO

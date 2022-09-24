@@ -95,7 +95,7 @@ enum Msg_type {
 int Send_data(
     int socket,
     Msg_type id,
-    unsigned char *data = nullptr,    // For just sending id.
+    const unsigned char *data = nullptr,    // For just sending id.
     int datalen = 0
 );
 int Receive_data(

@@ -397,7 +397,7 @@ public:
 	}
 
 	void write(const std::string &s) final {
-		out->write(&s[0], s.size());
+		out->write(s.data(), s.size());
 	}
 
 	void seek(size_t pos) final {
@@ -490,7 +490,7 @@ public:
 	}
 
 	void write(const std::string &s) final {
-		write(&s[0], s.size());
+		write(s.data(), s.size());
 	}
 
 	void seek(size_t pos) final {

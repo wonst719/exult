@@ -139,7 +139,7 @@ void Handle_debug_message(unsigned char *data, int datalen) {
 				          << std::endl;
 			}
 			std::string data(dataio.str());
-			auto *dptr = reinterpret_cast<unsigned char *>(&data[0]);
+			const auto *dptr = reinterpret_cast<const unsigned char *>(data.data());
 			const int datalen = std::min(static_cast<int>(data.size()),
 			                       Exult_server::maxlength);
 			Exult_server::Send_data(client_socket,

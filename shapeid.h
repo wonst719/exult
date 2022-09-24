@@ -129,7 +129,7 @@ public:
 		else if (!translucent)
 			shape->paint_rle(xoff, yoff);
 		else
-			shape->paint_rle_translucent(xoff, yoff, &xforms[0], xforms.size());
+			shape->paint_rle_translucent(xoff, yoff, xforms.data(), xforms.size());
 	}
 
 	inline void paint_invisible(int xoff, int yoff, Shape_frame *shape) {
