@@ -273,8 +273,8 @@ sint32 XMidiSequence::timeTillNext()
 	sint32 sixthoToNext = 0x7FFFFFFF; // Int max
 
 	// Time remaining on notes currently being played
-	XMidiEvent *note;
-	if ((note = notes_on.GetNotes())) {
+	XMidiEvent *note = notes_on.GetNotes();
+	if (note != nullptr) {
 		const sint32 diff = note->ex.note_on.note_time - getRealTime();
 		if (diff < sixthoToNext) sixthoToNext = diff;
 	}
@@ -290,11 +290,11 @@ sint32 XMidiSequence::timeTillNext()
 	return sixthoToNext/6;
 }
 
-void XMidiSequence::updateShadowForEvent(XMidiEvent *event)
+void XMidiSequence::updateShadowForEvent(XMidiEvent *new_event)
 {
-	const unsigned int chan = event->status & 0xF;
-	const unsigned int type = event->status >> 4;
-	const uint32 data = event->data[0] | (event->data[1] << 8);
+	const unsigned int chan = new_event->status & 0xF;
+	const unsigned int type = new_event->status >> 4;
+	const uint32 data = new_event->data[0] | (new_event->data[1] << 8);
 
 	// Shouldn't be required. XMidi should automatically detect all anyway
 	//evntlist->chan_mask |= 1 << chan;
@@ -303,51 +303,51 @@ void XMidiSequence::updateShadowForEvent(XMidiEvent *event)
 
 	if (type == MIDI_STATUS_CONTROLLER) {
 		// Channel volume
-		if (event->data[0] == 7) {
-			shadows[chan].volumes[0] = event->data[1];
+		if (new_event->data[0] == 7) {
+			shadows[chan].volumes[0] = new_event->data[1];
 		}
-		else if (event->data[0] == 39) {
-			shadows[chan].volumes[1] = event->data[1];
+		else if (new_event->data[0] == 39) {
+			shadows[chan].volumes[1] = new_event->data[1];
 		}
 		// Bank
-		else if (event->data[0] == 0 || event->data[0] == 32) {
-			shadows[chan].bank[event->data[0]/32] = event->data[1];
+		else if (new_event->data[0] == 0 || new_event->data[0] == 32) {
+			shadows[chan].bank[new_event->data[0]/32] = new_event->data[1];
 		}
 		// modWheel
-		else if (event->data[0] == 1 || event->data[0] == 33) {
-			shadows[chan].modWheel[event->data[0]/32] = event->data[1];
+		else if (new_event->data[0] == 1 || new_event->data[0] == 33) {
+			shadows[chan].modWheel[new_event->data[0]/32] = new_event->data[1];
 		}
 		// footpedal
-		else if (event->data[0] == 4 || event->data[0] == 36) {
-			shadows[chan].footpedal[event->data[0]/32] = event->data[1];
+		else if (new_event->data[0] == 4 || new_event->data[0] == 36) {
+			shadows[chan].footpedal[new_event->data[0]/32] = new_event->data[1];
 		}
 		// pan
-		else if (event->data[0] == 9 || event->data[0] == 41) {
-			shadows[chan].pan[event->data[0]/32] = event->data[1];
+		else if (new_event->data[0] == 9 || new_event->data[0] == 41) {
+			shadows[chan].pan[new_event->data[0]/32] = new_event->data[1];
 		}
 		// balance
-		else if (event->data[0] == 10 || event->data[0] == 42) {
-			shadows[chan].balance[event->data[0]/32] = event->data[1];
+		else if (new_event->data[0] == 10 || new_event->data[0] == 42) {
+			shadows[chan].balance[new_event->data[0]/32] = new_event->data[1];
 		}
 		// expression
-		else if (event->data[0] == 11 || event->data[0] == 43) {
-			shadows[chan].expression[event->data[0]/32] = event->data[1];
+		else if (new_event->data[0] == 11 || new_event->data[0] == 43) {
+			shadows[chan].expression[new_event->data[0]/32] = new_event->data[1];
 		}
 		// sustain
-		else if (event->data[0] == 64) {
-			shadows[chan].effects = event->data[1];
+		else if (new_event->data[0] == 64) {
+			shadows[chan].effects = new_event->data[1];
 		}
 		// effect
-		else if (event->data[0] == 91) {
-			shadows[chan].effects = event->data[1];
+		else if (new_event->data[0] == 91) {
+			shadows[chan].effects = new_event->data[1];
 		}
 		// chorus
-		else if (event->data[0] == 93) {
-			shadows[chan].chorus = event->data[1];
+		else if (new_event->data[0] == 93) {
+			shadows[chan].chorus = new_event->data[1];
 		}
 		// XMidi bank
-		else if (event->data[0] == XMIDI_CONTROLLER_BANK_CHANGE) {
-			shadows[chan].xbank = event->data[1];
+		else if (new_event->data[0] == XMIDI_CONTROLLER_BANK_CHANGE) {
+			shadows[chan].xbank = new_event->data[1];
 		}
 	}
 	else if (type == MIDI_STATUS_PROG_CHANGE)
