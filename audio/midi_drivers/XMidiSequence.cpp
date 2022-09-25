@@ -58,11 +58,11 @@ XMidiSequence::XMidiSequence(XMidiSequenceHandler *Handler, uint16 seq_id, XMidi
 		last_tick = brnch->time;
 		event = brnch;
 
-		XMidiEvent  *event = evntlist->events;
-		while (event != brnch)
+		XMidiEvent  *next_event = evntlist->events;
+		while (next_event != brnch)
 		{
-			updateShadowForEvent(event);
-			event=event->next;
+			updateShadowForEvent(next_event);
+			next_event = next_event->next;
 		}
 		for (int i = 0; i < 16; i++) gainChannel(i);
 	}
@@ -401,9 +401,10 @@ void XMidiSequence::sendEvent()
 	}
 }
 
-#define SendController(ctrl,name) \
-	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | ((ctrl) << 8) | (shadows[i].name[0] << 16)); \
-	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (((ctrl)+32) << 8) | (shadows[i].name[1] << 16));
+void XMidiSequence::sendController(int ctrl, int i, int (&controller)[2]) const {
+	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | ((ctrl) << 8) | (controller[0] << 16)); \
+	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (((ctrl)+32) << 8) | (controller[1] << 16));
+}
 
 void XMidiSequence::applyShadow(int i)
 {
@@ -411,23 +412,23 @@ void XMidiSequence::applyShadow(int i)
 	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_PITCH_WHEEL << 4) | (shadows[i].pitchWheel << 8));
 
 	// Modulation Wheel
-	SendController(1,modWheel);
+	sendController(1, i, shadows[i].modWheel);
 
 	// Footpedal
-	SendController(4,footpedal);
+	sendController(4, i, shadows[i].footpedal);
 
 	// Volume
 	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (7 << 8) | (((shadows[i].volumes[0]*vol_multi)/0xFF) << 16));
 	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (39 << 8) | (shadows[i].volumes[1] << 16));
 
 	// Pan
-	SendController(9,pan);
+	sendController(9, i, shadows[i].pan);
 
 	// Balance
-	SendController(10,balance);
+	sendController(10, i, shadows[i].balance);
 
 	// expression
-	SendController(11,expression);
+	sendController(11, i, shadows[i].expression);
 
 	// Sustain
 	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (64 << 8) | (shadows[i].sustain << 16));
@@ -443,7 +444,7 @@ void XMidiSequence::applyShadow(int i)
 
 	// Bank Select
 	if (shadows[i].program != -1) handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_PROG_CHANGE << 4) | (shadows[i].program << 8));
-	SendController(0,bank);
+	sendController(0, i, shadows[i].bank);
 }
 
 void XMidiSequence::setVolume(int new_volume)

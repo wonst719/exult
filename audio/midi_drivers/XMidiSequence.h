@@ -31,12 +31,12 @@ public:
 
 	//! Create the XXMidiSequence object
 	//! \param handler XMidiSequenceHandler object that the events are to be sent to
-	//! \param sequence_id The id num for this sequence
+	//! \param seq_id The id num for this sequence
 	//! \param events The Midi event list that is to be played
 	//! \param repeat Specifies if repeating is enabled or disabled
 	//! \param volume Volume level to play at
 	//! \param branch The Branch index to start playing at
-	XMidiSequence(XMidiSequenceHandler *handler, uint16 seq_id, XMidiEventList *events, 
+	XMidiSequence(XMidiSequenceHandler *handler, uint16 seq_id, XMidiEventList *events,
 						bool repeat, int volume, int branch);
 
 	//! Destructor
@@ -49,7 +49,7 @@ public:
 	int					playEvent();
 
 	//! Get the time till the next event
-	//! \return ms till next event (can be negative if running behind time). 
+	//! \return ms till next event (can be negative if running behind time).
 	sint32				timeTillNext();
 
 	//! Set a new volume to use
@@ -66,16 +66,16 @@ public:
 
 	//! Called when the XMidiSequenceHandler is taking a channel from this sequence
 	//! The XMidiSequence will gracefully reset the state of the channel
-	//! \param c the channel being lost
+	//! \param i the channel being lost
 	void				loseChannel(int i);
 
 	//! Called when the XMidiSequenceHandler is giving a channel to this sequence
 	//! The XMidiSequence will update the state of the channel to what is stored in the shadow
-	//! \param c the channel being gained
+	//! \param i the channel being gained
 	void				gainChannel(int i);
 
 	//! Apply a shadow state
-	//! \param c the channel to apply the shadow for
+	//! \param i the channel to apply the shadow for
 	void				applyShadow(int i);
 
 	//! Get the channel used mask
@@ -141,6 +141,12 @@ private:
 		int		xbank;
 		void reset();
 	} shadows[16];
+
+	//! Send the current event to the controller
+	//! \param ctrl control code
+	//! \param i the channel being modified
+	//! \param controller the controller array being modified
+	void			sendController(int ctrl, int i, int (&controller)[2]) const;
 
 	//! Send the current event to the XMidiSequenceHandler
 	void			sendEvent();
