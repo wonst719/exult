@@ -4019,7 +4019,7 @@ Game_object *Actor::attacked(
 	if (Combat::show_hits && !is_dead() && delta >= 0) {
 		eman->remove_text_effect(this);
 		char hpmsg[50];
-		sprintf(hpmsg, "-%d(%d)", delta, oldhp - delta);
+		snprintf(hpmsg, sizeof(hpmsg), "-%d(%d)", delta, oldhp - delta);
 		eman->add_text(hpmsg, this);
 	}
 	if (combat_trace) {

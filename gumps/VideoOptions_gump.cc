@@ -73,7 +73,7 @@ static inline uint16 get_height(uint32 resolution) {
 
 static string resolutionstring(int w, int h) {
 	char buf[100];
-	sprintf(buf, "%ix%i", w, h);
+	snprintf(buf, sizeof(buf), "%ix%i", w, h);
 	return buf;
 }
 

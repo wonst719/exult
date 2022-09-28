@@ -517,7 +517,7 @@ void Game_window::abort(
 	std::va_list ap;
 	va_start(ap, msg);
 	char buf[512];
-	vsprintf(buf, msg, ap);     // Format the message.
+	vsnprintf(buf, sizeof(buf), msg, ap);     // Format the message.
 	cerr << "Exult (fatal): " << buf << endl;
 	delete this;
 	throw quit_exception(-1);

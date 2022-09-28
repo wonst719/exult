@@ -903,7 +903,7 @@ void Cheat::next_map_teleport() const {
 	}
 	gwin->teleport_party(gwin->get_main_actor()->get_tile(), true, newmap);
 	char msg[80];
-	sprintf(msg, "To map #%02x", newmap);
+	snprintf(msg, sizeof(msg), "To map #%02x", newmap);
 	eman->center_text(msg);
 }
 

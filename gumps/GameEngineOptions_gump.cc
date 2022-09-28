@@ -67,7 +67,7 @@ static const int num_default_rates = array_size(framerates) - 1;
 
 static string framestring(int fr) {
 	char buf[100];
-	sprintf(buf, "%i fps", fr);
+	snprintf(buf, sizeof(buf), "%i fps", fr);
 	return buf;
 }
 
