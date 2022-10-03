@@ -1307,10 +1307,7 @@ echo Debug Usecode Container.... : $enable_usecode_container
 echo Debug non Readied Objects.. : $enable_nonreadied_objects
 echo
 echo Compilation :
-echo Enable compiler sanitizers. : $enable_sanitizers
-echo Enable SDL parachute....... : $enable_sdl_parachute
-echo Build with static libraries : $enable_static_libs
-echo -n "Build Exult................ : "
+printf "Build Exult................ : "
 if test x$enable_libexult = xyes; then
 	echo as library
 elif test x$enable_exult = xyes; then
@@ -1318,6 +1315,9 @@ elif test x$enable_exult = xyes; then
 else
 	echo no
 fi
+echo Enable compiler sanitizers. : $enable_sanitizers
+echo Enable SDL parachute....... : $enable_sdl_parachute
+echo Build with static libraries : $enable_static_libs
 echo Turn all warnings to errors : $enable_warning_errors
 echo Turn pedantics to errors... : $enable_pedantic_errors
 
