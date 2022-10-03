@@ -4050,7 +4050,7 @@ void ExultStudio::open_shape_window(
 	if (palbuf) {
 		shape_single = new Shape_single(
 		    get_widget("shinfo_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_frame"),
 		    -1,
 		    ifile,
@@ -4058,7 +4058,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_draw"));
 		body_single = new Shape_single(
 		    get_widget("shinfo_body_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_body_frame"),
 		    U7_SHAPE_SHAPES,
 		    vgafile->get_ifile(),
@@ -4068,7 +4068,7 @@ void ExultStudio::open_shape_window(
 	if (gumpfile && palbuf) {
 		gump_single = new Shape_single(
 		    get_widget("shinfo_gump_num"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    nullptr,
 		    U7_SHAPE_GUMPS,
 		    gumpfile->get_ifile(),
@@ -4078,7 +4078,7 @@ void ExultStudio::open_shape_window(
 	if (spritefile && palbuf) {
 		explosion_single = new Shape_single(
 		    get_widget("shinfo_explosion_sprite"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    nullptr,
 		    U7_SHAPE_SPRITES,
 		    spritefile->get_ifile(),
@@ -4253,7 +4253,7 @@ void ExultStudio::open_shape_window(
 	if (paperdolfile && palbuf) {
 		npcpaperdoll_aframe_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_ashape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_aframe"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4261,7 +4261,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_aframe_draw"), true);
 		npcpaperdoll_atwohanded_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_ashape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_atwohanded"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4269,7 +4269,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_atwohanded_draw"), true);
 		npcpaperdoll_astaff_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_ashape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_astaff"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4277,7 +4277,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_astaff_draw"), true);
 		npcpaperdoll_bframe_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_bshape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_bframe"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4285,7 +4285,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_bframe_draw"), true);
 		npcpaperdoll_hframe_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_hshape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_hframe"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4293,7 +4293,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_hframe_draw"), true);
 		npcpaperdoll_hhelm_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_hshape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_hhelm"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4301,7 +4301,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_hhelm_draw"), true);
 		objpaperdoll_frame0_single = new Shape_single(
 		    get_widget("shinfo_objpaperdoll_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_objpaperdoll_frame0"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4309,7 +4309,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_objpaperdoll_frame0_draw"), true);
 		objpaperdoll_frame1_single = new Shape_single(
 		    get_widget("shinfo_objpaperdoll_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_objpaperdoll_frame1"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4317,7 +4317,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_objpaperdoll_frame1_draw"), true);
 		objpaperdoll_frame2_single = new Shape_single(
 		    get_widget("shinfo_objpaperdoll_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_objpaperdoll_frame2"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4325,7 +4325,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_objpaperdoll_frame2_draw"), true);
 		objpaperdoll_frame3_single = new Shape_single(
 		    get_widget("shinfo_objpaperdoll_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_objpaperdoll_frame3"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),

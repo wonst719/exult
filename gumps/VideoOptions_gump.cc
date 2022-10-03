@@ -68,7 +68,7 @@ static inline uint16 get_width(uint32 resolution) {
 }
 
 static inline uint16 get_height(uint32 resolution) {
-	return (resolution & 0xffffu);
+	return resolution & 0xffffu;
 }
 
 static string resolutionstring(int w, int h) {

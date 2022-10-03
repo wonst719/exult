@@ -809,7 +809,7 @@ public:
 		T *cls = info.*data;
 		if (!cls)
 			return (info.have_static_flags & T::get_info_flag()) != 0;
-		return (cls->need_write());
+		return cls->need_write();
 	}
 };
 

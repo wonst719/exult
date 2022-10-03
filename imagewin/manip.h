@@ -115,7 +115,7 @@ public:
 
 	static uintD rgb(unsigned int r, unsigned int g,
 	                 unsigned int b) {
-		return ((r >> 3) << 10) | ((g >> 3) << 5) | ((b >> 3));
+		return ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
 	}
 	static void split_dest(uintD pix, unsigned int &r,
 	                       unsigned int &g, unsigned int &b) {
@@ -150,7 +150,7 @@ public:
 
 	static uintD rgb(unsigned int r, unsigned int g,
 	                 unsigned int b) {
-		return ((r >> 3) << 11) | ((g >> 2) << 5) | ((b >> 3));
+		return ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
 	}
 	static void split_dest(uintD pix, unsigned int &r,
 	                       unsigned int &g, unsigned int &b) {
