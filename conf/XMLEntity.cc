@@ -184,7 +184,7 @@ void    XMLnode::xmlassign(const string &key, const string &value) {
 	// No match, so create a new node and do recursion
 	auto *t = new XMLnode(k2);
 	nodelist.push_back(t);
-	(*t).xmlassign(k, value);
+	t->xmlassign(k, value);
 }
 
 

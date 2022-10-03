@@ -1206,7 +1206,7 @@ bool Vga_file::get_imported_shape_data(int shnum, imported_map &data) {
 	auto it =
 	    imported_shape_table.find(shnum);
 	if (it != imported_shape_table.end()) {
-		data = (*it).second;
+		data = it->second;
 		return true;
 	}
 	return false;

@@ -383,7 +383,7 @@ public:
 		if (it == vars.end())
 			return -1;
 		else
-			return (*it).second;
+			return it->second;
 	}
 	bool is_dup(const char *nm);      // Already declared?
 };
@@ -594,7 +594,7 @@ public:
 		auto it = nums_used.find(ucnum);
 		if (it == nums_used.end())  // Unused?  That's good.
 			return nullptr;
-		return (*it).second;
+		return it->second;
 	}
 	virtual bool has_ret() const {
 		return ret_type != no_ret;
@@ -645,7 +645,7 @@ public:
 		if (it == symbols.end())
 			return nullptr;
 		else
-			return (*it).second;
+			return it->second;
 	}
 	// Search upwards through scopes.
 	Uc_symbol *search_up(const char *nm);

@@ -377,7 +377,7 @@ int Uc_function::add_string(
 	// Search for an existing string.
 	auto exist = text_map.find(text);
 	if (exist != text_map.end())
-		return (*exist).second;
+		return exist->second;
 	const int offset = text_data_size;    // This is where it will go.
 	const int textlen = strlen(text) + 1; // Got to include ending null.
 	char *new_text_data = new char[text_data_size + textlen];
@@ -407,7 +407,7 @@ int Uc_function::find_string_prefix(
 	// Find 1st entry >= text.
 	auto exist = text_map.lower_bound(text);
 	if (exist == text_map.end() ||
-	        strncmp(text, (*exist).first.c_str(), len) != 0) {
+	        strncmp(text, exist->first.c_str(), len) != 0) {
 		char *buf = new char[len + 100];
 		sprintf(buf, "Prefix '%s' matches no string in this function",
 		        text);
@@ -418,13 +418,13 @@ int Uc_function::find_string_prefix(
 	auto next = exist;
 	++next;
 	if (next != text_map.end() &&
-	        strncmp(text, (*next).first.c_str(), len) == 0) {
+	        strncmp(text, next->first.c_str(), len) == 0) {
 		char *buf = new char[len + 100];
 		sprintf(buf, "Prefix '%s' matches more than one string", text);
 		loc.error(buf);
 		delete [] buf;
 	}
-	return (*exist).second;     // Return offset.
+	return exist->second;     // Return offset.
 }
 
 

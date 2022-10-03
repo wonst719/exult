@@ -135,11 +135,12 @@ static const T *Search_vector_data_double_wildcards(
 	auto it = std::lower_bound(vec.begin(), vec.end(), inf);
 	if (it == vec.end())    // Nowhere to be found.
 		return nullptr;
-	else if (*it == inf && !it->is_invalid())   // Have it already.
-		return &*it;
+	auto& new_info = *it;
+	if (new_info == inf && !it->is_invalid())   // Have it already.
+		return &new_info;
 	// We only have to search forward for a match.
 	if (quality != -1) {
-		if ((*it).*fr == frame) {
+		if (new_info.*fr == frame) {
 			// Maybe quality is to blame. Try wildcard quality.
 			inf.*qual = -1;
 			it = std::lower_bound(it, vec.end(), inf);

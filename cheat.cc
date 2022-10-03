@@ -569,7 +569,7 @@ void Cheat::toggle_selected(Game_object *obj) {
 	// In list?
 	for (auto it = selected.begin();
 	        it != selected.end(); ++it)
-		if ((*it).get() == obj) {
+		if (it->get() == obj) {
 			// Yes, so remove it.
 			selected.erase(it);
 			if (selected.empty())   // Last one?

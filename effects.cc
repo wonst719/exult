@@ -245,7 +245,7 @@ int Effects_manager::get_weather(
 				(static_cast<Weather_effect *>(ef.get())->get_num() >= 0);
 	});
 	return found != effects.cend()
-		? static_cast<Weather_effect *>((*found).get())->get_num()
+		? static_cast<Weather_effect *>(found->get())->get_num()
 		: 0;
 }
 

@@ -144,7 +144,7 @@ Usecode_symbol *Usecode_scope_symbol::operator[](const char *nm) {
 	if (it == by_name.end())
 		return nullptr;
 	else
-		return (*it).second;
+		return it->second;
 }
 
 Usecode_symbol *Usecode_scope_symbol::operator[](int val) {
@@ -154,7 +154,7 @@ Usecode_symbol *Usecode_scope_symbol::operator[](int val) {
 	if (it == by_val.end())
 		return nullptr;
 	else
-		return (*it).second;
+		return it->second;
 }
 
 Usecode_class_symbol *Usecode_scope_symbol::get_class(const char *nm) {
@@ -164,7 +164,7 @@ Usecode_class_symbol *Usecode_scope_symbol::get_class(const char *nm) {
 	if (it == class_names.end())
 		return nullptr;
 	else
-		return (*it).second;
+		return it->second;
 }
 
 /*
@@ -178,7 +178,7 @@ int Usecode_scope_symbol::get_high_shape_fun(int val) {
 	if (it == shape_funs.end())
 		return -1;
 	else
-		return (*it).second;
+		return it->second;
 }
 
 /*
@@ -191,7 +191,7 @@ bool Usecode_scope_symbol::is_object_fun(int val) {
 	// Symbol not found; default to original behavior
 	if (it == by_val.end())
 		return val < 0x800;
-	Usecode_symbol *sym = (*it).second;
+	Usecode_symbol *sym = it->second;
 	return sym &&
 	        (sym->get_kind() == shape_fun || sym->get_kind() == object_fun);
 }

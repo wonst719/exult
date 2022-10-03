@@ -507,7 +507,7 @@ Uc_function_symbol *Uc_function_symbol::create(
 		nums_used[ucnum] = sym;
 		return sym;
 	}
-	sym = (*it).second;
+	sym = it->second;
 	if (sym->name != nm || sym->get_num_parms() != p.size()) {
 		char buf[256];
 		sprintf(buf,

@@ -758,7 +758,7 @@ static void Extract(
 		palbuf[i] *= 4;     // Exult palette vals are 0-63.
 	Vga_file ifile(imagename);  // May throw an exception.
 	for (auto it = specs.begin(); it != specs.end();  ++it) {
-		char *basename = (*it).filename;
+		char *basename = it->filename;
 		if (!basename)      // Empty?
 			continue;
 		const int shnum = it - specs.begin();
@@ -770,8 +770,8 @@ static void Extract(
 		// Read in all frames.
 		Shape *shape = ifile.extract_shape(shnum);
 		const int nframes = shape->get_num_frames();
-		if (nframes != (*it).nframes)
-			cerr << "Warning: # frames (" << (*it).nframes <<
+		if (nframes != it->nframes)
+			cerr << "Warning: # frames (" << it->nframes <<
 			     ") given for shape " << shnum <<
 			     " doesn't match actual count (" << nframes <<
 			     ")" << endl;

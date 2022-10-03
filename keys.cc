@@ -662,7 +662,7 @@ void KeyBinder::ParseLine(char *line) {
 				// lookup in table
 				auto key_index = keys.find(t);
 				if (key_index != keys.end()) {
-					k.sym = (*key_index).second;
+					k.sym = key_index->second;
 				} else {
 					cerr << "Keybinder: unsupported key: " << keycode << endl;
 					return;
@@ -686,7 +686,7 @@ void KeyBinder::ParseLine(char *line) {
 
 	auto action_index = actions.find(t);
 	if (action_index != actions.end()) {
-		a.action = (*action_index).second;
+		a.action = action_index->second;
 	} else {
 		cerr << "Keybinder: unsupported action: " << t << endl;
 		return;

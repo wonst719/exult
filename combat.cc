@@ -416,7 +416,7 @@ list<Game_object_weak>::iterator Combat_schedule::find_protected_attacker(
 	auto best_opp = opponents.end();
 	for (auto it = opponents.begin();
 	        it != opponents.end(); ++it) {
-		const Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
+		const Actor_shared opp = std::static_pointer_cast<Actor>(it->lock());
 		int dist;
 		if (opp && opp->get_target() == prot_actor &&
 		        (dist = npc->distance(opp.get())) < best_dist) {
@@ -478,7 +478,7 @@ Game_object *Combat_schedule::find_foe(
 		int least_str = 100;
 		for (auto it = opponents.begin();
 		        it != opponents.end(); ++it) {
-			const Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
+			const Actor_shared opp = std::static_pointer_cast<Actor>(it->lock());
 			if (!opp)
 			    continue;
 			str = opp->get_property(Actor::strength);
@@ -494,7 +494,7 @@ Game_object *Combat_schedule::find_foe(
 		int best_str = -100;
 		for (auto it = opponents.begin();
 		        it != opponents.end(); ++it) {
-			const Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
+			const Actor_shared opp = std::static_pointer_cast<Actor>(it->lock());
 			if (!opp)
 			    continue;
 			str = opp->get_property(Actor::strength);
@@ -509,7 +509,7 @@ Game_object *Combat_schedule::find_foe(
 		int best_dist = 4 * c_tiles_per_chunk;
 		for (auto it = opponents.begin();
 		        it != opponents.end(); ++it) {
-			const Actor_shared opp = std::static_pointer_cast<Actor>((*it).lock());
+			const Actor_shared opp = std::static_pointer_cast<Actor>(it->lock());
 			if (!opp)
 			    continue;
 			int dist = npc->distance(opp.get());
@@ -535,7 +535,7 @@ Game_object *Combat_schedule::find_foe(
 	}
 	Actor_shared new_opponent;
 	if (new_opp_link != opponents.end()) {
-		new_opponent = std::static_pointer_cast<Actor>((*new_opp_link).lock());
+		new_opponent = std::static_pointer_cast<Actor>(new_opp_link->lock());
 		opponents.erase(new_opp_link);
 	}
 	return new_opponent ? new_opponent.get() : nullptr;

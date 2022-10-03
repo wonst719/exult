@@ -1563,12 +1563,12 @@ Usecode_value Usecode_internal::Execute_Intrinsic(UsecodeIntrinsicFn func, const
 	if (intrinsic_trace) {
 		Usecode_Trace(name, intrinsic, num_parms, parms);
 		cout.flush();
-		Usecode_value u = ((*this).*func)(num_parms, parms);
+		Usecode_value u = (this->*func)(num_parms, parms);
 		Usecode_TraceReturn(u);
 		return u;
 	}
 #endif
-	return ((*this).*func)(num_parms, parms);
+	return (this->*func)(num_parms, parms);
 }
 
 using UsecodeIntrinsicFn = Usecode_value(Usecode_internal::*)(int num_parms, Usecode_value parms[12]);
@@ -1627,8 +1627,8 @@ Usecode_value Usecode_internal::call_intrinsic(
 				table_entry = serpent_table + intrinsic;
 		} else
 			table_entry = intrinsic_table + intrinsic;
-		const UsecodeIntrinsicFn func = (*table_entry).func;
-		const char *name = (*table_entry).name;
+		const UsecodeIntrinsicFn func = table_entry->func;
+		const char *name = table_entry->name;
 		return Execute_Intrinsic(func, name, intrinsic,
 		                         num_parms, parms);
 	}

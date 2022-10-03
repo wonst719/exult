@@ -242,7 +242,7 @@ public:
 		auto siter = strings->find(nm);
 		if (siter == strings->end())
 			siter = strings->insert(nm).first;
-		nm = (*siter).c_str();
+		nm = siter->c_str();
 		map[nm] = val;
 	}
 	/// Gets an attribute's value, if it is in the list.
@@ -253,9 +253,9 @@ public:
 		auto siter = strings->find(nm);
 		if (siter == strings->end())
 			return 0;
-		nm = (*siter).c_str();
+		nm = siter->c_str();
 		auto it = map.find(nm);
-		return it == map.end() ? 0 : (*it).second;
+		return it == map.end() ? 0 : it->second;
 	}
 	/// Gets all attributes for the current actor.
 	/// @param attlist (name, value) vector containig all attributes.

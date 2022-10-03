@@ -82,7 +82,7 @@ bool Time_queue::remove(
 			[obj](const auto& el) { return el.handler == obj; });
 	auto found = toRemove != data.end();
 	if (found) {
-		(*toRemove).handler->queue_cnt--;
+		toRemove->handler->queue_cnt--;
 		data.erase(toRemove);
 	}
 	return found;
@@ -141,7 +141,7 @@ long Time_queue::find_delay(
 	if (pause_time) { // Watch for case when paused.
 		curtime = pause_time;
 	}
-	const long delay = (*found).time - curtime;
+	const long delay = found->time - curtime;
 	return delay >= 0 ? delay : 0;
 }
 
@@ -176,7 +176,7 @@ void Time_queue::activate_always(
 		return;
 	Queue_entry ent;
 	for (auto it = data.begin();
-	        it != data.end() && !(curtime < (*it).time);) {
+	        it != data.end() && !(curtime < it->time);) {
 		auto next = it;
 		++next;         // Get ->next in case we erase.
 		ent = *it;
@@ -227,8 +227,8 @@ bool Time_queue_iterator::operator()(
 	);
 	if (iter == tqueue->data.end())
 		return false;
-	obj = (*iter).handler;      // Return fields.
-	data = (*iter).udata;
+	obj = iter->handler;      // Return fields.
+	data = iter->udata;
 	++iter;             // On to the next.
 	return true;
 }

@@ -197,7 +197,7 @@ public:
 			src >> key;
 			auto it = shapevars.find(key);
 			if (it != shapevars.end()) {
-				data.second = (*it).second; // The shape #.
+				data.second = it->second; // The shape #.
 			} else {
 				return; // Invalid reference; bail out.
 			}
@@ -263,7 +263,7 @@ public:
 			const string key = ReadStr(src, 0);
 			auto it = shapevars.find(key);
 			if (it != shapevars.end()) {
-				return (*it).second;    // The var value.
+				return it->second;    // The var value.
 			}
 			return -1;  // Invalid reference; bail out.
 		}
@@ -535,7 +535,7 @@ Base_Avatar_info *Shapeinfo_lookup::GetBaseAvInfo(bool sex) {
 	setup_avatar_data();
 	auto it = avdata->def_av_info.find(sex);
 	if (it != avdata->def_av_info.end()) {
-		return &((*it).second);
+		return &(it->second);
 	}
 	return nullptr;
 }
@@ -544,7 +544,7 @@ int Shapeinfo_lookup::get_skinvar(const string& key) {
 	setup_shape_files();
 	auto it = data->skinvars.find(key);
 	if (it != data->skinvars.end()) {
-		return (*it).second;    // The shape #.
+		return it->second;    // The shape #.
 	}
 	return -1;  // Invalid reference; bail out.
 }
