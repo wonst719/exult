@@ -568,7 +568,7 @@ if test x$enable_exult_studio_support = xyes ; then
 	AC_DEFINE(USE_EXULTSTUDIO, 1, [Use Exult Studio])
 	AC_CHECK_FUNC(xwin, AC_DEFINE(XWIN))
 	if test "$WINDOWING_SYSTEM" = -DMACOSX -a "$ac_cv_func_xwin" != yes; then
-		if test ! $sdl_patchlevel -gt "14"; then
+		if test $sdl_minor_version -eq "0" -a $sdl_patchlevel -lt "15"; then
 			echo "SDL2 2.0.15 or newer is needed for native drag'n'drop - switching to X11"
 			enable_macosx_x11_studio_support=yes
 		fi
