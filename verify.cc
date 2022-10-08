@@ -123,15 +123,17 @@ int verify_files(BaseGameInfo* game) {
 	if (errors == 0) {
 		std::cout << "All files match, your data files are good" << std::endl;
 	} else {
-		const std::string files{errors > 1 ? "files" : "file"};
-		const std::string hashes{errors > 1 ? "hashes" : "hash"};
-		const std::string these{errors > 1 ? "these" : "this"};
-		const std::string they_are{errors > 1 ? "they are" : "it is"};
-		std::cout << errors << ' ' << files << " did not match the expected "
-				  << hashes << "; see the affected " << files << " above."
+		const std::string file_or_files{errors > 1 ? "files" : "file"};
+		const std::string hash_or_hashes{errors > 1 ? "hashes" : "hash"};
+		const std::string these_or_this{errors > 1 ? "these" : "this"};
+		const std::string they_are_or_it_is{errors > 1 ? "they are" : "it is"};
+		std::cout << errors << ' ' << file_or_files
+				  << " did not match the expected " << hash_or_hashes
+				  << "; see the affected " << file_or_files << " above."
 				  << std::endl
-				  << "If you did not modify " << these << ' ' << files << ", "
-				  << they_are << " probably corrupt." << std::endl;
+				  << "If you did not modify " << these_or_this << ' '
+				  << file_or_files << ", " << they_are_or_it_is
+				  << " probably corrupt." << std::endl;
 	}
 	return errors;
 }
