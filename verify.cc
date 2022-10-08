@@ -88,14 +88,14 @@ int verify_files(BaseGameInfo *game) {
 		case EXULT_MENU_GAME:
 			// Nothing to do
 			break;
-		};
+		}
 		return empty_map;
 	};
 	const auto& files = get_filelist();
 	if (files.empty()) {
 		return 1;
 	}
-	std::cerr << std::endl
+	std::cout << std::endl
 	          << std::endl
 	          << "========================================" << std::endl
 	          << "Starting file verification" << std::endl;
@@ -113,21 +113,21 @@ int verify_files(BaseGameInfo *game) {
 		const auto hash_str = sha1::toHexString(sha1::calc(data.get(), length));
 		if (strcmp(hash, hash_str.data()) != 0) {
 			errors++;
-			std::cerr << "Hash mismatch for file '" << file << "':" << std::endl
+			std::cout << "Hash mismatch for file '" << file << "':" << std::endl
 			          << "\tExpected hash: " << hash << std::endl
 			          << "\tActual hash:   " << hash_str.data() << std::endl;
 		}
 	}
-	std::cerr << "========================================" << std::endl
-	          << "File verification finshed" << std::endl;
+	std::cout << "========================================" << std::endl
+	          << "File verification finished" << std::endl;
 	if (errors == 0) {
-		std::cerr << "All files match, your data files are good" << std::endl;
+		std::cout << "All files match, your data files are good" << std::endl;
 	} else {
 		const std::string files{errors > 1 ? "files" : "file"};
 		const std::string hashes{errors > 1 ? "hashes" : "hash"};
 		const std::string these{errors > 1 ? "these" : "this"};
 		const std::string they_are{errors > 1 ? "they are" : "it is"};
-		std::cerr << errors << ' ' << files << " did not match the expected "
+		std::cout << errors << ' ' << files << " did not match the expected "
 		          << hashes << "; see the affected " << files << " above." << std::endl
 		          << "If you did not modify " << these << ' ' << files
 		          << ", " << they_are << " probably corrupt." << std::endl;
