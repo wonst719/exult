@@ -271,7 +271,6 @@ Makecache
 
 # vscode
 .vscode
-.clangd
 .vs
 .cache
 msvc/.vs
