@@ -17,25 +17,25 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
 #include "verify.h"
 
+#include "databuf.h"
 #include "exult_constants.h"
 #include "fnames.h"
-#include "databuf.h"
-#include "utils.h"
-#include "sha1/sha1.h"
-#include "modmgr.h"
 #include "hash_utils.h"
+#include "modmgr.h"
+#include "sha1/sha1.h"
+#include "utils.h"
 
 #include <cstring>
 #include <iostream>
 #include <map>
 #include <vector>
 
-using File2HashMap = std::map<const char *, const char *>;
+using File2HashMap = std::map<const char*, const char*>;
 extern const File2HashMap blackgate_files;
 extern const File2HashMap portenoire_files;
 extern const File2HashMap puertanegra_files;
@@ -46,7 +46,7 @@ extern const File2HashMap serpentisle_files;
 extern const File2HashMap islaserpiente_files;
 extern const File2HashMap silverseed_files;
 
-int verify_files(BaseGameInfo *game) {
+int verify_files(BaseGameInfo* game) {
 	const File2HashMap empty_map;
 	const auto get_filelist = [&empty_map, game]() -> const File2HashMap& {
 		switch (game->get_game_type()) {
@@ -55,14 +55,14 @@ int verify_files(BaseGameInfo *game) {
 				return forgeofvirtue_files;
 			}
 			switch (game->get_game_language()) {
-				case ENGLISH:
-					return blackgate_files;
-				case FRENCH:
-					return portenoire_files;
-				case GERMAN:
-					return schwarzepforte_files;
-				case SPANISH:
-					return puertanegra_files;
+			case ENGLISH:
+				return blackgate_files;
+			case FRENCH:
+				return portenoire_files;
+			case GERMAN:
+				return schwarzepforte_files;
+			case SPANISH:
+				return puertanegra_files;
 			};
 			break;
 		case SERPENT_ISLE:
@@ -73,14 +73,14 @@ int verify_files(BaseGameInfo *game) {
 				return serpentbeta_files;
 			}
 			switch (game->get_game_language()) {
-				case ENGLISH:
-					return blackgate_files;
-				case FRENCH:
-				case GERMAN:
-					// These do not exist
-					break;
-				case SPANISH:
-					return islaserpiente_files;
+			case ENGLISH:
+				return blackgate_files;
+			case FRENCH:
+			case GERMAN:
+				// These do not exist
+				break;
+			case SPANISH:
+				return islaserpiente_files;
 			};
 			break;
 		case EXULT_DEVEL_GAME:
@@ -96,30 +96,30 @@ int verify_files(BaseGameInfo *game) {
 		return 1;
 	}
 	std::cout << std::endl
-	          << std::endl
-	          << "========================================" << std::endl
-	          << "Starting file verification" << std::endl;
+			  << std::endl
+			  << "========================================" << std::endl
+			  << "Starting file verification" << std::endl;
 	int errors = 0;
 	for (const auto& file_hash : files) {
-		const auto& file = file_hash.first;
-		const auto& hash = file_hash.second;
+		const auto&     file = file_hash.first;
+		const auto&     hash = file_hash.second;
 		IFileDataSource ds(file);
 		if (!ds.good()) {
 			errors++;
 			continue;
 		}
-		const auto length = ds.getSize();
-		const auto data = ds.readN(length);
+		const auto length   = ds.getSize();
+		const auto data     = ds.readN(length);
 		const auto hash_str = sha1::toHexString(sha1::calc(data.get(), length));
 		if (strcmp(hash, hash_str.data()) != 0) {
 			errors++;
 			std::cout << "Hash mismatch for file '" << file << "':" << std::endl
-			          << "\tExpected hash: " << hash << std::endl
-			          << "\tActual hash:   " << hash_str.data() << std::endl;
+					  << "\tExpected hash: " << hash << std::endl
+					  << "\tActual hash:   " << hash_str.data() << std::endl;
 		}
 	}
 	std::cout << "========================================" << std::endl
-	          << "File verification finished" << std::endl;
+			  << "File verification finished" << std::endl;
 	if (errors == 0) {
 		std::cout << "All files match, your data files are good" << std::endl;
 	} else {
@@ -128,13 +128,13 @@ int verify_files(BaseGameInfo *game) {
 		const std::string these{errors > 1 ? "these" : "this"};
 		const std::string they_are{errors > 1 ? "they are" : "it is"};
 		std::cout << errors << ' ' << files << " did not match the expected "
-		          << hashes << "; see the affected " << files << " above." << std::endl
-		          << "If you did not modify " << these << ' ' << files
-		          << ", " << they_are << " probably corrupt." << std::endl;
+				  << hashes << "; see the affected " << files << " above."
+				  << std::endl
+				  << "If you did not modify " << these << ' ' << files << ", "
+				  << they_are << " probably corrupt." << std::endl;
 	}
 	return errors;
 }
-
 
 const File2HashMap blackgate_files{
 		{MAINMUS_AD, "0ec151bd93e07ea36715d3bea56ea996bf9f7720"},
