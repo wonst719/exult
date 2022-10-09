@@ -600,7 +600,7 @@ void redirect_output(const char *prefix) {
 	auto redirect_stream = [](FILE* stream, const char* device, HANDLE handle,
 							  DWORD& type, int mode, size_t size) {
 		// Only redirect if the stream is not already being redirected.
-		if (type == FILE_TYPE_UNKNOWN) {
+		if (handle != INVALID_HANDLE_VALUE && type == FILE_TYPE_UNKNOWN) {
 			// Flush the output in case anything is queued
 			fflush(stream);
 			FILE* new_stream = freopen(device, "w", stream);
@@ -633,14 +633,11 @@ void redirect_output(const char *prefix) {
 		// from Windows Explorer. This console can be destroyed, but it will
 		// cause it to flash into view, then disappear right away.
 		// TODO: Figure out a way to make Exult/ES "return" the terminal.
-		if (stdout_handle != INVALID_HANDLE_VALUE
-			&& stderr_handle != INVALID_HANDLE_VALUE) {
-			// We will only redirect outputs to files if both calls failed.
-			const bool did_stdout = redirect_stdout("CONOUT$");
-			const bool did_stderr = redirect_stderr("CONOUT$");
-			if (did_stdout || did_stderr) {
-				return;
-			}
+		// We will only redirect outputs to files if both calls failed.
+		const bool did_stdout = redirect_stdout("CONOUT$");
+		const bool did_stderr = redirect_stderr("CONOUT$");
+		if (did_stdout || did_stderr) {
+			return;
 		}
 	}
 
