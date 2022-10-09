@@ -269,11 +269,11 @@ static void switch_slashes(
 }
 
 void U7set_istream_factory(U7IstreamFactory factory) {
-    istream_factory = factory;
+	istream_factory = std::move(factory);
 }
 
 void U7set_ostream_factory(U7OstreamFactory factory) {
-    ostream_factory = factory;
+	ostream_factory = std::move(factory);
 }
 
 /*
@@ -662,7 +662,7 @@ void cleanup_output(const char *prefix) {
 static std::string home_dir;
 
 void U7set_home(std::string home) {
-	home_dir = home;
+	home_dir = std::move(home);
 }
 
 string Get_home() {
