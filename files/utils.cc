@@ -51,7 +51,6 @@
 #include "utils.h"
 #include "fnames.h"
 #include "ignore_unused_variable_warning.h"
-#include "noncopyable.h"
 
 #if defined(MACOSX) || defined(__IPHONEOS__)
 #  include <CoreFoundation/CoreFoundation.h>
