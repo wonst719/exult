@@ -659,37 +659,37 @@ void cleanup_output(const char *prefix) {
 #endif  // _WIN32
 
 
-static std::string home_dir;
+static std::string home_directory;
 
 void U7set_home(std::string home) {
-	home_dir = std::move(home);
+	home_directory = std::move(home);
 }
 
 string Get_home() {
-	if (!home_dir.empty()) {
-		return home_dir;
+	if (!home_directory.empty()) {
+		return home_directory;
 	}
 #ifdef _WIN32
 #ifdef PORTABLE_EXULT_WIN32
-	home_dir = ".";
+	home_directory = ".";
 #else
 	if (get_system_path("<HOME>") == ".")
-		home_dir = ".";
+		home_directory = ".";
 	else {
 		shell32_wrapper shell32;
-		home_dir = shell32.Get_local_appdata();
-		if (!home_dir.empty())
-			home_dir += "\\Exult";
+		home_directory = shell32.Get_local_appdata();
+		if (!home_directory.empty())
+			home_directory += "\\Exult";
 		else
-			home_dir = ".";
+			home_directory = ".";
 	}
 #endif // PORTABLE_WIN32_EXULT
 #else
 	const char *home = nullptr;
 	if ((home = getenv("HOME")) != nullptr)
-		home_dir = home;
+		home_directory = home;
 #endif
-	return home_dir;
+	return home_directory;
 }
 
 #if defined(MACOSX) || defined(__IPHONEOS__)
