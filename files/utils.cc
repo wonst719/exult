@@ -51,6 +51,7 @@
 #include "utils.h"
 #include "fnames.h"
 #include "ignore_unused_variable_warning.h"
+#include "noncopyable.h"
 
 #if defined(MACOSX) || defined(__IPHONEOS__)
 #  include <CoreFoundation/CoreFoundation.h>
@@ -563,14 +564,65 @@ void cleanup_output(const char *prefix) {
 #else
 static std::string Get_home();
 
+struct unsynch_from_stdio {
+	const bool old_synch_status = std::ostream::sync_with_stdio(false);
+	~unsynch_from_stdio() noexcept {
+		std::ostream::sync_with_stdio(old_synch_status);
+	}
+};
+
 // Pulled from exult_studio.cc.
 void redirect_output(const char *prefix) {
-	if (GetFileType(GetStdHandle(STD_OUTPUT_HANDLE)) == FILE_TYPE_PIPE) {
-		// If we are at a msys/msys2 shell running in MinTTY, do not redirect the output,
-		// and print it to console instead.
+	HANDLE stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE stderr_handle = GetStdHandle(STD_ERROR_HANDLE);
+	DWORD stdout_type = GetFileType(stdout_handle);
+	DWORD stderr_type = GetFileType(stderr_handle);
+	if (stdout_type != FILE_TYPE_UNKNOWN && stderr_type != FILE_TYPE_UNKNOWN) {
+		// If we already have valid destinations for both stdout and stderr,
+		// we don't need to do anything. This happens, for example, on MSYS2
+		// in MinTTY.
 		return;
 	}
-	if (AttachConsole(ATTACH_PARENT_PROCESS)) {
+	auto attach_console = [](){
+		// If we already have a console, quit.
+		if (GetConsoleWindow() != nullptr) {
+			return true;
+		}
+		// Attach to the parent process console.
+		if (AttachConsole(ATTACH_PARENT_PROCESS) != 0) {
+			return true;
+		}
+#ifdef DEBUG
+		return AllocConsole() != 0;
+#else
+		return false;
+#endif
+	};
+	auto redirect_stream = [](FILE* stream, const char* device, HANDLE handle,
+							  DWORD& type, int mode, size_t size) {
+		// Only redirect if the stream is not already being redirected.
+		if (type == FILE_TYPE_UNKNOWN) {
+			// Flush the output in case anything is queued
+			fflush(stream);
+			FILE* new_stream = freopen(device, "w", stream);
+			if (new_stream != nullptr) {
+				setvbuf(stream, nullptr, mode, size);
+				return true;
+			}
+			type = GetFileType(handle);
+		}
+		return false;
+	};
+	auto redirect_stdout = [&](const char* device) {
+		// Line buffered
+		return redirect_stream(stdout, device, stdout_handle, stdout_type, _IOLBF, BUFSIZ);
+	};
+	auto redirect_stderr = [&](const char* device) {
+		// No buffering
+		return redirect_stream(stderr, device, stderr_handle, stderr_type, _IONBF, 0);
+	};
+	const unsynch_from_stdio resyncher;
+	if (attach_console()) {
 		// If we are in something like Windows Terminal, we need to connect to
 		// the parent terminal and manually redirect stdout/stderr to the
 		// console. Note: in powershell or cmd.exe, this will give the
@@ -582,78 +634,45 @@ void redirect_output(const char *prefix) {
 		// from Windows Explorer. This console can be destroyed, but it will
 		// cause it to flash into view, then disappear right away.
 		// TODO: Figure out a way to make Exult/ES "return" the terminal.
-		HANDLE stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-		HANDLE stderr_handle = GetStdHandle(STD_ERROR_HANDLE);
 		if (stdout_handle != INVALID_HANDLE_VALUE
 			&& stderr_handle != INVALID_HANDLE_VALUE) {
-			// We will only redirect outputs if both calls succeed.
-			FILE* newstdout = freopen("CONOUT$", "w", stdout);
-			FILE* newstderr = freopen("CONOUT$", "w", stderr);
-			// If either freopen fails, lets just go on through to write to
-			// files instead.
-			if (newstdout != nullptr && newstderr != nullptr) {
-				// Set correct buffer mode: line-buffered for stdout, unbuffered
-				// for stderr.
-				setvbuf(stdout, nullptr, _IOLBF, 0);
-				setvbuf(stderr, nullptr, _IONBF, 0);
+			// We will only redirect outputs to files if both calls failed.
+			const bool did_stdout = redirect_stdout("CONOUT$");
+			const bool did_stderr = redirect_stderr("CONOUT$");
+			if (did_stdout || did_stderr) {
 				return;
 			}
 		}
 	}
+
 	// Starting from GUI, or from cmd.exe, we will need to redirect the output.
-
-	// Flush the output in case anything is queued
-	fclose(stdout);
-	fclose(stderr);
-
+	// Paths to the output files.
 	const string folderPath = Get_home() + "/";
-
 	const string stdoutPath = folderPath + prefix + "out.txt";
-	const char *stdoutfile = stdoutPath.c_str();
-
-	// Redirect standard input and standard output
-	FILE *newfp = freopen(stdoutfile, "w", stdout);
-	if (newfp == nullptr) {
-		// This happens on NT
-#if !defined(stdout)
-		stdout = fopen(stdoutfile, "w");
-#else
-		newfp = fopen(stdoutfile, "w");
-		if (newfp)
-			*stdout = *newfp;
-#endif
-	}
-
+	redirect_stdout(stdoutPath.c_str());
 	const string stderrPath = folderPath + prefix + "err.txt";
-	const char *stderrfile = stderrPath.c_str();
-
-	newfp = freopen(stderrfile, "w", stderr);
-	if (newfp == nullptr) {
-		// This happens on NT
-#if !defined(stderr)
-		stderr = fopen(stderrfile, "w");
-#else
-		newfp = fopen(stderrfile, "w");
-		if (newfp)
-			*stderr = *newfp;
-#endif
-	}
-	setvbuf(stdout, nullptr, _IOLBF, BUFSIZ);  // Line buffered
-	setbuf(stderr, nullptr);                   // No buffering
+	redirect_stderr(stderrPath.c_str());
 }
 
 void cleanup_output(const char *prefix) {
-	const string folderPath = Get_home() + "/";
-	if (!ftell(stdout)) {
+	// If we have a console, we don't have output files to clear.
+	if (GetConsoleWindow() != nullptr) {
 		fclose(stdout);
-		const string stdoutPath = folderPath + prefix + "out.txt";
-		remove(stdoutPath.c_str());
-	}
-	if (!ftell(stderr)) {
 		fclose(stderr);
-		const string stderrPath = folderPath + prefix + "err.txt";
-		remove(stderrPath.c_str());
+		FreeConsole();
+		return;
 	}
+	const string folderPath = Get_home() + "/";
+	auto clear_empty_redirect = [&](FILE* stream, const char* suffix) {
+		fflush(stream);
+		if (ftell(stream) == 0) {
+			fclose(stream);
+			const string stream_path = folderPath + prefix + suffix;
+			remove(stream_path.c_str());
+		}
+	};
+	clear_empty_redirect(stdout, "out.txt");
+	clear_empty_redirect(stderr, "err.txt");
 }
 #endif // USE_CONSOLE
 #endif  // _WIN32
