@@ -643,10 +643,10 @@ void redirect_output(const char *prefix) {
 
 	// Starting from GUI, or from cmd.exe, we will need to redirect the output.
 	// Paths to the output files.
-	const string folderPath = Get_home() + "/";
-	const string stdoutPath = folderPath + prefix + "out.txt";
+	const string folderPath = Get_home() + "/" + prefix;
+	const string stdoutPath = folderPath + "out.txt";
 	redirect_stdout(stdoutPath.c_str());
-	const string stderrPath = folderPath + prefix + "err.txt";
+	const string stderrPath = folderPath + "err.txt";
 	redirect_stderr(stderrPath.c_str());
 }
 
@@ -658,12 +658,12 @@ void cleanup_output(const char *prefix) {
 		FreeConsole();
 		return;
 	}
-	const string folderPath = Get_home() + "/";
+	const string folderPath = Get_home() + "/" + prefix;
 	auto clear_empty_redirect = [&](FILE* stream, const char* suffix) {
 		fflush(stream);
 		if (ftell(stream) == 0) {
 			fclose(stream);
-			const string stream_path = folderPath + prefix + suffix;
+			const string stream_path = folderPath + suffix;
 			remove(stream_path.c_str());
 		}
 	};
@@ -672,7 +672,6 @@ void cleanup_output(const char *prefix) {
 }
 #endif // USE_CONSOLE
 #endif  // _WIN32
-
 
 static std::string home_directory;
 
