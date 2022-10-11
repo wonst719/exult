@@ -296,7 +296,7 @@ std::unique_ptr<std::istream> U7open_in(
 	do {
 		try {
 			//std::cout << "trying: " << name << std::endl;
- 			in = istream_factory(name.c_str(), mode);
+			in = istream_factory(name.c_str(), mode);
 		} catch (std::exception &) {
 		}
 		if (in && in->good() && !in->fail()) {
@@ -494,7 +494,7 @@ protected:
 	    DWORD dwFlags,
 	    HANDLE hToken,
 	    PWSTR *ppszPath
-    );
+	);
 	SHGetKnownFolderPathFunc SHGetKnownFolderPath;
 	*/
 
@@ -633,12 +633,12 @@ void redirect_output(const char *prefix) {
 		// from Windows Explorer. This console can be destroyed, but it will
 		// cause it to flash into view, then disappear right away.
 		// TODO: Figure out a way to make Exult/ES "return" the terminal.
-		// We will only redirect outputs to files if both calls failed.
-		const bool did_stdout = redirect_stdout("CONOUT$");
-		const bool did_stderr = redirect_stderr("CONOUT$");
-		if (did_stdout || did_stderr) {
+		// If both calls succeeded in redirecting output to the terminal, we can
+		// bail out early.
+		if (redirect_stdout("CONOUT$") && redirect_stderr("CONOUT$")) {
 			return;
 		}
+		// Otherwise, fall through to redirect whichever ones failed to a file.
 	}
 
 	// Starting from GUI, or from cmd.exe, we will need to redirect the output.
@@ -651,13 +651,6 @@ void redirect_output(const char *prefix) {
 }
 
 void cleanup_output(const char *prefix) {
-	// If we have a console, we don't have output files to clear.
-	if (GetConsoleWindow() != nullptr) {
-		fclose(stdout);
-		fclose(stderr);
-		FreeConsole();
-		return;
-	}
 	const string folderPath = Get_home() + "/" + prefix;
 	auto clear_empty_redirect = [&](FILE* stream, const char* suffix) {
 		fflush(stream);
@@ -669,6 +662,9 @@ void cleanup_output(const char *prefix) {
 	};
 	clear_empty_redirect(stdout, "out.txt");
 	clear_empty_redirect(stderr, "err.txt");
+	if (GetConsoleWindow() != nullptr) {
+		FreeConsole();
+	}
 }
 #endif // USE_CONSOLE
 #endif  // _WIN32
