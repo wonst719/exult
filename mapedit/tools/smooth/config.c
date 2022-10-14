@@ -74,13 +74,14 @@ int read_config(FILE *f) {
 					printf("\nsection %s", line);
 					fflush(stdout);
 				}
-				pluginname = (char *)malloc((13 + line_length) * sizeof(char));
+				const size_t namelen = (13 + line_length) * sizeof(char);
+				pluginname = (char *)malloc(namelen);
 				strncpy(line, line + 1, line_length - 3); // what's between the '[' and the ']'
 				line[line_length - 3] = '\0'; // and add a \0 at the end
 #ifdef _WIN32
-				sprintf(pluginname, "libsmooth_%s.dll", line);
+				snprintf(pluginname, namelen, "libsmooth_%s.dll", line);
 #else
-				sprintf(pluginname, "libsmooth_%s.so", line);
+				snprintf(pluginname, namelen, "libsmooth_%s.so", line);
 #endif
 				if (g_statics.debug > 2) {
 					printf("Plugin to load: %s\n", pluginname);

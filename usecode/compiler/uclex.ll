@@ -42,6 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ucparse.h"
 #include "ucloc.h"
 #include "ucfun.h"
+#include "array_size.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
@@ -145,7 +146,7 @@ static void Include
 	if (!yyin)
 		{
 		char msg[180];
-		sprintf(msg, "Can't open '%s'", name);
+		snprintf(msg, array_size(msg), "Can't open '%s'", name);
 		Uc_location::yyerror(msg);
 		exit(1);
 		}
@@ -234,7 +235,7 @@ char *Handle_string
 		default:
 			{
 			char buf[150];
-			sprintf(buf, "Unknown escape sequence '\\%c'. If you are trying "
+			snprintf(buf, array_size(buf), "Unknown escape sequence '\\%c'. If you are trying "
 			             "to insert a literal backslash ('\\') into text, "
 			             "write it as '\\\\'.", *from);
 			Uc_location::yywarning(buf);

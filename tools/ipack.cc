@@ -93,7 +93,7 @@ static void Get_all_shapes(
     char *basename,
     Shape_specs &specs      // Shape specs. returned here.
 ) {
-	const int namelen = strlen(basename) + strlen("SSSS_") + 1;
+	const size_t namelen = strlen(basename) + strlen("SSSS_") + 1;
 	Vga_file ifile;
 	try {
 		ifile.load(imagename);  // May throw an exception.
@@ -108,7 +108,7 @@ static void Get_all_shapes(
 		if (!nframes)
 			continue;
 		char *shapename = new char[namelen];
-		sprintf(shapename, "%s%04d_", basename, i);
+		snprintf(shapename, namelen, "%s%04d_", basename, i);
 		specs[i].flat = false;
 		specs[i].nframes = nframes;
 		specs[i].filename = shapename;
@@ -445,8 +445,9 @@ static void Write_frame(
     unsigned char *palette      // 3*256 bytes.
 ) {
 	assert(frame != nullptr);
-	char *fullname = new char[strlen(basename) + 30];
-	sprintf(fullname, "%s%02d.png", basename, frnum);
+	const size_t namelen = strlen(basename) + 30;
+	char *fullname = new char[namelen];
+	snprintf(fullname, namelen, "%s%02d.png", basename, frnum);
 	cout << "Writing " << fullname << endl;
 	const int w = frame->get_width();
 	const int h = frame->get_height();
@@ -611,10 +612,11 @@ static void Write_exult(
     char *palname           // Store palette with here if !0.
 ) {
 	Shape shape(nframes);
-	char *fullname = new char[strlen(basename) + 30];
+	const size_t namelen = strlen(basename) + 30;
+	char *fullname = new char[namelen];
 	int frnum;          // Read in frames.
 	for (frnum = 0; frnum < nframes; frnum++) {
-		sprintf(fullname, "%s%02d.png", basename, frnum);
+		snprintf(fullname, namelen, "%s%02d.png", basename, frnum);
 		cout << "Reading " << fullname << endl;
 		int w;
 		int h;

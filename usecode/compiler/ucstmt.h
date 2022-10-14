@@ -208,11 +208,11 @@ class Uc_arrayloop_statement : public Uc_statement {
 	Uc_var_symbol *var;     // Loop variable.
 	Uc_var_symbol *array;       // Array to loop over.
 	Uc_var_symbol *index;       // Counter.
-	Uc_var_symbol *array_size;  // Symbol holding array size.
+	Uc_var_symbol *array_len;  // Symbol holding array size.
 	Uc_statement *stmt;     // What to execute.
 public:
 	Uc_arrayloop_statement(Uc_var_symbol *v, Uc_var_symbol *a)
-		: var(v), array(a), index(nullptr), array_size(nullptr), stmt(nullptr)
+		: var(v), array(a), index(nullptr), array_len(nullptr), stmt(nullptr)
 	{  }
 	~Uc_arrayloop_statement() override;
 	void set_statement(Uc_statement *s) {
@@ -222,7 +222,7 @@ public:
 		index = i;
 	}
 	void set_array_size(Uc_var_symbol *as) {
-		array_size = as;
+		array_len = as;
 	}
 	void finish(Uc_function *fun);  // Create tmps. if necessary.
 	// Generate code.

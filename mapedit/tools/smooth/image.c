@@ -111,9 +111,10 @@ void putpixel(SDL_Surface *surface, int x, int y, Uint8 pixel) {
 }
 
 char *transform(int index) {
-	char *ret = (char *)malloc(7 * sizeof(char));
+	const size_t retlen = 7 * sizeof(char);
+	char *ret = (char *)malloc(retlen);
 
-	sprintf(ret, "%02x%02x%02x", \
+	snprintf(ret, retlen, "%02x%02x%02x", \
 	        g_variables.image_out->format->palette->colors[index].r, \
 	        g_variables.image_out->format->palette->colors[index].g, \
 	        g_variables.image_out->format->palette->colors[index].b\

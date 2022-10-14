@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
 		Uint8 blue;
 		SDL_GetRGB(i, fmt, &red, &green, &blue);
 		char buff[7];
-		sprintf(buff, "%02x%02x%02x", red, green, blue);
+		snprintf(buff, sizeof(buff), "%02x%02x%02x", red, green, blue);
 		// red, green and blue contains the colour definition. Now we need to enter the u7chunk retrieved for that one
 
 		fseek(f, 0, SEEK_SET); // back to the beginning for each colour

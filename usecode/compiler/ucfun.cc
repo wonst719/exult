@@ -408,8 +408,9 @@ int Uc_function::find_string_prefix(
 	auto exist = text_map.lower_bound(text);
 	if (exist == text_map.end() ||
 	        strncmp(text, exist->first.c_str(), len) != 0) {
-		char *buf = new char[len + 100];
-		sprintf(buf, "Prefix '%s' matches no string in this function",
+		const size_t buflen = len + 100;
+		char *buf = new char[buflen];
+		snprintf(buf, buflen, "Prefix '%s' matches no string in this function",
 		        text);
 		loc.error(buf);
 		delete [] buf;
@@ -419,8 +420,9 @@ int Uc_function::find_string_prefix(
 	++next;
 	if (next != text_map.end() &&
 	        strncmp(text, next->first.c_str(), len) == 0) {
-		char *buf = new char[len + 100];
-		sprintf(buf, "Prefix '%s' matches more than one string", text);
+		const size_t buflen = len + 100;
+		char *buf = new char[buflen];
+		snprintf(buf, buflen, "Prefix '%s' matches more than one string", text);
 		loc.error(buf);
 		delete [] buf;
 	}
