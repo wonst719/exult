@@ -22,7 +22,7 @@ int img_read(char *filein) {
 
 	SDL_RWops *rw;
 	if (!strcmp(filein, "-")) { // stdin as input. Shouldn't work but we try anyways
-		rw = SDL_RWFromFP(stdin, 0);
+		rw = SDL_RWFromFP(stdin, SDL_FALSE);
 	} else { // a regular file name
 		rw = SDL_RWFromFile(filein, "rb");
 	}
