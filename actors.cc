@@ -1725,6 +1725,7 @@ void Actor::set_schedule_type(
 	if (newsched) {
 		schedule = std::move(newsched);
 	} else {
+		schedule.reset();
 		switch (static_cast<Schedule::Schedule_types>(new_schedule_type)) {
 		case Schedule::combat:
 			schedule = std::make_unique<Combat_schedule>(this, old_schedule);
