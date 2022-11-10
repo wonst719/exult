@@ -27,7 +27,7 @@ on:
       - "!.gitignore"
       - "!.gitattributes"
       - "!.github/workflows/*"
-      - ".github/workflows/ci-linux.yml"
+      - ".github/workflows/codeql.yml"
   pull_request:
     # The branches below must be a subset of the branches above
     branches: ["master"]
@@ -55,7 +55,7 @@ on:
       - "!.gitignore"
       - "!.gitattributes"
       - "!.github/workflows/*"
-      - ".github/workflows/ci-linux.yml"
+      - ".github/workflows/codeql.yml"
   schedule:
     - cron: "25 18 * * 4"
 
