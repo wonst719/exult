@@ -87,8 +87,8 @@ jobs:
           severity: info
           username: github-actions
           webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
-          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-          details: 'The Android build succeeded.'
+          text: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          details: "The Android build succeeded."
       - name: Discord failure notification
         uses: rjstone/discord-webhook-notify@v1
         if: needs.ci-android.result != 'success'
@@ -96,8 +96,8 @@ jobs:
           severity: error
           username: github-actions
           webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
-          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-          details: 'The Android build failed.'
+          text: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          details: "The Android build failed."
   ci-android:
     runs-on: ubuntu-latest
     steps:
@@ -113,12 +113,12 @@ jobs:
             sudo apt-fast update
           fi
           sudo apt-fast install -y \
-          zlib1g-dev libogg-dev libvorbis-dev libasound2-dev libfluidsynth-dev libsdl2-dev libpng-dev libfreetype6-dev \
-          libxml2-dev bison flex timidity
+            zlib1g-dev libogg-dev libvorbis-dev libasound2-dev libfluidsynth-dev libsdl2-dev libpng-dev libfreetype6-dev \
+            libxml2-dev bison flex timidity
       - uses: actions/setup-java@v3
         with:
           java-version: 11
-          distribution: 'temurin'
+          distribution: "temurin"
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
       - name: Setup Gradle

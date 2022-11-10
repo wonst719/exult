@@ -89,8 +89,8 @@ jobs:
           severity: info
           username: github-actions
           webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
-          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-          details: 'The Linux build succeeded.'
+          text: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          details: "The Linux build succeeded."
       - name: Discord failure notification
         uses: rjstone/discord-webhook-notify@v1
         if: needs.ci-linux.result != 'success'
@@ -98,8 +98,8 @@ jobs:
           severity: error
           username: github-actions
           webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
-          text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-          details: 'The Linux build failed.'
+          text: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          details: "The Linux build failed."
   ci-linux:
     runs-on: ubuntu-latest
     strategy:
@@ -126,8 +126,8 @@ jobs:
             sudo apt-fast update
           fi
           sudo apt-fast install -y \
-          zlib1g-dev libogg-dev libvorbis-dev libasound2-dev libfluidsynth-dev libsdl2-dev libpng-dev libfreetype6-dev libgtk2.0-dev libgtk-3-dev \
-          libgdk-pixbuf2.0-dev libxml2-dev bison flex timidity libgimp2.0-dev
+            zlib1g-dev libogg-dev libvorbis-dev libasound2-dev libfluidsynth-dev libsdl2-dev libpng-dev libfreetype6-dev libgtk2.0-dev libgtk-3-dev \
+            libgdk-pixbuf2.0-dev libxml2-dev bison flex timidity libgimp2.0-dev
       - name: Checkout code
         uses: actions/checkout@master
       - name: Run autogen
