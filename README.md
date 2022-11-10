@@ -5,8 +5,7 @@
 [![GitHub](https://img.shields.io/github/license/exult/exult?label=License&logo=GNU)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/exult/exult?label=codefactor&logo=codefactor&logoColor=white)](https://www.codefactor.io/repository/github/exult/exult)
-[![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/exult/exult?logo=LGTM)](https://lgtm.com/projects/g/exult/exult/alerts/)
-[![LGTM Grade](https://img.shields.io/lgtm/grade/cpp/github/exult/exult?logo=LGTM)](https://lgtm.com/projects/g/exult/exult/context:cpp)
+[![CodeQL](https://img.shields.io/github/workflow/status/exult/exult/CodeQL?label=CodeQL&logo=github&logoColor=white)](https://github.com/exult/exult/security/code-scanning)
 
 [![CI Ubuntu 20.04](https://img.shields.io/github/workflow/status/exult/exult/ci-linux?label=CI%20Ubuntu&logo=Ubuntu&logoColor=white)](https://github.com/exult/exult/actions?query=workflow%3Aci-linux)
 [![CI Mac OS Catalina 10.15](https://img.shields.io/github/workflow/status/exult/exult/ci-macos?label=CI%20Mac%20OS%20X&logo=Apple&logoColor=white)](https://github.com/exult/exult/actions?query=workflow%3Aci-macos)

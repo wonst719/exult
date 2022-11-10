@@ -2,12 +2,62 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ 'master' ]
+    branches: ["master"]
+    paths:
+      - "**"
+      - "!android"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!ios/**"
+      - "!macosx/**"
+      - "!msvcstuff/**"
+      - "!win32/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-linux.yml"
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ 'master' ]
+    branches: ["master"]
+    paths:
+      - "**"
+      - "!android"
+      - "!docs/**"
+      - "docs/Makefile.am"
+      - "!ios/**"
+      - "!macosx/**"
+      - "!msvcstuff/**"
+      - "!win32/**"
+      - "!AUTHORS"
+      - "!ChangeLog"
+      - "!COPYING"
+      - "!FAQ"
+      - "!INSTALL"
+      - "!NEWS"
+      - "!**README**"
+      - "!**.ico"
+      - "!**.md"
+      - "!**.png"
+      - "!**.txt"
+      - "!.clang*"
+      - "!.gitignore"
+      - "!.gitattributes"
+      - "!.github/workflows/*"
+      - ".github/workflows/ci-linux.yml"
   schedule:
-    - cron: '25 18 * * 4'
+    - cron: "25 18 * * 4"
 
 jobs:
   analyze:
@@ -21,41 +71,55 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['cpp']
+        language: ["cpp"]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          # If you wish to specify custom queries, you can do so here or in a config file.
+          # By default, queries listed here will override any specified in a config file.
+          # Prefix the list here with "+" to use these queries and those in the config file.
 
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
-        
-        # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-        # queries: security-extended,security-and-quality
+          # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+          # queries: security-extended,security-and-quality
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      # ℹ️ Command-line programs to run using the OS shell.
+      # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
 
-
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-
-    #   If the Autobuild fails above, remove it and uncomment the following three lines. 
-    #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
-    - name: Build exult
-      run: |
-        sudo apt-get update
-        sudo apt-get install libvorbis-dev libsdl2-dev zlib1g-dev automake autoconf libtool
-        ./autogen.sh
-        ./configure
-        make
-      
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: "/language:${{matrix.language}}"
+      #   If the Autobuild fails above, remove it and uncomment the following three lines.
+      #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
+      - name: Install dependencies
+        run: |
+          if ! apt-fast -- help &> /dev/null; then
+            sudo add-apt-repository -u -y ppa:apt-fast/stable
+            sudo apt-get update
+            echo debconf apt-fast/maxdownloads string 16 | sudo debconf-set-selections
+            echo debconf apt-fast/dlflag boolean true | sudo debconf-set-selections
+            echo debconf apt-fast/aptmanager string apt-get | sudo debconf-set-selections
+            DEBIAN_FRONTEND=noninteractive sudo apt install -y apt-fast
+          else
+            sudo apt-fast update
+          fi
+          sudo apt-fast install -y \
+            zlib1g-dev libogg-dev libvorbis-dev libasound2-dev libfluidsynth-dev libsdl2-dev libpng-dev libfreetype6-dev libgtk2.0-dev libgtk-3-dev \
+            libgdk-pixbuf2.0-dev libxml2-dev bison flex timidity libgimp2.0-dev
+      - name: Run autogen
+        run: |
+          chmod a+x ./autogen.sh
+          ./autogen.sh
+      - name: Configure
+          ./configure --with-debug=extreme --enable-exult-studio --enable-exult-studio-support --enable-compiler --enable-gimp-plugin \
+          --enable-zip-support --enable-shared --enable-midi-sfx --enable-gnome-shp-thumbnailer --enable-data --enable-mods \
+          --with-usecode-debugger=yes --enable-usecode-container --enable-nonreadied-objects --disable-oggtest --disable-vorbistest
+      - name: Build exult
+        run: make -j 2
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
