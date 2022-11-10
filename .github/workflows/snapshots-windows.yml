@@ -84,10 +84,10 @@ jobs:
           SNAPSHOT_PATH=$(cygpath -m ~/Exult-dist)
           cd $GITHUB_WORKSPACE/exult-$ARCH
           mkdir -p ${SNAPSHOT_PATH}
-          make -j -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} dist studiodist toolsdist plugindist
+          make -j 2 -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} dist studiodist toolsdist plugindist
           for ff in bgkeyring islefaq sifixes; do
             pushd content/${ff}
-            make -j -f Makefile.mingw ${ff}dir=${SNAPSHOT_PATH}/${ff} install
+            make -j 2 -f Makefile.mingw ${ff}dir=${SNAPSHOT_PATH}/${ff} install
             popd
           done
           echo "EXULT_SNAPSHOT_PATH=${SNAPSHOT_PATH}" >> $GITHUB_ENV
@@ -106,7 +106,7 @@ jobs:
           SNAPSHOT_PATH=$(cygpath -m ~/Exult-dist)
           cd $GITHUB_WORKSPACE/exult-$ARCH
           mkdir -p ${SNAPSHOT_PATH}
-          make -j -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} dist studiodist toolsdist plugindist
+          make -j 2 -f Makefile.mingw DISTPATH=${SNAPSHOT_PATH} dist studiodist toolsdist plugindist
           echo "EXULT_SNAPSHOT_PATH=${SNAPSHOT_PATH}" >> $GITHUB_ENV
       - name: Create installers
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}

@@ -136,7 +136,7 @@ jobs:
           ./configure --disable-exult --disable-data --enable-tools --enable-compiler
           make -j
           sudo make install
-          make clean distclean -j
+          make clean distclean -j 2
       - name: Configure
         run: |
           if gradle --version &> /dev/null; then
@@ -147,4 +147,4 @@ jobs:
             --enable-usecode-container --enable-nonreadied-objects --disable-oggtest --disable-vorbistest \
             --disable-tools --enable-libexult --enable-android-apk=debug
       - name: Build
-        run: make -j
+        run: make -j 2
