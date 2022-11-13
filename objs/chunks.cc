@@ -439,13 +439,14 @@ int Chunk_cache::get_lowest_blocked(
  *  See if a tile is water or land.
  */
 
-inline void Check_terrain(
+inline int Check_terrain(
     Map_chunk *nlist,   // Chunk.
-    int tx, int ty,         // Tile within chunk.
-    int &terrain            // Sets: bit0 if land, bit1 if water,
+    int tx, int ty      // Tile within chunk.
     //   bit2 if solid.
 ) {
 	ShapeID flat = nlist->get_flat(tx, ty);
+	// Sets: bit0 if land, bit1 if water,
+	int terrain = 0;
 	if (!flat.is_invalid()) {
 		if (flat.get_info().is_water())
 			terrain |= 2;
@@ -454,7 +455,7 @@ inline void Check_terrain(
 		else
 			terrain |= 1;
 	}
-
+	return terrain;
 }
 
 /*
@@ -476,18 +477,23 @@ bool Chunk_cache::is_blocked(
     int max_rise            // Max. rise, or -1 to use old beha-
     //   viour (max_drop if FLY, else 1).
 ) {
-
+	bool const is_ethereal = (move_flags & MOVE_ETHEREAL) != 0;
+	bool const in_mapedit = (move_flags & MOVE_MAPEDIT) != 0;
+	bool const can_walk = (move_flags & MOVE_WALK) != 0;
+	bool const can_swim = (move_flags & MOVE_SWIM) != 0;
+	bool const can_fly  = (move_flags & MOVE_FLY ) != 0;
+	bool const is_levitating = (move_flags & MOVE_LEVITATE) != 0;
 	// Ethereal beings always return not blocked
 	// and can only move horizontally
-	if (move_flags & MOVE_ETHEREAL) {
+	if (is_ethereal) {
 		new_lift = lift;
 		return false;
 	}
 	// Figure max lift allowed.
 	if (max_rise == -1) {
-		if ((move_flags & (MOVE_FLY | MOVE_MAPEDIT)) != 0) {
+		if (in_mapedit || can_fly) {
 			max_rise = max_drop;
-		} else if ((move_flags & MOVE_WALK)) {
+		} else if (can_walk) {
 			max_rise = 1;
 		} else {
 			// Swim.
@@ -495,16 +501,18 @@ bool Chunk_cache::is_blocked(
 		}
 	}
 	int max_lift = lift + max_rise;
-	if (max_lift > 255)
+	if (max_lift > 255) {
 		max_lift = 255;     // As high as we can go.
+	}
 	set_tflags(tx, ty, max_lift + height);
 	for (new_lift = lift; new_lift <= max_lift; new_lift++) {
 		if (!TEST_TFLAGS(new_lift)) {
 			// Not blocked?
 			const int new_high = get_lowest_blocked(new_lift);
 			// Not blocked above?
-			if (new_high == -1 || new_high >= (new_lift + height))
+			if (new_high == -1 || new_high >= (new_lift + height)) {
 				break;  // Okay.
+			}
 		}
 	}
 	if (new_lift > max_lift) {  // Spot not found at lift or higher?
@@ -517,34 +525,36 @@ bool Chunk_cache::is_blocked(
 			return true;   // Still blocked above.
 	}
 	if (new_lift <= lift) {     // Not going up?  See if falling.
-		new_lift = (move_flags & MOVE_LEVITATE) ? lift :
-		           get_highest_blocked(lift) + 1;
+		new_lift = is_levitating ? lift : get_highest_blocked(lift) + 1;
 		// Don't allow fall of > max_drop.
 		if (lift - new_lift > max_drop) {
 			// Map-editing?  Suspend in air there.
-			if (move_flags & MOVE_MAPEDIT)
+			if (in_mapedit) {
 				new_lift = lift - max_drop;
-			else
+			} else {
 				return true;
+			}
 		}
 		const int new_high = get_lowest_blocked(new_lift);
 
 		// Make sure that where we want to go is tall enough for us
-		if (new_high != -1 && new_high < (new_lift + height))
+		if (new_high != -1 && new_high < (new_lift + height)) {
 			return true;
+		}
 	}
 
 	// Found a new place to go, lets test if we can actually move there
 
 	// Lift 0 tests
 	if (new_lift == 0) {
-		if (move_flags & MOVE_MAPEDIT)
+		if (in_mapedit) {
 			return false;   // Map-editor, so anything is okay.
-		int ter = 0;
-		Check_terrain(obj_list, tx, ty, ter);
-		bool const can_walk = (move_flags & MOVE_WALK) != 0;
-		bool const can_swim = (move_flags & MOVE_SWIM) != 0;
-		bool const can_fly  = (move_flags & MOVE_FLY ) != 0;
+		}
+		if (!can_walk && !can_swim && !can_fly) {
+			// Cannot move at all, like Reapers in BG.
+			return true;
+		}
+		int const ter = Check_terrain(obj_list, tx, ty);
 		if (can_swim && !can_walk && !can_fly && (ter & 2) == 0) {
 			// Can only swim; do not allow to move outside of water.
 			return true;
@@ -558,10 +568,9 @@ bool Chunk_cache::is_blocked(
 			return true;
 		}
 		return false;
-	} else if (move_flags & (MOVE_FLY | MOVE_WALK))
-		return false;
-
-	return true;
+	}
+	// TODO: maybe worth checking for swim here as well?
+	return !can_walk && !can_fly;
 }
 
 /*
