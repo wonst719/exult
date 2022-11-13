@@ -2327,7 +2327,7 @@ void Game_window::double_clicked(
 		        // Or bodies.
 		        !obj->get_info().is_body_shape()) {
 			// And don't attack unlocked doors
-			if ((info.is_door() && !obj->get_framenum() % 4 < 2) ||
+			if ((info.is_door() && obj->get_framenum() % 4 < 2) ||
 			        // or unlocked containers
 			        (cls == Shape_info::container && !info.is_container_locked())) {
 				obj->activate();
