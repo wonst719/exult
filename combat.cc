@@ -895,7 +895,14 @@ void Combat_schedule::start_strike(
 	if (combat_trace) {
 		cout << npc->get_name() << " attacks " << opponent->get_name() << endl;
 	}
-	const int dir = npc->get_direction(opponent);
+	const int dir = [&]() {
+		// This fixes Reaper animation.
+		const int move_flags = npc->get_type_flags();
+		if ((move_flags & (MOVE_ETHEREAL | MOVE_WALK | MOVE_SWIM | MOVE_FLY)) == 0) {
+			return static_cast<int>(north);
+		}
+		return npc->get_direction(opponent);
+	}();
 	signed char frames[12];     // Get frames to show.
 	const int cnt = npc->get_attack_frames(weapon_shape, ranged, dir, frames);
 	if (cnt)
