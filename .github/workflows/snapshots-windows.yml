@@ -151,8 +151,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ github.token }}
-          name: Snapshot ${{ github.ref }}
-          tag_name: snapshot-${{ github.ref }}
+          name: Snapshot ${{ env.GITHUB_REF }}
+          tag_name: snapshot-${{ env.GITHUB_REF }}
           body_path: ${{ env.EXULT_SNAPSHOT_PATH }}/body.txt
           prerelease: false
           fail_on_unmatched_files: true
