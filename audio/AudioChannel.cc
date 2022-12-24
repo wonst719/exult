@@ -82,11 +82,12 @@ void AudioChannel::playSample(AudioSample *sample_, int loop_, int priority_, bo
 	const size_t decompressor_size = round_up(sample->getDecompressorDataSize());
 	const size_t frame_size = round_up(sample->getFrameSize());
 	const size_t decompressor_align = sample->getDecompressorAlignment();
+	const size_t new_size = decompressor_size + frame_size * 2 + decompressor_align;
 
 	// Setup buffers
-	if ((decompressor_size + frame_size * 2) > playdata_size)
+	if (new_size > playdata_size)
 	{
-		playdata_size = decompressor_size + frame_size * 2 + decompressor_align;
+		playdata_size = new_size;
 		playdata = std::make_unique<uint8[]>(playdata_size);
 	}
 
@@ -94,14 +95,10 @@ void AudioChannel::playSample(AudioSample *sample_, int loop_, int priority_, bo
 	decomp = playdata.get();
 	// Align decomp to required alignment.
 	std::align(decompressor_align, decompressor_size, decomp, avail_space);
-	// Align first frame.
-	const size_t delta = playdata_size - avail_space;
-	avail_space -= decompressor_size;
-	void *frameptr = playdata.get() + delta + decompressor_size;
-	std::align(alignof(std::max_align_t), frame_size, frameptr, avail_space);
-	frames[0] = static_cast<uint8*>(frameptr);
+	uint8* frameptr = static_cast<uint8*>(decomp) + decompressor_size;
+	frames[0] = frameptr;
 	// Second frame should be aligned for free.
-	frames[1] = frames[0] + frame_size;
+	frames[1] = frameptr + frame_size;
 
 	// Init the sample decompressor
 	sample->initDecompressor(decomp);

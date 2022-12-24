@@ -32,7 +32,7 @@ class AudioChannel
 	std::unique_ptr<uint8[]> playdata;
 	void			*decomp = nullptr;
 	uint8			*frames[2]{};
-	uint32			playdata_size = 0;
+	size_t			playdata_size = 0;
 
 	uint32			sample_rate;
 	bool			stereo;
