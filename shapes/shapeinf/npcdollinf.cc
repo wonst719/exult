@@ -34,7 +34,7 @@ bool Paperdoll_npc::read(
     Exult_Game game     // Loading BG file.
 ) {
 	ignore_unused_variable_warning(version, game);
-	int sexflag = ReadInt(in);
+	const int sexflag = ReadInt(in);
 	if (sexflag == -0xff) { // means delete entry.
 		set_invalid(true);
 		return true;

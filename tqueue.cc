@@ -24,7 +24,15 @@
 
 #include "tqueue.h"
 #include <algorithm>
-#include <SDL_timer.h>
+
+#ifdef __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif    // __GNUC__
+#include <SDL.h>
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#endif    // __GNUC__
 
 /*
  *  Remove all entries.
@@ -74,7 +82,7 @@ bool Time_queue::remove(
 			[obj](const auto& el) { return el.handler == obj; });
 	auto found = toRemove != data.end();
 	if (found) {
-		(*toRemove).handler->queue_cnt--;
+		toRemove->handler->queue_cnt--;
 		data.erase(toRemove);
 	}
 	return found;
@@ -93,7 +101,7 @@ bool Time_queue::remove(
 	auto it = std::find_if(data.begin(), data.end(),
 			[&](const auto& el) { return el.handler == obj && el.udata == udata; }
 	);
-	bool found = it != data.end();
+	const bool found = it != data.end();
 	if (found) {
 		obj->queue_cnt--;
 		data.erase(it);
@@ -133,7 +141,7 @@ long Time_queue::find_delay(
 	if (pause_time) { // Watch for case when paused.
 		curtime = pause_time;
 	}
-	long delay = (*found).time - curtime;
+	const long delay = found->time - curtime;
 	return delay >= 0 ? delay : 0;
 }
 
@@ -149,7 +157,7 @@ void Time_queue::activate0(
 	do {
 		ent = data.front();
 		Time_sensitive *obj = ent.handler;
-		uintptr udata = ent.udata;
+		const uintptr udata = ent.udata;
 		data.pop_front();   // Remove from chain.
 		obj->queue_cnt--;
 		obj->handle_event(curtime, udata);
@@ -168,14 +176,14 @@ void Time_queue::activate_always(
 		return;
 	Queue_entry ent;
 	for (auto it = data.begin();
-	        it != data.end() && !(curtime < (*it).time);) {
+	        it != data.end() && !(curtime < it->time);) {
 		auto next = it;
 		++next;         // Get ->next in case we erase.
 		ent = *it;
 		Time_sensitive *obj = ent.handler;
 		if (obj->always) {
 			obj->queue_cnt--;
-			uintptr udata = ent.udata;
+			const uintptr udata = ent.udata;
 			data.erase(it);
 			obj->handle_event(curtime, udata);
 		}
@@ -192,7 +200,7 @@ void Time_queue::resume(
 ) {
 	if (!paused || --paused > 0)    // Only unpause when stack empty.
 		return;         // Not paused.
-	int diff = curtime - pause_time;
+	const int diff = curtime - pause_time;
 	pause_time = 0;
 	if (diff < 0)           // Should not happen.
 		return;
@@ -219,8 +227,8 @@ bool Time_queue_iterator::operator()(
 	);
 	if (iter == tqueue->data.end())
 		return false;
-	obj = (*iter).handler;      // Return fields.
-	data = (*iter).udata;
+	obj = iter->handler;      // Return fields.
+	data = iter->udata;
 	++iter;             // On to the next.
 	return true;
 }

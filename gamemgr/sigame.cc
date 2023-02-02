@@ -24,15 +24,6 @@
 
 #include "array_size.h"
 
-#ifdef __GNUC__
-#	pragma GCC diagnostic push
-#	pragma GCC diagnostic ignored "-Wold-style-cast"
-#endif    // __GNUC__
-#include "SDL_events.h"
-#ifdef __GNUC__
-#	pragma GCC diagnostic pop
-#endif    // __GNUC__
-
 #include "files/U7file.h"
 #include "files/utils.h"
 #include "flic/playfli.h"
@@ -247,7 +238,7 @@ SI_Game::SI_Game() {
 
 // Little weighted random function for lightning on the castle
 static int get_frame() {
-	int num = rand() % 9;
+	const int num = rand() % 9;
 
 	if (num >= 8) return 2;
 	else if (num >= 6) return 1;
@@ -262,9 +253,9 @@ void SI_Game::play_intro() {
 
 	Font *sifont = fontManager.get_font("SIINTRO_FONT");
 
-	bool speech = audio->is_audio_enabled() &&
+	const bool speech = audio->is_audio_enabled() &&
 	              audio->is_speech_enabled();
-	bool speech_n_subs = Audio::get_ptr()->is_speech_with_subs();
+	const bool speech_n_subs = Audio::get_ptr()->is_speech_with_subs();
 	bool extended_intro = gwin->get_extended_intro();
 
 	auto select_fli = [&extended_intro](int orig_id, int ext_id) {
@@ -339,7 +330,7 @@ void SI_Game::play_intro() {
 		unique_ptr<unsigned char[]> buffer;
 		// Thunder, note we use the buffer again later so it's not freed here
 		if (speech) {
-			U7multiobject voc_thunder(INTRO_DAT, PATCH_INTRO, 15);
+			const U7multiobject voc_thunder(INTRO_DAT, PATCH_INTRO, 15);
 			buffer = voc_thunder.retrieve(size);
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
@@ -470,7 +461,7 @@ void SI_Game::play_intro() {
 
 		// Guard walks in
 		if (speech && !jive) {
-			U7multiobject voc_my_leige(INTRO_DAT, PATCH_INTRO, 16);
+			const U7multiobject voc_my_leige(INTRO_DAT, PATCH_INTRO, 16);
 			auto buffer = voc_my_leige.retrieve(size);
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
@@ -493,10 +484,10 @@ void SI_Game::play_intro() {
 		win->show();
 		wait_delay(0, 0, 1);
 
-		const char *all_we[2] = { get_text_msg(all_we0), get_text_msg(all_we0 + 1) };
+		const char * const all_we[2] = { get_text_msg(all_we0), get_text_msg(all_we0 + 1) };
 
 		if (speech && !jive) {
-			U7multiobject voc_all_we(INTRO_DAT, PATCH_INTRO, 17);
+			const U7multiobject voc_all_we(INTRO_DAT, PATCH_INTRO, 17);
 			auto buffer = voc_all_we.retrieve(size);
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
@@ -524,7 +515,7 @@ void SI_Game::play_intro() {
 		fli2.play(win, j, j, next);
 
 		if (!speech || jive  || speech_n_subs) {
-			const char *and_a[2] = { get_text_msg(and_a0), get_text_msg(and_a0 + 1) };
+			const char * const and_a[2] = { get_text_msg(and_a0), get_text_msg(and_a0 + 1) };
 			sifont->draw_text(ibuf, centerx + 150 - sifont->get_text_width(and_a[0]), centery + 74, and_a[0]);
 			sifont->draw_text(ibuf, centerx + 150 - sifont->get_text_width(and_a[1]), centery + 87, and_a[1]);
 		}
@@ -546,7 +537,7 @@ void SI_Game::play_intro() {
 				throw UserBreakException();
 
 		if (speech && !jive) {
-			U7multiobject voc_indeed(INTRO_DAT, PATCH_INTRO, 18);
+			const U7multiobject voc_indeed(INTRO_DAT, PATCH_INTRO, 18);
 			auto buffer = voc_indeed.retrieve(size);
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
@@ -595,7 +586,7 @@ void SI_Game::play_intro() {
 
 		// 'Stand Back'
 		if (speech && !jive) {
-			U7multiobject voc_stand_back(INTRO_DAT, PATCH_INTRO, 19);
+			const U7multiobject voc_stand_back(INTRO_DAT, PATCH_INTRO, 19);
 			auto buffer = voc_stand_back.retrieve(size);
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
@@ -626,12 +617,12 @@ void SI_Game::play_intro() {
 		gshape_ds.read(name, 8);
 		Shape_frame *sf;
 
-		Shape_file gshape(&gshape_ds);
+		const Shape_file gshape(&gshape_ds);
 
 		cout << "Shape '" << name << "' in intro.dat has " << gshape.get_num_frames() << endl;
 
 		if (speech && !jive) {
-			U7multiobject voc_big_g(INTRO_DAT, PATCH_INTRO, 20);
+			const U7multiobject voc_big_g(INTRO_DAT, PATCH_INTRO, 20);
 			auto buffer = voc_big_g.retrieve(size);
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
@@ -705,7 +696,7 @@ void SI_Game::play_intro() {
 		}
 
 		if (speech && !jive) {
-			U7multiobject voc_tis_my(INTRO_DAT, PATCH_INTRO, 21);
+			const U7multiobject voc_tis_my(INTRO_DAT, PATCH_INTRO, 21);
 			auto buffer = voc_tis_my.retrieve(size);
 			audio->copy_and_play(buffer.get() + 8, size - 8, false);
 		}
@@ -899,11 +890,11 @@ bool ExCineFlic::play_it(Image_window *win, uint32 t) {
 
 	if (cur + 1 < count || repeat) {
 		// Only advance frame if we can
-		uint32 time_next = time + (cur + 1) * speed;
+		const uint32 time_next = time + (cur + 1) * speed;
 		if (time_next <= t) {
 			cur++;
 			// The actual frame number
-			int actual = start + (cur % count);
+			const int actual = start + (cur % count);
 			player->play(win, actual, actual, 0);
 			return true;
 		}
@@ -935,7 +926,7 @@ public:
 bool ExCineVoc::play_it(Image_window *win, uint32 t) {
 	ignore_unused_variable_warning(win, t);
 	size_t size;
-	U7multiobject voc(file, patch, index);
+	const U7multiobject voc(file, patch, index);
 	auto buffer = voc.retrieve(size);
 	uint8 *buf = buffer.get();
 	if (!memcmp(buf, "win", sizeof("win") - 1)) {
@@ -998,9 +989,9 @@ void SI_Game::end_game(bool success, bool within_game) {
 
 	Font *sifont = fontManager.get_font("SIINTRO_FONT");
 
-	bool speech = audio->is_audio_enabled() &&
+	const bool speech = audio->is_audio_enabled() &&
 	              audio->is_speech_enabled();
-	bool speech_n_subs = Audio::get_ptr()->is_speech_with_subs();
+	const bool speech_n_subs = Audio::get_ptr()->is_speech_with_subs();
 
 	gwin->clear_screen(true);
 
@@ -1109,7 +1100,7 @@ void SI_Game::end_game(bool success, bool within_game) {
 		ExCineFlic(70250, INTRO_DAT, PATCH_INTRO, 13, 0, 121, false, 75),
 		ExCineFlic(82300)
 	};
-	int last_flic = array_size(flics) - 1;
+	const int last_flic = array_size(flics) - 1;
 	int cur_flic = -1;
 	ExCineFlic *flic = nullptr;
 	ExCineFlic *pal_flic = nullptr;
@@ -1126,7 +1117,7 @@ void SI_Game::end_game(bool success, bool within_game) {
 		ExCineVoc(74750, INTRO_DAT, PATCH_INTRO, 29)
 	};
 
-	int last_voc = array_size(vocs) - 1;
+	const int last_voc = array_size(vocs) - 1;
 	int cur_voc = -1;
 
 	// Subtitle times
@@ -1142,21 +1133,21 @@ void SI_Game::end_game(bool success, bool within_game) {
 		ExSubEvent(74750, pagan, 3, sifont),	// "Perhaps you would join me in\nanother world alltogether?\nWe do have a score to settle!"
 	};
 
-	int last_sub = array_size(subs) - 1;
+	const int last_sub = array_size(subs) - 1;
 	int cur_sub = -1;
 
 	// Start the music
 	audio->start_music(R_SEND, 0, false);
 
-	int start_time = SDL_GetTicks();
+	const int start_time = SDL_GetTicks();
 	bool showing_subs = false;
 
 	while (true) {
-		uint32 time = SDL_GetTicks() - start_time;
+		const uint32 time = SDL_GetTicks() - start_time;
 
 		// Need to go to the next flic?
 		if (cur_flic < last_flic && flics[cur_flic + 1].time <= time) {
-			bool next_play = flics[cur_flic + 1].can_play();
+			const bool next_play = flics[cur_flic + 1].can_play();
 			// Can play the new one, don't need the old one anymore
 			if (next_play) {
 				// Free it
@@ -1285,7 +1276,7 @@ void SI_Game::show_credits() {
 }
 
 bool SI_Game::new_game(Vga_file &shapes) {
-	int menuy = topy + 110;
+	const int menuy = topy + 110;
 	Font *font = fontManager.get_font("MENU_FONT");
 
 	Vga_file faces_vga;
@@ -1297,7 +1288,7 @@ bool SI_Game::new_game(Vga_file &shapes) {
 	npc_name[0] = 0;
 
 	int selected = 0;
-	int num_choices = 4;
+	const int num_choices = 4;
 	bool editing = true;
 	bool redraw = true;
 	bool ok = true;
@@ -1333,10 +1324,10 @@ bool SI_Game::new_game(Vga_file &shapes) {
 			Uint16 keysym_unicode = 0;
 			bool isTextInput = false;
 			if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
-				SDL_Rect rectName   = { topx + 10,    menuy + 10, 130,  16 };
-				SDL_Rect rectSex    = { topx + 10,    menuy + 25, 130,  16 };
-				SDL_Rect rectOnward = { topx + 10,    topy + 180, 130,  16 };
-				SDL_Rect rectReturn = { centerx + 10, topy + 180, 130,  16 };
+				const SDL_Rect rectName   = { topx + 10,    menuy + 10, 130,  16 };
+				const SDL_Rect rectSex    = { topx + 10,    menuy + 25, 130,  16 };
+				const SDL_Rect rectOnward = { topx + 10,    topy + 180, 130,  16 };
+				const SDL_Rect rectReturn = { centerx + 10, topy + 180, 130,  16 };
 				SDL_Point point;
 				gwin->get_win()->screen_to_game(event.button.x, event.button.y, gwin->get_fastmouse(), point.x, point.y);
 				if (SDL_EnclosePoints(&point, 1, &rectName, nullptr)) {
@@ -1390,7 +1381,7 @@ bool SI_Game::new_game(Vga_file &shapes) {
 				switch (event.key.keysym.sym) {
 				case SDLK_SPACE:
 					if (selected == 0) {
-						int len = strlen(npc_name);
+						const int len = strlen(npc_name);
 						if (len < max_len) {
 							npc_name[len] = ' ';
 							npc_name[len + 1] = 0;
@@ -1443,7 +1434,7 @@ bool SI_Game::new_game(Vga_file &shapes) {
 				default: {
 					if ((isTextInput && selected == 0) || (!isTextInput && keysym_unicode > +'~' && selected == 0))
 					{
-						int len = strlen(npc_name);
+						const int len = strlen(npc_name);
 						char chr = 0;
 						if ((keysym_unicode & 0xFF80) == 0)
 							chr = keysym_unicode & 0x7F;

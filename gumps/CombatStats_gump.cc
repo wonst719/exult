@@ -47,7 +47,7 @@ CombatStats_gump::CombatStats_gump(int initx, int inity) :
 
 	party_size = gwin->get_party(party, 1);
 
-	int shnum = game->get_shape("gumps/cstats/1") + party_size - 1;
+	const int shnum = game->get_shape("gumps/cstats/1") + party_size - 1;
 	ShapeID::set_shape(shnum, 0);
 
 	int i;  // Blame MSVC
@@ -71,7 +71,7 @@ void CombatStats_gump::paint() {
 	Gump::paint();
 
 	if (gwin->failed_copy_protection()) {
-		int oinkx = 91;
+		const int oinkx = 91;
 		for (int i = 0; i < party_size; i++) {
 			sman->paint_text(2, "Oink", x + oinkx + i * coldx, y + rowy[1]);
 			sman->paint_text(2, "Oink", x + oinkx + i * coldx, y + rowy[2]);

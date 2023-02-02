@@ -20,7 +20,14 @@
 #  include <config.h>
 #endif
 
-#include "SDL_keyboard.h"
+#ifdef __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif    // __GNUC__
+#include <SDL.h>
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#endif    // __GNUC__
 
 #include "actors.h"
 #include "keys.h"
@@ -585,7 +592,7 @@ void KeyBinder::ParseText(char *text, int len) {
 }
 
 static void skipspace(string &s) {
-	size_t i = s.find_first_not_of(chardata.whitespace);
+	const size_t i = s.find_first_not_of(chardata.whitespace);
 	if (i && i != string::npos)
 		s.erase(0, i);
 }
@@ -655,7 +662,7 @@ void KeyBinder::ParseLine(char *line) {
 				// lookup in table
 				auto key_index = keys.find(t);
 				if (key_index != keys.end()) {
-					k.sym = (*key_index).second;
+					k.sym = key_index->second;
 				} else {
 					cerr << "Keybinder: unsupported key: " << keycode << endl;
 					return;
@@ -679,7 +686,7 @@ void KeyBinder::ParseLine(char *line) {
 
 	auto action_index = actions.find(t);
 	if (action_index != actions.end()) {
-		a.action = (*action_index).second;
+		a.action = action_index->second;
 	} else {
 		cerr << "Keybinder: unsupported action: " << t << endl;
 		return;
@@ -694,7 +701,7 @@ void KeyBinder::ParseLine(char *line) {
 		// Want to allow function name.
 		if (s.length() && s[0] != '#') {
 			i = s.find_first_of(chardata.whitespace);
-			string t = s.substr(0, i);
+			const string t = s.substr(0, i);
 			s.erase(0, i);
 			skipspace(s);
 
@@ -712,11 +719,11 @@ void KeyBinder::ParseLine(char *line) {
 	}
 	while (s.length() && s[0] != '#' && np < c_maxparams) {
 		i = s.find_first_of(chardata.whitespace);
-		string t = s.substr(0, i);
+		const string t = s.substr(0, i);
 		s.erase(0, i);
 		skipspace(s);
 
-		int p = atoi(t.c_str());
+		const int p = atoi(t.c_str());
 		a.params[np++] = p;
 	}
 
@@ -809,7 +816,7 @@ void KeyBinder::LoadDefaults() {
 
 	const str_int_pair &resource = game->get_resource("config/defaultkeys");
 
-	U7object txtobj(resource.str, resource.num);
+	const U7object txtobj(resource.str, resource.num);
 	size_t len;
 	auto txt = txtobj.retrieve(len);
 	if (txt && len > 0)

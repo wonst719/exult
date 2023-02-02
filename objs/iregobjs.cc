@@ -125,8 +125,8 @@ unsigned char *Ireg_game_object::write_common_ireg(
     unsigned char *buf      // Buffer to be filled.
 ) {
 	unsigned char *endptr;
-	int shapenum = get_shapenum();
-	int framenum = get_framenum();
+	const int shapenum = get_shapenum();
+	const int framenum = get_framenum();
 	if (shapenum >= 1024 || framenum >= 64) {
 		*buf++ = IREG_EXTENDED;
 		norm_len++;

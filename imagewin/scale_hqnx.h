@@ -152,9 +152,9 @@ inline int hqx_init(int *w, int *c, int *yuv, const unsigned char *from,
                     int x, int sline_pixels, int prevline, int nextline,
                     Manip_pixels &manip) {
 	auto RGBtoYUV = [](unsigned int r, unsigned int g, unsigned int b) {
-		int Y = (r + g + b) >> 2;
-		int u = 128 + ((r - b) >> 2);
-		int v = 128 + ((-r + 2 * g - b) >> 3);
+		const int Y = (r + g + b) >> 2;
+		const int u = 128 + ((r - b) >> 2);
+		const int v = 128 + ((-r + 2 * g - b) >> 3);
 		return (Y << 16) + (u << 8) + v;
 	};
 
@@ -197,7 +197,7 @@ inline int hqx_init(int *w, int *c, int *yuv, const unsigned char *from,
 	int pattern = 0;
 	int flag = 1;
 
-	int YUV1 = yuv[5];
+	const int YUV1 = yuv[5];
 
 	for (int k = 1; k <= 9; k++) {
 		if (k == 5) continue;

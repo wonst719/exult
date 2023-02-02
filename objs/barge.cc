@@ -69,8 +69,8 @@ inline Tile_coord Rotate90r(
     Tile_coord const &c         // Center to rotate around.
 ) {
 	// Get cart. coords. rel. to center.
-	int rx = t.tx - c.tx;
-	int ry = c.ty - t.ty;
+	const int rx = t.tx - c.tx;
+	const int ry = c.ty - t.ty;
 	return Tile_coord(c.tx + ry, c.ty + rx, t.tz);
 }
 
@@ -86,8 +86,8 @@ inline Tile_coord Rotate90l(
     Tile_coord const &c         // Center to rotate around.
 ) {
 	// Get cart. coords. rel. to center.
-	int rx = t.tx - c.tx;
-	int ry = c.ty - t.ty;
+	const int rx = t.tx - c.tx;
+	const int ry = c.ty - t.ty;
 	return Tile_coord(c.tx - ry, c.ty - rx, t.tz);
 }
 
@@ -103,8 +103,8 @@ inline Tile_coord Rotate180(
     Tile_coord const &c         // Center to rotate around.
 ) {
 	// Get cart. coords. rel. to center.
-	int rx = t.tx - c.tx;
-	int ry = c.ty - t.ty;
+	const int rx = t.tx - c.tx;
+	const int ry = c.ty - t.ty;
 	return Tile_coord(c.tx - rx, c.ty + ry, t.tz);
 }
 
@@ -177,7 +177,7 @@ inline Tile_coord Rotate180(
 
 inline void Barge_object::swap_dims(
 ) {
-	int tmp = xtiles;       // Swap dims.
+	const int tmp = xtiles;       // Swap dims.
 	xtiles = ytiles;
 	ytiles = tmp;
 }
@@ -188,9 +188,9 @@ inline void Barge_object::swap_dims(
 
 TileRect Barge_object::get_tile_footprint(
 ) {
-	Tile_coord pos = get_tile();
-	int xts = get_xtiles();
-	int yts = get_ytiles();
+	const Tile_coord pos = get_tile();
+	const int xts = get_xtiles();
+	const int yts = get_ytiles();
 	TileRect foot((pos.tx - xts + 1 + c_num_tiles) % c_num_tiles,
 	               (pos.ty - yts + 1 + c_num_tiles) % c_num_tiles, xts, yts);
 	return foot;
@@ -215,15 +215,15 @@ inline void Barge_object::set_center(
 int Barge_object::okay_to_rotate(
     Tile_coord const &pos           // New position (bottom-right).
 ) {
-	int lift = get_lift();
+	const int lift = get_lift();
 	// Special case for carpet.
-	int move_type = (lift > 0) ? (MOVE_LEVITATE) : MOVE_ALL_TERRAIN;
+	const int move_type = (lift > 0) ? (MOVE_LEVITATE) : MOVE_ALL_TERRAIN;
 	// Get footprint in tiles.
-	TileRect foot = get_tile_footprint();
-	int xts = get_xtiles();
-	int yts = get_ytiles();
+	const TileRect foot = get_tile_footprint();
+	const int xts = get_xtiles();
+	const int yts = get_ytiles();
 	// Get where new footprint will be.
-	TileRect newfoot(pos.tx - yts + 1, pos.ty - xts + 1, yts, xts);
+	const TileRect newfoot(pos.tx - yts + 1, pos.ty - xts + 1, yts, xts);
 	int new_lift;
 	if (newfoot.y < foot.y)     // Got a piece above the old one?
 		// Check area.  (No dropping allowed.)
@@ -274,8 +274,8 @@ void Barge_object::gather(
 	ice_raft = false;       // We'll just detect it each time.
 	objects.resize(perm_count); // Start fresh.
 	// Get footprint in tiles.
-	TileRect foot = get_tile_footprint();
-	int lift = get_lift();      // How high we are.
+	const TileRect foot = get_tile_footprint();
+	const int lift = get_lift();      // How high we are.
 	// Go through intersected chunks.
 	Chunk_intersect_iterator next_chunk(foot);
 	TileRect tiles;
@@ -293,18 +293,18 @@ void Barge_object::gather(
 				continue;
 			if (obj->is_egg()) // don't pick up eggs
 				continue;
-			Tile_coord t = obj->get_tile();
+			const Tile_coord t = obj->get_tile();
 			if (!tiles.has_world_point(t.tx, t.ty) ||
 			        obj->get_owner() == this)
 				continue;
 			const Shape_info &info = obj->get_info();
 			// Above barge, within 5-tiles up?
-			bool isbarge = info.is_barge_part() /*+++ || !info.get_weight() */;
+			const bool isbarge = info.is_barge_part() /*+++ || !info.get_weight() */;
 			if (t.tz + info.get_3d_height() > lift &&
 			        ((isbarge && t.tz >= lift - 1) ||
 			         (t.tz < lift + 5 && t.tz >= lift /*+++ + 1 */))) {
 				objects.push_back(obj->shared_from_this());
-				int btype = obj->get_info().get_barge_type();
+				const int btype = obj->get_info().get_barge_type();
 				if (btype == Shape_info::barge_raft)
 					ice_raft = true;
 				else if (btype == Shape_info::barge_turtle)
@@ -338,8 +338,8 @@ void Barge_object::add_dirty(
 	int x;
 	int y;           // Get lower-right corner.
 	gwin->get_shape_location(this, x, y);
-	int w = xtiles * c_tilesize;
-	int h = ytiles * c_tilesize;
+	const int w = xtiles * c_tilesize;
+	const int h = ytiles * c_tilesize;
 	TileRect box(x - w, y - h, w, h);
 	const int barge_enlarge = (c_tilesize + c_tilesize / 4);
 	const int barge_stretch = (4 * c_tilesize + c_tilesize / 2);
@@ -365,7 +365,7 @@ void Barge_object::finish_move(
     int newmap          // Map #, or -1 for current.
 ) {
 	set_center();           // Update center.
-	int cnt = objects.size();   // We'll move each object.
+	const int cnt = objects.size();   // We'll move each object.
 	for (int i = 0; i < cnt; i++) { // Now add them back in new location.
 		Game_object *obj = get_object(i);
 		if (i < perm_count) // Restore us as owner.
@@ -414,10 +414,10 @@ void Barge_object::travel_to_tile(
 	if (path->NewPath(get_tile(), dest, nullptr)) {
 		frame_time = speed;
 		// Figure new direction.
-		Tile_coord cur = get_tile();
-		int dy = Tile_coord::delta(cur.ty, dest.ty);
-		int dx = Tile_coord::delta(cur.tx, dest.tx);
-		int ndir = Get_direction4(-dy, dx);
+		const Tile_coord cur = get_tile();
+		const int dy = Tile_coord::delta(cur.ty, dest.ty);
+		const int dx = Tile_coord::delta(cur.tx, dest.tx);
+		const int ndir = Get_direction4(-dy, dx);
 		if (!ice_raft)      // Ice-raft doesn't rotate.
 			face_direction(ndir);
 		if (!in_queue())    // Not already in queue?
@@ -434,18 +434,18 @@ void Barge_object::turn_right(
 ) {
 	add_dirty();            // Want to repaint old position.
 	// Move the barge itself.
-	Tile_coord rot = Rotate90r(gwin, this, xtiles, ytiles, center);
+	const Tile_coord rot = Rotate90r(gwin, this, xtiles, ytiles, center);
 	if (!okay_to_rotate(rot))   // Check for blockage.
 		return;
 	Container_game_object::move(rot.tx, rot.ty, rot.tz);
 	swap_dims();            // Exchange xtiles, ytiles.
 	dir = (dir + 1) % 4;    // Increment direction.
-	int cnt = objects.size();   // We'll move each object.
+	const int cnt = objects.size();   // We'll move each object.
 	// But 1st, remove & save new pos.
 	auto *positions = new Tile_coord[cnt];
 	for (int i = 0; i < cnt; i++) {
 		Game_object *obj = get_object(i);
-		int frame = obj->get_framenum();
+		const int frame = obj->get_framenum();
 		const Shape_info &info = obj->get_info();
 		positions[i] = Rotate90r(gwin, obj, info.get_3d_xtiles(frame),
 		                         info.get_3d_ytiles(frame), center);
@@ -466,18 +466,18 @@ void Barge_object::turn_left(
 ) {
 	add_dirty();            // Want to repaint old position.
 	// Move the barge itself.
-	Tile_coord rot = Rotate90l(gwin, this, xtiles, ytiles, center);
+	const Tile_coord rot = Rotate90l(gwin, this, xtiles, ytiles, center);
 	if (!okay_to_rotate(rot))   // Check for blockage.
 		return;
 	Container_game_object::move(rot.tx, rot.ty, rot.tz);
 	swap_dims();            // Exchange xtiles, ytiles.
 	dir = (dir + 3) % 4;    // Increment direction.
-	int cnt = objects.size();   // We'll move each object.
+	const int cnt = objects.size();   // We'll move each object.
 	// But 1st, remove & save new pos.
 	auto *positions = new Tile_coord[cnt];
 	for (int i = 0; i < cnt; i++) {
 		Game_object *obj = get_object(i);
-		int frame = obj->get_framenum();
+		const int frame = obj->get_framenum();
 		const Shape_info &info = obj->get_info();
 		positions[i] = Rotate90l(gwin, obj, info.get_3d_xtiles(frame),
 		                         info.get_3d_ytiles(frame), center);
@@ -498,15 +498,15 @@ void Barge_object::turn_around(
 ) {
 	add_dirty();            // Want to repaint old position.
 	// Move the barge itself.
-	Tile_coord rot = Rotate180(gwin, this, xtiles, ytiles, center);
+	const Tile_coord rot = Rotate180(gwin, this, xtiles, ytiles, center);
 	Container_game_object::move(rot.tx, rot.ty, rot.tz);
 	dir = (dir + 2) % 4;    // Increment direction.
-	int cnt = objects.size();   // We'll move each object.
+	const int cnt = objects.size();   // We'll move each object.
 	// But 1st, remove & save new pos.
 	auto *positions = new Tile_coord[cnt];
 	for (int i = 0; i < cnt; i++) {
 		Game_object *obj = get_object(i);
-		int frame = obj->get_framenum();
+		const int frame = obj->get_framenum();
 		const Shape_info &info = obj->get_info();
 		positions[i] = Rotate180(gwin, obj, info.get_3d_xtiles(frame),
 		                         info.get_3d_ytiles(frame), center);
@@ -532,7 +532,7 @@ void Barge_object::done(
 	norecurse++;
 	if (boat == 1) {        // Look for sails on boat.
 		// Pretend they were clicked on.
-		int cnt = objects.size();   // Look for open sail.
+		const int cnt = objects.size();   // Look for open sail.
 		for (int i = 0; i < cnt; i++) {
 			Game_object *obj = objects[i].get();
 			if (obj->get_info().get_barge_type() == Shape_info::barge_sails &&
@@ -551,8 +551,8 @@ void Barge_object::done(
 
 int Barge_object::okay_to_land(
 ) {
-	TileRect foot = get_tile_footprint();
-	int lift = get_lift();      // How high we are.
+	const TileRect foot = get_tile_footprint();
+	const int lift = get_lift();      // How high we are.
 	// Go through intersected chunks.
 	Chunk_intersect_iterator next_chunk(foot);
 	TileRect tiles;
@@ -617,22 +617,22 @@ void Barge_object::move(
 	// Want to repaint old position.
 	add_dirty();
 	// Get current location.
-	Tile_coord old = get_tile();
+	const Tile_coord old = get_tile();
 	if (newmap == -1) newmap = get_map_num();
 	// Move the barge itself.
 	Container_game_object::move(newtx, newty, newlift, newmap);
 	set_center();
 	// Get deltas.
-	int dx = newtx - old.tx;
-	int dy = newty - old.ty;
-	int dz = newlift - old.tz;
-	int cnt = objects.size();   // We'll move each object.
+	const int dx = newtx - old.tx;
+	const int dy = newty - old.ty;
+	const int dz = newlift - old.tz;
+	const int cnt = objects.size();   // We'll move each object.
 	// But 1st, remove & save new pos.
 	auto *positions = new Tile_coord[cnt];
 	int i;
 	for (i = 0; i < cnt; i++) {
 		Game_object *obj = get_object(i);
-		Tile_coord ot = obj->get_tile();
+		const Tile_coord ot = obj->get_tile();
 		// Watch for world-wrapping.
 		positions[i] = Tile_coord(
 		                   (ot.tx + dx + c_num_tiles) % c_num_tiles,
@@ -643,7 +643,7 @@ void Barge_object::move(
 		obj->set_invalid(); // So it gets added back right.
 		if (!taking_2nd_step) {
 			// Animate a few shapes.
-			int frame = obj->get_framenum();
+			const int frame = obj->get_framenum();
 			switch (obj->get_info().get_barge_type()) {
 			case Shape_info::barge_wheel:       // Cart wheel.
 				obj->change_frame(((frame + 1) & 3) | (frame & 32));
@@ -723,7 +723,7 @@ void Barge_object::paint(
 	// The objects are in the chunk too.
 	if (gwin->paint_eggs) {
 		Container_game_object::paint();
-		int pix = sman->get_special_pixel(CURSED_PIXEL);
+		const int pix = sman->get_special_pixel(CURSED_PIXEL);
 		int rx;
 		int by;
 		int lx;
@@ -766,7 +766,7 @@ bool Barge_object::edit(
 	if (client_socket >= 0 &&   // Talking to ExultStudio?
 	        cheat.in_map_editor()) {
 		editing.reset();
-		Tile_coord t = get_tile();
+		const Tile_coord t = get_tile();
 		if (Barge_object_out(client_socket, this, t.tx, t.ty, t.tz,
 		                     get_shapenum(), get_framenum(),
 		                     xtiles, ytiles, dir) != -1) {
@@ -867,7 +867,7 @@ bool Barge_object::step(
 	ignore_unused_variable_warning(frame);
 	if (!gathered)          // Happens in SI with turtle.
 		gather();
-	Tile_coord cur = get_tile();
+	const Tile_coord cur = get_tile();
 	// Blocked? (Assume ht.=4, for now.)
 	int move_type;
 	if (cur.tz > 0)
@@ -931,7 +931,7 @@ int Barge_object::get_ireg_size() {
 
 	for (int i = 0; i < perm_count; i++) {
 		Game_object *obj = get_object(i);
-		int size = obj->get_ireg_size();
+		const int size = obj->get_ireg_size();
 
 		if (size < 0) return -1;
 

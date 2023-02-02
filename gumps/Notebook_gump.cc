@@ -28,13 +28,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gamewin.h"
 #include "gameclk.h"
 #include "actors.h"
-#include "SDL_events.h"
 #include "Configuration.h"
 #include "msgfile.h"
 #include "fnames.h"
 #include "cheat.h"
 #include "U7file.h"
-#include "Gump_manager.h"
 #include "exult.h"
 #include "touchui.h"
 
@@ -221,7 +219,7 @@ void Notebook_gump::add_new(
     int gflag
 ) {
 	Game_clock *clk = gwin->get_clock();
-	Tile_coord t = gwin->get_main_actor()->get_tile();
+	const Tile_coord t = gwin->get_main_actor()->get_tile();
 	auto *note = new One_note(clk->get_day(), clk->get_hour(),
 	                              clk->get_minute(), t.tx, t.ty, text, gflag);
 	note->is_new = true;
@@ -311,7 +309,7 @@ bool Notebook_gump::paint_page(
     int &offset,            // Starting offset into text.  Updated.
     int pagenum
 ) {
-	bool find_cursor = (note == notes[curnote] && cursor.x < 0);
+	const bool find_cursor = (note == notes[curnote] && cursor.x < 0);
 	if (offset == 0) {      // Print note info. at start.
 		char buf[60];
 		const char *ampm = "am";
@@ -342,7 +340,7 @@ bool Notebook_gump::paint_page(
 	}
 	const char *str = note->text.c_str() + offset;
 	cursor.offset -= offset;
-	int endoff = sman->paint_text_box(font, str, x + box.x,
+	const int endoff = sman->paint_text_box(font, str, x + box.x,
 	                                  y + box.y, box.w, box.h, vlead,
 	                                  false, false, -1, find_cursor ? &cursor : nullptr);
 	cursor.offset += offset;
@@ -369,9 +367,9 @@ bool Notebook_gump::paint_page(
 void Notebook_gump::change_page(
     int delta
 ) {
-	int topleft = curpage & ~1;
+	const int topleft = curpage & ~1;
 	if (delta > 0) {
-		int nxt = topleft + 2;
+		const int nxt = topleft + 2;
 		if (nxt >= static_cast<int>(page_info.size()))
 			return;
 		curpage = nxt;
@@ -404,7 +402,7 @@ Gump_button *Notebook_gump::on_button(
 		return leftpage;
 	else if (rightpage->on_button(mx, my))
 		return rightpage;
-	int topleft = curpage & ~1;
+	const int topleft = curpage & ~1;
 	int notenum = page_info[topleft].notenum;
 	if (notenum < 0)
 		return nullptr;
@@ -457,7 +455,7 @@ void Notebook_gump::paint(
 	Gump::paint();
 	if (curpage > 0)        // Not the first?
 		leftpage->paint();
-	int topleft = curpage & ~1;
+	const int topleft = curpage & ~1;
 	int notenum = page_info[topleft].notenum;
 	if (notenum < 0)
 		return;
@@ -488,7 +486,7 @@ void Notebook_gump::paint(
 		offset = 0;
 	}
 	rightpage->paint();
-	int nxt = topleft + 2;      // For next pair of pages.
+	const int nxt = topleft + 2;      // For next pair of pages.
 	if (nxt >= static_cast<int>(page_info.size()))
 		page_info.resize(nxt + 1);
 	page_info[nxt].notenum = notenum;
@@ -503,7 +501,7 @@ void Notebook_gump::prev_page(
 ) {
 	if (!curpage)
 		return;
-	Notebook_top &pinfo = page_info[curpage];
+	const Notebook_top &pinfo = page_info[curpage];
 	--curpage;
 	curnote = page_info[curpage].notenum;
 	if (!pinfo.offset)      // Going to new note?
@@ -521,7 +519,7 @@ void Notebook_gump::next_page(
 	if (curpage >= static_cast<int>(page_info.size()))
 		return;
 	++curpage;
-	Notebook_top &pinfo = page_info[curpage];
+	const Notebook_top &pinfo = page_info[curpage];
 	curnote = pinfo.notenum;
 	cursor.offset = pinfo.offset;   // Start of page.
 }
@@ -549,7 +547,7 @@ void Notebook_gump::down_arrow(
 ) {
 	int offset = page_info[curpage].offset;
 	TileRect box = Get_text_area((curpage % 2) != 0, offset == 0);
-	int ht = sman->get_text_height(font);
+	const int ht = sman->get_text_height(font);
 	if (on_last_page_line()) {
 		if (curpage >= static_cast<int>(page_info.size()) - 1)
 			return;
@@ -560,11 +558,11 @@ void Notebook_gump::down_arrow(
 		cursor.y = y + box.y - ht;
 	}
 	box.shift(x, y);        // Window coords.
-	int mx = box.x + updnx + 1;
-	int my = cursor.y + ht + ht / 2;
-	int notenum = page_info[curpage].notenum;
+	const int mx = box.x + updnx + 1;
+	const int my = cursor.y + ht + ht / 2;
+	const int notenum = page_info[curpage].notenum;
 	One_note *note = notes[notenum];
-	int coff = sman->find_cursor(font, note->text.c_str() + offset, box.x,
+	const int coff = sman->find_cursor(font, note->text.c_str() + offset, box.x,
 	                             box.y, box.w, box.h, mx, my, vlead);
 	if (coff >= 0) {        // Found it?
 		cursor.offset = offset + coff;
@@ -574,15 +572,15 @@ void Notebook_gump::down_arrow(
 
 void Notebook_gump::up_arrow(
 ) {
-	Notebook_top &pinfo = page_info[curpage];
-	int ht = sman->get_text_height(font);
+	const Notebook_top &pinfo = page_info[curpage];
+	const int ht = sman->get_text_height(font);
 	int offset = pinfo.offset;
 	int notenum = pinfo.notenum;
 	if (on_first_page_line()) { // Above top.
 		if (!curpage)
 			return;
 		prev_page();
-		Notebook_top &pinfo2 = page_info[curpage];
+		const Notebook_top &pinfo2 = page_info[curpage];
 		notenum = pinfo2.notenum;
 		if (pinfo.notenum == notenum)   // Same note?
 			cursor.offset = offset - 1;
@@ -594,10 +592,10 @@ void Notebook_gump::up_arrow(
 	}
 	TileRect box = Get_text_area((curpage % 2) != 0, offset == 0);
 	box.shift(x, y);        // Window coords.
-	int mx = box.x + updnx + 1;
-	int my = cursor.y - ht / 2;
+	const int mx = box.x + updnx + 1;
+	const int my = cursor.y - ht / 2;
 	One_note *note = notes[notenum];
-	int coff = sman->find_cursor(font, note->text.c_str() + offset, box.x,
+	const int coff = sman->find_cursor(font, note->text.c_str() + offset, box.x,
 	                             box.y, box.w, box.h, mx, my, vlead);
 	if (coff >= 0) {        // Found it?
 		cursor.offset = offset + coff;
@@ -622,7 +620,7 @@ bool Notebook_gump::handle_kbd_event(
 		return false;
 	if (curpage >= static_cast<int>(page_info.size()))
 		return false;       // Shouldn't happen.
-	Notebook_top &pinfo = page_info[curpage];
+	const Notebook_top &pinfo = page_info[curpage];
 	One_note *note = notes[pinfo.notenum];
 	switch (chr) {
 	case SDLK_RETURN:
@@ -746,17 +744,17 @@ void Notebook_gump::write(
 
 void Notebook_gump::read(
 ) {
-	string root;
+	const string root;
 	Configuration conf;
 
 	conf.read_abs_config_file(NOTEBOOKXML, root);
-	string identstr;
+	const string identstr;
 	// not spamming the terminal with all the notes in normal play
 #ifdef DEBUG
 	conf.dump(cout, identstr);
 #endif
 	Configuration::KeyTypeList note_nds;
-	string basekey = "notebook";
+	const string basekey = "notebook";
 	conf.getsubkeys(note_nds, basekey);
 	One_note *note = nullptr;
 	for (const auto& notend : note_nds) {

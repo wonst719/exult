@@ -377,9 +377,9 @@ int Uc_function::add_string(
 	// Search for an existing string.
 	auto exist = text_map.find(text);
 	if (exist != text_map.end())
-		return (*exist).second;
-	int offset = text_data_size;    // This is where it will go.
-	int textlen = strlen(text) + 1; // Got to include ending null.
+		return exist->second;
+	const int offset = text_data_size;    // This is where it will go.
+	const int textlen = strlen(text) + 1; // Got to include ending null.
 	char *new_text_data = new char[text_data_size + textlen];
 	if (text_data_size)     // Copy over old.
 		memcpy(new_text_data, text_data, text_data_size);
@@ -403,13 +403,14 @@ int Uc_function::find_string_prefix(
     Uc_location &loc,       // For printing errors.
     const char *text
 ) {
-	int len = strlen(text);
+	const int len = strlen(text);
 	// Find 1st entry >= text.
 	auto exist = text_map.lower_bound(text);
 	if (exist == text_map.end() ||
-	        strncmp(text, (*exist).first.c_str(), len) != 0) {
-		char *buf = new char[len + 100];
-		sprintf(buf, "Prefix '%s' matches no string in this function",
+	        strncmp(text, exist->first.c_str(), len) != 0) {
+		const size_t buflen = len + 100;
+		char *buf = new char[buflen];
+		snprintf(buf, buflen, "Prefix '%s' matches no string in this function",
 		        text);
 		loc.error(buf);
 		delete [] buf;
@@ -418,13 +419,14 @@ int Uc_function::find_string_prefix(
 	auto next = exist;
 	++next;
 	if (next != text_map.end() &&
-	        strncmp(text, (*next).first.c_str(), len) == 0) {
-		char *buf = new char[len + 100];
-		sprintf(buf, "Prefix '%s' matches more than one string", text);
+	        strncmp(text, next->first.c_str(), len) == 0) {
+		const size_t buflen = len + 100;
+		char *buf = new char[buflen];
+		snprintf(buf, buflen, "Prefix '%s' matches more than one string", text);
 		loc.error(buf);
 		delete [] buf;
 	}
-	return (*exist).second;     // Return offset.
+	return exist->second;     // Return offset.
 }
 
 
@@ -440,7 +442,7 @@ int Uc_function::link(
 	for (auto it = links.begin(); it != links.end(); ++it)
 		if (*it == fun)     // Found it?  Return offset.
 			return it - links.begin();
-	int offset = links.size();  // Going to add it.
+	const int offset = links.size();  // Going to add it.
 	links.push_back(fun);
 	return offset;
 }
@@ -726,7 +728,7 @@ void Uc_function::gen(
 		Set_32bit_jump_flags(fun_blocks);
 		vector<int> locs;
 		// Get locations.
-		int size = Compute_locations(fun_blocks, locs) + 1;
+		const int size = Compute_locations(fun_blocks, locs) + 1;
 
 		code.reserve(size);
 		// Output code.
@@ -734,7 +736,7 @@ void Uc_function::gen(
 				block->write(code);
 			if (block->does_not_jump())
 				continue;   // Not a jump.
-			int dist = Compute_jump_distance(block, locs);
+			const int dist = Compute_jump_distance(block, locs);
 			if (is_sint_32bit(dist))
 				Write4(code, dist);
 			else
@@ -759,15 +761,15 @@ void Uc_function::gen(
 	fun_blocks.clear();
 	delete initial;
 	delete endblock;
-	int codelen = code.size();  // Get its length.
-	int num_links = links.size();
+	const int codelen = code.size();  // Get its length.
+	const int num_links = links.size();
 	// Total: text_data_size + data +
 	//   #args + #locals + #links + links +
 	//   codelen.
 	int totallen =  2 + text_data_size + 2 + 2 + 2 + 2 * num_links + codelen;
 
 	// Special cases.
-	bool need_ext_header = (proto->get_usecode_num() == 0xffff) ||
+	const bool need_ext_header = (proto->get_usecode_num() == 0xffff) ||
 	                       (proto->get_usecode_num() == 0xfffe);
 
 	// Function # first.

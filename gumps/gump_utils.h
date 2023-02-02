@@ -25,8 +25,7 @@
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif    // __GNUC__
-#include "SDL_timer.h"
-#include "SDL_events.h"
+#include <SDL.h>
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
@@ -40,7 +39,7 @@
 
 inline void Delay(
 ) {
-	Uint32 expiration = DELAY_TOTAL_MS + SDL_GetTicks();
+	const Uint32 expiration = DELAY_TOTAL_MS + SDL_GetTicks();
 	for (;;) {
 		SDL_PumpEvents();
 		if ((SDL_PeepEvents(nullptr, 0, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT) != 0) ||

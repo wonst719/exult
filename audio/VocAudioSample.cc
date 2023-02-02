@@ -138,7 +138,7 @@ VocAudioSample::VocAudioSample(std::unique_ptr<uint8[]> buffer_, uint32 size_)
 				adpcm_reference = 0;
 			}
 			else if (compression != 0) {
-				CERR("Can't handle VOC compression type"); 
+				CERR("Can't handle VOC compression type");
 			}
 
 			if (dec_len > static_cast<size_t>(frame_size)) frame_size = dec_len;
@@ -185,7 +185,7 @@ inline int VocAudioSample::decode_ADPCM_4_sample(uint8 sample,
 	int& reference,
 	int& scale)
 {
-	static int scaleMap[8] = { -2, -1, 0, 0, 1, 1, 1, 1 };
+	static const int scaleMap[8] = { -2, -1, 0, 0, 1, 1, 1, 1 };
 
 	if (sample & 0x08) {
 		reference = max(0x00, reference - ((sample & 0x07) << scale));
@@ -201,7 +201,7 @@ inline int VocAudioSample::decode_ADPCM_4_sample(uint8 sample,
 //
 // Performs 4-bit ADPCM decoding in-place.
 //
-void VocAudioSample::decode_ADPCM_4(uint8* inBuf,	
+void VocAudioSample::decode_ADPCM_4(uint8* inBuf,
 	int bufSize,				// Size of inbuf
 	uint8* outBuf,			// Size is 2x bufsize
 	int& reference,			// ADPCM reference value
@@ -270,7 +270,7 @@ bool VocAudioSample::advanceChunk(void *DecompData) const
 		l|=(buffer[1+decomp->pos])<<8;
 		l|=(buffer[0+decomp->pos]);
 		decomp->pos += 3 + l;
-		return advanceChunk(decomp); 
+		return advanceChunk(decomp);
 	};
 
 	if (!chunk_length)
@@ -292,14 +292,14 @@ uint32 VocAudioSample::decompressFrame(void *DecompData, void *samples) const
 	auto *decomp = static_cast<VocDecompData *>(DecompData);
 
 	// At end of stream??
-	if (!decomp->chunk_remain && !advanceChunk(decomp)) return 0; 
+	if (!decomp->chunk_remain && !advanceChunk(decomp)) return 0;
 
 	int num_samples = decomp->chunk_remain;
 
 	if (decomp->cur_type == 0 && decomp->compression == 1)
 	{
 		if (decomp->adpcm_reference == -1) num_samples = (num_samples-1)*2;
-		else num_samples *= 2;		
+		else num_samples *= 2;
 	}
 
 	// Limit number of samples produced
@@ -310,7 +310,7 @@ uint32 VocAudioSample::decompressFrame(void *DecompData, void *samples) const
 	// This is just silence
 	if (decomp->cur_type == 1)
 	{
-		bytes_used = 0;		
+		bytes_used = 0;
 		std::memset(samples,0,num_samples);
 	}
 	else if (decomp->compression == 0)

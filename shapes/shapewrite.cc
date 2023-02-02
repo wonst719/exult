@@ -79,7 +79,7 @@ public:
 };
 
 void Shapes_vga_file::Write_Shapeinf_text_data_file(Exult_Game game) {
-	size_t num_shapes = shapes.size();
+	const size_t num_shapes = shapes.size();
 	Base_writer *writers[] = {
 		// For explosions.
 		new Functor_multidata_writer < Shape_info,
@@ -204,12 +204,12 @@ void Shapes_vga_file::Write_Shapeinf_text_data_file(Exult_Game game) {
 		Vector_writer_functor < Frame_usecode_info, Shape_info,
 		&Shape_info::frucinf > > ("frame_usecode", info, num_shapes)
 	};
-	int numsections = array_size(writers);
+	const int numsections = array_size(writers);
 	Write_text_data_file("shape_info", writers, numsections, 7, game);
 }
 
 void Shapes_vga_file::Write_Bodies_text_data_file(Exult_Game game) {
-	size_t num_shapes = shapes.size();
+	const size_t num_shapes = shapes.size();
 	Base_writer *writers[] = {
 		new Functor_multidata_writer < Shape_info,
 		Bit_text_writer_functor < is_body_flag, unsigned short,
@@ -220,12 +220,12 @@ void Shapes_vga_file::Write_Bodies_text_data_file(Exult_Game game) {
 		Class_writer_functor < Body_info, Shape_info,
 		&Shape_info::body > > ("bodylist", info, num_shapes)
 	};
-	int numsections = array_size(writers);
+	const int numsections = array_size(writers);
 	Write_text_data_file("bodies", writers, numsections, 2, game);
 }
 
 void Shapes_vga_file::Write_Paperdoll_text_data_file(Exult_Game game) {
-	size_t num_shapes = shapes.size();
+	const size_t num_shapes = shapes.size();
 	Base_writer *writers[] = {
 		new Functor_multidata_writer < Shape_info,
 		Class_writer_functor < Paperdoll_npc, Shape_info,
@@ -234,7 +234,7 @@ void Shapes_vga_file::Write_Paperdoll_text_data_file(Exult_Game game) {
 		Vector_writer_functor < Paperdoll_item, Shape_info,
 		&Shape_info::objpaperdoll > > ("items", info, num_shapes)
 	};
-	int numsections = array_size(writers);
+	const int numsections = array_size(writers);
 	Write_text_data_file("paperdol_info", writers, numsections, 3, game);
 }
 
@@ -246,8 +246,8 @@ void Shapes_vga_file::Write_Paperdoll_text_data_file(Exult_Game game) {
 void Shapes_vga_file::write_info(
     Exult_Game game
 ) {
-	size_t num_shapes = shapes.size();
-	bool have_patch_path = is_system_path_defined("<PATCH>");
+	const size_t num_shapes = shapes.size();
+	const bool have_patch_path = is_system_path_defined("<PATCH>");
 	assert(have_patch_path);
 
 	// ShapeDims
@@ -305,7 +305,7 @@ void Shapes_vga_file::write_info(
 	memset(&occbits[0], 0, sizeof(occbits));
 	for (size_t i = 0; i < sizeof(occbits); i++) {
 		unsigned char bits = 0;
-		int shnum = i * 8;  // Check each bit.
+		const int shnum = i * 8;  // Check each bit.
 		for (size_t b = 0; b < 8; b++)
 			if (shnum + b >= num_shapes)
 				break;
@@ -326,7 +326,7 @@ void Shapes_vga_file::write_info(
 		Equip_record &rec = Monster_info::get_equip(i);
 		// 10 elements/record.
 		for (int e = 0; e < 10; e++) {
-			Equip_element &elem = rec.get(e);
+			const Equip_element &elem = rec.get(e);
 			Write2(mfile, elem.get_shapenum());
 			mfile.put(elem.get_probability());
 			mfile.put(elem.get_quantity());
@@ -413,7 +413,7 @@ void Frame_name_info::write(
 	WriteInt(out, shapenum);
 	WriteInt(out, frame < 0 ? -1 : (frame & 0xff));
 	WriteInt(out, quality < 0 ? -1 : (quality & 0xff));
-	int mtype = is_invalid() ? -255 : type;
+	const int mtype = is_invalid() ? -255 : type;
 	WriteInt(out, mtype, mtype < 0);
 	if (mtype < 0)
 		return;
@@ -433,8 +433,8 @@ void Frame_flags_info::write(
 	WriteInt(out, shapenum);
 	WriteInt(out, frame < 0 ? -1 : (frame & 0xff));
 	WriteInt(out, quality < 0 ? -1 : (quality & 0xff));
-	unsigned int flags = is_invalid() ? 0 : m_flags;
-	int size = 8 * sizeof(m_flags) - 1; // Bit count.
+	const unsigned int flags = is_invalid() ? 0 : m_flags;
+	const int size = 8 * sizeof(m_flags) - 1; // Bit count.
 	int bit = 0;
 	while (bit < size) {
 		out << ((flags & (1U << bit)) != 0) << '/';
@@ -458,7 +458,7 @@ void Frame_usecode_info::write(
 		WriteInt(out, -1, true);
 		return;
 	}
-	bool type = usecode_name.length() != 0;
+	const bool type = usecode_name.length() != 0;
 	WriteInt(out, type);
 	if (type)
 		WriteStr(out, usecode_name, true);
@@ -547,14 +547,13 @@ void Paperdoll_item::write(
 	WriteInt(out, world_frame < 0 ? -1 : world_frame);
 	WriteInt(out, translucent);
 	WriteInt(out, spot);
-	int mtype = is_invalid() ? -255 : type;
+	const int mtype = is_invalid() ? -255 : type;
 	WriteInt(out, mtype, mtype < 0);
 	if (mtype < 0)  // 'Invalid' entry; we are done.
 		return;
 	WriteInt(out, gender);
 	WriteInt(out, shape);
-	int i = 0;
-	for (; i < 3; i++) {
+	for (int i = 0; i < 3; i++) {
 		if (frame[i] == -1)
 			return;     // Done writing.
 		WriteInt(out, frame[i], frame[i + 1] == -1);
@@ -607,21 +606,21 @@ void Weapon_info::write(
 	Write2(ptr, ammo);
 	Write2(ptr, projectile);
 	*ptr++ = damage;
-	unsigned char flags0 = (damage_type << 4) | (m_delete_depleted ? (1 << 3) : 0) |
+	const unsigned char flags0 = (damage_type << 4) | (m_delete_depleted ? (1 << 3) : 0) |
 	                       (m_no_blocking ? (1 << 2) : 0) | (m_explodes ? (1 << 1) : 0) | (m_lucky ? 1 : 0);
 	*ptr++ = flags0;
 	*ptr++ = (range << 3) | (uses << 1) | (m_autohit ? 1 : 0);
-	unsigned char flags1 = (m_returns ? 1 : 0) | (m_need_target ? (1 << 1) : 0) | (rotation_speed << 4) |
+	const unsigned char flags1 = (m_returns ? 1 : 0) | (m_need_target ? (1 << 1) : 0) | (rotation_speed << 4) |
 	                       ((missile_speed == 4 ? 1 : 0) << 2);
 	*ptr++ = flags1;
-	int delay = missile_speed >= 3 ? 0 : (missile_speed == 2 ? 2 : 3);
-	unsigned char flags2 = actor_frames | (delay << 5);
+	const int delay = missile_speed >= 3 ? 0 : (missile_speed == 2 ? 2 : 3);
+	const unsigned char flags2 = actor_frames | (delay << 5);
 	*ptr++ = flags2;
 	*ptr++ = powers;
 	*ptr++ = 0;         // ??
 	Write2(ptr, usecode);
 	// BG:  Subtracted 1 from each sfx.
-	int sfx_delta = game == BLACK_GATE ? -1 : 0;
+	const int sfx_delta = game == BLACK_GATE ? -1 : 0;
 	Write2(ptr, sfx - sfx_delta);
 	Write2(ptr, hitsfx - sfx_delta);
 	// Last 2 bytes unknown/unused.
@@ -712,7 +711,7 @@ void Monster_info::write(
 	         (m_can_summon ? (1 << 1) : 0) |
 	         (m_can_be_invisible ? (1 << 2) : 0);
 	*ptr++ = 0;         // Unknown.
-	int sfx_delta = game == BLACK_GATE ? -1 : 0;
+	const int sfx_delta = game == BLACK_GATE ? -1 : 0;
 	*ptr++ = static_cast<unsigned char>((sfx & 0xff) - sfx_delta);
 	out.write(reinterpret_cast<char *>(buf), sizeof(buf));
 }

@@ -103,7 +103,7 @@
 0x55B:Batlin!  Si el Avatar logra
 0x55C:destruir la Puerta Negra,
 0x55D:ve junto con la humana llamada
-0x55E:Gweeno a la Isla de la Serpiente
+0x55E:Gwenno a la Isla de la Serpiente
 0x55F:Alli conoceras mi nuevo plan
 0x560:en contra de Britania
 0x561:Batlin! Debes saber que mi cara

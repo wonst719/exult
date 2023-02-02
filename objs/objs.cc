@@ -78,7 +78,7 @@ int Game_object::get_usecode() const {
 	                                 get_framenum(), inf.has_quality() ? get_quality() : -1);
 	if (useinf) {
 		// Shape has frame- or quality-dependent usecode.
-		std::string ucname = useinf->get_usecode_name();
+		const std::string ucname = useinf->get_usecode_name();
 		int ucid = -1;
 		if (ucname.length())    // Try by name first.
 			ucid = ucmachine->find_function(ucname.c_str(), true);
@@ -154,12 +154,12 @@ Tile_coord Game_object::get_center_tile(
 		return Tile_coord(255 * c_tiles_per_chunk, 255 * c_tiles_per_chunk,
 		                  0);
 	}
-	int frame = get_framenum();
-	int dx = (get_info().get_3d_xtiles(frame) - 1) >> 1;
-	int dy = (get_info().get_3d_ytiles(frame) - 1) >> 1;
-	int dz = (get_info().get_3d_height() * 3) / 4;
-	int x = chunk->cx * c_tiles_per_chunk + tx - dx;
-	int y = chunk->cy * c_tiles_per_chunk + ty - dy;
+	const int frame = get_framenum();
+	const int dx = (get_info().get_3d_xtiles(frame) - 1) >> 1;
+	const int dy = (get_info().get_3d_ytiles(frame) - 1) >> 1;
+	const int dz = (get_info().get_3d_height() * 3) / 4;
+	const int x = chunk->cx * c_tiles_per_chunk + tx - dx;
+	const int y = chunk->cy * c_tiles_per_chunk + ty - dy;
 	return Tile_coord(x, y, lift + dz);
 }
 
@@ -175,10 +175,10 @@ Tile_coord Game_object::get_missile_tile(
 		return Tile_coord(255 * c_tiles_per_chunk, 255 * c_tiles_per_chunk,
 		                  0);
 	}
-	int frame = get_framenum();
-	int dx = get_info().get_3d_xtiles(frame) - 1;
-	int dy = get_info().get_3d_ytiles(frame) - 1;
-	int dz = (get_info().get_3d_height() * 3) / 4;
+	const int frame = get_framenum();
+	const int dx = get_info().get_3d_xtiles(frame) - 1;
+	const int dy = get_info().get_3d_ytiles(frame) - 1;
+	const int dz = (get_info().get_3d_height() * 3) / 4;
 	/*switch (dir)
 	    {
 	    case south:
@@ -197,8 +197,8 @@ Tile_coord Game_object::get_missile_tile(
 	        dy = -1;
 	        break;
 	    }*/
-	int x = chunk->cx * c_tiles_per_chunk + tx - dx / 2;
-	int y = chunk->cy * c_tiles_per_chunk + ty - dy / 2;
+	const int x = chunk->cx * c_tiles_per_chunk + tx - dx / 2;
+	const int y = chunk->cy * c_tiles_per_chunk + ty - dy / 2;
 	return Tile_coord(x, y, lift + dz);
 }
 
@@ -248,11 +248,11 @@ int Game_object::distance(
 	Tile_coord t2 = o2->get_tile();
 	const Shape_info &info1 = get_info();
 	const Shape_info &info2 = o2->get_info();
-	int f1 = get_framenum();
-	int f2 = o2->get_framenum();
-	int dx = Tile_coord::delta(t1.tx, t2.tx);
-	int dy = Tile_coord::delta(t1.ty, t2.ty);
-	int dz = t1.tz - t2.tz;
+	const int f1 = get_framenum();
+	const int f2 = o2->get_framenum();
+	const int dx = Tile_coord::delta(t1.tx, t2.tx);
+	const int dy = Tile_coord::delta(t1.ty, t2.ty);
+	const int dz = t1.tz - t2.tz;
 	delta_wrap_check(dx, info1.get_3d_xtiles(f1) - 1,
 	                 info2.get_3d_xtiles(f2) - 1, t1.tx, t2.tx);
 	delta_wrap_check(dy, info1.get_3d_ytiles(f1) - 1,
@@ -271,10 +271,10 @@ int Game_object::distance(
 ) const {
 	Tile_coord t1 = get_tile();
 	const Shape_info &info1 = get_info();
-	int f1 = get_framenum();
-	int dx = Tile_coord::delta(t1.tx, t2.tx);
-	int dy = Tile_coord::delta(t1.ty, t2.ty);
-	int dz = t1.tz - t2.tz;
+	const int f1 = get_framenum();
+	const int dx = Tile_coord::delta(t1.tx, t2.tx);
+	const int dy = Tile_coord::delta(t1.ty, t2.ty);
+	const int dz = t1.tz - t2.tz;
 	delta_wrap_check(dx, info1.get_3d_xtiles(f1) - 1, 0, t1.tx, t2.tx);
 	delta_wrap_check(dy, info1.get_3d_ytiles(f1) - 1, 0, t1.ty, t2.ty);
 	delta_check(dz, info1.get_3d_height(), 0, t1.tz, t2.tz);
@@ -288,8 +288,8 @@ int Game_object::distance(
 int Game_object::get_direction(
     Game_object *o2
 ) const {
-	Tile_coord t1 = get_center_tile();
-	Tile_coord t2 = o2->get_center_tile();
+	const Tile_coord t1 = get_center_tile();
+	const Tile_coord t2 = o2->get_center_tile();
 	// Treat as cartesian coords.
 	return static_cast<int>(Get_direction(t1.ty - t2.ty, t2.tx - t1.tx));
 }
@@ -301,7 +301,7 @@ int Game_object::get_direction(
 int Game_object::get_direction(
     Tile_coord const &t2
 ) const {
-	Tile_coord t1 = get_center_tile();
+	const Tile_coord t1 = get_center_tile();
 	// Treat as cartesian coords.
 	return static_cast<int>(Get_direction(t1.ty - t2.ty, t2.tx - t1.tx));
 }
@@ -313,8 +313,8 @@ int Game_object::get_direction(
 int Game_object::get_facing_direction(
     Game_object *o2
 ) const {
-	Tile_coord t1 = get_tile();
-	TileRect torect = o2->get_footprint();
+	const Tile_coord t1 = get_tile();
+	const TileRect torect = o2->get_footprint();
 	if (torect.x + torect.w <= t1.tx &&
 	        t1.ty >= torect.y && t1.ty < torect.y + torect.h)
 		return static_cast<int>(west);
@@ -357,9 +357,9 @@ const int MAX_QUANTITY = 100;       // Highest quantity possible.
 
 int Game_object::get_quantity(
 ) const {
-	int shnum = get_shapenum();
+	const int shnum = get_shapenum();
 	if (Has_quantity(shnum)) {
-		int qual = quality & 0x7f;
+		const int qual = quality & 0x7f;
 		return qual ? qual : 1;
 	} else
 		return 1;
@@ -377,7 +377,7 @@ int Game_object::get_effective_range(
 			return 3;
 		reach = winf->get_range();
 	}
-	int uses = winf ? winf->get_uses() : static_cast<int>(Weapon_info::melee);
+	const int uses = winf ? winf->get_uses() : static_cast<int>(Weapon_info::melee);
 	if (!uses || uses == Weapon_info::ranged)
 		return reach;
 	else
@@ -406,7 +406,7 @@ int Game_object::get_weapon_ammo(
 	if (!winf)
 		// No ammo needed.
 		return 0;
-	int uses = winf->get_uses();
+	const int uses = winf->get_uses();
 	int need_ammo = 0;
 	// This seems to match perfectly the originals.
 	if (family == -1 || !ranged)
@@ -430,7 +430,7 @@ int Game_object::get_effective_obj_hp(int weapon_shape) const {
 	int hps = get_obj_hp();
 	if (!hps) {
 		const Shape_info &inf = get_info();
-		int qual = inf.has_quality() ? get_quality() : -1;
+		const int qual = inf.has_quality() ? get_quality() : -1;
 		hps = inf.get_effective_hps(get_framenum(), qual);
 	}
 	return hps;
@@ -444,7 +444,7 @@ int Game_object::get_obj_hp() const {
 }
 
 void Game_object::set_obj_hp(int hp) {
-	int shnum = get_shapenum();
+	const int shnum = get_shapenum();
 	if (Has_hitpoints(shnum))
 		set_quality(hp);
 }
@@ -455,7 +455,7 @@ void Game_object::set_obj_hp(int hp) {
 
 int Game_object::get_volume(
 ) const {
-	int vol = get_info().get_volume();
+	const int vol = get_info().get_volume();
 	return vol;         // I think U7 ignores quantity!
 }
 
@@ -511,7 +511,7 @@ int Game_object::modify_quantity(
 			*del = true;
 		return delta + quant;
 	}
-	int oldvol = get_volume();  // Get old volume used.
+	const int oldvol = get_volume();  // Get old volume used.
 	quality = static_cast<char>(newquant);  // Store new value.
 	// Set appropriate frame.
 	if (get_info().has_weapon_info())   // Starbursts, serpent(ine) daggers, knives.
@@ -523,7 +523,7 @@ int Game_object::modify_quantity(
 		if (get_info().get_ready_type() == triple_bolts)
 			base = 24;
 		// Verified.
-		int new_frame = newquant > 12 ? 7 : (newquant > 6 ? 6 : newquant - 1);
+		const int new_frame = newquant > 12 ? 7 : (newquant > 6 ? 6 : newquant - 1);
 		change_frame(base + new_frame);
 	}
 
@@ -540,7 +540,7 @@ int Game_object::modify_quantity(
 
 int Game_object::get_dir_facing(
 ) const {
-	int reflect = get_framenum() & (16 | 32);
+	const int reflect = get_framenum() & (16 | 32);
 	switch (reflect) {
 	case 0:
 		return static_cast<int>(north);
@@ -566,15 +566,15 @@ void Game_object::move(
     int newmap
 ) {
 	// Figure new chunk.
-	int newcx = newtx / c_tiles_per_chunk;
-	int newcy = newty / c_tiles_per_chunk;
+	const int newcx = newtx / c_tiles_per_chunk;
+	const int newcy = newty / c_tiles_per_chunk;
 	Game_map *objmap = newmap >= 0 ? gwin->get_map(newmap) : get_map();
 	if (!objmap) objmap = gmap;
 	Map_chunk *newchunk = objmap->get_chunk_safely(newcx, newcy);
 	if (!newchunk)
 		return;         // Bad loc.
 	Map_chunk *oldchunk = chunk;    // Remove from old.
-	Game_object_shared keep = shared_from_this();
+	const Game_object_shared keep = shared_from_this();
 	if (oldchunk) {
 		gwin->add_dirty(this);  // Want to repaint old area.
 		oldchunk->remove(this);
@@ -609,13 +609,13 @@ bool Game_object::swap_positions(
 ) {
 	const Shape_info &inf1 = get_info();
 	const Shape_info &inf2 = obj2->get_info();
-	int frame1 = get_framenum();
-	int frame2 = obj2->get_framenum();
+	const int frame1 = get_framenum();
+	const int frame2 = obj2->get_framenum();
 	if (inf1.get_3d_xtiles(frame1) != inf2.get_3d_xtiles(frame2) ||
 	        inf1.get_3d_ytiles(frame1) != inf2.get_3d_ytiles(frame2))
 		return false;       // Not the same size.
-	Tile_coord p1 = get_tile();
-	Tile_coord p2 = obj2->get_tile();
+	const Tile_coord p1 = get_tile();
+	const Tile_coord p2 = obj2->get_tile();
     Game_object_shared keep1;
     Game_object_shared keep2;
 	remove_this(&keep1);         // Remove (but don't delete) each.
@@ -741,8 +741,8 @@ public:
 	Object_closest_sorter(Tile_coord const &p) : pos(p)
 	{  }
 	bool operator()(const Game_object *o1, const Game_object *o2) {
-		Tile_coord t1 = o1->get_tile();
-		Tile_coord t2 = o2->get_tile();
+		const Tile_coord t1 = o1->get_tile();
+		const Tile_coord t2 = o2->get_tile();
 		return t1.distance(pos) < t2.distance(pos);
 	}
 };
@@ -764,7 +764,7 @@ Game_object *Game_object::find_closest(
 	for (i = 0; i < num_shapes; i++)
 		// 0xb0 mask finds anything.
 		find_nearby(vec, shapenums[i], dist, 0xb0);
-	int cnt = vec.size();
+	const int cnt = vec.size();
 	if (!cnt)
 		return nullptr;
 	if (cnt > 1)
@@ -791,14 +791,14 @@ Game_object *Game_object::find_closest(
 	for (i = 0; i < num_shapes; i++)
 		// 0xb0 mask finds anything.
 		find_nearby(vec, pos, shapenums[i], dist, 0xb0);
-	int cnt = vec.size();
+	const int cnt = vec.size();
 	if (!cnt)
 		return nullptr;
 	Game_object *closest = nullptr;   // Get closest.
 	int best_dist = 10000;      // In tiles.
 	// Get our location.
 	for (auto *obj : vec) {
-		int dist = obj->get_tile().distance(pos);
+		const int dist = obj->get_tile().distance(pos);
 		if (dist < best_dist) {
 			closest = obj;
 			best_dist = dist;
@@ -815,10 +815,10 @@ TileRect Game_object::get_footprint(
 ) {
 	const Shape_info &info = get_info();
 	// Get footprint.
-	int frame = get_framenum();
-	int xtiles = info.get_3d_xtiles(frame);
-	int ytiles = info.get_3d_ytiles(frame);
-	Tile_coord t = get_tile();
+	const int frame = get_framenum();
+	const int xtiles = info.get_3d_xtiles(frame);
+	const int ytiles = info.get_3d_ytiles(frame);
+	const Tile_coord t = get_tile();
 	TileRect foot((t.tx - xtiles + 1 + c_num_tiles) % c_num_tiles,
 	               (t.ty - ytiles + 1 + c_num_tiles) % c_num_tiles,
 	               xtiles, ytiles);
@@ -833,11 +833,11 @@ Block Game_object::get_block(
 ) const {
 	const Shape_info &info = get_info();
 	// Get footprint.
-	int frame = get_framenum();
-	int xtiles = info.get_3d_xtiles(frame);
-	int ytiles = info.get_3d_ytiles(frame);
-	int ztiles = info.get_3d_height();
-	Tile_coord t = get_tile();
+	const int frame = get_framenum();
+	const int xtiles = info.get_3d_xtiles(frame);
+	const int ytiles = info.get_3d_ytiles(frame);
+	const int ztiles = info.get_3d_height();
+	const Tile_coord t = get_tile();
 	Block vol((t.tx - xtiles + 1 + c_num_tiles) % c_num_tiles,
 	          (t.ty - ytiles + 1 + c_num_tiles) % c_num_tiles,
 	          t.tz,
@@ -852,15 +852,15 @@ Block Game_object::get_block(
 bool Game_object::blocks(
     Tile_coord const &tile
 ) const {
-	Tile_coord t = get_tile();
+	const Tile_coord t = get_tile();
 	if (t.tx < tile.tx || t.ty < tile.ty || t.tz > tile.tz)
 		return false;       // Out of range.
 	const Shape_info &info = get_info();
-	int ztiles = info.get_3d_height();
+	const int ztiles = info.get_3d_height();
 	if (!ztiles || !info.is_solid())
 		return false;       // Skip if not an obstacle.
 	// Occupies desired tile?
-	int frame = get_framenum();
+	const int frame = get_framenum();
 	return tile.tx > t.tx - info.get_3d_xtiles(frame) &&
 	        tile.ty > t.ty - info.get_3d_ytiles(frame) &&
 	        tile.tz < t.tz + ztiles;
@@ -911,11 +911,11 @@ bool Game_object::is_closed_door(
 	if (!info.is_door())
 		return false;
 	// Get door's footprint.
-	int frame = get_framenum();
-	int xtiles = info.get_3d_xtiles(frame);
-	int ytiles = info.get_3d_ytiles(frame);
+	const int frame = get_framenum();
+	const int xtiles = info.get_3d_xtiles(frame);
+	const int ytiles = info.get_3d_ytiles(frame);
 	// Get its location.
-	Tile_coord doortile = get_tile();
+	const Tile_coord doortile = get_tile();
 	Tile_coord before;
 	Tile_coord after;   // Want tiles to both sides.
 	if (xtiles > ytiles) {      // Horizontal footprint?
@@ -977,7 +977,7 @@ void Game_object::say(
     int from, int to        // Range (inclusive).
 ) {
 	if (from > to) return;
-	int offset = rand() % (to - from + 1);
+	const int offset = rand() % (to - from + 1);
 	if (from + offset < get_num_text_msgs())
 		say(get_text_msg(from + offset));
 }
@@ -1016,7 +1016,7 @@ void Game_object::activate(
 ) {
 	if (edit())
 		return;         // Map-editing.
-	int gump = get_info().get_gump_shape();
+	const int gump = get_info().get_gump_shape();
 	if (gump == game->get_shape("gumps/spell_scroll")) {
 		gumpman->add_gump(this, gump);
 		return;
@@ -1035,8 +1035,8 @@ bool Game_object::edit(
 	if (client_socket >= 0 &&   // Talking to ExultStudio?
 	        cheat.in_map_editor()) {
 		editing.reset();
-		Tile_coord t = get_tile();
-		std::string name = get_name();
+		const Tile_coord t = get_tile();
+		const std::string name = get_name();
 		if (Object_out(client_socket, Exult_server::obj,
 		               this, t.tx, t.ty, t.tz,
 		               get_shapenum(), get_framenum(), get_quality(),
@@ -1199,12 +1199,12 @@ bool Game_object::drop(
     Game_object *obj        // This may be deleted.
 ) {
 	const Shape_info &inf = get_info();
-	int shapenum = get_shapenum();  // It's possible if shapes match.
+	const int shapenum = get_shapenum();  // It's possible if shapes match.
 	if (obj->get_shapenum() != shapenum || !inf.has_quantity() ||
 	        (!inf.has_quantity_frames() && get_framenum() != obj->get_framenum()))
 		return false;
-	int objq = obj->get_quantity();
-	int total_quant = get_quantity() + objq;
+	const int objq = obj->get_quantity();
+	const int total_quant = get_quantity() + objq;
 	if (total_quant > MAX_QUANTITY) // Too much?
 		return false;
 	modify_quantity(objq);      // Add to our quantity.
@@ -1309,7 +1309,7 @@ int Game_object::compare(
 	TileRect r2 = gwin->get_shape_rect(obj2);
 	if (!inf1.area.intersects(r2))
 		return 0;     // No overlap on screen.
-	Ordering_info inf2(gwin, obj2, r2);
+	const Ordering_info inf2(gwin, obj2, r2);
 #ifdef DEBUGLT
 	Debug_lt(inf1.tx, inf1.ty, inf2.tx, inf2.ty);
 #endif
@@ -1399,7 +1399,7 @@ int Game_object::lt(
     Game_object &obj2
 ) {
 	Ordering_info ord(gwin, this);
-	int cmp = compare(ord, &obj2);
+	const int cmp = compare(ord, &obj2);
 	return cmp == -1 ? 1 : cmp == 1 ? 0 : -1;
 }
 
@@ -1412,7 +1412,7 @@ int Game_object::lt(
 int Game_object::get_rotated_frame(
     int quads           // 1=90, 2=180, 3=270.
 ) const {
-	int curframe = get_framenum();
+	const int curframe = get_framenum();
 	return get_info().get_rotated_frame(curframe, quads);
 }
 
@@ -1437,7 +1437,7 @@ int Game_object::apply_damage(
 		damage = 127;
 	else {
 		if (type != Weapon_data::lightning_damage && str > 0) {
-			int base = str / 3;
+			const int base = str / 3;
 			damage = base ? 1 + rand() % base : 0;
 		}
 		if (wpoints > 0)
@@ -1466,7 +1466,7 @@ int Game_object::reduce_health(
 	if (exp)
 		*exp = 0;
 	// Returns 0 if doesn't have HP's or is indestructible.
-	int hp = get_effective_obj_hp();
+	const int hp = get_effective_obj_hp();
 	if (!hp || // Object is indestructible.
 	        // These damage types do not affect objects.
 	        type == Weapon_data::lightning_damage ||
@@ -1476,7 +1476,7 @@ int Game_object::reduce_health(
 	        (type == Weapon_data::fire_damage || delta >= hp)) {
 		// Cause chain reaction.
 		set_quality(1); // Make it indestructible.
-		Tile_coord offset(0, 0, get_info().get_3d_height() / 2);
+		const Tile_coord offset(0, 0, get_info().get_3d_height() / 2);
 		eman->add_effect(std::make_unique<Explosion_effect>(get_tile() + offset,
 		                                      this, 0, get_shapenum(), -1, attacker));
 		return delta;   // Will be destroyed in Explosion_effect.
@@ -1541,14 +1541,14 @@ int Game_object::figure_hit_points(
 
 	if (explodes && !explosion) { // Explosions shouldn't explode again.
 		// Time to explode.
-		Tile_coord offset(0, 0, get_info().get_3d_height() / 2);
+		const Tile_coord offset(0, 0, get_info().get_3d_height() / 2);
 		eman->add_effect(std::make_unique<Explosion_effect>(get_tile() + offset,
 		                                      nullptr, 0, weapon_shape, ammo_shape, attacker));
 		return -1;
 	}
 
 	int delta = 0;
-	int effstr = attacker && attacker->as_actor()
+	const int effstr = attacker && attacker->as_actor()
 	             ? attacker->as_actor()->get_effective_prop(Actor::strength) : 0;
 	if (winf && (winf->get_powers() & Weapon_data::no_damage) == 0)
 		delta = apply_damage(attacker, effstr, wpoints, type);
@@ -1589,19 +1589,19 @@ Game_object *Game_object::attacked(
     int ammo_shape,         // < 0 for no ammo shape.
     bool explosion          // If this is an explosion attacking.
 ) {
-	int shnum = get_shapenum();
+	const int shnum = get_shapenum();
 
 	if (shnum == 735 && ammo_shape == 722) {
 		// Arrows hitting archery practice target.
-		int frnum = get_framenum();
-		int newframe = !frnum ? (3 * (rand() % 8) + 1)
+		const int frnum = get_framenum();
+		const int newframe = !frnum ? (3 * (rand() % 8) + 1)
 		               : ((frnum % 3) != 0 ? frnum + 1 : frnum);
 		change_frame(newframe);
 	}
 
-	int oldhp = get_effective_obj_hp();
-	int delta = figure_hit_points(attacker, weapon_shape, ammo_shape, explosion);
-	int newhp = get_effective_obj_hp();
+	const int oldhp = get_effective_obj_hp();
+	const int delta = figure_hit_points(attacker, weapon_shape, ammo_shape, explosion);
+	const int newhp = get_effective_obj_hp();
 
 	if (combat_trace) {
 		string name = "<trap>";
@@ -1644,7 +1644,7 @@ void Terrain_game_object::move(
     int newlift,
     int newmap
 ) {
-	bool caching_out = chunk ? chunk->get_map()->is_caching_out() : false;
+	const bool caching_out = chunk ? chunk->get_map()->is_caching_out() : false;
 	if (!caching_out) {
 		gwin->get_map()->set_map_modified();
 		if (chunk) {
@@ -1707,7 +1707,7 @@ void Ifix_game_object::move(
     int newlift,
     int newmap
 ) {
-	bool caching_out = gwin->get_map()->is_caching_out();
+	const bool caching_out = gwin->get_map()->is_caching_out();
 	if (chunk && !caching_out)  // Mark superchunk as 'modified'.
 		get_map()->set_ifix_modified(get_cx(), get_cy());
 	Game_object::move(newtx, newty, newlift, newmap);
@@ -1724,8 +1724,8 @@ void Ifix_game_object::remove_this(
     Game_object_shared *keep     // Non-null to not delete.
 ) {
 	if (chunk) {        // Mark superchunk as 'modified'.
-		int cx = get_cx();
-		int cy = get_cy();
+		const int cx = get_cx();
+		const int cy = get_cy();
 		get_map()->set_ifix_modified(cx, cy);
 	}
 	Game_object::remove_this(keep);
@@ -1742,8 +1742,8 @@ void Ifix_game_object::write_ifix(
 	unsigned char buf[5];
 	buf[0] = (tx << 4) | ty;
 	buf[1] = lift;
-	int shapenum = get_shapenum();
-	int framenum = get_framenum();
+	const int shapenum = get_shapenum();
+	const int framenum = get_framenum();
 	if (v2) {
 		buf[2] = shapenum & 0xff;
 		buf[3] = (shapenum >> 8) & 0xff;

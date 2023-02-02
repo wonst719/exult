@@ -62,10 +62,10 @@ static inline bool Can_be_added(
 ) {
 	const Shape_info &continfo = cont->get_info();
 	const Shape_info &add_info = ShapeID::get_info(shapenum);
-	return !(cont->get_shapenum() == shapenum   // Shape can't be inside itself.
-	         || (!allow_locked && continfo.is_container_locked())   // Locked container.
-	         || !continfo.is_shape_accepted(shapenum)  // Shape can't be inside.
-	         || (!add_info.is_spell() && add_info.is_on_fire()));	// Object is on fire, and can't be inside others
+	return cont->get_shapenum() != shapenum   // Shape can't be inside itself.
+	         && (allow_locked || !continfo.is_container_locked())   // Locked container.
+	         && continfo.is_shape_accepted(shapenum)  // Shape can't be inside.
+	         && (add_info.is_spell() || !add_info.is_on_fire());	// Object is on fire, and can't be inside others
 }
 
 // Max. we'll hold.  (Guessing).
@@ -83,7 +83,7 @@ void Container_game_object::remove(
 ) {
 	if (objects.is_empty())
 		return;
-	int shapenum = obj->get_shapenum();
+	const int shapenum = obj->get_shapenum();
 	volume_used -= obj->get_volume();
 	obj->set_owner(nullptr);
 	obj->set_invalid();     // No longer part of world.
@@ -132,13 +132,13 @@ bool Container_game_object::add(
 
 	if (combine) {          // Should we try to combine?
 		const Shape_info &info = obj->get_info();
-		int quant = obj->get_quantity();
+		const int quant = obj->get_quantity();
 		// Combine, but don't add.
-		int newquant = add_quantity(quant, obj->get_shapenum(),
+		const int newquant = add_quantity(quant, obj->get_shapenum(),
 		                            info.has_quality() ? obj->get_quality() : c_any_qual,
 		                            obj->get_framenum(), true);
 		if (newquant == 0) { // All added?
-			int shape_num = obj->get_shapenum();
+			const int shape_num = obj->get_shapenum();
 			obj->remove_this();
 			if(g_shortcutBar)
 				g_shortcutBar->check_for_updates(shape_num);
@@ -146,9 +146,9 @@ bool Container_game_object::add(
 		} else if (newquant < quant) // Partly successful.
 			obj->modify_quantity(newquant - quant);
 	}
-	int objvol = obj->get_volume();
+	const int objvol = obj->get_volume();
 	if (!cheat.in_hack_mover() && !dont_check) {
-		int maxvol = get_max_volume();
+		const int maxvol = get_max_volume();
 		// maxvol = 0 means infinite (ship's hold, hollow tree, etc...)
 		if (maxvol > 0 && objvol + volume_used > maxvol)
 			return false;   // Doesn't fit.
@@ -172,7 +172,7 @@ void Container_game_object::change_member_shape(
     Game_object *obj,
     int newshape
 ) {
-	int oldvol = obj->get_volume();
+	const int oldvol = obj->get_volume();
 	obj->set_shape(newshape);
 	// Update total volume.
 	volume_used += obj->get_volume() - oldvol;
@@ -222,12 +222,12 @@ int Container_game_object::add_quantity(
 	int maxweight = get_max_weight();// Check weight.
 	if (maxweight) {
 		maxweight *= 10;    // Work in .1 stones.
-		int avail = maxweight - get_outermost()->get_weight();
-		int objweight = Ireg_game_object::get_weight(shapenum, delta);
+		const int avail = maxweight - get_outermost()->get_weight();
+		const int objweight = Ireg_game_object::get_weight(shapenum, delta);
 		if (objweight && objweight > avail) {
 			// Limit what we can add.
 			// Work in 1/100ths.
-			int weight1 = (10 * objweight) / delta;
+			const int weight1 = (10 * objweight) / delta;
 			cant_add = delta - (10 * avail) / (weight1 ? weight1 : 1);
 			if (cant_add >= delta)
 				return delta;   // Can't add any.
@@ -235,8 +235,8 @@ int Container_game_object::add_quantity(
 		}
 	}
 	const Shape_info &info = ShapeID::get_info(shapenum);
-	bool has_quantity = info.has_quantity();    // Quantity-type shape?
-	bool has_quantity_frame = has_quantity ? info.has_quantity_frames() : false;
+	const bool has_quantity = info.has_quantity();    // Quantity-type shape?
+	const bool has_quantity_frame = has_quantity ? info.has_quantity_frames() : false;
 	// Note:  quantity is ignored for
 	//   figuring volume.
 	Game_object *obj;
@@ -434,8 +434,8 @@ bool Container_game_object::edit(
 	if (client_socket >= 0 &&   // Talking to ExultStudio?
 	        cheat.in_map_editor()) {
 		editing.reset();
-		Tile_coord t = get_tile();
-		std::string name = get_name();
+		const Tile_coord t = get_tile();
+		const std::string name = get_name();
 		if (Container_out(client_socket, this, t.tx, t.ty, t.tz,
 		                  get_shapenum(), get_framenum(), get_quality(), name,
 		                  get_obj_hp(),
@@ -498,7 +498,7 @@ void Container_game_object::update_from_studio(
 	Container_game_object *owner = obj->get_owner();
 	if (!owner) {
 		// See if it moved -- but only if not inside something!
-		Tile_coord oldt = obj->get_tile();
+		const Tile_coord oldt = obj->get_tile();
 		if (oldt.tx != tx || oldt.ty != ty || oldt.tz != tz)
 			obj->move(tx, ty, tz);
 	}
@@ -560,7 +560,7 @@ int Container_game_object::count_objects(
 		        (framenum == c_any_framenum || (obj->get_framenum() & 31) == framenum) &&
 		        (qual == c_any_qual || obj->get_quality() == qual)) {
 			// Check quantity.
-			int quant = obj->get_quantity();
+			const int quant = obj->get_quantity();
 			total += quant;
 		}
 		// Count recursively.
@@ -579,7 +579,7 @@ int Container_game_object::get_objects(
     int qual,           // Quality, or c_any_qual for any.
     int framenum            // Frame#, or c_any_framenum for any.
 ) {
-	int vecsize = vec.size();
+	const int vecsize = vec.size();
 	Game_object *obj;
 	Object_iterator next(objects);
 	while ((obj = next.get_next()) != nullptr) {
@@ -619,7 +619,7 @@ void Container_game_object::write_ireg(
 	unsigned char buf[20];      // 12-byte entry.
 	uint8 *ptr = write_common_ireg(12, buf);
 	Game_object *first = objects.get_first(); // Guessing: +++++
-	unsigned short tword = first ? first->get_prev()->get_shapenum()
+	const unsigned short tword = first ? first->get_prev()->get_shapenum()
 	                       : 0;
 	Write2(ptr, tword);
 	*ptr++ = 0;         // Unknown.
@@ -649,7 +649,7 @@ int Container_game_object::get_ireg_size() {
 		Game_object *obj;
 		Object_iterator next(objects);
 		while ((obj = next.get_next()) != nullptr) {
-			int size = obj->get_ireg_size();
+			const int size = obj->get_ireg_size();
 
 			if (size < 0) return -1;
 
@@ -687,7 +687,7 @@ bool Container_game_object::extract_contents(Container_game_object *targ) {
 	Game_object *obj;
 
 	while ((obj = objects.get_first())) {
-	    Game_object_shared keep = obj->shared_from_this();
+	    const Game_object_shared keep = obj->shared_from_this();
 		remove(obj);
 
 		if (targ) {
@@ -712,7 +712,7 @@ void Container_game_object::delete_contents() {
 
 	Game_object *obj;
 	while ((obj = objects.get_first())) {
-	    Game_object_shared keep = obj->shared_from_this();
+	    const Game_object_shared keep = obj->shared_from_this();
 	    remove(obj);
 		obj->delete_contents(); // recurse into contained containers
 		obj->remove_this(nullptr);
@@ -759,7 +759,7 @@ Game_object *Container_game_object::find_weapon_ammo(
 	const Weapon_info *winf = ShapeID::get_info(weapon).get_weapon_info();
 	if (!winf)
 		return nullptr;
-	int family = winf->get_ammo_consumed();
+	const int family = winf->get_ammo_consumed();
 	if (family >= 0)
 		return nullptr;
 

@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ucfun.h"
 #include "ucclass.h"
 #include "basic_block.h"
+#include "array_size.h"
 #include "ignore_unused_variable_warning.h"
 
 using std::strcmp;
@@ -131,20 +132,20 @@ int Uc_var_symbol::is_object_function(bool print_error) const {
 		char buf[180];
 		switch (is_obj_fun) {
 		case -2:
-			sprintf(buf, "Shape # is equal to fun. ID only for shapes < 0x400; use UI_get_usecode_fun instead");
+			snprintf(buf, array_size(buf), "Shape # is equal to fun. ID only for shapes < 0x400; use UI_get_usecode_fun instead");
 			Uc_location::yywarning(buf);
 			break;
 		case 1:
-			sprintf(buf, "Var '%s' contains fun. not declared as 'shape#' or 'object#'",
+			snprintf(buf, array_size(buf), "Var '%s' contains fun. not declared as 'shape#' or 'object#'",
 			        name.c_str());
 			Uc_location::yyerror(buf);
 			break;
 		case 2:
-			sprintf(buf, "Var '%s' contains a negative number", name.c_str());
+			snprintf(buf, array_size(buf), "Var '%s' contains a negative number", name.c_str());
 			Uc_location::yyerror(buf);
 			break;
 		case 3:
-			sprintf(buf, "Return of intrinsics are generally not fun. IDs");
+			snprintf(buf, array_size(buf), "Return of intrinsics are generally not fun. IDs");
 			Uc_location::yyerror(buf);
 			break;
 		}
@@ -216,10 +217,10 @@ Uc_expression *Uc_static_class_symbol::create_expression(
 bool Uc_struct_symbol::is_dup(
     const char *nm
 ) {
-	int index = search(nm);
+	const int index = search(nm);
 	if (index >= 0) {       // Already declared?
 		char msg[180];
-		sprintf(msg, "Symbol '%s' already declared", nm);
+		snprintf(msg, array_size(msg), "Symbol '%s' already declared", nm);
 		Uc_location::yyerror(msg);
 		return true;
 	}
@@ -248,7 +249,7 @@ Uc_class_symbol *Uc_class_symbol::create(
 	Uc_symbol *sym = Uc_function::search_globals(nm);
 	if (sym) {
 		char buf[256];
-		sprintf(buf, "Class name '%s' already exists.", nm);
+		snprintf(buf, array_size(buf), "Class name '%s' already exists.", nm);
 		Uc_location::yyerror(buf);
 	}
 	auto *csym = new Uc_class_symbol(nm, c);
@@ -406,26 +407,26 @@ Uc_function_symbol *Uc_function_symbol::create(
 		num = -1;
 		if (kind == shape_fun) {
 			char buf[180];
-			sprintf(buf, "Shape number cannot be negative");
+			snprintf(buf, array_size(buf), "Shape number cannot be negative");
 			Uc_location::yyerror(buf);
 		}
 	} else if (num < 0x400) {
 		if (kind == utility_fun) {
 			char buf[180];
-			sprintf(buf, "Treating function '%s' as being a 'shape#()' function.", nm);
+			snprintf(buf, array_size(buf), "Treating function '%s' as being a 'shape#()' function.", nm);
 			Uc_location::yywarning(buf);
 			kind = shape_fun;
 		}
 	} else if (num < 0x800) {
 		if (kind == utility_fun) {
 			char buf[180];
-			sprintf(buf, "Treating function '%s' as being an 'object#()' function.", nm);
+			snprintf(buf, array_size(buf), "Treating function '%s' as being an 'object#()' function.", nm);
 			Uc_location::yywarning(buf);
 			kind = object_fun;
 		}
 	}
 
-	int shp = (kind == shape_fun) ? num : -1;
+	const int shp = (kind == shape_fun) ? num : -1;
 	if (shp >= 0x400)
 		num = new_auto_num ? -1 : 0xC00 + shp;
 	else if (shp != -1)
@@ -463,7 +464,7 @@ Uc_function_symbol *Uc_function_symbol::create(
 		} else if (scope) {
 			if (!sym->is_inherited()) {
 				char buf[256];
-				sprintf(buf, "Duplicate declaration of function '%s'.", nm);
+				snprintf(buf, array_size(buf), "Duplicate declaration of function '%s'.", nm);
 				Uc_location::yyerror(buf);
 			}
 		} else if (sym->is_externed() || is_extern)
@@ -478,20 +479,20 @@ Uc_function_symbol *Uc_function_symbol::create(
 				num = -1;
 		else {
 			char buf[256];
-			sprintf(buf, "Duplicate declaration of function '%s'.", nm);
+			snprintf(buf, array_size(buf), "Duplicate declaration of function '%s'.", nm);
 			Uc_location::yyerror(buf);
 		}
 	}
 
 	if (num < 0 && !new_auto_num) {
 		char buf[256];
-		sprintf(buf,
+		snprintf(buf, array_size(buf),
 		        "Auto-numbering function '%s', but '#autonumber' directive not used.",
 		        nm);
 		Uc_location::yywarning(buf);
 	}
 
-	int ucnum = num >= 0 ? num : (last_num + 1);
+	const int ucnum = num >= 0 ? num : (last_num + 1);
 	// Set last_num if the function doesn't
 	// have a number:
 	if (num < 0 ||
@@ -507,10 +508,10 @@ Uc_function_symbol *Uc_function_symbol::create(
 		nums_used[ucnum] = sym;
 		return sym;
 	}
-	sym = (*it).second;
+	sym = it->second;
 	if (sym->name != nm || sym->get_num_parms() != p.size()) {
 		char buf[256];
-		sprintf(buf,
+		snprintf(buf, array_size(buf),
 		        "Function 0x%x already used for '%s' with %zu params.",
 		        ucnum, sym->get_name(), sym->get_num_parms());
 		Uc_location::yyerror(buf);
@@ -546,14 +547,14 @@ int Uc_function_symbol::gen_call(
 	size_t parmcnt = aparms->gen_values(out);   // Want to push parm. values.
 	parmcnt += (method_num >= 0);       // Count 'this'.
 	if (parmcnt != parms.size()) {
-		sprintf(buf,
+		snprintf(buf, array_size(buf),
 		        "# parms. passed (%zu) doesn't match '%s' count (%zu)",
 		        parmcnt, get_name(), parms.size());
 		Uc_location::yyerror(buf);
 	}
 	// See if expecting a return value from a function that has none.
 	if (retvalue && !has_ret()) {
-		sprintf(buf,
+		snprintf(buf, array_size(buf),
 		        "Function '%s' does not have a return value",
 		        get_name());
 		Uc_location::yyerror(buf);
@@ -574,7 +575,7 @@ int Uc_function_symbol::gen_call(
 				itemref = tsym->create_expression();
 		}
 		if (!itemref) {
-			sprintf(buf,
+			snprintf(buf, array_size(buf),
 			        "Class method '%s' requires a 'this'.", get_name());
 			Uc_location::yyerror(buf);
 		} else
@@ -603,7 +604,7 @@ int Uc_function_symbol::gen_call(
 	} else {            // Normal CALL.
 		// Called function sets return.
 		// Add to externs list.
-		int link = fun->link(this);
+		const int link = fun->link(this);
 		WriteOp(out, UC_CALL);
 		WriteOpParam2(out, link);
 	}
@@ -612,7 +613,7 @@ int Uc_function_symbol::gen_call(
 		// Generate the code to pop the result off the stack.
 		static int cnt = 0;
 		char buf[50];
-		sprintf(buf, "_tmpretval_%d", cnt++);
+		snprintf(buf, array_size(buf), "_tmpretval_%d", cnt++);
 		// Create a 'tmp' variable.
 		Uc_var_symbol *var = fun->add_symbol(buf);
 		if (!var)
@@ -685,13 +686,13 @@ int Uc_scope::add_function_symbol(
 	if (fun2 == fun)        // The case for an EXTERN.
 		return 1;
 	else if (!fun2) {       // Non-function name.
-		sprintf(buf, "'%s' already declared", nm);
+		snprintf(buf, array_size(buf), "'%s' already declared", nm);
 		Uc_location::yyerror(buf);
 	} else if (fun->get_num_parms() != fun2->get_num_parms()) {
 		if (fun2->is_inherited())
-			sprintf(buf, "Decl. of virtual member function '%s' doesn't match decl. from base class", nm);
+			snprintf(buf, array_size(buf), "Decl. of virtual member function '%s' doesn't match decl. from base class", nm);
 		else
-			sprintf(buf, "Decl. of '%s' doesn't match previous decl", nm);
+			snprintf(buf, array_size(buf), "Decl. of '%s' doesn't match previous decl", nm);
 		Uc_location::yyerror(buf);
 	} else if (fun->usecode_num != fun2->usecode_num) {
 		if (fun2->externed || fun->externed || fun2->is_inherited()) {
@@ -699,7 +700,7 @@ int Uc_scope::add_function_symbol(
 			        Uc_function_symbol::last_num == fun->usecode_num)
 				--Uc_function_symbol::last_num;
 		} else {
-			sprintf(buf, "Decl. of '%s' has different usecode #.",
+			snprintf(buf, array_size(buf), "Decl. of '%s' has different usecode #.",
 			        nm);
 			Uc_location::yyerror(buf);
 		}
@@ -719,7 +720,7 @@ bool Uc_scope::is_dup(
 	Uc_symbol *sym = search(nm);
 	if (sym) {          // Already in scope?
 		char msg[180];
-		sprintf(msg, "Symbol '%s' already declared", nm);
+		snprintf(msg, array_size(msg), "Symbol '%s' already declared", nm);
 		Uc_location::yyerror(msg);
 		return true;
 	}

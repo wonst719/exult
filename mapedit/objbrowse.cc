@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "shapegroup.h"
 
 #include <cctype>
+#include <cmath>
 
 using EStudio::Add_menu_item;
 using EStudio::Create_arrow_button;
@@ -39,6 +40,8 @@ Object_browser::Object_browser(Shape_group *grp, Shape_file_info *fi)
 Object_browser::~Object_browser() {
 	if (popup)
 		gtk_widget_destroy(popup);
+	if ((G_IS_OBJECT(vscroll_ctlr)) && (G_OBJECT(vscroll_ctlr)->ref_count > 0))
+		g_object_unref(vscroll_ctlr);
 }
 
 void Object_browser::set_widget(GtkWidget *w) {
@@ -56,7 +59,7 @@ bool Object_browser::search_name(
 	auto safe_tolower = [](const char ch) {
 		return static_cast<char>(tolower(static_cast<unsigned char>(ch)));
 	};
-	char first = safe_tolower(*srch);
+	const char first = safe_tolower(*srch);
 	while (*nm) {
 		if (safe_tolower(*nm) == first) {
 			const char *np = nm + 1;
@@ -97,7 +100,7 @@ void Object_browser::on_browser_group_add(
 	auto *chooser = static_cast<Object_browser *>(udata);
 	auto *grp = static_cast<Shape_group *>(g_object_get_data(
 	        G_OBJECT(item), "user_data"));
-	int id = chooser->get_selected_id();
+	const int id = chooser->get_selected_id();
 	if (id >= 0) {          // Selected shape?
 		grp->add(id);       // Add & redisplay open windows.
 		ExultStudio::get_instance()->update_group_windows(grp);
@@ -115,7 +118,7 @@ void Object_browser::add_group_submenu(
 	//   the main window.
 	Shape_group_file *groups = group ? group->get_file()
 	                           : ExultStudio::get_instance()->get_cur_groups();
-	int gcnt = groups ? groups->size() : 0;
+	const int gcnt = groups ? groups->size() : 0;
 	if (gcnt > 1 ||         // Groups besides ours?
 	        (gcnt == 1 && !group)) {
 		GtkWidget *mitem = Add_menu_item(popup,
@@ -171,7 +174,7 @@ void Create_file_selection(
 	}
 	if (path != nullptr && is_system_path_defined(path)) {
 		// Default to a writable location.
-		std::string startdir = get_system_path(path);
+		const std::string startdir = get_system_path(path);
 		gtk_file_chooser_set_current_folder(fsel, startdir.c_str());
 	}
 	if (!filters.empty()) {
@@ -476,3 +479,42 @@ GtkWidget *Object_browser::create_controls(
 	return topframe;
 }
 
+// Scroll events.
+void Object_browser::draw_vscrolled( // For scroll events.
+    GtkEventControllerScroll *self,  // The scroll event controller,
+    gdouble dx, gdouble dy, // The scroll motion
+    gpointer data           // ->Object_browser.
+) {
+	ignore_unused_variable_warning(self, dx);
+	auto *browser = static_cast<Object_browser *>(data);
+	GtkAdjustment *adj = gtk_range_get_adjustment(
+	    GTK_RANGE(browser->vscroll));
+	const gdouble adj_value  = gtk_adjustment_get_value(adj);
+#if defined(MACOSX) && !defined(XWIN)
+	const gdouble new_unit   = 1.0;
+#else
+	const gdouble adj_pgsize = gtk_adjustment_get_page_size(adj);
+	const gdouble new_unit   = pow(adj_pgsize, 2.0/3.0);
+#endif // MACOSX && !XWIN
+	const gdouble new_value  = (dy * new_unit) + adj_value;
+#ifdef DEBUG
+	std::cout << "Objects : Wheeled to " << dy
+	          << " at " << gtk_adjustment_get_value(adj)
+	          << " -> " << new_value
+	          << " of [ " << gtk_adjustment_get_lower(adj)
+	          << ", " << gtk_adjustment_get_upper(adj)
+	          << " ] by " << gtk_adjustment_get_step_increment(adj)
+	          << " ( " << gtk_adjustment_get_page_increment(adj)
+	          << ", " << gtk_adjustment_get_page_size(adj)
+	          << " )" << std::endl;
+#endif
+	gtk_adjustment_set_value(adj, new_value);
+}
+
+void Object_browser::enable_draw_vscroll(GtkWidget *draw) {
+	vscroll_ctlr = GTK_EVENT_CONTROLLER(
+	    gtk_event_controller_scroll_new(draw,
+	                 GTK_EVENT_CONTROLLER_SCROLL_VERTICAL));
+	g_signal_connect(G_OBJECT(vscroll_ctlr), "scroll",
+	                 G_CALLBACK(draw_vscrolled), this);
+}

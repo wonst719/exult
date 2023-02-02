@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <string>
 #include <vector>
 
+#include "array_size.h"
 #include "ucfun.h"
 #include "ucclass.h"
 #include "ucexpr.h"
@@ -371,13 +372,13 @@ function_proto:
 			char buf[180];
 			if (has_ret || struct_type)
 				{
-				sprintf(buf, "Functions declared with '%s#' cannot return a value",
+				snprintf(buf, array_size(buf), "Functions declared with '%s#' cannot return a value",
 					$4->kind == Uc_function_symbol::shape_fun ? "shape" : "object");
 				yyerror(buf);
 				}
 			if (!$6->empty())
 				{
-				sprintf(buf, "Functions declared with '%s#' cannot have arguments",
+				snprintf(buf, array_size(buf), "Functions declared with '%s#' cannot have arguments",
 					$4->kind == Uc_function_symbol::shape_fun ? "shape" : "object");
 				yyerror(buf);
 				}
@@ -429,13 +430,13 @@ const_int_val:
 		char buf[180];
 		if (!sym)
 			{
-			sprintf(buf, "'%s' not declared", $1);
+			snprintf(buf, array_size(buf), "'%s' not declared", $1);
 			yyerror(buf);
 			$$ = -1;
 			}
 		else if ((var = dynamic_cast<Uc_const_int_symbol *>(sym)) == nullptr)
 			{
-			sprintf(buf, "'%s' is not a constant integer", $1);
+			snprintf(buf, array_size(buf), "'%s' is not a constant integer", $1);
 			yyerror(buf);
 			$$ = -1;
 			}
@@ -677,7 +678,7 @@ var_decl:
 		if (cur_class && !cur_fun)
 			{
 			char buf[180];
-			sprintf(buf, "Initialization of class member var '%s' must be done through constructor", $1);
+			snprintf(buf, array_size(buf), "Initialization of class member var '%s' must be done through constructor", $1);
 			yyerror(buf);
 			$$ = nullptr;
 			}
@@ -779,7 +780,7 @@ struct_decl:
 		if (cur_class && !cur_fun)
 			{
 			char buf[180];
-			sprintf(buf, "Initialization of class member struct '%s' must be done through constructor", $1);
+			snprintf(buf, array_size(buf), "Initialization of class member struct '%s' must be done through constructor", $1);
 			yyerror(buf);
 			$$ = nullptr;
 			}
@@ -803,7 +804,7 @@ class_expr:
 		if (!sym)
 			{
 			char buf[150];
-			sprintf(buf, "'%s' not declared", $1);
+			snprintf(buf, array_size(buf), "'%s' not declared", $1);
 			yyerror(buf);
 			cur_fun->add_symbol($1);
 			$$ = nullptr;
@@ -811,7 +812,7 @@ class_expr:
 		else if (sym->get_sym_type() != Uc_symbol::Class)
 			{
 			char buf[150];
-			sprintf(buf, "'%s' not a class", $1);
+			snprintf(buf, array_size(buf), "'%s' not a class", $1);
 			yyerror(buf);
 			$$ = nullptr;
 			}
@@ -1131,7 +1132,7 @@ start_array_loop:
 		if ($4->get_cls())
 			{
 			char buf[150];
-			sprintf(buf, "Can't convert class '%s' into non-class",
+			snprintf(buf, array_size(buf), "Can't convert class '%s' into non-class",
 					$4->get_name());
 			yyerror(buf);
 			}
@@ -1177,7 +1178,7 @@ special_method_call_statement:
 		if ($5->get_cls())
 			{
 			char buf[150];
-			sprintf(buf, "Can't convert class '%s' into non-class",
+			snprintf(buf, array_size(buf), "Can't convert class '%s' into non-class",
 					$5->get_name());
 			yyerror(buf);
 			}
@@ -1206,7 +1207,7 @@ return_statement:
 		if (!cur_fun->has_ret())
 			{
 			char buf[180];
-			sprintf(buf, "Function '%s' can't return a value",
+			snprintf(buf, array_size(buf), "Function '%s' can't return a value",
 					cur_fun->get_name());
 			yyerror(buf);
 			$$ = nullptr;
@@ -1225,7 +1226,7 @@ return_statement:
 				else
 					{
 					char buf[210];
-					sprintf(buf, "Function '%s' expects a return of %s '%s' but supplied value is %s'%s'",
+					snprintf(buf, array_size(buf), "Function '%s' expects a return of %s '%s' but supplied value is %s'%s'",
 							cur_fun->get_name(),
 							trg ? "class" : "type",
 							trg ? trg->get_name() : "var",
@@ -1247,7 +1248,7 @@ return_statement:
 			{
 			Uc_class *cls = cur_fun->get_cls();
 			char buf[180];
-			sprintf(buf, "Function '%s' must return a '%s'",
+			snprintf(buf, array_size(buf), "Function '%s' must return a '%s'",
 					cur_fun->get_name(), cls ? cls->get_name() : "var");
 			yyerror(buf);
 			$$ = nullptr;
@@ -1593,7 +1594,7 @@ start_call:
 			if ($2->is_object_function() == -1)
 				{	// Don't know.
 				char buf[180];
-				sprintf(buf, "Please ensure that 'call' uses a function declared with 'shape#' or 'object#'");
+				snprintf(buf, array_size(buf), "Please ensure that 'call' uses a function declared with 'shape#' or 'object#'");
 				yywarning(buf);
 				}
 			$$ = $2;
@@ -1712,7 +1713,7 @@ label_statement:
 		if (cur_fun->search_label($1))
 			{
 			char buf[150];
-			sprintf(buf, "duplicate label: '%s'", $1);
+			snprintf(buf, array_size(buf), "duplicate label: '%s'", $1);
 			yyerror(buf);
 			$$ = nullptr;
 			}
@@ -1740,7 +1741,7 @@ delete_statement:
 		if (!cls)
 			{
 			char buf[150];
-			sprintf(buf, "'%s' is not a class", $2->get_name());
+			snprintf(buf, array_size(buf), "'%s' is not a class", $2->get_name());
 			yyerror(buf);
 			$$ = nullptr;
 			}
@@ -1873,7 +1874,7 @@ addressof:
 		if (!sym)	/* See if the symbol is defined */
 			{
 			char buf[150];
-			sprintf(buf, "'%s' not declared", $2);
+			snprintf(buf, array_size(buf), "'%s' not declared", $2);
 			yyerror(buf);
 			$$ = nullptr;
 			}
@@ -1881,7 +1882,7 @@ addressof:
 		if (!fun)	/* See if the symbol is a function */
 			{
 			char buf[150];
-			sprintf(buf, "'%s' is not a function", $2);
+			snprintf(buf, array_size(buf), "'%s' is not a function", $2);
 			yyerror(buf);
 			$$ = nullptr;
 			}
@@ -1924,12 +1925,12 @@ primary:
 			char buf[150];
 			if (is_int_32bit($1))
 				{
-				sprintf(buf, "Literal integer '%d' cannot be represented as 16-bit integer. Assuming '(long)' cast.",
+				snprintf(buf, array_size(buf), "Literal integer '%d' cannot be represented as 16-bit integer. Assuming '(long)' cast.",
 						$1);
 				op = UC_PUSHI32;
 				}
 			else
-				sprintf(buf, "Interpreting integer '%d' as the signed 16-bit integer '%d'. If this is incorrect, use '(long)' cast.",
+				snprintf(buf, array_size(buf), "Interpreting integer '%d' as the signed 16-bit integer '%d'. If this is incorrect, use '(long)' cast.",
 						$1, static_cast<short>($1));
 			yywarning(buf);
 			}
@@ -1952,7 +1953,7 @@ primary:
 			if (offset < 0)
 				{
 				char buf[150];
-				sprintf(buf, "'%s' does not belong to struct '%s'",
+				snprintf(buf, array_size(buf), "'%s' does not belong to struct '%s'",
 						$1->name, base->get_name());
 				yyerror(buf);
 				$$ = new Uc_int_expression(0);
@@ -1978,7 +1979,7 @@ primary:
 		if ($1->get_cls())
 			{
 			char buf[150];
-			sprintf(buf, "Can't convert class '%s' into non-class",
+			snprintf(buf, array_size(buf), "Can't convert class '%s' into non-class",
 					$1->get_name());
 			yyerror(buf);
 			$$ = new Uc_arrayelem_expression($1, $3);
@@ -2135,12 +2136,12 @@ int_literal:				/* A const. integer value.	*/
 			char buf[150];
 			if (is_int_32bit($1))
 				{
-				sprintf(buf, "Literal integer '%d' cannot be represented as 16-bit integer. Assuming '(long)' cast.",
+				snprintf(buf, array_size(buf), "Literal integer '%d' cannot be represented as 16-bit integer. Assuming '(long)' cast.",
 						$1);
 				op = UC_PUSHI32;
 				}
 			else
-				sprintf(buf, "Interpreting integer '%d' as the signed 16-bit integer '%d'. If this is incorrect, use '(long)' cast.",
+				snprintf(buf, array_size(buf), "Interpreting integer '%d' as the signed 16-bit integer '%d'. If this is incorrect, use '(long)' cast.",
 						$1, static_cast<short>($1));
 			yywarning(buf);
 			}
@@ -2155,7 +2156,7 @@ int_literal:				/* A const. integer value.	*/
 		if (!sym)
 			{
 			char buf[150];
-			sprintf(buf, "'%s' is not a const int", $1->get_name());
+			snprintf(buf, array_size(buf), "'%s' is not a const int", $1->get_name());
 			yyerror(buf);
 			$$ = nullptr;
 			}
@@ -2192,7 +2193,7 @@ declared_var_value:
 		if (!$$)
 			{
 			char buf[150];
-			sprintf(buf, "Can't use '%s' here", $1->get_name());
+			snprintf(buf, array_size(buf), "Can't use '%s' here", $1->get_name());
 			yyerror(buf);
 			$$ = new Uc_int_expression(0);
 			}
@@ -2206,9 +2207,9 @@ declared_var:
 		if (!var)
 			{
 			char buf[150];
-			sprintf(buf, "'%s' not a 'var'", $1->get_name());
+			snprintf(buf, array_size(buf), "'%s' not a 'var'", $1->get_name());
 			yyerror(buf);
-			sprintf(buf, "%s_needvar", $1->get_name());
+			snprintf(buf, array_size(buf), "%s_needvar", $1->get_name());
 			var = cur_fun->add_symbol(buf);
 			}
 		$$ = var;
@@ -2222,7 +2223,7 @@ declared_sym:
 		if (!sym)
 			{
 			char buf[150];
-			sprintf(buf, "'%s' not declared", $1);
+			snprintf(buf, array_size(buf), "'%s' not declared", $1);
 			yyerror(buf);
 			sym = cur_fun->add_symbol($1);
 			}
@@ -2243,7 +2244,7 @@ defined_struct:
 		if (!sym)
 			{
 			char buf[150];
-			sprintf(buf, "'%s' not found, or is not a struct.", $1);
+			snprintf(buf, array_size(buf), "'%s' not found, or is not a struct.", $1);
 			yyerror(buf);
 			$$ = nullptr;
 			}
@@ -2296,7 +2297,7 @@ static Uc_class *Find_class
 	if (!csym)
 		{
 		char buf[150];
-		sprintf(buf, "'%s' not found, or is not a class.", nm);
+		snprintf(buf, array_size(buf), "'%s' not found, or is not a class.", nm);
 		yyerror(buf);
 		return nullptr;
 		}
@@ -2328,7 +2329,7 @@ static bool Incompatible_classes_error(Uc_class *src, Uc_class *trg)
 	if (!src->is_class_compatible(trg->get_name()))
 		{
 		char buf[180];
-		sprintf(buf, "Class '%s' can't be converted into class '%s'",
+		snprintf(buf, array_size(buf), "Class '%s' can't be converted into class '%s'",
 				src->get_name(), trg->get_name());
 		yyerror(buf);
 		return true;
@@ -2348,7 +2349,7 @@ static Uc_call_expression *cls_method_call
 	if (!curcls)
 		{
 		char buf[150];
-		sprintf(buf, "'%s' requires a class object", nm);
+		snprintf(buf, array_size(buf), "'%s' requires a class object", nm);
 		yyerror(buf);
 		return nullptr;
 		}
@@ -2360,7 +2361,7 @@ static Uc_call_expression *cls_method_call
 	if (!sym)
 		{
 		char buf[150];
-		sprintf(buf, "Function '%s' is not declared in class '%s'",
+		snprintf(buf, array_size(buf), "Function '%s' is not declared in class '%s'",
 				nm, clsscope->get_name());
 		yyerror(buf);
 		return nullptr;
@@ -2370,7 +2371,7 @@ static Uc_call_expression *cls_method_call
 	if (!fun)
 		{
 		char buf[150];
-		sprintf(buf, "'%s' is not a function", nm);
+		snprintf(buf, array_size(buf), "'%s' is not a function", nm);
 		yyerror(buf);
 		return nullptr;
 		}
@@ -2402,14 +2403,14 @@ static bool Uc_is_valid_calle
 		if (ths && !ths->is_class())
 			{
 			char buf[150];
-			sprintf(buf, "'%s' is not an object or shape function", nm);
+			snprintf(buf, array_size(buf), "'%s' is not an object or shape function", nm);
 			yyerror(buf);
 			return false;
 			}
 		else if (ths)
 			{
 			char buf[150];
-			sprintf(buf, "'%s' is not a member of class '%s'",
+			snprintf(buf, array_size(buf), "'%s' is not a member of class '%s'",
 					nm, ths->get_cls()->get_name());
 			yyerror(buf);
 			return false;
@@ -2420,7 +2421,7 @@ static bool Uc_is_valid_calle
 		if (!ths)
 			{
 			char buf[180];
-			sprintf(buf, "'%s' expects an itemref, but none was supplied; using current itemref", nm);
+			snprintf(buf, array_size(buf), "'%s' expects an itemref, but none was supplied; using current itemref", nm);
 			ths = new Uc_item_expression();
 			yywarning(buf);
 			return true;
@@ -2468,7 +2469,7 @@ static Uc_call_expression *cls_function_call
 	if (!sym)
 		{
 		char buf[150];
-		sprintf(buf, "'%s' not declared", nm);
+		snprintf(buf, array_size(buf), "'%s' not declared", nm);
 		yyerror(buf);
 		return nullptr;
 		}

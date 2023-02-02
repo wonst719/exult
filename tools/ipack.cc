@@ -93,7 +93,7 @@ static void Get_all_shapes(
     char *basename,
     Shape_specs &specs      // Shape specs. returned here.
 ) {
-	int namelen = strlen(basename) + strlen("SSSS_") + 1;
+	const size_t namelen = strlen(basename) + strlen("SSSS_") + 1;
 	Vga_file ifile;
 	try {
 		ifile.load(imagename);  // May throw an exception.
@@ -101,14 +101,14 @@ static void Get_all_shapes(
 		cerr << e.what() << endl;
 		exit(1);
 	}
-	int nshapes = ifile.get_num_shapes();
+	const int nshapes = ifile.get_num_shapes();
 	specs.resize(nshapes);
 	for (int i = 0; i < nshapes; ++i) {
-		int nframes = ifile.get_num_frames(i);
+		const int nframes = ifile.get_num_frames(i);
 		if (!nframes)
 			continue;
 		char *shapename = new char[namelen];
-		sprintf(shapename, "%s%04d_", basename, i);
+		snprintf(shapename, namelen, "%s%04d_", basename, i);
 		specs[i].flat = false;
 		specs[i].nframes = nframes;
 		specs[i].filename = shapename;
@@ -167,7 +167,7 @@ static long Get_number(
     char *ptr,
     char  *&endptr          // ->past number and spaces returned.
 ) {
-	long num = strtol(ptr, &endptr, 0);
+	const long num = strtol(ptr, &endptr, 0);
 	if (endptr == ptr) {    // No #?
 		cerr << "Line " << linenum << ":  " << errmsg << endl;
 		exit(1);
@@ -194,7 +194,7 @@ static char *Get_token(
 		     ":  Expecting a name" << endl;
 		exit(1);
 	}
-	char sav = *endptr;
+	const char sav = *endptr;
 	*endptr = 0;
 	char *token = newstrdup(ptr);
 	*endptr = sav;
@@ -278,7 +278,7 @@ static void Read_script(
 			return;
 		}
 		// Get shape# in decimal, hex, or oct.
-		size_t shnum = Get_number(linenum, "Shape # missing",
+		const size_t shnum = Get_number(linenum, "Shape # missing",
 		                          ptr, endptr);
 		if (*endptr != '/') {
 			cerr << "Line #" << linenum <<
@@ -286,7 +286,7 @@ static void Read_script(
 			exit(1);
 		}
 		ptr = endptr + 1;
-		long nframes = Get_number(linenum, "Frame count missing",
+		const long nframes = Get_number(linenum, "Frame count missing",
 		                          ptr, endptr);
 		if (*endptr != ':') {
 			cerr << "Line #" << linenum <<
@@ -375,9 +375,9 @@ static void Greyify_palette(
     int palsize         // 0-256.
 ) {
 	for (int i = 0; i < palsize; i++) {
-		int ind = i * 3;
+		const int ind = i * 3;
 		// Take average.
-		int ave = (from[ind] + from[ind + 1] + from[ind + 2]) / 3;
+		const int ave = (from[ind] + from[ind + 1] + from[ind + 2]) / 3;
 		to[ind] = to[ind + 1] = to[ind + 2] = ave;
 	}
 }
@@ -420,11 +420,11 @@ static void Write_text_palette(
 		if (palette[3 * i] != 0 || palette[3 * i + 1] != 0 ||
 		        palette[3 * i + 2] != 0)
 			break;
-	int last_color = i;
+	const int last_color = i;
 	for (i = 0; i <= last_color; i++) {
-		int r = palette[3 * i];
-		int g = palette[3 * i + 1];
-		int b = palette[3 * i + 2];
+		const int r = palette[3 * i];
+		const int g = palette[3 * i + 1];
+		const int b = palette[3 * i + 2];
 		pout << setw(3) << r << ' ' << setw(3) << g << ' ' <<
 		     setw(3) << b << endl;
 	}
@@ -445,11 +445,12 @@ static void Write_frame(
     unsigned char *palette      // 3*256 bytes.
 ) {
 	assert(frame != nullptr);
-	char *fullname = new char[strlen(basename) + 30];
-	sprintf(fullname, "%s%02d.png", basename, frnum);
+	const size_t namelen = strlen(basename) + 30;
+	char *fullname = new char[namelen];
+	snprintf(fullname, namelen, "%s%02d.png", basename, frnum);
 	cout << "Writing " << fullname << endl;
-	int w = frame->get_width();
-	int h = frame->get_height();
+	const int w = frame->get_width();
+	const int h = frame->get_height();
 	Image_buffer8 img(w, h);    // Render into a buffer.
 	img.fill8(transp);      // Fill with transparent pixel.
 	frame->paint(&img, frame->get_xleft(), frame->get_yabove());
@@ -546,7 +547,7 @@ static void Write_exult_from_tiles(
 	cout << "Reading " << filename << " tiled"
 	     << (bycol ? ", by cols" : ", by rows") << " first" << endl;
 	// Figure #tiles in other dim.
-	int dim1_cnt = (nframes + dim0_cnt - 1) / dim0_cnt;
+	const int dim1_cnt = (nframes + dim0_cnt - 1) / dim0_cnt;
 	int needw;
 	int needh;       // Figure min. image dims.
 	if (bycol) {
@@ -611,10 +612,11 @@ static void Write_exult(
     char *palname           // Store palette with here if !0.
 ) {
 	Shape shape(nframes);
-	char *fullname = new char[strlen(basename) + 30];
+	const size_t namelen = strlen(basename) + 30;
+	char *fullname = new char[namelen];
 	int frnum;          // Read in frames.
 	for (frnum = 0; frnum < nframes; frnum++) {
-		sprintf(fullname, "%s%02d.png", basename, frnum);
+		snprintf(fullname, namelen, "%s%02d.png", basename, frnum);
 		cout << "Reading " << fullname << endl;
 		int w;
 		int h;
@@ -674,7 +676,7 @@ static void Create(
 	for (auto& spec : specs) {
 		char *basename = spec.filename;
 		if (basename) {     // Not empty?
-			int dim0_cnt = spec.dim0_tiles;
+			const int dim0_cnt = spec.dim0_tiles;
 			if (dim0_cnt > 0)
 				Write_exult_from_tiles(writer, basename,
 				                       spec.nframes, spec.bycol,
@@ -707,7 +709,7 @@ static void Update(
 		palname = nullptr;
 	}
 	FlexFile in(imagename);     // May throw exception.
-	size_t oldcnt = in.number_of_objects();
+	const size_t oldcnt = in.number_of_objects();
 	vector<unique_ptr<unsigned char[]>> data(oldcnt);    // Read in all the entries.
 	vector<int> lengths(oldcnt);
 	size_t i;
@@ -720,7 +722,7 @@ static void Update(
 		}
 	}
 	OFileDataSource out(imagename);     // May throw exception.
-	size_t newcnt = oldcnt > specs.size() ? oldcnt : specs.size();
+	const size_t newcnt = oldcnt > specs.size() ? oldcnt : specs.size();
 	Flex_writer writer(out, title, newcnt);
 	for (i = 0; i < newcnt; i++) {  // Write out new entries.
 		// New entry for this shape?
@@ -750,7 +752,7 @@ static void Extract(
 		cerr << "No palette name (i.e., 'palettes.flx') given" << endl;
 		exit(1);
 	}
-	U7object pal(palname, 0);   // Get palette 0.
+	const U7object pal(palname, 0);   // Get palette 0.
 	size_t len;
 	// This may throw an exception
 	auto palbuf = pal.retrieve(len);
@@ -758,10 +760,10 @@ static void Extract(
 		palbuf[i] *= 4;     // Exult palette vals are 0-63.
 	Vga_file ifile(imagename);  // May throw an exception.
 	for (auto it = specs.begin(); it != specs.end();  ++it) {
-		char *basename = (*it).filename;
+		char *basename = it->filename;
 		if (!basename)      // Empty?
 			continue;
-		int shnum = it - specs.begin();
+		const int shnum = it - specs.begin();
 		if (shnum >= ifile.get_num_shapes()) {
 			cerr << "Shape #" << shnum << " > #shapes in file" <<
 			     endl;
@@ -769,9 +771,9 @@ static void Extract(
 		}
 		// Read in all frames.
 		Shape *shape = ifile.extract_shape(shnum);
-		int nframes = shape->get_num_frames();
-		if (nframes != (*it).nframes)
-			cerr << "Warning: # frames (" << (*it).nframes <<
+		const int nframes = shape->get_num_frames();
+		if (nframes != it->nframes)
+			cerr << "Warning: # frames (" << it->nframes <<
 			     ") given for shape " << shnum <<
 			     " doesn't match actual count (" << nframes <<
 			     ")" << endl;

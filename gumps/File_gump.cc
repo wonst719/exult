@@ -27,7 +27,7 @@
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif    // __GNUC__
-#include "SDL_events.h"
+#include <SDL.h>
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
@@ -45,9 +45,7 @@
 
 using std::cout;
 using std::endl;
-using std::memmove;
 using std::string;
-using std::strlen;
 using std::strncpy;
 
 /*
@@ -389,7 +387,7 @@ void File_gump::load(
 	if (!focus ||           // This would contain the name.
 	        !focus->get_length())
 		return;
-	int num = get_save_index(focus);// Which one is it?
+	const int num = get_save_index(focus);// Which one is it?
 	if (num == -1)
 		return;         // Shouldn't ever happen.
 	if (!Yesno_gump::ask(
@@ -410,7 +408,7 @@ void File_gump::save(
 	if (!focus ||           // This would contain the name.
 	        !focus->get_length())
 		return;
-	int num = get_save_index(focus);// Which one is it?
+	const int num = get_save_index(focus);// Which one is it?
 	if (num == -1)
 		return;         // Shouldn't ever happen.
 	if (*gwin->get_save_name(num))  // Already a game in this slot?
@@ -446,29 +444,29 @@ int File_gump::toggle_option(
     Gump_button *btn        // Button that was clicked.
 ) {
 	if (btn == buttons[3]) {    // Music?
-		bool music = !Audio::get_ptr()->is_music_enabled();
+		const bool music = !Audio::get_ptr()->is_music_enabled();
 		Audio::get_ptr()->set_music_enabled(music);
 		if (!music)     // Stop what's playing.
 			Audio::get_ptr()->stop_music();
-		string s = music ? "yes" : "no";
+		const string s = music ? "yes" : "no";
 		// Write option out.
 		config->set("config/audio/midi/enabled", s, true);
 		return music ? 1 : 0;
 	}
 	if (btn == buttons[4]) {    // Speech?
-		bool speech = !Audio::get_ptr()->is_speech_enabled();
+		const bool speech = !Audio::get_ptr()->is_speech_enabled();
 		Audio::get_ptr()->set_speech_enabled(speech);
-		string s = speech ? "yes" : "no";
+		const string s = speech ? "yes" : "no";
 		// Write option out.
 		config->set("config/audio/speech/enabled", s, true);
 		return speech ? 1 : 0;
 	}
 	if (btn == buttons[5]) {    // Sound effects?
-		bool effects = !Audio::get_ptr()->are_effects_enabled();
+		const bool effects = !Audio::get_ptr()->are_effects_enabled();
 		Audio::get_ptr()->set_effects_enabled(effects);
 		if (!effects)       // Off?  Stop what's playing.
 			Audio::get_ptr()->stop_sound_effects();
-		string s = effects ? "yes" : "no";
+		const string s = effects ? "yes" : "no";
 		// Write option out.
 		config->set("config/audio/effects/enabled", s, true);
 		return effects ? 1 : 0;
@@ -649,7 +647,7 @@ void File_gump::text_input(int chr, int unicode, bool shift_pressed) {
 		if (shift_pressed) {
 			chr = std::toupper(chr);
 		}
-		int old_length = focus->get_length();
+		const int old_length = focus->get_length();
 		focus->insert(chr);
 		// Added first character?  Need
 		//   'Save' button.

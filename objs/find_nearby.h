@@ -52,7 +52,7 @@ int Game_object::find_nearby(
 		if ((mask & (4 | 8)) && // Both seem to be all NPC's.
 				!info.is_npc())
 			return false;
-		Shape_info::Shape_class sclass = info.get_shape_class();
+		const Shape_info::Shape_class sclass = info.get_shape_class();
 		// Egg/barge?
 		if ((sclass == Shape_info::hatchable || sclass == Shape_info::barge) &&
 				!(mask & 0x10))     // Only accept if bit 16 set.
@@ -77,7 +77,7 @@ int Game_object::find_nearby(
 	int vecsize = vec.size();
 	Game_window *gwin = Game_window::get_instance();
 	Game_map *gmap = gwin->get_map();
-	TileRect bounds((pos.tx - delta + c_num_tiles) % c_num_tiles,
+	const TileRect bounds((pos.tx - delta + c_num_tiles) % c_num_tiles,
 	                 (pos.ty - delta + c_num_tiles) % c_num_tiles,
 	                 1 + 2 * delta, 1 + 2 * delta);
 	// Stay within world.
@@ -108,7 +108,7 @@ int Game_object::find_nearby(
 				continue;
 			if (exclude_okay_to_take && obj->get_flag(Obj_flags::okay_to_take))
 				continue;
-			Tile_coord t = obj->get_tile();
+			const Tile_coord t = obj->get_tile();
 			if (tiles.has_point(t.tx, t.ty)) {
 				typename VecType::value_type castobj = obj_cast(obj);
 				if (castobj) vec.push_back(castobj);

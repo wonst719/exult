@@ -41,7 +41,14 @@
 #include "ucmachine.h"
 #include "ignore_unused_variable_warning.h"
 
-#include "SDL_timer.h"
+#ifdef __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif    // __GNUC__
+#include <SDL.h>
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#endif    // __GNUC__
 
 #include "AudioMixer.h"
 using namespace Pentagram;
@@ -95,7 +102,7 @@ void Effects_manager::add_text(
     const char *msg,
     int x, int y
 ) {
-	                                   
+
 	texts.emplace_front(std::make_unique<Text_effect>(
 		msg,
 		gwin->get_scrolltx() + x / c_tilesize,
@@ -134,7 +141,7 @@ void Effects_manager::add_effect(
 void Effects_manager::remove_text_effect(
     Game_object *item       // Item text was added for.
 ) {
-	auto effectToDelete = std::find_if(texts.begin(), texts.end(), 
+	auto effectToDelete = std::find_if(texts.begin(), texts.end(),
 			[item](const auto& el) { return el->is_text(item); });
 	if (effectToDelete == texts.end())
 		return;
@@ -155,7 +162,7 @@ std::unique_ptr<Special_effect> Effects_manager::remove_effect(
 			[effect](const auto& ef) { return ef.get() == effect; });
 	decltype(effects)::value_type result;
 	if (toDelete != effects.end()) {
-		result = std::move(*toDelete);	
+		result = std::move(*toDelete);
 		effects.erase(toDelete);
 	}
 	return result;
@@ -234,11 +241,11 @@ void Effects_manager::remove_usecode_lightning(
 int Effects_manager::get_weather(
 ) {
 	auto found = std::find_if(effects.cbegin(), effects.cend(), [](const auto& ef) {
-			return ef->is_weather() && 
+			return ef->is_weather() &&
 				(static_cast<Weather_effect *>(ef.get())->get_num() >= 0);
 	});
 	return found != effects.cend()
-		? static_cast<Weather_effect *>((*found).get())->get_num()
+		? static_cast<Weather_effect *>(found->get())->get_num()
 		: 0;
 }
 
@@ -347,7 +354,7 @@ inline void Sprites_effect::add_dirty(
 	if (pos.tx == -1 || frnum == -1)
 		return;         // Already at destination.
 	Shape_frame *shape = sprite.get_shape();
-	int lp = pos.tz / 2;
+	const int lp = pos.tz / 2;
 
 	gwin->add_dirty(gwin->clip_to_win(gwin->get_shape_rect(shape,
 	                                  xoff + (pos.tx - lp - gwin->get_scrolltx())*c_tilesize,
@@ -364,7 +371,7 @@ void Sprites_effect::handle_event(
     uintptr udata
 ) {
 	int frame_num = sprite.get_framenum();
-	int delay = gwin->get_std_delay();// Delay between frames.  Needs to
+	const int delay = gwin->get_std_delay();// Delay between frames.  Needs to
 	//   match usecode animations.
 	if (!reps || (reps < 0 && frame_num == frames)) { // At end?
 		// Remove & delete this.
@@ -374,7 +381,7 @@ void Sprites_effect::handle_event(
 	}
 	add_dirty(frame_num);       // Clear out old.
 	gwin->set_painted();
-    Game_object_shared item_obj = item.lock();
+    const Game_object_shared item_obj = item.lock();
 	if (item_obj)           // Following actor?
 		pos = item_obj->get_tile();
 	xoff += deltax;         // Add deltas.
@@ -398,7 +405,7 @@ void Sprites_effect::paint(
 ) {
 	if (sprite.get_framenum() >= frames)
 		return;
-	int lp = pos.tz / 2;    // Account for lift.
+	const int lp = pos.tz / 2;    // Account for lift.
 	sprite.paint_shape(
 	    xoff + (pos.tx - lp - gwin->get_scrolltx())*c_tilesize - gwin->get_scrolltx_lo(),
 	    yoff + (pos.ty - lp - gwin->get_scrollty())*c_tilesize - gwin->get_scrolltx_lo());
@@ -408,7 +415,7 @@ static inline int get_explosion_shape(
     int weap,
     int proj
 ) {
-	int shp = proj >= 0 ? proj : (weap >= 0 ? weap : 704);
+	const int shp = proj >= 0 ? proj : (weap >= 0 ? weap : 704);
 	return ShapeID::get_info(shp).get_explosion_sprite();
 }
 
@@ -416,7 +423,7 @@ static inline int get_explosion_sfx(
     int weap,
     int proj
 ) {
-	int shp = proj >= 0 ? proj : (weap >= 0 ? weap : 704);
+	const int shp = proj >= 0 ? proj : (weap >= 0 ? weap : 704);
 	return ShapeID::get_info(shp).get_explosion_sfx();
 }
 
@@ -453,20 +460,20 @@ void Explosion_effect::handle_event(
     unsigned long curtime,      // Current time of day.
     uintptr udata
 ) {
-	int frnum = sprite.get_framenum();
+	const int frnum = sprite.get_framenum();
 	if (!frnum) {       // Max. volume, with stereo position.
 		Audio::get_ptr()->play_sound_effect(exp_sfx, pos, AUDIO_MAX_VOLUME);
 	}
 	if (frnum == frames / 4) {
 		// this was in ~Explosion_effect before
-		Game_object_shared exp_obj = explode.lock();
+		const Game_object_shared exp_obj = explode.lock();
 		if (exp_obj && !exp_obj->is_pos_invalid()) {
 			Game_window::get_instance()->add_dirty(exp_obj.get());
 			exp_obj->remove_this();
 			explode = Game_object_weak();
 		}
 		Shape_frame *shape = sprite.get_shape();
-		int width = shape->get_width();     //Get the sprite's width
+		const int width = shape->get_width();     //Get the sprite's width
 		Game_object_vector vec; // Find objects near explosion.
 		Game_object::find_nearby(vec, pos, c_any_shapenum,
 		                         width / (2 * c_tilesize), 0);
@@ -474,9 +481,9 @@ void Explosion_effect::handle_event(
 		vector<Game_object_weak> cvec(vec.size());
 		Game_object::obj_vec_to_weak(cvec, vec);
 		for (auto& it : cvec) {
-			Game_object_shared obj = it.lock();
+			const Game_object_shared obj = it.lock();
 			if (obj) {
-			    Game_object_shared att_obj = attacker.lock();
+			    const Game_object_shared att_obj = attacker.lock();
 			    obj->attacked(att_obj.get(), weapon, projectile,
 													   		   true);
 			}
@@ -520,10 +527,10 @@ void Projectile_effect::init(
 		no_blocking = no_blocking || ainfo->no_blocking();
 		autohit = autohit || ainfo->autohits();
 	}
-	Game_object_shared att_obj = attacker.lock();
-	Game_object_shared tgt_obj = target.lock();
+	const Game_object_shared att_obj = attacker.lock();
+	const Game_object_shared tgt_obj = target.lock();
 	if (att_obj) {         // Try to set start better.
-		int dir = tgt_obj ?
+		const int dir = tgt_obj ?
 		          att_obj->get_direction(tgt_obj.get()) :
 		          att_obj->get_direction(d);
 		pos = att_obj->get_missile_tile(dir);
@@ -537,14 +544,14 @@ void Projectile_effect::init(
 		dst.tz = pos.tz;
 	path = new Zombie();        // Create simple pathfinder.
 	// Find path.  Should never fail.
-	bool explodes = (winfo && winfo->explodes()) || (ainfo && ainfo->explodes());
+	const bool explodes = (winfo && winfo->explodes()) || (ainfo && ainfo->explodes());
 	if (explodes && ainfo && ainfo->is_homing())
 		path->NewPath(pos, pos, nullptr); //A bit of a hack, I know...
 	else {
 		path->NewPath(pos, dst, nullptr);
 		if (att_obj) {
 			// Getprojectile  out of shooter's volume.
-			Block vol = att_obj->get_block();
+			const Block vol = att_obj->get_block();
 			Tile_coord t;
 			bool done;
 			while (path->GetNextStep(t, done))
@@ -553,7 +560,7 @@ void Projectile_effect::init(
 			pos = t;
 		}
 	}
-	int sprite_shape = sprite.get_shapenum();
+	const int sprite_shape = sprite.get_shapenum();
 	set_sprite_shape(sprite_shape);
 	// Start after a slight delay.
 	gwin->get_tqueue()->add(Game::get_ticks(), this, gwin->get_std_delay() / 2);
@@ -574,7 +581,7 @@ void Projectile_effect::set_sprite_shape(
 		//   going clockwise from North.
 		Tile_coord src = path->get_src();
 		Tile_coord dest = path->get_dest();
-		int dir = Get_dir16(src, dest);
+		const int dir = Get_dir16(src, dest);
 		sprite.set_frame(8 + dir);
 	}
 	//else if (frames == 1 && sprite.get_shapenum() != 704)
@@ -662,7 +669,7 @@ inline void Projectile_effect::add_dirty(
 		return;
 	Shape_frame *shape = sprite.get_shape();
 	// Force repaint of prev. position.
-	int liftpix = pos.tz * c_tilesize / 2;
+	const int liftpix = pos.tz * c_tilesize / 2;
 	gwin->add_dirty(gwin->clip_to_win(gwin->get_shape_rect(shape,
 	                                  (pos.tx - gwin->get_scrolltx())*c_tilesize - liftpix,
 	                                  (pos.ty - gwin->get_scrollty())*c_tilesize - liftpix
@@ -682,7 +689,7 @@ inline Game_object_shared Find_target(
 	ignore_unused_variable_warning(gwin);
 	if (pos.tz % 5 == 0)    // On floor?
 		pos.tz++;       // Look up 1 tile.
-	Tile_coord dest = pos;      // This gets modified.
+	const Tile_coord dest = pos;      // This gets modified.
 	if (!Map_chunk::is_blocked(pos, 1, MOVE_FLY, 0) &&
 	        dest == pos)
 		return nullptr;
@@ -698,16 +705,16 @@ void Projectile_effect::handle_event(
     unsigned long curtime,      // Current time of day.
     uintptr udata
 ) {
-	int delay = gwin->get_std_delay() / 2;
+	const int delay = gwin->get_std_delay() / 2;
 	add_dirty();            // Force repaint of old pos.
 	const Weapon_info *winf = ShapeID::get_info(weapon).get_weapon_info();
 	if (winf && winf->get_rotation_speed()) {
 		// The missile rotates (such as axes/boomerangs)
-		int new_frame = sprite.get_framenum() + winf->get_rotation_speed();
+		const int new_frame = sprite.get_framenum() + winf->get_rotation_speed();
 		sprite.set_frame(new_frame > 23 ? ((new_frame - 8) % 16) + 8 : new_frame);
 	}
 	bool path_finished = false;
-	Game_object_shared att_obj = attacker.lock();
+	const Game_object_shared att_obj = attacker.lock();
 	Game_object_shared tgt_obj = target.lock();
 	for (int i = 0; i < speed; i++) {
 		// This speeds up the missile.
@@ -723,9 +730,9 @@ void Projectile_effect::handle_event(
 	const Ammo_info *ainf = ShapeID::get_info(projectile_shape).get_ammo_info();
 	if (path_finished) {
 		// Done?
-		bool explodes = (winf && winf->explodes()) || (ainf && ainf->explodes());
+		const bool explodes = (winf && winf->explodes()) || (ainf && ainf->explodes());
 		if (return_path) {  // Returned a boomerang?
-			Ireg_game_object_shared obj =
+			const Ireg_game_object_shared obj =
 			    gmap->create_ireg_object(sprite.get_shapenum(), 0);
 			if (!tgt_obj || !tgt_obj->add(obj.get())) {
 				obj->set_flag(Obj_flags::okay_to_take);
@@ -748,7 +755,7 @@ void Projectile_effect::handle_event(
 			target = Game_object_weak(); // Takes care of attack.
 		} else {
 			// Not teleported away ?
-			bool returns = (winf && winf->returns()) || (ainf && ainf->returns());
+			const bool returns = (winf && winf->returns()) || (ainf && ainf->returns());
 			bool hit = false;
 			if (tgt_obj && att_obj != tgt_obj &&
 			        // Aims for center tile, so check center tile.
@@ -783,17 +790,17 @@ void Projectile_effect::handle_event(
 				if (!winf)
 					drop = true;
 				else if (ainf) {
-					int ammo = winf->get_ammo_consumed();
-					int type = ainf->get_drop_type();
+					const int ammo = winf->get_ammo_consumed();
+					const int type = ainf->get_drop_type();
 					drop = (ammo >= 0 || ammo == -3) &&
 					       (type == Ammo_info::always_drop ||
 					        (!hit && type != Ammo_info::never_drop));
 				}
 				if (drop) {
-					Tile_coord dpos = Map_chunk::find_spot(pos, 3,
+					const Tile_coord dpos = Map_chunk::find_spot(pos, 3,
 					                              sprite.get_shapenum(), 0, 1);
 					if (dpos.tx != -1) {
-						Game_object_shared aobj = gmap->create_ireg_object(
+						const Game_object_shared aobj = gmap->create_ireg_object(
 						                        sprite.get_shapenum(), 0);
 						if (!att_obj || att_obj->get_flag(Obj_flags::is_temporary))
 							aobj->set_flag(Obj_flags::is_temporary);
@@ -821,7 +828,7 @@ void Projectile_effect::paint(
 ) {
 	if (skip_render)
 		return;
-	int liftpix = pos.tz * c_tilesize / 2;
+	const int liftpix = pos.tz * c_tilesize / 2;
 	sprite.paint_shape(
 	    (pos.tx - gwin->get_scrolltx())*c_tilesize - liftpix - gwin->get_scrolltx_lo(),
 	    (pos.ty - gwin->get_scrollty())*c_tilesize - liftpix - gwin->get_scrollty_lo());
@@ -863,7 +870,7 @@ Homing_projectile::Homing_projectile(   // A better name is welcome...
 inline int Homing_projectile::add_dirty(
 ) {
 	Shape_frame *shape = sprite.get_shape();
-	int liftpix = pos.tz * c_tilesize / 2;
+	const int liftpix = pos.tz * c_tilesize / 2;
 	gwin->add_dirty(gwin->clip_to_win(gwin->get_shape_rect(shape,
 	                                  (pos.tx - gwin->get_scrolltx())*c_tilesize - liftpix,
 	                                  (pos.ty - gwin->get_scrollty())*c_tilesize - liftpix
@@ -879,19 +886,19 @@ void Homing_projectile::handle_event(
     unsigned long curtime,      // Current time of day.
     uintptr udata
 ) {
-	int width = add_dirty();    // Repaint old area.
+	const int width = add_dirty();    // Repaint old area.
 
 	if ((target && !target->is_dead()) || stationary) {
 		//Move to target/destination if needed
-		Tile_coord tpos = stationary ? dest : target->get_tile();
-		int deltax = tpos.tx - pos.tx;
-		int deltay = tpos.ty - pos.ty;
-		int deltaz = tpos.tz +
+		const Tile_coord tpos = stationary ? dest : target->get_tile();
+		const int deltax = tpos.tx - pos.tx;
+		const int deltay = tpos.ty - pos.ty;
+		const int deltaz = tpos.tz +
 		             (stationary ? 0 : target->get_info().get_3d_height() / 2) - pos.tz;
-		int absx = deltax >= 0 ? deltax : -deltax;
-		int absy = deltay >= 0 ? deltay : -deltay;
-		int absz = deltaz >= 0 ? deltaz : -deltaz;
-		uint32 dist = absx * absx + absy * absy + absz * absz;
+		const int absx = deltax >= 0 ? deltax : -deltax;
+		const int absy = deltay >= 0 ? deltay : -deltay;
+		const int absz = deltaz >= 0 ? deltaz : -deltaz;
+		const uint32 dist = absx * absx + absy * absy + absz * absz;
 		if (dist > 1) {
 			if (deltax)
 				pos.tx += deltax / absx;
@@ -909,11 +916,11 @@ void Homing_projectile::handle_event(
 		for (auto *npc : npcs) {
 			if (!npc->is_in_party() && !npc->is_dead() &&
 			        (npc->get_effective_alignment() >= Actor::evil)) {
-				Tile_coord npos = npc->get_tile();
-				int dx = npos.tx - pos.tx;
-				int dy = npos.ty - pos.ty;
-				int dz = npos.tz - pos.tz;
-				uint32 dist = dx * dx + dy * dy + dz * dz;
+				const Tile_coord npos = npc->get_tile();
+				const int dx = npos.tx - pos.tx;
+				const int dy = npos.ty - pos.ty;
+				const int dz = npos.tz - pos.tz;
+				const uint32 dist = dx * dx + dy * dy + dz * dz;
 				if (dist < bestdist) {
 					bestdist = dist;
 					nearest = npc;
@@ -931,7 +938,7 @@ void Homing_projectile::handle_event(
 			if (!npc->is_in_party()) {
 				//Still powerful, but no longer overkill...
 				//also makes the enemy react, which is good
-				Game_object_shared att_obj = attacker.lock();
+				const Game_object_shared att_obj = attacker.lock();
 				npc->attacked(att_obj.get(), weapon, weapon, true);
 			}
 		}
@@ -961,7 +968,7 @@ void Homing_projectile::handle_event(
 
 void Homing_projectile::paint(
 ) {
-	int liftpix = pos.tz * c_tilesize / 2;
+	const int liftpix = pos.tz * c_tilesize / 2;
 	sprite.paint_shape(
 	    (pos.tx - gwin->get_scrolltx())*c_tilesize - liftpix - gwin->get_scrolltx_lo(),
 	    (pos.ty - gwin->get_scrollty())*c_tilesize - liftpix - gwin->get_scrollty_lo());
@@ -972,7 +979,7 @@ void Homing_projectile::paint(
  */
 
 TileRect Text_effect::Figure_text_pos() {
-	Game_object_shared item_obj = item.lock();
+	const Game_object_shared item_obj = item.lock();
 	if (item_obj) {
 		Gump_manager *gumpman = gwin->get_gump_man();
 		// See if it's in a gump.
@@ -1002,7 +1009,7 @@ TileRect Text_effect::Figure_text_pos() {
 void Text_effect::add_dirty(
 ) {
 	// Repaint slightly bigger rectangle.
-	TileRect rect(pos.x - c_tilesize,
+	const TileRect rect(pos.x - c_tilesize,
 	              pos.y - c_tilesize,
 	              width + 2 * c_tilesize, height + 2 * c_tilesize);
 	gwin->add_dirty(gwin->clip_to_win(rect));
@@ -1023,7 +1030,7 @@ void Text_effect::init(
 	gwin->get_tqueue()->add(Game::get_ticks(), this);
 	if (msg[0] == '@')
 		msg[0] = '"';
-	int len = msg.size();
+	const int len = msg.size();
 	if (msg[len - 1] == '@')
 		msg[len - 1] = '"';
 }
@@ -1080,7 +1087,7 @@ void Text_effect::handle_event(
 void Text_effect::update_dirty(
 ) {
 	// See if moved.
-	TileRect npos = Figure_text_pos();
+	const TileRect npos = Figure_text_pos();
 	if (npos == pos)        // No change?
 		return;
 	add_dirty();            // Force repaint of old area.
@@ -1102,7 +1109,7 @@ Text_effect::~Text_effect(
 void Text_effect::paint(
 ) {
 	const char *ptr = msg.c_str();
-	int len = strlen(ptr);
+	const int len = strlen(ptr);
 	sman->paint_text(0, ptr, len,
 	                 pos.x,
 	                 pos.y);
@@ -1186,13 +1193,13 @@ public:
 	    int scrolltx, int scrollty,
 	    int w, int h
 	) {
-		int frame = drop.get_framenum();
-		uint32 ascrollx = scrolltx * static_cast<uint32>(c_tilesize);
-		uint32 ascrolly = scrollty * static_cast<uint32>(c_tilesize);
-		int ax = drop.get_ax();
-		int ay = drop.get_ay();
-		int x = ax - ascrollx;
-		int y = ay - ascrolly;
+		const int frame = drop.get_framenum();
+		const uint32 ascrollx = scrolltx * static_cast<uint32>(c_tilesize);
+		const uint32 ascrolly = scrollty * static_cast<uint32>(c_tilesize);
+		const int ax = drop.get_ax();
+		const int ay = drop.get_ay();
+		const int x = ax - ascrollx;
+		const int y = ay - ascrolly;
 		// Still on screen?  Restore pix.
 		if (frame >= 0 && x >= 0 && y >= 0 && x < w && y < h) {
 			Game_window *gwin = Game_window::get_instance();
@@ -1207,12 +1214,12 @@ public:
 	    int scrolltx, int scrollty,
 	    int w, int h
 	) {
-		uint32 ascrollx = scrolltx * static_cast<uint32>(c_tilesize);
-		uint32 ascrolly = scrollty * static_cast<uint32>(c_tilesize);
-		int ax = drop.get_ax();
-		int ay = drop.get_ay();
-		int x = ax - ascrollx;
-		int y = ay - ascrolly;
+		const uint32 ascrollx = scrolltx * static_cast<uint32>(c_tilesize);
+		const uint32 ascrolly = scrollty * static_cast<uint32>(c_tilesize);
+		const int ax = drop.get_ax();
+		const int ay = drop.get_ay();
+		const int x = ax - ascrollx;
+		const int y = ay - ascrolly;
 		// Still on screen?  Restore pix.
 		if (x >= 0 && y >= 0 && x < w && y < h) {
 			Game_window *gwin = Game_window::get_instance();
@@ -1228,7 +1235,7 @@ static inline void set_frame(Particle &drop) {
 	int frame = drop.get_framenum();
 	if (frame < 0) {
 		if (randomize) {
-			int dir = rand() % 2;
+			const int dir = rand() % 2;
 			if (dir)
 				drop.toggle_forward();
 			frame = fra0 + rand() % (fraN - fra0) + dir;
@@ -1251,7 +1258,7 @@ protected:
 		set_frame<fra0, fraN, randomize>(drop);
 		// Time to restart?
 		if (x < 0 || x >= w || y < 0 || y >= h) {
-			int r = rand();
+			const int r = rand();
 			drop.move(ascrollx + r % (w - w / 8), ascrolly + r % (h - h / 4));
 		} else              // Next spot.
 			drop.move(drop.get_ax() + delta, drop.get_ay() + delta);
@@ -1310,11 +1317,11 @@ public:
 		        !gumpman->showing_gumps(true)) {
 			// Don't show rain inside buildings!
 			Image_window8 *win = gwin->get_win();
-			int w = win->get_game_width();
-			int h = win->get_game_height();
+			const int w = win->get_game_width();
+			const int h = win->get_game_height();
 			// Get transform table.
-			int scrolltx = gwin->get_scrolltx();
-			int scrollty = gwin->get_scrollty();
+			const int scrolltx = gwin->get_scrolltx();
+			const int scrollty = gwin->get_scrollty();
 			// Move drops.
 			for (int i = 0; i < num_drops; i++)
 				do_drop.move(drops[i], scrolltx, scrollty, w, h);
@@ -1334,11 +1341,11 @@ public:
 		if (gwin->is_main_actor_inside())
 			return;         // Inside.
 		// Get transform table.
-		int scrolltx = gwin->get_scrolltx();
-		int scrollty = gwin->get_scrollty();
+		const int scrolltx = gwin->get_scrolltx();
+		const int scrollty = gwin->get_scrollty();
 		Image_window8 *win = gwin->get_win();
-		int w = win->get_game_width();
-		int h = win->get_game_height();
+		const int w = win->get_game_width();
+		const int h = win->get_game_height();
 		for (int i = 0; i < num_drops; i++)
 			do_drop.paint(drops[i], scrolltx, scrollty, w, h);
 		gwin->set_painted();
@@ -1363,7 +1370,7 @@ void Lightning_effect::handle_event(
     unsigned long curtime,      // Current time of day.
     uintptr udata
 ) {
-	int r = rand();         // Get a random #.
+	const int r = rand();         // Get a random #.
 	int delay = 100;        // Delay for next time.
 	if (flashing) {         // Just turned white?  Restore.
 		gclock->set_palette();
@@ -1400,9 +1407,9 @@ Storm_effect::Storm_effect(
 ) : Weather_effect(duration, delay, 2, egg), start(true) {
 	// Start raining soon.
 	eman->add_effect(std::make_unique<Clouds_effect>(duration + 1, delay));
-	int rain_delay = 20 + rand() % 1000;
+	const int rain_delay = 20 + rand() % 1000;
 	eman->add_effect(std::make_unique<Rain_effect<Raindrop>>(duration + 2, rain_delay, 0));
-	int lightning_delay = rain_delay + rand() % 500;
+	const int lightning_delay = rain_delay + rand() % 500;
 	eman->add_effect(std::make_unique<Lightning_effect>(duration - 2, lightning_delay));
 }
 
@@ -1503,7 +1510,7 @@ Fog_effect::Fog_effect(
 ) : Weather_effect(duration, delay, 4, egg), start(true) {
 		// SI adds sparkle/raindrops to the fog palette shift
 		// let's do that for all games
-		int rain_delay = 250 + rand() % 1000;
+		const int rain_delay = 250 + rand() % 1000;
 		eman->add_effect(std::make_unique<Rain_effect<Sparkle>>(duration, rain_delay, MAXDROPS/2));
 }
 
@@ -1531,8 +1538,8 @@ Cloud::Cloud(
 ) : cloud(CLOUD, 0, SF_SPRITES_VGA), wx(0), wy(0), deltax(dx), deltay(dy), count(-1) {
 	Game_window *gwin = Game_window::get_instance();
 	// Get abs. values.
-	int adx = deltax > 0 ? deltax : -deltax;
-	int ady = deltay > 0 ? deltay : -deltay;
+	const int adx = deltax > 0 ? deltax : -deltax;
+	const int ady = deltay > 0 ? deltay : -deltay;
 	if (adx < ady)
 		max_count = 2 * gwin->get_height() / ady;
 	else
@@ -1560,8 +1567,8 @@ void Cloud::set_start_pos(
 		x = deltax > 0 ? -shape->get_xright() : w + shape->get_xleft();
 		return;
 	}
-	int halfp = w + h;      // 1/2 perimeter.
-	int r = rand() % halfp;     // Start on one of two sides.
+	const int halfp = w + h;      // 1/2 perimeter.
+	const int r = rand() % halfp;     // Start on one of two sides.
 	if (r > h) {        // Start on top/bottom.
 		x = r - h;
 		y = deltay > 0 ? -shape->get_ybelow() :
@@ -1587,8 +1594,8 @@ inline void Cloud::next(
 	if (curtime < start_time)
 		return;         // Not yet.
 	// Get top-left world pos.
-	long scrollx = gwin->get_scrolltx() * c_tilesize;
-	long scrolly = gwin->get_scrollty() * c_tilesize;
+	const long scrollx = gwin->get_scrolltx() * c_tilesize;
+	const long scrolly = gwin->get_scrollty() * c_tilesize;
 	Shape_frame *shape = cloud.get_shape();
 	gwin->add_dirty(gwin->clip_to_win(gwin->get_shape_rect(
 	                                      shape, wx - scrollx, wy - scrolly).enlarge(c_tilesize / 2)));
@@ -1679,8 +1686,8 @@ void Clouds_effect::handle_event(
 		gwin->set_all_dirty();
 		return;
 	}
-	int w = gwin->get_width();
-	int h = gwin->get_height();
+	const int w = gwin->get_width();
+	const int h = gwin->get_height();
 	for (auto& cloud : clouds)
 		cloud->next(gwin, curtime, w, h);
 	gwin->get_tqueue()->add(curtime + delay, this, udata);
@@ -1766,7 +1773,7 @@ Fire_field_effect::Fire_field_effect(
     int base_lifespan,
     bool endless
 ) {
-    Game_object_shared field_obj = gmap->create_ireg_object(895, 0);
+    const Game_object_shared field_obj = gmap->create_ireg_object(895, 0);
 	field = Game_object_weak(field_obj);
 	field_obj->set_flag(Obj_flags::is_temporary);
 	field_obj->move(t.tx, t.ty, t.tz);
@@ -1778,11 +1785,11 @@ Fire_field_effect::Fire_field_effect(
 	constexpr const static int dir_frames[] = {2, 4, 1, 3};
 	for (int dir = 0; dir < 4; dir++) {
 		const Tile_coord pos = t.get_neighbor(dir * 2);
-		Game_object_shared dust_obj = gmap->create_ireg_object(224, dir_frames[dir]);
+		const Game_object_shared dust_obj = gmap->create_ireg_object(224, dir_frames[dir]);
 		dust_obj->set_flag(Obj_flags::is_temporary);
 		dust_obj->move(pos.tx, pos.ty, pos.tz);
 	}
-	Game_object_shared dust_obj = gmap->create_ireg_object(224, 5);
+	const Game_object_shared dust_obj = gmap->create_ireg_object(224, 5);
 	dust_obj->set_flag(Obj_flags::is_temporary);
 	dust_obj->move(t.tx, t.ty, t.tz);
 	gwin->get_tqueue()->add(Game::get_ticks() + 3000 + rand() % 2000, this);
@@ -1796,7 +1803,7 @@ void Fire_field_effect::handle_event(
     unsigned long curtime,      // Current time of day.
     uintptr udata
 ) {
-	Game_object_shared field_obj = field.lock();
+	const Game_object_shared field_obj = field.lock();
 	if (remaining_ticks-- <= 0) {       // All done?
 		if (field_obj) {
 			field_obj->remove_this();

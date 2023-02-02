@@ -125,9 +125,9 @@ int find_intrinsic(const char * const *func_table, unsigned funsize, const char 
 void read_token(FILE *fi) {
 	int i = 0;
 	int c = 32;
-	while (((c == ' ') || (c == '\t') || (c == '\n') || (c == ',')) && (!feof(fi)))
+	while (((c == ' ') || (c == '\t') || (c == '\n') || (c == ',')) && !feof(fi))
 		c = fgetc(fi);
-	while (!((c == ' ') || (c == '\t') || (c == '\n') || (c == ',')) && (!feof(fi))) {
+	while ((c != ' ') && (c != '\t') && (c != '\n') && (c != ',') && !feof(fi)) {
 		if (i >= TOKEN_LENGTH - 1) {
 			fprintf(stderr, "Error: token too long!\n");
 			exit(-1);
@@ -160,10 +160,10 @@ void read_token(FILE *fi) {
 
 int main(int argc,char *argv[]) {
 	unsigned i;
-	unsigned opsize = array_size(opcode_table);
-	unsigned pushsize = array_size(push_table);
-	unsigned popsize = array_size(pop_table);
-	unsigned compsize = array_size(compiler_table);
+	const unsigned opsize = array_size(opcode_table);
+	const unsigned pushsize = array_size(push_table);
+	const unsigned popsize = array_size(pop_table);
+	const unsigned compsize = array_size(compiler_table);
 	int label;
 	const char * const *func_table = bg_intrinsic_table;
 	int funsize = bg_intrinsic_size;

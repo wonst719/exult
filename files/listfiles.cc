@@ -28,8 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cstring>
 #include <iostream>
 
-using std::cerr;
-using std::endl;
 using std::string;
 
 #include "utils.h"
@@ -47,7 +45,7 @@ using std::string;
 #include <tchar.h>
 
 int U7ListFiles(const std::string &mask, FileList &files) {
-	string          path(get_system_path(mask));
+	const string    path(get_system_path(mask));
 	const TCHAR     *lpszT;
 	WIN32_FIND_DATA fileinfo;
 	HANDLE          handle;
@@ -161,7 +159,7 @@ static int U7ListFilesImp(const std::string &path, FileList &files) {
 	case 3:   //no matches
 		return 0;
 	default:  //error
-		cerr << "Glob error " << err << endl;
+		std::cerr << "Glob error " << err << std::endl;
 		return err;
 	}
 }

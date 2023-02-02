@@ -568,7 +568,7 @@ if test x$enable_exult_studio_support = xyes ; then
 	AC_DEFINE(USE_EXULTSTUDIO, 1, [Use Exult Studio])
 	AC_CHECK_FUNC(xwin, AC_DEFINE(XWIN))
 	if test "$WINDOWING_SYSTEM" = -DMACOSX -a "$ac_cv_func_xwin" != yes; then
-		if test ! $sdl_patchlevel -gt "14"; then
+		if test $sdl_minor_version -eq "0" -a $sdl_patchlevel -lt "15"; then
 			echo "SDL2 2.0.15 or newer is needed for native drag'n'drop - switching to X11"
 			enable_macosx_x11_studio_support=yes
 		fi
@@ -1307,10 +1307,7 @@ echo Debug Usecode Container.... : $enable_usecode_container
 echo Debug non Readied Objects.. : $enable_nonreadied_objects
 echo
 echo Compilation :
-echo Enable compiler sanitizers. : $enable_sanitizers
-echo Enable SDL parachute....... : $enable_sdl_parachute
-echo Build with static libraries : $enable_static_libs
-echo -n "Build Exult................ : "
+printf "Build Exult................ : "
 if test x$enable_libexult = xyes; then
 	echo as library
 elif test x$enable_exult = xyes; then
@@ -1318,6 +1315,9 @@ elif test x$enable_exult = xyes; then
 else
 	echo no
 fi
+echo Enable compiler sanitizers. : $enable_sanitizers
+echo Enable SDL parachute....... : $enable_sdl_parachute
+echo Build with static libraries : $enable_static_libs
 echo Turn all warnings to errors : $enable_warning_errors
 echo Turn pedantics to errors... : $enable_pedantic_errors
 

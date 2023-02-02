@@ -20,16 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #  include <config.h>
 #endif
 
-#ifdef __GNUC__
-#	pragma GCC diagnostic push
-#	pragma GCC diagnostic ignored "-Wold-style-cast"
-#endif    // __GNUC__
-#include "SDL_events.h"
-#include "SDL_keyboard.h"
-#ifdef __GNUC__
-#	pragma GCC diagnostic pop
-#endif    // __GNUC__
-
 #include "game.h"
 #include "gamewin.h"
 #include "Gump_button.h"
@@ -88,7 +78,7 @@ void Slider_gump::set_val(
     int newval
 ) {
 	val = newval;
-	static int xdist = xmax - xmin;
+	static const int xdist = xmax - xmin;
 	if (max_val - min_val == 0) {
 		val = 0;
 		diamondx = xmin;
@@ -203,11 +193,11 @@ bool Slider_gump::mouse_down(
 		if (mx - get_x() < xmin || mx - get_x() > xmax)
 			return true;
 		diamondx = mx - get_x();
-		static int xdist = xmax - xmin;
+		static const int xdist = xmax - xmin;
 		int delta = (diamondx - xmin) * (max_val - min_val) / xdist;
 		// Round down to nearest step.
 		delta -= delta % step_val;
-		int newval = min_val + delta;
+		const int newval = min_val + delta;
 		if (newval != val)      // Set value.
 			val = newval;
 		paint();
@@ -257,11 +247,11 @@ void Slider_gump::mouse_drag(
 		diamondx = xmin;
 	else if (diamondx > xmax)
 		diamondx = xmax;
-	static int xdist = xmax - xmin;
+	static const int xdist = xmax - xmin;
 	int delta = (diamondx - xmin) * (max_val - min_val) / xdist;
 	// Round down to nearest step.
 	delta -= delta % step_val;
-	int newval = min_val + delta;
+	const int newval = min_val + delta;
 	if (newval != val)      // Set value.
 		val = newval;
 	paint();
@@ -287,7 +277,7 @@ void Slider_gump::key_down(int chr) {
 }
 
 void Slider_gump::mousewheel_up() {
-	SDL_Keymod mod = SDL_GetModState();
+	const SDL_Keymod mod = SDL_GetModState();
 	if (mod & KMOD_ALT)
 		move_diamond(-10 * step_val);
 	else
@@ -295,7 +285,7 @@ void Slider_gump::mousewheel_up() {
 }
 
 void Slider_gump::mousewheel_down() {
-	SDL_Keymod mod = SDL_GetModState();
+	const SDL_Keymod mod = SDL_GetModState();
 	if (mod & KMOD_ALT)
 		move_diamond(10 * step_val);
 	else

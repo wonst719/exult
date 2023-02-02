@@ -66,8 +66,8 @@ Shape_group::Shape_group(
 	if (vgafile->read_info(es->get_game_type(), true))
 		es->set_shapeinfo_modified();
 	int i;
-	int cnt = vgafile->get_num_shapes();
-	bool modified = file->modified;
+	const int cnt = vgafile->get_num_shapes();
+	const bool modified = file->modified;
 
 	if (builtin >= 0 && builtin <= 15) {
 		for (i = 0; i < cnt; i++)
@@ -203,7 +203,7 @@ void Shape_group::del(
 void Shape_group::swap(
     int i               // Lower one.
 ) {
-	int x0 = (*this)[i];
+	const int x0 = (*this)[i];
 	(*this)[i] = (*this)[i + 1];
 	(*this)[i + 1] = x0;
 	file->modified = true;
@@ -216,7 +216,7 @@ void Shape_group::swap(
 void Shape_group::add(
     int id
 ) {
-	for (int it : *this)
+	for (const int it : *this)
 		if (it == id)
 			return;     // Already there.
 	push_back(id);
@@ -244,21 +244,21 @@ Shape_group_file::Shape_group_file(
     const char *nm          // Basename.
 ) : name(nm), modified(false) {
 	unique_ptr<Flex> flex;
-	std::string patchname = "<PATCH>/" + name;
-	std::string staticname = "<STATIC>/" + name;
+	const std::string patchname = "<PATCH>/" + name;
+	const std::string staticname = "<STATIC>/" + name;
 	if (U7exists(patchname))    // First try 'patch' directory.
 		flex = make_unique<FlexFile>(patchname.c_str());
 	else if (U7exists(staticname))
 		flex = make_unique<FlexFile>(staticname.c_str());
 	if (flex) {         // Exists?
-		int cnt = flex->number_of_objects();
+		const int cnt = flex->number_of_objects();
 		for (int i = 0; i < cnt; i++) {
 			// Get each group.
 			std::size_t len;
 			auto buf = flex->retrieve(i, len);
 			const char *gname = reinterpret_cast<const char *>(buf.get()); // Starts with name.
 			const unsigned char *ptr = buf.get() + strlen(gname) + 1;
-			size_t sz = Read2(ptr); // Get # entries.
+			const size_t sz = Read2(ptr); // Get # entries.
 			assert((len - (ptr - buf.get())) / 2 == sz);
 			auto *grp = new Shape_group(gname, this);
 			grp->reserve(sz);
@@ -382,7 +382,7 @@ Shape_group *Shape_group_file::get_builtin(
 
 void Shape_group_file::write(
 ) {
-	std::string patchname = "<PATCH>/" + name;
+	const std::string patchname = "<PATCH>/" + name;
 	try {
 		OFileDataSource out(patchname.c_str());
 		Flex_writer gfile(out, "ExultStudio shape groups", groups.size());
@@ -405,7 +405,7 @@ static int Get_tree_row(
     GtkTreePath *path
 ) {
 	gchar *str = gtk_tree_path_to_string(path);
-	int row = atoi(str);
+	const int row = atoi(str);
 	g_free(str);
 	return row;
 }
@@ -414,7 +414,7 @@ static int Get_tree_row(
     GtkTreeIter *iter       // Position we want.
 ) {
 	GtkTreePath *path = gtk_tree_model_get_path(model, iter);
-	int row = Get_tree_row(path);
+	const int row = Get_tree_row(path);
 	gtk_tree_path_free(path);
 	return row;
 }
@@ -544,7 +544,7 @@ void ExultStudio::setup_groups(
 		// Create column.
 		GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 		g_object_set(renderer, "xalign", 0.0, nullptr);
-		gint col_offset = gtk_tree_view_insert_column_with_attributes(
+		const gint col_offset = gtk_tree_view_insert_column_with_attributes(
 		                      tview,
 		                      -1, "Names",
 		                      renderer, "text",
@@ -580,7 +580,7 @@ void ExultStudio::setup_groups(
 	// Show builtins for shapes.vga.
 	set_visible("builtin_groups", curfile == vgafile);
 	gtk_tree_view_set_reorderable(tview, TRUE);
-	int cnt = groups->size();   // Add groups from file.
+	const int cnt = groups->size();   // Add groups from file.
 	GtkTreeIter iter;
 	for (int i = 0; i < cnt; i++) {
 		Shape_group *grp = groups->get(i);
@@ -659,13 +659,13 @@ void ExultStudio::del_group(
 	GtkTreeIter iter;
 	if (!gtk_tree_selection_get_selected(list, &model, &iter))
 		return;
-	int row = Get_tree_row(model, &iter);
+	const int row = Get_tree_row(model, &iter);
 	Shape_group_file *groups = curfile->get_groups();
 	Shape_group *grp = groups->get(row);
 	string msg("Delete group '");
 	msg += grp->get_name();
 	msg += "'?";
-	int choice = prompt(msg.c_str(), "Yes", "No");
+	const int choice = prompt(msg.c_str(), "Yes", "No");
 	if (choice != 0)        // Yes?
 		return;
 	delete groups->get(row);    // Delete the group.
@@ -696,7 +696,7 @@ void ExultStudio::groups_changed(
 	if (!curfile)
 		return;
 	Shape_group_file *groups = curfile->get_groups();
-	int row = Get_tree_row(path);
+	const int row = Get_tree_row(path);
 	if (!loc)
 		groups->remove(row, false);
 	else {
@@ -734,7 +734,7 @@ on_group_up_clicked(GtkToggleButton *button,
 	                    G_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(button))),
 	                    "browser"));
 	Shape_group *grp = chooser->get_group();
-	int i = chooser->get_selected();
+	const int i = chooser->get_selected();
 	if (grp && i > 0) {     // Moving item up.
 		grp->swap(i - 1);
 		ExultStudio::get_instance()->update_group_windows(grp);
@@ -748,7 +748,7 @@ on_group_down_clicked(GtkToggleButton *button,
 	                    G_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(button))),
 	                    "browser"));
 	Shape_group *grp = chooser->get_group();
-	int i = chooser->get_selected();
+	const int i = chooser->get_selected();
 	if (grp && i < grp->size() - 1) { // Moving down.
 		grp->swap(i);
 		ExultStudio::get_instance()->update_group_windows(grp);
@@ -762,7 +762,7 @@ on_group_shape_remove_clicked(GtkToggleButton *button,
 	                    G_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(button))),
 	                    "browser"));
 	Shape_group *grp = chooser->get_group();
-	int i = chooser->get_selected();
+	const int i = chooser->get_selected();
 	if (grp && i >= 0) {
 		grp->del(i);
 		ExultStudio::get_instance()->update_group_windows(grp);
@@ -784,7 +784,7 @@ void ExultStudio::open_group_window(
 	GtkTreeIter iter;
 	if (!gtk_tree_selection_get_selected(list, &model, &iter))
 		return;
-	int row = Get_tree_row(model, &iter);
+	const int row = Get_tree_row(model, &iter);
 	Shape_group_file *groups = curfile->get_groups();
 	Shape_group *grp = groups->get(row);
 	open_group_window(grp);
@@ -801,7 +801,7 @@ void ExultStudio::open_builtin_group_window(
 	Shape_group_file *groups = curfile->get_groups();
 	GtkComboBox *btn = GTK_COMBO_BOX(get_widget("builtin_group"));
 	assert(btn != nullptr);
-	int index = gtk_combo_box_get_active(btn);
+	const int index = gtk_combo_box_get_active(btn);
 	// gchar * label = gtk_combo_box_get_active_text(btn);
 	GtkTreeIter iter;
 	gtk_combo_box_get_active_iter(btn, &iter);
@@ -890,7 +890,7 @@ void ExultStudio::save_groups(
 ) {
 	if (!files)
 		return;
-	int cnt = files->size();
+	const int cnt = files->size();
 	for (int i = 0; i < cnt; i++) { // Check each file.
 		Shape_file_info *info = (*files)[i];
 		Shape_group_file *gfile = info->get_groups();
@@ -907,7 +907,7 @@ bool ExultStudio::groups_modified(
 ) {
 	if (!files)
 		return false;
-	int cnt = files->size();
+	const int cnt = files->size();
 	for (int i = 0; i < cnt; i++) { // Check each file.
 		Shape_file_info *info = (*files)[i];
 		Shape_group_file *gfile = info->get_groups();

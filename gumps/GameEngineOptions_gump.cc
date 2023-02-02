@@ -27,7 +27,6 @@
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif    // __GNUC__
-#include "SDL_events.h"
 #include <SDL.h>
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
@@ -68,7 +67,7 @@ static const int num_default_rates = array_size(framerates) - 1;
 
 static string framestring(int fr) {
 	char buf[100];
-	sprintf(buf, "%i fps", fr);
+	snprintf(buf, sizeof(buf), "%i fps", fr);
 	return buf;
 }
 
@@ -97,7 +96,7 @@ void GameEngineOptions_gump::build_buttons() {
 	int y_index = 0;
 	int small_size = 44;
 	int large_size = 85;
-	
+
 	buttons[id_allow_autonotes] = std::make_unique<GameEngineTextToggle>(this, &GameEngineOptions_gump::toggle_allow_autonotes,
 	        yesNo, allow_autonotes, colx[5], rowy[y_index], small_size);
 
@@ -133,7 +132,7 @@ void GameEngineOptions_gump::build_buttons() {
 }
 
 void GameEngineOptions_gump::load_settings() {
-	string yn;
+	const string yn;
 	cheats = cheat();
 	difficulty = Combat::difficulty;
 	if (difficulty < -3)
@@ -149,7 +148,7 @@ void GameEngineOptions_gump::load_settings() {
 	alternate_drop = gwin->get_alternate_drop();
 	allow_autonotes = gwin->get_allow_autonotes();
 	gumps_pause = !gumpman->gumps_dont_pause_game();
-	int realframes = 1000 / gwin->get_std_delay();
+	const int realframes = 1000 / gwin->get_std_delay();
 
 	frames = -1;
 	framerates[num_default_rates] = realframes;
@@ -177,7 +176,7 @@ GameEngineOptions_gump::GameEngineOptions_gump()
 
 	load_settings();
 	build_buttons();
-	
+
 	// Ok
 	buttons[id_ok] = std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::close,
 	        oktext, colx[0] - 2, rowy[12], 50);
@@ -213,7 +212,7 @@ void GameEngineOptions_gump::save_settings() {
 	gwin->set_allow_autonotes(allow_autonotes);
 	config->set("config/gameplay/allow_autonotes",
 	            allow_autonotes ? "yes" : "no", false);
-	int fps = framerates[frames];
+	const int fps = framerates[frames];
 	gwin->set_std_delay(1000 / fps);
 	config->set("config/video/fps", fps, false);
 	cheat.set_enabled(cheats != 0);

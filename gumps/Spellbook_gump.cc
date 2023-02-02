@@ -20,7 +20,15 @@
 #  include <config.h>
 #endif
 
-#include <SDL_timer.h>
+#ifdef __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif    // __GNUC__
+#include <SDL.h>
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#endif    // __GNUC__
+
 #include "actors.h"
 #include "cheat.h"
 #include "gamewin.h"
@@ -135,14 +143,14 @@ public:
 void Bookmark_button::set(
 ) {
 	auto *sgump = static_cast<Spellbook_gump *>(parent);
-	TileRect &object_area = sgump->object_area;
-	int spwidth = sgump->spwidth;   // Spell width.
+	const TileRect &object_area = sgump->object_area;
+	const int spwidth = sgump->spwidth;   // Spell width.
 	Spellbook_object *book = sgump->book;
-	int page = sgump->page;     // Page (circle) we're on.
-	int bmpage = book->bookmark / 8; // Bookmark's page.
-	int s = book->bookmark % 8; // Get # within circle.
+	const int page = sgump->page;     // Page (circle) we're on.
+	const int bmpage = book->bookmark / 8; // Bookmark's page.
+	const int s = book->bookmark % 8; // Get # within circle.
 	// Which side for bookmark?
-	bool left = bmpage == page ? (s < 4) : bmpage < page;
+	const bool left = bmpage == page ? (s < 4) : bmpage < page;
 	// Figure coords.
 	x = left ? object_area.x + spwidth / 2
 	    : object_area.x + object_area.w - spwidth / 2 - 2;
@@ -161,8 +169,8 @@ bool Bookmark_button::activate(
 ) {
 	if (button != 1) return false;
 	auto *sgump = static_cast<Spellbook_gump *>(parent);
-	int bmpage = sgump->book->bookmark / 8; // Bookmark's page.
-	int delta = sign(bmpage - sgump->page);
+	const int bmpage = sgump->book->bookmark / 8; // Bookmark's page.
+	const int delta = sign(bmpage - sgump->page);
 	// On a different, valid page?
 	if (bmpage >= 0 && bmpage != sgump->page) {
 		while (bmpage != sgump->page) // turn all pages between current and Bookmark's page.
@@ -232,7 +240,7 @@ void Spellbook_gump::set_avail(
 	for (r = 0; r < NREAGENTS; r++) // Count, by frame (frame==bit#).
 		reagent_counts[r] = book_owner->count_objects(
 		                        REAGENTS, c_any_qual, r);
-	bool has_ring = book->has_ring(gwin->get_main_actor());
+	const bool has_ring = book->has_ring(gwin->get_main_actor());
 	for (i = 0; i < 9 * 8; i++) { // Now figure what's available.
 		avail[i] = 10000;   // 'infinite'.
 		if (has_ring)
@@ -273,14 +281,14 @@ Spellbook_gump::Spellbook_gump(
 	spwidth = spshape->get_width();
 	spheight = spshape->get_height();
 	bookmark->set();        // Set to correct position, frame.
-	int vertspace = (object_area.h - 4 * spheight) / 4;
-	int spells0 = SPELLS;
+	const int vertspace = (object_area.h - 4 * spheight) / 4;
+	const int spells0 = SPELLS;
 	for (int c = 0; c < 9; c++) { // Add each spell.
-		int spindex = c * 8;
-		unsigned char cflags = book->circles[c];
+		const int spindex = c * 8;
+		const unsigned char cflags = book->circles[c];
 		for (int s = 0; s < 8; s++)
 			if ((cflags & (1 << s)) || cheat.in_wizard_mode() || cheat.in_map_editor()) {
-				int spnum = spindex + s;
+				const int spnum = spindex + s;
 				spells[spnum] = new Spell_button(this,
 				                                 s < 4 ? object_area.x +
 				                                 spshape->get_xleft() + 1
@@ -355,8 +363,8 @@ void Spellbook_gump::change_page(
 			return;
 		turning_page = 1;
 	}
-	ShapeID shape(TURNINGPAGE, 0, SF_GUMPS_VGA);
-	int nframes = shape.get_num_frames();
+	const ShapeID shape(TURNINGPAGE, 0, SF_GUMPS_VGA);
+	const int nframes = shape.get_num_frames();
 	int i;
 	turning_frame = turning_page == 1 ? 0 : nframes - 1;
 	for (i = 0; i < nframes; i++) { // Animate.
@@ -410,7 +418,7 @@ Gump_button *Spellbook_gump::on_button(
 		return leftpage;
 	else if (rightpage->on_button(mx, my))
 		return rightpage;
-	int spindex = page * 8;     // Index into list.
+	const int spindex = page * 8;     // Index into list.
 	for (int s = 0; s < 8; s++) { // Check spells.
 		Gump_button *spell = spells[spindex + s];
 		if (spell && spell->on_button(mx, my))
@@ -445,18 +453,18 @@ void Spellbook_gump::paint(
 		paint_button(leftpage);
 	if (page < 8)           // Not the last?
 		paint_button(rightpage);
-	int spindex = page * 8;     // Index into list.
+	const int spindex = page * 8;     // Index into list.
 	for (int s = 0; s < 8; s++) // Paint spells.
 		if (spells[spindex + s]) {
 			Gump_button *spell = spells[spindex + s];
 			paint_button(spell);
 			if (GAME_BG && page == 0 && !cheat.in_map_editor()) // No quantities for 0th circle in BG.
 				continue;
-			int num = avail[spindex + s];
+			const int num = avail[spindex + s];
 			char text[8];
 #ifdef USE_EXULTSTUDIO
 			if (cheat.in_map_editor()) {
-				unsigned char cflags = book->circles[page];
+				const unsigned char cflags = book->circles[page];
 				if (cflags & (1 << s)) // has spell
 					std::strcpy(text, "remove");
 				else
@@ -491,8 +499,8 @@ void Spellbook_gump::paint(
 		const int TPYOFF = 3;
 		ShapeID shape(TURNINGPAGE, turning_frame, SF_GUMPS_VGA);
 		Shape_frame *fr = shape.get_shape();
-		int spritex = x + object_area.x + fr->get_xleft() + TPXOFF;
-		int spritey = y + fr->get_yabove() + TPYOFF;
+		const int spritex = x + object_area.x + fr->get_xleft() + TPXOFF;
+		const int spritey = y + fr->get_yabove() + TPYOFF;
 		shape.paint_shape(spritex, spritey);
 		turning_frame += turning_page;
 		if (turning_frame < 0 || turning_frame >=
@@ -507,8 +515,8 @@ void Spellbook_gump::paint(
  */
 
 bool Spellbook_gump::handle_kbd_event(void *vev) {
-	SDL_Event &ev = *static_cast<SDL_Event *>(vev);
-	int chr = ev.key.keysym.sym;
+	const SDL_Event &ev = *static_cast<SDL_Event *>(vev);
+	const int chr = ev.key.keysym.sym;
 
 	if (ev.type == SDL_KEYUP)
 		return true;        // Ignoring key-up at present.
@@ -540,18 +548,18 @@ bool Spellbook_gump::handle_kbd_event(void *vev) {
 		select_spell((page * 8) | (book->bookmark & 3) |  4);
 		break;
 	case SDLK_UP: {
-		int snum = book->bookmark & 3;
+		const int snum = book->bookmark & 3;
 		if (snum == 0)
 			break;
-		int side = book->bookmark & 4;
+		const int side = book->bookmark & 4;
 		select_spell((page * 8) | side | (snum - 1));
 		break;
 	}
 	case SDLK_DOWN: {
-		int snum = book->bookmark & 3;
+		const int snum = book->bookmark & 3;
 		if (snum == 3)
 			break;
-		int side = book->bookmark & 4;
+		const int side = book->bookmark & 4;
 		select_spell((page * 8) | side | (snum + 1));
 		break;
 	}
@@ -574,7 +582,7 @@ Spellscroll_gump::Spellscroll_gump(
 	Shape_frame *spshape = ShapeID(SCROLLSPELLS, 0, SF_GUMPS_VGA).get_shape();
 	spwidth = spshape->get_width();
 	spheight = spshape->get_height();
-	int spellnum = scroll->get_quality();
+	const int spellnum = scroll->get_quality();
 	if (spellnum >= 0 && spellnum < 8 * 9)
 		spell = new Spell_button(this,
 		                         object_area.x + 4 + spshape->get_xleft(),

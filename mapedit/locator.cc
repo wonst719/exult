@@ -235,8 +235,8 @@ void Locator::render(
 	// Get dims.
 	GtkAllocation alloc =  {0, 0, 0, 0};
 	gtk_widget_get_allocation(draw, &alloc);
-	int draww = alloc.width;
-	int drawh = alloc.height;
+	const int draww = alloc.width;
+	const int drawh = alloc.height;
 	GdkRectangle all;
 	if (!area) {
 		all.x = all.y = 0;
@@ -260,7 +260,7 @@ void Locator::render(
 	int cur = 0;            // Cur. pixel.
 	// First the rows.
 	for (i = 0; i < c_num_schunks - 1; i++) {
-		int rowht = (drawh - cur) / (c_num_schunks - i);
+		const int rowht = (drawh - cur) / (c_num_schunks - i);
 		cur += rowht;
 		cairo_set_source_rgb(drawgc, 192.0 / 255.0, 192.0 / 255.0, 192.0 / 255.0);
 		cairo_move_to(drawgc, 0, cur);
@@ -280,7 +280,7 @@ void Locator::render(
 	}
 	cur = 0;            // Now the columns.
 	for (i = 0; i < c_num_schunks - 1; i++) {
-		int colwd = (draww - cur) / (c_num_schunks - i);
+		const int colwd = (draww - cur) / (c_num_schunks - i);
 		cur += colwd;
 		cairo_set_source_rgb(drawgc, 192.0 / 255.0, 192.0 / 255.0, 192.0 / 255.0);
 		cairo_move_to(drawgc, cur, 0);
@@ -299,10 +299,10 @@ void Locator::render(
 		}
 	}
 	// Figure where to draw box.
-	int cx = tx / c_tiles_per_chunk;
-	int cy = ty / c_tiles_per_chunk;
-	int x = (cx * draww) / c_num_chunks;
-	int y = (cy * drawh) / c_num_chunks;
+	const int cx = tx / c_tiles_per_chunk;
+	const int cy = ty / c_tiles_per_chunk;
+	const int x = (cx * draww) / c_num_chunks;
+	const int y = (cy * drawh) / c_num_chunks;
 	int w = (txs * draww) / c_num_tiles;
 	int h = (tys * drawh) / c_num_tiles;
 	if (w == 0)
@@ -341,8 +341,8 @@ void Locator::view_changed(
 	tys = Read4(data);
 	// ++++Scale?  Later.
 	// Do things by chunk.
-	int cx = tx / c_tiles_per_chunk;
-	int cy = ty / c_tiles_per_chunk;
+	const int cx = tx / c_tiles_per_chunk;
+	const int cy = ty / c_tiles_per_chunk;
 	tx = cx * c_tiles_per_chunk;
 	ty = cy * c_tiles_per_chunk;
 	// Update scrolls.
@@ -360,7 +360,7 @@ void Locator::vscrolled(        // For vertical scrollbar.
     gpointer data           // ->Shape_chooser.
 ) {
 	auto *loc = static_cast<Locator *>(data);
-	int oldty = loc->ty;
+	const int oldty = loc->ty;
 	loc->ty = static_cast<gint>(gtk_adjustment_get_value(adj)) * c_tiles_per_chunk;
 	if (loc->ty != oldty)       // (Already equal if this event came
 		//   from Exult msg.).
@@ -374,7 +374,7 @@ void Locator::hscrolled(        // For horizontal scrollbar.
     gpointer data           // ->Locator.
 ) {
 	auto *loc = static_cast<Locator *>(data);
-	int oldtx = loc->tx;
+	const int oldtx = loc->tx;
 	loc->tx = static_cast<gint>(gtk_adjustment_get_value(adj)) * c_tiles_per_chunk;
 	if (loc->tx != oldtx)       // (Already equal if this event came
 		//   from Exult msg.).
@@ -441,9 +441,9 @@ void Locator::goto_mouse(
     int mx, int my,         // Pixel coords. in draw area.
     bool delay_send         // Delay send_location for a bit.
 ) {
-	GdkRectangle oldbox = viewbox;  // Old location of box.
-	int oldtx = tx;
-	int oldty = ty;
+	const GdkRectangle oldbox = viewbox;  // Old location of box.
+	const int oldtx = tx;
+	const int oldty = ty;
 	// Set tx,ty here so hscrolled() &
 	//   vscrolled() don't send to Exult.
 	GtkAllocation alloc =  {0, 0, 0, 0};
@@ -501,8 +501,8 @@ gboolean Locator::mouse_press(
 	if (event->button != 1)
 		return FALSE;       // Handling left-click.
 	// Get mouse position, draw dims.
-	int mx = static_cast<int>(event->x);
-	int my = static_cast<int>(event->y);
+	const int mx = static_cast<int>(event->x);
+	const int my = static_cast<int>(event->y);
 	// Double-click?
 	if (reinterpret_cast<GdkEvent *>(event)->type == GDK_2BUTTON_PRESS) {
 		goto_mouse(mx, my);

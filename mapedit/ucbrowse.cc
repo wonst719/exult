@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ucbrowse.h"
 
+#include "headers/array_size.h"
 #include "ucsymtbl.h"
 #include "utils.h"
 
@@ -168,7 +169,7 @@ static gint ucbrowser_compare_func(
     GtkTreeIter  *b,
     gpointer      userdata
 ) {
-	gint colnum = *static_cast<gint *>(userdata);
+	const gint colnum = *static_cast<gint *>(userdata);
 	gint ret = 0;
 	gchar *name1 = nullptr;
 	gchar *name2 = nullptr;
@@ -328,13 +329,13 @@ void Usecode_browser::setup_list(
 		return;
 	symtbl.read(in);
 	gtk_tree_store_clear(model);
-	bool show_funs = studio->get_toggle("view_uc_functions");
-	bool show_classes = studio->get_toggle("view_uc_classes");
-	bool show_shapes = studio->get_toggle("view_uc_shapes");
-	bool show_objects = studio->get_toggle("view_uc_objects");
+	const bool show_funs = studio->get_toggle("view_uc_functions");
+	const bool show_classes = studio->get_toggle("view_uc_classes");
+	const bool show_shapes = studio->get_toggle("view_uc_shapes");
+	const bool show_objects = studio->get_toggle("view_uc_objects");
 	const Usecode_symbol_table::Syms_vector &syms = symtbl.get_symbols();
 	for (auto *sym : syms) {
-		Usecode_symbol::Symbol_kind kind = sym->get_kind();
+		const Usecode_symbol::Symbol_kind kind = sym->get_kind();
 		const char *kindstr = nullptr;
 		const char *nm = sym->get_name();
 		if (!nm[0])
@@ -364,7 +365,7 @@ void Usecode_browser::setup_list(
 			continue;
 		}
 		char num[20];
-		sprintf(num, "%05xH", sym->get_val());
+		snprintf(num, array_size(num), "%05xH", sym->get_val());
 		GtkTreeIter iter;
 		gtk_tree_store_append(model, &iter, nullptr);
 		gtk_tree_store_set(model, &iter, NAME_COL, nm,

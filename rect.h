@@ -32,13 +32,13 @@ static inline bool Point_in_strip(int start, int end, int pt) noexcept {
 	// Does the strip wrap around the world?
 	if (end >= c_num_tiles) {
 		// Yes. Check both halves of it.
-		if (!(pt >= start && pt < c_num_tiles) &&
-		        !(pt >= 0 && pt < (end % c_num_tiles))) {
+		if ((pt < start || pt >= c_num_tiles) &&
+		        (pt < 0 || pt >= (end % c_num_tiles))) {
 			return false;
 		}
 	}
 	// No; check whether the point is in or not.
-	else if (!(pt >= start && pt < end)) {
+	else if (pt < start || pt >= end) {
 		return false;   // It was not.
 	}
 	return true;
@@ -68,10 +68,10 @@ public:                 // Let's make it all public.
 	// Add another to this one to get
 	//  a rect. that encloses both.
 	TileRect add(TileRect const &r2) const noexcept {
-		int xend = x + w;
-		int yend = y + h;
-		int xend2 = r2.x + r2.w;
-		int yend2 = r2.y + r2.h;
+		const int xend = x + w;
+		const int yend = y + h;
+		const int xend2 = r2.x + r2.w;
+		const int yend2 = r2.y + r2.h;
 		TileRect r;        // Return this.
 		r.x = std::min(x, r2.x);
 		r.y = std::min(y, r2.y);
@@ -81,10 +81,10 @@ public:                 // Let's make it all public.
 	}
 	// Intersect another with this.
 	TileRect intersect(TileRect const &r2) const noexcept {
-		int xend = x + w;
-		int yend = y + h;
-		int xend2 = r2.x + r2.w;
-		int yend2 = r2.y + r2.h;
+		const int xend = x + w;
+		const int yend = y + h;
+		const int xend2 = r2.x + r2.w;
+		const int yend2 = r2.y + r2.h;
 		TileRect r;        // Return this.
 		r.x = std::max(x, r2.x);
 		r.y = std::max(y, r2.y);
@@ -111,9 +111,9 @@ public:                 // Let's make it all public.
 	int distance(int px, int py) const noexcept  // Get distance from a point (max.
 	//   dist. along x or y coord.)
 	{
-		int xdist = px <= x ? (x - px) : (px - x - w + 1);
-		int ydist = py <= y ? (y - py) : (py - y - h + 1);
-		int dist = xdist > ydist ? xdist : ydist;
+		const int xdist = px <= x ? (x - px) : (px - x - w + 1);
+		const int ydist = py <= y ? (y - py) : (py - y - h + 1);
+		const int dist = xdist > ydist ? xdist : ydist;
 		return dist < 0 ? 0 : dist;
 	}
 	bool operator==(TileRect const &rect2) const noexcept {

@@ -41,7 +41,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "usefuns.h"
 #include "ignore_unused_variable_warning.h"
 
-using std::memcpy;
 using std::ostream;
 
 // TODO: De-hard-code reagent shape and costs.
@@ -159,8 +158,8 @@ Spellbook_object::Spellbook_object(
 int Spellbook_object::add_spell(
     int spell           // 0-71
 ) {
-	int circle = spell / 8;
-	int num = spell % 8;    // # within circle.
+	const int circle = spell / 8;
+	const int num = spell % 8;    // # within circle.
 	if (circles[circle] & (1 << num))
 		return 0;       // Already have it.
 	circles[circle] |= (1 << num);
@@ -183,8 +182,8 @@ void Spellbook_object::clear_spells() {
 int Spellbook_object::remove_spell(
     int spell           // 0-71
 ) {
-	int circle = spell / 8;
-	int num = spell % 8;    // # within circle.
+	const int circle = spell / 8;
+	const int num = spell % 8;    // # within circle.
 	if ((circles[circle] & (1 << num)) == 0)
 		return 0;       // Already does not have it.
 	circles[circle] ^= (1 << num);
@@ -201,14 +200,14 @@ bool Spellbook_object::can_do_spell(
 ) {
 	if (cheat.in_wizard_mode())
 		return true;        // Cheating.
-	int circle = spell / 8;     // Circle spell is in.
-	unsigned char cflags = circles[circle];
+	const int circle = spell / 8;     // Circle spell is in.
+	const unsigned char cflags = circles[circle];
 	if ((cflags & (1 << (spell % 8))) == 0)
 		return false;       // We don't have that spell.
-	int mana = act->get_property(Actor::mana);
+	const int mana = act->get_property(Actor::mana);
 	// TODO: Need to de-hard-code cost.
-	int cost = circle + (GAME_SI ? 1 : 0);
-	int level = act->get_level();
+	const int cost = circle + (GAME_SI ? 1 : 0);
+	const int level = act->get_level();
 	if ((mana < cost) || (level < circle))
 		// Not enough mana or not yet at required level?
 		return false;
@@ -241,7 +240,7 @@ bool Spellbook_object::do_spell(
 		int circle = spell / 8; // Figure/subtract mana.
 		if (cheat.in_wizard_mode())
 			circle = 0;
-		int mana = act->get_property(Actor::mana);
+		const int mana = act->get_property(Actor::mana);
 		// TODO: Need to de-hard-code cost.
 		act->set_property(Actor::mana, mana - circle - (GAME_SI ? 1 : 0));
 		// Figure what we used.

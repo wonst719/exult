@@ -221,7 +221,7 @@ int ExultStudio::init_cont_window(
 	if (btn) {
 		GtkAdjustment *adj = gtk_spin_button_get_adjustment(
 		                         GTK_SPIN_BUTTON(btn));
-		int nframes = vgafile->get_ifile()->get_num_frames(shape);
+		const int nframes = vgafile->get_ifile()->get_num_frames(shape);
 		gtk_adjustment_set_upper(adj, (nframes - 1) | 32); // So we can rotate.
 		g_signal_emit_by_name(G_OBJECT(adj), "changed");
 	}
@@ -240,16 +240,16 @@ int ExultStudio::save_cont_window(
 	// Get container address.
 	auto *addr = static_cast<Container_game_object *>(
 	                 g_object_get_data(G_OBJECT(contwin), "user_data"));
-	int tx = get_spin("cont_x");
-	int ty = get_spin("cont_y");
-	int tz = get_spin("cont_z");
-	std::string name(get_text_entry("cont_name"));
-	int shape = get_spin("cont_shape");
-	int frame = get_spin("cont_frame");
-	int quality = get_spin("cont_quality");
-	unsigned char res = get_spin("cont_resistance");
-	bool invis = get_toggle("cont_invisible");
-	bool can_take = get_toggle("cont_okay_to_take");
+	const int tx = get_spin("cont_x");
+	const int ty = get_spin("cont_y");
+	const int tz = get_spin("cont_z");
+	const std::string name(get_text_entry("cont_name"));
+	const int shape = get_spin("cont_shape");
+	const int frame = get_spin("cont_frame");
+	const int quality = get_spin("cont_quality");
+	const unsigned char res = get_spin("cont_resistance");
+	const bool invis = get_toggle("cont_invisible");
+	const bool can_take = get_toggle("cont_okay_to_take");
 
 	if (Container_out(server_socket, addr, tx, ty, tz,
 	                  shape, frame, quality, name, res, invis, can_take) == -1) {
@@ -266,8 +266,7 @@ int ExultStudio::save_cont_window(
 
 void ExultStudio::rotate_cont(
 ) {
-	int shnum = get_num_entry("cont_shape");
-	int frnum = get_num_entry("cont_frame");
+	const int shnum = get_num_entry("cont_shape");
 	if (shnum <= 0)
 		return;
 	auto *shfile = static_cast<Shapes_vga_file *>(vgafile->get_ifile());
@@ -275,6 +274,7 @@ void ExultStudio::rotate_cont(
 	if (shfile->read_info(game_type, true))
 		set_shapeinfo_modified();
 	const Shape_info &info = shfile->get_info(shnum);
+	int frnum = get_num_entry("cont_frame");
 	frnum = info.get_rotated_frame(frnum, 1);
 	set_spin("cont_frame", frnum);
 	cont_single->render();

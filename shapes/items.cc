@@ -239,16 +239,16 @@ static void Setup_item_names(
 	text_msgs.resize(total_msgs);
 	misc_names.resize(num_misc_names);
 	// Hack alert: move SI misc_names around to match those of SS.
-	bool doremap = si && (!expansion || sibeta);
+	const bool doremap = si && (!expansion || sibeta);
 	if (doremap)
 		flxcnt -= 17;   // Just to be safe.
 	int i;
 	for (i = 0; i < flxcnt; i++) {
 		items.seekg(0x80 + i * 8);
-		int itemoffs = Read4(items);
+		const int itemoffs = Read4(items);
 		if (!itemoffs)
 			continue;
-		int itemlen = Read4(items);
+		const int itemlen = Read4(items);
 		items.seekg(itemoffs);
 		char *newitem = new char[itemlen];
 		items.read(newitem, itemlen);
@@ -286,7 +286,7 @@ static void Setup_text(
 	vector<string> msglist;
 	int first_msg;
 	first_msg = Read_text_msg_file(exultmsg, msglist);
-	unsigned total_msgs = static_cast<int>(msglist.size() - 0x400);
+	const unsigned total_msgs = static_cast<int>(msglist.size() - 0x400);
 	if (first_msg >= 0) {
 		first_msg -= 0x400;
 	}
@@ -305,7 +305,7 @@ static void Setup_text(
 
 void Setup_text(bool si, bool expansion, bool sibeta) {
 	Free_text();
-	bool is_patch = is_system_path_defined("<PATCH>");
+	const bool is_patch = is_system_path_defined("<PATCH>");
 	// Always read from exultmsg.txt
 	// TODO: allow multilingual exultmsg.txt files.
 	std::unique_ptr<istream> exultmsg;
@@ -314,7 +314,7 @@ void Setup_text(bool si, bool expansion, bool sibeta) {
 	} else {
 		auto exultmsgbuf = std::make_unique<stringstream>();
 		const char *msgs = BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX);
-		U7object txtobj(msgs, EXULT_FLX_EXULTMSG_TXT);
+		const U7object txtobj(msgs, EXULT_FLX_EXULTMSG_TXT);
 		size_t len;
 		auto txt = txtobj.retrieve(len);
 		if (txt && len > 0) {

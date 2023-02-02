@@ -26,8 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Text_gump.h"
 
 using std::strchr;
-using std::strcpy;
-using std::strlen;
 
 /*
  *  Add to the text, starting a newline.
@@ -36,7 +34,7 @@ using std::strlen;
 void Text_gump::add_text(
     const char *str
 ) {
-	int slen = strlen(str);     // Length of new text.
+	const int slen = strlen(str);     // Length of new text.
 	// Allocate new space.
 	char *newtext = new char[textlen + (textlen != 0) + slen + 1];
 	if (textlen) {          // Copy over old.
@@ -63,7 +61,7 @@ int Text_gump::paint_page(
 ) {
 	const int vlead = 1;        // Extra inter-line spacing.
 	int ypos = 0;
-	int textheight = sman->get_text_height(font) + vlead;
+	const int textheight = sman->get_text_height(font) + vlead;
 	char *str = text + start;
 	while (*str && *str != '*' && ypos + textheight <= box.h) {
 		if (*str == '~') {  // Empty paragraph?
@@ -79,9 +77,9 @@ int Text_gump::paint_page(
 			eol = epage;
 		if (!eol)       // No end found?
 			eol = text + textlen;
-		char eolchr = *eol; // Save char. at EOL.
+		const char eolchr = *eol; // Save char. at EOL.
 		*eol = 0;
-		int endoff = sman->paint_text_box(font, str, x + box.x,
+		const int endoff = sman->paint_text_box(font, str, x + box.x,
 		                                  y + box.y + ypos, box.w, box.h - ypos, vlead);
 		*eol = eolchr;      // Restore char.
 		if (endoff > 0) {   // All painted?

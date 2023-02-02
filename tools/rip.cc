@@ -1,3 +1,5 @@
+#include "array_size.h"
+
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
@@ -45,7 +47,7 @@ void rebuild() {
 				exit(0);
 			}
 			while (!feof(fi2)) {
-				unsigned c = fgetc(fi2);
+				const unsigned c = fgetc(fi2);
 				if (!feof(fi2))
 					fputc(c, fo);
 			}
@@ -108,7 +110,7 @@ int main(int argc, char *argv[]) {
 		} else {
 			extended = false;
 			unsigned short temp;
-			size_t err = fread(&temp, 2, 1, fi);
+			const size_t err = fread(&temp, 2, 1, fi);
 			assert(err == 1);
 			fs = temp;
 		}
@@ -116,7 +118,7 @@ int main(int argc, char *argv[]) {
 		char s[10];
 		char filename[18];
 		if (number == all_functions || number == only_index || number == fn) {
-			sprintf(s, "%04X", fn);
+			snprintf(s, array_size(s), "%04X", fn);
 			strcpy(filename, s);
 			strcat(filename, ".uco");
 			fprintf(fo2, "%s\n", s);

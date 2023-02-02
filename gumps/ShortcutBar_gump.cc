@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ShortcutBar_gump.h"
 
-#include "SDL_events.h"
-
 #include "fnames.h"
 #include "exult.h"
 #include "keyactions.h"
@@ -35,7 +33,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Gump_manager.h"
 #include "Gump_button.h"
 #include "exult_flx.h"
-#include "gamewin.h"
 #include "Text_button.h"
 #include "cheat.h"
 #include "ucmachine.h"
@@ -54,7 +51,7 @@ Game_object *is_party_item(
     int qual            // Desired quality
 ) {
 	Actor *party[9];        // Get party.
-	int cnt = Game_window::get_instance()->get_party(party, 1);
+	const int cnt = Game_window::get_instance()->get_party(party, 1);
 	for (int i = 0; i < cnt; i++) {
 		Actor *person = party[i];
 		Game_object *obj = person->find_item(shnum, qual, frnum);
@@ -95,7 +92,7 @@ void ShortcutBar_gump::createButtons() {
 	int x = (gamex - 320)/2;
 
 	memset(buttonItems, 0, sizeof(buttonItems));
-	bool trlucent = gwin->get_shortcutbar_type() == 1 && starty >= 0;
+	const bool trlucent = gwin->get_shortcutbar_type() == 1 && starty >= 0;
 	// disk
 	buttonItems[0].shapeId = new ShapeID(EXULT_FLX_SB_DISK_SHP, trlucent ? 1 : 0, SF_EXULT_FLX);
 	buttonItems[0].name = "disk";
@@ -222,12 +219,12 @@ void ShortcutBar_gump::createButtons() {
 	} else
 		numButtons = 9;
 
-	int barItemWidth = (320/numButtons);
+	const int barItemWidth = (320/numButtons);
 
 	for (int i = 0; i < numButtons; i++, x += barItemWidth) {
 		Shape_frame *frame = buttonItems[i].shapeId->get_shape();
-		int dX = frame->get_xleft() + (barItemWidth-frame->get_width()) / 2;
-		int dY = frame->get_yabove() + (height - frame->get_height()) / 2;
+		const int dX = frame->get_xleft() + (barItemWidth-frame->get_width()) / 2;
+		const int dY = frame->get_yabove() + (height - frame->get_height()) / 2;
 		buttonItems[i].mx = x + dX;
 		buttonItems[i].my = starty + dY;
 		buttonItems[i].rect = TileRect(x, starty, barItemWidth, height);
@@ -290,9 +287,9 @@ void ShortcutBar_gump::paint() {
 	Gump::paint();
 
 	for (int i = 0; i < numButtons; i++) {
-		ShortcutBarButtonItem& item = buttonItems[i];
-		int x = locx + item.mx;
-		int y = locy + item.my;
+		const ShortcutBarButtonItem& item = buttonItems[i];
+		const int x = locx + item.mx;
+		const int y = locy + item.my;
 		sman->paint_shape(x, y, item.shapeId->get_shape(), item.translucent);
 		// when the bar is on the game screen it may need an outline
 		if (gwin->get_outline_color() < NPIXCOLORS && starty >= 0)

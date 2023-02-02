@@ -456,8 +456,8 @@ public:
 	                          int *exp = nullptr) override;
 	void fight_back(Game_object *attacker);
 	bool get_attack_target(Game_object *&obj, Tile_coord &t) const {
-		static Tile_coord invalidloc(-1, -1, 0);
-		Game_object_shared tobj = target_object.lock();
+		static const Tile_coord invalidloc(-1, -1, 0);
+		const Game_object_shared tobj = target_object.lock();
 		obj = tobj.get();
 		t = target_tile;
 		return obj || target_tile != invalidloc;

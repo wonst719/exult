@@ -29,7 +29,15 @@
 using std::setw;
 using std::setfill;
 
-#include "SDL_mouse.h"
+#ifdef __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif    // __GNUC__
+#include <SDL.h>
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#endif    // __GNUC__
+
 #include "cheat.h"
 #include "exult.h"
 #include "gamewin.h"
@@ -135,7 +143,7 @@ void Cheat::toggle_god() {
 	if (god_mode) {
 		eman->center_text("God Mode Enabled");
 		Actor *party[9];        // Set attack mode to 'nearest'.
-		int cnt = gwin->get_party(party, 1);
+		const int cnt = gwin->get_party(party, 1);
 		for (int i = 0; i < cnt; i++)
 			party[i]->set_attack_mode(Actor::nearest);
 	} else
@@ -196,12 +204,12 @@ void Cheat::toggle_map_editor() {
 			cmnd += " -g ";   // Now want game name.
 			cmnd += Game::get_gametitle();
 			// Now want mod name.
-			std::string modnamestr = Game::get_modtitle();
+			const std::string modnamestr = Game::get_modtitle();
 			if (!modnamestr.empty()) {
 				cmnd += " -m ";
 				cmnd += modnamestr;
 			}
-			std::string alt_cfg = get_system_path("<alt_cfg>");
+			const std::string alt_cfg = get_system_path("<alt_cfg>");
 			if (alt_cfg != "<alt_cfg>") {
 				cmnd += " -c ";
 				cmnd += alt_cfg;
@@ -209,7 +217,7 @@ void Cheat::toggle_map_editor() {
 			cmnd += " &";
 			cout << "Executing: " << cmnd << endl;
 #ifndef _WIN32
-			int ret = system(cmnd.c_str());
+			const int ret = system(cmnd.c_str());
 			if (ret == 127 || ret == -1)
 				cout << "Couldn't run Exult Studio" << endl;
 #else
@@ -219,7 +227,7 @@ void Cheat::toggle_map_editor() {
 			std::memset(&si, 0, sizeof(si));
 			si.cb = sizeof(si);
 
-			int ret = CreateProcess(nullptr, &cmnd[0], nullptr, nullptr,
+			const int ret = CreateProcess(nullptr, &cmnd[0], nullptr, nullptr,
 			                        FALSE, 0,
 			                        nullptr, nullptr, &si, &pi);
 			if (!ret) cout << "Couldn't run Exult Studio" << endl;
@@ -250,10 +258,10 @@ void Cheat::set_edit_mode(Map_editor_mode md) {
 
 void Cheat::clear_chunksel() {
 	if (chunksel_right >= 0 && chunksel_bottom >= 0) {
-		int startx = chunksel_left;
-		int stopx = chunksel_right + 1;
-		int starty = chunksel_top;
-		int stopy = chunksel_bottom + 1;
+		const int startx = chunksel_left;
+		const int stopx = chunksel_right + 1;
+		const int starty = chunksel_top;
+		const int stopy = chunksel_bottom + 1;
 		for (int cy = starty; cy != stopy; cy = INCR_CHUNK(cy))
 			for (int cx = startx; cx != stopx;
 			        cx = INCR_CHUNK(cx)) {
@@ -268,8 +276,8 @@ void Cheat::clear_chunksel() {
 void Cheat::add_chunksel(Map_chunk *chunk, bool extend) {
 	ignore_unused_variable_warning(extend);
 	chunk->set_selected(true);
-	int cx = chunk->get_cx();
-	int cy = chunk->get_cy();
+	const int cx = chunk->get_cx();
+	const int cy = chunk->get_cy();
 	if (cx < chunksel_left)
 		chunksel_left = cx;
 	if (cx > chunksel_right)
@@ -284,8 +292,8 @@ void Cheat::add_chunksel(Map_chunk *chunk, bool extend) {
 /*  Move a given chunk. */
 void Cheat::move_chunk(Map_chunk *chunk, int dx, int dy) {
 	// Figure dest. with wrapping.
-	int tox = (chunk->get_cx() + dx + c_num_chunks) % c_num_chunks;
-	int toy = (chunk->get_cy() + dy + c_num_chunks) % c_num_chunks;
+	const int tox = (chunk->get_cx() + dx + c_num_chunks) % c_num_chunks;
+	const int toy = (chunk->get_cy() + dy + c_num_chunks) % c_num_chunks;
 	Map_chunk *tochunk = gmap->get_chunk(tox, toy);
 	Game_object_shared_vector tmplist; // Delete objs. in 'tochunk'.
 
@@ -312,7 +320,7 @@ void Cheat::move_chunk(Map_chunk *chunk, int dx, int dy) {
 	dx *= c_tiles_per_chunk;
 	dy *= c_tiles_per_chunk;
 	for (auto& obj : tmplist) {
-		Tile_coord t = obj->get_tile();
+		const Tile_coord t = obj->get_tile();
 		// Got to move objects legally.
 		obj->move((t.tx + dx + c_num_tiles) % c_num_tiles,
 		          (t.ty + dy + c_num_tiles) % c_num_tiles, t.tz);
@@ -456,7 +464,7 @@ void Cheat::change_skin() const {
 		return;
 
 	int color = gwin->get_main_actor()->get_skin_color();
-	bool sex = gwin->get_main_actor()->get_type_flag(Actor::tf_sex);
+	const bool sex = gwin->get_main_actor()->get_type_flag(Actor::tf_sex);
 	color = Shapeinfo_lookup::GetNextSkin(color, sex, sman->have_si_shapes());
 
 	gwin->get_main_actor()->set_skin_color(color);
@@ -470,13 +478,13 @@ void Cheat::levelup_party() const {
 	bool leveledup = false;
 
 	// get party, including Avatar
-	int cnt = gwin->get_party(party, 1);
+	const int cnt = gwin->get_party(party, 1);
 
 	for (int i = 0; i < cnt; i++) {
-		int level = party[i]->get_level();
+		const int level = party[i]->get_level();
 		if (level < 10) {
 			leveledup = true;
-			int newexp = 25 * (2 << level); // one level higher
+			const int newexp = 25 * (2 << level); // one level higher
 			party[i]->set_property(Actor::exp, newexp);
 		}
 	}
@@ -561,7 +569,7 @@ void Cheat::toggle_selected(Game_object *obj) {
 	// In list?
 	for (auto it = selected.begin();
 	        it != selected.end(); ++it)
-		if ((*it).get() == obj) {
+		if (it->get() == obj) {
 			// Yes, so remove it.
 			selected.erase(it);
 			if (selected.empty())   // Last one?
@@ -596,7 +604,7 @@ void Cheat::delete_selected() {
 	if (selected.empty())
 		return;
 	while (!selected.empty()) {
-		Game_object_shared obj = selected.back();
+		const Game_object_shared obj = selected.back();
 		selected.pop_back();
 		if (obj->get_owner())
 			gwin->add_dirty(obj.get());
@@ -622,7 +630,7 @@ void Cheat::move_selected_objs(int dx, int dy, int dz) {
 		Game_object *obj = it.get();
 		Game_object *owner = obj->get_outermost();
 		// Get location.  Use owner if inside.
-		Tile_coord tile = owner->get_tile();
+		const Tile_coord tile = owner->get_tile();
 		tiles[obj] = tile;
 		if (obj == owner)   // Not inside?
 			gwin->add_dirty(obj);
@@ -641,10 +649,10 @@ void Cheat::move_selected_objs(int dx, int dy, int dz) {
 		dz = 255 - highz;
 	// Add back in new locations.
 	for (auto& it : selected) {
-		Tile_coord tile = tiles[it.get()];
-		int newtx = (tile.tx + dx + c_num_tiles) % c_num_tiles;
-		int newty = (tile.ty + dy + c_num_tiles) % c_num_tiles;
-		int newtz = (tile.tz + dz + 256) % 256;
+		const Tile_coord tile = tiles[it.get()];
+		const int newtx = (tile.tx + dx + c_num_tiles) % c_num_tiles;
+		const int newty = (tile.ty + dy + c_num_tiles) % c_num_tiles;
+		const int newtz = (tile.tz + dz + 256) % 256;
 		it->set_invalid();
 		it->move(newtx, newty, newtz);
 	}
@@ -671,8 +679,8 @@ bool Cheat::is_selected(Game_object *o) {
 class Clip_compare {
 public:
 	bool operator()(const Game_object_shared& o1, const Game_object_shared& o2) {
-		Tile_coord t1 = o1->get_tile();
-		Tile_coord t2 = o2->get_tile();
+		const Tile_coord t1 = o1->get_tile();
+		const Tile_coord t2 = o2->get_tile();
 		if (t1.tz != t2.tz)
 			return t1.tz < t2.tz;
 		else if (t1.ty != t2.ty)
@@ -687,7 +695,7 @@ public:
 void Cheat::cut(bool copy) {
 	if (selected.empty())
 		return;         // Nothing selected.
-	bool clip_was_empty = clipboard.empty();
+	const bool clip_was_empty = clipboard.empty();
 	// Clear out old clipboard.
 	clipboard.resize(0);
 	clipboard.reserve(selected.size());
@@ -698,7 +706,7 @@ void Cheat::cut(bool copy) {
 		Game_object_shared newobj;
 		Game_object_shared keep;
 		Game_object *obj = it.get();
-		Tile_coord t = obj->get_outermost()->get_tile();
+		const Tile_coord t = obj->get_outermost()->get_tile();
 		if (copy)
 			// TEST+++++REALLY want a 'clone()'.
 			newobj = gwin->get_map()->create_ireg_object(
@@ -730,9 +738,9 @@ static Game_object_shared Create_object(
     int shape, int frame        // What to create.
 ) {
 	const Shape_info &info = ShapeID::get_info(shape);
-	int sclass = info.get_shape_class();
+	const int sclass = info.get_shape_class();
 	// Is it an ireg (changeable) obj?
-	bool ireg = (sclass != Shape_info::unusable &&
+	const bool ireg = (sclass != Shape_info::unusable &&
 	             sclass != Shape_info::building);
 	Game_object_shared newobj;
 	if (ireg)
@@ -752,16 +760,16 @@ void Cheat::paste(
 	if (clipboard.empty())
 		return;         // Nothing there.
 	// Use lowest/south/east for position.
-	Tile_coord hot = clipboard[0]->get_tile();
+	const Tile_coord hot = clipboard[0]->get_tile();
 	clear_selected();       // Remove old selected.
 	for (const auto& obj : clipboard) {
-			Tile_coord t = obj->get_tile();
+			const Tile_coord t = obj->get_tile();
 		// Figure spot rel. to hot-spot.
-		int liftpix = ((t.tz - hot.tz) * c_tilesize) / 2;
-		int x = mx + (t.tx - hot.tx) * c_tilesize - liftpix;
-		int y = my + (t.ty - hot.ty) * c_tilesize - liftpix;
+		const int liftpix = ((t.tz - hot.tz) * c_tilesize) / 2;
+		const int x = mx + (t.tx - hot.tx) * c_tilesize - liftpix;
+		const int y = my + (t.ty - hot.ty) * c_tilesize - liftpix;
 		// +++++Use clone().
-		Game_object_shared newobj = Create_object(gwin, obj->get_shapenum(),
+		const Game_object_shared newobj = Create_object(gwin, obj->get_shapenum(),
 		                    obj->get_framenum());
 		Dragging_info drag(newobj);
 		if (drag.drop(x, y, true))  // (Dels if it fails.)
@@ -801,7 +809,7 @@ public:
 			if (!(map = mini->get_shape(0, mapnum)))
 				map = mini->get_shape(0, 0);
 		} else {
-			ShapeID mapid(game->get_shape("sprites/cheatmap"),
+			const ShapeID mapid(game->get_shape("sprites/cheatmap"),
 			              1, SF_GAME_FLX);
 			map = mapid.get_shape();
 		}
@@ -821,7 +829,7 @@ public:
 		// mark current location
 		int xx;
 		int yy;
-		Tile_coord t = gwin->get_main_actor()->get_tile();
+		const Tile_coord t = gwin->get_main_actor()->get_tile();
 
 		xx = ((t.tx * (w - border * 2)) / worldsize);
 		yy = ((t.ty * (h - border * 2)) / worldsize);
@@ -883,7 +891,7 @@ void Cheat::cursor_teleport() const {
 }
 
 void Cheat::next_map_teleport() const {
-	int curmap = gwin->get_map()->get_num();
+	const int curmap = gwin->get_map()->get_num();
 	int newmap = Find_next_map(curmap + 1, 4);  // Look forwards by 4.
 	if (newmap == -1) {     // Not found?
 		// Look from 0.
@@ -895,7 +903,7 @@ void Cheat::next_map_teleport() const {
 	}
 	gwin->teleport_party(gwin->get_main_actor()->get_tile(), true, newmap);
 	char msg[80];
-	sprintf(msg, "To map #%02x", newmap);
+	snprintf(msg, sizeof(msg), "To map #%02x", newmap);
 	eman->center_text(msg);
 }
 
@@ -912,10 +920,10 @@ void Cheat::create_last_shape() const {
 	int current_shape = 0;
 	int current_frame = 0;
 	if (browser->get_shape(current_shape, current_frame)) {
-		Game_object_shared obj = gwin->get_map()->create_ireg_object(
+		const Game_object_shared obj = gwin->get_map()->create_ireg_object(
 		                       current_shape, current_frame);
 		obj->set_flag(Obj_flags::okay_to_take);
-		Tile_coord t =  Map_chunk::find_spot(
+		const Tile_coord t =  Map_chunk::find_spot(
 	                    gwin->get_main_actor()->get_tile(), 4, obj.get(), 2);
 		if (t.tx != -1) {
 			obj->move(t);
@@ -964,11 +972,11 @@ void Cheat::heal_party() const {
 	for (i = 0; i < count; i++)
 		dead[i] = partyman->get_dead_member(i);
 	for (i = 0; i < count; i++) {
-		int npc_num = dead[i];
+		const int npc_num = dead[i];
 		Dead_body *body = gwin->get_body(npc_num);
 		Actor *live_npc = gwin->get_npc(npc_num);
 		if (body && live_npc) {
-			Tile_coord avpos = gwin->get_main_actor()->get_tile();
+			const Tile_coord avpos = gwin->get_main_actor()->get_tile();
 			body->move(avpos);
 			live_npc->resurrect(body);
 		}

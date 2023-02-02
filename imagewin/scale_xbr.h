@@ -290,8 +290,8 @@ void Scale_xBR(
 		rgb_row_plus_2  = new RGBColor<Manip_pixels, 2>[buff_size];
 	}
 
-	int from_x = srcx >= 2 ? srcx - 2 : 0;
-	int to_x = (srcx + srcw + 2 <= sline_pixels) ? (srcx + srcw + 2) : sline_pixels;
+	const int from_x = srcx >= 2 ? srcx - 2 : 0;
+	const int to_x = (srcx + srcw + 2 <= sline_pixels) ? (srcx + srcw + 2) : sline_pixels;
 	int from_width = to_x - from_x;
 	if (sline_pixels < from_width)
 		from_width = sline_pixels;

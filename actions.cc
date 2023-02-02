@@ -34,7 +34,6 @@
 #include "dir.h"
 #include "ucmachine.h"
 #include "frameseq.h"
-#include "ucmachine.h"
 #include "cheat.h"
 #include "party.h"
 #include "monstinf.h"
@@ -56,9 +55,9 @@ int Actor_action::handle_event_safely(
     bool &deleted           // True returned if we're gone!
 ) {
 	Actor_action *old_action = actor->get_action();
-	long old_seq = old_action->seq;
+	const long old_seq = old_action->seq;
 	// Do current action.
-	int delay = handle_event(actor);
+	const int delay = handle_event(actor);
 	if (actor->get_action() != old_action ||
 	        old_action->seq != old_seq) {
 		deleted = true;     // We've been deleted.
@@ -116,7 +115,7 @@ Actor_action *Actor_action::create_action_sequence(
 	if (dest != actloc) {   // Get to destination.
 		// A persistence of 30 allows sitting on LB's ship from far away without
 		// party members teleporting.
-		int persistence = persistant ? 30 : 0;
+		const int persistence = persistant ? 30 : 0;
 		Actor_action *w = new Path_walking_actor_action(new Astar(), 3, persistence);
 		Actor_action *w2 = w->walk_to_tile(actor, actloc, dest, 0, persistant);
 		if (w2 != w)
@@ -155,8 +154,8 @@ Path_walking_actor_action::Path_walking_actor_action(
 ) : path(p), max_blocked(maxblk), persistence(pers) {
 	if (!path)
 		path = new Astar();
-	Tile_coord src = path->get_src();
-	Tile_coord dest = path->get_dest();
+	const Tile_coord src = path->get_src();
+	const Tile_coord dest = path->get_dest();
 	original_dir = static_cast<int>(Get_direction4(
 	                                    src.ty - dest.ty, dest.tx - src.tx));
 }
@@ -205,7 +204,7 @@ int Path_walking_actor_action::handle_event(
     Actor *actor
 ) {
 	if (subseq) {       // Going through a door?
-		int delay = subseq->handle_event(actor);
+		const int delay = subseq->handle_event(actor);
 		if (delay)
 			return delay;   // Still going.
 		set_subseq(nullptr);
@@ -247,7 +246,7 @@ int Path_walking_actor_action::handle_event(
 		} else      // Wait up to 1.6 secs.
 			return 100 + std::rand() % 500;
 	}
-	int newspeed = actor->get_frame_time();// Get time between frames.
+	const int newspeed = actor->get_frame_time();// Get time between frames.
 	if (!newspeed) {
 		// This may mean bumping into another NPC, then having
 		// another NPC call move_aside on you then (e.g., large
@@ -275,16 +274,16 @@ int Path_walking_actor_action::handle_event(
 	}
 	if (done)           // In case we're deleted.
 		reached_end = true;
-	Tile_coord cur = actor->get_tile();
-	int newdir = static_cast<int>(Get_direction4(cur.ty - tile.ty,
+	const Tile_coord cur = actor->get_tile();
+	const int newdir = static_cast<int>(Get_direction4(cur.ty - tile.ty,
 	                              tile.tx - cur.tx));
 	Frames_sequence *frames = actor->get_frames(newdir);
 	int &step_index = actor->get_step_index();
 	if (!step_index)        // First time?  Init.
 		step_index = frames->find_unrotated(actor->get_framenum());
 	// Get next (updates step_index).
-	int frame = frames->get_next(step_index);
-	int cur_speed = speed;      // Step() might delete us!
+	const int frame = frames->get_next(step_index);
+	const int cur_speed = speed;      // Step() might delete us!
 	if (from_offscreen) {   // Teleport to 1st spot.
 		from_offscreen = false;
 		actor->move(tile.tx, tile.ty, tile.tz);
@@ -339,12 +338,12 @@ bool Path_walking_actor_action::open_door(
     Actor *actor,
     Game_object *door
 ) {
-	Tile_coord cur = actor->get_tile();
+	const Tile_coord cur = actor->get_tile();
 	// Get door's footprint in tiles.
-	TileRect foot = door->get_footprint();
+	const TileRect foot = door->get_footprint();
 	// Open it, but kludge quality to
 	//   avoid unwanted usecode.
-	int savequal = door->get_quality();
+	const int savequal = door->get_quality();
 	door->set_quality(0);
 	door->activate();
 	door->set_quality(savequal);
@@ -499,7 +498,7 @@ Approach_actor_action::Approach_actor_action(
 	dest_obj(weak_from_obj(d)), goal_dist(gdist),
 	orig_dest_pos(d->get_tile()), cur_step(0), for_projectile(for_proj) {
 	// Get length of path.
-	int nsteps = path->get_num_steps();
+	const int nsteps = path->get_num_steps();
 	//cout << "Approach nsteps is " << nsteps << "." << endl;
 	if (nsteps >= 6)        // (May have to play with this).
 		check_step = nsteps > 18 ? 9 : nsteps / 2;
@@ -539,8 +538,8 @@ Approach_actor_action *Approach_actor_action::create_path(
 int Approach_actor_action::handle_event(
     Actor *actor
 ) {
-	int delay = Path_walking_actor_action::handle_event(actor);
-	Game_object_shared dest_ptr = dest_obj.lock();
+	const int delay = Path_walking_actor_action::handle_event(actor);
+	const Game_object_shared dest_ptr = dest_obj.lock();
 	if (!dest_ptr || !delay || deleted)          // Done or blocked.
 		return 0;
 	// Close enough?
@@ -559,7 +558,7 @@ int Approach_actor_action::handle_event(
 		        Fast_pathfinder_client::is_straight_path(actor, dest_ptr.get()))
 			return 0;   // Can fire projectile.
 		// Figure next check.
-		int nsteps = path->get_num_steps();
+		const int nsteps = path->get_num_steps();
 		if (nsteps >= 6)
 			// Try checking more often.
 			check_step += 3;
@@ -697,7 +696,7 @@ int Activate_actor_action::handle_event(
     Actor *actor
 ) {
 	ignore_unused_variable_warning(actor);
-	Game_object_shared obj_ptr = obj.lock();
+	const Game_object_shared obj_ptr = obj.lock();
 	if (obj_ptr)
 	    obj_ptr->activate();
 	return 0;           // That's all.
@@ -724,7 +723,7 @@ int Usecode_actor_action::handle_event(
 ) {
 	ignore_unused_variable_warning(actor);
 	Game_window *gwin = Game_window::get_instance();
-    Game_object_shared item_ptr = item.lock();
+    const Game_object_shared item_ptr = item.lock();
 	if (item_ptr) {
 	    gwin->get_usecode()->call_usecode(fun, item_ptr.get(),
 	                    static_cast<Usecode_machine::Usecode_events>(eventid));
@@ -771,10 +770,10 @@ Frames_actor_action::Frames_actor_action(
 int Frames_actor_action::handle_event(
     Actor *actor
 ) {
-	Game_object_shared o = obj.lock();
+	const Game_object_shared o = obj.lock();
 	if (index == cnt || (!o && !use_actor))
 		return 0;       // Done.
-	int frnum = frames[index++];    // Get frame.
+	const int frnum = frames[index++];    // Get frame.
 	if (frnum >= 0) {
 		if (o)
 			o->change_frame(frnum);
@@ -865,11 +864,11 @@ Object_animate_actor_action::Object_animate_actor_action(
 int Object_animate_actor_action::handle_event(
     Actor *actor
 ) {
-    Game_object_shared obj_ptr = obj.lock();
+    const Game_object_shared obj_ptr = obj.lock();
 	ignore_unused_variable_warning(actor);
 	if (!obj_ptr || !cycles)
 	    return 0;
-	int frnum = (obj_ptr->get_framenum() + 1) % nframes;
+	const int frnum = (obj_ptr->get_framenum() + 1) % nframes;
 	if (!frnum)         // New cycle?
 		--cycles;
 	obj_ptr->change_frame(frnum);
@@ -900,7 +899,7 @@ int Pickup_actor_action::handle_event(
 ) {
 	Game_window *gwin = Game_window::get_instance();
 	Game_object_shared keep;
-	Game_object_shared obj_ptr = obj.lock();
+	const Game_object_shared obj_ptr = obj.lock();
 	int frnum = -1;
 	if (!obj_ptr)
 	    return 0;		// It's gone!  So we're done.
@@ -911,7 +910,7 @@ int Pickup_actor_action::handle_event(
 		cnt++;
 		break;
 	case 1: {            // Bend down.
-		int tz = pickup ? obj_ptr->get_lift() : objpos.tz;
+		const int tz = pickup ? obj_ptr->get_lift() : objpos.tz;
 		frnum = (tz >= actor->get_lift() + 2) ?
 			  ((rand()%2) ? Actor::reach1_frame : Actor::reach2_frame) :
 			  Actor::bow_frame;
@@ -968,8 +967,8 @@ Face_pos_actor_action::Face_pos_actor_action(Game_object *o, int spd)
 int Face_pos_actor_action::handle_event(
     Actor *actor
 ) {
-	int dir = actor->get_direction(pos);
-	int frnum = actor->get_dir_framenum(dir, Actor::standing);
+	const int dir = actor->get_direction(pos);
+	const int frnum = actor->get_dir_framenum(dir, Actor::standing);
 	if (actor->get_framenum() == frnum)
 		return 0;       // There.
 	actor->change_frame(frnum);
@@ -997,7 +996,7 @@ int Change_actor_action::handle_event(
 ) {
 	ignore_unused_variable_warning(actor);
 	Game_window *gwin = Game_window::get_instance();
-	Game_object_shared obj_ptr = obj.lock();
+	const Game_object_shared obj_ptr = obj.lock();
 	if (obj_ptr) {
 		gwin->add_dirty(obj_ptr.get());
 		obj_ptr->set_shape(shnum, frnum);

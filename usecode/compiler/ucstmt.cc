@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cstdio>
 #include <cassert>
 
+#include "array_size.h"
 #include "ucstmt.h"
 #include "ucexpr.h"
 #include "ucsym.h"
@@ -124,7 +125,7 @@ void Uc_if_statement::gen(
 	auto *past_if = new Basic_block();
 	blocks.push_back(if_block);
 	int ival;
-	bool const_expr = !expr || expr->eval_const(ival);
+	const bool const_expr = !expr || expr->eval_const(ival);
 	if (!expr)
 		// IF body unreachable except by GOTO statements.
 		// Skip IF block.
@@ -205,7 +206,7 @@ void Uc_trycatch_statement::gen(
 	// Generate a temp variable for error if needed
 	if (!catch_var) {
 		char buf[50];
-		sprintf(buf, "_tmperror_%d", cnt++);
+		snprintf(buf, array_size(buf), "_tmperror_%d", cnt++);
 		// Create a 'tmp' variable.
 		catch_var = fun->add_symbol(buf);
 		assert(catch_var != nullptr);
@@ -431,12 +432,12 @@ void Uc_arrayloop_statement::finish(
 ) {
 	char buf[100];
 	if (!index) {       // Create vars. if not given.
-		sprintf(buf, "_%s_index", array->get_name());
+		snprintf(buf, array_size(buf), "_%s_index", array->get_name());
 		index = fun->add_symbol(buf);
 	}
-	if (!array_size) {
-		sprintf(buf, "_%s_size", array->get_name());
-		array_size = fun->add_symbol(buf);
+	if (!array_len) {
+		snprintf(buf, array_size(buf), "_%s_size", array->get_name());
+		array_len = fun->add_symbol(buf);
 	}
 }
 
@@ -477,7 +478,7 @@ void Uc_arrayloop_statement::gen(
 		opcode = UC_LOOPTOP;
 	for_top->set_targets(opcode, for_body, past_for);
 	WriteJumpParam2(for_top, index->get_offset());// Counter, total-count variables.
-	WriteJumpParam2(for_top, array_size->get_offset());
+	WriteJumpParam2(for_top, array_len->get_offset());
 	WriteJumpParam2(for_top, var->get_offset());    // Loop variable, than array.
 	WriteJumpParam2(for_top, array->get_offset());
 
@@ -672,7 +673,7 @@ void Uc_converse_case_statement::gen(
 	if (remove) {       // Remove answer?
 		if (string_offset.size() > 1) {
 			auto *strlist = new Uc_array_expression();
-			for (int it : string_offset) {
+			for (const int it : string_offset) {
 				auto *str = new Uc_string_expression(it);
 				strlist->add(str);
 			}
@@ -942,7 +943,7 @@ void Uc_message_statement::gen(
 	const std::vector<Uc_expression *> &exprs = msgs->get_exprs();
 	for (auto *msg : exprs) {
 			// A known string?
-		int offset = msg->get_string_offset();
+		const int offset = msg->get_string_offset();
 		if (offset >= 0) {
 			if (is_int_32bit(offset)) {
 				WriteOp(curr, UC_ADDSI32);

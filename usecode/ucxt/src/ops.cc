@@ -121,7 +121,7 @@ void ucxtInit::misc() {
 					munge_offset = true;
 
 		// once we've got it, add it to the map
-		pair<unsigned int, bool> tsm_tmp(static_cast<unsigned int>(strtol(k.second.c_str(), nullptr, 0)), munge_offset);
+		const pair<unsigned int, bool> tsm_tmp(static_cast<unsigned int>(strtol(k.second.c_str(), nullptr, 0)), munge_offset);
 		type_size_map.insert(pair<string, pair<unsigned int, bool> >(k.first, tsm_tmp));
 	}
 }
@@ -139,7 +139,7 @@ void ucxtInit::opcodes() {
 			opdata.getsubkeys(ktl, key);
 
 			if (!ktl.empty()) {
-				unsigned int i = static_cast<unsigned int>(strtol(key.substr(key.find_first_of('0')).c_str(), nullptr, 0));
+				const unsigned int i = static_cast<unsigned int>(strtol(key.substr(key.find_first_of('0')).c_str(), nullptr, 0));
 				opcode_table_data[i] = UCOpcodeData(i, ktl);
 			}
 		}
@@ -174,7 +174,7 @@ std::vector<std::string> qnd_ocsplit(const std::string &s) {
 	std::vector<std::string> vs;
 	std::string tstr;
 
-	for (char i : s) {
+	for (const char i : s) {
 		if (i == ',') {
 			vs.push_back(tstr);
 			tstr = "";

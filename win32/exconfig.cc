@@ -252,7 +252,7 @@ extern "C" {
 		MessageBoxDebug(nullptr, BGPath, "BGPath", MB_OK);
 		MessageBoxDebug(nullptr, SIPath, "SIPath", MB_OK);
 
-		int p_size = strlen(ExultDir) + strlen("/exult.cfg") + MAX_STRLEN;
+		const int p_size = strlen(ExultDir) + strlen("/exult.cfg") + MAX_STRLEN;
 		char *p = new char[p_size];
 
 		// Get the complete path for the config file
@@ -313,7 +313,7 @@ extern "C" {
 
 		int i;
 
-		int p_size = strlen(ExultDir) + strlen("/exult.cfg") + MAX_STRLEN;
+		const int p_size = strlen(ExultDir) + strlen("/exult.cfg") + MAX_STRLEN;
 		char *p = new char[p_size];
 
 		Path config_path(ExultDir);
@@ -384,7 +384,7 @@ extern "C" {
 	__declspec(dllexport) int __stdcall VerifyBGDirectory(char *path) {
 		int i;
 
-		std::string s(path);
+		const std::string s(path);
 		add_system_path("<STATIC>", s + "/static");
 
 		// Check all the BASE files
@@ -397,7 +397,7 @@ extern "C" {
 		// Check all the IFIX files
 		//for (i = 0; i < 144; i++) {
 		//  char num[4];
-		//  std::sprintf(num, "%02X", i);
+		//  std::snprintf(num, array_size(num), "%02X", i);
 		//
 		//  string s(U7IFIX);
 		//  s += num;
@@ -423,7 +423,7 @@ extern "C" {
 	__declspec(dllexport) int __stdcall VerifySIDirectory(char *path) {
 		int i;
 
-		std::string s(path);
+		const std::string s(path);
 		add_system_path("<STATIC>", s + "/static");
 
 		// Check all the BASE files
@@ -436,7 +436,7 @@ extern "C" {
 		// Check all the IFIX files
 		//for (i = 0; i < 144; i++) {
 		//  char num[4];
-		//  std::sprintf(num, "%02X", i);
+		//  std::snprintf(num, array_size(num), "%02X", i);
 		//
 		//  string s(U7IFIX);
 		//  s += num;

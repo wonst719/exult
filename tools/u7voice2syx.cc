@@ -235,15 +235,15 @@ int main(int argc, char *argv[]) {
 	std::size_t num_to_write;
 
 	char name[11];
-	const char *filenames[] = { "u7voice.flx",
+	const char * const filenames[] = { "u7voice.flx",
 	                            "u7intro.tim",
 	                            "mainmenu.tim"
 	                          };
-	const char *outnames[] = { "u7voice.syx",
+	const char * const outnames[] = { "u7voice.syx",
 	                           "u7intro.syx",
 	                           "mainmenu.syx"
 	                         };
-	bool bgsi[] = { true, true, false };
+	const bool bgsi[] = { true, true, false };
 
 	std::cout << "U7 Timbre Flex To MT-32 syx converter" << std::endl << std::endl;
 
@@ -275,7 +275,7 @@ int main(int argc, char *argv[]) {
 			if (!ds.good())
 				throw exult_exception("No data in index 0");
 
-			uint32 num_timbres = ds.read1();
+			const uint32 num_timbres = ds.read1();
 			std::cout << num_timbres << " custom timbres..." << std::endl;
 
 			if (ds.getSize() != 247 * num_timbres + 1)
@@ -375,7 +375,7 @@ int main(int argc, char *argv[]) {
 					if (U7PercussionNotes[j - 1] + 1 != U7PercussionNotes[j]) break;
 				}
 
-				int count = j - i;
+				const int count = j - i;
 
 				num_to_write = fill_sysex_buffer(
 				                   rhythm_base,

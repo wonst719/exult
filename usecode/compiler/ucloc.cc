@@ -58,7 +58,7 @@ void Uc_location::set_cur(
 			break;
 		}
 	if (!cur_source) {      // 1st time.
-		int len = strlen(s);
+		const int len = strlen(s);
 		cur_source = new char[len + 1];
 		strcpy(cur_source, s);
 		source_names.push_back(cur_source);

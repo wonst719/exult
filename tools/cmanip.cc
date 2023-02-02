@@ -81,7 +81,7 @@ void read_params(const int argc, char *argv[]) {
 
 	// "I'd appreciate your input"...
 	for (int i = 2; i < argc; i++) {
-		string s(argv[i]);
+		const string s(argv[i]);
 
 		/* Adds the value (argv[i+2]) to the key (argv[i+1]) in the conf file. */
 		if ((s == "add") || (s == "create") || (s == "mk") || (s == "new") || (s == "-a") || (s == "modify")) {

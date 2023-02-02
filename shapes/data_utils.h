@@ -135,11 +135,12 @@ static const T *Search_vector_data_double_wildcards(
 	auto it = std::lower_bound(vec.begin(), vec.end(), inf);
 	if (it == vec.end())    // Nowhere to be found.
 		return nullptr;
-	else if (*it == inf && !it->is_invalid())   // Have it already.
-		return &*it;
+	auto& new_info = *it;
+	if (new_info == inf && !it->is_invalid())   // Have it already.
+		return &new_info;
 	// We only have to search forward for a match.
 	if (quality != -1) {
-		if ((*it).*fr == frame) {
+		if (new_info.*fr == frame) {
 			// Maybe quality is to blame. Try wildcard quality.
 			inf.*qual = -1;
 			it = std::lower_bound(it, vec.end(), inf);
@@ -222,7 +223,7 @@ protected:
 		int vers = 0;
 		if (haveversion)
 			vers = Read1(in);
-		size_t cnt = Read_count(in);
+		const size_t cnt = Read_count(in);
 		for (size_t j = 0; j < cnt; j++)
 			read_data(in, j, vers, patch, game, true);
 	}
@@ -261,14 +262,14 @@ public:
 		str_int_pair resource = game->get_resource(buf);
 		U7object txtobj(resource.str, resource.num);
 		*/
-		bool bg = game == BLACK_GATE;
+		const bool bg = game == BLACK_GATE;
 		const char *flexfile =
 		    bg ? BUNDLE_CHECK(BUNDLE_EXULT_BG_FLX, EXULT_BG_FLX)
 		    : BUNDLE_CHECK(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX);
-		U7object txtobj(flexfile, resource);
+		const U7object txtobj(flexfile, resource);
 		std::size_t len;
 		auto txt = txtobj.retrieve(len);
-		std::string databuf(reinterpret_cast<char*>(txt.get()), len);
+		const std::string databuf(reinterpret_cast<char*>(txt.get()), len);
 		std::istringstream strin(databuf, std::ios::in | std::ios::binary);
 		read_binary_internal(strin, false, game);
 	}
@@ -385,7 +386,7 @@ public:
 	                Exult_Game game, Info &info) {
 		ignore_unused_variable_warning(version, patch, game);
 		// For backwards compatibility.
-		bool biton = ReadInt(in, 1) != 0;
+		const bool biton = ReadInt(in, 1) != 0;
 		if (biton)
 			info.*data |= (static_cast<T>(1) << bit);
 		else
@@ -512,7 +513,7 @@ static void Read_text_data_file(
 		str_int_pair resource = game->get_resource(buf);
 		U7object txtobj(resource.str, resource.num);
 		*/
-		bool bg = game == BLACK_GATE;
+		const bool bg = game == BLACK_GATE;
 		const char *flexfile =
 		    bg ? BUNDLE_CHECK(BUNDLE_EXULT_BG_FLX, EXULT_BG_FLX)
 		    : BUNDLE_CHECK(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX);
@@ -809,7 +810,7 @@ public:
 		T *cls = info.*data;
 		if (!cls)
 			return (info.have_static_flags & T::get_info_flag()) != 0;
-		return (cls->need_write());
+		return cls->need_write();
 	}
 };
 

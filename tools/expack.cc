@@ -56,7 +56,7 @@ enum Arch_mode { NOMODE, LIST, EXTRACT, CREATE, ADD, RESPONSE };
  */
 
 bool is_text_file(const string &fname) {
-	size_t len = fname.size();
+	const size_t len = fname.size();
 
 	// only if the filename is greater than 4 chars
 	return len > 4 && fname[len - 4] == '.' &&
@@ -66,7 +66,7 @@ bool is_text_file(const string &fname) {
 }
 
 bool is_null_entry(const string &fname) {
-	size_t len = fname.size();
+	const size_t len = fname.size();
 
 	return len >= 4 && fname[len - 4] == 'N' && fname[len - 3] == 'U' &&
 	        fname[len - 2] == 'L' && fname[len - 1] == 'L';
@@ -167,7 +167,7 @@ void getline(ifstream &file, string &buf) {
 		file.get(c);
 	}
 
-	while (!(file.peek() >= ' ' || file.peek() == '\t') && file.good())
+	while (file.peek() < ' ' && file.peek() != '\t' && file.good())
 		file.get(c);
 }
 
@@ -190,7 +190,7 @@ int main(int argc, char **argv)
 				string path_prefix;
 
 				std::unique_ptr<std::istream> pRespfile;
-				size_t slash = fname.rfind('/');
+				const size_t slash = fname.rfind('/');
 				if (slash != string::npos) {
 					path_prefix = fname.substr(0, slash + 1);
 				}
@@ -229,7 +229,7 @@ int main(int argc, char **argv)
 							ptr++;
 							// Shape # specified.
 							char *eptr;
-							long num = strtol(ptr, &eptr, 0);
+							const long num = strtol(ptr, &eptr, 0);
 							if (eptr == ptr) {
 								cerr << "Line " << linenum << ": shapenumber not found. The correct format of a line with specified shape is ':shapenum:filename'." << endl;
 								exit(1);
@@ -239,7 +239,7 @@ int main(int argc, char **argv)
 							assert(*ptr == ':');
 							ptr++;
 						}
-						string temp2 = path_prefix + ptr;
+						const string temp2 = path_prefix + ptr;
 						if (shnum >= file_names.size())
 							file_names.resize(shnum + 1);
 						file_names[shnum] = temp2;
@@ -278,7 +278,7 @@ int main(int argc, char **argv)
 			break;
 		U7FileManager *fm = U7FileManager::get_ptr();
 		U7file *f = fm->get_file_object(fname);
-		size_t count = f->number_of_objects();
+		const size_t count = f->number_of_objects();
 		cout << "Archive: " << fname << endl;
 		cout << "Type: " << f->get_archive_type() << endl;
 		cout << "Size: " << count << endl;
@@ -294,8 +294,8 @@ int main(int argc, char **argv)
 		constexpr const char ext[] = "u7o";
 		if (argc == 4) {
 			U7object f(fname, atoi(argv[3]));
-			unsigned long nobjs = f.number_of_objects();
-			unsigned long n = strtoul(argv[3], nullptr, 0);
+			const unsigned long nobjs = f.number_of_objects();
+			const unsigned long n = strtoul(argv[3], nullptr, 0);
 			if (n >= nobjs) {
 				cerr << "Obj. #(" << n <<
 				     ") is too large.  ";
@@ -309,7 +309,7 @@ int main(int argc, char **argv)
 		} else {
 			U7FileManager *fm = U7FileManager::get_ptr();
 			U7file *f = fm->get_file_object(fname);
-			int count = static_cast<int>(f->number_of_objects());
+			const int count = static_cast<int>(f->number_of_objects());
 			for (int index = 0; index < count; index++) {
 				U7object o(fname, index);
 				char outfile[32];
@@ -357,7 +357,7 @@ int main(int argc, char **argv)
 
 			// The files
 			for (unsigned int i = 0; i < file_names.size(); i++) {
-				size_t fsize = file_names[i].empty() ? 0 : get_file_size(file_names[i]);
+				const size_t fsize = file_names[i].empty() ? 0 : get_file_size(file_names[i]);
 				if (!file_names[i].empty() && fsize > 0) {
 					IFileDataSource ifs(file_names[i].c_str(), is_text_file(file_names[i]));
 					if (!ifs.good()) {
@@ -377,7 +377,7 @@ int main(int argc, char **argv)
 			}
 			writer.flush();
 
-			uint32 crc32val = crc32(fname.c_str());
+			const uint32 crc32val = crc32(fname.c_str());
 			header << std::endl << "#define\t" << hprefix << "_CRC32\t0x";
 			header << std::hex << crc32val << std::dec << "U" << std::endl;
 

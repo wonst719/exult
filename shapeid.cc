@@ -196,8 +196,8 @@ void Shape_manager::load(
 	files[SF_SPRITES_VGA].load(SPRITES_VGA, PATCH_SPRITES);
 	if (GAME_SIB) {
 		// Lets try to import shape 0 of sprites.vga from BG or SI.
-		pair<string, int> sourcebg(string("<ULTIMA7_STATIC>/sprites.vga"), -1);
-		pair<string, int> sourcesi(string("<SERPENT_STATIC>/sprites.vga"), -1);
+		const pair<string, int> sourcebg(string("<ULTIMA7_STATIC>/sprites.vga"), -1);
+		const pair<string, int> sourcesi(string("<SERPENT_STATIC>/sprites.vga"), -1);
 
 		vector<pair<int, int> > imports;
 		imports.emplace_back(0, 0);
@@ -243,7 +243,7 @@ void Shape_manager::load(
 		auto blendsflexspec = GAME_BG
 		                       ? File_spec(BUNDLE_CHECK(BUNDLE_EXULT_BG_FLX, EXULT_BG_FLX), EXULT_BG_FLX_BLENDS_DAT)
 		                       : File_spec(BUNDLE_CHECK(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX), EXULT_SI_FLX_BLENDS_DAT);
-		U7multiobject in(BLENDS, blendsflexspec, PATCH_BLENDS, 0);
+		const U7multiobject in(BLENDS, blendsflexspec, PATCH_BLENDS, 0);
 		size_t len;
 		ptr = in.retrieve(len);
 	}
@@ -274,7 +274,7 @@ void Shape_manager::load(
 	if (U7exists(XFORMTBL) || U7exists(PATCH_XFORMS)) {
 		// Read in translucency tables.
 		U7multifile xformfile(XFORMTBL, PATCH_XFORMS);
-		size_t nobjs = std::min(xformfile.number_of_objects(), nblends);  // Limit by blends.
+		const size_t nobjs = std::min(xformfile.number_of_objects(), nblends);  // Limit by blends.
 		for (size_t i = 0; i < nobjs; i++) {
 			auto ds = xformfile.retrieve(i);
 			if (!ds.good()) {

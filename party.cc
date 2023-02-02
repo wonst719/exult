@@ -90,10 +90,10 @@ bool Party_manager::remove_from_party(
 ) {
 	if (!npc)
 		return false;
-	int id = npc->get_party_id();
+	const int id = npc->get_party_id();
 	if (id == -1)           // Not in party?
 		return false;
-	int npc_num = npc->get_npc_num();
+	const int npc_num = npc->get_npc_num();
 	if (party[id] != npc_num) {
 		cout << "Party mismatch!!" << endl;
 		return false;
@@ -124,7 +124,7 @@ bool Party_manager::remove_from_party(
 int Party_manager::in_dead_party(
     Actor *npc
 ) const {
-	int num = npc->get_npc_num();
+	const int num = npc->get_npc_num();
 	for (int i = 0; i < dead_party_count; i++)
 		if (dead_party[i] == num)
 			return i;
@@ -158,7 +158,7 @@ bool Party_manager::remove_from_dead_party(
 ) {
 	if (!npc)
 		return false;
-	int id = in_dead_party(npc);    // Get index.
+	const int id = in_dead_party(npc);    // Get index.
 	if (id == -1)           // Not in list?
 		return false;
 	// Shift the rest down.
@@ -197,7 +197,7 @@ void Party_manager::link_party(
 	gwin->get_main_actor()->set_flag(Obj_flags::in_party);
 	// You own your own stuff.
 	gwin->get_main_actor()->set_flag_recursively(Obj_flags::okay_to_take);
-	int tmp_party_count = party_count;
+	const int tmp_party_count = party_count;
 	int i;
 	party_count = dead_party_count = 0;
 	// Now process them.
@@ -211,7 +211,7 @@ void Party_manager::link_party(
 		        ((oldid = npc->get_party_id()) >= 0 &&
 		         oldid < party_count))
 			continue;   // Skip bad entry.
-		int npc_num = npc->get_npc_num();
+		const int npc_num = npc->get_npc_num();
 		if (npc->is_dead()) { // Put dead in special list.
 			npc->set_party_id(-1);
 			if (static_cast<unsigned int>(dead_party_count) >= array_size(dead_party))
@@ -279,7 +279,7 @@ void Party_manager::get_followers(
 		        npc->get_flag(Obj_flags::paralyzed) ||
 		        npc->is_dead())
 			continue;   // Not available.
-		int sched = npc->get_schedule_type();
+		const int sched = npc->get_schedule_type();
 		// Skip if in combat or set to 'wait'.
 		if (sched != Schedule::combat &&
 		        sched != Schedule::wait &&
@@ -303,13 +303,13 @@ void Party_manager::move_followers(
     int dir             // Direction (0-7) he stepped in.
 ) const {
 	ignore_unused_variable_warning(vindex);
-	int id = npc->get_party_id();   // (-1 if Avatar).
-	Tile_coord pos = npc->get_tile();
-	int lnum = followers[1 + id][0];
-	int rnum = followers[1 + id][1];
+	const int id = npc->get_party_id();   // (-1 if Avatar).
+	const Tile_coord pos = npc->get_tile();
+	const int lnum = followers[1 + id][0];
+	const int rnum = followers[1 + id][1];
 	if (lnum == -1 && rnum == -1)
 		return;         // Nothing to do.
-	int dir4 = dir / 2;     // 0-3 now.
+	const int dir4 = dir / 2;     // 0-3 now.
 	Actor *lnpc = (lnum == -1 || lnum >= validcnt) ? nullptr : valid[lnum];
 	Actor *rnpc = (rnum == -1 || rnum >= validcnt) ? nullptr : valid[rnum];
 	int ldir = -1;
@@ -364,7 +364,7 @@ static Actor *Find_member_blocking(
 ) {
 	Game_window *gwin = Game_window::get_instance();
 	Party_manager *pman = gwin->get_party_man();
-	int count = pman->get_count();
+	const int count = pman->get_count();
 
 	for (int i = first; i < count; i++) {
 		Actor *npc = gwin->get_npc(pman->get_member(i));
@@ -385,7 +385,7 @@ inline int Get_dir_from(
     Actor *npc,
     Tile_coord &from
 ) {
-	Tile_coord pos = npc->get_tile();
+	const Tile_coord pos = npc->get_tile();
 	return Get_direction(from.ty - pos.ty, pos.tx - from.tx);
 }
 
@@ -398,12 +398,12 @@ inline bool Clear_to_leader(
     Actor *leader,
     Tile_coord from         // Start from here.
 ) {
-	Tile_coord dest = leader->get_tile();
+	const Tile_coord dest = leader->get_tile();
 	int dist = leader->distance(from);
 	if (dist > 4)
 		return false;       // Too far.
 	while (--dist) {        // Check tiles up to there.
-		int dir = Get_dir_from(leader, from);
+		const int dir = Get_dir_from(leader, from);
 		Tile_coord next = from.get_neighbor(dir);
 		if (npc->is_blocked(next, &from)) {
 			Actor *bnpc = Find_member_blocking(next, 0);
@@ -413,7 +413,7 @@ inline bool Clear_to_leader(
 		}
 		from = next;
 	}
-	int difftz = from.tz - dest.tz; // Check diff. in z-coords.
+	const int difftz = from.tz - dest.tz; // Check diff. in z-coords.
 	return difftz * difftz <= 1; // Can't be more than 2.
 }
 
@@ -447,13 +447,13 @@ static int Get_cost(
 		} else
 			return max_cost;
 	}
-	Tile_coord lpos = leader->get_tile();
-	int difftz = to.tz - lpos.tz;
-	int // Measure closeness.
+	const Tile_coord lpos = leader->get_tile();
+	const int difftz = to.tz - lpos.tz;
+	const int // Measure closeness.
 	    diffty = Tile_coord::delta(to.ty, lpos.ty);
-	int difftx = Tile_coord::delta(to.tx, lpos.tx);
+	const int difftx = Tile_coord::delta(to.tx, lpos.tx);
 	// Get dist**2 in x-y plane.
-	int xydist2 = diffty * diffty + difftx * difftx;
+	const int xydist2 = diffty * diffty + difftx * difftx;
 	cost += difftz * difftz + xydist2;
 	if (xydist2 > 2) {      // More than 1 tile away?
 		// Check 1 more tile towards leader.
@@ -476,16 +476,16 @@ static bool Take_best_step(
     int frame,          // Frame to show.
     int dir             // Direction we want to go.
 ) {
-	static int deltadir[] = {0, 1, 7, 2, 6, 3, 5};
+	static const int deltadir[] = {0, 1, 7, 2, 6, 3, 5};
 
 	int best_cost = max_cost + 8;
 	Tile_coord best(-1, -1, -1);
 	Actor *best_in_way = nullptr;
-	for (int i : deltadir) {
-		int diri = (dir + i) % 8;
-		Tile_coord to = pos.get_neighbor(diri);
+	for (const int i : deltadir) {
+		const int diri = (dir + i) % 8;
+		const Tile_coord to = pos.get_neighbor(diri);
 		Actor *in_way;      // Fudge cost with diff. in dir.
-		int cost = Get_cost(npc, leader, to, &in_way);
+		const int cost = Get_cost(npc, leader, to, &in_way);
 		if (cost < best_cost) {
 			best_cost = cost;
 			best_in_way = in_way;
@@ -524,7 +524,7 @@ inline bool Is_step_okay(
 	if (difftz > 4)         // More than 2?
 		return false;       // We'll want to find best dir.
 	// How close in XY?
-	int dist = leader->distance(to);
+	const int dist = leader->distance(to);
 	if (dist == 1)
 		return difftz <= 1;   // 1 tile away, so want dz <= 1.
 	return Clear_to_leader(npc, leader, to);       // Couldn't take a 2nd step.
@@ -543,7 +543,7 @@ int Party_manager::step(
     Tile_coord const &dest          // Destination tile.
 ) const {
 	Tile_coord pos = npc->get_tile();   // Current position.
-	Tile_coord to = Get_step_tile(pos, dest, dir);
+	const Tile_coord to = Get_step_tile(pos, dest, dir);
 	if (to.tx == pos.tx && to.ty == pos.ty)
 		return dir;     // Not moving.
 //TEST:
@@ -554,7 +554,7 @@ int Party_manager::step(
 	if (!step_index)        // First time?  Init.
 		step_index = frames->find_unrotated(npc->get_framenum());
 	// Get next (updates step_index).
-	int frame = frames->get_next(step_index);
+	const int frame = frames->get_next(step_index);
 	// Want dz<=1, dx<=2, dy<=2.
 	if (Is_step_okay(npc, leader, to) && npc->step(to, frame))
 		;

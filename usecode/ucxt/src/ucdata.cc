@@ -121,14 +121,14 @@ void UCData::open_usecode(const string &filename) {
 }
 
 void UCData::disassamble(ostream &o) {
-	boost::io::ios_flags_saver flags(o);
-	boost::io::ios_fill_saver fill(o);
+	const boost::io::ios_flags_saver flags(o);
+	const boost::io::ios_fill_saver fill(o);
 	load_globals(o);
 	load_funcs(o);
 	analyse_classes();
 
 	if (options.verbose) {
-		for (unsigned int func : search_funcs)
+		for (const unsigned int func : search_funcs)
 			o << "Looking for function number " << setw(8) << func << endl;
 		o << endl;
 	}
@@ -308,8 +308,8 @@ void UCData::load_globals(ostream &o) {
 		std::string flagname;
 		std::getline(gflags, flagname, '\0');
 		bool first = true;
-		boost::io::ios_flags_saver oflags(o);
-		boost::io::ios_fill_saver fill(o);
+		const boost::io::ios_flags_saver oflags(o);
+		const boost::io::ios_fill_saver fill(o);
 		o << setbase(16) << setfill('0');
 		while (gflags.good()) {
 			if (!flagname.empty()) {
@@ -374,7 +374,7 @@ void UCData::load_funcs(ostream &o) {
 	if (options.verbose) o << "Creating function map..." << endl;
 
 	for (auto *func : _funcs) {
-		int funcid = func->_funcid;
+		const int funcid = func->_funcid;
 		Usecode_symbol::Symbol_kind kind;
 		if (func->_sym)
 			kind = func->_sym->get_kind();
@@ -398,7 +398,7 @@ void UCData::load_funcs(ostream &o) {
 void UCData::analyse_classes() {
 	if (!_symtbl)
 		return;
-	int nclasses = _symtbl->get_num_classes();
+	const int nclasses = _symtbl->get_num_classes();
 	// Class 0 can't inherit from any others.
 	for (int i = 1; i < nclasses; i++) {
 		Usecode_class_symbol *cls = _symtbl->get_class(i);

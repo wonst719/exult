@@ -49,13 +49,9 @@ using std::atoi;
 using std::cout;
 using std::endl;
 using std::isdigit;
-using std::memset;
 using std::qsort;
 using std::string;
-using std::strlen;
 using std::strncpy;
-using std::strcpy;
-using std::strcat;
 using std::time_t;
 using std::tm;
 using std::localtime;
@@ -321,7 +317,7 @@ void Newfile_gump::scroll_page(int dir) {
 
 void Newfile_gump::PaintSaveName(int line) {
 
-	int actual_game = line + list_position;
+	const int actual_game = line + list_position;
 
 	if (actual_game < -2 || actual_game >= num_games) return;
 
@@ -382,7 +378,7 @@ void Newfile_gump::paint(
 	if (num_pos < 1) num_pos = 1;
 
 	// Now work out the position
-	int pos = ((scrollh - sliderh) * (list_position + 2)) / num_pos;
+	const int pos = ((scrollh - sliderh) * (list_position + 2)) / num_pos;
 
 	ShapeID slider_shape(EXULT_FLX_SAV_SLIDER_SHP, 0, SF_EXULT_FLX);
 	slider_shape.paint_shape(x + scrollx , y + scrolly + pos);
@@ -501,8 +497,8 @@ bool Newfile_gump::mouse_down(
 		return true;
 	}
 
-	int gx = mx - x;
-	int gy = my - y;
+	const int gx = mx - x;
+	const int gy = my - y;
 
 	// Check for scroller
 	if (gx >= scrollx && gx < scrollx + sliderw && gy >= scrolly && gy < scrolly + scrollh) {
@@ -510,7 +506,7 @@ bool Newfile_gump::mouse_down(
 		if (num_pos < 1) num_pos = 1;
 
 		// Now work out the position
-		int pos = ((scrollh - sliderh) * (list_position + 2)) / num_pos;
+		const int pos = ((scrollh - sliderh) * (list_position + 2)) / num_pos;
 
 		// Pressed above it
 		if (gy < pos + scrolly) {
@@ -539,7 +535,7 @@ bool Newfile_gump::mouse_down(
 	int hit = -1;
 	int i;
 	for (i = 0; i < fieldcount; i++) {
-		int fy = fieldy + i * (fieldh + fieldgap);
+		const int fy = fieldy + i * (fieldh + fieldgap);
 		if (gy >= fy && gy < fy + fieldh) {
 			hit = i;
 			break;
@@ -644,7 +640,7 @@ bool Newfile_gump::mouse_up(
 }
 
 void Newfile_gump::mousewheel_up() {
-	SDL_Keymod mod = SDL_GetModState();
+	const SDL_Keymod mod = SDL_GetModState();
 	if (mod & KMOD_ALT)
 		scroll_page(-1);
 	else
@@ -652,7 +648,7 @@ void Newfile_gump::mousewheel_up() {
 }
 
 void Newfile_gump::mousewheel_down() {
-	SDL_Keymod mod = SDL_GetModState();
+	const SDL_Keymod mod = SDL_GetModState();
 	if (mod & KMOD_ALT)
 		scroll_page(1);
 	else
@@ -669,8 +665,8 @@ void Newfile_gump::mouse_drag(
 	// If not sliding don't do anything
 	if (slide_start == -1) return;
 
-	int gx = mx - x;
-	int gy = my - y;
+	const int gx = mx - x;
+	const int gy = my - y;
 
 	// First if the position is too far away from the slider
 	// We'll put it back to the start
@@ -683,13 +679,13 @@ void Newfile_gump::mouse_drag(
 	sy -= sliderh / 2;
 
 	// Now work out the number of positions
-	int num_pos = (2 + num_games) - fieldcount;
+	const int num_pos = (2 + num_games) - fieldcount;
 
 	// Can't scroll if there is less than 1 pos
 	if (num_pos < 1) return;
 
 	// Now work out the closest position to here position
-	int new_pos = ((sy * num_pos * 2) / (scrollh - sliderh) + 1) / 2 - 2;
+	const int new_pos = ((sy * num_pos * 2) / (scrollh - sliderh) + 1) / 2 - 2;
 
 	if (new_pos != list_position) {
 		list_position = new_pos;
@@ -899,7 +895,7 @@ void Newfile_gump::LoadSaveGameDetails() {
 	cur_details->game_hour = gclock->get_hour();
 	cur_details->game_minute = gclock->get_minute();
 
-	time_t t = time(nullptr);
+	const time_t t = time(nullptr);
 	tm *timeinfo = localtime(&t);
 
 	cur_details->real_day = timeinfo->tm_mday;
@@ -918,7 +914,7 @@ void Newfile_gump::LoadSaveGameDetails() {
 		else
 			npc = gwin->get_npc(partyman->get_member(i - 1));
 
-		std::string namestr = npc->get_npc_name();
+		const std::string namestr = npc->get_npc_name();
 		strncpy(cur_party[i].name, namestr.c_str(), 18);
 		cur_party[i].shape = npc->get_shapenum();
 		cur_party[i].shape_file = npc->get_shapefile();

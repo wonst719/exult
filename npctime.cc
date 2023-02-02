@@ -305,7 +305,7 @@ void Npc_hunger_timer::handle_event(
 ) {
 	ignore_unused_variable_warning(udata);
 	Actor *npc = list->npc;
-	int food = npc->get_property(static_cast<int>(Actor::food_level));
+	const int food = npc->get_property(static_cast<int>(Actor::food_level));
 	// No longer a party member?
 	if (!npc->is_in_party() ||
 	        //   or no longer hungry?
@@ -314,7 +314,7 @@ void Npc_hunger_timer::handle_event(
 		delete this;
 		return;
 	}
-	uint32 minute = get_minute();
+	const uint32 minute = get_minute();
 	// Once/minute.
 	if (minute != last_time) {
 		if (!npc->is_knocked_out()) {
@@ -365,7 +365,7 @@ void Npc_poison_timer::handle_event(
 		delete this;
 		return;
 	}
-	int penalty = rand() % 3;
+	const int penalty = rand() % 3;
 	npc->reduce_health(penalty, Weapon_data::sonic_damage);
 
 //	npc->set_property(static_cast<int>(Actor::health),
@@ -406,7 +406,7 @@ void Npc_sleep_timer::handle_event(
 			npc->clear_sleep();
 		else if (!npc->is_dead()) { // Don't wake the dead.
 			npc->clear_flag(Obj_flags::asleep);
-			int frnum = npc->get_framenum();
+			const int frnum = npc->get_framenum();
 			if ((frnum & 0xf) == Actor::sleep_frame &&
 			        // Slimes don't change.
 			        !npc->get_info().has_strange_movement())

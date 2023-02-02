@@ -102,7 +102,7 @@ void Scale_Hq2x(
 	int w[10];
 	int c[10];
 	int yuv[10];
-	int stopy = srcy + srch;
+	const int stopy = srcy + srch;
 	int stopx = srcx + srcw;
 	unsigned char *from = source + srcy * sline_pixels + srcx;
 	Dest_pixel *to = dest + 2 * srcy * dline_pixels + 2 * srcx;

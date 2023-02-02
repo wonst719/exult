@@ -60,7 +60,7 @@ static void Read_flex(
     vector<string> &strings     // Strings are stored here.
 ) {
 	FlexFile in(filename);      // May throw exception.
-	int cnt = in.number_of_objects();
+	const int cnt = in.number_of_objects();
 	strings.resize(cnt);
 	for (int i = 0; i < cnt; i++) {
 		size_t len;
@@ -102,9 +102,9 @@ static void Write_text(
     vector<string> &strings     // Strings to write.
 ) {
 	out << "# Written by Exult Textpack tool" << endl;
-	int cnt = strings.size();
+	const int cnt = strings.size();
 	for (int i = 0; i < cnt; i++) {
-		string &text = strings[i];
+		const string &text = strings[i];
 		if (text.empty())
 			continue;
 		if (text.size() + 1 > 1024) {

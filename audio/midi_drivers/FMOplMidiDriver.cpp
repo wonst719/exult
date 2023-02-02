@@ -289,7 +289,7 @@ int FMOplMidiDriver::midi_calc_volume(int channel, int vel)
 //
 void FMOplMidiDriver::send(uint32 b)
 {
-	unsigned char channel = static_cast<char>(b & 0x0F);
+	const unsigned char channel = static_cast<char>(b & 0x0F);
 
 	// Discard everything on channel 9 for now
 	if (channel == 9 && !xmidibanks[127]) return;
@@ -311,7 +311,7 @@ void FMOplMidiDriver::send(uint32 b)
 						chp[i].channel = -1;
 					} else {
 						chp[i].sustained = true;
-						chp[i].counter += 10; // artificially age the chp 
+						chp[i].counter += 10; // artificially age the chp
 					}
 				}
 
@@ -356,7 +356,7 @@ void FMOplMidiDriver::send(uint32 b)
 				}
 
 				// Calculate the adlib volume
-				int nv = midi_calc_volume(channel, vel);
+				const int nv = midi_calc_volume(channel, vel);
 
 				// Send note on
 				midi_fm_playnote(on, note + ch[channel].nshift, nv * 2, ch[channel].pitchbend, ch[channel].pan);
@@ -370,7 +370,7 @@ void FMOplMidiDriver::send(uint32 b)
 	case 0xa0:{									/*key after touch */
 			auto note = static_cast<unsigned char>((b >> 8) & 0x7F);
 			auto vel = static_cast<unsigned char>((b >> 16) & 0x7F);
-			int nv = midi_calc_volume(channel, vel);
+			const int nv = midi_calc_volume(channel, vel);
 
 			for (int i = 0; i < 9; i++)
 				if ((chp[i].channel == channel) && (chp[i].note == note)) {
@@ -512,11 +512,11 @@ void FMOplMidiDriver::send(uint32 b)
 
 	case 0xe0:{
 		//break;						/* pitch wheel */
-			int pitchbend = ((b >> 8) & 0x7F) | (((b >> 16) & 0x7F) << 7);
+			const int pitchbend = ((b >> 8) & 0x7F) | (((b >> 16) & 0x7F) << 7);
 			ch[channel].pitchbend = pitchbend;
 			for (int i = 0; i < 9; i++) {
 				if (chp[i].channel == channel) {
-					int nv = midi_calc_volume(channel, chp[i].velocity);
+					const int nv = midi_calc_volume(channel, chp[i].velocity);
 					midi_fm_playnote(i, chp[i].note + ch[channel].nshift, nv * 2, pitchbend, ch[channel].pan);
 				}
 			}
@@ -587,7 +587,7 @@ void FMOplMidiDriver::midi_update_volume(int channel)
 	for (int i = 0; i < 9; i++)
 		if (chp[i].channel == channel) {
 
-			int nv = midi_calc_volume(channel, chp[i].velocity);
+			const int nv = midi_calc_volume(channel, chp[i].velocity);
 			midi_fm_volume(i, nv * 2);
 		}
 }
@@ -746,7 +746,7 @@ void FMOplMidiDriver::midi_fm_playnote(int voice, int note, int volume, int pitc
 	midi_fm_volume(voice, volume);
 	midi_write_adlib(0xa0 + voice, static_cast<unsigned char>(freq & 0xff));
 
-	int c = ((freq & 0x300) >> 8) + (oct << 2) + (1 << 5);
+	const int c = ((freq & 0x300) >> 8) + (oct << 2) + (1 << 5);
 	midi_write_adlib(0xb0 + voice, static_cast<unsigned char>(c));
 }
 
@@ -783,8 +783,8 @@ void FMOplMidiDriver::loadXMIDITimbres(IDataSource *ds)
 		// Seek to the entry
 		ds->seek(i*6);
 
-		uint32 patch = static_cast<uint8>(ds->read1());
-		uint32 bank = static_cast<uint8>(ds->read1());
+		const uint32 patch = static_cast<uint8>(ds->read1());
+		const uint32 bank = static_cast<uint8>(ds->read1());
 
 		// If we read both == 255 then we've read all of them
 		if (patch == 255 || bank == 255) {
@@ -793,7 +793,7 @@ void FMOplMidiDriver::loadXMIDITimbres(IDataSource *ds)
 		}
 
 		// Get offset and seek to it
-		uint32 offset = ds->read4();
+		const uint32 offset = ds->read4();
 
 		//POUT ("Patch " << i << " = " << bank << ":" << patch << " @ " << offset);
 
@@ -806,7 +806,7 @@ void FMOplMidiDriver::loadXMIDITimbres(IDataSource *ds)
 		ds->seek(offset);
 
 		// Get len of the entry
-		uint16 len = ds->read2();
+		const uint16 len = ds->read2();
 
 		// Only accept lens that are 0xC
 		if (len != 0xE) {
@@ -951,7 +951,7 @@ void FMOplMidiDriver::loadU7VoiceTimbres(IDataSource *ds)
 
 	//POUT("Size of u7voice_adlib_ins " << sizeof(u7voice_adlib_ins));
 
-	int count = ds->read1() & 0xFF;
+	const int count = ds->read1() & 0xFF;
 
 	// Read all the timbres
 	for (int i = 0; i < count; i++) {
@@ -959,8 +959,8 @@ void FMOplMidiDriver::loadU7VoiceTimbres(IDataSource *ds)
 		// Read the timbre
 		u7voice_ins.read(ds);
 
-		uint32 patch = u7voice_ins.prog_num;
-		uint32 bank = 0;
+		const uint32 patch = u7voice_ins.prog_num;
+		const uint32 bank = 0;
 
 		//POUT ("Patch " << i << " = " << bank << ":" << patch);
 

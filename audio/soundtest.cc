@@ -1,6 +1,6 @@
 /*
  *  Copyright (C) 2000-2022 The Exult Team
- *  
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -24,7 +24,7 @@
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif    // __GNUC__
-#include "SDL_events.h"
+#include <SDL.h>
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
@@ -51,18 +51,18 @@ void SoundTester::test_sound()
 	bool redraw = true;
 	SDL_Event event;
 
-	int centerx = gwin->get_width()/2;
-	int centery = gwin->get_height()/2;
-	int left = centerx - 65;
-	int first_line = centery-53;
-	int line;
-	int height = 6;
-	int width = 6;
-	
+	const int centerx = gwin->get_width()/2;
+	const int centery = gwin->get_height()/2;
+	const int left = centerx - 65;
+	const int first_line = centery-53;
+	const int height = 6;
+	const int width = 6;
+
 	Mouse::mouse->hide();
 
 	gwin->get_tqueue()->pause(SDL_GetTicks());
 
+	int line;
 	do
 	{
 		if (redraw)
@@ -78,13 +78,13 @@ void SoundTester::test_sound()
 
 			line += height*2;
 			font->paint_text_fixedwidth(ibuf, "   Up - Previous Type", left, line, width);
-			
+
 			line += height;
 			font->paint_text_fixedwidth(ibuf, " Down - Next Type", left, line, width);
-			
+
 			line += height;
 			font->paint_text_fixedwidth(ibuf, " Left - Previous Number", left, line, width);
-			
+
 			line += height;
 			font->paint_text_fixedwidth(ibuf, "Right - Next Number", left, line, width);
 
@@ -100,7 +100,6 @@ void SoundTester::test_sound()
 			line += height;
 			font->paint_text_fixedwidth(ibuf, "    S - Stop Music", left, line, width);
 
-
 			snprintf (buf, 256, "%2s Music %c %3i %c %s",
 					active==0?"->":"",
 					active==0?'<':' ',
@@ -109,8 +108,7 @@ void SoundTester::test_sound()
 					repeat?"- Repeat":"");
 			line += height*2;
 			font->paint_text_fixedwidth(ibuf, buf, left, line, width);
-			
-			
+
 			snprintf (buf, 256, "%2s SFX   %c %3i %c",
 					active==1?"->":"",
 						active==1?'<':' ',
@@ -119,7 +117,6 @@ void SoundTester::test_sound()
 
 			line += height*2;
 			font->paint_text_fixedwidth(ibuf, buf, left, line, width);
-
 
 			snprintf (buf, 256, "%2s Voice %c %3i %c",
 					active==2?"->":"",
@@ -161,12 +158,12 @@ void SoundTester::test_sound()
 					audio->start_speech (voice, false);
 				}
 				break;
-				
+
 			case SDLK_r:
 				repeat = !repeat;
 				break;
 			case SDLK_s:
-				if ((event.key.keysym.mod & KMOD_ALT) && (event.key.keysym.mod & KMOD_CTRL)) 
+				if ((event.key.keysym.mod & KMOD_ALT) && (event.key.keysym.mod & KMOD_CTRL))
 					make_screenshot(true);
 				else
 					audio->stop_music();
@@ -218,7 +215,7 @@ void SoundTester::test_sound()
 	} while(looping);
 
 	gwin->get_tqueue()->resume(SDL_GetTicks());
-	
+
 	gwin->paint();
 	Mouse::mouse->show();
 	gwin->show();

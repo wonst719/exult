@@ -6,6 +6,7 @@ Checks: >
   -bugprone-parent-virtual-call,
   -bugprone-signed-char-misuse,
   -bugprone-narrowing-conversions,
+  -bugprone-easily-swappable-parameters,
   clang-diagnostic-*,
   -clang-diagnostic-implicit-fallthrough,
   -clang-diagnostic-weak-template-vtables,
@@ -15,24 +16,23 @@ Checks: >
   misc-*,
   -misc-non-private-member-variables-in-classes,
   -misc-unused-parameters,
+  -misc-no-recursion,
   modernize-*,
   -modernize-avoid-bind,
   -modernize-avoid-c-arrays,
   -modernize-concat-nested-namespaces,
-  -modernize-pass-by-value,
   -modernize-use-trailing-return-type,
+  -modernize-use-nodiscard,
   performance-*,
   readability-*,
   -readability-avoid-const-params-in-decls,
-  -readability-braces-around-statements,
   -readability-convert-member-functions-to-static,
-  -readability-else-after-return,
-  -readability-implicit-bool-conversion,
   -readability-magic-numbers,
   -readability-make-member-function-const,
   -readability-named-parameter,
-  -readability-redundant-declaration,
-  -readability-uppercase-literal-suffix
+  -readability-uppercase-literal-suffix,
+  -readability-function-cognitive-complexity,
+  -readability-identifier-length
 CheckOptions:
     - key: bugprone-argument-comment.StrictMode
       value: 1

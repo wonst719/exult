@@ -27,7 +27,7 @@
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif    // __GNUC__
-#include "SDL_events.h"
+#include <SDL.h>
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
@@ -82,7 +82,7 @@ void GameDisplayOptions_gump::build_buttons() {
 	int y_index = 0;
 	int small_size = 44;
 	int large_size = 85;
-	
+
 	//Status Bar Positions
 	std::vector<std::string> stats = {"Disabled", "Left", "Middle", "Right", "Vertical"};
 	buttons[id_facestats] = std::make_unique<GameDisplayTextToggle>(this, &GameDisplayOptions_gump::toggle_facestats,
@@ -148,7 +148,7 @@ void GameDisplayOptions_gump::load_settings() {
 	} else
 		facestats = Face_stats::get_state() + 1;
 	paperdolls = false;
-	string pdolls;
+	const string pdolls;
 	paperdolls = sman->are_paperdolls_enabled();
 	text_bg = gwin->get_text_bg() + 1;
 	smooth_scrolling = gwin->is_lerping_enabled() / 25;

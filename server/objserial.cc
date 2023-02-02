@@ -40,7 +40,7 @@ Serial_out &Serial_out::operator<<(
     std::string &s
 ) {
 	const char *str = s.c_str();
-	int len = std::strlen(str);     // Get length.
+	const int len = std::strlen(str);     // Get length.
 	*this << len;           // First the length.
 	std::memcpy(buf, str, len);     // Then the bytes.
 	buf += len;

@@ -43,14 +43,18 @@ Boston, MA  02111-1307, USA.
 
 #include "istring.h"
 
-#include <SDL_video.h>
-#include <SDL_error.h>
+#ifdef __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif    // __GNUC__
+#include <SDL.h>
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#endif    // __GNUC__
 
 #include "manip.h"
 #include "BilinearScaler.h"
 #include "PointScaler.h"
-
-#include "SDL.h"
 
 #include "Configuration.h"
 
@@ -339,7 +343,7 @@ void Image_window::static_init() {
 	for (int j = 0; j < SDL_GetNumDisplayModes(0); j++) {
 		SDL_DisplayMode dispmode;
 		if (SDL_GetDisplayMode(0, j, &dispmode) == 0) {
-			Resolution res = { dispmode.w, dispmode.h };
+			const Resolution res = { dispmode.w, dispmode.h };
 			p_resolutions[(res.width << 16) | res.height] = res;
 
 		} else {
@@ -409,7 +413,7 @@ void Image_window::static_init() {
 	bool ok_rgb = false;
 
 	for (auto it = p_resolutions.begin(); it != p_resolutions.end();) {
-		Image_window::Resolution &res = it->second;
+		const Image_window::Resolution &res = it->second;
 		bool ok = false;
 
 		if (VideoModeOK(res.width, res.height)) {
@@ -604,7 +608,7 @@ bool Image_window::create_scale_surfaces(int w, int h, int bpp) {
 		SDL_GetRendererOutputSize(screen_renderer, &dw, &dh);
 		w=dw;
 		h=dh;
-		Resolution res = { w, h };
+		const Resolution res = { w, h };
 		p_resolutions[(w << 16) | h] = res;
 		//getting new native scale when highdpi is active
 		int sw;
@@ -791,8 +795,8 @@ void Image_window::show(
 	increase_area(x, y, w, h, 4, 4, 4, 4, get_full_width(), get_full_height());
 
 	// Make it 4 pixel aligned too
-	int dx = x & 3;
-	int dy = y & 3;
+	const int dx = x & 3;
+	const int dy = y & 3;
 	x -= dx;
 	w += dx;
 	y -= dy;
@@ -821,9 +825,9 @@ void Image_window::show(
 		} else {
 			scalefun show_scaled;
 			if (inter_surface->format->BitsPerPixel == 16 || inter_surface->format->BitsPerPixel == 15) {
-				int r = inter_surface->format->Rmask;
-				int g = inter_surface->format->Gmask;
-				int b = inter_surface->format->Bmask;
+				const int r = inter_surface->format->Rmask;
+				const int g = inter_surface->format->Gmask;
+				const int b = inter_surface->format->Bmask;
 
 				show_scaled =
 				    (r == 0xf800 && g == 0x7e0 && b == 0x1f) || (b == 0xf800 && g == 0x7e0 && r == 0x1f) ?
@@ -973,8 +977,8 @@ bool Image_window::get_draw_dims(int sw, int sh, int scale, FillMode fillmode, i
 			ih = (sh * iw * 5) / (sw * 6);
 		}
 	} else if (fillmode >= Centre && fillmode < (1 << 16)) {
-		int factor = 2 + ((fillmode - Centre) / 2);
-		int aspect_factor = (fillmode & 1) ? 5 : 6;
+		const int factor = 2 + ((fillmode - Centre) / 2);
+		const int aspect_factor = (fillmode & 1) ? 5 : 6;
 
 		if (gw == 0 || gh == 0) {
 			gw = (sw * 2) / (factor * scale);
@@ -988,8 +992,8 @@ bool Image_window::get_draw_dims(int sw, int sh, int scale, FillMode fillmode, i
 
 		if (gh * scale > ih) gh = ih / scale;
 	} else {
-		int fw = fillmode & 0xFFFF;
-		int fh = (fillmode >> 16) & 0xFFFF;
+		const int fw = fillmode & 0xFFFF;
+		const int fh = (fillmode >> 16) & 0xFFFF;
 
 		if (!fw || !fh) return false;
 
@@ -1041,7 +1045,7 @@ Image_window::FillMode Image_window::string_to_fillmode(const char *str) {
 		if (!std::isdigit(static_cast<unsigned char>(*str))) return static_cast<FillMode>(0);
 
 		char *end;
-		unsigned long f = std::strtoul(str, &end, 10);
+		const unsigned long f = std::strtoul(str, &end, 10);
 		str += (end - str);
 
 		if (f >= (65536 - Centre) / 2 || *str) return static_cast<FillMode>(0);
@@ -1055,7 +1059,7 @@ Image_window::FillMode Image_window::string_to_fillmode(const char *str) {
 		if (!std::isdigit(static_cast<unsigned char>(*str))) return static_cast<FillMode>(0);
 
 		char *end;
-		unsigned long f = std::strtoul(str, &end, 10);
+		const unsigned long f = std::strtoul(str, &end, 10);
 		str += (end - str);
 
 		if (f >= (65536 - AspectCorrectCentre) / 2 || *str) return static_cast<FillMode>(0);
@@ -1065,7 +1069,7 @@ Image_window::FillMode Image_window::string_to_fillmode(const char *str) {
 		if (!std::isdigit(static_cast<unsigned char>(*str))) return static_cast<FillMode>(0);
 
 		char *end;
-		unsigned long fx = std::strtoul(str, &end, 10);
+		const unsigned long fx = std::strtoul(str, &end, 10);
 		str += (end - str);
 
 		if (fx > 65535 || (*str != 'X' && *str != 'x')) return static_cast<FillMode>(0);
@@ -1073,7 +1077,7 @@ Image_window::FillMode Image_window::string_to_fillmode(const char *str) {
 		++str;
 		if (!std::isdigit(static_cast<unsigned char>(*str))) return static_cast<FillMode>(0);
 
-		unsigned long fy = std::strtoul(str, &end, 10);
+		const unsigned long fy = std::strtoul(str, &end, 10);
 		str += (end - str);
 
 		if (fy > 65535 || *str) return static_cast<FillMode>(0);
@@ -1095,7 +1099,7 @@ bool Image_window::fillmode_to_string(FillMode fmode, std::string &str) {
 		str = "Aspect Correct Fit";
 		return true;
 	} else if (fmode >= Centre && fmode < (1 << 16)) {
-		int factor = 2 + ((fmode - Centre) / 2);
+		const int factor = 2 + ((fmode - Centre) / 2);
 		char factor_str[16];
 
 		if (factor == 2)
@@ -1111,8 +1115,8 @@ bool Image_window::fillmode_to_string(FillMode fmode, std::string &str) {
 			str = std::string("Centre") + std::string(factor_str);
 		return true;
 	} else {
-		int fw = fmode & 0xFFFF;
-		int fh = (fmode >> 16) & 0xFFFF;
+		const int fw = fmode & 0xFFFF;
+		const int fh = (fmode >> 16) & 0xFFFF;
 
 		if (!fw || !fh) return false;
 

@@ -117,7 +117,7 @@ void Image_file_info::flush(
 	if (!modified)
 		return;
 	modified = false;
-	int nshapes = ifile->get_num_shapes();
+	const int nshapes = ifile->get_num_shapes();
 	int shnum;          // First read all entries.
 	vector<Shape *> shapes(nshapes);
 	for (shnum = 0; shnum < nshapes; shnum++)
@@ -254,7 +254,7 @@ bool Npcs_file_info::read_npc(unsigned num) {
 	npcs[num].shapenum = Read2(newptr); // -1 if unused.
 	if (npcs[num].shapenum >= 0) {
 		npcs[num].unused = (*newptr++ != 0);
-		utf8Str utf8name(reinterpret_cast<const char *>(newptr));
+		const utf8Str utf8name(reinterpret_cast<const char *>(newptr));
 		npcs[num].name = utf8name;
 	} else {
 		npcs[num].unused = true;
@@ -306,7 +306,7 @@ void Npcs_file_info::setup(
 		npcs[i].shapenum = Read2(newptr);   // -1 if unused.
 		if (npcs[i].shapenum >= 0) {
 			npcs[i].unused = (*newptr++ != 0);
-			utf8Str utf8name(reinterpret_cast<const char *>(newptr));
+			const utf8Str utf8name(reinterpret_cast<const char *>(newptr));
 			npcs[i].name = utf8name;
 		} else {
 			npcs[i].unused = true;
@@ -445,7 +445,7 @@ void Flex_file_info::flush(
 	if (!modified)
 		return;
 	modified = false;
-	int cnt = entries.size();
+	const int cnt = entries.size();
 	size_t len;
 	int i;
 	for (i = 0; i < cnt; i++) { // Make sure all are read.
@@ -522,11 +522,11 @@ static bool Create_file(
     const string &pathname      // Full name.
 ) {
 	try {
-		int namelen = strlen(basename);
+		const int namelen = strlen(basename);
 		if (strcasecmp(".flx", basename + namelen - 4) == 0) {
 			// We can create an empty flx.
 			OFileDataSource out(pathname.c_str());  // May throw exception.
-			Flex_writer writer(out, "Written by ExultStudio", 0);
+			const Flex_writer writer(out, "Written by ExultStudio", 0);
 			return true;
 		} else if (strcasecmp(".pal", basename + namelen - 4) == 0) {
 			// Empty 1-palette file.
@@ -554,11 +554,11 @@ Shape_file_info *Shape_file_set::create(
 		if (strcasecmp(file->basename.c_str(), basename) == 0)
 			return file; // Found it.
 	// Look in 'static', 'patch'.
-	string sstr = string("<STATIC>/") + basename;
-	string pstr = string("<PATCH>/") + basename;
+	const string sstr = string("<STATIC>/") + basename;
+	const string pstr = string("<PATCH>/") + basename;
 	const char *spath = sstr.c_str();
 	const char *ppath = pstr.c_str();
-	bool sexists = U7exists(spath);
+	const bool sexists = U7exists(spath);
 	bool pexists = U7exists(ppath);
 	if (!sexists && !pexists)   // Neither place.  Try to create.
 		if (!(pexists = Create_file(basename, ppath)))
@@ -606,7 +606,7 @@ Shape_file_info *Shape_file_set::create(
 		}
 		auto& in = *pIn;
 		in.seekg(0, std::ios::end); // Figure size.
-		int sz = in.tellg();
+		const int sz = in.tellg();
 		delete groups;
 		return append(new Flex_file_info(basename, fullname, sz));
 	} else {            // Not handled above?

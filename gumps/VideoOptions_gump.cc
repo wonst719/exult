@@ -30,7 +30,7 @@
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif    // __GNUC__
-#include "SDL_events.h"
+#include <SDL.h>
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
@@ -68,12 +68,12 @@ static inline uint16 get_width(uint32 resolution) {
 }
 
 static inline uint16 get_height(uint32 resolution) {
-	return (resolution & 0xffffu);
+	return resolution & 0xffffu;
 }
 
 static string resolutionstring(int w, int h) {
 	char buf[100];
-	sprintf(buf, "%ix%i", w, h);
+	snprintf(buf, sizeof(buf), "%ix%i", w, h);
 	return buf;
 }
 
@@ -177,7 +177,7 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 	buttons[id_has_ac].reset();
 
 	const auto& resolutionsref = fullscreen ? resolutions : win_resolutions;
-	uint32 current_res = make_resolution(gwin->get_win()->get_display_width(), gwin->get_win()->get_display_height());
+	const uint32 current_res = make_resolution(gwin->get_win()->get_display_width(), gwin->get_win()->get_display_height());
 
 	std::vector<std::string> restext;
 	restext.reserve(resolutionsref.size());
@@ -252,15 +252,30 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 			std::set<uint32> Resolutions{
 				make_resolution(320, 200),
 				make_resolution(320, 240),
+				make_resolution(400, 250),
 				make_resolution(400, 300),
+				make_resolution(480, 300),
+				make_resolution(480, 360),
+				make_resolution(512, 320),
 				make_resolution(512, 384),
 				make_resolution(640, 400),
 				make_resolution(640, 480),
+				make_resolution(800, 500),
 				make_resolution(800, 600),
 				make_resolution(960, 600),
 				make_resolution(960, 720),
+				make_resolution(1024, 640),
 				make_resolution(1024, 768),
-				make_resolution(1200, 900)
+				make_resolution(1200, 750),
+				make_resolution(1200, 900),
+				make_resolution(1280, 800),
+				make_resolution(1280, 960),
+				make_resolution(1440, 900),
+				make_resolution(1440, 1080),
+				make_resolution(1600, 1000),
+				make_resolution(1600, 1200),
+				make_resolution(1920, 1200),
+				make_resolution(1920, 1440)
 			};
 			auto it = std::find(Resolutions.cbegin(), Resolutions.cend(), resolution);
 			if (it == Resolutions.cend()) {
@@ -320,7 +335,7 @@ VideoOptions_gump::VideoOptions_gump()
 	buttons[id_high_dpi] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_high_dpi,
 	        enabledtext, highdpi, colx[2], rowy[2], 74);
 	config->value("config/video/share_video_settings", share_settings, false);
-	
+
 	std::vector<std::string> yesNO = {"No", "Yes"};
 #if !defined(__IPHONEOS__) && !defined(ANDROID)
 	buttons[id_share_settings] = std::make_unique<VideoTextToggle>(this, &VideoOptions_gump::toggle_share_settings,

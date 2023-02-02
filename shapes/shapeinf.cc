@@ -512,7 +512,7 @@ int Shape_info::get_rotated_frame(
 ) const {
 	// Seat is a special case.
 	if (barge_type == barge_seat) {
-		int dir = curframe % 4; // Current dir (0-3).
+		const int dir = curframe % 4; // Current dir (0-3).
 		return (curframe - dir) + (dir + quads) % 4;
 	} else if (is_barge_part())     // Piece of a barge?
 		switch (quads) {

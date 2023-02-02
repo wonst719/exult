@@ -79,7 +79,7 @@ public:
 	void readline(std::string &str) {
 		str.erase();
 		while (!eof()) {
-			char character =  static_cast<char>(read1());
+			const char character =  static_cast<char>(read1());
 			if (character == '\r') {
 				continue;        // Skip cr
 			}
@@ -155,7 +155,7 @@ public:
 
 	bool eof() const final {
 		in->get();
-		bool ret = in->eof();
+		const bool ret = in->eof();
 		if (!ret) {
 			in->unget();
 		}
@@ -309,14 +309,14 @@ class IExultDataSource: public IBufferDataSource {
 public:
 	IExultDataSource(const File_spec &fname, int index)
 		: IBufferDataSource(nullptr, 0) {
-		U7object obj(fname, index);
+		const U7object obj(fname, index);
 		data = obj.retrieve(size);
 		buf = buf_ptr = data.get();
 	}
 
 	IExultDataSource(const File_spec &fname0, const File_spec &fname1, int index)
 		: IBufferDataSource(nullptr, 0) {
-		U7multiobject obj(fname0, fname1, index);
+		const U7multiobject obj(fname0, fname1, index);
 		data = obj.retrieve(size);
 		buf = buf_ptr = data.get();
 	}
@@ -324,7 +324,7 @@ public:
 	IExultDataSource(const File_spec &fname0, const File_spec &fname1,
 	                 const File_spec &fname2, int index)
 		: IBufferDataSource(nullptr, 0) {
-		U7multiobject obj(fname0, fname1, fname2, index);
+		const U7multiobject obj(fname0, fname1, fname2, index);
 		data = obj.retrieve(size);
 		buf = buf_ptr = data.get();
 	}
@@ -397,7 +397,7 @@ public:
 	}
 
 	void write(const std::string &s) final {
-		out->write(&s[0], s.size());
+		out->write(s.data(), s.size());
 	}
 
 	void seek(size_t pos) final {
@@ -490,7 +490,7 @@ public:
 	}
 
 	void write(const std::string &s) final {
-		write(&s[0], s.size());
+		write(s.data(), s.size());
 	}
 
 	void seek(size_t pos) final {
@@ -535,7 +535,7 @@ public:
 };
 
 inline void IDataSource::copy_to(ODataSource& dest) {
-	size_t len = getSize();
+	const size_t len = getSize();
 	auto data = readN(len);
 	dest.write(data.get(), len);
 }
@@ -545,7 +545,7 @@ inline std::unique_ptr<IDataSource> IStreamDataSource::makeSource(size_t len) {
 }
 
 inline std::unique_ptr<IDataSource> IBufferDataView::makeSource(size_t len) {
-	size_t avail = getAvail();
+	const size_t avail = getAvail();
 	if (avail < len) {
 		len = avail;
 	}
@@ -555,7 +555,7 @@ inline std::unique_ptr<IDataSource> IBufferDataView::makeSource(size_t len) {
 }
 
 inline void IBufferDataView::copy_to(ODataSource& dest) {
-	size_t len = getAvail();
+	const size_t len = getAvail();
 	dest.write(getPtr(), len);
 	skip(len);
 }

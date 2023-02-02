@@ -51,8 +51,8 @@ static inline bool Get_sfx_out_of_range(
     Game_window *gwin,
     Tile_coord const &opos
 ) {
-	TileRect size = gwin->get_win_tile_rect();
-	Tile_coord apos(size.x + size.w / 2, size.y + size.h / 2, gwin->get_camera_actor()->get_lift());
+	const TileRect size = gwin->get_win_tile_rect();
+	const Tile_coord apos(size.x + size.w / 2, size.y + size.h / 2, gwin->get_camera_actor()->get_lift());
 
 	return apos.square_distance_screen_space(opos) > (MAX_SOUND_FALLOFF * MAX_SOUND_FALLOFF);
 }
@@ -72,11 +72,11 @@ void Object_sfx::Play(Game_object *obj, int sfx, int delay) {
 		Game_object *outer = obj->get_outermost();
 		osfx->last_pos = outer->get_center_tile();
 
-		bool halt = Get_sfx_out_of_range(gwin, osfx->last_pos);
+		const bool halt = Get_sfx_out_of_range(gwin, osfx->last_pos);
 
 		if (!halt && osfx->channel == -1 && sfx > -1) {    // First time?
 			// Start playing.
-			int volume = AUDIO_MAX_VOLUME;  // Set volume based on distance.
+			const int volume = AUDIO_MAX_VOLUME;  // Set volume based on distance.
 			osfx->channel = Audio::get_ptr()->play_sound_effect(sfx, osfx->last_pos, volume, 0);
 		}
 		delay = 100;
@@ -120,7 +120,7 @@ void Object_sfx::handle_event(
 	//bool active = channel != -1 ? mixer->isPlaying(channel) : false;
 
 	Game_object *outer;
-	Game_object_shared obj_ptr = obj.lock();
+	const Game_object_shared obj_ptr = obj.lock();
 	if (obj_ptr) {
 		outer = obj_ptr->get_outermost();
 		last_pos = outer->get_center_tile();
@@ -135,11 +135,11 @@ void Object_sfx::handle_event(
 	    }
 	*/
 
-	bool halt = Get_sfx_out_of_range(gwin, last_pos);
+	const bool halt = Get_sfx_out_of_range(gwin, last_pos);
 
 	if (!halt && channel == -1 && sfx > -1) {    // First time?
 		// Start playing.
-		int volume = AUDIO_MAX_VOLUME;  // Set volume based on distance.
+		const int volume = AUDIO_MAX_VOLUME;  // Set volume based on distance.
 		channel = Audio::get_ptr()->play_sound_effect(sfx, last_pos, volume, 0);
 	} else if (channel != -1) {
 		if (halt) {
@@ -222,15 +222,15 @@ void Shape_sfx::update(
 		Game_clock *gclock = Game_window::get_instance()->get_clock();
 		if (gclock->get_minute() == 0) {
 			// Play sfx->extra every hour for reps = hour
-			int reps = gclock->get_hour() % 12;
+			const int reps = gclock->get_hour() % 12;
 			rep[1] = (reps ? reps : 12) - 1;
 			sfxnum[1] = sfxinf->get_extra_sfx();
 		}
 	}
 
 	dir = 0;
-	int volume = AUDIO_MAX_VOLUME;  // Set volume based on distance.
-	bool halt = Get_sfx_out_of_range(gwin, obj->get_center_tile());
+	const int volume = AUDIO_MAX_VOLUME;  // Set volume based on distance.
+	const bool halt = Get_sfx_out_of_range(gwin, obj->get_center_tile());
 
 	if (play && halt)
 		play = false;
@@ -256,7 +256,7 @@ void Shape_sfx::update(
 Animator *Animator::create(
     Game_object *ob         // Animated object.
 ) {
-	int frames = ob->get_num_frames();
+	const int frames = ob->get_num_frames();
 	const Shape_info &info = ob->get_info();
 	if (!info.is_animated())    // Assume it's just SFX.
 		return new Sfx_animator(ob);
@@ -320,12 +320,12 @@ void Frame_animator::Initialize() {
 	last_shape = obj->get_shapenum();
 	// Catch rotated objects here.
 	last_frame = obj->get_framenum() & ~(1 << 5);
-	int rotflag = obj->get_framenum() & (1 << 5);
+	const int rotflag = obj->get_framenum() & (1 << 5);
 
-	ShapeID shp(last_shape, last_frame);
+	const ShapeID shp(last_shape, last_frame);
 	aniinf = obj->get_info().get_animation_info_safe(last_shape,
 	         shp.get_num_frames());
-	int cnt = aniinf->get_frame_count();
+	const int cnt = aniinf->get_frame_count();
 	if (cnt < 0)
 		nframes = shp.get_num_frames();
 	else
@@ -358,7 +358,7 @@ int Frame_animator::get_next_frame() {
 	// Re-init if it's outside the range.
 	// ++++++Should we do this for the other cases (jsf)?
 	// ++++++Seeing if it breaks anything (marzo)
-	int curframe = obj->get_framenum();
+	const int curframe = obj->get_framenum();
 	if (curframe < first_frame ||
 	        curframe >= first_frame + nframes)
 		Initialize();
@@ -380,7 +380,7 @@ int Frame_animator::get_next_frame() {
 		break;
 
 	case Animation_info::FA_TIMESYNCHED: {
-		unsigned int ticks = Game::get_ticks();
+		const unsigned int ticks = Game::get_ticks();
 		const int delay = 100;
 		currpos = (ticks / (delay * aniinf->get_frame_delay())) + created;
 		currpos %= nframes;
@@ -390,12 +390,12 @@ int Frame_animator::get_next_frame() {
 
 	case Animation_info::FA_LOOPING:
 	default: {
-		int chance = aniinf->get_freeze_first_chance();
+		const int chance = aniinf->get_freeze_first_chance();
 		if (currpos || chance == 100
 		        || (chance && rand() % 100 < chance)) {
 			currpos++;
 			currpos %= nframes;
-			int rec = aniinf->get_recycle();
+			const int rec = aniinf->get_recycle();
 			if (!currpos && nframes >= rec)
 				currpos = (nframes - rec) % nframes;
 		}
@@ -425,8 +425,8 @@ void Frame_animator::handle_event(
 
 	if (!--frame_counter) {
 		frame_counter = aniinf->get_frame_delay();
-		bool dirty_first = gwin->add_dirty(obj);
-		int framenum = get_next_frame();
+		const bool dirty_first = gwin->add_dirty(obj);
+		const int framenum = get_next_frame();
 		obj->change_frame(last_frame = framenum);
 		if (!dirty_first && !gwin->add_dirty(obj)) {
 			// No longer on screen.
@@ -485,7 +485,7 @@ void Sfx_animator::handle_event(
 	const int delay = 100;      // Guessing this will be enough.
 
 	auto *gwin = reinterpret_cast<Game_window *>(udata);
-	TileRect rect = gwin->clip_to_win(gwin->get_shape_rect(obj));
+	const TileRect rect = gwin->clip_to_win(gwin->get_shape_rect(obj));
 	if (rect.w <= 0 || rect.h <= 0) {
 		// No longer on screen.
 		animating = false;
@@ -540,8 +540,8 @@ void Wiggle_animator::handle_event(
 		return;
 	}
 	Tile_coord t = obj->get_tile(); // Get current position.
-	int newdx = rand() % 3;
-	int newdy = rand() % 3;
+	const int newdx = rand() % 3;
+	const int newdy = rand() % 3;
 	t.tx += -deltax + newdx;
 	t.ty += -deltay + newdy;
 	deltax = newdx;
@@ -621,7 +621,7 @@ void Animated_ireg_object::paint(
  */
 
 void Animated_ireg_object::write_ireg(ODataSource *out) {
-	int oldframe = get_framenum();
+	const int oldframe = get_framenum();
 	set_frame(animator->get_framenum());
 	Ireg_game_object::write_ireg(out);
 	set_frame(oldframe);
@@ -666,7 +666,7 @@ void Animated_ifix_object::paint(
 void Animated_ifix_object::write_ifix(ODataSource *ifix,  bool v2)
 
 {
-	int oldframe = get_framenum();
+	const int oldframe = get_framenum();
 	set_frame(animator->get_framenum());
 	Ifix_game_object::write_ifix(ifix, v2);
 	set_frame(oldframe);

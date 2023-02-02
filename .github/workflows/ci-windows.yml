@@ -118,9 +118,9 @@ jobs:
         uses: actions/checkout@master
       - name: Build
         run: |
-          make -j -f Makefile.mingw DEBUG=1 USECODE_CONTAINER=1 USECODE_DEBUGGER=1 SHOW_NONREADIED_OBJECTS=1 Exult.exe exult_studio.exe tools u7shp.exe
+          make -j 2 -f Makefile.mingw DEBUG=1 USECODE_CONTAINER=1 USECODE_DEBUGGER=1 SHOW_NONREADIED_OBJECTS=1 Exult.exe exult_studio.exe tools u7shp.exe
           for ff in $(find content -name 'Makefile.mingw' -exec dirname {} \;); do
             pushd "${ff}"
-            make -j -f Makefile.mingw
+            make -j 2 -f Makefile.mingw
             popd
           done

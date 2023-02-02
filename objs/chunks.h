@@ -112,7 +112,7 @@ private:
 	                   unsigned short eggbits, bool now);
 	void activate_eggs(Game_object *obj, Map_chunk *chunk,
 	                   int tx, int ty, int tz, int from_tx, int from_ty, bool now) {
-		unsigned short eggbits = eggs[
+		const unsigned short eggbits = eggs[
 		                             (ty % c_tiles_per_chunk) * c_tiles_per_chunk +
 		                             (tx % c_tiles_per_chunk)];
 		if (eggbits)

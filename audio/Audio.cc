@@ -19,12 +19,8 @@
 #include "pent_include.h"
 #include "ignore_unused_variable_warning.h"
 
-#include <SDL_audio.h>
-#include <SDL_timer.h>
-
 #include <fstream>
 #include <set>
-//#include "SDL_mapping.h"
 
 #include "Audio.h"
 #include "Configuration.h"
@@ -129,7 +125,7 @@ void SFX_cache_manager::flush(AudioMixer *mixer)
 {
 	for (auto it = cache.begin() ; it != cache.end(); it = cache.begin())
 	{
-		if (it->second.second) 
+		if (it->second.second)
 		{
 			if (it->second.second->getRefCount() != 1 && mixer)
 				mixer->stopSample(it->second.second);
@@ -178,7 +174,7 @@ void SFX_cache_manager::garbage_collect()
 		}
 	}
 
-	if (count <= max_fixed) 
+	if (count <= max_fixed)
 		return;
 
 	for (auto& it : cache)
@@ -259,7 +255,7 @@ Audio::Audio()
 	sfxs = std::make_unique<SFX_cache_manager>();
 }
 
-void Audio::Init(int _samplerate,int _channels)	
+void Audio::Init(int _samplerate,int _channels)
 {
 	if (!audio_enabled) return;
 
@@ -328,7 +324,7 @@ bool Audio::have_midi_sfx(std::string *out)
 bool Audio::have_config_sfx(const std::string &game, std::string *out)
 	{
 	string s;
-	string d = "config/disk/game/" + game + "/waves";
+	const string d = "config/disk/game/" + game + "/waves";
 	config->value(d.c_str(), s, "---");
 	return (s != "---") && can_sfx(s, out);
 	}
@@ -343,7 +339,7 @@ void	Audio::Init_sfx()
 		sfxs->garbage_collect();
 		}
 
-	Exult_Game game = Game::get_game_type();
+	const Exult_Game game = Game::get_game_type();
 	if (game == SERPENT_ISLE)
 	{
 		bg2si_sfxs = bgconv;
@@ -372,7 +368,7 @@ void	Audio::Init_sfx()
 		{
 		if (have_roland_sfx(game, &flex) || have_sblaster_sfx(game, &flex))
 			{
-			string d = "config/disk/game/" + Game::get_gametitle() + "/waves";
+			const string d = "config/disk/game/" + Game::get_gametitle() + "/waves";
 			size_t sep = flex.rfind('/');
 			std::string pflex;
 			if (sep != string::npos)
@@ -396,7 +392,7 @@ void	Audio::Init_sfx()
 }
 
 Audio::~Audio()
-{ 
+{
 	if (!initialized)
 	{
 		//SDL_open = false;
@@ -464,7 +460,7 @@ void Audio::playfile(const char *fname, const char *fpatch, bool wait)
 	if (!audio_enabled)
 		return;
 
-	U7multiobject sample(fname, fpatch, 0);
+	const U7multiobject sample(fname, fpatch, 0);
 
 	size_t len;
 	auto buf = sample.retrieve(len);
@@ -568,7 +564,7 @@ bool Audio::start_speech(int num, bool wait)
 		patchfile = PATCH_U7SPEECH;
 	}
 
-	U7multiobject sample(filename, patchfile, num);
+	const U7multiobject sample(filename, patchfile, num);
 
 	size_t len;
 	auto buf = sample.retrieve(len);
@@ -637,7 +633,7 @@ int Audio::play_wave_sfx
 		return -1;
 	}
 
-	int instance_id = mixer->playSample(wave,repeat,0,true,AUDIO_DEF_PITCH,volume,volume);
+	const int instance_id = mixer->playSample(wave,repeat,0,true,AUDIO_DEF_PITCH,volume,volume);
 	if (instance_id < 0)
 	{
 		CERR("No channel was available to play sfx '" << num << "'");
@@ -689,7 +685,7 @@ int Audio::play_wave_sfx
 	auto wavbuf = ds.steal_data(wavlen);
 	auto *wave = AudioSample::createAudioSample(std::move(wavbuf), wavlen);
 
-	int instance_id = mixer->playSample(wave, repeat, 0, true, AUDIO_DEF_PITCH, volume,volume);
+	const int instance_id = mixer->playSample(wave, repeat, 0, true, AUDIO_DEF_PITCH, volume,volume);
 	// Either AudioMixer::playSample called IncRef through AudioChannel::playSample and the sample
 	// will be played, of the sample was not queued for playback.
 	// In either case we need to Release the sample to avoid a memory leak.
@@ -726,10 +722,10 @@ void Audio::get_2d_position_for_tile(const Tile_coord &tile, int &distance, int 
 	balance = 0;
 
 	Game_window *gwin = Game_window::get_instance();
-	TileRect size = gwin->get_win_tile_rect();
-	Tile_coord apos(size.x+size.w/2,size.y+size.h/2,gwin->get_camera_actor()->get_lift());
+	const TileRect size = gwin->get_win_tile_rect();
+	const Tile_coord apos(size.x+size.w/2,size.y+size.h/2,gwin->get_camera_actor()->get_lift());
 
-	int sqr_dist = apos.square_distance_screen_space(tile);
+	const int sqr_dist = apos.square_distance_screen_space(tile);
 	if (sqr_dist > MAX_SOUND_FALLOFF*MAX_SOUND_FALLOFF) {
 		distance = 257;
 		return;
@@ -745,7 +741,7 @@ void Audio::get_2d_position_for_tile(const Tile_coord &tile, int &distance, int 
 
 int Audio::play_sound_effect (int num, const Game_object *obj, int volume, int repeat)
 {
-	Tile_coord tile = obj->get_center_tile();
+	const Tile_coord tile = obj->get_center_tile();
 	return play_sound_effect(num, tile, volume, repeat);
 }
 
@@ -760,7 +756,7 @@ int Audio::play_sound_effect (int num, const Tile_coord &tile, int volume, int r
 
 int Audio::update_sound_effect(int chan, const Game_object *obj)
 {
-	Tile_coord tile = obj->get_center_tile();
+	const Tile_coord tile = obj->get_center_tile();
 	return update_sound_effect(chan,tile);
 }
 

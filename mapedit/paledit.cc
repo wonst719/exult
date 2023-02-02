@@ -60,9 +60,9 @@ static void Write_palette(
     ExultRgbCmap *pal       // Palette to write.
 ) {
 	for (int i = 0; i < 256; i++) {
-		int r = (pal->colors[i] >> 16) & 255;
-		int g = (pal->colors[i] >> 8) & 255;
-		int b = pal->colors[i] & 255;
+		const int r = (pal->colors[i] >> 16) & 255;
+		const int g = (pal->colors[i] >> 8) & 255;
+		const int b = pal->colors[i] & 255;
 		buf[3 * i] = r / 4; // Range 0-63.
 		buf[3 * i + 1] = g / 4;
 		buf[3 * i + 2] = b / 4;
@@ -79,20 +79,20 @@ inline void Palette_edit::show(
 	GtkAllocation alloc = {0, 0, 0, 0};
 	gtk_widget_get_allocation(draw, &alloc);
 	if (drawgc != nullptr) {   // In expose Callback
-		int bw = alloc.width  / 16;
-		int bh = alloc.height / 16;
-		int rw = alloc.width  % 16;
-		int rh = alloc.height % 16;
+		const int bw = alloc.width  / 16;
+		const int bh = alloc.height / 16;
+		const int rw = alloc.width  % 16;
+		const int rh = alloc.height % 16;
 		// Two segments intersect iff neither is entirely right of the other
 		for (int ly = 0; ly < 16; ly++) {
-			int yp = (ly * bh) + (ly <= rh ? ly : rh);
-			int hp = bh + (ly <= rh ? 1 : 0);
+			const int yp = (ly * bh) + (ly <= rh ? ly : rh);
+			const int hp = bh + (ly <= rh ? 1 : 0);
 			if ((yp <= (y + h)) && (y <= (yp + hp))) {
 				for (int lx = 0; lx < 16; lx++) {
-					int xp = (lx * bw) + (lx <= rw ? lx : rw);
-					int wp = bw + (lx <= rw ? 1 : 0);
+					const int xp = (lx * bw) + (lx <= rw ? lx : rw);
+					const int wp = bw + (lx <= rw ? 1 : 0);
 					if ((xp <= (x + w)) && (x <= (xp + wp))) {
-						guint32 color = palettes[cur_pal]->colors[lx + ly * 16];
+						const guint32 color = palettes[cur_pal]->colors[lx + ly * 16];
 						cairo_set_source_rgb(drawgc,
 						                     ((color >> 16) & 255) / 255.0,
 						                     ((color >> 8) & 255) / 255.0,
@@ -141,7 +141,7 @@ void Palette_edit::load_internal(
 	// Free old.
 	for (auto *palette : palettes)
 		delete palette;
-	unsigned cnt = flex_info->size();
+	const unsigned cnt = flex_info->size();
 	palettes.resize(cnt);       // Set size of list.
 	if (!cnt)           // No palettes?
 		new_palette();      // Create 1 blank palette.
@@ -167,22 +167,22 @@ void Palette_edit::render(
 ) {
 	GtkAllocation alloc = {0, 0, 0, 0};
 	gtk_widget_get_allocation(draw, &alloc);
-	int neww = alloc.width;
-	int newh = alloc.height;
+	const int neww = alloc.width;
+	const int newh = alloc.height;
 	// Changed size?
 	if (neww != width || newh != height) {
 		width = neww;
 		height = newh;
 	}
 	// Figure cell size.
-	int eachw = width / 16;
-	int eachh = height / 16;
+	const int eachw = width / 16;
+	const int eachh = height / 16;
 	// Figure extra pixels.
-	int extraw = width % 16;
-	int extrah = height % 16;
+	const int extraw = width % 16;
+	const int extrah = height % 16;
 	if (selected >= 0) {    // Update selected box.
-		int selx = selected % 16;
-		int sely = selected / 16;
+		const int selx = selected % 16;
+		const int sely = selected / 16;
 		selected_box.x = selx * eachw;
 		selected_box.y = sely * eachh;
 		selected_box.w = eachw;
@@ -216,7 +216,7 @@ void Palette_edit::double_clicked(
 	colorsel = GTK_COLOR_CHOOSER_DIALOG(
 	               gtk_color_chooser_dialog_new(buf, nullptr));
 	// Get color.
-	guint32 c = palettes[cur_pal]->colors[selected];
+	const guint32 c = palettes[cur_pal]->colors[selected];
 	GdkRGBA  rgba;
 	rgba.red   = ((c >> 16) & 0xff) / 255.0;
 	rgba.green = ((c >>  8) & 0xff) / 255.0;
@@ -294,19 +294,19 @@ gint Palette_edit::mouse_press(
 
 	if (paled->colorsel)
 		return TRUE;      // Already editing a color.
-	int old_selected = paled->selected;
-	int width = paled->width;
-	int height = paled->height;
-	int eventx = static_cast<int>(event->x);
-	int eventy = static_cast<int>(event->y);
+	const int old_selected = paled->selected;
+	const int width = paled->width;
+	const int height = paled->height;
+	const int eventx = static_cast<int>(event->x);
+	const int eventy = static_cast<int>(event->y);
 	// Figure cell size.
-	int eachw = width / 16;
-	int eachh = height / 16;
+	const int eachw = width / 16;
+	const int eachh = height / 16;
 	// Figure extra pixels.
-	int extraw = width % 16;
-	int extrah = height % 16;
-	int extrax = extraw * (eachw + 1); // Total length of extra-sized boxes.
-	int extray = extrah * (eachh + 1);
+	const int extraw = width % 16;
+	const int extrah = height % 16;
+	const int extrax = extraw * (eachw + 1); // Total length of extra-sized boxes.
+	const int extray = extrah * (eachh + 1);
 	int selx;
 	int sely;         // Gets box indices.
 	if (eventx < extrax)
@@ -372,7 +372,7 @@ void Palette_edit::palnum_changed(
     gpointer data           // ->Shape_chooser.
 ) {
 	auto *paled = static_cast<Palette_edit *>(data);
-	gint newnum = static_cast<gint>(gtk_adjustment_get_value(adj));
+	const gint newnum = static_cast<gint>(gtk_adjustment_get_value(adj));
 	paled->show_palette(newnum);
 	paled->render();
 	paled->enable_controls();
@@ -667,7 +667,7 @@ void Palette_edit::new_palette(
 	newpal->colors[0] = 255 << 16;
 	newpal->colors[1] = 255 << 8;
 	newpal->colors[2] = 255;
-	int index = palettes.size();    // Index of new palette.
+	const int index = palettes.size();    // Index of new palette.
 	palettes.push_back(newpal);
 	update_flex(index);     // Add to file.
 }
@@ -828,7 +828,7 @@ void Palette_edit::export_palette(
 	if (U7exists(fname)) {
 		char *msg = g_strdup_printf(
 		                "'%s' already exists.  Overwrite?", fname);
-		int answer = Prompt(msg, "Yes", "No");
+		const int answer = Prompt(msg, "Yes", "No");
 		g_free(msg);
 		if (answer != 0)
 			return;
@@ -842,11 +842,11 @@ void Palette_edit::export_palette(
 	for (i = 255; i > 0; i--)
 		if (pal->colors[i] != 0)
 			break;
-	int last_color = i;
+	const int last_color = i;
 	for (i = 0; i <= last_color; i++) {
-		int r = (pal->colors[i] >> 16) & 255;
-		int g = (pal->colors[i] >> 8) & 255;
-		int b = pal->colors[i] & 255;
+		const int r = (pal->colors[i] >> 16) & 255;
+		const int g = (pal->colors[i] >> 8) & 255;
+		const int b = pal->colors[i] & 255;
 		out << setw(3) << r << ' ' << setw(3) << g << ' ' <<
 		    setw(3) << b << endl;
 	}
@@ -864,7 +864,7 @@ void Palette_edit::import_palette(
 	auto *paled = static_cast<Palette_edit *>(user_data);
 	char *msg = g_strdup_printf(
 	                "Overwrite current palette from '%s'?", fname);
-	int answer = Prompt(msg, "Yes", "No");
+	const int answer = Prompt(msg, "Yes", "No");
 	g_free(msg);
 	if (answer != 0)
 		return;

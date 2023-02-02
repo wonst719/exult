@@ -44,7 +44,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "miscinf.h"
 #include "ignore_unused_variable_warning.h"
 
-using std::memset;
 using std::rand;
 using std::vector;
 
@@ -83,14 +82,14 @@ inline void Set_blocked_tile(
     int lift,           // Starting lift to set.
     int ztiles          // # tiles along z-axis.
 ) {
-	uint16 val = blocked[ty * c_tiles_per_chunk + tx];
+	const uint16 val = blocked[ty * c_tiles_per_chunk + tx];
 	// Get mask for the bit0's:
 	auto mask0 = static_cast<uint16>(tmasks[ztiles] << 2 * lift);
-	uint16 mask1 = mask0 << 1;  // Mask for the bit1's.
-	uint16 val0s = val & mask0;
-	uint16 Nval0s = (~val)&mask0;
-	uint16 val1s = val & mask1;
-	uint16 newval = val1s | (val0s << 1) | Nval0s | (val1s >> 1);
+	const uint16 mask1 = mask0 << 1;  // Mask for the bit1's.
+	const uint16 val0s = val & mask0;
+	const uint16 Nval0s = (~val)&mask0;
+	const uint16 val1s = val & mask1;
+	const uint16 newval = val1s | (val0s << 1) | Nval0s | (val1s >> 1);
 	// Replace old values with new.
 	blocked[ty * c_tiles_per_chunk + tx] = (val&~(mask0 | mask1)) | newval;
 }
@@ -108,14 +107,14 @@ inline void Clear_blocked_tile(
     int lift,           // Starting lift to set.
     int ztiles          // # tiles along z-axis.
 ) {
-	uint16 val = blocked[ty * c_tiles_per_chunk + tx];
+	const uint16 val = blocked[ty * c_tiles_per_chunk + tx];
 	// Get mask for the bit0's:
 	auto mask0 = static_cast<uint16>(tmasks[ztiles] << 2 * lift);
-	uint16 mask1 = mask0 << 1;  // Mask for the bit1's.
-	uint16 val0s = val & mask0;
-	uint16 Nval0s = (~val)&mask0;
-	uint16 val1s = val & mask1;
-	uint16 newval = (val1s & (val0s << 1)) | ((val1s >> 1) & Nval0s);
+	const uint16 mask1 = mask0 << 1;  // Mask for the bit1's.
+	const uint16 val0s = val & mask0;
+	const uint16 Nval0s = (~val)&mask0;
+	const uint16 val1s = val & mask1;
+	const uint16 newval = (val1s & (val0s << 1)) | ((val1s >> 1) & Nval0s);
 	// Replace old values with new.
 	blocked[ty * c_tiles_per_chunk + tx] = (val&~(mask0 | mask1)) | newval;
 }
@@ -145,8 +144,8 @@ void Chunk_cache::set_blocked(
 ) {
 	int z = lift;
 	while (ztiles) {
-		int zlevel = z / 8;
-		int thisz = z % 8;
+		const int zlevel = z / 8;
+		const int thisz = z % 8;
 		int zcnt = 8 - thisz;
 		if (ztiles < zcnt)
 			zcnt = ztiles;
@@ -166,8 +165,8 @@ void Chunk_cache::clear_blocked(
 ) {
 	int z = lift;
 	while (ztiles) {
-		unsigned int zlevel = z / 8;
-		int thisz = z % 8;
+		const unsigned int zlevel = z / 8;
+		const int thisz = z % 8;
 		int zcnt = 8 - thisz;
 		if (zlevel >= blocked.size())
 			break;      // All done.
@@ -202,16 +201,16 @@ void Chunk_cache::update_object(
 		else
 			doors.erase(obj);
 	}
-	int ztiles = info.get_3d_height();
+	const int ztiles = info.get_3d_height();
 	if (!ztiles || !info.is_solid())
 		return;         // Skip if not an obstacle.
 	// Get lower-right corner of obj.
-	int endx = obj->get_tx();
-	int endy = obj->get_ty();
-	int frame = obj->get_framenum();// Get footprint dimensions.
-	int xtiles = info.get_3d_xtiles(frame);
-	int ytiles = info.get_3d_ytiles(frame);
-	int lift = obj->get_lift();
+	const int endx = obj->get_tx();
+	const int endy = obj->get_ty();
+	const int frame = obj->get_framenum();// Get footprint dimensions.
+	const int xtiles = info.get_3d_xtiles(frame);
+	const int ytiles = info.get_3d_ytiles(frame);
+	const int lift = obj->get_lift();
 	// Simplest case?
 	if (xtiles == 1 && ytiles == 1 && ztiles <= 8 - lift % 8) {
 		if (add)
@@ -222,7 +221,7 @@ void Chunk_cache::update_object(
 			                   endx, endy, lift % 8, ztiles);
 		return;
 	}
-	TileRect footprint = obj->get_footprint();
+	const TileRect footprint = obj->get_footprint();
 	// Go through interesected chunks.
 	Chunk_intersect_iterator next_chunk(footprint);
 	TileRect tiles;
@@ -264,9 +263,9 @@ void Chunk_cache::set_egged(
 		}
 		if (eggnum > 15)    // We only have 16 bits.
 			eggnum = 15;
-		short mask = (1 << eggnum);
-		int stopx = tiles.x + tiles.w;
-		int stopy = tiles.y + tiles.h;
+		const short mask = (1 << eggnum);
+		const int stopx = tiles.x + tiles.w;
+		const int stopy = tiles.y + tiles.h;
 		for (int ty = tiles.y; ty < stopy; ++ty)
 			for (int tx = tiles.x; tx < stopx; ++tx)
 				eggs[ty * c_tiles_per_chunk + tx] |= mask;
@@ -282,9 +281,9 @@ void Chunk_cache::set_egged(
 					return;
 			eggnum = 15;
 		}
-		short mask = ~(1 << eggnum);
-		int stopx = tiles.x + tiles.w;
-		int stopy = tiles.y + tiles.h;
+		const short mask = ~(1 << eggnum);
+		const int stopx = tiles.x + tiles.w;
+		const int stopy = tiles.y + tiles.h;
 		for (int ty = tiles.y; ty < stopy; ty++)
 			for (int tx = tiles.x; tx < stopx; tx++)
 				eggs[ty * c_tiles_per_chunk + tx] &= mask;
@@ -302,7 +301,7 @@ void Chunk_cache::update_egg(
 ) {
 	ignore_unused_variable_warning(chunk);
 	// Get footprint with abs. tiles.
-	TileRect foot = egg->get_area();
+	const TileRect foot = egg->get_area();
 	if (!foot.w)
 		return;         // Empty (probability = 0).
 	TileRect crect;        // Gets tiles within each chunk.
@@ -316,10 +315,10 @@ void Chunk_cache::update_egg(
 		return;
 	}
 	// Just do the perimeter.
-	TileRect top(foot.x, foot.y, foot.w, 1);
-	TileRect bottom(foot.x, foot.y + foot.h - 1, foot.w, 1);
-	TileRect left(foot.x, foot.y + 1, 1, foot.h - 2);
-	TileRect right(foot.x + foot.w - 1, foot.y + 1, 1, foot.h - 2);
+	const TileRect top(foot.x, foot.y, foot.w, 1);
+	const TileRect bottom(foot.x, foot.y + foot.h - 1, foot.w, 1);
+	const TileRect left(foot.x, foot.y + 1, 1, foot.h - 2);
+	const TileRect right(foot.x + foot.w - 1, foot.y + 1, 1, foot.h - 2);
 	// Go through intersected chunks.
 	Chunk_intersect_iterator tops(top);
 	while (tops.get_next(crect, cx, cy))
@@ -365,7 +364,7 @@ inline void Chunk_cache::set_tflags(
     int maxz
 ) {
 	int zlevel = maxz / 8;
-	int bsize = blocked.size();
+	const int bsize = blocked.size();
 	if (zlevel >= bsize) {
 		memset(tflags + bsize, 0, (zlevel - bsize + 1)*sizeof(uint16));
 		zlevel = bsize - 1;
@@ -440,13 +439,14 @@ int Chunk_cache::get_lowest_blocked(
  *  See if a tile is water or land.
  */
 
-inline void Check_terrain(
+inline int Check_terrain(
     Map_chunk *nlist,   // Chunk.
-    int tx, int ty,         // Tile within chunk.
-    int &terrain            // Sets: bit0 if land, bit1 if water,
+    int tx, int ty      // Tile within chunk.
     //   bit2 if solid.
 ) {
 	ShapeID flat = nlist->get_flat(tx, ty);
+	// Sets: bit0 if land, bit1 if water,
+	int terrain = 0;
 	if (!flat.is_invalid()) {
 		if (flat.get_info().is_water())
 			terrain |= 2;
@@ -455,7 +455,7 @@ inline void Check_terrain(
 		else
 			terrain |= 1;
 	}
-
+	return terrain;
 }
 
 /*
@@ -477,18 +477,23 @@ bool Chunk_cache::is_blocked(
     int max_rise            // Max. rise, or -1 to use old beha-
     //   viour (max_drop if FLY, else 1).
 ) {
-
+	bool const is_ethereal = (move_flags & MOVE_ETHEREAL) != 0;
+	bool const in_mapedit = (move_flags & MOVE_MAPEDIT) != 0;
+	bool const can_walk = (move_flags & MOVE_WALK) != 0;
+	bool const can_swim = (move_flags & MOVE_SWIM) != 0;
+	bool const can_fly  = (move_flags & MOVE_FLY ) != 0;
+	bool const is_levitating = (move_flags & MOVE_LEVITATE) != 0;
 	// Ethereal beings always return not blocked
 	// and can only move horizontally
-	if (move_flags & MOVE_ETHEREAL) {
+	if (is_ethereal) {
 		new_lift = lift;
 		return false;
 	}
 	// Figure max lift allowed.
 	if (max_rise == -1) {
-		if ((move_flags & (MOVE_FLY | MOVE_MAPEDIT)) != 0) {
+		if (in_mapedit || can_fly) {
 			max_rise = max_drop;
-		} else if ((move_flags & MOVE_WALK)) {
+		} else if (can_walk) {
 			max_rise = 1;
 		} else {
 			// Swim.
@@ -496,16 +501,18 @@ bool Chunk_cache::is_blocked(
 		}
 	}
 	int max_lift = lift + max_rise;
-	if (max_lift > 255)
+	if (max_lift > 255) {
 		max_lift = 255;     // As high as we can go.
+	}
 	set_tflags(tx, ty, max_lift + height);
 	for (new_lift = lift; new_lift <= max_lift; new_lift++) {
 		if (!TEST_TFLAGS(new_lift)) {
 			// Not blocked?
-			int new_high = get_lowest_blocked(new_lift);
+			const int new_high = get_lowest_blocked(new_lift);
 			// Not blocked above?
-			if (new_high == -1 || new_high >= (new_lift + height))
+			if (new_high == -1 || new_high >= (new_lift + height)) {
 				break;  // Okay.
+			}
 		}
 	}
 	if (new_lift > max_lift) {  // Spot not found at lift or higher?
@@ -513,39 +520,41 @@ bool Chunk_cache::is_blocked(
 		new_lift = get_highest_blocked(lift) + 1;
 		if (new_lift >= lift)   // Couldn't drop?
 			return true;
-		int new_high = get_lowest_blocked(new_lift);
+		const int new_high = get_lowest_blocked(new_lift);
 		if (new_high != -1 && new_high < new_lift + height)
 			return true;   // Still blocked above.
 	}
 	if (new_lift <= lift) {     // Not going up?  See if falling.
-		new_lift = (move_flags & MOVE_LEVITATE) ? lift :
-		           get_highest_blocked(lift) + 1;
+		new_lift = is_levitating ? lift : get_highest_blocked(lift) + 1;
 		// Don't allow fall of > max_drop.
 		if (lift - new_lift > max_drop) {
 			// Map-editing?  Suspend in air there.
-			if (move_flags & MOVE_MAPEDIT)
+			if (in_mapedit) {
 				new_lift = lift - max_drop;
-			else
+			} else {
 				return true;
+			}
 		}
-		int new_high = get_lowest_blocked(new_lift);
+		const int new_high = get_lowest_blocked(new_lift);
 
 		// Make sure that where we want to go is tall enough for us
-		if (new_high != -1 && new_high < (new_lift + height))
+		if (new_high != -1 && new_high < (new_lift + height)) {
 			return true;
+		}
 	}
 
 	// Found a new place to go, lets test if we can actually move there
 
 	// Lift 0 tests
 	if (new_lift == 0) {
-		if (move_flags & MOVE_MAPEDIT)
+		if (in_mapedit) {
 			return false;   // Map-editor, so anything is okay.
-		int ter = 0;
-		Check_terrain(obj_list, tx, ty, ter);
-		bool const can_walk = (move_flags & MOVE_WALK) != 0;
-		bool const can_swim = (move_flags & MOVE_SWIM) != 0;
-		bool const can_fly  = (move_flags & MOVE_FLY ) != 0;
+		}
+		if (!can_walk && !can_swim && !can_fly) {
+			// Cannot move at all, like Reapers in BG.
+			return true;
+		}
+		int const ter = Check_terrain(obj_list, tx, ty);
 		if (can_swim && !can_walk && !can_fly && (ter & 2) == 0) {
 			// Can only swim; do not allow to move outside of water.
 			return true;
@@ -559,10 +568,9 @@ bool Chunk_cache::is_blocked(
 			return true;
 		}
 		return false;
-	} else if (move_flags & (MOVE_FLY | MOVE_WALK))
-		return false;
-
-	return true;
+	}
+	// TODO: maybe worth checking for swim here as well?
+	return !can_walk && !can_fly;
 }
 
 /*
@@ -595,7 +603,7 @@ void Chunk_cache::activate_eggs(
 		// DON'T use an iterator here, since
 		//   the list can change as eggs are
 		//   activated, causing a CRASH!
-		size_t sz = egg_objects.size();
+		const size_t sz = egg_objects.size();
 		for (; i < sz; i++) {
 			Egg_object *egg = egg_objects[i];
 			if (egg && egg->is_active(obj, tx, ty, tz, from_tx, from_ty)) {
@@ -670,7 +678,7 @@ void Map_chunk::set_terrain(
 				int shapenum = id.get_shapenum();
 				int framenum = id.get_framenum();
 				const Shape_info &info = id.get_info();
-				Game_object_shared obj = info.is_animated() ?
+				const Game_object_shared obj = info.is_animated() ?
 				            std::make_shared<Animated_object>(shapenum,
 				                              framenum, tilex, tiley)
 				          : std::make_shared<Terrain_game_object>(shapenum,
@@ -739,7 +747,7 @@ void Map_chunk::add(
 ) {
 	newobj->chunk = this;       // Set object's chunk.
 	Ordering_info ord(gwin, newobj);
-	Game_object_shared newobj_shared = newobj->shared_from_this();
+	const Game_object_shared newobj_shared = newobj->shared_from_this();
 	// Put past flats.
 	if (first_nonflat)
 		objects.insert_before(newobj_shared, first_nonflat);
@@ -761,8 +769,8 @@ void Map_chunk::add(
 			                         INCR_CHUNK(cy), newobj, ord);
 		// See if newobj extends outside.
 		/* Let's try boundary. YES.  This helps with statues through roofs!*/
-		bool ext_left = (newobj->get_tx() - ord.xs) < 0 && cx > 0;
-		bool ext_above = (newobj->get_ty() - ord.ys) < 0 && cy > 0;
+		const bool ext_left = (newobj->get_tx() - ord.xs) < 0 && cx > 0;
+		const bool ext_above = (newobj->get_ty() - ord.ys) < 0 && cy > 0;
 		if (ext_left) {
 			add_outside_dependencies(DECR_CHUNK(cx), cy,
 			                         newobj, ord)->from_right++;
@@ -831,12 +839,12 @@ void Map_chunk::remove(
 	Game_map *gmap = gwin->get_map();
 	const Shape_info &info = remove->get_info();
 	// See if it extends outside.
-	int frame = remove->get_framenum();
-	int tx = remove->get_tx();
-	int ty = remove->get_ty();
+	const int frame = remove->get_framenum();
+	const int tx = remove->get_tx();
+	const int ty = remove->get_ty();
 	/* Let's try boundary. YES.  Helps with statues through roofs. */
-	bool ext_left = (tx - info.get_3d_xtiles(frame)) < 0 && cx > 0;
-	bool ext_above = (ty - info.get_3d_ytiles(frame)) < 0 && cy > 0;
+	const bool ext_left = (tx - info.get_3d_xtiles(frame)) < 0 && cx > 0;
+	const bool ext_above = (ty - info.get_3d_ytiles(frame)) < 0 && cy > 0;
 	if (ext_left) {
 		gmap->get_chunk(cx - 1, cy)->from_below_right--;
 		if (ext_above)
@@ -885,12 +893,12 @@ bool Map_chunk::is_blocked(
 	new_lift = 0;
 	startx = (startx + c_num_tiles) % c_num_tiles;      // Watch for wrapping.
 	starty = (starty + c_num_tiles) % c_num_tiles;
-	int stopy = (starty + ytiles) % c_num_tiles;
-	int stopx = (startx + xtiles) % c_num_tiles;
+	const int stopy = (starty + ytiles) % c_num_tiles;
+	const int stopx = (startx + xtiles) % c_num_tiles;
 	for (ty = starty; ty != stopy; ty = INCR_TILE(ty)) {
 		// Get y chunk, tile-in-chunk.
-		int cy = ty / c_tiles_per_chunk;
-		int rty = ty % c_tiles_per_chunk;
+		const int cy = ty / c_tiles_per_chunk;
+		const int rty = ty % c_tiles_per_chunk;
 		for (tx = startx; tx != stopx; tx = INCR_TILE(tx)) {
 			int this_lift;
 			Map_chunk *olist = gmap->get_chunk(
@@ -1003,13 +1011,13 @@ bool Map_chunk::is_blocked(
 #endif
 	for (y = horizy0; y != horizy1; y = INCR_TILE(y)) {
 		// Get y chunk, tile-in-chunk.
-		int cy = y / c_tiles_per_chunk;
-		int rty = y % c_tiles_per_chunk;
+		const int cy = y / c_tiles_per_chunk;
+		const int rty = y % c_tiles_per_chunk;
 		for (x = horizx0; x != horizx1; x = INCR_TILE(x)) {
 			Map_chunk *olist = gmap->get_chunk(
 			                       x / c_tiles_per_chunk, cy);
 			olist->setup_cache();
-			int rtx = x % c_tiles_per_chunk;
+			const int rtx = x % c_tiles_per_chunk;
 			if (olist->is_blocked(ztiles, from.tz, rtx, rty,
 			                      new_lift, move_flags, max_drop, max_rise))
 				return true;
@@ -1024,13 +1032,13 @@ bool Map_chunk::is_blocked(
 	// Do vert. block.
 	for (x = vertx0; x != vertx1; x = INCR_TILE(x)) {
 		// Get x chunk, tile-in-chunk.
-		int cx = x / c_tiles_per_chunk;
-		int rtx = x % c_tiles_per_chunk;
+		const int cx = x / c_tiles_per_chunk;
+		const int rtx = x % c_tiles_per_chunk;
 		for (y = verty0; y != verty1; y = INCR_TILE(y)) {
 			Map_chunk *olist = gmap->get_chunk(
 			                       cx, y / c_tiles_per_chunk);
 			olist->setup_cache();
-			int rty = y % c_tiles_per_chunk;
+			const int rty = y % c_tiles_per_chunk;
 			if (olist->is_blocked(ztiles, from.tz, rtx, rty,
 			                      new_lift, move_flags, max_drop, max_rise))
 				return true;
@@ -1097,8 +1105,8 @@ inline bool Check_spot(
     int tx, int ty, int tz
 ) {
 	Game_map *gmap = Game_window::get_instance()->get_map();
-	int cx = tx / c_tiles_per_chunk;
-	int cy = ty / c_tiles_per_chunk;
+	const int cx = tx / c_tiles_per_chunk;
+	const int cy = ty / c_tiles_per_chunk;
 	Map_chunk *chunk = gmap->get_chunk_safely(cx, cy);
 	if (!chunk)
 		return false;
@@ -1125,9 +1133,9 @@ Tile_coord Map_chunk::find_spot(
     Find_spot_where where       // Inside/outside.
 ) {
 	const Shape_info &info = ShapeID::get_info(shapenum);
-	int xs = info.get_3d_xtiles(framenum);
-	int ys = info.get_3d_ytiles(framenum);
-	int zs = info.get_3d_height();
+	const int xs = info.get_3d_xtiles(framenum);
+	const int ys = info.get_3d_ytiles(framenum);
+	const int zs = info.get_3d_height();
 	// The 'MOVE_FLY' flag really means
 	//   we can look upwards by max_drop.
 	const int mflags = MOVE_WALK | MOVE_FLY;
@@ -1140,7 +1148,7 @@ Tile_coord Map_chunk::find_spot(
 		dir = rand() % 8;   // Choose dir. randomly.
 	dir = (dir + 1) % 8;    // Make NW the 0 point.
 	for (int d = 1; d <= dist; d++) { // Look outwards.
-		int square_cnt = 8 * d    ; // # tiles in square's perim.
+		const int square_cnt = 8 * d    ; // # tiles in square's perim.
 		// Get square (starting in NW).
 		const auto square = Get_square(pos, d);
 		int index = dir * d; // Get index of preferred spot.
@@ -1176,9 +1184,9 @@ Tile_coord Map_chunk::find_spot(
     int max_drop,           // Allow to drop by this much.
     Find_spot_where where       // Inside/outside.
 ) {
-	Tile_coord t2 = obj->get_tile();
+	const Tile_coord t2 = obj->get_tile();
 	// Get direction from pos. to object.
-	int dir = static_cast<int>(Get_direction(pos.ty - t2.ty, t2.tx - pos.tx));
+	const int dir = static_cast<int>(Get_direction(pos.ty - t2.ty, t2.tx - pos.tx));
 	return find_spot(pos, dist, obj->get_shapenum(), obj->get_framenum(),
 	                 max_drop, dir, where);
 }
@@ -1195,7 +1203,7 @@ int Map_chunk::find_in_area(
     int shapenum,
     int framenum
 ) {
-	int savesize = vec.size();
+	const int savesize = vec.size();
 	// Go through interesected chunks.
 	Chunk_intersect_iterator next_chunk(area);
 	TileRect tiles;        // (Tiles within intersected chunk).
@@ -1233,9 +1241,9 @@ void Map_chunk::try_all_eggs(
 		return;
 	norecurse++;
 	Game_map *gmap = gwin->get_map();
-	Tile_coord pos = obj->get_tile();
+	const Tile_coord pos = obj->get_tile();
 	const int dist = 32;        // See if this works okay.
-	TileRect area(pos.tx - dist, pos.ty - dist, 2 * dist, 2 * dist);
+	const TileRect area(pos.tx - dist, pos.ty - dist, 2 * dist, 2 * dist);
 	// Go through interesected chunks.
 	Chunk_intersect_iterator next_chunk(area);
 	TileRect tiles;        // (Ignored).
@@ -1278,8 +1286,8 @@ void Map_chunk::add_dungeon_levels(
 		// First one found.
 		dungeon_levels = std::make_unique<unsigned char[]>(256);
 	}
-	int endy = tiles.y + tiles.h;
-	int endx = tiles.x + tiles.w;
+	const int endy = tiles.y + tiles.h;
+	const int endx = tiles.x + tiles.w;
 	for (int ty = tiles.y; ty < endy; ty++) {
 		for (int tx = tiles.x; tx < endx; tx++) {
 			if (GAME_SI) {
@@ -1307,7 +1315,7 @@ void Map_chunk::setup_dungeon_levels(
 		if (shinf.get_shape_class() == Shape_info::building &&
 		        shinf.get_mountain_top_type() == Shape_info::normal_mountain_top) {
 			// SI shape 941, frame 0 => do whole chunk (I think).
-			TileRect area =
+			const TileRect area =
 			    (shinf.has_translucency()
 			     && each->get_framenum() == 0)
 			    ? TileRect(cx * c_tiles_per_chunk,
@@ -1331,7 +1339,7 @@ void Map_chunk::setup_dungeon_levels(
 			// This is not exactly accurate.
 			ice_dungeon |= 1 << ((each->get_tx() >> 3) + 2 * (each->get_ty() >> 3));
 
-			TileRect area = each->get_footprint();
+			const TileRect area = each->get_footprint();
 
 			// Go through interesected chunks.
 			Chunk_intersect_iterator next_chunk(area);
@@ -1383,9 +1391,9 @@ void Map_chunk::gravity(
 			if (!obj->is_dragable() &&
 			        !obj->get_info().is_npc())
 				continue;
-			Tile_coord t = obj->get_tile();
+			const Tile_coord t = obj->get_tile();
 			// Get footprint.
-			TileRect foot = obj->get_footprint();
+			const TileRect foot = obj->get_footprint();
 			// Above area?
 			if (t.tz >= lift && foot.intersects(area) &&
 			        // Unblocked below itself?
@@ -1398,9 +1406,9 @@ void Map_chunk::gravity(
 	}
 	// Drop each one found.
 	for (auto *obj : dropped) {
-		Tile_coord t = obj->get_tile();
+		const Tile_coord t = obj->get_tile();
 		// Get footprint.
-		TileRect foot = obj->get_footprint();
+		const TileRect foot = obj->get_footprint();
 		// Let drop as far as possible.
 		if (!is_blocked(1, t.tz - 1, foot.x, foot.y,
 		                foot.w, foot.h, new_lift, MOVE_ALL_TERRAIN, 100) && new_lift < t.tz) {
@@ -1423,7 +1431,7 @@ void Map_chunk::gravity(
  *
  */
 int Map_chunk::is_roof(int tx, int ty, int lift) {
-	int height = get_lowest_blocked(lift + 4, tx, ty);
+	const int height = get_lowest_blocked(lift + 4, tx, ty);
 	if (height == -1) return 255;
 	return height;
 }
@@ -1456,7 +1464,7 @@ int Map_chunk::get_obj_actors(vector<Game_object *> &removes,
 		// Normal objects and monsters
 		if (actor == nullptr || (each->is_monster() && each->get_flag(Obj_flags::is_temporary))) {
 			removes.push_back(each);
-			int ireg_size = each->get_ireg_size();
+			const int ireg_size = each->get_ireg_size();
 
 			if (ireg_size < 0) failed = true;
 			else buf_size += ireg_size;

@@ -62,11 +62,11 @@ void Actor::read(
 	// This is used to get around parts of the files that we don't know
 	// what the uses are. 'fix_first' is used fix issues in the originals
 	// files that cause problems for the extra info we save.
-	bool fix_first = Game::is_new_game();
+	const bool fix_first = Game::is_new_game();
 
 	init();             // Clear rest of stuff.
-	unsigned locx = nfile->read1(); // Get chunk/tile coords.
-	unsigned locy = nfile->read1();
+	const unsigned locx = nfile->read1(); // Get chunk/tile coords.
+	const unsigned locy = nfile->read1();
 	// Read & set shape #, frame #.
 	unsigned short shnum = nfile->read2();
 
@@ -78,7 +78,7 @@ void Actor::read(
 
 	set_frame(shnum >> 10);
 
-	int iflag1 = nfile->read2();    // Inventory flag.
+	const int iflag1 = nfile->read2();    // Inventory flag.
 	// We're going to use these bits.
 	// iflag1:0 == has_contents.
 	// iflag1:1 == sched. usecode follows,
@@ -88,19 +88,19 @@ void Actor::read(
 	// iflag1:3 == usecode fun name assigned
 	//   by ES, so use it instead.
 	// iflag1:4 == Extended skin number
-	bool read_sched_usecode = !fix_first && (iflag1 & 2);
-	bool usecode_name_used = !fix_first && (iflag1 & 8);
+	const bool read_sched_usecode = !fix_first && (iflag1 & 2);
+	const bool usecode_name_used = !fix_first && (iflag1 & 8);
 	if (usecode_name_used || (!fix_first && (iflag1 & 4)))
 		usecode_assigned = true;
-	bool extended_skin = !fix_first && (iflag1 & 16);
+	const bool extended_skin = !fix_first && (iflag1 & 16);
 
-	int schunk = nfile->read1();    // Superchunk #.
+	const int schunk = nfile->read1();    // Superchunk #.
 	// For multi-map:
 	int map_num = nfile->read1();
 	if (fix_first)
 		map_num = 0;
 	Game_map *npcmap = gwin->get_map(map_num);
-	int usefun = nfile->read2();    // Get usecode function #.
+	const int usefun = nfile->read2();    // Get usecode function #.
 	set_lift(usefun >> 12);     // Lift is high 4 bits.
 	usecode = usefun & 0xfff;
 	// Need this for BG. (Not sure if SI.)
@@ -112,10 +112,10 @@ void Actor::read(
 	         usecode == 0xfff)
 		usecode = -1;       // Let's try this.
 	// Guessing:  !!  (Want to get signed.)
-	int health_val = static_cast<int>(static_cast<char>(nfile->read1()));
+	const int health_val = static_cast<int>(static_cast<char>(nfile->read1()));
 	set_property(static_cast<int>(Actor::health), health_val);
 	nfile->skip(3); // Skip 3 bytes.
-	int iflag2 = nfile->read2();    // The 'used-in-game' flag.
+	const int iflag2 = nfile->read2();    // The 'used-in-game' flag.
 	if (iflag2 == 0 && num >= 0 && !fix_unused) {
 		if (num == 0)       // Old (bad) savegame?
 			fix_unused = true;
@@ -126,7 +126,7 @@ void Actor::read(
 #endif
 	}
 
-	bool has_contents = fix_first ? (iflag1 && !unused) : (iflag1 & 1) != 0;
+	const bool has_contents = fix_first ? (iflag1 && !unused) : (iflag1 & 1) != 0;
 	// Read first set of flags
 	const int rflags = nfile->read2();
 
@@ -158,7 +158,7 @@ void Actor::read(
 
 	// In BG - Strength (0-5), skin colour(6-7)
 	// In SI - Strength (0-4), skin colour(5-6), freeze (7)
-	int strength_val = nfile->read1();
+	const int strength_val = nfile->read1();
 
 	if (Game::get_game_type() == BLACK_GATE) {
 		set_property(static_cast<int>(Actor::strength), strength_val & 0x3F);
@@ -196,7 +196,7 @@ void Actor::read(
 
 
 	// Intelligence (0-4), read(5), Tournament (6), polymorph (7)
-	int intel_val = nfile->read1();
+	const int intel_val = nfile->read1();
 
 	set_property(static_cast<int>(Actor::intelligence), intel_val & 0x1F);
 	if ((intel_val >> 5) & 1) set_flag(Obj_flags::read);
@@ -207,12 +207,12 @@ void Actor::read(
 
 
 	// Combat skill (0-6), Petra (7)
-	int combat_val = nfile->read1();
+	const int combat_val = nfile->read1();
 	set_property(static_cast<int>(Actor::combat), combat_val & 0x7F);
 	if ((combat_val >> 7) & 1) set_flag(Obj_flags::petra);
 
 	schedule_type = nfile->read1();
-	int amode = nfile->read1(); // Default attack mode
+	const int amode = nfile->read1(); // Default attack mode
 	// Just stealing 2 spare bits:
 	combat_protected = (amode & (1 << 4)) != 0;
 	user_set_attack = (amode & (1 << 5)) != 0;
@@ -225,8 +225,8 @@ void Actor::read(
 	} else
 		charmalign = nfile->read1(); // Alignment when charmed.
 
-	int unk0 = nfile->read1();  // We set high bit of this value.
-	int unk1 = nfile->read1();
+	const int unk0 = nfile->read1();  // We set high bit of this value.
+	const int unk1 = nfile->read1();
 	int magic = 0;
 	int mana = 0;
 	int temp;
@@ -237,8 +237,8 @@ void Actor::read(
 		//                      TempLow (5-7)
 		// Else: ID# (0-4), TempHigh (5-7) and Met (0),
 		//  No Spell Casting (1), Zombie (2), TempLow (5-7)
-		int magic_val = nfile->read1();
-		int mana_val = nfile->read1();
+		const int magic_val = nfile->read1();
+		const int mana_val = nfile->read1();
 		temp = ((magic_val >> 2) & 0x38) + ((mana_val >> 5) & 7);
 		if (num == 0) {
 			magic = magic_val & 0x1f;
@@ -290,7 +290,7 @@ void Actor::read(
 	schedule_loc.ty = nfile->read2();   //be for schedule)
 
 	// Type flags 2
-	int tflags = nfile->read2();
+	const int tflags = nfile->read2();
 
 	// First time round, all the flags are garbage
 	if (fix_first) {
@@ -358,7 +358,7 @@ void Actor::read(
 		nfile->skip(1);  // 1 free from old SIFLAGS
 
 		// Flags2   But don't set polymorph.
-		bool polym = get_flag(Obj_flags::polymorph);
+		const bool polym = get_flag(Obj_flags::polymorph);
 		f = nfile->read4();
 		flags2 |= f;
 		if (!polym && get_flag(Obj_flags::polymorph))
@@ -366,7 +366,7 @@ void Actor::read(
 
 		if (usecode_name_used) {
 			// Support for named functions.
-			int funsize = nfile->read1();
+			const int funsize = nfile->read1();
 			char *nm = new char[funsize + 1];
 			nfile->read(nm, funsize);
 			nm[funsize] = 0;
@@ -375,7 +375,7 @@ void Actor::read(
 			delete [] nm;
 		}
 
-		int skin = nfile->read1();
+		const int skin = nfile->read1();
 		if (extended_skin) {
 			if (Game::get_avskin() >= 0)
 				set_skin_color(Game::get_avskin());
@@ -427,17 +427,17 @@ void Actor::read(
 		name = reinterpret_cast<char const *>(namebuf);     // Store copy of it.
 
 	// Get abs. chunk. coords. of schunk.
-	int scy = 16 * (schunk / 12);
-	int scx = 16 * (schunk % 12);
+	const int scy = 16 * (schunk / 12);
+	const int scx = 16 * (schunk % 12);
 	if (has_contents)       // Inventory?  Read.
 		npcmap->read_ireg_objects(nfile, scx, scy, this);
 	if (read_sched_usecode)     // Read in scheduled usecode.
 		npcmap->read_special_ireg(nfile, this);
-	int cx = locx >> 4;     // Get chunk indices within schunk.
-	int cy = locy >> 4;
+	const int cx = locx >> 4;     // Get chunk indices within schunk.
+	const int cy = locy >> 4;
 	// Get tile #'s.
-	int tilex = locx & 0xf;
-	int tiley = locy & 0xf;
+	const int tilex = locx & 0xf;
+	const int tiley = locy & 0xf;
 	set_shape_pos(tilex, tiley);
 	Map_chunk *olist = npcmap->get_chunk_safely(scx + cx, scy + cy);
 	set_invalid();          // Not in world yet.
@@ -505,10 +505,10 @@ void Actor::write(
 	int i;
 	unsigned char buf4[4];      // Write coords., shape, frame.
 
-	int old_shape = get_shapenum(); // Backup shape because we might change it
+	const int old_shape = get_shapenum(); // Backup shape because we might change it
 	set_shape(get_shape_real());     // Change the shape out non polymorph one
-	int shapenum = get_shapenum();
-	int framenum = get_framenum();
+	const int shapenum = get_shapenum();
+	const int framenum = get_framenum();
 	buf4[0] = ((get_cx() % 16) << 4) | get_tx();
 	buf4[1] = ((get_cy() % 16) << 4) | get_ty();
 	// ++++++Is this even needed anymore? We already save 16-bit shapes below.
@@ -604,14 +604,14 @@ void Actor::write(
 	nfile->write1(iout);
 
 	nfile->write1(get_schedule_type());
-	unsigned char amode = attack_mode |
+	const unsigned char amode = attack_mode |
 	                      (combat_protected ? (1 << 4) : 0) |
 	                      (user_set_attack ? (1 << 5) : 0);
 	nfile->write1(amode);
 	nfile->write1(get_effective_alignment());       // Effective alignment
 	// Exult is using the 2 unknown bytes to store magic, mana for all
 	//   NPC's, and to store temperature more simply.
-	int magic = get_property(static_cast<int>(Actor::magic));
+	const int magic = get_property(static_cast<int>(Actor::magic));
 	nfile->write1(magic | 0x80); // Set high bit to flag new format.
 	nfile->write1(get_property(static_cast<int>(Actor::mana)));
 	nfile->write1(get_temperature());
@@ -671,7 +671,7 @@ void Actor::write(
 
 	if (usecode_assigned && !usecode_name.empty()) {
 		// Support for named functions.
-		int size = usecode_name.size();
+		const int size = usecode_name.size();
 		nfile->write1(size);
 		char *nm = new char[size];
 		std::strncpy(nm, usecode_name.c_str(), size);
@@ -695,7 +695,7 @@ void Actor::write(
 	char namebuf[17];       // Write 16-byte name.
 	std::memset(namebuf, 0, 16);
 	if (name.empty()) {
-		std::string namestr = Game_object::get_name();
+		const std::string namestr = Game_object::get_name();
 		std::strncpy(namebuf, namestr.c_str(), 16);
 	} else
 		std::strncpy(namebuf, name.c_str(), 16);

@@ -93,10 +93,10 @@ void Map_patch_collection::add(
     std::unique_ptr<Map_patch> p
 ) {
 	// Get superchunk coords.
-	int sx = p->spec.loc.tx / c_tiles_per_schunk;
-	int sy = p->spec.loc.ty / c_tiles_per_schunk;
+	const int sx = p->spec.loc.tx / c_tiles_per_schunk;
+	const int sy = p->spec.loc.ty / c_tiles_per_schunk;
 	// Get superchunk # (0-143).
-	int schunk = sy * c_num_schunks + sx;
+	const int schunk = sy * c_num_schunks + sx;
 	patches[schunk].push_back(std::move(p));
 }
 

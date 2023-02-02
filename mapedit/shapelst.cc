@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "shapelst.h"
 
+#include "array_size.h"
 #include "databuf.h"
 #include "fontgen.h"
 #include "frnameinf.h"
@@ -120,14 +121,18 @@ void Shape_chooser::show(
 ) {
 	Shape_draw::show(x, y, w, h);
 	if ((selected >= 0) && (drawgc != nullptr)) {    // Show selected.
-		TileRect b = info[selected].box;
+		const int zoom_scale = ZoomGet();
+		const TileRect b = info[selected].box;
 		// Draw yellow box.
-		cairo_set_line_width(drawgc, 1.0);
+		cairo_set_line_width(drawgc, zoom_scale/2.0);
 		cairo_set_source_rgb(drawgc,
 		                     ((drawfg >> 16) & 255) / 255.0,
 		                     ((drawfg >> 8) & 255) / 255.0,
 		                     (drawfg & 255) / 255.0);
-		cairo_rectangle(drawgc, b.x - hoffset, b.y - voffset, b.w, b.h);
+		cairo_rectangle(drawgc, ((b.x - hoffset) * zoom_scale)/2,
+		                        ((b.y - voffset) * zoom_scale)/2,
+		                        (b.w * zoom_scale)/2,
+		                        (b.h * zoom_scale)/2);
 		cairo_stroke(drawgc);
 	}
 }
@@ -162,10 +167,9 @@ void Shape_chooser::select(
 ) {
 	selected = new_sel;
 	tell_server_shape();        // Tell Exult.
-	int shapenum = info[selected].shapenum;
+	const int shapenum = info[selected].shapenum;
 	// Update spin-button value, range.
-	gtk_widget_set_sensitive(fspin, true);
-	int nframes = ifile->get_num_frames(shapenum);
+	const int nframes = ifile->get_num_frames(shapenum);
 	gtk_adjustment_set_upper(frame_adj, nframes - 1);
 	gtk_adjustment_set_value(frame_adj, info[selected].framenum);
 	gtk_widget_set_sensitive(fspin, true);
@@ -182,7 +186,7 @@ void Shape_chooser::render(
 	// Get drawing area dimensions.
 	GtkAllocation alloc = {0, 0, 0, 0};
 	gtk_widget_get_allocation(draw, &alloc);
-	gint winh = alloc.height;
+	const gint winh = ZoomDown(alloc.height);
 	// Clear window first.
 	iwin->fill8(255);       // Set to background_color.
 	int curr_y = -row0_voffset;
@@ -190,16 +194,16 @@ void Shape_chooser::render(
 	//   filter (group).
 	for (unsigned rownum = row0; curr_y  < winh && rownum < rows.size();
 	        ++rownum) {
-		Shape_row &row = rows[rownum];
+		const Shape_row &row = rows[rownum];
 		unsigned cols = get_num_cols(rownum);
 		for (unsigned index = row.index0; cols; --cols, ++index) {
-			int shapenum = info[index].shapenum;
-			int framenum = info[index].framenum;
+			const int shapenum = info[index].shapenum;
+			const int framenum = info[index].framenum;
 			Shape_frame *shape = ifile->get_shape(shapenum,
 			                                      framenum);
 			if (shape) {
-				int sx = info[index].box.x - hoffset;
-				int sy = info[index].box.y - voffset;
+				const int sx = info[index].box.x - hoffset;
+				const int sy = info[index].box.y - voffset;
 				shape->paint(iwin, sx + shape->get_xleft(),
 				             sy + shape->get_yabove());
 				last_shape = shapenum;
@@ -217,14 +221,14 @@ void Shape_chooser::render(
 static int Get_max_height(
     Shape *shape
 ) {
-	int cnt = shape->get_num_frames();
+	const int cnt = shape->get_num_frames();
 	int maxh = 0;
 	for (int i = 0; i < cnt; i++) {
 		Shape_frame *frame = shape->get_frame(i);
 		if (!frame) {
 			continue;
 		}
-		int ht = frame->get_height();
+		const int ht = frame->get_height();
 		if (ht > maxh)
 			maxh = ht;
 	}
@@ -243,7 +247,7 @@ static int Get_x_offset(
 ) {
 	if (!shape)
 		return 0;
-	int nframes = shape->get_num_frames();
+	const int nframes = shape->get_num_frames();
 	if (framenum >= nframes)
 		framenum = nframes - 1;
 	int xoff = 0;
@@ -263,7 +267,7 @@ static int Get_x_offset(
 void Shape_chooser::setup_info(
     bool savepos            // Try to keep current position.
 ) {
-	unsigned oldind = rows[row0].index0;
+	const unsigned oldind = (selected >= 0 ? selected : rows[row0].index0);
 	info.resize(0);
 	rows.resize(0);
 	row0 = row0_voffset = 0;
@@ -272,6 +276,7 @@ void Shape_chooser::setup_info(
 	    probably be removed from the base Obj_browser class */
 	index0 = 0;
 	voffset = 0;
+	hoffset = 0;
 	total_height = 0;
 	if (frames_mode)
 		setup_frames_info();
@@ -280,6 +285,8 @@ void Shape_chooser::setup_info(
 	setup_vscrollbar();
 	if (savepos)
 		goto_index(oldind);
+	if (savepos && frames_mode)
+		scroll_to_frame();
 }
 
 /*
@@ -297,23 +304,23 @@ void Shape_chooser::setup_shapes_info(
 	// Get drawing area dimensions.
 	GtkAllocation alloc = {0, 0, 0, 0};
 	gtk_widget_get_allocation(draw, &alloc);
-	gint winw = alloc.width;
+	const gint winw = ZoomDown(alloc.width);
 	int x = 0;
 	int curr_y = 0;
 	int row_h = 0;
-	int total_cnt = get_count();
+	const int total_cnt = get_count();
 	//   filter (group).
 	rows.resize(1);         // Start 1st row.
 	rows[0].index0 = 0;
 	rows[0].y = 0;
 	for (int index = 0; index < total_cnt; index++) {
-		int shapenum = group ? (*group)[index] : index;
-		int framenum = shapenum == selshape ? selframe : framenum0;
+		const int shapenum = group ? (*group)[index] : index;
+		const int framenum = shapenum == selshape ? selframe : framenum0;
 		Shape_frame *shape = ifile->get_shape(shapenum, framenum);
 		if (!shape)
 			continue;
-		int sh = shape->get_height();
-		int sw = shape->get_width();
+		const int sh = shape->get_height();
+		const int sw = shape->get_width();
 		// Check if we've exceeded max width
 		if (x + sw > winw && x) {   // But don't leave row empty.
 			// Next line.
@@ -327,7 +334,7 @@ void Shape_chooser::setup_shapes_info(
 		}
 		if (sh > row_h)
 			row_h = sh;
-		int sy = curr_y + border; // Get top y-coord.
+		const int sy = curr_y + border; // Get top y-coord.
 		// Store info. about where drawn.
 		info.emplace_back();
 		info.back().set(shapenum, framenum, x, sy, sw, sh);
@@ -346,16 +353,16 @@ void Shape_chooser::setup_frames_info(
 	// Get drawing area dimensions.
 	int curr_y = 0;
 	int maxw = 0;
-	unsigned total_cnt = get_count();
+	const unsigned total_cnt = get_count();
 	//   filter (group).
 	for (unsigned index = index0; index < total_cnt; index++) {
-		int shapenum = group ? (*group)[index] : index;
+		const int shapenum = group ? (*group)[index] : index;
 		// Get all frames.
 		Shape *shape = ifile->extract_shape(shapenum);
-		int nframes = shape ? shape->get_num_frames() : 0;
+		const int nframes = shape ? shape->get_num_frames() : 0;
 		if (!nframes)
 			continue;
-		int row_h = Get_max_height(shape);
+		const int row_h = Get_max_height(shape);
 		rows.emplace_back();
 		rows.back().index0 = info.size();
 		rows.back().y = curr_y;
@@ -372,7 +379,7 @@ void Shape_chooser::setup_frames_info(
 			}
 			sh = frame->get_height();
 			sw = frame->get_width();
-			int sy = curr_y + border; // Get top y-coord.
+			const int sy = curr_y + border; // Get top y-coord.
 			// Store info. about where drawn.
 			info.emplace_back();
 			info.back().set(shapenum, framenum, x, sy, sw, sh);
@@ -394,19 +401,19 @@ void Shape_chooser::setup_frames_info(
 void Shape_chooser::scroll_to_frame(
 ) {
 	if (selected >= 0) {    // Save selection info.
-		int selshape = info[selected].shapenum;
-		int selframe = info[selected].framenum;
+		const int selshape = info[selected].shapenum;
+		const int selframe = info[selected].framenum;
 		Shape *shape = ifile->extract_shape(selshape);
-		int xoff = Get_x_offset(shape, selframe);
+		const int xoff = Get_x_offset(shape, selframe);
 		if (xoff < hoffset) // Left of visual area?
 			hoffset = xoff > border ? xoff - border : 0;
 		else {
 			GtkAllocation alloc = {0, 0, 0, 0};
 			gtk_widget_get_allocation(draw, &alloc);
-			gint winw = alloc.width;
+			const gint winw = ZoomDown(alloc.width);
 			Shape_frame *fr = shape->get_frame(selframe);
 			if (fr) {
-				int sw = fr->get_width();
+				const int sw = fr->get_width();
 				if (xoff + sw + border - hoffset > winw)
 					hoffset = xoff + sw + border - winw;
 			}
@@ -426,16 +433,17 @@ void Shape_chooser::goto_index(
 ) {
 	if (index >= info.size())
 		return;         // Illegal index or empty chooser.
-	Shape_entry &inf = info[index]; // Already in view?
-	unsigned midx = inf.box.x + inf.box.w / 2;
-	unsigned midy = inf.box.y + inf.box.h / 2;
-	TileRect winrect(hoffset, voffset, config_width, config_height);
+	const Shape_entry &inf = info[index]; // Already in view?
+	const unsigned midx = inf.box.x + inf.box.w / 2;
+	const unsigned midy = inf.box.y + inf.box.h / 2;
+	const TileRect winrect(hoffset, voffset,
+	    ZoomDown(config_width), ZoomDown(config_height));
 	if (winrect.has_point(midx, midy))
 		return;
 	unsigned start = 0;
 	unsigned count = rows.size();
 	while (count > 1) {     // Binary search.
-		unsigned mid = start + count / 2;
+		const unsigned mid = start + count / 2;
 		if (index < rows[mid].index0)
 			count = mid - start;
 		else {
@@ -459,7 +467,7 @@ int Shape_chooser::find_shape(
     int shnum
 ) {
 	if (group) {        // They're not ordered.
-		unsigned cnt = info.size();
+		const unsigned cnt = info.size();
 		for (unsigned i = 0; i < cnt; ++i)
 			if (info[i].shapenum == shnum)
 				return i;
@@ -468,7 +476,7 @@ int Shape_chooser::find_shape(
 	unsigned start = 0;
 	unsigned count = info.size();
 	while (count > 1) {     // Binary search.
-		unsigned mid = start + count / 2;
+		const unsigned mid = start + count / 2;
 		if (shnum < info[mid].shapenum)
 			count = mid - start;
 		else {
@@ -529,7 +537,8 @@ gint Shape_chooser::expose(
 	chooser->set_graphic_context(cairo);
 	GdkRectangle area = { 0, 0, 0, 0 };
 	gdk_cairo_get_clip_rectangle(cairo, &area);
-	chooser->show(area.x, area.y, area.width, area.height);
+	chooser->show(ZoomDown(area.x), ZoomDown(area.y),
+	              ZoomDown(area.width), ZoomDown(area.height));
 	chooser->set_graphic_context(nullptr);
 	return TRUE;
 }
@@ -560,6 +569,10 @@ gint Shape_chooser::mouse_press(
 ) {
 	gtk_widget_grab_focus(widget);
 
+#ifdef DEBUG
+	cout << "Shapes : Clicked to " << (event->x) << " * " << (event->y)
+	     << " by " << (event->button) << endl;
+#endif
 	if (event->button == 4) {
 		if (row0 > 0)
 			scroll_row_vertical(row0 - 1);
@@ -568,19 +581,19 @@ gint Shape_chooser::mouse_press(
 		scroll_row_vertical(row0 + 1);
 		return TRUE;
 	}
-	int old_selected = selected;
+	const int old_selected = selected;
 	int new_selected = -1;
 	unsigned i;              // Search through entries.
-	unsigned infosz = info.size();
-	int absx = static_cast<int>(event->x) + hoffset;
-	int absy = static_cast<int>(event->y) + voffset;
+	const unsigned infosz = info.size();
+	const int absx = ZoomDown(static_cast<int>(event->x)) + hoffset;
+	const int absy = ZoomDown(static_cast<int>(event->y)) + voffset;
 	for (i = rows[row0].index0; i < infosz; i++) {
 		if (info[i].box.distance(absx, absy) <= 2) {
 			// Found the box?
 			// Indicate we can drag.
 			new_selected = i;
 			break;
-		} else if (info[i].box.y - voffset >= config_height)
+		} else if (info[i].box.y - voffset >= ZoomDown(config_height))
 			break;      // Past bottom of screen.
 	}
 	if (new_selected >= 0) {
@@ -655,11 +668,11 @@ const unsigned char transp = 255;
 time_t Shape_chooser::export_png(
     const char *fname       // File to write out.
 ) {
-	int shnum = info[selected].shapenum;
-	int frnum = info[selected].framenum;
+	const int shnum = info[selected].shapenum;
+	const int frnum = info[selected].framenum;
 	Shape_frame *frame = ifile->get_shape(shnum, frnum);
-	int w = frame->get_width();
-	int h = frame->get_height();
+	const int w = frame->get_width();
+	const int h = frame->get_height();
 	Image_buffer8 img(w, h);    // Render into a buffer.
 	img.fill8(transp);      // Fill with transparent pixel.
 	frame->paint(&img, frame->get_xleft(), frame->get_yabove());
@@ -700,8 +713,8 @@ time_t Shape_chooser::export_png(
 ) {
 	unsigned char pal[3 * 256]; // Set up palette.
 	Get_rgb_palette(palette, pal);
-	int w = img.get_width();
-	int h = img.get_height();
+	const int w = img.get_width();
+	const int h = img.get_height();
 	struct stat fs;         // Write out to the .png.
 	// (Rotate transp. pixel to 0 for the
 	//   Gimp's sake.)
@@ -727,7 +740,7 @@ time_t Shape_chooser::export_tiled_png(
     bool bycols         // Write tiles columns-first.
 ) {
 	assert(selected >= 0);
-	int shnum = info[selected].shapenum;
+	const int shnum = info[selected].shapenum;
 	ExultStudio *studio = ExultStudio::get_instance();
 	// Low shape in 'shapes.vga'?
 	assert(IS_FLAT(shnum) && file_info == studio->get_vgafile());
@@ -735,9 +748,9 @@ time_t Shape_chooser::export_tiled_png(
 	assert(shape != nullptr);
 	cout << "Writing " << fname << " tiled"
 	     << (bycols ? ", by cols" : ", by rows") << " first" << endl;
-	int nframes = shape->get_num_frames();
+	const int nframes = shape->get_num_frames();
 	// Figure #tiles in other dim.
-	int dim1_cnt = (nframes + tiles - 1) / tiles;
+	const int dim1_cnt = (nframes + tiles - 1) / tiles;
 	int w;
 	int h;
 	if (bycols) {
@@ -756,7 +769,7 @@ time_t Shape_chooser::export_tiled_png(
 		if (frame->is_rle() || frame->get_width() != c_tilesize ||
 		        frame->get_height() != c_tilesize) {
 			char buf[250];
-			snprintf(buf, sizeof(buf), "Can only tile %dx%d flat shapes",
+			snprintf(buf, array_size(buf), "Can only tile %dx%d flat shapes",
 			         c_tilesize, c_tilesize);
 			Alert("%s", buf);
 			return 0;
@@ -784,8 +797,8 @@ time_t Shape_chooser::export_tiled_png(
 void Shape_chooser::edit_shape_info(
 ) {
 	ExultStudio *studio = ExultStudio::get_instance();
-	int shnum = info[selected].shapenum;
-	int frnum = info[selected].framenum;
+	const int shnum = info[selected].shapenum;
+	const int frnum = info[selected].framenum;
 	Shape_info *info = nullptr;
 	const char *name = nullptr;
 	if (shapes_file) {
@@ -810,8 +823,8 @@ void Shape_chooser::edit_shape(
     bool bycols         // Write tiles columns-first.
 ) {
 	ExultStudio *studio = ExultStudio::get_instance();
-	int shnum = info[selected].shapenum;
-	int frnum = info[selected].framenum;
+	const int shnum = info[selected].shapenum;
+	const int frnum = info[selected].framenum;
 	string filestr("<SAVEGAME>");   // Set up filename.
 	filestr += "/itmp";     // "Image tmp" directory.
 	U7mkdir(filestr.c_str(), 0755); // Create if not already there.
@@ -875,7 +888,7 @@ void Shape_chooser::edit_shape(
 	STARTUPINFO     si;
 	std::memset(&si, 0, sizeof(si));
 	si.cb = sizeof(si);
-	int ret = CreateProcess(nullptr, &cmd[0],
+	const int ret = CreateProcess(nullptr, &cmd[0],
 	                        nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi);
 	if (!ret)
 		Alert("Can't launch '%s'", studio->get_image_editor());
@@ -950,11 +963,11 @@ static int Find_closest_color(
 	// Be sure to search rotating colors too.
 	for (int i = 0; i < 0xff; i++) {
 		// Get deltas.
-		long dr = r - pal[3 * i];
-		long dg = g - pal[3 * i + 1];
-		long db = b - pal[3 * i + 2];
+		const long dr = r - pal[3 * i];
+		const long dg = g - pal[3 * i + 1];
+		const long db = b - pal[3 * i + 2];
 		// Figure distance-squared.
-		long dist = dr * dr + dg * dg + db * db;
+		const long dist = dr * dr + dg * dg + db * db;
 		if (dist < best_distance) {
 			// Better than prev?
 			best_index = i;
@@ -984,7 +997,7 @@ static void Convert_indexed_image(
 	map[transp] = transp;       // But leave transparent pix. alone.
 	// Go through pixels.
 	for (i = 0; i < count; i++) {
-		unsigned char pix = *pixels;
+		const unsigned char pix = *pixels;
 		if (map[pix] == -1) // New one?
 			map[pix] = Find_closest_color(newpal, oldpal[3 * pix],
 			                              oldpal[3 * pix + 1], oldpal[3 * pix + 2]);
@@ -1025,7 +1038,7 @@ static void Import_png(
 	Convert_indexed_image(pixels, h * rowsize, oldpal, palsize, pal);
 	delete [] oldpal;
 	// Low shape in 'shapes.vga'?
-	bool flat = IS_FLAT(shapenum) && finfo == studio->get_vgafile();
+	const bool flat = IS_FLAT(shapenum) && finfo == studio->get_vgafile();
 	int xleft;
 	int yabove;
 	if (flat) {
@@ -1066,12 +1079,12 @@ static void Import_png_tiles(
 	Shape *shape = ifile->extract_shape(shapenum);
 	if (!shape)
 		return;
-	int nframes = shape->get_num_frames();
+	const int nframes = shape->get_num_frames();
 	cout << "Reading " << fname << " tiled"
 	     << (bycols ? ", by cols" : ", by rows") << " first" << endl;
 	// Figure #tiles in other dim.
-	int dim0_cnt = tiles;
-	int dim1_cnt = (nframes + dim0_cnt - 1) / dim0_cnt;
+	const int dim0_cnt = tiles;
+	const int dim1_cnt = (nframes + dim0_cnt - 1) / dim0_cnt;
 	int needw;
 	int needh;       // Figure min. image dims.
 	if (bycols) {
@@ -1182,7 +1195,7 @@ void Shape_chooser::export_frame(
 	if (U7exists(fname)) {
 		char *msg = g_strdup_printf(
 		                "'%s' already exists.  Overwrite?", fname);
-		int answer = Prompt(msg, "Yes", "No");
+		const int answer = Prompt(msg, "Yes", "No");
 		g_free(msg);
 		if (answer != 0)
 			return;
@@ -1203,8 +1216,8 @@ void Shape_chooser::import_frame(
 	auto *chooser = static_cast<Shape_chooser *>(user_data);
 	if (chooser->selected < 0)
 		return;         // Shouldn't happen.
-	int shnum = chooser->info[chooser->selected].shapenum;
-	int frnum = chooser->info[chooser->selected].framenum;
+	const int shnum = chooser->info[chooser->selected].shapenum;
+	const int frnum = chooser->info[chooser->selected].framenum;
 	unsigned char pal[3 * 256]; // Get current palette.
 	Get_rgb_palette(chooser->palette, pal);
 	Import_png(fname, chooser->file_info, pal, shnum, frnum);
@@ -1222,12 +1235,13 @@ void Shape_chooser::export_all_pngs(
     int shnum
 ) {
 	for (int i = 0; i < ifile->get_num_frames(shnum); i++) {
-		char *fullname = new char[strlen(fname) + 30];
-		sprintf(fullname, "%s%02d.png", fname, i);
+		const size_t namelen = strlen(fname) + 30;
+		char *fullname = new char[namelen];
+		snprintf(fullname, namelen, "%s%02d.png", fname, i);
 		cout << "Writing " << fullname << endl;
 		Shape_frame *frame = ifile->get_shape(shnum, i);
-		int w = frame->get_width();
-		int h = frame->get_height();
+		const int w = frame->get_width();
+		const int h = frame->get_height();
 		Image_buffer8 img(w, h);    // Render into a buffer.
 		img.fill8(transp);      // Fill with transparent pixel.
 		frame->paint(&img, frame->get_xleft(), frame->get_yabove());
@@ -1247,7 +1261,7 @@ void Shape_chooser::export_all_frames(
     gpointer user_data
 ) {
 	auto *chooser = static_cast<Shape_chooser *>(user_data);
-	int shnum = chooser->info[chooser->selected].shapenum;
+	const int shnum = chooser->info[chooser->selected].shapenum;
 	chooser->export_all_pngs(fname, shnum);
 }
 
@@ -1256,7 +1270,7 @@ void Shape_chooser::export_shape(
     gpointer user_data
 ) {
 	auto *chooser = static_cast<Shape_chooser *>(user_data);
-	int shnum = chooser->info[chooser->selected].shapenum;
+	const int shnum = chooser->info[chooser->selected].shapenum;
 	Shape *shp = chooser->ifile->extract_shape(shnum);
 	Image_file_info::write_file(fname, &shp, 1, true);
 }
@@ -1269,8 +1283,9 @@ void Shape_chooser::import_all_pngs(
     const char *fname,
     int shnum
 ) {
-	char *fullname = new char[strlen(fname) + 30];
-	sprintf(fullname, "%s%02d.png", fname, 0);
+	const size_t namelen = strlen(fname) + 30;
+	char *fullname = new char[namelen];
+	snprintf(fullname, namelen, "%s%02d.png", fname, 0);
 	if (!U7exists(fullname)) {
 		cerr << "Invalid base file name for import of all frames!" << endl;
 		delete [] fullname;
@@ -1303,8 +1318,8 @@ void Shape_chooser::import_all_pngs(
 		// Convert to game palette.
 		Convert_indexed_image(pixels, h * rowsize, oldpal, palsize, pal);
 		delete [] oldpal;
-		int xleft = w + xoff - 1;
-		int yabove = h + yoff - 1;
+		const int xleft = w + xoff - 1;
+		const int yabove = h + yoff - 1;
 		auto frame = make_unique<Shape_frame>(pixels,
 		                                      w, h, xleft, yabove, true);
 		if (i < ifile->get_num_frames(shnum))
@@ -1314,7 +1329,7 @@ void Shape_chooser::import_all_pngs(
 		delete [] pixels;
 
 		i++;
-		sprintf(fullname, "%s%02d.png", fname, i);
+		snprintf(fullname, namelen, "%s%02d.png", fname, i);
 	}
 	render();
 	file_info->set_modified();
@@ -1329,8 +1344,8 @@ void Shape_chooser::import_all_frames(
 	auto *chooser = static_cast<Shape_chooser *>(user_data);
 	if (chooser->selected < 0)
 		return;         // Shouldn't happen.
-	int shnum = chooser->info[chooser->selected].shapenum;
-	int len = strlen(fname);
+	const int shnum = chooser->info[chooser->selected].shapenum;
+	const int len = strlen(fname);
 	// Ensure we have a valid file name.
 	std::string file = fname;
 	if (file[len - 4] == '.')
@@ -1355,7 +1370,7 @@ void Shape_chooser::import_shape(
 		int first;
 		if (len != size || (first = ds.read4()) > size || (first % 4) != 0)
 			return;
-		int shnum = chooser->info[chooser->selected].shapenum;
+		const int shnum = chooser->info[chooser->selected].shapenum;
 		Shape *shp = chooser->ifile->extract_shape(shnum);
 		ds.seek(0);
 		shp->load(&ds);
@@ -1373,8 +1388,8 @@ void Shape_chooser::new_frame(
 ) {
 	if (selected < 0)
 		return;
-	int shnum = info[selected].shapenum;
-	int frnum = info[selected].framenum;
+	const int shnum = info[selected].shapenum;
+	const int frnum = info[selected].framenum;
 	Vga_file *ifile = file_info->get_ifile();
 	// Read entire shape.
 	Shape *shape = ifile->extract_shape(shnum);
@@ -1384,7 +1399,7 @@ void Shape_chooser::new_frame(
 		return;
 	// Low shape in 'shapes.vga'?
 	ExultStudio *studio = ExultStudio::get_instance();
-	bool flat = IS_FLAT(shnum) && file_info == studio->get_vgafile();
+	const bool flat = IS_FLAT(shnum) && file_info == studio->get_vgafile();
 	int w = 0;
 	int h = 0;
 	int xleft;
@@ -1392,16 +1407,16 @@ void Shape_chooser::new_frame(
 	if (flat)
 		w = h = xleft = yabove = c_tilesize;
 	else {              // Find largest frame.
-		int cnt = shape->get_num_frames();
+		const int cnt = shape->get_num_frames();
 		for (int i = 0; i < cnt; i++) {
 			Shape_frame *fr = shape->get_frame(i);
 			if (!fr) {
 				continue;
 			}
-			int ht = fr->get_height();
+			const int ht = fr->get_height();
 			if (ht > h)
 				h = ht;
-			int wd = fr->get_width();
+			const int wd = fr->get_width();
 			if (wd > w)
 				w = wd;
 		}
@@ -1448,7 +1463,7 @@ C_EXPORT void on_new_shape_font_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	GtkWidget *win = gtk_widget_get_toplevel(GTK_WIDGET(btn));
 	auto *chooser = static_cast<Shape_chooser *>(
 	                    g_object_get_data(G_OBJECT(win), "user_data"));
@@ -1461,10 +1476,10 @@ gboolean Shape_chooser::on_new_shape_font_color_draw_expose_event(
 ) {
 	ignore_unused_variable_warning(data);
 	ExultStudio *studio = ExultStudio::get_instance();
-	int index = studio->get_spin("new_shape_font_color");
+	const int index = studio->get_spin("new_shape_font_color");
 	auto *chooser = static_cast<Shape_chooser *>(
 	               g_object_get_data(G_OBJECT(widget), "user_data"));
-	guint32 color = chooser->get_color(index);
+	const guint32 color = chooser->get_color(index);
 	GdkRectangle area = { 0, 0, 0, 0 };
 	gdk_cairo_get_clip_rectangle(cairo, &area);
 	cairo_set_source_rgb(cairo,
@@ -1533,7 +1548,7 @@ void Shape_chooser::new_shape(
 	gtk_window_set_modal(GTK_WINDOW(win), true);
 	g_object_set_data(G_OBJECT(win), "user_data", this);
 	// Get current selection.
-	int shnum = selected >= 0 ? info[selected].shapenum : 0;
+	const int shnum = selected >= 0 ? info[selected].shapenum : 0;
 	GtkWidget *spin = studio->get_widget("new_shape_num");
 	GtkAdjustment *adj = gtk_spin_button_get_adjustment(
 	                         GTK_SPIN_BUTTON(spin));
@@ -1554,7 +1569,7 @@ void Shape_chooser::new_shape(
 	gtk_adjustment_set_value(adj, shstart);
 	spin = studio->get_widget("new_shape_nframes");
 	adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(spin));
-	bool flat = IS_FLAT(shnum) && file_info == studio->get_vgafile();
+	const bool flat = IS_FLAT(shnum) && file_info == studio->get_vgafile();
 	if (flat)
 		gtk_adjustment_set_upper(adj, 31);
 	else
@@ -1590,7 +1605,7 @@ void Shape_chooser::new_shape(
 void Shape_chooser::create_new_shape(
 ) {
 	ExultStudio *studio = ExultStudio::get_instance();
-	int shnum = studio->get_spin("new_shape_num");
+	const int shnum = studio->get_spin("new_shape_num");
 	int nframes = studio->get_spin("new_shape_nframes");
 	if (nframes <= 0)
 		nframes = 1;
@@ -1607,7 +1622,7 @@ void Shape_chooser::create_new_shape(
 		return;
 	}
 	// Create frames.
-	bool flat = IS_FLAT(shnum) && file_info == studio->get_vgafile();
+	const bool flat = IS_FLAT(shnum) && file_info == studio->get_vgafile();
 	bool use_font = false;
 #ifdef HAVE_FREETYPE2
 	// Want to create from a font?
@@ -1619,8 +1634,8 @@ void Shape_chooser::create_new_shape(
 			Alert("Can't load font into a 'flat' shape");
 			return;
 		}
-		int ht = studio->get_spin("new_shape_font_height");
-		int fg = studio->get_spin("new_shape_font_color");
+		const int ht = studio->get_spin("new_shape_font_height");
+		const int fg = studio->get_spin("new_shape_font_color");
 		if (!Gen_font_shape(shape, fontname, nframes,
 		                    // Use transparent color for bgnd.
 		                    ht, fg, 255))
@@ -1628,10 +1643,10 @@ void Shape_chooser::create_new_shape(
 	}
 #endif
 	if (!use_font) {
-		int w = c_tilesize;
-		int h = c_tilesize;
-		int xleft = flat ? c_tilesize : w - 1;
-		int yabove = flat ? c_tilesize : h - 1;
+		const int w = c_tilesize;
+		const int h = c_tilesize;
+		const int xleft = flat ? c_tilesize : w - 1;
+		const int yabove = flat ? c_tilesize : h - 1;
 		Image_buffer8 img(w, h);
 		img.fill8(1);       // Just use color #1.
 		img.fill8(2, w - 2, h - 2, 1, 1);
@@ -1659,8 +1674,8 @@ void Shape_chooser::del_frame(
 ) {
 	if (selected < 0)
 		return;
-	int shnum = info[selected].shapenum;
-	int frnum = info[selected].framenum;
+	const int shnum = info[selected].shapenum;
+	const int frnum = info[selected].framenum;
 	Vga_file *ifile = file_info->get_ifile();
 	// Read entire shape.
 	Shape *shape = ifile->extract_shape(shnum);
@@ -1704,8 +1719,8 @@ void Shape_chooser::drag_data_get(
 	int file = chooser->ifile->get_u7drag_type();
 	if (file == U7_SHAPE_UNK)
 		file = U7_SHAPE_SHAPES; // Just assume it's shapes.vga.
-	Shape_entry &shinfo = chooser->info[chooser->selected];
-	int len = Store_u7_shapeid(buf, file, shinfo.shapenum,
+	const Shape_entry &shinfo = chooser->info[chooser->selected];
+	const int len = Store_u7_shapeid(buf, file, shinfo.shapenum,
 	                           shinfo.framenum);
 	cout << "Setting selection data (" << shinfo.shapenum <<
 	     '/' << shinfo.framenum << ')' << endl;
@@ -1730,7 +1745,7 @@ gint Shape_chooser::drag_begin(
 	if (chooser->selected < 0)
 		return FALSE;       // ++++Display a halt bitmap.
 	// Get ->shape.
-	Shape_entry &shinfo = chooser->info[chooser->selected];
+	const Shape_entry &shinfo = chooser->info[chooser->selected];
 	Shape_frame *shape = chooser->ifile->get_shape(shinfo.shapenum,
 	                     shinfo.framenum);
 	if (!shape)
@@ -1761,11 +1776,19 @@ void Shape_chooser::scroll_vertical(
     int newoffset
 ) {
 	int delta = newoffset - voffset;
-	while (delta > 0 && row0 < rows.size() - 1) {
+	while (delta > 0 && row0 < rows.size()) {
 		// Going down.
-		int rowh = rows[row0].height - row0_voffset;
+		const int rowh = rows[row0].height - row0_voffset;
 		if (delta < rowh) {
 			// Part of current row.
+			voffset += delta;
+			row0_voffset += delta;
+			delta = 0;
+		} else if (row0 == rows.size() - 1) {
+			// Scroll in bottomest row
+			if (delta > rowh) {
+				delta = rowh;
+			}
 			voffset += delta;
 			row0_voffset += delta;
 			delta = 0;
@@ -1815,9 +1838,9 @@ void Shape_chooser::setup_vscrollbar(
 	gtk_adjustment_set_value(adj, 0);
 	gtk_adjustment_set_lower(adj, 0);
 	gtk_adjustment_set_upper(adj, total_height);
-	gtk_adjustment_set_step_increment(adj, 16);   // +++++FOR NOW.
-	gtk_adjustment_set_page_increment(adj, config_height);
-	gtk_adjustment_set_page_size(adj, config_height);
+	gtk_adjustment_set_step_increment(adj, ZoomDown(16));   // +++++FOR NOW.
+	gtk_adjustment_set_page_increment(adj, ZoomDown(config_height));
+	gtk_adjustment_set_page_size(adj, ZoomDown(config_height));
 	g_signal_emit_by_name(G_OBJECT(adj), "changed");
 }
 
@@ -1834,10 +1857,12 @@ void Shape_chooser::setup_hscrollbar(
 		gtk_adjustment_set_upper(adj, newmax);
 	GtkAllocation alloc = {0, 0, 0, 0};
 	gtk_widget_get_allocation(draw, &alloc);
-	gtk_adjustment_set_page_increment(adj, alloc.width);
-	gtk_adjustment_set_page_size(adj, alloc.width);
+	gtk_adjustment_set_step_increment(adj, ZoomDown(16));   // +++++FOR NOW.
+	gtk_adjustment_set_page_increment(adj, ZoomDown(alloc.width));
+	gtk_adjustment_set_page_size(adj, ZoomDown(alloc.width));
 	if (gtk_adjustment_get_page_size(adj) > gtk_adjustment_get_upper(adj))
 		gtk_adjustment_set_upper(adj, gtk_adjustment_get_page_size(adj));
+	gtk_adjustment_set_value(adj, 0);
 	g_signal_emit_by_name(G_OBJECT(adj), "changed");
 }
 
@@ -1850,8 +1875,16 @@ void Shape_chooser::vscrolled(      // For vertical scrollbar.
     gpointer data           // ->Shape_chooser.
 ) {
 	auto *chooser = static_cast<Shape_chooser *>(data);
-	cout << "Scrolled to " << gtk_adjustment_get_value(adj) << '\n';
-	gint newindex = static_cast<gint>(gtk_adjustment_get_value(adj));
+#ifdef DEBUG
+	cout << "Shapes : VScrolled to " << gtk_adjustment_get_value(adj)
+	     << " of [ " << gtk_adjustment_get_lower(adj)
+	     << ", " << gtk_adjustment_get_upper(adj)
+	     << " ] by " << gtk_adjustment_get_step_increment(adj)
+	     << " ( " << gtk_adjustment_get_page_increment(adj)
+	     << ", " << gtk_adjustment_get_page_size(adj)
+	     << " )" << endl;
+#endif
+	const gint newindex = static_cast<gint>(gtk_adjustment_get_value(adj));
 	chooser->scroll_vertical(newindex);
 }
 void Shape_chooser::hscrolled(      // For horizontal scrollbar.
@@ -1859,6 +1892,15 @@ void Shape_chooser::hscrolled(      // For horizontal scrollbar.
     gpointer data           // ->Shape_chooser.
 ) {
 	auto *chooser = static_cast<Shape_chooser *>(data);
+#ifdef DEBUG
+	cout << "Shapes : HScrolled to " << gtk_adjustment_get_value(adj)
+	     << " of [ " << gtk_adjustment_get_lower(adj)
+	     << ", " << gtk_adjustment_get_upper(adj)
+	     << " ] by " << gtk_adjustment_get_step_increment(adj)
+	     << " ( " << gtk_adjustment_get_page_increment(adj)
+	     << ", " << gtk_adjustment_get_page_size(adj)
+	     << " )" << endl;
+#endif
 	chooser->hoffset = static_cast<gint>(gtk_adjustment_get_value(adj));
 	chooser->render();
 }
@@ -1872,10 +1914,10 @@ void Shape_chooser::frame_changed(
     gpointer data           // ->Shape_chooser.
 ) {
 	auto *chooser = static_cast<Shape_chooser *>(data);
-	gint newframe = static_cast<gint>(gtk_adjustment_get_value(adj));
+	const gint newframe = static_cast<gint>(gtk_adjustment_get_value(adj));
 	if (chooser->selected >= 0) {
 		Shape_entry &shinfo = chooser->info[chooser->selected];
-		int nframes = chooser->ifile->get_num_frames(shinfo.shapenum);
+		const int nframes = chooser->ifile->get_num_frames(shinfo.shapenum);
 		if (newframe >= nframes)    // Just checking
 			return;
 		shinfo.framenum = newframe;
@@ -1895,7 +1937,7 @@ void Shape_chooser::all_frames_toggled(
     gpointer data
 ) {
 	auto *chooser = static_cast<Shape_chooser *>(data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	chooser->frames_mode = on;
 	if (on)             // Frame => show horiz. scrollbar.
 		gtk_widget_show(chooser->hscroll);
@@ -1904,7 +1946,7 @@ void Shape_chooser::all_frames_toggled(
 	// The old index is no longer valid, so we need to remember the shape.
 	int indx = chooser->selected >= 0 ? chooser->selected
 	           : static_cast<int>(chooser->rows[chooser->row0].index0);
-	int shnum = chooser->info[indx].shapenum;
+	const int shnum = chooser->info[indx].shapenum;
 	chooser->selected = -1;
 	chooser->setup_info();
 	indx = chooser->find_shape(shnum);
@@ -1945,9 +1987,9 @@ void Shape_chooser::on_shapes_popup_edtiles_activate(
 	gtk_window_set_modal(GTK_WINDOW(win), true);
 	g_object_set_data(G_OBJECT(win), "user_data", ch);
 	// Get current selection.
-	int shnum = ch->info[ch->selected].shapenum;
+	const int shnum = ch->info[ch->selected].shapenum;
 	Vga_file *ifile = ch->file_info->get_ifile();
-	int nframes = ifile->get_num_frames(shnum);
+	const int nframes = ifile->get_num_frames(shnum);
 	GtkWidget *spin = studio->get_widget("export_tiles_count");
 	GtkAdjustment *adj = gtk_spin_button_get_adjustment(
 	                         GTK_SPIN_BUTTON(spin));
@@ -2054,8 +2096,8 @@ on_export_tiles_okay_clicked(GtkButton       *button,
 	auto *chooser = static_cast<Shape_chooser *>(
 	                    g_object_get_data(G_OBJECT(win), "user_data"));
 	ExultStudio *studio = ExultStudio::get_instance();
-	int tiles = studio->get_spin("export_tiles_count");
-	bool bycol = studio->get_toggle("tiled_by_columns");
+	const int tiles = studio->get_spin("export_tiles_count");
+	const bool bycol = studio->get_toggle("tiled_by_columns");
 	chooser->edit_shape(tiles, bycol);
 	gtk_widget_hide(win);
 }
@@ -2102,7 +2144,7 @@ void Shape_chooser::search(
 ) {
 	if (!shapes_file)       // Not 'shapes.vga'.
 		return;         // In future, maybe find shape #?
-	int total = get_count();
+	const int total = get_count();
 	if (!total)
 		return;         // Empty.
 	// Read info if not read.
@@ -2113,10 +2155,10 @@ void Shape_chooser::search(
 	int start = selected >= 0 ? selected : static_cast<int>(rows[row0].index0);
 	int i;
 	start += dir;
-	int stop = dir == -1 ? -1 : static_cast<int>(info.size());
-	codepageStr srch(search);
+	const int stop = dir == -1 ? -1 : static_cast<int>(info.size());
+	const codepageStr srch(search);
 	for (i = start; i != stop; i += dir) {
-		int shnum = info[i].shapenum;
+		const int shnum = info[i].shapenum;
 		const char *nm = studio->get_shape_name(shnum);
 		if (nm && search_name(nm, srch))
 			break;      // Found it.
@@ -2125,8 +2167,8 @@ void Shape_chooser::search(
 			bool found = false;
 			const std::vector<Frame_name_info> &nminf = info.get_frame_name_info();
 			for (const auto &it : nminf) {
-				int type = it.get_type();
-				int msgid = it.get_msgid();
+				const int type = it.get_type();
+				const int msgid = it.get_msgid();
 				if (type == -255 || type == -1 || msgid >= get_num_misc_names()
 				        || !get_misc_name(msgid))
 					continue;   // Keep looking.
@@ -2157,8 +2199,8 @@ void Shape_chooser::locate(
 		return;         // Shouldn't happen.
 	unsigned char data[Exult_server::maxlength];
 	unsigned char *ptr = &data[0];
-	int qual = ExultStudio::get_num_entry(get_loc_q(), -1);
-	int frnum = ExultStudio::get_num_entry(get_loc_f(), -1);
+	const int qual = ExultStudio::get_num_entry(get_loc_q(), -1);
+	const int frnum = ExultStudio::get_num_entry(get_loc_f(), -1);
 	Write2(ptr, info[selected].shapenum);
 	Write2(ptr, frnum < 0 ? c_any_framenum : frnum);
 	Write2(ptr, qual < 0 ? c_any_qual : qual);
@@ -2244,7 +2286,8 @@ Shape_chooser::Shape_chooser(
 	shapes_file(nullptr), framenum0(0),
 	info(0), rows(0), row0(0),
 	row0_voffset(0), total_height(0),
-	frames_mode(false), hoffset(0), voffset(0), status_id(-1), sel_changed(nullptr) {
+	frames_mode(false), hoffset(0), voffset(0),
+	status_id(-1), sel_changed(nullptr) {
 	rows.reserve(40);
 
 	// Put things in a vert. box.
@@ -2314,6 +2357,8 @@ Shape_chooser::Shape_chooser(
 	g_signal_connect(G_OBJECT(shape_adj), "value-changed",
 	                 G_CALLBACK(hscrolled), this);
 //++++  gtk_widget_hide(hscroll);   // Only shown in 'frames' mode.
+	// Scroll events.
+	enable_draw_vscroll(draw);
 
 	// At the bottom, status bar & frame:
 	GtkWidget *hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
@@ -2341,6 +2386,7 @@ Shape_chooser::Shape_chooser(
 	                 G_CALLBACK(frame_changed), this);
 	gtk_box_pack_start(GTK_BOX(hbox1), fspin, FALSE, FALSE, 0);
 	widget_set_margins(fspin, 1*HMARGIN, 2*HMARGIN, 2*VMARGIN, 2*VMARGIN);
+	gtk_widget_set_sensitive(fspin, false);
 	gtk_widget_show(fspin);
 	// A toggle for 'All Frames'.
 	GtkWidget *allframes = gtk_toggle_button_new_with_label("Frames");
@@ -2396,30 +2442,30 @@ void Shape_chooser::update_statusbar(
 	if (status_id >= 0)     // Remove prev. selection msg.
 		gtk_statusbar_remove(GTK_STATUSBAR(sbar), sbar_sel, status_id);
 	if (selected >= 0) {
-		int shapenum = info[selected].shapenum;
-		int nframes = ifile->get_num_frames(shapenum);
-		g_snprintf(buf, sizeof(buf), "Shape %d (0x%03x, %d frames)",
+		const int shapenum = info[selected].shapenum;
+		const int nframes = ifile->get_num_frames(shapenum);
+		g_snprintf(buf, array_size(buf), "Shape %d (0x%03x, %d frames)",
 		           shapenum, shapenum, nframes);
 		ExultStudio *studio = ExultStudio::get_instance();
 		if (shapes_file) {
 			const char *nm;
 			if ((nm = studio->get_shape_name(shapenum))) {
-				int len = strlen(buf);
+				const int len = strlen(buf);
 				g_snprintf(buf + len, sizeof(buf) - len,
 				           ":  '%s'", nm);
 			}
 			if (shapes_file->read_info(studio->get_game_type(), true))
 				studio->set_shapeinfo_modified();
-			int frnum = info[selected].framenum;
+			const int frnum = info[selected].framenum;
 			const Shape_info &inf = shapes_file->get_info(shapenum);
 			const Frame_name_info *nminf;
 			if (inf.has_frame_name_info() &&
 			        (nminf = inf.get_frame_name(frnum, -1)) != nullptr) {
-				int type = nminf->get_type();
-				int msgid = nminf->get_msgid();
+				const int type = nminf->get_type();
+				const int msgid = nminf->get_msgid();
 				if (type >= 0 && msgid < get_num_misc_names()) {
 					const char *msgstr = get_misc_name(msgid);
-					int len = strlen(buf);
+					const int len = strlen(buf);
 					// For safety.
 					if (!nm) nm = "";
 					if (!msgstr) msgstr = "";
@@ -2428,7 +2474,7 @@ void Shape_chooser::update_statusbar(
 						if (type > 2)
 							otmsgstr = "<NPC Name>";
 						else {
-							int otmsg = nminf->get_othermsg();
+							const int otmsg = nminf->get_othermsg();
 							otmsgstr = otmsg == -255 ? nm :
 							           (otmsg == -1 || otmsg >= get_num_misc_names() ? "" :
 							            get_misc_name(otmsg));
@@ -2454,7 +2500,7 @@ void Shape_chooser::update_statusbar(
 		status_id = gtk_statusbar_push(GTK_STATUSBAR(sbar),
 		                               sbar_sel, buf);
 	} else if (!info.empty() && !group) {
-		int first_shape = info[rows[row0].index0].shapenum;
+		const int first_shape = info[rows[row0].index0].shapenum;
 		g_snprintf(buf, sizeof(buf), "Shapes %d to %d (0x%03x to 0x%03x)",
 		           first_shape, last_shape, first_shape, last_shape);
 		status_id = gtk_statusbar_push(GTK_STATUSBAR(sbar),

@@ -215,9 +215,9 @@ int Export_png8(
 	if (transp_index == 0)
 		dotransp_to_0 = false;  // Don't need to rotate if already 0.
 	png_color pngpal[256];      // Set palette.
-	int rot = dotransp_to_0 ? (pal_size - transp_index) : 0;
+	const int rot = dotransp_to_0 ? (pal_size - transp_index) : 0;
 	for (int i = 0; i < pal_size; i++) {
-		int desti = (i + rot) % pal_size;
+		const int desti = (i + rot) % pal_size;
 		pngpal[desti].red = palette[3 * i];
 		pngpal[desti].green = palette[3 * i + 1];
 		pngpal[desti].blue = palette[3 * i + 2];
@@ -225,7 +225,7 @@ int Export_png8(
 	png_set_PLTE(png, info, &pngpal[0], pal_size);
 	png_set_oFFs(png, info, xoff, yoff, PNG_OFFSET_PIXEL);
 	if (transp_index >= 0 && transp_index < 256) {
-		int tindex = dotransp_to_0 ? 0 : transp_index;
+		const int tindex = dotransp_to_0 ? 0 : transp_index;
 		png_byte trans[256];    // Only desired index is transparent.
 		memset(&trans[0], 255, sizeof(trans));
 		trans[static_cast<png_byte>(tindex)] = 0;

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif    // __GNUC__
-#include <SDL_events.h>
+#include <SDL.h>
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
@@ -184,8 +184,8 @@ Countdown_gump::Countdown_gump(const std::string &txt, int timeout, const char *
 }
 
 bool Countdown_gump::run() {
-	int elapsed = SDL_GetTicks() - start_time;
-	int remaining = timer * 1000 - elapsed;
+	const int elapsed = SDL_GetTicks() - start_time;
+	const int remaining = timer * 1000 - elapsed;
 
 	if (remaining <= 0)  set_answer(0);
 

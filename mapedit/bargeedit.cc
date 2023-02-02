@@ -184,14 +184,14 @@ int ExultStudio::save_barge_window(
 	// Get barge (null if creating new).
 	auto *addr = static_cast<Barge_object *>(
 	                 g_object_get_data(G_OBJECT(bargewin), "user_data"));
-	int tx = -1;
-	int ty = -1;
-	int tz = -1;  // +++++For now.
-	int shape = -1;
-	int frame = -1; // For now.
-	int dir = get_optmenu("barge_dir");
-	int xtiles = get_spin("barge_xtiles");
-	int ytiles = get_spin("barge_ytiles");
+	const int tx = -1;
+	const int ty = -1;
+	const int tz = -1;  // +++++For now.
+	const int shape = -1;
+	const int frame = -1; // For now.
+	const int dir = get_optmenu("barge_dir");
+	const int xtiles = get_spin("barge_xtiles");
+	const int ytiles = get_spin("barge_ytiles");
 	if (Barge_object_out(server_socket, addr, tx, ty, tz,
 	                     shape, frame, xtiles, ytiles, dir) == -1) {
 		cout << "Error sending barge data to server" << endl;

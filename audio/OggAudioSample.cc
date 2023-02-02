@@ -65,7 +65,7 @@ size_t OggAudioSample::read_func  (void *ptr, size_t size, size_t nmemb, void *d
 {
 	auto *ids = static_cast<IDataSource*>(datasource);
 	//if (ids->eof()) return 0;
-	size_t limit = ids->getAvail();
+	const size_t limit = ids->getAvail();
 	if (limit == 0) return 0;
 	else if (limit < size*nmemb) nmemb = limit/size;
 	ids->read(ptr,size*nmemb);
@@ -98,7 +98,7 @@ bool OggAudioSample::isThis(IDataSource *oggdata)
 {
 	OggVorbis_File vf;
 	oggdata->seek(0);
-	int res = ov_test_callbacks(oggdata,&vf,nullptr,0,callbacks);
+	const int res = ov_test_callbacks(oggdata,&vf,nullptr,0,callbacks);
 	ov_clear(&vf);
 
 	return res == 0;
@@ -166,7 +166,7 @@ uint32 OggAudioSample::decompressFrame(void *DecompData, void *samples) const
 	const int bigendianp = 1;
 #endif
 
-	long count = ov_read(&decomp->ov,static_cast<char*>(samples),frame_size,bigendianp,2,1,&decomp->bitstream);
+	const long count = ov_read(&decomp->ov,static_cast<char*>(samples),frame_size,bigendianp,2,1,&decomp->bitstream);
 
 	//if (count == OV_EINVAL || count == 0) {
 	if (count <= 0) return 0;

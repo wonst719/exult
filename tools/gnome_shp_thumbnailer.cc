@@ -193,7 +193,7 @@ struct Render_tiles {
 	    int xo, int yo
 	) {
 		ignore_unused_variable_warning(h);
-		int dim0_cnt = w / 8;
+		const int dim0_cnt = w / 8;
 		int f = -1;
 		for (auto& frame : shape) {
 			f++;
@@ -204,8 +204,8 @@ struct Render_tiles {
 				cerr << "Can only tile 8x8 flat shapes, but shape doesn't qualify" << endl;
 				exit(4);
 			}
-			int x = f % dim0_cnt;
-			int y = f / dim0_cnt;
+			const int x = f % dim0_cnt;
+			const int y = f / dim0_cnt;
 			frame->paint(&img, xo + x * 8 + frame->get_xleft(),
 			             yo + y * 8 + frame->get_yabove());
 		}
@@ -257,7 +257,7 @@ int main(int argc, char *argv[]) {
 		cerr << "Usage: gnome-shp-thumbnailer -s size inputfile outputfile" << endl;
 		return 1;
 	}
-	int  size = atoi(argv[2]);
+	const int  size = atoi(argv[2]);
 	if (size < 0 || size > 2048) {
 		cerr << "Invalid thumbnail size: " << size << "!" << endl;
 		return 2;
@@ -279,11 +279,11 @@ int main(int argc, char *argv[]) {
 				break;
 			}
 		} else {
-			unsigned nframes = shape.get_num_frames();
+			const unsigned nframes = shape.get_num_frames();
 			unsigned dim0 = intSqrt(nframes);
 			if (dim0 * dim0 < nframes)
 				dim0 += 1;
-			unsigned dim1 = (nframes + dim0 - 1) / dim0;
+			const unsigned dim1 = (nframes + dim0 - 1) / dim0;
 			Write_thumbnail<Shape, Render_tiles>(outputfile, shape, shppal,
 				                                 dim0 * 8, dim1 * 8, size);
 		}

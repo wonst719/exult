@@ -104,7 +104,7 @@ int main(
 	Uc_function::set_intrinsic_type(ty);
 	yyparse();
 	if (yyin != stdin) fclose(yyin);
-	int errs = Uc_location::get_num_errors();
+	const int errs = Uc_location::get_num_errors();
 	if (errs > 0)           // Check for errors.
 		return errs;
 	// Open output.

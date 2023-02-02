@@ -93,7 +93,7 @@ bool Monster_info::read(
 	m_can_be_invisible = (*ptr & 4) != 0;
 	ptr++;
 	ptr++;      // Byte 16: Unknown (0).
-	int sfx_delta = game == BLACK_GATE ? -1 : 0;
+	const int sfx_delta = game == BLACK_GATE ? -1 : 0;
 	sfx = *reinterpret_cast<signed char *>(ptr++) + sfx_delta;  // Byte 17.
 	return true;
 }

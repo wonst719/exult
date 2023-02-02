@@ -62,7 +62,7 @@ public:
 	Shape_info &get_info(int shapenum) {
 		auto it = info.find(shapenum);
 		if (it != info.end())
-			return (*it).second;
+			return it->second;
 		return zinfo;
 	}
 	bool has_info(int shapenum) {

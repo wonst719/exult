@@ -195,7 +195,7 @@ void Flex_writer::flush(
 void Flex_writer::finish_object(
 ) {
 	// Location past end of section.
-	size_t pos = dout.getPos();
+	const size_t pos = dout.getPos();
 	Write4(tptr, static_cast<uint32>(cur_start - start_pos));   // Store start of section.
 	Write4(tptr, static_cast<uint32>(pos - cur_start)); // Store length.
 	cur_start = pos;

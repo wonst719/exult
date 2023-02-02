@@ -120,7 +120,7 @@ bool Weapon_info::read(
 	//   shape if shoot/throw.
 	projectile = Read2(ptr);    // What a projectile fired will look like.
 	damage = *ptr++;
-	unsigned char flags0 = *ptr++;
+	const unsigned char flags0 = *ptr++;
 	m_lucky = flags0 & 1;
 	m_explodes = (flags0 >> 1) & 1;
 	m_no_blocking = (flags0 >> 2) & 1;
@@ -130,14 +130,14 @@ bool Weapon_info::read(
 	m_autohit = range & 1;
 	uses = (range >> 1) & 3;    // Throwable, etc.:
 	range = range >> 3;
-	unsigned char flags1 = *ptr++;
+	const unsigned char flags1 = *ptr++;
 	m_returns = (flags1 & 1);
 	m_need_target = (flags1 >> 1) & 1;
 	missile_speed = (flags1 >> 2) & 3;
 	rotation_speed = (flags1 >> 4) & 15;
-	unsigned char flags2 = *ptr++;
+	const unsigned char flags2 = *ptr++;
 	actor_frames = (flags2 & 15);
-	int speed = (flags2 >> 5) & 7;
+	const int speed = (flags2 >> 5) & 7;
 	if (missile_speed)
 		missile_speed = 4;
 	else
@@ -146,7 +146,7 @@ bool Weapon_info::read(
 	ptr++;              // Skip (0).
 	usecode = Read2(ptr);
 	// BG:  Subtract 1 from each sfx.
-	int sfx_delta = game == BLACK_GATE ? -1 : 0;
+	const int sfx_delta = game == BLACK_GATE ? -1 : 0;
 	sfx = Read2(ptr) + sfx_delta;
 	hitsfx = Read2(ptr) + sfx_delta;
 	/*  Don't (seems to be unused).

@@ -93,13 +93,13 @@ public:
 	int operator()(std::istream &in, int index, int version, bool binary) {
 		ignore_unused_variable_warning(index, version, binary);
 		if (in.peek() == '%') {
-			std::string key = ReadStr(in);
+			const std::string key = ReadStr(in);
 			// We need these for Exult, but not for ES.
 			// For now, a compromise/hack in that ES defines
 			// a version of this function which always returns
 			// -1, while Exult has another which forwards to
 			// Shapeinfo_lookup::get_skinvar
-			int id = get_skinvar(key);
+			const int id = get_skinvar(key);
 			return id < 0 ? -1 : id;
 		} else
 			return ReadInt(in);
@@ -139,7 +139,7 @@ public:
 		unsigned char ready = info.ready_type;
 		info.spell_flag = ready & 1;
 		ready >>= 3;
-		unsigned char spot = game == BLACK_GATE ? Ready_spot_from_BG(ready)
+		const unsigned char spot = game == BLACK_GATE ? Ready_spot_from_BG(ready)
 		            : Ready_spot_from_SI(ready);
 		info.ready_type = spot;
 		// Init alternate spots.
@@ -311,10 +311,10 @@ void Shapes_vga_file::Read_Shapeinf_text_data_file(
 		Vector_reader_functor < Frame_usecode_info, Shape_info,
 		&Shape_info::frucinf > > (info),
 	};
-	int numsections = array_size(sections);
-	int numreaders = array_size(readers);
+	const int numsections = array_size(sections);
+	const int numreaders = array_size(readers);
 	assert(numsections == numreaders);
-	int flxres = game_type == BLACK_GATE ?
+	const int flxres = game_type == BLACK_GATE ?
 	             EXULT_BG_FLX_SHAPE_INFO_TXT : EXULT_SI_FLX_SHAPE_INFO_TXT;
 
 	Read_text_data_file("shape_info", readers, sections,
@@ -336,10 +336,10 @@ void Shapes_vga_file::Read_Bodies_text_data_file(
 		Class_reader_functor < Body_info, Shape_info,
 		&Shape_info::body > > (info)
 	};
-	int numsections = array_size(sections);
-	int numreaders = array_size(readers);
+	const int numsections = array_size(sections);
+	const int numreaders = array_size(readers);
 	assert(numsections == numreaders);
-	int flxres = game_type == BLACK_GATE ?
+	const int flxres = game_type == BLACK_GATE ?
 	             EXULT_BG_FLX_BODIES_TXT : EXULT_SI_FLX_BODIES_TXT;
 
 	Read_text_data_file("bodies", readers, sections,
@@ -361,10 +361,10 @@ void Shapes_vga_file::Read_Paperdoll_text_data_file(
 		Vector_reader_functor < Paperdoll_item, Shape_info,
 		&Shape_info::objpaperdoll > > (info),
 	};
-	int numsections = array_size(sections);
-	int numreaders = array_size(readers);
+	const int numsections = array_size(sections);
+	const int numreaders = array_size(readers);
 	assert(numsections == numreaders);
-	int flxres = game_type == BLACK_GATE ?
+	const int flxres = game_type == BLACK_GATE ?
 	             EXULT_BG_FLX_PAPERDOL_INFO_TXT : EXULT_SI_FLX_PAPERDOL_INFO_TXT;
 
 	Read_text_data_file("paperdol_info", readers, sections,
@@ -419,7 +419,7 @@ bool Shapes_vga_file::read_info(
 	if (info_read)
 		return false;
 	info_read = true;
-	bool have_patch_path = is_system_path_defined("<PATCH>");
+	const bool have_patch_path = is_system_path_defined("<PATCH>");
 
 	// ShapeDims
 
@@ -484,7 +484,7 @@ bool Shapes_vga_file::read_info(
 	auto pWihh = U7open2(patch_name(PATCH_WIHH), WIHH, editing);
 	if (pWihh) {
 		auto& wihh = *pWihh;
-		size_t cnt = shapes.size();
+		const size_t cnt = shapes.size();
 		unsigned short offsets[c_max_shapes];
 		for (size_t i = 0; i < cnt; i++)
 			offsets[i] = Read2(wihh);
@@ -520,7 +520,7 @@ bool Shapes_vga_file::read_info(
 		occ.read(reinterpret_cast<char *>(occbits), sizeof(occbits));
 		for (int i = 0; i < occ.gcount(); i++) {
 			unsigned char bits = occbits[i];
-			int shnum = i * 8;  // Check each bit.
+			const int shnum = i * 8;  // Check each bit.
 			for (int b = 0; bits; b++, bits = bits >> 1)
 				if (bits & 1)
 					info[shnum + b].occludes_flag = true;
@@ -532,15 +532,15 @@ bool Shapes_vga_file::read_info(
 	if (pMfile) {
 		auto& mfile = *pMfile;
 		// Get # entries (with Exult extension).
-		int num_recs = Read_count(mfile);
+		const int num_recs = Read_count(mfile);
 		Monster_info::reserve_equip(num_recs);
 		for (int i = 0; i < num_recs; i++) {
 			Equip_record equip;
 			// 10 elements/record.
 			for (int elem = 0; elem < 10; elem++) {
-				int shnum = Read2(mfile);
-				unsigned prob = Read1(mfile);
-				unsigned quant = Read1(mfile);
+				const int shnum = Read2(mfile);
+				const unsigned prob = Read1(mfile);
+				const unsigned quant = Read1(mfile);
 				Read2(mfile);
 				equip.set(elem, shnum, prob, quant);
 			}
@@ -593,7 +593,7 @@ bool Shapes_vga_file::read_info(
 	Read_Paperdoll_text_data_file(editing, game);
 
 	// Ensure valid ready spots for all shapes.
-	unsigned char defready = game == BLACK_GATE ? backpack : rhand;
+	const unsigned char defready = game == BLACK_GATE ? backpack : rhand;
 	zinfo.ready_type = defready;
 	for (auto& it : info) {
 		Shape_info &inf = it.second;
@@ -602,7 +602,7 @@ bool Shapes_vga_file::read_info(
 	}
 	bool auto_modified = false;
 	for (auto &it : info) {
-		int shnum = it.first;
+		const int shnum = it.first;
 		Shape_info &inf = it.second;
 		if (inf.has_monster_info()) {
 			Monster_info *minf = inf.monstinf;

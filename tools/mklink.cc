@@ -49,7 +49,7 @@ uint16 usecode_functions::get_total_size(vector<uint16>& call_tree) const {
 	uint16 size = 0;
 
 	// Add size of each function
-	for (unsigned short funcid : call_tree) {
+	for (const unsigned short funcid : call_tree) {
 		size += functions[funcid].size;
 	}
 	return size;
@@ -133,7 +133,7 @@ int main() {
 		usecode_func& u_ptr = functions.get(func_num);
 		u_ptr.where = func_pos;				// Remember start of function
 		u_ptr.size = Read2(usecode);		// Read the function size
-		uint16 data_size = Read2(usecode);	// Read the data size
+		const uint16 data_size = Read2(usecode);	// Read the data size
 		// Skip the data section, number of args and local vars
 		usecode.ignore(data_size + 4);
 		u_ptr.num_call = Read2(usecode);	// Read number of called functions
@@ -160,7 +160,7 @@ int main() {
 	uint16 lnk2_written = 0;
 	// Write data about each function
 	for (size_t i = 0; i <= max_func; i++) {
-		usecode_func& u_ptr = functions.get(i);
+		const usecode_func& u_ptr = functions.get(i);
 		if (!u_ptr.size) {
 			// Write null entry for null function
 			Write2(linkdep1, lnk2_written);
@@ -172,12 +172,12 @@ int main() {
 		vector<uint16> func_tree = functions.get_tree(i);
 		functions.fix_tree(func_tree);
 		// Get total size of function + all called functions
-		uint16 total_size = functions.get_total_size(func_tree);
+		const uint16 total_size = functions.get_total_size(func_tree);
 		// Write to linkdep1
 		Write2(linkdep1, lnk2_written);
 		Write2(linkdep1, total_size);
 		// Write each pointer
-		for (unsigned short j : func_tree) {
+		for (const unsigned short j : func_tree) {
 			Write4(linkdep2, functions.get(j).where);
 			lnk2_written++;
 		}

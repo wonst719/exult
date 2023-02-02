@@ -27,7 +27,7 @@
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif    // __GNUC__
-#include "SDL_events.h"
+#include <SDL.h>
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
@@ -43,7 +43,6 @@
 #include "Text_button.h"
 #include "Enabled_button.h"
 #include "font.h"
-#include "gamewin.h"
 #include "touchui.h"
 
 using std::string;
@@ -81,7 +80,7 @@ void InputOptions_gump::help() {
 
 void InputOptions_gump::build_buttons() {
 	const std::vector<std::string> yesNo = {"No", "Yes"};
-	
+
 	int y_index = 0;
 
 	std::vector<string> dpad_text = {"None"};
@@ -164,7 +163,7 @@ void InputOptions_gump::save_settings() {
 
 	gwin->set_allow_right_pathfind(right_pathfind);
 	config->set("config/gameplay/allow_right_pathfind", pathfind_texts[right_pathfind], false);
-	
+
 	config->set("config/gameplay/scroll_with_mouse",
 	            scroll_mouse ? "yes" : "no", false);
 	gwin->set_mouse_with_scroll(scroll_mouse);

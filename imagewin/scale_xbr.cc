@@ -28,8 +28,6 @@
 
 #ifdef USE_XBR_SCALER
 
-#include "SDL_video.h"
-
 #include "imagewin.h"
 #include <cstdlib>
 #include <cstring>
@@ -45,7 +43,7 @@
 void Image_window::show_scaled8to16_2xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to16 manip(paletted_surface->format->palette->colors,
+	const Manip8to16 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_xBR<uint16, Manip8to16, Scaler2xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -59,7 +57,7 @@ void Image_window::show_scaled8to16_2xBR(
 void Image_window::show_scaled8to555_2xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to555 manip(paletted_surface->format->palette->colors,
+	const Manip8to555 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_xBR<uint16, Manip8to555, Scaler2xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -73,7 +71,7 @@ void Image_window::show_scaled8to555_2xBR(
 void Image_window::show_scaled8to565_2xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to565 manip(paletted_surface->format->palette->colors,
+	const Manip8to565 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_xBR<uint16, Manip8to565, Scaler2xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -87,7 +85,7 @@ void Image_window::show_scaled8to565_2xBR(
 void Image_window::show_scaled8to32_2xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to32 manip(paletted_surface->format->palette->colors,
+	const Manip8to32 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_xBR<uint32, Manip8to32, Scaler2xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -104,7 +102,7 @@ void Image_window::show_scaled8to32_2xBR(
 void Image_window::show_scaled8to16_3xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to16 manip(paletted_surface->format->palette->colors,
+	const Manip8to16 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_xBR<uint16, Manip8to16, Scaler3xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -118,7 +116,7 @@ void Image_window::show_scaled8to16_3xBR(
 void Image_window::show_scaled8to555_3xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to555 manip(paletted_surface->format->palette->colors,
+	const Manip8to555 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_xBR<uint16, Manip8to555, Scaler3xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -132,7 +130,7 @@ void Image_window::show_scaled8to555_3xBR(
 void Image_window::show_scaled8to565_3xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to565 manip(paletted_surface->format->palette->colors,
+	const Manip8to565 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_xBR<uint16, Manip8to565, Scaler3xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -146,7 +144,7 @@ void Image_window::show_scaled8to565_3xBR(
 void Image_window::show_scaled8to32_3xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to32 manip(paletted_surface->format->palette->colors,
+	const Manip8to32 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_xBR<uint32, Manip8to32, Scaler3xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -163,7 +161,7 @@ void Image_window::show_scaled8to32_3xBR(
 void Image_window::show_scaled8to16_4xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to16 manip(paletted_surface->format->palette->colors,
+	const Manip8to16 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_xBR<uint16, Manip8to16, Scaler4xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -177,7 +175,7 @@ void Image_window::show_scaled8to16_4xBR(
 void Image_window::show_scaled8to555_4xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to555 manip(paletted_surface->format->palette->colors,
+	const Manip8to555 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_xBR<uint16, Manip8to555, Scaler4xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -191,7 +189,7 @@ void Image_window::show_scaled8to555_4xBR(
 void Image_window::show_scaled8to565_4xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to565 manip(paletted_surface->format->palette->colors,
+	const Manip8to565 manip(paletted_surface->format->palette->colors,
 	                  inter_surface->format);
 	Scale_xBR<uint16, Manip8to565, Scaler4xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,
@@ -205,7 +203,7 @@ void Image_window::show_scaled8to565_4xBR(
 void Image_window::show_scaled8to32_4xBR(
     int x, int y, int w, int h  // Area to show.
 ) {
-	Manip8to32 manip(paletted_surface->format->palette->colors,
+	const Manip8to32 manip(paletted_surface->format->palette->colors,
 	                 inter_surface->format);
 	Scale_xBR<uint32, Manip8to32, Scaler4xBR>
 	(static_cast<uint8 *>(draw_surface->pixels), x + guard_band, y + guard_band, w, h,

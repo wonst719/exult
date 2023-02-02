@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 The ScummVM project
  * Copyright (C) 2005 The Pentagram Team
  * Copyright (C) 2006-2022 The Exult Team
@@ -28,7 +28,7 @@
 
 //#include <cstring>
 
-const MidiDriver::MidiDriverDesc FluidSynthMidiDriver::desc = 
+const MidiDriver::MidiDriverDesc FluidSynthMidiDriver::desc =
 		MidiDriver::MidiDriverDesc ("FluidSynth", createInstance);
 
 // MidiDriver method implementations
@@ -56,11 +56,11 @@ int FluidSynthMidiDriver::open() {
 		return -1;
 	}
 
-	std::string sfsetting = "fluidsynth_soundfont";
+	const std::string sfsetting = "fluidsynth_soundfont";
 	std::vector<std::string> soundfonts;
 	std::string soundfont;
 	for (size_t i = 0; i < 10; i++) {
-		std::string settingkey = sfsetting + static_cast<char>(i + '0');
+		const std::string settingkey = sfsetting + static_cast<char>(i + '0');
 		soundfont = getConfigSetting(settingkey, "");
 		if (!soundfont.empty())
 			soundfonts.push_back(soundfont);
@@ -103,7 +103,7 @@ int FluidSynthMidiDriver::open() {
 	int numloaded = 0;
 	for (auto& soundfont : soundfonts)
 	{
-		int soundFont = fluid_synth_sfload(_synth, soundfont.c_str(), 1);
+		const int soundFont = fluid_synth_sfload(_synth, soundfont.c_str(), 1);
 		if (soundFont == -1) {
 			perr << "Failed loading custom sound font '" << soundfont << "'" << std::endl;
 		} else {
@@ -111,7 +111,7 @@ int FluidSynthMidiDriver::open() {
 			_soundFont.push(soundFont);
 			numloaded++;
 		}
-		
+
 	}
 	if (numloaded == 0) {
 		perr << "Failed to load any custom sound fonts; giving up." << std::endl;
@@ -136,8 +136,8 @@ void FluidSynthMidiDriver::close() {
 
 void FluidSynthMidiDriver::send(uint32 b) {
 	//uint8 param3 = static_cast<uint8>((b >> 24) & 0xFF);
-	uint32 param2 = static_cast<uint8>((b >> 16) & 0xFF);
-	uint32 param1 = static_cast<uint8>((b >>  8) & 0xFF);
+	const uint32 param2 = static_cast<uint8>((b >> 16) & 0xFF);
+	const uint32 param1 = static_cast<uint8>((b >>  8) & 0xFF);
 	auto cmd     = static_cast<uint8>(b & 0xF0);
 	auto chan    = static_cast<uint8>(b & 0x0F);
 

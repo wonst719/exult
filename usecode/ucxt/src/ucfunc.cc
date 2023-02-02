@@ -114,8 +114,8 @@ ostream &tab_indent(const unsigned int indent, ostream &o) {
 
 /* Outputs the short function data 'list' format, returns true upon success */
 bool UCFunc::output_list(ostream &o, unsigned int funcno, const UCOptions &options) {
-	boost::io::ios_flags_saver flags(o);
-	boost::io::ios_fill_saver fill(o);
+	const boost::io::ios_flags_saver flags(o);
+	const boost::io::ios_fill_saver fill(o);
 	o << "#" << std::setbase(10) << std::setw(4) << funcno << std::setbase(16) << ": "
 	  << (return_var ? '&' : ' ')
 	  << std::setw(4) << _funcid    << "H  "
@@ -138,7 +138,7 @@ bool UCFunc::output_ucs(ostream &o, const FuncMap &funcmap, const map<unsigned i
 
 	if (!_externs.empty()) tab_indent(indent, o) << "// externs" << endl;
 	// output the 'externs'
-	for (unsigned int ext : _externs) {
+	for (const unsigned int ext : _externs) {
 		auto fmp = funcmap.find(ext);
 		output_ucs_funcname(tab_indent(indent, o) << "extern ", funcmap, ext, fmp->second.num_args, symtbl) << ';' << endl;
 	}
@@ -389,7 +389,7 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 						cout << "NEW EFFECT: " << current->first->_params_parsed[0] << '\t';
 #endif
 
-						unsigned int offset = current->first->_params_parsed[0];
+						const unsigned int offset = current->first->_params_parsed[0];
 						Usecode_class_symbol *cls = symtbl->get_class(offset);
 						if (cls != nullptr) {
 							num_args = cls->get_num_vars();
@@ -418,10 +418,10 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 							cout << current->first->_params_parsed[1] << '\t';
 #endif
 
-							unsigned int offset = current->first->_params_parsed[1];
+							const unsigned int offset = current->first->_params_parsed[1];
 							Usecode_class_symbol *cls = symtbl->get_class(offset);
 							assert(cls);
-							int method = cls->get_method_id(current->first->_params_parsed[0]);
+							const int method = cls->get_method_id(current->first->_params_parsed[0]);
 							assert(method >= 0);
 							auto fmp = funcmap.find(method);
 							assert(fmp != funcmap.end());
@@ -439,7 +439,7 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 						cout << "CALL EFFECT: " << opcode_table_data[current->first->_id].num_pop << '\t';
 #endif
 
-						unsigned int offset = 0x100 - opcode_table_data[current->first->_id].num_pop;
+						const unsigned int offset = 0x100 - opcode_table_data[current->first->_id].num_pop;
 						num_args = current->first->_params_parsed[(offset & 0x1f) - 1] + (offset >> 5);
 
 #ifdef DEBUG_PARSE2a
@@ -524,9 +524,9 @@ vector<UCc *> UCFunc::parse_ucs_pass2a(vector<pair<UCc *, bool> >::reverse_itera
 						vucc.push_back(current->first);
 						current->second = true;
 					} else {
-						unsigned int offset = current->first->_params_parsed[1];
+						const unsigned int offset = current->first->_params_parsed[1];
 						Usecode_class_symbol *cls = symtbl->get_class(offset);
-						int method = cls->get_method_id(current->first->_params_parsed[0]);
+						const int method = cls->get_method_id(current->first->_params_parsed[0]);
 						auto fmp = funcmap.find(method);
 						assert(fmp != funcmap.end());
 						if (fmp->second.return_var) {
@@ -627,8 +627,8 @@ void ucc_parse_parambytes(UCc &ucop, const UCOpcodeData &otd) {
 
 		assert(first < ucop._params.size());
 
-		unsigned int ssize = param_size.first;
-		bool offset_munge = param_size.second;
+		const unsigned int ssize = param_size.first;
+		const bool offset_munge = param_size.second;
 
 		assert(ssize != 0);
 
@@ -638,7 +638,7 @@ void ucc_parse_parambytes(UCc &ucop, const UCOpcodeData &otd) {
 			if (offset_munge) {
 				auto calcvar = static_cast<unsigned int>(ucop._params[first++]);
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 8);
-				unsigned int reloffset = calc16reloffset(ucop, calcvar);
+				const unsigned int reloffset = calc16reloffset(ucop, calcvar);
 				ucop._params_parsed.push_back(reloffset);
 				ucop._jump_offsets.push_back(reloffset);
 			} else {
@@ -652,7 +652,7 @@ void ucc_parse_parambytes(UCc &ucop, const UCOpcodeData &otd) {
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 8);
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 16);
 				calcvar += ((static_cast<unsigned int>(ucop._params[first++])) << 24);
-				unsigned int reloffset = calc32reloffset(ucop, calcvar);
+				const unsigned int reloffset = calc32reloffset(ucop, calcvar);
 				ucop._params_parsed.push_back(reloffset);
 				ucop._jump_offsets.push_back(reloffset);
 			} else {
@@ -690,7 +690,7 @@ bool UCFunc::output_asm(ostream &o, const FuncMap &funcmap, const map<unsigned i
 	o << "\t.localc      " << std::setw(4) << _num_locals << "H" << endl;
 	o << "\t.externsize  " << std::setw(4) << _externs.size() << "H" << endl;
 
-	for (unsigned int ext : _externs)
+	for (const unsigned int ext : _externs)
 		o << '\t' << "  .extern    " << std::setw(4) << ext << "H" << endl;
 
 	for (auto& opcode : _opcodes)
@@ -730,7 +730,7 @@ void UCFunc::output_raw_opcodes(ostream &o, const UCc &op) {
 	}
 
 	// seperator
-	size_t numsep = op._params.size();
+	const size_t numsep = op._params.size();
 	//cout << endl << numsep << endl;
 	if (numsep > 6)
 		o << endl << "\t\t\t";
@@ -785,7 +785,7 @@ inline unsigned int charnum2uint(const char c) {
 
 template <int radix, int width>
 static void print_number(char c, std::stringstream &str, const vector<unsigned int> &params) {
-	unsigned int t = charnum2uint(c);
+	const unsigned int t = charnum2uint(c);
 	if (t != 0) {
 		assert(params.size() >= t);
 		if (radix != 16)
@@ -799,7 +799,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 	std::stringstream str;
 	str << std::setfill('0') << std::setbase(16);
 	str.setf(ios::uppercase);
-	size_t  len = asmstr.length();
+	const size_t  len = asmstr.length();
 	const vector<unsigned int> &params = op._params_parsed;
 
 	if (len == 0) return string(); // for the degenerate case
@@ -892,7 +892,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 					c = asmstr[i];
 				}
 
-				unsigned int t = charnum2uint(c);
+				const unsigned int t = charnum2uint(c);
 
 				assert(params.size() >= t);
 				assert(t != 0);
@@ -917,11 +917,11 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 				// if it's the intrinsic name we want
 				i++;
 				c = asmstr[i];
-				unsigned int t = charnum2uint(c);
+				const unsigned int t = charnum2uint(c);
 
 				assert(params.size() >= t);
 				assert(t != 0);
-				string s = intrinsics.find(params[t - 1])->second;
+				const string s = intrinsics.find(params[t - 1])->second;
 				str << s;
 				break;
 			}
@@ -938,7 +938,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 				} else if (c == '#') {
 					i++;
 					c = asmstr[i];
-					unsigned int t = charnum2uint(c);
+					const unsigned int t = charnum2uint(c);
 
 					assert(params.size() >= t);
 					assert(t != 0);
@@ -973,7 +973,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 					funcname += "::";
 					funcname += fmp->second.funcname;
 				} else {
-					unsigned int t = charnum2uint(c);
+					const unsigned int t = charnum2uint(c);
 
 					assert(ucf._externs.size() >= t);
 					assert(t != 0);
@@ -996,7 +996,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 				// if it's the character representation of a text data string we want
 				i++;
 				c = asmstr[i];
-				unsigned int t = charnum2uint(c);
+				const unsigned int t = charnum2uint(c);
 
 				// If followed by comma means start at first popped parameter; if
 				// followed by plus sign, start on the parameter specified by the
@@ -1006,7 +1006,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 					if (c == '+') {
 						i++;
 						c = asmstr[i];
-						unsigned int n = charnum2uint(c);
+						const unsigned int n = charnum2uint(c);
 						assert(n != 0);
 						it = it + (n - 1);
 					}
@@ -1027,7 +1027,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 					if (t > op._popped.size())
 						str << "0x0000/*stack underflow*/";
 					else {
-						UCc &ucc(*op._popped[t - 1]);
+						const UCc &ucc(*op._popped[t - 1]);
 						str << demunge_ocstring(ucf, funcmap, opcode_table_data[ucc._id].ucs_nmo, intrinsics, ucc, ucs_output, symtbl);
 					}
 				}
@@ -1041,10 +1041,10 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 				if (c == 's') {
 					i++;
 					c = asmstr[i];
-					unsigned int t = charnum2uint(c);
+					const unsigned int t = charnum2uint(c);
 					assert(t != 0);
 					assert(params.size() >= t);
-					int paramval = static_cast<sint16>(params[t - 1]);
+					const int paramval = static_cast<sint16>(params[t - 1]);
 					if (paramval < 0)
 						str << UCFunc::GLOBALSTATICPREFIX << std::setw(4) << -paramval;
 					else
@@ -1052,13 +1052,13 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 				} else if (c == 'c') {
 					i++;
 					c = asmstr[i];
-					unsigned int t = charnum2uint(c);
+					const unsigned int t = charnum2uint(c);
 					assert(t != 0);
 					assert(params.size() >= t);
-					int paramval = params[t - 1];
+					const int paramval = params[t - 1];
 					str << UCFunc::CLASSVARPREFIX << std::setw(4) << paramval;
 				} else {
-					unsigned int t = charnum2uint(c);
+					const unsigned int t = charnum2uint(c);
 					assert(t != 0);
 					assert(params.size() >= t);
 					// Small hack to make variable name equal to the
@@ -1083,10 +1083,10 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 				assert(symtbl);
 				i++;
 				c = asmstr[i];
-				unsigned int t = charnum2uint(c);
+				const unsigned int t = charnum2uint(c);
 				assert(t != 0);
 				assert(params.size() >= t);
-				unsigned int clsid = params[t - 1];
+				const unsigned int clsid = params[t - 1];
 				Usecode_class_symbol *cls = symtbl->get_class(clsid);
 				assert(cls);
 				str << cls->get_name();
@@ -1096,7 +1096,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 				// Global flag reference
 				i++;
 				c = asmstr[i];
-				unsigned int t = charnum2uint(c);
+				const unsigned int t = charnum2uint(c);
 				assert(t != 0);
 				assert(params.size() >= t);
 				auto it = UCFunc::FlagMap.find(params[t - 1]);
@@ -1207,7 +1207,7 @@ void readbin_U7UCFunc(
 
 	// process ze data segment!
 	{
-		streampos pos = f.tellg(); // paranoia
+		const streampos pos = f.tellg(); // paranoia
 
 		size_t off = 0;
 		// Load all strings & their offsets

@@ -47,6 +47,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef _WIN32
 #	include "servewin32.h"
 #else
+//#	include <fcntl.h> The call to fcntl is for !_WIN32 and has been commented out
+#	include <sys/stat.h>
 #	include <sys/socket.h>
 #	include <sys/un.h>
 #endif
@@ -62,8 +64,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef HAVE_GETOPT_LONG
 #	include <getopt.h>
 #endif
-
-#include <fcntl.h>
 
 #include <cerrno>
 #include <cstdarg>
@@ -518,6 +518,7 @@ C_EXPORT gboolean on_main_window_focus_in_event(
 ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 	css_path(nullptr), css_provider(nullptr), static_path(nullptr),
 	image_editor(nullptr), default_game(nullptr), background_color(0),
+	shape_scale(0), shape_bilinear(false),
 	shape_info_modified(false), shape_names_modified(false), npc_modified(false),
 	files(nullptr), curfile(nullptr),
 	vgafile(nullptr), facefile(nullptr), fontfile(nullptr), gumpfile(nullptr),
@@ -564,7 +565,7 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 	string game;                // Game to look up in .exult.cfg.
 	string modtitle;            // Mod title to look up in <MODS>/*.cfg.
 	string alt_cfg;
-	static const char *optstring = "hsc:g:m:px:y:";
+	static const char *optstring = "hsc:g:m:px:y:z:";
 	opterr = 0;         // Don't let getopt() print errs.
 	int optchr;
 	auto get_next_option = [&]() {
@@ -578,6 +579,7 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 			{ "portable",       no_argument, nullptr, 'p' },
 			{ "xmldir",   required_argument, nullptr, 'x' },
 			{ "cssdir",   required_argument, nullptr, 'y' },
+			{ "zoom",     required_argument, nullptr, 'z' },
 			{ nullptr,    0,                 nullptr,  0  }
 		};
 		return getopt_long(argc, argv, optstring,
@@ -608,6 +610,37 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 		case 'm':       // Mod.
 			modtitle = optarg;
 			break;
+		case 'z':
+			if ((optarg[0] == 'b') || (optarg[0] == 'B')) {
+				shape_bilinear = true;
+				optarg ++;
+			}
+			else if ((optarg[0] == 'n') || (optarg[0] == 'N')) {
+				shape_bilinear = false;
+				optarg ++;
+			}
+			else {
+				shape_bilinear = false;
+			}
+			shape_scale =
+			    (static_cast<int>(std::strtoul(optarg, nullptr, 10)) / 50);
+			if (shape_scale < 2) {
+				shape_scale = 2;
+			}
+			else if (shape_scale > 32) {
+				shape_scale = 32;
+			} else {
+				// The expected values are 2,3, 4,6, 8,12, 16,24, 32 :
+				//   the bounds 2 and 32 are checked above.
+				//   Loop : divide by 2, until reaching 2 or 3.
+				int shape_pow2 = 1;
+				while(shape_scale > 4) {
+					shape_scale >>= 1;
+					shape_pow2  <<= 1;
+				}
+				shape_scale *= shape_pow2;
+			}
+			break;
 		case 'p':
 #ifdef _WIN32
 			portable = true;
@@ -619,7 +652,7 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 		case 'h':
 #ifdef HAVE_GETOPT_LONG
 			cerr << "Usage: exult_studio [--help|-h] [--silent|-s] [--config|-c <configfile>]" << endl
-			     << "                    [--game|-g <game>] [--mod|-m <mod>]" << endl;
+			     << "                    [--game|-g <game>] [--mod|-m <mod>] [--zoom|-z <zoomshape>]" << endl;
 #ifdef _WIN32
 			cerr << "                    [--portable|-p]" << endl;
 #endif
@@ -636,6 +669,9 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 #endif
 			cerr << "        --xmldir gladedir        Specify where the exult_studio.glade resides, default is share/exult" << endl;
 			cerr << "        --cssdir cssdir          Specify where the exult_studio.css   resides, default is share/exult" << endl;
+			cerr << "        --zoom zoomshape         Enlarge the displayed Shapes, [B|N(default)]percent, default is 100" << endl;
+			cerr << "                                         With Nearest : N ( default ), or Bilinear : B" << endl;
+			cerr << "                                         Percent is one of 100, 150, 200, 300, 400, 600, 800, 1200 or 1600" << endl;
 #else
 			cerr << "Usage: exult_studio [-h] [-s] [-c <configfile>]" << endl
 			     << "                    [-g <game>] [-m <mod>]" << endl;
@@ -655,6 +691,9 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 #endif
 			cerr << "        -x gladedir     Specify where the exult_studio.glade resides, default is share/exult" << endl;
 			cerr << "        -y cssdir       Specify where the exult_studio.css   resides, default is share/exult" << endl;
+			cerr << "        -z zoomshape    Enlarge the displayed Shapes, [B|N(default)]percent, default is 100" << endl;
+			cerr << "                                With Nearest : N ( default ), or Bilinear : B" << endl;
+			cerr << "                                Percent is one of 100, 150, 200, 300, 400, 600, 800, 1200 or 1600" << endl;
 #endif // HAVE_GETOPT_LONG
 			exit(1);
 		}
@@ -678,10 +717,23 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 	else {
 		config->read_config_file(USER_CONFIGURATION_FILE);
 	}
+	// Get Shape scaling from config if not set by command line, report if above 100%
+	if (shape_scale == 0) {
+		config->value("config/estudio/shape_scale", shape_scale, 2);
+		config->value("config/estudio/shape_bilinear", shape_bilinear, false);
+		if (shape_scale > 2) {
+			cout << "Scaling Shapes by " << (shape_scale * 50) << "% using "
+			     << (shape_bilinear ? "Bilinear." : "Nearest (by config).") << endl;
+		}
+	} else
+	if (shape_scale > 2) {
+		cout << "Scaling Shapes by " << (shape_scale * 50) << "% using "
+		     << (shape_bilinear ? "Bilinear." : "Nearest (by command line).") << endl;
+	}
 	// Setup virtual directories
 	string data_path;
-	string app_path;
 #ifdef MACOSX
+	string app_path;
 	if (is_system_path_defined("<APPBUNDLE>")) {
 		app_path = get_system_path("<APPBUNDLE>");
 		if (U7exists(app_path)) {
@@ -692,7 +744,6 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 #endif
 	config->value("config/disk/data_path", data_path, EXULT_DATADIR);
 	setup_data_dir(data_path, argv[0]);
-	string dirstr;
 	string datastr;
 #ifdef MACOSX
 	if (U7exists(app_path)) {
@@ -772,6 +823,9 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 
 	mainnotebook = GTK_NOTEBOOK(get_widget("notebook3"));
 
+	// Create Zoom shapes GUI
+	create_zoom_controls();
+
 	// More setting up...
 	// Connect signals automagically.
 	gtk_builder_connect_signals(app_xml, nullptr);
@@ -783,6 +837,8 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 //++++Used to work  gtk_window_set_default_size(GTK_WINDOW(app), w, h);
 		gtk_window_resize(GTK_WINDOW(app), w, h);
 	gtk_widget_show(app);
+	g_signal_connect(G_OBJECT(app), "key-press-event",
+	                 G_CALLBACK(on_app_key_press), this);
 	// Background color for shape browser.
 	int bcolor;
 	config->value("config/estudio/background_color", bcolor, 0);
@@ -792,7 +848,7 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 	gamemanager = new GameManager(silent);
 
 	if (gamemanager->get_game_count() == 0) {
-		int choice = prompt("Exult Studio could not find any games to edit.\n\n"
+		const int choice = prompt("Exult Studio could not find any games to edit.\n\n"
 		                    "Do you wish to create a new game to edit?",
 		                    "Yes", "No");
 		if (choice == 0)
@@ -830,13 +886,15 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 
 ExultStudio::~ExultStudio() {
 	// Store main window size.
-	int w = w_at_close;
-	int h = h_at_close;
+	const int w = w_at_close;
+	const int h = h_at_close;
 	// Finish up external edits.
 	Shape_chooser::clear_editing_files();
 
 	config->set("config/estudio/main/width", w, true);
 	config->set("config/estudio/main/height", h, true);
+	config->set("config/estudio/shape_scale", shape_scale, true);
+	config->set("config/estudio/shape_bilinear", shape_bilinear, true);
 	Free_text();
 	g_free(glade_path);
 	if (css_path)
@@ -930,7 +988,7 @@ bool ExultStudio::okay_to_close(
 	h_at_close = alloc.height;
 
 	if (need_to_save()) {
-		int choice = prompt("File(s) modified.  Save?",
+		const int choice = prompt("File(s) modified.  Save?",
 		                    "Yes", "No", "Cancel");
 		if (choice == 2)    // Cancel?
 			return false;
@@ -1048,9 +1106,9 @@ void ExultStudio::create_new_game(
 		EStudio::Alert("Can't find base game name in '%s'", dir);
 		return;
 	}
-	string gamestr(ptr, eptr - ptr);
-	string dirstr(dir);
-	string static_path = dirstr + "/static";
+	const string gamestr(ptr, eptr - ptr);
+	const string dirstr(dir);
+	const string static_path = dirstr + "/static";
 	if (U7exists(static_path)) {
 		string msg("Directory '");
 		msg += static_path;
@@ -1063,11 +1121,11 @@ void ExultStudio::create_new_game(
 	U7mkdir(dir, 0755);     // Create "game", "game/static",
 	//   "game/patch".
 	U7mkdir(static_path.c_str(), 0755);
-	string patch_path = dirstr + "/patch";
+	const string patch_path = dirstr + "/patch";
 	U7mkdir(patch_path.c_str(), 0755);
 	// Set .exult.cfg.
 	string d("config/disk/game/");
-	string gameconfig = d + gamestr;
+	const string gameconfig = d + gamestr;
 	d = gameconfig + "/path";
 	config->set(d.c_str(), dirstr, false);
 	d = gameconfig + "/editing";    // We are editing.
@@ -1088,8 +1146,8 @@ void ExultStudio::create_new_game(
 			// Ignore case of extension.
 			if (!strcmp(fname, ".") || !strcmp(fname, ".."))
 				continue;
-			string src = esdir + '/' + fname;
-			string dest = static_path + '/' + fname;
+			const string src = esdir + '/' + fname;
+			const string dest = static_path + '/' + fname;
 			EStudio::Copy_file(src.c_str(), dest.c_str());
 		}
 		closedir(dirrd);
@@ -1152,8 +1210,8 @@ C_EXPORT void on_gameselect_ok_clicked(
 		GtkTextIter endpos;
 		gtk_text_buffer_get_bounds(buff, &startpos, &endpos);
 		gchar *modmenu = gtk_text_iter_get_text(&startpos, &endpos);
-		codepageStr menu(modmenu, "CP437");
-		string modmenustr = menu.get_str();
+		const codepageStr menu(modmenu, "CP437");
+		const string modmenustr = menu.get_str();
 		g_free(modmenu);
 		if (modmenustr.empty())
 			return;
@@ -1170,7 +1228,7 @@ C_EXPORT void on_gameselect_ok_clicked(
 		d = pathname + "/gamedat";
 		U7mkdir(d.c_str(), 0755);
 		// Create mod cfg file:
-		string cfgfile = pathname + ".cfg";
+		const string cfgfile = pathname + ".cfg";
 		Configuration modcfg(cfgfile, "modinfo");
 		modcfg.set("mod_info/display_string", modmenustr, true);
 		modcfg.set("mod_info/required_version", VERSION, true);
@@ -1243,15 +1301,15 @@ C_EXPORT void on_gameselect_gamelist_cursor_changed(
 	                   -1);
 
 	for (size_t j = 0; j < mods.size(); j++) {
-		ModInfo &currmod = mods[j];
+		const ModInfo &currmod = mods[j];
 		string modname = currmod.get_menu_string();
-		string::size_type t = modname.find('\n', 0);
+		const string::size_type t = modname.find('\n', 0);
 		if (t != string::npos)
 			modname.replace(t, 1, " ");
 
 		// Titles need to be displayable in Exult menu, hence should not
 		// have any extra characters.
-		utf8Str title(modname.c_str(), "CP437");
+		const utf8Str title(modname.c_str(), "CP437");
 		gtk_tree_store_append(model, &iter, nullptr);
 		gtk_tree_store_set(model, &iter,
 		                   0, title.get_str(),
@@ -1268,15 +1326,15 @@ void fill_game_tree(GtkTreeView *treeview, int curr_game) {
 	GtkTreeIter iter;
 	GtkTreePath *path = nullptr;
 	for (size_t j = 0; j < games.size(); j++) {
-		ModManager &currgame = games[j];
+		const ModManager &currgame = games[j];
 		string gamename = currgame.get_menu_string();
-		string::size_type t = gamename.find('\n', 0);
+		const string::size_type t = gamename.find('\n', 0);
 		if (t != string::npos)
 			gamename.replace(t, 1, " ");
 
 		// Titles need to be displayable in Exult menu, hence should not
 		// have any extra characters.
-		utf8Str title(gamename.c_str(), "CP437");
+		const utf8Str title(gamename.c_str(), "CP437");
 		gtk_tree_store_append(model, &iter, nullptr);
 		gtk_tree_store_set(model, &iter,
 		                   0, title.get_str(),
@@ -1393,7 +1451,7 @@ void ExultStudio::set_game_path(const string &gamename, const string &modname) {
 		if (gamemanager->get_game_count() > 0)
 			dlg += "browse for a different game, ";
 		dlg += "create a new game or exit?";
-		int choice = (gamemanager->get_game_count() > 0) ?
+		const int choice = (gamemanager->get_game_count() > 0) ?
 		             prompt(dlg.c_str(), "Browse", "Create New", "Quit") :
 		             (prompt(dlg.c_str(), "Create New", "Quit") + 1);
 		if (choice == 0) {
@@ -1425,7 +1483,7 @@ void ExultStudio::set_game_path(const string &gamename, const string &modname) {
 		g_free(static_path);
 	// Set up path to static.
 	static_path = g_strdup(get_system_path("<STATIC>").c_str());
-	string patch_path = get_system_path("<PATCH>");
+	const string patch_path = get_system_path("<PATCH>");
 	if (!U7exists(patch_path))  // Create patch if not there.
 		U7mkdir(patch_path.c_str(), 0755);
 	// Reset EVERYTHING.
@@ -1462,7 +1520,7 @@ void ExultStudio::set_game_path(const string &gamename, const string &modname) {
 		gtk_widget_hide(gameinfowin);
 
 	gtk_notebook_prev_page(mainnotebook);
-	U7multiobject palobj(PALETTES_FLX, PATCH_PALETTES, 0);
+	const U7multiobject palobj(PALETTES_FLX, PATCH_PALETTES, 0);
 	size_t len;
 	palbuf = palobj.retrieve(len);
 	if (!palbuf || !len) {
@@ -1522,8 +1580,8 @@ void add_to_tree(GtkTreeStore *model, const char *folderName,
 			startpos = commapos + 1;
 		}
 
-		string spath("<STATIC>");
-		string ppath("<PATCH>");
+		const string spath("<STATIC>");
+		const string ppath("<PATCH>");
 		const char *ext = strstr(pattern, "*");
 		if (!ext)
 			ext = pattern;
@@ -1533,7 +1591,7 @@ void add_to_tree(GtkTreeStore *model, const char *folderName,
 		if (dir) {
 			while ((entry = readdir(dir))) {
 				char *fname = entry->d_name;
-				int flen = strlen(fname);
+				const int flen = strlen(fname);
 				// Ignore case of extension.
 				if (!strcmp(fname, ".") || !strcmp(fname, "..") ||
 				        strcasecmp(fname + flen - strlen(ext), ext) != 0)
@@ -1551,7 +1609,7 @@ void add_to_tree(GtkTreeStore *model, const char *folderName,
 		if (dir) {
 			while ((entry = readdir(dir))) {
 				char *fname = entry->d_name;
-				int flen = strlen(fname);
+				const int flen = strlen(fname);
 				// Ignore case of extension.
 				if (!strcmp(fname, ".") || !strcmp(fname, "..") ||
 				        strcasecmp(fname + flen - strlen(ext), ext) != 0)
@@ -1587,7 +1645,7 @@ void add_to_tree(GtkTreeStore *model, const char *folderName,
 	va_start(ap, extra_cnt);
 	while (extra_cnt--) {
 		char *nm = va_arg(ap, char *);
-		int ty = va_arg(ap, int);
+		const int ty = va_arg(ap, int);
 		gtk_tree_store_append(model, &child_iter, &iter);
 		gtk_tree_store_set(model, &child_iter,
 		                   FOLDER_COLUMN, nullptr,
@@ -1699,7 +1757,7 @@ bool ExultStudio::need_to_save(
 		unsigned char data[Exult_server::maxlength];
 		Exult_server::Msg_type id;
 		Exult_server::wait_for_response(server_socket, 100);
-		int len = Exult_server::Receive_data(server_socket,
+		const int len = Exult_server::Receive_data(server_socket,
 		                                     id, data, sizeof(data));
 		int vers;
 		int edlift;
@@ -1879,7 +1937,7 @@ void ExultStudio::show_unused_shapes(
     const unsigned char *data,        // Bits set for unused shapes.
     int datalen         // #bytes.
 ) {
-	int nshapes = datalen * 8;
+	const int nshapes = datalen * 8;
 	GtkTextView *text = GTK_TEXT_VIEW(get_widget("msg_text"));
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(text);
 	gtk_text_buffer_set_text(buffer, "", 0);    // Clear out old text
@@ -1943,7 +2001,7 @@ void ExultStudio::create_shape_file(
     const char *pathname,         // Full path.
     gpointer udata          // 1 if NOT a FLEX file.
 ) {
-	bool oneshape = reinterpret_cast<uintptr>(udata) != 0;
+	const bool oneshape = reinterpret_cast<uintptr>(udata) != 0;
 	try {               // Write file.
 		if (oneshape) {         // Single-shape?
 			// Create one here.
@@ -2312,7 +2370,6 @@ int ExultStudio::prompt(
 		                             static_cast<const gchar **>(logo_xpm));
 		GtkWidget *draw = gtk_image_new_from_pixbuf(logo_pixbuf);
 		g_object_unref(logo_pixbuf);
-		gtk_widget_show(draw);
 		GtkWidget *hbox = get_widget("prompt3_hbox");
 		gtk_widget_set_size_request(draw,
 		                            gdk_pixbuf_get_width(logo_pixbuf),
@@ -2477,7 +2534,7 @@ on_prefs_background_choose_clicked(GtkButton *button,
 	                                      gtk_color_chooser_dialog_new("Background color", nullptr));
 	gtk_window_set_modal(GTK_WINDOW(colorsel), true);
 	// Get color.
-	guint32 c = ExultStudio::get_instance()->get_background_color();
+	const guint32 c = ExultStudio::get_instance()->get_background_color();
 	GdkRGBA  rgba;
 	rgba.red   = ((c >> 16) & 0xff) / 255.0;
 	rgba.green = ((c >>  8) & 0xff) / 255.0;
@@ -2660,7 +2717,7 @@ void ExultStudio::read_from_server(
 ) {
 #ifdef _WIN32
 	// Nothing
-	int len = Exult_server::peek_pipe();
+	const int len = Exult_server::peek_pipe();
 
 	//Do_Drop_Callback(&len);
 
@@ -2678,7 +2735,7 @@ void ExultStudio::read_from_server(
 #endif
 	unsigned char data[Exult_server::maxlength];
 	Exult_server::Msg_type id;
-	int datalen = Exult_server::Receive_data(server_socket, id, data,
+	const int datalen = Exult_server::Receive_data(server_socket, id, data,
 	              sizeof(data));
 	if (datalen < 0) {
 		cout << "Error reading from server" << endl;
@@ -2775,7 +2832,10 @@ bool ExultStudio::connect_to_server(
 		g_source_remove(server_input_tag);
 	}
 	// Use <GAMEDAT>/exultserver.
-	if (!U7exists(GAMEDAT) || !U7exists(EXULT_SERVER)) {
+	// Use stat() instead of U7exists which no longer supports sockets.
+	struct stat fs;
+	const std::string servename = get_system_path(EXULT_SERVER);
+	if (!U7exists(GAMEDAT) || (stat(servename.c_str(), &fs)) != 0) {
 		cout << "Can't find gamedat for socket" << endl;
 		return false;
 	}
@@ -2783,7 +2843,7 @@ bool ExultStudio::connect_to_server(
 	sockaddr_un addr;
 	addr.sun_family = AF_UNIX;
 	addr.sun_path[0] = 0;
-	strcpy(addr.sun_path, get_system_path(EXULT_SERVER).c_str());
+	strcpy(addr.sun_path, servename.c_str());
 	server_socket = socket(PF_LOCAL, SOCK_STREAM, 0);
 	if (server_socket < 0) {
 		perror("Failed to open map-editor socket");
@@ -2897,11 +2957,11 @@ int ExultStudio::find_palette_color(int r, int g, int b) {
 	long best_distance = 0xfffffff;
 	for (int i = 0; i < 256; i++) {
 		// Get deltas.
-		long dr = r - palbuf[3 * i];
-		long dg = g - palbuf[3 * i + 1];
-		long db = b - palbuf[3 * i + 2];
+		const long dr = r - palbuf[3 * i];
+		const long dg = g - palbuf[3 * i + 1];
+		const long db = b - palbuf[3 * i + 2];
 		// Figure distance-squared.
-		long dist = dr * dr + dg * dg + db * db;
+		const long dist = dr * dr + dg * dg + db * db;
 		if (dist < best_distance) { // Better than prev?
 			best_index = i;
 			best_distance = dist;
@@ -2993,7 +3053,7 @@ C_EXPORT void on_gameinfo_apply_clicked(
 	gchar *modmenu = gtk_text_iter_get_text(&startpos, &endpos);
 	// Titles need to be displayable in Exult menu, hence should not
 	// have any extra characters.
-	codepageStr menu(modmenu, "CP437");
+	const codepageStr menu(modmenu, "CP437");
 	string menustr = menu.get_str();
 	for (size_t i = 0; i < strlen(menustr.c_str()); i++)
 		if ((static_cast<unsigned char>(menustr[i]) & 0x80) != 0)
@@ -3007,7 +3067,7 @@ C_EXPORT void on_gameinfo_apply_clicked(
 
 	Configuration *cfg;
 	string root;
-	bool ismod = gameinfo->get_config_file(cfg, root);
+	const bool ismod = gameinfo->get_config_file(cfg, root);
 	cfg->set(root + (ismod ? "display_string" : "title"), menustr, true);
 	cfg->set(root + "codepage", enc, true);
 	if (ismod)
@@ -3052,7 +3112,7 @@ void ExultStudio::show_charset(
 		"F0\t\xF0\t\xF1\t\xF2\t\xF3\t\xF4\t\xF5\t\xF6\t\xF7\t\xF8\t\xF9\t\xFA\t\xFB\t\xFC\t\xFD\t\xFE\t\xFF\n\0"
 	};
 
-	utf8Str codechars(charset, enc);
+	const utf8Str codechars(charset, enc);
 	GtkTextBuffer *buff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(
 	                          get_widget("gameinfo_codepage_display")));
 	gtk_text_buffer_set_text(buff, codechars, -1);
@@ -3077,7 +3137,7 @@ void ExultStudio::set_game_information(
 	}
 
 	// game_encoding should equal gameinfo->get_codepage().
-	int index = Find_Encoding_Index(game_encoding.c_str());
+	const int index = Find_Encoding_Index(game_encoding.c_str());
 
 	// Override 'unknown' encodings.
 	set_optmenu("gameinfo_charset", index >= 0 ? index : 0);
@@ -3088,7 +3148,7 @@ void ExultStudio::set_game_information(
 	                          get_widget("gameinfo_menustring")));
 	// Titles need to be displayable in Exult menu, hence should not
 	// have any extra characters.
-	utf8Str title(gameinfo->get_menu_string().c_str(), "CP437");
+	const utf8Str title(gameinfo->get_menu_string().c_str(), "CP437");
 	gtk_text_buffer_set_text(buff, title.get_str(), -1);
 
 	gtk_widget_show(gameinfowin);
@@ -3152,14 +3212,14 @@ void convertFromUTF8::convert(gchar *&_convstr, const char *str, const char *enc
 			*end = 0;
 			// Must always be < 5, but just to be safe...
 			//int len = end - ptr;
-			std::ptrdiff_t len = end - ptr;
+			const std::ptrdiff_t len = end - ptr;
 			size_t pos;
 
 			while ((pos = force.find(illegal)) != string::npos)
 				force.replace(pos, len, 1, '?');
 
 			CONV_ERROR("UTF-8", enc);
-			char fallback = '?';
+			const char fallback = '?';
 			_convstr = g_convert_with_fallback(force.c_str(), -1, "UTF-8", enc,
 			                                   &fallback, &bytes_read, &bytes_written, &error);
 		}
@@ -3167,7 +3227,7 @@ void convertFromUTF8::convert(gchar *&_convstr, const char *str, const char *enc
 		if (!_convstr) {
 			CONV_ERROR(enc, "UTF-8");
 			// Conversion still failed; try lossy conversion.
-			char fallback = '?';
+			const char fallback = '?';
 			_convstr = g_convert_with_fallback(force.c_str(), -1, "UTF-8", enc,
 			                                   &fallback, &bytes_read, &bytes_written, &error);
 		}
@@ -3209,7 +3269,7 @@ void convertToUTF8::convert(gchar *&_convstr, const char *str, const char *enc) 
 		// Need to clean string.
 		string force(str);
 		while (!_convstr && error->code == G_CONVERT_ERROR_ILLEGAL_SEQUENCE) {
-			char illegal = force[bytes_read];
+			const char illegal = force[bytes_read];
 			size_t pos;
 
 			while ((pos = force.find(illegal)) != string::npos)
@@ -3223,7 +3283,7 @@ void convertToUTF8::convert(gchar *&_convstr, const char *str, const char *enc) 
 		if (!_convstr) {
 			CONV_ERROR(enc, "UTF-8");
 			// Conversion still failed; try lossy conversion.
-			char fallback = '?';
+			const char fallback = '?';
 			_convstr = g_convert_with_fallback(force.c_str(), -1, "UTF-8", enc,
 			                                   &fallback, &bytes_read, &bytes_written, &error);
 		}
@@ -3239,4 +3299,139 @@ void convertToUTF8::convert(gchar *&_convstr, const char *str, const char *enc) 
 int get_skinvar(const std::string &key) {
 	ignore_unused_variable_warning(key);
 	return -1;
+}
+
+// Zoom callbacks
+void ExultStudio::on_zoom_bilinear(GtkToggleButton *btn, gpointer user_data)
+{
+	ignore_unused_variable_warning(btn, user_data);
+	auto *studio = ExultStudio::get_instance();
+	studio->shape_bilinear = gtk_toggle_button_get_active(btn);
+	if (studio->browser) {
+		// No need to setup_info, the sizes of the shapes do not change.
+		studio->browser->render();
+	}
+}
+
+void ExultStudio::on_zoom_up(GtkButton *btn, gpointer user_data)
+{
+	ignore_unused_variable_warning(btn, user_data);
+	auto *studio = ExultStudio::get_instance();
+	if (studio->shape_scale == 32) {
+		return;
+	}
+	if (studio->shape_scale % 3 == 0) {
+		studio->shape_scale = (studio->shape_scale * 4) / 3;
+	} else {
+		studio->shape_scale = (studio->shape_scale * 3) / 2;
+	}
+	string zvalue = std::to_string(50 * studio->shape_scale) + "%";
+	gtk_label_set_text(GTK_LABEL(studio->shape_zlabel), zvalue.c_str());
+	gtk_widget_set_sensitive(studio->shape_zup,
+	                         (studio->shape_scale <  32 ? true : false));
+	gtk_widget_set_sensitive(studio->shape_zdown,
+	                         (studio->shape_scale >   2 ? true : false));
+	if (studio->browser) {
+		studio->browser->setup_info(true);
+		studio->browser->render();
+	}
+}
+
+void ExultStudio::on_zoom_down(GtkButton *btn, gpointer user_data)
+{
+	ignore_unused_variable_warning(btn, user_data);
+	auto *studio = ExultStudio::get_instance();
+	if (studio->shape_scale == 2) {
+		return;
+	}
+	if (studio->shape_scale % 3 == 0) {
+		studio->shape_scale = (studio->shape_scale * 2) / 3;
+	} else {
+		studio->shape_scale = (studio->shape_scale * 3) / 4;
+	}
+	string zvalue = std::to_string(50 * studio->shape_scale) + "%";
+	gtk_label_set_text(GTK_LABEL(studio->shape_zlabel), zvalue.c_str());
+	gtk_widget_set_sensitive(studio->shape_zup,
+	                         (studio->shape_scale <  32 ? true : false));
+	gtk_widget_set_sensitive(studio->shape_zdown,
+	                         (studio->shape_scale >   2 ? true : false));
+	if (studio->browser) {
+		studio->browser->setup_info(true);
+		studio->browser->render();
+	}
+}
+
+gboolean ExultStudio::on_app_key_press(
+    GtkEntry *entry,
+    GdkEventKey *event,
+    gpointer user_data
+) {
+	ignore_unused_variable_warning(entry, user_data);
+	auto *studio = ExultStudio::get_instance();
+	switch (event->keyval) {
+	case GDK_KEY_plus:
+	case GDK_KEY_KP_Add:
+		if (studio->shape_zup) {
+			g_signal_emit_by_name(G_OBJECT(studio->shape_zup), "clicked");
+		}
+		return TRUE;
+	case GDK_KEY_minus:
+	case GDK_KEY_KP_Subtract:
+		if (studio->shape_zdown) {
+			g_signal_emit_by_name(G_OBJECT(studio->shape_zdown), "clicked");
+		}
+		return TRUE;
+	}
+	return FALSE;
+}
+void ExultStudio::create_zoom_controls()
+{
+	GtkWidget *zbox = get_widget("menubar_box");
+	GtkWidget *zframe = gtk_frame_new(nullptr);
+	widget_set_margins(zframe, 2*HMARGIN, 0*HMARGIN, 0*VMARGIN, 0*VMARGIN);
+	gtk_widget_show(zframe);
+	gtk_box_pack_start(GTK_BOX(zbox), zframe, FALSE, FALSE, 0);
+
+	GtkWidget *zbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	widget_set_margins(zbox2, 0*HMARGIN, 0*HMARGIN, 0*VMARGIN, 0*VMARGIN);
+	gtk_box_set_homogeneous(GTK_BOX(zbox2), FALSE);
+	gtk_widget_show(zbox2);
+	gtk_container_add(GTK_CONTAINER(zframe), zbox2);
+
+	GtkWidget *zname = gtk_label_new("Zoom");
+	gtk_widget_set_visible(GTK_WIDGET(zname), TRUE);
+	widget_set_margins(zname, 4*HMARGIN, 2*HMARGIN, 2*VMARGIN, 2*VMARGIN);
+	gtk_box_pack_start(GTK_BOX(zbox2), zname, FALSE, FALSE, 0);
+	gtk_widget_show(zname);
+
+	string zvalue = std::to_string(50 * shape_scale) + "%";
+	shape_zlabel = gtk_label_new(zvalue.c_str());
+	gtk_widget_set_visible(GTK_WIDGET(shape_zlabel), TRUE);
+	widget_set_margins(shape_zlabel, 2*HMARGIN, 2*HMARGIN, 2*VMARGIN, 2*VMARGIN);
+	gtk_box_pack_start(GTK_BOX(zbox2), shape_zlabel, FALSE, FALSE, 0);
+	gtk_widget_set_size_request(shape_zlabel, 50, -1);
+	gtk_label_set_justify(GTK_LABEL(shape_zlabel), GTK_JUSTIFY_RIGHT);
+	gtk_widget_show(shape_zlabel);
+
+	shape_zdown = EStudio::Create_arrow_button(GTK_ARROW_DOWN,
+	    G_CALLBACK(ExultStudio::on_zoom_down), this);
+	widget_set_margins(shape_zdown, 2*HMARGIN, 1*HMARGIN, 2*VMARGIN, 2*VMARGIN);
+	gtk_widget_set_sensitive(shape_zdown, (shape_scale > 2 ? true : false));
+	gtk_box_pack_start(GTK_BOX(zbox2), shape_zdown, TRUE, TRUE, 0);
+	gtk_widget_show(shape_zdown);
+
+	shape_zup  = EStudio::Create_arrow_button(GTK_ARROW_UP,
+	    G_CALLBACK(ExultStudio::on_zoom_up), this);
+	widget_set_margins(shape_zup, 1*HMARGIN, 2*HMARGIN, 2*VMARGIN, 2*VMARGIN);
+	gtk_widget_set_sensitive(shape_zup, (shape_scale <  32 ? true : false));
+	gtk_box_pack_start(GTK_BOX(zbox2), shape_zup, TRUE, TRUE, 0);
+	gtk_widget_show(shape_zup);
+
+	GtkWidget *zcheck = gtk_check_button_new_with_label("Bilinear");
+	widget_set_margins(zcheck, 2*HMARGIN, 2*HMARGIN, 2*VMARGIN, 2*VMARGIN);
+	gtk_box_pack_start(GTK_BOX(zbox2), zcheck, TRUE, TRUE, 0);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(zcheck), shape_bilinear);
+	gtk_widget_show(zcheck);
+	g_signal_connect(G_OBJECT(zcheck), "toggled",
+	    G_CALLBACK(ExultStudio::on_zoom_bilinear), this);
 }

@@ -196,7 +196,7 @@ int ExultStudio::init_obj_window(
 	if (btn) {
 		GtkAdjustment *adj = gtk_spin_button_get_adjustment(
 		                         GTK_SPIN_BUTTON(btn));
-		int nframes = vgafile->get_ifile()->get_num_frames(shape);
+		const int nframes = vgafile->get_ifile()->get_num_frames(shape);
 		gtk_adjustment_set_upper(adj, (nframes - 1) | 32); // So we can rotate.
 		g_signal_emit_by_name(G_OBJECT(adj), "changed");
 	}
@@ -214,16 +214,16 @@ int ExultStudio::save_obj_window(
 	cout << "In save_obj_window()" << endl;
 	// Get object address.
 	auto *addr = static_cast<Game_object *>(g_object_get_data(G_OBJECT(objwin), "user_data"));
-	int tx = get_spin("obj_x");
-	int ty = get_spin("obj_y");
-	int tz = get_spin("obj_z");
-	std::string name(get_text_entry("obj_name"));
+	const int tx = get_spin("obj_x");
+	const int ty = get_spin("obj_y");
+	const int tz = get_spin("obj_z");
+	const std::string name(get_text_entry("obj_name"));
 //	int shape = get_num_entry("obj_shape");
 //	int frame = get_num_entry("obj_frame");
 //	int quality = get_num_entry("obj_quality");
-	int shape = get_spin("obj_shape");
-	int frame = get_spin("obj_frame");
-	int quality = get_spin("obj_quality");
+	const int shape = get_spin("obj_shape");
+	const int frame = get_spin("obj_frame");
+	const int quality = get_spin("obj_quality");
 
 	if (Object_out(server_socket, Exult_server::obj, addr, tx, ty, tz,
 	               shape, frame, quality, name) == -1) {
@@ -240,8 +240,7 @@ int ExultStudio::save_obj_window(
 
 void ExultStudio::rotate_obj(
 ) {
-	int shnum = get_num_entry("obj_shape");
-	int frnum = get_num_entry("obj_frame");
+	const int shnum = get_num_entry("obj_shape");
 	if (shnum <= 0)
 		return;
 	auto *shfile = static_cast<Shapes_vga_file *>(vgafile->get_ifile());
@@ -249,6 +248,7 @@ void ExultStudio::rotate_obj(
 	if (shfile->read_info(game_type, true))
 		set_shapeinfo_modified();
 	const Shape_info &info = shfile->get_info(shnum);
+	int frnum = get_num_entry("obj_frame");
 	frnum = info.get_rotated_frame(frnum, 1);
 	set_spin("obj_frame", frnum);
 	obj_single->render();

@@ -342,13 +342,13 @@ public:
 
 	Shape *extract_shape(int shapenum) {
 		imported_map data;
-		bool is_imported = get_imported_shape_data(shapenum, data);
+		const bool is_imported = get_imported_shape_data(shapenum, data);
 		if (is_imported)
 			assert(!imported_shapes.empty()); // For safety.
 		else
 			assert(!shapes.empty());
 		// Load all frames into memory
-		int count = get_num_frames(shapenum);
+		const int count = get_num_frames(shapenum);
 		for (int i = 1; i < count; i++)
 			get_shape(shapenum, i);
 		if (is_imported)

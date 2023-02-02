@@ -49,8 +49,8 @@ public:
 		return this;
 	}
 	bool has_spell(int spell) {  // Has a spell.
-		int circle = spell / 8;
-		int num = spell % 8;    // # within circle.
+		const int circle = spell / 8;
+		const int num = spell % 8;    // # within circle.
 		return (circles[circle] & (1 << num)) != 0;
 	}
 	int add_spell(int spell);   // Add a spell.

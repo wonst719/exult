@@ -57,7 +57,6 @@
 #  include <sys/param.h> // for MAXPATHLEN
 #endif
 
-using std::cerr;
 using std::string;
 using std::ios;
 
@@ -157,7 +156,7 @@ string get_system_path(const string &path) {
 	while (pos != string::npos && pos2 == 0 && cnt-- > 0) {
 		pos += 1;
 		// See if we can translate this prefix
-		string syspath = new_path.substr(0, pos);
+		const string syspath = new_path.substr(0, pos);
 		if (is_system_path_defined(syspath)) {
 			string new_prefix = path_map[syspath];
 			new_prefix += new_path.substr(pos);
@@ -270,11 +269,11 @@ static void switch_slashes(
 }
 
 void U7set_istream_factory(U7IstreamFactory factory) {
-    istream_factory = factory;
+	istream_factory = std::move(factory);
 }
 
 void U7set_ostream_factory(U7OstreamFactory factory) {
-    ostream_factory = factory;
+	ostream_factory = std::move(factory);
 }
 
 /*
@@ -297,7 +296,7 @@ std::unique_ptr<std::istream> U7open_in(
 	do {
 		try {
 			//std::cout << "trying: " << name << std::endl;
- 			in = istream_factory(name.c_str(), mode);
+			in = istream_factory(name.c_str(), mode);
 		} catch (std::exception &) {
 		}
 		if (in && in->good() && !in->fail()) {
@@ -458,7 +457,7 @@ int U7mkdir(
 ) {
 	string name = get_system_path(dirname);
 	// remove any trailing slashes
-	string::size_type pos = name.find_last_not_of('/');
+	const string::size_type pos = name.find_last_not_of('/');
 	if (pos != string::npos)
 		name.resize(pos + 1);
 #if defined(_WIN32) && defined(UNICODE)
@@ -495,7 +494,7 @@ protected:
 	    DWORD dwFlags,
 	    HANDLE hToken,
 	    PWSTR *ppszPath
-    );
+	);
 	SHGetKnownFolderPathFunc SHGetKnownFolderPath;
 	*/
 
@@ -564,14 +563,65 @@ void cleanup_output(const char *prefix) {
 #else
 static std::string Get_home();
 
+struct unsynch_from_stdio {
+	const bool old_synch_status = std::ostream::sync_with_stdio(false);
+	~unsynch_from_stdio() noexcept {
+		std::ostream::sync_with_stdio(old_synch_status);
+	}
+};
+
 // Pulled from exult_studio.cc.
 void redirect_output(const char *prefix) {
-	if (GetFileType(GetStdHandle(STD_OUTPUT_HANDLE)) == FILE_TYPE_PIPE) {
-		// If we are at a msys/msys2 shell running in MinTTY, do not redirect the output,
-		// and print it to console instead.
+	HANDLE stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE stderr_handle = GetStdHandle(STD_ERROR_HANDLE);
+	DWORD stdout_type = GetFileType(stdout_handle);
+	DWORD stderr_type = GetFileType(stderr_handle);
+	if (stdout_type != FILE_TYPE_UNKNOWN && stderr_type != FILE_TYPE_UNKNOWN) {
+		// If we already have valid destinations for both stdout and stderr,
+		// we don't need to do anything. This happens, for example, on MSYS2
+		// in MinTTY.
 		return;
 	}
-	if (AttachConsole(ATTACH_PARENT_PROCESS)) {
+	auto attach_console = [](){
+		// If we already have a console, quit.
+		if (GetConsoleWindow() != nullptr) {
+			return true;
+		}
+		// Attach to the parent process console.
+		if (AttachConsole(ATTACH_PARENT_PROCESS) != 0) {
+			return true;
+		}
+#ifdef DEBUG
+		return AllocConsole() != 0;
+#else
+		return false;
+#endif
+	};
+	auto redirect_stream = [](FILE* stream, const char* device, HANDLE handle,
+							  DWORD& type, int mode, size_t size) {
+		// Only redirect if the stream is not already being redirected.
+		if (handle != INVALID_HANDLE_VALUE && type == FILE_TYPE_UNKNOWN) {
+			// Flush the output in case anything is queued
+			fflush(stream);
+			FILE* new_stream = freopen(device, "w", stream);
+			if (new_stream != nullptr) {
+				setvbuf(stream, nullptr, mode, size);
+				return true;
+			}
+			type = GetFileType(handle);
+		}
+		return false;
+	};
+	auto redirect_stdout = [&](const char* device) {
+		// Line buffered
+		return redirect_stream(stdout, device, stdout_handle, stdout_type, _IOLBF, BUFSIZ);
+	};
+	auto redirect_stderr = [&](const char* device) {
+		// No buffering
+		return redirect_stream(stderr, device, stderr_handle, stderr_type, _IONBF, 0);
+	};
+	const unsynch_from_stdio resyncher;
+	if (attach_console()) {
 		// If we are in something like Windows Terminal, we need to connect to
 		// the parent terminal and manually redirect stdout/stderr to the
 		// console. Note: in powershell or cmd.exe, this will give the
@@ -583,114 +633,73 @@ void redirect_output(const char *prefix) {
 		// from Windows Explorer. This console can be destroyed, but it will
 		// cause it to flash into view, then disappear right away.
 		// TODO: Figure out a way to make Exult/ES "return" the terminal.
-		HANDLE stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-		HANDLE stderr_handle = GetStdHandle(STD_ERROR_HANDLE);
-		if (stdout_handle != INVALID_HANDLE_VALUE
-			&& stderr_handle != INVALID_HANDLE_VALUE) {
-			// We will only redirect outputs if both calls succeed.
-			FILE* newstdout = freopen("CONOUT$", "w", stdout);
-			FILE* newstderr = freopen("CONOUT$", "w", stderr);
-			// If either freopen fails, lets just go on through to write to
-			// files instead.
-			if (newstdout != nullptr && newstderr != nullptr) {
-				// Set correct buffer mode: line-buffered for stdout, unbuffered
-				// for stderr.
-				setvbuf(stdout, nullptr, _IOLBF, 0);
-				setvbuf(stderr, nullptr, _IONBF, 0);
-				return;
-			}
+		// If both calls succeeded in redirecting output to the terminal, we can
+		// bail out early.
+		if (redirect_stdout("CONOUT$") && redirect_stderr("CONOUT$")) {
+			return;
 		}
+		// Otherwise, fall through to redirect whichever ones failed to a file.
 	}
+
 	// Starting from GUI, or from cmd.exe, we will need to redirect the output.
-
-	// Flush the output in case anything is queued
-	fclose(stdout);
-	fclose(stderr);
-
-	string folderPath = Get_home() + "/";
-
-	string stdoutPath = folderPath + prefix + "out.txt";
-	const char *stdoutfile = stdoutPath.c_str();
-
-	// Redirect standard input and standard output
-	FILE *newfp = freopen(stdoutfile, "w", stdout);
-	if (newfp == nullptr) {
-		// This happens on NT
-#if !defined(stdout)
-		stdout = fopen(stdoutfile, "w");
-#else
-		newfp = fopen(stdoutfile, "w");
-		if (newfp)
-			*stdout = *newfp;
-#endif
-	}
-
-	string stderrPath = folderPath + prefix + "err.txt";
-	const char *stderrfile = stderrPath.c_str();
-
-	newfp = freopen(stderrfile, "w", stderr);
-	if (newfp == nullptr) {
-		// This happens on NT
-#if !defined(stderr)
-		stderr = fopen(stderrfile, "w");
-#else
-		newfp = fopen(stderrfile, "w");
-		if (newfp)
-			*stderr = *newfp;
-#endif
-	}
-	setvbuf(stdout, nullptr, _IOLBF, BUFSIZ);  // Line buffered
-	setbuf(stderr, nullptr);                   // No buffering
+	// Paths to the output files.
+	const string folderPath = Get_home() + "/" + prefix;
+	const string stdoutPath = folderPath + "out.txt";
+	redirect_stdout(stdoutPath.c_str());
+	const string stderrPath = folderPath + "err.txt";
+	redirect_stderr(stderrPath.c_str());
 }
 
 void cleanup_output(const char *prefix) {
-	string folderPath = Get_home() + "/";
-	if (!ftell(stdout)) {
-		fclose(stdout);
-		string stdoutPath = folderPath + prefix + "out.txt";
-		remove(stdoutPath.c_str());
-	}
-	if (!ftell(stderr)) {
-		fclose(stderr);
-		string stderrPath = folderPath + prefix + "err.txt";
-		remove(stderrPath.c_str());
+	const string folderPath = Get_home() + "/" + prefix;
+	auto clear_empty_redirect = [&](FILE* stream, const char* suffix) {
+		fflush(stream);
+		if (ftell(stream) == 0) {
+			fclose(stream);
+			const string stream_path = folderPath + suffix;
+			remove(stream_path.c_str());
+		}
+	};
+	clear_empty_redirect(stdout, "out.txt");
+	clear_empty_redirect(stderr, "err.txt");
+	if (GetConsoleWindow() != nullptr) {
+		FreeConsole();
 	}
 }
 #endif // USE_CONSOLE
 #endif  // _WIN32
 
-
-static std::string home_dir;
+static std::string home_directory;
 
 void U7set_home(std::string home) {
-	home_dir = home;
+	home_directory = std::move(home);
 }
 
 string Get_home() {
-	if (!home_dir.empty()) {
-		return home_dir;
+	if (!home_directory.empty()) {
+		return home_directory;
 	}
 #ifdef _WIN32
 #ifdef PORTABLE_EXULT_WIN32
-	home_dir = ".";
+	home_directory = ".";
 #else
 	if (get_system_path("<HOME>") == ".")
-		home_dir = ".";
+		home_directory = ".";
 	else {
 		shell32_wrapper shell32;
-		home_dir = shell32.Get_local_appdata();
-		if (!home_dir.empty())
-			home_dir += "\\Exult";
+		home_directory = shell32.Get_local_appdata();
+		if (!home_directory.empty())
+			home_directory += "\\Exult";
 		else
-			home_dir = ".";
+			home_directory = ".";
 	}
 #endif // PORTABLE_WIN32_EXULT
 #else
 	const char *home = nullptr;
 	if ((home = getenv("HOME")) != nullptr)
-		home_dir = home;
+		home_directory = home;
 #endif
-	return home_dir;
+	return home_directory;
 }
 
 #if defined(MACOSX) || defined(__IPHONEOS__)
@@ -753,7 +762,7 @@ void setup_data_dir(
 	const char *sep = std::strrchr(runpath, '/');
 	if (!sep) sep = std::strrchr(runpath, '\\');
 	if (sep) {
-		int plen = sep - runpath;
+		const int plen = sep - runpath;
 		std::string dpath(runpath, plen + 1);
 		dpath += "data";
 		add_system_path("<DATA>", dpath);
@@ -831,10 +840,10 @@ static string Get_gamehome_dir(const string& home_dir, const string& config_dir)
 }
 
 void setup_program_paths() {
-	string home_dir(Get_home());
-	string config_dir(Get_config_dir(home_dir));
-	string savehome_dir(Get_savehome_dir(home_dir, config_dir));
-	string gamehome_dir(Get_gamehome_dir(home_dir, config_dir));
+	const string home_dir(Get_home());
+	const string config_dir(Get_config_dir(home_dir));
+	const string savehome_dir(Get_savehome_dir(home_dir, config_dir));
+	const string gamehome_dir(Get_gamehome_dir(home_dir, config_dir));
 
 	if (get_system_path("<HOME>") != ".")
 		add_system_path("<HOME>", home_dir);
@@ -896,8 +905,8 @@ void U7copy(
 	auto& out = *pOut;
 	out << in.rdbuf();
 	out.flush();
-	bool inok = in.good();
-	bool outok = out.good();
+	const bool inok = in.good();
+	const bool outok = out.good();
 	if (!inok)
 		throw file_read_exception(src);
 	if (!outok)
@@ -942,7 +951,7 @@ uint32 msb32(uint32 x) {
  */
 
 int fgepow2(uint32 n) {
-	uint32 l = msb32(n);
+	const uint32 l = msb32(n);
 	return l < n ? (l << 1) : l;
 }
 

@@ -99,7 +99,7 @@ id_counter(0)
 
 	// Open SDL Audio (even though we may not need it)
 	SDL_InitSubSystem(SDL_INIT_AUDIO);
-	SDL_AudioDeviceID dev = SDL_OpenAudioDevice(nullptr, 0, &desired, &obtained, SDL_AUDIO_ALLOW_ANY_CHANGE);
+	const SDL_AudioDeviceID dev = SDL_OpenAudioDevice(nullptr, 0, &desired, &obtained, SDL_AUDIO_ALLOW_ANY_CHANGE);
 	audio_ok = (dev != 0);
 
 	if (audio_ok) {
@@ -107,7 +107,7 @@ id_counter(0)
 		     << static_cast<int>(obtained.channels) << " Channels" <<  std::endl;
 		device = std::make_unique<SDLAudioDevice>(dev);
 		{
-			std::lock_guard<SDLAudioDevice> lock(*device);
+			const std::lock_guard<SDLAudioDevice> lock(*device);
 			sample_rate = obtained.freq;
 			stereo = obtained.channels == 2;
 
@@ -138,7 +138,7 @@ void AudioMixer::reset()
 
 	midi->stop_music();
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	for (auto& channel : channels) channel.stop();
 }
 
@@ -146,7 +146,7 @@ sint32 AudioMixer::playSample(AudioSample *sample, int loop, int priority, bool 
 {
 	if (!audio_ok || channels.empty()) return -1;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.begin(), channels.end(), [](auto& channel) {
 		return !channel.isPlaying();
 	});
@@ -171,7 +171,7 @@ bool AudioMixer::isPlaying(sint32 instance_id) const
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return false;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
 		return channel.getInstanceId() == instance_id;
 	});
@@ -182,7 +182,7 @@ bool AudioMixer::isPlaying(AudioSample *sample) const
 {
 	if (!sample || channels.empty() || !audio_ok) return false;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.cbegin(), channels.cend(), [sample](auto& channel) {
 		return channel.getSample() == sample;
 	});
@@ -193,7 +193,7 @@ bool AudioMixer::isPlayingVoice() const
 {
 	if (channels.empty() || !audio_ok) return false;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.cbegin(), channels.cend(), [](auto& channel) {
 		return channel.isPlaying() && channel.getSample()->isVocSample();
 	});
@@ -204,7 +204,7 @@ void AudioMixer::stopSample(sint32 instance_id)
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
 		return channel.getInstanceId() == instance_id;
 	});
@@ -217,7 +217,7 @@ void AudioMixer::stopSample(AudioSample *sample)
 {
 	if (!sample || channels.empty() || !audio_ok) return;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	for (auto& channel : channels)
 	{
 		if (channel.getSample() == sample)
@@ -229,7 +229,7 @@ void AudioMixer::setPaused(sint32 instance_id, bool paused)
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
 		return channel.getInstanceId() == instance_id;
 	});
@@ -242,7 +242,7 @@ bool AudioMixer::isPaused(sint32 instance_id) const
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return false;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
 		return channel.getInstanceId() == instance_id;
 	});
@@ -253,7 +253,7 @@ void AudioMixer::setPausedAll(bool paused)
 {
 	if (channels.empty() || !audio_ok) return;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	for (auto& channel : channels)
 		channel.setPaused(paused);
 }
@@ -262,7 +262,7 @@ void AudioMixer::setVolume(sint32 instance_id, int lvol, int rvol)
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
 		return channel.getInstanceId() == instance_id;
 	});
@@ -275,7 +275,7 @@ void AudioMixer::getVolume(sint32 instance_id, int &lvol, int &rvol) const
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
 		return channel.getInstanceId() == instance_id;
 	});
@@ -289,7 +289,7 @@ bool AudioMixer::set2DPosition(sint32 instance_id, int distance, int angle)
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return false;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
 		return channel.getInstanceId() == instance_id;
 	});
@@ -304,7 +304,7 @@ void AudioMixer::get2DPosition(sint32 instance_id, int &distance, int &angle) co
 {
 	if (instance_id < 0 || channels.empty() || !audio_ok) return;
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
 		return channel.getInstanceId() == instance_id;
 	});
@@ -319,7 +319,7 @@ void AudioMixer::sdlAudioCallback(void *userdata, Uint8 *stream, int len)
 	// Unfortunately, SDL does not guarantee that stream will be aligned to
 	// the correct alignment for sint16.
 	// There is no real solution except using an aligned buffer and copying.
-	size_t newlen = size_t(len + 1) / 2;
+	const size_t newlen = size_t(len + 1) / 2;
 	// This should never be needed, as we set the vector length
 	// based on information provided by SDL. Lets leave it in anyway
 	// just in case...
@@ -347,7 +347,7 @@ void AudioMixer::openMidiOutput()
 	auto * new_driver = new MyMidiPlayer();
 
 	{
-		std::lock_guard<SDLAudioDevice> lock(*device);
+		const std::lock_guard<SDLAudioDevice> lock(*device);
 		midi = new_driver;
 	}
 	midi->load_timbres();
@@ -362,7 +362,7 @@ void AudioMixer::closeMidiOutput()
 	midi->stop_music(true);
 	midi->destroyMidiDriver();
 
-	std::lock_guard<SDLAudioDevice> lock(*device);
+	const std::lock_guard<SDLAudioDevice> lock(*device);
 	delete midi;
 	midi = nullptr;
 }

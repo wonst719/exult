@@ -65,8 +65,8 @@ void Virtue_stone_object::write_ireg(
 	*ptr++ = pos.tx % c_tiles_per_schunk;
 	*ptr++ = pos.ty % c_tiles_per_schunk;
 	// Get superchunk index.
-	int sx = pos.tx / c_tiles_per_schunk;
-	int sy = pos.ty / c_tiles_per_schunk;
+	const int sx = pos.tx / c_tiles_per_schunk;
+	const int sy = pos.ty / c_tiles_per_schunk;
 	*ptr++ = sy * 12 + sx;      // Write superchunk #.
 	*ptr++ = static_cast<unsigned char>(pos.tz);        // Finally, lift in entry[7].??Guess+++
 	*ptr++ = 0;         // Entry[8] unknown.

@@ -165,7 +165,7 @@ Game_object *Gump::find_object(
 	int oy;
 
 	while ((obj = next.get_next()) != nullptr) {
-		TileRect box = get_shape_rect(obj);
+		const TileRect box = get_shape_rect(obj);
 		if (box.has_point(mx, my)) {
 			s = obj->get_shape();
 			get_shape_location(obj, ox, oy);
@@ -189,7 +189,7 @@ TileRect Gump::get_dirty(
 	Object_iterator next(container->get_objects());
 	Game_object *obj;
 	while ((obj = next.get_next()) != nullptr) {
-		TileRect orect = get_shape_rect(obj);
+		const TileRect orect = get_shape_rect(obj);
 		rect = rect.add(orect);
 	}
 	return rect;
@@ -309,8 +309,8 @@ void check_elem_positions(Object_list &objects)
 	Object_iterator next(objects);
 	// See if all have the same position, indicating from a new game.
 	while ((obj = next.get_next()) != nullptr) {
-		int tx = obj->get_tx();
-		int ty = obj->get_ty();
+		const int tx = obj->get_tx();
+		const int ty = obj->get_ty();
 	    if (prevx == -1) {
 		    prevx = tx;
 			prevy = ty;
@@ -346,8 +346,8 @@ void Gump::paint(
 	box.shift(x, y);        // Set box to screen location.
 	int cury = 0;
 	int curx = 0;
-	int endy = box.h;
-	int endx = box.w;
+	const int endy = box.h;
+	const int endx = box.w;
 	int loop = 0;           // # of times covering container.
 	check_elem_positions(objects);	// Set to place if new game.
 	Game_object *obj;
@@ -356,9 +356,9 @@ void Gump::paint(
 		Shape_frame *shape = obj->get_shape();
 		if (!shape)
 			continue;
-		int objx = obj->get_tx() - shape->get_xleft() +
+		const int objx = obj->get_tx() - shape->get_xleft() +
 		           1 + object_area.x;
-		int objy = obj->get_ty() - shape->get_yabove() +
+		const int objy = obj->get_ty() - shape->get_yabove() +
 		           1 + object_area.y;
 		// Does obj. appear to be placed?
 		if (!object_area.has_point(objx, objy) ||

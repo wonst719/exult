@@ -149,14 +149,14 @@ public:
 #ifdef DEBUG    // For debugging.
 	void write_text() const {
 		std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(opcode) << ' ';
-		for (char param : params)
+		for (const char param : params)
 			std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(static_cast<unsigned char>(param)) << ' ';
 		if (is_jump)
 			std::cout << "<offset>";
 	}
 #endif
 	int get_size() const {  // Total size, including offset.
-		int size = 1 + params.size();
+		const int size = 1 + params.size();
 		if (is_32bit())
 			return size + 4;    // +4 for 32-bit offset.
 		else if (is_jump)

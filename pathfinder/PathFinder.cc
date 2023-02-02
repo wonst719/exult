@@ -30,7 +30,7 @@
 int Pathfinder_client::get_max_cost(
     int cost_to_goal        // From estimate_cost(start, goal).
 ) {
-	int max_cost = 3 * cost_to_goal;
+	const int max_cost = 3 * cost_to_goal;
 	// (Raised from 64 on 9/4/2000).
 	return max_cost < 74 ? 74 : max_cost;
 }

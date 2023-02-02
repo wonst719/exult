@@ -99,7 +99,7 @@ static bool Gen_font_shape_win32(
 		// Get each glyph.
 		GLYPHMETRICS metrics;
 
-		unsigned int buffsize = GetGlyphOutline(dc, ii, GGO_BITMAP, &metrics, 0, nullptr, &matrix);
+		const unsigned int buffsize = GetGlyphOutline(dc, ii, GGO_BITMAP, &metrics, 0, nullptr, &matrix);
 		int offset = 0;     // Starting row, col.
 
 		const wchar_t chr = ii;
@@ -143,7 +143,7 @@ static bool Gen_font_shape_win32(
 			}
 
 			// Allocate our buffer.
-			int cnt = sw * sh;  // Total #pixels.
+			const int cnt = sw * sh;  // Total #pixels.
 			auto *pixels = new unsigned char[cnt];
 			memset(pixels, bg, cnt);// Fill with background.
 
@@ -248,7 +248,7 @@ static bool Gen_font_shape_win32(
 	SelectObject(dc, bmp);
 	SelectObject(dc, font);
 
-	bool ret = Gen_font_shape_win32(dc, font, shape, nframes, pixels_ht, fg, bg, shadow);
+	const bool ret = Gen_font_shape_win32(dc, font, shape, nframes, pixels_ht, fg, bg, shadow);
 	DeleteObject(bmp);
 	DeleteObject(font);
 	DeleteDC(dc);
@@ -334,8 +334,8 @@ bool Gen_font_shape(
 			shape->set_frame(make_unique<Shape_frame>(&bg, 1, 1, 0, 0, true), chr);
 			continue;
 		}
-		int w = glyph->bitmap.width;
-		int h = glyph->bitmap.rows;
+		const int w = glyph->bitmap.width;
+		const int h = glyph->bitmap.rows;
 		int sw = w;
 		int sh = h; // Shape width/height.
 		int offset = 0;     // Starting row, col.
@@ -349,7 +349,7 @@ bool Gen_font_shape(
 			offset = 1;
 		}
 		// Allocate our buffer.
-		int cnt = sw * sh;  // Total #pixels.
+		const int cnt = sw * sh;  // Total #pixels.
 		auto *pixels = new unsigned char[cnt];
 		memset(pixels, bg, cnt);// Fill with background.
 		// I believe this is 1 bit/pixel:

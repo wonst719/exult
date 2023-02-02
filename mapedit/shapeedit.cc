@@ -226,7 +226,7 @@ C_EXPORT gboolean on_equip_recnum_changed(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	int recnum = gtk_spin_button_get_value_as_int(
+	const int recnum = gtk_spin_button_get_value_as_int(
 	                 GTK_SPIN_BUTTON(widget));
 	ExultStudio::get_instance()->init_equip_window(recnum);
 	return TRUE;
@@ -371,9 +371,9 @@ void ExultStudio::init_equip_window(
 	Equip_record &rec = Monster_info::get_equip(recnum - 1);
 	// Go through rows.
 	for (int row = 0; row < 10; row++) {
-		Equip_element &elem = rec.get(row);
-		Equip_row_widgets &widgets = equip_rows[row];
-		int shnum = elem.get_shapenum();
+		const Equip_element &elem = rec.get(row);
+		const Equip_row_widgets &widgets = equip_rows[row];
+		const int shnum = elem.get_shapenum();
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(widgets.shape),
 		                          shnum);
 		const char *nm = get_shape_name(shnum);
@@ -391,13 +391,13 @@ void ExultStudio::init_equip_window(
 
 void ExultStudio::save_equip_window(
 ) {
-	int recnum = get_spin("equip_recnum");
+	const int recnum = get_spin("equip_recnum");
 	// Get the record.
 	Equip_record &rec = Monster_info::get_equip(recnum - 1);
 	// Go through rows.
 	for (int row = 0; row < 10; row++) {
 		Equip_element &elem = rec.get(row);
-		Equip_row_widgets &widgets = equip_rows[row];
+		const Equip_row_widgets &widgets = equip_rows[row];
 		elem.set(gtk_spin_button_get_value_as_int(
 		             GTK_SPIN_BUTTON(widgets.shape)),
 		         gtk_spin_button_get_value_as_int(
@@ -415,7 +415,7 @@ void ExultStudio::save_equip_window(
 void ExultStudio::open_equip_window(
     int recnum          // Record # to start with (1-based).
 ) {
-	int ecnt = Monster_info::get_equip_cnt();
+	const int ecnt = Monster_info::get_equip_cnt();
 	if (recnum <= 0 || recnum > ecnt)
 		return;
 	if (!equipwin) {        // First time?
@@ -448,8 +448,8 @@ void ExultStudio::new_equip_record(
 ) {
 	Equip_record rec;
 	Monster_info::add_equip(rec);
-	int ecnt = Monster_info::get_equip_cnt();
-	int recnum = ecnt;
+	const int ecnt = Monster_info::get_equip_cnt();
+	const int recnum = ecnt;
 	// Show new entry.
 	set_spin("equip_recnum", recnum, 1, ecnt);
 	set_sensitive("equip_new", ecnt < 255);
@@ -507,8 +507,8 @@ C_EXPORT gboolean on_shinfo_weapon_ammo_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
-	bool on = sel == 0;
+	const int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	const bool on = sel == 0;
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_weapon_ammo_shape", on);
 	return TRUE;
@@ -522,8 +522,8 @@ C_EXPORT gboolean on_shinfo_weapon_sprite_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
-	bool on = sel == 0;
+	const int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	const bool on = sel == 0;
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_weapon_proj", on);
 	return TRUE;
@@ -537,8 +537,8 @@ C_EXPORT gboolean on_shinfo_ammo_sprite_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
-	bool on = sel == 0;
+	const int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	const bool on = sel == 0;
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_ammo_proj", on);
 	return TRUE;
@@ -552,19 +552,19 @@ C_EXPORT gboolean on_shinfo_animation_type_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	const int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	bool on = sel != static_cast<int>(Animation_info::FA_HOURLY);
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_animation_ticks", on);
 	studio->set_sensitive("shinfo_animation_sfxsynch", on);
-	bool sfxon = !studio->get_toggle("shinfo_animation_sfxsynch");
+	const bool sfxon = !studio->get_toggle("shinfo_animation_sfxsynch");
 	studio->set_sensitive("shinfo_animation_sfxdelay", on && sfxon);
 	on = (sel == static_cast<int>(Animation_info::FA_LOOPING));
-	bool freezeon = studio->get_optmenu("shinfo_animation_freezefirst") == 2;
+	const bool freezeon = studio->get_optmenu("shinfo_animation_freezefirst") == 2;
 	studio->set_sensitive("shinfo_animation_freezefirst", on);
 	studio->set_sensitive("shinfo_animation_freezechance", on && freezeon);
 	studio->set_sensitive("shinfo_animation_rectype", on);
-	bool recon = studio->get_toggle("shinfo_animation_rectype");
+	const bool recon = studio->get_toggle("shinfo_animation_rectype");
 	studio->set_sensitive("shinfo_animation_recycle", on && !recon);
 	return TRUE;
 }
@@ -576,7 +576,7 @@ C_EXPORT gboolean on_shinfo_animation_frtype_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_animation_frcount", on);
 	return TRUE;
@@ -591,7 +591,7 @@ C_EXPORT gboolean on_shinfo_animation_rectype_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_animation_recycle", on);
 	return TRUE;
@@ -605,7 +605,7 @@ C_EXPORT gboolean on_shinfo_animation_sfxsynch_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_animation_sfxdelay", on);
 	return TRUE;
@@ -619,7 +619,7 @@ C_EXPORT gboolean on_shinfo_animation_freezefirst_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	const int sel = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_animation_freezechance", sel == 2);
 	return TRUE;
@@ -633,7 +633,7 @@ C_EXPORT gboolean on_shinfo_effhps_frame_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_effhps_frame_num", on);
 	return TRUE;
@@ -647,7 +647,7 @@ C_EXPORT gboolean on_shinfo_effhps_qual_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_effhps_qual_num", on);
 	return TRUE;
@@ -661,7 +661,7 @@ C_EXPORT gboolean on_shinfo_effhps_hp_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_effhps_hp_val", on);
 	return TRUE;
@@ -675,7 +675,7 @@ C_EXPORT gboolean on_shinfo_frameusecode_frame_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_frameusecode_frame_num", on);
 	return TRUE;
@@ -689,7 +689,7 @@ C_EXPORT gboolean on_shinfo_frameusecode_qual_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_frameusecode_qual_num", on);
 	return TRUE;
@@ -703,7 +703,7 @@ C_EXPORT gboolean on_shinfo_framenames_frame_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_framenames_frame_num", on);
 	return TRUE;
@@ -717,7 +717,7 @@ C_EXPORT gboolean on_shinfo_framenames_qual_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_framenames_qual_num", on);
 	return TRUE;
@@ -731,7 +731,7 @@ C_EXPORT gboolean on_shinfo_framenames_name_type_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	int type = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	const int type = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	ExultStudio *studio = ExultStudio::get_instance();
 	if (type == 0)
 		studio->set_entry("shinfo_framenames_name_text",
@@ -767,7 +767,7 @@ C_EXPORT gboolean on_shinfo_framenames_comp_msg_type_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	int val = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	const int val = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_framenames_comp_msg_text", val == 2);
 	return TRUE;
@@ -800,7 +800,7 @@ C_EXPORT gboolean on_shinfo_frameflags_frame_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_frameflags_frame_num", on);
 	return TRUE;
@@ -814,7 +814,7 @@ C_EXPORT gboolean on_shinfo_frameflags_qual_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_frameflags_qual_num", on);
 	return TRUE;
@@ -828,7 +828,7 @@ C_EXPORT gboolean on_shinfo_brightness_frame_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_brightness_frame_num", on);
 	return TRUE;
@@ -842,7 +842,7 @@ C_EXPORT gboolean on_shinfo_warmth_frame_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_warmth_frame_num", on);
 	return TRUE;
@@ -856,7 +856,7 @@ C_EXPORT gboolean on_shinfo_cntrules_shape_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_cntrules_shape_num", on);
 	return TRUE;
@@ -870,7 +870,7 @@ C_EXPORT gboolean on_shinfo_explosion_sfx_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_explosion_sfx_number", on);
 	return TRUE;
@@ -972,9 +972,9 @@ static inline void Get_hp_fields(
     unsigned int &qual,
     unsigned int *hps = nullptr
 ) {
-	bool anyfr = studio->get_toggle("shinfo_effhps_frame_type");
-	bool anyq = studio->get_toggle("shinfo_effhps_qual_type");
-	bool nohps = studio->get_toggle("shinfo_effhps_hp_type");
+	const bool anyfr = studio->get_toggle("shinfo_effhps_frame_type");
+	const bool anyq = studio->get_toggle("shinfo_effhps_qual_type");
+	const bool nohps = studio->get_toggle("shinfo_effhps_hp_type");
 	frnum = anyfr ? ~0u :
 	        studio->get_spin("shinfo_effhps_frame_num");
 	qual = anyq ? ~0u :
@@ -985,7 +985,7 @@ static inline void Get_hp_fields(
 
 static inline bool Have_quality() {
 	ExultStudio *studio = ExultStudio::get_instance();
-	int c = studio->get_optmenu("shinfo_shape_class");
+	const int c = studio->get_optmenu("shinfo_shape_class");
 	return c == 1 || c == 5 || c == 6 || c == 9 || c == 10 || c == 11;
 }
 
@@ -996,7 +996,7 @@ static inline void Set_hp_fields(
 ) {
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_toggle("shinfo_effhps_frame_type", frnum == -1);
-	bool havequal = Have_quality();
+	const bool havequal = Have_quality();
 	if (!havequal)
 		qual = -1;
 	studio->set_toggle("shinfo_effhps_qual_type", qual == -1, havequal);
@@ -1024,7 +1024,7 @@ C_EXPORT void on_shinfo_effhps_update_clicked(
 	unsigned int newhps;
 	Get_hp_fields(studio, newfrnum, newqual, &newhps);
 	UniqueTreeIter iter(nullptr, TreeIterDeleter);
-	int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
+	const int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
 	if (cmp) {
 		GtkTreeIter newiter;
 		GdkPixbuf *nshape = studio->shape_image(
@@ -1144,7 +1144,7 @@ static inline void Get_brightness_fields(
     unsigned int &frnum,
     unsigned int *brightness = nullptr
 ) {
-	bool anyfr = studio->get_toggle("shinfo_brightness_frame_type");
+	const bool anyfr = studio->get_toggle("shinfo_brightness_frame_type");
 	frnum = anyfr ? ~0u :
 	        studio->get_spin("shinfo_brightness_frame_num");
 	if (brightness)
@@ -1179,7 +1179,7 @@ C_EXPORT void on_shinfo_brightness_update_clicked(
 	GtkTreeModel *model = gtk_tree_view_get_model(brightnesstree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	UniqueTreeIter iter(nullptr, TreeIterDeleter);
-	int cmp = Find_unary_iter(model, iter, newfrnum);
+	const int cmp = Find_unary_iter(model, iter, newfrnum);
 	if (cmp) {
 		GtkTreeIter newiter;
 		GdkPixbuf *nshape = studio->shape_image(
@@ -1259,7 +1259,7 @@ static inline void Get_warmth_fields(
     unsigned int &frnum,
     int *warm = nullptr
 ) {
-	bool anyfr = studio->get_toggle("shinfo_warmth_frame_type");
+	const bool anyfr = studio->get_toggle("shinfo_warmth_frame_type");
 	frnum = anyfr ? ~0u :
 	        studio->get_spin("shinfo_warmth_frame_num");
 	if (warm)
@@ -1294,7 +1294,7 @@ C_EXPORT void on_shinfo_warmth_update_clicked(
 	GtkTreeModel *model = gtk_tree_view_get_model(warmtree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	UniqueTreeIter iter(nullptr, TreeIterDeleter);
-	int cmp = Find_unary_iter(model, iter, newfrnum);
+	const int cmp = Find_unary_iter(model, iter, newfrnum);
 	if (cmp) {
 		GtkTreeIter newiter;
 		GdkPixbuf *nshape = studio->shape_image(
@@ -1374,7 +1374,7 @@ static inline void Get_cntrules_fields(
     unsigned int &shnum,
     bool *accept = nullptr
 ) {
-	bool anysh = studio->get_toggle("shinfo_cntrules_shape_type");
+	const bool anysh = studio->get_toggle("shinfo_cntrules_shape_type");
 	shnum = anysh ? ~0u :
 	        studio->get_spin("shinfo_cntrules_shape_num");
 	if (accept)
@@ -1409,7 +1409,7 @@ C_EXPORT void on_shinfo_cntrules_update_clicked(
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	UniqueTreeIter iter(nullptr, TreeIterDeleter);
-	int cmp = Find_unary_iter(model, iter, newshnum);
+	const int cmp = Find_unary_iter(model, iter, newshnum);
 	if (cmp) {
 		GtkTreeIter newiter;
 		GdkPixbuf *nshape = studio->shape_image(
@@ -1490,10 +1490,10 @@ static inline void Get_frameflags_fields(
     unsigned int &qual,
     unsigned int *flags = nullptr
 ) {
-	bool anyfr = studio->get_toggle("shinfo_frameflags_frame_type");
+	const bool anyfr = studio->get_toggle("shinfo_frameflags_frame_type");
 	frnum = anyfr ? ~0u :
 	        studio->get_spin("shinfo_frameflags_frame_num");
-	bool anyq = studio->get_toggle("shinfo_frameflags_qual_type");
+	const bool anyq = studio->get_toggle("shinfo_frameflags_qual_type");
 	qual = anyq ? ~0u :
 	       studio->get_spin("shinfo_frameflags_qual_num");
 	if (flags) {
@@ -1563,7 +1563,7 @@ C_EXPORT void on_shinfo_frameflags_update_clicked(
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	UniqueTreeIter iter(nullptr, TreeIterDeleter);
-	int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
+	const int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
 	if (cmp) {
 		GtkTreeIter newiter;
 		GdkPixbuf *nshape = studio->shape_image(
@@ -1649,10 +1649,10 @@ static inline void Get_frameusecode_fields(
     unsigned int &qual,
     const char **ucfun = nullptr
 ) {
-	bool anyfr = studio->get_toggle("shinfo_frameusecode_frame_type");
+	const bool anyfr = studio->get_toggle("shinfo_frameusecode_frame_type");
 	frnum = anyfr ? ~0u :
 	        studio->get_spin("shinfo_frameusecode_frame_num");
-	bool anyq = studio->get_toggle("shinfo_frameusecode_qual_type");
+	const bool anyq = studio->get_toggle("shinfo_frameusecode_qual_type");
 	qual = anyq ? ~0u :
 	       studio->get_spin("shinfo_frameusecode_qual_num");
 	if (ucfun)
@@ -1691,7 +1691,7 @@ C_EXPORT void on_shinfo_frameusecode_update_clicked(
 	GtkTreeModel *model = gtk_tree_view_get_model(cnttree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	UniqueTreeIter iter(nullptr, TreeIterDeleter);
-	int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
+	const int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
 	if (cmp) {
 		GtkTreeIter newiter;
 		GdkPixbuf *nshape = studio->shape_image(
@@ -1794,10 +1794,10 @@ static inline void Get_framenames_fields(
     int *othertype = nullptr,
     const char **othermsg = nullptr
 ) {
-	bool anyfr = studio->get_toggle("shinfo_framenames_frame_type");
+	const bool anyfr = studio->get_toggle("shinfo_framenames_frame_type");
 	frnum = anyfr ? ~0u :
 	        studio->get_spin("shinfo_framenames_frame_num");
-	bool anyq = studio->get_toggle("shinfo_framenames_qual_type");
+	const bool anyq = studio->get_toggle("shinfo_framenames_qual_type");
 	qual = anyq ? ~0u :
 	       studio->get_spin("shinfo_framenames_qual_num");
 	if (type) {
@@ -1812,8 +1812,8 @@ static inline void Get_framenames_fields(
 			*type = 0;
 			break;
 		default: {
-			int b0 = studio->get_optmenu("shinfo_framenames_comp_pos") + 1;
-			int b1 = studio->get_optmenu("shinfo_framenames_comp_type") * 2;
+			const int b0 = studio->get_optmenu("shinfo_framenames_comp_pos") + 1;
+			const int b1 = studio->get_optmenu("shinfo_framenames_comp_type") * 2;
 			*type = b0 + b1;
 			break;
 		}
@@ -1849,7 +1849,7 @@ static void Set_framenames_fields(
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_toggle("shinfo_framenames_frame_type", frnum == -1);
 	studio->set_spin("shinfo_framenames_frame_num", frnum == -1 ? 0 : frnum, frnum != -1);
-	bool havequal = Have_quality();
+	const bool havequal = Have_quality();
 	if (!havequal)
 		qual = -1;
 	studio->set_toggle("shinfo_framenames_qual_type", qual == -1, havequal);
@@ -1864,11 +1864,11 @@ static void Set_framenames_fields(
 		studio->set_entry("shinfo_framenames_comp_msg_text", "", false);
 	} else {
 		--type;
-		int flag = (type & 2) / 2;
+		const int flag = (type & 2) / 2;
 		studio->set_optmenu("shinfo_framenames_name_type", 3);
 		studio->set_optmenu("shinfo_framenames_comp_pos", (type & 1));
 		studio->set_optmenu("shinfo_framenames_comp_type", flag);
-		int compindex = !flag ? (othertype == -255 ? 0 :
+		const int compindex = !flag ? (othertype == -255 ? 0 :
 		                         (othertype == -1 ? 1 : 2)) : 0;
 		studio->set_optmenu("shinfo_framenames_comp_msg_type", compindex, !flag);
 		studio->set_entry("shinfo_framenames_comp_msg_text",
@@ -1899,7 +1899,7 @@ C_EXPORT void on_shinfo_framenames_update_clicked(
 	GtkTreeModel *model = gtk_tree_view_get_model(nametree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	UniqueTreeIter iter(nullptr, TreeIterDeleter);
-	int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
+	const int cmp = Find_binary_iter(model, iter, newfrnum, newqual);
 	if (cmp) {
 		GtkTreeIter newiter;
 		GdkPixbuf *nshape = studio->shape_image(
@@ -2005,10 +2005,10 @@ static inline void Get_objpaperdoll_fields(
     bool *trans = nullptr,
     bool *gender = nullptr
 ) {
-	int ready = studio->get_optmenu("shinfo_ready_spot");
+	const int ready = studio->get_optmenu("shinfo_ready_spot");
 	bool fron = ready == 6 || ready == 7 || ready == 8 || ready == 9;
-	int altspot = studio->get_optmenu("shinfo_altready1_spot");
-	bool armor = ready == 12 && altspot != 3;
+	const int altspot = studio->get_optmenu("shinfo_altready1_spot");
+	const bool armor = ready == 12 && altspot != 3;
 	if (armor) fron = true;
 	spot = studio->get_optmenu("shinfo_objpaperdoll_spot");
 	int max;
@@ -2020,7 +2020,7 @@ static inline void Get_objpaperdoll_fields(
 		max = 0;
 	spot = spot == 18 ? 102 : spot;
 
-	bool anyfr = studio->get_toggle("shinfo_objpaperdoll_wframe_type");
+	const bool anyfr = studio->get_toggle("shinfo_objpaperdoll_wframe_type");
 	frnum = anyfr ? ~0u :
 	        studio->get_spin("shinfo_objpaperdoll_wframe");
 	if (shape)
@@ -2048,10 +2048,10 @@ static void Set_objpaperdoll_fields(
     int frame0 = 0, int frame1 = 0, int frame2 = 0, int frame3 = 0
 ) {
 	ExultStudio *studio = ExultStudio::get_instance();
-	int ready = studio->get_optmenu("shinfo_ready_spot");
+	const int ready = studio->get_optmenu("shinfo_ready_spot");
 	bool fron = ready == 6 || ready == 7 || ready == 8 || ready == 9;
-	int altspot = studio->get_optmenu("shinfo_altready1_spot");
-	bool armor = ready == 12 && altspot != 3;
+	const int altspot = studio->get_optmenu("shinfo_altready1_spot");
+	const bool armor = ready == 12 && altspot != 3;
 	if (armor) fron = true;
 	int max;
 	if (spot == 0 && ready == 11) // helmet
@@ -2095,8 +2095,8 @@ static inline void Set_objpaperdoll_sensitivity(
 	studio->set_spin("shinfo_objpaperdoll_spotframe", 0, max);
 	studio->set_sensitive("shinfo_objpaperdoll_spotframe", max > 0);
 	bool fron = ready == 6 || ready == 7 || ready == 8 || ready == 9;
-	int altspot = studio->get_optmenu("shinfo_altready1_spot");
-	bool armor = ready == 12 && altspot != 3;
+	const int altspot = studio->get_optmenu("shinfo_altready1_spot");
+	const bool armor = ready == 12 && altspot != 3;
 	if (armor) fron = true;
 	studio->set_sensitive("shinfo_objpaperdoll_frame1", fron);
 	studio->set_sensitive("shinfo_objpaperdoll_frame2", fron);
@@ -2153,7 +2153,7 @@ C_EXPORT gboolean on_shinfo_objpaperdoll_frame_type_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio *studio = ExultStudio::get_instance();
 	studio->set_sensitive("shinfo_objpaperdoll_wframe", on);
 	return TRUE;
@@ -2186,7 +2186,7 @@ C_EXPORT void on_shinfo_objpaperdoll_update_clicked(
 	GtkTreeModel *model = gtk_tree_view_get_model(dolltree);
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	UniqueTreeIter iter(nullptr, TreeIterDeleter);
-	int cmp = Find_binary_iter(model, iter, newfrnum, newspot);
+	const int cmp = Find_binary_iter(model, iter, newfrnum, newspot);
 	if (cmp) {
 		GtkTreeIter newiter;
 		GdkPixbuf *nshape = studio->shape_image(
@@ -2267,9 +2267,9 @@ C_EXPORT gboolean on_shinfo_objpaperdoll_spot_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	int spot = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	const int spot = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	ExultStudio *studio = ExultStudio::get_instance();
-	int ready = studio->get_optmenu("shinfo_ready_spot");
+	const int ready = studio->get_optmenu("shinfo_ready_spot");
 	Set_objpaperdoll_sensitivity(studio, spot, ready);
 	return TRUE;
 }
@@ -2282,9 +2282,9 @@ C_EXPORT gboolean on_shinfo_ready_spot_changed(
     gpointer data
 ) {
 	ignore_unused_variable_warning(data);
-	int ready = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	const int ready = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	ExultStudio *studio = ExultStudio::get_instance();
-	int spot = studio->get_optmenu("shinfo_objpaperdoll_spot");
+	const int spot = studio->get_optmenu("shinfo_objpaperdoll_spot");
 	Set_objpaperdoll_sensitivity(studio, spot, ready);
 	return TRUE;
 }
@@ -2297,7 +2297,7 @@ C_EXPORT void on_shinfo_weapon_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_weapon_box", on);
 }
 C_EXPORT void on_shinfo_ammo_check_toggled(
@@ -2305,7 +2305,7 @@ C_EXPORT void on_shinfo_ammo_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_ammo_box", on);
 }
 C_EXPORT void on_shinfo_armor_check_toggled(
@@ -2313,7 +2313,7 @@ C_EXPORT void on_shinfo_armor_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_armor_box", on);
 }
 C_EXPORT void on_shinfo_monster_check_toggled(
@@ -2321,7 +2321,7 @@ C_EXPORT void on_shinfo_monster_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_monster_box", on);
 }
 C_EXPORT void on_shinfo_container_check_toggled(
@@ -2329,7 +2329,7 @@ C_EXPORT void on_shinfo_container_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_container_box", on);
 }
 C_EXPORT void on_shinfo_mountaintop_check_toggled(
@@ -2337,7 +2337,7 @@ C_EXPORT void on_shinfo_mountaintop_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_mountaintop_box", on);
 }
 C_EXPORT void on_shinfo_bargetype_check_toggled(
@@ -2345,7 +2345,7 @@ C_EXPORT void on_shinfo_bargetype_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_barge_box", on);
 }
 C_EXPORT void on_shinfo_fieldinfo_check_toggled(
@@ -2353,7 +2353,7 @@ C_EXPORT void on_shinfo_fieldinfo_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_fieldinfo_box", on);
 }
 C_EXPORT void on_shinfo_barge_check_toggled(
@@ -2361,7 +2361,7 @@ C_EXPORT void on_shinfo_barge_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_sensitive("shinfo_barge_type", on);
 }
 C_EXPORT void on_shinfo_field_check_toggled(
@@ -2369,7 +2369,7 @@ C_EXPORT void on_shinfo_field_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_sensitive("shinfo_fieldinfo_type", on);
 }
 C_EXPORT void on_shinfo_body_check_toggled(
@@ -2377,7 +2377,7 @@ C_EXPORT void on_shinfo_body_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_coffin", on);
 }
 C_EXPORT void on_shinfo_animation_check_toggled(
@@ -2385,7 +2385,7 @@ C_EXPORT void on_shinfo_animation_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_animation_box", on);
 }
 C_EXPORT void on_shinfo_explosion_check_toggled(
@@ -2393,7 +2393,7 @@ C_EXPORT void on_shinfo_explosion_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_explosion_box", on);
 }
 C_EXPORT void on_shinfo_effhps_check_toggled(
@@ -2401,7 +2401,7 @@ C_EXPORT void on_shinfo_effhps_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_effhps_box", on);
 }
 C_EXPORT void on_shinfo_npcflags_check_toggled(
@@ -2409,7 +2409,7 @@ C_EXPORT void on_shinfo_npcflags_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_npcflags_box", on);
 }
 C_EXPORT void on_shinfo_sound_check_toggled(
@@ -2417,7 +2417,7 @@ C_EXPORT void on_shinfo_sound_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_sfx_box", on);
 }
 C_EXPORT void on_shinfo_brightness_check_toggled(
@@ -2425,7 +2425,7 @@ C_EXPORT void on_shinfo_brightness_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_brightness_box", on);
 }
 C_EXPORT void on_shinfo_warmth_check_toggled(
@@ -2433,7 +2433,7 @@ C_EXPORT void on_shinfo_warmth_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_warmth_box", on);
 }
 C_EXPORT void on_shinfo_cntrules_check_toggled(
@@ -2441,7 +2441,7 @@ C_EXPORT void on_shinfo_cntrules_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_cntrules_box", on);
 }
 C_EXPORT void on_shinfo_framenames_check_toggled(
@@ -2449,7 +2449,7 @@ C_EXPORT void on_shinfo_framenames_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_framenames_box", on);
 }
 C_EXPORT void on_shinfo_frameflags_check_toggled(
@@ -2457,7 +2457,7 @@ C_EXPORT void on_shinfo_frameflags_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_frameflags_box", on);
 }
 C_EXPORT void on_shinfo_frameusecode_check_toggled(
@@ -2465,7 +2465,7 @@ C_EXPORT void on_shinfo_frameusecode_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_frameusecode_box", on);
 }
 C_EXPORT void on_shinfo_npcpaperdoll_check_toggled(
@@ -2473,7 +2473,7 @@ C_EXPORT void on_shinfo_npcpaperdoll_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_npcpaperdoll_box", on);
 }
 C_EXPORT void on_shinfo_objpaperdoll_check_toggled(
@@ -2481,7 +2481,7 @@ C_EXPORT void on_shinfo_objpaperdoll_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_visible("shinfo_objpaperdoll_box", on);
 }
 C_EXPORT void on_shinfo_ammo_special_check_toggled(
@@ -2489,7 +2489,7 @@ C_EXPORT void on_shinfo_ammo_special_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_sensitive("shinfo_ammo_drop", !on);
 }
 C_EXPORT void on_shinfo_single_sfx_toggled(
@@ -2497,7 +2497,7 @@ C_EXPORT void on_shinfo_single_sfx_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_sensitive("shinfo_sfx_type", on);
 	ExultStudio::get_instance()->set_sensitive("shinfo_sfx_count", on);
 }
@@ -2506,7 +2506,7 @@ C_EXPORT void on_shinfo_sfx_clock_check_toggled(
     gpointer user_data
 ) {
 	ignore_unused_variable_warning(user_data);
-	bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	const bool on = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
 	ExultStudio::get_instance()->set_sensitive("shinfo_sfx_clock_sfx", on);
 }
 
@@ -2533,7 +2533,7 @@ void ExultStudio::set_shape_notebook_frame(
 ) {
 	auto *file_info = static_cast<Shape_file_info *>(
 	                      g_object_get_data(G_OBJECT(shapewin), "file_info"));
-	int shnum = get_num_entry("shinfo_shape");
+	const int shnum = get_num_entry("shinfo_shape");
 	Vga_file *ifile = file_info->get_ifile();
 	Shape_frame *shape = ifile->get_shape(shnum, frnum);
 	if (shape == nullptr) {
@@ -2645,7 +2645,7 @@ void ExultStudio::init_shape_notebook(
 	                              9, 10, 11, 12, 0
 	                             };
 	const int numclasses = array_size(classes);
-	int shclass = static_cast<int>(info.get_shape_class());
+	const int shclass = static_cast<int>(info.get_shape_class());
 	set_optmenu("shinfo_shape_class", shclass < numclasses ?
 	            classes[shclass] : 0);
 	set_shape_notebook_frame(frnum);
@@ -2701,12 +2701,12 @@ void ExultStudio::init_shape_notebook(
 		set_spin("shinfo_weapon_damage", winfo->get_damage());
 		set_spin("shinfo_weapon_range", winfo->get_range());
 		set_optmenu("shinfo_weapon_type", winfo->get_damage_type());
-		int ammo = winfo->get_ammo_consumed();
-		int ammo_use = ammo >= 0 ? 0 : -ammo;
+		const int ammo = winfo->get_ammo_consumed();
+		const int ammo_use = ammo >= 0 ? 0 : -ammo;
 		set_optmenu("shinfo_weapon_ammo", ammo_use);
 		set_spin("shinfo_weapon_ammo_shape", ammo >= 0 ? ammo : 0, ammo >= 0);
-		int proj = winfo->get_projectile();
-		int proj_type = proj >= 0 ? 0 : (proj == -1 ? 1 : 2);
+		const int proj = winfo->get_projectile();
+		const int proj_type = proj >= 0 ? 0 : (proj == -1 ? 1 : 2);
 		set_optmenu("shinfo_weapon_sprite", proj_type);
 		set_spin("shinfo_weapon_proj", proj >= 0 ? proj : 0, proj >= 0);
 		set_optmenu("shinfo_weapon_uses", winfo->get_uses());
@@ -2744,8 +2744,8 @@ void ExultStudio::init_shape_notebook(
 	if (ainfo) {        // Setup ammo page.
 		set_spin("shinfo_ammo_damage", ainfo->get_damage());
 		set_spin("shinfo_ammo_family", ainfo->get_family_shape());
-		int proj = ainfo->get_sprite_shape();
-		int proj_type = proj >= 0 ? 0 : (proj == -1 ? 1 : 2);
+		const int proj = ainfo->get_sprite_shape();
+		const int proj_type = proj >= 0 ? 0 : (proj == -1 ? 1 : 2);
 		set_optmenu("shinfo_ammo_sprite", proj_type);
 		set_spin("shinfo_ammo_proj", proj >= 0 ? proj : 0, proj >= 0);
 		set_optmenu("shinfo_ammo_type", ainfo->get_damage_type());
@@ -2787,7 +2787,7 @@ void ExultStudio::init_shape_notebook(
 		set_bit_toggles(&immun[0],
 		                array_size(immun), arinfo->get_immune());
 	}
-	unsigned char aflags = info.get_actor_flags();
+	const unsigned char aflags = info.get_actor_flags();
 	set_toggle("shinfo_npcflags_check", aflags != 0);
 	set_visible("shinfo_npcflags_box", aflags != 0);
 	if (aflags) {
@@ -2863,8 +2863,8 @@ void ExultStudio::init_shape_notebook(
 		set_bit_toggles(&flags[0],
 		                array_size(flags), minfo->get_flags());
 	}
-	int gump_shape = info.get_gump_shape();
-	int gump_font = info.get_gump_font();
+	const int gump_shape = info.get_gump_shape();
+	const int gump_font = info.get_gump_font();
 	set_toggle("shinfo_container_check", gump_shape >= 0);
 	set_visible("shinfo_container_box", gump_shape >= 0);
 	set_spin("shinfo_gump_num", gump_shape >= 0 ? gump_shape : 0);
@@ -2875,7 +2875,7 @@ void ExultStudio::init_shape_notebook(
 		mountain_top = 0;
 	set_toggle("shinfo_mountaintop_check", mountain_top != 0);
 	set_visible("shinfo_mountaintop_box", mountain_top != 0);
-	bool top_on = get_optmenu("shinfo_shape_class") == 12;
+	const bool top_on = get_optmenu("shinfo_shape_class") == 12;
 	set_optmenu("shinfo_mountaintop_type", top_on ? mountain_top : 0, top_on);
 
 	int barge_type = info.get_barge_type();
@@ -2883,33 +2883,33 @@ void ExultStudio::init_shape_notebook(
 		barge_type = 0;
 	set_toggle("shinfo_bargetype_check", barge_type != 0);
 	set_visible("shinfo_barge_box", barge_type != 0);
-	bool barge_on = get_toggle("shinfo_barge_check");
+	const bool barge_on = get_toggle("shinfo_barge_check");
 	set_optmenu("shinfo_barge_type", barge_on ? barge_type : 0, barge_on);
 
 	int field_type = info.get_field_type();
 	if (field_type > 4)
 		field_type = 0;
-	bool field_on = get_toggle("shinfo_field_check");
+	const bool field_on = get_toggle("shinfo_field_check");
 	set_toggle("shinfo_fieldinfo_check", field_type >= 0);
 	set_visible("shinfo_fieldinfo_box", field_on);
 	set_optmenu("shinfo_fieldinfo_type", field_on ? field_type + 1 : 0, field_on);
 
-	bool hasbody = info.has_body_info();
+	const bool hasbody = info.has_body_info();
 	set_toggle("shinfo_body_check", hasbody);
 	set_visible("shinfo_coffin", hasbody);
 	if (hasbody) {
-		int shnum = info.get_body_shape();
+		const int shnum = info.get_body_shape();
 		set_spin("shinfo_body_shape", shnum);
 		set_spin("shinfo_body_frame", info.get_body_frame(),
 		         0, vgafile->get_ifile()->get_num_frames(shnum) - 1);
 	}
 
-	bool hasexp = info.has_explosion_info();
+	const bool hasexp = info.has_explosion_info();
 	set_toggle("shinfo_explosion_check", hasexp);
 	set_visible("shinfo_explosion_box", hasexp);
 	if (hasexp) {
 		set_spin("shinfo_explosion_sprite", info.get_explosion_sprite());
-		int sfxnum = info.get_explosion_sfx();
+		const int sfxnum = info.get_explosion_sfx();
 		if (sfxnum < 0) {
 			set_toggle("shinfo_explosion_sfx_type", true);
 			set_spin("shinfo_explosion_sfx_number", 0, false);
@@ -2923,13 +2923,13 @@ void ExultStudio::init_shape_notebook(
 	set_toggle("shinfo_sound_check", sfxinf != nullptr);
 	set_visible("shinfo_sfx_box", sfxinf != nullptr);
 	if (sfxinf) {
-		int range = sfxinf->get_sfx_range();
+		const int range = sfxinf->get_sfx_range();
 		set_toggle("shinfo_single_sfx", range == 1);
 		set_spin("shinfo_sfx_first", sfxinf->get_sfx());
 		set_spin("shinfo_sfx_chance", sfxinf->get_chance());
 		set_optmenu("shinfo_sfx_type", sfxinf->play_randomly(), range > 1);
 		set_spin("shinfo_sfx_count", range, range > 1);
-		bool hourly = sfxinf->play_horly_ticks();
+		const bool hourly = sfxinf->play_horly_ticks();
 		set_toggle("shinfo_sfx_clock_check", hourly);
 		set_spin("shinfo_sfx_clock_sfx", sfxinf->get_extra_sfx(), hourly);
 	}
@@ -2946,7 +2946,7 @@ void ExultStudio::init_shape_notebook(
 		set_spin("shinfo_npcpaperdoll_hframe", npcinf->get_head_frame());
 		set_spin("shinfo_npcpaperdoll_hhelm", npcinf->get_head_frame_helm());
 		set_spin("shinfo_npcpaperdoll_ashape", npcinf->get_arms_shape());
-		static const char *arm_names[] = {"shinfo_npcpaperdoll_aframe",
+		static const char * const arm_names[] = {"shinfo_npcpaperdoll_aframe",
 		                                  "shinfo_npcpaperdoll_atwohanded",
 		                                  "shinfo_npcpaperdoll_astaff"
 		                                 };
@@ -2958,12 +2958,12 @@ void ExultStudio::init_shape_notebook(
 	set_toggle("shinfo_animation_check", aniinf != nullptr);
 	set_visible("shinfo_animation_box", aniinf != nullptr);
 	if (aniinf) {
-		Animation_info::AniType type = aniinf->get_type();
+		const Animation_info::AniType type = aniinf->get_type();
 		bool on = (type != Animation_info::FA_NON_LOOPING);
 		set_optmenu("shinfo_animation_type", static_cast<int>(type));
 		Vga_file *ifile = curfile->get_ifile();
-		int nframes = ifile->get_num_frames(shnum);
-		int count = aniinf->get_frame_count();
+		const int nframes = ifile->get_num_frames(shnum);
+		const int count = aniinf->get_frame_count();
 		if (count == nframes || count < 0) {
 			set_toggle("shinfo_animation_frtype", true);
 			set_spin("shinfo_animation_frcount", nframes, false);
@@ -2979,13 +2979,13 @@ void ExultStudio::init_shape_notebook(
 		set_spin("shinfo_animation_sfxdelay", sfxdelay < 0 ? 1 : sfxdelay,
 		         on && sfxdelay > 0);
 		on = (type == Animation_info::FA_LOOPING);
-		int chance = aniinf->get_freeze_first_chance();
+		const int chance = aniinf->get_freeze_first_chance();
 		set_optmenu("shinfo_animation_freezefirst", chance == 100 ? 0 :
 		            (chance == 0 ? 1 : 2), on);
-		bool usespin = (chance > 0) && (chance < 100);
+		const bool usespin = (chance > 0) && (chance < 100);
 		set_spin("shinfo_animation_freezechance",
 		         usespin ? chance : 1, on && usespin);
-		int rec = aniinf->get_recycle();
+		const int rec = aniinf->get_recycle();
 		set_toggle("shinfo_animation_rectype", rec == 0, on);
 		set_spin("shinfo_animation_recycle", rec ? rec : nframes, on && rec);
 	}
@@ -3253,23 +3253,23 @@ void ExultStudio::init_shape_notebook(
 		GtkTreeStore *store = GTK_TREE_STORE(model);
 		GtkTreeIter iter;
 		const Frame_name_info *first = nullptr;
-		codepageStr locsname(get_text_entry("shinfo_name"));
+		const codepageStr locsname(get_text_entry("shinfo_name"));
 		const char *sname = locsname.get_str();
 		for (const auto &nmit : nmvec) {
 			if (nmit.is_invalid())
 				continue;
 			if (!first)
 				first = &nmit;
-			int type = nmit.get_type();
-			int msgid = nmit.get_msgid();
+			const int type = nmit.get_type();
+			const int msgid = nmit.get_msgid();
 			const char *msgstr = type == -255 ? sname :
 			                     (type == -1 || msgid >= get_num_misc_names() ? nullptr : get_misc_name(msgid));
-			int otmsg = nmit.get_othermsg();
-			int otype = type <= 0 ? -1 : (otmsg < 0 ? otmsg : 2);
+			const int otmsg = nmit.get_othermsg();
+			const int otype = type <= 0 ? -1 : (otmsg < 0 ? otmsg : 2);
 			const char *otmsgstr = otype == -255 ? sname :
 			                       (otype == -1 || otmsg >= get_num_misc_names() ? nullptr : get_misc_name(otmsg));
-			utf8Str utf8msg(msgstr);
-			utf8Str utf8otmsg(otmsgstr);
+			const utf8Str utf8msg(msgstr);
+			const utf8Str utf8otmsg(otmsgstr);
 			GdkPixbuf *nshape = shape_image(shpfile, shnum, nmit.get_frame(), true);
 			gtk_tree_store_append(store, &iter, nullptr);
 			gtk_tree_store_set(store, &iter, FNAME_FRAME, nmit.get_frame(),
@@ -3289,16 +3289,16 @@ void ExultStudio::init_shape_notebook(
 		gtk_tree_view_set_cursor(nametree, path, nullptr, false);
 		gtk_tree_path_free(path);
 		if (first) {
-			int type = first->get_type();
-			int msgid = first->get_msgid();
+			const int type = first->get_type();
+			const int msgid = first->get_msgid();
 			const char *msgstr = type == -255 ? sname :
 			                     (type == -1 || msgid >= get_num_misc_names() ? "" : get_misc_name(msgid));
-			int otmsg = first->get_othermsg();
-			int otype = type <= 0 ? -1 : (otmsg < 0 ? otmsg : 2);
+			const int otmsg = first->get_othermsg();
+			const int otype = type <= 0 ? -1 : (otmsg < 0 ? otmsg : 2);
 			const char *otmsgstr = otype == -255 ? sname :
 			                       (otype == -1 || otmsg >= get_num_misc_names() ? "" : get_misc_name(otmsg));
-			utf8Str utf8msg(msgstr);
-			utf8Str utf8otmsg(otmsgstr);
+			const utf8Str utf8msg(msgstr);
+			const utf8Str utf8otmsg(otmsgstr);
 			Set_framenames_fields(first->get_frame(), first->get_quality(),
 			                      type, utf8msg, otype, utf8otmsg);
 		} else
@@ -3495,7 +3495,7 @@ int ExultStudio::find_misc_name(const char *id) const {
 }
 
 int ExultStudio::add_misc_name(const char *id) {
-	int num = get_num_misc_names();
+	const int num = get_num_misc_names();
 	Set_misc_name(num, id);
 	misc_name_map.insert(std::pair<string, int>(string(id), num));
 	shape_names_modified = true;
@@ -3506,8 +3506,8 @@ struct Update_framenames {
 private:
 	int Find_name_id(const char *msg) {
 		ExultStudio *studio = ExultStudio::get_instance();
-		codepageStr locmsg(msg);
-		int idnum = studio->find_misc_name(locmsg);
+		const codepageStr locmsg(msg);
+		const int idnum = studio->find_misc_name(locmsg);
 		if (idnum < 0)
 			return studio->add_misc_name(locmsg);
 		return idnum;
@@ -3592,12 +3592,12 @@ void ExultStudio::save_shape_notebook(
     int shnum,          // Shape #.
     int frnum           // Frame #.
 ) {
-	static int classes[] = {0, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14};
+	static const int classes[] = {0, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14};
 	info.set_shape_class(static_cast<Shape_info::Shape_class>(
 	                         classes[get_optmenu("shinfo_shape_class")]));
 	info.set_3d(get_spin("shinfo_xtiles"), get_spin("shinfo_ytiles"),
 	            get_spin("shinfo_ztiles"));
-	int spot = get_optmenu("shinfo_ready_spot");
+	const int spot = get_optmenu("shinfo_ready_spot");
 	static const unsigned char conv_spots[] = {
 		rhand, lhand, both_hands, amulet, cloak,
 		neck, lfinger, gloves, lrgloves,
@@ -3660,15 +3660,15 @@ void ExultStudio::save_shape_notebook(
 		    get_spin("shinfo_weapon_damage"),
 		    get_optmenu("shinfo_weapon_type"));
 		winfo->set_range(get_spin("shinfo_weapon_range"));
-		int ammo_use = get_optmenu("shinfo_weapon_ammo");
-		int ammo = ammo_use == 0 ?
+		const int ammo_use = get_optmenu("shinfo_weapon_ammo");
+		const int ammo = ammo_use == 0 ?
 		           get_spin("shinfo_weapon_ammo_shape")
 		           :  ammo_use == 2 ? -2       // Charges.
 		           :  ammo_use == 3 ? -3       // Thrown.
 		           :  -1;              // None.
 		winfo->set_ammo(ammo);
-		int proj_type = get_optmenu("shinfo_weapon_sprite");
-		int proj = proj_type == 0 ?
+		const int proj_type = get_optmenu("shinfo_weapon_sprite");
+		const int proj = proj_type == 0 ?
 		           get_spin("shinfo_weapon_proj")
 		           :  ammo_use == 2 ? -3       // Weapon.
 		           :  -1;              // None.
@@ -3709,8 +3709,8 @@ void ExultStudio::save_shape_notebook(
 		ainfo->set_family_shape(get_spin("shinfo_ammo_family"));
 		ainfo->set_damage(get_spin("shinfo_ammo_damage"),
 		                  get_optmenu("shinfo_ammo_type"));
-		int proj_type = get_optmenu("shinfo_ammo_sprite");
-		int proj = proj_type == 0 ?
+		const int proj_type = get_optmenu("shinfo_ammo_sprite");
+		const int proj = proj_type == 0 ?
 		           get_spin("shinfo_ammo_proj")
 		           :  proj_type == 2 ? -3      // Weapon.
 		           :  -1;              // None.
@@ -3865,7 +3865,7 @@ void ExultStudio::save_shape_notebook(
 		info.set_explosion_info(false);
 	else {
 		Explosion_info *einfo = info.set_explosion_info(true);
-		int sfx = get_toggle("shinfo_explosion_sfx_type") ? -1
+		const int sfx = get_toggle("shinfo_explosion_sfx_type") ? -1
 		          : get_spin("shinfo_explosion_sfx_number");
 		einfo->set(get_spin("shinfo_explosion_sprite"), sfx);
 	}
@@ -3876,10 +3876,10 @@ void ExultStudio::save_shape_notebook(
 		sfxinf->set_sfx(get_spin("shinfo_sfx_first"));
 		sfxinf->set_play_randomly(get_optmenu("shinfo_sfx_type"));
 		sfxinf->set_chance(get_spin("shinfo_sfx_chance"));
-		int extra = get_toggle("shinfo_sfx_clock_check") ?
+		const int extra = get_toggle("shinfo_sfx_clock_check") ?
 		            get_spin("shinfo_sfx_clock_sfx") : -1;
 		sfxinf->set_extra_sfx(extra);
-		int range = get_toggle("shinfo_single_sfx") ? 1 :
+		const int range = get_toggle("shinfo_single_sfx") ? 1 :
 		            get_spin("shinfo_sfx_count");
 		sfxinf->set_sfx_range(range);
 	}
@@ -3895,7 +3895,7 @@ void ExultStudio::save_shape_notebook(
 		npcinf->set_head_frame(get_spin("shinfo_npcpaperdoll_hframe"));
 		npcinf->set_head_frame_helm(get_spin("shinfo_npcpaperdoll_hhelm"));
 		npcinf->set_arms_shape(get_spin("shinfo_npcpaperdoll_ashape"));
-		static const char *arm_names[] = {"shinfo_npcpaperdoll_aframe",
+		static const char * const arm_names[] = {"shinfo_npcpaperdoll_aframe",
 		                                  "shinfo_npcpaperdoll_atwohanded",
 		                                  "shinfo_npcpaperdoll_astaff"
 		                                 };
@@ -3909,21 +3909,21 @@ void ExultStudio::save_shape_notebook(
 		auto type =
 		    static_cast<Animation_info::AniType>(get_optmenu("shinfo_animation_type"));
 		aniinf->set_type(type);
-		int count = get_spin("shinfo_animation_frcount");
+		const int count = get_spin("shinfo_animation_frcount");
 		Vga_file *ifile = curfile->get_ifile();
-		int nframes = ifile->get_num_frames(shnum);
+		const int nframes = ifile->get_num_frames(shnum);
 		if (get_toggle("shinfo_animation_frtype") || count == nframes)
 			aniinf->set_frame_count(-1);
 		else
 			aniinf->set_frame_count(count);
 		if (type != Animation_info::FA_NON_LOOPING) {
 			aniinf->set_frame_delay(get_spin("shinfo_animation_ticks"));
-			int sfxdelay = get_toggle("shinfo_animation_sfxsynch") ? -1
+			const int sfxdelay = get_toggle("shinfo_animation_sfxsynch") ? -1
 			               : get_spin("shinfo_animation_sfxdelay");
 			aniinf->set_sfx_delay(sfxdelay);
 			if (type == Animation_info::FA_LOOPING) {
-				int menu = get_optmenu("shinfo_animation_freezefirst");
-				int chance = menu == 0 ? 100
+				const int menu = get_optmenu("shinfo_animation_freezefirst");
+				const int chance = menu == 0 ? 100
 				             : (menu == 1 ? 0 : get_spin("shinfo_animation_freezechance"));
 				aniinf->set_freeze_first_chance(chance);
 				int rec;
@@ -4050,7 +4050,7 @@ void ExultStudio::open_shape_window(
 	if (palbuf) {
 		shape_single = new Shape_single(
 		    get_widget("shinfo_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_frame"),
 		    -1,
 		    ifile,
@@ -4058,7 +4058,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_draw"));
 		body_single = new Shape_single(
 		    get_widget("shinfo_body_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_body_frame"),
 		    U7_SHAPE_SHAPES,
 		    vgafile->get_ifile(),
@@ -4068,7 +4068,7 @@ void ExultStudio::open_shape_window(
 	if (gumpfile && palbuf) {
 		gump_single = new Shape_single(
 		    get_widget("shinfo_gump_num"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    nullptr,
 		    U7_SHAPE_GUMPS,
 		    gumpfile->get_ifile(),
@@ -4078,7 +4078,7 @@ void ExultStudio::open_shape_window(
 	if (spritefile && palbuf) {
 		explosion_single = new Shape_single(
 		    get_widget("shinfo_explosion_sprite"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    nullptr,
 		    U7_SHAPE_SPRITES,
 		    spritefile->get_ifile(),
@@ -4253,7 +4253,7 @@ void ExultStudio::open_shape_window(
 	if (paperdolfile && palbuf) {
 		npcpaperdoll_aframe_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_ashape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_aframe"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4261,7 +4261,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_aframe_draw"), true);
 		npcpaperdoll_atwohanded_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_ashape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_atwohanded"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4269,7 +4269,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_atwohanded_draw"), true);
 		npcpaperdoll_astaff_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_ashape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_astaff"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4277,7 +4277,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_astaff_draw"), true);
 		npcpaperdoll_bframe_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_bshape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_bframe"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4285,7 +4285,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_bframe_draw"), true);
 		npcpaperdoll_hframe_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_hshape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_hframe"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4293,7 +4293,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_hframe_draw"), true);
 		npcpaperdoll_hhelm_single = new Shape_single(
 		    get_widget("shinfo_npcpaperdoll_hshape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_npcpaperdoll_hhelm"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4301,7 +4301,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_npcpaperdoll_hhelm_draw"), true);
 		objpaperdoll_frame0_single = new Shape_single(
 		    get_widget("shinfo_objpaperdoll_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_objpaperdoll_frame0"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4309,7 +4309,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_objpaperdoll_frame0_draw"), true);
 		objpaperdoll_frame1_single = new Shape_single(
 		    get_widget("shinfo_objpaperdoll_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_objpaperdoll_frame1"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4317,7 +4317,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_objpaperdoll_frame1_draw"), true);
 		objpaperdoll_frame2_single = new Shape_single(
 		    get_widget("shinfo_objpaperdoll_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_objpaperdoll_frame2"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4325,7 +4325,7 @@ void ExultStudio::open_shape_window(
 		    get_widget("shinfo_objpaperdoll_frame2_draw"), true);
 		objpaperdoll_frame3_single = new Shape_single(
 		    get_widget("shinfo_objpaperdoll_shape"), nullptr,
-		    [](int shnum)->bool{ return (shnum >= 0); },
+		    [](int shnum)->bool{ return shnum >= 0; },
 		    get_widget("shinfo_objpaperdoll_frame3"),
 		    U7_SHAPE_PAPERDOL,
 		    paperdolfile->get_ifile(),
@@ -4348,7 +4348,7 @@ void ExultStudio::open_shape_window(
 	g_object_set_data(G_OBJECT(shapewin), "file_info", file_info);
 	// Shape/frame.
 	set_entry("shinfo_shape", shnum, false, false);
-	int nframes = ifile->get_num_frames(shnum);
+	const int nframes = ifile->get_num_frames(shnum);
 	set_spin("shinfo_frame", frnum, 0, nframes - 1);
 	set_spin("shinfo_effhps_frame_num", 0, nframes - 1);
 	set_spin("shinfo_brightness_frame_num", 0, nframes - 1);
@@ -4356,7 +4356,7 @@ void ExultStudio::open_shape_window(
 	set_spin("shinfo_frameflags_frame_num", 0, nframes - 1);
 	set_spin("shinfo_frameusecode_frame_num", 0, nframes - 1);
 	// Store name, #frames.
-	utf8Str utf8shname(shname ? shname : "");
+	const utf8Str utf8shname(shname ? shname : "");
 	set_entry("shinfo_name", utf8shname);
 //	set_spin("shinfo_num_frames", nframes);
 	// Show xright, ybelow.
@@ -4498,7 +4498,7 @@ void ExultStudio::open_shape_window(
 		col = gtk_tree_view_column_new_with_attributes(
 		          "Spot", renderer, "text", DOLL_SPOT, nullptr);
 		gtk_tree_view_append_column(dolltree, col);
-		const char *columns[] = {"Trans", "Gender", "Spot frame", "DShape",
+		const char * const columns[] = {"Trans", "Gender", "Spot frame", "DShape",
 		                         "DFrame0", "DFrame1", "DFrame2", "DFrame3"
 		                        };
 		for (size_t i = 0; i < array_size(columns); i++) {
@@ -4679,15 +4679,15 @@ void ExultStudio::open_shape_window(
 
 void ExultStudio::save_shape_window(
 ) {
-	int shnum = get_num_entry("shinfo_shape");
-	int frnum = get_num_entry("shinfo_frame");
+	const int shnum = get_num_entry("shinfo_shape");
+	const int frnum = get_num_entry("shinfo_frame");
 	auto *info = static_cast<Shape_info *>(
 	                 g_object_get_data(G_OBJECT(shapewin), "user_data"));
 	auto *file_info = static_cast<Shape_file_info *>(
 	                      g_object_get_data(G_OBJECT(shapewin), "file_info"));
 	Vga_file *ifile = file_info->get_ifile();
 	if (info) {         // If 'shapes.vga', get name.
-		codepageStr locnm(get_text_entry("shinfo_name"));
+		const codepageStr locnm(get_text_entry("shinfo_name"));
 		const gchar *nm = locnm.get_str();
 		if (!nm)
 			nm = "";
@@ -4703,8 +4703,8 @@ void ExultStudio::save_shape_window(
 	// Update origin.
 	Shape_frame *frame = ifile->get_shape(shnum, frnum);
 	if (frame != nullptr) {
-		int xright = get_spin("shinfo_originx");
-		int ybelow = get_spin("shinfo_originy");
+		const int xright = get_spin("shinfo_originx");
+		const int ybelow = get_spin("shinfo_originy");
 		if (xright != frame->get_xright() || ybelow != frame->get_ybelow()) {
 			// It changed.
 			file_info->set_modified();

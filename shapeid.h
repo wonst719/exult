@@ -129,7 +129,7 @@ public:
 		else if (!translucent)
 			shape->paint_rle(xoff, yoff);
 		else
-			shape->paint_rle_translucent(xoff, yoff, &xforms[0], xforms.size());
+			shape->paint_rle_translucent(xoff, yoff, xforms.data(), xforms.size());
 	}
 
 	inline void paint_invisible(int xoff, int yoff, Shape_frame *shape) {
@@ -182,8 +182,8 @@ class ShapeID : public Game_singletons {
 public:
 	// Read from buffer & incr. ptr.
 	ShapeID(unsigned char  *&data) {
-		unsigned char l = *data++;
-		unsigned char h = *data++;
+		const unsigned char l = *data++;
+		const unsigned char h = *data++;
 		shapenum = l + 256 * (h & 0x3);
 		framenum = h >> 2;
 	}

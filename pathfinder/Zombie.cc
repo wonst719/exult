@@ -53,9 +53,9 @@ bool Zombie::NewPath(Tile_coord const &s, Tile_coord const &d, Pathfinder_client
 	dest = d;
 	cur = s;            // Get current coords.
 	sum1 = sum2 = 0;        // Clear accumulators.
-	long deltax = Tile_coord::delta(cur.tx, dest.tx);
-	long deltay = Tile_coord::delta(cur.ty, dest.ty);
-	long deltaz = Tile_coord::delta(cur.tz, dest.tz);
+	const long deltax = Tile_coord::delta(cur.tx, dest.tx);
+	const long deltay = Tile_coord::delta(cur.ty, dest.ty);
+	const long deltaz = Tile_coord::delta(cur.tz, dest.tz);
 	if (!deltax && !deltay && !deltaz) { // Going nowhere?
 		major_distance = 0;
 		return false;
@@ -122,8 +122,8 @@ bool Zombie::GetNextStep(Tile_coord &n, bool &done) {
 	sum1 += major_frame_incr * minor_delta1;
 	sum2 += major_frame_incr * minor_delta2;
 	// Figure change in slower axes.
-	int minor_frame_incr1 = sum1 / major_delta;
-	int minor_frame_incr2 = sum2 / major_delta;
+	const int minor_frame_incr1 = sum1 / major_delta;
+	const int minor_frame_incr2 = sum2 / major_delta;
 	sum1 = sum1 % major_delta;  // Remove what we used.
 	sum2 = sum2 % major_delta;  // Remove what we used.
 	// Update coords. within world.

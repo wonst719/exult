@@ -145,7 +145,7 @@ bool Halo_button::activate(
 ) {
 	if (button != 1) return false;
 	// Want to toggle it.
-	bool prot = !actor->is_combat_protected();
+	const bool prot = !actor->is_combat_protected();
 	set_pushed(prot);
 	parent->paint();
 	actor->set_combat_protected(prot);
@@ -153,7 +153,7 @@ bool Halo_button::activate(
 		return true;
 	// On?  Got to turn off others.
 	Actor *party[9];        // Get entire party, including Avatar.
-	int cnt = gwin->get_party(party, 1);
+	const int cnt = gwin->get_party(party, 1);
 	for (int i = 0; i < cnt; i++) {
 		if (party[i] != actor && party[i]->is_combat_protected())
 			party[i]->set_combat_protected(false);
@@ -181,7 +181,7 @@ bool Combat_mode_button::activate(
 ) {
 	if (button != 1) return false;
 	// Only Avatar gets last frame (manual)
-	int nframes = actor == gwin->get_main_actor() ? 10 : 9;
+	const int nframes = actor == gwin->get_main_actor() ? 10 : 9;
 	set_frame((get_framenum() + 1) % nframes);
 	// Flag that player set the mode.
 	actor->set_attack_mode(static_cast<Actor::Attack_mode>(get_framenum()), true);
@@ -209,7 +209,7 @@ bool Cstats_button::activate(
     int button
 ) {
 	if (button != 1) return false;
-	int cnt = partyman->get_count();
+	const int cnt = partyman->get_count();
 	gumpman->add_gump(nullptr, game->get_shape("gumps/cstats/1") + cnt);
 	return true;
 }
