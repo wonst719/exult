@@ -2876,7 +2876,8 @@ void ExultStudio::init_shape_notebook(
 	set_toggle("shinfo_mountaintop_check", mountain_top != 0);
 	set_visible("shinfo_mountaintop_box", mountain_top != 0);
 	const bool top_on = get_optmenu("shinfo_shape_class") == 12;
-	set_optmenu("shinfo_mountaintop_type", top_on ? mountain_top : 0, top_on);
+	set_optmenu("shinfo_mountaintop_type", top_on ? mountain_top : 0,
+	            mountain_top != 0 || top_on);
 
 	int barge_type = info.get_barge_type();
 	if (barge_type > 6 || barge_type < 0)
@@ -2884,15 +2885,15 @@ void ExultStudio::init_shape_notebook(
 	set_toggle("shinfo_bargetype_check", barge_type != 0);
 	set_visible("shinfo_barge_box", barge_type != 0);
 	const bool barge_on = get_toggle("shinfo_barge_check");
-	set_optmenu("shinfo_barge_type", barge_on ? barge_type : 0, barge_on);
+	set_optmenu("shinfo_barge_type", barge_type, barge_type != 0 || barge_on);
 
 	int field_type = info.get_field_type();
-	if (field_type > 4)
-		field_type = 0;
+	if (field_type > 4 || field_type < 0)
+		field_type = -1;
 	const bool field_on = get_toggle("shinfo_field_check");
 	set_toggle("shinfo_fieldinfo_check", field_type >= 0);
-	set_visible("shinfo_fieldinfo_box", field_on);
-	set_optmenu("shinfo_fieldinfo_type", field_on ? field_type + 1 : 0, field_on);
+	set_visible("shinfo_fieldinfo_box", field_type >= 0 || field_on);
+	set_optmenu("shinfo_fieldinfo_type", field_type + 1, field_type >= 0 || field_on);
 
 	const bool hasbody = info.has_body_info();
 	set_toggle("shinfo_body_check", hasbody);
