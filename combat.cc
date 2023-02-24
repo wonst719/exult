@@ -513,8 +513,12 @@ Game_object *Combat_schedule::find_foe(
 			if (!opp)
 			    continue;
 			int dist = npc->distance(opp.get());
+			const int oppressor = opp->get_oppressor();
+			if (oppressor >= 0 && oppressor != npc->get_npc_num()) {
+				dist += 16; // Penalize opponents that already have an attacker.
+			}
 			if (opp->get_attack_mode() == Actor::flee)
-				dist += 16; // Avoid fleeing.
+				dist += 32; // Avoid fleeing.
 			if (dist < best_dist) {
 				best_dist = dist;
 				new_opp_link = it;
@@ -527,10 +531,32 @@ Game_object *Combat_schedule::find_foe(
 		if (new_opp_link != opponents.end())
 			break;      // Found one.
 		// FALLTHROUGH
-	case Actor::random:
-	default:            // Default to random.
+	default:            // Default to first in list.
 		if (!opponents.empty())
 			new_opp_link = opponents.begin();
+		break;
+	case Actor::random: 
+		if (!opponents.empty()) {
+			for (int tries = 0; tries < 3; tries++) {
+				size_t index = std::rand() % opponents.size();
+				auto it = opponents.begin();
+				std::advance(it, index);
+				const Actor_shared opp
+				              = std::static_pointer_cast<Actor>(it->lock());
+				if (!opp) {
+				   continue;
+				}
+				const int oppressor = opp->get_oppressor();
+				if (oppressor >= 0 && oppressor != npc->get_npc_num()) {
+				   continue;
+				}
+				new_opp_link = it;
+			}
+			// Fallback to old behavior
+			if (new_opp_link == opponents.end()) {
+				new_opp_link = opponents.begin();
+			}
+		}
 		break;
 	}
 	Actor_shared new_opponent;
