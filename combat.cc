@@ -647,6 +647,7 @@ void Combat_schedule::approach_foe(
 	const Weapon_info *winf = npc->get_weapon(points, weapon_shape, weapon);
 	const int dist = for_projectile ? 1 : winf ? winf->get_range() : 3;
 	Game_object *opponent = npc->get_target();
+
 	// Find opponent.
 	if (!opponent && !(opponent = find_foe())) {
 		failures++;
@@ -823,13 +824,15 @@ void Combat_schedule::wander_for_attack(
 ) {
 	Tile_coord pos = npc->get_tile();
 	Game_object *opponent = npc->get_target();
+	if (!opponent)
+	    return;
 	int dir = npc->get_direction(opponent);
 
 	dir += rand()%2 ? 2 : 6;			// A perpendicular direction.
 	dir %= 8;
 	int tries = 3;
 	while (tries--) {
-	    int cnt = 2 + rand()%3;
+	    int cnt = (2 + rand()%3);
 	    while (cnt--)
 	        pos = pos.get_neighbor(dir);
 	    // Find a free spot.
@@ -904,11 +907,17 @@ void Combat_schedule::start_strike(
 	// At this point, we're within range, with state set.
 	if (check_lof &&
 	        !Fast_pathfinder_client::is_straight_path(npc, opponent)) {
-		state = approach;
+		// We're blocked from striking.
+	    state = approach;
 		approach_foe(true); // Try to get adjacent.
-		//wander_for_attack();
+		if (strike_blocked < 5) {
+		   ++strike_blocked;
+		   if (dist > 5) 
+	           wander_for_attack();			// Just move a bit.
+		}
 		return;
 	}
+	strike_blocked = 0;
 	if (!started_battle)
 		start_battle(); // Play music if first time.
 	// Some battle cries. Guessing at where to do it, and how often.
@@ -1303,7 +1312,7 @@ Combat_schedule::Combat_schedule(
 	practice_target(nullptr), weapon(nullptr), weapon_shape(-1), spellbook(nullptr),
 	no_blocking(false), yelled(0), started_battle(false), fleed(0),
 	failures(0), teleport_time(0), summon_time(0),
-	dex_points(0), alignment(n->get_effective_alignment()) {
+	dex_points(0), strike_blocked(0), alignment(n->get_effective_alignment()) {
 	Combat_schedule::set_weapon();
 	// Cache some data.
 	can_yell = npc->can_speak();

@@ -762,7 +762,9 @@ bool Actor::add_dirty(
 void Actor::change_frame(
     int frnum
 ) {
-	add_dirty();            // Set to repaint old area.
+    bool on_map = get_chunk() != nullptr;
+    if (on_map)
+	    add_dirty();            // Set to repaint old area (if on map).
 	ShapeID id(get_shapenum(), frnum, get_shapefile());
 	Shape_frame *shape = id.get_shape();
 	if (!shape || shape->is_empty()) {
@@ -774,7 +776,8 @@ void Actor::change_frame(
 	}
 	rest_time = 0;
 	set_frame(frnum);
-	add_dirty(true);           // Set to repaint new.
+	if (on_map)
+	    add_dirty(true);           // Set to repaint new.
 }
 
 /**

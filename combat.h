@@ -66,6 +66,7 @@ protected:
 	unsigned int summon_time;
 	unsigned int invisible_time;
 	unsigned int dex_points;    // Need these to attack.
+    unsigned int strike_blocked;  // # failures to get a clear path to strike.
 	int alignment;          // So we can tell if it changed.
 
 	void start_battle();        // Play music at start of battle.
