@@ -75,6 +75,11 @@ protected:
 	bool be_invisible();
 	virtual void find_opponents();
 	// Find attacker of protected member.
+	std::list<Game_object_weak>::iterator find_weakest_opponent();
+	std::list<Game_object_weak>::iterator find_strongest_opponent();
+	std::list<Game_object_weak>::iterator find_nearest_opponent();
+	std::list<Game_object_weak>::iterator find_random_opponent();
+	std::list<Game_object_weak>::iterator find_attacked_opponent();
 	std::list<Game_object_weak>::iterator find_protected_attacker();
 	Game_object *find_foe(int mode);// Find a new opponent.
 	Game_object *find_foe();

@@ -388,6 +388,171 @@ void Combat_schedule::find_opponents(
 }
 
 /*
+ *  Find weakest opponent.
+ *
+ *  Output: ->attacker in opponents, or opponents.end() if not found.
+ */
+
+std::list<Game_object_weak>::iterator Combat_schedule::find_weakest_opponent(
+) {
+	int  least_str      = 100;
+	auto least_opp_link = opponents.end();
+	for (auto it = opponents.begin(); it != opponents.end(); ++it) {
+		const Actor_shared opp
+				= std::static_pointer_cast<Actor>(it->lock());
+		if (!opp) {
+			continue;
+		}
+		// TODO: Maybe look at current health instead? Or perhaps use a
+		// more complex metric, maybe based on the amount of experience
+		// gained from defeating the NPC?
+		int str = opp->get_property(Actor::strength);
+		if (str < least_str) {
+			least_str      = str;
+			least_opp_link = it;
+		}
+	}
+	return least_opp_link;
+}
+
+/*
+ *  Find strongest opponent.
+ *
+ *  Output: ->attacker in opponents, or opponents.end() if not found.
+ */
+
+std::list<Game_object_weak>::iterator Combat_schedule::find_strongest_opponent(
+) {
+	int  best_str      = -100;
+	auto best_opp_link = opponents.end();
+	for (auto it = opponents.begin(); it != opponents.end(); ++it) {
+		const Actor_shared opp = std::static_pointer_cast<Actor>(it->lock());
+		if (!opp) {
+			continue;
+		}
+		// TODO: Maybe look at current health instead? Or perhaps use a
+		// more complex metric, maybe based on the amount of experience
+		// gained from defeating the NPC?
+		int str = opp->get_property(Actor::strength);
+		if (str > best_str) {
+			best_str      = str;
+			best_opp_link = it;
+		}
+	}
+	return best_opp_link;
+}
+
+/*
+ *  Find nearest opponent. Prefers enemies that are not being attacked by an
+ *  ally.
+ *
+ *  Output: ->attacker in opponents, or opponents.end() if not found.
+ */
+
+std::list<Game_object_weak>::iterator Combat_schedule::find_nearest_opponent(
+) {
+	int  best_dist     = 4 * c_tiles_per_chunk;
+	auto near_opp_link = opponents.end();
+	for (auto it = opponents.begin(); it != opponents.end(); ++it) {
+		const Actor_shared opp = std::static_pointer_cast<Actor>(it->lock());
+		if (!opp) {
+			continue;
+		}
+		int       dist      = npc->distance(opp.get());
+		const int oppressor = opp->get_oppressor();
+		if (oppressor >= 0 && oppressor != npc->get_npc_num()) {
+			// Penalize opponents that already have an attacker.
+			dist += 16;
+		}
+		if (opp->get_attack_mode() == Actor::flee || !opp->can_act()) {
+			// Avoid fleeing.
+			dist += 32;
+		}
+		if (dist < best_dist) {
+			best_dist     = dist;
+			near_opp_link = it;
+		}
+	}
+	return near_opp_link;
+}
+
+/*
+ *  Find random opponent from list.
+ *
+ *  Output: ->attacker in opponents, or opponents.end() if not found.
+ */
+
+std::list<Game_object_weak>::iterator Combat_schedule::find_random_opponent(
+) {
+	auto random_opp_link = opponents.end();
+	for (int tries = 0; tries < 3; tries++) {
+		size_t index = std::rand() % opponents.size();
+		auto   it    = opponents.begin();
+		std::advance(it, index);
+		const Actor_shared opp = std::static_pointer_cast<Actor>(it->lock());
+		if (!opp) {
+			continue;
+		}
+		const int oppressor = opp->get_oppressor();
+		if (oppressor >= 0 && oppressor != npc->get_npc_num()) {
+			continue;
+		}
+		random_opp_link = it;
+	}
+	if (random_opp_link == opponents.end()) {
+		// Fallback to nearest.
+		random_opp_link = find_weakest_opponent();
+	}
+	return random_opp_link;
+}
+
+/*
+ *  Find nearest opponent. Prefers enemies that are being attacked by an
+ *  ally.
+ *
+ *  Output: ->attacker in opponents, or opponents.end() if not found.
+ */
+
+std::list<Game_object_weak>::iterator Combat_schedule::find_attacked_opponent(
+) {
+	// Similar to find_nearest_opponent, but want only enemies that are
+	// attacked by an ally.
+	// TODO: Maybe base this on find_strongest_opponent instead?
+	int       best_dist     = 4 * c_tiles_per_chunk;
+	auto      near_opp_link = opponents.end();
+	const int npc_align     = npc->get_effective_alignment();
+	for (auto it = opponents.begin(); it != opponents.end(); ++it) {
+		const Actor_shared opp = std::static_pointer_cast<Actor>(it->lock());
+		if (!opp) {
+			continue;
+		}
+		int       dist      = npc->distance(opp.get());
+		const int oppressor = opp->get_oppressor();
+		if (oppressor < 0 || oppressor == npc->get_npc_num()) {
+			// Penalize opponents that are not being attacked
+			// or that are being attacked by us already
+			dist += 16;
+		}
+		Actor* oppr = gwin->get_npc(oppressor);
+		assert(oppr != nullptr);
+		if (oppr->get_effective_alignment() == npc_align
+			&& oppr->get_target() != opp.get()) {
+			// Oppressor is not actually attacking NPC, so penalize it.
+			dist += 16;
+		}
+		if (opp->get_attack_mode() == Actor::flee || !opp->can_act()) {
+			// Avoid fleeing.
+			dist += 32;
+		}
+		if (dist < best_dist) {
+			best_dist     = dist;
+			near_opp_link = it;
+		}
+	}
+	return near_opp_link;
+}
+
+/*
  *  Find 'protected' party member's attackers.
  *
  *  Output: ->attacker in opponents, or opponents.end() if not found.
@@ -466,92 +631,66 @@ Game_object *Combat_schedule::find_foe(
 		if (practice_target)    // For dueling.
 			return practice_target;
 	}
+	if (opponents.empty()) {
+		// Nothing to do but give up
+		return nullptr;
+	}
 	auto new_opp_link = opponents.end();
 	switch (static_cast<Actor::Attack_mode>(mode)) {
-	case Actor::weakest: {
-		int str;
-		int least_str = 100;
-		for (auto it = opponents.begin();
-		        it != opponents.end(); ++it) {
-			const Actor_shared opp = std::static_pointer_cast<Actor>(it->lock());
-			if (!opp)
-				continue;
-			str = opp->get_property(Actor::strength);
-			if (str < least_str) {
-				least_str = str;
-				new_opp_link = it;
-			}
-		}
+	case Actor::weakest:
+		new_opp_link = find_weakest_opponent();
 		break;
-	}
-	case Actor::strongest: {
-		int str;
-		int best_str = -100;
-		for (auto it = opponents.begin();
-		        it != opponents.end(); ++it) {
-			const Actor_shared opp = std::static_pointer_cast<Actor>(it->lock());
-			if (!opp)
-				continue;
-			str = opp->get_property(Actor::strength);
-			if (str > best_str) {
-				best_str = str;
-				new_opp_link = it;
-			}
-		}
+	case Actor::strongest:
+		new_opp_link = find_strongest_opponent();
 		break;
-	}
-	case Actor::nearest: {
-		int best_dist = 4 * c_tiles_per_chunk;
-		for (auto it = opponents.begin();
-		        it != opponents.end(); ++it) {
-			const Actor_shared opp = std::static_pointer_cast<Actor>(it->lock());
-			if (!opp)
-				continue;
-			int dist = npc->distance(opp.get());
-			const int oppressor = opp->get_oppressor();
-			if (oppressor >= 0 && oppressor != npc->get_npc_num()) {
-				dist += 16; // Penalize opponents that already have an attacker.
-			}
-			if (opp->get_attack_mode() == Actor::flee)
-				dist += 32; // Avoid fleeing.
-			if (dist < best_dist) {
-				best_dist = dist;
-				new_opp_link = it;
-			}
-		}
+	case Actor::nearest:
+		new_opp_link = find_nearest_opponent();
 		break;
-	}
 	case Actor::protect:
 		new_opp_link = find_protected_attacker();
-		if (new_opp_link != opponents.end())
-			break;      // Found one.
-		// FALLTHROUGH
-	default:            // Default to first in list.
-		if (!opponents.empty())
+		if (new_opp_link == opponents.end()) {
 			new_opp_link = opponents.begin();
+		}
 		break;
 	case Actor::random:
-		if (!opponents.empty()) {
-			for (int tries = 0; tries < 3; tries++) {
-				size_t index = std::rand() % opponents.size();
-				auto it = opponents.begin();
-				std::advance(it, index);
-				const Actor_shared opp
-				              = std::static_pointer_cast<Actor>(it->lock());
-				if (!opp) {
-					continue;
-				}
-				const int oppressor = opp->get_oppressor();
-				if (oppressor >= 0 && oppressor != npc->get_npc_num()) {
-					continue;
-				}
-				new_opp_link = it;
-			}
-			// Fallback to old behavior
-			if (new_opp_link == opponents.end()) {
-				new_opp_link = opponents.begin();
-			}
+		new_opp_link = find_random_opponent();
+		break;
+	case Actor::berserk:
+		// Berserk seems to alternate between finding random enemies and
+		// finding nearest opponent in the originals. Guessing this is done
+		// randomly.
+		if (rand() % 2 == 0) {
+			new_opp_link = find_random_opponent();
+		} else {
+			new_opp_link = find_nearest_opponent();
 		}
+		break;
+	case Actor::defend: {
+		// TODO: Need to see how it works in the original, but a preliminary
+		// analysis suggests there are no effects on actual chance of hitting
+		// enemies, or of being hit by them.
+		// For now, I am picking nearest enemy when NPC is strong, and weakest
+		// enemy otherwise. This gives the illusion of working by boosting
+		// survivability.
+		const int max_hp = npc->get_effective_prop(Actor::strength);
+		const int curr_hp = npc->get_effective_prop(Actor::health);
+		if (max_hp <= 2 * curr_hp) {
+			// More than half health
+			new_opp_link = find_nearest_opponent();
+		} else {
+			// Less than half health
+			new_opp_link = find_weakest_opponent();
+		}
+		break;
+	}
+	case Actor::flank: {
+		// TODO: Investigate how this works on the original. For now, trying to
+		// attack an enemy which is also being attacked by an ally.
+		new_opp_link = find_attacked_opponent();
+		break;
+	}
+	default:    // Default to first in list.
+		new_opp_link = opponents.begin();
 		break;
 	}
 	Actor_shared new_opponent;
