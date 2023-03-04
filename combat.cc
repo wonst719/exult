@@ -583,6 +583,9 @@ void Combat_schedule::back_off(
     Actor *npc,
     Game_object *attacker
 ) {
+	if (!npc->can_act()) {
+		return;
+	}
 	int points;
 	int weapon_shape;
 	Game_object *weapon;
