@@ -555,6 +555,10 @@ ExultStudio::ExultStudio(int argc, char **argv): glade_path(nullptr),
 	// Initialize the various subsystems
 	self = this;
 	gtk_init(&argc, &argv);
+	g_object_set(
+			gtk_settings_get_default(),
+			"gtk-application-prefer-dark-theme", TRUE,
+			nullptr);
 #ifdef _WIN32
 	bool portable = false;
 #endif
@@ -2532,6 +2536,7 @@ on_prefs_background_choose_clicked(GtkButton *button,
 	ignore_unused_variable_warning(button, user_data);
 	GtkColorChooserDialog *colorsel = GTK_COLOR_CHOOSER_DIALOG(
 	                                      gtk_color_chooser_dialog_new("Background color", nullptr));
+	g_object_set(colorsel, "show-editor", TRUE, nullptr);
 	gtk_window_set_modal(GTK_WINDOW(colorsel), true);
 	// Get color.
 	const guint32 c = ExultStudio::get_instance()->get_background_color();
