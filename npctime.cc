@@ -551,7 +551,7 @@ void Npc_bleed_timer::handle_event(
 	Actor *npc = list->npc;
 	if (curtime >= end_time ||  // Long enough?  Or cured?
 	        !npc->get_type_flag(Actor::tf_bleeding) ||
-	        npc->is_dead()) {   // Obviously.
+	        npc->is_dead() || npc->is_dormant()) {   // Obviously.
 		npc->clear_type_flag(Actor::tf_bleeding);
 		delete this;
 		return;

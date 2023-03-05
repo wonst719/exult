@@ -4135,6 +4135,7 @@ void Actor::die(
 	schedule.reset();
 	gwin->get_tqueue()->remove(this);// Remove from time queue.
 	Actor::set_flag(Obj_flags::dead);// IMPORTANT:  Set this before moving
+	clear_type_flag(Actor::tf_bleeding);
 	//   objs. so Usecode(eventid=6) isn't called.
 	int shnum = get_shapenum();
 	// Special case:  Hook, Dracothraxus.
@@ -4632,6 +4633,12 @@ void Main_actor::die(
 	if (gwin->in_combat())
 		gwin->toggle_combat();  // Hope this is safe....
 	Actor::set_flag(Obj_flags::dead);
+	clear_type_flag(Actor::tf_bleeding);
+	Actor* party[9];
+	const int cnt = gwin->get_party(party, 1);
+	for (int i = 0; i < cnt; i++) {
+		party[i]->clear_type_flag(Actor::tf_bleeding);
+	}
 	gumpman->close_all_gumps(); // Obviously.
 	// Special function for dying:
 	Usecode_function_data *info = Shapeinfo_lookup::GetAvUsecode(0);
