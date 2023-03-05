@@ -640,6 +640,8 @@ public:
 	void set_charmed_combat();
 	virtual void fall_down();
 	virtual void lay_down(bool die);
+	void               bleed(int first_frame, int last_frame, Tile_coord loc) const;
+	void bleed() const;
 	virtual void die(Game_object *attacker);        // We're dead.
 	Actor *resurrect(Dead_body *body);// Bring back to life.
 	Game_object_shared clone();     // Create another nearby to this.

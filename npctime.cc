@@ -126,6 +126,18 @@ public:
 };
 
 /*
+ *  Handle bleeding.
+ */
+class Npc_bleed_timer : public Npc_timer {
+	uint32 end_time;    // Time when it wears off.
+public:
+	Npc_bleed_timer(Npc_timer_list* l);
+	~Npc_bleed_timer() override;
+	// Handle events:
+	void handle_event(unsigned long curtime, uintptr udata) override;
+};
+
+/*
  *  Timer for flags that don't need any other checks.
  */
 class Npc_flag_timer : public Npc_timer {
@@ -252,6 +264,15 @@ void Npc_timer_list::start_paralyze(
 ) {
 	delete paralyze;
 	paralyze = new Npc_flag_timer(this, Obj_flags::paralyzed, &paralyze);
+}
+
+/*
+ *  Start bleeding.
+ */
+
+void Npc_timer_list::start_bleeding() {
+	delete paralyze;
+	bleed = new Npc_bleed_timer(this);
 }
 
 /*
@@ -494,6 +515,51 @@ void Npc_protection_timer::handle_event(
 	}
 	// Check again in 2 secs.
 	gwin->get_tqueue()->add(curtime + 2000, this);
+}
+
+/*
+ *  Initialize bleeding timer.
+ */
+
+Npc_bleed_timer::Npc_bleed_timer(
+    Npc_timer_list *l
+) : Npc_timer(l, 5000) {
+	Actor* npc = list->npc;
+	npc->bleed();
+	// Lasts 1-3 minutes.
+	end_time = Game::get_ticks() + 60000 + rand() % 120000;
+}
+
+/*
+ *  Done with bleeding timer.
+ */
+
+Npc_bleed_timer::~Npc_bleed_timer(
+) {
+	list->bleed = nullptr;
+}
+
+/*
+ *  Time to bleed, or see if it's worn off.
+ */
+
+void Npc_bleed_timer::handle_event(
+    unsigned long curtime,
+    uintptr udata
+) {
+	ignore_unused_variable_warning(udata);
+	Actor *npc = list->npc;
+	if (curtime >= end_time ||  // Long enough?  Or cured?
+	        !npc->get_type_flag(Actor::tf_bleeding) ||
+	        npc->is_dead()) {   // Obviously.
+		npc->clear_type_flag(Actor::tf_bleeding);
+		delete this;
+		return;
+	}
+	// TODO: Maybe also damage the NPC a bit when bleeding?
+	npc->bleed();
+	// Check again in .5-1 secs.
+	gwin->get_tqueue()->add(curtime + 500 + rand() % 500, this);
 }
 
 /*

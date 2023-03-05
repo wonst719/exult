@@ -559,14 +559,10 @@ bool Slime_actor::step(
 	// Update surrounding frames (& this).
 	const Tile_coord newpos = get_tile();
 	update_frames(oldpos, newpos);
-	Game_object_vector blood;   // Place blood in old spot.
-	if (newpos != oldpos && rand() % 9 == 0 &&
-	        !find_nearby(blood, oldpos, 912, 1, 0)) {
-		// Frames 4-11 are green.
-		const Game_object_shared b = get_map()->create_ireg_object(
-											912, 4 + rand() % 8);
-		b->set_flag(Obj_flags::is_temporary);
-		b->move(oldpos);
+	const int first_slime_frame = 4;
+	const int last_slime_frame  = 7;
+	if (newpos != oldpos && rand() % 6 == 0) {
+		bleed(first_slime_frame, last_slime_frame, oldpos);
 	}
 	return ret;
 }

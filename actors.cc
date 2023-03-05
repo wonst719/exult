@@ -2712,6 +2712,61 @@ int Actor::apply_damage(
 }
 
 /*
+ *  This method creates a blood pool where the actor stands.
+ */
+
+void Actor::bleed(int first_frame, int last_frame, Tile_coord loc) const {
+	// TODO: de-hard-code these.
+	const int blood_shape = 912;
+	Game_object_vector blood_vec;
+	// Don't add blood in a tile if it is already there.
+	if (find_nearby(blood_vec, get_tile(), blood_shape, 0, 0x80)) {
+		// Lets try increasing size instead.
+		for (auto* blood : blood_vec) {
+			if (!blood) {
+				continue;
+			}
+			int blood_frame = blood->get_framenum() % 32;
+			if (blood_frame < first_frame || blood_frame > last_frame) {
+				continue;
+			}
+			if (blood_frame < last_frame) {
+				blood_frame++;
+				if (rand() % 2) {
+					blood_frame |= 32;
+				}
+				blood->set_frame(blood_frame);
+			}
+			return;
+		}
+	}
+	// Create blood where actor stands.
+	int num_frames = last_frame - first_frame + 1;
+	if (num_frames > 2) {
+		// Lets start with a smaller pool.
+		num_frames = 2;
+	}
+		int blood_frame = first_frame + (rand() % num_frames);
+	if (rand() % 2) {
+		blood_frame |= 32;
+	}
+	const Game_object_shared bobj = gmap->create_ireg_object(blood_shape, blood_frame);
+	bobj->set_flag(Obj_flags::is_temporary);
+	bobj->move(loc);
+}
+
+void Actor::bleed() const {
+	const Monster_info *minf = get_info().get_monster_info_safe();
+	if (minf->cant_bleed()) {
+		return;
+	}
+	// TODO: de-hard-code these.
+	const int first_blood_frame = 0;
+	const int last_blood_frame = 3;
+	bleed(first_blood_frame, last_blood_frame, get_tile());
+}
+
+/*
  *  This method should be called to decrement health directly.
  *
  *  Output: Hits taken. If exp is nonzero, experience value if defeated.
@@ -2786,10 +2841,7 @@ int Actor::reduce_health(
 	        // *always* cause bleeding).
 	        && rand() % 10 < delta
 	        && find_nearby(vec, blood, 1, 0) < 2) {
-		// Create blood where actor stands.
-		const Game_object_shared bobj = gmap->create_ireg_object(blood, 0);
-		bobj->set_flag(Obj_flags::is_temporary);
-		bobj->move(get_tile());
+		set_type_flag(Actor::tf_bleeding);
 	}
 	if (val <= 0 && oldhp > 0 && get_flag(Obj_flags::tournament)) {
 		// HPs are never reduced before tournament usecode
@@ -3200,6 +3252,9 @@ void Actor::set_type_flag(
 ) {
 	if (flag >= 0 && flag < 16)
 		type_flags |= (static_cast<uint32>(1) << flag);
+	if (flag == Actor::tf_bleeding) {
+		need_timers()->start_bleeding();
+	}
 
 	set_actor_shape();
 }
@@ -3274,6 +3329,9 @@ void Actor::set_type_flags(
     unsigned short tflags
 ) {
 	type_flags = tflags;
+	if (get_type_flag(Actor::tf_bleeding)) {
+		need_timers()->start_bleeding();
+	}
 	set_actor_shape();
 }
 
@@ -4267,7 +4325,7 @@ void Actor::mend_wounds(
 			hp = maxhp;
 		properties[static_cast<int>(health)] = hp;
 	}
-
+	clear_type_flag(Actor::tf_bleeding);
 	if (!mendmana)
 		return;
 	// Restore some mana also.
@@ -4322,6 +4380,7 @@ Actor *Actor::resurrect(
 	Actor::clear_flag(Obj_flags::protection);
 	Actor::clear_flag(Obj_flags::cursed);
 	Actor::clear_flag(Obj_flags::charmed);
+	Actor::clear_type_flag(Actor::tf_bleeding);
 	// Restore to party if possible.
 	partyman->update_party_status(this);
 	// Give a reasonable schedule.
