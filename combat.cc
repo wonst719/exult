@@ -768,7 +768,9 @@ void Combat_schedule::back_off(
 	npc->move(spots[ind]);
 	const int dir = npc->get_facing_direction(attacker);
 	npc->change_frame(npc->get_dir_framenum(dir, Actor::standing));
-	cout << "***" << npc->get_name() << " is backing off" << endl;
+	if (combat_trace) {
+		cout << npc->get_name() << " is backing off" << endl;
+	}
 }
 
 /*
