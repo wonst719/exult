@@ -233,8 +233,10 @@ void Game::show_congratulations(Palette *pal0) {
 						displayMessage += tokens[TokenExactly];
 					}
 					displayMessage += get_token(month, TokenMonth, TokenMonths);
-					// add ampersand only if there is more to display.
-					if (day > 0 || hour > 0) {
+					// add ampersand or comma if there is more to display.
+					if (day > 0 && hour > 0) {
+						displayMessage += ", ";
+					} else if (day > 0 || hour > 0) {
 						displayMessage += tokens[TokenAnd];
 					}
 				}
@@ -248,9 +250,9 @@ void Game::show_congratulations(Palette *pal0) {
 						displayMessage += tokens[TokenAnd];
 					}
 				}
-				if (hour > 0) {
-					// if no days, display hours(this would only happen on exactly 1,2,3 etc months)
-					// Here so the player doesnt think we didn't track the hours/days.
+				if (hour > 0 || (month == 0 && day == 0)) {
+					// if no days, display hours (this would only happen on exactly 1,2,3 etc months)
+					// Here so the player doesn't think we didn't track the hours/days.
 					// so 112 days at 2am would display "4 months & 2 hours", 113 days at 2am would display "4 months & 1 day"
 					if (month == 0 && day == 0) {
 						displayMessage += tokens[TokenOnly];
