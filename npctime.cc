@@ -181,8 +181,10 @@ Npc_timer_list::~Npc_timer_list(
 
 void Npc_timer_list::start_hunger(
 ) {
-	if (!hunger)            // Not already there?
+	if (hunger == nullptr) {
+		// Not already there?
 		hunger = new Npc_hunger_timer(this);
+	}
 }
 
 /*
@@ -339,10 +341,12 @@ void Npc_hunger_timer::handle_event(
 	// Once/minute.
 	if (minute != last_time) {
 		if (!npc->is_knocked_out()) {
-			if ((rand() % 3) == 0)
+			if ((rand() % 3) == 0) {
 				npc->say_hunger_message();
-			if (food <= 0 && (rand() % 5) < 2)
+			}
+			if (food <= 0 && (rand() % 5) < 2) {
 				npc->reduce_health(1, Weapon_data::sonic_damage);
+			}
 		}
 		last_time = minute;
 	}
@@ -408,8 +412,9 @@ void Npc_sleep_timer::handle_event(
 	if (npc->get_property(static_cast<int>(Actor::health)) <= 0) {
 		if (npc->is_in_party() || gmap->is_chunk_read(npc->get_cx(), npc->get_cy())) {
 			// 1 in 6 every half minute = approx. 1 HP every 3 min.
-			if (rand() % 6 == 0)
+			if (rand() % 6 == 0) {
 				npc->mend_wounds(false);
+			}
 		} else {   // If not nearby, and not in party, just set health and mana to full.
 			npc->set_property(static_cast<int>(Actor::health),
 			                  npc->get_property(static_cast<int>(Actor::strength)));
@@ -423,17 +428,18 @@ void Npc_sleep_timer::handle_event(
 	            !npc->get_flag(Obj_flags::asleep))
 	   ) {
 		// Avoid waking sleeping people.
-		if (npc->get_schedule_type() == Schedule::sleep)
+		if (npc->get_schedule_type() == Schedule::sleep) {
 			npc->clear_sleep();
-		else if (!npc->is_dead()) { // Don't wake the dead.
+		} else if (!npc->is_dead()) { // Don't wake the dead.
 			npc->clear_flag(Obj_flags::asleep);
 			const int frnum = npc->get_framenum();
 			if ((frnum & 0xf) == Actor::sleep_frame &&
 			        // Slimes don't change.
-			        !npc->get_info().has_strange_movement())
+			        !npc->get_info().has_strange_movement()) {
 				// Stand up.
 				npc->change_frame(
 				    Actor::standing | (frnum & 0x30));
+			}
 		}
 		delete this;
 		return;
@@ -446,21 +452,18 @@ void Npc_sleep_timer::handle_event(
  *  Check for a given ring.
  */
 
-inline int Wearing_ring(
+inline bool Wearing_ring(
     Actor *actor,
     int shnum,          // Ring shape to look for.
     int frnum
 ) {
 	// See if wearing ring.
-	Game_object *ring = actor->get_readied(lfinger);
-	if (ring && ring->get_shapenum() == shnum &&
-	        ring->get_framenum() == frnum)
-		return 1;
-	ring = actor->get_readied(rfinger);
-	if (ring && ring->get_shapenum() == shnum &&
-	        ring->get_framenum() == frnum)
-		return 1;
-	return 0;
+	auto is_this_ring = [&](Game_object* ring) {
+		return ring != nullptr && ring->get_shapenum() == shnum
+			   && ring->get_framenum() == frnum;
+	};
+	return is_this_ring(actor->get_readied(lfinger)) ||
+	       is_this_ring(actor->get_readied(rfinger));
 }
 
 /*
@@ -481,8 +484,9 @@ void Npc_invisibility_timer::handle_event(
 	if (curtime >= end_time ||  // Long enough?  Or cleared.
 	        !npc->get_flag(Obj_flags::invisible)) {
 		npc->clear_flag(Obj_flags::invisible);
-		if (!npc->is_dead())
+		if (!npc->is_dead()) {
 			gwin->add_dirty(npc);
+		}
 		delete this;
 		return;
 	}
@@ -508,8 +512,9 @@ void Npc_protection_timer::handle_event(
 	if (curtime >= end_time ||  // Long enough?  Or cleared.
 	        !npc->get_flag(Obj_flags::protection)) {
 		npc->clear_flag(Obj_flags::protection);
-		if (!npc->is_dead())
+		if (!npc->is_dead()) {
 			gwin->add_dirty(npc);
+		}
 		delete this;
 		return;
 	}
@@ -576,7 +581,8 @@ void Npc_flag_timer::handle_event(
 	        !npc->get_flag(flag)) {
 		npc->clear_flag(flag);
 		delete this;
-	} else              // Check again in 10 secs.
+	} else {              // Check again in 10 secs.
 		gwin->get_tqueue()->add(curtime + 10000, this);
+	}
 }
 
