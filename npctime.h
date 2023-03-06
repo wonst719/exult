@@ -30,7 +30,7 @@ class Npc_poison_timer;
 class Npc_sleep_timer;
 class Npc_invisibility_timer;
 class Npc_protection_timer;
-class Npc_bleed_timer ;
+class Npc_bleed_timer;
 class Npc_flag_timer;
 
 /*
@@ -38,13 +38,13 @@ class Npc_flag_timer;
  */
 class Npc_timer_list {
 	Actor *npc;
-	Npc_hunger_timer *hunger;
-	Npc_poison_timer *poison;
-	Npc_sleep_timer *sleep;
-	Npc_invisibility_timer *invisibility;
-	Npc_protection_timer *protection;
-	Npc_bleed_timer *bleed;
-	Npc_flag_timer *might, *curse, *charm, *paralyze;
+	Npc_hunger_timer *hunger{};
+	Npc_poison_timer *poison{};
+	Npc_sleep_timer *sleep{};
+	Npc_invisibility_timer *invisibility{};
+	Npc_protection_timer *protection{};
+	Npc_bleed_timer *bleed{};
+	Npc_flag_timer *might{}, *curse{}, *charm{}, *paralyze{};
 public:
 	friend class Npc_hunger_timer;
 	friend class Npc_poison_timer;
@@ -53,10 +53,7 @@ public:
 	friend class Npc_protection_timer;
 	friend class Npc_flag_timer;
 	friend class Npc_bleed_timer;
-	Npc_timer_list(Actor *n) : npc(n), hunger(nullptr), poison(nullptr), sleep(nullptr),
-		invisibility(nullptr), protection(nullptr), might(nullptr), curse(nullptr),
-		charm(nullptr), paralyze(nullptr)
-	{  }
+	Npc_timer_list(Actor *n) : npc(n) {}
 	~Npc_timer_list();
 	void start_hunger();
 	void start_poison();
