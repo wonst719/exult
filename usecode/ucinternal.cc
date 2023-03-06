@@ -2517,11 +2517,16 @@ int Usecode_internal::run() {
 				pushi(arr.find_elem(val) >= 0);
 				break;
 			}
-			case UC_CONVSMTH:        // Unknown.
-			case UC_CONVSMTH32:      // (32 bit version)
-				// this opcode only occurs in the 'audition' usecode function (BG)
-				// not sure what it's supposed to do, but this function results
-				// in the same behaviour as the original
+			case UC_DEFAULT:        // Conversation default.
+			case UC_DEFAULT32:      // (32 bit version)
+				// This opcode only occurs in the 'audition' usecode function (BG)
+				// It is a version of CMPS that pops no values from the stack
+				// (ignores the count parameter) and either branches to the next
+				// case if an answer has been picked already or marks an answer
+				// as being found, so that no more answers can be found after
+				// this opcode runs until the next converse loop.
+				// This means that it can be dangerous to place it before other
+				// CMPS cases, as they will never match.
 				frame->ip += 2;
 				if (opcode < UC_EXTOPCODE)
 					offset = Read2s(frame->ip);

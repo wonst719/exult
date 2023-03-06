@@ -33,7 +33,7 @@
 #       loop: If present, marks the opcode as representing a for loop.
 #       new_effect: If present, marks this as being a class allocating opcode.
 #       method_effect: If present, causes the number of elements indicated by
-#               the corresponding method to be popped. 
+#               the corresponding method to be popped.
 #       not_param: If present, prevents the opcode from counting as a parameter
 #               for other opcodes.
 # The following self-closing tags are only for the usecode script output, and
@@ -142,7 +142,7 @@ Pop {short} number of values from the stack, compare each one to the
 last response from the user, and jumps to the {offset} if it's not found,
 else continue as normal.
 NOTE: only do this comparing if we haven't found a correct answer on
-any of the previous CMPSs since the last ASK.
+any of the previous CMPSs or DEFAULTs since the last ASK.
 		-->
 	</>
 	<0x09>
@@ -546,20 +546,22 @@ on the stack.
 		-->
 	</>
 	<0x31>
-		<name> UC_CONVSMTH </>
-		<asm_nmo> `conv_something\t%1, %2` </>
+		<name> UC_DEFAULT </>
+		<asm_nmo> `default\t%1, %2` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `smth(0x%1) atend label%f*_%2` </>
+		<ucs_nmo> `default(0x%1) atend label%f*_%2` </>
 		<num_bytes> 4 </>
 		<param_types> {short,offset} </>
 		<num_pop> 0 </>
 		<num_push> 0 </>
 		<!--
-Does something related to conversations. Only occurs (2x) in the usecode
-function handling the 'audition' in Britain. Current implementation
-produces same result as original, although we're unsure of the exact
-function of this opcode.
-(Doesn't push or pop anything)
+This is a version of CMPS that pops no values from the stack (ignores the
+{short} parameter) and either jumps to the {offset} if an answer has been
+handled by a previous CMPS or marks an answer as being found and continue
+as normal.
+NOTE: Placing this before CMPS or DEFAULT opcodes will mean they never match a
+response from the user. You never need more than one DEFAULT in an ASK, and you
+should always place it after all CMPS cases of an ASK.
 		-->
 	</>
 	<0x32>
@@ -728,9 +730,9 @@ Calls the function (short) with "item" being equal to the
 element at the top of the stack. It does not return a
 value on the stack.
 
-In c-style notation, if the topmost element of the stack 
-is AVATAR = -356, and function 0x261 (Func0261) is 
-being called, we would have AVATAR->Func0261() and 
+In c-style notation, if the topmost element of the stack
+is AVATAR = -356, and function 0x261 (Func0261) is
+being called, we would have AVATAR->Func0261() and
 inside Func0261, "item" would be the avatar.
 		-->
 	</>
@@ -844,9 +846,9 @@ Calls the original game function (short) with "item" being equal
 to the element at the top of the stack. It does not return a
 value on the stack.
 
-In c-style notation, if the topmost element of the stack 
-is AVATAR = -356, and function 0x261 (Func0261) is 
-being called, we would have AVATAR->Func0261() and 
+In c-style notation, if the topmost element of the stack
+is AVATAR = -356, and function 0x261 (Func0261) is
+being called, we would have AVATAR->Func0261() and
 inside Func0261, "item" would be the avatar.
 		-->
 	</>
@@ -1199,15 +1201,15 @@ Calls the function specified by the 32-bit parameter.
 		<!-- The 32bit version of 0x2E - UC_LOOP -->
 	</>
 	<0xB1>
-		<name> UC_CONVSMTH32 </>
-		<asm_nmo> `conv_something32\t%1 %2` </>
+		<name> UC_DEFAULT32 </>
+		<asm_nmo> `default32\t%1 %2` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `smth32(0x%1) atend label%f*_%2` </>
+		<ucs_nmo> `default(0x%1) atend label%f*_%2` </>
 		<num_bytes> 6 </>
 		<param_types> {short,offset32} </>
 		<num_pop> 0 </>
 		<num_push> 0 </>
-		<!-- The 32bit version of 0x31 - UC_CONVSMTH -->
+		<!-- The 32bit version of 0x31 - UC_DEFAULT -->
 	</>
 	<0xBF>
 		<name> UC_THROW </>
@@ -1263,9 +1265,9 @@ Calls the function (long) with "item" being equal to the
 element at the top of the stack. It does not return a
 value on the stack.
 
-In c-style notation, if the topmost element of the stack 
-is AVATAR = -356, and function 0x261 (Func0261) is 
-being called, we would have AVATAR->Func0261() and 
+In c-style notation, if the topmost element of the stack
+is AVATAR = -356, and function 0x261 (Func0261) is
+being called, we would have AVATAR->Func0261() and
 inside Func0261, "item" would be the avatar.
 		-->
 	</>

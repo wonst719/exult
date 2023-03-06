@@ -63,7 +63,7 @@ enum UsecodeOps {
 	UC_LOOP = 0x2e,
 	UC_ADDSV = 0x2f,
 	UC_IN = 0x30,
-	UC_CONVSMTH = 0x31,      // Audition opcode; UCC never emits this.
+	UC_DEFAULT = 0x31,       // Conversation default.
 	UC_RETZ = 0x32,          // Returns zero.
 	UC_SAY = 0x33,
 	UC_CALLIS = 0x38,
@@ -118,7 +118,7 @@ enum UsecodeOps {
 	UC_PUSHI32 = 0x9f,
 	UC_CALL32 = 0xa4,
 	UC_LOOP32 = 0xae,        // 32-bit version of UC_LOOP; UCC never emits this.
-	UC_CONVSMTH32 = 0xb1,    // 32-bit audition opcode; UCC never emits this.
+	UC_DEFAULT32 = 0xb1,     // 32-bit version of conversation default opcode.
 	UC_CALLE32 = 0xc7,
 	UC_DBGFUNC32 = 0xcd,     // 32-bit version of SI debug opcode; UCC never emits this.
 	UC_LOOPTOPS32 = 0xdc,    // 32-bit loop with static array.

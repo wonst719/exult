@@ -663,11 +663,14 @@ void Uc_converse_case_statement::gen(
 	blocks.push_back(case_body);
 	// Past CASE body.
 	auto *past_case = new Basic_block();
-	if (is_default())
-		curr->set_targets(UC_INVALID, case_body);
-	else {
+	if (is_default()) {
+		curr->set_targets(UC_DEFAULT, case_body, past_case);
+		// Writing 1 to match audition usecode, but this could be anything.
+		WriteJumpParam2(curr, 1);
+	} else {
 		curr->set_targets(UC_CMPS, case_body, past_case);
-		WriteJumpParam2(curr, string_offset.size());    // # strings on stack.
+		// # strings on stack.
+		WriteJumpParam2(curr, string_offset.size());
 	}
 
 	if (remove) {       // Remove answer?

@@ -57,9 +57,9 @@ public:
 			params.reserve(8);
 			break;
 		case UC_CMPS:
-		case UC_CONVSMTH:
+		case UC_DEFAULT:
 		case UC_CMPS32:
-		case UC_CONVSMTH32:
+		case UC_DEFAULT32:
 			is_jump = true;
 			params.reserve(2);
 			break;
@@ -221,7 +221,7 @@ protected:
 	// block; otherwise, one of:
 	//  conditional jumps:
 	//      UC_JNE, UC_CMPS, UC_CONVERSE, UC_LOOPTOP, UC_LOOPTOPS, UC_LOOPTOPTHV,
-	//      UC_TRYSTART
+	//      UC_TRYSTART, UC_DEFAULT
 	//  unconditional jumps:
 	//      UC_JMP
 	// or the 32-bit versions of these instructions.
@@ -290,9 +290,8 @@ public:
 	bool is_simple_jump_block() const {
 		return is_jump_block() && instructions.empty();
 	}
-	bool is_conditionaljump_block() const
-	// instructions shouldn't be empty in this case.
-	{
+	bool is_conditionaljump_block() const {
+		// instructions shouldn't be empty in this case.
 		return jmp_op ? (jmp_op->get_opcode() == UC_JNE) : false;
 	}
 	bool is_fallthrough_block() const {
