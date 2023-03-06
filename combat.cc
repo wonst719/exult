@@ -532,13 +532,14 @@ std::list<Game_object_weak>::iterator Combat_schedule::find_attacked_opponent(
 			// Penalize opponents that are not being attacked
 			// or that are being attacked by us already
 			dist += 16;
-		}
-		Actor* oppr = gwin->get_npc(oppressor);
-		assert(oppr != nullptr);
-		if (oppr->get_effective_alignment() == npc_align
-			&& oppr->get_target() != opp.get()) {
-			// Oppressor is not actually attacking NPC, so penalize it.
-			dist += 16;
+		} else {
+			const Actor* oppr = gwin->get_npc(oppressor);
+			assert(oppr != nullptr);
+			if (oppr->get_effective_alignment() == npc_align
+				&& oppr->get_target() != opp.get()) {
+				// Oppressor is not actually attacking NPC, so penalize it.
+				dist += 16;
+			}
 		}
 		if (opp->get_attack_mode() == Actor::flee || !opp->can_act()) {
 			// Avoid fleeing.
