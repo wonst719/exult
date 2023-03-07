@@ -19,11 +19,15 @@
  */
 
 #ifndef NPCTIME_H
-#define NPCTIME_H   1
+#define NPCTIME_H 1
 
 #include "tqueue.h"
 
+#include <map>
+#include <memory>
+
 class Game_window;
+class Game_object;
 class Actor;
 class Npc_hunger_timer;
 class Npc_poison_timer;
@@ -37,14 +41,27 @@ class Npc_flag_timer;
  *  List of references to timers for an NPC.
  */
 class Npc_timer_list {
-	Actor *npc;
-	Npc_hunger_timer *hunger{};
-	Npc_poison_timer *poison{};
-	Npc_sleep_timer *sleep{};
-	Npc_invisibility_timer *invisibility{};
-	Npc_protection_timer *protection{};
-	Npc_bleed_timer *bleed{};
-	Npc_flag_timer *might{}, *curse{}, *charm{}, *paralyze{};
+	using unique_flag_timer = std::unique_ptr<Npc_flag_timer>;
+	std::weak_ptr<Game_object>              npc;
+	std::unique_ptr<Npc_hunger_timer>       hunger;
+	std::unique_ptr<Npc_poison_timer>       poison;
+	std::unique_ptr<Npc_sleep_timer>        sleep;
+	std::unique_ptr<Npc_invisibility_timer> invisibility;
+	std::unique_ptr<Npc_protection_timer>   protection;
+	std::map<int, unique_flag_timer>        flags;
+	std::unique_ptr<Npc_bleed_timer>        bleed;
+
+	void start_flag(int flag);
+	void stop_hunger();
+	void stop_poison();
+	void stop_sleep();
+	void stop_invisibility();
+	void stop_protection();
+	void stop_flag(int flag);
+	void stop_bleeding();
+
+	std::shared_ptr<Actor> get_npc() const;
+
 public:
 	friend class Npc_hunger_timer;
 	friend class Npc_poison_timer;
@@ -53,7 +70,7 @@ public:
 	friend class Npc_protection_timer;
 	friend class Npc_flag_timer;
 	friend class Npc_bleed_timer;
-	Npc_timer_list(Actor *n) : npc(n) {}
+	Npc_timer_list(Actor* n);
 	~Npc_timer_list();
 	void start_hunger();
 	void start_poison();
@@ -67,4 +84,4 @@ public:
 	void start_bleeding();
 };
 
-#endif  /* INCL_NPCTIME */
+#endif /* INCL_NPCTIME */
