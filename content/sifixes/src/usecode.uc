@@ -141,3 +141,5 @@
 #include "cutscenes/wall_of_lights.uc"
 // Fixes gang planck blocking check
 #include "misc/is_obj_blocked.uc"
+// Fixes Boydon's tournament flag post List Field
+#include "misc/list_field.uc"
