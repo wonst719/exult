@@ -146,15 +146,17 @@ enum Monitor_traitor_subplot
 	// so the dialog in Fawn won’t change. Similar to the original Origin bug with Harnna and the Strange Coins,
 	// if Flag 204 is set you can repeatedly ask Standarr about Pomdirgun, the option does not get removed.
 	POMDIRGUN_IS_DEAD = 0xCC
-
 };
 
 enum Kidnapping_of_Cantra_subplot
 {
+	SHAMINOS_KEEP_BARRIERS_GONE = 0x0,
 	KNOWS_CANTRA_IS_MISSING = 0x79,
 	WILL_FIND_CANTRA = 0x5B,
 	CURED_CANTRA = 0x47,     // Flag when Cantra is cured.
-	TOLD_CANTRA_IS_ALIVE = 0x96
+	TOLD_CANTRA_IS_ALIVE = 0x96,
+	BATLIN_FLED_SHAMINOS_KEEP = 0x2E2,
+	HOUND_TRACKED_BATLIN = 0x25D
 };
 
 enum Knights_Test_subplot
@@ -198,7 +200,7 @@ enum Fawn_townplot
 	ASKED_JENDON_DAEMON_ARTIFACTS = 0x156,
 	ASK_DELIN_ABOUT_BATLIN = 0x158,
 	ORACLE_SET_TO_INNOCENT = 0x16E,
-	ORACLE_SET_TO_CORRUPT = 0x16F, 
+	ORACLE_SET_TO_CORRUPT = 0x16F,
 	// Dual-use flag, set on the start of the audience cutscene, unset during the
 	// recess between trial sessions, and re-set again after the trial concludes:
 	AUDIENCE_WITH_YELINDA = 0x170,
@@ -206,7 +208,9 @@ enum Fawn_townplot
 	FAWN_TRIAL_DONE = 0x172,
 	DUPRE_ACCUSED = 0x173,
 	IOLO_ACCUSED = 0x174,
-	SHAMINO_ACCUSED = 0x175
+	SHAMINO_ACCUSED = 0x175,
+	KNOW_YELINDAS_DIAMOND_NECKLACE = 0x1B1,
+	RETURNED_COMB_OF_BEAUTY = 0x212
 };
 
 enum Sleeping_Bull_townplot
@@ -214,10 +218,11 @@ enum Sleeping_Bull_townplot
 	ASKED_ANDRAL_ABOUT_INN = 0xC
 };
 
+/*
 enum Moonshade_townplot
 {
-	a
 };
+*/
 
 enum Gustacios_experiment_subplot
 {
@@ -392,7 +397,7 @@ enum Teleport_storm_objects
 	HAS_CLUE_FURCAP = 0x2A0,
 	KNOWS_FURCAP_OWNER = 0x292,
 	KNOWS_BREAST_PLATE_OWNER = 0x294,
-	
+
 	// Items which have been gotten back:
 	HAS_DUPRE_SHIELD = 0xB2,
 
@@ -411,13 +416,13 @@ enum Silver_Seed_flags
 	WEARING_BELT_OF_STRENGTH = 0x2E8,
 	EXPERIENCE_FROM_BELT_OF_STRENGTH = 0x2E9,
 	USED_AMULET_OF_BALANCE = 0x2EE,
-	
+
 	ASKED_SUROK_TOO_MUCH = 0x2F4,
 	RED_ORB_PLACED = 0x2F5,
 	PURPLE_ORB_PLACED = 0x2F6,
 	BLUE_ORB_PLACED = 0x2F7,
 	YELLOW_ORB_PLACED = 0x2F8,
-	
+
 	KNOW_YUREL_LOVES_CHEESE = 0x2FA,
 	HAVE_AMULET_OF_BALANCE = 0x2FB,
 	HAVE_SILVER_SEED = 0x2FC,
@@ -425,7 +430,7 @@ enum Silver_Seed_flags
 	CASK_WAS_MOVED = 0x2FE,
 	ROPE_ON_WELL = 0x2FF,
 	HAVE_KEYRING = 0x300,
-	
+
 	WEARING_GAUNTLETS_OF_QUICKNESS = 0x302,
 	HOLDING_ERINONS_AXE = 0x303,
 	EXPERIENCE_FROM_ERINONS_AXE = 0x304,
@@ -442,7 +447,7 @@ enum Silver_Seed_flags
 	MET_RIEYA = 0x30F,
 	MET_DRUSILLA = 0x310,
 	MET_SOLARIA = 0x311,
-	
+
 	PLANTED_SILVER_SEED = 0x313,
 	USED_IRON_MAIDEN = 0x314,
 	EXPERIENCE_FROM_RING_OF_REAGENTS = 0x315

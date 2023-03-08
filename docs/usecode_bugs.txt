@@ -77,7 +77,6 @@ The List Field also sets this flag in the NPC to be trained, and clears it when
 done. This causes Boydon to lose his special permanent death.
 
 
-
 Fixed bugs:
 ==================
 
@@ -344,3 +343,20 @@ with
 0089:   push    [0007]
 
 This will fix the bug.
+
+
+(SI) Tracking Anti-Shamino:
+===========================
+
+The Hound of Doskar's usecode is supposed to allow you to track Anti-Shamino
+using Beatrix's LOVE SONNETS book. However, it checks the wrong quality (62
+instead of 63) and you need the Diary of an Anonymous henchman of Batlin's.
+
+Usecode function 036A:
+
+replace
+0276:   pushi   003EH
+with
+0276:   pushi   003FH
+
+This makes the Hound track Anti-Shamino through the correct book.

@@ -143,3 +143,5 @@
 #include "misc/is_obj_blocked.uc"
 // Fixes Boydon's tournament flag post List Field
 #include "misc/list_field.uc"
+// Allows Hound of Doskar to track Anti-Shamino with Beatrix' Book.
+#include "npcs/hound.uc"

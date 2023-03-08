@@ -14,7 +14,7 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 /*	This file has a few shapes which I used in the mod. I intend to have them all
  *	one day in the file, but it will take some time.
  *
@@ -203,7 +203,7 @@ enum ammo_shapes
 	SHAPE_ARROW = 722,
 	SHAPE_BOLT = 723
 };
-	
+
 enum armor_shapes
 {
 	SHAPE_CLOAK = 227,
@@ -370,7 +370,7 @@ enum dead_body_shapes
 
 // Most containers here
 enum container_shapes
-{	
+{
 	SHAPE_SHIPS_HOLD = 405,
 	SHAPE_LOCKED_CHEST = 522,
 	SHAPE_LOCKEDCHEST = 522,				// Legacy
@@ -574,6 +574,16 @@ enum npc_shapes
 	// These are the "old" avatar shapes:
 	// SHAPE_MALE_AVATAR = 721,
 	// SHAPE_FEMALE_AVATAR = 989,
+};
+
+enum lute_frames {
+	FRAME_IOLOS_LUTE = 2
+};
+
+enum amulet_frames {
+	FRAME_BATLINS_MEDALLION = 4,
+	FRAME_DIAMOND_NECKLACE = 5,
+	FRAME_WHITE_DIAMOND_NECKLACE = 8
 };
 
 const int FRAME_DRIED_FISH = 31;

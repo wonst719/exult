@@ -17,6 +17,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+//returns a random entry from an array
+var randomIndex(var array)
+{
+	var size = UI_get_array_size(array);
+	var rand = UI_get_random(size);
+	return array[rand];
+}
+
 void freeze object#() ()
 {
 	set_item_flag(DONT_MOVE);
