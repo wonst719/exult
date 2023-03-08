@@ -28,7 +28,7 @@ enum item_flags {			// Bit #'s of flags:
 		might = 12,		// Double strength, dext, intel.
 		no_spell_casting = 13,
 		cant_die = 14,		// Test flag in Monster_info.
-		dancing = 15,		// ??Not sure.
+		in_action = 15,		// If the NPC is doing something. Set by "Dance" spell in BG.
 		dont_move = 16,		// User can't move.  In BG,
 					//   completely invisible.
 		si_on_moving_barge = 17,// SI's version of 10?

@@ -152,7 +152,7 @@ const long DAY		= 36000;
  */
 
 /*
- *	Item/NPC flags, stolen from the Exult LB-joins-party patch with some 
+ *	Item/NPC flags, stolen from the Exult LB-joins-party patch with some
  *	comments added.
  *	These can be retrieved and set using UI_get_item_flag(itemref, flag),
  *	UI_set_item_flag(itemref, flag) and UI_clear_item_flag(itemref, flag).
@@ -175,22 +175,23 @@ enum item_flags
 	MIGHT				= 12,		// Double strength, dext, intel.
 	IMMUNITIES			= 13,		// Lots of imunities; can be gotten only.
 	CANT_DIE			= 14,		// Test flag in monster_info.
-	DANCING				= 15,		// Set by "Dance" spell in BG.
+	IN_ACTION			= 15,		// If the NPC is doing something. Set by "Dance" spell in BG.
 	DONT_MOVE			= 16,		// SI-only. NPC can't move; "cutscene" mode.
 	DONT_RENDER			= 16,		// BG-only. Like DONT_MOVE, but avatar also
 									// completely invisible.
 	TEMPORARY			= 18,		// Is temporary - this means that the item will
 									// be deleted once the party gets beyond a certain
 									// range from it (outside the superchunk?)
-	SAILOR				= 20,		// The barge's 'captain'. When getting the flag,
+	ACTIVE_SAILOR		= 20,		// The barge's 'captain'. When getting the flag,
 									// you will actually get the current captain.
 	OKAY_TO_LAND		= 21,		// Used for flying-carpet.
 	BG_DONT_MOVE		= 22,		// BG-only. NPC can't move; "cutscene" mode.
 	SI_DONT_RENDER		= 22,		// SI-only. Like DONT_MOVE, but avatar also
 									// completely invisible.
 	IN_DUNGEON			= 23,		// If set, you won't be accused of stealing.
+	IS_SOLID			= 24,		// Used by gangplank usecode to determine if an object is solid.
 	CONFUSED			= 25,
-	IN_MOTION			= 26,		// Object is a barge object moving, or on a barge
+	ACTIVE_BARGE		= 26,		// Object is a barge object moving, or on a barge
 									// object that is moving. Set in usecode, and mostly
 									// used for the SI 'NPC' ships such as the turtle.
 	MET					= 28,		// Has the npc been met before - originally this

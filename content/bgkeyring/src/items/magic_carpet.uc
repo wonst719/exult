@@ -41,9 +41,9 @@ void Magic_Carpet shape#(SHAPE_MAGIC_CARPET) ()
 		// If showing gumps, close them.
 		if (UI_in_gump_mode())
 			UI_close_gumps();
-		
+
 		var barge = get_barge();
-		
+
 		// Flag 10 = 'on moving barge'
 		if (!barge->get_item_flag(ON_MOVING_BARGE))
 		{
@@ -56,10 +56,10 @@ void Magic_Carpet shape#(SHAPE_MAGIC_CARPET) ()
 				// he uses hack mover.
 				if (event == PARTY_CARPET && AVATAR->in_usecode_path())
 					return;
-				
+
 				// If so, take off.
 				CarpetTakeOff(barge);
-				
+
 				// Should always work:
 				var pieces = barge->find_nearby(SHAPE_CARPET_ROLLER, 20, 0);
 				var piece = 0;
@@ -79,7 +79,7 @@ void Magic_Carpet shape#(SHAPE_MAGIC_CARPET) ()
 					var nsrefl   = (frnum / 2) % 2;
 					var diagrefl = frnum / 32;
 					var dir = ((diagrefl * 6) + (nsrefl * 4)) % 8;
-					
+
 					// Make all party face the barge's direction and change
 					// to their standing frames.
 					var party = UI_get_party_list();
@@ -108,11 +108,11 @@ void Magic_Carpet shape#(SHAPE_MAGIC_CARPET) ()
 					var nsrefl   = (frnum / 2) % 2;
 					var diagrefl = frnum / 32;
 					var dir = ((diagrefl * 6) + (nsrefl * 4)) % 8;
-					
+
 					// Get barge's position.
 					var pos = barge->get_object_position();
 					pos[Z] += 1;
-					
+
 					// Get array of position offsets.
 					var offsets;
 					switch (dir)
@@ -134,7 +134,7 @@ void Magic_Carpet shape#(SHAPE_MAGIC_CARPET) ()
 							           -5,  0, -3, -2, -3,  0, -1, -1];
 							break;
 					}
-					
+
 					// Go through party.
 					var party = UI_get_party_list();
 					for (npc in party with index)
@@ -171,7 +171,7 @@ void Magic_Carpet shape#(SHAPE_MAGIC_CARPET) ()
 			{
 				// Everything is A-OK for landing, so do it.
 				barge->clear_item_flag(ON_MOVING_BARGE);
-				barge->clear_item_flag(IN_MOTION);
+				barge->clear_item_flag(ACTIVE_BARGE);
 				// Make carpet descent until the ground.
 				script barge
 				{
@@ -195,7 +195,7 @@ void FlyingCarpetRoller shape#(SHAPE_CARPET_ROLLER) ()
 {
 	// Check if we are on a barge.
 	var barge  = get_barge();
-	
+
 	if (barge)
 	{
 		// We are. Is the barge in motion?
@@ -208,17 +208,17 @@ void FlyingCarpetRoller shape#(SHAPE_CARPET_ROLLER) ()
 		var pos = barge->get_object_position();
 		if (pos[Z] > 0)
 			return;
-		
+
 		// Find nearby pieces of the carpet and delete them all.
 		var pieces = find_nearby(SHAPE_MAGIC_CARPET, 20, 0);
 		for (obj in pieces)
 			if (obj->get_barge() == barge)
 				obj->remove_item();
-				
+
 		// Delete the barge object too.
 		barge->remove_item();
 	}
-	
+
 	// Convert frame number into direction and rotation bits.
 	var frnum  = get_item_frame_rot();
 	var nsrefl   = (frnum / 2) % 2;
@@ -226,14 +226,14 @@ void FlyingCarpetRoller shape#(SHAPE_CARPET_ROLLER) ()
 	var dir = ((diagrefl * 6) + (nsrefl * 4)) % 8;
 	var diagbit  = diagrefl * 32;
 	var nsbit    = nsrefl * 2;
-	
+
 	// Get piece position.
 	var pos    = get_object_position();
-	
+
 	// Create a rolled-up carpet and set its frame.
 	var roll = UI_create_new_object(SHAPE_ROLLED_CARPET);
 	roll->set_item_frame_rot(0 + nsbit + diagbit);
-	
+
 	// Move the rolled-up carpet into the right spot.
 	switch (dir)
 	{
@@ -250,7 +250,7 @@ void FlyingCarpetRoller shape#(SHAPE_CARPET_ROLLER) ()
 			UI_update_last_created([pos[X]    , pos[Y] + 1, 0]);
 			break;
 	}
-	
+
 	// Finally, remove this piece.
 	remove_item();
 }
@@ -264,7 +264,7 @@ void RolledFlyingCarpet shape#(SHAPE_ROLLED_CARPET) ()
 		randomPartySay("@There is not enough space to unroll the carpet.@");
 		return;
 	}
-	
+
 	// Convert frame number into direction and rotation bits.
 	var frnum = get_item_frame_rot();
 	var nsrefl   = (frnum / 2) % 2;
@@ -272,13 +272,13 @@ void RolledFlyingCarpet shape#(SHAPE_ROLLED_CARPET) ()
 	var dir = ((diagrefl * 6) + (nsrefl * 4)) % 8;
 	var diagbit  = diagrefl * 32;
 	var nsbit    = nsrefl * 2;
-	
+
 	// Get carpet position.
 	var pos = get_object_position();
-	
+
 	// These will be positions for each of the carpet pieces.
 	var pospart1, pospart2, pospart3, posbarge;
-	
+
 	// Get positions adequate to the direction.
 	switch (dir)
 	{
@@ -307,21 +307,21 @@ void RolledFlyingCarpet shape#(SHAPE_ROLLED_CARPET) ()
 			posbarge = [pos[X]    , pos[Y]    , pos[Z]];
 			break;
 	}
-	
+
 	// Remove the current piece from the world without deleting.
 	set_last_created();
-	
+
 	// Create barge with correct size and direction.
 	var barge;
 	if (diagbit)
 		barge = UI_create_barge_object(12, 6, dir);
 	else
 		barge = UI_create_barge_object(6, 12, dir);
-		
+
 	// Put this barge in the right position, but above the ground (yes, I am
 	// being silly using 255; 10 or so would be enough).
 	UI_update_last_created([posbarge[X], posbarge[Y], 255]);
-	
+
 	// Check if the ground is clear (flag 21 == 'okay to land').
 	if (barge->get_item_flag(OKAY_TO_LAND))
 	{
@@ -330,20 +330,20 @@ void RolledFlyingCarpet shape#(SHAPE_ROLLED_CARPET) ()
 		var part1 = UI_create_new_object(SHAPE_MAGIC_CARPET);
 		part1->set_item_frame_rot(nsbit + diagbit);
 		UI_update_last_created(pospart1);
-		
+
 		var part2 = UI_create_new_object(SHAPE_MAGIC_CARPET);
 		part2->set_item_frame_rot(2 - nsbit + diagbit);
 		UI_update_last_created(pospart2);
-		
+
 		var part3 = UI_create_new_object(SHAPE_CARPET_ROLLER);
 		part3->set_item_frame_rot(nsbit + diagbit);
 		UI_update_last_created(pospart3);
-		
+
 		// Move barge to the ground. This will cause it to gather the barge
 		// pieces into its list.
 		barge->set_last_created();
 		UI_update_last_created(posbarge);
-		
+
 		// Finally, delete the current object.
 		remove_item();
 	}
@@ -353,10 +353,10 @@ void RolledFlyingCarpet shape#(SHAPE_ROLLED_CARPET) ()
 		// Put the rolled-up carpet back.
 		set_last_created();
 		UI_update_last_created(pos);
-		
+
 		// Delete the barge object.
 		barge->remove_item();
-		
+
 		// Complain about the lack of space.
 		randomPartySay("@There is not enough space to unroll the carpet.@");
 	}

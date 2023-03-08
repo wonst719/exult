@@ -98,7 +98,7 @@ const char *CheatScreen::flag_names[64] = {
 	"might",        // 0x0C
 	"immunities",   //0x0D
 	"cant_die",     // 0x0E
-	"dancing",      // 0x0F
+	"in_action",      // 0x0F
 
 	"dont_move/bg_dont_render",     // 0x10
 	"si_on_moving_barge",   // 0x11

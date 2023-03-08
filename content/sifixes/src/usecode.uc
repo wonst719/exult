@@ -139,3 +139,5 @@
 #include "cutscenes/monitor_banquet.uc"
 // Absolutely force companions to be there and force-kills them after
 #include "cutscenes/wall_of_lights.uc"
+// Fixes gang planck blocking check
+#include "misc/is_obj_blocked.uc"

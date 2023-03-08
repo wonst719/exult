@@ -284,7 +284,7 @@ void spellEndSeance object#() ()
 	gflags[SEANCE_PAULETTE] = false;
 	gflags[SEANCE_QUENTON] = false;
 	gflags[SEANCE_FORSYTHE] = false;
-}	
+}
 
 void spellCauseDancing object#() ()
 {
@@ -298,7 +298,7 @@ void spellCauseDancing object#() ()
 			var pos = npc->get_object_position();
 			UI_sprite_effect(16, pos[X], pos[Y], 0, 0, 0, -1);
 			setNonpartySchedule(npc, DANCE);
-			npc->set_item_flag(DANCING);
+			npc->set_item_flag(IN_ACTION);
 			var barks = ["@Dance!@", "@Yeah!@", "@Huh!@", "@Oh, yeah!@", "@I'm bad!@", "@Boogie!@", "@Yow!@"];
 			var rand = UI_die_roll(1, 7);
 			var delay = UI_die_roll(10, 40);
@@ -308,7 +308,7 @@ void spellCauseDancing object#() ()
 			{	nohalt;						call stopDancing;}
 		}
 	}
-}	
+}
 
 void spellSummonSkeletonsEffect object#() ()
 {
@@ -326,7 +326,7 @@ void spellSummonSkeletonsEffect object#() ()
 		summoned->set_alignment(get_alignment());
 		rand -= 1;
 	}
-}	
+}
 
 void spellCauseFearEffect object#() ()
 {
@@ -357,7 +357,7 @@ void spellMagicStormEffect object#() ()
 		script item after rand ticks
 		{	nohalt;						call spellMagicStormEffect;}
 	}
-}	
+}
 
 void spellTremorEffect object#() ()
 {
@@ -371,7 +371,7 @@ void spellTremorEffect object#() ()
 		while (counter < duration)
 		{
 			var rand = UI_die_roll(0, 8);
-	
+
 			if (rand == 0)
 				usecodearray << {	actor frame kneeling;		actor frame bowing;
 									actor frame standing;};
@@ -399,7 +399,7 @@ void spellTremorEffect object#() ()
 			else if (rand == 8)
 				usecodearray << {	face directions[UI_get_random(4)];
 									actor frame ready;	actor frame standing; };
-	
+
 			counter = (counter + 1);
 		}
 		npc->halt_scheduled();
@@ -484,4 +484,4 @@ void spellMassResurrectEffect object#() ()
 			script body after 2+dist/3 ticks resurrect;
 		}
 	}
-}	
+}

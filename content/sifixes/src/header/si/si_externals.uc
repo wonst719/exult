@@ -100,6 +100,8 @@ extern var directionFromAvatar 0x979 (var obj);
 // Sees if the party has a minimum count of the specified item:
 extern var hasItemCount 0x97D (var cont, var mincount, var shapenum, var quality, var framenum);
 
+extern var absoluteValueOf 0x97E (var number);
+
 // Makes the NPC bark after delay ticks:
 extern void delayedBark 0x97F (var npc, var bark, var delay);
 
@@ -168,7 +170,7 @@ extern void unfreezeAvatar 0x9AA ();
  */
 extern void setNewSchedules 0x9AC (var npc, var posx, var posy, var activity);
 
-// Sets a single NPC to attack the party, 
+// Sets a single NPC to attack the party,
 // and changes that NPC's alignment to Evil.
 extern void attackParty 0x9AD (var npc);
 

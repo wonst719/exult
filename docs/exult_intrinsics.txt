@@ -1385,7 +1385,7 @@ int obj->get_item_flag(int flag)
         CANT_DIE           = 14    Object can't die. Used for testing purposes,
                                    and certain critical NPCs (such as L.B.). Can
                                    be inspected only.
-        DANCING            = 15    Object is executing the usecode called by the
+        IN_ACTION          = 15    Object is executing the usecode called by the
                                    Dance spell.
         DONT_MOVE          = 16    SI: The NPC cannot move.
         DONT_RENDER        = 16    BG: The NPC cannot move, and is not rendered
@@ -1394,8 +1394,9 @@ int obj->get_item_flag(int flag)
                                    barges. (Turtle for example.)
         TEMPORARY          = 18    Object is temporary and will decay once the
                                    chunk it is in is un-cached.
-        SAILOR             = 20    Object is the 'captain' of a barge. *Only set
-                                   on NPCs!*
+        ACTIVE_SAILOR      = 20    Object is the 'captain' of a barge.  When
+                                   getting the flag, you will actually get the
+                                   current captain.
         OKAY_TO_LAND       = 21    Set in usecode for flying carpet, TRUE if you
                                    can land currently.
         BG_DONT_MOVE       = 22    BG: BG's version of DONT_MOVE.
@@ -1403,10 +1404,12 @@ int obj->get_item_flag(int flag)
         IN_DUNGEON         = 23    If set on PC or an NPC, they won't trigger
                                    the stealing usecode if they take food
                                    objects.
+        IS_SOLID           = 24    Used by gangplank usecode to determine if an
+                                   object is solid.
         CONFUSED           = 25    This will be set if the avatar failed
                                    copyright protection questions in SI. Only
                                    really meaningful used on the avatar.
-        IN_MOTION          = 26    Object is a barge object moving, or on a
+        ACTIVE_BARGE       = 26    Object is a barge object moving, or on a
                                    barge object that is moving. Set in usecode,
                                    and mostly used for the SI 'NPC' ships such
                                    as the turtle.
@@ -1448,10 +1451,11 @@ int obj->get_item_flag(int flag)
 
   Return:
     For most flags, true if the flag is set (that is, in effect), false
-    otherwise. There is one exception, however: The 'SAILOR' flag has a peculiar
-    behavior in that it actually returns an object reference to the last object
-    to have that flag set, or zero if no object has been set or if the flag has
-    been cleared with 'clear_item_flag' intrinsic.
+    otherwise. There is one exception, however: The 'ACTIVE_SAILOR' and
+    'ACTIVE_BARGE' flags have a peculiar behavior in that they actually returns
+    an object reference to the last object to have that flag set, or zero if no
+    object has been set, or if the flag has been cleared with 'clear_item_flag'
+    intrinsic for the given flag.
 
     With the exception of the OKAY_TO_TAKE, TEMPORARY and INVISIBLE flags, these
     flags are valid for NPCs only. You can get, set or clear any of those values
@@ -1473,9 +1477,10 @@ obj->set_item_flag(int flag)
             can be any of the values for the 'flag' parameter of the
             set_item_flag intrinsic.
 
-    In the special case of the 'SAILOR' flag, the supplied object, instead of a
-    flag value. This stored object will be returned by future calls of the
-    'get_item_flag' intrinsic.
+    In the special case of the 'ACTIVE_SAILOR' and 'ACTIVE_BARGE' flags, stores
+    the supplied object, instead of a flag value. This stored object will be
+    returned by future calls of the 'get_item_flag' intrinsic for the given
+    flag.
 
     With the exception of the OKAY_TO_TAKE, TEMPORARY and INVISIBLE flags, these
     flags are valid for NPCs only. You can get, set or clear any of those values
@@ -1497,9 +1502,9 @@ obj->clear_item_flag(int flag)
             it can be any of the values for the 'flag' parameter of the
             set_item_flag intrinsic.
 
-    In the special case of the 'SAILOR' flag, the object that it stores is set
-    to zero. This will be the return of any future calls to the 'get_item_flag'
-    intrinsic.
+    In the special case of the 'ACTIVE_SAILOR' and 'ACTIVE_BARGE' flags, the
+    object that they stores is set to zero. This will be the return of any
+    future calls to the 'get_item_flag' intrinsic for the given flag.
 
     With the exception of the OKAY_TO_TAKE, TEMPORARY and INVISIBLE flags, these
     flags are valid for NPCs only. You can get, set or clear any of those values

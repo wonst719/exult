@@ -7088,7 +7088,7 @@ Coordinates</property>
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="npc_flag_of_15">
-                    <property name="label" translatable="yes">Dancing</property>
+                    <property name="label" translatable="yes">In action</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>

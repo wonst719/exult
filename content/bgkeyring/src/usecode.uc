@@ -79,3 +79,6 @@
 
 //The Crown Jewels:
 #include "items/crown_jewels.uc"
+
+// Fixes gang planck blocking check
+#include "misc/is_obj_blocked.uc"

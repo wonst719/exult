@@ -2552,12 +2552,12 @@ static bool Is_moving_barge_flag(
 ) {
 	if (Game::get_game_type() == BLACK_GATE) {
 		return fnum == static_cast<int>(Obj_flags::on_moving_barge) ||
-		       fnum == static_cast<int>(Obj_flags::in_motion);
+		       fnum == static_cast<int>(Obj_flags::active_barge);
 	} else {            // SI.
 		return fnum == static_cast<int>(Obj_flags::si_on_moving_barge) ||
 		       // Ice raft needs this one:
 		       fnum == static_cast<int>(Obj_flags::on_moving_barge) ||
-		       fnum == static_cast<int>(Obj_flags::in_motion);
+		       fnum == static_cast<int>(Obj_flags::active_barge);
 	}
 }
 
@@ -2591,16 +2591,17 @@ USECODE_INTRINSIC(get_item_flag) {
 		const Monster_info *inf = obj->get_info().get_monster_info();
 		return Usecode_value((inf != nullptr && inf->death_safe()) ||
 		                     (npc && npc->check_gear_powers(Frame_flags::death_safe)));
-	}
-	// +++++0x18 is used in testing for
-	//   blocked gangplank. What is it?????
-	else if (fnum == 0x18 && Game::get_game_type() == BLACK_GATE)
-		return Usecode_value(1);
-	else if (fnum == static_cast<int>(Obj_flags::in_dungeon))
+	} else if (fnum == Obj_flags::is_solid) {
+		// Verified. The previous version worked well because of a bug in both
+		// BG and SI gang-planck usecode, which checked the flag on the wrong
+		// object. Also, no non-solid object is in a position where it could
+		// block the gang-planck.
+		return Usecode_value(obj->get_info().is_solid());
+	} else if (fnum == static_cast<int>(Obj_flags::in_dungeon))
 		return Usecode_value(obj == gwin->get_main_actor() &&
 		                     gwin->is_in_dungeon());
-	else if (fnum == 0x14)      // Must be the sailor, as this is used
-		//   to check for Ferryman.
+	else if (fnum == Obj_flags::active_sailor)
+		// Must be the sailor, as this is used to check for Ferryman.
 		return Usecode_value(sailor);
 	Usecode_value u(obj->get_flag(fnum));
 	return u;
@@ -2634,7 +2635,8 @@ USECODE_INTRINSIC(set_item_flag) {
 		obj->set_flag(flag);
 		gwin->add_dirty(obj);
 		break;
-	case 0x14:          // The sailor (Ferryman).
+	case Obj_flags::active_sailor:
+		// The sailor (Ferryman or sails).
 		sailor = obj;
 		break;
 	default:
@@ -2668,7 +2670,8 @@ USECODE_INTRINSIC(clear_item_flag) {
 			Barge_object *barge = Get_barge(obj);
 			if (barge && barge == gwin->get_moving_barge())
 				gwin->set_moving_barge(nullptr);
-		} else if (flag == 0x14)    // Handles Ferryman
+		} else if (flag == Obj_flags::active_sailor)
+			// Handles Ferryman and sails
 			sailor = nullptr;
 	}
 	return no_ret;

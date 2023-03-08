@@ -45,7 +45,7 @@ void BatlinAtWallOfLights object#(0x73B) ()
 	{
 		var index;
 		var max;
-		
+
 		pos = AVATAR->get_object_position();
 		pos[X] = pos[X] - 4;
 		pos[Y] = pos[Y] + 10;
@@ -58,13 +58,13 @@ void BatlinAtWallOfLights object#(0x73B) ()
 			npc->clear_item_flag(CURSED);
 			npc->clear_item_flag(PARALYZED);
 			npc->clear_item_flag(POISONED);
-			npc->clear_item_flag(DANCING);
+			npc->clear_item_flag(IN_ACTION);
 			npc->clear_item_flag(DONT_MOVE);
 			npc->clear_item_flag(CONFUSED);
-			
+
 			// Do not let even the Avatar prevent them from being there:
 			npc->set_item_flag(SI_TOURNAMENT);
-			
+
 			if (npc->get_distance(AVATAR) > 15)
 			{
 				pos[X] = pos[X] + index * 2;
@@ -74,7 +74,7 @@ void BatlinAtWallOfLights object#(0x73B) ()
 		BatlinAtWallOfLights.original();
 		abort;
 	}
-	
+
 	else if (event == EGG)
 	{
 		pos = AVATAR->get_object_position();
@@ -91,33 +91,33 @@ void BatlinAtWallOfLights object#(0x73B) ()
 		}
 		BatlinAtWallOfLights.original();
 		abort;
-	}	
-		
+	}
+
 	else if (event == SCRIPTED)
 	{
 		var pathegg = getPathEgg(2, 1);
 		var pathegg_quality = pathegg->get_item_quality();
-		
+
 		if ((pathegg_quality > 3) && (pathegg_quality < 7))
 		{
 			npc = companions[(pathegg_quality - 3)];
 			UI_play_sound_effect(0x77);
-			
+
 			if (pathegg_quality > 4)
 			{
 				pos = npc->get_object_position();
 				UI_sprite_effect(7, pos[X], pos[Y], 0, 0, 0, -1);
 			}
-			
+
 			var body = UI_find_object(-359, SHAPE_BODIES_2, QUALITY_ANY, 16);
 			var dir = npc->find_direction(body);
 			var offsets = [0, 0];
-			
+
 			if (dir in [NORTHWEST, NORTH, NORTHEAST])
 				offsets[Y] = -1;
 			else if (dir in [SOUTHWEST, SOUTH, SOUTHEAST])
 				offsets[Y] = 1;
-				
+
 			if (dir in [NORTHEAST, EAST, SOUTHEAST])
 				offsets[X] = 1;
 			else if (dir in [NORTHWEST, WEST, SOUTHWEST])
@@ -133,20 +133,20 @@ void BatlinAtWallOfLights object#(0x73B) ()
 			offsets[Y] = -1 * offsets[Y];
 			UI_sprite_effect(32, pos[X], pos[Y], offsets[X], offsets[Y], 0, dist);
 			pathegg->set_item_quality(pathegg_quality + 1);
-			
+
 			script pathegg
 			{	nohalt;						wait (dist + 10);
 				call BatlinAtWallOfLights;}
-			
+
 			newbaneshape = baneshapes[(pathegg_quality - 3)];
-			
+
 			npc->remove_from_party();
 			pos = npc->get_object_position();
 			var objpos = [0x6B + 3 * npc, 0x36, 0];
 
 			npc->move_object(objpos);
 			setNewSchedules(npc, objpos[X], objpos[Y], WAIT);
-			
+
 			var baneframe = npc->get_item_frame();
 			var baneobj = newbaneshape->create_new_object2(pos);
 			baneobj->set_item_frame(baneframe);
@@ -154,7 +154,7 @@ void BatlinAtWallOfLights object#(0x73B) ()
 			UI_sprite_effect(7, pos[X], pos[Y], 0, 0, 0, -1);
 			abort;
 		}
-			
+
 		else if (pathegg_quality == 7)
 		{
 			const int ANARCHY = -290;
@@ -164,22 +164,22 @@ void BatlinAtWallOfLights object#(0x73B) ()
 			say("@I am Anarchy! Hahaha!@");
 			say("@The world shall quail before me! Wrong shall become right! And right shall become lost! Nothing shall escape my touch!@");
 			UI_remove_npc_face0();
-			
+
 			UI_show_npc_face0(WANTONNESS, 0);
 			say("@Hahaha! I am the Wantonness Bane!@");
 			say("@Wherever I pass, people shall frolic and sate their wild desires! I shall drive thee to feed thy darkest hungers!@");
 			UI_remove_npc_face0();
-			
+
 			UI_show_npc_face0(INSANITY, 0);
 			say("@I -- hahaha! -- am the Insanity Bane! Hahaha!@");
 			say("@All those who fall within my shadow shall have their reason clouded and their wits addled! Their greatest love shall lie in the rubbish they once loathed! Hahaha!@");
 			UI_remove_npc_face0();
-			
+
 			pos = AVATAR->get_object_position();
 			UI_sprite_effect(7, pos[X], pos[Y], 0, 0, 0, -1);
-			
+
 			var banenpc;
-			
+
 			for (newbaneshape in baneshapes with index to max)
 			{
 				banenpc = AVATAR->find_nearby(newbaneshape, 40, 0);
