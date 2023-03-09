@@ -338,9 +338,9 @@ In BG, this is usecode function 082C; in SI, this is usecode function 0913.
 In either case:
 
 replace
-0089:   push    [0003]
+0089: 21 03 00          push    [0003]
 with
-0089:   push    [0007]
+0089: 21 07 00          push    [0007]
 
 This will fix the bug.
 
@@ -355,8 +355,8 @@ instead of 63) and you need the Diary of an Anonymous henchman of Batlin's.
 Usecode function 036A:
 
 replace
-0276:   pushi   003EH
+0276: 1F 3E 00          pushi   003EH
 with
-0276:   pushi   003FH
+0276: 1F 3F 00          pushi   003FH
 
 This makes the Hound track Anti-Shamino through the correct book.
