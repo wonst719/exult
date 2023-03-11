@@ -138,6 +138,10 @@ extern var getNonAutomatonPartyMembers 0x98E ();
  */
 extern var partyUtters 0x992 (var npcnum, var partyutter, var avatarutter, var isbark);
 
+// Makes a random party member bark utter.
+// Equivalent to partyUtters(1, utter, utter, true);
+extern void randomPartyBark 0x949 (var utter);
+
 // Gets the Avatar's location ID; see getLocationID in "misc/location_ids.uc"
 // for details:
 extern var getAvatarLocationID 0x994 ();

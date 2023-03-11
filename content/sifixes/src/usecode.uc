@@ -127,6 +127,8 @@
 // Changes watches/sundials to 24 hour time
 // if you ask Shamino to do it.
 #include "items/time_tellers.uc"
+// Using new and improved UI_is_water for better fishing experience.
+#include "items/fishingrod.uc"
 
 // Fixes to spells the Avatar can cast
 #include "spells/spells.uc"

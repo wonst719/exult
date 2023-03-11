@@ -3286,12 +3286,34 @@ UI_set_orrery(int pos[3], int state)                                        [BG]
     it will delete the nearby planets, if any, and create new ones in the
     required positions.
 
-bool UI_is_water(int pos[3])
+int UI_is_water(object param)
+int param->is_water()
+int UI_is_water(int param[2]
+int UI_is_water(int param[3]
+int UI_is_water(mixed param[4])
 
     Determines if a given tile or object is a water tile.
 
   Parameters:
-    pos    Location of tile or object to be tested.
+    param    The object or location to be tested.
+
+    The parameter can be an object, an array with 2 components, an array with 3
+    components, or an array with 4 components. The interpretation of the
+    parameter is as follows:
+
+        Type         Interpretation/Format
+        object       Exult specific: The parameter is an object or NPC, whose
+                     shape is tested for the water flag.
+        int [2]      The parameter is a (x, y) position specifying a tile to be
+                     tested.
+        int [3]      The parameter is a (x, y, z) position, such as the return
+                     of a UI_get_object_position intrinsic call. Of this
+                     position, (x, y) specifies a tile to be tested.
+        mixed [4]    Exult specific: The parameter is of the form (object, x, y,
+                     z), such as the return of a call to UI_click_on_item
+                     intrinsic. If object is not null, it's shape is tested for
+                     the water flag. Otherwise, (x, y) is used to find and test
+                     the corresponding tile.
 
   Return:
     true if the specified tile or object is a water tile, false otherwise.

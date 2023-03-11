@@ -163,7 +163,7 @@ void spellFireRingEffect object#() ()
 		ring->set_item_flag(TEMPORARY);
 		UI_update_last_created(pos);
 		var delay = 31;
-		delay = (delay + UI_die_roll(1, 5));
+		delay = delay + UI_die_roll(1, 5);
 		script ring after delay ticks
 		{	nohalt;						remove;}
 	}
@@ -429,11 +429,11 @@ void spellSummonEffect object#() ()
 	var creature_count = [5, 1, 5, 1, 2, 2, 2, 1, 1, 3, 1, 5, 2];
 	var array_size = UI_get_array_size(summonables);
 
-	var rand1 = UI_die_roll(1, array_size);
+	var rand1 = UI_get_random(array_size);
 	var rand2 = UI_die_roll(1, 100);
 	while (max_rand2[rand1] < rand2)
 	{
-		rand1 = UI_die_roll(1, array_size);
+		rand1 = UI_get_random(array_size);
 		rand2 = UI_die_roll(1, 100);
 	}
 

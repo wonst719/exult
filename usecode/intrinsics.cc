@@ -2319,19 +2319,26 @@ USECODE_INTRINSIC(start_blocking_speech) {
 USECODE_INTRINSIC(is_water) {
 	ignore_unused_variable_warning(num_parms);
 	// Is_water(pos).
-	const int size = parms[0].get_array_size();
-	if (size >= 3) {
-		const Tile_coord t(parms[0].get_elem(0).get_int_value(),
-		             parms[0].get_elem(1).get_int_value(),
-		             parms[0].get_elem(2).get_int_value());
-		// Didn't click on an object?
-		const int x = (t.tx - gwin->get_scrolltx()) * c_tilesize;
-		const int y = (t.ty - gwin->get_scrollty()) * c_tilesize;
-		if (t.tz != 0 || gwin->find_object(x, y))
-			return Usecode_value(0);
+	const size_t size = parms[0].get_array_size();
+	if (size >= 2 && size <= 4) {
+		if (size == 4) {
+			// Exult extention: if this is a [obj, x, y, z], check if the object
+			// (if any) has the flag water set.
+			auto *obj = get_item(parms[0].get_elem(0));
+			if (obj != nullptr) {
+				return Usecode_value(obj->get_info().is_water());
+			}
+		}
+		const int off = size == 4 ? 1 : 0;
+		// The original completely ignores the third coordinate.
+		const int xpos = parms[0].get_elem(0 + off).get_int_value();
+		const int ypos = parms[0].get_elem(1 + off).get_int_value();
+		const int x = (xpos - gwin->get_scrolltx()) * c_tilesize;
+		const int y = (ypos - gwin->get_scrollty()) * c_tilesize;
 		ShapeID sid = gwin->get_flat(x, y);
-		if (sid.is_invalid())
+		if (sid.is_invalid()) {
 			return Usecode_value(0);
+		}
 		const Shape_info &info = sid.get_info();
 		return Usecode_value(info.is_water());
 	}

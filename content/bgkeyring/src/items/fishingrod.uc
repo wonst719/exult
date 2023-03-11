@@ -47,11 +47,11 @@ void FishingRod shape#(0x296) ()
 			randomPartySay("@Thou must have the rod in thy hand.@");
 			return;
 		}
-    
+
 		UI_close_gumps();
 		var target = UI_click_on_item();
 
-		if (!(UI_is_water([target[2], target[3], target[4]]) || target->get_item_shape() == SHAPE_FISH))
+		if (!UI_is_water(target) && target->get_item_shape() != SHAPE_FISH)
 		{
 			UI_flash_mouse(0);
 
@@ -146,7 +146,7 @@ void FishingRod shape#(0x296) ()
 				caught_fish = nearby_fish[UI_get_random(num_fish_nearby)];
 			caught_fish->remove_item();
 			*/
-			
+
 			//Make one of the party members comment on the catch
 			rand = UI_get_random(3);
 			if (rand == 1)
