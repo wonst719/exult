@@ -76,6 +76,7 @@ USECODE_OBJECTS = \
 	src/misc/food_stuff/functions.uc	\
 	src/misc/food_stuff/milking.uc	\
 	src/misc/inn_key_eggs.uc	\
+	src/misc/is_obj_blocked.uc	\
 	src/misc/iteractions.uc	\
 	src/misc/rest_functions.uc	\
 	src/misc/services.uc	\
@@ -104,6 +105,7 @@ USECODE_OBJECTS = \
 	src/npcs/related_functions/zauriel_dialog.uc	\
 	src/npcs/reyna.uc	\
 	src/npcs/tory.uc	\
+	src/npcs/tseramed.uc	\
 	src/npcs/willy.uc	\
 	src/npcs/wisps.uc	\
 	src/npcs/zauriel.uc	\
@@ -167,9 +169,9 @@ PAPERDOL_VGA_OBJECTS = \
 	src/graphics/paperdol.in	\
 	src/graphics/paperdol/Female_Paperdoll.shp	\
 	src/graphics/paperdol/FlyingCarpet.shp	\
+	src/graphics/paperdol/Laurianna_Paperdoll.shp	\
 	src/graphics/paperdol/LB_Crown_Paperdoll.shp	\
 	src/graphics/paperdol/LB_Sceptre_Paperdoll.shp	\
-	src/graphics/paperdol/Laurianna_Paperdoll.shp	\
 	src/graphics/paperdol/Male_Paperdoll.shp	\
 	src/graphics/paperdol/Mariah_Paperdoll.shp	\
 	src/graphics/paperdol/Spell_Amulet_Paperdoll.shp	\
@@ -216,11 +218,11 @@ SHAPES_VGA_OBJECTS = \
 	src/graphics/shapes/Julias_Hammer.shp	\
 	src/graphics/shapes/Keyring.shp	\
 	src/graphics/shapes/Kitchen_Items.shp	\
+	src/graphics/shapes/Laurianna.shp	\
+	src/graphics/shapes/Laurianna.shp	\
 	src/graphics/shapes/LB_Amulet.shp	\
 	src/graphics/shapes/LB_Crown.shp	\
 	src/graphics/shapes/LB_Sceptre.shp	\
-	src/graphics/shapes/Laurianna.shp	\
-	src/graphics/shapes/Laurianna.shp	\
 	src/graphics/shapes/Lord_British.shp	\
 	src/graphics/shapes/Magic_Gem.shp	\
 	src/graphics/shapes/Mariah.shp	\

@@ -48,11 +48,11 @@ enum met_flags
 	MET_TORY			= 0x271,
 
 	MET_ELAD			= 0x204,
-	
+
 	MET_LEIGH			= 0x272,
-	
+
 	MET_INMANILEM		= 0x247,
-	
+
 	MET_CHANTU			= 0x52
 };
 
@@ -105,6 +105,12 @@ enum julia_conversation_flags
 	ASKED_JULIA_TO_LEAVE		= 0x101,
 	JULIA_IN_PARTY				= 0x108,
 	ASKED_JULIA_ABOUT_SPARK		= 0x121
+};
+
+//Flags used in conversation with Tseramed
+enum tseramed_conversation_flags
+{
+	TSERAMED_THINKS_MAGE		= 0x15E
 };
 
 //Flags used in Minoc conversations to do with the sawmill murder

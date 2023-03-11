@@ -30,6 +30,7 @@ USECODE_OBJECTS = \
 	src/header/si/si_npcs.uc	\
 	src/header/si/si_shapes.uc	\
 	src/items/bucket_cure.uc	\
+	src/items/fishingrod.uc	\
 	src/items/hourglass.uc	\
 	src/items/pillar.uc	\
 	src/items/potion.uc	\
@@ -46,6 +47,8 @@ USECODE_OBJECTS = \
 	src/misc/fawn_tower_cleanup.uc	\
 	src/misc/gwani_cloak_check.uc	\
 	src/misc/inn_keys.uc	\
+	src/misc/is_obj_blocked.uc	\
+	src/misc/list_field.uc	\
 	src/misc/location_ids.uc	\
 	src/misc/luther_return_shield.uc	\
 	src/misc/resurrect.uc	\
@@ -59,6 +62,7 @@ USECODE_OBJECTS = \
 	src/npcs/ghost.uc	\
 	src/npcs/goblin_simon.uc	\
 	src/npcs/gwenno.uc	\
+	src/npcs/hound.uc	\
 	src/npcs/iolo.uc	\
 	src/npcs/kylista.uc	\
 	src/npcs/mwaerno.uc	\

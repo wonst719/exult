@@ -80,5 +80,8 @@
 //The Crown Jewels:
 #include "items/crown_jewels.uc"
 
-// Fixes gang planck blocking check
+//Fixes gang planck blocking check
 #include "misc/is_obj_blocked.uc"
+
+//Fixing missing conversation branch with Tseramed
+#include "npcs/tseramed.uc"

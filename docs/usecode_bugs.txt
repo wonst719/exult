@@ -360,3 +360,23 @@ with
 0276: 1F 3F 00          pushi   003FH
 
 This makes the Hound track Anti-Shamino through the correct book.
+
+
+(BG) Tseramed hidden dialog:
+============================
+
+After you get to know Tseramed a bit, he will ask you, during a conversation,
+if you prefer magic or weapons to dispatch foes. If you say you prefer weapons,
+he proceeds to ask if you prefer melee or ranged weapons. If you choose ranged,
+there is supposed to be a dialog exchange with any female party members.
+
+However, there is a bad branch which prevents the exchange from showing.
+
+Usecode function 08F3:
+
+replace
+00F2: 06 61 00          jmp     0156
+with
+00F2: 06 03 00          jmp     00F8
+
+This will correct the bug, and the exchange will now show.
