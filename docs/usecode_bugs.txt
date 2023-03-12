@@ -268,7 +268,7 @@ With this, the function calls make sense without any further changes.
 
 In the leaked beta version of SI, there are four cases of stack underflows.
 They are caused by the same reason as above: incorrect order of externs, and
-two functions are afflicted by them: 0x4BE and .
+two functions are afflicted by them: 0x4BE and 0x8FC.
 
 Usecode function 04BE (SI Beta): in the function header:
 

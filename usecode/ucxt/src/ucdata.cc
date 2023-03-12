@@ -200,13 +200,13 @@ void UCData::disassamble(ostream &o) {
 	}
 
 	if (!_foundfunc)
-		o << "Function not found." << endl;
+		std::cerr << "Function not found." << endl;
 
 	if (search_funcs.empty())
-		o << "Functions: " << _funcs.size() << endl;
+		std::cerr << "Functions: " << _funcs.size() << endl;
 
 	if (options.output_list)
-		o << endl << "Functions: " << setbase(10) << _funcs.size() << endl;
+		std::cerr << endl << "Functions: " << setbase(10) << _funcs.size() << endl;
 
 	if (options.output_trans_table)
 		o << "</>" << endl;
