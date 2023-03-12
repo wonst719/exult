@@ -930,7 +930,7 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 				// we'll only do it in the 'full' text output for the moment.
 				if (!commentformat) {
 					for (string::size_type i = 0; i < s.size(); i++) {
-						if ((s[i] == '\"') || (s[i] == '\\') || (s[i] == '\'')) {
+						if ((s[i] == '\"') || (s[i] == '\\')) {
 							s.insert(i, "\\");
 							++i;
 						} else if ((s[i] == '\r') || (s[i] == '\n') || (s[i] == '\t')) {
