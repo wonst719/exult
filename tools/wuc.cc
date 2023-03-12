@@ -187,7 +187,6 @@ int main(int argc,char *argv[]) {
 		funsize = sibeta_intrinsic_size;
 	}
 
-
 	lindex = 0;
 	for (pass = 0; pass < 2; pass++) {
 		//          printf("Pass %d\n",pass+1);
@@ -246,10 +245,37 @@ int main(int argc,char *argv[]) {
 					}
 			} else if (!strcmp(token, "db")) {
 				read_token(fi);
-				if (token[0] == 39)
-					for (i = 1; i < strlen(token); i++)
-						emit_byte(token[i]);
-				else {
+				if (token[0] == '\'') {
+					const unsigned len = strlen(token);
+					for (i = 1; i < len; i++) {
+						if (token[i] == '\\' && i + 1 < len) {
+							++i;
+							switch (token[i]) {
+							case 'r':
+								emit_byte('\r');
+								break;
+							case 'n':
+								emit_byte('\n');
+								break;
+							case 't':
+								emit_byte('\t');
+								break;
+							case '\\':
+								emit_byte('\\');
+								break;
+							case '\'':
+								emit_byte('\'');
+								break;
+							default:
+								emit_byte('\\');
+								emit_byte(token[i]);
+								break;
+							}
+						} else {
+							emit_byte(token[i]);
+						}
+					}
+				} else {
 					sscanf(token, "%x", &byteval);
 					emit_byte(byteval);
 				}

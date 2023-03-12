@@ -363,7 +363,7 @@ Appends a string from the data segment {dataoffset} to the string register.
 	</>
 	<0x1D>
 		<name> UC_PUSHS </>
-		<asm_nmo> `pushs\t%1H` </>
+		<asm_nmo> `pushs\tL%1` </>
 		<asm_comment> `\t\t\t; %tc1` </>
 		<ucs_nmo> `\"%t1\"` </>
 		<num_bytes> 2 </>
@@ -1224,7 +1224,7 @@ Calls the function specified by the 32-bit parameter.
 		<!--
 Pops the top most element off the stack, stores it in the return register.
 Then shows any text in the string register, and exits the function immediatly.
-ABRT also exits all calling functions, effectively stopping the usecode interpreter,
+THROW also exits all calling functions, effectively stopping the usecode interpreter,
 unless caught in a try/catch block.
 		-->
 	</>

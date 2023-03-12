@@ -703,7 +703,8 @@ void UCFunc::output_asm_data(ostream &o) {
 	static const unsigned int nochars = 60;
 	// limit of about 60 chars to a line, wrap to the next line if longer then this...
 	for (auto& i : _data) {
-		for (unsigned int j = 0; j < i.second.size(); j++) {
+		unsigned int j = 0;
+		for (const char cc : i.second) {
 			if (j == 0)
 				o << "L" << setw(4) << i.first << ":";
 			if ((j != 0) && !(j % nochars))
@@ -711,9 +712,33 @@ void UCFunc::output_asm_data(ostream &o) {
 			if (!(j % nochars))
 				o << "\tdb\t'";
 
-			o << i.second[j];
+			if (cc == '\r' || cc == '\n' || cc == '\t' || cc == '\\' || cc == '\'') {
+				if (!((j + 1) % nochars) || !((j + 2) % nochars)) {
+					o << "'" << endl;
+					o << "\tdb\t'";
+					// Prevent double-splitting of lines
+					j = nochars;
+				}
+				if (cc == '\r') {
+					o << "\\r";
+				} else if (cc == '\n') {
+					o << "\\n";
+				} else if (cc == '\t') {
+					o << "\\t";
+				} else if (cc == '\\') {
+					o << "\\\\";
+				} else if (cc == '\'') {
+					o << "\\'";
+				}
+				j += 2;
+			} else {
+				o << cc;
+				j++;
+			}
 		}
-		o << "'" << endl;
+		if (!i.second.empty()) {
+			o << "'" << endl;
+		}
 		o << "\tdb\t00" << endl;
 	}
 }
@@ -903,13 +928,24 @@ string demunge_ocstring(UCFunc &ucf, const FuncMap &funcmap, const string &asmst
 
 				// escape the appropriate characters...
 				// we'll only do it in the 'full' text output for the moment.
-				if (!commentformat)
-					for (string::size_type i = 0; i < s.size(); i++)
-						if ((s[i] == '\"') || (s[i] == '\\')) {
+				if (!commentformat) {
+					for (string::size_type i = 0; i < s.size(); i++) {
+						if ((s[i] == '\"') || (s[i] == '\\') || (s[i] == '\'')) {
 							s.insert(i, "\\");
 							++i;
+						} else if ((s[i] == '\r') || (s[i] == '\n') || (s[i] == '\t')) {
+							s.insert(i, "\\");
+							++i;
+							if (s[i] == '\r') {
+								s[i] = 'r';
+							} else if (s[i] == '\n') {
+								s[i] = 'n';
+							} else if (s[i] == '\t') {
+								s[i] = 't';
+							}
 						}
-
+					}
+				}
 				str << s;
 				break;
 			}
