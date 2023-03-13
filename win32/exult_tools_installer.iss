@@ -90,6 +90,8 @@ Source: Tools-i686\tools\map.png; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools-i686\tools\smooth.txt; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools-i686\tools\rough.bmp; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools-i686\tools\smoothed.bmp; DestDir: {app}\tools\; Flags: ignoreversion
+Source: Tools-x86_64\ucxt.txt; DestDir: {app}\; Flags: ignoreversion
+Source: Tools-x86_64\ucxtread.txt; DestDir: {app}\; Flags: ignoreversion
 
 [Dirs]
 Name: {app}\data
