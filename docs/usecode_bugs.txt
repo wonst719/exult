@@ -380,3 +380,46 @@ with
 00F2: 06 03 00          jmp     00F8
 
 This will correct the bug, and the exchange will now show.
+
+
+(BG) Selling flour:
+===================
+
+Selling flour to Wilhem is very buggy because of two things:
+
+1. he checks for the wrong frames (a flour bag and butter churner), and it is
+   clear he should be checking for both types of closed flour sacks (he does not
+   care about open sacks, which is realistic)
+2. he does not buy if you are not carrying any amount of either frames
+3. he pays before taking away the flour, so you may have to drop things to the
+   ground in order to be able to sell flour
+
+The first 2 are easily fixable by a hex edit:
+
+Usecode function 0434:
+
+Replace:
+007B: 1F 0F 00          pushi   000FH
+with
+007B: 1F 0D 00          pushi   000DH
+
+Usecode function 0948:
+
+Replace:
+0037: 1F 0F 00          pushi   000FH
+with
+0037: 1F 0D 00          pushi   000DH
+
+Replace:
+0058: 0F                or
+with
+0058: 0E                and
+
+Replace:
+00B5: 1F 0F 00          pushi   000FH
+with
+00B5: 1F 0D 00          pushi   000DH
+
+After these, he will still not sell if you are overburdered (but you can drop
+things on the ground to sell), but he will now correctly buy any amount of
+either of the closed flour bags.
