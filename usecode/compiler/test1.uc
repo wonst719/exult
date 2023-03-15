@@ -214,154 +214,193 @@ void try_catch_test()
 extern var Predicate (var npc);
 
 void for_nobreak_test(var list) {
-    var npc;
-    for (npc in list)
-    {
-        if (Predicate(npc))
-        {
-            break;
-        }
-    }
-    nobreak
-    {
-        npc = -356;
-    }
-    UI_set_opponent(-71, npc);
+	var npc;
+	for (npc in list)
+	{
+		if (Predicate(npc))
+		{
+			break;
+		}
+	}
+	nobreak
+	{
+		npc = -356;
+	}
+	UI_set_opponent(-71, npc);
 }
 
 void while_nobreak_test(var list) {
-    var count = UI_get_array_size(list);
-    var index = 0;
-    var npc;
-    while (index < count)
-    {
-        npc = list[index];
-        if (Predicate(npc))
-        {
-            break;
-        }
-        index = index + 1;
-    }
-    nobreak
-    {
-        npc = -356;
-    }
-    UI_set_opponent(-71, npc);
+	var count = UI_get_array_size(list);
+	var index = 0;
+	var npc;
+	while (index < count)
+	{
+		npc = list[index];
+		if (Predicate(npc))
+		{
+			break;
+		}
+		index = index + 1;
+	}
+	nobreak
+	{
+		npc = -356;
+	}
+	UI_set_opponent(-71, npc);
 }
 
 void dowhile_nobreak_test(var list) {
-    var count = UI_get_array_size(list);
-    var index = 0;
-    var npc;
-    do
-    {
-        npc = list[index];
-        if (Predicate(npc))
-        {
-            break;
-        }
-        index = index + 1;
-    } while (index < count)
-    nobreak
-    {
-        npc = -356;
-    }
-    UI_set_opponent(-71, npc);
+	var count = UI_get_array_size(list);
+	var index = 0;
+	var npc;
+	do
+	{
+		npc = list[index];
+		if (Predicate(npc))
+		{
+			break;
+		}
+		index = index + 1;
+	} while (index < count)
+	nobreak
+	{
+		npc = -356;
+	}
+	UI_set_opponent(-71, npc);
 }
 
 void breakable_nobreak_test(var list) {
-    var count = UI_get_array_size(list);
-    var index = 0;
-    var npc;
-    do
-    {
-        npc = list[index];
-        if (Predicate(npc))
-        {
-            break;
-        }
-    } while (false)
-    nobreak
-    {
-        npc = -356;
-    }
-    UI_set_opponent(-71, npc);
+	var count = UI_get_array_size(list);
+	var index = 0;
+	var npc;
+	do
+	{
+		npc = list[index];
+		if (Predicate(npc))
+		{
+			break;
+		}
+	} while (false)
+	nobreak
+	{
+		npc = -356;
+	}
+	UI_set_opponent(-71, npc);
 }
 
 void converse_nobreak_test(var list) {
-    var npc;
-    converse (["Iolo", "Shamino", "Dupre"])
-    {
-    case "Iolo" (remove):
-        npc = -1;
-        if (Predicate(npc))
-        {
-            break;
-        }
-    case "Shamino" (remove):
-        npc = -2;
-        if (Predicate(npc))
-        {
-            break;
-        }
-    case "Dupre" (remove):
-        npc = -3;
-        if (Predicate(npc))
-        {
-            break;
-        }
-    }
-    nobreak
-    {
-        npc = -356;
-    }
-    UI_set_opponent(-71, npc);
+	var npc;
+	converse (["Iolo", "Shamino", "Dupre"])
+	{
+	case "Iolo" (remove):
+		npc = -1;
+		if (Predicate(npc))
+		{
+			break;
+		}
+	case "Shamino" (remove):
+		npc = -2;
+		if (Predicate(npc))
+		{
+			break;
+		}
+	case "Dupre" (remove):
+		npc = -3;
+		if (Predicate(npc))
+		{
+			break;
+		}
+	}
+	nobreak
+	{
+		npc = -356;
+	}
+	UI_set_opponent(-71, npc);
 }
 
 void infinite_warning_nobreak_test1(var list) {
-    var count = UI_get_array_size(list);
-    var index = 0;
-    var npc;
-    do
-    {
-        npc = list[index];
-        if (Predicate(npc))
-        {
-            break;
-        }
-        else
-        {
-            goto test_nobreak;
-        }
-    } while (true)
-    nobreak
-    {
+	var count = UI_get_array_size(list);
+	var index = 0;
+	var npc;
+	do
+	{
+		npc = list[index];
+		if (Predicate(npc))
+		{
+			break;
+		}
+		else
+		{
+			goto test_nobreak;
+		}
+	} while (true)
+	nobreak
+	{
 test_nobreak:
-        npc = -356;
-    }
-    UI_set_opponent(-71, npc);
+		npc = -356;
+	}
+	UI_set_opponent(-71, npc);
 }
 
 void infinite_warning_nobreak_test2(var list) {
-    var count = UI_get_array_size(list);
-    var index = 0;
-    var npc;
-    do
-    {
-        npc = list[index];
-        if (Predicate(npc))
-        {
-            break;
-        }
-        else
-        {
-            goto test_nobreak;
-        }
-    } while (true)
-    nobreak
-    {
-        npc = -356;
+	var count = UI_get_array_size(list);
+	var index = 0;
+	var npc;
+	do
+	{
+		npc = list[index];
+		if (Predicate(npc))
+		{
+			break;
+		}
+		else
+		{
+			goto test_nobreak;
+		}
+	} while (true)
+	nobreak
+	{
+		npc = -356;
 test_nobreak:
-    }
-    UI_set_opponent(-71, npc);
+	}
+	UI_set_opponent(-71, npc);
+}
+
+extern void doTraining(var price);
+extern var askYesNo();
+void preamble_test() {
+	converse : nested (["name", "job", "bye"])
+	{
+		var party = UI_get_party_list();
+		case "name" (remove):
+			say("I am Mi.");
+		case "job" (remove):
+			say("I teach martial arts.");
+			if (!(item in party))
+			{
+				add("join");
+			}
+			add("train");
+		case "train":
+			if (item in party)
+			{
+				say("Since we are traveling together, I will waive my usual fee.");
+				doTraining(0);
+			}
+			else
+			{
+				say("It will cost 50 gold per person. Is this acceptable?");
+				if (askYesNo())
+				{
+					doTraining(50);
+				}
+				else
+				{
+					say("Suit yourself.");
+				}
+			}
+		case "bye":
+			break;
+	}
+	say("Farewell!");
 }

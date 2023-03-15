@@ -1294,21 +1294,21 @@ opt_nest:
 	;
 
 converse_statement:
-	start_conv '{' response_case_list '}' opt_nobreak
+	start_conv '{' statement_list response_case_list '}' opt_nobreak
 		{
 		end_loop();
 		--converse;
-		$$ = new Uc_converse_statement(nullptr, $3, false, $5);
+		$$ = new Uc_converse_statement(nullptr, $3, $4, false, $6);
 		}
 
-	| start_conv opt_nest '(' expression ')' '{' converse_case_list '}' opt_nobreak
+	| start_conv opt_nest '(' expression ')' '{' statement_list converse_case_list '}' opt_nobreak
 		{
 		end_loop();
 		--converse;
 		if (Class_unexpected_error($4))
 			$$ = nullptr;
 		else
-			$$ = new Uc_converse_statement($4, $7, $2, $9);
+			$$ = new Uc_converse_statement($4, $7, $8, $2, $10);
 		}
 	;
 

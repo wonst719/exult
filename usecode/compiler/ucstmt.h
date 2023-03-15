@@ -339,13 +339,15 @@ public:
  */
 class Uc_converse_statement : public Uc_statement {
 	static int nest;        // Keeps track of nesting.
+	Uc_block_statement *preamble;    // Statements before the first case.
 	Uc_expression *answers;     // Answers to add.
 	Uc_statement *nobreak;  // What to execute after normal finish.
 	std::vector<Uc_statement *> cases;      // What to execute.
 	bool nestconv;          // Whether or not to force push/pop.
 public:
-	Uc_converse_statement(Uc_expression *a, std::vector<Uc_statement *> *cs,
-	                       bool n, Uc_statement *nb);
+	Uc_converse_statement(Uc_expression *a, Uc_block_statement *p,
+	                      std::vector<Uc_statement *> *cs, bool n,
+	                      Uc_statement *nb);
 	~Uc_converse_statement() override;
 	// Generate code.
 	void gen(Uc_function *fun, std::vector<Basic_block *> &blocks,

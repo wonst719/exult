@@ -800,11 +800,12 @@ void Uc_converse_case_statement::gen(
 
 Uc_converse_statement::Uc_converse_statement(
     Uc_expression *a,
+	Uc_block_statement *p,
     std::vector<Uc_statement *> *cs,
     bool n,
 	Uc_statement *nb
 )
-	: answers(a), nobreak(nb), cases(*cs), nestconv(n) {
+	: answers(a), preamble(p), nobreak(nb), cases(*cs), nestconv(n) {
 	bool has_default = false;
 	for (auto *it : cases) {
 		auto *stmt =
@@ -875,6 +876,9 @@ void Uc_converse_statement::gen(
 	conv_top->set_targets(UC_CONVERSE, conv_body, nobreak_block);
 	// Generate loop body.
 	Uc_converse_case_statement *def = nullptr;
+	if (preamble != nullptr) {
+		preamble->gen(fun, blocks, conv_body, end, labels, conv_top, past_conv);
+	}
 	for (auto *it : cases) {
 		auto *stmt =
 		    static_cast<Uc_converse_case_statement *>(it);
