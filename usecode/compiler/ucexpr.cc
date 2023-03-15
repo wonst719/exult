@@ -414,6 +414,9 @@ bool Uc_binary_expression::eval_const(
 	case UC_OR:
 		val = val1 || val2;
 		return true;
+	case UC_ARRA:
+		val = 0;
+		return false;
 	default:
 		val = 0;
 		error("This operation not supported for integer constants");

@@ -411,3 +411,10 @@ void preamble_test() {
 	}
 	say("Farewell!");
 }
+
+void array_tests()
+{
+	var var1 = UI_get_object_position(0xFE9C) & (0xFE99 & 0x0003);
+	var var2 = (UI_get_object_position(0xFE9C) & 0xFE99) & 0x0003;
+	var var3 = UI_get_object_position(0xFE9C) & [0xFE99, 0x0003];
+}
