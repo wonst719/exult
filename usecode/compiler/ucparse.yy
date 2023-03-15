@@ -165,8 +165,9 @@ struct Member_selector
 /*
  *	Handle if-then-else conflict.
  */
-%left IF
-%right ELSE
+%precedence IF
+%precedence ELSE
+
 
 /*
  *	Expression precedence rules (lowest to highest):
@@ -253,13 +254,13 @@ class_definition:
 opt_inheritance:
 	':' defined_class
 		{ $$ = $2; }
-	|				/* Empty */
+	| %empty
 		{ $$ = nullptr; }
 	;
 
 class_item_list:
 	class_item_list class_item
-	|				/* Empty */
+	| %empty
 	;
 
 class_item:
@@ -329,7 +330,7 @@ struct_definition:
 
 struct_item_list:
 	struct_item_list struct_item
-	|				/* Empty */
+	| %empty
 	;
 
 struct_item:
@@ -417,7 +418,7 @@ opt_funid:
 
 opt_const_int_val:
 	const_int_val
-	|				/* Empty. */
+	| %empty
 		{ $$ = -1; }
 	;
 
@@ -447,7 +448,7 @@ const_int_val:
 
 opt_int:
 	const_int_val
-	|				/* Empty. */
+	| %empty
 		{ $$ = -1; }
 	;
 
@@ -488,7 +489,7 @@ statement_list:
 		if ($2)
 			$$->add($2);
 		}
-	|				/* Empty. */
+	| %empty
 		{ $$ = new Uc_block_statement(); }
 	;
 
@@ -613,7 +614,7 @@ const_int_type:
 opt_enum_type:
 	':' const_int_type
 		{ const_opcode.push_back(static_cast<UsecodeOps>($2)); }
-	|			/* Empty. */
+	| %empty
 		{ const_opcode.push_back(UC_PUSHI); }
 	;
 
@@ -1197,7 +1198,7 @@ special_method_call_statement:
 opt_delay:
 	',' nonclass_expr
 		{ $$ = $2; }
-	|				/* Empty */
+	| %empty
 		{ $$ = nullptr; }
 	;
 
@@ -1261,7 +1262,7 @@ return_statement:
 opt_nest:
 	':' NESTED
 		{ $$ = 1; }
-	|				/* Empty */
+	| %empty
 		{ $$ = 0; }
 	;
 
@@ -1298,7 +1299,7 @@ converse_case_list:
 		if ($2)
 			$$->push_back($2);
 		}
-	|				/* Empty */
+	| %empty
 		{ $$ = new vector<Uc_statement *>; }
 	;
 
@@ -1366,7 +1367,7 @@ string_list:
 converse_options:
 	'(' REMOVE ')'			/* For now, just one.		*/
 		{ $$ = 1; }
-	|				/* Empty */
+	| %empty
 		{ $$ = 0; }
 	;
 
@@ -1693,7 +1694,7 @@ egg_criteria:
 opt_script_delay:
 	AFTER nonclass_expr TICKS
 		{ $$ = $2; }
-	|				/* Empty */
+	| %empty
 		{ $$ = nullptr; }
 	;
 
@@ -1767,7 +1768,7 @@ answer_statement:
 
 opt_nonclass_expr_list:
 	nonclass_expr_list
-	|				/* Empty */
+	| %empty
 		{ $$ = new Uc_array_expression(); }
 	;
 
@@ -1897,7 +1898,7 @@ addressof:
 
 opt_expression_list:
 	expression_list
-	|				/* Empty */
+	| %empty
 		{ $$ = new Uc_array_expression(); }
 	;
 
@@ -2096,13 +2097,13 @@ function_call:
 opt_original:
 	ORIGINAL
 		{ $$ = 1; }
-	|				/* Empty */
+	| %empty
 		{ $$ = 0; }
 	;
 
 opt_param_list:
 	param_list
-	|				/* Empty */
+	| %empty
 		{ $$ = new std::vector<Uc_var_symbol *>; }
    	;
 
@@ -2171,7 +2172,7 @@ int_literal:				/* A const. integer value.	*/
 
 opt_void:
 	VOID
-	|				/* Empty */
+	| %empty
 		{
 		yywarning("You should prepend 'void' for functions that do not return a value.");
 		}
