@@ -1098,7 +1098,6 @@ while_statement:
 array_loop_statement:
 	start_array_loop ')' { start_loop(); } statement
 		{
-		end_loop();
 		$1->set_statement($4);
 		$1->finish(cur_fun);
 		cur_fun->pop_scope();
@@ -1108,7 +1107,6 @@ array_loop_statement:
 		{ $1->set_index(cur_fun->add_symbol($3)); }
 					')' { start_loop(); } statement
 		{
-		end_loop();
 		$1->set_statement($7);
 		$1->finish(cur_fun);
 		cur_fun->pop_scope();
@@ -1120,7 +1118,6 @@ array_loop_statement:
 		{ $1->set_array_size(cur_fun->add_symbol($6)); }
 						')' { start_loop(); } statement
 		{
-		end_loop();
 		$1->set_statement($10);
 		cur_fun->pop_scope();
 		end_loop();
