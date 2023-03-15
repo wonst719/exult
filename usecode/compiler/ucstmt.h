@@ -313,12 +313,17 @@ public:
  */
 class Uc_converse_case_statement : public Uc_statement {
 	std::vector<int> string_offset;     // Offset of string to compare.
+	Uc_expression*   variable;          // Alternative to pushing string_offset
 	bool remove;            // True to remove answer.
 	Uc_statement *statements;   // Execute these.
 public:
 	Uc_converse_case_statement(std::vector<int> soff, bool rem, Uc_statement *stmts)
-		: string_offset(std::move(soff)), remove(rem), statements(stmts)
+		: string_offset(std::move(soff)), variable(nullptr), remove(rem),
+		  statements(stmts)
 	{  }
+	Uc_converse_case_statement(
+			Uc_expression* v, bool rem, Uc_statement* stmts)
+			: variable(v), remove(rem), statements(stmts) {}
 	~Uc_converse_case_statement() override {
 		delete statements;
 	}
@@ -328,7 +333,7 @@ public:
 	         std::map<std::string, Basic_block *> &labels,
 	         Basic_block *start = nullptr, Basic_block *exit = nullptr) override;
 	bool is_default() {
-		return string_offset.empty();
+		return string_offset.empty() && variable == nullptr;
 	}
 };
 
@@ -339,8 +344,8 @@ public:
  */
 class Uc_converse_statement : public Uc_statement {
 	static int nest;        // Keeps track of nesting.
-	Uc_block_statement *preamble;    // Statements before the first case.
 	Uc_expression *answers;     // Answers to add.
+	Uc_block_statement *preamble;    // Statements before the first case.
 	Uc_statement *nobreak;  // What to execute after normal finish.
 	std::vector<Uc_statement *> cases;      // What to execute.
 	bool nestconv;          // Whether or not to force push/pop.

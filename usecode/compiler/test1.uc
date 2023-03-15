@@ -369,11 +369,18 @@ test_nobreak:
 extern void doTraining(var price);
 extern var askYesNo();
 void preamble_test() {
+	var avatarName = UI_get_npc_name(UI_get_avatar_ref());
 	converse : nested (["name", "job", "bye"])
 	{
 		var party = UI_get_party_list();
 		case "name" (remove):
-			say("I am Mi.");
+			say("I am Mi. What is your name?");
+			add(avatarName, "Avatar");
+		case "Avatar" (remove):
+			say("Your name is 'Avatar'? I find that unlikely...");
+		case avatarName (remove):
+			say("Pleased to meet you, ", avatarName, "!");
+			UI_remove_answer("Avatar");
 		case "job" (remove):
 			say("I teach martial arts.");
 			if (!(item in party))

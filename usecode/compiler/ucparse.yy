@@ -1331,11 +1331,21 @@ converse_case_list:
 	;
 
 converse_case:
-	CASE string_list converse_options ':'
+	CASE declared_var_value converse_options ':'
 			{ cur_fun->push_scope(); } statement_list
 		{
-		$$ = new Uc_converse_case_statement(*$2,
-				($3 ? true : false), $6);
+		Uc_expression *expr = $2;
+		if (Class_unexpected_error(expr))
+			{
+			expr = nullptr;
+			}
+		$$ = new Uc_converse_case_statement(expr, ($3 ? true : false), $6);
+		cur_fun->pop_scope();
+		}
+	| CASE string_list converse_options ':'
+			{ cur_fun->push_scope(); } statement_list
+		{
+		$$ = new Uc_converse_case_statement(*$2, ($3 ? true : false), $6);
 		delete $2;		// A copy was made.
 		cur_fun->pop_scope();
 		}

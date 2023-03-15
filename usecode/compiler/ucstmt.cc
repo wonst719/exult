@@ -740,18 +740,24 @@ void Uc_converse_case_statement::gen(
     Basic_block *start,         // Block used for 'continue' statements.
     Basic_block *exit           // Block used for 'break' statements.
 ) {
-	if (!remove && !statements) // Optimize whole case away.
+	if (!remove && statements == nullptr) {
+		// Optimize whole case away.
 		return;
+	}
 
-	for (auto it = string_offset.rbegin();
-	        it != string_offset.rend(); ++it) {
-		// Push strings on stack; *it should always be >= 0.
-		if (is_int_32bit(*it)) {
-			WriteOp(curr, UC_PUSHS32);
-			WriteOpParam4(curr, *it);
-		} else {
-			WriteOp(curr, UC_PUSHS);
-			WriteOpParam2(curr, *it);
+	if (variable != nullptr) {
+		variable->gen_value(curr);
+	} else {
+		for (auto it = string_offset.rbegin();
+				it != string_offset.rend(); ++it) {
+			// Push strings on stack; *it should always be >= 0.
+			if (is_int_32bit(*it)) {
+				WriteOp(curr, UC_PUSHS32);
+				WriteOpParam4(curr, *it);
+			} else {
+				WriteOp(curr, UC_PUSHS);
+				WriteOpParam2(curr, *it);
+			}
 		}
 	}
 	// New basic block for CASE body.
@@ -766,7 +772,8 @@ void Uc_converse_case_statement::gen(
 	} else {
 		curr->set_targets(UC_CMPS, case_body, past_case);
 		// # strings on stack.
-		WriteJumpParam2(curr, string_offset.size());
+		const size_t count = variable == nullptr ? string_offset.size() : 1;
+		WriteJumpParam2(curr, count);
 	}
 
 	if (remove) {       // Remove answer?
