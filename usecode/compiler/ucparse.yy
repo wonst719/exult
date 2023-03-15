@@ -993,7 +993,7 @@ if_statement:
 				}
 			else
 				{	// Need this because of those pesky GOTOs...
-				$3->warning("'if' clause may never be executed");
+				$3->warning("'if' clause may never execute");
 				$$ = new Uc_if_statement(nullptr, $5, nullptr);
 				}
 			delete $3;
@@ -1009,13 +1009,13 @@ if_statement:
 			if (val)
 				{
 					// Need this because of those pesky GOTOs...
-				$3->warning("'else' clause may never be executed");
+				$3->warning("'else' clause may never execute");
 				$$ = new Uc_if_statement(new Uc_int_expression(val == 0), $5, $7);
 				}
 			else
 				{
 					// Need this because of those pesky GOTOs...
-				$3->warning("'if' clause may never be executed");
+				$3->warning("'if' clause may never execute");
 				$$ = new Uc_if_statement(nullptr, $5, $7);
 				}
 			delete $3;
@@ -1065,8 +1065,8 @@ while_statement:
 				$$ = new Uc_infinite_loop_statement($6);
 				}
 			else
-				{	// Need this because of those pesky GOTOs...
-				$3->warning("Body of 'while' statement may never be executed");
+				{	// Need 'may' because of those pesky GOTOs...
+				$3->warning("Body of 'while' statement may never execute");
 				$$ = new Uc_while_statement(nullptr, $6);
 				}
 			delete $3;
