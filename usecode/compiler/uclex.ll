@@ -333,6 +333,7 @@ catch		return CATCH;
 abort		return ABORT;
 throw		return THROW;
 ".original"	return ORIGINAL;
+nobreak		return NOBREAK;
 <fun_id>{
 "shape#"	return SHAPENUM;
 "object#"	return OBJECTNUM;

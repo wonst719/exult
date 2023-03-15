@@ -257,10 +257,28 @@ void Uc_breakable_statement::gen(
     Basic_block *exit           // Block used for 'break' statements.
 ) {
 	ignore_unused_variable_warning(start, exit);
-	if (!stmt)  // Optimize whole statement away.
+	if (stmt == nullptr && nobreak == nullptr) {
+		// Optimize whole statement away.
 		return;
-	auto *past_block = new Basic_block();
-	stmt->gen(fun, blocks, curr, end, labels, past_block, past_block);
+	}
+	// Basic block for no-break statements
+	auto* nobreak_block = new Basic_block();
+	// Basic block past statement body.
+	auto* past_block = new Basic_block();
+	if (stmt) {
+		stmt->gen(fun, blocks, curr, end, labels, past_block, past_block);
+	}
+	curr->set_taken(nobreak_block);
+
+	// Generate no-break block.
+	blocks.push_back(nobreak_block);
+	if (nobreak != nullptr) {
+		auto* next_block = nobreak_block;
+		nobreak->gen(fun, blocks, next_block, end, labels);
+		nobreak_block = next_block;
+	}
+	// Fallthrough from no-break block to past-while (break) block
+	nobreak_block->set_taken(past_block);
 	blocks.push_back(curr = past_block);
 }
 
@@ -288,15 +306,19 @@ void Uc_while_statement::gen(
     Basic_block *exit           // Block used for 'break' statements.
 ) {
 	ignore_unused_variable_warning(start, exit);
-	if (!stmt)  // Optimize whole loop away.
+	if (stmt == nullptr && nobreak == nullptr) {
+		// Optimize whole loop away.
 		return;
+	}
 	// The start of a loop is a jump target and needs
 	// a new basic block.
 	auto *while_top = new Basic_block();
-	// Basic block past while body.
-	auto *past_while = new Basic_block();
 	// Need new block past a JNE (the test) or JMP.
 	auto *while_block = new Basic_block();
+	// Basic block for no-break statements
+	auto* nobreak_block = new Basic_block();
+	// Basic block past while body.
+	auto *past_while = new Basic_block();
 	// Fall-through to WHILE top.
 	curr->set_taken(while_top);
 	blocks.push_back(while_top);
@@ -304,18 +326,30 @@ void Uc_while_statement::gen(
 	if (!expr)
 		// While body unreachable except through GOTO statements.
 		// Skip WHILE body by default.
-		while_top->set_targets(UC_JMP, past_while);
+		while_top->set_targets(UC_JMP, nobreak_block);
 	else {
 		// Gen test code.
 		expr->gen_value(while_top);
 		// Link WHILE top to WHILE body and past-WHILE blocks.
-		while_top->set_targets(UC_JNE, while_block, past_while);
+		while_top->set_targets(UC_JNE, while_block, nobreak_block);
 	}
 	// Generate while body.
-	stmt->gen(fun, blocks, while_block, end, labels, while_top, past_while);
+	if (stmt != nullptr) {
+		stmt->gen(fun, blocks, while_block, end, labels, while_top, past_while);
+	}
 
 	// JMP back to top.
 	while_block->set_targets(UC_JMP, while_top);
+
+	// Generate no-break block.
+	blocks.push_back(nobreak_block);
+	if (nobreak != nullptr) {
+		auto* next_block = nobreak_block;
+		nobreak->gen(fun, blocks, next_block, end, labels);
+		nobreak_block = next_block;
+	}
+	// Fallthrough from no-break block to past-while (break) block
+	nobreak_block->set_taken(past_while);
 	blocks.push_back(curr = past_while);
 }
 
@@ -344,8 +378,10 @@ void Uc_dowhile_statement::gen(
     Basic_block *exit           // Block used for 'break' statements.
 ) {
 	ignore_unused_variable_warning(start, exit);
-	if (!stmt)  // Optimize whole loop away.
+	if (stmt == nullptr && nobreak == nullptr) {
+		// Optimize whole loop away.
 		return;
+	}
 	// The start of a loop is a jump target and needs
 	// a new basic block.
 	auto *do_block = new Basic_block();
@@ -355,18 +391,32 @@ void Uc_dowhile_statement::gen(
 	auto *do_test = new Basic_block();
 	// Gen test code.
 	expr->gen_value(do_test);
+	// Basic block for no-break statements
+	auto* nobreak_block = new Basic_block();
 	// Basic block past while body.
 	auto *past_do = new Basic_block();
 	// Jump back to top.
 	auto *do_jmp = new Basic_block();
 	do_jmp->set_targets(UC_JMP, do_block);
-	do_test->set_targets(UC_JNE, do_jmp, past_do);
+	do_test->set_targets(UC_JNE, do_jmp, nobreak_block);
 	// Generate while body.
-	stmt->gen(fun, blocks, do_block, end, labels, do_test, past_do);
+	if (stmt != nullptr) {
+		stmt->gen(fun, blocks, do_block, end, labels, do_test, past_do);
+	}
 	do_block->set_targets(UC_INVALID, do_test);
 
 	blocks.push_back(do_test);
 	blocks.push_back(do_jmp);
+
+	// Generate no-break block.
+	blocks.push_back(nobreak_block);
+	if (nobreak != nullptr) {
+		auto* next_block = nobreak_block;
+		nobreak->gen(fun, blocks, next_block, end, labels);
+		nobreak_block = next_block;
+	}
+	// Fallthrough from no-break block to past-while (break) block
+	nobreak_block->set_taken(past_do);
 	blocks.push_back(curr = past_do);
 }
 
@@ -393,8 +443,11 @@ void Uc_infinite_loop_statement::gen(
     Basic_block *exit           // Block used for 'break' statements.
 ) {
 	ignore_unused_variable_warning(start, exit);
-	if (!stmt)  // Optimize whole loop away.
+	if (stmt == nullptr && nobreak == nullptr) {
+		// Optimize whole loop away.
 		return;
+	}
+	const size_t num_end = end->predecessor_count();
 	// The start of a loop is a jump target and needs
 	// a new basic block.
 	auto *loop_top = new Basic_block();
@@ -405,13 +458,39 @@ void Uc_infinite_loop_statement::gen(
 	// Basic block past loop body.
 	auto *past_loop = new Basic_block();
 	// Generate loop body.
-	stmt->gen(fun, blocks, loop_body, end, labels, loop_top, past_loop);
+	if (stmt) {
+		stmt->gen(fun, blocks, loop_body, end, labels, loop_top, past_loop);
+	}
 	// Jump back to top.
 	loop_body->set_targets(UC_JMP, loop_top);
 
+	if (past_loop->is_orphan() && num_end == end->predecessor_count()) {
+		// Need to do this *before* setting fallthrough for nobreak statements.
+		error("Error: Infinite loop without any 'abort', 'break', or 'return' statements");
+	}
+
+	if (nobreak != nullptr) {
+		// Basic block for no-break statements
+		auto *nobreak_block = new Basic_block();
+		blocks.push_back(nobreak_block);
+		auto *next_block = nobreak_block;
+		nobreak->gen(fun, blocks, next_block, end, labels);
+		next_block->set_taken(past_loop);
+
+		if (nobreak_block->is_orphan()) {
+			if (next_block == nobreak_block) {
+				warning("No statements in 'nobreak' block will never execute");
+			} else {
+				// There may be a label somewhere in the block.
+				if (!nobreak_block->is_empty_block()) {
+					warning("Some statements in 'nobreak' block will never execute");
+				}
+			}
+		}
+		nobreak_block = next_block;
+	}
+
 	blocks.push_back(curr = past_loop);
-	if (past_loop->is_orphan())
-		warning("No 'break' statements will be executed for infinite loop");
 }
 
 /*
@@ -455,8 +534,10 @@ void Uc_arrayloop_statement::gen(
     Basic_block *exit           // Block used for 'break' statements.
 ) {
 	ignore_unused_variable_warning(start, exit);
-	if (!stmt)
-		return;         // Nothing useful to do.
+	if (stmt == nullptr && nobreak == nullptr) {
+		// Nothing useful to do.
+		return;
+	}
 	// Start of loop.
 	WriteOp(curr, UC_LOOP);
 	// The start of a loop is a jump target and needs
@@ -467,25 +548,40 @@ void Uc_arrayloop_statement::gen(
 	// Body of FOR loop.
 	auto *for_body = new Basic_block();
 	blocks.push_back(for_body);
-	// Block immediatelly after FOR.
+	// Basic block for no-break statements
+	auto* nobreak_block = new Basic_block();
+	// Block immediately after FOR.
 	auto *past_for = new Basic_block();
 	UsecodeOps opcode;
-	if (array->is_static())
+	if (array->is_static()) {
 		opcode = UC_LOOPTOPS;
-	else if (array->get_sym_type() == Uc_symbol::Member_var)
+	} else if (array->get_sym_type() == Uc_symbol::Member_var) {
 		opcode = UC_LOOPTOPTHV;
-	else
+	} else {
 		opcode = UC_LOOPTOP;
-	for_top->set_targets(opcode, for_body, past_for);
+	}
+	for_top->set_targets(opcode, for_body, nobreak_block);
 	WriteJumpParam2(for_top, index->get_offset());// Counter, total-count variables.
 	WriteJumpParam2(for_top, array_len->get_offset());
 	WriteJumpParam2(for_top, var->get_offset());    // Loop variable, than array.
 	WriteJumpParam2(for_top, array->get_offset());
 
 	// Generate FOR body.
-	stmt->gen(fun, blocks, for_body, end, labels, for_top, past_for);
+	if (stmt != nullptr) {
+		stmt->gen(fun, blocks, for_body, end, labels, for_top, past_for);
+	}
 	// Jump back to top.
 	for_body->set_targets(UC_JMP, for_top);
+
+	// Generate no-break block.
+	blocks.push_back(nobreak_block);
+	if (nobreak != nullptr) {
+		auto* next_block = nobreak_block;
+		nobreak->gen(fun, blocks, next_block, end, labels);
+		nobreak_block = next_block;
+	}
+	// Fallthrough from no-break block to past-while (break) block
+	nobreak_block->set_taken(past_for);
 
 	blocks.push_back(curr = past_for);
 }
@@ -705,9 +801,10 @@ void Uc_converse_case_statement::gen(
 Uc_converse_statement::Uc_converse_statement(
     Uc_expression *a,
     std::vector<Uc_statement *> *cs,
-    bool n
+    bool n,
+	Uc_statement *nb
 )
-	: answers(a), cases(*cs), nestconv(n) {
+	: answers(a), nobreak(nb), cases(*cs), nestconv(n) {
 	bool has_default = false;
 	for (auto *it : cases) {
 		auto *stmt =
@@ -748,15 +845,20 @@ void Uc_converse_statement::gen(
     Basic_block *exit           // Block used for 'break' statements.
 ) {
 	ignore_unused_variable_warning(start, exit);
-	if (cases.empty())  // Nothing to do; optimize whole block away.
+	if (cases.empty() && nobreak == nullptr) {
+		// Nothing to do; optimize whole block away.
 		return;
-	if (nest++ > 0 || nestconv)         // Not the outermost?
+	}
+	if (nest++ > 0 || nestconv) {
+		// Not the outermost?
 		// Generate a 'push_answers()'.
 		Call_intrinsic(fun, blocks, curr, end, labels,
 		               Uc_function::get_push_answers());
-	if (answers)            // Add desired answers.
+	}
+	if (answers != nullptr) {            // Add desired answers.
 		Call_intrinsic(fun, blocks, curr, end, labels,
 		               Uc_function::get_add_answer(), answers);
+	}
 	// The start of a CONVERSE loop is a jump target and needs
 	// a new basic block.
 	auto *conv_top = new Basic_block();
@@ -765,30 +867,46 @@ void Uc_converse_statement::gen(
 	// Need new block as it is past a jump.
 	auto *conv_body = new Basic_block();
 	blocks.push_back(conv_body);
+	// Basic block for no-break statements
+	auto* nobreak_block = new Basic_block();
 	// Block past the CONVERSE loop.
 	auto *past_conv = new Basic_block();
 	WriteOp(past_conv, UC_CONVERSELOC);
-	conv_top->set_targets(UC_CONVERSE, conv_body, past_conv);
+	conv_top->set_targets(UC_CONVERSE, conv_body, nobreak_block);
 	// Generate loop body.
 	Uc_converse_case_statement *def = nullptr;
 	for (auto *it : cases) {
 		auto *stmt =
 		    static_cast<Uc_converse_case_statement *>(it);
-		if (stmt->is_default())
+		if (stmt->is_default()) {
 			def = stmt;
-		else
+		} else {
 			stmt->gen(fun, blocks, conv_body, end, labels, conv_top, past_conv);
+		}
 	}
-	if (def)
+	if (def != nullptr) {
 		def->gen(fun, blocks, conv_body, end, labels, conv_top, past_conv);
+	}
 	// Jump back to top.
 	conv_body->set_targets(UC_JMP, conv_top);
+
+	// Generate no-break block.
+	blocks.push_back(nobreak_block);
+	if (nobreak != nullptr) {
+		auto* next_block = nobreak_block;
+		nobreak->gen(fun, blocks, next_block, end, labels);
+		nobreak_block = next_block;
+	}
+	// Fallthrough from no-break block to past-while (break) block
+	nobreak_block->set_taken(past_conv);
 	blocks.push_back(curr = past_conv);
 
-	if (--nest > 0 || nestconv)         // Not the outermost?
+	if (--nest > 0 || nestconv) {
+		// Not the outermost?
 		// Generate a 'pop_answers()'.
 		Call_intrinsic(fun, blocks, curr, end, labels,
 		               Uc_function::get_pop_answers());
+	}
 }
 
 /*

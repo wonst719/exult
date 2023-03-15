@@ -356,7 +356,10 @@ public:
 	bool has_single_predecessor() const {
 		return predecessors.size() == 1;
 	}
-	void set_taken(Basic_block *dest) {
+	size_t predecessor_count() const {
+		return predecessors.size();
+	}
+	void set_taken(Basic_block* dest) {
 		if (dest)
 			dest->predecessors.insert(this);
 		if (taken)

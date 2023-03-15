@@ -145,7 +145,7 @@ struct Member_selector
  *	Script keywords:
  */
 					/* Script commands. */
-%token CONTINUE REPEAT NOP NOHALT WAIT /*REMOVE*/ RISE DESCEND FRAME HATCH
+%token NOBREAK CONTINUE REPEAT NOP NOHALT WAIT /*REMOVE*/ RISE DESCEND FRAME HATCH
 %token NEXT PREVIOUS CYCLE STEP MUSIC CALL SPEECH SFX FACE HIT HOURS ACTOR
 %token ATTACK FINISH RESURRECT SETEGG MINUTES RESET WEATHER NEAR FAR
 %token NORTH SOUTH EAST WEST NE NW SE SW
@@ -168,6 +168,12 @@ struct Member_selector
 %precedence IF
 %precedence ELSE
 
+/*
+ *	Handle <loop>-nobreak conflict.
+ */
+
+%precedence LOOP
+%precedence NOBREAK
 
 /*
  *	Expression precedence rules (lowest to highest):
@@ -206,7 +212,7 @@ struct Member_selector
 %type <stmt> special_method_call_statement trycatch_statement trystart_statement
 %type <stmt> array_loop_statement var_decl var_decl_list stmt_declaration
 %type <stmt> class_decl class_decl_list struct_decl_list struct_decl
-%type <stmt> break_statement converse_statement
+%type <stmt> break_statement converse_statement opt_nobreak opt_nobreak_do
 %type <stmt> converse_case switch_case script_statement switch_statement
 %type <stmt> label_statement goto_statement answer_statement
 %type <stmt> delete_statement continue_statement response_case
@@ -1053,8 +1059,22 @@ trystart_statement:
 		}
 	;
 
+opt_nobreak:
+	NOBREAK statement
+		{ $$ = $2; }
+	| %empty %prec LOOP
+		{ $$ = nullptr; }
+	;
+
+opt_nobreak_do:
+	NOBREAK statement
+		{ $$ = $2; }
+	| ';' %prec LOOP
+		{ $$ = nullptr; }
+	;
+
 while_statement:
-	WHILE '(' nonclass_expr ')' { start_loop(); } statement
+	WHILE '(' nonclass_expr ')' { start_loop(); } statement opt_nobreak
 		{
 		int val;
 		if ($3->eval_const(val))
@@ -1062,20 +1082,20 @@ while_statement:
 			if (val)
 				{
 				$3->warning("Infinite loop detected");
-				$$ = new Uc_infinite_loop_statement($6);
+				$$ = new Uc_infinite_loop_statement($6, $7);
 				}
 			else
 				{	// Need 'may' because of those pesky GOTOs...
 				$3->warning("Body of 'while' statement may never execute");
-				$$ = new Uc_while_statement(nullptr, $6);
+				$$ = new Uc_while_statement(nullptr, $6, $7);
 				}
 			delete $3;
 			}
 		else
-			$$ = new Uc_while_statement($3, $6);
+			$$ = new Uc_while_statement($3, $6, $7);
 		end_loop();
 		}
-	| DO { start_loop(); } statement WHILE '(' nonclass_expr ')' ';'
+	| DO { start_loop(); } statement WHILE '(' nonclass_expr ')' opt_nobreak_do
 		{
 		int val;
 		if ($6->eval_const(val))
@@ -1083,31 +1103,35 @@ while_statement:
 			if (val)
 				{
 				$6->warning("Infinite loop detected");
-				$$ = new Uc_infinite_loop_statement($3);
+				$$ = new Uc_infinite_loop_statement($3, $8);
 				}
-			else		// Optimize loop away.
-				$$ = new Uc_breakable_statement($3);
+			else	// Optimize loop away.
+				{
+				$$ = new Uc_breakable_statement($3, $8);
+				}
 			delete $6;
 			}
 		else
-			$$ = new Uc_dowhile_statement($6, $3);
+			$$ = new Uc_dowhile_statement($6, $3, $8);
 		end_loop();
 		}
 	;
 
 array_loop_statement:
-	start_array_loop ')' { start_loop(); } statement
+	start_array_loop ')' { start_loop(); } statement opt_nobreak
 		{
 		$1->set_statement($4);
+		$1->set_nobreak($5);
 		$1->finish(cur_fun);
 		cur_fun->pop_scope();
 		end_loop();
 		}
 	| start_array_loop WITH IDENTIFIER
 		{ $1->set_index(cur_fun->add_symbol($3)); }
-					')' { start_loop(); } statement
+					')' { start_loop(); } statement opt_nobreak
 		{
 		$1->set_statement($7);
+		$1->set_nobreak($8);
 		$1->finish(cur_fun);
 		cur_fun->pop_scope();
 		end_loop();
@@ -1116,9 +1140,10 @@ array_loop_statement:
 		{ $1->set_index(cur_fun->add_symbol($3)); }
 				TO IDENTIFIER
 		{ $1->set_array_size(cur_fun->add_symbol($6)); }
-						')' { start_loop(); } statement
+						')' { start_loop(); } statement opt_nobreak
 		{
 		$1->set_statement($10);
+		$1->set_nobreak($11);
 		cur_fun->pop_scope();
 		end_loop();
 		}
@@ -1134,7 +1159,12 @@ start_array_loop:
 					$4->get_name());
 			yyerror(buf);
 			}
-		auto *var = cur_fun->add_symbol($2);
+		Uc_symbol *sym = cur_fun->search_up($2);
+		auto *var = dynamic_cast<Uc_var_symbol *>(sym);
+		if (!var)
+			{
+			var = cur_fun->add_symbol($2);
+			}
 		$$ = new Uc_arrayloop_statement(var, $4);
 		}
 	;
@@ -1264,21 +1294,21 @@ opt_nest:
 	;
 
 converse_statement:
-	start_conv '{' response_case_list '}'
+	start_conv '{' response_case_list '}' opt_nobreak
 		{
 		end_loop();
 		--converse;
-		$$ = new Uc_converse_statement(nullptr, $3, false);
+		$$ = new Uc_converse_statement(nullptr, $3, false, $5);
 		}
 
-	| start_conv opt_nest '(' expression ')' '{' converse_case_list '}'
+	| start_conv opt_nest '(' expression ')' '{' converse_case_list '}' opt_nobreak
 		{
 		end_loop();
 		--converse;
 		if (Class_unexpected_error($4))
 			$$ = nullptr;
 		else
-			$$ = new Uc_converse_statement($4, $7, $2);
+			$$ = new Uc_converse_statement($4, $7, $2, $9);
 		}
 	;
 

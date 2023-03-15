@@ -136,9 +136,10 @@ public:
  */
 class Uc_breakable_statement : public Uc_statement {
 	Uc_statement *stmt;     // What to execute.
+	Uc_statement *nobreak;  // What to execute after normal finish.
 public:
-	Uc_breakable_statement(Uc_statement *s)
-		: stmt(s)
+	Uc_breakable_statement(Uc_statement *s, Uc_statement* nb)
+		: stmt(s), nobreak(nb)
 	{  }
 	~Uc_breakable_statement() override;
 	// Generate code.
@@ -154,10 +155,10 @@ public:
 class Uc_while_statement : public Uc_statement {
 	Uc_expression *expr;        // What to test.
 	Uc_statement *stmt;     // What to execute.
+	Uc_statement *nobreak;  // What to execute after normal finish.
 public:
-	Uc_while_statement(Uc_expression *e, Uc_statement *s)
-		: expr(e), stmt(s)
-	{  }
+	Uc_while_statement(Uc_expression* e, Uc_statement* s, Uc_statement* nb)
+			: expr(e), stmt(s), nobreak(nb) {}
 	~Uc_while_statement() override;
 	// Generate code.
 	void gen(Uc_function *fun, std::vector<Basic_block *> &blocks,
@@ -172,9 +173,10 @@ public:
 class Uc_dowhile_statement : public Uc_statement {
 	Uc_expression *expr;        // What to test.
 	Uc_statement *stmt;     // What to execute.
+	Uc_statement *nobreak;  // What to execute after normal finish.
 public:
-	Uc_dowhile_statement(Uc_expression *e, Uc_statement *s)
-		: expr(e), stmt(s)
+	Uc_dowhile_statement(Uc_expression *e, Uc_statement *s, Uc_statement* nb)
+		: expr(e), stmt(s), nobreak(nb)
 	{  }
 	~Uc_dowhile_statement() override;
 	// Generate code.
@@ -189,9 +191,10 @@ public:
  */
 class Uc_infinite_loop_statement : public Uc_statement {
 	Uc_statement *stmt;     // What to execute.
+	Uc_statement *nobreak;  // What to execute after normal finish.
 public:
-	Uc_infinite_loop_statement(Uc_statement *s)
-		: stmt(s)
+	Uc_infinite_loop_statement(Uc_statement *s, Uc_statement *nb)
+		: stmt(s), nobreak(nb)
 	{  }
 	~Uc_infinite_loop_statement() override;
 	// Generate code.
@@ -210,13 +213,18 @@ class Uc_arrayloop_statement : public Uc_statement {
 	Uc_var_symbol *index;       // Counter.
 	Uc_var_symbol *array_len;  // Symbol holding array size.
 	Uc_statement *stmt;     // What to execute.
+	Uc_statement *nobreak;  // What to execute after normal finish.
 public:
 	Uc_arrayloop_statement(Uc_var_symbol *v, Uc_var_symbol *a)
-		: var(v), array(a), index(nullptr), array_len(nullptr), stmt(nullptr)
+		: var(v), array(a), index(nullptr), array_len(nullptr), stmt(nullptr),
+		  nobreak(nullptr)
 	{  }
 	~Uc_arrayloop_statement() override;
 	void set_statement(Uc_statement *s) {
 		stmt = s;
+	}
+	void set_nobreak(Uc_statement* n) {
+		nobreak = n;
 	}
 	void set_index(Uc_var_symbol *i) {
 		index = i;
@@ -332,11 +340,12 @@ public:
 class Uc_converse_statement : public Uc_statement {
 	static int nest;        // Keeps track of nesting.
 	Uc_expression *answers;     // Answers to add.
+	Uc_statement *nobreak;  // What to execute after normal finish.
 	std::vector<Uc_statement *> cases;      // What to execute.
 	bool nestconv;          // Whether or not to force push/pop.
 public:
-	Uc_converse_statement(Uc_expression *a,
-	                      std::vector<Uc_statement *> *cs, bool n);
+	Uc_converse_statement(Uc_expression *a, std::vector<Uc_statement *> *cs,
+	                       bool n, Uc_statement *nb);
 	~Uc_converse_statement() override;
 	// Generate code.
 	void gen(Uc_function *fun, std::vector<Basic_block *> &blocks,

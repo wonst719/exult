@@ -4,6 +4,7 @@
 
 extern var adder (a, b);	// Declaration.
 const int const13 = 13;
+const int DOUBLECLICK = 1;
 
 /*
  *	Return sum.
@@ -134,11 +135,11 @@ class<Test> Fun2 (class<Test> a)
 	//mytest = new Test3(a);		// Fails to compile
 	mytest = new Test3(3);
 	bar = new Test(13);
-	
+
 	// Conditions:
 	if (bar)
 		;
-		
+
 	// Deletion:
 	delete bar;
 }
@@ -208,4 +209,159 @@ void try_catch_test()
 		}
 		throw_abrt_test("Game over");
 	}
+}
+
+extern var Predicate (var npc);
+
+void for_nobreak_test(var list) {
+    var npc;
+    for (npc in list)
+    {
+        if (Predicate(npc))
+        {
+            break;
+        }
+    }
+    nobreak
+    {
+        npc = -356;
+    }
+    UI_set_opponent(-71, npc);
+}
+
+void while_nobreak_test(var list) {
+    var count = UI_get_array_size(list);
+    var index = 0;
+    var npc;
+    while (index < count)
+    {
+        npc = list[index];
+        if (Predicate(npc))
+        {
+            break;
+        }
+        index = index + 1;
+    }
+    nobreak
+    {
+        npc = -356;
+    }
+    UI_set_opponent(-71, npc);
+}
+
+void dowhile_nobreak_test(var list) {
+    var count = UI_get_array_size(list);
+    var index = 0;
+    var npc;
+    do
+    {
+        npc = list[index];
+        if (Predicate(npc))
+        {
+            break;
+        }
+        index = index + 1;
+    } while (index < count)
+    nobreak
+    {
+        npc = -356;
+    }
+    UI_set_opponent(-71, npc);
+}
+
+void breakable_nobreak_test(var list) {
+    var count = UI_get_array_size(list);
+    var index = 0;
+    var npc;
+    do
+    {
+        npc = list[index];
+        if (Predicate(npc))
+        {
+            break;
+        }
+    } while (false)
+    nobreak
+    {
+        npc = -356;
+    }
+    UI_set_opponent(-71, npc);
+}
+
+void converse_nobreak_test(var list) {
+    var npc;
+    converse (["Iolo", "Shamino", "Dupre"])
+    {
+    case "Iolo" (remove):
+        npc = -1;
+        if (Predicate(npc))
+        {
+            break;
+        }
+    case "Shamino" (remove):
+        npc = -2;
+        if (Predicate(npc))
+        {
+            break;
+        }
+    case "Dupre" (remove):
+        npc = -3;
+        if (Predicate(npc))
+        {
+            break;
+        }
+    }
+    nobreak
+    {
+        npc = -356;
+    }
+    UI_set_opponent(-71, npc);
+}
+
+void infinite_warning_nobreak_test1(var list) {
+    var count = UI_get_array_size(list);
+    var index = 0;
+    var npc;
+    do
+    {
+        npc = list[index];
+        if (Predicate(npc))
+        {
+            break;
+        }
+        else
+        {
+            goto test_nobreak;
+        }
+    } while (true)
+    nobreak
+    {
+test_nobreak:
+        npc = -356;
+    }
+    UI_set_opponent(-71, npc);
+}
+
+void infinite_warning_nobreak_test2(var list) {
+    var count = UI_get_array_size(list);
+    var index = 0;
+    var npc;
+    do
+    {
+        npc = list[index];
+        if (Predicate(npc))
+        {
+            break;
+        }
+        else
+        {
+            goto test_nobreak;
+        }
+    } while (true)
+    nobreak
+    {
+        npc = -356;
+test_nobreak:
+    }
+    UI_set_opponent(-71, npc);
 }
