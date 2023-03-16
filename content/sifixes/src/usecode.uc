@@ -47,9 +47,6 @@
 
 // From here down, all functions have preassigned function numbers:
 
-// Utility code is not specific to BG or SI, and can be reused in original mods
-#include "utility/remove_all_container_items_and_container.uc"
-
 // Fixes spelling in Draxinar's second riddle
 #include "misc/draxinar_earrings_riddle.uc"
 // Fixes the incorrect answer to Draxinar's last riddle

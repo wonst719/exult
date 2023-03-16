@@ -328,8 +328,6 @@ enum northernforest_npcs
 	IVOR = -158,
 	MORGHRIM = -159,
 	HOUND_OF_DOSKAR = -269,
-	// Moved to si_faces.uc
-	// FACE_HOUND_OF_DOSKAR = -279,
 	HAZARD = -275,
 	SONAR = -276 // Timberwolf known as Windrunner
 };

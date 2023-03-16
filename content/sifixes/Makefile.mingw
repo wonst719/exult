@@ -26,12 +26,15 @@ USECODE_OBJECTS = \
 	src/header/constants.uc	\
 	src/header/functions.uc	\
 	src/header/si/si_externals.uc	\
+	src/header/si/si_faces.uc	\
 	src/header/si/si_gflags.uc	\
 	src/header/si/si_npcs.uc	\
 	src/header/si/si_shapes.uc	\
+	src/header/si/si_sprites.uc	\
 	src/items/bucket_cure.uc	\
 	src/items/fishingrod.uc	\
 	src/items/hourglass.uc	\
+	src/items/nightmare.uc	\
 	src/items/pillar.uc	\
 	src/items/potion.uc	\
 	src/items/scroll.uc	\
@@ -74,6 +77,10 @@ USECODE_OBJECTS = \
 	src/spells/spells.uc	\
 	src/usecode.uc	
 
+FACES_VGA_OBJECTS = \
+	src/graphics/faces.in	\
+	src/graphics/faces/317_smith_horse_by_rhona.shp	
+
 GUMPS_VGA_OBJECTS = \
 	src/graphics/gumps.in	\
 	src/graphics/gumps/magic_scroll_1st.shp	\
@@ -108,6 +115,8 @@ SPRITES_VGA_OBJECTS = \
 
 CLEANFILES = \
 	data/usecode	\
+	data/faces.vga	\
+	data/faces_vga.h	\
 	data/gumps.vga	\
 	data/gumps_vga.h	\
 	data/mainshp.flx	\
@@ -119,13 +128,14 @@ CLEANFILES = \
 	data/sprites.vga	\
 	data/sprites_vga.h	
 
-all: data/usecode data/gumps.vga data/mainshp.flx data/paperdol.vga data/shapes.vga data/sprites.vga
+all: data/usecode data/faces.vga data/gumps.vga data/mainshp.flx data/paperdol.vga data/shapes.vga data/sprites.vga
 
 install: all
 	mkdir -p $(sifixesdir)
 	cp sifixes.cfg $(sifixesdir)/sifixes.cfg
 	mkdir -p $(sifixesdir)/sifixes/data
 	cp data/usecode $(sifixesdir)/sifixes/data/usecode
+	cp data/faces.vga $(sifixesdir)/sifixes/data/faces.vga
 	cp data/gumps.vga $(sifixesdir)/sifixes/data/gumps.vga
 	cp data/mainshp.flx $(sifixesdir)/sifixes/data/mainshp.flx
 	cp data/paperdol.vga $(sifixesdir)/sifixes/data/paperdol.vga
@@ -146,6 +156,9 @@ $(UCC):
 
 data/usecode: $(UCC) $(USECODE_OBJECTS)
 	$(UCC) -I src -o data/usecode src/usecode.uc
+
+data/faces.vga: $(EXPACK) $(FACES_VGA_OBJECTS)
+	$(EXPACK) -i $(srcdir)/src/graphics/faces.in
 
 data/gumps.vga: $(EXPACK) $(GUMPS_VGA_OBJECTS)
 	$(EXPACK) -i $(srcdir)/src/graphics/gumps.in

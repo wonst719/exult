@@ -157,6 +157,9 @@ extern var getOuterContainer 0x99E (var obj);
 // the corresponding frame. Returned path eggs come from the Usecode Container.
 extern var getPathEgg 0x9A0 (var num1, var num2);
 
+// Remove all items from a container, then removes the container.
+extern void removeAllItemsAndContainer 0x9A3 (var obj);
+
 // Returns an array containing the index of all instances of
 // element in the array:
 extern var getIndexForElement 0x9A8 (var element, var array);

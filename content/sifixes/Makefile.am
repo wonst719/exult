@@ -18,12 +18,15 @@ USECODE_OBJECTS = \
 	src/header/constants.uc	\
 	src/header/functions.uc	\
 	src/header/si/si_externals.uc	\
+	src/header/si/si_faces.uc	\
 	src/header/si/si_gflags.uc	\
 	src/header/si/si_npcs.uc	\
 	src/header/si/si_shapes.uc	\
+	src/header/si/si_sprites.uc	\
 	src/items/bucket_cure.uc	\
 	src/items/fishingrod.uc	\
 	src/items/hourglass.uc	\
+	src/items/nightmare.uc	\
 	src/items/pillar.uc	\
 	src/items/potion.uc	\
 	src/items/scroll.uc	\
@@ -66,6 +69,10 @@ USECODE_OBJECTS = \
 	src/spells/spells.uc	\
 	src/usecode.uc	
 
+FACES_VGA_OBJECTS = \
+	src/graphics/faces.in	\
+	src/graphics/faces/317_smith_horse_by_rhona.shp	
+
 GUMPS_VGA_OBJECTS = \
 	src/graphics/gumps.in	\
 	src/graphics/gumps/magic_scroll_1st.shp	\
@@ -107,6 +114,7 @@ sifixesdatadir = $(sifixesdir)/sifixes/data
 
 nodist_sifixesdata_DATA = \
 	data/usecode	\
+	data/faces.vga	\
 	data/gumps.vga	\
 	data/mainshp.flx	\
 	data/paperdol.vga	\
@@ -124,6 +132,7 @@ EXTRA_DIST = \
 	src/make.bat	\
 	src/make.sh	\
 	$(USECODE_OBJECTS)	\
+	$(FACES_VGA_OBJECTS)	\
 	$(GUMPS_VGA_OBJECTS)	\
 	$(MAINSHP_FLX_OBJECTS)	\
 	$(PAPERDOL_VGA_OBJECTS)	\
@@ -134,6 +143,8 @@ EXTRA_DIST = \
 
 CLEANFILES = \
 	data/usecode	\
+	data/faces.vga	\
+	data/faces_vga.h	\
 	data/gumps.vga	\
 	data/gumps_vga.h	\
 	data/mainshp.flx	\
@@ -154,6 +165,9 @@ $(UCC):
 
 data/usecode: $(UCC) $(USECODE_OBJECTS)
 	$(UCC) -I src -o data/usecode src/usecode.uc
+
+data/faces.vga: $(EXPACK) $(FACES_VGA_OBJECTS)
+	$(EXPACK) -i $(srcdir)/src/graphics/faces.in
 
 data/gumps.vga: $(EXPACK) $(GUMPS_VGA_OBJECTS)
 	$(EXPACK) -i $(srcdir)/src/graphics/gumps.in
