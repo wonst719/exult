@@ -466,7 +466,7 @@ toolsdist: tools toolsinstall
 	cp mapedit/tools/smooth/README $(U7PATH)/tools/smooth.txt
 	cp mapedit/tools/smooth/rough.bmp $(U7PATH)/tools
 	cp mapedit/tools/smooth/smoothed.bmp $(U7PATH)/tools
-	cp usecode/ucxt/README $(U7PATH)/ucxt.txt
+	cp usecode/ucxt/Docs/README $(U7PATH)/ucxt.txt
 	cp usecode/ucxt/ucxtread.txt $(U7PATH)
 	cp AUTHORS $(U7PATH)/AUTHORS.txt
 	cp COPYING $(U7PATH)/COPYING.txt
