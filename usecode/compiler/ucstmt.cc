@@ -785,19 +785,26 @@ void Uc_converse_case_statement::gen(
 			}
 			Call_intrinsic(fun, blocks, case_body, end, labels,
 			               Uc_function::get_remove_answer(), strlist);
-		} else if (!string_offset.empty())
+		} else if (!string_offset.empty()) {
 			Call_intrinsic(fun, blocks, case_body, end, labels,
 			               Uc_function::get_remove_answer(),
 			               new Uc_string_expression(string_offset[0]));
-		else
+		} else {
 			Call_intrinsic(fun, blocks, case_body, end, labels,
 			               Uc_function::get_remove_answer(),
 			               new Uc_choice_expression());
+		}
 	}
-	if (statements)         // Generate statement's code.
+	if (statements != nullptr) {
+		// Generate statement's code.
 		statements->gen(fun, blocks, case_body, end, labels, start, exit);
+	}
 	// Jump back to converse top.
-	case_body->set_targets(UC_JMP, start);
+	if (statements == nullptr || !statements->falls_through()) {
+		case_body->set_targets(UC_JMP, start);
+	} else {
+		case_body->set_taken(past_case);
+	}
 	blocks.push_back(curr = past_case);
 }
 

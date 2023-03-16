@@ -274,6 +274,7 @@ char *Handle_string
 %s fun_id
 %s in_script
 %s in_loop
+%s in_conversation
 %s in_breakable
 
 %%
@@ -345,6 +346,11 @@ break		return BREAK;
 <in_loop>{
 break		return BREAK;
 continue	return CONTINUE;
+}
+<in_conversation>{
+break		return BREAK;
+continue	return CONTINUE;
+fallthrough	return FALLTHROUGH;
 }
 					/* Script commands. */
 <in_script>{
@@ -521,6 +527,14 @@ void start_loop()
 	yy_push_state(in_loop);
 	}
 void end_loop()
+	{
+	yy_pop_state();
+	}
+void start_converse()
+	{
+	yy_push_state(in_conversation);
+	}
+void end_converse()
 	{
 	yy_pop_state();
 	}

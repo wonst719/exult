@@ -418,3 +418,52 @@ void array_tests()
 	var var2 = (UI_get_object_position(0xFE9C) & 0xFE99) & 0x0003;
 	var var3 = UI_get_object_position(0xFE9C) & [0xFE99, 0x0003];
 }
+
+void fallthrough_test() {
+	var avatarName = UI_get_npc_name(UI_get_avatar_ref());
+	converse : nested (["name", "job", "bye"])
+	{
+		var party = UI_get_party_list();
+		case "name" (remove):
+			say("I am Mi. What is your name?");
+			add(avatarName, "Avatar");
+			fallthrough;
+		case "Avatar" (remove):
+			say("Your name is 'Avatar'? I find that unlikely...");
+			fallthrough;
+		case avatarName (remove):
+			say("Pleased to meet you, ", avatarName, "!");
+			UI_remove_answer("Avatar");
+			fallthrough;
+		case "job" (remove):
+			say("I teach martial arts.");
+			if (!(item in party))
+			{
+				add("join");
+			}
+			add("train");
+			fallthrough;
+		case "train":
+			if (item in party)
+			{
+				say("Since we are traveling together, I will waive my usual fee.");
+				doTraining(0);
+			}
+			else
+			{
+				say("It will cost 50 gold per person. Is this acceptable?");
+				if (askYesNo())
+				{
+					doTraining(50);
+				}
+				else
+				{
+					say("Suit yourself.");
+				}
+			}
+			fallthrough;
+		case "bye":
+			break;
+	}
+	say("Farewell!");
+}

@@ -52,6 +52,10 @@ public:
 	                 Basic_block *&curr, Basic_block *end,
 	                 std::map<std::string, Basic_block *> &labels,
 	                 Basic_block *start = nullptr, Basic_block *exit = nullptr) = 0;
+	// Whether statement is a fallthrough statement or ends in one.
+	virtual bool falls_through() const {
+		return false;
+	}
 };
 
 /*
@@ -69,6 +73,9 @@ public:
 	         Basic_block *&curr, Basic_block *end,
 	         std::map<std::string, Basic_block *> &labels,
 	         Basic_block *start = nullptr, Basic_block *exit = nullptr) override;
+	bool falls_through() const override {
+		return !statements.empty() && statements.back()->falls_through();
+	}
 };
 
 /*
@@ -281,6 +288,23 @@ public:
 };
 
 /*
+ *  BREAK statement:
+ */
+class Uc_fallthrough_statement : public Uc_statement {
+public:
+	// Generate code.
+	void gen(Uc_function *fun, std::vector<Basic_block *> &blocks,
+	         Basic_block *&curr, Basic_block *end,
+	         std::map<std::string, Basic_block *> &labels,
+	         Basic_block *start = nullptr, Basic_block *exit = nullptr) override {
+		ignore_unused_variable_warning(fun, blocks, curr, end, labels, start, exit);
+	}
+	bool falls_through() const override {
+		return true;
+	}
+};
+
+/*
  *  a LABEL statement:
  */
 class Uc_label_statement : public Uc_statement {
@@ -334,6 +358,9 @@ public:
 	         Basic_block *start = nullptr, Basic_block *exit = nullptr) override;
 	bool is_default() {
 		return string_offset.empty() && variable == nullptr;
+	}
+	bool falls_through() const override {
+		return statements != nullptr && statements->falls_through();
 	}
 };
 

@@ -48,6 +48,7 @@ void yyerror(const char *);
 void yywarning(const char *);
 extern int yylex();
 extern void start_script(), end_script();
+extern void start_converse(), end_converse();
 extern void start_loop(), end_loop();
 extern void start_breakable(), end_breakable();
 extern void start_fun_id(), end_fun_id();
@@ -138,7 +139,7 @@ struct Member_selector
 %token VAR VOID ALIAS STRUCT UCC_CHAR UCC_INT UCC_LONG UCC_CONST STRING ENUM
 %token CONVERSE NESTED SAY MESSAGE RESPONSE EVENT FLAG ITEM UCTRUE UCFALSE REMOVE
 %token ADD HIDE SCRIPT AFTER TICKS STATIC_ ORIGINAL SHAPENUM OBJECTNUM
-%token CLASS NEW DELETE RUNSCRIPT UCC_INSERT SWITCH DEFAULT
+%token CLASS NEW DELETE RUNSCRIPT UCC_INSERT SWITCH DEFAULT FALLTHROUGH
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ CHOICE TRY CATCH ABORT THROW
 
 /*
@@ -214,8 +215,8 @@ struct Member_selector
 %type <stmt> class_decl class_decl_list struct_decl_list struct_decl
 %type <stmt> break_statement converse_statement opt_nobreak opt_nobreak_do
 %type <stmt> converse_case switch_case script_statement switch_statement
-%type <stmt> label_statement goto_statement answer_statement
-%type <stmt> delete_statement continue_statement response_case
+%type <stmt> label_statement goto_statement answer_statement delete_statement
+%type <stmt> continue_statement response_case fallthrough_statement
 %type <block> statement_list
 %type <arrayloop> start_array_loop
 %type <exprlist> opt_expression_list expression_list script_command_list
@@ -515,6 +516,7 @@ statement:
 	| script_statement
 	| break_statement
 	| continue_statement
+	| fallthrough_statement
 	| goto_statement
 	| delete_statement
 	| SAY  '(' opt_nonclass_expr_list ')' ';'
@@ -1296,14 +1298,14 @@ opt_nest:
 converse_statement:
 	start_conv '{' statement_list response_case_list '}' opt_nobreak
 		{
-		end_loop();
+		end_converse();
 		--converse;
 		$$ = new Uc_converse_statement(nullptr, $3, $4, false, $6);
 		}
 
 	| start_conv opt_nest '(' expression ')' '{' statement_list converse_case_list '}' opt_nobreak
 		{
-		end_loop();
+		end_converse();
 		--converse;
 		if (Class_unexpected_error($4))
 			$$ = nullptr;
@@ -1315,7 +1317,7 @@ converse_statement:
 start_conv:
 	CONVERSE
 		{
-		start_loop();
+		start_converse();
 		++converse;
 		}
 	;
@@ -1743,6 +1745,11 @@ break_statement:
 continue_statement:
 	CONTINUE ';'
 		{ $$ = new Uc_continue_statement(); }
+	;
+
+fallthrough_statement:
+	FALLTHROUGH ';'
+		{ $$ = new Uc_fallthrough_statement(); }
 	;
 
 label_statement:
