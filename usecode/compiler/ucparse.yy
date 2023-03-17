@@ -1309,7 +1309,15 @@ converse_statement:
 		if (Class_unexpected_error($4))
 			$$ = nullptr;
 		else
-			$$ = new Uc_converse_statement($4, $7, $8, $2, $10);
+			{
+			int ival;
+			Uc_expression *expr = $4;
+			if ($4->eval_const(ival))
+				{
+				expr = nullptr;
+				}
+			$$ = new Uc_converse_statement(expr, $7, $8, $2, $10);
+			}
 		}
 	;
 

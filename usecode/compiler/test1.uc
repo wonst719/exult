@@ -37,6 +37,11 @@ var adder1 (a, b)
 			say("This is utter nonsense!");
 		}
 	say("Hello, the time is ", 12, "o'clock");
+	converse (0)
+		{
+		case "bye" (remove):
+			break;
+		}
 	// Newer conversation style:
 	converse (["Name", "Bye", "name"])
 		{
@@ -494,4 +499,9 @@ void test_always_default()
 			say();
 			break;
 	}
+}
+
+void test_intrinsic()
+{
+	(@0x83)();
 }
