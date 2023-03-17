@@ -1175,7 +1175,6 @@ start_for:
 	FOR '('
 		{
 		cur_fun->push_scope();
-		start_loop();
 		}
 	;
 
