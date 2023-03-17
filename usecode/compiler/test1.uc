@@ -414,26 +414,36 @@ void preamble_test() {
 
 void array_tests()
 {
-	var var1 = UI_get_object_position(0xFE9C) & (0xFE99 & 0x0003);
-	var var2 = (UI_get_object_position(0xFE9C) & 0xFE99) & 0x0003;
-	var var3 = UI_get_object_position(0xFE9C) & [0xFE99, 0x0003];
+	const int AVATAR = -356;
+	const int SHAPE_ANY = -359;
+	var var1 = UI_get_object_position(AVATAR) & (SHAPE_ANY & 0x0003);
+	var var2 = (UI_get_object_position(AVATAR) & SHAPE_ANY) & 0x0003;
+	var var3 = UI_get_object_position(AVATAR) & [SHAPE_ANY, 0x0003];
 }
 
-void fallthrough_test() {
+void fallthrough_always_test() {
 	var avatarName = UI_get_npc_name(UI_get_avatar_ref());
 	converse : nested (["name", "job", "bye"])
 	{
 		var party = UI_get_party_list();
+		var remove_name = false;
 		case "name" (remove):
 			say("I am Mi. What is your name?");
 			add(avatarName, "Avatar");
 			fallthrough;
-		case "Avatar" (remove):
+		case "Avatar":
 			say("Your name is 'Avatar'? I find that unlikely...");
+			remove_name = true;
 			fallthrough;
-		case avatarName (remove):
+		case avatarName:
 			say("Pleased to meet you, ", avatarName, "!");
-			UI_remove_answer("Avatar");
+			remove_name = true;
+			fallthrough;
+		always:
+			if (remove_name)
+			{
+				UI_remove_answer(["Avatar", avatarName]);
+			}
 			fallthrough;
 		case "job" (remove):
 			say("I teach martial arts.");
@@ -466,4 +476,22 @@ void fallthrough_test() {
 			break;
 	}
 	say("Farewell!");
+}
+
+void test_always_default()
+{
+	converse (["-I- am the Avatar!", "I -am- the Avatar!", "I am -the- Avatar!", "I am the -Avatar-!"])
+	{
+		default:
+			message("\"No, no, no! That is all wrong! Thou art the 'Avatar'! Thou must feel like the Avatar! Thou must sound like the Avatar! Thou must -be- the Avatar! Try it again.\"");
+			say();
+			fallthrough;
+		always:
+			UI_clear_answers();
+			UI_add_answer(["-I- am the Avatar!", "I -am- the Avatar!", "I am -the- Avatar!", "I am the -Avatar-!"]);
+		default:
+			message("\"Better... better... but I think perhaps thou dost need a prop.\"");
+			say();
+			break;
+	}
 }

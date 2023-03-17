@@ -336,31 +336,93 @@ public:
  *  Conversation CASE statement:
  */
 class Uc_converse_case_statement : public Uc_statement {
-	std::vector<int> string_offset;     // Offset of string to compare.
-	Uc_expression*   variable;          // Alternative to pushing string_offset
-	bool remove;            // True to remove answer.
 	Uc_statement *statements;   // Execute these.
+	bool remove;                // True to remove answer.
 public:
-	Uc_converse_case_statement(std::vector<int> soff, bool rem, Uc_statement *stmts)
-		: string_offset(std::move(soff)), variable(nullptr), remove(rem),
-		  statements(stmts)
+	Uc_converse_case_statement(Uc_statement *stmts, bool rem)
+		: statements(stmts), remove(rem)
 	{  }
-	Uc_converse_case_statement(
-			Uc_expression* v, bool rem, Uc_statement* stmts)
-			: variable(v), remove(rem), statements(stmts) {}
 	~Uc_converse_case_statement() override {
 		delete statements;
 	}
+	virtual int gen_check(Basic_block *curr, Basic_block *case_body,
+	                      Basic_block *past_case) = 0;
+	virtual int gen_remove(Uc_function *fun, std::vector<Basic_block *> &blocks,
+	                       Basic_block *case_body, Basic_block *end,
+	                       std::map<std::string, Basic_block *> &labels) = 0;
 	// Generate code.
 	void gen(Uc_function *fun, std::vector<Basic_block *> &blocks,
 	         Basic_block *&curr, Basic_block *end,
 	         std::map<std::string, Basic_block *> &labels,
 	         Basic_block *start = nullptr, Basic_block *exit = nullptr) override;
-	bool is_default() {
-		return string_offset.empty() && variable == nullptr;
-	}
 	bool falls_through() const override {
 		return statements != nullptr && statements->falls_through();
+	}
+};
+
+/*
+ *  Conversation CASE statement with a list of strings:
+ */
+class Uc_converse_strings_case_statement : public Uc_converse_case_statement {
+	std::vector<int> string_offset;     // Offset of string to compare.
+public:
+	Uc_converse_strings_case_statement(std::vector<int> soff, Uc_statement *stmts, bool rem)
+		: Uc_converse_case_statement(stmts, rem), string_offset(std::move(soff))
+	{  }
+	int gen_check(Basic_block *curr, Basic_block *case_body,
+	              Basic_block *past_case) override;
+	int gen_remove(Uc_function *fun, std::vector<Basic_block *> &blocks,
+	               Basic_block *case_body, Basic_block *end,
+	               std::map<std::string, Basic_block *> &labels) override;
+};
+
+/*
+ *  Conversation CASE statement with a variable:
+ */
+class Uc_converse_variable_case_statement : public Uc_converse_case_statement {
+	Uc_expression *variable;            // Alternative to pushing string_offset
+public:
+	Uc_converse_variable_case_statement(
+			Uc_expression *v, Uc_statement *stmts, bool rem)
+			: Uc_converse_case_statement(stmts, rem), variable(v)
+	{  }
+	int gen_check(Basic_block *curr, Basic_block *case_body,
+	              Basic_block *past_case) override;
+	int gen_remove(Uc_function *fun, std::vector<Basic_block *> &blocks,
+	               Basic_block *case_body, Basic_block *end,
+	               std::map<std::string, Basic_block *> &labels) override;
+};
+
+/*
+ *  Conversation DEFAULT statement:
+ */
+class Uc_converse_default_case_statement : public Uc_converse_case_statement {
+public:
+	Uc_converse_default_case_statement(Uc_statement *stmts)
+			: Uc_converse_case_statement(stmts, false)
+	{  }
+	int gen_check(Basic_block *curr, Basic_block *case_body,
+	              Basic_block *past_case) override;
+	int gen_remove(Uc_function *fun, std::vector<Basic_block *> &blocks,
+	               Basic_block *case_body, Basic_block *end,
+	               std::map<std::string, Basic_block *> &labels) override;
+};
+
+/*
+ *  Conversation ALWAYS statement:
+ */
+class Uc_converse_always_case_statement : public Uc_converse_case_statement {
+public:
+	Uc_converse_always_case_statement(Uc_statement *stmts)
+			: Uc_converse_case_statement(stmts, false)
+	{  }
+	int gen_check(Basic_block *curr, Basic_block *case_body,
+	              Basic_block *past_case) override;
+	int gen_remove(Uc_function *fun, std::vector<Basic_block *> &blocks,
+	               Basic_block *case_body, Basic_block *end,
+	               std::map<std::string, Basic_block *> &labels) override;
+	bool falls_through() const override {
+		return true;
 	}
 };
 

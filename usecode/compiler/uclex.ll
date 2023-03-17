@@ -309,6 +309,7 @@ new			return NEW;
 delete		return DELETE;
 switch		return SWITCH;
 default		return DEFAULT;
+always		return ALWAYS;
 
 converse	return CONVERSE;
 user_choice	return CHOICE;

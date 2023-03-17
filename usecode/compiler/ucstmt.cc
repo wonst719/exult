@@ -22,6 +22,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "ignore_unused_variable_warning.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -745,67 +746,178 @@ void Uc_converse_case_statement::gen(
 		return;
 	}
 
-	if (variable != nullptr) {
-		variable->gen_value(curr);
-	} else {
-		for (auto it = string_offset.rbegin();
-				it != string_offset.rend(); ++it) {
-			// Push strings on stack; *it should always be >= 0.
-			if (is_int_32bit(*it)) {
-				WriteOp(curr, UC_PUSHS32);
-				WriteOpParam4(curr, *it);
-			} else {
-				WriteOp(curr, UC_PUSHS);
-				WriteOpParam2(curr, *it);
-			}
-		}
-	}
 	// New basic block for CASE body.
 	auto *case_body = new Basic_block();
 	blocks.push_back(case_body);
 	// Past CASE body.
 	auto *past_case = new Basic_block();
-	if (is_default()) {
-		curr->set_targets(UC_DEFAULT, case_body, past_case);
-		// Writing 1 to match audition usecode, but this could be anything.
-		WriteJumpParam2(curr, 1);
-	} else {
-		curr->set_targets(UC_CMPS, case_body, past_case);
-		// # strings on stack.
-		const size_t count = variable == nullptr ? string_offset.size() : 1;
-		WriteJumpParam2(curr, count);
-	}
 
-	if (remove) {       // Remove answer?
-		if (string_offset.size() > 1) {
-			auto *strlist = new Uc_array_expression();
-			for (const int it : string_offset) {
-				auto *str = new Uc_string_expression(it);
-				strlist->add(str);
-			}
-			Call_intrinsic(fun, blocks, case_body, end, labels,
-			               Uc_function::get_remove_answer(), strlist);
-		} else if (!string_offset.empty()) {
-			Call_intrinsic(fun, blocks, case_body, end, labels,
-			               Uc_function::get_remove_answer(),
-			               new Uc_string_expression(string_offset[0]));
-		} else {
-			Call_intrinsic(fun, blocks, case_body, end, labels,
-			               Uc_function::get_remove_answer(),
-			               new Uc_choice_expression());
-		}
+	gen_check(curr, case_body, past_case);
+
+	if (remove) {    // Remove answer?
+		gen_remove(fun, blocks, case_body, end, labels);
 	}
 	if (statements != nullptr) {
 		// Generate statement's code.
 		statements->gen(fun, blocks, case_body, end, labels, start, exit);
 	}
 	// Jump back to converse top.
-	if (statements == nullptr || !statements->falls_through()) {
+	if (!falls_through()) {
 		case_body->set_targets(UC_JMP, start);
 	} else {
 		case_body->set_taken(past_case);
 	}
 	blocks.push_back(curr = past_case);
+}
+
+/*
+ *  Generate code.
+ */
+
+int Uc_converse_strings_case_statement::gen_check(
+    Basic_block *curr,         // Active block; where we write the check
+    Basic_block *case_body,    // Case body, for check fallthrough
+    Basic_block *past_case     // Block after the case statement
+) {
+	for (auto it = string_offset.rbegin();
+			it != string_offset.rend(); ++it) {
+		// Push strings on stack; *it should always be >= 0.
+		if (is_int_32bit(*it)) {
+			WriteOp(curr, UC_PUSHS32);
+			WriteOpParam4(curr, *it);
+		} else {
+			WriteOp(curr, UC_PUSHS);
+			WriteOpParam2(curr, *it);
+		}
+	}
+	// # strings on stack.
+	curr->set_targets(UC_CMPS, case_body, past_case);
+	WriteJumpParam2(curr, string_offset.size());
+	return 1;
+}
+
+/*
+ *  Generate code.
+ */
+
+int Uc_converse_strings_case_statement::gen_remove(
+    Uc_function *fun,
+    vector<Basic_block *> &blocks,      // What we are producing.
+    Basic_block *case_body,             // Active block; will usually be *changed*.
+    Basic_block *end,                   // Fictitious exit block for function.
+    map<string, Basic_block *> &labels  // Label map for goto statements.
+) {
+	if (string_offset.size() > 1) {
+		auto *strlist = new Uc_array_expression();
+		for (const int it : string_offset) {
+			auto *str = new Uc_string_expression(it);
+			strlist->add(str);
+		}
+		Call_intrinsic(fun, blocks, case_body, end, labels,
+		          Uc_function::get_remove_answer(), strlist);
+	} else if (!string_offset.empty()) {
+		Call_intrinsic(fun, blocks, case_body, end, labels,
+		          Uc_function::get_remove_answer(),
+		          new Uc_string_expression(string_offset[0]));
+	} else {
+		Call_intrinsic(fun, blocks, case_body, end, labels,
+		          Uc_function::get_remove_answer(),
+		          new Uc_choice_expression());
+	}
+	return 1;
+}
+
+/*
+ *  Generate code.
+ */
+
+int Uc_converse_variable_case_statement::gen_check(
+		Basic_block *curr,         // Active block; where we write the check
+		Basic_block *case_body,    // Case body, for check fallthrough
+		Basic_block *past_case     // Block after the case statement
+) {
+	if (variable != nullptr) {
+		variable->gen_value(curr);
+		// # strings on stack.
+		curr->set_targets(UC_CMPS, case_body, past_case);
+		WriteJumpParam2(curr, 1);
+		return 1;
+	}
+	return 0;
+}
+
+/*
+ *  Generate code.
+ */
+
+int Uc_converse_variable_case_statement::gen_remove(
+    Uc_function *fun,
+    vector<Basic_block *> &blocks,      // What we are producing.
+    Basic_block *case_body,             // Active block; will usually be *changed*.
+    Basic_block *end,                   // Fictitious exit block for function.
+    map<string, Basic_block *> &labels  // Label map for goto statements.
+) {
+	if (variable != nullptr) {
+		Call_intrinsic(fun, blocks, case_body, end, labels,
+		         Uc_function::get_remove_answer(),
+		         variable);
+		return 1;
+	}
+	Call_intrinsic(fun, blocks, case_body, end, labels,
+	          Uc_function::get_remove_answer(),
+	          new Uc_choice_expression());
+	return 1;
+}
+
+/*
+ *  Generate code.
+ */
+
+int Uc_converse_default_case_statement::gen_check(
+    Basic_block *curr,         // Active block; where we write the check
+    Basic_block *case_body,    // Case body, for check fallthrough
+    Basic_block *past_case     // Block after the case statement
+) {
+	// Writing 1 to match audition usecode, but this could be anything.
+	curr->set_targets(UC_DEFAULT, case_body, past_case);
+	WriteJumpParam2(curr, 1);
+	return 1;
+}
+
+int Uc_converse_default_case_statement::gen_remove(
+    Uc_function *fun,
+    vector<Basic_block *> &blocks,      // What we are producing.
+    Basic_block *case_body,             // Active block; will usually be *changed*.
+    Basic_block *end,                   // Fictitious exit block for function.
+    map<string, Basic_block *> &labels  // Label map for goto statements.
+) {
+	ignore_unused_variable_warning(fun, blocks, case_body, end, labels);
+	return 1;
+}
+
+/*
+ *  Generate code.
+ */
+
+int Uc_converse_always_case_statement::gen_check(
+    Basic_block *curr,         // Active block; where we write the check
+    Basic_block *case_body,    // Case body, for check fallthrough
+    Basic_block *past_case     // Block after the case statement
+) {
+	ignore_unused_variable_warning(past_case);
+	curr->set_taken(case_body);
+	return 1;
+}
+
+int Uc_converse_always_case_statement::gen_remove(
+    Uc_function *fun,
+    vector<Basic_block *> &blocks,      // What we are producing.
+    Basic_block *case_body,             // Active block; will usually be *changed*.
+    Basic_block *end,                   // Fictitious exit block for function.
+    map<string, Basic_block *> &labels  // Label map for goto statements.
+) {
+	ignore_unused_variable_warning(fun, blocks, case_body, end, labels);
+	return 1;
 }
 
 /*
@@ -820,19 +932,6 @@ Uc_converse_statement::Uc_converse_statement(
 	Uc_statement *nb
 )
 	: answers(a), preamble(p), nobreak(nb), cases(*cs), nestconv(n) {
-	bool has_default = false;
-	for (auto *it : cases) {
-		auto *stmt =
-		    static_cast<Uc_converse_case_statement *>(it);
-		if (stmt->is_default()) {
-			if (has_default) {
-				char buf[255];
-				snprintf(buf, 255, "converse statement already has a default case.");
-				error(buf);
-			} else
-				has_default = true;
-		}
-	}
 }
 
 /*
@@ -889,21 +988,11 @@ void Uc_converse_statement::gen(
 	WriteOp(past_conv, UC_CONVERSELOC);
 	conv_top->set_targets(UC_CONVERSE, conv_body, nobreak_block);
 	// Generate loop body.
-	Uc_converse_case_statement *def = nullptr;
 	if (preamble != nullptr) {
 		preamble->gen(fun, blocks, conv_body, end, labels, conv_top, past_conv);
 	}
 	for (auto *it : cases) {
-		auto *stmt =
-		    static_cast<Uc_converse_case_statement *>(it);
-		if (stmt->is_default()) {
-			def = stmt;
-		} else {
-			stmt->gen(fun, blocks, conv_body, end, labels, conv_top, past_conv);
-		}
-	}
-	if (def != nullptr) {
-		def->gen(fun, blocks, conv_body, end, labels, conv_top, past_conv);
+		it->gen(fun, blocks, conv_body, end, labels, conv_top, past_conv);
 	}
 	// Jump back to top.
 	conv_body->set_targets(UC_JMP, conv_top);

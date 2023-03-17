@@ -139,7 +139,7 @@ struct Member_selector
 %token VAR VOID ALIAS STRUCT UCC_CHAR UCC_INT UCC_LONG UCC_CONST STRING ENUM
 %token CONVERSE NESTED SAY MESSAGE RESPONSE EVENT FLAG ITEM UCTRUE UCFALSE REMOVE
 %token ADD HIDE SCRIPT AFTER TICKS STATIC_ ORIGINAL SHAPENUM OBJECTNUM
-%token CLASS NEW DELETE RUNSCRIPT UCC_INSERT SWITCH DEFAULT FALLTHROUGH
+%token CLASS NEW DELETE RUNSCRIPT UCC_INSERT SWITCH DEFAULT FALLTHROUGH ALWAYS
 %token ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ CHOICE TRY CATCH ABORT THROW
 
 /*
@@ -1341,21 +1341,26 @@ converse_case:
 			{
 			expr = nullptr;
 			}
-		$$ = new Uc_converse_case_statement(expr, ($3 ? true : false), $6);
+		$$ = new Uc_converse_variable_case_statement(expr, $6, ($3 ? true : false));
 		cur_fun->pop_scope();
 		}
 	| CASE string_list converse_options ':'
 			{ cur_fun->push_scope(); } statement_list
 		{
-		$$ = new Uc_converse_case_statement(*$2, ($3 ? true : false), $6);
+		$$ = new Uc_converse_strings_case_statement(*$2, $6, ($3 ? true : false));
 		delete $2;		// A copy was made.
 		cur_fun->pop_scope();
 		}
-	| DEFAULT converse_options ':'
+	| ALWAYS ':'
 			{ cur_fun->push_scope(); } statement_list
 		{
-		$$ = new Uc_converse_case_statement(std::vector<int>(),
-				($2 ? true : false), $5);
+		$$ = new Uc_converse_always_case_statement($4);
+		cur_fun->pop_scope();
+		}
+	| DEFAULT ':'
+			{ cur_fun->push_scope(); } statement_list
+		{
+		$$ = new Uc_converse_default_case_statement($4);
 		cur_fun->pop_scope();
 		}
 	;
@@ -1377,7 +1382,7 @@ response_case:
 	response_expression
 			{ cur_fun->push_scope(); } statement_list
 		{
-		$$ = new Uc_converse_case_statement(*$1, false, $3);
+		$$ = new Uc_converse_strings_case_statement(*$1, $3, false);
 		delete $1;		// A copy was made.
 		cur_fun->pop_scope();
 		}
