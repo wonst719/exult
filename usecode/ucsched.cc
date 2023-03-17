@@ -422,7 +422,9 @@ int Usecode_script::exec(
 				i -= 2;     // Stay in this opcode.
 			break;
 		}
-		case nop:       // Just a nop.
+		case Ucscript::nop1:
+		case Ucscript::nop2:
+			// Just a nop.
 			break;
 		case Ucscript::finish:  // Flag to finish if deleted.
 			must_finish = true;

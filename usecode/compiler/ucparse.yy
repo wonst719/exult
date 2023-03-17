@@ -149,7 +149,7 @@ struct Member_selector
 %token NOBREAK CONTINUE REPEAT NOP NOHALT WAIT /*REMOVE*/ RISE DESCEND FRAME HATCH
 %token NEXT PREVIOUS CYCLE STEP MUSIC CALL SPEECH SFX FACE HIT HOURS ACTOR
 %token ATTACK FINISH RESURRECT SETEGG MINUTES RESET WEATHER NEAR FAR
-%token NORTH SOUTH EAST WEST NE NW SE SW
+%token NORTH SOUTH EAST WEST NE NW SE SW NOP2
 %token STANDING STEP_RIGHT STEP_LEFT READY RAISE_1H REACH_1H STRIKE_1H RAISE_2H
 %token REACH_2H STRIKE_2H SITTING BOWING KNEELING SLEEPING CAST_UP CAST_OUT
 %token CACHED_IN PARTY_NEAR AVATAR_NEAR AVATAR_FAR AVATAR_FOOTPAD
@@ -1523,7 +1523,9 @@ script_command:
 		$$ = result;
 		}
 	| NOP  ';'
-		{ $$ = new Uc_int_expression(Ucscript::nop, UC_PUSHB); }
+		{ $$ = new Uc_int_expression(Ucscript::nop2, UC_PUSHB); }
+	| NOP2 ';'
+		{ $$ = new Uc_int_expression(Ucscript::nop1, UC_PUSHB); }
 	| NOHALT  ';'
 		{ $$ = new Uc_int_expression(Ucscript::dont_halt, UC_PUSHB); }
 	| WAIT nonclass_expr  ';'		/* Ticks. */

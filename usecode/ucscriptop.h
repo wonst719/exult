@@ -27,10 +27,11 @@
 namespace Ucscript {
 enum Ucscript_ops {
     cont =      0x01,       // Continue without painting.
+    nop1 =      0x02,       // Doesn't seem to do anything; present in BG funs 0x710, 0x714
     reset =     0x0a,       // Resets script ip.
     repeat =    0x0b,       // Loop(offset, cnt).
     repeat2 =   0x0c,       // Loop(offset, cnt1, cnt2).
-    nop =       0x21,       // Not sure about this.
+    nop2 =      0x21,       // Not sure about this.
     dont_halt = 0x23,       // Not right?
     wait_while_near = 0x24, // wait_while_near(dist). Halt on opcode for as long
     // as avatar is within dist tiles.
