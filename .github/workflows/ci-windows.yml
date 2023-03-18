@@ -99,7 +99,7 @@ jobs:
           text: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           title: 'The Windows build failed.'
   ci-windows:
-    runs-on: windows-2019
+    runs-on: windows-latest
     defaults:
       run:
         shell: msys2 {0}

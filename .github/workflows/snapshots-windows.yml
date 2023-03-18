@@ -8,7 +8,7 @@ on:
 jobs:
   snapshots-windows:
     if: ${{ github.repository_owner == 'exult' }}
-    runs-on: windows-2019
+    runs-on: windows-latest
     defaults:
       run:
         shell: msys2 {0}
