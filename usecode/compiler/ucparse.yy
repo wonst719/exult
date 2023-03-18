@@ -1577,12 +1577,12 @@ script_command:
 		{ $$ = Create_array(Ucscript::frame, $2); }
 	| ACTOR FRAME nonclass_expr ';'
 		{
-		$$ = new Uc_binary_expression(UC_ADD, new Uc_int_expression(0x61),
+		$$ = new Uc_binary_expression(UC_ADD, new Uc_int_expression(Ucscript::npc_frame),
 				new Uc_binary_expression(UC_MOD, $3, new Uc_int_expression(16)),
 				UC_PUSHB);	// Want byte.
 		}
 	| ACTOR FRAME actor_frames ';'
-		{ $$ = new Uc_int_expression(0x61 + ($3 & 15), UC_PUSHB); }
+		{ $$ = new Uc_int_expression(Ucscript::npc_frame + ($3 & 15), UC_PUSHB); }
 	| HATCH ';'			/* Assumes item is an egg. */
 		{ $$ = new Uc_int_expression(Ucscript::egg, UC_PUSHB); }
 	| SETEGG nonclass_expr ',' nonclass_expr ';'
@@ -1655,6 +1655,7 @@ script_command:
 		{ $$ = Create_array(Ucscript::hit, $2, new Uc_int_expression($4)); }
 	| ATTACK ';'
 		{ $$ = new Uc_int_expression(Ucscript::attack, UC_PUSHB); }
+	| declared_var_value ';'
 	| '{' script_command_list '}'
 		{ $$ = $2; }
 	;
