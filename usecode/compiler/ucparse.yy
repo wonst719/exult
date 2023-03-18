@@ -223,7 +223,7 @@ struct Member_selector
 %type <exprlist> opt_expression_list expression_list script_command_list
 %type <exprlist> opt_nonclass_expr_list nonclass_expr_list appended_element_list
 %type <stmtlist> switch_case_list converse_case_list response_case_list
-%type <funcall> function_call
+%type <funcall> function_call script_expr
 
 %%
 
@@ -695,8 +695,24 @@ var_decl:
 		else
 			{
 			auto *var = cur_fun ? cur_fun->add_symbol($1)
-							 : cur_class->add_symbol($1);
+			                    : cur_class->add_symbol($1);
 			var->set_is_obj_fun($3->is_object_function(false));
+			$$ = new Uc_assignment_statement(new Uc_var_expression(var), $3);
+			}
+		}
+	| IDENTIFIER '=' script_expr
+		{
+		if (cur_class && !cur_fun)
+			{
+			char buf[180];
+			snprintf(buf, array_size(buf), "Initialization of class member var '%s' must be done through constructor", $1);
+			yyerror(buf);
+			$$ = nullptr;
+			}
+		else
+			{
+			auto *var = cur_fun ? cur_fun->add_symbol($1)
+			                    : cur_class->add_symbol($1);
 			$$ = new Uc_assignment_statement(new Uc_var_expression(var), $3);
 			}
 		}
@@ -942,6 +958,13 @@ assignment_statement:
 			$1->set_is_obj_fun($3->is_object_function(false));
 			$$ = new Uc_assignment_statement($1, $3);
 			}
+		}
+	| expression '=' script_expr ';'
+		{
+		if (Class_unexpected_error($1))
+			$$ = nullptr;
+		else
+			$$ = new Uc_assignment_statement($1, $3);
 		}
 	| nonclass_expr assignment_operator nonclass_expr ';'
 		{
@@ -1455,9 +1478,10 @@ switch_case:
 		{	$$ = new Uc_switch_default_case_statement($3);	}
 	;
 
-script_statement:			/* Yes, this could be an intrinsic. */
+script_expr:
 	SCRIPT { start_script(); } item opt_script_delay script_command
 		{
+		end_script();
 		auto *parms = new Uc_array_expression();
 		parms->add($3);		// Itemref.
 		parms->add($5);		// Script.
@@ -1465,10 +1489,13 @@ script_statement:			/* Yes, this could be an intrinsic. */
 			parms->add($4);
 					// Get the script intrinsic.
 		Uc_symbol *sym = Uc_function::get_intrinsic($4 ? 2 : 1);
-		auto *fcall =
-				new Uc_call_expression(sym, parms, cur_fun);
-		$$ = new Uc_call_statement(fcall);
-		end_script();
+		$$ = new Uc_call_expression(sym, parms, cur_fun);
+		}
+
+script_statement:			/* Yes, this could be an intrinsic. */
+	script_expr
+		{
+		$$ = new Uc_call_statement($1);
 		}
 	;
 

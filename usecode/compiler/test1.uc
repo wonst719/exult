@@ -505,3 +505,16 @@ void test_intrinsic()
 {
 	(@0x83)();
 }
+
+void test_script_assign()
+{
+	var temp1;
+	temp1 = script item {
+		nohalt;
+		next frame;
+	};
+	var temp2 = script item {
+		nohalt;
+		next frame;
+	};
+}
