@@ -124,7 +124,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: current
+          gradle-version: 6.9.4
       - name: Checkout code
         uses: actions/checkout@master
       - name: Run autogen
@@ -139,10 +139,6 @@ jobs:
           make clean distclean -j 2
       - name: Configure
         run: |
-          if gradle --version &> /dev/null; then
-            GRADLE_PATH=$(ls -d /root/gradle-installations/installs/gradle-*/bin | head -n1)
-          fi
-          export PATH="$GRADLE_PATH:$PATH"
           ./configure --enable-zip-support --enable-midi-sfx --enable-data --enable-mods \
             --enable-usecode-container --enable-nonreadied-objects --disable-oggtest --disable-vorbistest \
             --disable-tools --enable-libexult --enable-android-apk=debug
