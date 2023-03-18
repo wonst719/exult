@@ -170,9 +170,9 @@ public:
 	static Uc_intrinsic_symbol *get_get_item_shape() {
 		return get_intrinsic(get_item_shape);
 	}
-	Uc_var_symbol *add_symbol(char *nm);// Add var. to current scope.
-	Uc_var_symbol *add_symbol(char *nm, Uc_class *c);// Add var. to current scope.
-	Uc_var_symbol *add_symbol(char *nm, Uc_struct_symbol *s);// Add var. to current scope.
+	Uc_var_symbol *add_symbol(const char *nm);// Add var. to current scope.
+	Uc_var_symbol *add_symbol(const char *nm, Uc_class *c);// Add var. to current scope.
+	Uc_var_symbol *add_symbol(const char *nm, Uc_struct_symbol *s);// Add var. to current scope.
 	Uc_var_symbol *add_symbol(Uc_var_symbol *var);// Add var. to current scope.
 	// Add alias to current scope.
 	Uc_var_symbol *add_alias(char *nm, Uc_var_symbol *var);

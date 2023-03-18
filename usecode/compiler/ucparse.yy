@@ -52,6 +52,7 @@ extern void start_converse(), end_converse();
 extern void start_loop(), end_loop();
 extern void start_breakable(), end_breakable();
 extern void start_fun_id(), end_fun_id();
+static Uc_var_symbol *Get_variable(const char *);
 static Uc_array_expression *Create_array(int, Uc_expression *);
 static Uc_array_expression *Create_array(int, Uc_expression *,
 							Uc_expression *);
@@ -1129,7 +1130,7 @@ array_loop_statement:
 		end_loop();
 		}
 	| start_array_loop WITH IDENTIFIER
-		{ $1->set_index(cur_fun->add_symbol($3)); }
+		{ $1->set_index(Get_variable($3)); }
 					')' { start_loop(); } statement opt_nobreak
 		{
 		$1->set_statement($7);
@@ -1139,9 +1140,9 @@ array_loop_statement:
 		end_loop();
 		}
 	| start_array_loop WITH IDENTIFIER
-		{ $1->set_index(cur_fun->add_symbol($3)); }
+		{ $1->set_index(Get_variable($3)); }
 				TO IDENTIFIER
-		{ $1->set_array_size(cur_fun->add_symbol($6)); }
+		{ $1->set_array_size(Get_variable($6)); }
 						')' { start_loop(); } statement opt_nobreak
 		{
 		$1->set_statement($10);
@@ -1161,13 +1162,7 @@ start_array_loop:
 					$4->get_name());
 			yyerror(buf);
 			}
-		Uc_symbol *sym = cur_fun->search_up($2);
-		auto *var = dynamic_cast<Uc_var_symbol *>(sym);
-		if (!var)
-			{
-			var = cur_fun->add_symbol($2);
-			}
-		$$ = new Uc_arrayloop_statement(var, $4);
+		$$ = new Uc_arrayloop_statement(Get_variable($2), $4);
 		}
 	;
 
@@ -2318,6 +2313,19 @@ defined_struct:
 #pragma GCC diagnostic pop
 #endif  // __GNUC__
 
+static Uc_var_symbol *Get_variable
+	(
+	const char *ident
+	)
+	{
+	Uc_symbol *sym = cur_fun->search_up(ident);
+	auto *var = dynamic_cast<Uc_var_symbol *>(sym);
+	if (!var)
+		{
+		var = cur_fun->add_symbol(ident);
+		}
+	return var;
+	}
 /*
  *	Create an array with an integer as the first element.
  */
@@ -2435,8 +2443,7 @@ static Uc_call_expression *cls_method_call
 		return nullptr;
 		}
 
-	auto *ret =
-			new Uc_call_expression(sym, parms, cur_fun, false);
+	auto *ret = new Uc_call_expression(sym, parms, cur_fun, false);
 	ret->set_itemref(ths);
 	ret->set_call_scope(clsscope);
 	ret->check_params();

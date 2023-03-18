@@ -96,7 +96,7 @@ Uc_function::~Uc_function(
  */
 
 Uc_var_symbol *Uc_function::add_symbol(
-    char *nm
+    const char *nm
 ) {
 	if (cur_scope->is_dup(nm))
 		return nullptr;
@@ -113,7 +113,7 @@ Uc_var_symbol *Uc_function::add_symbol(
  */
 
 Uc_var_symbol *Uc_function::add_symbol(
-    char *nm,
+    const char *nm,
     Uc_class *c
 ) {
 	if (cur_scope->is_dup(nm))
@@ -131,7 +131,7 @@ Uc_var_symbol *Uc_function::add_symbol(
  */
 
 Uc_var_symbol *Uc_function::add_symbol(
-    char *nm,
+    const char *nm,
     Uc_struct_symbol *s
 ) {
 	if (cur_scope->is_dup(nm))
