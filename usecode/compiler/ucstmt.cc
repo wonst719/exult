@@ -275,7 +275,7 @@ void Uc_breakable_statement::gen(
 	blocks.push_back(nobreak_block);
 	if (nobreak != nullptr) {
 		auto* next_block = nobreak_block;
-		nobreak->gen(fun, blocks, next_block, end, labels);
+		nobreak->gen(fun, blocks, next_block, end, labels, start, exit);
 		nobreak_block = next_block;
 	}
 	// Fallthrough from no-break block to past-while (break) block
@@ -346,7 +346,7 @@ void Uc_while_statement::gen(
 	blocks.push_back(nobreak_block);
 	if (nobreak != nullptr) {
 		auto* next_block = nobreak_block;
-		nobreak->gen(fun, blocks, next_block, end, labels);
+		nobreak->gen(fun, blocks, next_block, end, labels, start, exit);
 		nobreak_block = next_block;
 	}
 	// Fallthrough from no-break block to past-while (break) block
@@ -413,7 +413,7 @@ void Uc_dowhile_statement::gen(
 	blocks.push_back(nobreak_block);
 	if (nobreak != nullptr) {
 		auto* next_block = nobreak_block;
-		nobreak->gen(fun, blocks, next_block, end, labels);
+		nobreak->gen(fun, blocks, next_block, end, labels, start, exit);
 		nobreak_block = next_block;
 	}
 	// Fallthrough from no-break block to past-while (break) block
@@ -475,7 +475,7 @@ void Uc_infinite_loop_statement::gen(
 		auto *nobreak_block = new Basic_block();
 		blocks.push_back(nobreak_block);
 		auto *next_block = nobreak_block;
-		nobreak->gen(fun, blocks, next_block, end, labels);
+		nobreak->gen(fun, blocks, next_block, end, labels, start, exit);
 		next_block->set_taken(past_loop);
 
 		if (nobreak_block->is_orphan()) {
@@ -578,7 +578,7 @@ void Uc_arrayloop_statement::gen(
 	blocks.push_back(nobreak_block);
 	if (nobreak != nullptr) {
 		auto* next_block = nobreak_block;
-		nobreak->gen(fun, blocks, next_block, end, labels);
+		nobreak->gen(fun, blocks, next_block, end, labels, start, exit);
 		nobreak_block = next_block;
 	}
 	// Fallthrough from no-break block to past-while (break) block
@@ -959,7 +959,7 @@ void Uc_converse_statement::gen(
     Basic_block *exit           // Block used for 'break' statements.
 ) {
 	ignore_unused_variable_warning(start, exit);
-	if (cases.empty() && nobreak == nullptr) {
+	if (cases.empty() && nobreak == nullptr && preamble == nullptr) {
 		// Nothing to do; optimize whole block away.
 		return;
 	}
@@ -1001,7 +1001,7 @@ void Uc_converse_statement::gen(
 	blocks.push_back(nobreak_block);
 	if (nobreak != nullptr) {
 		auto* next_block = nobreak_block;
-		nobreak->gen(fun, blocks, next_block, end, labels);
+		nobreak->gen(fun, blocks, next_block, end, labels, start, exit);
 		nobreak_block = next_block;
 	}
 	// Fallthrough from no-break block to past-while (break) block
