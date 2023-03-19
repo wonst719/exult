@@ -267,7 +267,7 @@ void Uc_breakable_statement::gen(
 	// Basic block past statement body.
 	auto* past_block = new Basic_block();
 	if (stmt) {
-		stmt->gen(fun, blocks, curr, end, labels, past_block, past_block);
+		stmt->gen(fun, blocks, curr, end, labels, nobreak_block, past_block);
 	}
 	curr->set_taken(nobreak_block);
 

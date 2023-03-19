@@ -343,6 +343,7 @@ nobreak		return NOBREAK;
 
 <in_breakable>{
 break		return BREAK;
+continue	return CONTINUE;
 }
 <in_loop>{
 break		return BREAK;

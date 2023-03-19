@@ -518,3 +518,47 @@ void test_script_assign()
 		next frame;
 	};
 }
+
+void test_breakable_continue(var flag)
+{
+	do
+	{
+		if (flag == 1)
+		{
+			say("Continue");
+			continue;
+		}
+		if (flag == 2)
+		{
+			say("Break");
+			break;
+		}
+		if (flag == 3)
+		{
+			say("Fallthrough");
+		}
+	} while (false)
+	nobreak
+	{
+		say("No-break");
+	}
+	say("Past the end");
+	do
+	{
+		if (flag == 1)
+		{
+			say("Continue");
+			continue;
+		}
+		if (flag == 2)
+		{
+			say("Break");
+			break;
+		}
+		if (flag == 3)
+		{
+			say("Fallthrough");
+		}
+	} while (false);
+	say("Past the end");
+}
