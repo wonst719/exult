@@ -139,8 +139,6 @@ jobs:
           make clean distclean -j 2
       - name: Configure
         run: |
-          ./configure --enable-zip-support --enable-midi-sfx --enable-data --enable-mods \
-            --enable-usecode-container --enable-nonreadied-objects --disable-oggtest --disable-vorbistest \
-            --disable-tools --enable-libexult --enable-android-apk=debug
+          ./configure --disable-exult --enable-data --disable-tools --enable-android-apk=debug
       - name: Build
         run: make -j 2
