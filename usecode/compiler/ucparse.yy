@@ -150,7 +150,7 @@ struct Member_selector
 %token NOBREAK CONTINUE REPEAT NOP NOHALT WAIT /*REMOVE*/ RISE DESCEND FRAME HATCH
 %token NEXT PREVIOUS CYCLE STEP MUSIC CALL SPEECH SFX FACE HIT HOURS ACTOR
 %token ATTACK FINISH RESURRECT SETEGG MINUTES RESET WEATHER NEAR FAR
-%token NORTH SOUTH EAST WEST NE NW SE SW NOP2
+%token NORTH SOUTH EAST WEST NE NW SE SW NOP2 RAW
 %token STANDING STEP_RIGHT STEP_LEFT READY RAISE_1H REACH_1H STRIKE_1H RAISE_2H
 %token REACH_2H STRIKE_2H SITTING BOWING KNEELING SLEEPING CAST_UP CAST_OUT
 %token CACHED_IN PARTY_NEAR AVATAR_NEAR AVATAR_FAR AVATAR_FOOTPAD
@@ -1551,6 +1551,27 @@ script_command:
 		result->add($4);	// Then #times to repeat.
 		$$ = result;
 		}
+	| RAW '(' INT_LITERAL ')' ';'
+		{
+		UsecodeOps op = !const_opcode.empty() ? const_opcode.back() : UC_PUSHI;
+		if (is_sint_32bit($3) && op != UC_PUSHI32)
+			{
+			char buf[150];
+			if (is_int_32bit($3))
+				{
+				snprintf(buf, array_size(buf), "Literal integer '%d' cannot be represented as 16-bit integer. Assuming '(long)' cast.",
+						$3);
+				op = UC_PUSHI32;
+				}
+			else
+				snprintf(buf, array_size(buf), "Interpreting integer '%d' as the signed 16-bit integer '%d'. If this is incorrect, use '(long)' cast.",
+						$3, static_cast<short>($3));
+			yywarning(buf);
+			}
+		$$ = new Uc_int_expression($3, op);
+		}
+	| RAW '(' int_cast INT_LITERAL %prec UCC_CAST ')' ';'
+		{ $$ = new Uc_int_expression($4, static_cast<UsecodeOps>($3)); }
 	| NOP  ';'
 		{ $$ = new Uc_int_expression(Ucscript::nop2, UC_PUSHB); }
 	| NOP2 ';'

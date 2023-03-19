@@ -356,6 +356,7 @@ fallthrough	return FALLTHROUGH;
 }
 					/* Script commands. */
 <in_script>{
+raw		return RAW;
 nop		return NOP;
 nop2		return NOP2;
 nohalt		return NOHALT;
