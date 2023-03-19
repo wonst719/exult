@@ -1,7 +1,7 @@
 AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir)/usecode -I$(top_srcdir)/files -I$(top_srcdir) \
 	$(INCDIRS) $(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS)
 
-AM_YFLAGS = -d -v				# Want ucparse.h.
+AM_YFLAGS = -d -v -Wno-yacc				# Want ucparse.h, need Bison extensions.
 
 ucc_SOURCES = ucparse.yy uclex.ll ucmain.cc \
 	basic_block.h	\
