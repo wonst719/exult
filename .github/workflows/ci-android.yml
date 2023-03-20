@@ -99,7 +99,7 @@ jobs:
           text: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           title: "The Android build failed."
   ci-android:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Install dependencies
         run: |
@@ -141,5 +141,6 @@ jobs:
             --disable-nxbr --disable-zip-support --disable-sdl-parachute
       - name: Build
         run: |
-          cd ./../build
-          make -j 2
+          cd ./../build/files && make -j 2
+          cd ./../data && make -j 2
+          cd ./../android && make -j 2

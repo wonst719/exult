@@ -32,12 +32,21 @@ The Android APK is built as an optional component of a regular native Exult buil
 
 In addition to the regular desktop Exult dependencies, you will need the android SDK and NDK.  The easiest way to get these is to install Android Studio.  You will also need to edit your path so that the build can find the `gradle` and `sdkmanager` commands.  Android Studio can be installed for free from [Google](https://developer.android.com/studio).
 
-With those dependencies in place, you can build Exult as normal, but pass the `--enable-android-apk` flag to the `configure` script.  The following is a quick summary of the commands to build:
+Now you also need Gradle, follow the instructions at https://linuxize.com/post/how-to-install-gradle-on-ubuntu-20-04/ and install Gradle version 6.9.4 (or newer but currently it needs to be version 6.x, higher versions are not supported at the moment).
+
+With those dependencies in place, you can build Exult, but pass the `--enable-android-apk` flag to the `configure` script.  However you need to make sure to build Exult outside of its source to prevent any problems when you cross compile the varios Android arches. You can also disable a lot of build options as the Android build is done via Cmake. 
+The following is a quick summary of the commands to build (assuming you are in the exult source):
 
 ```
-$ ./autogen.sh
-$ ./configure --enable-android-apk=debug
-$ make
+mkdir ./../build && cd ./../build
+$ ./../exult/autogen.sh
+$ ./../exult/configure --enable-data --enable-android-apk=debug \
+            --disable-exult --disable-tools --disable-timidity-midi --disable-alsa \
+            --disable-fluidsynth --disable-mt32emu --disable-all-hq-scalers \
+            --disable-nxbr --disable-zip-support --disable-sdl-parachute
+$ cd files && make
+$ cd ./../data && make
+$ cd ./../android && make
 ```
 
 The final APK will be located in `./android/app/build/outputs/apk/debug/app-debug.apk`.
@@ -45,10 +54,16 @@ The final APK will be located in `./android/app/build/outputs/apk/debug/app-debu
 Building a release build is similar, but requires signing the binary:
 
 ```
-$ ./autogen.sh
-$ ./configure --enable-android-apk=release
-$ make
-$ /path/to/Android/Sdk/build-tools/version/zipalign -v -p 4 ./android/app/build/outputs/apk/release/app-release-unsigned.apk ./android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk
-$ /path/to/Android/Sdk/build-tools/version/apksigner sign --ks path/to/my/android-keystore.jks --out ./android/app/build/outputs/apk/release/app-release-signed.apk ./android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+mkdir ./../build && cd ./../build
+$ ./../exult/autogen.sh
+$ ./../exult/configure --enable-data --enable-android-apk=release \
+            --disable-exult --disable-tools --disable-timidity-midi --disable-alsa \
+            --disable-fluidsynth --disable-mt32emu --disable-all-hq-scalers \
+            --disable-nxbr --disable-zip-support --disable-sdl-parachute
+$ cd files && make
+$ cd ./../data && make
+$ cd ./../android && make
+$ /path/to/Android/Sdk/build-tools/version/zipalign -v -p 4 ./../exult/android/app/build/outputs/apk/release/app-release-unsigned.apk ./../exult/android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+$ /path/to/Android/Sdk/build-tools/version/apksigner sign --ks path/to/my/android-keystore.jks --out ./../exult/android/app/build/outputs/apk/release/app-release-signed.apk ./../exult/android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk
 
 ```
