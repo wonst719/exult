@@ -130,15 +130,16 @@ jobs:
       - name: Run autogen
         run: |
           chmod a+x ./autogen.sh
-          ./autogen.sh
-      - name: Compile host tools
-        run: |
-          ./configure --disable-exult --disable-data --enable-tools --enable-compiler
-          make -j
-          sudo make install
-          make clean distclean -j 2
+          mkdir ./../build && cd ./../build
+          ./../exult/autogen.sh
       - name: Configure
         run: |
-          ./configure --disable-exult --enable-data --disable-tools --enable-android-apk=debug
+          cd ./../build
+          ./../exult/configure --enable-data --enable-android-apk=debug \
+            --disable-exult --disable-tools --disable-timidity-midi --disable-alsa \
+            --disable-fluidsynth --disable-mt32emu --disable-all-hq-scalers \
+            --disable-nxbr --disable-zip-support --disable-sdl-parachute
       - name: Build
-        run: make -j 2
+        run: |
+          cd ./../build
+          make -j 2
