@@ -753,10 +753,15 @@ void setup_data_dir(
 			return;
 	}
 
-	// Try "data" subdirectory for current working directory:
-	add_system_path("<DATA>", "data");
-	if (U7exists(EXULT_FLX))
-		return;
+	// Due to SDL_RWops internally using SDL_OpenFPFromBundleOrFallback in OSX
+	// (which looks for the file inside the bundle before looking in CWD), there
+	// is no reason ever to check CWD if we found the bundle path above.
+	if (!is_system_path_defined("<BUNDLE>")) {
+		// Try "data" subdirectory for current working directory:
+		add_system_path("<DATA>", "data");
+		if (U7exists(EXULT_FLX))
+			return;
+	}
 
 	// Try "data" subdirectory for exe directory:
 	const char *sep = std::strrchr(runpath, '/');
