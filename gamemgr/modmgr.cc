@@ -771,6 +771,13 @@ void GameManager::print_found(
 	clone_system_path(staticpath, path);
 	if (silent)
 		return;
+	if (is_system_path_defined("<BUNDLE>")) {
+		snprintf(path, sizeof(path), "<BUNDLE>/%s", flex);
+		if (U7exists(path)) {
+			cout << flex << " : found" << endl;
+			return;
+		}
+	}
 	snprintf(path, sizeof(path), "<DATA>/%s", flex);
 	if (U7exists(path))
 		cout << flex << " : found" << endl;
