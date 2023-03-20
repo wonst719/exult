@@ -1730,8 +1730,7 @@ void Dance_schedule::now_what(
 	signed char *frames;
 	int nframes;
 	static const char base_frames[] = {Actor::standing, Actor::up_frame, Actor::out_frame};
-	static const int framecount = array_size(base_frames);
-	const int danceroutine = rand() % framecount;
+	const int danceroutine = rand() % 5;
 	const int speed = 2 * gwin->get_std_delay();
 	switch (danceroutine) {
 	default: {
