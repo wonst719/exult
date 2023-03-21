@@ -32,7 +32,7 @@ The Android APK is built as an optional component of a regular native Exult buil
 
 In addition to the regular desktop Exult dependencies, you will need the android SDK and NDK.  The easiest way to get these is to install Android Studio.  You will also need to edit your path so that the build can find the `gradle` and `sdkmanager` commands.  Android Studio can be installed for free from [Google](https://developer.android.com/studio).
 
-Now you also need Gradle, follow the instructions at https://linuxize.com/post/how-to-install-gradle-on-ubuntu-20-04/ and install Gradle version 6.9.4 (or newer but currently it needs to be version 6.x, higher versions are not supported at the moment).
+Now you also need Gradle, follow the instructions at https://linuxize.com/post/how-to-install-gradle-on-ubuntu-20-04/ and install Gradle version 7.6.1 (or newer but currently it needs to be at least version  >= 6.8.2 or version 7.x , version 8.x or higher are not supported at the moment).
 
 With those dependencies in place, you can build Exult, but pass the `--enable-android-apk` flag to the `configure` script.  However you need to make sure to build Exult outside of its source to prevent any problems when you cross compile the varios Android arches. You can also disable a lot of build options as the Android build is done via Cmake. 
 The following is a quick summary of the commands to build (assuming you are in the exult source):

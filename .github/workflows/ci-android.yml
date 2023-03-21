@@ -124,7 +124,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 6.9.4
+          gradle-version: 7.6.1
       - name: Checkout code
         uses: actions/checkout@master
       - name: Run autogen
