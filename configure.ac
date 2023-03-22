@@ -290,10 +290,10 @@ fi
 # ---------------------------------------------------------------------
 # Check for pkg-config
 # ---------------------------------------------------------------------
-PKG_PROG_PKG_CONFIG
-if test x$PKG_CONFIG = x; then
-	AC_MSG_ERROR([*** To Build Exult 1.9+, pkg-config is required. ***])
-fi
+	PKG_PROG_PKG_CONFIG
+	if test x$PKG_CONFIG = x; then
+		AC_MSG_ERROR([*** To Build Exult 1.9+, pkg-config is required. ***])
+	fi
 
 # ---------------------------------------------------------------------
 # SDL
@@ -305,7 +305,7 @@ EXULT_CHECK_SDL(:,AC_MSG_ERROR([[*** SDL not found!]]))
 # libogg, libvorbis, libvorbisfile
 # ---------------------------------------------------------------------
 
-PKG_CHECK_MODULES(OGG, ogg >= 1.0 vorbis >= 1.0.1 vorbisfile, , AC_MSG_ERROR([*** must have Ogg/Vorbis installed!]))
+	PKG_CHECK_MODULES(OGG, ogg >= 1.0 vorbis >= 1.0.1 vorbisfile, , AC_MSG_ERROR([*** must have Ogg/Vorbis installed!]))
 
 # ---------------------------------------------------------------------
 # Gtk (for ES)
@@ -1129,6 +1129,12 @@ if test x$enable_android_apk != xno; then
 		# The apk filename has an additional suffix for release builds
 		AC_SUBST(APK_SUFFIX, -unsigned)
 	fi
+	
+	#disable building Exult as the APK building uses its own build system
+	if test x$enable_android_apk != xno; then
+		enable_exult=no
+	fi
+
 else
 	AC_MSG_RESULT(no)
 fi
@@ -1278,29 +1284,36 @@ echo Build Exult mods........... : $enable_mods
 echo Build Exult Studio......... : $enable_exult_studio
 echo Exult Studio support....... : $enable_exult_studio_support
 echo
-if test x$enable_all_hq_scalers = xyes; then
-	echo Build all HQ scalers....... : $enable_all_hq_scalers
-else
-	echo Build HQ2X scaler.......... : $enable_hq2x
-	echo Build HQ3X scaler.......... : $enable_hq3x
-	echo Build HQ4X scaler.......... : $enable_hq4x
+if test x$enable_exult = xyes; then
+	if test x$enable_all_hq_scalers = xyes; then
+		echo Build all HQ scalers....... : $enable_all_hq_scalers
+		else
+		echo Build HQ2X scaler.......... : $enable_hq2x
+		echo Build HQ3X scaler.......... : $enable_hq3x
+		echo Build HQ4X scaler.......... : $enable_hq4x
+	fi
+	echo Build NxBR scalers......... : $enable_nxbr
+	echo
+	echo Audio :
+	echo Enable ALSA midi........... : $enable_alsa
+	echo Enable Fluidsynth midi..... : $enable_fluidsynth
+	echo Enable mt32emu midi........ : $enable_mt32emu
+	echo Enable Timidity midi....... : $enable_timidity_midi
+	echo Enable SFX as midi......... : $enable_midi_sfx
+	echo
 fi
-echo Build NxBR scalers......... : $enable_nxbr
-echo
-echo Audio :
-echo Enable ALSA midi........... : $enable_alsa
-echo Enable Fluidsynth midi..... : $enable_fluidsynth
-echo Enable mt32emu midi........ : $enable_mt32emu
-echo Enable Timidity midi....... : $enable_timidity_midi
-echo Enable SFX as midi......... : $enable_midi_sfx
-echo
 echo Addons :
 echo Create data files.......... : $enable_data
 echo Create zipped Savegames.... : $enable_zip_support
 echo Build GIMP plugin.......... : $enable_gimp_plugin
 echo Build Gnome SHP Thumbnailer : $enable_gnome_shp_thumbnailer
-echo Build Android APK.......... : $enable_android_apk
 echo
+if test x$enable_android_apk != xno; then
+	echo Android:
+	echo Build Android APK.......... : $enable_android_apk
+	echo Gradle..................... : $gradle_version
+	echo
+fi
 echo Debug :
 echo Build Usecode debugger..... : $enable_usecode_debugger
 echo Debug Usecode Container.... : $enable_usecode_container
