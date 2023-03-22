@@ -455,10 +455,10 @@ static int Remove_dead_blocks(
 		niter++;
 		size_t i = 0;
 		int nremoved = 0;
-		while (i + 1 < blocks.size()) {
+		while (i < blocks.size()) {
 			Basic_block *block = blocks[i];
 			bool remove = false;
-			if (!block->is_reachable()) {
+			if (!block->is_reachable() || block->no_parents()) {
 				// Remove unreachable block.
 				block->unlink_descendants();
 				block->unlink_predecessors();
