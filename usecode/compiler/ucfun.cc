@@ -448,7 +448,8 @@ int Uc_function::link(
 }
 
 static int Remove_dead_blocks(
-    vector<Basic_block *> &blocks
+    vector<Basic_block *> &blocks,
+	Basic_block *endblock
 ) {
 	int niter = 0;
 	while (true) {
@@ -457,14 +458,18 @@ static int Remove_dead_blocks(
 		int nremoved = 0;
 		while (i < blocks.size()) {
 			Basic_block *block = blocks[i];
+			if (block->get_taken() == nullptr) {
+				block->set_targets(UC_INVALID, endblock);
+			}
 			bool remove = false;
 			if (!block->is_reachable() || block->no_parents()) {
 				// Remove unreachable block.
 				block->unlink_descendants();
 				block->unlink_predecessors();
 				remove = true;
-			} else if (block->is_empty_block() && block->is_forced_target()) {
-				// Link predecessors directly to decendants.
+			} else if (block->is_empty_block() && block->is_forced_target() &&
+				       !block->is_end_block()) {
+				// Link predecessors directly to descendants.
 				// May link a block to the initial block, or
 				// may link the initial and ending blocks.
 				block->link_through_block();
@@ -695,8 +700,6 @@ void Uc_function::gen(
 	}
 	// Mark all blocks reachable from initial block.
 	initial->mark_reachable();
-	if (!fun_blocks.empty() && !fun_blocks.back()->is_end_block())
-		fun_blocks.back()->set_targets(UC_INVALID, endblock);
 	// Labels map is no longer needed.
 	for (auto &elem : label_blocks) {
 		Basic_block *label = elem.second;
@@ -711,11 +714,11 @@ void Uc_function::gen(
 	}
 	label_blocks.clear();
 	// First round of optimizations.
-	Remove_dead_blocks(fun_blocks);
+	Remove_dead_blocks(fun_blocks, endblock);
 	// Second round of optimizations.
 	Optimize_jumps(fun_blocks, proto->has_ret());
 	// Third round of optimizations.
-	Remove_dead_blocks(fun_blocks);
+	Remove_dead_blocks(fun_blocks, endblock);
 	// Set block indices.
 	for (size_t i = 0; i < fun_blocks.size(); i++) {
 		Basic_block *block = fun_blocks[i];
