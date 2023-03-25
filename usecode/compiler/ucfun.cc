@@ -590,8 +590,9 @@ static int Optimize_jumps(
 							WriteOp(block, opcode);
 					}
 					// Set destinations.
-					block->set_taken(block->get_ntaken());
+					Basic_block *ntaken = block->get_ntaken();
 					block->set_ntaken(aux->get_taken());
+					block->set_taken(ntaken);
 					remove = true;
 				}
 			} else if (block->is_end_block() && (aux = blocks[i + 1])->is_end_block()
