@@ -253,8 +253,12 @@ public:
 	            unsigned char prob, uint16 d1, uint16 d2, const char *fnm)
 		: Egg_object(shnum, frnum, tx, ty, tz, itype, prob, d1, d2),
 		  fun(d2) {
-		set_quality(d1 & 0xff);
+		Game_object::set_quality(d1 & 0xff);
 		Usecode_egg::set_str1(fnm);
+	}
+	void set_quality(int q) override{
+		Game_object::set_quality(q & 0xff);
+		data1 = (data1 & 0xFF00) | get_quality();
 	}
 	void set_str1(const char *s) override {
 		fun_name = s ? s : "";
@@ -265,10 +269,10 @@ public:
 		return fun_name.c_str();
 	}
 	int get_usecode() const override {
-	    return fun;
+		return fun;
 	}
 	bool set_usecode(int funid, const char *nm = nullptr) override {
-	    fun = funid;
+		fun = funid;
 		fun_name = nm;
 		return true;
 	}
@@ -362,11 +366,15 @@ public:
 		if (type == intermap)
 			mapnum = d1 & 0xff;
 		else
-			set_quality(d1 & 0xff); // Teleport egg.
+			Game_object::set_quality(d1 & 0xff); // Teleport egg.
 		const int schunk = d1 >> 8;
 		destx = (schunk % 12) * c_tiles_per_schunk + (d2 & 0xff);
 		desty = (schunk / 12) * c_tiles_per_schunk + (d2 >> 8);
 		destz = d3 & 0xff;
+	}
+	void set_quality(int q) override{
+		Game_object::set_quality(q & 0xff);
+		data1 = (data1 & 0xFF00) | get_quality();
 	}
 	void hatch_now(Game_object *obj, bool must) override {
 		ignore_unused_variable_warning(must);
@@ -440,7 +448,11 @@ public:
 	         unsigned int tz, unsigned short itype,
 	         unsigned char prob, uint16 d1, uint16 d2)
 		: Egg_object(shnum, frnum, tx, ty, tz, itype, prob, d1, d2) {
-		set_quality(d1 & 0xff);
+		Game_object::set_quality(d1 & 0xff);
+	}
+	void set_quality(int q) override{
+		Game_object::set_quality(q & 0xff);
+		data1 = (data1 & 0xFF00) | get_quality();
 	}
 };
 

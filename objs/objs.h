@@ -145,7 +145,7 @@ public:
 	int get_quality() const {
 		return quality;
 	}
-	void set_quality(int q) {
+	virtual void set_quality(int q) {
 		quality = q;
 	}
 	int get_quantity() const;   // Like # of coins.
