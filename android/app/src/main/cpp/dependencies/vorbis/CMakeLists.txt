@@ -13,4 +13,4 @@ set_target_properties(
 )
 
 # Vorbis depends on Ogg and vorbisfile
-set_target_properties(${DEPENDENCY} PROPERTIES INTERFACE_LINK_LIBRARIES "ogg")
+set_target_properties(${DEPENDENCY} PROPERTIES INTERFACE_LINK_LIBRARIES "ogg;vorbisfile")
