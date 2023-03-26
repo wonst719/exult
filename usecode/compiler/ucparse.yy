@@ -1640,24 +1640,31 @@ script_command:
 	| STEP direction ';'
 		{ $$ = new Uc_int_expression(Ucscript::step_n + $2, UC_PUSHB); }
 	| MUSIC nonclass_expr ';'
-		{ $$ = Create_array(Ucscript::music, $2); }
+		{ $$ = Create_array(Ucscript::music, $2, new Uc_int_expression(0)); }
 	| MUSIC nonclass_expr ',' nonclass_expr ';'
 		{
 			// This is the 'repeat' flag.
 		Uc_expression *expr;
 		int ival;
 		if ($4->eval_const(ival))
-			expr = new Uc_int_expression(ival ? 256 : 0);
+			expr = new Uc_int_expression(ival ? 1 : 0);
 		else	// Argh.
-			expr = new Uc_binary_expression(UC_MUL,
-					new Uc_int_expression(256),
-					new Uc_binary_expression(UC_CMPNE, $4,
-						new Uc_bool_expression(false)));
-		$$ = Create_array(Ucscript::music,
-				new Uc_binary_expression(UC_ADD, $2, expr));
+			expr = $4;
+		$$ = Create_array(Ucscript::music, $2, expr);
 		}
 	| start_call ';'
-		{ $$ = Create_array(Ucscript::usecode, $1); }
+		{
+		int ival;
+		if ($1->eval_const(ival) && ival >= 0 && ival < 0x100)
+			{
+			// Matches original usecode.
+			$$ = Create_array(Ucscript::usecode, $1, new Uc_int_expression(0));
+			}
+		else
+			{
+			$$ = Create_array(Ucscript::usecode, $1);
+			}
+		}
 	| start_call ',' nonclass_expr ';'
 		{ $$ = Create_array(Ucscript::usecode2, $1, $3); }
 	| SPEECH nonclass_expr ';'

@@ -530,8 +530,9 @@ int Usecode_script::exec(
 			// Get dir.
 			const int val = code->get_elem(++i).get_int_value();
 			// Height change (verified).
+			++i;
 			const int dz = size_t(i) < code->get_array_size() ?
-			         code->get_elem(++i).get_int_value() : 0;
+			         code->get_elem(i).get_int_value() : 0;
 			// Watch for buggy SI usecode!
 			const int destz = optr->get_lift() + dz;
 			if (destz < 0 || dz > 15 || dz < -15) {
@@ -547,14 +548,47 @@ int Usecode_script::exec(
 		}
 		case music: {   // Unknown.
 			const Usecode_value &val = code->get_elem(++i);
-			const int song = val.get_int_value();
+			int song = val.get_int_value();
 			// Verified.
-			Audio::get_ptr()->start_music(song & 0xff, (song >> 8) != 0);
+			bool continuous = false;
+			if (song < 0 || song > 0xff) {
+				// Supporting this because it works in the original. But this
+				// is wrong. Supporting this also keeps compatibility with older
+				// versions of UCC that did this.
+				continuous = (song >> 8) != 0;
+				song &= 0xff;
+			} else {
+				++i;
+				const bool in_range = size_t(i) < code->get_array_size();
+				const int value = in_range ?
+				         code->get_elem(i).get_int_value() : 0;
+				if (in_range && (value == 0 || value == 1)) {
+					continuous = value != 0;
+				} else {
+					// Put the element back. Works around some buggy SI usecode.
+					--i;
+				}
+			}
+			Audio::get_ptr()->start_music(song, continuous);
 			break;
 		}
 		case Ucscript::usecode: { // Call?
 			const Usecode_value &val = code->get_elem(++i);
-			const int fun = val.get_int_value();
+			int fun = val.get_int_value();
+			// Functions 0xff or less have an extra zero element after in the
+			// original usecode. I modified UCC to match this as well, but
+			// we need to support old versions of UCC.
+			if (fun >= 0 && fun < 0x100) {
+				++i;
+				const bool in_range = size_t(i) < code->get_array_size();
+				const int value = in_range ?
+				         code->get_elem(i).get_int_value() : 0;
+				if (!in_range || value != 0) {
+					// If this is not a 0, or not in range, then lets put the
+					// element back.
+					--i;
+				}
+			}
 			// HACK: Prevent function 0x6fb in FoV from triggering while
 			// the screen is faded out, as it can cause the screen to
 			// remain faded due to eliminating the script that does the
