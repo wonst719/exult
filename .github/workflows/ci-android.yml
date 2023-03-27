@@ -99,22 +99,8 @@ jobs:
           text: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           title: "The Android build failed."
   ci-android:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - name: Install dependencies
-        run: |
-          if ! apt-fast --help &> /dev/null; then
-            sudo add-apt-repository -u -y ppa:apt-fast/stable
-            echo debconf apt-fast/maxdownloads string 16 | sudo debconf-set-selections
-            echo debconf apt-fast/dlflag boolean true | sudo debconf-set-selections
-            echo debconf apt-fast/aptmanager string apt-get | sudo debconf-set-selections
-            DEBIAN_FRONTEND=noninteractive sudo apt install -y apt-fast
-          else
-            sudo apt-fast update
-          fi
-          sudo apt-fast install -y \
-            zlib1g-dev libogg-dev libvorbis-dev libasound2-dev libfluidsynth-dev libsdl2-dev libpng-dev libfreetype6-dev \
-            libxml2-dev bison flex timidity
       - uses: actions/setup-java@v3
         with:
           java-version: 11

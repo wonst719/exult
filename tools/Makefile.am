@@ -3,10 +3,22 @@ AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir)/files -I$(top_srcdir)/usec
 	-I$(top_srcdir)/conf $(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS) $(SDL_CFLAGS) \
 	$(GDK_PIXBUF_CFLAGS)
 
+if CROSS_COMPILING
+if BUILD_TOOLS
+EXPACK_BIN = expack
+else
+EXPACK_BIN =
+endif
+else
+EXPACK_BIN = expack
+endif
+
 if HAVE_PNG
+if HAVE_SDL
 IPACK = ipack
 else
 IPACK =
+endif
 GTHUMB=
 endif
 
@@ -24,7 +36,7 @@ EXTRATOOLS =
 NOINSTTOOLS =
 endif
 
-bin_PROGRAMS = expack $(EXTRATOOLS) $(IPACK) $(GTHUMB)
+bin_PROGRAMS = $(EXPACK_BIN) $(EXTRATOOLS) $(IPACK) $(GTHUMB)
 noinst_PROGRAMS = $(NOINSTTOOLS)
 
 expack_SOURCES = \

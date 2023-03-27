@@ -2,6 +2,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir) -I$(top_srcdir)/files $(SD
 		-I$(top_srcdir)/conf \
 		$(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS)
 
+if HAVE_SDL
 noinst_LTLIBRARIES = libimagewin.la
 
 libimagewin_la_SOURCES = \
@@ -47,6 +48,7 @@ libimagewin_la_SOURCES += \
 	PointScaler.h \
 	scale_xbr.cc \
 	scale_xbr.h
+endif
 endif
 
 EXTRA_DIST =

@@ -60,6 +60,7 @@ AC_DEFUN([EXULT_CHECK_SDL],[
       exult_sdlok=no
     else
       AC_DEFINE(HAVE_SDL_H, 1, [Define to 1 if you have the "SDL.h" header file])
+      AM_CONDITIONAL(HAVE_SDL, true)
     fi
   fi
 
@@ -136,7 +137,12 @@ AC_DEFUN([EXULT_CHECK_SDL],[
     AC_SUBST(SDL_LIBS)
     ifelse([$1], , :, [$1])
   else
-    ifelse([$2], , :, [$2])
+    if test x$enable_android_apk != xno; then
+      AC_DEFINE(HAVE_SDL_H, 0, [Define to 1 if you have the "SDL.h" header file])
+      AM_CONDITIONAL(HAVE_SDL, false)
+    else
+      ifelse([$2], , :, [$2])
+    fi
   fi
 ]);
 

@@ -177,7 +177,11 @@ AC_HEADER_DIRENT
 AC_CHECK_HEADERS(limits.h sys/time.h unistd.h)
 AC_CHECK_HEADERS(sys/types.h sys/socket.h netdb.h)
 AC_CHECK_HEADERS(sys/wait.h signal.h getopt.h)
-AC_CHECK_HEADERS(png.h, AM_CONDITIONAL(HAVE_PNG,true), AM_CONDITIONAL(HAVE_PNG, false))
+if test x$ARCH != xandroid; then
+	AC_CHECK_HEADERS(png.h, AM_CONDITIONAL(HAVE_PNG,true), AM_CONDITIONAL(HAVE_PNG, false))
+else
+	AM_CONDITIONAL(HAVE_PNG, false)
+fi
 
 # ---------------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.
@@ -244,6 +248,115 @@ else
 fi
 
 # ---------------------------------------------------------------------
+# Build Android APK?
+# Note: version numbers checked in this section are known-good baselines,
+# the working minimums have not been tested
+# ---------------------------------------------------------------------
+
+AM_CONDITIONAL(ANDROID_APK, false)
+AC_ARG_ENABLE(android-apk, AS_HELP_STRING([--enable-android-apk=debug|release], [Build an Android APK @<:@default no@:>@]),enable_android_apk="$enableval",enable_android_apk=no)
+AC_MSG_CHECKING([whether to build an Android APK])
+if test x$enable_android_apk != xno; then
+	AC_MSG_RESULT($enable_android_apk)
+
+	# Needed to stage the sources in an out-of-tree build directory
+	AC_PROG_MKDIR_P
+	AC_PROG_LN_S
+
+	# Needed to download and patch SDL sources
+	AC_CHECK_PROGS(GIT, git)
+	if test -z "$GIT"; then
+		AC_MSG_ERROR([not found])
+	fi
+	AC_CHECK_PROGS(PATCH, patch)
+	if test -z "$PATCH"; then
+		AC_MSG_ERROR([not found])
+	fi
+
+	# Check for gradle
+	# TODO: any reasonable way to use the gradle bundled with android studio?
+	AC_CHECK_PROGS(GRADLE, gradle)
+	if test -z "$GRADLE"; then
+		AC_MSG_ERROR([not found])
+	fi
+
+	# Checking against a known-good baseline gradle version
+	AC_MSG_CHECKING([gradle version])
+	gradle_version=`$GRADLE --version | grep Gradle | awk '{print $2;}' | tr -d '\r\n'`
+	AX_COMPARE_VERSION([$gradle_version], [ge], [6.8.2], [dnl
+		dnl $gradle_version >= 6.8.2
+		AC_MSG_RESULT([found $gradle_version >= 6.8.2])
+	], [
+		dnl $gradle_version < 6.8.2
+		AC_MSG_ERROR([found $gradle_version < 6.8.2])
+	])
+
+	# Use sdkmanager to check Android package versions.
+	AC_PATH_PROGS(SDKMANAGER, sdkmanager)
+
+	# Check for required Android SDK version.
+	ANDROID_SDK_VERSION=30
+	AC_MSG_CHECKING([for Android SDK $ANDROID_SDK_VERSION])
+	if $SDKMANAGER --list|grep -q "platforms;android-$ANDROID_SDK_VERSION"; then
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_ERROR([no])
+	fi
+	AC_SUBST(ANDROID_SDK_VERSION, $ANDROID_SDK_VERSION)
+
+	# Check for required Android SDK Build-Tools version.
+	ANDROID_BUILD_TOOLS_VERSION=30.0.3
+	AC_MSG_CHECKING([for Android SDK Build-Tools $ANDROID_BUILD_TOOLS_VERSION])
+	if $SDKMANAGER --list|grep -q "build-tools;$ANDROID_BUILD_TOOLS_VERSION"; then
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_ERROR([no])
+	fi
+	AC_SUBST(ANDROID_BUILD_TOOLS_VERSION, $ANDROID_BUILD_TOOLS_VERSION)
+
+	# Check for required Android NDK version.
+	ANDROID_NDK_VERSION=21.4.7075529
+	AC_MSG_CHECKING([for Android NDK $ANDROID_NDK_VERSION])
+	if $SDKMANAGER --list|grep -q "ndk;$ANDROID_NDK_VERSION"; then
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_ERROR([no])
+	fi
+	AC_SUBST(ANDROID_NDK_VERSION, $ANDROID_NDK_VERSION)
+
+	# Check for required Android CMake version.
+	ANDROID_CMAKE_VERSION=3.18.1
+	AC_MSG_CHECKING([for Android CMake $ANDROID_CMAKE_VERSION])
+	if $SDKMANAGER --list|grep -q "cmake;$ANDROID_CMAKE_VERSION"; then
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_ERROR([no])
+	fi
+	AC_SUBST(ANDROID_CMAKE_VERSION, $ANDROID_CMAKE_VERSION)
+
+	# Pass down SDK directory
+	AC_SUBST(ANDROID_SDK_ROOT, `AS_DIRNAME(["$SDKMANAGER"])`/../../../..)
+
+	# Enable Android APK build
+	AM_CONDITIONAL(ANDROID_APK, true)
+	AC_SUBST(APK_BUILD_TYPE, $enable_android_apk)
+	if test x$enable_android_apk = xrelease; then
+		# The apk filename has an additional suffix for release builds
+		AC_SUBST(APK_SUFFIX, -unsigned)
+	fi
+
+	# The APK building uses its own build system
+	# so disable everything except generating the data files
+	if test x$enable_android_apk != xno; then
+		enable_exult=no
+		enable_tools=no
+	fi
+	
+else
+	AC_MSG_RESULT(no)
+fi
+
+# ---------------------------------------------------------------------
 # Build Exult at all
 # This is meant to facilitate building the tools on the host
 # system for posterior cross-compilation
@@ -290,10 +403,13 @@ fi
 # ---------------------------------------------------------------------
 # Check for pkg-config
 # ---------------------------------------------------------------------
+
+if test x$enable_android_apk = xno; then
 	PKG_PROG_PKG_CONFIG
 	if test x$PKG_CONFIG = x; then
 		AC_MSG_ERROR([*** To Build Exult 1.9+, pkg-config is required. ***])
 	fi
+fi
 
 # ---------------------------------------------------------------------
 # SDL
@@ -305,7 +421,9 @@ EXULT_CHECK_SDL(:,AC_MSG_ERROR([[*** SDL not found!]]))
 # libogg, libvorbis, libvorbisfile
 # ---------------------------------------------------------------------
 
+if test x$enable_android_apk = xno; then
 	PKG_CHECK_MODULES(OGG, ogg >= 1.0 vorbis >= 1.0.1 vorbisfile, , AC_MSG_ERROR([*** must have Ogg/Vorbis installed!]))
+fi
 
 # ---------------------------------------------------------------------
 # Gtk (for ES)
@@ -1036,109 +1154,6 @@ else
 	AC_MSG_RESULT(no)
 fi
 
-# Build Android APK?
-# Note: version numbers checked in this section are known-good baselines; haven't tested extensively to find minimums
-AM_CONDITIONAL(ANDROID_APK, false)
-AC_ARG_ENABLE(android-apk, AS_HELP_STRING([--enable-android-apk=debug|release], [Build an Android APK @<:@default no@:>@]),enable_android_apk="$enableval",enable_android_apk=no)
-AC_MSG_CHECKING([whether to build an Android APK])
-if test x$enable_android_apk != xno; then
-	AC_MSG_RESULT($enable_android_apk)
-
-	# Needed to stage the sources in an out-of-tree build directory
-	AC_PROG_MKDIR_P
-	AC_PROG_LN_S
-
-	# Needed to download and patch SDL sources
-	AC_CHECK_PROGS(GIT, git)
-	if test -z "$GIT"; then
-		AC_MSG_ERROR([not found])
-	fi
-	AC_CHECK_PROGS(PATCH, patch)
-	if test -z "$PATCH"; then
-		AC_MSG_ERROR([not found])
-	fi
-
-	# Check for gradle
-	# TODO: any reasonable way to use the gradle bundled with android studio?
-	AC_CHECK_PROGS(GRADLE, gradle)
-	if test -z "$GRADLE"; then
-		AC_MSG_ERROR([not found])
-	fi
-
-	# Checking against a known-good baseline gradle version
-	AC_MSG_CHECKING([gradle version])
-	gradle_version=`$GRADLE --version | grep Gradle | awk '{print $2;}' | tr -d '\r\n'`
-	AX_COMPARE_VERSION([$gradle_version], [ge], [6.8.2], [dnl
-		dnl $gradle_version >= 6.8.2
-		AC_MSG_RESULT([found $gradle_version >= 6.8.2])
-	], [
-		dnl $gradle_version < 6.8.2
-		AC_MSG_ERROR([found $gradle_version < 6.8.2])
-	])
-
-	# Use sdkmanager to check Android package versions.
-	AC_PATH_PROGS(SDKMANAGER, sdkmanager)
-
-	# Check for required Android SDK version.
-	ANDROID_SDK_VERSION=30
-	AC_MSG_CHECKING([for Android SDK $ANDROID_SDK_VERSION])
-	if $SDKMANAGER --list|grep -q "platforms;android-$ANDROID_SDK_VERSION"; then
-		AC_MSG_RESULT([yes])
-	else
-		AC_MSG_ERROR([no])
-	fi
-	AC_SUBST(ANDROID_SDK_VERSION, $ANDROID_SDK_VERSION)
-
-	# Check for required Android SDK Build-Tools version.
-	ANDROID_BUILD_TOOLS_VERSION=30.0.3
-	AC_MSG_CHECKING([for Android SDK Build-Tools $ANDROID_BUILD_TOOLS_VERSION])
-	if $SDKMANAGER --list|grep -q "build-tools;$ANDROID_BUILD_TOOLS_VERSION"; then
-		AC_MSG_RESULT([yes])
-	else
-		AC_MSG_ERROR([no])
-	fi
-	AC_SUBST(ANDROID_BUILD_TOOLS_VERSION, $ANDROID_BUILD_TOOLS_VERSION)
-
-	# Check for required Android NDK version.
-	ANDROID_NDK_VERSION=21.4.7075529
-	AC_MSG_CHECKING([for Android NDK $ANDROID_NDK_VERSION])
-	if $SDKMANAGER --list|grep -q "ndk;$ANDROID_NDK_VERSION"; then
-		AC_MSG_RESULT([yes])
-	else
-		AC_MSG_ERROR([no])
-	fi
-	AC_SUBST(ANDROID_NDK_VERSION, $ANDROID_NDK_VERSION)
-
-	# Check for required Android CMake version.
-	ANDROID_CMAKE_VERSION=3.18.1
-	AC_MSG_CHECKING([for Android CMake $ANDROID_CMAKE_VERSION])
-	if $SDKMANAGER --list|grep -q "cmake;$ANDROID_CMAKE_VERSION"; then
-		AC_MSG_RESULT([yes])
-	else
-		AC_MSG_ERROR([no])
-	fi
-	AC_SUBST(ANDROID_CMAKE_VERSION, $ANDROID_CMAKE_VERSION)
-
-	# Pass down SDK directory
-	AC_SUBST(ANDROID_SDK_ROOT, `AS_DIRNAME(["$SDKMANAGER"])`/../../../..)
-
-	# Enable Android APK build
-	AM_CONDITIONAL(ANDROID_APK, true)
-	AC_SUBST(APK_BUILD_TYPE, $enable_android_apk)
-	if test x$enable_android_apk = xrelease; then
-		# The apk filename has an additional suffix for release builds
-		AC_SUBST(APK_SUFFIX, -unsigned)
-	fi
-	
-	#disable building Exult as the APK building uses its own build system
-	if test x$enable_android_apk != xno; then
-		enable_exult=no
-	fi
-
-else
-	AC_MSG_RESULT(no)
-fi
-
 # ----------------------------------------------------------------
 # If we are cross-compiling, look for expack and head2data in PATH
 # ----------------------------------------------------------------
@@ -1253,31 +1268,33 @@ if test "x$dbg_level" != "x"; then
 	echo C++ debug.................. : $dbg_level
 fi
 echo
-echo SDL........................ : `$SDL_CONFIG --version`
-PKG_CHECK_EXISTS(ogg,
-	echo Ogg.........................: `$PKG_CONFIG --modversion ogg`)
-PKG_CHECK_EXISTS(vorbis,
-	echo Vorbis......................: `$PKG_CONFIG --modversion vorbis`)
-if test x$ac_cv_header_png_h = xyes; then
-	PKG_CHECK_EXISTS(libpng,
-		echo libpng..................... : `$PKG_CONFIG --modversion libpng`)
+if test x$enable_android_apk = xno; then
+	echo SDL........................ : `$SDL_CONFIG --version`
+	PKG_CHECK_EXISTS(ogg,
+		echo Ogg.........................: `$PKG_CONFIG --modversion ogg`)
+	PKG_CHECK_EXISTS(vorbis,
+		echo Vorbis......................: `$PKG_CONFIG --modversion vorbis`)
+	if test x$ac_cv_header_png_h = xyes; then
+		PKG_CHECK_EXISTS(libpng,
+			echo libpng..................... : `$PKG_CONFIG --modversion libpng`)
+	fi
+	if test x$enable_mt32emu = xyes; then
+		PKG_CHECK_EXISTS(mt32emu,
+			echo MT32emu.................... : `$PKG_CONFIG --modversion mt32emu`)
+	fi
+	if test x$enable_fluidsynth = xyes; then
+		PKG_CHECK_EXISTS(fluidsynth,
+			echo Fluidsynth................. : `$PKG_CONFIG --modversion fluidsynth`)
+	fi
+	if test x$have_gtk = xyes; then
+		echo GLIB....................... : `$PKG_CONFIG --modversion glib-2.0`
+		echo GTK+....................... : `$PKG_CONFIG --modversion gtk+-3.0`
+	fi
+	if test x$have_gdk_pixbuf = xyes; then
+		echo GDK-Pixbuf................. : `$PKG_CONFIG --modversion gdk-pixbuf-2.0`
+	fi
+	echo
 fi
-if test x$enable_mt32emu = xyes; then
-	PKG_CHECK_EXISTS(mt32emu,
-		echo MT32emu.................... : `$PKG_CONFIG --modversion mt32emu`)
-fi
-if test x$enable_fluidsynth = xyes; then
-	PKG_CHECK_EXISTS(fluidsynth,
-		echo Fluidsynth................. : `$PKG_CONFIG --modversion fluidsynth`)
-fi
-if test x$have_gtk = xyes; then
-	echo GLIB....................... : `$PKG_CONFIG --modversion glib-2.0`
-	echo GTK+....................... : `$PKG_CONFIG --modversion gtk+-3.0`
-fi
-if test x$have_gdk_pixbuf = xyes; then
-	echo GDK-Pixbuf................. : `$PKG_CONFIG --modversion gdk-pixbuf-2.0`
-fi
-echo
 echo Build tools................ : $enable_tools
 echo Build usecode compiler..... : $enable_compiler
 echo Build Exult mods........... : $enable_mods
