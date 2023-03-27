@@ -10,5 +10,5 @@ ExternalProject_Add(
   INSTALL_DIR       @DEPENDENCIES_INSTALL_DIR@
   CONFIGURE_COMMAND <SOURCE_DIR>/autogen.sh
   COMMAND           . @ENVFILE@ && <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --host=@ANDROID_LLVM_TRIPLE@
-  BUILD_COMMAND     make -j@NCPU@
+  BUILD_COMMAND     make -j@NCPU@ -s LIBTOOLFLAGS="--silent"
 )
