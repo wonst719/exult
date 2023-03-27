@@ -90,6 +90,21 @@ AC_DEFUN([EXULT_CHECK_SDL],[
   if test "x$exult_sdlok" = xyes; then
     LIBS="$LIBS $SDL_LIBS"
 
+    dnl as normal executable...
+
+    AC_LINK_IFELSE([AC_LANG_SOURCE([[
+    #include "SDL.h"
+
+    int main(int argc, char* argv[]) {
+      SDL_Init(0);
+      return 0;
+    }
+    ]])],sdllinkok=exe,sdllinkok=no)
+
+    if test x$sdllinkok = xno; then
+
+      dnl as library with SDL_main...
+
       AC_LINK_IFELSE([AC_LANG_SOURCE([[
       #include "SDL.h"
 
@@ -97,7 +112,14 @@ AC_DEFUN([EXULT_CHECK_SDL],[
         SDL_Init(0);
         return 0;
       }
-    ]])],sdllinkok=yes,sdllinkok=no)
+      #undef main
+      int main(int argc, char * argv[]) {
+        return SDL_main(argc, argv);
+      }
+      ]])],sdllinkok=lib,sdllinkok=no)      
+
+    fi
+
     if test x$sdllinkok = xno; then
       exult_sdlok=no
     fi
