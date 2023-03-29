@@ -178,8 +178,30 @@ static void Set_game
 		Uc_function::set_intrinsic_type(Uc_function::sib);
 	else
 		Uc_location::yyerror(
-			"Specify \"blackgate\", \"serpentisle\" or \"serpentbeta\" "
+			"Specify \"blackgate\", \"serpentisle\", or \"serpentbeta\" "
 				"with #game.");
+	}
+
+/*
+ *	Handle #strictbraces directive.
+ */
+
+static void Set_strict_mode
+	(
+	char *yytext			// Contains name.
+	)
+	{
+	char *ename;
+	char *name = Find_name(yytext, ename);
+	if (!name)
+		Uc_location::yyerror("No parameter in #strictbraces");
+	else if (strcmp(name, "true") == 0)
+		Uc_location::set_strict_mode(true);
+	else if (strcmp(name, "false") == 0)
+		Uc_location::set_strict_mode(false);
+	else
+		Uc_location::yyerror(
+			"Specify \"true\", or \"false\" with #strictbraces.");
 	}
 
 /*
@@ -473,6 +495,7 @@ sonic_damage	return SONIC_DAMAGE;
 "#include"[ \t]+.*\n		{ Uc_location::increment_cur_line(); Include(yytext + 8); }
 "#game"[ \t]+.*\n		{ Set_game(yytext + 5); Uc_location::increment_cur_line(); }
 "#autonumber"[ \t]+"0x"[0-9a-fA-F]+.*\n	{ Set_autonum(yytext + 11); Uc_location::increment_cur_line(); }
+"#strictbraces"[ \t]+.*\n		{ Set_strict_mode(yytext + 13); Uc_location::increment_cur_line(); }
 
 \#[^\n]*	{ Uc_location::yyerror("Directives require a terminating new-line character before the end of file"); }
 \#[^\n]*\n	{ Uc_location::yywarning("Unknown directive is being ignored"); Uc_location::increment_cur_line(); }

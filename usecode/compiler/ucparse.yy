@@ -212,14 +212,14 @@ struct Member_selector
 %type <stmt> statement assignment_statement if_statement while_statement
 %type <stmt> statement_block return_statement function_call_statement
 %type <stmt> special_method_call_statement trycatch_statement trystart_statement
-%type <stmt> try_statement
+%type <stmt> try_statement simple_statement
 %type <stmt> array_loop_statement var_decl var_decl_list stmt_declaration
 %type <stmt> class_decl class_decl_list struct_decl_list struct_decl
 %type <stmt> break_statement converse_statement opt_nobreak opt_nobreak_do
 %type <stmt> converse_case switch_case script_statement switch_statement
 %type <stmt> label_statement goto_statement answer_statement delete_statement
 %type <stmt> continue_statement response_case fallthrough_statement
-%type <stmt> scoped_statement
+%type <stmt> scoped_statement scoped_or_if_statement
 %type <block> statement_list
 %type <arrayloop> start_array_loop
 %type <exprlist> opt_expression_list expression_list script_command_list
@@ -503,17 +503,15 @@ statement_list:
 		{ $$ = new Uc_block_statement(); }
 	;
 
-statement:
+simple_statement:
 	stmt_declaration
 	| assignment_statement
-	| if_statement
 	| trycatch_statement
 	| while_statement
 	| array_loop_statement
 	| function_call_statement
 	| special_method_call_statement
 	| return_statement
-	| statement_block
 	| converse_statement
 	| switch_statement
 	| script_statement
@@ -533,6 +531,12 @@ statement:
 		{ $$ = new Uc_abort_statement($2); }
 	| ';'				/* Null statement */
 		{ $$ = nullptr; }
+	;
+
+statement:
+	simple_statement
+	| if_statement
+	| statement_block
 	;
 
 throwabort_statement:
@@ -1015,15 +1019,28 @@ appended_element:
 	;
 
 scoped_statement:
-	{ cur_fun->push_scope(); } statement
+	statement_block_start statement_list '}'
 		{
+		cur_fun->pop_scope();
+		$$ = $2;
+		}
+	| {cur_fun->push_scope();} simple_statement
+		{
+		if (Uc_location::get_strict_mode()) {
+			yyerror("Statements must be surrounded by braces in strict mode");
+		}
 		cur_fun->pop_scope();
 		$$ = $2;
 		}
 	;
 
+scoped_or_if_statement:
+	scoped_statement
+	| if_statement
+	;
+
 if_statement:
-	IF '(' expression ')' scoped_statement %prec IF
+	IF '(' expression ')' scoped_or_if_statement %prec IF
 		{
 		int val;
 		if ($3->eval_const(val))
@@ -1043,7 +1060,7 @@ if_statement:
 		else
 			$$ = new Uc_if_statement($3, $5, nullptr);
 		}
-	| IF '(' expression ')' scoped_statement ELSE scoped_statement
+	| IF '(' expression ')' scoped_or_if_statement ELSE scoped_or_if_statement
 		{
 		int val;
 		if ($3->eval_const(val))
@@ -1120,8 +1137,7 @@ opt_nobreak_do:
 	;
 
 while_statement:
-	WHILE '(' nonclass_expr ')' { start_loop(); cur_fun->push_scope(); }
-			statement opt_nobreak
+	WHILE '(' nonclass_expr ')' { start_loop(); } scoped_statement opt_nobreak
 		{
 		int val;
 		if ($3->eval_const(val))
@@ -1140,11 +1156,9 @@ while_statement:
 			}
 		else
 			$$ = new Uc_while_statement($3, $6, $7);
-		cur_fun->pop_scope();
 		end_loop();
 		}
-	| DO { start_loop(); cur_fun->push_scope(); } statement WHILE '('
-			nonclass_expr ')' opt_nobreak_do
+	| DO { start_loop(); } scoped_statement WHILE '(' nonclass_expr ')' opt_nobreak_do
 		{
 		int val;
 		if ($6->eval_const(val))
@@ -1162,13 +1176,12 @@ while_statement:
 			}
 		else
 			$$ = new Uc_dowhile_statement($6, $3, $8);
-		cur_fun->pop_scope();
 		end_loop();
 		}
 	;
 
 array_loop_statement:
-	start_array_loop ')' { start_loop(); } statement opt_nobreak
+	start_array_loop ')' { start_loop(); } scoped_statement opt_nobreak
 		{
 		$1->set_statement($4);
 		$1->set_nobreak($5);
@@ -1178,7 +1191,7 @@ array_loop_statement:
 		}
 	| start_array_loop WITH IDENTIFIER
 		{ $1->set_index(Get_variable($3)); }
-					')' { start_loop(); } statement opt_nobreak
+					')' { start_loop(); } scoped_statement opt_nobreak
 		{
 		$1->set_statement($7);
 		$1->set_nobreak($8);
@@ -1190,7 +1203,7 @@ array_loop_statement:
 		{ $1->set_index(Get_variable($3)); }
 				TO IDENTIFIER
 		{ $1->set_array_size(Get_variable($6)); }
-						')' { start_loop(); } statement opt_nobreak
+						')' { start_loop(); } scoped_statement opt_nobreak
 		{
 		$1->set_statement($10);
 		$1->set_nobreak($11);

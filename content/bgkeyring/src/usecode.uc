@@ -19,6 +19,8 @@
 
 //Tells the compiler the game type
 #game "blackgate"
+// Want to enforce braces around all statements
+#strictbraces "true"
 
 //Starts autonumbering at function number 0xC00.
 //I leave function numbers in the range 0xA00 to
