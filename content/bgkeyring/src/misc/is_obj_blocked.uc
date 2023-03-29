@@ -19,8 +19,7 @@
  *	Author: Marzo Junior
  */
 
-var IsObjectBlocked 0x82C (var obj, var obj_pos, var size, var blacklist)
-{
+var IsObjectBlocked 0x82C (var obj, var obj_pos, var size, var blacklist) {
 	var near_list = UI_find_nearby(obj, SHAPE_ANY, absoluteValueOf(size), MASK_INVISIBLE);
 	for (blocker in near_list) {
 		var position = UI_get_object_position(blocker);

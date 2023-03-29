@@ -25,12 +25,10 @@
  *	across different video resolutions.
  */
 
-void shapeSmithDreamRealm shape#(0x375) ()
-{
+void shapeSmithDreamRealm shape#(0x375) () {
 	var nightmare_pos;
 
-	if (event == STARTED_TALKING)
-	{
+	if (event == STARTED_TALKING) {
 		FACE_SMITHZHORSE.say("@Avatar! How good it is to see thee! How long hath it been since we last met?@");
 		AVATAR.say("@Ahhhh... Errrr... Well....@");
 		AVATAR.hide();
@@ -63,11 +61,8 @@ void shapeSmithDreamRealm shape#(0x375) ()
 		remove_item();
 		// Weird warp sound
 		UI_play_sound_effect(76);
-	}
-
-	// Freedom scene with the death of Sabrina
-	else if (event == SCRIPTED)
-	{
+	} else if (event == SCRIPTED) {
+		// Freedom scene with the death of Sabrina
 		AVATAR->clear_item_flag(DONT_MOVE);
 		clear_item_flag(SI_TOURNAMENT);
 		nightmare_pos = get_object_position();

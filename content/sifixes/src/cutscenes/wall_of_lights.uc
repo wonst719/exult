@@ -33,24 +33,21 @@ extern void killEveryone object#(0x7D8) ();
 
 const int BATLIN_FACE = -287;
 
-void BatlinAtWallOfLights object#(0x73B) ()
-{
+void BatlinAtWallOfLights object#(0x73B) () {
 	var pos;
 	var companions = [SHAMINO, DUPRE, IOLO];
 	var baneshapes = [SHAPE_ANTISHAMINO, SHAPE_ANTIDUPRE, SHAPE_MAD_IOLO];
 	var npc;
 	var newbaneshape;
 
-	if ((get_item_quality() == 255) && (event == EGG))
-	{
+	if ((get_item_quality() == 255) && (event == EGG)) {
 		var index;
 		var max;
 
 		pos = AVATAR->get_object_position();
 		pos[X] = pos[X] - 4;
 		pos[Y] = pos[Y] + 10;
-		for (npc in companions with index to max)
-		{
+		for (npc in companions with index to max) {
 			// Absolutely ensure that the companions will be there for the scene:
 			npc->clear_item_flag(DEAD);
 			npc->clear_item_flag(ASLEEP);
@@ -65,25 +62,19 @@ void BatlinAtWallOfLights object#(0x73B) ()
 			// Do not let even the Avatar prevent them from being there:
 			npc->set_item_flag(SI_TOURNAMENT);
 
-			if (npc->get_distance(AVATAR) > 15)
-			{
+			if (npc->get_distance(AVATAR) > 15) {
 				pos[X] = pos[X] + index * 2;
 				npc->move_object(pos);
 			}
 		}
 		BatlinAtWallOfLights.original();
 		abort;
-	}
-
-	else if (event == EGG)
-	{
+	} else if (event == EGG) {
 		pos = AVATAR->get_object_position();
 		pos[X] = pos[X] - 4;
 		pos[Y] = pos[Y] + 5;
-		for (npc in companions with index to max)
-		{
-			if (!npc->npc_nearby())
-			{
+		for (npc in companions with index to max) {
+			if (!npc->npc_nearby()) {
 				npc->set_last_created();
 				pos[X] = pos[X] + index * 2;
 				UI_update_last_created(pos);
@@ -91,20 +82,15 @@ void BatlinAtWallOfLights object#(0x73B) ()
 		}
 		BatlinAtWallOfLights.original();
 		abort;
-	}
-
-	else if (event == SCRIPTED)
-	{
+	} else if (event == SCRIPTED) {
 		var pathegg = getPathEgg(2, 1);
 		var pathegg_quality = pathegg->get_item_quality();
 
-		if ((pathegg_quality > 3) && (pathegg_quality < 7))
-		{
+		if ((pathegg_quality > 3) && (pathegg_quality < 7)) {
 			npc = companions[(pathegg_quality - 3)];
 			UI_play_sound_effect(0x77);
 
-			if (pathegg_quality > 4)
-			{
+			if (pathegg_quality > 4) {
 				pos = npc->get_object_position();
 				UI_sprite_effect(7, pos[X], pos[Y], 0, 0, 0, -1);
 			}
@@ -113,15 +99,17 @@ void BatlinAtWallOfLights object#(0x73B) ()
 			var dir = npc->find_direction(body);
 			var offsets = [0, 0];
 
-			if (dir in [NORTHWEST, NORTH, NORTHEAST])
+			if (dir in [NORTHWEST, NORTH, NORTHEAST]) {
 				offsets[Y] = -1;
-			else if (dir in [SOUTHWEST, SOUTH, SOUTHEAST])
+			} else if (dir in [SOUTHWEST, SOUTH, SOUTHEAST]) {
 				offsets[Y] = 1;
+			}
 
-			if (dir in [NORTHEAST, EAST, SOUTHEAST])
+			if (dir in [NORTHEAST, EAST, SOUTHEAST]) {
 				offsets[X] = 1;
-			else if (dir in [NORTHWEST, WEST, SOUTHWEST])
+			} else if (dir in [NORTHWEST, WEST, SOUTHWEST]) {
 				offsets[X] = -1;
+			}
 
 			var dist = npc->get_distance(body);
 			offsets[X] = offsets[X] * dist;
@@ -134,9 +122,11 @@ void BatlinAtWallOfLights object#(0x73B) ()
 			UI_sprite_effect(32, pos[X], pos[Y], offsets[X], offsets[Y], 0, dist);
 			pathegg->set_item_quality(pathegg_quality + 1);
 
-			script pathegg
-			{	nohalt;						wait (dist + 10);
-				call BatlinAtWallOfLights;}
+			script pathegg {
+				nohalt;
+				wait (dist + 10);
+				call BatlinAtWallOfLights;
+			}
 
 			newbaneshape = baneshapes[(pathegg_quality - 3)];
 
@@ -153,10 +143,7 @@ void BatlinAtWallOfLights object#(0x73B) ()
 			baneobj->set_schedule_type(WAIT);
 			UI_sprite_effect(7, pos[X], pos[Y], 0, 0, 0, -1);
 			abort;
-		}
-
-		else if (pathegg_quality == 7)
-		{
+		} else if (pathegg_quality == 7) {
 			const int ANARCHY = -290;
 			const int WANTONNESS = -291;
 			const int INSANITY = -292;
@@ -180,11 +167,9 @@ void BatlinAtWallOfLights object#(0x73B) ()
 
 			var banenpc;
 
-			for (newbaneshape in baneshapes with index to max)
-			{
+			for (newbaneshape in baneshapes with index to max) {
 				banenpc = AVATAR->find_nearby(newbaneshape, 40, 0);
-				if (banenpc)
-				{
+				if (banenpc) {
 					pos = banenpc->get_object_position();
 					banenpc->remove_item();
 					dropAllItems(companions[index], pos);
@@ -193,24 +178,26 @@ void BatlinAtWallOfLights object#(0x73B) ()
 				}
 			}
 
-			if (BOYDON->npc_nearby())
-			{
+			if (BOYDON->npc_nearby()) {
 				pos = BOYDON->get_object_position();
-				script BOYDON
-				{	nohalt;						wait 7;
+				script BOYDON {
+					nohalt;
+					wait 7;
 					hit 55, NORMAL_DAMAGE;
 				}
 			}
 			UI_play_sound_effect(0x2A);
 			gflags[SERPENT_GWANI_HORN_SPEECH] = true;
-			script getPathEgg(5, 4) after 40 ticks
-			{	nohalt;						call startSerpentSpeechViaRing;}
+			script getPathEgg(5, 4) after 40 ticks {
+				nohalt;
+				call startSerpentSpeechViaRing;
+			}
 			pathegg->set_item_quality(0);
 			AVATAR->clear_item_flag(DONT_MOVE);
 			UI_set_weather(0);
 			abort;
-		}
-		else
+		} else {
 			BatlinAtWallOfLights.original();
+		}
 	}
 }

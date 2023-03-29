@@ -24,18 +24,14 @@
  *	silly sods who programmed it to start with duplicated the behaviour in
  *	two locations.
  */
-void Dough shape#(0x292) ()
-{
+void Dough shape#(0x292) () {
 	//this behaviour allows you to place bread upon a hearth without drag-dropping
-	if (event == DOUBLECLICK)
-	{
-		if (get_item_frame() > 0)	//dough is not flour
-		{
+	if (event == DOUBLECLICK) {
+		if (get_item_frame() > 0) {
+			//dough is not flour
 			var target = UI_click_on_item();
-			if (target->get_item_shape() == SHAPE_HEARTH)
-			{
-				if (set_last_created())
-				{
+			if (target->get_item_shape() == SHAPE_HEARTH) {
+				if (set_last_created()) {
 					var target_pos = target->get_object_position();
 					//choose a random position somewhere along the hearth
 					//tweaked to allow one more space for it...
@@ -45,12 +41,12 @@ void Dough shape#(0x292) ()
 					target_pos[Z] = target_pos[Z] + 1;
 
 					//now place the dough there
-					if (UI_update_last_created(target_pos))
-					{
+					if (UI_update_last_created(target_pos)) {
 						//Changed to call BakeBread instead of Dough
 						script item after 60 ticks call bakeBread;
-						if (UI_get_random(2) == 1)
+						if (UI_get_random(2) == 1) {
 							randomPartyBark("@Do not overcook it!@");
+						}
 					}
 				}
 			}

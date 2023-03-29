@@ -23,8 +23,7 @@
  *	2023-03-15 Added full list to support adding a face to SmithzHorse.
  */
 
-enum sprites
-{
+enum sprites {
 	// Used for several effects:
 	SPRITE_0 = 0,
 	SPRITE_BIG_EXPLOSION = 1,

@@ -38,6 +38,8 @@ content/islefaq/patch/shapes.vga
 content/islefaq/patch/shapes_vga.h
 content/islefaq/patch/usecode
 content/si/usecode
+content/sifixes/data/faces.vga
+content/sifixes/data/faces_vga.h
 content/sifixes/data/gumps.vga
 content/sifixes/data/gumps_vga.h
 content/sifixes/data/mainshp.flx

@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  *
- *	This header file contains several more constants used throughout usecode. 
+ *	This header file contains several more constants used throughout usecode.
  *	Specifically, it has constants for several sprite animations and sounds, as
  *	well as some faces.
  *
@@ -26,8 +26,7 @@
  */
 
 //Sprite effects
-enum sprite_effects
-{
+enum sprite_effects {
    ANIMATION_BIG_BLAST			= 1,
    ANIMATION_CLOUDS				= 3,
    ANIMATION_MEDIUM_BLAST		= 4,
@@ -45,8 +44,7 @@ enum sprite_effects
 };
 
 //SFX
-enum sound_effects
-{
+enum sound_effects {
    SOUND_BLAST					= 8,	// Fireball spell sound effect.
    SOUND_BIG_BLAST				= 9,	// Explosion spell sound effect.
    SOUND_MOONGATE				= 11,	// Moongate raising sound effect.
@@ -58,8 +56,7 @@ enum sound_effects
 };
 
 //Some faces:
-enum faces
-{
+enum faces {
    DRACOTHRAXUS_FACE			= -293,
    BLACK_SWORD_FACE				= -292,
    ARCADION_GEM_FACE			= -291,

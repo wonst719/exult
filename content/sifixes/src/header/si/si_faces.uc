@@ -23,8 +23,7 @@
  *  2023-03-15 Added to SIfixes, includes Rhona's artwork for SmithzHorse.
  */
 
-enum face_names
-{
+enum face_names {
 	FACE_AVATAR = 0,					// 6 frames
 	FACE_DUPRE = 1,
 	FACE_SHAMINO = 2,
@@ -212,8 +211,7 @@ enum face_names
 	FACE_SMITHZHORSE = 317
 };
 
-enum face_frames
-{
+enum face_frames {
 	FRAME_COLUMNA_YOUNG = 0,
 	FRAME_COLUMNA_OLD = 1,
 	FRAME_FRIGIDAZZI_NAKED = 2,
