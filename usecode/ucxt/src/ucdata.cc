@@ -139,6 +139,20 @@ void UCData::disassamble(ostream &o) {
 	if (options.output_trans_table)
 		o << "<trans>" << endl;
 
+	if (options.output_ucs && options.game_u7()) {
+		o << "#game \"";
+		if (options.game_bg() || options.game_fov()) {
+			o << "blackgate";
+		} else if (options.game_si() || options.game_ss()) {
+			o << "serpentisle";
+		} else if (options.game_sib()) {
+			o << "serpentbeta";
+		} else {
+			o << "uhhh... unknown?";
+		}
+		o << '"' << endl;
+	}
+
 	if (options.output_ucs && UCFunc::num_global_statics > 0) {
 		o << "// Global static variables" << endl;
 		for (int i = 1; i <= UCFunc::num_global_statics; i++)
