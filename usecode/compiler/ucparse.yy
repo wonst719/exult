@@ -212,12 +212,14 @@ struct Member_selector
 %type <stmt> statement assignment_statement if_statement while_statement
 %type <stmt> statement_block return_statement function_call_statement
 %type <stmt> special_method_call_statement trycatch_statement trystart_statement
+%type <stmt> try_statement
 %type <stmt> array_loop_statement var_decl var_decl_list stmt_declaration
 %type <stmt> class_decl class_decl_list struct_decl_list struct_decl
 %type <stmt> break_statement converse_statement opt_nobreak opt_nobreak_do
 %type <stmt> converse_case switch_case script_statement switch_statement
 %type <stmt> label_statement goto_statement answer_statement delete_statement
 %type <stmt> continue_statement response_case fallthrough_statement
+%type <stmt> scoped_statement
 %type <block> statement_list
 %type <arrayloop> start_array_loop
 %type <exprlist> opt_expression_list expression_list script_command_list
@@ -1012,8 +1014,16 @@ appended_element:
 		}
 	;
 
+scoped_statement:
+	{ cur_fun->push_scope(); } statement
+		{
+		cur_fun->pop_scope();
+		$$ = $2;
+		}
+	;
+
 if_statement:
-	IF '(' expression ')' statement %prec IF
+	IF '(' expression ')' scoped_statement %prec IF
 		{
 		int val;
 		if ($3->eval_const(val))
@@ -1033,7 +1043,7 @@ if_statement:
 		else
 			$$ = new Uc_if_statement($3, $5, nullptr);
 		}
-	| IF '(' expression ')' statement ELSE statement
+	| IF '(' expression ')' scoped_statement ELSE scoped_statement
 		{
 		int val;
 		if ($3->eval_const(val))
@@ -1066,22 +1076,32 @@ trycatch_statement:
 		} else {
 			stmt->set_catch_statement($3);
 		}
+		cur_fun->pop_scope();
 		$$ = stmt;
 		}
 	;
 
 trystart_statement:
-	TRY '{' statement_list '}' CATCH '(' ')'
+	try_statement statement_list '}' CATCH '(' ')'
 		{
+		cur_fun->pop_scope();
 		cur_fun->push_scope();
-		$$ = new Uc_trycatch_statement($3);
+		$$ = new Uc_trycatch_statement($2);
 		}
-	| TRY '{' statement_list '}' CATCH '(' IDENTIFIER ')'
+	| try_statement statement_list '}' CATCH '(' IDENTIFIER ')'
+		{
+		cur_fun->pop_scope();
+		cur_fun->push_scope();
+		auto *stmt = new Uc_trycatch_statement($2);
+		stmt->set_catch_variable(cur_fun->add_symbol($6));
+		$$ = stmt;
+		}
+	;
+
+try_statement:
+	TRY '{'
 		{
 		cur_fun->push_scope();
-		auto *stmt = new Uc_trycatch_statement($3);
-		stmt->set_catch_variable(cur_fun->add_symbol($7));
-		$$ = stmt;
 		}
 	;
 
@@ -1100,7 +1120,8 @@ opt_nobreak_do:
 	;
 
 while_statement:
-	WHILE '(' nonclass_expr ')' { start_loop(); } statement opt_nobreak
+	WHILE '(' nonclass_expr ')' { start_loop(); cur_fun->push_scope(); }
+			statement opt_nobreak
 		{
 		int val;
 		if ($3->eval_const(val))
@@ -1119,9 +1140,11 @@ while_statement:
 			}
 		else
 			$$ = new Uc_while_statement($3, $6, $7);
+		cur_fun->pop_scope();
 		end_loop();
 		}
-	| DO { start_loop(); } statement WHILE '(' nonclass_expr ')' opt_nobreak_do
+	| DO { start_loop(); cur_fun->push_scope(); } statement WHILE '('
+			nonclass_expr ')' opt_nobreak_do
 		{
 		int val;
 		if ($6->eval_const(val))
@@ -1139,6 +1162,7 @@ while_statement:
 			}
 		else
 			$$ = new Uc_dowhile_statement($6, $3, $8);
+		cur_fun->pop_scope();
 		end_loop();
 		}
 	;
@@ -1315,6 +1339,7 @@ opt_nest:
 converse_statement:
 	start_conv '{' statement_list response_case_list '}' opt_nobreak
 		{
+		cur_fun->pop_scope();
 		end_converse();
 		--converse;
 		$$ = new Uc_converse_statement(nullptr, $3, $4, false, $6);
@@ -1322,6 +1347,7 @@ converse_statement:
 
 	| start_conv opt_nest '(' expression ')' '{' statement_list converse_case_list '}' opt_nobreak
 		{
+		cur_fun->pop_scope();
 		end_converse();
 		--converse;
 		if (Class_unexpected_error($4))
@@ -1343,6 +1369,7 @@ start_conv:
 	CONVERSE
 		{
 		start_converse();
+		cur_fun->push_scope();
 		++converse;
 		}
 	;
