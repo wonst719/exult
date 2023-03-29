@@ -45,8 +45,8 @@ void TseramedBattleQueries 0x8F3 (var party) {
 		case "valor in arms":
 			say("@I have often suspected it! I am honored to travel with thee. I shall watch thee diligently, for surely thou art the greatest fighter who ever lived.@");
 			say("@When our quest is complete we shall regale each other with our exploits. Tell me, dost thou prefer hand to hand combat or ranged weaponry?@");
-			UI_remove_answer(["enchantment", "valor in arms"]);
-			UI_add_answer(["hand to hand", "ranged weaponry"]);
+			remove(["enchantment", "valor in arms"]);
+			add(["hand to hand", "ranged weaponry"]);
 			gflags[TSERAMED_THINKS_MAGE] = false;
 			got_reply = false;
 

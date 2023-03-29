@@ -192,7 +192,7 @@ void zaurielDestroyComponents () {
 }
 
 void zaurielMakeGem(var make) {
-	UI_remove_answer(["Make gem", "Fix gem"]);
+	remove(["Make gem", "Fix gem"]);
 	say("@Yes, thou hast everything I asked thee. Here, give me the components.@ Zauriel takes the components from you.");
 
 	// What we need to take from party.
