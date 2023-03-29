@@ -65,9 +65,6 @@ static Uc_call_expression *cls_method_call(Uc_expression *ths, Uc_class *curcls,
 static Uc_call_expression *cls_function_call(Uc_expression *ths,
 		Uc_class *curcls, char *nm, bool original, Uc_array_expression *parms);
 
-
-#define YYERROR_VERBOSE 1
-
 std::vector<Uc_design_unit *> units;	// THIS is what we produce.
 
 static Uc_function *cur_fun = nullptr;	// Current function being parsed.
@@ -110,6 +107,9 @@ struct Member_selector
 #endif  // __GNUC__
 
 %}
+
+%define parse.lac full
+%define parse.error detailed
 
 %union
 	{
