@@ -197,6 +197,7 @@ struct Member_selector
 %type <expr> expression primary declared_var_value opt_script_delay item
 %type <expr> script_command start_call addressof new_expr class_expr
 %type <expr> nonclass_expr opt_delay appended_element int_literal
+%type <expr> opt_primary_expression
 %type <intval> opt_int direction converse_options actor_frames egg_criteria
 %type <intval> opt_original assignment_operator const_int_val opt_const_int_val
 %type <intval> const_int_type int_cast dam_type opt_nest
@@ -225,7 +226,7 @@ struct Member_selector
 %type <exprlist> opt_expression_list expression_list script_command_list
 %type <exprlist> opt_nonclass_expr_list nonclass_expr_list appended_element_list
 %type <stmtlist> switch_case_list converse_case_list response_case_list
-%type <funcall> function_call script_expr
+%type <funcall> function_call script_expr run_script_expression
 
 %%
 
@@ -1257,24 +1258,19 @@ special_method_call_statement:
 			new Uc_call_expression(Uc_function::get_remove_face(),
 				new Uc_array_expression($1), cur_fun));
 		}
-	| primary hierarchy_tok RUNSCRIPT '(' declared_var opt_delay ')' ';'
+	;
+
+run_script_expression:
+	opt_primary_expression RUNSCRIPT '(' nonclass_expr opt_delay ')'
 		{
-		if ($5->get_cls())
-			{
-			char buf[150];
-			snprintf(buf, array_size(buf), "Can't convert class '%s' into non-class",
-					$5->get_name());
-			yyerror(buf);
-			}
 		auto *parms = new Uc_array_expression();
 		parms->add($1);		// Itemref.
-		parms->add(new Uc_var_expression($5));		// Script.
-		if ($6)
-			parms->add($6);		// Delay.
+		parms->add($4);		// Script.
+		if ($5)
+			parms->add($5);		// Delay.
 					// Get the script intrinsic.
-		Uc_symbol *sym = Uc_function::get_intrinsic($6 ? 2 : 1);
-		$$ = new Uc_call_statement(
-			new Uc_call_expression(sym, parms, cur_fun));
+		Uc_symbol *sym = Uc_function::get_intrinsic($5 ? 2 : 1);
+		$$ = new Uc_call_expression(sym, parms, cur_fun);
 		}
 	;
 
@@ -2014,6 +2010,10 @@ expression:
 	| STRING_PREFIX
 		{ $$ = new Uc_string_prefix_expression(cur_fun, $1); }
 	| new_expr
+	| run_script_expression
+		{
+		$$ = $1;
+		}
 	;
 
 addressof:
@@ -2182,6 +2182,12 @@ member_selector:
 		{ $$ = new Member_selector($1, $3); }
 	;
 
+opt_primary_expression:
+	primary hierarchy_tok
+		{ $$ = $1; }
+	| %empty
+		{ $$ = new Uc_item_expression(); }
+
 function_call:
 	member_selector opt_original '(' opt_expression_list ')'
 		{
@@ -2254,7 +2260,7 @@ opt_param_list:
 	param_list
 	| %empty
 		{ $$ = new std::vector<Uc_var_symbol *>; }
-   	;
+	;
 
 param_list:
 	param_list ',' param
