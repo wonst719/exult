@@ -166,7 +166,7 @@ enum item_flags {
 	OKAY_TO_TAKE		= 11,		// The item does not belong to anyone, and won't
 									// trigger stealing behaviour if you take it.
 	MIGHT				= 12,		// Double strength, dext, intel.
-	IMMUNITIES			= 13,		// Lots of imunities; can be gotten only.
+	IMMUNITIES			= 13,		// Lots of immunities; can be gotten only.
 	CANT_DIE			= 14,		// Test flag in monster_info.
 	IN_ACTION			= 15,		// If the NPC is doing something. Set by "Dance" spell in BG.
 	DONT_MOVE			= 16,		// SI-only. NPC can't move; "cutscene" mode.
@@ -420,7 +420,7 @@ enum egg_states {
 	EXTERNAL_CRITERIA = 7	// Appears on Isle of Avatar.  Guessing
 };
 
-//NPC atitudes toward the avatar
+//NPC attitudes toward the avatar
 enum alignments {
 	NEUTRAL			= 0,
 	GOOD			= 1,
@@ -448,7 +448,7 @@ enum item_masks {
 	MASK_INVISIBLE			= 0x20,
 	MASK_PARTY_INVISIBLE	= 0x40,
 	MASK_TRANSLUCENT		= 0x80,
-	MASK_ALL_UNSEEN			= 0xB0		//MASK_EGG+MASK_INVISIBLE+MASK_TRANLUCENT
+	MASK_ALL_UNSEEN			= 0xB0		//MASK_EGG+MASK_INVISIBLE+MASK_TRANSLUCENT
 };
 
 //NPC animation frames, WITH rotation bit. Use these with UI_set_item_frame_rot

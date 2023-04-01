@@ -16,7 +16,7 @@
 #               function passed as parameter.
 #       function_effect: If present, this is a 'call type' opcode. Uses passed
 #                parameter as function ID.
-#       return: If present, it signifises that the function this opcode is found
+#       return: If present, it signifies that the function this opcode is found
 #               in returns a variable on the stack.
 #       paren:  If present, we output a pair of parenthesis around the usecode
 #               script output.
@@ -61,8 +61,8 @@
 
 # REMEMBER: All arrays are indexed with as 1 based rather then 0 based.
 
-# Notes on number of bytes poped/pushed:
-# All numbers are the number of bytes poped/pushed from the stack, with the
+# Notes on number of bytes popped/pushed:
+# All numbers are the number of bytes popped/pushed from the stack, with the
 # exception of 0xFF, which currently means the number of bytes in the first
 # opcode parameter (see opcode 0x07). and 0xFE means the second parameter.
 # Logic: parameter referenced is abs(0x100 - value)
@@ -74,7 +74,7 @@
 		<name> UC_LOOPTOP </>
 		<asm_nmo> `loop\t[%1], [%2], [%3], [%4], %5` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `for (%v3 in %v4 with %v1 to %v2) atend label%f*_%5` </>
+		<ucs_nmo> `for (%v3 in %v4 with %v1 to %v2) attend label%f*_%5` </>
 		<num_bytes> 10 </>
 		<param_types> {short,short,short,varoffset,offset} </>
 		<num_pop> 0 </>
@@ -92,7 +92,7 @@ TODO: To be done...
 		<name> UC_CONVERSE </>
 		<asm_nmo> `startconv\t%1` </>
 		<asm_comment> `` </>
-		<ucs_nmo> `converse (0) atend label%f*_%1` </>
+		<ucs_nmo> `converse (0) attend label%f*_%1` </>
 		<num_bytes> 2 </>
 		<param_types> {offset} </>
 		<num_pop> 0 </>
@@ -131,7 +131,7 @@ the relative {offset}.
 		<name> UC_CMPS </>
 		<asm_nmo> `cmps\t%1H, %2` </>
 		<asm_comment> `\t\t;` </>
-		<ucs_nmo> `case %p, atend label%f*_%2:` </>
+		<ucs_nmo> `case %p, attend label%f*_%2:` </>
 		<num_bytes> 4 </>
 		<param_types> {short,offset} </>
 		<num_pop> 0xFF </>
@@ -471,7 +471,7 @@ string buffer. Does not return any elements on the stack (ie: returns "void").
 Pops one (pop v1) element off the stack (the array index), and uses it as an
 index of the local variable {varoffset}. (varoffset[v1]) The element obtained
 is then pushed onto the stack.
-TODO: NOTE: This opcode has been changed... need to redocument.
+TODO: NOTE: This opcode has been changed... need to re-document.
 		-->
 	</>
 	<0x2C>
@@ -549,7 +549,7 @@ on the stack.
 		<name> UC_DEFAULT </>
 		<asm_nmo> `default\t%1, %2` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `default(0x%1) atend label%f*_%2` </>
+		<ucs_nmo> `default(0x%1) attend label%f*_%2` </>
 		<num_bytes> 4 </>
 		<param_types> {short,offset} </>
 		<num_pop> 0 </>
@@ -975,7 +975,7 @@ TODO: NOTE: This opcode has been changed... need to redocument.
 		<name> UC_LOOPTOPS </>
 		<asm_nmo> `staticloop\t[%1], [%2], [%3], [%4], %5` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `for (%v3 in %vs4 with %v1 to %v2) atend label%f*_%5` </>
+		<ucs_nmo> `for (%v3 in %vs4 with %v1 to %v2) attend label%f*_%5` </>
 		<num_bytes> 10 </>
 		<param_types> {short,short,short,varoffset,offset} </>
 		<num_pop> 0 </>
@@ -1021,7 +1021,7 @@ TODO: NOTE: This opcode has been changed... need to redocument.
 		<name> UC_LOOPTOPTHV </>
 		<asm_nmo> `clsvarloop\t[%1], [%2], [%3], [%4], %5` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `for (%v3 in %vc4 with %v1 to %v2) atend label%f*_%5` </>
+		<ucs_nmo> `for (%v3 in %vc4 with %v1 to %v2) attend label%f*_%5` </>
 		<num_bytes> 10 </>
 		<param_types> {short,short,short,varoffset,offset} </>
 		<num_pop> 0 </>
@@ -1089,7 +1089,7 @@ Prepares to catch abort/throw on given label instead of exiting usecode machine.
 		<name> UC_LOOPTOP32 </>
 		<asm_nmo> `loop32\t[%1], [%2], [%3], [%4], %5` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `for (%v3 in %v4 with %v1 to %v2) atend label%f*_%n5` </>
+		<ucs_nmo> `for (%v3 in %v4 with %v1 to %v2) attend label%f*_%n5` </>
 		<num_bytes> 12 </>
 		<param_types> {short,short,short,varoffset,offset32} </>
 		<num_pop> 0 </>
@@ -1101,7 +1101,7 @@ Prepares to catch abort/throw on given label instead of exiting usecode machine.
 		<name> UC_CONVERSE32 </>
 		<asm_nmo> `startconv32\t%1` </>
 		<asm_comment> `` </>
-		<ucs_nmo> `converse (0) atend label%f*_%1` </>
+		<ucs_nmo> `converse (0) attend label%f*_%1` </>
 		<num_bytes> 4 </>
 		<param_types> {offset32} </>
 		<num_pop> 0 </>
@@ -1134,7 +1134,7 @@ Prepares to catch abort/throw on given label instead of exiting usecode machine.
 		<name> UC_CMPS32 </>
 		<asm_nmo> `cmps32\t%1H, %n2` </>
 		<asm_comment> `\t\t;` </>
-		<ucs_nmo> `case %p, atend label%f*_%2:` </>
+		<ucs_nmo> `case %p, attend label%f*_%2:` </>
 		<num_bytes> 6 </>
 		<param_types> {short,offset32} </>
 		<num_pop> 0xFF </>
@@ -1204,7 +1204,7 @@ Calls the function specified by the 32-bit parameter.
 		<name> UC_DEFAULT32 </>
 		<asm_nmo> `default32\t%1 %2` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `default(0x%1) atend label%f*_%2` </>
+		<ucs_nmo> `default(0x%1) attend label%f*_%2` </>
 		<num_bytes> 6 </>
 		<param_types> {short,offset32} </>
 		<num_pop> 0 </>
@@ -1223,7 +1223,7 @@ Calls the function specified by the 32-bit parameter.
 		<return/>
 		<!--
 Pops the top most element off the stack, stores it in the return register.
-Then shows any text in the string register, and exits the function immediatly.
+Then shows any text in the string register, and exits the function immediately.
 THROW also exits all calling functions, effectively stopping the usecode interpreter,
 unless caught in a try/catch block.
 		-->
@@ -1301,7 +1301,7 @@ Calls function pushed onto the stack.
 		<name> UC_LOOPTOPS32 </>
 		<asm_nmo> `staticloop32\t[%1], [%2], [%3], [%4], %5` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `for (%v3 in %vs4 with %v1 to %v2) atend label%f*_%5` </>
+		<ucs_nmo> `for (%v3 in %vs4 with %v1 to %v2) attend label%f*_%5` </>
 		<num_bytes> 12 </>
 		<param_types> {short,short,short,varoffset,offset32} </>
 		<num_pop> 0 </>
@@ -1314,7 +1314,7 @@ Calls function pushed onto the stack.
 		<name> UC_LOOPTOPTHV32 </>
 		<asm_nmo> `clsvarloop32\t[%1], [%2], [%3], [%4], %5` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `for (%v3 in %vc4 with %v1 to %v2) atend label%f*_%5` </>
+		<ucs_nmo> `for (%v3 in %vc4 with %v1 to %v2) attend label%f*_%5` </>
 		<num_bytes> 12 </>
 		<param_types> {short,short,short,varoffset,offset32} </>
 		<num_pop> 0 </>
