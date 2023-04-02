@@ -1258,6 +1258,10 @@ special_method_call_statement:
 			new Uc_call_expression(Uc_function::get_remove_face(),
 				new Uc_array_expression($1), cur_fun));
 		}
+	| run_script_expression ';'
+		{
+		$$ = new Uc_call_statement($1);
+		}
 	;
 
 run_script_expression:
