@@ -128,21 +128,29 @@ static void Include
 		Uc_location::yyerror("No file in #include");
 		return;
 		}
-					// Check if file has already been included.
+	// Check if file has already been included.
 	auto it = inclfiles.find(name);
 	if (it != inclfiles.end())
 		return;
 	locstack.push_back(new Uc_location());
 	bufstack.push_back(YY_CURRENT_BUFFER);
 	yyin = fopen(name, "r");
-					// Look in -I list if not found here.
-	for (char *dir : include_dirs)
+	// Look in -I list if not found here.
+	if (yyin == nullptr)
 		{
-		string path(dir);
-		path += '/';
-		path += name;
-		yyin = fopen(path.c_str(), "r");
+		for (char *dir : include_dirs)
+			{
+			string path(dir);
+			path += '/';
+			path += name;
+			yyin = fopen(path.c_str(), "r");
+			if (yyin != nullptr)
+				{
+				break;
+				}
+			}
 		}
+
 	if (!yyin)
 		{
 		char msg[180];
@@ -150,9 +158,9 @@ static void Include
 		Uc_location::yyerror(msg);
 		exit(1);
 		}
-					// Add file to list of included files.
+	// Add file to list of included files.
 	inclfiles.insert(name);
-					// Set location to new file.
+	// Set location to new file.
 	Uc_location::set_cur(name, 0);
 	yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
 	}
