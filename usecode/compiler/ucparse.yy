@@ -1048,12 +1048,16 @@ if_statement:
 			{
 			if (val)
 				{
-				$3->warning("'if' clause will always be executed");
+				if (dynamic_cast<Uc_bool_expression*>($3) == nullptr) {
+					$3->warning("'if' clause will always be executed");
+				}
 				$$ = $5;
 				}
 			else
 				{	// Need this because of those pesky GOTOs...
-				$3->warning("'if' clause may never execute");
+				if (dynamic_cast<Uc_bool_expression*>($3) == nullptr) {
+					$3->warning("'if' clause may never execute");
+				}
 				$$ = new Uc_if_statement(nullptr, $5, nullptr);
 				}
 			delete $3;
@@ -1069,13 +1073,17 @@ if_statement:
 			if (val)
 				{
 					// Need this because of those pesky GOTOs...
-				$3->warning("'else' clause may never execute");
+				if (dynamic_cast<Uc_bool_expression*>($3) == nullptr) {
+					$3->warning("'else' clause may never execute");
+				}
 				$$ = new Uc_if_statement(new Uc_int_expression(val == 0), $5, $7);
 				}
 			else
 				{
 					// Need this because of those pesky GOTOs...
-				$3->warning("'if' clause may never execute");
+				if (dynamic_cast<Uc_bool_expression*>($3) == nullptr) {
+					$3->warning("'if' clause may never execute");
+				}
 				$$ = new Uc_if_statement(nullptr, $5, $7);
 				}
 			delete $3;
@@ -1145,12 +1153,16 @@ while_statement:
 			{
 			if (val)
 				{
-				$3->warning("Infinite loop detected");
+				if (dynamic_cast<Uc_bool_expression*>($3) == nullptr) {
+					$3->warning("Infinite loop detected");
+				}
 				$$ = new Uc_infinite_loop_statement($6, $7);
 				}
 			else
 				{	// Need 'may' because of those pesky GOTOs...
-				$3->warning("Body of 'while' statement may never execute");
+				if (dynamic_cast<Uc_bool_expression*>($3) == nullptr) {
+					$3->warning("Body of 'while' statement may never execute");
+				}
 				$$ = new Uc_while_statement(nullptr, $6, $7);
 				}
 			delete $3;
@@ -1166,7 +1178,9 @@ while_statement:
 			{
 			if (val)
 				{
-				$6->warning("Infinite loop detected");
+				if (dynamic_cast<Uc_bool_expression*>($6) == nullptr) {
+					$6->warning("Infinite loop detected");
+				}
 				$$ = new Uc_infinite_loop_statement($3, $8);
 				}
 			else	// Optimize loop away.
