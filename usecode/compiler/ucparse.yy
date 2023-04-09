@@ -136,33 +136,168 @@ struct Member_selector
 /*
  *	Keywords:
  */
-%token IF ELSE RETURN DO WHILE FOR UCC_IN WITH TO EXTERN BREAK GOTO CASE
-%token VAR VOID ALIAS STRUCT UCC_CHAR UCC_INT UCC_LONG UCC_CONST STRING ENUM
-%token CONVERSE NESTED SAY MESSAGE RESPONSE EVENT FLAG ITEM UCTRUE UCFALSE REMOVE
-%token ADD HIDE SCRIPT AFTER TICKS STATIC_ ORIGINAL SHAPENUM OBJECTNUM
-%token CLASS NEW DELETE RUNSCRIPT UCC_INSERT SWITCH DEFAULT FALLTHROUGH ALWAYS
-%token ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ CHOICE TRY CATCH ABORT THROW
+%token IF "'if'"
+%token ELSE "'else'"
+%token RETURN "'return'"
+%token DO "'do'"
+%token WHILE "'while'"
+%token FOR "'for'"
+%token WITH "'with'"
+%token TO "'to'"
+%token EXTERN "'extern'"
+%token BREAK "'break'"
+%token GOTO "'goto'"
+%token CASE "'case'"
+%token VAR "'var'"
+%token VOID "'void'"
+%token ALIAS "'alias'"
+%token STRUCT "'struct'"
+%token UCC_CHAR "'char'"
+%token UCC_INT "'int'"
+%token UCC_LONG "'long'"
+%token UCC_CONST "'const'"
+%token STRING "'string'"
+%token ENUM "'enum'"
+%token CONVERSE "'converse'"
+%token NESTED "'nested'"
+%token SAY "'say'"
+%token MESSAGE "'message'"
+%token RESPONSE "'response'"
+%token EVENT "'event'"
+%token FLAG "'gflags'"
+%token ITEM "'item'"
+%token UCTRUE "'true'"
+%token UCFALSE "'false'"
+%token REMOVE "'remove'"
+%token ADD "'add'"
+%token HIDE "'hide'"
+%token SCRIPT "'script'"
+%token AFTER "'after'"
+%token TICKS "'ticks'"
+%token STATIC_ "'static'"
+%token ORIGINAL "'original'"
+%token SHAPENUM "shape'#'"
+%token OBJECTNUM "object'#'"
+%token CLASS "'class'"
+%token RUNSCRIPT "'runscript'"
+%token SWITCH "'switch'"
+%token DEFAULT "'default'"
+%token FALLTHROUGH "'fallthrough'"
+%token ALWAYS "'always'"
+%token CHOICE "'user_choice'"
+%token TRY "'try'"
+%token CATCH "'catch'"
+%token ABORT "'abort'"
+%token THROW "'throw'"
 
 /*
  *	Script keywords:
  */
 					/* Script commands. */
-%token NOBREAK CONTINUE REPEAT NOP NOHALT WAIT /*REMOVE*/ RISE DESCEND FRAME HATCH
-%token NEXT PREVIOUS CYCLE STEP MUSIC CALL SPEECH SFX FACE HIT HOURS ACTOR
-%token ATTACK FINISH RESURRECT SETEGG MINUTES RESET WEATHER NEAR FAR
-%token NORTH SOUTH EAST WEST NE NW SE SW NOP2 RAW
-%token STANDING STEP_RIGHT STEP_LEFT READY RAISE_1H REACH_1H STRIKE_1H RAISE_2H
-%token REACH_2H STRIKE_2H SITTING BOWING KNEELING SLEEPING CAST_UP CAST_OUT
-%token CACHED_IN PARTY_NEAR AVATAR_NEAR AVATAR_FAR AVATAR_FOOTPAD
-%token PARTY_FOOTPAD SOMETHING_ON EXTERNAL_CRITERIA NORMAL_DAMAGE FIRE_DAMAGE
-%token  MAGIC_DAMAGE LIGHTNING_DAMAGE ETHEREAL_DAMAGE SONIC_DAMAGE
+%token NOBREAK "'nobreak'"
+%token CONTINUE "'continue'"
+%token REPEAT "'repeat'"
+%token NOP "'nop'"
+%token NOHALT "'nohalt'"
+%token WAIT "'wait'"
+%token RISE "'rise'"
+%token DESCEND "'descend'"
+%token FRAME "'frame'"
+%token HATCH "'hatch'"
+%token NEXT "'next'"
+%token PREVIOUS "'previous'"
+%token CYCLE "'cycle'"
+%token STEP "'step'"
+%token MUSIC "'music'"
+%token CALL "'call'"
+%token SPEECH "'speech'"
+%token SFX "'sfx'"
+%token FACE "'face'"
+%token HIT "'hit'"
+%token HOURS "'hours'"
+%token ACTOR "'actor'"
+%token ATTACK "'attack'"
+%token FINISH "'finish'"
+%token RESURRECT "'resurrect'"
+%token SETEGG "'setegg'"
+%token MINUTES "'minutes'"
+%token RESET "'reset'"
+%token WEATHER "'weather'"
+%token NEAR "'near'"
+%token FAR "'far'"
+%token NORTH "'north'"
+%token SOUTH "'south'"
+%token EAST "'east'"
+%token WEST "'west'"
+%token NE "'ne'"
+%token NW "'nw'"
+%token SE "'se'"
+%token SW "'sw'"
+%token NOP2 "'nop2'"
+%token RAW "'raw'"
+%token STANDING "'standing'"
+%token STEP_RIGHT "'step_right'"
+%token STEP_LEFT "'step_left'"
+%token READY "'ready'"
+%token RAISE_1H "'raise_1h'"
+%token REACH_1H "'reach_1h'"
+%token STRIKE_1H "'strike_1h'"
+%token RAISE_2H "'raise_2h'"
+%token REACH_2H "'reach_2h'"
+%token STRIKE_2H "'strike_2h'"
+%token SITTING "'sitting'"
+%token BOWING "'bowing'"
+%token KNEELING "'kneeling'"
+%token SLEEPING "'sleeping'"
+%token CAST_UP "'cast_up'"
+%token CAST_OUT "'cast_out'"
+%token CACHED_IN "'cached_in'"
+%token PARTY_NEAR "'party_near'"
+%token AVATAR_NEAR "'avatar_near'"
+%token AVATAR_FAR "'avatar_far'"
+%token AVATAR_FOOTPAD "'avatar_footpad'"
+%token PARTY_FOOTPAD "'party_footpad'"
+%token SOMETHING_ON "'something_on'"
+%token EXTERNAL_CRITERIA "'external_criteria'"
+%token NORMAL_DAMAGE "'normal_damage'"
+%token FIRE_DAMAGE "'fire_damage'"
+%token MAGIC_DAMAGE "'magic_damage'"
+%token LIGHTNING_DAMAGE "'lightning_damage'"
+%token ETHEREAL_DAMAGE "'ethereal_damage'"
+%token SONIC_DAMAGE "'sonic_damage'"
 
+/*
+ *	Operators
+ */
+%token UCC_INSERT "'<<'"
+%token ADD_EQ "'+='"
+%token SUB_EQ "'-='"
+%token MUL_EQ "'*='"
+%token DIV_EQ "'/='"
+%token MOD_EQ "'%='"
+%token AND "'&&'"
+%token OR "'||'"
+%token EQUALS "'=='"
+%token NEQUALS "'!='"
+%token LTEQUALS "'<='"
+%token GTEQUALS "'>='"
+%token UCC_IN "'in'"
+%token NOT "'!'"
+%token ADDRESSOF "'&'"
+%token UMINUS "'-'"
+%token UPLUS "'+'"
+%token NEW "'new'"
+%token DELETE "'delete'"
+%token UCC_POINTS "'->'"
+%token UCC_SCOPE "'::'"
 
 /*
  *	Other tokens:
  */
-%token <strval> STRING_LITERAL STRING_PREFIX IDENTIFIER
-%token <intval> INT_LITERAL
+%token <strval> STRING_LITERAL "string literal"
+%token <strval> STRING_PREFIX "string prefix"
+%token <strval> IDENTIFIER "identifier"
+%token <intval> INT_LITERAL "integer"
 
 /*
  *	Handle if-then-else conflict.
