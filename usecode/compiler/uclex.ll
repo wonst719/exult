@@ -229,10 +229,11 @@ static void Set_autonum
 
 char *Handle_string
 	(
-	const char *from			// Ends with a '"'.
+	const char *from,			// Ends with a '"'.
+	size_t length
 	)
 	{
-	char *to = new char[1 + strlen(from)];	// (Bigger than needed.)
+	char *to = new char[length];	// (Bigger than needed.)
 	char *str = to;
 
 	while (*from && *from != '\"')
@@ -254,6 +255,47 @@ char *Handle_string
 		case '\'':
 		case '\\':
 			*to++ = *from; break;
+		case '{': {
+			// We know that this will be of the form \\{xxx}
+			// where xxx is one of dot, ea, ee, ng, st, or th.
+			const char *term = from;
+			while (*term != '\0' && *term != '}') {
+				++term;
+			}
+			if (*term != '}') {
+				// Just in case.
+				Uc_location::yyerror("Unterminated rune escape sequence in string. This is probably a stray '\\{' which should be fixed.");
+				*to++ = '{';
+				break;
+			}
+			std::string escape(from + 1, term);
+			if (escape == "dot") {
+				*to++ = '|';
+			} else if (escape == "ea") {
+				*to++ = '+';
+			} else if (escape == "ee") {
+				*to++ = ')';
+			} else if (escape == "ng") {
+				*to++ = '*';
+			} else if (escape == "st") {
+				*to++ = ',';
+			} else if (escape == "th") {
+				*to++ = '(';
+			} else {
+				if (escape.size() != 2 && escape.size() != 3) {
+					// Just in case.
+					char buf[150];
+					snprintf(buf, array_size(buf), "Invalid rune escape sequence '\\{%s}'. "
+					             "Valid escapes are: '\\{dot}', '\\{ea}', '\\{ee}', '\\{ng}', '\\{st}', '\\{th}'",
+								 escape.c_str());
+					Uc_location::yyerror(buf);
+					*to++ = '{';
+					break;
+				}
+			}
+			from = term;
+			break;
+		}
 		default:
 			{
 			char buf[150];
@@ -457,15 +499,16 @@ sonic_damage	return SONIC_DAMAGE;
 			yylval.strval = strdup(yytext);
 			return IDENTIFIER;
 			}
-\"([^"]|\\.)*\"		{
+\"([^"]|\\\{(dot|ea|ee|ng|st|th)\}|\\[^\{])*\"		{
 					// Remove ending quote.
-			yylval.strval = Handle_string(yytext + 1);
+			const char *strval = yytext + 1;
+			yylval.strval = Handle_string(strval, strlen(strval) + 1);
 			return STRING_LITERAL;
 			}
-\"([^"]|\\.)*\"\*		{
+\"([^"]|\\\{(dot|ea|ee|ng|st|th)\}|\\[^\{])*\"\*		{
 					// Remove ending quote and asterisk.
-			yylval.strval = strdup(yytext + 1);
-			yylval.strval[strlen(yylval.strval) - 2] = 0;
+			const char *strval = yytext + 1;
+			yylval.strval = Handle_string(strval, strlen(strval) + 1);
 			return STRING_PREFIX;
 			}
 [0-9]+			{
