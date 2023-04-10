@@ -30,25 +30,25 @@ void Plaque shape#(0x334) () {
 	} else {
 		var msg;
 		if (qual == 100) {
-			msg = ["\{dot}e", "flame", "of", "tru\{dot}"];
+			msg = ["\{th}e", "flame", "of", "tru\{th}"];
 		} else if (qual == 101) {
-			msg = ["\{dot}e", "flame", "of", "love"];
+			msg = ["\{th}e", "flame", "of", "love"];
 		} else if (qual == 102) {
-			msg = ["\{dot}e", "flame", "of", "courage"];
+			msg = ["\{th}e", "flame", "of", "courage"];
 		} else if (qual == 103) {
-			msg = ["\{dot}e", "flame", "of", "infinity"];
+			msg = ["\{th}e", "flame", "of", "infinity"];
 		} else if (qual == 104) {
-			msg = ["\{dot}e", "flame", "of", "si\{ng}ularity"];
+			msg = ["\{th}e", "flame", "of", "si\{ng}ularity"];
 		} else if (qual == 105) {
-			msg = ["shrine", "of", "\{dot}e", "codex"];
+			msg = ["shrine", "of", "\{th}e", "codex"];
 		} else if (qual == 106) {
 			msg = ["ch\{ea}ters", "never", "win"];
 		} else if (qual == 107) {
-			msg = ["\{dot}e", "book", "of", "tru\{dot}"];
+			msg = ["\{th}e", "book", "of", "tru\{th}"];
 		} else if (qual == 108) {
-			msg = ["\{dot}e", "candle", "of", "love"];
+			msg = ["\{th}e", "candle", "of", "love"];
 		} else if (qual == 109) {
-			msg = ["\{dot}e", "bell", "of", "courage"];
+			msg = ["\{th}e", "bell", "of", "courage"];
 		}
 		UI_display_runes(0x0033, msg);
 	}
