@@ -549,11 +549,12 @@ on the stack.
 		<name> UC_DEFAULT </>
 		<asm_nmo> `default\t%1, %2` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `default(0x%1) attend label%f*_%2` </>
+		<ucs_nmo> `default(0x%1) attend label%f*_%2:` </>
 		<num_bytes> 4 </>
 		<param_types> {short,offset} </>
 		<num_pop> 0 </>
 		<num_push> 0 </>
+		<nosemicolon/>
 		<!--
 This is a version of CMPS that pops no values from the stack (ignores the
 {short} parameter) and either jumps to the {offset} if an answer has been
@@ -1204,11 +1205,12 @@ Calls the function specified by the 32-bit parameter.
 		<name> UC_DEFAULT32 </>
 		<asm_nmo> `default32\t%1 %2` </>
 		<asm_comment> `\t\t\t;` </>
-		<ucs_nmo> `default(0x%1) attend label%f*_%2` </>
+		<ucs_nmo> `default(0x%1) attend label%f*_%2:` </>
 		<num_bytes> 6 </>
 		<param_types> {short,offset32} </>
 		<num_pop> 0 </>
 		<num_push> 0 </>
+		<nosemicolon/>
 		<!-- The 32bit version of 0x31 - UC_DEFAULT -->
 	</>
 	<0xBF>
