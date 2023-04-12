@@ -505,7 +505,7 @@ Pops the top most element off the stack, stores it in the return register and re
 		<name> UC_LOOP </>
 		<asm_nmo> `initloop` </>
 		<asm_comment> `` </>
-		<ucs_nmo> `//enum()` </>
+		<ucs_nmo> `enum()` </>
 		<num_bytes> 0 </>
 		<param_types> {} </>
 		<num_pop> 0 </>
@@ -661,7 +661,7 @@ unless caught in a try/catch block.
 		<name> UC_CONVERSELOC </>
 		<asm_nmo> `endconv` </>
 		<asm_comment> `` </>
-		<ucs_nmo> `break` </>
+		<ucs_nmo> `endconv` </>
 		<num_bytes> 0 </>
 		<param_types> {} </>
 		<num_pop> 0 </>
