@@ -92,7 +92,7 @@ TODO: To be done...
 		<name> UC_CONVERSE </>
 		<asm_nmo> `startconv\t%1` </>
 		<asm_comment> `` </>
-		<ucs_nmo> `converse (0) attend label%f*_%1` </>
+		<ucs_nmo> `converse attend label%f*_%1` </>
 		<num_bytes> 2 </>
 		<param_types> {offset} </>
 		<num_pop> 0 </>
@@ -1102,7 +1102,7 @@ Prepares to catch abort/throw on given label instead of exiting usecode machine.
 		<name> UC_CONVERSE32 </>
 		<asm_nmo> `startconv32\t%1` </>
 		<asm_comment> `` </>
-		<ucs_nmo> `converse (0) attend label%f*_%1` </>
+		<ucs_nmo> `converse attend label%f*_%1` </>
 		<num_bytes> 4 </>
 		<param_types> {offset32} </>
 		<num_pop> 0 </>
