@@ -710,7 +710,8 @@ void Uc_function::gen(
 			label->unlink_descendants();
 			label->unlink_predecessors();
 			elem.second = nullptr;
-			delete label;
+			// Note: unused labels get removed and deleted in Remove_dead_blocks
+			// so we should not delete them here.
 		}
 	}
 	label_blocks.clear();
