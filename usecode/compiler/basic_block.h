@@ -271,6 +271,9 @@ public:
 	bool ends_in_return() const {
 		return !instructions.empty() && instructions.back()->is_return();
 	}
+	bool ends_in_abort() const {
+		return !instructions.empty() && instructions.back()->is_abort();
+	}
 	int get_jump_size() const {
 		if (!jmp_op)
 			return 0;   // Fall-through block or terminating block
