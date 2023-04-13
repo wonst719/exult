@@ -661,7 +661,6 @@ void Uc_continue_statement::gen(
 	blocks.push_back(curr);
 }
 
-
 void Uc_label_statement::gen(
     Uc_function *fun,
     vector<Basic_block *> &blocks,      // What we are producing.
@@ -676,7 +675,10 @@ void Uc_label_statement::gen(
 	// Should never fail, but...
 	assert(it != labels.end());
 	Basic_block *block = it->second;
-	curr->set_taken(block);
+	assert(block != nullptr);
+	if (!curr->is_jump_block() && !curr->ends_in_return() && !curr->ends_in_abort()) {
+		curr->set_taken(block);
+	}
 	blocks.push_back(curr = block);
 
 	// no code
