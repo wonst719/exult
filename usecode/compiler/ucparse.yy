@@ -1211,7 +1211,7 @@ if_statement:
 				if (dynamic_cast<Uc_bool_expression*>($3) == nullptr) {
 					$3->warning("'else' clause may never execute");
 				}
-				$$ = new Uc_if_statement(new Uc_int_expression(val == 0), $5, $7);
+				$$ = new Uc_if_statement(new Uc_int_expression(val != 0), $5, $7);
 				}
 			else
 				{

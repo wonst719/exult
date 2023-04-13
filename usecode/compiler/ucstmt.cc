@@ -118,46 +118,49 @@ void Uc_if_statement::gen(
     Basic_block *start,         // Block used for 'continue' statements.
     Basic_block *exit           // Block used for 'break' statements.
 ) {
-	if (!if_stmt && !else_stmt) // Optimize whole block away.
+	if (if_stmt == nullptr && else_stmt == nullptr) // Optimize whole block away.
 		return;
 	// The basic block for the if code.
 	auto *if_block = new Basic_block();
 	// The basic block after the if/else blocks.
 	auto *past_if = new Basic_block();
 	blocks.push_back(if_block);
-	int ival;
-	const bool const_expr = !expr || expr->eval_const(ival);
-	if (!expr)
+	int ival = 0;
+	const bool const_expr = expr == nullptr || expr->eval_const(ival);
+	if (expr == nullptr || (const_expr && ival == 0)) {
 		// IF body unreachable except by GOTO statements.
 		// Skip IF block.
 		curr->set_targets(UC_JMP, past_if);
-	else if (ival)
+	} else if (const_expr && ival != 0) {
 		// ELSE block unreachable except by GOTO statements.
 		// Fall-through to IF block.
 		curr->set_targets(UC_INVALID, if_block);
-	else {
+	} else {
 		// Gen test code & JNE.
 		expr->gen_value(curr);
 		curr->set_targets(UC_JNE, if_block);
 	}
-	if (if_stmt)
+	if (if_stmt != nullptr) {
 		if_stmt->gen(fun, blocks, if_block, end, labels, start, exit);
-	if (else_stmt) {
+	}
+	if (else_stmt != nullptr) {
 		// The basic block for the else code.
 		auto *else_block = new Basic_block();
 		blocks.push_back(else_block);
-		if (!expr)  // Go directly to else block instead.
+		if (expr == nullptr) {  // Go directly to else block instead.
 			curr->set_taken(else_block);
-		else if (!ival) // Only for JNE.
+		} else if (ival == 0) { // Only for JNE.
 			curr->set_ntaken(else_block);
+		}
 		// JMP past ELSE code.
 		if_block->set_targets(UC_JMP, past_if);
 		// Generate else code.
 		else_stmt->gen(fun, blocks, else_block, end, labels, start, exit);
 		else_block->set_taken(past_if);
 	} else {
-		if (!const_expr)    // Need to go to past-if block too.
+		if (!const_expr) {    // Need to go to past-if block too.
 			curr->set_ntaken(past_if);
+		}
 		if_block->set_targets(UC_INVALID, past_if);
 	}
 	blocks.push_back(curr = past_if);
