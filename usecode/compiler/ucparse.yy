@@ -2787,6 +2787,30 @@ static Uc_call_expression *cls_function_call
 			ths = new Uc_item_expression();
 		}
 
+	// UI_UNKNOWN_XX
+	if (!sym)
+		{
+		string name(nm);
+		const string uiUnk("UI_UNKNOWN_");
+		if (name.size() == uiUnk.size() + 2)
+			{
+			string num("0x");
+			num += name.substr(uiUnk.size(), 2);
+			if (name.substr(0, uiUnk.size()) == uiUnk)
+				{
+				try
+					{
+					auto val = std::stoul(num, nullptr, 0);
+					sym = Uc_function::get_intrinsic(val);
+					}
+				catch (std::exception&)
+					{
+					sym = nullptr;
+					}
+				}
+			}
+		}
+
 	if (!sym)
 		{
 		char buf[150];
