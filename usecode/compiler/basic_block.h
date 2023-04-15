@@ -44,6 +44,7 @@ protected:
 	UsecodeOps opcode;
 	std::vector<char> params;
 	bool is_jump;
+	bool op32bit = false;
 public:
 	Opcode(UsecodeOps op) : opcode(op) {
 		switch (opcode) {
@@ -142,13 +143,23 @@ public:
 	void WriteParam4(unsigned int val) {
 		Write4(params, val);
 	}
+
+private:
+	uint32 get_real_opcode() const {
+		if (op32bit) {
+			return static_cast<uint32>(opcode) | 0x80u;
+		}
+		return opcode;
+	}
+
+public:
 	void write(std::vector<char> &out) {
-		Write1(out, static_cast<uint32>(opcode));
+		Write1(out, get_real_opcode());
 		out.insert(out.end(), params.begin(), params.end());
 	}
 #ifdef DEBUG    // For debugging.
 	void write_text() const {
-		std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(opcode) << ' ';
+		std::cout << std::setw(2) << std::setfill('0') << get_real_opcode() << ' ';
 		for (const char param : params) {
 			std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(static_cast<unsigned char>(param)) << ' ';
 		}
@@ -168,10 +179,12 @@ public:
 		return size;
 	}
 	bool is_32bit() const { // Only matters for jumps.
-		return is_jump && (opcode & 0x80) != 0;
+		return op32bit;
 	}
 	void set_32bit() {      // Only matters for jumps.
-		if (is_jump) opcode |= 0x80;
+		if (is_jump) {
+			op32bit = true;
+		}
 	}
 	bool is_return() const {
 		return opcode == UC_RET || opcode == UC_RET2
