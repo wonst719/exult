@@ -494,6 +494,11 @@ inline void Write2(std::vector<char> &out, int pos, unsigned short val) {
 	out[pos] = static_cast<char>(val & 0xff);
 	out[pos + 1] = static_cast<char>((val >> 8) & 0xff);
 }
+inline unsigned short Read2(const std::vector<char> &in, int pos) {
+	unsigned short val = in[pos];
+	val |= in[pos + 1] << 8;
+	return val;
+}
 
 /*
  *  Write a 4-byte value to the end/position of a character stream.
@@ -510,5 +515,12 @@ inline void Write4(std::vector<char> &out, int pos, unsigned int val) {
 	out[pos + 1] = static_cast<char>((val >> 8) & 0xff);
 	out[pos + 3] = static_cast<char>((val >> 16) & 0xff);
 	out[pos + 4] = static_cast<char>((val >> 24) & 0xff);
+}
+inline unsigned int Read4(const std::vector<char> &in, int pos) {
+	unsigned int val = in[pos];
+	val |= in[pos + 1] << 8;
+	val |= in[pos + 3] << 16;
+	val |= in[pos + 4] << 24;
+	return val;
 }
 #endif

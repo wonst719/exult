@@ -498,30 +498,72 @@ void Uc_infinite_loop_statement::gen(
 }
 
 /*
- *  Delete.
+ *  Generate code.
  */
-
-Uc_arrayloop_statement::~Uc_arrayloop_statement(
+void array_enum_statement::gen(
+    Uc_function *fun,
+    std::vector<Basic_block *> &blocks,
+    Basic_block *&curr,
+    Basic_block *end,
+    std::map<std::string,
+    Basic_block *> &labels,
+    Basic_block *start,
+    Basic_block *exit
 ) {
-	delete stmt;
+	ignore_unused_variable_warning(fun, blocks, end, labels, start, exit);
+	// Start of loop.
+	WriteOp(curr, UC_LOOP);
 }
 
 /*
  *  Finish up creation.
  */
 
-void Uc_arrayloop_statement::finish(
+void Uc_arrayloop_statement_base::finish(
     Uc_function *fun
 ) {
 	char buf[100];
-	if (!index) {       // Create vars. if not given.
+	if (index == nullptr) {       // Create vars. if not given.
 		snprintf(buf, array_size(buf), "_%s_index", array->get_name());
 		index = fun->add_symbol(buf);
 	}
-	if (!array_len) {
+	if (array_len == nullptr) {
 		snprintf(buf, array_size(buf), "_%s_size", array->get_name());
 		array_len = fun->add_symbol(buf);
 	}
+}
+
+/*
+ *  Generate code.
+ */
+
+void Uc_arrayloop_statement_base::gen_check(
+    Basic_block *for_top,
+    Basic_block *loop_body,
+    Basic_block *past_loop
+) {
+	UsecodeOps opcode;
+	if (array->is_static()) {
+		opcode = UC_LOOPTOPS;
+	} else if (array->get_sym_type() == Uc_symbol::Member_var) {
+		opcode = UC_LOOPTOPTHV;
+	} else {
+		opcode = UC_LOOPTOP;
+	}
+	for_top->set_targets(opcode, loop_body, past_loop);
+	WriteJumpParam2(for_top, index->get_offset());  // Counter, total-count variables.
+	WriteJumpParam2(for_top, array_len->get_offset());
+	WriteJumpParam2(for_top, var->get_offset());    // Loop variable, than array.
+	WriteJumpParam2(for_top, array->get_offset());
+}
+
+/*
+ *  Delete.
+ */
+
+Uc_arrayloop_statement::~Uc_arrayloop_statement(
+) {
+	delete stmt;
 }
 
 /*
@@ -556,19 +598,7 @@ void Uc_arrayloop_statement::gen(
 	auto* nobreak_block = new Basic_block();
 	// Block immediately after FOR.
 	auto *past_for = new Basic_block();
-	UsecodeOps opcode;
-	if (array->is_static()) {
-		opcode = UC_LOOPTOPS;
-	} else if (array->get_sym_type() == Uc_symbol::Member_var) {
-		opcode = UC_LOOPTOPTHV;
-	} else {
-		opcode = UC_LOOPTOP;
-	}
-	for_top->set_targets(opcode, for_body, nobreak_block);
-	WriteJumpParam2(for_top, index->get_offset());// Counter, total-count variables.
-	WriteJumpParam2(for_top, array_len->get_offset());
-	WriteJumpParam2(for_top, var->get_offset());    // Loop variable, than array.
-	WriteJumpParam2(for_top, array->get_offset());
+	gen_check(for_top, for_body, nobreak_block);
 
 	// Generate FOR body.
 	if (stmt != nullptr) {
@@ -588,6 +618,40 @@ void Uc_arrayloop_statement::gen(
 	nobreak_block->set_taken(past_for);
 
 	blocks.push_back(curr = past_for);
+}
+
+/*
+ *  Generate code.
+ */
+
+void Uc_arrayloop_attend_statement::gen(
+    Uc_function *fun,
+    vector<Basic_block *> &blocks,      // What we are producing.
+    Basic_block *&curr,         // Active block; will usually be *changed*.
+    Basic_block *end,           // Fictitious exit block for function.
+    map<string, Basic_block *> &labels, // Label map for goto statements.
+    Basic_block *start,         // Block used for 'continue' statements.
+    Basic_block *exit           // Block used for 'break' statements.
+) {
+	ignore_unused_variable_warning(fun, end, start, exit);
+	auto it = labels.find(label);
+	if (it == labels.end()) {
+		char buf[255];
+		snprintf(buf, 255, "Undeclared label: '%s'", label.c_str());
+		error(buf);
+		return;
+	}
+	// The start of a loop is a jump target and needs
+	// a new basic block.
+	auto *for_top = new Basic_block();
+	curr->set_taken(for_top);
+	blocks.push_back(for_top);
+	// Body of FOR loop.
+	auto *for_body = new Basic_block();
+	// Block immediately after FOR.
+	auto *past_for = it->second;
+	gen_check(for_top, for_body, past_for);
+	blocks.push_back(curr = for_body);
 }
 
 /*
@@ -731,6 +795,23 @@ static void Call_intrinsic(
 	Uc_call_statement fstmt(fcall);
 	fstmt.gen(fun, blocks, curr, end, labels);
 	parms->clear();         // DON'T want to delete parm0.
+}
+
+/*
+ *  Generate code.
+ */
+void Uc_endconv_statement::gen(
+    Uc_function *fun,
+    std::vector<Basic_block *> &blocks,
+    Basic_block *&curr,
+    Basic_block *end,
+    std::map<std::string,
+    Basic_block *> &labels,
+    Basic_block *start,
+    Basic_block *exit
+) {
+	ignore_unused_variable_warning(fun, blocks, end, labels, start, exit);
+	WriteOp(curr, UC_CONVERSELOC);
 }
 
 /*
@@ -926,17 +1007,174 @@ int Uc_converse_always_case_statement::gen_remove(
 }
 
 /*
+ *  Generate code.
+ */
+
+void Uc_converse_case_attend_statement::gen(
+    Uc_function *fun,
+    vector<Basic_block *> &blocks,      // What we are producing.
+    Basic_block *&curr,         // Active block; will usually be *changed*.
+    Basic_block *end,           // Fictitious exit block for function.
+    map<string, Basic_block *> &labels, // Label map for goto statements.
+    Basic_block *start,         // Block used for 'continue' statements.
+    Basic_block *exit           // Block used for 'break' statements.
+) {
+	ignore_unused_variable_warning(start, exit);
+	auto it = labels.find(label);
+	if (it == labels.end()) {
+		char buf[255];
+		snprintf(buf, 255, "Undeclared label: '%s'", label.c_str());
+		error(buf);
+		return;
+	}
+	// New basic block for CASE body.
+	auto *case_body = new Basic_block();
+	// Past CASE body.
+	auto *past_case = it->second;
+	gen_check(curr, case_body, past_case);
+
+	if (remove) {    // Remove answer?
+		gen_remove(fun, blocks, case_body, end, labels);
+	}
+	blocks.push_back(curr = case_body);
+}
+
+/*
+ *  Generate code.
+ */
+
+int Uc_converse_strings_case_attend_statement::gen_check(
+    Basic_block *curr,         // Active block; where we write the check
+    Basic_block *case_body,    // Case body, for check fallthrough
+    Basic_block *past_case     // Block after the case statement
+) {
+	for (auto it = string_offset.rbegin();
+			it != string_offset.rend(); ++it) {
+		// Push strings on stack; *it should always be >= 0.
+		if (is_int_32bit(*it)) {
+			WriteOp(curr, UC_PUSHS32);
+			WriteOpParam4(curr, *it);
+		} else {
+			WriteOp(curr, UC_PUSHS);
+			WriteOpParam2(curr, *it);
+		}
+	}
+	// # strings on stack.
+	curr->set_targets(UC_CMPS, case_body, past_case);
+	WriteJumpParam2(curr, string_offset.size());
+	return 1;
+}
+
+/*
+ *  Generate code.
+ */
+
+int Uc_converse_strings_case_attend_statement::gen_remove(
+    Uc_function *fun,
+    vector<Basic_block *> &blocks,      // What we are producing.
+    Basic_block *case_body,             // Active block; will usually be *changed*.
+    Basic_block *end,                   // Fictitious exit block for function.
+    map<string, Basic_block *> &labels  // Label map for goto statements.
+) {
+	if (string_offset.size() > 1) {
+		auto *strlist = new Uc_array_expression();
+		for (const int it : string_offset) {
+			auto *str = new Uc_string_expression(it);
+			strlist->add(str);
+		}
+		Call_intrinsic(fun, blocks, case_body, end, labels,
+		          Uc_function::get_remove_answer(), strlist);
+	} else if (!string_offset.empty()) {
+		Call_intrinsic(fun, blocks, case_body, end, labels,
+		          Uc_function::get_remove_answer(),
+		          new Uc_string_expression(string_offset[0]));
+	} else {
+		Call_intrinsic(fun, blocks, case_body, end, labels,
+		          Uc_function::get_remove_answer(),
+		          new Uc_choice_expression());
+	}
+	return 1;
+}
+
+/*
+ *  Generate code.
+ */
+
+int Uc_converse_variable_case_attend_statement::gen_check(
+		Basic_block *curr,         // Active block; where we write the check
+		Basic_block *case_body,    // Case body, for check fallthrough
+		Basic_block *past_case     // Block after the case statement
+) {
+	if (variable != nullptr) {
+		variable->gen_value(curr);
+		// # strings on stack.
+		curr->set_targets(UC_CMPS, case_body, past_case);
+		WriteJumpParam2(curr, 1);
+		return 1;
+	}
+	return 0;
+}
+
+/*
+ *  Generate code.
+ */
+
+int Uc_converse_variable_case_attend_statement::gen_remove(
+    Uc_function *fun,
+    vector<Basic_block *> &blocks,      // What we are producing.
+    Basic_block *case_body,             // Active block; will usually be *changed*.
+    Basic_block *end,                   // Fictitious exit block for function.
+    map<string, Basic_block *> &labels  // Label map for goto statements.
+) {
+	if (variable != nullptr) {
+		Call_intrinsic(fun, blocks, case_body, end, labels,
+		         Uc_function::get_remove_answer(),
+		         variable);
+		return 1;
+	}
+	Call_intrinsic(fun, blocks, case_body, end, labels,
+	          Uc_function::get_remove_answer(),
+	          new Uc_choice_expression());
+	return 1;
+}
+
+/*
+ *  Generate code.
+ */
+
+int Uc_converse_default_case_attend_statement::gen_check(
+    Basic_block *curr,         // Active block; where we write the check
+    Basic_block *case_body,    // Case body, for check fallthrough
+    Basic_block *past_case     // Block after the case statement
+) {
+	// Writing 1 to match audition usecode, but this could be anything.
+	curr->set_targets(UC_DEFAULT, case_body, past_case);
+	WriteJumpParam2(curr, value);
+	return 1;
+}
+
+int Uc_converse_default_case_attend_statement::gen_remove(
+    Uc_function *fun,
+    vector<Basic_block *> &blocks,      // What we are producing.
+    Basic_block *case_body,             // Active block; will usually be *changed*.
+    Basic_block *end,                   // Fictitious exit block for function.
+    map<string, Basic_block *> &labels  // Label map for goto statements.
+) {
+	ignore_unused_variable_warning(fun, blocks, case_body, end, labels);
+	return 1;
+}
+
+/*
  *  Initialize.
  */
 
 Uc_converse_statement::Uc_converse_statement(
     Uc_expression *a,
-	Uc_block_statement *p,
+    Uc_block_statement *p,
     std::vector<Uc_statement *> *cs,
     bool n,
-	Uc_statement *nb
-)
-	: answers(a), preamble(p), nobreak(nb), cases(*cs), nestconv(n) {
+    Uc_statement *nb
+) : answers(a), preamble(p), nobreak(nb), cases(*cs), nestconv(n) {
 }
 
 /*
@@ -1019,6 +1257,50 @@ void Uc_converse_statement::gen(
 		Call_intrinsic(fun, blocks, curr, end, labels,
 		               Uc_function::get_pop_answers());
 	}
+}
+
+/*
+ *  Initialize.
+ */
+
+Uc_converse_attend_statement::Uc_converse_attend_statement(
+    std::string target
+) : label(std::move(target)) {
+}
+
+/*
+ *  Generate code.
+ */
+
+void Uc_converse_attend_statement::gen(
+    Uc_function *fun,
+    vector<Basic_block *> &blocks,      // What we are producing.
+    Basic_block *&curr,         // Active block; will usually be *changed*.
+    Basic_block *end,           // Fictitious exit block for function.
+    map<string, Basic_block *> &labels, // Label map for goto statements.
+    Basic_block *start,         // Block used for 'continue' statements.
+    Basic_block *exit           // Block used for 'break' statements.
+) {
+	ignore_unused_variable_warning(fun, end, start, exit);
+	// The start of a CONVERSE loop is a jump target and needs
+	// a new basic block.
+	auto it = labels.find(label);
+	if (it == labels.end()) {
+		char buf[255];
+		snprintf(buf, 255, "Undeclared label: '%s'", label.c_str());
+		error(buf);
+		return;
+	}
+	auto *conv_top = new Basic_block();
+	// Fallthrough from curr to conv_top.
+	curr->set_taken(conv_top);
+	blocks.push_back(conv_top);
+	auto *conv_body = new Basic_block();
+	Basic_block *past_conv = it->second;
+	// Branch to label or fallthrough to body.
+	curr->set_targets(UC_CONVERSE, conv_body, past_conv);
+	// Add body and make it current basic block.
+	blocks.push_back(curr = conv_body);
 }
 
 /*

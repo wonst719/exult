@@ -97,6 +97,17 @@ struct Member_selector
 		{  }
 	};
 
+struct Loop_Vars
+	{
+	Uc_var_symbol *var;
+	Uc_var_symbol *array;
+	Uc_var_symbol *index = nullptr;
+	Uc_var_symbol *length = nullptr;
+	Loop_Vars(Uc_var_symbol *v, Uc_var_symbol *a)
+		: var(v), array(a)
+		{  }
+	};
+
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -123,12 +134,12 @@ struct Member_selector
 	class Uc_statement *stmt;
 	class std::vector<Uc_var_symbol *> *varvec;
 	class Uc_block_statement *block;
-	class Uc_arrayloop_statement *arrayloop;
 	class Uc_array_expression *exprlist;
 	class std::vector<int> *intlist;
 	class std::vector<Uc_statement *> *stmtlist;
 	struct Fun_id_info *funid;
 	struct Member_selector *membersel;
+	struct Loop_Vars *loopvars;
 	int intval;
 	char *strval;
 	}
@@ -189,6 +200,8 @@ struct Member_selector
 %token CATCH "'catch'"
 %token ABORT "'abort'"
 %token THROW "'throw'"
+%token ATTEND "'attend'"
+%token ENDCONV "'endconv'"
 
 /*
  *	Script keywords:
@@ -332,10 +345,10 @@ struct Member_selector
 %type <expr> expression primary declared_var_value opt_script_delay item
 %type <expr> script_command start_call addressof new_expr class_expr
 %type <expr> nonclass_expr opt_delay appended_element int_literal
-%type <expr> opt_primary_expression
+%type <expr> opt_primary_expression conv_expression
 %type <intval> opt_int direction converse_options actor_frames egg_criteria
 %type <intval> opt_original assignment_operator const_int_val opt_const_int_val
-%type <intval> const_int_type int_cast dam_type opt_nest
+%type <intval> const_int_type int_cast dam_type opt_nest opt_int_value
 %type <funid> opt_funid
 %type <membersel> member_selector
 %type <intlist> string_list response_expression
@@ -348,16 +361,17 @@ struct Member_selector
 %type <stmt> statement assignment_statement if_statement while_statement
 %type <stmt> statement_block return_statement function_call_statement
 %type <stmt> special_method_call_statement trycatch_statement trystart_statement
-%type <stmt> try_statement simple_statement
+%type <stmt> try_statement simple_statement noncase_statement
 %type <stmt> array_loop_statement var_decl var_decl_list stmt_declaration
 %type <stmt> class_decl class_decl_list struct_decl_list struct_decl
 %type <stmt> break_statement converse_statement opt_nobreak opt_nobreak_do
 %type <stmt> converse_case switch_case script_statement switch_statement
 %type <stmt> label_statement goto_statement answer_statement delete_statement
 %type <stmt> continue_statement response_case fallthrough_statement
-%type <stmt> scoped_statement scoped_or_if_statement
-%type <block> statement_list
-%type <arrayloop> start_array_loop
+%type <stmt> scoped_statement scoped_or_if_statement converse_case_attend
+%type <stmt> array_enum_statement opt_trailing_label
+%type <block> statement_list noncase_statement_list
+%type <loopvars> start_array_loop start_array_variables
 %type <exprlist> opt_expression_list expression_list script_command_list
 %type <exprlist> opt_nonclass_expr_list nonclass_expr_list appended_element_list
 %type <stmtlist> switch_case_list converse_case_list response_case_list
@@ -497,14 +511,20 @@ function:
 		}
 	;
 
-function_body:
-	'{' statement_list '}'
+opt_trailing_label:
+	label_statement
+	| %empty
 		{
-		cur_fun->set_statement($2);
+		$$ = nullptr;
 		}
-	| '{' statement_list label_statement '}'
-		{	// Function ends in label.
-		$2->add($3);
+
+function_body:
+	'{' statement_list opt_trailing_label '}'
+		{
+		if ($3 != nullptr)
+			{
+			$2->add($3);
+			}
 		cur_fun->set_statement($2);
 		}
 	;
@@ -599,14 +619,12 @@ opt_int:
 	;
 
 statement_block:
-	statement_block_start statement_list '}'
-		{
-		$$ = $2;
-		cur_fun->pop_scope();
-		}
-	| statement_block_start statement_list label_statement '}'
+	statement_block_start statement_list opt_trailing_label '}'
 		{	// Block ends in label.
-		$2->add($3);
+		if ($3 != nullptr)
+			{
+			$2->add($3);
+			}
 		$$ = $2;
 		cur_fun->pop_scope();
 		}
@@ -639,12 +657,23 @@ statement_list:
 		{ $$ = new Uc_block_statement(); }
 	;
 
+noncase_statement_list:
+	noncase_statement_list noncase_statement
+		{
+		if ($2)
+			$$->add($2);
+		}
+	| %empty
+		{ $$ = new Uc_block_statement(); }
+	;
+
 simple_statement:
 	stmt_declaration
 	| assignment_statement
 	| trycatch_statement
 	| while_statement
 	| array_loop_statement
+	| array_enum_statement
 	| function_call_statement
 	| special_method_call_statement
 	| return_statement
@@ -661,6 +690,8 @@ simple_statement:
 	| MESSAGE '(' opt_nonclass_expr_list ')' ';'
 		{ $$ = new Uc_message_statement($3); }
 	| answer_statement
+	| ENDCONV ';'
+		{ $$ = new Uc_endconv_statement(); }
 	| throwabort_statement ';'
 		{ $$ = new Uc_abort_statement(); }
 	| throwabort_statement expression ';'
@@ -670,6 +701,13 @@ simple_statement:
 	;
 
 statement:
+	simple_statement
+	| if_statement
+	| statement_block
+	| converse_case_attend
+	;
+
+noncase_statement:
 	simple_statement
 	| if_statement
 	| statement_block
@@ -1155,8 +1193,12 @@ appended_element:
 	;
 
 scoped_statement:
-	statement_block_start statement_list '}'
+	statement_block_start statement_list opt_trailing_label '}'
 		{
+		if ($3 != nullptr)
+			{
+			$2->add($3);
+			}
 		cur_fun->pop_scope();
 		$$ = $2;
 		}
@@ -1229,8 +1271,12 @@ if_statement:
 	;
 
 trycatch_statement:
-	trystart_statement '{' statement_list '}'
+	trystart_statement '{' statement_list opt_trailing_label '}'
 		{
+		if ($4 != nullptr)
+			{
+			$3->add($4);
+			}
 		auto *stmt = dynamic_cast<Uc_trycatch_statement*>($1);
 		if (!stmt) {
 			yyerror("try/catch statement is not a try/catch statement");
@@ -1243,18 +1289,26 @@ trycatch_statement:
 	;
 
 trystart_statement:
-	try_statement statement_list '}' CATCH '(' ')'
+	try_statement statement_list opt_trailing_label '}' CATCH '(' ')'
 		{
+		if ($3 != nullptr)
+			{
+			$2->add($3);
+			}
 		cur_fun->pop_scope();
 		cur_fun->push_scope();
 		$$ = new Uc_trycatch_statement($2);
 		}
-	| try_statement statement_list '}' CATCH '(' IDENTIFIER ')'
+	| try_statement statement_list opt_trailing_label '}' CATCH '(' IDENTIFIER ')'
 		{
+		if ($3 != nullptr)
+			{
+			$2->add($3);
+			}
 		cur_fun->pop_scope();
 		cur_fun->push_scope();
 		auto *stmt = new Uc_trycatch_statement($2);
-		stmt->set_catch_variable(cur_fun->add_symbol($6));
+		stmt->set_catch_variable(cur_fun->add_symbol($7));
 		$$ = stmt;
 		}
 	;
@@ -1330,35 +1384,55 @@ while_statement:
 		}
 	;
 
+array_enum_statement:
+	ENUM '(' ')' ';'
+		{
+		$$ = new array_enum_statement();
+		}
+	;
+
 array_loop_statement:
-	start_array_loop ')' { start_loop(); } scoped_statement opt_nobreak
+	start_array_variables { start_loop(); } scoped_statement opt_nobreak
 		{
-		$1->set_statement($4);
-		$1->set_nobreak($5);
-		$1->finish(cur_fun);
+		auto *expr = new Uc_arrayloop_statement($1->var, $1->array);
+		expr->set_statement($3);
+		expr->set_nobreak($4);
+		expr->set_index($1->index);
+		expr->set_array_size($1->length);
+		expr->finish(cur_fun);
 		cur_fun->pop_scope();
 		end_loop();
+		delete $1;	// No onger needed
+		$$ = expr;
 		}
-	| start_array_loop WITH IDENTIFIER
-		{ $1->set_index(Get_variable($3)); }
-					')' { start_loop(); } scoped_statement opt_nobreak
+	| start_array_variables ATTEND IDENTIFIER ';'
 		{
-		$1->set_statement($7);
-		$1->set_nobreak($8);
-		$1->finish(cur_fun);
+		auto *expr = new Uc_arrayloop_attend_statement($1->var, $1->array);
+		expr->set_index($1->index);
+		expr->set_array_size($1->length);
+		expr->set_target($3);
 		cur_fun->pop_scope();
-		end_loop();
+		expr->finish(cur_fun);
+		delete $1;	// No onger needed
+		$$ = expr;
 		}
-	| start_array_loop WITH IDENTIFIER
-		{ $1->set_index(Get_variable($3)); }
-				TO IDENTIFIER
-		{ $1->set_array_size(Get_variable($6)); }
-						')' { start_loop(); } scoped_statement opt_nobreak
+	;
+
+start_array_variables:
+	start_array_loop ')'
 		{
-		$1->set_statement($10);
-		$1->set_nobreak($11);
-		cur_fun->pop_scope();
-		end_loop();
+		$$ = $1;
+		}
+	| start_array_loop WITH IDENTIFIER ')'
+		{
+		$1->index = Get_variable($3);
+		$$ = $1;
+		}
+	| start_array_loop WITH IDENTIFIER TO IDENTIFIER ')'
+		{
+		$1->index = Get_variable($3);
+		$1->length = Get_variable($5);
+		$$ = $1;
 		}
 	;
 
@@ -1372,7 +1446,7 @@ start_array_loop:
 					$4->get_name());
 			yyerror(buf);
 			}
-		$$ = new Uc_arrayloop_statement(Get_variable($2), $4);
+		$$ = new Loop_Vars(Get_variable($2), $4);
 		}
 	;
 
@@ -1499,40 +1573,54 @@ opt_nest:
 	;
 
 converse_statement:
-	start_conv '{' statement_list response_case_list '}' opt_nobreak
+	CONVERSE start_conv
+			noncase_statement_list response_case_list '}' opt_nobreak
 		{
 		cur_fun->pop_scope();
 		end_converse();
 		--converse;
 		$$ = new Uc_converse_statement(nullptr, $3, $4, false, $6);
 		}
-
-	| start_conv opt_nest '(' expression ')' '{' statement_list converse_case_list '}' opt_nobreak
+	| CONVERSE opt_nest conv_expression start_conv
+			noncase_statement_list converse_case_list '}' opt_nobreak
 		{
 		cur_fun->pop_scope();
 		end_converse();
 		--converse;
-		if (Class_unexpected_error($4))
-			$$ = nullptr;
-		else
-			{
-			int ival;
-			Uc_expression *expr = $4;
-			if ($4->eval_const(ival))
-				{
-				expr = nullptr;
-				}
-			$$ = new Uc_converse_statement(expr, $7, $8, $2, $10);
-			}
+		$$ = new Uc_converse_statement($3, $5, $6, $2, $8);
+		}
+	| CONVERSE ATTEND IDENTIFIER ';'
+		{
+		$$ = new Uc_converse_attend_statement($3);
 		}
 	;
 
 start_conv:
-	CONVERSE
+	'{' { start_converse(); cur_fun->push_scope(); ++converse; }
 		{
 		start_converse();
 		cur_fun->push_scope();
 		++converse;
+		}
+	;
+
+conv_expression:
+	'(' expression ')'
+		{
+		if (Class_unexpected_error($2))
+			$$ = nullptr;
+		else
+			{
+			int ival;
+			if ($2->eval_const(ival))
+				{
+				$$ = nullptr;
+				}
+			else
+				{
+				$$ = $2;
+				}
+			}
 		}
 	;
 
@@ -1548,7 +1636,7 @@ converse_case_list:
 
 converse_case:
 	CASE declared_var_value converse_options ':'
-			{ cur_fun->push_scope(); } statement_list
+			{ cur_fun->push_scope(); } noncase_statement_list
 		{
 		Uc_expression *expr = $2;
 		if (Class_unexpected_error(expr))
@@ -1559,23 +1647,56 @@ converse_case:
 		cur_fun->pop_scope();
 		}
 	| CASE string_list converse_options ':'
-			{ cur_fun->push_scope(); } statement_list
+			{ cur_fun->push_scope(); } noncase_statement_list
 		{
 		$$ = new Uc_converse_strings_case_statement(*$2, $6, ($3 ? true : false));
 		delete $2;		// A copy was made.
 		cur_fun->pop_scope();
 		}
 	| ALWAYS ':'
-			{ cur_fun->push_scope(); } statement_list
+			{ cur_fun->push_scope(); } noncase_statement_list
 		{
 		$$ = new Uc_converse_always_case_statement($4);
 		cur_fun->pop_scope();
 		}
 	| DEFAULT ':'
-			{ cur_fun->push_scope(); } statement_list
+			{ cur_fun->push_scope(); } noncase_statement_list
 		{
 		$$ = new Uc_converse_default_case_statement($4);
 		cur_fun->pop_scope();
+		}
+	;
+
+opt_int_value:
+	'(' int_literal ')'
+		{
+		int ival;
+		if (!$2->eval_const(ival))
+			yyerror("Failed to obtain value from integer constant");
+		$$ = ival;
+		}
+	| %empty
+		{ $$ = 1; }
+	;
+
+converse_case_attend:
+	CASE declared_var_value converse_options ATTEND IDENTIFIER ':'
+		{
+		Uc_expression *expr = $2;
+		if (Class_unexpected_error(expr))
+			{
+			expr = nullptr;
+			}
+		$$ = new Uc_converse_variable_case_attend_statement(expr, $5, ($3 ? true : false));
+		}
+	| CASE string_list converse_options ATTEND IDENTIFIER ':'
+		{
+		$$ = new Uc_converse_strings_case_attend_statement(*$2, $5, ($3 ? true : false));
+		delete $2;		// A copy was made.
+		}
+	| DEFAULT opt_int_value ATTEND IDENTIFIER ':'
+		{
+		$$ = new Uc_converse_default_case_attend_statement($4, $2);
 		}
 	;
 
@@ -1658,12 +1779,12 @@ switch_case_list:
 	;
 
 switch_case:
-	CASE int_literal ':' statement_list
+	CASE int_literal ':' noncase_statement_list
 		{	$$ = new Uc_switch_expression_case_statement($2, $4);	}
-	| CASE STRING_LITERAL ':' statement_list
+	| CASE STRING_LITERAL ':' noncase_statement_list
 		{	$$ = new Uc_switch_expression_case_statement(
 				new Uc_string_expression(cur_fun->add_string($2)), $4);	}
-	| DEFAULT ':' statement_list
+	| DEFAULT ':' noncase_statement_list
 		{	$$ = new Uc_switch_default_case_statement($3);	}
 	;
 

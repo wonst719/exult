@@ -78,7 +78,12 @@ var adder1 (a, b)
 	}
 
 	return adder(a, 3);
-	}
+}
+
+var adder (a, b)
+{
+	return a + b;
+}
 
 class Test
 {
@@ -561,4 +566,36 @@ void test_breakable_continue(var flag)
 		}
 	} while (false);
 	say("Past the end");
+}
+
+void test_for_attend(var array)
+{
+	var npc;
+	enum();
+loop:
+	for (npc in array) attend exit;
+	if (!npc->get_item_flag(0xA)) goto loop;
+	npc->clear_item_flag(0xA);
+	npc->set_item_flag(0xB);
+	goto loop;
+exit:
+}
+
+void test_converse_attend(var array)
+{
+loop:
+	converse attend exit;
+	case "name" attend next_case:
+	message("a");
+	say();
+next_case:
+	case array attend default_case:
+	message("b");
+	say();
+default_case:
+	default attend loop:
+	message("c");
+	say();
+	endconv;
+exit:
 }

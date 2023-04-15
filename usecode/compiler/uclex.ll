@@ -382,8 +382,10 @@ delete		return DELETE;
 switch		return SWITCH;
 default		return DEFAULT;
 always		return ALWAYS;
+attend		return ATTEND;
 
 converse	return CONVERSE;
+endconv		return ENDCONV;
 user_choice	return CHOICE;
 nested		return NESTED;
 say		return SAY;
