@@ -52,11 +52,10 @@ Uc_scope Uc_function::globals(nullptr);   // Stores intrinic symbols.
 vector<Uc_intrinsic_symbol *> Uc_function::intrinsics;
 int Uc_function::num_global_statics = 0;
 int Uc_function::add_answer = -1, Uc_function::remove_answer = -1,
-                 Uc_function::push_answers = -1, Uc_function::pop_answers = -1,
-                              Uc_function::show_face = -1, Uc_function::remove_face = -1,
-                                           Uc_function::get_item_shape = -1, Uc_function::get_usecode_fun = -1;
-Uc_function::Intrinsic_type Uc_function::intrinsic_type =
-    Uc_function::unset;
+    Uc_function::push_answers = -1, Uc_function::pop_answers = -1,
+    Uc_function::show_face = -1, Uc_function::remove_face = -1,
+    Uc_function::get_item_shape = -1, Uc_function::get_usecode_fun = -1;
+Uc_function::Intrinsic_type Uc_function::intrinsic_type = Uc_function::unset;
 
 /*
  *  Create function, and add to global symbol table.
@@ -429,7 +428,6 @@ int Uc_function::find_string_prefix(
 	return exist->second;     // Return offset.
 }
 
-
 /*
  *  Lookup/add a link to an external function.
  *
@@ -451,13 +449,12 @@ static int Remove_dead_blocks(
     vector<Basic_block *> &blocks,
 	Basic_block *endblock
 ) {
-	int niter = 0;
+	int total_removed = 0;
 	while (true) {
-		niter++;
-		size_t i = 0;
-		int nremoved = 0;
+		size_t i        = 0;
+		int    nremoved = 0;
 		while (i < blocks.size()) {
-			Basic_block *block = blocks[i];
+			Basic_block* block = blocks[i];
 			if (block->get_taken() == nullptr) {
 				block->set_targets(UC_INVALID, endblock);
 			}
@@ -484,19 +481,20 @@ static int Remove_dead_blocks(
 			}
 			i++;
 		}
-		if (!nremoved)
+		total_removed += nremoved;
+		if (nremoved == 0) {
 			break;
+		}
 	}
-	return niter;
+	return total_removed;
 }
 
 static int Optimize_jumps(
-    vector<Basic_block *> &blocks,
+    vector<Basic_block*>& blocks,
     bool returns
 ) {
-	int niter = 0;
+	int total_removed = 0;
 	while (true) {
-		niter++;
 		size_t i = 0;
 		int nremoved = 0;
 		while (i + 1 < blocks.size()) {
@@ -505,12 +503,20 @@ static int Optimize_jumps(
 			bool remove = false;
 			if (block->is_jump_block()) {
 				// Unconditional jump block.
+				if (aux == blocks[i + 1]) {
+					// Jumping to next block.
+					// Optimize the jump away.
+					++nremoved;
+					block->clear_jump();
+					continue;
+				}
 				if (aux->is_simple_jump_block()) {
 					// Double-jump. Merge the jumps in a single one.
 					block->set_taken(aux->get_taken());
 					++nremoved;
 					continue;
-				} else if (aux->is_end_block()) {
+				}
+				if (aux->is_end_block()) {
 					// Jump to end-block.
 					if (aux->is_empty_block()) {
 						// No return opcode in end block; add one.
@@ -535,7 +541,7 @@ static int Optimize_jumps(
 			} else if (aux == blocks[i + 1]) {
 				if (block->is_fallthrough_block() || block->is_jump_block()) {
 					// Fall-through block followed by block which descends
-					// from current block or jump immediatelly followed
+					// from current block or jump immediately followed
 					// by its target.
 					if (aux->has_single_predecessor()) {
 						// Child block has single ancestor.
@@ -582,18 +588,27 @@ static int Optimize_jumps(
 						opcode = UC_INVALID;
 						break;
 					}
-					if (opcode == UC_INVALID)
+					if (opcode == UC_INVALID) {
 						WriteOp(block, UC_NOT);
-					else {
+					} else {
 						PopOpcode(block);
-						if (opcode != UC_NOT)
+						if (opcode != UC_NOT) {
 							WriteOp(block, opcode);
+						}
 					}
 					// Set destinations.
 					Basic_block *ntaken = block->get_ntaken();
 					block->set_ntaken(aux->get_taken());
 					block->set_taken(ntaken);
 					remove = true;
+				} else if (block->is_conditionaljump_block()
+					       || block->is_converse_case_block()) {
+					Basic_block *naux = block->get_ntaken();
+					if (naux->is_simple_jump_block()) {
+						block->set_ntaken(naux->get_taken());
+						++nremoved;
+						continue;
+					}
 				}
 			} else if (block->is_end_block() && (aux = blocks[i + 1])->is_end_block()
 			           && block->ends_in_return() && aux->is_simple_return_block()
@@ -614,10 +629,12 @@ static int Optimize_jumps(
 			}
 			i++;
 		}
-		if (!nremoved)
+		total_removed += nremoved;
+		if (nremoved == 0) {
 			break;
+		}
 	}
-	return niter;
+	return total_removed;
 }
 
 static inline int Compute_locations(
@@ -628,9 +645,9 @@ static inline int Compute_locations(
 	locs.push_back(0);  // First block is at zero.
 	// Get locations.
 	Basic_block *back = blocks.back();
-	for (auto it = blocks.begin();
-	        *it != back; ++it)
+	for (auto it = blocks.begin(); *it != back; ++it) {
 		locs.push_back(locs.back() + (*it)->get_block_size());
+	}
 	return locs.back() + back->get_block_size();
 }
 
@@ -699,6 +716,16 @@ void Uc_function::gen(
 		fun_blocks.pop_back();
 		delete blk;
 	}
+	for (auto iter = fun_blocks.begin(); iter != fun_blocks.end(); ) {
+		Basic_block *block = *iter;
+		if (block->is_empty_block() && block->get_taken() != nullptr) {
+			block->link_through_block();
+			iter = fun_blocks.erase(iter);
+			delete block;
+			continue;
+		}
+		++iter;
+	}
 	// Mark all blocks reachable from initial block.
 	initial->mark_reachable();
 	// Labels map is no longer needed.
@@ -717,10 +744,12 @@ void Uc_function::gen(
 	label_blocks.clear();
 	// First round of optimizations.
 	Remove_dead_blocks(fun_blocks, endblock);
-	// Second round of optimizations.
-	Optimize_jumps(fun_blocks, proto->has_ret());
-	// Third round of optimizations.
-	Remove_dead_blocks(fun_blocks, endblock);
+	int count1 = 0;
+	int count2 = 0;
+	do {
+		count1 = Optimize_jumps(fun_blocks, proto->has_ret());
+		count2 = Remove_dead_blocks(fun_blocks, endblock);
+	} while (count1 > 0 || count2 > 0);
 	// Set block indices.
 	for (size_t i = 0; i < fun_blocks.size(); i++) {
 		Basic_block *block = fun_blocks[i];
@@ -738,14 +767,15 @@ void Uc_function::gen(
 		code.reserve(size);
 		// Output code.
 		for (auto *block : fun_blocks) {
-				block->write(code);
+			block->write(code);
 			if (block->does_not_jump())
 				continue;   // Not a jump.
 			const int dist = Compute_jump_distance(block, locs);
-			if (is_sint_32bit(dist))
+			if (is_sint_32bit(dist)) {
 				Write4(code, dist);
-			else
+			} else {
 				Write2(code, dist);
+			}
 		}
 	}
 
