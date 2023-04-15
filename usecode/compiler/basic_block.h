@@ -149,20 +149,23 @@ public:
 #ifdef DEBUG    // For debugging.
 	void write_text() const {
 		std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(opcode) << ' ';
-		for (const char param : params)
+		for (const char param : params) {
 			std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(static_cast<unsigned char>(param)) << ' ';
-		if (is_jump)
+		}
+		if (is_jump) {
 			std::cout << "<offset>";
+		}
 	}
 #endif
-	int get_size() const {  // Total size, including offset.
-		const int size = 1 + params.size();
-		if (is_32bit())
+	size_t get_size() const {  // Total size, including offset.
+		const size_t size = 1 + params.size();
+		if (is_32bit()) {
 			return size + 4;    // +4 for 32-bit offset.
-		else if (is_jump)
+		}
+		if (is_jump) {
 			return size + 2;    // +2 for 16-bit offset.
-		else
-			return size;
+		}
+		return size;
 	}
 	bool is_32bit() const { // Only matters for jumps.
 		return is_jump && (opcode & 0x80) != 0;
@@ -234,12 +237,15 @@ public:
 	}
 	Basic_block(int ind, Basic_block *t = nullptr, Basic_block *n = nullptr, UsecodeOps ins = UC_INVALID)
 		:   index(ind), taken(t), ntaken(n), jmp_op(new Opcode(ins)) {
-		if (index != -1) instructions.reserve(100);
+		if (index != -1) {
+			instructions.reserve(100);
+		}
 	}
 	~Basic_block() {
 		predecessors.clear();
-		for (auto *op : instructions)
+		for (auto *op : instructions) {
 			delete op;
+		}
 		instructions.clear();
 		delete jmp_op;
 	}
@@ -250,7 +256,7 @@ public:
 		index = ind;
 	}
 	UsecodeOps get_opcode() const {
-		return jmp_op ? jmp_op->get_opcode() : UC_INVALID;
+		return jmp_op != nullptr ? jmp_op->get_opcode() : UC_INVALID;
 	}
 	void clear_jump() {
 		delete jmp_op;
@@ -260,10 +266,12 @@ public:
 		return !instructions.empty() ? instructions.back()->get_opcode() : UC_INVALID;
 	}
 	void set_32bit_jump() {
-		if (jmp_op) jmp_op->set_32bit();
+		if (jmp_op != nullptr) {
+			jmp_op->set_32bit();
+		}
 	}
 	bool is_32bit_jump() {
-		return jmp_op ? jmp_op->is_32bit() : false;
+		return jmp_op != nullptr ? jmp_op->is_32bit() : false;
 	}
 	bool does_not_jump() const {
 		return jmp_op == nullptr;
@@ -274,42 +282,43 @@ public:
 	bool ends_in_abort() const {
 		return !instructions.empty() && instructions.back()->is_abort();
 	}
-	int get_jump_size() const {
-		if (!jmp_op)
+	size_t get_jump_size() const {
+		if (jmp_op == nullptr) {
 			return 0;   // Fall-through block or terminating block
-		else
-			return jmp_op->get_size();
+		}
+		return jmp_op->get_size();
 	}
-	int get_block_size() const {
-		int size = get_jump_size();
+	size_t get_block_size() const {
+		size_t size = get_jump_size();
 		for (auto *op : instructions) {
-				size += op->get_size();
+			size += op->get_size();
 		}
 		return size;
 	}
 	bool is_jump_block() const {
-		return jmp_op ? (jmp_op->get_opcode() == UC_JMP) : false;
+		return jmp_op != nullptr ? (jmp_op->get_opcode() == UC_JMP) : false;
 	}
 	bool is_simple_jump_block() const {
 		return is_jump_block() && instructions.empty();
 	}
 	bool is_conditionaljump_block() const {
 		// instructions shouldn't be empty in this case.
-		return jmp_op ? (jmp_op->get_opcode() == UC_JNE) : false;
+		return jmp_op != nullptr ? (jmp_op->get_opcode() == UC_JNE) : false;
 	}
 	bool is_fallthrough_block() const {
-		return !jmp_op && taken;
+		return jmp_op == nullptr && taken != nullptr;
 	}
 	bool is_empty_block() const {
-		return !jmp_op && (instructions.empty());
+		return jmp_op == nullptr && (instructions.empty());
 	}
 	bool is_end_block() const {
-		return !jmp_op && taken && (taken->index == -1);
+		return jmp_op == nullptr && taken != nullptr && (taken->index == -1);
 	}
 	bool is_forced_target() const {
 		for (auto *block : predecessors) {
-			if (!block->is_jump_block() && !block->is_fallthrough_block())
+			if (!block->is_jump_block() && !block->is_fallthrough_block()) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -324,7 +333,7 @@ public:
 		       && instructions.size() == 1 && instructions.back()->is_abort();
 	}
 	bool is_childless() const {
-		return !taken && !ntaken;
+		return taken == nullptr && ntaken == nullptr;
 	}
 	bool no_parents() const {
 		return predecessors.empty();
@@ -336,13 +345,16 @@ public:
 		return reachable;
 	}
 	void mark_reachable() {
-		if (reachable)
+		if (reachable) {
 			return;
+		}
 		reachable = true;
-		if (taken)
+		if (taken != nullptr) {
 			taken->mark_reachable();
-		if (ntaken)
+		}
+		if (ntaken != nullptr) {
 			ntaken->mark_reachable();
+		}
 	}
 	Basic_block *get_taken() {
 		return taken;
@@ -363,42 +375,49 @@ public:
 		return predecessors.size();
 	}
 	void set_taken(Basic_block* dest) {
-		if (dest)
+		if (dest != nullptr) {
 			dest->predecessors.insert(this);
-		if (taken)
+		}
+		if (taken != nullptr) {
 			taken->predecessors.erase(this);
+		}
 		taken = dest;
 	}
 	void set_ntaken(Basic_block *dest) {
-		if (dest)
+		if (dest != nullptr) {
 			dest->predecessors.insert(this);
-		if (ntaken)
+		}
+		if (ntaken != nullptr) {
 			ntaken->predecessors.erase(this);
+		}
 		ntaken = dest;
 	}
 	void set_targets(UsecodeOps op, Basic_block *t = nullptr, Basic_block *n = nullptr) {
 		clear_jump();
-		if (op != UC_INVALID)
+		if (op != UC_INVALID) {
 			jmp_op = new Opcode(op);
+		}
 		set_taken(t);
 		set_ntaken(n);
 	}
 	void unlink_descendants() {
-		if (taken) {
+		if (taken != nullptr) {
 			taken->predecessors.erase(this);
 			taken = nullptr;
 		}
-		if (ntaken) {
+		if (ntaken != nullptr) {
 			ntaken->predecessors.erase(this);
 			ntaken = nullptr;
 		}
 	}
 	void link_predecessors() {
 		for (auto *block : predecessors) {
-			if (block->taken == this)
+			if (block->taken == this) {
 				block->taken_index = index;
-			if (block->ntaken == this)
+			}
+			if (block->ntaken == this) {
 				block->ntaken_index = index;
+			}
 		}
 	}
 	void unlink_predecessors() {
@@ -418,19 +437,21 @@ public:
 		for (auto *pred : predecessors) {
 			// Do NOT use set_taken, set_ntaken!
 			if (pred->taken == this) {
-				if (taken)  // Check almost unneeded.
+				if (taken != nullptr) {  // Check almost unneeded.
 					taken->predecessors.insert(pred);
+				}
 				pred->taken = taken;
 			}
 			if (pred->ntaken == this) {
-				if (ntaken) {
+				if (ntaken != nullptr) {
 					ntaken->predecessors.insert(pred);
 					pred->ntaken = ntaken;
-				} else if (taken) {
+				} else if (taken != nullptr) {
 					taken->predecessors.insert(pred);
 					pred->ntaken = taken;
-				} else
+				} else {
 					pred->ntaken = nullptr;
+				}
 			}
 		}
 		predecessors.clear();
@@ -452,8 +473,9 @@ public:
 		for (auto *op : instructions) {
 			op->write(out);
 		}
-		if (jmp_op)
+		if (jmp_op != nullptr) {
 			jmp_op->write(out);
+		}
 	}
 #ifdef DEBUG    // For debugging.
 	void check() const {
@@ -461,12 +483,14 @@ public:
 		          << '\t' << std::setw(8) << std::setfill('0') << taken
 		          << '\t' << std::setw(8) << std::setfill('0') << ntaken
 		          << '\t';
-		for (const auto *instruction : instructions)
+		for (const auto *instruction : instructions) {
 			instruction->write_text();
-		if (jmp_op)
+		}
+		if (jmp_op != nullptr) {
 			jmp_op->write_text();
-		else
+		} else {
 			std::cout << "<no jump>";
+		}
 		std::cout << std::endl;
 	}
 #endif
@@ -477,8 +501,9 @@ public:
  */
 
 inline void PopOpcode(Basic_block *dest) {
-	if (dest->instructions.empty())
+	if (dest->instructions.empty()) {
 		return;
+	}
 	Opcode *op = dest->instructions.back();
 	dest->instructions.pop_back();
 	delete op;
@@ -499,8 +524,9 @@ inline void WriteOp(Basic_block *dest, UsecodeOps val) {
  */
 
 inline void WriteOpParam1(Basic_block *dest, unsigned short val) {
-	if (dest->instructions.empty())
+	if (dest->instructions.empty()) {
 		return;
+	}
 	dest->instructions.back()->WriteParam1(val);
 }
 
@@ -509,8 +535,9 @@ inline void WriteOpParam1(Basic_block *dest, unsigned short val) {
  */
 
 inline void WriteOpParam2(Basic_block *dest, unsigned short val) {
-	if (dest->instructions.empty())
+	if (dest->instructions.empty()) {
 		return;
+	}
 	dest->instructions.back()->WriteParam2(val);
 }
 
@@ -519,8 +546,9 @@ inline void WriteOpParam2(Basic_block *dest, unsigned short val) {
  */
 
 inline void WriteOpParam4(Basic_block *dest, unsigned int val) {
-	if (dest->instructions.empty())
+	if (dest->instructions.empty()) {
 		return;
+	}
 	dest->instructions.back()->WriteParam4(val);
 }
 
@@ -529,8 +557,9 @@ inline void WriteOpParam4(Basic_block *dest, unsigned int val) {
  */
 
 inline void WriteJumpParam2(Basic_block *dest, unsigned short val) {
-	if (!dest->jmp_op)
+	if (dest->jmp_op == nullptr) {
 		return;
+	}
 	dest->jmp_op->WriteParam2(val);
 }
 
@@ -539,8 +568,9 @@ inline void WriteJumpParam2(Basic_block *dest, unsigned short val) {
  */
 
 inline void WriteJumpParam4(Basic_block *dest, unsigned int val) {
-	if (!dest->jmp_op)
+	if (dest->jmp_op == nullptr) {
 		return;
+	}
 	dest->jmp_op->WriteParam4(val);
 }
 
