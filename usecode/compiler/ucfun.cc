@@ -602,7 +602,8 @@ static int Optimize_jumps(
 					block->set_taken(ntaken);
 					remove = true;
 				} else if (block->is_conditionaljump_block()
-					       || block->is_converse_case_block()) {
+					       || block->is_converse_case_block()
+						   || block->is_array_loop_block()) {
 					Basic_block *naux = block->get_ntaken();
 					if (naux->is_simple_jump_block()) {
 						block->set_ntaken(naux->get_taken());

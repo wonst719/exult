@@ -22,6 +22,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "opcodes.h"
 #ifndef INCL_BASICBLOCK
 
 #include <iomanip>
@@ -317,6 +318,14 @@ public:
 	bool is_conditionaljump_block() const {
 		// instructions shouldn't be empty in this case.
 		return jmp_op != nullptr ? (jmp_op->get_opcode() == UC_JNE) : false;
+	}
+	bool is_array_loop_block() const {
+		if (jmp_op == nullptr) {
+			return false;
+		}
+		const auto opcode = jmp_op->get_opcode();
+		return opcode == UC_LOOPTOP || opcode == UC_LOOPTOPS
+		    || opcode == UC_LOOPTOPTHV;
 	}
 	bool is_converse_case_block() const {
 		if (jmp_op == nullptr) {
