@@ -433,7 +433,7 @@ fi
 # ---------------------------------------------------------------------
 
 if test x$enable_android_apk = xno; then
-    PKG_CHECK_MODULES(ICU, icu-uc, have_icu=yes, have_icu=no)
+	PKG_CHECK_MODULES(ICU, icu-uc, have_icu=yes, have_icu=no)
 fi
 
 # ---------------------------------------------------------------------
@@ -1277,6 +1277,22 @@ dnl ****************
 echo
 echo Exult v$VERSION
 echo
+printf "Build Exult................ : "
+if test x$enable_libexult = xyes; then
+	echo as library
+elif test x$enable_exult = xyes; then
+	echo yes
+else
+	echo no
+fi
+echo Build Exult Studio......... : $enable_exult_studio
+echo Exult Studio support....... : $enable_exult_studio_support
+echo Create data files.......... : $enable_data
+if test x$enable_android_apk != xno; then
+	echo Build Android APK.......... : $enable_android_apk
+	echo Gradle..................... : $gradle_version
+fi
+echo
 echo C++ Compiler............... : $CXX
 if test "x$opt_level" != "x"; then
 	echo C++ optimization........... : $opt_level
@@ -1286,6 +1302,7 @@ if test "x$dbg_level" != "x"; then
 fi
 echo
 if test x$enable_android_apk = xno; then
+	echo Dependencies :
 	echo SDL........................ : `$SDL_CONFIG --version`
 	PKG_CHECK_EXISTS(ogg,
 		echo Ogg.........................: `$PKG_CONFIG --modversion ogg`)
@@ -1303,6 +1320,10 @@ if test x$enable_android_apk = xno; then
 		PKG_CHECK_EXISTS(fluidsynth,
 			echo Fluidsynth................. : `$PKG_CONFIG --modversion fluidsynth`)
 	fi
+	if test x$enable_zip_support = xyes ; then
+		PKG_CHECK_EXISTS(zlib,
+			echo zlib....................... : `$PKG_CONFIG --modversion zlib`)
+	fi
 	if test x$have_icu = xyes; then
 		echo ICU........................ : `$PKG_CONFIG --modversion icu-uc`
 	fi
@@ -1315,13 +1336,9 @@ if test x$enable_android_apk = xno; then
 	fi
 	echo
 fi
-echo Build tools................ : $enable_tools
-echo Build usecode compiler..... : $enable_compiler
-echo Build Exult mods........... : $enable_mods
-echo Build Exult Studio......... : $enable_exult_studio
-echo Exult Studio support....... : $enable_exult_studio_support
-echo
+
 if test x$enable_exult = xyes; then
+	echo Scalers :
 	if test x$enable_all_hq_scalers = xyes; then
 		echo Build all HQ scalers....... : $enable_all_hq_scalers
 		else
@@ -1340,45 +1357,30 @@ if test x$enable_exult = xyes; then
 	echo
 fi
 echo Addons :
-echo Create data files.......... : $enable_data
+echo Build tools................ : $enable_tools
+echo Build usecode compiler..... : $enable_compiler
+echo Build Exult mods........... : $enable_mods
 echo Create zipped Savegames.... : $enable_zip_support
 echo Build GIMP plugin.......... : $enable_gimp_plugin
 echo Build Gnome SHP Thumbnailer : $enable_gnome_shp_thumbnailer
 echo
-if test x$enable_android_apk != xno; then
-	echo Android:
-	echo Build Android APK.......... : $enable_android_apk
-	echo Gradle..................... : $gradle_version
-	echo
-fi
 echo Debug :
 echo Build Usecode debugger..... : $enable_usecode_debugger
 echo Debug Usecode Container.... : $enable_usecode_container
 echo Debug non Readied Objects.. : $enable_nonreadied_objects
 echo
 echo Compilation :
-printf "Build Exult................ : "
-if test x$enable_libexult = xyes; then
-	echo as library
-elif test x$enable_exult = xyes; then
-	echo yes
-else
-	echo no
-fi
 echo Enable compiler sanitizers. : $enable_sanitizers
 echo Enable SDL parachute....... : $enable_sdl_parachute
 echo Build with static libraries : $enable_static_libs
 echo Turn all warnings to errors : $enable_warning_errors
 echo Turn pedantics to errors... : $enable_pedantic_errors
-
 if test x$ARCH = xmacosx; then
 	if test x$enable_static_libs != xno; then
-		echo
 		echo Mac OS X static libs....... : $with_macosx_static_lib_path
 	fi
 fi
 if test x"$with_macosx_code_signature" != x; then
-	echo
 	echo Mac OS X code sign ID...... : $with_macosx_code_signature
 fi
 if test ${cross_compiling} = yes; then
@@ -1392,4 +1394,4 @@ if test ${cross_compiling} = yes; then
 	fi
 fi
 echo
-echo "Now type 'make' to build Exult"
+echo "Now enter 'make'"
