@@ -368,6 +368,7 @@ AC_ARG_ENABLE(exult, AS_HELP_STRING([--enable-exult], [Build Exult @<:@default y
 # Build Exult as a library?
 # ---------------------------------------------------------------------
 
+AM_CONDITIONAL(BUILD_SHAPES, false)
 AC_ARG_ENABLE(libexult, AS_HELP_STRING([--enable-libexult], [Build Exult as a library @<:@default no@:>@]),,enable_libexult=no)
 if test x$enable_libexult = xyes -a x$enable_exult = xno; then
 	AC_MSG_ERROR([*** It is not possible build Exult as a library if building Exult is disabled ***])
@@ -377,10 +378,12 @@ else
 		AC_MSG_RESULT(as a library)
 		AM_CONDITIONAL(BUILD_EXULT, true)
 		AM_CONDITIONAL(BUILD_LIBEXULT, true)
+		AM_CONDITIONAL(BUILD_SHAPES, true)
 	elif test x$enable_exult = xyes; then
 		AC_MSG_RESULT(yes)
 		AM_CONDITIONAL(BUILD_EXULT, true)
 		AM_CONDITIONAL(BUILD_LIBEXULT, false)
+		AM_CONDITIONAL(BUILD_SHAPES, true)
 	else
 		AC_MSG_RESULT(no)
 		AM_CONDITIONAL(BUILD_EXULT, false)
@@ -421,7 +424,7 @@ EXULT_CHECK_SDL(:,AC_MSG_ERROR([[*** SDL not found!]]))
 # libogg, libvorbis, libvorbisfile
 # ---------------------------------------------------------------------
 
-if test x$enable_android_apk = xno; then
+if test x$enable_android_apk = xno -a x$enable_exult = xyes; then
 	PKG_CHECK_MODULES(OGG, ogg >= 1.0 vorbis >= 1.0.1 vorbisfile, , AC_MSG_ERROR([*** must have Ogg/Vorbis installed!]))
 fi
 
@@ -1067,6 +1070,7 @@ if test x$enable_exult_studio = xyes; then
 		exit 1
 	fi
 	AM_CONDITIONAL(BUILD_STUDIO, true)
+	AM_CONDITIONAL(BUILD_SHAPES, true)
 else
 	AM_CONDITIONAL(BUILD_STUDIO, false)
 	AC_MSG_RESULT(no)

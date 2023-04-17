@@ -4,7 +4,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/headers -I$(top_srcdir) -I$(top_srcdir)/files \
 	$(SDL_CFLAGS) $(FREETYPE2_INCLUDES) \
 	$(INCDIRS) $(WINDOWING_SYSTEM) $(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS)
 
-if BUILD_EXULT
+if BUILD_SHAPES
 SUBDIRS = shapeinf
 else
 SUBDIRS =
@@ -18,7 +18,7 @@ libshapes_la_SOURCES = \
 	vgafile.cc \
 	vgafile.h
 
-if BUILD_EXULT
+if BUILD_SHAPES
 libshapes_la_SOURCES += \
 	baseinf.h \
 	data_utils.h \
