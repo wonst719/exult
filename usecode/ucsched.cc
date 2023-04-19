@@ -371,13 +371,16 @@ int Usecode_script::exec(
 			// ++++ TESTING.
 			do_another = true;
 			Usecode_value &cntval = code->get_elem(i + 2);
-			const int cnt = cntval.get_int_value();
-			if (cnt <= 0)
+			const int num_repeats = cntval.get_int_value();
+			if (num_repeats <= 0) {
 				// Done.
 				i += 2;
-			else {
-				// Decr. and loop.
-				cntval = Usecode_value(cnt - 1);
+			} else {
+				// A count of 255 means infinite loop.
+				if (num_repeats != 255) {
+					// Decr. and loop.
+					cntval = Usecode_value(num_repeats - 1);
+				}
 				const Usecode_value &offval = code->get_elem(i + 1);
 				i += offval.get_int_value() - 1;
 				if (i < -1) // Before start?
@@ -397,14 +400,14 @@ int Usecode_script::exec(
 			do_another = true;
 			Usecode_value &cntval = code->get_elem(i + 2);
 			const Usecode_value &origval = code->get_elem(i + 3);
-			const int cnt = cntval.get_int_value();
-			if (cnt <= 0) {
+			const int num_repeats = cntval.get_int_value();
+			if (num_repeats <= 0) {
 				// Done.
 				i += 3;
 				cntval = origval; // restore counter
 			} else {
 				// Decr. and loop.
-				cntval = Usecode_value(cnt - 1);
+				cntval = Usecode_value(num_repeats - 1);
 				const Usecode_value &offval = code->get_elem(i + 1);
 				i += offval.get_int_value() - 1;
 			}

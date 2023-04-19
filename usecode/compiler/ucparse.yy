@@ -278,6 +278,7 @@ struct Loop_Vars
 %token LIGHTNING_DAMAGE "'lightning_damage'"
 %token ETHEREAL_DAMAGE "'ethereal_damage'"
 %token SONIC_DAMAGE "'sonic_damage'"
+%token FOREVER "'forever'"
 
 /*
  *	Operators
@@ -345,7 +346,7 @@ struct Loop_Vars
 %type <expr> expression primary declared_var_value opt_script_delay item
 %type <expr> script_command start_call addressof new_expr class_expr
 %type <expr> nonclass_expr opt_delay appended_element int_literal
-%type <expr> opt_primary_expression conv_expression
+%type <expr> opt_primary_expression conv_expression repeat_count
 %type <intval> opt_int direction converse_options actor_frames egg_criteria
 %type <intval> opt_original assignment_operator const_int_val opt_const_int_val
 %type <intval> const_int_type int_cast dam_type opt_nest opt_int_value
@@ -1832,7 +1833,7 @@ script_command:
 		{ $$ = new Uc_int_expression(Ucscript::cont, UC_PUSHB); }
 	| RESET ';'			/* Go back to the beginning of the script */
 		{ $$ = new Uc_int_expression(Ucscript::reset, UC_PUSHB); }
-	| REPEAT nonclass_expr { repeat_nesting++; } script_command  ';'
+	| REPEAT repeat_count { repeat_nesting++; } script_command  ';'
 		{
 		repeat_nesting--;
 		auto *result = new Uc_array_expression();
@@ -2016,6 +2017,17 @@ start_call:
 			}
 		}
 	;
+
+repeat_count:
+	nonclass_expr
+	| FOREVER
+		{
+		if (repeat_nesting != 0)
+			{
+			yyerror("'repeat forever' is not allowed for nested 'repeat' commands");
+			}
+		$$ = new Uc_int_expression(255);
+		}
 
 dam_type:
 	NORMAL_DAMAGE

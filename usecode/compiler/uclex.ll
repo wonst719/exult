@@ -498,6 +498,7 @@ magic_damage	return MAGIC_DAMAGE;
 lightning_damage	return LIGHTNING_DAMAGE;
 ethereal_damage	return ETHEREAL_DAMAGE;
 sonic_damage	return SONIC_DAMAGE;
+forever		return FOREVER;
 }
 
 
