@@ -350,6 +350,7 @@ struct Loop_Vars
 %type <intval> opt_int direction converse_options actor_frames egg_criteria
 %type <intval> opt_original assignment_operator const_int_val opt_const_int_val
 %type <intval> const_int_type int_cast dam_type opt_nest opt_int_value
+%type <intval> sign_int_literal
 %type <funid> opt_funid
 %type <membersel> member_selector
 %type <intlist> string_list response_expression
@@ -590,7 +591,7 @@ opt_const_int_val:
 	;
 
 const_int_val:
-	INT_LITERAL
+	sign_int_literal
 	| IDENTIFIER
 		{
 		Uc_symbol *sym = Uc_function::search_globals($1);
@@ -1862,27 +1863,8 @@ script_command:
 		result->add($4);	// Then #times to repeat.
 		$$ = result;
 		}
-	| RAW '(' INT_LITERAL ')' ';'
-		{
-		UsecodeOps op = !const_opcode.empty() ? const_opcode.back() : UC_PUSHI;
-		if (is_sint_32bit($3) && op != UC_PUSHI32)
-			{
-			char buf[150];
-			if (is_int_32bit($3))
-				{
-				snprintf(buf, array_size(buf), "Literal integer '%d' cannot be represented as 16-bit integer. Assuming '(long)' cast.",
-						$3);
-				op = UC_PUSHI32;
-				}
-			else
-				snprintf(buf, array_size(buf), "Interpreting integer '%d' as the signed 16-bit integer '%d'. If this is incorrect, use '(long)' cast.",
-						$3, static_cast<short>($3));
-			yywarning(buf);
-			}
-		$$ = new Uc_int_expression($3, op);
-		}
-	| RAW '(' int_cast INT_LITERAL %prec UCC_CAST ')' ';'
-		{ $$ = new Uc_int_expression($4, static_cast<UsecodeOps>($3)); }
+	| RAW '(' int_literal ')' ';'
+		{ $$ = $3; }
 	| NOP  ';'
 		{ $$ = new Uc_int_expression(Ucscript::nop2, UC_PUSHB); }
 	| NOP2 ';'
@@ -2569,8 +2551,20 @@ param:
 		{ $$ = new Uc_class_inst_symbol($5, $3, 0); }
 	;
 
-int_literal:				/* A const. integer value.	*/
+sign_int_literal:
 	INT_LITERAL
+	| '-' INT_LITERAL %prec UMINUS
+		{
+		$$ = -$2;
+		}
+	| '+' INT_LITERAL %prec UPLUS
+		{
+		$$ = $2;
+		}
+	;
+
+int_literal:				/* A const. integer value.	*/
+	sign_int_literal
 		{
 		UsecodeOps op = !const_opcode.empty() ? const_opcode.back() : UC_PUSHI;
 		if (is_sint_32bit($1) && op != UC_PUSHI32)
@@ -2589,7 +2583,7 @@ int_literal:				/* A const. integer value.	*/
 			}
 		$$ = new Uc_int_expression($1, op);
 		}
-	| int_cast INT_LITERAL %prec UCC_CAST
+	| int_cast sign_int_literal %prec UCC_CAST
 		{ $$ = new Uc_int_expression($2, static_cast<UsecodeOps>($1)); }
 	| declared_sym
 		{
