@@ -366,15 +366,27 @@ int Usecode_script::exec(
 			if (!finish)    // Appears to be right.
 				i = -1;     // Matches originals.
 			break;
-		case repeat: {      // ?? 2 parms, 1st one < 0.
-			// Loop(offset, cnt).
-			// ++++ TESTING.
+		case repeat:        // Loop(offset, count).
+		case repeat2: {     // Loop(offset, count, reset).
+			// repeat:
+			// Use 'count' as loop var. When it reaches 0, the opcode won't
+			// loop again.
+			// repeat2:
+			// Use 'count' as loop var. When it reaches 0, reset it to 'reset'.
+			// This is necessary for loop nesting.
+			// (used in mining machine, orb of the moons)
+
 			do_another = true;
 			Usecode_value &cntval = code->get_elem(i + 2);
 			const int num_repeats = cntval.get_int_value();
 			if (num_repeats <= 0) {
 				// Done.
-				i += 2;
+				if (opcode == repeat2) {
+					cntval = code->get_elem(i + 3); // restore counter
+					i += 3;
+				} else {
+					i += 2;
+				}
 			} else {
 				// A count of 255 means infinite loop.
 				if (num_repeats != 255) {
@@ -383,33 +395,9 @@ int Usecode_script::exec(
 				}
 				const Usecode_value &offval = code->get_elem(i + 1);
 				i += offval.get_int_value() - 1;
-				if (i < -1) // Before start?
+				if (i < -1) { // Before start?
 					i = -1;
-			}
-			break;
-		}
-		case repeat2: {     // Loop with 3 parms.???
-			// Loop(offset, cnt1, cnt2?).
-			//Guessing: loop cnt2 each round. use cnt1 as loop var.
-			//This is necessary for loop nesting.
-			//(used in mining machine, orb of the moons)
-
-			// Swapped cnt1 and cnt2 -- seems to better match
-			// the originals.
-
-			do_another = true;
-			Usecode_value &cntval = code->get_elem(i + 2);
-			const Usecode_value &origval = code->get_elem(i + 3);
-			const int num_repeats = cntval.get_int_value();
-			if (num_repeats <= 0) {
-				// Done.
-				i += 3;
-				cntval = origval; // restore counter
-			} else {
-				// Decr. and loop.
-				cntval = Usecode_value(num_repeats - 1);
-				const Usecode_value &offval = code->get_elem(i + 1);
-				i += offval.get_int_value() - 1;
+				}
 			}
 			break;
 		}
