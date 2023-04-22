@@ -350,6 +350,13 @@
 			remoteGlobalIDString = 4F58F7AA67A348AC99788A8C;
 			remoteInfo = mt32emu;
 		};
+		8A9A02B829F3E170000AF341 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8A52528E25718896005AD385 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E2D187CF28A5673500D2B4F1;
+			remoteInfo = "xcFramework-iOS";
+		};
 		8ABE808F25DE9B58005B3BC7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8A52528E25718896005AD385 /* SDL.xcodeproj */;
@@ -383,7 +390,7 @@
 		8A0C19E11D6D9F1800B9105A /* sibetaintrinsics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sibetaintrinsics.h; sourceTree = "<group>"; };
 		8A1C581B1FE7D91B00738E40 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		8A45A3AC247C068500F12F4D /* joythumb-glass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joythumb-glass.png"; sourceTree = "<group>"; };
-		8A52528E25718896005AD385 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = SDL2/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
+		8A52528E25718896005AD385 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = SDL/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
 		8A599C1C246058A9006E3252 /* libmt32emu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = libmt32emu.xcodeproj; sourceTree = "<group>"; };
 		8A6013662057CF0C00FCA555 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		8A7F1F721DE5B72A0066F6FC /* expack */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = expack; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -987,6 +994,7 @@
 				8A52529F25718897005AD385 /* SDL2.framework */,
 				8A5252A125718897005AD385 /* SDL2.framework */,
 				8A5252A325718897005AD385 /* SDL2.framework */,
+				8A9A02B929F3E170000AF341 /* SDL2.framework */,
 				8A5252A525718897005AD385 /* libSDL2.a */,
 				8A5252A725718897005AD385 /* libSDL2.a */,
 				8A5252A925718897005AD385 /* libSDL2.a */,
@@ -1693,8 +1701,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				8ABE809025DE9B58005B3BC7 /* PBXTargetDependency */,
 				8A38FFF41DE6F68400B942F9 /* PBXTargetDependency */,
+				8ABE809025DE9B58005B3BC7 /* PBXTargetDependency */,
 			);
 			name = Exult;
 			productName = Exult;
@@ -1847,6 +1855,13 @@
 			fileType = archive.ar;
 			path = libmt32emu.a;
 			remoteRef = 8A599C20246058A9006E3252 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8A9A02B929F3E170000AF341 /* SDL2.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL2.framework;
+			remoteRef = 8A9A02B829F3E170000AF341 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		E738C84E1A6FFF58003A950D /* libogg.a */ = {
@@ -2179,7 +2194,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					./include,
 					../,
-					./SDL2/include,
+					./SDL/include,
 					./libvorbis/include,
 					./libogg/include,
 					../objs,
@@ -2228,7 +2243,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					./include,
 					../,
-					./SDL2/include,
+					./SDL/include,
 					./libvorbis/include,
 					./libogg/include,
 					../objs,
