@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,6 +13,7 @@
 		8A057F9227A8362E00948459 /* CoreAudioMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A057F8427A835AF00948459 /* CoreAudioMidiDriver.cpp */; };
 		8A1C58211FE7D91B00738E40 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A1C581B1FE7D91B00738E40 /* libz.tbd */; };
 		8A1FC4272571C747007B86DD /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A8340BF1F8977FB000696C7 /* CoreMotion.framework */; };
+		8A204E2629F572E900E7D3E2 /* libfluidsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A204E2529F572DF00E7D3E2 /* libfluidsynth.a */; };
 		8A2C52511DE6E1810016E16A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A7F1F8E1DE5BDD40066F6FC /* CoreFoundation.framework */; };
 		8A2C52591DE6E8E50016E16A /* crc.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD671A6E3161006C8BE4 /* crc.cc */; };
 		8A2C525A1DE6E8E90016E16A /* Flat.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD6A1A6E3161006C8BE4 /* Flat.cc */; };
@@ -39,7 +40,6 @@
 		8A98326D27AD7A0C0028D9C9 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A98326C27AD7A0C0028D9C9 /* QuartzCore.framework */; };
 		8A98326F27AD7AE70028D9C9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A98326E27AD7AE70028D9C9 /* Foundation.framework */; };
 		8A98327127AD7C060028D9C9 /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A98327027AD7C060028D9C9 /* CoreHaptics.framework */; };
-		8A9A03AD29F428E0000AF341 /* libfluidsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A9A039F29F4289C000AF341 /* libfluidsynth.a */; };
 		8A9A03B029F42948000AF341 /* FluidSynthMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A03AE29F42948000AF341 /* FluidSynthMidiDriver.cpp */; };
 		8A9EB725281878EC0025C639 /* sdlrwopsstreambuf.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A9EB713281878EC0025C639 /* sdlrwopsstreambuf.cc */; };
 		8A9EB726281878EC0025C639 /* sdlrwopsostream.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A9EB722281878EC0025C639 /* sdlrwopsostream.cc */; };
@@ -268,6 +268,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		8A204E2229F572DF00E7D3E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8A204E1D29F572DF00E7D3E2 /* FluidSynth.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8A9A029629F3DEFE000AF341;
+			remoteInfo = make_tables;
+		};
+		8A204E2429F572DF00E7D3E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8A204E1D29F572DF00E7D3E2 /* FluidSynth.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8A9A012E29F32EEF000AF341;
+			remoteInfo = fluidsynth;
+		};
 		8A38FFF31DE6F68400B942F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -359,27 +373,6 @@
 			remoteGlobalIDString = E2D187CF28A5673500D2B4F1;
 			remoteInfo = "xcFramework-iOS";
 		};
-		8A9A039C29F4289C000AF341 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A9A039729F4289C000AF341 /* FluidSynth.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8A9A029629F3DEFE000AF341;
-			remoteInfo = make_tables;
-		};
-		8A9A039E29F4289C000AF341 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A9A039729F4289C000AF341 /* FluidSynth.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8A9A012E29F32EEF000AF341;
-			remoteInfo = fluidsynth;
-		};
-		8ABE808F25DE9B58005B3BC7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A52528E25718896005AD385 /* SDL.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A7D88D1723E24D3B00DCD162;
-			remoteInfo = "Static Library-iOS";
-		};
 		E738C84D1A6FFF58003A950D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E738C8491A6FFF58003A950D /* libogg.xcodeproj */;
@@ -408,6 +401,7 @@
 		8A45A3AC247C068500F12F4D /* joythumb-glass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joythumb-glass.png"; sourceTree = "<group>"; };
 		8A52528E25718896005AD385 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = SDL/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
 		8A599C1C246058A9006E3252 /* libmt32emu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = libmt32emu.xcodeproj; sourceTree = "<group>"; };
+		8A204E1D29F572DF00E7D3E2 /* FluidSynth.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FluidSynth.xcodeproj; path = fluidsynth-sans-glib/xcode-ios/FluidSynth.xcodeproj; sourceTree = "<group>"; };
 		8A6013662057CF0C00FCA555 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		8A7F1F721DE5B72A0066F6FC /* expack */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = expack; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A7F1F7D1DE5B7820066F6FC /* expack.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = expack.cc; path = ../tools/expack.cc; sourceTree = "<group>"; };
@@ -422,7 +416,6 @@
 		8A98326C27AD7A0C0028D9C9 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8A98326E27AD7AE70028D9C9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8A98327027AD7C060028D9C9 /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
-		8A9A039729F4289C000AF341 /* FluidSynth.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FluidSynth.xcodeproj; path = "fluidsynth-sans-glib/xcode-ios/FluidSynth.xcodeproj"; sourceTree = "<group>"; };
 		8A9A03AE29F42948000AF341 /* FluidSynthMidiDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FluidSynthMidiDriver.cpp; sourceTree = "<group>"; };
 		8A9A03AF29F42948000AF341 /* FluidSynthMidiDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluidSynthMidiDriver.h; sourceTree = "<group>"; };
 		8A9EB713281878EC0025C639 /* sdlrwopsstreambuf.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sdlrwopsstreambuf.cc; path = ../files/sdlrwopsstreambuf.cc; sourceTree = "<group>"; };
@@ -895,11 +888,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A9A03AD29F428E0000AF341 /* libfluidsynth.a in Frameworks */,
 				8A5252C4257188A5005AD385 /* libSDL2.a in Frameworks */,
 				8A599C2224605925006E3252 /* libmt32emu.a in Frameworks */,
 				E738C8551A6FFF71003A950D /* libogg.a in Frameworks */,
 				E738C8561A6FFF75003A950D /* libvorbis.a in Frameworks */,
+				8A204E2629F572E900E7D3E2 /* libfluidsynth.a in Frameworks */,
 				8A1C58211FE7D91B00738E40 /* libz.tbd in Frameworks */,
 				8A8340D51F8979D3000696C7 /* AudioToolbox.framework in Frameworks */,
 				8A8340D11F897827000696C7 /* AVFoundation.framework in Frameworks */,
@@ -1008,6 +1001,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		8A204E1E29F572DF00E7D3E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8A204E2329F572DF00E7D3E2 /* make_tables */,
+				8A204E2529F572DF00E7D3E2 /* libfluidsynth.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		8A52528F25718896005AD385 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1042,15 +1044,6 @@
 			);
 			name = sha1;
 			path = ../files/sha1;
-			sourceTree = "<group>";
-		};
-		8A9A039829F4289C000AF341 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				8A9A039D29F4289C000AF341 /* make_tables */,
-				8A9A039F29F4289C000AF341 /* libfluidsynth.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		E700DAF31A6E2CE7006C8BE4 /* audio */ = {
@@ -1710,11 +1703,11 @@
 		E738C85E1A7000E8003A950D /* Libs */ = {
 			isa = PBXGroup;
 			children = (
-				8A9A039729F4289C000AF341 /* FluidSynth.xcodeproj */,
 				8A52528E25718896005AD385 /* SDL.xcodeproj */,
 				8A599C1C246058A9006E3252 /* libmt32emu.xcodeproj */,
 				E738C8491A6FFF58003A950D /* libogg.xcodeproj */,
 				E738C84F1A6FFF65003A950D /* libvorbis.xcodeproj */,
+				8A204E1D29F572DF00E7D3E2 /* FluidSynth.xcodeproj */,
 			);
 			name = Libs;
 			sourceTree = "<group>";
@@ -1734,7 +1727,6 @@
 			);
 			dependencies = (
 				8A38FFF41DE6F68400B942F9 /* PBXTargetDependency */,
-				8ABE809025DE9B58005B3BC7 /* PBXTargetDependency */,
 			);
 			name = Exult;
 			productName = Exult;
@@ -1764,7 +1756,8 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1400;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = 5PRK96AWD5;
@@ -1776,7 +1769,7 @@
 				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Exult" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -1787,8 +1780,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 8A9A039829F4289C000AF341 /* Products */;
-					ProjectRef = 8A9A039729F4289C000AF341 /* FluidSynth.xcodeproj */;
+					ProductGroup = 8A204E1E29F572DF00E7D3E2 /* Products */;
+					ProjectRef = 8A204E1D29F572DF00E7D3E2 /* FluidSynth.xcodeproj */;
 				},
 				{
 					ProductGroup = 8A599C1D246058A9006E3252 /* Products */;
@@ -1816,6 +1809,20 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		8A204E2329F572DF00E7D3E2 /* make_tables */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = make_tables;
+			remoteRef = 8A204E2229F572DF00E7D3E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8A204E2529F572DF00E7D3E2 /* libfluidsynth.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libfluidsynth.a;
+			remoteRef = 8A204E2429F572DF00E7D3E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		8A52529F25718897005AD385 /* SDL2.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -1898,20 +1905,6 @@
 			fileType = wrapper.framework;
 			path = SDL2.framework;
 			remoteRef = 8A9A02B829F3E170000AF341 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8A9A039D29F4289C000AF341 /* make_tables */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = make_tables;
-			remoteRef = 8A9A039C29F4289C000AF341 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8A9A039F29F4289C000AF341 /* libfluidsynth.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfluidsynth.a;
-			remoteRef = 8A9A039E29F4289C000AF341 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		E738C84E1A6FFF58003A950D /* libogg.a */ = {
@@ -2211,11 +2204,6 @@
 			isa = PBXTargetDependency;
 			target = 8A7F1F711DE5B72A0066F6FC /* expack */;
 			targetProxy = 8A38FFF31DE6F68400B942F9 /* PBXContainerItemProxy */;
-		};
-		8ABE809025DE9B58005B3BC7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Static Library-iOS";
-			targetProxy = 8ABE808F25DE9B58005B3BC7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
