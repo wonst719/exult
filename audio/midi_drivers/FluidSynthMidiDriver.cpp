@@ -62,12 +62,46 @@ int FluidSynthMidiDriver::open() {
 	for (size_t i = 0; i < 10; i++) {
 		const std::string settingkey = sfsetting + static_cast<char>(i + '0');
 		soundfont = getConfigSetting(settingkey, "");
-		if (!soundfont.empty())
+		if (!soundfont.empty()) {
+			std::string options[] = {"", "<BUNDLE>", "<DATA>"};
+			for (auto& d : options) {
+				std::string f;
+				if (!d.empty()) {
+					if (!is_system_path_defined(d)) {
+						continue;
+					}
+					f = get_system_path(d);
+					f += '/';
+					f += soundfont;
+				} else {
+					f = soundfont;
+				}
+				if (U7exists(f.c_str()))
+					soundfont = f;
+			}
 			soundfonts.push_back(soundfont);
+		}
 	}
 	soundfont = getConfigSetting(sfsetting, "");
-	if (!soundfont.empty())
+	if (!soundfont.empty()) {
+		std::string options[] = {"", "<BUNDLE>", "<DATA>"};
+		for (auto& d : options) {
+			std::string f;
+			if (!d.empty()) {
+				if (!is_system_path_defined(d)) {
+					continue;
+				}
+				f = get_system_path(d);
+				f += '/';
+				f += soundfont;
+			} else {
+				f = soundfont;
+			}
+			if (U7exists(f.c_str()))
+				soundfont = f;
+		}
 		soundfonts.push_back(soundfont);
+	}
 
 	_settings = new_fluid_settings();
 
