@@ -133,7 +133,7 @@ int CoreAudioMidiDriver::open() {
 						soundfont = f;
 				}
 				std::cout << "Loading SoundFont '" << soundfont << "'" << std::endl;
-				if (!soundfont.empty()) {
+				if (!soundfont.empty() && U7exists(soundfont.c_str())) {
 					OSErr err;
 					CFURLRef url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault,
 					               reinterpret_cast<const UInt8 *>(soundfont.c_str()),
@@ -158,7 +158,7 @@ int CoreAudioMidiDriver::open() {
 						return 1;
 					}
 				} else {
-					std::cout << "Path Error" << std::endl;
+					std::cout << "Path to SoundFont '" << soundfont << "' not found. Continuing without." << std::endl;
 				}
 			}
 		}
