@@ -114,7 +114,7 @@ int CoreAudioMidiDriver::open() {
 		// Load custom soundfont, if specified
 		if (config->key_exists("config/audio/midi/coreaudio_soundfont")) {
 			std::string soundfont = getConfigSetting("coreaudio_soundfont", "");
-			if (!soundfont.empty()) {
+			if (!soundfont.empty()) {
 				// is the full path entered or is it in the App bundle or the data folder
 				std::string options[] = {"", "<BUNDLE>", "<DATA>"};
 				for (auto& d : options) {
