@@ -114,52 +114,52 @@ int CoreAudioMidiDriver::open() {
 		// Load custom soundfont, if specified
 		if (config->key_exists("config/audio/midi/coreaudio_soundfont")) {
 			std::string soundfont = getConfigSetting("coreaudio_soundfont", "");
-		// is the full path entered or is it in the App bundle or the data folder
-			std::string options[] = {"", "<BUNDLE>", "<DATA>"};
-			for (auto& d : options) {
-				std::string f;
-				if (!d.empty()) {
-					if (!is_system_path_defined(d)) {
-						continue;
+			if (!soundfont.empty()) {
+				// is the full path entered or is it in the App bundle or the data folder
+				std::string options[] = {"", "<BUNDLE>", "<DATA>"};
+				for (auto& d : options) {
+					std::string f;
+					if (!d.empty()) {
+						if (!is_system_path_defined(d)) {
+							continue;
+						}
+						f = get_system_path(d);
+						f += '/';
+						f += soundfont;
+					} else {
+						f = soundfont;
 					}
-					f = get_system_path(d);
-					f += '/';
-					f += soundfont;
-				} else {
-					f = soundfont;
+					if (U7exists(f.c_str()))
+						soundfont = f;
 				}
-				if (U7exists(f.c_str()))
-					soundfont = f;
-			}
-			std::cout << "Loading SoundFont '" << soundfont << "'" << std::endl;
-			if (soundfont != "") {
-				OSErr err;
-				// kMusicDeviceProperty_SoundBankFSSpec is present on 10.6+, but broken
-				// kMusicDeviceProperty_SoundBankURL was added in 10.5 as a replacement
-				CFURLRef url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault,
-				               reinterpret_cast<const UInt8 *>(soundfont.c_str()),
-				               soundfont.size(), false);
-				if (url) {
-					err = AudioUnitSetProperty(
-					          _synth, kMusicDeviceProperty_SoundBankURL,
-					          kAudioUnitScope_Global, 0, &url, sizeof(url));
-					CFRelease(url);
+				std::cout << "Loading SoundFont '" << soundfont << "'" << std::endl;
+				if (!soundfont.empty()) {
+					OSErr err;
+					CFURLRef url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault,
+					               reinterpret_cast<const UInt8 *>(soundfont.c_str()),
+					               soundfont.size(), false);
+					if (url) {
+						err = AudioUnitSetProperty(
+						          _synth, kMusicDeviceProperty_SoundBankURL,
+						          kAudioUnitScope_Global, 0, &url, sizeof(url));
+						CFRelease(url);
+					} else {
+						std::cout << "Failed to allocate CFURLRef from '" << soundfont << "'" << std::endl;
+						// after trying and failing to load a soundfont it's better
+						// to fail initializing the CoreAudio driver or it might crash
+						return 1;
+					}
+					if (!err) {
+						std::cout << "Loaded!" << std::endl;
+					} else {
+						std::cout << "Error loading SoundFont '" << soundfont << "'" << std::endl;
+						// after trying and failing to load a soundfont it's better
+						// to fail initializing the CoreAudio driver or it might crash
+						return 1;
+					}
 				} else {
-					std::cout << "Failed to allocate CFURLRef from '" << soundfont << "'" << std::endl;
-					// after trying and failing to load a soundfont it's better
-					// to fail initializing the CoreAudio driver or it might crash
-					return 1;
+					std::cout << "Path Error" << std::endl;
 				}
-				if (!err) {
-					std::cout << "Loaded!" << std::endl;
-				} else {
-					std::cout << "Error loading SoundFont '" << soundfont << "'" << std::endl;
-					// after trying and failing to load a soundfont it's better
-					// to fail initializing the CoreAudio driver or it might crash
-					return 1;
-				}
-			} else {
-				std::cout << "Path Error" << std::endl;
 			}
 		}
 
