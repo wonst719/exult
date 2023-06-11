@@ -289,6 +289,7 @@ struct Loop_Vars
 %token MUL_EQ "'*='"
 %token DIV_EQ "'/='"
 %token MOD_EQ "'%='"
+%token AND_EQ "'&='"
 %token AND "'&&'"
 %token OR "'||'"
 %token EQUALS "'=='"
@@ -329,7 +330,7 @@ struct Loop_Vars
 /*
  *	Expression precedence rules (lowest to highest):
  */
-%left UCC_INSERT ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ '='
+%left UCC_INSERT ADD_EQ SUB_EQ MUL_EQ DIV_EQ MOD_EQ AND_EQ '='
 %left AND OR
 %left EQUALS NEQUALS
 %left LTEQUALS GTEQUALS '<' '>' UCC_IN
@@ -1173,6 +1174,8 @@ assignment_operator:
 		{ $$ = UC_DIV; }
 	| MOD_EQ
 		{ $$ = UC_MOD; }
+	| AND_EQ
+		{ $$ = UC_ARRA; }
 	;
 
 appended_element_list:

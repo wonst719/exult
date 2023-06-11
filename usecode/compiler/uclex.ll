@@ -543,6 +543,7 @@ forever		return FOREVER;
 "*="			{ return MUL_EQ; }
 "/="			{ return DIV_EQ; }
 "%="			{ return MOD_EQ; }
+"&="			{ return AND_EQ; }
 
 "#"[ \t]+[0-9]+[ \t]+\"[^"]*\".*\n	{ Set_location(yytext + 2); Uc_location::increment_cur_line(); }
 "#line"[ \t]+[0-9]+[ \t]+\"[^"]*\".*\n	{ Set_location(yytext + 6); Uc_location::increment_cur_line(); }
