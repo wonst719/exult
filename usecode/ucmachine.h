@@ -65,7 +65,8 @@ public:
 	    readied = 5,        // Wear an item.
 	    unreadied = 6,      // Removed an item.
 	    died = 7,       // In SI only, I think.
-	    chat = 9    // When a NPC wants to talk to you in SI
+	    chat = 9,    // When a NPC wants to talk to you in SI
+		si_path_fail = 14
 	};
 	enum Global_flag_names {
 	    did_first_scene = 0x3b, // Went through 1st scene with Iolo.

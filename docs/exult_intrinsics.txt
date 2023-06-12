@@ -303,6 +303,7 @@ npc->si_path_run_usecode(int pos[], int event, object obj, function fun, bool
              its intended destination; if true, the specified usecode function
              will be called even if the destination cannot be reached. The
              set_path_failure intrinsic will override this flag in either case.
+             This failure usecode will use event 'SI_PATH_FAILURE'.
 
 UI_set_path_failure(function fun, object obj, int event)
 
@@ -318,6 +319,12 @@ UI_set_path_failure(function fun, object obj, int event)
              called. If this parameter is zero, usecode will *not be called* at
              all.
     event    The event that should be used if the usecode function is called.
+
+    ****** SI SPECIFIC ******
+    In the original SI, this could never affect the failure event for
+    si_path_run_usecode, which would always be 14. Exult does not suffer from
+    this limitation.
+    **** END SI SPECIFIC ****
 
 bool UI_in_usecode_path(actor npc)
 bool npc->in_usecode_path()

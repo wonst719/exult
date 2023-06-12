@@ -1457,9 +1457,14 @@ bool Usecode_internal::path_run_usecode(
 	if (companions)
 		action->set_get_party();
 	if (always)         // Set failure to same thing.
+		// Note: si_path_run_usecode always uses event 14 for this. Even when
+		// it is overridden by UI_set_path_failure. This causes a few bugs in
+		// SI usecode because the script developers assumed that the failure
+		// event could be overriden by UI_set_path_failure. Most of the time,
+		// they just use this value anyway so nothing is lost.
 		action->set_failure(
 		    new Usecode_actor_action(usefun, obj,
-		                             eventval.get_int_value()));
+		                             Usecode_machine::si_path_fail));
 	npc->set_action(action);    // Get into time queue.
 	npc->start(gwin->get_std_delay(), 0);
 	return !action->done_and_failed();
