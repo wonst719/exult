@@ -323,7 +323,6 @@ enum frame_offsets {
 enum inv_slots_bg {
 	BG_BACKPACK		=  0,
 	BG_WEAPON_HAND	=  1,
-	BG_BOTH_HANDS	=  1,
 	BG_SHIELD_HAND	=  2,
 	BG_OFF_HAND		=  2,
 	BG_BELT			=  3,
@@ -340,6 +339,7 @@ enum inv_slots_bg {
 	BG_EARS			= 16,	// Exult-only
 	BG_BACK_SHIELD	= 17,	// Exult-only
 	BG_BACK_2H		= 19,	// Exult-only
+	BG_BOTH_HANDS	= 20,
 	BG_AMULET		= 22	// Exult-only
 };
 
@@ -349,7 +349,6 @@ enum inv_slots_si {
 	SI_SHIELD_HAND	=  0,
 	SI_OFF_HAND		=  0,
 	SI_WEAPON_HAND	=  1,
-	SI_BOTH_HANDS	=  1,
 	SI_CLOAK		=  2,
 	SI_AMULET		=  3,
 	SI_HEAD			=  4,
@@ -365,7 +364,8 @@ enum inv_slots_si {
 	SI_LEGS			= 14,
 	SI_BACKPACK		= 15,
 	SI_BACK_SHIELD	= 16,
-	SI_BACK_2H		= 17
+	SI_BACK_2H		= 17,
+	SI_BOTH_HANDS	= 20
 };
 
 /*
