@@ -233,8 +233,8 @@ void eggLockInnDoors object#(0xCB0) () {
 						pos[X] = pos[X] - 8;
 					}
 
-					AVATAR->si_path_run_usecode(pos, PATH_SUCCESS, AVATAR, unfreeze, true);
-					UI_set_path_failure(unfreeze, AVATAR, PATH_FAILURE);
+					AVATAR->si_path_run_usecode(pos, SI_PATH_SUCCESS, AVATAR, unfreeze, true);
+					UI_set_path_failure(unfreeze, AVATAR, SI_PATH_FAILURE);
 					abort;
 				}
 			} else {

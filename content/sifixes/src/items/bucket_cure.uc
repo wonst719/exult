@@ -46,8 +46,8 @@ void DumpBucket 0x88A (var bucket) {
 			CANTRA->set_schedule_type(WAIT);
 			// Without UI_set_path_failure, Cantra's would be stuck in waiting
 			// mode if the player moved the Avatar before reaching Cantra:
-			if (UI_path_run_usecode([target[2], target[3], target[4]], CureCantra, bucket, PATH_SUCCESS)) {
-				UI_set_path_failure(CureCantra, bucket, PATH_FAILURE);
+			if (UI_path_run_usecode([target[2], target[3], target[4]], CureCantra, bucket, SI_PATH_SUCCESS)) {
+				UI_set_path_failure(CureCantra, bucket, SI_PATH_FAILURE);
 			}
 			abort;
 		} else if (((npcnum == DUPRE) && (bucket_quality == QUALITY_DISCIPLINE)) ||
@@ -55,8 +55,8 @@ void DumpBucket 0x88A (var bucket) {
 		    ((npcnum == IOLO) && (bucket_quality == QUALITY_LOGIC))) {
 			npcnum->set_schedule_type(WAIT);
 
-			if (UI_path_run_usecode([target[2], target[3], target[4]], CureCompanion, bucket, PATH_SUCCESS)) {
-				UI_set_path_failure(CureCompanion, bucket, PATH_FAILURE);
+			if (UI_path_run_usecode([target[2], target[3], target[4]], CureCompanion, bucket, SI_PATH_SUCCESS)) {
+				UI_set_path_failure(CureCompanion, bucket, SI_PATH_FAILURE);
 			}
 			abort;
 		}

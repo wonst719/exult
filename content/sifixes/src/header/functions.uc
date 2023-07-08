@@ -106,7 +106,7 @@ const int QUALITY_ETHICALITY = 14;
 const int QUALITY_DISCIPLINE = 15;
 
 void CureCantra () {
-	if (event == PATH_SUCCESS) {
+	if (event == SI_PATH_SUCCESS) {
 		UI_close_gumps();
 		// Now empty.
 		set_item_frame(0);
@@ -119,7 +119,7 @@ void CureCantra () {
 		CANTRA->set_schedule_type(TALK);
 		// We've done it.
 		gflags[CURED_CANTRA] = true;
-	} else if (event == PATH_FAILURE) {
+	} else if (event == SI_PATH_FAILURE) {
 		CANTRA->set_schedule_type(WANDER);
 	}
 }
@@ -138,7 +138,7 @@ void CureCompanion () {
 		npcnum = DUPRE;
 	}
 
-	if (event == PATH_SUCCESS) {
+	if (event == SI_PATH_SUCCESS) {
 		UI_close_gumps();
 		// Now empty.
 		set_item_frame(0);
@@ -154,7 +154,7 @@ void CureCompanion () {
 		if (!npcnum->get_item_flag(IN_PARTY)) {
 			npcnum->set_schedule_type(TALK);
 		}
-	} else if (event == PATH_FAILURE) {
+	} else if (event == SI_PATH_FAILURE) {
 		npcnum->set_schedule_type(WANDER);
 	}
 }

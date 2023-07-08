@@ -25,7 +25,7 @@ void FawnTrialBarks 0x939 (var quality) {
 	if (quality == 0x00F8) {
 		var trialnpc = getTrialNPC(true);
 		UI_move_object(trialnpc, [0x407, 0x679]);
-		UI_si_path_run_usecode(trialnpc, [0x407, 0x66B], PATH_SUCCESS, UI_get_npc_object(trialnpc), FawnTrialTrigger, false);
+		UI_si_path_run_usecode(trialnpc, [0x407, 0x66B], SI_PATH_SUCCESS, UI_get_npc_object(trialnpc), FawnTrialTrigger, false);
 		partySetTrialFacing();
 		delayedBark(trialnpc, "@" + getPoliteTitle() + "...@", 10);
 		delayedBark(AVATAR, "@" + getTrialNPC(false) + "!@", 5);

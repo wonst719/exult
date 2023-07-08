@@ -56,8 +56,8 @@ void MonitorBanquet object#(0x1C3) () {
 		}
 
 		AVATAR->item_say("@This must be the place!@");
-		AVATAR->si_path_run_usecode([0x41F, 0xA7C, 0x0], PATH_SUCCESS, item, MonitorBanquet, true);
-		UI_set_path_failure(MonitorBanquet, item, PATH_FAILURE);
+		AVATAR->si_path_run_usecode([0x41F, 0xA7C, 0x0], SI_PATH_SUCCESS, item, MonitorBanquet, true);
+		UI_set_path_failure(MonitorBanquet, item, SI_PATH_FAILURE);
 		gflags[MONITOR_BANQUET_STARTED] = true;
 		// In the original, the avatar's position is used instead of
 		// a hardcoded one. I preferred the hardcoded one -- this

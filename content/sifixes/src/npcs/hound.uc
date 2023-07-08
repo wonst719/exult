@@ -129,13 +129,13 @@ void HoundOfDoskar shape#(0x36A) () {
 				UI_remove_npc_face0();
 				abort;
 		}
-	} else if (event == PATH_SUCCESS) {
+	} else if (event == SI_PATH_SUCCESS) {
 		set_schedule_type(HOUND);
 		script item {
 			nohalt;
 			say "@Ruff!@";
 		}
-	} else if (event == PATH_FAILURE) {
+	} else if (event == SI_PATH_FAILURE) {
 		set_schedule_type(HOUND);
 	} else if (event == PROXIMITY) {
 		clear_item_say();
