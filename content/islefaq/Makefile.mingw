@@ -54,6 +54,8 @@ install: all
 	cp patch/u7ifix65 $(islefaqdir)/islefaq/patch/u7ifix65
 	cp patch/u7map $(islefaqdir)/islefaq/patch/u7map
 	cp patch/wihh.dat $(islefaqdir)/islefaq/patch/wihh.dat
+	cp README $(islefaqdir)/islefaq/Readme.txt
+	cp ./../../COPYING $(islefaqdir)/islefaq/License.txt
 
 uninstall:
 	rm -f $(islefaqdir)/islefaq.cfg

@@ -142,6 +142,10 @@ install: all
 	cp data/shapes.vga $(sifixesdir)/sifixes/data/shapes.vga
 	cp data/sprites.vga $(sifixesdir)/sifixes/data/sprites.vga
 	cp data/initgame.dat $(sifixesdir)/sifixes/data/initgame.dat
+	cp Readme.txt $(sifixesdir)/sifixes/Readme.txt
+	cp sifixes.ico $(sifixesdir)/sifixes/sifixes.ico
+	cp sifixes.png $(sifixesdir)/sifixes/sifixes.png
+	cp ./../../COPYING $(sifixesdir)/sifixes/License.txt
 
 uninstall:
 	rm -f $(sifixesdir)/sifixes.cfg

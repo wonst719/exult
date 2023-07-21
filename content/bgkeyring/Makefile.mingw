@@ -322,6 +322,10 @@ install: all
 	cp data/map01/u7ifix77 $(bgkeyringdir)/Keyring/data/map01/u7ifix77
 	cp data/map01/u7ifix7d $(bgkeyringdir)/Keyring/data/map01/u7ifix7d
 	cp data/map01/u7map $(bgkeyringdir)/Keyring/data/map01/u7map
+	cp Readme.txt $(bgkeyringdir)/Keyring/Readme.txt
+	cp Keyring.ico $(bgkeyringdir)/Keyring/Keyring.ico
+	cp Keyring.png $(bgkeyringdir)/Keyring/Keyring.png
+	cp ./../../COPYING $(bgkeyringdir)/Keyring/License.txt
 
 uninstall:
 	rm -f $(bgkeyringdir)/Keyring.cfg
