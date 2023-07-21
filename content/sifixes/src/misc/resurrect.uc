@@ -72,7 +72,7 @@ void Resurrect 0x8FE () {
 				// Prevent resurrection of Dupre after the Crematorium:
 				flag_dont_resurrect = true;
 				say("@I am sorry, my ", msg,
-					", but I cannot -- this isn't Dupre's body, but merely shadow of him. See how it diappears when I try to raise it...@");
+					", but I cannot -- this isn't Dupre's body, but merely shadow of him. See how it disappears when I try to raise it...@");
 			}
 
 			var pos = npc->get_object_position();
@@ -83,7 +83,7 @@ void Resurrect 0x8FE () {
 			    (pos[X] <= 0xEF) && (pos[Y] <= 0x4F)))) {
 				// Prevent resurrection of a live NPC:
 				flag_dont_resurrect = true;
-				say("@I know not who this is, but it isn't thy friend -- he is still alive somewhere. The similarity is remarkable, though... But look! The body disapeared! I wonder what has happened to it?@");
+				say("@I know not who this is, but it isn't thy friend -- he is still alive somewhere. The similarity is remarkable, though... But look! The body disappeared! I wonder what has happened to it?@");
 			}
 
 			if (flag_dont_resurrect) {

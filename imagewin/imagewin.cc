@@ -282,7 +282,7 @@ int Image_window::Get_best_bpp(int w, int h, int bpp, uint32 flags) {
 		if (best_bpp != 0)
 			return best_bpp;
 
-		cerr << "SDL Reports " << w << "x" << h << " " << bpp << " bpp " << ((flags & SDL_WINDOW_FULLSCREEN_DESKTOP) ? "fullscreen" : "windowed") << " surface is not OK. Attmempting to use " << bpp << " bpp anyway." << endl;
+		cerr << "SDL Reports " << w << "x" << h << " " << bpp << " bpp " << ((flags & SDL_WINDOW_FULLSCREEN_DESKTOP) ? "fullscreen" : "windowed") << " surface is not OK. Attempting to use " << bpp << " bpp anyway." << endl;
 		return bpp;
 	}
 
@@ -660,7 +660,7 @@ bool Image_window::create_scale_surfaces(int w, int h, int bpp) {
 		inter_surface = draw_surface;
 	} else if (inter_width != w || inter_height != h) {
 		if (!(inter_surface =  SDL_CreateRGBSurface(SDL_SWSURFACE, inter_width + 2 * scale * guard_band, inter_height + 2 * scale * guard_band, hwdepth, display_surface->format->Rmask, display_surface->format->Gmask, display_surface->format->Bmask, display_surface->format->Amask))) {
-			cerr << "Coldn't create inter surface: " << SDL_GetError() << endl;
+			cerr << "Couldn't create inter surface: " << SDL_GetError() << endl;
 			free_surface();
 			return false;
 		}
