@@ -85,7 +85,8 @@ jobs:
           releaseDirectory: ./../build/android/app/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
           # this corrupts the APK for some reason thus we do it in the previous step
           zipAlign: false
       - name: Save release artifact
