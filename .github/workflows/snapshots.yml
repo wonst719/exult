@@ -67,8 +67,6 @@ jobs:
             ExultTools.exe
             Gimp20Plugin.exe
             Gimp20Plugin.exe
-            exult-snapshot-signed.apk
-            exult-snapshot-debug.apk
       - name: Generate VirusTotal Body
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: |
