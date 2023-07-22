@@ -1,0 +1,118 @@
+name: snapshots
+
+on:
+  schedule:
+    - cron: "0 00 * * *" # Daily at 00:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snapshots-windows:
+    uses: ./.github/workflows/snapshots-windows.yml
+    secrets: inherit
+  snapshots-android:
+    uses: ./.github/workflows/snapshots-android.yml
+    secrets: inherit
+  snapshots:
+    runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'exult' }}
+    needs: [snapshots-windows, snapshots-android]
+    steps:
+      - name: Activity check
+        shell: bash
+        run: |
+          DATEUTC=$(curl -sL https://api.github.com/repos/exult/exult/commits | jq -r '[.[]][0]' | jq -r '.commit.committer.date')
+          TIMESTAMP=$(date --utc -d "$DATEUTC" +%s)
+          DAYS=$(( ($(date --utc +%s) - $TIMESTAMP) / 86400 ))
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
+          else
+            if [ $DAYS -gt 0 ]; then
+              echo EXULT_REPO_ALIVE=false >> $GITHUB_ENV
+            else
+              echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
+            fi
+          fi
+          echo "GITHUB_REF=v1.9.0.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
+      - name: Install SSH key
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: "${{ secrets.SSH_PRIVATE_KEY }}"
+          name: id_rsa
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+      - name: Download Windows artifacts
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: "windows snapshot"
+      - name: Download Android artifacts
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: "android snapshot"
+      - name: VirusTotal Scan
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        id: scan_files
+        uses: crazy-max/ghaction-virustotal@v3
+        with:
+          vt_api_key: ${{ secrets.VT_API_KEY }}
+          github_token: ${{ github.token }}
+          update_release_body: true
+          files: |
+            Exult.exe
+            ExultStudio.exe
+            ExultTools.exe
+            Gimp20Plugin.exe
+            Gimp20Plugin.exe
+            exult-snapshot-signed.apk
+            exult-snapshot-debug.apk
+      - name: Generate VirusTotal Body
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        run: |
+          echo "Snapshot ${{ env.GITHUB_REF }}" > body.txt
+          echo "" >> body.txt
+          echo "🛡 [VirusTotal GitHub Action](https://github.com/crazy-max/ghaction-virustotal) analysis:" >> body.txt
+          echo "" >> body.txt
+          analysis="${{ steps.scan_files.outputs.analysis }}"
+          while read -d, -r pair; do
+            IFS='=' read -r filename analysisURL <<<"$pair"
+            echo "* [$(basename $filename)]($analysisURL)" >> body.txt
+          done <<<"$analysis,"
+      - name: Create release
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ github.token }}
+          name: Snapshot ${{ env.GITHUB_REF }}
+          tag_name: snapshot-${{ env.GITHUB_REF }}
+          body_path: body.txt
+          prerelease: false
+          fail_on_unmatched_files: true
+          files: |
+            Exult.exe
+            ExultStudio.exe
+            ExultTools.exe
+            Gimp20Plugin.exe
+            Keyring.zip
+            SFisland.zip
+            Sifixes.zip
+            exult-snapshot-signed.apk
+            exult-snapshot-debug.apk
+      - name: Upload snapshots
+        shell: bash
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        run: |
+          cd $GITHUB_WORKSPACE
+          scp -i ~/.ssh/id_rsa *.exe *.zip *.apk ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
+      - name: Delete Windows artifact
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: |
+            "windows snapshot"
+            "android snapshot"
+          failOnError: false
