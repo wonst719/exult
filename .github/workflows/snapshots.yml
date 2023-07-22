@@ -108,7 +108,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           scp -i ~/.ssh/id_rsa *.exe *.zip *.apk ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/
-      - name: Delete Windows artifact
+      - name: Delete artifacts
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: geekyeggo/delete-artifact@v2
         with:
