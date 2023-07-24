@@ -218,6 +218,7 @@ public class ExultActivity extends SDLActivity {
 
     m_dpadImageView = new ImageView(this);
     m_dpadImageView.setImageResource(R.drawable.dpad_center);
+    m_dpadImageView.setPadding(140, 0, 140, 170);
     m_dpadImageView.setOnTouchListener(
         new View.OnTouchListener() {
           @Override

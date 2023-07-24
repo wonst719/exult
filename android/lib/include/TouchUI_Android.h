@@ -35,7 +35,7 @@ public:
 
 	static TouchUI_Android* getInstance();
 	void                    setVirtualJoystick(Sint16 x, Sint16 y);
-        void                    sendEscapeKeypress();
+	void                    sendEscapeKeypress();
 
 private:
 	static TouchUI_Android* m_instance;
