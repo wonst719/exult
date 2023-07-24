@@ -5,7 +5,7 @@ on:
     branches: ["master"]
     paths:
       - "**"
-      - "!android"
+      - "!android/**"
       - "!docs/**"
       - "docs/Makefile.am"
       - "!ios/**"
@@ -33,7 +33,7 @@ on:
     branches: ["master"]
     paths:
       - "**"
-      - "!android"
+      - "!android/**"
       - "!docs/**"
       - "docs/Makefile.am"
       - "!ios/**"
