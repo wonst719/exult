@@ -32,7 +32,7 @@ jobs:
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.1
+          gradle-version: 7.6.2
       - name: Checkout code
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: actions/checkout@master
@@ -53,9 +53,9 @@ jobs:
       - name: Build debug
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: |
-          cd ./../build/files && make -j 2
-          cd ./../data && make -j 2
-          cd ./../android && make -j 2
+          cd ./../build/files && make -j2
+          cd ./../data && make -j2
+          cd ./../android && make -j2
       - name: Save debug artifact
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: |

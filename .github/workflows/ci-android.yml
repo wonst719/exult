@@ -110,7 +110,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.1
+          gradle-version: 7.6.2
       - name: Checkout code
         uses: actions/checkout@master
       - name: Run autogen
@@ -127,6 +127,6 @@ jobs:
             --disable-nxbr --disable-zip-support --disable-sdl-parachute
       - name: Build
         run: |
-          cd ./../build/files && make -j 2
-          cd ./../data && make -j 2
-          cd ./../android && make -j 2
+          cd ./../build/files && make -j2
+          cd ./../data && make -j2
+          cd ./../android && make -j2

@@ -111,6 +111,6 @@ jobs:
         uses: geekyeggo/delete-artifact@v2
         with:
           name: |
-            "windows snapshot"
-            "android snapshot"
+            windows*
+            android*
           failOnError: false
