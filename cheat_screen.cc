@@ -675,7 +675,7 @@ void CheatScreen::NormalMenu() {
 
 	// Use
 #if !defined(__IPHONEOS__) && !defined(ANDROID)
-	// Paperdolls can be toggled in the gumps, no need here for iOS
+	// Paperdolls can be toggled in the gumps, no need here for small screens
 	Shape_manager *sman = Shape_manager::get_instance();
 	if (sman->can_use_paperdolls() && sman->are_paperdolls_enabled())
 		snprintf(buf, 512, "[P]aperdolls..: Yes");
@@ -708,7 +708,7 @@ void CheatScreen::NormalMenu() {
 	font->paint_text_fixedwidth(ibuf, "[S]et Time", offsetx + offsetx1, offsety4, 8);
 
 #if !defined(__IPHONEOS__) && !defined(ANDROID)
-	// for iOS taking the liberty of leaving that out
+	// for small screens taking the liberty of leaving that out
 	// Time Rate
 	snprintf(buf, 512, "[+-] Time Rate: %3i", clock->get_time_rate());
 	font->paint_text_fixedwidth(ibuf, buf, 0, maxy - 36, 8);
@@ -1017,7 +1017,7 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 		gwin->clear_screen();
 
 #if defined(__IPHONEOS__) || defined(ANDROID)
-		// on iOS we want lean and mean, so begone NormalDisplay
+		// on small screens we want lean and mean, so begone NormalDisplay
 		font->paint_text_fixedwidth(ibuf, "Global Flags", 15, 0, 8);
 #else
 		NormalDisplay();
