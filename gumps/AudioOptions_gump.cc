@@ -51,8 +51,8 @@
 
 using namespace Pentagram;
 
-static const int rowy[] = { 5, 17, 29, 45, 57, 69, 81, 93,
-                            105, 121, 133, 149, 161, 173
+static const int rowy[] = { 5, 17, 29, 44, 56, 68, 80, 92,
+                            104, 116, 131, 143, 158, 173
                           };
 static const int colx[] = { 35, 50, 134 };
 
@@ -148,15 +148,14 @@ void AudioOptions_gump::rebuild_buttons() {
 #endif
 
 	buttons[id_sfx_enabled] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_sfx_enabled,
-	        std::move(sfx_options), sfx_enabled, colx[2], rowy[9], 59);
+	        std::move(sfx_options), sfx_enabled, colx[2], rowy[10], 59);
 	if (sfx_enabled)
 		rebuild_sfx_buttons();
 
 	// speech on/off
-	buttons[id_speech_enabled] = std::make_unique<AudioEnabledToggle>(this, &AudioOptions_gump::toggle_speech_enabled,
-	        speech_enabled, colx[2], rowy[11], 59);
-	if (speech_enabled)
-		rebuild_speech_buttons();
+	std::vector<std::string> speech_options = {"Subtitles only", "Voice only", "Voice + Subtitles"};
+	buttons[id_speech_enabled] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_speech_enabled,
+	        std::move(speech_options), speech_option, colx[2] - 49, rowy[12], 108);
 }
 
 void AudioOptions_gump::rebuild_midi_buttons() {
@@ -213,7 +212,7 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 		if (have_custom_pack)
 			sfx_digitalpacks.emplace_back("Custom");
 		buttons[id_sfx_pack] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_sfx_pack,
-		        std::move(sfx_digitalpacks), sfx_package, colx[2] - 33, rowy[10], 92);
+		        std::move(sfx_digitalpacks), sfx_package, colx[2] - 33, rowy[11], 92);
 	}
 #ifdef ENABLE_MIDISFX
 	else if (sfx_enabled == midi_state) {
@@ -221,20 +220,9 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 
 		// sfx conversion
 		buttons[id_sfx_pack] = std::make_unique<AudioTextToggle>(this, &AudioOptions_gump::toggle_sfx_pack,
-		        std::move(sfx_conversiontext), sfx_conversion == 5 ? 1 : 0, colx[2], rowy[10], 59);
+		        std::move(sfx_conversiontext), sfx_conversion == 5 ? 1 : 0, colx[2], rowy[11], 59);
 	}
 #endif
-}
-
-void AudioOptions_gump::rebuild_speech_buttons() {
-	buttons[id_speech_subtitles].reset();
-
-	if (!speech_enabled)
-		return;
-	else {
-		buttons[id_speech_subtitles] = std::make_unique<AudioEnabledToggle>(this, &AudioOptions_gump::toggle_speech_subtitles,
-		        speech_subtitles, colx[2], rowy[12], 59);
-	}
 }
 
 void AudioOptions_gump::rebuild_mididriveroption_buttons() {
@@ -280,8 +268,9 @@ void AudioOptions_gump::load_settings() {
 	audio_enabled = (Audio::get_ptr()->is_audio_enabled() ? 1 : 0);
 	midi_enabled = (Audio::get_ptr()->is_music_enabled() ? 1 : 0);
 	const bool sfx_on = (Audio::get_ptr()->are_effects_enabled());
-	speech_enabled = (Audio::get_ptr()->is_speech_enabled() ? 1 : 0);
-	speech_subtitles = (Audio::get_ptr()->is_speech_with_subs() ? 1 : 0);
+	speech_option = ( Audio::get_ptr()->is_speech_enabled() ?
+	                  ( Audio::get_ptr()->is_speech_with_subs() ? speech_on_with_subtitles : speech_on )
+	                  : speech_off );
 	midi_looping = (Audio::get_ptr()->is_music_looping_allowed() ? 1 : 0);
 	speaker_type = true; // stereo
 	sample_rate = 44100;
@@ -478,16 +467,15 @@ void AudioOptions_gump::save_settings() {
 	Audio::get_ptr()->set_effects_enabled(sfx_enabled != 0);
 	if (!sfx_enabled)       // Stop what's playing.
 		Audio::get_ptr()->stop_sound_effects();
-	Audio::get_ptr()->set_speech_enabled(speech_enabled == 1);
-	Audio::get_ptr()->set_speech_with_subs(speech_subtitles == 1);
+	Audio::get_ptr()->set_speech_enabled(speech_option != speech_off);
+	Audio::get_ptr()->set_speech_with_subs(speech_option == speech_on_with_subtitles);
 	Audio::get_ptr()->set_allow_music_looping(midi_looping == 1);
 
 	config->set("config/audio/enabled", audio_enabled ? "yes" : "no", false);
 	config->set("config/audio/midi/enabled", midi_enabled ? "yes" : "no", false);
 	config->set("config/audio/effects/enabled", sfx_enabled ? "yes" : "no", false);
-	config->set("config/audio/speech/enabled", speech_enabled ? "yes" : "no", false);
-	config->set("config/audio/speech/with_subs", speech_subtitles ? "yes" : "no", false);
-
+	config->set("config/audio/speech/enabled", ( speech_option != speech_off ) ? "yes" : "no", false);
+	config->set("config/audio/speech/with_subs", ( speech_option == speech_on_with_subtitles ) ? "yes" : "no", false);
 	config->set("config/audio/midi/chorus/enabled", (midi_reverb_chorus & 2) ? "yes" : "no", false);
 	config->set("config/audio/midi/reverb/enabled", (midi_reverb_chorus & 1) ? "yes" : "no", false);
 	config->set("config/audio/midi/looping", midi_looping ? "yes" : "no", false);
@@ -588,18 +576,16 @@ void AudioOptions_gump::paint() {
 				if (buttons[id_midi_effects] != nullptr) font->paint_text(iwin->get_ib8(), "effects", x + colx[1], y + rowy[8] + 1);
 			}
 		}
-		font->paint_text(iwin->get_ib8(), "SFX:", x + colx[0], y + rowy[9] + 1);
+		font->paint_text(iwin->get_ib8(), "SFX:", x + colx[0], y + rowy[10] + 1);
 		if (sfx_enabled == 1 && have_digital_sfx() && !gwin->is_in_exult_menu()) {
-			font->paint_text(iwin->get_ib8(), "pack", x + colx[1], y + rowy[10] + 1);
+			font->paint_text(iwin->get_ib8(), "pack", x + colx[1], y + rowy[11] + 1);
 		}
 #ifdef ENABLE_MIDISFX
 		else if (sfx_enabled == midi_state) {
-			font->paint_text(iwin->get_ib8(), "conversion", x + colx[1], y + rowy[10] + 1);
+			font->paint_text(iwin->get_ib8(), "conversion", x + colx[1], y + rowy[11] + 1);
 		}
 #endif
-		font->paint_text(iwin->get_ib8(), "Speech:", x + colx[0], y + rowy[11] + 1);
-		if (speech_enabled == 1)
-			font->paint_text(iwin->get_ib8(), "subtitles", x + colx[1], y + rowy[12] + 1);
+		font->paint_text(iwin->get_ib8(), "Speech:", x + colx[0], y + rowy[12] + 1);
 	}
 	gwin->set_painted();
 }

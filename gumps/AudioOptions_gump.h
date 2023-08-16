@@ -46,10 +46,15 @@ private:
 	    id_sfx_pack,
 	    id_sfx_conv = id_sfx_pack,
 	    id_speech_enabled,
-	    id_speech_subtitles,
 	    id_count
 	};
 	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
+
+	enum AudioSpeechState {
+		speech_off,
+		speech_on,
+		speech_on_with_subtitles
+	};
 
 	bool speaker_type; // only mono and stereo atm
 	bool o_speaker_type;
@@ -70,8 +75,7 @@ private:
 #ifdef ENABLE_MIDISFX
 	int sfx_conversion;
 #endif
-	int speech_enabled;
-	int speech_subtitles;
+	int speech_option;
 
 	// Auxiliary variables for digital SFX packages:
 	int nsfxopts, nsfxpacks;
@@ -104,7 +108,6 @@ public:
 	void rebuild_midi_driver_buttons();
 	void rebuild_mididriveroption_buttons();
 	void rebuild_sfx_buttons();
-	void rebuild_speech_buttons();
 
 	void load_settings();
 	void save_settings();
@@ -151,12 +154,7 @@ public:
 	}
 	void toggle_sfx_pack(int state);
 	void toggle_speech_enabled(int state) {
-		speech_enabled = state;
-		rebuild_speech_buttons();
-		paint();
-	}
-	void toggle_speech_subtitles(int state) {
-		speech_subtitles = state;
+		speech_option = state;
 	}
 };
 
