@@ -3065,10 +3065,12 @@ void Game_window::set_shortcutbar(uint8 s) {
 		return;
 	}
 	use_shortcutbar = s;
-	if(using_shortcutbar()) {
-		g_shortcutBar = new ShortcutBar_gump(0,0);
-	} else {
-		gump_man->close_gump(g_shortcutBar);
-		g_shortcutBar = nullptr;
+	if(!is_in_exult_menu()) {
+		if(using_shortcutbar()) {
+			g_shortcutBar = new ShortcutBar_gump(0,0);
+		} else {
+			gump_man->close_gump(g_shortcutBar);
+			g_shortcutBar = nullptr;
+		}
 	}
 }
