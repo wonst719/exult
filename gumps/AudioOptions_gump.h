@@ -50,11 +50,11 @@ private:
 	};
 	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
 
-	enum AudioSpeechState {
+	typedef enum _audio_speech_state {
 		speech_off,
 		speech_on,
 		speech_on_with_subtitles
-	};
+	} audio_speech_state;
 
 	bool speaker_type; // only mono and stereo atm
 	bool o_speaker_type;
@@ -75,7 +75,7 @@ private:
 #ifdef ENABLE_MIDISFX
 	int sfx_conversion;
 #endif
-	int speech_option;
+	audio_speech_state speech_option;
 
 	// Auxiliary variables for digital SFX packages:
 	int nsfxopts, nsfxpacks;
@@ -154,7 +154,7 @@ public:
 	}
 	void toggle_sfx_pack(int state);
 	void toggle_speech_enabled(int state) {
-		speech_option = state;
+		speech_option = static_cast<audio_speech_state>(state);
 	}
 };
 
