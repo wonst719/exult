@@ -255,7 +255,7 @@ void SI_Game::play_intro() {
 
 	const bool speech = audio->is_audio_enabled() &&
 	              audio->is_speech_enabled();
-	const bool speech_n_subs = Audio::get_ptr()->is_speech_with_subs();
+	const bool subtitles = !speech || Audio::get_ptr()->is_speech_with_subs();
 	bool extended_intro = gwin->get_extended_intro();
 
 	auto select_fli = [&extended_intro](int orig_id, int ext_id) {
@@ -472,7 +472,7 @@ void SI_Game::play_intro() {
 
 			if (jive)
 				sifont->draw_text(ibuf, centerx + 30, centery + 87, get_text_msg(yo_homes));
-			else if (!speech || speech_n_subs)
+			else if (subtitles)
 				sifont->draw_text(ibuf, centerx + 30, centery + 87, get_text_msg(my_leige));
 
 			win->show();
@@ -496,7 +496,7 @@ void SI_Game::play_intro() {
 		for (; j < count; j++) {
 			next = fli2.play(win, j, j, next);
 
-			if (!speech || jive  || speech_n_subs) {
+			if (subtitles || jive) {
 				sifont->draw_text(ibuf, centerx + 150 - sifont->get_text_width(all_we[0]), centery + 74, all_we[0]);
 				sifont->draw_text(ibuf, centerx + 160 - sifont->get_text_width(all_we[1]), centery + 87, all_we[1]);
 			}
@@ -514,7 +514,7 @@ void SI_Game::play_intro() {
 
 		fli2.play(win, j, j, next);
 
-		if (!speech || jive  || speech_n_subs) {
+		if (subtitles || jive) {
 			const char * const and_a[2] = { get_text_msg(and_a0), get_text_msg(and_a0 + 1) };
 			sifont->draw_text(ibuf, centerx + 150 - sifont->get_text_width(and_a[0]), centery + 74, and_a[0]);
 			sifont->draw_text(ibuf, centerx + 150 - sifont->get_text_width(and_a[1]), centery + 87, and_a[1]);
@@ -551,7 +551,7 @@ void SI_Game::play_intro() {
 
 			if (jive)
 				sifont->draw_text(ibuf, topx + 40, centery + 74, get_text_msg(iree));
-			else if (!speech || speech_n_subs) {
+			else if (subtitles) {
 				sifont->draw_text(ibuf, topx + 40, centery + 74, get_text_msg(indeed));
 				sifont->draw_text(ibuf, topx + 40, centery + 87, get_text_msg(indeed + 1));
 			}
@@ -597,7 +597,7 @@ void SI_Game::play_intro() {
 
 			if (jive)
 				sifont->draw_text(ibuf, topx + 70, centery + 60, get_text_msg(jump_back));
-			else if (!speech || speech_n_subs)
+			else if (subtitles)
 				sifont->draw_text(ibuf, topx + 70, centery + 60, get_text_msg(stand_back));
 
 			win->show();
@@ -652,13 +652,13 @@ void SI_Game::play_intro() {
 			} else if (j < 300 && jive) {
 				sifont->center_text(ibuf, centerx, centery + 74, get_text_msg(soon_i));
 				sifont->center_text(ibuf, centerx, centery + 87, get_text_msg(soon_i + 1));
-			} else if (j < 100 && (!speech || speech_n_subs)) {
+			} else if (j < 100 && (subtitles)) {
 				sifont->center_text(ibuf, centerx, centery + 74, get_text_msg(batlin));
 				sifont->center_text(ibuf, centerx, centery + 87, get_text_msg(batlin + 1));
-			} else if (j < 200 && (!speech || speech_n_subs)) {
+			} else if (j < 200 && (subtitles)) {
 				sifont->center_text(ibuf, centerx, centery + 74, get_text_msg(you_shall));
 				sifont->center_text(ibuf, centerx, centery + 87, get_text_msg(you_shall + 1));
-			} else if (j < 300 && (!speech || speech_n_subs)) {
+			} else if (j < 300 && (subtitles)) {
 				sifont->center_text(ibuf, centerx, centery + 74, get_text_msg(there_i));
 				sifont->center_text(ibuf, centerx, centery + 87, get_text_msg(there_i + 1));
 			}
@@ -705,9 +705,9 @@ void SI_Game::play_intro() {
 		for (j = 0; j < count; j++) {
 			next = fli5.play(win, j, j, next) + 30;
 
-			if (j < 20 && (!speech || jive || speech_n_subs)) {
+			if (j < 20 && (subtitles || jive)) {
 				sifont->center_text(ibuf, centerx, centery + 74, get_text_msg(tis_my));
-			} else if (j > 22 && (!speech || jive || speech_n_subs)) {
+			} else if (j > 22 && (subtitles || jive)) {
 				sifont->center_text(ibuf, centerx, centery + 74, get_text_msg(tis_my + 1));
 				sifont->center_text(ibuf, centerx, centery + 87, get_text_msg(tis_my + 2));
 			}
@@ -991,7 +991,7 @@ void SI_Game::end_game(bool success, bool within_game) {
 
 	const bool speech = audio->is_audio_enabled() &&
 	              audio->is_speech_enabled();
-	const bool speech_n_subs = Audio::get_ptr()->is_speech_with_subs();
+	const bool subtitles = !speech || Audio::get_ptr()->is_speech_with_subs();
 
 	gwin->clear_screen(true);
 
@@ -1195,7 +1195,7 @@ void SI_Game::end_game(bool success, bool within_game) {
 		// Need to go to the next subtitle?
 		if (cur_sub < last_sub && subs[cur_sub + 1].time <= time) {
 			cur_sub++;
-			if (!speech || speech_n_subs) {
+			if (subtitles) {
 				showing_subs = true;
 				COUT("Subtitle at time: " << subs[cur_sub].time);
 			}
@@ -1217,7 +1217,7 @@ void SI_Game::end_game(bool success, bool within_game) {
 		if (flic && flic->can_play()) updated = flic->play_it(win, time);
 
 		// Need to go to the next subtitle?
-		if ((!speech  || speech_n_subs) && showing_subs && cur_sub <= last_sub) {
+		if ((subtitles) && showing_subs && cur_sub <= last_sub) {
 			updated = true;
 			subs[cur_sub].show_sub(ibuf, centerx, centery);
 		}

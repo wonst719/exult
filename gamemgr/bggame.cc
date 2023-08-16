@@ -909,7 +909,7 @@ void BG_Game::scene_guardian() {
 
 				const bool speech = Audio::get_ptr()->is_audio_enabled() &&
 				              Audio::get_ptr()->is_speech_enabled();
-				const bool want_subs = !speech || Audio::get_ptr()->is_speech_with_subs();
+				const bool subtitles = !speech || Audio::get_ptr()->is_speech_with_subs();
 
 				auto AdvanceTextPointer = [&]() {
 					txt_ptr = next_txt;
@@ -960,7 +960,7 @@ void BG_Game::scene_guardian() {
 
 				// First event needs to be read here
 				lipsync.get_event(next_time, next_code);
-				if (want_subs) {
+				if (subtitles) {
 					text_index = 0;
 				} else {
 					text_index = text_num_frames;	// Disable subtitles
@@ -1572,7 +1572,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 
 	const bool speech = Audio::get_ptr()->is_audio_enabled() &&
 	              Audio::get_ptr()->is_speech_enabled();
-	const bool want_subs = !speech || Audio::get_ptr()->is_speech_with_subs();
+	const bool subtitles = !speech || Audio::get_ptr()->is_speech_with_subs();
 
 	// Clear screen
 	gwin->clear_screen(true);
@@ -1628,7 +1628,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 
 			for (unsigned int i = 150; i < 204; i++) {
 				next = fli1.play(win, i, i, next);
-				if (want_subs)
+				if (subtitles)
 					endfont2->draw_text(ibuf, width, height, message);
 				win->show();
 				if (wait_delay(0, 0, 1)) {
@@ -1651,7 +1651,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 
 			for (unsigned int i = 0; i < 100; i++) {
 				next = fli2.play(win, i, i, next);
-				if (want_subs)
+				if (subtitles)
 					endfont2->draw_text(ibuf, width, height, message);
 				win->show();
 				if (wait_delay(0, 0, 1)) {
@@ -1759,7 +1759,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 		for (const unsigned int i = next + 28000; i > next;) {
 			for (unsigned int j = 0; j < static_cast<unsigned>(finfo.frames); j++) {
 				next = fli3.play(win, j, j, next);
-				if (want_subs) {
+				if (subtitles) {
 					for (m = 0; m < 8; m++)
 						endfont3->center_text(ibuf, centerx, starty + endfont3->get_text_height()*m, get_text_msg(txt_screen0 + m));
 				}
