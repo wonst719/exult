@@ -1598,7 +1598,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 	fli1.play(win, 0, 0, 0);
 
 	// Start endgame music.
-	if (midi) midi->start_music(ENDSCORE_XMI, 1, false);
+	Audio::get_ptr()->start_music(ENDSCORE_XMI, 1, false);
 
 	try {
 		unsigned int next = 0;
@@ -1638,7 +1638,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 		}
 
 		// Set new music
-		if (midi) midi->start_music(ENDSCORE_XMI, 2, false);
+		Audio::get_ptr()->start_music(ENDSCORE_XMI, 2, false);
 
 		// Set speech
 
