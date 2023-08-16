@@ -3084,7 +3084,7 @@ void Usecode_internal::do_speech(
     int num
 ) {
 	speech_track = num;     // Used in Usecode function.
-	if (!Audio::get_ptr()->start_speech(num))
+	if (!Audio::get_ptr()->start_speech(num) || Audio::get_ptr()->is_speech_with_subs())
 		// No speech?  Call text function.
 		call_usecode(SpeechUsecode, nullptr, double_click);
 }
