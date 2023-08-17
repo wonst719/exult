@@ -336,7 +336,8 @@ int ShortcutBar_gump::handle_event(SDL_Event *event) {
 		}
 	} else {
 		handle_events = true;
-		return 0;}
+		return 0;
+	}
 	return 0;
 }
 
@@ -347,7 +348,7 @@ void ShortcutBar_gump::mouse_down(SDL_Event *event, int mx, int my) {
 			buttonItems[i].pushed = true;
 		}
 	}
-	}
+}
 
 #define DID_MOUSE_UP 1
 
