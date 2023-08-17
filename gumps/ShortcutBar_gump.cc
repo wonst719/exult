@@ -302,17 +302,31 @@ void ShortcutBar_gump::paint() {
 
 int ShortcutBar_gump::handle_event(SDL_Event *event) {
 	Game_window *gwin = Game_window::get_instance();
+	static bool handle_events = true;
 	// When the Save/Load menu is open, or the notebook, don't handle events
 	if (gumpman->modal_gump_mode() || gwin->get_usecode()->in_usecode() || g_waiting_for_click
-		|| Notebook_gump::get_instance())
+		|| Notebook_gump::get_instance()) {
+		if (Notebook_gump::get_instance()) {
+			handle_events = false;
+		}
 		return 0;
-
-	if (event->type == SDL_MOUSEBUTTONDOWN || event->type == SDL_MOUSEBUTTONUP) {
+	}
+	
+	if ((event->type == SDL_MOUSEBUTTONDOWN || event->type == SDL_MOUSEBUTTONUP) && handle_events) {
 		int x;
 		int y;
 		gwin->get_win()->screen_to_game(event->button.x, event->button.y,
 		                                gwin->get_fastmouse(), x, y);
+		Gump *on_gump = gumpman->find_gump(x, y);
+		Gump_button *button;
 		if (x >= startx && x <= (locx + width) && y >= starty && y <= (starty + height)) {
+			if (on_gump && (button = on_gump->on_button(x, y)) && button->is_checkmark()) {
+				handle_events = false;
+				return 0;
+			}
+			// do not click "through" a gump
+			if (on_gump)
+				return 0;
 			if (event->type == SDL_MOUSEBUTTONDOWN) {
 				mouse_down(event, x, y);
 			} else if (event->type == SDL_MOUSEBUTTONUP) {
@@ -320,7 +334,9 @@ int ShortcutBar_gump::handle_event(SDL_Event *event) {
 			}
 			return 1;
 		}
-	}
+	} else {
+		handle_events = true;
+		return 0;}
 	return 0;
 }
 
@@ -331,7 +347,7 @@ void ShortcutBar_gump::mouse_down(SDL_Event *event, int mx, int my) {
 			buttonItems[i].pushed = true;
 		}
 	}
-}
+	}
 
 #define DID_MOUSE_UP 1
 
