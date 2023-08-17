@@ -306,6 +306,7 @@ int ShortcutBar_gump::handle_event(SDL_Event *event) {
 	// When the Save/Load menu is open, or the notebook, don't handle events
 	if (gumpman->modal_gump_mode() || gwin->get_usecode()->in_usecode() || g_waiting_for_click
 		|| Notebook_gump::get_instance()) {
+		// do not register a mouse up event on notebook checkmark
 		if (Notebook_gump::get_instance()) {
 			handle_events = false;
 		}
@@ -320,13 +321,14 @@ int ShortcutBar_gump::handle_event(SDL_Event *event) {
 		Gump *on_gump = gumpman->find_gump(x, y);
 		Gump_button *button;
 		if (x >= startx && x <= (locx + width) && y >= starty && y <= (starty + height)) {
+			// do not register a mouse up event when closing a gump via checkmark over the bar
 			if (on_gump && (button = on_gump->on_button(x, y)) && button->is_checkmark()) {
 				handle_events = false;
 				return 0;
-			}
-			// do not click "through" a gump
-			if (on_gump)
+			} else if (on_gump) {
+				// do not click "through" a gump
 				return 0;
+			}
 			if (event->type == SDL_MOUSEBUTTONDOWN) {
 				mouse_down(event, x, y);
 			} else if (event->type == SDL_MOUSEBUTTONUP) {
