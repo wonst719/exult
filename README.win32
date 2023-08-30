@@ -85,7 +85,8 @@ To build Exult Studio, you must install the following:
             mingw-w64-${MSYSTEM_CARCH}-adwaita-icon-theme \
             mingw-w64-${MSYSTEM_CARCH}-libxml2 \
             mingw-w64-${MSYSTEM_CARCH}-freetype \
-            mingw-w64-${MSYSTEM_CARCH}-zlib
+            mingw-w64-${MSYSTEM_CARCH}-zlib \
+            mingw-w64-${MSYSTEM_CARCH}-icu
 
 To build the Gimp Plug-In, you must install the following:
     pacman -S --noconfirm --needed \
