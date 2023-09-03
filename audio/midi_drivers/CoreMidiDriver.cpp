@@ -35,9 +35,10 @@ const MidiDriver::MidiDriverDesc CoreMidiDriver::desc =
 CoreMidiDriver::CoreMidiDriver() : 
 	mClient(0), mOutPort(0), mDest(0)
 {
-	OSStatus err;
-	err = MIDIClientCreate(CFSTR("Pentagram MIDI Driver for OS X"), nullptr, nullptr, &mClient);
-
+	OSStatus err = noErr;
+	err = MIDIClientCreate(CFSTR("CoreMidi Driver for macOS"), nullptr, nullptr, &mClient);
+	if (err != noErr)
+		perr << "CoreMidi Driver initialization failed: " << err  << std::endl;
 }
 
 CoreMidiDriver::~CoreMidiDriver() {
