@@ -433,7 +433,7 @@ fi
 # ---------------------------------------------------------------------
 if test x$ARCH = xmacosx; then
 	AC_ARG_WITH(macosx-static-lib-path,
-		AS_HELP_STRING([--with-macosx-static-lib-path=path], [path to location of static library files (Mac OS X bundles only)]),
+		AS_HELP_STRING([--with-macosx-static-lib-path=path], [path to location of static library files (macOS bundles only)]),
 		[with_macosx_static_lib_path="$withval"],
 		[with_macosx_static_lib_path=""])
 	if test x$with_macosx_static_lib_path != x; then
@@ -481,7 +481,7 @@ fi
 
 AM_CONDITIONAL(WITH_OSX_CODE_SIGNATURE, false)
 AC_ARG_WITH(macosx-code-signature,
-	AS_HELP_STRING([--with-macosx-code-signature=identity], [identity for code signing (Mac OS X bundles only) @<:@default "Developer ID Application"@:>@]),
+	AS_HELP_STRING([--with-macosx-code-signature=identity], [identity for code signing (macOS bundles only) @<:@default "Developer ID Application"@:>@]),
 	[with_macosx_code_signature="$withval"],
 	[with_macosx_code_signature=""])
 if test x$ARCH = xmacosx; then
@@ -719,7 +719,7 @@ if test "$WINDOWING_SYSTEM" != -DXWIN -a "$WINDOWING_SYSTEM" != -D_WIN32 -a "$WI
 	enable_exult_studio_support=no
 fi
 
-AC_ARG_ENABLE(macosx-x11-studio-support, AS_HELP_STRING([--enable-macosx-x11-studio-support], [Force Exult Studio X11 support in Mac OS X @<:@default no@:>@]),,enable_macosx_x11_studio_support=no)
+AC_ARG_ENABLE(macosx-x11-studio-support, AS_HELP_STRING([--enable-macosx-x11-studio-support], [Force Exult Studio X11 support in macOS @<:@default no@:>@]),,enable_macosx_x11_studio_support=no)
 if test "$WINDOWING_SYSTEM" != -DMACOSX; then
 	enable_macosx_x11_studio_support=no
 fi
@@ -1371,11 +1371,11 @@ echo Turn all warnings to errors : $enable_warning_errors
 echo Turn pedantics to errors... : $enable_pedantic_errors
 if test x$ARCH = xmacosx; then
 	if test x$enable_static_libs != xno; then
-		echo Mac OS X static libs....... : $with_macosx_static_lib_path
+		echo macOS static libs....... : $with_macosx_static_lib_path
 	fi
 fi
 if test x"$with_macosx_code_signature" != x; then
-	echo Mac OS X code sign ID...... : $with_macosx_code_signature
+	echo macOS code sign ID...... : $with_macosx_code_signature
 fi
 if test ${cross_compiling} = yes; then
 	echo

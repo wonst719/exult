@@ -334,8 +334,8 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 		// ++++ These path settings are for that game data which requires only
 		// ++++ read access. They default to a subdirectory of:
 		// ++++     *nix: /usr/local/share/exult or /usr/share/exult
-		// ++++     MacOS X: /Library/Application Support/Exult
-		// ++++     Windows, MacOS: program path.
+		// ++++     macOS: /Library/Application Support/Exult
+		// ++++     Windows: program path.
 
 		// <path> setting: default is "$gameprefix".
 		config_path = base_cfg_path + "/path";
