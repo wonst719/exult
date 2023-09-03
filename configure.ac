@@ -429,26 +429,6 @@ if test x$enable_android_apk = xno -a x$enable_exult = xyes; then
 fi
 
 # ---------------------------------------------------------------------
-# Icu (for ES)
-# ---------------------------------------------------------------------
-
-if test x$enable_android_apk = xno; then
-	PKG_CHECK_MODULES(ICU, icu-uc, have_icu=yes, have_icu=no)
-fi
-
-# ---------------------------------------------------------------------
-# Gtk (for ES)
-# ---------------------------------------------------------------------
-
-PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.16, have_gtk=yes, have_gtk=no)
-
-# ---------------------------------------------------------------------
-# Gdk-Pixbuf (for Gnome shp thumbnailer)
-# ---------------------------------------------------------------------
-
-PKG_CHECK_MODULES(GDK_PIXBUF, gdk-pixbuf-2.0, have_gdk_pixbuf=yes, have_gdk_pixbuf=no)
-
-# ---------------------------------------------------------------------
 # Black magic for static linking.
 # ---------------------------------------------------------------------
 if test x$ARCH = xmacosx; then
@@ -589,14 +569,12 @@ fi
 
 
 # zipped savegame support
-
 AC_ARG_ENABLE(zip-support, AS_HELP_STRING([--enable-zip-support], [Enable zipped savegame support @<:@default yes@:>@]),,enable_zip_support=yes)
+AC_MSG_CHECKING([for zipped savegame support])
 
 if test x$enable_zip_support = xyes ; then
 	AC_CHECK_HEADER(zlib.h,,enable_zip_support=no)
 fi
-
-AC_MSG_CHECKING([for zipped savegame support])
 
 if test x$enable_zip_support = xyes ; then
 	# disabled for now (non-portable):
@@ -668,7 +646,6 @@ else
 fi
 
 # Midi Sfx
-
 AC_ARG_ENABLE(midi-sfx, AS_HELP_STRING([--enable-midi-sfx], [Support for Midi Sfx (sounds horrible) @<:@default no@:>@]),,enable_midi_sfx=no)
 AC_MSG_CHECKING([whether to enable midi sfx])
 if test x$enable_midi_sfx = xyes; then
@@ -679,10 +656,65 @@ else
 fi
 
 # ---------------------------------------------------------------------
-# support for Exult Studio
+# Exult Studio
 # ---------------------------------------------------------------------
-AC_MSG_CHECKING([whether to enable support for Exult Studio])
+
+AC_ARG_ENABLE(exult-studio, AS_HELP_STRING([--enable-exult-studio], [Build Exult Studio @<:@default no@:>@]),,enable_exult_studio=no)
+AC_MSG_CHECKING([whether to build Exult Studio])
+
+if test x$enable_android_apk = xyes; then
+	enable_exult_studio=no
+fi
+
+# library dependencies
+if test x$enable_exult_studio = xyes; then
+# Icu
+	PKG_CHECK_MODULES(ICU, icu-uc, have_icu=yes, have_icu=no)
+# Gtk
+	PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.16, have_gtk=yes, have_gtk=no)
+# Freetype2 (optional, used in ExultStudio, shapes/fontgen.cc)
+	AC_PATH_PROG(FT2CONFIG, freetype-config)
+	if test -n "$FT2CONFIG"; then
+		FREETYPE2_LIBS=`$FT2CONFIG --libs`
+		SAVED_LDFLAGS="$LDFLAGS"
+		LDFLAGS="$LDFLAGS $FREETYPE2_LIBS"
+		AC_CHECK_FUNC(FT_Init_FreeType, have_freetype=yes, have_freetype=no)
+		LDFLAGS="$SAVED_LDFLAGS"
+		FREETYPE2_INCLUDES=`$FT2CONFIG --cflags`
+		if test x$have_freetype = xyes; then
+			AC_DEFINE(HAVE_FREETYPE2, 1, [Have freetype2])
+		else
+			FREETYPE2_LIBS=
+			FREETYPE2_INCLUDES=
+		fi
+		AC_SUBST(FREETYPE2_LIBS)
+		AC_SUBST(FREETYPE2_INCLUDES)
+	fi
+fi
+
+# Exult Studio
+if test x$enable_exult_studio = xyes; then
+	AC_MSG_RESULT(yes)
+	if test x$have_gtk = xno; then
+		echo "Exult Studio requires the GTK+ (aka the GIMP Tool Kit), but it is not installed."
+		echo "Please try again, either with the GTK+ installed as 3.16 or newer, or with '--disable-exult-studio'."
+		exit 1
+	fi
+	if test x$have_icu = xno; then
+		echo "Exult Studio requires the ICU (aka the International Components for Unicode), but it is not installed."
+		echo "Please try again, either with the ICU installed, or with '--disable-exult-studio'."
+		exit 1
+	fi
+	AM_CONDITIONAL(BUILD_STUDIO, true)
+	AM_CONDITIONAL(BUILD_SHAPES, true)
+else
+	AM_CONDITIONAL(BUILD_STUDIO, false)
+	AC_MSG_RESULT(no)
+fi
+
+# support for Exult Studio
 AC_ARG_ENABLE(exult-studio-support, AS_HELP_STRING([--enable-exult-studio-support], [Enable ExultStudio support @<:@default no@:>@]),,enable_exult_studio_support=no)
+AC_MSG_CHECKING([whether to enable support for Exult Studio])
 if test "$WINDOWING_SYSTEM" != -DXWIN -a "$WINDOWING_SYSTEM" != -D_WIN32 -a "$WINDOWING_SYSTEM" != -DMACOSX; then
 	enable_exult_studio_support=no
 fi
@@ -690,6 +722,10 @@ fi
 AC_ARG_ENABLE(macosx-x11-studio-support, AS_HELP_STRING([--enable-macosx-x11-studio-support], [Force Exult Studio X11 support in Mac OS X @<:@default no@:>@]),,enable_macosx_x11_studio_support=no)
 if test "$WINDOWING_SYSTEM" != -DMACOSX; then
 	enable_macosx_x11_studio_support=no
+fi
+
+if test x$enable_exult_studio = xyes; then
+	enable_exult_studio_support=yes
 fi
 
 if test x$enable_exult_studio_support = xyes ; then
@@ -719,6 +755,152 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+# ---------------------------------------------------------------------
+# External features
+# ---------------------------------------------------------------------
+
+# Build any external programs?
+AC_ARG_ENABLE(tools, AS_HELP_STRING([--disable-tools], [Only build the main program]),,enable_tools=yes)
+AC_MSG_CHECKING([whether to build only the main program])
+if test x$enable_tools = xno; then
+	AC_MSG_RESULT(yes)
+	AM_CONDITIONAL(BUILD_TOOLS, false)
+	enable_gimp_plugin=no
+	enable_compiler=no
+else
+	AM_CONDITIONAL(BUILD_TOOLS, true)
+	AC_MSG_RESULT(no)
+fi
+
+# Build compiler?
+AC_ARG_ENABLE(compiler, AS_HELP_STRING([--enable-compiler], [Build the usecode compiler @<:@default no@:>@]),,enable_compiler=no)
+AC_MSG_CHECKING([whether to build the usecode compiler])
+if test x$enable_compiler = xno; then
+	AC_MSG_RESULT(no)
+	AM_CONDITIONAL(BUILD_COMPILER, false)
+else
+	AC_MSG_RESULT(yes)
+	AM_CONDITIONAL(BUILD_COMPILER, true)
+fi
+
+# Build data files?
+AC_ARG_ENABLE(data, AS_HELP_STRING([--enable-data], [Create the data files @<:@default yes@:>@]),,enable_data=yes)
+AC_MSG_CHECKING([whether to build the data files])
+if test x$enable_data = xno; then
+	AC_MSG_RESULT(no)
+	AM_CONDITIONAL(DATA_FILES, false)
+else
+	AM_CONDITIONAL(DATA_FILES, true)
+	AC_MSG_RESULT(yes)
+fi
+
+# Build mods?
+AC_ARG_ENABLE(mods, AS_HELP_STRING([--enable-mods], [Build the Exult mods (requires usecode compiler) @<:@default no@:>@]),,enable_mods=no)
+AC_MSG_CHECKING([whether to build the Exult mods])
+if test x$enable_mods = xno -o x$enable_compiler = xno; then
+	AC_MSG_RESULT(no)
+	AM_CONDITIONAL(BUILD_MODS, false)
+else
+	AM_CONDITIONAL(BUILD_MODS, true)
+	AC_MSG_RESULT(yes)
+fi
+
+# Usecode debugger
+AC_ARG_WITH([usecode-debugger],
+            AS_HELP_STRING([--with-usecode-debugger=no|console|yes],
+                           [Experimental and buggy support for usecode debugging @<:@default no@:>@]),
+            [enable_usecode_debugger="$withval"], [enable_usecode_debugger="no"])
+AC_MSG_CHECKING([whether to enable the usecode debugger])
+if test x$enable_usecode_debugger = xconsole -o x$enable_usecode_debugger = xyes; then
+	AC_MSG_RESULT(yes)
+	if test x$enable_usecode_debugger = xconsole; then
+		AC_DEFINE(USECODE_CONSOLE_DEBUGGER, 1, [Enable Usecode debugging on console])
+	elif test x$enable_exult_studio != xyes; then
+		echo "But we are not building Exult Studio."
+		echo "Try again, either with --enable-exult-studio, or without the usecode debugger"
+		exit 1
+	elif test x$enable_exult_studio_support != xyes; then
+		echo "But we are not building Exult with Exult Studio support."
+		echo "Try again, either with --enable-exult-studio-support, or without the usecode debugger"
+		exit 1
+	fi
+	AC_DEFINE(USECODE_DEBUGGER, 1, [Enable Usecode debugging])
+else
+	AC_MSG_RESULT(no)
+fi
+
+# Usecode container
+AC_ARG_ENABLE(usecode-container, AS_HELP_STRING([--enable-usecode-container], [Enable display of usecode container for debugging purposes @<:@default no@:>@]),,enable_usecode_container=no)
+AC_MSG_CHECKING([whether to display the usecode container in Gumps])
+if test x$enable_usecode_container = xyes; then
+	AC_MSG_RESULT(yes)
+	AC_DEFINE(SHOW_USECODE_CONTAINER, 1, [Display Usecode container])
+else
+	AC_MSG_RESULT(no)
+fi
+
+# Show non-readied objects
+AC_ARG_ENABLE(nonreadied-objects, AS_HELP_STRING([--enable-nonreadied-objects], [Enable display of non-readied objects for debugging purposes @<:@default no@:>@]),,enable_nonreadied_objects=no)
+AC_MSG_CHECKING([whether to display non-readied objects in Gumps])
+if test x$enable_nonreadied_objects = xyes; then
+	AC_MSG_RESULT(yes)
+	AC_DEFINE(SHOW_NONREADIED_OBJECTS, 1, [Display non-readied objects])
+else
+	AC_MSG_RESULT(no)
+fi
+
+# gnome-shp-thumbnailer
+AC_ARG_ENABLE(gnome-shp-thumbnailer, AS_HELP_STRING([--enable-gnome-shp-thumbnailer], [Build Gnome SHP Thumbnailer @<:@default no@:>@]),,enable_gnome_shp_thumbnailer=no)
+AC_MSG_CHECKING([whether to build the Gnome SHP Thumbnailer])
+if test x$enable_gnome_shp_thumbnailer = xyes; then
+	AC_MSG_RESULT(yes)
+	# needs Gdk-Pixbuf
+	PKG_CHECK_MODULES(GDK_PIXBUF, gdk-pixbuf-2.0, have_gdk_pixbuf=yes, have_gdk_pixbuf=no)
+	if test x$have_gdk_pixbuf = xno; then
+		echo "The Gnome shp thumbnailer requires Gdk-Pixbuf."
+		echo "Try again, either with Gdk-Pixbuf-2.0, or with --disable-gnome-shp-thumbnailer"
+		exit 1
+	fi
+	AM_CONDITIONAL(BUILD_GTHUMB, true)
+else
+	AM_CONDITIONAL(BUILD_GTHUMB, false)
+	AC_MSG_RESULT(no)
+fi
+
+# GIMP plugin
+AM_CONDITIONAL(GIMP_PLUGIN, false)
+AC_ARG_ENABLE(gimp-plugin, AS_HELP_STRING([--enable-gimp-plugin], [Build the GIMP plugin @<:@default no@:>@]),,enable_gimp_plugin=no)
+AC_MSG_CHECKING([whether to build the GIMP plugin])
+if test x$enable_gimp_plugin = xyes; then
+	AC_MSG_RESULT(yes)
+	AC_MSG_CHECKING([for gimptool])
+	AC_CHECK_PROGS(GIMPTOOL, gimptool-2.0)
+	if test -z "$GIMPTOOL"; then
+		AC_MSG_RESULT([no, not building GIMP plugin])
+	else
+		AC_MSG_CHECKING([for GIMP version])
+		gimp_version=`$GIMPTOOL --version`
+		AX_COMPARE_VERSION([$gimp_version], [ge], [2.8.0], [dnl
+			dnl $gimp_version >= 2.8.0
+			AC_MSG_RESULT([found $gimp_version >= 2.8.0])
+			AC_SUBST(GIMPTOOL)
+			AM_CONDITIONAL(GIMP_PLUGIN, true)
+			GIMP_PLUGIN_PREFIX=`$GIMPTOOL --gimpplugindir`
+			GIMP_PLUGIN_PREFIX="$GIMP_PLUGIN_PREFIX/plug-ins"
+			AC_SUBST(GIMP_PLUGIN_PREFIX)
+			AC_DEFINE(HAVE_GIMP, 1, [Have GIMP])
+			GIMP_INCLUDES=`$PKG_CONFIG --cflags gimpui-2.0`
+			GIMP_LIBS=`$PKG_CONFIG --libs gimpui-2.0`
+			AC_SUBST(GIMP_INCLUDES)
+			AC_SUBST(GIMP_LIBS)
+		], [
+			dnl $gimp_version < 2.8.0
+			AC_MSG_RESULT([found $gimp_version < 2.8.0 - disabling plugin])
+		])
+	fi
+else
+	AC_MSG_RESULT(no)
+fi
 
 # ---------------------------------------------------------------------
 # Alternative directories
@@ -934,7 +1116,6 @@ else
 	AC_MSG_RESULT(no)
 fi
 
-
 # ---------------------------------------------------------------------
 # Warning level
 # ---------------------------------------------------------------------
@@ -984,196 +1165,9 @@ do
 	AX_CHECK_COMPILE_FLAG([$cxx_flag], [WARNINGS="$WARNINGS $cxx_flag"], [], [$DEBUG_LEVEL -Werror])
 done
 
-
-# --------------------
-# External features
-# --------------------
-
-# Build any external programs?
-AC_ARG_ENABLE(tools, AS_HELP_STRING([--disable-tools], [Only build the main program]),,enable_tools=yes)
-AC_MSG_CHECKING([whether to build only the main program])
-if test x$enable_tools = xno; then
-	AC_MSG_RESULT(yes)
-	AM_CONDITIONAL(BUILD_TOOLS, false)
-	enable_gimp_plugin=no
-	enable_compiler=no
-else
-	AM_CONDITIONAL(BUILD_TOOLS, true)
-	AC_MSG_RESULT(no)
-fi
-
-# Build compiler?
-AC_ARG_ENABLE(compiler, AS_HELP_STRING([--enable-compiler], [Build the usecode compiler @<:@default no@:>@]),,enable_compiler=no)
-AC_MSG_CHECKING([whether to build the usecode compiler])
-if test x$enable_compiler = xno; then
-	AC_MSG_RESULT(no)
-	AM_CONDITIONAL(BUILD_COMPILER, false)
-else
-	AC_MSG_RESULT(yes)
-	AM_CONDITIONAL(BUILD_COMPILER, true)
-fi
-
-# Build data files?
-AC_ARG_ENABLE(data, AS_HELP_STRING([--enable-data], [Create the data files @<:@default yes@:>@]),,enable_data=yes)
-AC_MSG_CHECKING([whether to build the data files])
-if test x$enable_data = xno; then
-	AC_MSG_RESULT(no)
-	AM_CONDITIONAL(DATA_FILES, false)
-else
-	AM_CONDITIONAL(DATA_FILES, true)
-	AC_MSG_RESULT(yes)
-fi
-
-# Build mods?
-AC_ARG_ENABLE(mods, AS_HELP_STRING([--enable-mods], [Build the Exult mods (requires usecode compiler) @<:@default no@:>@]),,enable_mods=no)
-AC_MSG_CHECKING([whether to build the Exult mods])
-if test x$enable_mods = xno -o x$enable_compiler = xno; then
-	AC_MSG_RESULT(no)
-	AM_CONDITIONAL(BUILD_MODS, false)
-else
-	AM_CONDITIONAL(BUILD_MODS, true)
-	AC_MSG_RESULT(yes)
-fi
-
-# Freetype2 (optional, used in ExultStudio, shapes/fontgen.cc)
-AC_PATH_PROG(FT2CONFIG, freetype-config)
-if test -n "$FT2CONFIG"; then
-	FREETYPE2_LIBS=`$FT2CONFIG --libs`
-	SAVED_LDFLAGS="$LDFLAGS"
-	LDFLAGS="$LDFLAGS $FREETYPE2_LIBS"
-	AC_CHECK_FUNC(FT_Init_FreeType, have_freetype=yes, have_freetype=no)
-	LDFLAGS="$SAVED_LDFLAGS"
-	FREETYPE2_INCLUDES=`$FT2CONFIG --cflags`
-	if test x$have_freetype = xyes; then
-		AC_DEFINE(HAVE_FREETYPE2, 1, [Have freetype2])
-	else
-		FREETYPE2_LIBS=
-		FREETYPE2_INCLUDES=
-	fi
-	AC_SUBST(FREETYPE2_LIBS)
-	AC_SUBST(FREETYPE2_INCLUDES)
-fi
-
-# exult-studio
-AC_ARG_ENABLE(exult-studio, AS_HELP_STRING([--enable-exult-studio], [Build Exult Studio @<:@default no@:>@]),,enable_exult_studio=no)
-AC_MSG_CHECKING([whether to build Exult Studio])
-if test x$enable_exult_studio = xyes; then
-	AC_MSG_RESULT(yes)
-	if test x$have_gtk = xno; then
-		echo "Exult Studio requires the GTK+ (aka the GIMP Tool Kit), but it is not installed."
-		echo "Please try again, either with the GTK+ installed as 3.16 or newer, or with '--disable-exult-studio'."
-		exit 1
-	fi
-	if test x$have_icu = xno; then
-		echo "Exult Studio requires the ICU (aka the International Components for Unicode), but it is not installed."
-		echo "Please try again, either with the ICU installed, or with '--disable-exult-studio'."
-		exit 1
-	fi
-	AM_CONDITIONAL(BUILD_STUDIO, true)
-	AM_CONDITIONAL(BUILD_SHAPES, true)
-else
-	AM_CONDITIONAL(BUILD_STUDIO, false)
-	AC_MSG_RESULT(no)
-fi
-
-# Usecode debugger
-AC_ARG_WITH([usecode-debugger],
-            AS_HELP_STRING([--with-usecode-debugger=no|console|yes],
-                           [Experimental and buggy support for usecode debugging @<:@default no@:>@]),
-            [enable_usecode_debugger="$withval"], [enable_usecode_debugger="no"])
-AC_MSG_CHECKING([whether to enable the usecode debugger])
-if test x$enable_usecode_debugger = xconsole -o x$enable_usecode_debugger = xyes; then
-	AC_MSG_RESULT(yes)
-	if test x$enable_usecode_debugger = xconsole; then
-		AC_DEFINE(USECODE_CONSOLE_DEBUGGER, 1, [Enable Usecode debugging on console])
-	elif test x$enable_exult_studio != xyes; then
-		echo "But we are not building Exult Studio."
-		echo "Try again, either with --enable-exult-studio, or without the usecode debugger"
-		exit 1
-	elif test x$enable_exult_studio_support != xyes; then
-		echo "But we are not building Exult with Exult Studio support."
-		echo "Try again, either with --enable-exult-studio-support, or without the usecode debugger"
-		exit 1
-	fi
-	AC_DEFINE(USECODE_DEBUGGER, 1, [Enable Usecode debugging])
-else
-	AC_MSG_RESULT(no)
-fi
-
-# Usecode container
-AC_ARG_ENABLE(usecode-container, AS_HELP_STRING([--enable-usecode-container], [Enable display of usecode container for debugging purposes @<:@default no@:>@]),,enable_usecode_container=no)
-AC_MSG_CHECKING([whether to display the usecode container in Gumps])
-if test x$enable_usecode_container = xyes; then
-	AC_MSG_RESULT(yes)
-	AC_DEFINE(SHOW_USECODE_CONTAINER, 1, [Display Usecode container])
-else
-	AC_MSG_RESULT(no)
-fi
-
-# Show non-readied objects
-AC_ARG_ENABLE(nonreadied-objects, AS_HELP_STRING([--enable-nonreadied-objects], [Enable display of non-readied objects for debugging purposes @<:@default no@:>@]),,enable_nonreadied_objects=no)
-AC_MSG_CHECKING([whether to display non-readied objects in Gumps])
-if test x$enable_nonreadied_objects = xyes; then
-	AC_MSG_RESULT(yes)
-	AC_DEFINE(SHOW_NONREADIED_OBJECTS, 1, [Display non-readied objects])
-else
-	AC_MSG_RESULT(no)
-fi
-
-# gnome-shp-thumbnailer
-AC_ARG_ENABLE(gnome-shp-thumbnailer, AS_HELP_STRING([--enable-gnome-shp-thumbnailer], [Build Gnome SHP Thumbnailer @<:@default no@:>@]),,enable_gnome_shp_thumbnailer=no)
-AC_MSG_CHECKING([whether to build the Gnome SHP Thumbnailer])
-if test x$enable_gnome_shp_thumbnailer = xyes; then
-	AC_MSG_RESULT(yes)
-	if test x$have_gdk_pixbuf = xno; then
-		echo "Umm, but we don't have any Gdk-Pixbuf stuff."
-		echo "Try again, either with Gdk-Pixbuf-2.0, or with --disable-gnome-shp-thumbnailer"
-		exit 1
-	fi
-	AM_CONDITIONAL(BUILD_GTHUMB, true)
-else
-	AM_CONDITIONAL(BUILD_GTHUMB, false)
-	AC_MSG_RESULT(no)
-fi
-
-# GIMP plugin
-AM_CONDITIONAL(GIMP_PLUGIN, false)
-AC_ARG_ENABLE(gimp-plugin, AS_HELP_STRING([--enable-gimp-plugin], [Build the GIMP plugin @<:@default no@:>@]),,enable_gimp_plugin=no)
-AC_MSG_CHECKING([whether to build the GIMP plugin])
-if test x$enable_gimp_plugin = xyes; then
-	AC_MSG_RESULT(yes)
-	AC_MSG_CHECKING([for gimptool])
-	AC_CHECK_PROGS(GIMPTOOL, gimptool-2.0)
-	if test -z "$GIMPTOOL"; then
-		AC_MSG_RESULT([no, not building GIMP plugin])
-	else
-		AC_MSG_CHECKING([for GIMP version])
-		gimp_version=`$GIMPTOOL --version`
-		AX_COMPARE_VERSION([$gimp_version], [ge], [2.8.0], [dnl
-			dnl $gimp_version >= 2.8.0
-			AC_MSG_RESULT([found $gimp_version >= 2.8.0])
-			AC_SUBST(GIMPTOOL)
-			AM_CONDITIONAL(GIMP_PLUGIN, true)
-			GIMP_PLUGIN_PREFIX=`$GIMPTOOL --gimpplugindir`
-			GIMP_PLUGIN_PREFIX="$GIMP_PLUGIN_PREFIX/plug-ins"
-			AC_SUBST(GIMP_PLUGIN_PREFIX)
-			AC_DEFINE(HAVE_GIMP, 1, [Have GIMP])
-			GIMP_INCLUDES=`$PKG_CONFIG --cflags gimpui-2.0`
-			GIMP_LIBS=`$PKG_CONFIG --libs gimpui-2.0`
-			AC_SUBST(GIMP_INCLUDES)
-			AC_SUBST(GIMP_LIBS)
-		], [
-			dnl $gimp_version < 2.8.0
-			AC_MSG_RESULT([found $gimp_version < 2.8.0 - disabling plugin])
-		])
-	fi
-else
-	AC_MSG_RESULT(no)
-fi
-
-# ----------------------------------------------------------------
-# If we are cross-compiling, look for expack and head2data in PATH
-# ----------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Cross-Compiling
+# ---------------------------------------------------------------------
 
 AM_CONDITIONAL(CROSS_COMPILING, test $cross_compiling = yes)
 
@@ -1200,9 +1194,9 @@ AS_IF([ test $cross_compiling = yes ], [
 	fi
 ])
 
-# ------------------
+# ---------------------------------------------------------------------
 # Generate output
-# ------------------
+# ---------------------------------------------------------------------
 
 AC_SUBST(SDL_CFLAGS)
 AC_SUBST(SDL_LIBS)
@@ -1324,14 +1318,14 @@ if test x$enable_android_apk = xno; then
 		PKG_CHECK_EXISTS(zlib,
 			echo zlib....................... : `$PKG_CONFIG --modversion zlib`)
 	fi
-	if test x$have_icu = xyes; then
+	if test x$enable_exult_studio = xyes; then
 		echo ICU........................ : `$PKG_CONFIG --modversion icu-uc`
 	fi
-	if test x$have_gtk = xyes; then
+	if test x$enable_exult_studio = xyes; then
 		echo GLIB....................... : `$PKG_CONFIG --modversion glib-2.0`
 		echo GTK+....................... : `$PKG_CONFIG --modversion gtk+-3.0`
 	fi
-	if test x$have_gdk_pixbuf = xyes; then
+	if test x$enable_gnome_shp_thumbnailer = xyes; then
 		echo GDK-Pixbuf................. : `$PKG_CONFIG --modversion gdk-pixbuf-2.0`
 	fi
 	echo
