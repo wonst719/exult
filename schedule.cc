@@ -3527,8 +3527,11 @@ static void Prep_animation(Actor *npc, Game_object *table)
 	const int shapenum = table->get_shapenum();
 	// Cauldron or stove?  Animate a little.
 	if (shapenum == 995) {
-		// Don't use last cauldron frame.
-		table->change_frame(rand() % (table->get_num_frames() - 1));
+		// Only switch between frames 0 and 2
+		if (table->get_framenum() == 0)
+			table->change_frame(2);
+		else
+			table->change_frame(0);
 	} else if (shapenum == 664 || shapenum == 872) {
 		do {
 			table->change_frame(rand() % table->get_num_frames());
