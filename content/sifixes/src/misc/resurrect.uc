@@ -47,10 +47,10 @@ void Resurrect 0x8FE () {
 
 	for (body in resurrectlist with index to max) {
 		if (body != AVATAR->get_npc_object()) {
+			npc = body->get_body_npc();
 			itemindex = getIndexForElement(npc, resurrectables);
 			name = resurrectablenames[itemindex];
 			var flag_dont_resurrect = false;
-			npc = body->get_body_npc();
 			if (gflags[BANES_RELEASED]) {
 				// Prevent "resurrection" of the three Banes:
 				if ((npc == DUPRE) && !gflags[WANTONESS_BANE_DEAD]) {
