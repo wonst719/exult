@@ -2467,6 +2467,12 @@ void Actor::set_property(
 		else
 			clear_type_flag(tf_sex);
 		break;
+	case health:
+		if (val > properties[prop]) {
+			clear_type_flag(Actor::tf_bleeding);	// Stop bleeding.
+		}
+		properties[prop] = val;
+		break;
 	default:
 		if (prop >= 0 && prop < missile_weapon)
 			properties[prop] = val;
@@ -4305,6 +4311,7 @@ void Actor::mend_wounds(
     bool mendmana
 ) {
 	int hp = properties[static_cast<int>(health)];
+	clear_type_flag(Actor::tf_bleeding);	// Stop bleeding.
 	const bool starving = (get_property(static_cast<int>(food_level)) <= 9
 	                 && is_in_party() && !get_info().does_not_eat());
 	// It should be okay to leave is_cold_immune out.
