@@ -746,7 +746,7 @@ stmt_declaration:
 			cur_fun->add_alias($6, $8, $3);
 		$$ = nullptr;
 		}
-	| STRING string_decl_list ';'
+	| STRING string_decl_list opt_comma ';'
 		{ $$ = nullptr; }
 	| const_int_decl
 		{ $$ = nullptr; }
@@ -786,9 +786,14 @@ var_decl_list:
 		{ $$ = $1; }
 	;
 
+opt_comma:
+	','
+	| %empty
+	;
+
 enum_decl:				/* Decls. the elems, not the enum. */
 	ENUM IDENTIFIER { enum_val = -1; }
-			opt_enum_type '{' enum_item_list '}' ';'
+			opt_enum_type '{' enum_item_list opt_comma '}' ';'
 		{ const_opcode.pop_back(); }
 	;
 
@@ -830,7 +835,7 @@ enum_item:
 
 const_int_decl:
 	UCC_CONST const_int_type { const_opcode.push_back(static_cast<UsecodeOps>($2)); }
-		const_int_decl_list ';'
+		const_int_decl_list opt_comma ';'
 		{ const_opcode.pop_back(); }
 	;
 
@@ -2317,7 +2322,7 @@ addressof:
 	;
 
 opt_expression_list:
-	expression_list
+	expression_list opt_comma
 	| %empty
 		{ $$ = new Uc_array_expression(); }
 	;
