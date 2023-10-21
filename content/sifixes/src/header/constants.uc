@@ -369,8 +369,8 @@ enum inv_slots_si {
 	SI_BACK_SHIELD	= 16,
 	SI_BACK_2H		= 17,
 	SI_TRIPLE_BOLTS	= 18,	// Exult-only; ported from BG
-	SI_BOTH_HANDS	= 20
-	SI_LRGLOVES		= 21,	// Exult-only; ported from BG ; uses both ring slots
+	SI_BOTH_HANDS	= 20,
+	SI_LRGLOVES		= 21	// Exult-only; ported from BG ; uses both ring slots
 };
 
 /*
