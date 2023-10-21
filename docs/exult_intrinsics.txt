@@ -3049,10 +3049,19 @@ UI_display_runes(int gump, string runes)
     *    NG
     +    EA
     ,    ST
-    (    TH
 
     Additionally, all lowercase letters will be turned into uppercase letters,
     and pipes ('|') will be converted to spaces.
+
+    When compiling code, UCC accepts some escape sequences to make these strings
+    easier to read:
+
+    (    \{th}
+    )    \{ee}
+    *    \{ng}
+    +    \{ea}
+    ,    \{st}
+    |    \{dot}
 
 UI_book_mode(object obj)
 obj->book_mode()
