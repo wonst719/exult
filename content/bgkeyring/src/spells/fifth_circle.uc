@@ -290,7 +290,7 @@ void spellMassSleep () {
 		var pos = get_object_position();
 		item_say("@Vas Zu@");
 		if (inMagicStorm()) {
-			UI_sprite_effect(7, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
 			script item {
 				nohalt;
 				sfx 65;

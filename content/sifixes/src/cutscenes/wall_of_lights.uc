@@ -92,7 +92,7 @@ void BatlinAtWallOfLights object#(0x73B) () {
 
 			if (pathegg_quality > 4) {
 				pos = npc->get_object_position();
-				UI_sprite_effect(7, pos[X], pos[Y], 0, 0, 0, -1);
+				UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
 			}
 
 			var body = UI_find_object(-359, SHAPE_BODIES_2, QUALITY_ANY, 16);
@@ -119,7 +119,7 @@ void BatlinAtWallOfLights object#(0x73B) () {
 			pos[Y] = pos[Y] + offsets[Y];
 			offsets[X] = -1 * offsets[X];
 			offsets[Y] = -1 * offsets[Y];
-			UI_sprite_effect(32, pos[X], pos[Y], offsets[X], offsets[Y], 0, dist);
+			UI_sprite_effect(ANIMATION_RED_SWIRL, pos[X], pos[Y], offsets[X], offsets[Y], 0, dist);
 			pathegg->set_item_quality(pathegg_quality + 1);
 
 			script pathegg {
@@ -141,7 +141,7 @@ void BatlinAtWallOfLights object#(0x73B) () {
 			var baneobj = newbaneshape->create_new_object2(pos);
 			baneobj->set_item_frame(baneframe);
 			baneobj->set_schedule_type(WAIT);
-			UI_sprite_effect(7, pos[X], pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
 			abort;
 		} else if (pathegg_quality == 7) {
 			const int ANARCHY = -290;
@@ -163,7 +163,7 @@ void BatlinAtWallOfLights object#(0x73B) () {
 			UI_remove_npc_face0();
 
 			pos = AVATAR->get_object_position();
-			UI_sprite_effect(7, pos[X], pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
 
 			var banenpc;
 

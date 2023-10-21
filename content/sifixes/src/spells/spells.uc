@@ -615,11 +615,11 @@ void spellImbalance object#(0x687) () {
 		halt_scheduled();
 		item_say("@Kal Vas An Grav@");
 		if (notInMagicStorm()) {
-			obj_sprite_effect(ANIMATION_TELEPORT, -2, -2, -3, -3, 0, -1);
-			obj_sprite_effect(ANIMATION_TELEPORT, -2, -2, 3, -3, 0, -1);
-			obj_sprite_effect(ANIMATION_TELEPORT, -2, -2, 3, 3, 0, -1);
-			obj_sprite_effect(ANIMATION_TELEPORT, -2, -2, -3, 3, 0, -1);
-			obj_sprite_effect(26,				  -2, -2, 0, 0, 0, -1);
+			obj_sprite_effect(ANIMATION_TELEPORT,  -2, -2, -3, -3, 0, -1);
+			obj_sprite_effect(ANIMATION_TELEPORT,  -2, -2,  3, -3, 0, -1);
+			obj_sprite_effect(ANIMATION_TELEPORT,  -2, -2,  3,  3, 0, -1);
+			obj_sprite_effect(ANIMATION_TELEPORT,  -2, -2, -3,  3, 0, -1);
+			obj_sprite_effect(ANIMATION_TELEPORT2, -2, -2,  0,  0, 0, -1);
 			script item {
 				nohalt;
 				actor frame raise_1h;

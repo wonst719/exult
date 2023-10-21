@@ -116,7 +116,7 @@ void spellMassCurse () {
 		item_say("@Vas Des Sanct@");
 		if (inMagicStorm()) {
 			var pos = get_object_position();
-			UI_sprite_effect(7, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
 			script item {
 				nohalt;
 				actor frame cast_up;
@@ -186,10 +186,10 @@ void spellReveal () {
 						nohalt;
 						call spellClearFlag, INVISIBLE;
 					}
-					obj->obj_sprite_effect(13, -1, -1, 0, 0, 0, -1);
+					obj->obj_sprite_effect(ANIMATION_GREEN_BUBBLES, -1, -1, 0, 0, 0, -1);
 				}
 			} else {
-				obj_sprite_effect(13, -1, -1, 0, 0, 0, -1);
+				obj_sprite_effect(ANIMATION_GREEN_BUBBLES, -1, -1, 0, 0, 0, -1);
 			}
 		} else {
 			script item {
@@ -219,8 +219,8 @@ void spellSeance () {
 			var pos = get_object_position();
 			var sprite_x = (pos[X] - 2);
 			var sprite_y = (pos[Y] - 2);
-			UI_sprite_effect(13, sprite_x, sprite_y, 0, 0, 0, -1);
-			UI_sprite_effect(7, sprite_x, sprite_y, 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_GREEN_BUBBLES, sprite_x, sprite_y, 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, sprite_x, sprite_y, 0, 0, 0, -1);
 			//I have NO idea why they had one flag per ghost,
 			//instead of having one for them all...
 			gflags[SEANCE_CAINE] = true;

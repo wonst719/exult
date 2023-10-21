@@ -209,7 +209,7 @@ void spellShowMap object#() () {
 void spellProtectAllEffect object#() () {
 	UI_play_sound_effect(109);
 	var pos = get_object_position();
-	UI_sprite_effect(7, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+	UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
 	var targets = getFriendlyTargetList(item, 25);
 	for (npc in targets) {
 		npc->set_item_flag(PROTECTION);
@@ -270,7 +270,7 @@ void spellCauseDancing object#() () {
 		var intelligence = npc->get_npc_prop(INTELLIGENCE);
 		if ((intelligence > 5) && (intelligence < 25)) {
 			var pos = npc->get_object_position();
-			UI_sprite_effect(16, pos[X], pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_SPARKLES, pos[X], pos[Y], 0, 0, 0, -1);
 			setNonpartySchedule(npc, DANCE);
 			npc->set_item_flag(IN_ACTION);
 			var barks = ["@Dance!@", "@Yeah!@", "@Huh!@", "@Oh, yeah!@", "@I'm bad!@", "@Boogie!@", "@Yow!@"];

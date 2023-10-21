@@ -222,7 +222,7 @@ void Thoxa object#(0x4D3) () {
 				pos = get_object_position();
 				pos[X] = (pos[X] - (pos[Z] / 2));
 				pos[Y] = (pos[Y] - (pos[Z] / 2));
-				UI_sprite_effect(0x7, pos[X], pos[Y], 0, 0, 0, -1);
+				UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
 				UI_play_sound_effect(0x51);
 				remove_npc();
 				abort;

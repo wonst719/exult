@@ -168,7 +168,7 @@ void firesnakeExplode () {
 	var party = UI_get_party_list();
 	var pos = get_object_position();
 	var vertoff = (pos[Z] + 1) / 2;
-	UI_sprite_effect(1, (pos[X] + vertoff), (pos[Y] + vertoff), 0, 0, 0, -1);
+	UI_sprite_effect(ANIMATION_BIG_BLAST, (pos[X] + vertoff), (pos[Y] + vertoff), 0, 0, 0, -1);
 	UI_play_sound_effect(42);
 
 	for (obj in nearbyobjs with index to max) {

@@ -67,7 +67,7 @@ void spellCreateGold (var target) {
 				actor frame strike_1h;
 			}
 			var pos = target->get_object_position();
-			UI_sprite_effect(13, pos[X], pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_GREEN_BUBBLES, pos[X], pos[Y], 0, 0, 0, -1);
 			script target after 5 ticks {
 				nohalt;
 				call spellSetShape, SHAPE_GOLD_NUGGET;
@@ -151,7 +151,7 @@ void spellDelayedBlast (var target) {
 						actor frame cast_out;
 						actor frame cast_up;
 					}
-					UI_sprite_effect(13, sprite_pos[X], sprite_pos[Y], 0, 0, 0, -1);
+					UI_sprite_effect(ANIMATION_GREEN_BUBBLES, sprite_pos[X], sprite_pos[Y], 0, 0, 0, -1);
 				} else {
 					failed = true;
 				}
@@ -270,7 +270,7 @@ void spellMassCharm () {
 			}
 
 			var pos = get_object_position();
-			UI_sprite_effect(7, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
 			var dist = 25;
 			var nonparty_npcs = getNearbyNonPartyNPCs(dist);
 			for (npc in nonparty_npcs) {
@@ -323,7 +323,7 @@ void spellMassMight () {
 				call  spellSetFlag, MIGHT;
 			}
 			var pos = get_object_position();
-			UI_sprite_effect(7, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
 
 			var targets = getFriendlyTargetList(item, 25);
 			for (npc in targets) {
@@ -365,7 +365,7 @@ void spellRestoration () {
 				var str = npc->get_npc_prop(STRENGTH);
 				var hps = npc->get_npc_prop(HEALTH);
 				npc->set_npc_prop(HEALTH, (str - hps));
-				npc->obj_sprite_effect(13, -1, -1, 0, 0, 0, -1);
+				npc->obj_sprite_effect(ANIMATION_GREEN_BUBBLES, -1, -1, 0, 0, 0, -1);
 			}
 		} else {
 			script item {

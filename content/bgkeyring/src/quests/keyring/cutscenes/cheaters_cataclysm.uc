@@ -68,7 +68,7 @@ void beginCataclysm object#() () {
 
 			var pos = LAURIANNA->get_object_position();
 			//Laurianna will lie down unconscious and trigger the cataclysm:
-			UI_sprite_effect(1, pos[X], pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_BIG_BLAST, pos[X], pos[Y], 0, 0, 0, -1);
 			script LAURIANNA {
 				call trueFreeze;
 				nohalt;
@@ -133,8 +133,8 @@ void beginCataclysm object#() () {
 
 		//Exploding lightning bolts:
 		//One for the randomly selected party member:
-		UI_sprite_effect(1, npc_pos[X], npc_pos[Y], 0, 0, 0, -1);
-		UI_sprite_effect(17, npc_pos[X], npc_pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_BIG_BLAST, npc_pos[X], npc_pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_LIGHTNING, npc_pos[X], npc_pos[Y], 0, 0, 0, -1);
 		UI_play_sound_effect2(SOUND_BIG_BLAST, member);
 		member->reduce_health(HEALTH, UI_die_roll(3, 9), MAGIC_DAMAGE);
 		script member {
@@ -150,8 +150,8 @@ void beginCataclysm object#() () {
 		}
 
 		//One for the random position:
-		UI_sprite_effect(1, rand_pos[X], rand_pos[Y], 0, 0, 0, -1);
-		UI_sprite_effect(17, rand_pos[X], rand_pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_BIG_BLAST, rand_pos[X], rand_pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_LIGHTNING, rand_pos[X], rand_pos[Y], 0, 0, 0, -1);
 		UI_play_sound_effect2(SOUND_BIG_BLAST, AVATAR);
 
 		//Queue the next lightning bolts:

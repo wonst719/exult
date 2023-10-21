@@ -304,7 +304,7 @@ void spellRemoveCurse (var target) {
 				call spellClearFlag, PARALYZED;
 			}
 
-			obj_sprite_effect(13, -2, -2, 0, 0, 0, -1);
+			obj_sprite_effect(ANIMATION_GREEN_BUBBLES, -2, -2, 0, 0, 0, -1);
 		} else {
 			script item {
 				nohalt;

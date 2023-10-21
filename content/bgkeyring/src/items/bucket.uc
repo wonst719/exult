@@ -312,7 +312,7 @@ void useBucketOnDousable () {
 		sprite_pos[Y] = (target_pos[Y] - sprite_offset);
 
 		//display the puff of smoke
-		UI_sprite_effect(9, sprite_pos[X], sprite_pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_POOF, sprite_pos[X], sprite_pos[Y], 0, 0, 0, -1);
 
 		//tfssss
 		UI_play_sound_effect(0x2E);
@@ -333,7 +333,7 @@ void useBucketOnDousable () {
 			actor frame standing;
 		}
 
-		UI_sprite_effect(9, target_pos[X], target_pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_POOF, target_pos[X], target_pos[Y], 0, 0, 0, -1);
 		UI_play_sound_effect(0x2E);
 	}
 }

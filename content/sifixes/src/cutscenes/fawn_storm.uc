@@ -33,7 +33,7 @@ void FawnStorm object#(0x6BC) () {
 				if (UI_update_last_created(pos)) {
 					pos[X] = pos[X] + (pos[Z] / 2);
 					pos[Y] = pos[Y] + (pos[Z] / 2);
-					UI_sprite_effect(21, pos[X], pos[Y], 0, 0, 0, -1);
+					UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, pos[X], pos[Y], 0, 0, 0, -1);
 
 					var dir = IOLO->find_direction(lute);
 					script IOLO {

@@ -58,7 +58,7 @@ void spellAwakenAll () {
 		halt_scheduled();
 		item_say("@Vas An Zu@");
 		if (inMagicStorm()) {
-			UI_sprite_effect(7, (pos[X] - pos[Z]/2), (pos[Y] - pos[Z]/2), 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - pos[Z]/2), (pos[Y] - pos[Z]/2), 0, 0, 0, -1);
 			script item {
 				nohalt;
 				sfx 68;

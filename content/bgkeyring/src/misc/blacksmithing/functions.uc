@@ -392,7 +392,7 @@ void useSwordOnTrough object#() () {
 
 	if (placed) {
 		swordblank_pos = get_object_position();
-		UI_sprite_effect(9, (swordblank_pos[X] - 3), (swordblank_pos[Y] - 3), 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_POOF, (swordblank_pos[X] - 3), (swordblank_pos[Y] - 3), 0, 0, 0, -1);
 		UI_play_sound_effect(SOUND_QUENCH_SWORD);
 
 		if (isBlackSword(item)) {

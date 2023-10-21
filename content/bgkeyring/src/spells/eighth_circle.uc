@@ -82,7 +82,7 @@ void spellInvisibilityAll () {
 		item_say("@Vas Sact Lor@");
 		if (inMagicStorm()) {
 			var pos = get_object_position();
-			UI_sprite_effect(7, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
 			script item {
 				nohalt;
 				actor frame raise_1h;
@@ -120,7 +120,7 @@ void spellMassDeath () {
 		item_say("@Vas Corp@");
 		if (inMagicStorm()) {
 			var pos = get_object_position();
-			UI_sprite_effect(7, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
 			script item {
 				nohalt;
 				sfx 65;
@@ -201,8 +201,8 @@ void spellResurrect (var target) {
 				actor frame cast_up;
 			}
 			UI_play_music(15, 0);
-			UI_sprite_effect(17, pos[X], pos[Y], 0, 0, 0, -1);
-			UI_sprite_effect(13, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_LIGHTNING, pos[X], pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_GREEN_BUBBLES, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
 		} else {
 			script item {
 				nohalt;

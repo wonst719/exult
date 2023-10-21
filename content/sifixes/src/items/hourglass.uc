@@ -40,7 +40,7 @@ void Hourglass shape#(0x347) () {
 			    !gflags[BANES_RELEASED]) {
 				UI_close_gumps();
 				UI_play_sound_effect(0x30);
-				obj_sprite_effect(9, 0, 0, 0, 0, 0, -1);
+				obj_sprite_effect(ANIMATION_POOF, 0, 0, 0, 0, 0, -1);
 				abort;
 			}
 
@@ -71,7 +71,7 @@ void Hourglass shape#(0x347) () {
 					THOXA->move_object(pos);
 					THOXA->faceAvatar();
 					THOXA->set_schedule_type(TALK);
-					THOXA->obj_sprite_effect(7, 0, 0, 0, 0, 0, -1);
+					THOXA->obj_sprite_effect(ANIMATION_TELEPORT, 0, 0, 0, 0, 0, -1);
 					UI_play_sound_effect(0x0051);
 
 					pathegg = getPathEgg(2, 1);
@@ -82,11 +82,11 @@ void Hourglass shape#(0x347) () {
 					UI_close_gumps();
 				} else {
 					UI_play_sound_effect(0xE);
-					obj_sprite_effect(13, 0, 0, 0, 0, 0, -1);
+					obj_sprite_effect(ANIMATION_GREEN_BUBBLES, 0, 0, 0, 0, 0, -1);
 				}
 			} else {
 				UI_play_sound_effect(0x30);
-				obj_sprite_effect(9, 0, 0, 0, 0, 0, -1);
+				obj_sprite_effect(ANIMATION_POOF, 0, 0, 0, 0, 0, -1);
 			}
 		}
 	}

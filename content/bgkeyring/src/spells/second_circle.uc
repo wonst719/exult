@@ -68,7 +68,7 @@ void spellDestroyTrap (var target) {
 
 				trap->halt_scheduled();
 				trap->remove_item();
-				UI_sprite_effect(13, target[X], target[Y], 0, 0, 0, -1);
+				UI_sprite_effect(ANIMATION_GREEN_BUBBLES, target[X], target[Y], 0, 0, 0, -1);
 				UI_play_sound_effect(66);
 			}
 			nearby_traps = find_nearby(SHAPE_LOCKED_CHEST, 2, MASK_ALL_UNSEEN);
@@ -76,7 +76,7 @@ void spellDestroyTrap (var target) {
 				target = trap->get_object_position();
 				if (trap->get_item_quality() == KEY_PICKABLE_TRAPPED) {
 					trap->set_item_quality(0);
-					UI_sprite_effect(13, target[X], target[Y], 0, 0, 0, -1);
+					UI_sprite_effect(ANIMATION_GREEN_BUBBLES, target[X], target[Y], 0, 0, 0, -1);
 					UI_play_sound_effect(66);
 				}
 			}
@@ -186,7 +186,7 @@ void spellMassCure () {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
 		var pos = get_object_position();
-		UI_sprite_effect(7, pos[X], pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
 		item_say("@Vas An Nox@");
 		if (inMagicStorm()) {
 			script item {
@@ -237,7 +237,7 @@ void spellProtection (var target) {
 				call spellClearFlag, PROTECTION;
 			}
 
-			obj_sprite_effect(13, -2, -2, 0, 0, 0, -1);
+			obj_sprite_effect(ANIMATION_GREEN_BUBBLES, -2, -2, 0, 0, 0, -1);
 		} else {
 			script item {
 				nohalt;
