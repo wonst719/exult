@@ -286,11 +286,12 @@ void Actor::init(
 ) {
 	if (!avatar_frames[0])
 		init_default_frames();
-	size_t i;
-	for (i = 0; i < array_size(properties); i++)
-		properties[i] = 0;
-	for (i = 0; i < array_size(spots); i++)
-		spots[i] = nullptr;
+	for (auto& prop : properties) {
+		prop = 0;
+	}
+	for (auto& spot : spots) {
+		spot = nullptr;
+	}
 }
 
 /**
@@ -2657,9 +2658,7 @@ int Actor::apply_damage(
 		armor += minf->get_armor();
 
 	// Armor defense and immunities only affect UI_apply_damage.
-	const int num_spots = array_size(spots);
-	for (int i = 0; i < num_spots; i++) {
-		Game_object *obj = spots[i];
+	for (Game_object *obj : spots) {
 		if (obj) {
 			const Shape_info &info = obj->get_info();
 			armor += info.get_armor();
