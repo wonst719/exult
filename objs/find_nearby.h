@@ -23,10 +23,39 @@
 
 #include "chunks.h"
 #include "citerate.h"
+#include "flags.h"
 #include "gamemap.h"
 #include "gamewin.h"
 #include "objiter.h"
 #include "objs.h"
+
+enum class FindMask {
+	Normal         = 0b0000'0000,
+	NPC            = 0b0000'0100,
+	NPC2           = 0b0000'1000,
+	EggLike        = 0b0001'0000,
+	Invisible      = 0b0010'0000,
+	InvisibleParty = 0b0100'0000,
+	Transparent    = 0b1000'0000,
+};
+
+inline FindMask operator&(FindMask left, FindMask right) {
+	return static_cast<FindMask>(
+			static_cast<int>(left) & static_cast<int>(right));
+}
+inline FindMask operator|(FindMask left, FindMask right) {
+	return static_cast<FindMask>(
+			static_cast<int>(left) | static_cast<int>(right));
+}
+inline bool operator!(FindMask val) {
+	return static_cast<int>(val) == 0;
+}
+inline bool FlagNotSet(FindMask mask, FindMask value) {
+	return !(mask & value);
+}
+inline bool FlagIsSet(FindMask mask, FindMask value) {
+	return !FlagNotSet(mask, value);
+}
 
 template <typename VecType, typename Cast>
 int Game_object::find_nearby(
@@ -41,27 +70,29 @@ int Game_object::find_nearby(
 		int         framenum,     // Frame #, or c_any_framenum for any.
 		Cast const& obj_cast,     // Cast functor.
 		bool        exclude_okay_to_take) {
+	auto mask_ = static_cast<FindMask>(find_mask);
 	// Check an object in find_nearby() against the mask.
-	auto Check_mask = [](Game_object* obj, int mask) {
+	auto Check_mask = [](Game_object* obj, FindMask mask) {
 		const Shape_info& info = obj->get_info();
-		if ((mask & (4 | 8)) &&    // Both seem to be all NPC's.
+		if (FlagIsSet(mask, FindMask::NPC | FindMask::NPC2)
+			&&    // Both seem to be all NPC's.
 			!info.is_npc()) {
 			return false;
 		}
 		const Shape_info::Shape_class sclass = info.get_shape_class();
 		// Egg/barge?
-		if ((sclass == Shape_info::hatchable || sclass == Shape_info::barge)
-			&& !(mask & 0x10)) {    // Only accept if bit 16 set.
+		if (FlagNotSet(mask, FindMask::EggLike)
+			&& (sclass == Shape_info::hatchable
+				|| sclass == Shape_info::barge)) {
 			return false;
 		}
-		if (info.is_transparent() &&    // Transparent?
-			!(mask & 0x80)) {
+		if (FlagNotSet(mask, FindMask::Transparent) && info.is_transparent()) {
 			return false;
 		}
 		// Invisible object?
 		if (obj->get_flag(Obj_flags::invisible)) {
-			if (!(mask & 0x20)) {        // Guess:  0x20 == invisible.
-				if (!(mask & 0x40)) {    // Guess:  Inv. party member.
+			if (FlagNotSet(mask, FindMask::Invisible)) {
+				if (FlagNotSet(mask, FindMask::InvisibleParty)) {
 					return false;
 				}
 				if (!obj->get_flag(Obj_flags::in_party)) {
@@ -74,8 +105,9 @@ int Game_object::find_nearby(
 	if (delta < 0) {    // +++++Until we check all old callers.
 		delta = 24;
 	}
-	if (shapenum > 0 && find_mask == 4) {    // Ignore mask=4 if shape given!
-		find_mask = 0;
+	if (shapenum > 0
+		&& mask_ == FindMask::NPC) {    // Ignore mask=4 if shape given!
+		mask_ = FindMask::Normal;
 	}
 	int            vecsize = vec.size();
 	Game_window*   gwin    = Game_window::get_instance();
@@ -109,7 +141,7 @@ int Game_object::find_nearby(
 			if (framenum != c_any_framenum && obj->get_framenum() != framenum) {
 				continue;
 			}
-			if (!Check_mask(obj, find_mask)) {
+			if (!Check_mask(obj, mask_)) {
 				continue;
 			}
 			if (exclude_okay_to_take
