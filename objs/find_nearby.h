@@ -35,40 +35,48 @@ int Game_object::find_nearby(
 		int               shapenum,    // Shape to look for.
 		//   -1=any (but always use mask?),
 		//   c_any_shapenum=any.
-		int         delta,       // # tiles to look in each direction.
-		int         mask,        // See Check_mask() above.
-		int         qual,        // Quality, or c_any_qual for any.
-		int         framenum,    // Frame #, or c_any_framenum for any.
-		Cast const& obj_cast,    // Cast functor.
+		int         delta,        // # tiles to look in each direction.
+		int         find_mask,    // See Check_mask() bellow.
+		int         qual,         // Quality, or c_any_qual for any.
+		int         framenum,     // Frame #, or c_any_framenum for any.
+		Cast const& obj_cast,     // Cast functor.
 		bool        exclude_okay_to_take) {
 	// Check an object in find_nearby() against the mask.
 	auto Check_mask = [](Game_object* obj, int mask) {
 		const Shape_info& info = obj->get_info();
 		if ((mask & (4 | 8)) &&    // Both seem to be all NPC's.
-			!info.is_npc())
+			!info.is_npc()) {
 			return false;
+		}
 		const Shape_info::Shape_class sclass = info.get_shape_class();
 		// Egg/barge?
 		if ((sclass == Shape_info::hatchable || sclass == Shape_info::barge)
-			&& !(mask & 0x10))    // Only accept if bit 16 set.
+			&& !(mask & 0x10)) {    // Only accept if bit 16 set.
 			return false;
+		}
 		if (info.is_transparent() &&    // Transparent?
-			!(mask & 0x80))
+			!(mask & 0x80)) {
 			return false;
+		}
 		// Invisible object?
-		if (obj->get_flag(Obj_flags::invisible))
-			if (!(mask & 0x20)) {      // Guess:  0x20 == invisible.
-				if (!(mask & 0x40))    // Guess:  Inv. party member.
+		if (obj->get_flag(Obj_flags::invisible)) {
+			if (!(mask & 0x20)) {        // Guess:  0x20 == invisible.
+				if (!(mask & 0x40)) {    // Guess:  Inv. party member.
 					return false;
-				if (!obj->get_flag(Obj_flags::in_party))
+				}
+				if (!obj->get_flag(Obj_flags::in_party)) {
 					return false;
+				}
 			}
+		}
 		return true;    // Passed all tests.
 	};
-	if (delta < 0)    // +++++Until we check all old callers.
+	if (delta < 0) {    // +++++Until we check all old callers.
 		delta = 24;
-	if (shapenum > 0 && mask == 4)    // Ignore mask=4 if shape given!
-		mask = 0;
+	}
+	if (shapenum > 0 && find_mask == 4) {    // Ignore mask=4 if shape given!
+		find_mask = 0;
+	}
 	int            vecsize = vec.size();
 	Game_window*   gwin    = Game_window::get_instance();
 	Game_map*      gmap    = gwin->get_map();
@@ -91,22 +99,29 @@ int Game_object::find_nearby(
 		while ((obj = next.get_next()) != nullptr) {
 			// Check shape.
 			if (shapenum >= 0) {
-				if (obj->get_shapenum() != shapenum)
+				if (obj->get_shapenum() != shapenum) {
 					continue;
+				}
 			}
-			if (qual != c_any_qual && obj->get_quality() != qual)
+			if (qual != c_any_qual && obj->get_quality() != qual) {
 				continue;
-			if (framenum != c_any_framenum && obj->get_framenum() != framenum)
+			}
+			if (framenum != c_any_framenum && obj->get_framenum() != framenum) {
 				continue;
-			if (!Check_mask(obj, mask))
+			}
+			if (!Check_mask(obj, find_mask)) {
 				continue;
-			if (exclude_okay_to_take && obj->get_flag(Obj_flags::okay_to_take))
+			}
+			if (exclude_okay_to_take
+				&& obj->get_flag(Obj_flags::okay_to_take)) {
 				continue;
+			}
 			const Tile_coord t = obj->get_tile();
 			if (tiles.has_point(t.tx, t.ty)) {
 				typename VecType::value_type castobj = obj_cast(obj);
-				if (castobj)
+				if (castobj) {
 					vec.push_back(castobj);
+				}
 			}
 		}
 	}
