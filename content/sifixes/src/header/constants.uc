@@ -101,7 +101,7 @@ enum axes {
 /*
  *	Cardinal directions: returned by UI_get_direction. Use with face or step
  *	statements in script{} blocks. e.g:
- *	script item {  step NORTH; step NORTH; face SOUTH; }
+ *	script item { step NORTH; step NORTH; face SOUTH; }
  *	takes two steps north, then turn to face south
  */
 enum directions {
@@ -326,6 +326,7 @@ enum inv_slots_bg {
 	BG_SHIELD_HAND	=  2,
 	BG_OFF_HAND		=  2,
 	BG_BELT			=  3,
+	BG_NECK			=  4,
 	BG_TORSO		=  5,
 	BG_LEFT_RING	=  6,
 	BG_RIGHT_RING	=  7,
@@ -333,14 +334,16 @@ enum inv_slots_bg {
 	BG_HEAD			=  9,
 	BG_LEGS			= 10,
 	BG_FEET			= 11,
-	BG_USECODE		= 12,
-	BG_CLOAK		= 13,	// Exult-only
-	BG_GLOVES		= 14,	// Exult-only
-	BG_EARS			= 16,	// Exult-only
-	BG_BACK_SHIELD	= 17,	// Exult-only
-	BG_BACK_2H		= 19,	// Exult-only
+	BG_USECODE		= 12,	// Exult-only; ported from SI
+	BG_CLOAK		= 13,	// Exult-only; ported from SI
+	BG_GLOVES		= 14,	// Exult-only; ported from SI
+	BG_TRIPLE_BOLTS	= 15,
+	BG_EARS			= 16,	// Exult-only; ported from SI
+	BG_BACK_SHIELD	= 17,	// Exult-only; ported from SI
+	BG_BACK_2H		= 19,	// Exult-only; ported from SI
 	BG_BOTH_HANDS	= 20,
-	BG_AMULET		= 22	// Exult-only
+	BG_LRGLOVES		= 21,	// Uses both ring slots
+	BG_AMULET		= 22	// Exult-only; ported from SI
 };
 
 // Ready slots for Serpent Isle: use with <UI_is_readied> or <UI_get_readied>.
@@ -365,7 +368,9 @@ enum inv_slots_si {
 	SI_BACKPACK		= 15,
 	SI_BACK_SHIELD	= 16,
 	SI_BACK_2H		= 17,
+	SI_TRIPLE_BOLTS	= 18,	// Exult-only; ported from BG
 	SI_BOTH_HANDS	= 20
+	SI_LRGLOVES		= 21,	// Exult-only; ported from BG ; uses both ring slots
 };
 
 /*
