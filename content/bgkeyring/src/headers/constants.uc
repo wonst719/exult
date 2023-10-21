@@ -460,8 +460,8 @@ enum weather_types {
 //that they can be added together
 enum item_masks {
 	MASK_NONE				= 0x0,
-	MASK_NPC				= 0x04,
-	MASK_NPC2				= 0x08,		//Maybe non-party NPCs only? All NPCs in Exult
+	MASK_NPC				= 0x04,		//Only find NPCs, alive or dead
+	MASK_NPC2				= 0x08,		//Only find living NPCs
 	MASK_EGG				= 0x10,		//Also for barges
 	MASK_INVISIBLE			= 0x20,
 	MASK_PARTY_INVISIBLE	= 0x40,

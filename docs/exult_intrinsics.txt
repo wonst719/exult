@@ -707,9 +707,10 @@ object[] UI_find_nearby(mixed loc[4], int shape, int dist, int mask)
 
         MASK_NONE = 0x00               Cannot find eggs, barges, invisible or
                                        transparent objects.
-        MASK_NPC = 0x04                Restricts the search to NPCs. Ignored if
-                                       a non-wildcard shape is given.
-        MASK_NPC2 = 0x08               Restricts the search to NPCs.
+        MASK_NPC = 0x04                Restricts the search to NPCs, alive or
+                                       dead. Ignored if a non-wildcard shape is
+                                       given.
+        MASK_NPC2 = 0x08               Restricts the search to living NPCs.
         MASK_EGG = 0x10                Allows eggs and barges to be found.
         MASK_INVISIBLE = 0x20          Allows invisible objects that are not in
                                        the avatar's party to be found.

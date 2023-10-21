@@ -31,8 +31,8 @@
 
 enum class FindMask {
 	Normal         = 0b0000'0000,
-	NPC            = 0b0000'0100,
-	NPC2           = 0b0000'1000,
+	AnyNPC         = 0b0000'0100,
+	LiveNPC        = 0b0000'1000,
 	EggLike        = 0b0001'0000,
 	Invisible      = 0b0010'0000,
 	InvisibleParty = 0b0100'0000,
@@ -74,9 +74,11 @@ int Game_object::find_nearby(
 	// Check an object in find_nearby() against the mask.
 	auto Check_mask = [](Game_object* obj, FindMask mask) {
 		const Shape_info& info = obj->get_info();
-		if (FlagIsSet(mask, FindMask::NPC | FindMask::NPC2)
-			&&    // Both seem to be all NPC's.
-			!info.is_npc()) {
+		if (FlagIsSet(mask, FindMask::AnyNPC) && !info.is_npc()) {
+			return false;
+		}
+		if (FlagIsSet(mask, FindMask::LiveNPC)
+			&& (!info.is_npc() || obj->get_flag(Obj_flags::dead))) {
 			return false;
 		}
 		const Shape_info::Shape_class sclass = info.get_shape_class();
@@ -106,7 +108,7 @@ int Game_object::find_nearby(
 		delta = 24;
 	}
 	if (shapenum > 0
-		&& mask_ == FindMask::NPC) {    // Ignore mask=4 if shape given!
+		&& mask_ == FindMask::AnyNPC) {    // Ignore mask=4 if shape given!
 		mask_ = FindMask::Normal;
 	}
 	int            vecsize = vec.size();
