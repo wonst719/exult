@@ -1678,18 +1678,34 @@ int UI_apply_damage(int base, int hits, int type, object obj)
     The type of the damage is a numerical value that describes what kind of
     damage should be caused. It can be one of the following values:
 
-        NORMAL_DAMAGE = 0       Normal damage.
-        FIRE_DAMAGE = 1         Damage from heat sources.
-        MAGIC_DAMAGE = 2        Damage from a magical source.
-        LIGHTNING_DAMAGE = 3    Damage from electrical sources such as
-                                lightning. Extremely painful, even a single
-                                point of damage causes the screen to flash a red
-                                color. This damage ignores all armor and does
-                                not depend on the attacker's strength.
-        ETHEREAL_DAMAGE = 4     Special magical damage, basically magic damage
-                                not blocked by normal magic resistance or armor.
-        SONIC_DAMAGE = 5        Sound-based damage. This damage type ignores
-                                armor.
+        NORMAL_DAMAGE = 0        Normal damage.
+        FIRE_DAMAGE = 1          Damage from heat sources.
+        MAGIC_DAMAGE = 2         Damage from a magical source.
+        LIGHTNING_DAMAGE = 3     Damage from electrical sources such as
+                                 lightning. Extremely painful, even a single
+                                 point of damage causes the screen to flash a
+                                 red color. This damage ignores all armor and
+                                 does not depend on the attacker's strength.
+        POISON_DAMAGE = 3        Damage from poison. Extremely painful, even a
+                                 single point of damage causes the screen to
+                                 flash a red color. This damage ignores all
+                                 armor and does not depend on the attacker's
+                                 strength.
+        STARVATION_DAMAGE = 3    Damage from starvation. Extremely painful, even
+                                 a single point of damage causes the screen to
+                                 flash a red color. This damage ignores all
+                                 armor and does not depend on the attacker's
+                                 strength.
+        FREEZING_DAMAGE = 3      Damage from frostbite. Extremely painful, even
+                                 a single point of damage causes the screen to
+                                 flash a red color. This damage ignores all
+                                 armor and does not depend on the attacker's
+                                 strength.
+        ETHEREAL_DAMAGE = 4      Special magical damage, basically magic damage
+                                 not blocked by normal magic resistance or
+                                 armor.
+        SONIC_DAMAGE = 5         Sound-based damage. This damage type ignores
+                                 armor.
 
     The damage is calculated from a series of generated random numbers. It
     proceeds along the following steps:
@@ -1732,18 +1748,34 @@ obj->reduce_health(int hits, int type)
     The type of the damage is a numerical value that describes what kind of
     damage should be caused. It can be one of the following values:
 
-        NORMAL_DAMAGE = 0       Normal damage.
-        FIRE_DAMAGE = 1         Damage from heat sources.
-        MAGIC_DAMAGE = 2        Damage from a magical source.
-        LIGHTNING_DAMAGE = 3    Damage from electrical sources such as
-                                lightning. Extremely painful, even a single
-                                point of damage causes the screen to flash a red
-                                color. This damage ignores all armor and does
-                                not depend on the attacker's strength.
-        ETHEREAL_DAMAGE = 4     Special magical damage, basically magic damage
-                                not blocked by normal magic resistance or armor.
-        SONIC_DAMAGE = 5        Sound-based damage. This damage type ignores
-                                armor.
+        NORMAL_DAMAGE = 0        Normal damage.
+        FIRE_DAMAGE = 1          Damage from heat sources.
+        MAGIC_DAMAGE = 2         Damage from a magical source.
+        LIGHTNING_DAMAGE = 3     Damage from electrical sources such as
+                                 lightning. Extremely painful, even a single
+                                 point of damage causes the screen to flash a
+                                 red color. This damage ignores all armor and
+                                 does not depend on the attacker's strength.
+        POISON_DAMAGE = 3        Damage from poison. Extremely painful, even a
+                                 single point of damage causes the screen to
+                                 flash a red color. This damage ignores all
+                                 armor and does not depend on the attacker's
+                                 strength.
+        STARVATION_DAMAGE = 3    Damage from starvation. Extremely painful, even
+                                 a single point of damage causes the screen to
+                                 flash a red color. This damage ignores all
+                                 armor and does not depend on the attacker's
+                                 strength.
+        FREEZING_DAMAGE = 3      Damage from frostbite. Extremely painful, even
+                                 a single point of damage causes the screen to
+                                 flash a red color. This damage ignores all
+                                 armor and does not depend on the attacker's
+                                 strength.
+        ETHEREAL_DAMAGE = 4      Special magical damage, basically magic damage
+                                 not blocked by normal magic resistance or
+                                 armor.
+        SONIC_DAMAGE = 5         Sound-based damage. This damage type ignores
+                                 armor.
 
 int UI_attack_object(object attacker, object target, int weapon)
 int attacker->attack_object(object target, int weapon)

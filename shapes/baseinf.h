@@ -49,6 +49,9 @@ enum Damage_type {
     fire_damage = 1,
     magic_damage = 2,
     lightning_damage = 3,
+	poison_damage = 3,
+	starvation_damage = 3,
+	freezing_damage = 3,
     ethereal_damage = 4,
     sonic_damage = 5
 };

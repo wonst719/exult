@@ -338,7 +338,7 @@ void Npc_hunger_timer::handle_event(
 				npc->say_hunger_message();
 			}
 			if (food <= 0 && (rand() % 5) < 2) {
-				npc->reduce_health(1, Weapon_data::sonic_damage);
+				npc->reduce_health(1, Weapon_data::starvation_damage);
 			}
 		}
 		last_time = minute;
@@ -379,7 +379,7 @@ void Npc_poison_timer::handle_event(
 		return;
 	}
 	const int penalty = rand() % 3;
-	npc->reduce_health(penalty, Weapon_data::sonic_damage);
+	npc->reduce_health(penalty, Weapon_data::poison_damage);
 
 	// Check again in 10-20 secs.
 	gwin->get_tqueue()->add(curtime + 10000 + rand() % 10000, this);

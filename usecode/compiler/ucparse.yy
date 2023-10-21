@@ -276,6 +276,9 @@ struct Loop_Vars
 %token FIRE_DAMAGE "'fire_damage'"
 %token MAGIC_DAMAGE "'magic_damage'"
 %token LIGHTNING_DAMAGE "'lightning_damage'"
+%token POISON_DAMAGE "'poison_damage'"
+%token STARVATION_DAMAGE "'starvation_damage'"
+%token FREEZING_DAMAGE "'freezing_damage'"
 %token ETHEREAL_DAMAGE "'ethereal_damage'"
 %token SONIC_DAMAGE "'sonic_damage'"
 %token FOREVER "'forever'"
@@ -2027,6 +2030,12 @@ dam_type:
 	| MAGIC_DAMAGE
 		{ $$ = 2; }
 	| LIGHTNING_DAMAGE
+		{ $$ = 3; }
+	| POISON_DAMAGE
+		{ $$ = 3; }
+	| STARVATION_DAMAGE
+		{ $$ = 3; }
+	| FREEZING_DAMAGE
 		{ $$ = 3; }
 	| ETHEREAL_DAMAGE
 		{ $$ = 4; }

@@ -1065,11 +1065,11 @@ void Actor::check_temperature(
 			break;
 		case 5:
 			say(first_frostbite_3, last_frostbite_3);
-			reduce_health(1, Weapon_data::sonic_damage);
+			reduce_health(1, Weapon_data::freezing_damage);
 			break;
 		case 6:
 			say(first_frozen, last_frozen); // Frozen.
-			reduce_health(1 + rand() % 3, Weapon_data::sonic_damage);
+			reduce_health(1 + rand() % 3, Weapon_data::freezing_damage);
 			break;
 		}
 }
