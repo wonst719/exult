@@ -555,14 +555,14 @@ USECODE_INTRINSIC(update_last_created) {
 	//   ??guessing??
 	modified_map = true;
 	if (last_created.empty()) {
-		Usecode_value u(static_cast<Game_object *>(nullptr));
+		Usecode_value u(0);
 		return u;
 	}
 	const Game_object_shared obj = last_created.back();
 	last_created.pop_back();
 	obj->set_invalid();     // It's already been removed.
 	Usecode_value &arr = parms[0];
-	const int sz = arr.get_array_size();
+	const size_t sz = arr.get_array_size();
 	if (sz >= 2) {
 		//arr is loc (x, y, z, map) if sz == 4,
 		//(x, y, z) for sz == 3 and (x, y) for sz == 2
@@ -571,14 +571,6 @@ USECODE_INTRINSIC(update_last_created) {
 		                sz >= 3 ? arr.get_elem(2).get_int_value() : 0);
 		obj->move(dest.tx, dest.ty, dest.tz, sz < 4 ? -1 :
 		          arr.get_elem(3).get_int_value());
-		if (GAME_BG) {
-			Usecode_value u(1);
-			return u;
-		} else {
-			Usecode_value u(obj);
-			return u;
-		}
-		// Taking a guess here:
 	} else if (sz == 1) {
 		obj->remove_this();
 	}

@@ -446,3 +446,28 @@ with
 After these, he will still not sell if you are overburdered (but you can drop
 things on the ground to sell), but he will now correctly buy any amount of
 either of the closed flour bags.
+
+
+(SI) Everlasting fire fields:
+=============================
+
+In SI, function 0882 creates a fire field and sets the 'temporary' flag on it.
+Or, at least, this was the intent: but after calling UI_update_last_created, the
+usecode overwrites the variable pointing to the object, and it then tries to set
+the flag on an invalid reference, which fails. This makes the fire field last
+forever, instead of disappearing after a cache-out.
+
+To fix it is simple:
+
+Usecode function 0882: turn this:
+
+0029:   callis  update_last_created@01
+002D:   pop     [0001]
+
+Into this:
+
+0029:   callis  update_last_created@01
+002D:   pop     [0000]
+
+Variable [0000] is not used after this, and so is safe to overwrite; and the
+value of variable [0001] is preserved for the subsequent call to set the flag.
