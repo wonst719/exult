@@ -911,7 +911,7 @@ void U7copy(
 	try {
 		pIn = U7open_in(src);
 		pOut = U7open_out(dest);
-	} catch (exult_exception &e) {
+	} catch (exult_exception&) {
 		throw;
 	}
 	if (!pIn) {

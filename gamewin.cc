@@ -565,7 +565,7 @@ void Game_window::init_files(bool cycle) {
 	} else {
 		try {
 			keybinder->LoadFromFile(keyfilename.c_str());
-		} catch (file_open_exception &err) {
+		} catch (file_open_exception &) {
 			cerr << "Key mappings file '" << keyfilename << "' not found, falling back to default mappings." << endl;
 			keybinder->LoadDefaults();
 		}
@@ -2751,7 +2751,7 @@ void Game_window::setup_game(
 	} else {
 		try {
 			Notebook_gump::read_auto_text_file(autonotesfilename.c_str());
-		} catch (file_open_exception &err) {
+		} catch (file_open_exception &) {
 			cerr << "Autonotes file '" << autonotesfilename << "' not found, falling back to default autonotes." << endl;
 			Notebook_gump::read_auto_text();
 		}

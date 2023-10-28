@@ -529,7 +529,7 @@ static void Read_text_data_file(
 			auto& in = *pIn;
 			static_version = Read_text_msg_file_sections(in,
 			                 static_strings, sections, numsections);
-		} catch (std::exception &e) {
+		} catch (std::exception &) {
 			if (!editing) {
 				for (int i = 0; i < numsections; i++)
 					delete parsers[i];

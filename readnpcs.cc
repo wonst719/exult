@@ -300,7 +300,7 @@ void Game_window::write_schedules() {
 
 	sfile.write4(static_cast<unsigned int>(-2));        // Exult version #.
 	sfile.write4(num);      // # of NPC's, not include Avatar.
-	sfile.write2(script_names.size());
+	sfile.write2((uint16)script_names.size());
 	sfile.write2(0);        // First offset
 
 	for (i = 1; i < num; i++) { // write offsets with list of scheds.
@@ -314,7 +314,7 @@ void Game_window::write_schedules() {
 			total += 2 + elem.size();
 		sfile.write2(total);
 		for (auto& elem : script_names) {
-			sfile.write2(elem.size());
+			sfile.write2((uint16)elem.size());
 			sfile.write(elem);
 		}
 	}
@@ -346,7 +346,9 @@ void Game_window::revert_schedules(Actor *npc) {
 		sfile.skip(sz);
 	}
 	// Seek to the right place
-	sfile.skip(offsets[npc->get_npc_num() - 1]*entsize);
+	sfile.skip(
+			offsets[npc->get_npc_num() - 1]
+			* std::streamoff(entsize));
 
 	Read_a_schedule(sfile, npc->get_npc_num(), npc, entsize, offsets.get());
 }
