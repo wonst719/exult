@@ -351,10 +351,10 @@ struct Loop_Vars
 %type <expr> script_command start_call addressof new_expr class_expr
 %type <expr> nonclass_expr opt_delay appended_element int_literal
 %type <expr> opt_primary_expression conv_expression repeat_count
-%type <intval> opt_int direction converse_options actor_frames egg_criteria
+%type <intval> direction converse_options actor_frames egg_criteria
 %type <intval> opt_original assignment_operator const_int_val opt_const_int_val
 %type <intval> const_int_type int_cast dam_type opt_nest opt_int_value
-%type <intval> sign_int_literal
+%type <intval> sign_int_literal const_int_expr opt_const_int_expr
 %type <funid> opt_funid
 %type <membersel> member_selector
 %type <intlist> string_list response_expression
@@ -535,7 +535,7 @@ function_body:
 		}
 	;
 
-					/* Opt_int assigns function #. */
+					/* opt_const_int_val assigns function #. */
 function_proto:
 	ret_type IDENTIFIER { start_fun_id(); } opt_funid '(' opt_param_list ')'
 		{
@@ -566,7 +566,7 @@ function_proto:
 		has_ret = false;
 		struct_type = nullptr;
 		}
-	| CLASS '<' defined_class '>' IDENTIFIER opt_int '(' opt_param_list ')'
+	| CLASS '<' defined_class '>' IDENTIFIER opt_const_int_val '(' opt_param_list ')'
 		{
 		$$ = Uc_function_symbol::create($5, $6, *$8, is_extern, nullptr,
 				Uc_function_symbol::utility_fun);
@@ -576,17 +576,40 @@ function_proto:
 	;
 
 opt_funid:
-	SHAPENUM '(' const_int_val ')'
+	SHAPENUM '(' const_int_expr ')'
 		{
 		$$ = new Fun_id_info(Uc_function_symbol::shape_fun, $3 < 0 ? -1 : $3);
 		if ($3 < 0)
 			yyerror("Shape number cannot be negative");
 		}
-	| OBJECTNUM '(' opt_const_int_val ')'
+	| OBJECTNUM '(' opt_const_int_expr ')'
 		{ $$ = new Fun_id_info(Uc_function_symbol::object_fun, $3); }
 	| opt_const_int_val
 		{ $$ = new Fun_id_info(Uc_function_symbol::utility_fun, $1); }
+	| '#' '(' const_int_expr ')'
+		{ $$ = new Fun_id_info(Uc_function_symbol::utility_fun, $3); }
 	;
+
+opt_const_int_expr:
+	const_int_expr
+	| %empty
+		{ $$ = -1; }
+	;
+
+const_int_expr:
+	nonclass_expr
+		{
+		int val;		// Get constant.
+		if ($1 && $1->eval_const(val))
+			{
+			$$ = val;
+			}
+		else
+			{
+			yyerror("Could not compute an integral constant from expression");
+			$$ = -1;
+			}
+		}
 
 opt_const_int_val:
 	const_int_val
@@ -616,12 +639,6 @@ const_int_val:
 		else
 			$$ = var->get_value();
 		}
-	;
-
-opt_int:
-	const_int_val
-	| %empty
-		{ $$ = -1; }
 	;
 
 statement_block:
