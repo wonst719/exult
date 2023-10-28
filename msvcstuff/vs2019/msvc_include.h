@@ -24,5 +24,7 @@
 
 #include <windows.h>
 
-#define USE_FMOPL_MIDI
-#define USE_WINDOWS_MIDI
+#define USE_FMOPL_MIDI 1
+#define USE_WINDOWS_MIDI 1
+//#define USE_MT32EMU_MIDI 1
+#define HAVE_STDIO_H 1
