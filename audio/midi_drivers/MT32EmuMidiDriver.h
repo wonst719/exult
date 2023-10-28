@@ -30,7 +30,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#include <mt32emu/mt32emu.h>
 #endif
 
-namespace MT32Emu { class Synth; }
+namespace MT32Emu {
+	class Synth;
+	class SampleRateConverter;
+}    // namespace MT32Emu
 
 class MT32EmuMidiDriver : public LowLevelMidiDriver
 {
@@ -40,6 +43,11 @@ class MT32EmuMidiDriver : public LowLevelMidiDriver
 	}
 
 	MT32Emu::Synth	*mt32;
+	MT32Emu::SampleRateConverter* mt32src;
+	MT32EmuMidiDriver() : mt32(nullptr), mt32src(nullptr)
+	{
+
+	}
 
 public:
 	static const MidiDriverDesc* getDesc() { return &desc; }

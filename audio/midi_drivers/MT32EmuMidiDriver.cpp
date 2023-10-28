@@ -129,6 +129,9 @@ int MT32EmuMidiDriver::open() {
 		mt32 = nullptr;
 		return 1;
 	}
+	if (mt32->getStereoOutputSampleRate() != sample_rate)
+	mt32src = new SampleRateConverter(
+				*mt32, sample_rate, SamplerateConversionQuality_GOOD);
 
 	ROMImage::freeROMImage(controlROMImage);
 	ROMImage::freeROMImage(pcmROMImage);
@@ -136,6 +139,10 @@ int MT32EmuMidiDriver::open() {
 }
 
 void MT32EmuMidiDriver::close() {
+	if (mt32src) {
+		delete mt32src;
+		mt32src = nullptr;
+	}
 	if (mt32) {
 		mt32->close();
 		delete mt32;
@@ -165,6 +172,9 @@ void MT32EmuMidiDriver::lowLevelProduceSamples(
 	sint16 *samples,
 	uint32 num_samples
 ) {
+	if (mt32src)
+		mt32src->getOutputSamples(samples, num_samples);
+		else
 	mt32->render(samples,num_samples);
 }
 
