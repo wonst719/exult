@@ -413,6 +413,7 @@ nobreak		return NOBREAK;
 <fun_id>{
 "shape#"	return SHAPENUM;
 "object#"	return OBJECTNUM;
+"id#"	return IDNUM;
 }
 
 <in_breakable>{

@@ -189,6 +189,7 @@ struct Loop_Vars
 %token ORIGINAL "'original'"
 %token SHAPENUM "shape'#'"
 %token OBJECTNUM "object'#'"
+%token IDNUM "id'#'"
 %token CLASS "'class'"
 %token RUNSCRIPT "'runscript'"
 %token SWITCH "'switch'"
@@ -586,7 +587,7 @@ opt_funid:
 		{ $$ = new Fun_id_info(Uc_function_symbol::object_fun, $3); }
 	| opt_const_int_val
 		{ $$ = new Fun_id_info(Uc_function_symbol::utility_fun, $1); }
-	| '#' '(' const_int_expr ')'
+	| IDNUM '(' const_int_expr ')'
 		{ $$ = new Fun_id_info(Uc_function_symbol::utility_fun, $3); }
 	;
 
@@ -597,19 +598,59 @@ opt_const_int_expr:
 	;
 
 const_int_expr:
-	nonclass_expr
+	const_int_val
+		{ $$ = $1; }
+	| const_int_expr '+' const_int_expr
+		{ $$ = $1 + $3; }
+	| const_int_expr '-' const_int_expr
+		{ $$ = $1 - $3; }
+	| const_int_expr '*' const_int_expr
+		{ $$ = $1 * $3; }
+	| const_int_expr '/' const_int_expr
 		{
-		int val;		// Get constant.
-		if ($1 && $1->eval_const(val))
+		if ($3 == 0)
 			{
-			$$ = val;
+			yyerror("Division by 0");
+			$$ = -1;
 			}
 		else
 			{
-			yyerror("Could not compute an integral constant from expression");
-			$$ = -1;
+			$$ = $1 / $3;
 			}
 		}
+	| const_int_expr '%' const_int_expr
+		{
+		if ($3 == 0)
+			{
+			yyerror("Division by 0");
+			$$ = -1;
+			}
+		else
+			{
+			$$ = $1 % $3;
+			}
+		}
+	| const_int_expr EQUALS const_int_expr
+		{ $$ = $1 == $3; }
+	| const_int_expr NEQUALS const_int_expr
+		{ $$ = $1 != $3; }
+	| const_int_expr '<' const_int_expr
+		{ $$ = $1 < $3; }
+	| const_int_expr LTEQUALS const_int_expr
+		{ $$ = $1 <= $3; }
+	| const_int_expr '>' const_int_expr
+		{ $$ = $1 > $3; }
+	| const_int_expr GTEQUALS const_int_expr
+		{ $$ = $1 >= $3; }
+	| const_int_expr AND const_int_expr
+		{ $$ = $1 && $3; }
+	| const_int_expr OR const_int_expr
+		{ $$ = $1 || $3; }
+	| NOT const_int_expr
+		{ $$ = $2 == 0; }
+	| '(' const_int_expr ')'
+		{ $$ = $2; }
+	;
 
 opt_const_int_val:
 	const_int_val
@@ -865,20 +906,14 @@ const_int_decl_list:
 	;
 
 const_int:
-	IDENTIFIER '=' nonclass_expr
+	IDENTIFIER '=' const_int_expr
 		{
-		int val;		// Get constant.
-		if ($3->eval_const(val))
-			{
-			int op = const_opcode.back();
-			if (cur_fun)
-				cur_fun->add_int_const_symbol($1, val, op);
-			else		// Global.
-				Uc_function::add_global_int_const_symbol($1, val, op);
-			enum_val = val;	// In case we're in an enum.
-			}
-		else
-			yyerror("Integer constant expected.");
+		int op = const_opcode.back();
+		if (cur_fun)
+			cur_fun->add_int_const_symbol($1, $3, op);
+		else		// Global.
+			Uc_function::add_global_int_const_symbol($1, $3, op);
+		enum_val = $3;	// In case we're in an enum.
 		}
 	;
 
