@@ -154,6 +154,7 @@ public:
 	inline static void set_ticks(unsigned int t) {
 		ticks = t;
 	}
+	int waitforspeech();
 };
 
 extern Game *game;

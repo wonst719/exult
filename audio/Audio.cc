@@ -405,26 +405,28 @@ Audio::~Audio()
 	CERR("~Audio:  about to quit subsystem");
 }
 
-void Audio::copy_and_play(const uint8 *sound_data, uint32 len, bool wait)
-{
+sint32 Audio::copy_and_play(const uint8* sound_data, uint32 len, bool wait) {
 	auto new_sound_data = std::make_unique<uint8[]>(len);
 	std::memcpy(new_sound_data.get(), sound_data, len);
-	play(std::move(new_sound_data), len, wait);
+	return play(std::move(new_sound_data), len, wait);
 }
 
-void Audio::play(std::unique_ptr<uint8[]> sound_data, uint32 len, bool wait)
+sint32 Audio::play(std::unique_ptr<uint8[]> sound_data, uint32 len, bool wait)
 {
 	ignore_unused_variable_warning(wait);
 	if (!audio_enabled || !speech_enabled || !len) {
-		return;
+		return -1;
 	}
 
 	AudioSample *audio_sample = AudioSample::createAudioSample(std::move(sound_data), len);
 
 	if (audio_sample) {
-		mixer->playSample(audio_sample,0,128);
+		sint32 id = mixer->playSample(audio_sample,0,128);
 		audio_sample->Release();
-	}
+		return id;
+	} 
+	
+	return -1;
 
 }
 
@@ -455,10 +457,10 @@ void 	Audio::resume_audio()
 }
 
 
-void Audio::playfile(const char *fname, const char *fpatch, bool wait)
+sint32 Audio::playfile(const char *fname, const char *fpatch, bool wait)
 {
 	if (!audio_enabled)
-		return;
+		return -1;
 
 	const U7multiobject sample(fname, fpatch, 0);
 
@@ -467,10 +469,10 @@ void Audio::playfile(const char *fname, const char *fpatch, bool wait)
 	if (!buf || len == 0) {
 		// Failed to find file in patch or static dirs.
 		CERR("Audio::playfile: Error reading file '" << fname << "'");
-		return;
+		return -1;
 	}
 
-	play(std::move(buf), len, wait);
+	return play(std::move(buf), len, wait);
 }
 
 
@@ -572,7 +574,7 @@ bool Audio::start_speech(int num, bool wait)
 		return false;
 	}
 
-	play(std::move(buf), len, wait);
+	speech_id = play(std::move(buf), len, wait);
 	return true;
 }
 
@@ -582,6 +584,37 @@ void Audio::stop_speech()
 		return;
 
 	mixer->reset();
+	speech_id = -1;
+}
+
+bool Audio::is_speech_playing() {
+	return speech_id != -1 && mixer->isPlaying(speech_id);
+}
+
+int Audio::wait_for_speech(std::function<int(Uint32 ms)> waitfunc) {
+	if (speech_id == -1)
+		return -1;
+
+	if (!waitfunc)
+		waitfunc = [](int ms) {
+			SDL_Delay(ms);
+			return 0;
+		};
+
+	while (mixer->isPlaying(speech_id)) {
+
+		//50 ms or 20times a second
+		int canceled = waitfunc(50);
+		if (canceled > 0) {
+			mixer->stopSample(speech_id);
+			speech_id = -1;
+			return canceled;
+		}
+			
+	}
+	speech_id = -1;
+	return 0;
+	
 }
 
 /*

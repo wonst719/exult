@@ -1536,7 +1536,10 @@ std::vector<unsigned int> BG_Game::get_congratulations_messages() {
 }
 
 void BG_Game::end_game(bool success, bool within_game) {
-	Font *font = fontManager.get_font("MENU_FONT");
+
+	waitforspeech();
+
+	Font*  font  = fontManager.get_font("MENU_FONT");
 
 	if (!success) {
 		TextScroller text(MAINSHP_FLX, 0x15, font, nullptr);
@@ -1565,7 +1568,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 		return;
 	}
 
-	Audio *audio = Audio::get_ptr();
+	Audio* audio = Audio::get_ptr();
 	audio->stop_music();
 	MyMidiPlayer *midi = audio->get_midi();
 	if (midi) midi->set_timbre_lib(MyMidiPlayer::TIMBRE_LIB_ENDGAME);
@@ -1607,6 +1610,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 			if (wait_delay(0)) {
 				throw UserSkipException();
 			}
+
 		}
 
 		for (unsigned int i = 1; i < 150; i++) {

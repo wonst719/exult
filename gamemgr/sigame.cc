@@ -982,7 +982,8 @@ std::vector<unsigned int> SI_Game::get_congratulations_messages() {
 //
 void SI_Game::end_game(bool success, bool within_game) {
 	ignore_unused_variable_warning(success);
-	Audio *audio = Audio::get_ptr();
+	waitforspeech();
+	Audio* audio = Audio::get_ptr();
 	audio->stop_music();
 	MyMidiPlayer *midi = audio->get_midi();
 	if (midi) midi->set_timbre_lib(MyMidiPlayer::TIMBRE_LIB_ENDGAME);

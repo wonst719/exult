@@ -37,6 +37,7 @@
 #include "exult_constants.h"
 #include "Flex.h"
 #include "Midi.h"
+#include <functional>
 
 namespace Pentagram {
 	class AudioSample;
@@ -108,6 +109,7 @@ private:
 	bool initialized = false;
 	SDL_AudioSpec wanted;
 	std::unique_ptr<Pentagram::AudioMixer> mixer;
+	sint32 speech_id = -1;
 	bool audio_enabled;
 	std::unique_ptr<Flex> sfx_file;			// Holds .wav sound effects.
 	// You never allocate an Audio object directly, you rather access it using get_ptr()
@@ -137,9 +139,9 @@ public:
 	void	pause_audio();
 	void    resume_audio();
 
-	void	copy_and_play(const uint8 *sound_data,uint32 len,bool);
-	void	play(std::unique_ptr<uint8[]> sound_data,uint32 len,bool);
-	void	playfile(const char *,const char *,bool);
+	sint32  copy_and_play(const uint8* sound_data, uint32 len, bool);
+	sint32	play(std::unique_ptr<uint8[]> sound_data,uint32 len,bool);
+	sint32  playfile(const char*, const char*, bool);
 	bool	playing();
 	void	start_music(int num,bool continuous=false,const std::string& flex=MAINMUS);
 	void	start_music(const std::string& fname,int num,bool continuous=false);
@@ -167,6 +169,10 @@ public:
 	void	stop_sound_effects();
 	bool	start_speech(int num,bool wait=false);
 	void	stop_speech();
+	bool    is_speech_playing();
+	int     wait_for_speech(
+				std::function<int(Uint32 ms)> waitfunc
+				= std::function < int(Uint32 ms)>());
 	bool	is_speech_enabled() const { return speech_enabled; }
 	void	set_speech_enabled(bool ena) { speech_enabled = ena; }
 	bool	is_speech_with_subs() const { return speech_with_subs; }
