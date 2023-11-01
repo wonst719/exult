@@ -281,7 +281,7 @@ void Shape_manager::load(
 				// No XForm data at all. Make this XForm into an
 				// identity transformation.
 				for (size_t j = 0; j < sizeof(xforms[0].colors); j++)
-					xforms[nxforms - 1 - i].colors[j] = (uint8)j;
+					xforms[nxforms - 1 - i].colors[j] = static_cast<uint8>(j);
 			} else {
 				ds.read(xforms[nxforms - 1 - i].colors, sizeof(xforms[0].colors));
 			}

@@ -28,7 +28,7 @@
 #ifdef _MSC_VER
 #  include <intrin.h>
 inline uint8 rotl8(uint8 val, size_t shift) {
-	return _rotl8(val, (uint8)shift);
+	return _rotl8(val, static_cast<uint8>(shift));
 }
 #else
 inline uint8 rotl8(uint8 val, size_t shift) {

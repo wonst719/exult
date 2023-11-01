@@ -210,7 +210,7 @@ enum new_magincia_npcs {
 	BATTLES		= -135,	//thug for Robin
 	LEAVELL		= -136,	//thug for Robin
 	SAM			= -137,	//flower man and total hippie
-	ALAGNER		= -146	//scholar and plot device
+	ALAGNER		= -246	//scholar and plot device
 };
 
 //Skara Brae residents
