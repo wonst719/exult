@@ -107,6 +107,16 @@ ${moddir}dir=\$(U7PATH)/$basedest/mods
 	# Store MinGW dest dir:
 	destdir_mingw="\$(${moddir}dir)/$installdir"
 
+	# MinGW EXTRADIST
+	distfiles_mingw=$(find "$moddir" -maxdepth 1 -iname '*.ico' -or -iname '*.png' -or -iname '*.txt' | while read -r f; do file="${f#$moddir/}" ; echo "${t}cp ${file} \$(${moddir}dir)/${installdir}/${file}"; done | sort)
+	if [[ -n "$distfiles_mingw" ]]; then
+		distfiles_mingw="${distfiles_mingw}${n}${t}cp ./../../COPYING \$(${moddir}dir)/${installdir}/License.txt"
+	elif [[ -f "$moddir/README" ]]; then
+		distfiles_mingw="${t}cp README \$(${moddir}dir)/${installdir}/Readme.txt${n}${t}cp ./../../COPYING \$(${moddir}dir)/${installdir}/License.txt"
+	else
+		distfiles_mingw="${t}cp ./../../COPYING \$(${moddir}dir)/${installdir}/License.txt"
+	fi
+
 	# Automake EXTRADIST
 	distfiles=$(find "$moddir" -maxdepth 1 -iname '*.ico' -or -iname '*.png' -or -iname '*.mingw' -or -iname '*.txt' | while read -r f; do echo "${t}${f#$moddir/}${t}\\"; done | sort)
 	if [[ -n "$distfiles" ]]; then
@@ -245,6 +255,17 @@ $datafiles_mingw"
 	fi
 
 	# Rules for MinGW 'make install' and 'make uninstall'.
+	if [[ -n "$datafiles_mingw" ]]; then
+		if [[ -n "$distfiles_mingw" ]]; then
+			datafiles_mingw="${datafiles_mingw%$'\n'}${n}$distfiles_mingw"
+		else
+			datafiles_mingw="$datafiles_mingw"
+		fi
+	elif [[ -n "$distfiles_mingw" ]]; then
+		datafiles_mingw="$distfiles_mingw"
+	else
+		datafiles_mingw=""
+	fi
 	echo -e "$targets_mingw${n}\ninstall: all${n}\tmkdir -p \$(${moddir}dir)${n}\tcp $(basename "$cfgfile") \$(${moddir}dir)/$(basename "$cfgfile")${n}$datafiles_mingw${n}\nuninstall:${n}\trm -f \$(${moddir}dir)/$(basename "$cfgfile")${n}\trm -rf $destdir_mingw${n}" >> "$modmakefile_mingw"
 
 	# Output rule to build expack, if needed.

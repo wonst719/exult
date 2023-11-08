@@ -31,7 +31,7 @@ install: all
 	cp curecantra.cfg $(sidir)/curecantra.cfg
 	mkdir -p $(sidir)/curecantra/
 	cp usecode $(sidir)/curecantra/usecode
-
+	cp ./../../COPYING $(sidir)/curecantra/License.txt
 
 uninstall:
 	rm -f $(sidir)/curecantra.cfg

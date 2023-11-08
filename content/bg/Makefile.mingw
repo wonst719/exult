@@ -31,7 +31,7 @@ install: all
 	cp lbjoin.cfg $(bgdir)/lbjoin.cfg
 	mkdir -p $(bgdir)/lbjoin/
 	cp usecode $(bgdir)/lbjoin/usecode
-
+	cp ./../../COPYING $(bgdir)/lbjoin/License.txt
 
 uninstall:
 	rm -f $(bgdir)/lbjoin.cfg
