@@ -71,7 +71,7 @@ void HoundOfDoskar shape#(0x36A) () {
 		} else if (gflags[BANES_RELEASED] &&
 		         ((target_shape == SHAPE_AMULET && target_frame == FRAME_WHITE_DIAMOND_NECKLACE && !gflags[INSANITY_BANE_DEAD]) ||
 		          (target_shape == SHAPE_LUTE && target_frame == FRAME_IOLOS_LUTE && !gflags[INSANITY_BANE_DEAD]) ||
-		          (target_shape == SHAPE_DUPRE_SHIELD && !gflags[WANTONESS_BANE_DEAD]) ||
+		          (target_shape == SHAPE_DUPRE_SHIELD && !gflags[WANTONNESS_BANE_DEAD]) ||
 		          (target_shape == SHAPE_BOOK && target_quality == 63 && !gflags[ANARCHY_BANE_DEAD]))) {
 			if (getAvatarLocationID() == WHITE_DRAGON_CASTLE) {
 				HoundPointDirection([-1, 0, 0]);

@@ -134,7 +134,7 @@ void Gwenno object#(0x495) () {
 		}
 
 		if (gflags[KNOWS_OF_SOUL_GEMS] && (!gflags[ANARCHY_BANE_DEAD] ||
-		    !gflags[INSANITY_BANE_DEAD] || !gflags[WANTONESS_BANE_DEAD])) {
+		    !gflags[INSANITY_BANE_DEAD] || !gflags[WANTONNESS_BANE_DEAD])) {
 			say("@Avatar! I have found a most intriguing scroll that tells of some sort of mystic connection between the Banes and the ancient temples!@");
 			add("mystic connection");
 		}

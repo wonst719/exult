@@ -53,7 +53,7 @@ void Resurrect 0x8FE () {
 			var flag_dont_resurrect = false;
 			if (gflags[BANES_RELEASED]) {
 				// Prevent "resurrection" of the three Banes:
-				if ((npc == DUPRE) && !gflags[WANTONESS_BANE_DEAD]) {
+				if ((npc == DUPRE) && !gflags[WANTONNESS_BANE_DEAD]) {
 					flag_dont_resurrect = true;
 				} else if ((npc == IOLO) && !gflags[INSANITY_BANE_DEAD]) {
 					flag_dont_resurrect = true;
@@ -68,7 +68,7 @@ void Resurrect 0x8FE () {
 			}
 
 			if (!flag_dont_resurrect && (npc == DUPRE) &&
-			    gflags[DUPRE_IS_TOAST] && gflags[WANTONESS_BANE_DEAD]) {
+			    gflags[DUPRE_IS_TOAST] && gflags[WANTONNESS_BANE_DEAD]) {
 				// Prevent resurrection of Dupre after the Crematorium:
 				flag_dont_resurrect = true;
 				say("@I am sorry, my ", msg,

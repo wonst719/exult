@@ -53,7 +53,7 @@ enum Copy_protection_duplicate_prevention {
 	ASKED_BEASTS = 0x1C,
 	ASKED_REAGENTS = 0x1D,
 	ASKED_MASS_DEATH = 0x1E,
-	ASKED_GINSING = 0x1F,
+	ASKED_GINSENG = 0x1F,
 	ASKED_CREATE_AUTOMATA = 0x20,
 	ASKED_REASONS_FOR_WRITING = 0x21,
 	ASKED_OPHIDIAN_WRITING = 0x22,
@@ -87,7 +87,7 @@ enum Monitor_townplot {
 
 	ASK_LUCILLA_ABOUT_ANDRAL = 0x8F,
 
-	CREAMATED_PIKEMAN = 0xBE
+	CREMATED_PIKEMAN = 0xBE
 };
 
 enum Xenka_subplot {
@@ -98,7 +98,7 @@ enum Xenka_subplot {
 enum Find_Batlin_subplot {
 	ASKED_ANDRAL_ABOUT_ROBBERY = 0x58,
 	ASKED_STANDARR_ABOUT_BRUNT = 0x8D,
-	KNOWS_BATLIS_WAS_IN_MONITOR = 0x8E,
+	KNOWS_BATLIN_WAS_IN_MONITOR = 0x8E,
 	ASKED_SHAZZANA_ABOUT_SAILOR = 0xA8
 };
 
@@ -107,7 +107,7 @@ enum Monitor_sex_subplots {
 	BRENDANN_TATTOO_COMPLIMENT = 0x3F,
 
 	COURTED_LUCILLA = 0x53,
-	ACCEPTEC_LUCILLA_PROPOSAL = 0x54,
+	ACCEPTED_LUCILLA_PROPOSAL = 0x54,
 	KNOWS_OF_LUCILLA_AND_SPEKTOR = 0x55,
 
 	GAINED_GWANI_CLOAK = 0x8A
@@ -136,7 +136,7 @@ enum Monitor_traitor_subplot {
 	TOLD_HARNNA_FOUND_SCROLL = 0xC7,
 	// If 0xCC is set, changes or adds conversation with Harnna, Shazzana, Standarr, Templar, Brendann, Caladin,
 	// and also looks to add a bark about it to Brendann. No one outside of Monitor checks this,
-	// so the dialog in Fawn won’t change. Similar to the original Origin bug with Harnna and the Strange Coins,
+	// so the dialog in Fawn won't change. Similar to the original Origin bug with Harnna and the Strange Coins,
 	// if Flag 204 is set you can repeatedly ask Standarr about Pomdirgun, the option does not get removed.
 	POMDIRGUN_IS_DEAD = 0xCC
 };
@@ -262,7 +262,7 @@ enum Skullcrusher_townplot {
 // The quotes are from http://www.it-he.org
 enum Bane_flags {
 	BANES_RELEASED = 0x4,
-	WANTONESS_BANE_DEAD = 0xD3, // Haha! I am Dupre, bane of drunkenness!
+	WANTONNESS_BANE_DEAD = 0xD3, // Haha! I am Dupre, bane of drunkenness!
 	INSANITY_BANE_DEAD = 0xD5,  // I am Iolo! Bane of shooting-the-Avatar-
                                 // through-the-heart-with-the-triple-crossbow!
 	ANARCHY_BANE_DEAD = 0xD4,   // Kneel before Shamino, bane of rapidly
