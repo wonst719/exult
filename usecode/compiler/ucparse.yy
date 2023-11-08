@@ -349,13 +349,13 @@ struct Loop_Vars
  *	Production types:
  */
 %type <expr> expression primary declared_var_value opt_script_delay item
-%type <expr> script_command start_call addressof new_expr class_expr
+%type <expr> script_command start_call new_expr class_expr
 %type <expr> nonclass_expr opt_delay appended_element int_literal
 %type <expr> opt_primary_expression conv_expression repeat_count
 %type <intval> direction converse_options actor_frames egg_criteria
 %type <intval> opt_original assignment_operator const_int_val opt_const_int_val
 %type <intval> const_int_type int_cast dam_type opt_nest opt_int_value
-%type <intval> sign_int_literal const_int_expr opt_const_int_expr
+%type <intval> sign_int_literal const_int_expr opt_const_int_expr addressof
 %type <funid> opt_funid
 %type <membersel> member_selector
 %type <intlist> string_list response_expression
@@ -599,7 +599,6 @@ opt_const_int_expr:
 
 const_int_expr:
 	const_int_val
-		{ $$ = $1; }
 	| const_int_expr '+' const_int_expr
 		{ $$ = $1 + $3; }
 	| const_int_expr '-' const_int_expr
@@ -650,6 +649,7 @@ const_int_expr:
 		{ $$ = $2 == 0; }
 	| '(' const_int_expr ')'
 		{ $$ = $2; }
+	| addressof
 	;
 
 opt_const_int_val:
@@ -2333,11 +2333,14 @@ expression:
 		if (Class_unexpected_error($2))
 			$$ = nullptr;
 		else
-			$$ = new Uc_binary_expression(UC_SUB,
-				new Uc_int_expression(0), $2);
+			$$ = new Uc_binary_expression(UC_SUB, new Uc_int_expression(0), $2);
 		}
 	| addressof
-		{ $$ = $1; }
+		{
+		int funid = $1;
+		UsecodeOps op = is_int_32bit(funid) ? UC_PUSHI32 : UC_PUSHI;
+		$$ = new Uc_int_expression(funid, op);
+		}
 	| NOT primary
 		{ $$ = new Uc_unary_expression(UC_NOT, $2); }
 	| '[' opt_expression_list ']'	/* Concat. into an array. */
@@ -2348,9 +2351,7 @@ expression:
 		{ $$ = new Uc_string_prefix_expression(cur_fun, $1); }
 	| new_expr
 	| run_script_expression
-		{
-		$$ = $1;
-		}
+		{ $$ = $1; }
 	;
 
 addressof:
@@ -2363,7 +2364,7 @@ addressof:
 			char buf[150];
 			snprintf(buf, array_size(buf), "'%s' not declared", $2);
 			yyerror(buf);
-			$$ = nullptr;
+			$$ = -1;
 			}
 		auto *fun = dynamic_cast<Uc_function_symbol *>(sym);
 		if (!fun)	/* See if the symbol is a function */
@@ -2371,13 +2372,32 @@ addressof:
 			char buf[150];
 			snprintf(buf, array_size(buf), "'%s' is not a function", $2);
 			yyerror(buf);
-			$$ = nullptr;
+			$$ = -1;
 			}
 		else		/* Output the function's assigned number */
 			{
-			int funid = fun->get_usecode_num();
-			UsecodeOps op = is_int_32bit(funid) ? UC_PUSHI32 : UC_PUSHI;
-			$$ = new Uc_int_expression(funid, op);
+			$$ = fun->get_usecode_num();
+			}
+		}
+	| '&' STRUCT '<' defined_struct '>' UCC_SCOPE IDENTIFIER
+		{
+		auto *sym = $4;
+		if (sym)
+			{
+			int value = sym->search($7);
+			if (value < 0)
+				{
+				char buf[150];
+				snprintf(buf, array_size(buf),
+						"'struct<%s>::%s' is not a valid structure member",
+						$4->get_name(), $7);
+				yyerror(buf);
+				}
+			$$ = value;
+			}
+		else
+			{
+			$$ = -1;
 			}
 		}
 	;
