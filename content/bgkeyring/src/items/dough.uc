@@ -29,16 +29,16 @@ void Dough shape#(0x292) () {
 	if (event == DOUBLECLICK) {
 		if (get_item_frame() > 0) {
 			//dough is not flour
-			var target = UI_click_on_item();
+			struct<ObjPos> target = UI_click_on_item();
 			if (target->get_item_shape() == SHAPE_HEARTH) {
 				if (set_last_created()) {
-					var target_pos = target->get_object_position();
+					struct<Position> target_pos = target->get_object_position();
 					//choose a random position somewhere along the hearth
 					//tweaked to allow one more space for it...
 					//...and then untweaked again, as it makes the dough
 					//too hard to see
-					target_pos[X] = target_pos[X] - UI_die_roll(1, 2);
-					target_pos[Z] = target_pos[Z] + 1;
+					target_pos.x = target_pos.x - UI_die_roll(1, 2);
+					target_pos.z = target_pos.z + 1;
 
 					//now place the dough there
 					if (UI_update_last_created(target_pos)) {

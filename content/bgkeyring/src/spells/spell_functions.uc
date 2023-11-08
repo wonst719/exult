@@ -144,7 +144,7 @@ void spellCloneEffect object#() () {
 }
 
 void spellFireRingEffect object#() () {
-	var pos = get_object_position();
+	struct<Position> pos = get_object_position();
 	remove_item();
 	var ring = UI_create_new_object(SHAPE_FIRE_FIELD);
 	if (ring) {
@@ -168,13 +168,13 @@ void spellCauseLight object#() () {
 }
 
 void spellCenteredSpriteEffect object#() () {
-	var pos = get_object_position();
-	UI_sprite_effect(event, pos[X], pos[Y], 0, 0, 0, -1);
+	struct<Position> pos = get_object_position();
+	UI_sprite_effect(event, pos.x, pos.y, 0, 0, 0, -1);
 }
 
 void spellOffCenterSpriteEffect object#() () {
-	var pos = get_object_position();
-	UI_sprite_effect(event, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+	struct<Position> pos = get_object_position();
+	UI_sprite_effect(event, (pos.x - 2), (pos.y - 2), 0, 0, 0, -1);
 }
 
 void spellCreateFoodEffect object#() () {
@@ -187,7 +187,7 @@ void spellCreateFoodEffect object#() () {
 	var party = UI_get_party_list();
 
 	for (npc in party) {
-		var pos = npc->get_object_position();
+		struct<Position> pos = npc->get_object_position();
 		var fooditem = UI_create_new_object(SHAPE_FOOD);
 		if (fooditem) {
 			fooditem->set_item_frame(UI_die_roll(0, 31));
@@ -208,8 +208,8 @@ void spellShowMap object#() () {
 
 void spellProtectAllEffect object#() () {
 	UI_play_sound_effect(109);
-	var pos = get_object_position();
-	UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+	struct<Position> pos = get_object_position();
+	UI_sprite_effect(ANIMATION_TELEPORT, (pos.x - 2), (pos.y - 2), 0, 0, 0, -1);
 	var targets = getFriendlyTargetList(item, 25);
 	for (npc in targets) {
 		npc->set_item_flag(PROTECTION);
@@ -269,8 +269,8 @@ void spellCauseDancing object#() () {
 	for (npc in nonparty_npcs) {
 		var intelligence = npc->get_npc_prop(INTELLIGENCE);
 		if ((intelligence > 5) && (intelligence < 25)) {
-			var pos = npc->get_object_position();
-			UI_sprite_effect(ANIMATION_SPARKLES, pos[X], pos[Y], 0, 0, 0, -1);
+			struct<Position> pos = npc->get_object_position();
+			UI_sprite_effect(ANIMATION_SPARKLES, pos.x, pos.y, 0, 0, 0, -1);
 			setNonpartySchedule(npc, DANCE);
 			npc->set_item_flag(IN_ACTION);
 			var barks = ["@Dance!@", "@Yeah!@", "@Huh!@", "@Oh, yeah!@", "@I'm bad!@", "@Boogie!@", "@Yow!@"];
@@ -468,9 +468,9 @@ void spellMassResurrectEffect object#() () {
 		var qual = body->get_item_quality();
 		var quant = body->get_item_quantity(1);
 		if ((qual != 0) || (quant != 0)) {
-			var pos = get_object_position();
-			UI_sprite_effect(ANIMATION_LIGHTNING, pos[X], pos[Y], 0, 0, 0, -1);
-			UI_sprite_effect(ANIMATION_GREEN_BUBBLES, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			struct<Position> pos = get_object_position();
+			UI_sprite_effect(ANIMATION_LIGHTNING, pos.x, pos.y, 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_GREEN_BUBBLES, (pos.x - 2), (pos.y - 2), 0, 0, 0, -1);
 			var dist = get_distance(body);
 			script body after 2+dist/3 ticks resurrect;
 		}

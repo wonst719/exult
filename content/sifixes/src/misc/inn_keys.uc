@@ -55,8 +55,8 @@ void eggLockInnDoors object#(0xCB0) () {
 		abort;
 	}
 
-	var avpos = AVATAR->get_object_position();
-	if (avpos[Z] >= 4) {
+	struct<Position> avpos = AVATAR->get_object_position();
+	if (avpos.z >= 4) {
 		abort;
 	}
 
@@ -111,42 +111,42 @@ void eggLockInnDoors object#(0xCB0) () {
 		abort;
 	}
 
-	var pos = get_object_position();
+	struct<Position> pos = get_object_position();
 
 	if (egg_quality == INN_SLEEPING_SOLDIER) {
-		pos[X] = pos[X] - 8;
-		pos[Y] = pos[Y] - 16;
+		pos.x = pos.x - 8;
+		pos.y = pos.y - 16;
 	} else if (egg_quality == INN_BROKEN_OAR_SOUTHEAST) {
-		pos[X] = pos[X] - 16;
-		pos[Y] = pos[Y] + 7;
-		pos[Z] = 6;
+		pos.x = pos.x - 16;
+		pos.y = pos.y + 7;
+		pos.z = 6;
 	} else if (egg_quality == INN_BROKEN_OAR_EAST) {
-		pos[X] = pos[X] - 15;
-		pos[Y] = pos[Y] + 25;
-		pos[Z] = 6;
+		pos.x = pos.x - 15;
+		pos.y = pos.y + 25;
+		pos.z = 6;
 	} else if (egg_quality == INN_BROKEN_OAR_WEST) {
-		pos[X] = pos[X] + 16;
-		pos[Y] = pos[Y] + 25;
-		pos[Z] = 6;
+		pos.x = pos.x + 16;
+		pos.y = pos.y + 25;
+		pos.z = 6;
 	} else if (egg_quality == INN_SLEEPING_BULL_MAIN) {
-		pos[X] = pos[X] + 9;
-		pos[Y] = pos[Y] - 19;
-		pos[Z] = 6;
+		pos.x = pos.x + 9;
+		pos.y = pos.y - 19;
+		pos.z = 6;
 	} else if (egg_quality == INN_SLEEPING_BULL_NORTH) {
-		pos[X] = pos[X] + 16;
-		pos[Y] = pos[Y] + 20;
-		pos[Z] = 6;
+		pos.x = pos.x + 16;
+		pos.y = pos.y + 20;
+		pos.z = 6;
 	} else if (egg_quality == INN_SLEEPING_BULL_EAST_S) {
-		pos[X] = pos[X] - 38;
-		pos[Y] = pos[Y] - 19;
-		pos[Z] = 6;
+		pos.x = pos.x - 38;
+		pos.y = pos.y - 19;
+		pos.z = 6;
 	} else if (egg_quality == INN_SLEEPING_BULL_EAST_N) {
-		pos[X] = pos[X] - 38;
-		pos[Y] = pos[Y] - 3;
-		pos[Z] = 6;
+		pos.x = pos.x - 38;
+		pos.y = pos.y - 3;
+		pos.z = 6;
 	} else if (egg_quality == INN_BLUE_BOAR) {
-		pos[X] = pos[X] - 46;
-		pos[Y] = pos[Y] + 8;
+		pos.x = pos.x - 46;
+		pos.y = pos.y + 8;
 	}
 
 	var index;
@@ -224,13 +224,13 @@ void eggLockInnDoors object#(0xCB0) () {
 					pos = get_object_position();
 					dir = step_directions[egg_quality];
 					if (dir == NORTH) {
-						pos[Y] = pos[Y] - 8;
+						pos.y = pos.y - 8;
 					} else if (dir == EAST) {
-						pos[X] = pos[X] + 8;
+						pos.x = pos.x + 8;
 					} else if (dir == SOUTH) {
-						pos[Y] = pos[Y] + 8;
+						pos.y = pos.y + 8;
 					} else if (dir == WEST) {
-						pos[X] = pos[X] - 8;
+						pos.x = pos.x - 8;
 					}
 
 					AVATAR->si_path_run_usecode(pos, SI_PATH_SUCCESS, AVATAR, unfreeze, true);

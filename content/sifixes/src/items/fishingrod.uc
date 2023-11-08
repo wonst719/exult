@@ -25,7 +25,7 @@ const int FRAME_FISH = 12;
 void FishingRod shape#(SHAPE_FISHING_ROD) () {
 	if ((event == DOUBLECLICK) || (event == WEAPON)) {
 		UI_close_gumps();
-		var target = UI_click_on_item();
+		struct<ObjPos> target = UI_click_on_item();
 		script AVATAR {
 			actor frame strike_1h;
 			actor frame standing;
@@ -34,8 +34,8 @@ void FishingRod shape#(SHAPE_FISHING_ROD) () {
 			UI_flash_mouse(0);
 			return;
 		}
-		var pos = AVATAR->get_object_position();
-		pos[X] = pos[X] + 1;
+		struct<Position> pos = AVATAR->get_object_position();
+		pos.x = pos.x + 1;
 		if (UI_die_roll(1, 20) > 17) {
 			var fish = UI_create_new_object(SHAPE_FOOD);
 			if (fish) {

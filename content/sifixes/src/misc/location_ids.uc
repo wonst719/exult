@@ -57,8 +57,8 @@ enum location_ids {
 	THE_MAZE = 0x21
 };
 
-var getLocationID 0x993 (var pos) {
-	var loc2d = [pos[X], pos[Y]];
+var getLocationID 0x993 (struct<Position> pos) {
+	struct<Position2D> loc2d = [pos.x, pos.y];
 	var location_id = THE_WILDERNESS;
 
 	if (pointInsideRect(loc2d, [0x6AE, 0x53C], [0x73F, 0x5AF]) ||
@@ -166,7 +166,7 @@ var getLocationID 0x993 (var pos) {
 		// } else if (pointInsideRect(loc2d, [0x8FF, 0x9FF], [0xA00, 0xB00])) {
 		// 	location_id = THE_MAZE;
 		location_id = THE_WILDERNESS;
-	} else if (pos[Y] < 0x400) {
+	} else if (pos.y < 0x400) {
 		location_id = ICE_PLAINS;
 	}
 	return location_id;

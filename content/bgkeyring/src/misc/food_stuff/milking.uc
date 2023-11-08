@@ -43,8 +43,8 @@ void milkCow () {
 	//disabled: this usually results in it being rendered on top of the cow,
 	//and anyway it appears immediately rather than at the end of a leaning-down
 	//animation.
-	//var target_pos = UI_get_object_position(cow);
-	//target_pos[X] = target_pos[X] - 2;
+	//struct<Position> target_pos = UI_get_object_position(cow);
+	//target_pos.x = target_pos.x - 2;
 	//moveToLocation(vessel, target_pos);
 
 	if (UI_get_random(10) < 3) {

@@ -31,7 +31,7 @@
 
 	extern void spellAwakenAll ();
 	extern void spellCreateFood ();
-	extern void spellCure (var target);
+	extern void spellCure (struct<ObjPos> target);
 	extern void spellDetectTrap ();
 	extern void spellGreatDouse ();
 	extern void spellGreatIgnite ();
@@ -54,11 +54,11 @@ enum first_circle_spells {
 
 void spellAwakenAll () {
 	if (event == DOUBLECLICK) {
-		var pos = get_object_position();
+		struct<Position> pos = get_object_position();
 		halt_scheduled();
 		item_say("@Vas An Zu@");
 		if (inMagicStorm()) {
-			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - pos[Z]/2), (pos[Y] - pos[Z]/2), 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos.x - pos.z/2), (pos.y - pos.z/2), 0, 0, 0, -1);
 			script item {
 				nohalt;
 				sfx 68;
@@ -111,7 +111,7 @@ void spellCreateFood () {
 
 void spellCure (var target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@An Nox@");
@@ -266,9 +266,9 @@ void spellLocate () {
 	if (event == DOUBLECLICK) {
 		item_say("@In Wis@");
 		if (inMagicStorm()) {
-			var pos = get_object_position();
-			var longi = ((pos[X] - 0x3A5) / 10);
-			var lat = ((pos[Y] - 0x46E) / 10);
+			struct<Position> pos = get_object_position();
+			var longi = ((pos.x - 0x3A5) / 10);
+			var lat = ((pos.y - 0x46E) / 10);
 			var longstr;
 			var latstr;
 

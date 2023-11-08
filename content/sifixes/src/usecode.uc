@@ -33,6 +33,8 @@
 #include "header/constants.uc"
 // SI Global Flags
 #include "header/si/si_gflags.uc"
+// Standard structure definitions
+#include "header/si/si_structs.uc"
 // Calls defined in SI Usecode
 #include "header/si/si_externals.uc"
 // SI Shapes

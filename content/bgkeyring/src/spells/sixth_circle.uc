@@ -28,12 +28,12 @@
 	Sixth circle Spells
 
 	extern void spellCauseFear ();
-	extern void spellClone (var target);
-	extern void spellFireRing (var target);
+	extern void spellClone (struct<ObjPos> target);
+	extern void spellFireRing (struct<ObjPos> target);
 	extern void spellFlameStrike ();
 	extern void spellMagicStorm ();
-	extern void spellPoisonField (var target);
-	extern void spellSleepField (var target);
+	extern void spellPoisonField (struct<ObjPos> target);
+	extern void spellSleepField (struct<ObjPos> target);
 	extern void spellTremor ();
 */
 
@@ -77,9 +77,9 @@ void spellCauseFear () {
 	}
 }
 
-void spellClone (var target) {
+void spellClone (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		halt_scheduled();
 		item_say("@In Quas Xen@");
@@ -106,9 +106,9 @@ void spellClone (var target) {
 	}
 }
 
-void spellFireRing (var target) {
+void spellFireRing (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@Kal Flam Grav@");
@@ -127,9 +127,9 @@ void spellFireRing (var target) {
 			var counter = 0;
 			while (counter < 12) {
 				counter = (counter + 1);
-				var ring_x = (target[X + 1] + offset_x[counter]);
-				var ring_y = (target[Y + 1] + offset_y[counter]);
-				var ring_z = target[Z + 1];
+				var ring_x = (target.x + offset_x[counter]);
+				var ring_y = (target.y + offset_y[counter]);
+				var ring_z = target.z;
 				var pos = [ring_x, ring_y, ring_z];
 				var pos2 = [ring_x, ring_y, (ring_z + 1)];
 				if (!UI_is_not_blocked(pos, SHAPE_DELAYED_EXPLOSION, 0)) {
@@ -179,10 +179,10 @@ void spellFlameStrike () {
 
 			var targets = getEnemyTargetList(item, 25);
 			for (npc in targets) {
-				var pos = npc->get_object_position();
-				var strike_x = pos[X];
-				var strike_y = pos[Y];
-				var strike_z = pos[Z];
+				struct<Position> pos = npc->get_object_position();
+				var strike_x = pos.x;
+				var strike_y = pos.y;
+				var strike_z = pos.z;
 				pos = [strike_x, strike_y, 0];
 				var strike = UI_create_new_object(SHAPE_FIRE_FIELD);
 				if (strike) {
@@ -250,9 +250,9 @@ void spellMagicStorm () {
 	}
 }
 
-void spellPoisonField (var target) {
+void spellPoisonField (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@In Nox Grav@");
@@ -267,9 +267,9 @@ void spellPoisonField (var target) {
 			}
 			var field = UI_create_new_object(SHAPE_POISON_FIELD);
 			if (field) {
-				var field_x = (target[X + 1] + 1);
-				var field_y = (target[Y + 1] + 1);
-				var field_z = target[Z + 1];
+				var field_x = (target.x + 1);
+				var field_y = (target.y + 1);
+				var field_z = target.z;
 				var pos = [field_x, field_y, field_z];
 				field->set_item_flag(TEMPORARY);
 				UI_update_last_created(pos);
@@ -287,9 +287,9 @@ void spellPoisonField (var target) {
 	}
 }
 
-void spellSleepField (var target) {
+void spellSleepField (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@In Zu Grav@");
@@ -303,9 +303,9 @@ void spellSleepField (var target) {
 				actor frame strike_1h;
 			}
 
-			var field_x = (target[X + 1] + 1);
-			var field_y = (target[Y + 1] + 1);
-			var field_z = target[Z + 1];
+			var field_x = (target.x + 1);
+			var field_y = (target.y + 1);
+			var field_z = target.z;
 			var pos = [field_x, field_y, field_z];
 			var field = UI_create_new_object(SHAPE_SLEEP_FIELD);
 			if (field) {

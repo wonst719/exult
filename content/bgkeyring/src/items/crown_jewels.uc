@@ -29,8 +29,8 @@ void LB_Sceptre_Hit object#(0xB7E) () {
 	}
 	var field_shapes = [SHAPE_ENERGY_FIELD, SHAPE_FIRE_FIELD, SHAPE_POISON_FIELD, SHAPE_SLEEP_FIELD];
 	if (get_item_shape() in field_shapes) {
-		var pos = get_object_position();
-		UI_sprite_effect(ANIMATION_BLUE_BEADS, pos[X] - 1, pos[Y] - 1, 0, 0, 0, -1);
+		struct<Position> pos = get_object_position();
+		UI_sprite_effect(ANIMATION_BLUE_BEADS, pos.x - 1, pos.y - 1, 0, 0, 0, -1);
 		UI_play_sound_effect(64);
 		script item after 4 ticks remove;
 	}

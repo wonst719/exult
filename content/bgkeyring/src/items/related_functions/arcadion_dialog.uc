@@ -183,9 +183,9 @@ void arcadionSwordFormDialog object#() () {
 						say("@Where is the corpse of which thou dost speak?@ The dark sword begins to vibrate in your hand.*");
 						BLACK_SWORD_FACE.hide();
 
-						var target = UI_click_on_item();
+						struct<ObjPos> target = UI_click_on_item();
 						var target_shape = target->get_item_shape();
-						var target_position = target->get_object_position();
+						struct<Position> target_position = target->get_object_position();
 
 						BLACK_SWORD_FACE->show_npc_face(0);
 
@@ -318,9 +318,9 @@ void blackswordCreationAnimation object#() () {
 		return;
 	} else if (event == BLACKSWORD_LIGHTNING_EVENT) {
 		//(!gflags[FINISHED_BOND])
-		var pos = AVATAR->get_object_position();
-		UI_sprite_effect(ANIMATION_LIGHTNING, pos[X], pos[Y], 0, 0, 0, 3);
-		UI_sprite_effect(ANIMATION_LIGHTNING, pos[X], pos[Y], 0, 0, 0, -1);
+		struct<Position> pos = AVATAR->get_object_position();
+		UI_sprite_effect(ANIMATION_LIGHTNING, pos.x, pos.y, 0, 0, 0, 3);
+		UI_sprite_effect(ANIMATION_LIGHTNING, pos.x, pos.y, 0, 0, 0, -1);
 		UI_play_sound_effect(0x003E);
 
 		script item after 3 ticks
@@ -377,7 +377,7 @@ void arcadionGemFormDialog object#() () {
 					say("Slowly, the sword settles into its original shape, except for the blue gem glowing in the hilt.");
 				} else {
 					say("There is a flash of what can only be described as black light and the sword is wrenched out of your grasp and falls to the ground.");
-					var pos = AVATAR->get_object_position();
+					struct<Position> pos = AVATAR->get_object_position();
 					UI_update_last_created(pos);
 				}
 

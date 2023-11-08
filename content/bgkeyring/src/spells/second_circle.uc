@@ -27,13 +27,13 @@
 /*
 	Second circle Spells
 
-	extern void spellDestroyTrap (var target);
-	extern void spellEnchant (var target);
-	extern void spellFireBlast (var target);
+	extern void spellDestroyTrap (struct<ObjPos> target);
+	extern void spellEnchant (struct<ObjPos> target);
+	extern void spellFireBlast (struct<ObjPos> target);
 	extern void spellGreatLight ();
 	extern void spellMassCure ();
-	extern void spellProtection (var target);
-	extern void spellTelekinesis (var target);
+	extern void spellProtection (struct<ObjPos> target);
+	extern void spellTelekinesis (struct<ObjPos> target);
 	extern void spellWizardEye ();
 */
 
@@ -48,9 +48,9 @@ enum second_circle_spells {
 	SPELL_WIZARD_EYE				= 7
 };
 
-void spellDestroyTrap (var target) {
+void spellDestroyTrap (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		halt_scheduled();
 		item_say("@An Jux@");
@@ -63,20 +63,21 @@ void spellDestroyTrap (var target) {
 				actor frame strike_2h;
 			}
 			var nearby_traps = target->find_nearby(SHAPE_TRAP, 2, MASK_ALL_UNSEEN);
+			struct<Position>& trappos = target;
 			for (trap in nearby_traps) {
-				target = trap->get_object_position();
+				trappos = trap->get_object_position();
 
 				trap->halt_scheduled();
 				trap->remove_item();
-				UI_sprite_effect(ANIMATION_GREEN_BUBBLES, target[X], target[Y], 0, 0, 0, -1);
+				UI_sprite_effect(ANIMATION_GREEN_BUBBLES, trappos.x, trappos.y, 0, 0, 0, -1);
 				UI_play_sound_effect(66);
 			}
 			nearby_traps = find_nearby(SHAPE_LOCKED_CHEST, 2, MASK_ALL_UNSEEN);
 			for (trap in nearby_traps) {
-				target = trap->get_object_position();
+				trappos = trap->get_object_position();
 				if (trap->get_item_quality() == KEY_PICKABLE_TRAPPED) {
 					trap->set_item_quality(0);
-					UI_sprite_effect(ANIMATION_GREEN_BUBBLES, target[X], target[Y], 0, 0, 0, -1);
+					UI_sprite_effect(ANIMATION_GREEN_BUBBLES, trappos.x, trappos.y, 0, 0, 0, -1);
 					UI_play_sound_effect(66);
 				}
 			}
@@ -92,12 +93,12 @@ void spellDestroyTrap (var target) {
 	}
 }
 
-void spellEnchant (var target) {
+void spellEnchant (struct<ObjPos> target) {
 	var normal_missiles = [SHAPE_ARROWS, SHAPE_BOLTS];
 	var magic_missiles = [SHAPE_MAGIC_ARROWS, SHAPE_MAGIC_BOLTS];
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
 		var dir = direction_from(target);
 		item_say("@Ort Ylem@");
@@ -127,9 +128,9 @@ void spellEnchant (var target) {
 	}
 }
 
-void spellFireBlast (var target) {
+void spellFireBlast (struct<ObjPos> target) {
 	if ((event == DOUBLECLICK) || (event == WEAPON)) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@Vas Flam@");
@@ -185,8 +186,8 @@ void spellGreatLight () {
 void spellMassCure () {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		var pos = get_object_position();
-		UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
+		struct<Position> pos = get_object_position();
+		UI_sprite_effect(ANIMATION_TELEPORT, pos.x, pos.y, 0, 0, 0, -1);
 		item_say("@Vas An Nox@");
 		if (inMagicStorm()) {
 			script item {
@@ -216,10 +217,10 @@ void spellMassCure () {
 	}
 }
 
-void spellProtection (var target) {
+void spellProtection (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		item_say("@Uus Sanct@");
 		if (inMagicStorm() && target->is_npc()) {
@@ -251,17 +252,17 @@ void spellProtection (var target) {
 	}
 }
 
-void spellTelekinesis (var target) {
+void spellTelekinesis (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		//var target = UI_click_on_item();
-		if (target[X] == 0) {
+		//struct<ObjPos> target = UI_click_on_item();
+		if (target.obj == 0) {
 			return;
 		}
 
 		var dir = direction_from(target);
 		item_say("@Ort Por Ylem@");
-		if (inMagicStorm() && ((!target->is_npc()) && (target[X] != 0))) {
+		if (inMagicStorm() && ((!target->is_npc()) && (target.obj != 0))) {
 			set_to_attack(target, SHAPE_TELEKINESIS);
 			script item {
 				nohalt;

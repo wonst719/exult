@@ -26,7 +26,7 @@
  */
 
 void shapeSmithDreamRealm shape#(0x375) () {
-	var nightmare_pos;
+	struct<Position> nightmare_pos;
 
 	if (event == STARTED_TALKING) {
 		FACE_SMITHZHORSE.say("@Avatar! How good it is to see thee! How long hath it been since we last met?@");
@@ -57,7 +57,7 @@ void shapeSmithDreamRealm shape#(0x375) () {
 		FACE_SMITHZHORSE.hide();
 
 		nightmare_pos = get_object_position();
-		UI_sprite_effect(SPRITE_PURPLE_CIRCLES, nightmare_pos[1], nightmare_pos[2], 0, 0, 0, -1);
+		UI_sprite_effect(SPRITE_PURPLE_CIRCLES, nightmare_pos.x, nightmare_pos.y, 0, 0, 0, -1);
 		remove_item();
 		// Weird warp sound
 		UI_play_sound_effect(76);
@@ -66,9 +66,9 @@ void shapeSmithDreamRealm shape#(0x375) () {
 		AVATAR->clear_item_flag(DONT_MOVE);
 		clear_item_flag(SI_TOURNAMENT);
 		nightmare_pos = get_object_position();
-		UI_sprite_effect(SPRITE_MEDIUM_EXPLOSION, (nightmare_pos[1] - 1), (nightmare_pos[2] - 1), 0, 0, 0, -1);
-		UI_sprite_effect(SPRITE_WHITE_LIGHTNING, (nightmare_pos[1] - 1), (nightmare_pos[2] - 1), 0, 0, 2, 3);
-		UI_sprite_effect(SPRITE_WHITE_LIGHTNING, (nightmare_pos[1] - 2), (nightmare_pos[2] - 2), 0, 0, 0, -1);
+		UI_sprite_effect(SPRITE_MEDIUM_EXPLOSION, (nightmare_pos.x - 1), (nightmare_pos.y - 1), 0, 0, 0, -1);
+		UI_sprite_effect(SPRITE_WHITE_LIGHTNING, (nightmare_pos.x - 1), (nightmare_pos.y - 1), 0, 0, 2, 3);
+		UI_sprite_effect(SPRITE_WHITE_LIGHTNING, (nightmare_pos.x - 2), (nightmare_pos.y - 2), 0, 0, 0, -1);
 		UI_play_sound_effect(42);
 		UI_lightning();
 		removeAllItemsAndContainer(item);

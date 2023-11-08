@@ -22,7 +22,7 @@
 
 //Reimplemented to allow sheep-shearing
 void Shears shape#(0x2BA) () {
-	var target;
+	struct<ObjPos> target;
 	var target_shape;
 
 	if (event != DOUBLECLICK) {

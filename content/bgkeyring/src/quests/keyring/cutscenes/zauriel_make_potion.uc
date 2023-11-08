@@ -50,7 +50,7 @@ enum MakePotion_levels {
 };
 
 void zaurielMakePotion object#() () {
-	var pos;
+	struct<Position> pos;
 	var party = UI_get_party_list();
 	var casting;
 
@@ -87,10 +87,10 @@ void zaurielMakePotion object#() () {
 		//item = ZAURIEL
 		//The spell effect animation:
 		pos = get_object_position();
-		UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_TELEPORT, pos.x, pos.y, 0, 0, 0, -1);
 		for (npc in party) {
 			pos = npc->get_object_position();
-			UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, pos.x, pos.y, 0, 0, 0, -1);
 		}
 	} else if (event == POTION_FADE_SCREEN) {
 		//Fade to black:
@@ -317,8 +317,8 @@ void zaurielMakePotion object#() () {
 		giveExperience(100);
 		//Fire the teleport animation and move Zauriel:
 		gflags[ZAURIEL_TELEPORTED] = true;
-		var pos = ZAURIEL->get_object_position();
-		UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
+		struct<Position> pos = ZAURIEL->get_object_position();
+		UI_sprite_effect(ANIMATION_TELEPORT, pos.x, pos.y, 0, 0, 0, -1);
 		script ZAURIEL {
 			nohalt;
 			say "@Meet me near Skara Brae!@";

@@ -27,6 +27,7 @@ USECODE_OBJECTS = \
 	src/headers/bg/bg_npcs.uc	\
 	src/headers/bg/bg_shapes.uc	\
 	src/headers/bg/bg_shapes2.uc	\
+	src/headers/bg/bg_structs.uc	\
 	src/headers/constants.uc	\
 	src/headers/constants2.uc	\
 	src/headers/functions.uc	\

@@ -29,14 +29,14 @@
 /*
 	Linear Spells
 
-	extern void spellAwaken (var target);
-	extern void spellDouse (var target);
+	extern void spellAwaken (struct<ObjPos> target);
+	extern void spellDouse (struct<ObjPos> target);
 	extern void spellFireworks ();
 	extern void spellGlimmer ();
-	extern void spellIgnite (var target);
+	extern void spellIgnite (struct<ObjPos> target);
 	extern void spellThunder ();
 	extern void spellWeather ();
-	extern void spellDetectCharges (var target);
+	extern void spellDetectCharges (struct<ObjPos> target);
 */
 
 enum linear_spells {
@@ -50,12 +50,12 @@ enum linear_spells {
 	SPELL_DETECT_CHARGES			= 7			//NPC-only spell
 };
 
-void spellAwaken (var target) {
+void spellAwaken (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@An Zu@");
-		if (inMagicStorm() && (target[X] != 0)) {
+		if (inMagicStorm() && (target.obj != 0)) {
 			script item {
 				nohalt;
 				face dir;
@@ -79,10 +79,10 @@ void spellAwaken (var target) {
 	}
 }
 
-void spellDouse (var target) {
+void spellDouse (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		item_say("@An Flam@");
 		if (inMagicStorm()) {
@@ -163,10 +163,10 @@ void spellGlimmer () {
 	}
 }
 
-void spellIgnite (var target) {
+void spellIgnite (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		item_say("@In Flam@");
 		if (inMagicStorm()) {
@@ -252,10 +252,10 @@ void spellWeather () {
 	}
 }
 
-void spellDetectCharges (var target) {
+void spellDetectCharges (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
 		var dir = direction_from(target);
 		item_say("@Wis Ort@");

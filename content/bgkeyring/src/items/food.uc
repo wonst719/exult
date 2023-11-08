@@ -64,7 +64,7 @@ void Food shape#(0x179) () {
 
 	//Apples can be used on pastry dough to make pie
 	if (food_frame == FRAME_APPLE || food_frame == FRAME_EGG) {
-		var target = UI_click_on_item();
+		struct<ObjPos> target = UI_click_on_item();
 
 		//apple was used on dough
 		if (target->get_item_shape() == SHAPE_DOUGH) {

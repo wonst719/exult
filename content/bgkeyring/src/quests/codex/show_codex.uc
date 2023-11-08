@@ -145,9 +145,9 @@ void displayCodex object#() () {
 						}
 
 						//Animations & sounds:
-						var pos = codex->get_object_position();
-						UI_sprite_effect(ANIMATION_CIRCLE_BARRIER, pos[X] - pos[Z]/2, pos[Y] - pos[Z]/2 + 12, 0, -9, 0, -1);
-						UI_sprite_effect(ANIMATION_TELEPORT, pos[X] - pos[Z]/2, pos[Y] - pos[Z]/2, 0, 0, 0, -1);
+						struct<Position> pos = codex->get_object_position();
+						UI_sprite_effect(ANIMATION_CIRCLE_BARRIER, pos.x - pos.z/2, pos.y - pos.z/2 + 12, 0, -9, 0, -1);
+						UI_sprite_effect(ANIMATION_TELEPORT, pos.x - pos.z/2, pos.y - pos.z/2, 0, 0, 0, -1);
 						UI_play_sound_effect(64);
 						//Delayed removal of the Codex:
 						script codex after 13 ticks	remove;
@@ -157,7 +157,7 @@ void displayCodex object#() () {
 						//Animations in the items of principle:
 						for (obj in itemsofprinc) {
 							pos = obj->get_object_position();
-							UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, pos[X] - pos[Z]/2, pos[Y] - pos[Z]/2, 0, 0, 0, -1);
+							UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, pos.x - pos.z/2, pos.y - pos.z/2, 0, 0, 0, -1);
 						}
 
 						abort;

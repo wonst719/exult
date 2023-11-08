@@ -29,9 +29,9 @@ void finishShearing object#() () {
 	wool->set_item_flag(TEMPORARY);
 
 	//place the new bale next to the sheep
-	var target_pos = get_object_position();
-	target_pos[X] = target_pos[X] + 1;
-	target_pos[Y] = target_pos[Y] + 1;
+	struct<Position> target_pos = get_object_position();
+	target_pos.x = target_pos.x + 1;
+	target_pos.y = target_pos.y + 1;
 
 	//Todo: stick it in the players inventory if it can't be placed here
 	UI_update_last_created(target_pos);

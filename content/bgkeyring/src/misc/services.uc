@@ -80,7 +80,7 @@ var giveItemsToParty (var quantity, var shapenum, var quality, var framenum, var
 				say("@Since thou art so encumbered, I shall place the remaining ",
 				    delta, " of these upon the ground.@");
 			}
-			var pos = AVATAR->get_object_position();
+			struct<Position> pos = AVATAR->get_object_position();
 			var groundobjs = shapenum->create_new_object();
 			groundobjs->set_item_frame(framenum);
 			groundobjs->set_item_quality(quality);

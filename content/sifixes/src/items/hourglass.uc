@@ -22,7 +22,7 @@
  */
 
 void Hourglass shape#(0x347) () {
-	var pos;
+	struct<Position> pos;
 	var notincombat;
 	var nearbynpcs;
 	var index;
@@ -59,13 +59,13 @@ void Hourglass shape#(0x347) () {
 					// Offset Thoxa a bit so that she isn't INSIDE avatar:
 					var framerot = AVATAR->get_item_frame_rot();
 					if (framerot - EAST_FRAMESET >= 0) {
-						pos[X] = pos[X] + 5;
+						pos.x = pos.x + 5;
 					} else if (framerot - WEST_FRAMESET >= 0) {
-						pos[X] = pos[X] - 5;
+						pos.x = pos.x - 5;
 					} else if (framerot - SOUTH_FRAMESET >= 0) {
-						pos[Y] = pos[Y] + 5;
+						pos.y = pos.y + 5;
 					} else {
-						pos[Y] = pos[Y] - 5;
+						pos.y = pos.y - 5;
 					}
 
 					THOXA->move_object(pos);

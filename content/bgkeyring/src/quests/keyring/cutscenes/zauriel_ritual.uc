@@ -41,13 +41,13 @@ void zaurielTeleportPartyAround object#() () {
 	var party = [UI_get_party_list(), LAURIANNA->get_npc_object()];
 	var dist = 20;
 	//Get Zauriel's position:
-	var pos = get_object_position();
+	struct<Position> pos = get_object_position();
 	//Find nearby eggs:
 	var eggs = 	pos->find_nearby(SHAPE_EGG, dist, MASK_EGG);
 	//Find nearby barriers:
 	var barriers = pos->find_nearby(SHAPE_BARRIER, 3 * dist, MASK_TRANSLUCENT);
 	var count = 0;
-	var new_pos;
+	struct<Position> new_pos;
 	//The only four which are allowed to fight:
 	var companions = [
 		UI_get_avatar_ref(),
@@ -83,11 +83,11 @@ void zaurielTeleportPartyAround object#() () {
 
 				//Move the appropriate barrier:
 				count = count + 1;
-				pos = [new_pos[X] + 1, new_pos[Y] + 1, new_pos[Z]];
+				pos = [new_pos.x + 1, new_pos.y + 1, new_pos.z];
 				barriers[count]->move_object(pos);
 			}
 			//Move the NPC to the egg:
-			UI_sprite_effect(ANIMATION_TELEPORT, new_pos[X], new_pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, new_pos.x, new_pos.y, 0, 0, 0, -1);
 			npc->move_object(new_pos);
 		} else {
 			//Remove the egg if the NPC is not here.
@@ -97,7 +97,7 @@ void zaurielTeleportPartyAround object#() () {
 }
 
 void zaurielUnfreezeFormerParty () {
-	var pos = get_object_position();
+	struct<Position> pos = get_object_position();
 	//Find nearby eggs:
 	var eggs = 	pos->find_nearby(SHAPE_EGG, 20, MASK_EGG);
 
@@ -112,7 +112,7 @@ void zaurielUnfreezeFormerParty () {
 }
 
 void zaurielRitualCutscene object#() () {
-	var pos;
+	struct<Position> pos;
 	var barrier;
 	var body;
 	var zauriel_journal;
@@ -130,7 +130,7 @@ void zaurielRitualCutscene object#() () {
 		UI_update_last_created(pos);
 
 		pos = get_object_position();
-		UI_sprite_effect(ANIMATION_FIREWORKS, pos[X], pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_FIREWORKS, pos.x, pos.y, 0, 0, 0, -1);
 
 		item->begin_casting_mode();
 		//Zauriel script:
@@ -244,7 +244,7 @@ void zaurielRitualCutscene object#() () {
 	} else if (event == SPRITE_EFFECTS_LAURIANNA) {
 		//item = LAURIANNA
 		pos = get_object_position();
-		UI_sprite_effect(ANIMATION_CIRCLE_BARRIER, pos[X], pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_CIRCLE_BARRIER, pos.x, pos.y, 0, 0, 0, -1);
 	} else if (event == ERECT_BARRIER) {
 		//item varies
 		//Create the protective barrier:
@@ -252,8 +252,8 @@ void zaurielRitualCutscene object#() () {
 		barrier = UI_create_new_object(SHAPE_BARRIER);
 
 		//Offset the position so that the barrier is in the right place:
-		pos[X] = pos[X] + 1;
-		pos[Y] = pos[Y] + 1;
+		pos.x = pos.x + 1;
+		pos.y = pos.y + 1;
 
 		//Move the barrier to the target position:
 		UI_update_last_created(pos);
@@ -263,12 +263,12 @@ void zaurielRitualCutscene object#() () {
 	} else if (event == SPRITE_EFFECTS_ZAURIEL) {
 		//item = ZAURIEL
 		pos = get_object_position();
-		UI_sprite_effect(ANIMATION_FIREWORKS, pos[X], pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_FIREWORKS, pos.x, pos.y, 0, 0, 0, -1);
 	} else if (event == DRAGON_SHAPESHIFT) {
 		//item = ZAURIEL
 		//Turn Zauriel into a dragon:
 		pos = get_object_position();
-		UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, pos[X], pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, pos.x, pos.y, 0, 0, 0, -1);
 		UI_play_sound_effect2(SOUND_BIG_BLAST, item);
 		set_item_shape(SHAPE_DRAGON);
 		set_item_frame(0);
@@ -308,9 +308,9 @@ void zaurielRitualCutscene object#() () {
 		body->set_item_frame(FRAME_MONK_BODY_1);
 		//The final effects of the ritual:
 		UI_play_sound_effect2(SOUND_BIG_BLAST, body);
-		UI_sprite_effect(ANIMATION_CIRCLE_BARRIER, pos[X], pos[Y], 0, 0, 0, -1);
-		UI_sprite_effect(ANIMATION_LIGHTNING, pos[X], pos[Y], 0, 0, 0, -1);
-		UI_sprite_effect(ANIMATION_FIREWORKS, pos[X], pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_CIRCLE_BARRIER, pos.x, pos.y, 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_LIGHTNING, pos.x, pos.y, 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_FIREWORKS, pos.x, pos.y, 0, 0, 0, -1);
 		//Create the journal and place it on the body:
 		zauriel_journal = UI_create_new_object(SHAPE_JOURNAL);
 		zauriel_journal->set_item_quality(1);
@@ -332,9 +332,9 @@ void zaurielRitualCutscene object#() () {
 		pos = get_object_position();
 		//Final effects of the ritual:
 		UI_play_sound_effect2(SOUND_BIG_BLAST, item);
-		UI_sprite_effect(ANIMATION_CIRCLE_BARRIER, pos[X], pos[Y], 0, 0, 0, -1);
-		UI_sprite_effect(ANIMATION_LIGHTNING, pos[X], pos[Y], 0, 0, 0, -1);
-		UI_sprite_effect(ANIMATION_FIREWORKS, pos[X], pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_CIRCLE_BARRIER, pos.x, pos.y, 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_LIGHTNING, pos.x, pos.y, 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_FIREWORKS, pos.x, pos.y, 0, 0, 0, -1);
 		//delete all magical barriers:
 		var dist = 20;
 		var barriers = pos->find_nearby(SHAPE_BARRIER, dist, MASK_TRANSLUCENT);

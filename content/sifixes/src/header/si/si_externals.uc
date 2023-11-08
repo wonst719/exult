@@ -46,7 +46,7 @@ extern void xenkaReturns 0x8F4 ();
 extern void xenkanMonkDies 0x8F5 (var monk);
 
 // Returns true is point is inside rectangle
-extern var pointInsideRect 0x8F8 (var point, var upperleft, var lowerright);
+extern var pointInsideRect 0x8F8 (struct<Position2D> point, struct<Position2D> upperleft, struct<Position2D> lowerright);
 
 // List of dead bodies nearby:
 extern var getNearbyBodies 0x8FB ();

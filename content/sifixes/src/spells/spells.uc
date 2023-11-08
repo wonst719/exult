@@ -107,7 +107,7 @@ void spellCreateAmmo object#(0x66E) () {
 	var magicbows;
 	var crossbows;
 	var missile_shape;
-	var pos;
+	struct<Position> pos;
 	var amount;
 	var rand;
 	if (event == DOUBLECLICK) {
@@ -174,7 +174,7 @@ void spellCreateAmmo object#(0x66E) () {
  */
 
 void spellVibrate object#(0x676) () {
-	var target;
+	struct<ObjPos> target;
 	var target_shape;
 	var dir;
 
@@ -184,7 +184,7 @@ void spellVibrate object#(0x676) () {
 		dir = directionFromAvatar(item);
 		halt_scheduled();
 		item_say("@Uus Des Por Grav@");
-		if (notInMagicStorm() && target->is_npc() && (target[X] != 0)) {
+		if (notInMagicStorm() && target->is_npc() && (target.obj != 0)) {
 			script item {
 				nohalt;
 				face dir;
@@ -214,7 +214,7 @@ void spellVibrate object#(0x676) () {
 	}
 	if (event == SCRIPTED) {
 		var curritem;
-		var pos;
+		struct<Position> pos;
 		var updworked;
 		var npcitems;
 		npcitems = get_cont_items(SHAPE_ANY, QUALITY_ANY, FRAME_ANY);
@@ -249,16 +249,16 @@ void spellVibrate object#(0x676) () {
 					updworked = UI_update_last_created(pos);
 
 					if (!updworked) {
-						updworked = UI_update_last_created([(pos[X] - 2), pos[Y], pos[Z]]);
+						updworked = UI_update_last_created([(pos.x - 2), pos.y, pos.z]);
 					}
 					if (!updworked) {
-						updworked = UI_update_last_created([pos[X], (pos[Y] - 2), pos[Z]]);
+						updworked = UI_update_last_created([pos.x, (pos.y - 2), pos.z]);
 					}
 					if (!updworked) {
-						updworked = UI_update_last_created([(pos[X] + 2), pos[Y], pos[Z]]);
+						updworked = UI_update_last_created([(pos.x + 2), pos.y, pos.z]);
 					}
 					if (!updworked) {
-						updworked = UI_update_last_created([pos[X], (pos[Y] + 2), pos[Z]]);
+						updworked = UI_update_last_created([pos.x, (pos.y + 2), pos.z]);
 					}
 					if (!updworked) {
 						curritem->remove_item();
@@ -281,7 +281,7 @@ void spellVibrate object#(0x676) () {
 
 void spellCreateIce object#(0x678) () {
 	var failed;
-	var target;
+	struct<ObjPos> target;
 	var field_x;
 	var field_y;
 	var field_z;
@@ -293,9 +293,9 @@ void spellCreateIce object#(0x678) () {
 		halt_scheduled();
 		target = UI_click_on_item();
 		item_say("@In Frio@");
-		field_x = (target[X + 1] + 1);
-		field_y = (target[Y + 1] + 1);
-		field_z = target[Z + 1];
+		field_x = (target.x + 1);
+		field_y = (target.y + 1);
+		field_z = target.z;
 		pos = [field_x, field_y, field_z];
 		if (notInMagicStorm()) {
 			field = UI_create_new_object(SHAPE_MONOLITH);
@@ -335,7 +335,7 @@ void spellCreateIce object#(0x678) () {
 }
 
 void spellFetch object#(0x67B) () {
-	var target;
+	struct<ObjPos> target;
 	var isgrabbable;
 	var dir;
 	if (event == DOUBLECLICK) {
@@ -403,13 +403,13 @@ void spellSerpentBond object#(0x67D) () {
 			}
 		}
 	} else if (event == SCRIPTED) {
-		var pos = get_object_position();
-		var snakepos = [pos[X] + 2, pos[Y] + 2, pos[Z]];
+		struct<Position> pos = get_object_position();
+		var snakepos = [pos.x + 2, pos.y + 2, pos.z];
 
 		var insnakemaze = false;
 		// Check to see if the Avatar is inside the snake maze:
-		if ((pos[X] > 0x550) && (pos[X] < 0x573) &&
-		  (pos[Y] > 0x1EA) && (pos[Y] < 0x212)) {
+		if ((pos.x > 0x550) && (pos.x < 0x573) &&
+		  (pos.y > 0x1EA) && (pos.y < 0x212)) {
 			insnakemaze = true;
 		}
 
@@ -430,13 +430,13 @@ void spellSerpentBond object#(0x67D) () {
 }
 
 void spellFireSnake object#(0x67E) () {
-	var target;
+	struct<ObjPos> target;
 	var dir;
 	var field;
 	var field_x;
 	var field_y;
 	var field_z;
-	var pos;
+	struct<Position> pos;
 	var duration = 4;
 	var oldfield;
 
@@ -446,8 +446,8 @@ void spellFireSnake object#(0x67E) () {
 		halt_scheduled();
 		item_say("@Kal Vas Frio Grav@");
 		if (notInMagicStorm()) {
-			if (target[X] == 0) {
-				pos = [target[X + 1], target[Y + 1], target[Z + 1]];
+			if (target.obj == 0) {
+				pos = [target.x, target.y, target.z];
 				target = UI_create_new_object(SHAPE_PATH_EGG);
 				target->set_item_frame(31);
 				target->set_item_flag(TEMPORARY);
@@ -469,22 +469,22 @@ void spellFireSnake object#(0x67E) () {
 			if (field) {
 				pos = get_object_position();
 				if (dir in [NORTHWEST, NORTH, NORTHEAST]) {
-					field_y = pos[Y] - 2;
+					field_y = pos.y - 2;
 				} else if (dir in [SOUTHWEST, SOUTH, SOUTHEAST]) {
-					field_y = pos[Y] + 2;
+					field_y = pos.y + 2;
 				} else {
-					field_y = pos[Y];
+					field_y = pos.y;
 				}
 
 				if (dir in [NORTHWEST, WEST, SOUTHWEST]) {
-					field_x = pos[X] - 2;
+					field_x = pos.x - 2;
 				} else if (dir in [NORTHEAST, EAST, SOUTHEAST]) {
-					field_x = pos[X] + 2;
+					field_x = pos.x + 2;
 				} else {
-					field_x = pos[X];
+					field_x = pos.x;
 				}
 
-				field_z = pos[Z];
+				field_z = pos.z;
 				pos = [field_x, field_y, field_z];
 				UI_update_last_created(pos);
 				field->set_item_quality(duration);
@@ -517,35 +517,35 @@ void spellFireSnake object#(0x67E) () {
 		if (field) {
 			pos = oldfield->get_object_position();
 			if (dir in [NORTHWEST, NORTH, NORTHEAST]) {
-				field_y = pos[Y] - 1;
+				field_y = pos.y - 1;
 			} else if (dir in [SOUTHWEST, SOUTH, SOUTHEAST]) {
-				field_y = pos[Y] + 1;
+				field_y = pos.y + 1;
 			} else {
-				field_y = pos[Y];
+				field_y = pos.y;
 			}
 
 			if (dir in [NORTHWEST, WEST, SOUTHWEST]) {
-				field_x = pos[X] - 1;
+				field_x = pos.x - 1;
 			} else if (dir in [NORTHEAST, EAST, SOUTHEAST]) {
-				field_x = pos[X] + 1;
+				field_x = pos.x + 1;
 			} else {
-				field_x = pos[X];
+				field_x = pos.x;
 			}
 
-			field_z = pos[Z];
+			field_z = pos.z;
 			pos = [field_x, field_y, field_z];
 
 
 			if (!UI_is_not_blocked(pos, SHAPE_FIRE_FIELD, 0) &&
 			  get_distance(oldfield) > 1) {
 				// Try going up:
-				pos[Z] = field_z + 1;
+				pos.z = field_z + 1;
 				if (!UI_is_not_blocked(pos, SHAPE_FIRE_FIELD, 0)) {
 					// Try going down:
-					pos[Z] = field_z - 1;
+					pos.z = field_z - 1;
 					if (!UI_is_not_blocked(pos, SHAPE_FIRE_FIELD, 0)) {
 						// Force the issue:
-						pos[Z] = field_z;
+						pos.z = field_z;
 					}
 				}
 			}

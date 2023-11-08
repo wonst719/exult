@@ -33,7 +33,7 @@ void mightyGoblinDies 0x9B7 () {
 
 void eggFawnTowerCleanup object#(0x72D) () {
 	if ((event == EGG) && gflags[CLEARED_FAWN_TOWER]) {
-		var objpos = [get_object_position(), QUALITY_ANY, 0];
+		struct<Position> objpos = [get_object_position(), QUALITY_ANY, 0];
 		var goblineggs = objpos->find_nearby(SHAPE_EGG, 50, 16);
 		var index;
 		var max;

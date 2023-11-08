@@ -41,7 +41,7 @@ void bakeBread object#(0x635) () {
 		}
 	} else if (event == SCRIPTED) {
 		//dough called function to turn into bread
-		var dough_pos = get_object_position();
+		struct<Position> dough_pos = get_object_position();
 		var hearth = find_nearby(SHAPE_HEARTH, 2, MASK_NONE);
 
 		//Who the hell wrote this?? Why not just check for the

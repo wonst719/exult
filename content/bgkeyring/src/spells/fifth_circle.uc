@@ -29,13 +29,13 @@
 /*
 	Fifth circle Spells
 
-	extern void spellCharm (var target);
+	extern void spellCharm (struct<ObjPos> target);
 	extern void spellDance ();
-	extern void spellDispelField (var target);
-	extern void spellExplosion (var target);
-	extern void spellFireField (var target);
-	extern void spellGreatHeal (var target);
-	extern void spellInvisibility (var target);
+	extern void spellDispelField (struct<ObjPos> target);
+	extern void spellExplosion (struct<ObjPos> target);
+	extern void spellFireField (struct<ObjPos> target);
+	extern void spellGreatHeal (struct<ObjPos> target);
+	extern void spellInvisibility (struct<ObjPos> target);
 	extern void spellMassSleep ();
 	extern void spellSummonSkeletons ();
 */
@@ -52,9 +52,9 @@ enum fifth_circle_spells {
 	SPELL_SUMMON_SKELETONS			= 8
 };
 
-void spellCharm (var target) {
+void spellCharm (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		halt_scheduled();
 		item_say("@An Xen Ex@");
@@ -108,9 +108,9 @@ void spellDance () {
 	}
 }
 
-void spellDispelField (var target) {
+void spellDispelField (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		halt_scheduled();
 		var fields = [SHAPE_ENERGY_FIELD, SHAPE_FIRE_FIELD, SHAPE_POISON_FIELD, SHAPE_SLEEP_FIELD];
@@ -142,9 +142,9 @@ void spellDispelField (var target) {
 	}
 }
 
-void spellExplosion (var target) {
+void spellExplosion (struct<ObjPos> target) {
 	if ((event == DOUBLECLICK) || (event == WEAPON)) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@Vas Flam Hur@");
@@ -174,9 +174,9 @@ void spellExplosion (var target) {
 	}
 }
 
-void spellFireField (var target) {
+void spellFireField (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		halt_scheduled();
 		item_say("@In Flam Grav@");
@@ -192,9 +192,9 @@ void spellFireField (var target) {
 
 			var field = UI_create_new_object(SHAPE_FIRE_FIELD);
 			if (field) {
-				var field_x = (target[X + 1] + 1);
-				var field_y = (target[Y + 1] + 1);
-				var field_z = target[Z + 1];
+				var field_x = (target.x + 1);
+				var field_y = (target.y + 1);
+				var field_z = target.z;
 				var pos = [field_x, field_y, field_z];
 				UI_update_last_created(pos);
 				var duration = 100;
@@ -218,9 +218,9 @@ void spellFireField (var target) {
 	}
 }
 
-void spellGreatHeal (var target) {
+void spellGreatHeal (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		target->halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@Vas Mani@");
@@ -251,9 +251,9 @@ void spellGreatHeal (var target) {
 	}
 }
 
-void spellInvisibility (var target) {
+void spellInvisibility (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@Sanct Lor@");
@@ -287,10 +287,10 @@ void spellInvisibility (var target) {
 void spellMassSleep () {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		var pos = get_object_position();
+		struct<Position> pos = get_object_position();
 		item_say("@Vas Zu@");
 		if (inMagicStorm()) {
-			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos.x - 2), (pos.y - 2), 0, 0, 0, -1);
 			script item {
 				nohalt;
 				sfx 65;

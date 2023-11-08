@@ -37,7 +37,7 @@ enum potions {
 
 void Potion shape#(0x154) () {
 	var itemframe;
-	var target;
+	struct<ObjPos> target;
 
 	if (event == DOUBLECLICK) {
 		itemframe = get_item_frame();
@@ -90,7 +90,7 @@ void Potion shape#(0x154) () {
 			remove_item();
 			abort;
 		} else {
-			var pos = [target[X + 1], target[Y + 1], target[Z + 1]];
+			struct<Position> pos = [target.x, target.y, target.z];
 			partyUtters(1, "@Please, " + getPoliteTitle() + ", waste them not!@", 0, false);
 			var spill = UI_create_new_object(SHAPE_SPILL);
 			if (spill) {

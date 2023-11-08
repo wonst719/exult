@@ -24,7 +24,7 @@
  */
 
 void eggCodexLenses object#() () {
-	var pos;
+	struct<Position> pos;
 	var quality;
 	var lens;
 	var npc;
@@ -44,7 +44,7 @@ void eggCodexLenses object#() () {
 			if (framenum == (quality + 32)) {
 				//It is, and correctly rotated too
 				//Indicate to player that he did something right:
-				UI_sprite_effect(ANIMATION_GREEN_BUBBLES, pos[X] - 2, pos[Y] - 2, 0, 0, 0, -1);
+				UI_sprite_effect(ANIMATION_GREEN_BUBBLES, pos.x - 2, pos.y - 2, 0, 0, 0, -1);
 				UI_play_sound_effect(67);
 				if (event == SCRIPTED) {
 					//This was a scripted call, which means both
@@ -231,19 +231,19 @@ void eggCodexQuest object#() () {
 	var objframe = obj->get_item_frame();
 
 	//Get object position:
-	var pos = obj->get_object_position();
+	struct<Position> pos = obj->get_object_position();
 
 	//Check to see if the egg's quality matches the frame
 	//of the items of principle, if any:
 	if ((objshape == SHAPE_ITEM_OF_PRINCIPLE) && (objframe != qual)) {
 		//It is not; have some user feedback and leave:
-		UI_sprite_effect(ANIMATION_POOF, pos[X] - 2, pos[Y] - 2, 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_POOF, pos.x - 2, pos.y - 2, 0, 0, 0, -1);
 		return;
 	}
 
 	//If we got here, the object exists and is in the correct
 	//place; have some user feedback:
-	UI_sprite_effect(ANIMATION_GREEN_BUBBLES, pos[X] - 2, pos[Y] - 2, 0, 0, 0, -1);
+	UI_sprite_effect(ANIMATION_GREEN_BUBBLES, pos.x - 2, pos.y - 2, 0, 0, 0, -1);
 	UI_play_sound_effect(67);
 
 	//If the pathegg does not exist, create it:

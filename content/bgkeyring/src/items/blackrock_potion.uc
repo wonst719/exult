@@ -39,7 +39,7 @@ void killTargetNPC object#() () {
 			}
 		}
 		//Kill Lord British:
-		var pos = get_object_position();
+		struct<Position> pos = get_object_position();
 		//Create LB's body (the bastard cannot be killed...):
 		var body = UI_create_new_object(SHAPE_BODIES_2);
 		body->set_item_frame_rot(get_item_frame_rot());
@@ -89,7 +89,7 @@ void killTargetNPC object#() () {
 					//Erethian
 					//Set flag to prevent respawning:
 					gflags[0x02EE] = true;
-					var pos = get_object_position();
+					struct<Position> pos = get_object_position();
 					//Create his body:
 					body = UI_create_new_object(SHAPE_BODIES_3);
 					body->set_item_frame_rot(get_item_frame_rot());
@@ -101,7 +101,7 @@ void killTargetNPC object#() () {
 					//Dracothraxus
 					//Set flag to prevent respawning:
 					gflags[0x02EF] = true;
-					var pos = get_object_position();
+					struct<Position> pos = get_object_position();
 					//Create his body:
 					body = UI_create_new_object(SHAPE_LARGE_BODIES);
 					body->set_item_frame_rot(get_item_frame_rot());
@@ -164,7 +164,7 @@ void Blackrock_Potion shape#(0x450) () {
 			//Alas, yes...
 			npc.hide();
 			//Ask for target:
-			var target = UI_click_on_item();
+			struct<ObjPos> target = UI_click_on_item();
 
 			if (target->is_npc()) {
 				//An NPC:

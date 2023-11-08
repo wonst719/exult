@@ -166,8 +166,8 @@ var getMoongateDestination 0x823 (var moongate) {
 }
 
 void enterMoongate 0x824 (var moongate) {
-	var avatar_pos;
-	var moongate_pos;
+	struct<Position> avatar_pos;
+	struct<Position> moongate_pos;
 	var moongate_shape;
 	var var0004;
 
@@ -189,9 +189,9 @@ void enterMoongate 0x824 (var moongate) {
 		if ((moongate_shape == SHAPE_STANDING_RED_MOONGATE) ||
 				(moongate_shape == SHAPE_STANDING_BLUE_MOONGATE) ||
 				 (moongate_shape == SHAPE_ORB_MOONGATE_HORIZONTAL)) {
-			avatar_pos = badMoongateAnim(avatar_pos, moongate_pos, 2);
+			avatar_pos = badMoongateAnim(avatar_pos, moongate_pos, &struct<Position>::y);
 		} else {
-			avatar_pos = badMoongateAnim(avatar_pos, moongate_pos, 1);
+			avatar_pos = badMoongateAnim(avatar_pos, moongate_pos, &struct<Position>::x);
 		}
 
 		//Puts the avatar in position determined by badMoongateAnim:
@@ -215,8 +215,8 @@ void enterMoongate 0x824 (var moongate) {
 }
 
 void Orb_of_the_Moons shape#(0x311) () {
-	var target;
-	var target_coords;
+	struct<ObjPos> target;
+	struct<Position> target_coords;
 	var direction;
 	var coordinate;
 	var moongate_shape;
@@ -225,7 +225,7 @@ void Orb_of_the_Moons shape#(0x311) () {
 	var moongate;
 	var arrived_dest;
 	var distance;
-	var avatar_pos;
+	struct<Position> avatar_pos;
 	var coord_offset;
 
 	//If the sphere generator has been destroyed, the
@@ -265,12 +265,12 @@ void Orb_of_the_Moons shape#(0x311) () {
 		//Change the position to make moongate centered on target pos:
 		//target_coords[coordinate] = (target_coords[coordinate] + 2);
 		if ((direction == NORTH) || (direction == SOUTH)) {
-			target_coords[X] = (target_coords[X] + 2);
+			target_coords.x = (target_coords.x + 2);
 		} else if ((direction == EAST) || (direction == WEST)) {
-			target_coords[Y] = (target_coords[Y] + 2);
+			target_coords.y = (target_coords.y + 2);
 		} else {
-			target_coords[X] = (target_coords[X] + 1);
-			target_coords[Y] = (target_coords[Y] + 1);
+			target_coords.x = (target_coords.x + 1);
+			target_coords.y = (target_coords.y + 1);
 		}
 
 		//See if the target destination is blocked:
@@ -281,7 +281,7 @@ void Orb_of_the_Moons shape#(0x311) () {
 			//the Z coordinate and give up trying after 3 tries:
 			counter = 3;
 			while (counter) {
-				target_coords[Z] = (target_coords[Z] + 1);
+				target_coords.z = (target_coords.z + 1);
 				blocked = (!UI_is_not_blocked(target_coords, moongate_shape, 0));
 				if (!blocked) {
 					counter = 0;
@@ -318,12 +318,12 @@ void Orb_of_the_Moons shape#(0x311) () {
 		//Undoes the change made above, in preparation
 		//to move the avatar to the right spot:
 		if ((direction == NORTH) || (direction == SOUTH)) {
-			target_coords[X] = (target_coords[X] - 2);
+			target_coords.x = (target_coords.x - 2);
 		} else if ((direction == EAST) || (direction == WEST)) {
-			target_coords[Y] = (target_coords[Y] - 2);
+			target_coords.y = (target_coords.y - 2);
 		} else {
-			target_coords[X] = (target_coords[X] - 1);
-			target_coords[Y] = (target_coords[Y] - 1);
+			target_coords.x = (target_coords.x - 1);
+			target_coords.y = (target_coords.y - 1);
 		}
 
 		//Moongate music:
@@ -382,20 +382,20 @@ void Orb_of_the_Moons shape#(0x311) () {
 
 		//Determine coord offset for avatar destination:
 		if (!(direction in [EAST, WEST])) {
-			if ((target_coords[Y] < avatar_pos[Y])) {
+			if ((target_coords.y < avatar_pos.y)) {
 				coord_offset = 1;
 			} else {
 				coord_offset = -1;
 			}
-			target_coords[Y] = (target_coords[Y] + coord_offset);
+			target_coords.y = (target_coords.y + coord_offset);
 		}
 		if (!(direction in [NORTH, SOUTH])) {
-			if ((target_coords[X] < avatar_pos[X])) {
+			if ((target_coords.x < avatar_pos.x)) {
 				coord_offset = 1;
 			} else {
 				coord_offset = -1;
 			}
-			target_coords[X] = (target_coords[X] + coord_offset);
+			target_coords.x = (target_coords.x + coord_offset);
 		}
 
 		//The final destination of the avatar before entering moongate:

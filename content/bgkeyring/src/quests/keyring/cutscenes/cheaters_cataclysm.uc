@@ -66,9 +66,9 @@ void beginCataclysm object#() () {
 			ZAURIEL->unfreeze();
 			AVATAR->unfreeze();
 
-			var pos = LAURIANNA->get_object_position();
+			struct<Position> pos = LAURIANNA->get_object_position();
 			//Laurianna will lie down unconscious and trigger the cataclysm:
-			UI_sprite_effect(ANIMATION_BIG_BLAST, pos[X], pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_BIG_BLAST, pos.x, pos.y, 0, 0, 0, -1);
 			script LAURIANNA {
 				call trueFreeze;
 				nohalt;
@@ -118,12 +118,12 @@ void beginCataclysm object#() () {
 		var member = party[rand];
 
 		//Get position for the above NPC and for the Avatar:
-		var npc_pos = member->get_object_position();
-		var avatar_pos = AVATAR->get_object_position();
+		struct<Position> npc_pos = member->get_object_position();
+		struct<Position> avatar_pos = AVATAR->get_object_position();
 		//Get a random position around the Avatar:
-		var rand_pos = [
-			avatar_pos[X] + UI_get_random(41) - 21,
-			avatar_pos[Y] + UI_get_random(41) - 21,
+		struct<Position> rand_pos = [
+			avatar_pos.x + UI_get_random(41) - 21,
+			avatar_pos.y + UI_get_random(41) - 21,
 			0
 		];
 
@@ -133,8 +133,8 @@ void beginCataclysm object#() () {
 
 		//Exploding lightning bolts:
 		//One for the randomly selected party member:
-		UI_sprite_effect(ANIMATION_BIG_BLAST, npc_pos[X], npc_pos[Y], 0, 0, 0, -1);
-		UI_sprite_effect(ANIMATION_LIGHTNING, npc_pos[X], npc_pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_BIG_BLAST, npc_pos.x, npc_pos.y, 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_LIGHTNING, npc_pos.x, npc_pos.y, 0, 0, 0, -1);
 		UI_play_sound_effect2(SOUND_BIG_BLAST, member);
 		member->reduce_health(HEALTH, UI_die_roll(3, 9), MAGIC_DAMAGE);
 		script member {
@@ -150,8 +150,8 @@ void beginCataclysm object#() () {
 		}
 
 		//One for the random position:
-		UI_sprite_effect(ANIMATION_BIG_BLAST, rand_pos[X], rand_pos[Y], 0, 0, 0, -1);
-		UI_sprite_effect(ANIMATION_LIGHTNING, rand_pos[X], rand_pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_BIG_BLAST, rand_pos.x, rand_pos.y, 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_LIGHTNING, rand_pos.x, rand_pos.y, 0, 0, 0, -1);
 		UI_play_sound_effect2(SOUND_BIG_BLAST, AVATAR);
 
 		//Queue the next lightning bolts:

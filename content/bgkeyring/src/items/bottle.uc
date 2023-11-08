@@ -36,7 +36,7 @@ void Bottle shape#(0x268) () {
 		}
 	} else if (event == SCRIPTED) {
 		//Milk was picked up, and is ready to be used
-		var target = UI_click_on_item();
+		struct<ObjPos> target = UI_click_on_item();
 		//a churn was selected - go to the churn and run churnButter()
 		if (target->get_item_shape() == SHAPE_KITCHEN_ITEM &&
 				target->get_item_frame() == FRAME_CHURN) {

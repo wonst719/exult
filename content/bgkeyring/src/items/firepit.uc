@@ -65,12 +65,12 @@ void Firepit shape#(0x2E3) () {
 			var nearby_swordblanks = find_nearby(SHAPE_SWORDBLANK, 3, MASK_ALL_UNSEEN);
 			for (swordblank in nearby_swordblanks) {
 				//Make sure the swordblank is actually on top of the firepit
-				var firepit_pos = get_object_position();
-				var swordblank_pos = swordblank->get_object_position();
+				struct<Position> firepit_pos = get_object_position();
+				struct<Position> swordblank_pos = swordblank->get_object_position();
 
-				var x_offset = swordblank_pos[X] - firepit_pos[X];
-				var y_offset = swordblank_pos[Y] - firepit_pos[Y];
-				var z_offset = swordblank_pos[Z] - firepit_pos[Z];
+				var x_offset = swordblank_pos.x - firepit_pos.x;
+				var y_offset = swordblank_pos.y - firepit_pos.y;
+				var z_offset = swordblank_pos.z - firepit_pos.z;
 
 				//acceptable range
 				var x_range = [0, -1, -2];

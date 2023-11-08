@@ -31,13 +31,13 @@
 	Fourth circle Spells
 
 	extern void spellConjure ();
-	extern void spellLightning (var target);
+	extern void spellLightning (struct<ObjPos> target);
 	extern void spellMassCurse ();
 	extern void spellReveal ();
 	extern void spellSeance ();
-	extern void spellUnlockMagic (var target);
-	extern void spellRechargeMagic (var target);
-	extern void spellBlink (var target);
+	extern void spellUnlockMagic (struct<ObjPos> target);
+	extern void spellRechargeMagic (struct<ObjPos> target);
+	extern void spellBlink (struct<ObjPos> target);
 */
 
 enum fourth_circle_spells {
@@ -76,9 +76,9 @@ void spellConjure () {
 	}
 }
 
-void spellLightning (var target) {
+void spellLightning (struct<ObjPos> target) {
 	if ((event == DOUBLECLICK) || (event == WEAPON)) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@Ort Grav@");
@@ -115,8 +115,8 @@ void spellMassCurse () {
 		halt_scheduled();
 		item_say("@Vas Des Sanct@");
 		if (inMagicStorm()) {
-			var pos = get_object_position();
-			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			struct<Position> pos = get_object_position();
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos.x - 2), (pos.y - 2), 0, 0, 0, -1);
 			script item {
 				nohalt;
 				actor frame cast_up;
@@ -151,7 +151,7 @@ void spellMassCurse () {
 void spellReveal () {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		var pos = get_object_position();
+		struct<Position> pos = get_object_position();
 		item_say("@Wis Quas@");
 		if (inMagicStorm()) {
 			script item {
@@ -162,7 +162,7 @@ void spellReveal () {
 				actor frame strike_1h;
 			}
 
-			var findpos = get_object_position();
+			struct<Position> findpos = get_object_position();
 			var offset_x = [-15, -15, -15, -5, -5, -5, 5, 5, 5, 15, 15, 15];
 			var offset_y = [-7, 2, 11, -7, 2, 11, -7, 2, 11, -7, 2, 11];
 			var dist = 7;
@@ -170,8 +170,8 @@ void spellReveal () {
 			var revealables = [];
 			while (counter != 12) {
 				counter = (counter + 1);
-				var find_x = (pos[X] + offset_x[counter]);
-				var find_y = (pos[Y] + offset_y[counter]);
+				var find_x = (pos.x + offset_x[counter]);
+				var find_y = (pos.y + offset_y[counter]);
 				findpos = [find_x, find_y, 0];
 				var invisibles = findpos->find_nearby(SHAPE_ANY, dist, MASK_INVISIBLE);
 				for (obj in invisibles) {
@@ -216,9 +216,9 @@ void spellSeance () {
 				actor frame strike_1h;
 			}
 
-			var pos = get_object_position();
-			var sprite_x = (pos[X] - 2);
-			var sprite_y = (pos[Y] - 2);
+			struct<Position> pos = get_object_position();
+			var sprite_x = (pos.x - 2);
+			var sprite_y = (pos.y - 2);
 			UI_sprite_effect(ANIMATION_GREEN_BUBBLES, sprite_x, sprite_y, 0, 0, 0, -1);
 			UI_sprite_effect(ANIMATION_TELEPORT, sprite_x, sprite_y, 0, 0, 0, -1);
 			//I have NO idea why they had one flag per ghost,
@@ -265,9 +265,9 @@ void spellSeance () {
 	}
 }
 
-void spellUnlockMagic (var target) {
+void spellUnlockMagic (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
 		var dir = direction_from(target);
 		halt_scheduled();
@@ -309,10 +309,10 @@ void spellUnlockMagic (var target) {
 	}
 }
 
-void spellRechargeMagic (var target) {
+void spellRechargeMagic (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
 		var dir = direction_from(target);
 		item_say("@Uus Ort@");
@@ -326,7 +326,7 @@ void spellRechargeMagic (var target) {
 				charges = charges + UI_die_roll(3, 9);
 			}
 			target->set_item_quality(charges);
-			UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, target[X + 1], target[Y + 1], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, target.x, target.y, 0, 0, 0, -1);
 			script item {
 				nohalt;
 				face dir;
@@ -349,7 +349,7 @@ void spellRechargeMagic (var target) {
 }
 
 const int CREATE_CLOUDS					= 15;
-void spellBlink (var target) {
+void spellBlink (struct<ObjPos> target) {
 
 	var nearbyobjs;
 	var party;
@@ -362,7 +362,7 @@ void spellBlink (var target) {
 
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		var destpos = getClickPosition(target);
+		struct<Position> destpos = getClickPosition(target);
 		var dir = direction_from(target);
 		UI_item_say(item, "@Rel Por@");
 		if (inMagicStorm() && is_dest_reachable(destpos)) {
@@ -384,13 +384,13 @@ void spellBlink (var target) {
 				targets = [item];
 			}
 			for (npc in targets) {
-				var pos = npc->get_object_position();
+				struct<Position> pos = npc->get_object_position();
 				npc->obj_sprite_effect(ANIMATION_TELEPORT, 0, 0, 0, 0, 0, -1);
 				UI_play_sound_effect2(SOUND_TELEPORT, npc);
 				var field = UI_create_new_object(SHAPE_FIRE_FIELD);
 				if (field) {
-					//var fieldpos = [pos[X] + 1, pos[Y] + 1, pos[Z]];
-					var fieldpos = [pos[X], pos[Y], pos[Z]];
+					//var fieldpos = [pos.x + 1, pos.y + 1, pos.z];
+					var fieldpos = [pos.x, pos.y, pos.z];
 					UI_update_last_created(fieldpos);
 					var duration = 50;
 					field->set_item_quality(duration);

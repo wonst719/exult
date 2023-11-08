@@ -29,7 +29,7 @@ void eggCleanLockLake object#() () {
 	if (event != EGG) {
 		return;
 	}
-	var pos;
+	struct<Position> pos;
 
 	//Get the eggs' quality:
 	var quality = get_item_quality();
@@ -140,7 +140,7 @@ void eggCleanLockLake object#() () {
 				if ((itemshape in simple_garbage)
 						//There are some clothing and food items which are
 						//inside houses and should not be removed:
-						|| (((itemshape in clothing) || (itemshape == SHAPE_FOOD)) && (pos[Y] < 1230))
+						|| (((itemshape in clothing) || (itemshape == SHAPE_FOOD)) && (pos.y < 1230))
 						//Only chairs of frame 21 (which are outside houses)
 						//should be removed:
 						|| ((itemshape == SHAPE_CHAIR) && (obj->get_item_frame() == 21))) {

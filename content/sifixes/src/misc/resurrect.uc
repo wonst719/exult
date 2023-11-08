@@ -75,12 +75,12 @@ void Resurrect 0x8FE () {
 					", but I cannot -- this isn't Dupre's body, but merely shadow of him. See how it disappears when I try to raise it...@");
 			}
 
-			var pos = npc->get_object_position();
+			struct<Position> pos = npc->get_object_position();
 			if (!flag_dont_resurrect && !npc->is_dead() &&
 			    // Check to see if the NPC is *outside* of the
 			    // House of the Dead:
-			    (!((pos[X] >= 0x40) && (pos[Y] >= 0) &&
-			    (pos[X] <= 0xEF) && (pos[Y] <= 0x4F)))) {
+			    (!((pos.x >= 0x40) && (pos.y >= 0) &&
+			    (pos.x <= 0xEF) && (pos.y <= 0x4F)))) {
 				// Prevent resurrection of a live NPC:
 				flag_dont_resurrect = true;
 				say("@I know not who this is, but it isn't thy friend -- he is still alive somewhere. The similarity is remarkable, though... But look! The body disappeared! I wonder what has happened to it?@");
@@ -100,7 +100,7 @@ void Resurrect 0x8FE () {
 						npc->remove_from_party();
 					}
 
-					npc->set_new_schedules(MIDNIGHT, WAIT, [pos[X], pos[Y]]);
+					npc->set_new_schedules(MIDNIGHT, WAIT, [pos.x, pos.y]);
 					npc->run_schedule();
 					npc->set_schedule_type(WAIT);
 

@@ -30,12 +30,12 @@ void useSwordOnAnvil object#() () {
 
 //returns true if <swordblank> is correctly positioned on <anvil>, false otherwise
 var onAnvil (var swordblank, var anvil) {
-	var swordblank_pos = swordblank->get_object_position();
-	var anvil_pos = anvil->get_object_position();
+	struct<Position> swordblank_pos = swordblank->get_object_position();
+	struct<Position> anvil_pos = anvil->get_object_position();
 
-	return (swordblank_pos[X] == anvil_pos[X] &&
-			swordblank_pos[Y] == anvil_pos[Y] &&
-			swordblank_pos[Z] == anvil_pos[Z] + 1);
+	return (swordblank_pos.x == anvil_pos.x &&
+			swordblank_pos.y == anvil_pos.y &&
+			swordblank_pos.z == anvil_pos.z + 1);
 }
 
 //returns true if the specified blank is the Black Sword blank, false otherwise
@@ -354,7 +354,7 @@ void useSwordOnFirepit object#() () {
 //Swordblank was used on a trough of water (item is swordblank)
 void useSwordOnTrough object#() () {
 	var trough;
-	var swordblank_pos;
+	struct<Position> swordblank_pos;
 	var offsetx = 0;
 	var offsety = 0;
 
@@ -373,15 +373,15 @@ void useSwordOnTrough object#() () {
 		offsetx = 1;
 		offsety = -1;
 		placed = true;
-		var pos = trough->get_object_position();
+		struct<Position> pos = trough->get_object_position();
 		if (!isBlackSword(item)) {
-			pos[X] += 1;
-			pos[Y] -= 2;
+			pos.x += 1;
+			pos.y -= 2;
 		} else {
-			pos[X] += 1;
-			pos[Y] -= 1;
+			pos.x += 1;
+			pos.y -= 1;
 		}
-		pos[Z] += 2;
+		pos.z += 2;
 		item->set_last_created();
 		if (UI_update_last_created(pos)) {
 			UI_play_sound_effect(0x49);
@@ -392,7 +392,7 @@ void useSwordOnTrough object#() () {
 
 	if (placed) {
 		swordblank_pos = get_object_position();
-		UI_sprite_effect(ANIMATION_POOF, (swordblank_pos[X] - 3), (swordblank_pos[Y] - 3), 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_POOF, (swordblank_pos.x - 3), (swordblank_pos.y - 3), 0, 0, 0, -1);
 		UI_play_sound_effect(SOUND_QUENCH_SWORD);
 
 		if (isBlackSword(item)) {

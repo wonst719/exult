@@ -34,7 +34,7 @@ void Wheat shape#(0x2A5) () {
 	} else if (event == SCRIPTED) {
 		//Wheat-sack has been acquired and is now ready to use on millstone
 		UI_close_gumps();
-		var target = UI_click_on_item();
+		struct<ObjPos> target = UI_click_on_item();
 		if (target->get_item_shape() != SHAPE_MILLSTONE) {
 			randomPartySay("@Why not try grinding the wheat in a millstone?@");
 			return;
@@ -62,10 +62,10 @@ void createFlour object#() () {
 	flour->set_item_flag(TEMPORARY);
 	flour->set_item_flag(OKAY_TO_TAKE);
 
-	var target_pos = get_object_position();
+	struct<Position> target_pos = get_object_position();
 	//place it on the middle right-hand side of the millstone
-	target_pos[X] = target_pos[X] + 1;
-	target_pos[Y] = target_pos[Y] - 3;
+	target_pos.x = target_pos.x + 1;
+	target_pos.y = target_pos.y - 3;
 
 	UI_update_last_created(target_pos);
 	//Added: Check if Thurston is nearby, since he'll object

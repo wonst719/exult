@@ -52,8 +52,8 @@ void makeSpill object#() () {
 		return;
 	}
 
-	var avatar_pos = AVATAR->get_object_position();
-	var target_pos = [avatar_pos[X], avatar_pos[Y] - 1, 0];
+	struct<Position> avatar_pos = AVATAR->get_object_position();
+	var target_pos = [avatar_pos.x, avatar_pos.y - 1, 0];
 
 	var spill = UI_create_new_object(SHAPE_SPILL);
 	//choose a random frame
@@ -208,9 +208,9 @@ void useBucketOnTrough () {
 }
 
 void douseAnimation object#() () {
-	var pos = get_object_position();
-	var dest = [pos[X] - 3, pos[Y] - 4];
-	UI_sprite_effect(ANIMATION_POOF, dest[X], dest[Y], 0, 0, 0, -1);
+	struct<Position> pos = get_object_position();
+	struct<Position> dest = [pos.x - 3, pos.y - 4];
+	UI_sprite_effect(ANIMATION_POOF, dest.x, dest.y, 0, 0, 0, -1);
 	UI_play_sound_effect(0x2E);
 }
 
@@ -226,7 +226,7 @@ void useBucketOnDousable () {
 	var target_frame = get_item_frame();
 
 	var target_direction = directionFromAvatar(item);
-	var target_pos = get_object_position();
+	struct<Position> target_pos = get_object_position();
 
 	if (target_shape == SHAPE_FIREPIT) {
 		if (target_frame == 4) {
@@ -306,13 +306,13 @@ void useBucketOnDousable () {
 		//place the extinguishing effect relative to the elevation of the
 		//light source. Todo: separate this as a generic function, since
 		//I can see this being used often for sprite effects
-		var sprite_pos;
-		sprite_offset = sprite_offset + (target_pos[Z] / 2);
-		sprite_pos[X] = (target_pos[X] - sprite_offset);
-		sprite_pos[Y] = (target_pos[Y] - sprite_offset);
+		struct<Position> sprite_pos;
+		sprite_offset = sprite_offset + (target_pos.z / 2);
+		sprite_pos.x = (target_pos.x - sprite_offset);
+		sprite_pos.y = (target_pos.y - sprite_offset);
 
 		//display the puff of smoke
-		UI_sprite_effect(ANIMATION_POOF, sprite_pos[X], sprite_pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_POOF, sprite_pos.x, sprite_pos.y, 0, 0, 0, -1);
 
 		//tfssss
 		UI_play_sound_effect(0x2E);
@@ -333,7 +333,7 @@ void useBucketOnDousable () {
 			actor frame standing;
 		}
 
-		UI_sprite_effect(ANIMATION_POOF, target_pos[X], target_pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_POOF, target_pos.x, target_pos.y, 0, 0, 0, -1);
 		UI_play_sound_effect(0x2E);
 	}
 }
@@ -483,7 +483,7 @@ void Bucket shape#(0x32A) () {
 
 		var bucket_frame = get_item_frame();
 
-		var target = UI_click_on_item();
+		struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
 		var target_frame = target->get_item_frame();
 		var target_offsetx;
@@ -621,10 +621,11 @@ void Bucket shape#(0x32A) () {
 
 			//This strips the object reference from target, making
 			//it a regular X,Y,Z coordinate array
-			target = removeFromArray(target, target[1]);
+			struct<Position>& trg = target;
+			trg = removeFromArray(target, target[1]);
 
-			target[Y] = target[Y] + 1;
-			UI_path_run_usecode(target, useBucketOnGround, item, SCRIPTED);
+			trg.y = trg.y + 1;
+			UI_path_run_usecode(trg, useBucketOnGround, item, SCRIPTED);
 		}
 	}
 }

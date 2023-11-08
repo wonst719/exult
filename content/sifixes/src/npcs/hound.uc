@@ -44,7 +44,7 @@ void HoundOfDoskar shape#(0x36A) () {
 			}
 		}
 
-		var target = UI_click_on_item();
+		struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
 		var target_frame = target->get_item_frame();
 		var target_quality = target->get_item_quality();
@@ -110,7 +110,7 @@ void HoundOfDoskar shape#(0x36A) () {
 				abort;
 
 			case "attack" (remove):
-				var target = UI_click_on_item();
+				struct<ObjPos> target = UI_click_on_item();
 				var barks = ["@Woof.@", "@Woof?@", "@Woof!!@", "@Woof.@"];
 				if (!target || target->get_alignment() == GOOD || !target->is_npc()) {
 					say(barks[GOOD]);

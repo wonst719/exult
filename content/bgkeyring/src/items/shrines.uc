@@ -75,7 +75,7 @@ void Shrine shape#(0x463) () {
 	if (event == DOUBLECLICK) {
 		//Determine shrine's face and position:
 		shrine_frame = get_item_frame() + 1;
-		var pos = get_object_position();
+		struct<Position> pos = get_object_position();
 		var runes;
 		//Determine if the party has the correct rune:
 		if (shrine_frame == SHRINE_SACRIFICE_DEFILED) {
@@ -176,15 +176,15 @@ void Shrine shape#(0x463) () {
 
 			//Determine the place where the Avatar will meditate:
 			dir = direction_from(AVATAR);
-			pos[Z] -= 4;
+			pos.z -= 4;
 			if (dir in [NORTHWEST, NORTH, NORTHEAST]) {
-				pos[Y] -= 2;
+				pos.y -= 2;
 			} else if (dir in [SOUTHWEST, SOUTH, SOUTHEAST]) {
-				pos[Y] += 2;
+				pos.y += 2;
 			} else if (dir == EAST) {
-				pos[X] += 4;
+				pos.x += 4;
 			} else {
-				pos[X] -= 4;
+				pos.x -= 4;
 			}
 			//Make Avatar go there:
 			AVATAR->si_path_run_usecode(pos, PATH_SUCCESS, AVATAR, Shrine, true);

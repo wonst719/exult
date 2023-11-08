@@ -34,10 +34,10 @@ void createButter object#() () {
 	butter->set_item_flag(TEMPORARY);
 	butter->set_item_flag(OKAY_TO_TAKE);
 
-	var target_pos = get_object_position();
+	struct<Position> target_pos = get_object_position();
 	//place it on the middle right-hand side of the churn
-	target_pos[X] = target_pos[X] + 1;
-	//target_pos[Y] = target_pos[Y] - 3;
+	target_pos.x = target_pos.x + 1;
+	//target_pos.y = target_pos.y - 3;
 
 	UI_update_last_created(target_pos);
 
@@ -256,7 +256,7 @@ void consumeEdible (var food, var npc, var nutritional_value, var sound_effect) 
 //actual eating is handled by another function - this just
 //controls the click behavior
 void useEdible 0x813 (var food, var nutritional_value, var sound_effect) {
-	var npc = UI_click_on_item();
+	struct<ObjPos> npc = UI_click_on_item();
 	consumeEdible(food, npc, nutritional_value, sound_effect);
 	return;
 }

@@ -211,7 +211,7 @@ void Keyring shape#(0x44C) () {
 		return;
 	}
 
-	var target = UI_click_on_item();
+	struct<ObjPos> target = UI_click_on_item();
 
 	//Since BG has no native support for adding keys to the keyring when you
 	//add the key to the container, we include this here: using the keyring

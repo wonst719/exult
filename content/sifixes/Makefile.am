@@ -23,6 +23,7 @@ USECODE_OBJECTS = \
 	src/header/si/si_npcs.uc	\
 	src/header/si/si_shapes.uc	\
 	src/header/si/si_sprites.uc	\
+	src/header/si/si_structs.uc	\
 	src/items/bucket_cure.uc	\
 	src/items/fishingrod.uc	\
 	src/items/hourglass.uc	\

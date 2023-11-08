@@ -495,11 +495,11 @@ void lauriannaPostPotionDialog () {
 			has_amulet = false;
 			in_party = lauriannaAskJoin();
 			//Remove Laurianna's roots:
-			var pos = get_object_position();
+			struct<Position> pos = get_object_position();
 			set_item_shape(SHAPE_LAURIANNA);
 			set_last_created();
 			UI_update_last_created(pos);
-			UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, pos[X], pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, pos.x, pos.y, 0, 0, 0, -1);
 			UI_play_sound_effect(67);
 
 		case "blackrock" (remove):
@@ -537,7 +537,7 @@ void lauriannaPostPotionDialog () {
 				remove_from_party();
 				set_schedule_type(WAIT);
 				var eggs = ZAURIEL->find_nearby(SHAPE_EGG, 20, MASK_EGG);
-				var pos;
+				struct<Position> pos;
 				for (egg in eggs) {
 					if (egg->get_item_quality() == -1 * get_npc_number()) {
 						pos = egg->get_object_position();
@@ -545,7 +545,7 @@ void lauriannaPostPotionDialog () {
 					}
 				}
 				move_object(pos);
-				UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
+				UI_sprite_effect(ANIMATION_TELEPORT, pos.x, pos.y, 0, 0, 0, -1);
 				AVATAR->trueFreeze();
 
 				script item {

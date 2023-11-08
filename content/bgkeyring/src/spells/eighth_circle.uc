@@ -27,12 +27,12 @@
 /*
 	Eighth circle Spells
 
-	extern void spellDeathVortex (var target);
+	extern void spellDeathVortex (struct<ObjPos> target);
 	extern void spellInvisibilityAll ();
 	extern void spellMassDeath ();
-	extern void spellResurrect (var target);
+	extern void spellResurrect (struct<ObjPos> target);
 	extern void spellSummon ();
-	extern void spellSwordStrike (var target);
+	extern void spellSwordStrike (struct<ObjPos> target);
 	extern void spellTimeStop ();
 	extern void spellMassResurrect ();
 */
@@ -48,9 +48,9 @@ enum eighth_circle_spells {
 	SPELL_MASS_RESURRECT			= 7			//Special NPC-only spell
 };
 
-void spellDeathVortex (var target) {
+void spellDeathVortex (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		halt_scheduled();
 		item_say("@Vas Corp Hur@");
@@ -81,8 +81,8 @@ void spellInvisibilityAll () {
 		halt_scheduled();
 		item_say("@Vas Sact Lor@");
 		if (inMagicStorm()) {
-			var pos = get_object_position();
-			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			struct<Position> pos = get_object_position();
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos.x - 2), (pos.y - 2), 0, 0, 0, -1);
 			script item {
 				nohalt;
 				actor frame raise_1h;
@@ -119,8 +119,8 @@ void spellMassDeath () {
 		halt_scheduled();
 		item_say("@Vas Corp@");
 		if (inMagicStorm()) {
-			var pos = get_object_position();
-			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			struct<Position> pos = get_object_position();
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos.x - 2), (pos.y - 2), 0, 0, 0, -1);
 			script item {
 				nohalt;
 				sfx 65;
@@ -169,11 +169,11 @@ void spellMassDeath () {
 	}
 }
 
-void spellResurrect (var target) {
+void spellResurrect (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
-		var pos = target->get_object_position();
+		struct<Position> pos = target->get_object_position();
 		var dir = direction_from(target);
 		target->halt_scheduled();
 		halt_scheduled();
@@ -201,8 +201,8 @@ void spellResurrect (var target) {
 				actor frame cast_up;
 			}
 			UI_play_music(15, 0);
-			UI_sprite_effect(ANIMATION_LIGHTNING, pos[X], pos[Y], 0, 0, 0, -1);
-			UI_sprite_effect(ANIMATION_GREEN_BUBBLES, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_LIGHTNING, pos.x, pos.y, 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_GREEN_BUBBLES, (pos.x - 2), (pos.y - 2), 0, 0, 0, -1);
 		} else {
 			script item {
 				nohalt;
@@ -245,9 +245,9 @@ void spellSummon () {
 	}
 }
 
-void spellSwordStrike (var target) {
+void spellSwordStrike (struct<ObjPos> target) {
 	if ((event == DOUBLECLICK) || (event == WEAPON)) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@In Jux Por Ylem@");

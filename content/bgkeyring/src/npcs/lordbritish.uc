@@ -35,8 +35,8 @@ void giveFoVReward object#() () {
 	if (!gflags[LB_REWARDED_FOR_FV]) {
 		gflags[LB_REWARDED_FOR_FV] = true;
 
-		var pos = AVATAR->get_object_position();
-		UI_sprite_effect(ANIMATION_TELEPORT, pos[X] - pos[Z]/2, pos[Y] - pos[Z]/2, 0, 0, 0, -1);
+		struct<Position> pos = AVATAR->get_object_position();
+		UI_sprite_effect(ANIMATION_TELEPORT, pos.x - pos.z/2, pos.y - pos.z/2, 0, 0, 0, -1);
 		UI_play_sound_effect(67);
 
 		var str = AVATAR->get_npc_prop(STRENGTH);

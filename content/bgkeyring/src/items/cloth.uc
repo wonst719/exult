@@ -113,7 +113,7 @@ void Thread shape#(0x28E) () {
 		gotoAndGet(item);
 	} else if (event == SCRIPTED) {
 		//Player is carrying the thread and ready to use it
-		var target = UI_click_on_item();
+		struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
 
 		//loom was clicked on: go to the loom and run the weaving animation

@@ -46,7 +46,7 @@ void beginCutsceneMageAndGoons object#() () {
 	var cyclops;
 	var troll;
 	var fighter;
-	var pos;
+	struct<Position> pos;
 	var dir;
 
 	if (event == BEGIN_CUTSCENE) {
@@ -59,7 +59,7 @@ void beginCutsceneMageAndGoons object#() () {
 		AVATAR->trueFreeze();
 		//Create magical effect:
 		pos = get_object_position();
-		UI_sprite_effect(ANIMATION_BLUE_BEADS, pos[X], pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_BLUE_BEADS, pos.x, pos.y, 0, 0, 0, -1);
 
 		//Screen fader:
 		script item after 5 ticks call beginCutsceneMageAndGoons, FADE_SCREEN;
@@ -141,7 +141,7 @@ void beginCutsceneMageAndGoons object#() () {
 		UI_play_sound_effect2(110, item);
 		//Show magic bubbles:
 		pos = get_object_position();
-		UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, pos[X], pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, pos.x, pos.y, 0, 0, 0, -1);
 	} else if (event == GENERATE_SCRIPTS) {
 		//item = LAURIANNA
 
@@ -357,7 +357,7 @@ void beginCutsceneMageAndGoons object#() () {
 		//again until Laundo's death halts it.
 		//Creates fireworks around Laurianna:
 		pos = LAURIANNA->get_object_position();
-		UI_sprite_effect(ANIMATION_FIREWORKS, pos[X], pos[Y], 0, 0, 0, -1);
+		UI_sprite_effect(ANIMATION_FIREWORKS, pos.x, pos.y, 0, 0, 0, -1);
 		//Loop:
 		script item after 10 ticks call beginCutsceneMageAndGoons, FIREWORKS_LAURIANNA;
 	} else if (event == GARGOYLE_WARNS) {

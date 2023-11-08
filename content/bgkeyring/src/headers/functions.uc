@@ -74,7 +74,7 @@ void avatarSay(var line) {
 
 //Shift an object into a container (can be from another container or the world)
 var moveToContainer(var object, var container, var dont_check_ownership) {
-	var orig_pos;
+	struct<Position> orig_pos;
 	var orig_container;
 
 	//record the previous container
@@ -111,7 +111,7 @@ var moveToContainer(var object, var container, var dont_check_ownership) {
 
 //Opposite of moveToContainer: tries to place the item at the specified location, or returns it to its previous location/container if that couldn't be done.
 var moveToLocation(var object, var pos) {
-	var orig_pos;
+	struct<Position> orig_pos;
 	var orig_container;
 
 	//record the previous container

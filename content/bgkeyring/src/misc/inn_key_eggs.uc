@@ -76,7 +76,7 @@ void eggLockInnDoors object#() () {
 		}
 		abort;
 	} else if (event == EVENT_FIND_EGG) {
-		var objpos = AVATAR->get_object_position();
+		struct<Position> objpos = AVATAR->get_object_position();
 		objpos = [objpos, get_npc_id(), 7];
 		var egg = objpos->find_nearby(SHAPE_EGG, 3, MASK_EGG);
 		script egg call eggLockInnDoors, PATH_SUCCESS;
@@ -90,31 +90,31 @@ void eggLockInnDoors object#() () {
 		abort;
 	}
 	//Get the egg's position:
-	var pos = get_object_position();
+	struct<Position> pos = get_object_position();
 
 	//Use the egg's position to determine the offsets to the doors
 	// and beds
 	if (egg_quality == INN_WAYFARERS_NORTH) {
-		pos[Y] = pos[Y] - 15;
+		pos.y = pos.y - 15;
 	} else if (egg_quality == INN_OUT_N_INN) {
-		pos[X] = pos[X] + 8;
-		pos[Y] = pos[Y] - 16;
+		pos.x = pos.x + 8;
+		pos.y = pos.y - 16;
 	} else if (egg_quality == INN_BUNK_AND_STOOL) {
-		pos[X] = pos[X] - 48;
-		pos[Y] = pos[Y] - 8;
+		pos.x = pos.x - 48;
+		pos.y = pos.y - 8;
 	} else if (egg_quality == INN_MODEST_DAMSEL) {
-		pos[X] = pos[X] - 24;
+		pos.x = pos.x - 24;
 	} else if (egg_quality == INN_SALTY_DOG) {
-		pos[X] = pos[X] - 18;
-		pos[Y] = pos[Y] - 16;
+		pos.x = pos.x - 18;
+		pos.y = pos.y - 16;
 	} else if (egg_quality == INN_HONORABLE_HOUND) {
-		pos[Y] = pos[Y] + 27;
+		pos.y = pos.y + 27;
 	} else if (egg_quality == INN_CHEQUERED_CORK_EAST) {
-		pos[X] = pos[X] - 47;
-		pos[Y] = pos[Y] + 9;
+		pos.x = pos.x - 47;
+		pos.y = pos.y + 9;
 	} else if (egg_quality == INN_CHEQUERED_CORK_SOUTH) {
-		pos[X] = pos[X] - 7;
-		pos[Y] = pos[Y] - 15;
+		pos.x = pos.x - 7;
+		pos.y = pos.y - 15;
 	}
 
 	//Find all inn keys owner by the party:
@@ -201,13 +201,13 @@ void eggLockInnDoors object#() () {
 					pos = get_object_position();
 					var dir = step_directions[egg_quality];
 					if (dir == NORTH) {
-						pos[Y] = pos[Y] - 8;
+						pos.y = pos.y - 8;
 					} else if (dir == EAST) {
-						pos[X] = pos[X] + 8;
+						pos.x = pos.x + 8;
 					} else if (dir == SOUTH) {
-						pos[Y] = pos[Y] + 8;
+						pos.y = pos.y + 8;
 					} else if (dir == WEST) {
-						pos[X] = pos[X] - 8;
+						pos.x = pos.x - 8;
 					}
 
 					//Force Avatar back inside the inn:

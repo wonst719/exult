@@ -34,7 +34,7 @@ extern void killEveryone object#(0x7D8) ();
 const int BATLIN_FACE = -287;
 
 void BatlinAtWallOfLights object#(0x73B) () {
-	var pos;
+	struct<Position> pos;
 	var companions = [SHAMINO, DUPRE, IOLO];
 	var baneshapes = [SHAPE_ANTISHAMINO, SHAPE_ANTIDUPRE, SHAPE_MAD_IOLO];
 	var npc;
@@ -45,8 +45,8 @@ void BatlinAtWallOfLights object#(0x73B) () {
 		var max;
 
 		pos = AVATAR->get_object_position();
-		pos[X] = pos[X] - 4;
-		pos[Y] = pos[Y] + 10;
+		pos.x = pos.x - 4;
+		pos.y = pos.y + 10;
 		for (npc in companions with index to max) {
 			// Absolutely ensure that the companions will be there for the scene:
 			npc->clear_item_flag(DEAD);
@@ -63,7 +63,7 @@ void BatlinAtWallOfLights object#(0x73B) () {
 			npc->set_item_flag(SI_TOURNAMENT);
 
 			if (npc->get_distance(AVATAR) > 15) {
-				pos[X] = pos[X] + index * 2;
+				pos.x = pos.x + index * 2;
 				npc->move_object(pos);
 			}
 		}
@@ -71,12 +71,12 @@ void BatlinAtWallOfLights object#(0x73B) () {
 		abort;
 	} else if (event == EGG) {
 		pos = AVATAR->get_object_position();
-		pos[X] = pos[X] - 4;
-		pos[Y] = pos[Y] + 5;
+		pos.x = pos.x - 4;
+		pos.y = pos.y + 5;
 		for (npc in companions with index to max) {
 			if (!npc->npc_nearby()) {
 				npc->set_last_created();
-				pos[X] = pos[X] + index * 2;
+				pos.x = pos.x + index * 2;
 				UI_update_last_created(pos);
 			}
 		}
@@ -92,34 +92,34 @@ void BatlinAtWallOfLights object#(0x73B) () {
 
 			if (pathegg_quality > 4) {
 				pos = npc->get_object_position();
-				UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
+				UI_sprite_effect(ANIMATION_TELEPORT, pos.x, pos.y, 0, 0, 0, -1);
 			}
 
 			var body = UI_find_object(-359, SHAPE_BODIES_2, QUALITY_ANY, 16);
 			var dir = npc->find_direction(body);
-			var offsets = [0, 0];
+			struct<Position> offsets = [0, 0];
 
 			if (dir in [NORTHWEST, NORTH, NORTHEAST]) {
-				offsets[Y] = -1;
+				offsets.y = -1;
 			} else if (dir in [SOUTHWEST, SOUTH, SOUTHEAST]) {
-				offsets[Y] = 1;
+				offsets.y = 1;
 			}
 
 			if (dir in [NORTHEAST, EAST, SOUTHEAST]) {
-				offsets[X] = 1;
+				offsets.x = 1;
 			} else if (dir in [NORTHWEST, WEST, SOUTHWEST]) {
-				offsets[X] = -1;
+				offsets.x = -1;
 			}
 
 			var dist = npc->get_distance(body);
-			offsets[X] = offsets[X] * dist;
-			offsets[Y] = offsets[Y] * dist;
+			offsets.x = offsets.x * dist;
+			offsets.y = offsets.y * dist;
 			pos = npc->get_object_position();
-			pos[X] = pos[X] + offsets[X];
-			pos[Y] = pos[Y] + offsets[Y];
-			offsets[X] = -1 * offsets[X];
-			offsets[Y] = -1 * offsets[Y];
-			UI_sprite_effect(ANIMATION_RED_SWIRL, pos[X], pos[Y], offsets[X], offsets[Y], 0, dist);
+			pos.x = pos.x + offsets.x;
+			pos.y = pos.y + offsets.y;
+			offsets.x = -1 * offsets.x;
+			offsets.y = -1 * offsets.y;
+			UI_sprite_effect(ANIMATION_RED_SWIRL, pos.x, pos.y, offsets.x, offsets.y, 0, dist);
 			pathegg->set_item_quality(pathegg_quality + 1);
 
 			script pathegg {
@@ -132,16 +132,16 @@ void BatlinAtWallOfLights object#(0x73B) () {
 
 			npc->remove_from_party();
 			pos = npc->get_object_position();
-			var objpos = [0x6B + 3 * npc, 0x36, 0];
+			struct<Position> objpos = [0x6B + 3 * npc, 0x36, 0];
 
 			npc->move_object(objpos);
-			setNewSchedules(npc, objpos[X], objpos[Y], WAIT);
+			setNewSchedules(npc, objpos.x, objpos.y, WAIT);
 
 			var baneframe = npc->get_item_frame();
 			var baneobj = newbaneshape->create_new_object2(pos);
 			baneobj->set_item_frame(baneframe);
 			baneobj->set_schedule_type(WAIT);
-			UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, pos.x, pos.y, 0, 0, 0, -1);
 			abort;
 		} else if (pathegg_quality == 7) {
 			const int ANARCHY = -290;
@@ -163,7 +163,7 @@ void BatlinAtWallOfLights object#(0x73B) () {
 			UI_remove_npc_face0();
 
 			pos = AVATAR->get_object_position();
-			UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
+			UI_sprite_effect(ANIMATION_TELEPORT, pos.x, pos.y, 0, 0, 0, -1);
 
 			var banenpc;
 

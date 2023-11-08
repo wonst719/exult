@@ -47,11 +47,11 @@ void MonitorBanquet object#(0x1C3) () {
 		delayedBark(npc, "@" + partytoken + " shall wait for thee here!@", 5);
 
 		var partymembers = removeFromArray(AVATAR->get_npc_object(), UI_get_party_list2());
-		var pos;
+		struct<Position> pos;
 		for (npc in partymembers with index to max) {
 			npc->remove_from_party();
 			pos = npc->get_object_position();
-			npc->set_new_schedules(MIDNIGHT, STANDTHERE, [pos[X], pos[Y]]);
+			npc->set_new_schedules(MIDNIGHT, STANDTHERE, [pos.x, pos.y]);
 			npc->run_schedule();
 		}
 

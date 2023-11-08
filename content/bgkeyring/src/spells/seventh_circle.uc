@@ -29,11 +29,11 @@
 /*
 	Seventh circle Spells
 
-	extern void spellCreateGold (var target);
-	extern void spellDeathBolt (var target);
-	extern void spellDelayedBlast (var target);
-	extern void spellEnergyField (var target);
-	extern void spellEnergyMist (var target);
+	extern void spellCreateGold (struct<ObjPos> target);
+	extern void spellDeathBolt (struct<ObjPos> target);
+	extern void spellDelayedBlast (struct<ObjPos> target);
+	extern void spellEnergyField (struct<ObjPos> target);
+	extern void spellEnergyMist (struct<ObjPos> target);
 	extern void spellMassCharm ();
 	extern void spellMassMight ();
 	extern void spellRestoration ();
@@ -52,10 +52,10 @@ enum seventh_circle_spells {
 	SPELL_MASS_DISPEL_FIELD			= 8
 };
 
-void spellCreateGold (var target) {
+void spellCreateGold (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		item_say("@Rel Ylem@");
 		if (inMagicStorm() && (target->get_item_shape() == SHAPE_LEAD_ORE)) {
@@ -66,8 +66,8 @@ void spellCreateGold (var target) {
 				actor frame raise_1h;
 				actor frame strike_1h;
 			}
-			var pos = target->get_object_position();
-			UI_sprite_effect(ANIMATION_GREEN_BUBBLES, pos[X], pos[Y], 0, 0, 0, -1);
+			struct<Position> pos = target->get_object_position();
+			UI_sprite_effect(ANIMATION_GREEN_BUBBLES, pos.x, pos.y, 0, 0, 0, -1);
 			script target after 5 ticks {
 				nohalt;
 				call spellSetShape, SHAPE_GOLD_NUGGET;
@@ -84,9 +84,9 @@ void spellCreateGold (var target) {
 	}
 }
 
-void spellDeathBolt (var target) {
+void spellDeathBolt (struct<ObjPos> target) {
 	if ((event == DOUBLECLICK) || (event == WEAPON)) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		halt_scheduled();
 		var dir = direction_from(target);
 		item_say("@Corp Por@");
@@ -116,13 +116,13 @@ void spellDeathBolt (var target) {
 	}
 }
 
-void spellDelayedBlast (var target) {
+void spellDelayedBlast (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		var failed = false;
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
-		var sprite_pos = [target[X + 1], target[Y + 1], target[Z + 1]];
+		struct<Position> sprite_pos = [target.x, target.y, target.z];
 		item_say("@Tym Vas Flam@");
 		if (inMagicStorm()) {
 			var sprite = UI_create_new_object(SHAPE_DELAYED_EXPLOSION);
@@ -151,7 +151,7 @@ void spellDelayedBlast (var target) {
 						actor frame cast_out;
 						actor frame cast_up;
 					}
-					UI_sprite_effect(ANIMATION_GREEN_BUBBLES, sprite_pos[X], sprite_pos[Y], 0, 0, 0, -1);
+					UI_sprite_effect(ANIMATION_GREEN_BUBBLES, sprite_pos.x, sprite_pos.y, 0, 0, 0, -1);
 				} else {
 					failed = true;
 				}
@@ -175,15 +175,15 @@ void spellDelayedBlast (var target) {
 	}
 }
 
-void spellEnergyField (var target) {
+void spellEnergyField (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		var failed = false;
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		item_say("@In Sanct Grav@");
-		var pos_x = (target[X + 1] + 1);
-		var pos_y = (target[Y + 1] + 1);
-		var pos_z = target[Z + 1];
+		var pos_x = (target.x + 1);
+		var pos_y = (target.y + 1);
+		var pos_z = target.z;
 		var pos = [pos_x, pos_y, pos_z];
 		var notblocked = UI_is_not_blocked(pos, SHAPE_ENERGY_FIELD, 0);
 		if (inMagicStorm() && notblocked) {
@@ -223,10 +223,10 @@ void spellEnergyField (var target) {
 	}
 }
 
-void spellEnergyMist (var target) {
+void spellEnergyMist (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		item_say("@In Hur Grav Ylem@");
 		if (inMagicStorm()) {
@@ -269,8 +269,8 @@ void spellMassCharm () {
 				actor frame strike_2h;
 			}
 
-			var pos = get_object_position();
-			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			struct<Position> pos = get_object_position();
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos.x - 2), (pos.y - 2), 0, 0, 0, -1);
 			var dist = 25;
 			var nonparty_npcs = getNearbyNonPartyNPCs(dist);
 			for (npc in nonparty_npcs) {
@@ -322,8 +322,8 @@ void spellMassMight () {
 				actor frame strike_2h;
 				call  spellSetFlag, MIGHT;
 			}
-			var pos = get_object_position();
-			UI_sprite_effect(ANIMATION_TELEPORT, (pos[X] - 2), (pos[Y] - 2), 0, 0, 0, -1);
+			struct<Position> pos = get_object_position();
+			UI_sprite_effect(ANIMATION_TELEPORT, (pos.x - 2), (pos.y - 2), 0, 0, 0, -1);
 
 			var targets = getFriendlyTargetList(item, 25);
 			for (npc in targets) {

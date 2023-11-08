@@ -158,7 +158,7 @@ void Zauriel object#(0x48B) () {
 				LAURIANNA->set_schedule_type(WAIT);
 
 				var eggs = find_nearby(SHAPE_EGG, 20, MASK_EGG);
-				var pos;
+				struct<Position> pos;
 				for (egg in eggs) {
 					if (egg->get_item_quality() ==  -1 * LAURIANNA->get_npc_number()) {
 						pos = egg->get_object_position();
@@ -166,7 +166,7 @@ void Zauriel object#(0x48B) () {
 					}
 				}
 				LAURIANNA->move_object(pos);
-				UI_sprite_effect(ANIMATION_TELEPORT, pos[X], pos[Y], 0, 0, 0, -1);
+				UI_sprite_effect(ANIMATION_TELEPORT, pos.x, pos.y, 0, 0, 0, -1);
 				//LAURIANNA->move_object([0x224, 0x628, 0x0]);
 				//UI_sprite_effect(ANIMATION_TELEPORT, 0x224, 0x628, 0, 0, 0, -1);
 

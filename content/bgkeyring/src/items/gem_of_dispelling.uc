@@ -47,7 +47,7 @@ void Gem_Of_Dispelling shape#(0x451) () {
 			var amulet = UI_create_new_object(SHAPE_AMULET);
 			LAURIANNA->give_last_created();
 			//Make Laurianna have roots:
-			var pos = LAURIANNA->get_object_position();
+			struct<Position> pos = LAURIANNA->get_object_position();
 			LAURIANNA->set_item_shape(SHAPE_LAURIANNA_ROOTED);
 			LAURIANNA->set_last_created();
 			UI_update_last_created(pos);

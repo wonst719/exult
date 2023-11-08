@@ -31,7 +31,7 @@ void Hammer shape#(0x26F) () {
 
 		//clear the view
 		UI_close_gumps();
-		var target = UI_click_on_item();
+		struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
 
 		var swordblank;

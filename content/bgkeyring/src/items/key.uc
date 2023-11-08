@@ -32,7 +32,7 @@ void Key shape#(0x281) () {
 	}
 
 	//Prompt player for target:
-	var target = UI_click_on_item();
+	struct<ObjPos> target = UI_click_on_item();
 	//var target_quality;
 
 	//Target is the keyring:

@@ -29,15 +29,15 @@
 /*
 	Third circle Spells
 
-	extern void spellCurse (var target);
-	extern void spellHeal (var target);
-	extern void spellParalyze (var target);
+	extern void spellCurse (struct<ObjPos> target);
+	extern void spellHeal (struct<ObjPos> target);
+	extern void spellParalyze (struct<ObjPos> target);
 	extern void spellPeer ();
-	extern void spellPoison (var target);
+	extern void spellPoison (struct<ObjPos> target);
 	extern void spellProtectAll ();
-	extern void spellSleep (var target);
+	extern void spellSleep (struct<ObjPos> target);
 	extern void spellSwarm ();
-	extern void spellRemoveCurse (var target);
+	extern void spellRemoveCurse (struct<ObjPos> target);
 */
 
 enum third_circle_spells {
@@ -52,13 +52,13 @@ enum third_circle_spells {
 	SPELL_REMOVE_CURSE				= 8
 };
 
-void spellCurse (var target) {
+void spellCurse (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		item_say("@Des Sanct@");
-		if (inMagicStorm() && (target[X] != 0)) {
+		if (inMagicStorm() && (target.obj != 0)) {
 			set_to_attack(target, SHAPE_CURSE);
 			script item {
 				nohalt;
@@ -82,9 +82,9 @@ void spellCurse (var target) {
 	}
 }
 
-void spellHeal (var target) {
+void spellHeal (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		halt_scheduled();
 		item_say("@Mani@");
@@ -119,13 +119,13 @@ void spellHeal (var target) {
 	}
 }
 
-void spellParalyze (var target) {
+void spellParalyze (struct<ObjPos> target) {
 	if ((event == DOUBLECLICK) || (event == WEAPON)) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		halt_scheduled();
 		item_say("@An Por@");
-		if (inMagicStorm() && (target[X] != 0)) {
+		if (inMagicStorm() && (target.obj != 0)) {
 			set_to_attack(target, SHAPE_PARALYZE);
 			script item {
 				nohalt;
@@ -173,12 +173,12 @@ void spellPeer () {
 	}
 }
 
-void spellPoison (var target) {
+void spellPoison (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		item_say("@In Nox@");
-		if (inMagicStorm() && (target[X] != 0)) {
+		if (inMagicStorm() && (target.obj != 0)) {
 			set_to_attack(target, SHAPE_POISON);
 			script item {
 				nohalt;
@@ -228,13 +228,13 @@ void spellProtectAll () {
 	}
 }
 
-void spellSleep (var target) {
+void spellSleep (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		halt_scheduled();
 		item_say("@In Zu@");
-		if (inMagicStorm() && (target[X] != 0)) {
+		if (inMagicStorm() && (target.obj != 0)) {
 			set_to_attack(target, SHAPE_SPELL_SLEEP);
 			script item {
 				nohalt;
@@ -282,10 +282,10 @@ void spellSwarm () {
 	}
 }
 
-void spellRemoveCurse (var target) {
+void spellRemoveCurse (struct<ObjPos> target) {
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
-		//var target = UI_click_on_item();
+		//struct<ObjPos> target = UI_click_on_item();
 		var dir = direction_from(target);
 		item_say("@An Des Sanct@");
 		if (inMagicStorm() && target->is_npc()) {

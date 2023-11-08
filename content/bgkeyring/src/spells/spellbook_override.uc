@@ -152,7 +152,7 @@ void spellLightning_Override object#(0x661) () {
 }
 void spellMark_Override object#(0x662) () {
 	var target;
-	var pos;
+	struct<Position> pos;
 	var in_codex_shrine;
 
 	if (event == DOUBLECLICK) {
@@ -172,10 +172,10 @@ void spellMark_Override object#(0x662) () {
 			pos = target->get_object_position();
 
 			//Check to see if the STONE is inside the area of the Shrine of the Codex:
-			if (!UI_is_pc_inside() && (pos[X] >= 0xA50) && (pos[Y] >= 0xABC) && (pos[X] <= 0xAE0) && (pos[Y] <= 0xB1D)) {
+			if (!UI_is_pc_inside() && (pos.x >= 0xA50) && (pos.y >= 0xABC) && (pos.x <= 0xAE0) && (pos.y <= 0xB1D)) {
 				in_codex_shrine = true;
 			}
-			if ((pos[X] >= 0xA80) && (pos[Y] >= 0xADC) && (pos[X] <= 0xABB) && (pos[Y] <= 0xB0D)) {
+			if ((pos.x >= 0xA80) && (pos.y >= 0xADC) && (pos.x <= 0xABB) && (pos.y <= 0xB0D)) {
 				in_codex_shrine = true;
 			}
 		}

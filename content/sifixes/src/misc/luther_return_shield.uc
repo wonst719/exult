@@ -36,7 +36,7 @@ void returnDupresShield 0x848 () {
 			var shield = UI_create_new_object(SHAPE_MONITOR_SHIELD);
 			if (shield) {
 				shield->set_item_flag(TEMPORARY);
-				var pos = LUTHER->get_object_position();
+				struct<Position> pos = LUTHER->get_object_position();
 				UI_update_last_created(pos);
 			}
 		}

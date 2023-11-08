@@ -86,19 +86,6 @@ enum events {
 };
 
 /*
- *	Coordinate axes - use when referencing X,Y,Z coordinate arrays.
- *	Note that the coordinates returned by UI_click_on_item are 1 array-index
- *	higher, because index 1 of the returned array is the actual item clicked on.
- *	You can resolve this to a regular X,Y,Z coordinates array by using
- *	array = removeFromArray(array, array[1]); (see also bg_externals.uc)
- */
-enum axes {
-	X = 1,	//horizontal axis (numbered from west to east)
-	Y = 2,	//vertical axis (numbered from north to south)
-	Z = 3	//lift axis (numbered from ground to sky)
-};
-
-/*
  *	Cardinal directions: returned by UI_get_direction. Use with face or step
  *	statements in script{} blocks. e.g:
  *	script item { step NORTH; step NORTH; face SOUTH; }

@@ -37,7 +37,7 @@ void Baby shape#(0x2DA) () {
 			randomPartySay("@Praise All! The child is still alive. We must find who his parents are, and return him to his home!@");
 		}
 	} else {
-		var target = UI_click_on_item();
+		struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
 		if (target_shape == SHAPE_FULL_CRADLE) {
 			//used on full cradle

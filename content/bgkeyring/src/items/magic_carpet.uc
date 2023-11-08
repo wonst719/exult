@@ -107,8 +107,8 @@ void Magic_Carpet shape#(SHAPE_MAGIC_CARPET) () {
 					var dir = ((diagrefl * 6) + (nsrefl * 4)) % 8;
 
 					// Get barge's position.
-					var pos = barge->get_object_position();
-					pos[Z] += 1;
+					struct<Position> pos = barge->get_object_position();
+					pos.z += 1;
 
 					// Get array of position offsets.
 					var offsets;
@@ -145,13 +145,13 @@ void Magic_Carpet shape#(SHAPE_MAGIC_CARPET) () {
 						// Make party members walk to various points on the
 						// carpet and try to make it rise.
 						if (npc->get_npc_number() == AVATAR) {
-							UI_path_run_usecode([pos[X] + offsets[2*index-1],
-								                 pos[Y] + offsets[2*index],
-								                 pos[Z]], Magic_Carpet, barge, AVATAR_CARPET, true);
+							UI_path_run_usecode([pos.x + offsets[2*index-1],
+								                 pos.y + offsets[2*index],
+								                 pos.z], Magic_Carpet, barge, AVATAR_CARPET, true);
 						} else {
-							npc->si_path_run_usecode([pos[X] + offsets[2*index-1],
-								                      pos[Y] + offsets[2*index],
-								                      pos[Z]], PARTY_CARPET, barge,
+							npc->si_path_run_usecode([pos.x + offsets[2*index-1],
+								                      pos.y + offsets[2*index],
+								                      pos.z], PARTY_CARPET, barge,
 								                     Magic_Carpet, false);
 						}
 					}
@@ -164,9 +164,9 @@ void Magic_Carpet shape#(SHAPE_MAGIC_CARPET) () {
 			// Can we land?
 			// There aren't debris preventing landing. Check if we are not over
 			// the Codex Shrine.
-			var pos = AVATAR->get_object_position();
+			struct<Position> pos = AVATAR->get_object_position();
 			if (AVATAR->get_map_num() == 0 &&
-				(pos[X] >= 0xA50) && (pos[Y] >= 0xABC) && (pos[X] <= 0xAE0) && (pos[Y] <= 0xB2D)) {
+				(pos.x >= 0xA50) && (pos.y >= 0xABC) && (pos.x <= 0xAE0) && (pos.y <= 0xB2D)) {
 				// Party is over the area of the Shrine of the Codex; prevent landing
 				AVATAR.say("There is a strange force preventing you from landing in this area.");
 			} else {
@@ -201,8 +201,8 @@ void FlyingCarpetRoller shape#(SHAPE_CARPET_ROLLER) () {
 			barge->Magic_Carpet();
 			return;
 		}
-		var pos = barge->get_object_position();
-		if (pos[Z] > 0) {
+		struct<Position> pos = barge->get_object_position();
+		if (pos.z > 0) {
 			return;
 		}
 
@@ -227,7 +227,7 @@ void FlyingCarpetRoller shape#(SHAPE_CARPET_ROLLER) () {
 	var nsbit    = nsrefl * 2;
 
 	// Get piece position.
-	var pos    = get_object_position();
+	struct<Position> pos    = get_object_position();
 
 	// Create a rolled-up carpet and set its frame.
 	var roll = UI_create_new_object(SHAPE_ROLLED_CARPET);
@@ -236,16 +236,16 @@ void FlyingCarpetRoller shape#(SHAPE_CARPET_ROLLER) () {
 	// Move the rolled-up carpet into the right spot.
 	switch (dir) {
 		case 0:	// north
-			UI_update_last_created([pos[X] + 1, pos[Y]    , 0]);
+			UI_update_last_created([pos.x + 1, pos.y    , 0]);
 			break;
 		case 2:	// east
-			UI_update_last_created([pos[X]    , pos[Y] + 1, 0]);
+			UI_update_last_created([pos.x    , pos.y + 1, 0]);
 			break;
 		case 4:	// south
-			UI_update_last_created([pos[X] + 1, pos[Y]    , 0]);
+			UI_update_last_created([pos.x + 1, pos.y    , 0]);
 			break;
 		case 6:	// west
-			UI_update_last_created([pos[X]    , pos[Y] + 1, 0]);
+			UI_update_last_created([pos.x    , pos.y + 1, 0]);
 			break;
 	}
 
@@ -270,36 +270,36 @@ void RolledFlyingCarpet shape#(SHAPE_ROLLED_CARPET) () {
 	var nsbit    = nsrefl * 2;
 
 	// Get carpet position.
-	var pos = get_object_position();
+	struct<Position> pos = get_object_position();
 
 	// These will be positions for each of the carpet pieces.
-	var pospart1, pospart2, pospart3, posbarge;
+	struct<Position> pospart1, pospart2, pospart3, posbarge;
 
 	// Get positions adequate to the direction.
 	switch (dir) {
 		case 0:	// north
-			pospart1 = [pos[X]    , pos[Y] - 6, pos[Z]];
-			pospart2 = [pos[X]    , pos[Y]    , pos[Z]];
-			pospart3 = [pos[X] - 1, pos[Y]    , pos[Z]];
-			posbarge = [pos[X]    , pos[Y]    , pos[Z]];
+			pospart1 = [pos.x    , pos.y - 6, pos.z];
+			pospart2 = [pos.x    , pos.y    , pos.z];
+			pospart3 = [pos.x - 1, pos.y    , pos.z];
+			posbarge = [pos.x    , pos.y    , pos.z];
 			break;
 		case 2:	// east
-			pospart1 = [pos[X] +11, pos[Y]    , pos[Z]];
-			pospart2 = [pos[X] + 5, pos[Y]    , pos[Z]];
-			pospart3 = [pos[X]    , pos[Y] - 1, pos[Z]];
-			posbarge = [pos[X] +11, pos[Y]    , pos[Z]];
+			pospart1 = [pos.x +11, pos.y    , pos.z];
+			pospart2 = [pos.x + 5, pos.y    , pos.z];
+			pospart3 = [pos.x    , pos.y - 1, pos.z];
+			posbarge = [pos.x +11, pos.y    , pos.z];
 			break;
 		case 4:	// south
-			pospart1 = [pos[X]    , pos[Y] +11, pos[Z]];
-			pospart2 = [pos[X]    , pos[Y] + 5, pos[Z]];
-			pospart3 = [pos[X] - 1, pos[Y]    , pos[Z]];
-			posbarge = [pos[X]    , pos[Y] +11, pos[Z]];
+			pospart1 = [pos.x    , pos.y +11, pos.z];
+			pospart2 = [pos.x    , pos.y + 5, pos.z];
+			pospart3 = [pos.x - 1, pos.y    , pos.z];
+			posbarge = [pos.x    , pos.y +11, pos.z];
 			break;
 		case 6:	// west
-			pospart1 = [pos[X] - 6, pos[Y]    , pos[Z]];
-			pospart2 = [pos[X]    , pos[Y]    , pos[Z]];
-			pospart3 = [pos[X]    , pos[Y] - 1, pos[Z]];
-			posbarge = [pos[X]    , pos[Y]    , pos[Z]];
+			pospart1 = [pos.x - 6, pos.y    , pos.z];
+			pospart2 = [pos.x    , pos.y    , pos.z];
+			pospart3 = [pos.x    , pos.y - 1, pos.z];
+			posbarge = [pos.x    , pos.y    , pos.z];
 			break;
 	}
 
@@ -316,7 +316,7 @@ void RolledFlyingCarpet shape#(SHAPE_ROLLED_CARPET) () {
 
 	// Put this barge in the right position, but above the ground (yes, I am
 	// being silly using 255; 10 or so would be enough).
-	UI_update_last_created([posbarge[X], posbarge[Y], 255]);
+	UI_update_last_created([posbarge.x, posbarge.y, 255]);
 
 	// Check if the ground is clear (flag 21 == 'okay to land').
 	if (barge->get_item_flag(OKAY_TO_LAND)) {

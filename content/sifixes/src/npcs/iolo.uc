@@ -365,8 +365,8 @@ void Iolo object#(0x403) () {
 			UI_remove_npc_face0();
 			delayedBark(IOLO, "@Pleasant dreams!@", 2);
 
-			var pos = CLONE_IOLO->get_object_position();
-			UI_sprite_effect(ANIMATION_TELEPORT2, pos[X], pos[Y], 0, 0, 0, -1);
+			struct<Position> pos = CLONE_IOLO->get_object_position();
+			UI_sprite_effect(ANIMATION_TELEPORT2, pos.x, pos.y, 0, 0, 0, -1);
 			UI_play_sound_effect(0x51);
 			set_item_quality(3);
 
