@@ -227,15 +227,11 @@ bool Uc_struct_symbol::is_dup(
 	return false;
 }
 
-Uc_struct_symbol::~Uc_struct_symbol() {
-	for (auto& var : vars)
-		delete var.first;
-	vars.clear();
-}
+Uc_struct_symbol::~Uc_struct_symbol() = default;
 
 void Uc_struct_symbol::merge_struct(Uc_struct_symbol *other) {
 	for (auto& var : other->vars)
-		add(var.first);
+		add(var.first.c_str());
 }
 
 /*

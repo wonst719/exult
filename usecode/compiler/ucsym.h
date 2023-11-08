@@ -356,7 +356,7 @@ public:
  *  usecode variable -- this is left to Exult.
  */
 class Uc_struct_symbol : public Uc_symbol {
-	using Var_map = std::map<const char *, int, String_compare>;
+	using Var_map = std::map<std::string, int>;
 	Var_map vars;
 	int num_vars;           // # member variables.
 public:
