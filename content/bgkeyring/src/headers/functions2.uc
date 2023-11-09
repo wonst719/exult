@@ -91,7 +91,7 @@ var createContainerWithObjects (var cont_shape, var item_shapes, var item_frames
 
 	while (counter < shape_count) {
 		//Increment counter:
-		counter = counter + 1;
+		counter += 1;
 
 		if (item_quantity[counter]) {
 			//Create the object:
@@ -119,7 +119,7 @@ var createContainerWithObjects (var cont_shape, var item_shapes, var item_frames
 				//Repeat the creation-setting-giving proccess:
 				num = 1;
 				while (num < item_quantity[counter]) {
-					num = num + 1;
+					num += 1;
 					obj = UI_create_new_object(item_shapes[counter]);
 					obj->set_item_frame(item_frames[counter]);
 					obj->set_item_quality(item_quality[counter]);

@@ -220,8 +220,8 @@ void Thoxa object#(0x4D3) () {
 				say("@I must return to Monk Isle.@");
 				UI_remove_npc_face0();
 				pos = get_object_position();
-				pos.x = (pos.x - (pos.z / 2));
-				pos.y = (pos.y - (pos.z / 2));
+				pos.x -= (pos.z / 2);
+				pos.y -= (pos.z / 2);
 				UI_sprite_effect(ANIMATION_TELEPORT, pos.x, pos.y, 0, 0, 0, -1);
 				UI_play_sound_effect(0x51);
 				remove_npc();

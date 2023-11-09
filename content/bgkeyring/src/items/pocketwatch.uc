@@ -34,7 +34,7 @@ void Pocketwatch shape#(0x9F) () {
 		period = "pm";
 	}
 
-	hour = hour % 12;
+	hour %= 12;
 	if (hour == 0) {
 		hour = 12;
 	}

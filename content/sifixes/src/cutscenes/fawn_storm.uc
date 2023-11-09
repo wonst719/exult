@@ -29,10 +29,10 @@ void FawnStorm object#(0x6BC) () {
 			if (lute) {
 				lute->set_item_frame(0);
 				struct<Position> pos = IOLO->get_object_position();
-				pos.y = pos.y + 1;
+				pos.y += 1;
 				if (UI_update_last_created(pos)) {
-					pos.x = pos.x + (pos.z / 2);
-					pos.y = pos.y + (pos.z / 2);
+					pos.x += (pos.z / 2);
+					pos.y += (pos.z / 2);
 					UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, pos.x, pos.y, 0, 0, 0, -1);
 
 					var dir = IOLO->find_direction(lute);

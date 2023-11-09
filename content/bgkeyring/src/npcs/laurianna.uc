@@ -164,7 +164,7 @@ void Laurianna object#(0x494) () {
 					"@I am tired...@"
 				];
 				if (count_objects(SHAPE_AMULET, QUALITY_ANY, FRAME_ANY)) {
-					barks = barks & "Canst thou not help me with this necklace?";
+					barks &= "Canst thou not help me with this necklace?";
 				}
 			} else {
 				barks = "Z-z-z-z...";

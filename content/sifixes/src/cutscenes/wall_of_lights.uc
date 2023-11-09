@@ -45,8 +45,8 @@ void BatlinAtWallOfLights object#(0x73B) () {
 		var max;
 
 		pos = AVATAR->get_object_position();
-		pos.x = pos.x - 4;
-		pos.y = pos.y + 10;
+		pos.x -= 4;
+		pos.y += 10;
 		for (npc in companions with index to max) {
 			// Absolutely ensure that the companions will be there for the scene:
 			npc->clear_item_flag(DEAD);
@@ -63,7 +63,7 @@ void BatlinAtWallOfLights object#(0x73B) () {
 			npc->set_item_flag(SI_TOURNAMENT);
 
 			if (npc->get_distance(AVATAR) > 15) {
-				pos.x = pos.x + index * 2;
+				pos.x += index * 2;
 				npc->move_object(pos);
 			}
 		}
@@ -71,12 +71,12 @@ void BatlinAtWallOfLights object#(0x73B) () {
 		abort;
 	} else if (event == EGG) {
 		pos = AVATAR->get_object_position();
-		pos.x = pos.x - 4;
-		pos.y = pos.y + 5;
+		pos.x -= 4;
+		pos.y += 5;
 		for (npc in companions with index to max) {
 			if (!npc->npc_nearby()) {
 				npc->set_last_created();
-				pos.x = pos.x + index * 2;
+				pos.x += index * 2;
 				UI_update_last_created(pos);
 			}
 		}
@@ -112,11 +112,11 @@ void BatlinAtWallOfLights object#(0x73B) () {
 			}
 
 			var dist = npc->get_distance(body);
-			offsets.x = offsets.x * dist;
-			offsets.y = offsets.y * dist;
+			offsets.x *= dist;
+			offsets.y *= dist;
 			pos = npc->get_object_position();
-			pos.x = pos.x + offsets.x;
-			pos.y = pos.y + offsets.y;
+			pos.x += offsets.x;
+			pos.y += offsets.y;
 			offsets.x = -1 * offsets.x;
 			offsets.y = -1 * offsets.y;
 			UI_sprite_effect(ANIMATION_RED_SWIRL, pos.x, pos.y, offsets.x, offsets.y, 0, dist);

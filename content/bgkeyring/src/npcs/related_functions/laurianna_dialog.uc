@@ -761,9 +761,9 @@ void lauriannaYewDialog () {
 		var totalexp;
 		var party = UI_get_party_list();
 		for (npc in party) {
-			totalexp = totalexp + npc->get_npc_prop(EXPERIENCE);
+			totalexp += npc->get_npc_prop(EXPERIENCE);
 		}
-		totalexp = totalexp / UI_get_array_size(party);
+		totalexp /= UI_get_array_size(party);
 		set_npc_prop(EXPERIENCE, totalexp - get_npc_prop(EXPERIENCE));
 
 		var leather_armor = [

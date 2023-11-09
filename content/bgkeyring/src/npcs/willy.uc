@@ -307,7 +307,7 @@ void sellBread 0x947() {
 						//Go through all the ones on the ground, making them belong to Willy
 						food->clear_item_flag(OKAY_TO_TAKE);
 					}
-					count = count + 1;
+					count += 1;
 				}
 				say("@Come back and work for me at any time!@");
 				return;

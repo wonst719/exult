@@ -46,13 +46,13 @@ advanceTimeDueToRest 0x93A (var sleep_time, var itemref) {
 		}
 
 		//Gather readied light sources and torches:
-		light_sources = (light_sources & member->get_cont_items(SHAPE_TORCH_LIT, QUALITY_ANY, FRAME_ANY));
-		light_sources = (light_sources & member->get_cont_items(SHAPE_LIGHTSOURCE_LIT, QUALITY_ANY, FRAME_ANY));
+		light_sources &= member->get_cont_items(SHAPE_TORCH_LIT, QUALITY_ANY, FRAME_ANY);
+		light_sources &= member->get_cont_items(SHAPE_LIGHTSOURCE_LIT, QUALITY_ANY, FRAME_ANY);
 	}
 
 	//Gather all nearby torches and light sources:
-	light_sources = (light_sources & itemref->find_nearby(SHAPE_TORCH_LIT, 30, 0));
-	light_sources = (light_sources & itemref->find_nearby(SHAPE_LIGHTSOURCE_LIT, 30, 0));
+	light_sources &= itemref->find_nearby(SHAPE_TORCH_LIT, 30, 0);
+	light_sources &= itemref->find_nearby(SHAPE_LIGHTSOURCE_LIT, 30, 0);
 	//Unfortunately, the original left out all readied light sources and torches, which means
 	//a torch wouldn't go out if you were holding it...
 

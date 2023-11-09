@@ -126,7 +126,7 @@ void spellFireRing (struct<ObjPos> target) {
 			var offset_y = [-2, -2, -2, -1,  0,  1,  2,  2,  2,  1,  0, -1];
 			var counter = 0;
 			while (counter < 12) {
-				counter = (counter + 1);
+				counter += 1;
 				var ring_x = (target.x + offset_x[counter]);
 				var ring_y = (target.y + offset_y[counter]);
 				var ring_z = target.z;

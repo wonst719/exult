@@ -189,9 +189,9 @@ void eggCodexQuest object#() () {
 		while (index > 0) {
 			if (currflag >= pathegg_frame_flags[index]) {
 				setflags = [index - 1, setflags];
-				currflag = currflag - pathegg_frame_flags[index];
+				currflag -= pathegg_frame_flags[index];
 			}
-			index = index - 1;
+			index -= 1;
 		}
 	}
 
@@ -338,12 +338,12 @@ void eggsPartyLocationBarks object#(0x621) () {
 				var index = 0;
 
 				if (msg) {
-					msg = msg + " You also forgot";
+					msg += " You also forgot";
 				} else {
 					msg = "You left";
 				}
 				if (num == 0) {
-					msg = msg + " the three Items of Principle!";
+					msg += " the three Items of Principle!";
 				} else if (num == 1) {
 					if (has_book) {
 						index = [2, 3];
@@ -352,7 +352,7 @@ void eggsPartyLocationBarks object#(0x621) () {
 					} else if (has_bell) {
 						index = [1, 2];
 					}
-					msg = msg + princitems[index[1]] + " and" + princitems[index[2]] + "!";
+					msg += princitems[index[1]] + " and" + princitems[index[2]] + "!";
 				} else if (num == 2) {
 					if (!has_book) {
 						index = 1;
@@ -361,12 +361,12 @@ void eggsPartyLocationBarks object#(0x621) () {
 					} else if (!has_bell) {
 						index = 3;
 					}
-					msg = msg + princitems[index] + "!";
+					msg += princitems[index] + "!";
 				}
 			}
 			if (!contHasItemCount(PARTY, 1, SHAPE_VORTEX_CUBE, QUALITY_ANY, FRAME_ANY)) {
 				if (msg) {
-					msg = msg + " And the Vortex Cube!";
+					msg += " And the Vortex Cube!";
 				} else {
 					msg = "You left the Vortex Cube behind!";
 				}

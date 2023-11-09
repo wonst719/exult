@@ -43,7 +43,7 @@ void beginCataclysm object#() () {
 
 		//Get party list and append Zauriel to it:
 		var party = UI_get_party_list();
-		party = party & ZAURIEL;
+		party &= ZAURIEL;
 
 		//Make everyone SHY away:
 		for (member in party) {
@@ -111,7 +111,7 @@ void beginCataclysm object#() () {
 	} else if (event == CATACLISM_START) {
 		//Get party list and append Zauriel:
 		var party = UI_get_party_list();
-		party = party & ZAURIEL;
+		party &= ZAURIEL;
 
 		//Select one of them randomly:
 		var rand = UI_get_random(UI_get_array_size(party));

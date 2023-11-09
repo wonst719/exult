@@ -95,26 +95,26 @@ void eggLockInnDoors object#() () {
 	//Use the egg's position to determine the offsets to the doors
 	// and beds
 	if (egg_quality == INN_WAYFARERS_NORTH) {
-		pos.y = pos.y - 15;
+		pos.y -= 15;
 	} else if (egg_quality == INN_OUT_N_INN) {
-		pos.x = pos.x + 8;
-		pos.y = pos.y - 16;
+		pos.x += 8;
+		pos.y -= 16;
 	} else if (egg_quality == INN_BUNK_AND_STOOL) {
-		pos.x = pos.x - 48;
-		pos.y = pos.y - 8;
+		pos.x -= 48;
+		pos.y -= 8;
 	} else if (egg_quality == INN_MODEST_DAMSEL) {
-		pos.x = pos.x - 24;
+		pos.x -= 24;
 	} else if (egg_quality == INN_SALTY_DOG) {
-		pos.x = pos.x - 18;
-		pos.y = pos.y - 16;
+		pos.x -= 18;
+		pos.y -= 16;
 	} else if (egg_quality == INN_HONORABLE_HOUND) {
-		pos.y = pos.y + 27;
+		pos.y += 27;
 	} else if (egg_quality == INN_CHEQUERED_CORK_EAST) {
-		pos.x = pos.x - 47;
-		pos.y = pos.y + 9;
+		pos.x -= 47;
+		pos.y += 9;
 	} else if (egg_quality == INN_CHEQUERED_CORK_SOUTH) {
-		pos.x = pos.x - 7;
-		pos.y = pos.y - 15;
+		pos.x -= 7;
+		pos.y -= 15;
 	}
 
 	//Find all inn keys owner by the party:
@@ -124,7 +124,7 @@ void eggLockInnDoors object#() () {
 	for (key in ground_keys) {
 		//See how many are inn keys:
 		if (key->get_item_quality() == KEY_INN) {
-			inn_keys = inn_keys + 1;
+			inn_keys += 1;
 		}
 	}
 
@@ -201,13 +201,13 @@ void eggLockInnDoors object#() () {
 					pos = get_object_position();
 					var dir = step_directions[egg_quality];
 					if (dir == NORTH) {
-						pos.y = pos.y - 8;
+						pos.y -= 8;
 					} else if (dir == EAST) {
-						pos.x = pos.x + 8;
+						pos.x += 8;
 					} else if (dir == SOUTH) {
-						pos.y = pos.y + 8;
+						pos.y += 8;
 					} else if (dir == WEST) {
-						pos.x = pos.x - 8;
+						pos.x -= 8;
 					}
 
 					//Force Avatar back inside the inn:
@@ -238,7 +238,7 @@ void eggLockInnDoors object#() () {
 			];
 	//Find unlocked doors
 	for (door in door_shapes) {
-		inn_doors = inn_doors & pos->find_nearby(door, 20, MASK_NONE);
+		inn_doors &= pos->find_nearby(door, 20, MASK_NONE);
 	}
 
 	var door_state;
@@ -269,7 +269,7 @@ void eggLockInnDoors object#() () {
 
 	//Find all nearby beds:
 	var inn_beds = pos->find_nearby(SHAPE_BED_HORIZONTAL, 20, MASK_NONE);
-	inn_beds = inn_beds & pos->find_nearby(SHAPE_BED_VERTICAL, 20, MASK_NONE);
+	inn_beds &= pos->find_nearby(SHAPE_BED_VERTICAL, 20, MASK_NONE);
 	var bed;
 	var bed_state;
 	for (bed in inn_beds) {

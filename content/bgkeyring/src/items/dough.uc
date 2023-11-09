@@ -37,8 +37,8 @@ void Dough shape#(0x292) () {
 					//tweaked to allow one more space for it...
 					//...and then untweaked again, as it makes the dough
 					//too hard to see
-					target_pos.x = target_pos.x - UI_die_roll(1, 2);
-					target_pos.z = target_pos.z + 1;
+					target_pos.x -= UI_die_roll(1, 2);
+					target_pos.z += 1;
 
 					//now place the dough there
 					if (UI_update_last_created(target_pos)) {

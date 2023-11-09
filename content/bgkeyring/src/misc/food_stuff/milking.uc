@@ -44,7 +44,7 @@ void milkCow () {
 	//and anyway it appears immediately rather than at the end of a leaning-down
 	//animation.
 	//struct<Position> target_pos = UI_get_object_position(cow);
-	//target_pos.x = target_pos.x - 2;
+	//target_pos.x -= 2;
 	//moveToLocation(vessel, target_pos);
 
 	if (UI_get_random(10) < 3) {

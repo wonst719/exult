@@ -92,7 +92,7 @@ var giveItemsToParty (var quantity, var shapenum, var quality, var framenum, var
 						groundobjs->set_item_frame(framenum);
 						groundobjs->set_item_quality(quality);
 						UI_update_last_created(pos);
-						delta = delta - 1;
+						delta -= 1;
 					}
 				} else {
 					UI_update_last_created(pos);
@@ -448,7 +448,7 @@ void serviceHeal () {
 				choice = chooseFromMenu2(["Nobody", "Everyone", namelist]) - 1;
 				heal_everyone = (choice == 1);
 				if (choice > 1) {
-					choice = choice - 1;
+					choice -= 1;
 				}
 			} else if (price_list) {
 				heal_everyone = false;
@@ -472,10 +472,10 @@ void serviceHeal () {
 							((reply == SERVICE_RESURRECT) && ("Mass resurrect" in healing_spells))) {
 							price = (price * 5)/2;
 						} else {
-							price = price * numtargets;
+							price *= numtargets;
 						}
 					} else {
-						price = price * numtargets;
+						price *= numtargets;
 					}
 				} else {
 					targets = [targets[choice]];
@@ -531,7 +531,7 @@ void serviceHeal () {
 						var str = currtarget->get_npc_prop(STRENGTH);
 						var hps = currtarget->get_npc_prop(HEALTH);
 						currtarget->set_npc_prop(HEALTH, str - hps);
-						numtargets = numtargets - 1;
+						numtargets -= 1;
 					}
 				} else if (reply == SERVICE_CURE) {
 					var verbs = [" feeds ", " gives "];
@@ -544,7 +544,7 @@ void serviceHeal () {
 						var currtarget = targets[numtargets];
 						say("@"+ get_npc_name() + verbs[UI_get_random(UI_get_array_size(verbs))] + currtarget->get_npc_name() + msgs[UI_get_random(UI_get_array_size(msgs))]);
 						currtarget->clear_item_flag(POISONED);
-						numtargets = numtargets - 1;
+						numtargets -= 1;
 					}
 				} else if (reply == SERVICE_RESURRECT) {
 					say("@This message should never appear. Warn the programmer: there is a bug with resurrection and normal healing.@");

@@ -37,13 +37,13 @@ void KitchenItem shape#(0x35F) () {
 			var target_shape = target->get_item_shape();
 
 			if (target_shape == SHAPE_WORKTABLE_HORIZONTAL) {
-				target_pos.x = target_pos.x - UI_die_roll(0, 3);
+				target_pos.x -= UI_die_roll(0, 3);
 				//vertical offset ensures the flour ends up on top of the table
-				target_pos.z = target_pos.z + 2;
+				target_pos.z += 2;
 			} else if (target_shape == SHAPE_WORKTABLE_VERTICAL) {
-				target_pos.y = target_pos.y - UI_die_roll(0, 2);
+				target_pos.y -= UI_die_roll(0, 2);
 				//vertical offset ensures the flour ends up on top of the table
-				target_pos.z = target_pos.z + 2;
+				target_pos.z += 2;
 			} else {
 				//only those two kinds of tables are supported, oddly
 				randomPartySay("@Why not put the flour on the table first?@");

@@ -162,7 +162,7 @@ void eggCreateSpiderEggs object#() () {
 		//Place egg in correct position:
 		UI_update_last_created([0x0CE - num_eggs, 0x277 + yoff[num_eggs], 0x0]);
 		//Decrement counter:
-		num_eggs = num_eggs - 1;
+		num_eggs -= 1;
 	}
 }
 

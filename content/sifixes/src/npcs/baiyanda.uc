@@ -86,7 +86,7 @@ void Baiyanda object#(0x48F) () {
 				var max;
 
 				for (npc in living_npcs with index to max) {
-					namelist = (namelist & npc->get_npc_name());
+					namelist &= npc->get_npc_name();
 				}
 
 				living_npcs = [0, living_npcs];

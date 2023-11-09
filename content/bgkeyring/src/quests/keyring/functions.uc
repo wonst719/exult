@@ -42,7 +42,7 @@ void monsterEquipment (var monster, var contshape, var arms, var arms_quality, v
 	for (itemnum in arms with /*counter*/index) {
 		//For each item in arms,
 		//increment counter:
-		//index = index + 1;
+		//index += 1;
 		//Create the object:
 		new_obj = UI_create_new_object(itemnum);
 		//Set quality:
@@ -60,7 +60,7 @@ void monsterEquipment (var monster, var contshape, var arms, var arms_quality, v
 	while (index < UI_get_array_size(pouch_content)) {
 		//For each object in the array,
 		//increment counter:
-		index = index + 1;
+		index += 1;
 		//Create object:
 		new_obj = UI_create_new_object(pouch_content[index]);
 		//Set frame:
@@ -316,7 +316,7 @@ var createLichAndGems () {
 
 	while (counter < gem_count) {
 		//Increment counter:
-		counter = counter + 1;
+		counter += 1;
 		//Create a gem:
 		gem = UI_create_new_object(SHAPE_GEM_OF_DISPELLING);
 		//Make it temporary:

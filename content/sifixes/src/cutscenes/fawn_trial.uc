@@ -82,7 +82,7 @@ void Bolt shape#(0x2d3) () {
 		while (ii < 30000) {
 			event = SCRIPTED;
 			item->Bolt();
-			ii = ii + 1;
+			ii += 1;
 		}
 	}
 }

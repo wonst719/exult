@@ -35,7 +35,7 @@ void FishingRod shape#(SHAPE_FISHING_ROD) () {
 			return;
 		}
 		struct<Position> pos = AVATAR->get_object_position();
-		pos.x = pos.x + 1;
+		pos.x += 1;
 		if (UI_die_roll(1, 20) > 17) {
 			var fish = UI_create_new_object(SHAPE_FOOD);
 			if (fish) {

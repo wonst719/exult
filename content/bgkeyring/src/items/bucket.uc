@@ -307,7 +307,7 @@ void useBucketOnDousable () {
 		//light source. Todo: separate this as a generic function, since
 		//I can see this being used often for sprite effects
 		struct<Position> sprite_pos;
-		sprite_offset = sprite_offset + (target_pos.z / 2);
+		sprite_offset += (target_pos.z / 2);
 		sprite_pos.x = (target_pos.x - sprite_offset);
 		sprite_pos.y = (target_pos.y - sprite_offset);
 
@@ -624,7 +624,7 @@ void Bucket shape#(0x32A) () {
 			struct<Position>& trg = target;
 			trg = removeFromArray(target, target[1]);
 
-			trg.y = trg.y + 1;
+			trg.y += 1;
 			UI_path_run_usecode(trg, useBucketOnGround, item, SCRIPTED);
 		}
 	}

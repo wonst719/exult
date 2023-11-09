@@ -114,39 +114,39 @@ void eggLockInnDoors object#(0xCB0) () {
 	struct<Position> pos = get_object_position();
 
 	if (egg_quality == INN_SLEEPING_SOLDIER) {
-		pos.x = pos.x - 8;
-		pos.y = pos.y - 16;
+		pos.x -= 8;
+		pos.y -= 16;
 	} else if (egg_quality == INN_BROKEN_OAR_SOUTHEAST) {
-		pos.x = pos.x - 16;
-		pos.y = pos.y + 7;
+		pos.x -= 16;
+		pos.y += 7;
 		pos.z = 6;
 	} else if (egg_quality == INN_BROKEN_OAR_EAST) {
-		pos.x = pos.x - 15;
-		pos.y = pos.y + 25;
+		pos.x -= 15;
+		pos.y += 25;
 		pos.z = 6;
 	} else if (egg_quality == INN_BROKEN_OAR_WEST) {
-		pos.x = pos.x + 16;
-		pos.y = pos.y + 25;
+		pos.x += 16;
+		pos.y += 25;
 		pos.z = 6;
 	} else if (egg_quality == INN_SLEEPING_BULL_MAIN) {
-		pos.x = pos.x + 9;
-		pos.y = pos.y - 19;
+		pos.x += 9;
+		pos.y -= 19;
 		pos.z = 6;
 	} else if (egg_quality == INN_SLEEPING_BULL_NORTH) {
-		pos.x = pos.x + 16;
-		pos.y = pos.y + 20;
+		pos.x += 16;
+		pos.y += 20;
 		pos.z = 6;
 	} else if (egg_quality == INN_SLEEPING_BULL_EAST_S) {
-		pos.x = pos.x - 38;
-		pos.y = pos.y - 19;
+		pos.x -= 38;
+		pos.y -= 19;
 		pos.z = 6;
 	} else if (egg_quality == INN_SLEEPING_BULL_EAST_N) {
-		pos.x = pos.x - 38;
-		pos.y = pos.y - 3;
+		pos.x -= 38;
+		pos.y -= 3;
 		pos.z = 6;
 	} else if (egg_quality == INN_BLUE_BOAR) {
-		pos.x = pos.x - 46;
-		pos.y = pos.y + 8;
+		pos.x -= 46;
+		pos.y += 8;
 	}
 
 	var index;
@@ -156,7 +156,7 @@ void eggLockInnDoors object#(0xCB0) () {
 	var ground_keys = pos->find_nearby(SHAPE_KEY, 50, 0);
 	for (key in ground_keys with index to max) {
 		if (key->get_item_quality() == qualities[egg_quality]) {
-			inn_keys = inn_keys + 1;
+			inn_keys += 1;
 		}
 	}
 
@@ -224,13 +224,13 @@ void eggLockInnDoors object#(0xCB0) () {
 					pos = get_object_position();
 					dir = step_directions[egg_quality];
 					if (dir == NORTH) {
-						pos.y = pos.y - 8;
+						pos.y -= 8;
 					} else if (dir == EAST) {
-						pos.x = pos.x + 8;
+						pos.x += 8;
 					} else if (dir == SOUTH) {
-						pos.y = pos.y + 8;
+						pos.y += 8;
 					} else if (dir == WEST) {
-						pos.x = pos.x - 8;
+						pos.x -= 8;
 					}
 
 					AVATAR->si_path_run_usecode(pos, SI_PATH_SUCCESS, AVATAR, unfreeze, true);
@@ -273,7 +273,7 @@ void eggLockInnDoors object#(0xCB0) () {
 
 	var door;
 	for (door in door_shapes with index to max) {
-		inn_doors = inn_doors & pos->find_nearby(door, dist, 0);
+		inn_doors &= pos->find_nearby(door, dist, 0);
 	}
 
 	var door_state;
@@ -301,7 +301,7 @@ void eggLockInnDoors object#(0xCB0) () {
 	}
 
 	var inn_beds = pos->find_nearby(SHAPE_BED_HORIZONTAL, dist, 0);
-	inn_beds = inn_beds & pos->find_nearby(SHAPE_BED_VERTICAL, dist, 0);
+	inn_beds &= pos->find_nearby(SHAPE_BED_VERTICAL, dist, 0);
 	var bed;
 	var bed_state;
 	for (bed in inn_beds with index to max) {

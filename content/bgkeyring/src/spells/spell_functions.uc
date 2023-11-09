@@ -151,7 +151,7 @@ void spellFireRingEffect object#() () {
 		ring->set_item_flag(TEMPORARY);
 		UI_update_last_created(pos);
 		var delay = 31;
-		delay = delay + UI_die_roll(1, 5);
+		delay += UI_die_roll(1, 5);
 		script ring after delay ticks {
 			nohalt;
 			remove;
@@ -219,7 +219,7 @@ void spellProtectAllEffect object#() () {
 void spellSwarmEffect object#() () {
 	var rand = UI_die_roll(7, 10);
 	while (rand > 0) {
-		rand = (rand - 1);
+		rand -= 1;
 		UI_summon(SHAPE_FLY, false);
 	}
 }
@@ -241,7 +241,7 @@ void spellConjureEffect object#() () {
 	var rand = UI_die_roll(minroll, npclevel);
 
 	while (rand > 0) {
-		rand = (rand - 1);
+		rand -= 1;
 		var rand2 = UI_die_roll(minroll, npclevel);
 		var summoned = conjurables[rand2]->summon(false);
 		summoned->set_alignment(get_alignment());
@@ -395,7 +395,7 @@ void spellTremorEffect object#() () {
 					actor frame standing;
 				};
 			}
-			counter = (counter + 1);
+			counter += 1;
 		}
 		npc->halt_scheduled();
 		npc->run_script(usecodearray);
@@ -441,11 +441,11 @@ void spellSummonEffect object#() () {
 		rand3 = (-1 * rand3);
 	}
 
-	counter = (counter + rand3);
+	counter += rand3;
 	while (counter) {
 		var summoned = summonables[rand1]->summon(true);
 		summoned->set_alignment(get_alignment());
-		counter = (counter - 1);
+		counter -= 1;
 	}
 }
 

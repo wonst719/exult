@@ -30,7 +30,7 @@ void Lens shape#(0x2D6) () {
 		//Rotate by 90 degrees:
 		set_item_frame_rot((framenum + 32) % 64);
 		struct<Position> pos = get_object_position();
-		framenum = framenum % 2;
+		framenum %= 2;
 		if ((pos.x == 0xA9C + (framenum * 7)) && (pos.y == 0xAE7) && (pos.z == 4)) {
 			//This was done in the correct place (in the Codex Shrine),
 			//so find the right egg and activate it:

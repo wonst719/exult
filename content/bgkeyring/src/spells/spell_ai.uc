@@ -252,7 +252,7 @@ void aiCastBuffing (var allies, var enemies, var eff_level, var in_party, var in
 					target = obj;
 					break;
 				}
-				wand_users_size = wand_users_size - 1;
+				wand_users_size -= 1;
 			}
 
 			if (target) {

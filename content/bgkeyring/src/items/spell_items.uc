@@ -80,7 +80,7 @@ var prepareSpell (var npc, var spell_array, var talk, var removespells) {
 		if (spells_size > MAX_PREPARED_SPELLS) {
 			var index = spells_size - MAX_PREPARED_SPELLS;
 			while (index < spells_size) {
-				index = index + 1;
+				index += 1;
 				ret_array = [ret_array, spells[index]];
 			}
 		} else {
@@ -185,7 +185,7 @@ var getFavoriteIndexList (var name_array) {
 			if (element in getSpellList(circle)) {
 				break;
 			}
-			circle = circle + 1;
+			circle += 1;
 		}
 		spell_index = getIndexForSpell(circle, element);
 		ret_array << getSpellFunction(circle, 0) - getSpellFunction(0, 0) + spell_index;

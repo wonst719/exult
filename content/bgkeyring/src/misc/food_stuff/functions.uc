@@ -36,8 +36,8 @@ void createButter object#() () {
 
 	struct<Position> target_pos = get_object_position();
 	//place it on the middle right-hand side of the churn
-	target_pos.x = target_pos.x + 1;
-	//target_pos.y = target_pos.y - 3;
+	target_pos.x += 1;
+	//target_pos.y -= 3;
 
 	UI_update_last_created(target_pos);
 

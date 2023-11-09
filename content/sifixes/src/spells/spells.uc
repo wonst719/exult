@@ -141,7 +141,7 @@ void spellCreateAmmo object#(0x66E) () {
 		bows = PARTY->count_objects(SHAPE_BOW, QUALITY_ANY, FRAME_ANY);
 		magicbows = PARTY->count_objects(SHAPE_MAGIC_BOW, QUALITY_ANY, FRAME_ANY);
 		crossbows = PARTY->count_objects(SHAPE_CROSSBOW, QUALITY_ANY, FRAME_ANY);
-		bows = (bows + magicbows);
+		bows += magicbows;
 		missile_shape = SHAPE_ARROW;
 		if (crossbows > bows) {
 			missile_shape = SHAPE_BOLT;
@@ -226,7 +226,7 @@ void spellVibrate object#(0x676) () {
 
 		if (array_size > mincount) {
 			while (index < array_size) {
-				index = index + 1;
+				index += 1;
 				target_shape = npcitems[index]->get_item_shape();
 				if ((target_shape != SHAPE_PATH_EGG) &&
 				  (target_shape != SHAPE_USECODE_CONTAINER)) {
@@ -631,7 +631,7 @@ void spellImbalance object#(0x687) () {
 			}
 			delay = (15 + getNPCLevel(AVATAR));
 			while (delay != 0) {
-				delay = (delay - 1);
+				delay -= 1;
 				script AVATAR after (delay + 10) ticks {
 					nohalt;
 					call createImbalanceFields;

@@ -169,14 +169,14 @@ void spellReveal () {
 			var counter = 0;
 			var revealables = [];
 			while (counter != 12) {
-				counter = (counter + 1);
+				counter += 1;
 				var find_x = (pos.x + offset_x[counter]);
 				var find_y = (pos.y + offset_y[counter]);
 				findpos = [find_x, find_y, 0];
 				var invisibles = findpos->find_nearby(SHAPE_ANY, dist, MASK_INVISIBLE);
 				for (obj in invisibles) {
 					if (obj->get_item_flag(INVISIBLE) && (!(obj in revealables))) {
-						revealables = (revealables & obj);
+						revealables &= obj;
 					}
 				}
 			}
@@ -240,12 +240,12 @@ void spellSeance () {
 
 			if (hour < 6) {
 				delay = ((6 - hour) * 60);
-				delay = (delay + (60 - minute));
-				delay = (delay * 25);
+				delay += (60 - minute);
+				delay *= 25;
 			} else {
 				delay = ((23 - hour) * 60);
-				delay = (delay + (60 - minute));
-				delay = (delay * 25);
+				delay += (60 - minute);
+				delay *= 25;
 			}
 
 			script item after delay ticks {
@@ -319,11 +319,11 @@ void spellRechargeMagic (struct<ObjPos> target) {
 		var charges = target->get_item_quality();
 		if (inMagicStorm() && (target_shape in [SHAPE_LIGHTNING_WAND, SHAPE_FIRE_WAND, SHAPE_FIREDOOM_STAFF]) && (charges < 100)) {
 			if (charges < 50) {
-				charges = charges + UI_die_roll(12, 25);
+				charges += UI_die_roll(12, 25);
 			} else if (charges < 70) {
-				charges = charges + UI_die_roll(6, 18);
+				charges += UI_die_roll(6, 18);
 			} else if (charges < 200) {
-				charges = charges + UI_die_roll(3, 9);
+				charges += UI_die_roll(3, 9);
 			}
 			target->set_item_quality(charges);
 			UI_sprite_effect(ANIMATION_PURPLE_BUBBLES, target.x, target.y, 0, 0, 0, -1);

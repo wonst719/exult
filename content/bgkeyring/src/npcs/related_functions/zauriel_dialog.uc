@@ -772,7 +772,7 @@ void zaurielTalkPreQuest () {
 					];
 
 			//Player can try to badger Zauriel about what the reward is:
-			reward_counter = reward_counter + 1;
+			reward_counter += 1;
 
 			if (reward_counter > 20) {
 				say("@Thy dogged perseverance will not aid thee in extracting any more information about the reward.");
@@ -861,9 +861,9 @@ void zaurielTalkGemSubquest () {
 			//This is a little cheating; to avoid overcomplicating the verification of
 			//necessary components for the gem, I create the other components when Zauriel
 			//appraises the gems.
-			spider_eggs = spider_eggs + count_objects(SHAPE_SPIDER_EGG, QUALITY_ANY, FRAME_ANY);
-			invis_dust = invis_dust + count_objects(SHAPE_INVISIBILITY_DUST, QUALITY_ANY, FRAME_ANY);
-			bee_stringer = bee_stringer + count_objects(SHAPE_BEE_STINGER, QUALITY_ANY, FRAME_ANY);
+			spider_eggs += count_objects(SHAPE_SPIDER_EGG, QUALITY_ANY, FRAME_ANY);
+			invis_dust += count_objects(SHAPE_INVISIBILITY_DUST, QUALITY_ANY, FRAME_ANY);
+			bee_stringer += count_objects(SHAPE_BEE_STINGER, QUALITY_ANY, FRAME_ANY);
 
 			if ((spider_eggs >= 2) && (invis_dust) && (bee_stringer >= 6)) {
 				//Enough to fix the gem:
@@ -1051,7 +1051,7 @@ void zaurielTalkGemSubquest () {
 			var gems = [];
 			var party = UI_get_party_list();
 			for (npc in party) {
-				gems = gems & npc->get_cont_items(SHAPE_GEM_OF_DISPELLING, QUALITY_ANY, FRAME_ANY);
+				gems &= npc->get_cont_items(SHAPE_GEM_OF_DISPELLING, QUALITY_ANY, FRAME_ANY);
 			}
 
 			var gem_quality;

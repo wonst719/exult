@@ -60,7 +60,7 @@ var adder1 (a, b)
 	c = a[7];
 	a[const13] = 46;
 	c = item;
-	event = event + 7;
+	event += 7;
 	c = UI_get_item_flag(item, 10);
 	c = item->get_item_flag(10);
 	c = get_item_flag(10);
@@ -250,7 +250,7 @@ void while_nobreak_test(var list) {
 		{
 			break;
 		}
-		index = index + 1;
+		index += 1;
 	}
 	nobreak
 	{
@@ -270,7 +270,7 @@ void dowhile_nobreak_test(var list) {
 		{
 			break;
 		}
-		index = index + 1;
+		index += 1;
 	} while (index < count)
 	nobreak
 	{

@@ -210,7 +210,7 @@ void Dominik object#(0x565) ()
 		case "Name" (remove):
 			say("Dominik");
 		case "Job":
-			faqcnt = faqcnt + 1;
+			faqcnt += 1;
 			if (faqcnt == 1)
 				{
 				say("Please see the FAQ.");

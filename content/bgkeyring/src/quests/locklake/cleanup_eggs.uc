@@ -78,7 +78,7 @@ void eggCleanLockLake object#() () {
 
 		//Get the amount of time that elapsed since the last visit
 		//to this egg:
-		elapsed_time = elapsed_time - time;
+		elapsed_time -= time;
 
 		if (elapsed_time <= 0) {
 			//No time elapsed or invalid time; abort:
@@ -150,7 +150,7 @@ void eggCleanLockLake object#() () {
 					if (rand <= items_to_remove) {
 						//Remove it and reduce likelyhood of next item being removed:
 						obj->remove_item();
-						items_to_remove = items_to_remove - 1;
+						items_to_remove -= 1;
 					}
 				} else if (itemshape in bodies) {
 					//We have a body in our hands
@@ -173,15 +173,15 @@ void eggCleanLockLake object#() () {
 						}
 						//Remove body and reduce likelyhood of next item being removed:
 						obj->remove_item();
-						items_to_remove = items_to_remove - 1;
+						items_to_remove -= 1;
 					}
 				} else {
 					//Object cannot be removed (e.g., clothes inside houses)
-					unremovable_objects = unremovable_objects + 1;
+					unremovable_objects += 1;
 				}
 
 				//Increase likelyhood that next objects will be removed:
-				total_items = total_items - 1;
+				total_items -= 1;
 			}
 
 			if (unremovable_objects && (unremovable_objects == UI_get_array_size(garbage))) {
@@ -211,10 +211,10 @@ void eggCleanLockLake object#() () {
 		];
 		var posy;
 
-		items_to_remove = items_to_remove - 9;
+		items_to_remove -= 9;
 		while (items_to_remove > 0) {
 			//Go in steps of 9
-			items_to_remove = items_to_remove - 9;
+			items_to_remove -= 9;
 			//Determine y coordinate by the quality:
 			if ((quality >= 1) && (quality <= 6)) {
 				posy = 0x45F;
@@ -250,7 +250,7 @@ void eggCleanLockLake object#() () {
 				break;
 			} else {
 				//Prepare egg for next cleaning session:
-				quality = quality + 2;
+				quality += 2;
 				set_item_quality(quality);
 			}
 		}

@@ -265,12 +265,12 @@ void Orb_of_the_Moons shape#(0x311) () {
 		//Change the position to make moongate centered on target pos:
 		//target_coords[coordinate] = (target_coords[coordinate] + 2);
 		if ((direction == NORTH) || (direction == SOUTH)) {
-			target_coords.x = (target_coords.x + 2);
+			target_coords.x += 2;
 		} else if ((direction == EAST) || (direction == WEST)) {
-			target_coords.y = (target_coords.y + 2);
+			target_coords.y += 2;
 		} else {
-			target_coords.x = (target_coords.x + 1);
-			target_coords.y = (target_coords.y + 1);
+			target_coords.x += 1;
+			target_coords.y += 1;
 		}
 
 		//See if the target destination is blocked:
@@ -281,12 +281,12 @@ void Orb_of_the_Moons shape#(0x311) () {
 			//the Z coordinate and give up trying after 3 tries:
 			counter = 3;
 			while (counter) {
-				target_coords.z = (target_coords.z + 1);
+				target_coords.z += 1;
 				blocked = (!UI_is_not_blocked(target_coords, moongate_shape, 0));
 				if (!blocked) {
 					counter = 0;
 				} else {
-					counter = counter - 1;
+					counter -= 1;
 				}
 			}
 
@@ -318,12 +318,12 @@ void Orb_of_the_Moons shape#(0x311) () {
 		//Undoes the change made above, in preparation
 		//to move the avatar to the right spot:
 		if ((direction == NORTH) || (direction == SOUTH)) {
-			target_coords.x = (target_coords.x - 2);
+			target_coords.x -= 2;
 		} else if ((direction == EAST) || (direction == WEST)) {
-			target_coords.y = (target_coords.y - 2);
+			target_coords.y -= 2;
 		} else {
-			target_coords.x = (target_coords.x - 1);
-			target_coords.y = (target_coords.y - 1);
+			target_coords.x -= 1;
+			target_coords.y -= 1;
 		}
 
 		//Moongate music:
@@ -387,7 +387,7 @@ void Orb_of_the_Moons shape#(0x311) () {
 			} else {
 				coord_offset = -1;
 			}
-			target_coords.y = (target_coords.y + coord_offset);
+			target_coords.y += coord_offset;
 		}
 		if (!(direction in [NORTH, SOUTH])) {
 			if ((target_coords.x < avatar_pos.x)) {
@@ -395,7 +395,7 @@ void Orb_of_the_Moons shape#(0x311) () {
 			} else {
 				coord_offset = -1;
 			}
-			target_coords.x = (target_coords.x + coord_offset);
+			target_coords.x += coord_offset;
 		}
 
 		//The final destination of the avatar before entering moongate:

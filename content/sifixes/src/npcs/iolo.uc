@@ -284,41 +284,41 @@ void Iolo object#(0x403) () {
 					var songlist = [];
 					if (chooseFromMenu2(["old song", "new song"]) == 1) {
 						if (gflags[HEARD_BEATRIX_SONG] == true) {
-							songlist = (songlist & 1);
+							songlist &= 1;
 						}
 						if (gflags[HEARD_MOUNTAIN_SONG] == true) {
-							songlist = (songlist & 2);
+							songlist &= 2;
 						}
 						if (gflags[HEARD_GWANI_SONG] == true) {
-							songlist = (songlist & 3);
+							songlist &= 3;
 						}
 						if (gflags[HEARD_FOREST_MASTER_SONG] == true) {
-							songlist = (songlist & 4);
+							songlist &= 4;
 						}
 						if (gflags[HEARD_DREAM_SONG] == true) {
-							songlist = (songlist & 5);
+							songlist &= 5;
 						}
 						if (gflags[HEARD_WHITE_DRAGON_SONG] == true) {
-							songlist = (songlist & 6);
+							songlist &= 6;
 						}
 					} else {
 						if (gflags[HEARD_BEATRIX_SONG] == false) {
-							songlist = (songlist & 1);
+							songlist &= 1;
 						}
 						if (gflags[HEARD_MOUNTAIN_SONG] == false) {
-							songlist = (songlist & 2);
+							songlist &= 2;
 						}
 						if (gflags[HEARD_GWANI_SONG] == false) {
-							songlist = (songlist & 3);
+							songlist &= 3;
 						}
 						if (gflags[HEARD_FOREST_MASTER_SONG] == false) {
-							songlist = (songlist & 4);
+							songlist &= 4;
 						}
 						if (gflags[HEARD_DREAM_SONG] == false) {
-							songlist = (songlist & 5);
+							songlist &= 5;
 						}
 						if (gflags[HEARD_WHITE_DRAGON_SONG] == false) {
-							songlist = (songlist & 6);
+							songlist &= 6;
 						}
 					}
 

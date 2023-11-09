@@ -82,7 +82,7 @@ void zaurielTeleportPartyAround object#() () {
 				npc->set_item_frame_rot(STAND_SOUTH);
 
 				//Move the appropriate barrier:
-				count = count + 1;
+				count += 1;
 				pos = [new_pos.x + 1, new_pos.y + 1, new_pos.z];
 				barriers[count]->move_object(pos);
 			}
@@ -252,8 +252,8 @@ void zaurielRitualCutscene object#() () {
 		barrier = UI_create_new_object(SHAPE_BARRIER);
 
 		//Offset the position so that the barrier is in the right place:
-		pos.x = pos.x + 1;
-		pos.y = pos.y + 1;
+		pos.x += 1;
+		pos.y += 1;
 
 		//Move the barrier to the target position:
 		UI_update_last_created(pos);
