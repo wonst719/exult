@@ -360,6 +360,9 @@ public:
 	         Basic_block *&curr, Basic_block *end,
 	         std::map<std::string, Basic_block *> &labels,
 	         Basic_block *start = nullptr, Basic_block *exit = nullptr) override;
+	const std::string& get_label() const {
+		return label;
+	}
 };
 
 /*

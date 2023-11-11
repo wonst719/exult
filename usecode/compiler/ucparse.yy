@@ -135,6 +135,7 @@ struct Loop_Vars
 	class std::vector<Uc_var_symbol *> *varvec;
 	class Uc_block_statement *block;
 	class Uc_array_expression *exprlist;
+	class Uc_label_statement *label;
 	class std::vector<int> *intlist;
 	class std::vector<Uc_statement *> *stmtlist;
 	struct Fun_id_info *funid;
@@ -373,11 +374,12 @@ struct Loop_Vars
 %type <stmt> class_decl class_decl_list struct_decl_list struct_decl
 %type <stmt> break_statement converse_statement opt_nobreak opt_nobreak_do
 %type <stmt> converse_case switch_case script_statement switch_statement
-%type <stmt> label_statement goto_statement answer_statement delete_statement
+%type <stmt> goto_statement answer_statement delete_statement
 %type <stmt> continue_statement response_case fallthrough_statement
 %type <stmt> scoped_statement scoped_or_if_statement converse_case_attend
 %type <stmt> array_enum_statement opt_trailing_label
 %type <block> statement_list noncase_statement_list
+%type <label> label_statement
 %type <loopvars> start_array_loop start_array_variables
 %type <exprlist> opt_expression_list expression_list script_command_list
 %type <exprlist> opt_nonclass_expr_list nonclass_expr_list appended_element_list
@@ -520,6 +522,16 @@ function:
 
 opt_trailing_label:
 	label_statement
+		{
+		if (cur_fun->has_ret())
+			{
+			char buf[180];
+			snprintf(buf, array_size(buf), "Trailing label '%s' in non-void function '%s' is not allowed",
+					$1->get_label().c_str(), cur_fun->get_name());
+			yyerror(buf);
+			$$ = nullptr;
+			}
+		}
 	| %empty
 		{
 		$$ = nullptr;
