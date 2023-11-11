@@ -415,18 +415,10 @@ nobreak		return NOBREAK;
 "object#"	return OBJECTNUM;
 "id#"	return IDNUM;
 }
+break		return BREAK;
+continue	return CONTINUE;
 
-<in_breakable>{
-break		return BREAK;
-continue	return CONTINUE;
-}
-<in_loop>{
-break		return BREAK;
-continue	return CONTINUE;
-}
 <in_conversation>{
-break		return BREAK;
-continue	return CONTINUE;
 fallthrough	return FALLTHROUGH;
 }
 					/* Script commands. */
@@ -438,7 +430,6 @@ nohalt		return NOHALT;
 next		return NEXT;
 finish		return FINISH;
 resurrect	return RESURRECT;
-continue	return CONTINUE;
 reset	return RESET;
 repeat		return REPEAT;
 wait		return WAIT;
@@ -502,7 +493,6 @@ starvation_damage	return STARVATION_DAMAGE;
 freezing_damage	return FREEZING_DAMAGE;
 ethereal_damage	return ETHEREAL_DAMAGE;
 sonic_damage	return SONIC_DAMAGE;
-forever		return FOREVER;
 }
 
 
@@ -639,6 +629,16 @@ void start_fun_id()
 void end_fun_id()
 	{
 	yy_pop_state();
+	}
+bool can_break()
+	{
+	const int state = YYSTATE;
+	return state == in_loop || state == in_conversation || state == in_breakable;
+	}
+bool can_continue()
+	{
+	const int state = YYSTATE;
+	return state == in_loop || state == in_conversation;
 	}
 
 extern "C" int yywrap() { return 1; }		/* Stop at EOF. */

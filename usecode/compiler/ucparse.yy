@@ -57,6 +57,8 @@ extern void start_breakable();
 extern void end_breakable();
 extern void start_fun_id();
 extern void end_fun_id();
+extern bool can_break();
+extern bool can_continue();
 static Uc_var_symbol *Get_variable(const char *);
 static Uc_array_expression *Create_array(int, Uc_expression *);
 static Uc_array_expression *Create_array(int, Uc_expression *, Uc_expression *);
@@ -378,7 +380,7 @@ struct Loop_Vars
 %type <stmt> class_decl class_decl_list struct_decl_list struct_decl
 %type <stmt> break_statement converse_statement opt_nobreak opt_nobreak_do
 %type <stmt> converse_case switch_case script_statement switch_statement
-%type <stmt> goto_statement answer_statement delete_statement
+%type <stmt> goto_statement answer_statement delete_statement opt_nobreak_conv
 %type <stmt> continue_statement response_case fallthrough_statement
 %type <stmt> scoped_statement scoped_or_if_statement converse_case_attend
 %type <stmt> array_enum_statement opt_trailing_label
@@ -761,7 +763,21 @@ simple_statement:
 	| switch_statement
 	| script_statement
 	| break_statement
+		{
+		if (!can_break())
+			{
+			yyerror("'break' statement not allowed outside of loops/converse/breakable/forever statements");
+			}
+			$$ = $1;
+		}
 	| continue_statement
+		{
+		if (!can_continue())
+			{
+			yyerror("'continue' statement not allowed outside of loops/converse/breakable/forever statements");
+			}
+			$$ = $1;
+		}
 	| fallthrough_statement
 	| goto_statement
 	| delete_statement
@@ -1402,16 +1418,32 @@ try_statement:
 	;
 
 opt_nobreak:
-	NOBREAK statement
-		{ $$ = $2; }
+	NOBREAK { end_loop(); } statement
+		{
+		start_loop();
+		$$ = $3;
+		}
 	| %empty %prec LOOP
 		{ $$ = nullptr; }
 	;
 
 opt_nobreak_do:
-	NOBREAK statement
-		{ $$ = $2; }
+	NOBREAK { end_loop(); } statement
+		{
+		start_loop();
+		$$ = $3;
+		}
 	| ';' %prec LOOP
+		{ $$ = nullptr; }
+	;
+
+opt_nobreak_conv:
+	NOBREAK { end_converse(); } statement
+		{
+		start_converse();
+		$$ = $3;
+		}
+	| %empty %prec LOOP
 		{ $$ = nullptr; }
 	;
 
@@ -1655,7 +1687,7 @@ opt_nest:
 
 converse_statement:
 	CONVERSE start_conv
-			noncase_statement_list response_case_list '}' opt_nobreak
+			noncase_statement_list response_case_list '}' opt_nobreak_conv
 		{
 		cur_fun->pop_scope();
 		end_converse();
@@ -1663,7 +1695,7 @@ converse_statement:
 		$$ = new Uc_converse_statement(nullptr, $3, $4, false, $6);
 		}
 	| CONVERSE opt_nest conv_expression start_conv
-			noncase_statement_list converse_case_list '}' opt_nobreak
+			noncase_statement_list converse_case_list '}' opt_nobreak_conv
 		{
 		cur_fun->pop_scope();
 		end_converse();
