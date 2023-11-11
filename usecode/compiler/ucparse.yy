@@ -47,15 +47,19 @@ using std::vector;
 void yyerror(const char *);
 void yywarning(const char *);
 extern int yylex();
-extern void start_script(), end_script();
-extern void start_converse(), end_converse();
-extern void start_loop(), end_loop();
-extern void start_breakable(), end_breakable();
-extern void start_fun_id(), end_fun_id();
+extern void start_script();
+extern void end_script();
+extern void start_converse();
+extern void end_converse();
+extern void start_loop();
+extern void end_loop();
+extern void start_breakable();
+extern void end_breakable();
+extern void start_fun_id();
+extern void end_fun_id();
 static Uc_var_symbol *Get_variable(const char *);
 static Uc_array_expression *Create_array(int, Uc_expression *);
-static Uc_array_expression *Create_array(int, Uc_expression *,
-							Uc_expression *);
+static Uc_array_expression *Create_array(int, Uc_expression *, Uc_expression *);
 static Uc_class *Find_class(const char *nm);
 static bool Class_unexpected_error(Uc_expression *expr);
 static bool Nonclass_unexpected_error(Uc_expression *expr);
@@ -1673,7 +1677,7 @@ converse_statement:
 	;
 
 start_conv:
-	'{' { start_converse(); cur_fun->push_scope(); ++converse; }
+	'{'
 		{
 		start_converse();
 		cur_fun->push_scope();
