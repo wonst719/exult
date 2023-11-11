@@ -290,6 +290,7 @@ struct Loop_Vars
 %token ETHEREAL_DAMAGE "'ethereal_damage'"
 %token SONIC_DAMAGE "'sonic_damage'"
 %token FOREVER "'forever'"
+%token BREAKABLE "'breakable'"
 
 /*
  *	Operators
@@ -1473,6 +1474,11 @@ while_statement:
 			$$ = new Uc_while_statement($3, $6, $7);
 		end_loop();
 		}
+	| FOREVER { start_loop(); } scoped_statement opt_nobreak
+		{
+		$$ = new Uc_infinite_loop_statement($3, $4);
+		end_loop();
+		}
 	| DO { start_loop(); } scoped_statement WHILE '(' nonclass_expr ')' opt_nobreak_do
 		{
 		int val;
@@ -1493,6 +1499,11 @@ while_statement:
 			}
 		else
 			$$ = new Uc_dowhile_statement($6, $3, $8);
+		end_loop();
+		}
+	| BREAKABLE { start_loop(); } scoped_statement opt_nobreak
+		{
+		$$ = new Uc_breakable_statement($3, $4);
 		end_loop();
 		}
 	;

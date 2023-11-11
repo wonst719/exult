@@ -383,6 +383,8 @@ switch		return SWITCH;
 default		return DEFAULT;
 always		return ALWAYS;
 attend		return ATTEND;
+forever		return FOREVER;
+breakable	return BREAKABLE;
 
 converse	return CONVERSE;
 endconv		return ENDCONV;
