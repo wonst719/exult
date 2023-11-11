@@ -100,7 +100,6 @@ void Uc_assignment_statement::gen(
     Basic_block *exit           // Block used for 'break' statements.
 ) {
 	ignore_unused_variable_warning(fun, blocks, end, labels, start, exit);
-	ignore_unused_variable_warning(fun, blocks, end, labels, start, exit);
 	value->gen_value(curr);     // Get value on stack.
 	target->gen_assign(curr);
 }
@@ -260,7 +259,6 @@ void Uc_breakable_statement::gen(
     Basic_block *start,         // Block used for 'continue' statements.
     Basic_block *exit           // Block used for 'break' statements.
 ) {
-	ignore_unused_variable_warning(start, exit);
 	if (stmt == nullptr && nobreak == nullptr) {
 		// Optimize whole statement away.
 		return;
@@ -309,7 +307,6 @@ void Uc_while_statement::gen(
     Basic_block *start,         // Block used for 'continue' statements.
     Basic_block *exit           // Block used for 'break' statements.
 ) {
-	ignore_unused_variable_warning(start, exit);
 	if (stmt == nullptr && nobreak == nullptr) {
 		// Optimize whole loop away.
 		return;
@@ -381,7 +378,6 @@ void Uc_dowhile_statement::gen(
     Basic_block *start,         // Block used for 'continue' statements.
     Basic_block *exit           // Block used for 'break' statements.
 ) {
-	ignore_unused_variable_warning(start, exit);
 	if (stmt == nullptr && nobreak == nullptr) {
 		// Optimize whole loop away.
 		return;
@@ -446,7 +442,6 @@ void Uc_infinite_loop_statement::gen(
     Basic_block *start,         // Block used for 'continue' statements.
     Basic_block *exit           // Block used for 'break' statements.
 ) {
-	ignore_unused_variable_warning(start, exit);
 	if (stmt == nullptr && nobreak == nullptr) {
 		// Optimize whole loop away.
 		return;
@@ -579,7 +574,6 @@ void Uc_arrayloop_statement::gen(
     Basic_block *start,         // Block used for 'continue' statements.
     Basic_block *exit           // Block used for 'break' statements.
 ) {
-	ignore_unused_variable_warning(start, exit);
 	if (stmt == nullptr && nobreak == nullptr) {
 		// Nothing useful to do.
 		return;
@@ -1201,7 +1195,6 @@ void Uc_converse_statement::gen(
     Basic_block *start,         // Block used for 'continue' statements.
     Basic_block *exit           // Block used for 'break' statements.
 ) {
-	ignore_unused_variable_warning(start, exit);
 	if (cases.empty() && nobreak == nullptr && preamble == nullptr) {
 		// Nothing to do; optimize whole block away.
 		return;
