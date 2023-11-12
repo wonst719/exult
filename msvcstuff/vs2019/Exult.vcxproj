@@ -867,6 +867,9 @@
   <ItemGroup>
     <Xml Include="..\..\conf\config.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="..\..\win32\exult.exe.manifest" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\vorbis-msvc-x86.1.3.5.8787\build\native\vorbis-msvc-x86.targets" Condition="Exists('packages\vorbis-msvc-x86.1.3.5.8787\build\native\vorbis-msvc-x86.targets')" />

@@ -1465,4 +1465,7 @@
       <Filter>conf</Filter>
     </Xml>
   </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="..\..\win32\exult.exe.manifest" />
+  </ItemGroup>
 </Project>
