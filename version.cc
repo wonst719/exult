@@ -53,7 +53,7 @@ void getVersionInfo(std::ostream &out) {
 	// ARM THUMB
 #elif defined(__thumb__) || defined(__TARGET_ARCH_THUMB) || defined(_M_ARMT) 
 		out << "ARM Thumb";
-#elif defined(__arm__) || defined(__TARGET_ARCH_ARM) || defined(_ARM) 
+#elif defined(__arm__) || defined(__TARGET_ARCH_ARM) || defined(_ARM) \
 || defined(_M_ARM) || defined(__arm)
 	out << "ARM";
 	// ARM64
