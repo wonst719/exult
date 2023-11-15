@@ -58,7 +58,7 @@ void getVersionInfo(std::ostream &out) {
 	out << "ARM";
 	// ARM64
 #elif defined(__aarch64__) || defined(_M_ARM64) 
-			cout << "ARM64";
+			out << "ARM64";
 
 			//X86 
 #elif defined(i386) || defined(__i386) || defined(__i386__) \
