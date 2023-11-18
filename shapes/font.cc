@@ -301,7 +301,7 @@ int Font::paint_text(
 				chr = (chr << 8) | static_cast<unsigned char>(*text++);
 			}
 			if (useKoreanFont && korean_font && korean_font->hasGlyph(chr)) {
-				x += korean_font->drawGlyph(win, chr, x, korean_yoff);
+				x += korean_font->drawGlyph(win, chr, x, korean_yoff, trans);
 			} else {
 				Shape_frame* shape
 						= font_shapes->get_frame(static_cast<unsigned char>(chr));
