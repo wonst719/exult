@@ -502,7 +502,7 @@ protected:
 	Dest get_function(const char *func) {
 		static_assert(sizeof(Dest) == sizeof(decltype(GetProcAddress(hLib, func))), "sizeof(FARPROC) is not equal to sizeof(Dest)!");
 		Dest fptr;
-		const FARPROC optr = GetProcAddress(hLib, func);
+		FARPROC optr = GetProcAddress(hLib, func);
 		std::memcpy(&fptr, &optr, sizeof(optr));
 		return fptr;
 	}
