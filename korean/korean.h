@@ -51,7 +51,7 @@ public:
 	~KoreanFont();
 
 	bool load(const std::string& fontName);
-	int drawGlyph(Image_buffer8* dst, uint16 codepoint, int dx, int dy);
+	int drawGlyph(Image_buffer8* dst, uint16 codepoint, int dx, int dy, unsigned char *trans = nullptr);
 	int getGlyphAdvance(uint16 codepoint);
 	int getFontHeight();
 	bool hasGlyph(uint16 codepoint);
