@@ -104,7 +104,7 @@ KoreanFont::~KoreanFont() {
 	delete[] _fontPtr;
 }
 
-int KoreanFont::drawGlyph(Image_buffer8* dst, uint16 codepoint, int dx, int dy) {
+int KoreanFont::drawGlyph(Image_buffer8* dst, uint16 codepoint, int dx, int dy, unsigned char *trans) {
 	if (!_fontPtr)
 		return 0;
 
@@ -127,7 +127,11 @@ int KoreanFont::drawGlyph(Image_buffer8* dst, uint16 codepoint, int dx, int dy) 
 			byte c = (bits >> 6) & 0x3;
 			bits <<= 2;
 			if (c != 0) {
-				dst->put_pixel8(_pal[c], dx + x, dy + y);
+				if (trans) {
+					dst->put_pixel8(trans[_pal[c]], dx + x, dy + y);
+				} else {
+					dst->put_pixel8(_pal[c], dx + x, dy + y);
+				}
 			}
 		}
 	}
