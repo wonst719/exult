@@ -103,14 +103,24 @@ struct Member_selector
 		{  }
 	};
 
+struct Loop_Init
+	{
+	const char *var;
+	Uc_var_symbol *array;
+	Loop_Init(const char *v, Uc_var_symbol *a)
+		: var(v), array(a)
+		{  }
+	};
+
 struct Loop_Vars
 	{
 	Uc_var_symbol *var;
 	Uc_var_symbol *array;
-	Uc_var_symbol *index = nullptr;
-	Uc_var_symbol *length = nullptr;
-	Loop_Vars(Uc_var_symbol *v, Uc_var_symbol *a)
-		: var(v), array(a)
+	Uc_var_symbol *index;
+	Uc_var_symbol *length;
+	Loop_Vars(Uc_var_symbol *v, Uc_var_symbol *a, Uc_var_symbol *i = nullptr,
+	          Uc_var_symbol *l = nullptr)
+		: var(v), array(a), index(i), length(l)
 		{  }
 	};
 
@@ -146,6 +156,7 @@ struct Loop_Vars
 	class std::vector<Uc_statement *> *stmtlist;
 	struct Fun_id_info *funid;
 	struct Member_selector *membersel;
+	struct Loop_Init *loopinit;
 	struct Loop_Vars *loopvars;
 	int intval;
 	char *strval;
@@ -387,7 +398,8 @@ struct Loop_Vars
 %type <stmt> array_enum_statement opt_trailing_label
 %type <block> statement_list noncase_statement_list
 %type <label> label_statement
-%type <loopvars> start_array_loop start_array_variables
+%type <loopvars> start_array_variables
+%type <loopinit> start_array_loop
 %type <exprlist> opt_expression_list expression_list script_command_list
 %type <exprlist> opt_nonclass_expr_list nonclass_expr_list appended_element_list
 %type <stmtlist> switch_case_list converse_case_list response_case_list
@@ -1545,18 +1557,27 @@ array_loop_statement:
 start_array_variables:
 	start_array_loop ')'
 		{
-		$$ = $1;
+		Uc_var_symbol *index = cur_fun->add_symbol("$$for_loop_index_tempvar");
+		Uc_var_symbol *length = cur_fun->add_symbol("$$for_loop_length_tempvar");
+		Uc_var_symbol *var = Get_variable($1->var);
+		$$ = new Loop_Vars(var, $1->array, index, length);
+		delete $1;
 		}
 	| start_array_loop WITH IDENTIFIER ')'
 		{
-		$1->index = Get_variable($3);
-		$$ = $1;
+		Uc_var_symbol *index = Get_variable($3);
+		Uc_var_symbol *length = cur_fun->add_symbol("$$for_loop_length_tempvar");
+		Uc_var_symbol *var = Get_variable($1->var);
+		$$ = new Loop_Vars(var, $1->array, index, length);
+		delete $1;
 		}
 	| start_array_loop WITH IDENTIFIER TO IDENTIFIER ')'
 		{
-		$1->index = Get_variable($3);
-		$1->length = Get_variable($5);
-		$$ = $1;
+		Uc_var_symbol *index = Get_variable($3);
+		Uc_var_symbol *length = Get_variable($5);
+		Uc_var_symbol *var = Get_variable($1->var);
+		$$ = new Loop_Vars(var, $1->array, index, length);
+		delete $1;
 		}
 	;
 
@@ -1570,7 +1591,7 @@ start_array_loop:
 					$4->get_name());
 			yyerror(buf);
 			}
-		$$ = new Loop_Vars(Get_variable($2), $4);
+		$$ = new Loop_Init($2, $4);
 		}
 	;
 
