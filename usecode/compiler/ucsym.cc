@@ -611,7 +611,7 @@ int Uc_function_symbol::gen_call(
 		char buf[50];
 		snprintf(buf, array_size(buf), "_tmpretval_%d", cnt++);
 		// Create a 'tmp' variable.
-		Uc_var_symbol *var = fun->add_symbol(buf);
+		Uc_var_symbol *var = fun->add_symbol(buf, true);
 		if (!var)
 			return 0;       // Shouldn't happen.  Err. reported.
 		var->gen_assign(out);

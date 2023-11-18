@@ -129,16 +129,8 @@ public:
 	void pop_scope() {      // End scope.
 		cur_scope = cur_scope->get_parent();
 	}
-	Uc_symbol *search(const char *nm) { // Search current scope.
-		return cur_scope->search(nm);
-	}
-	Uc_symbol *search_up(const char *nm) {
-		Uc_symbol *sym = cur_scope->search_up(nm);
-		if (sym)
-			return sym;
-		setup_intrinsics();
-		return globals.search(nm);
-	}
+	Uc_symbol *search(const char *nm);
+	Uc_symbol *search_up(const char *nm);
 	static Uc_symbol *search_globals(const char *nm) {
 		return globals.search(nm);
 	}
@@ -170,9 +162,9 @@ public:
 	static Uc_intrinsic_symbol *get_get_item_shape() {
 		return get_intrinsic(get_item_shape);
 	}
-	Uc_var_symbol *add_symbol(const char *nm);// Add var. to current scope.
-	Uc_var_symbol *add_symbol(const char *nm, Uc_class *c);// Add var. to current scope.
-	Uc_var_symbol *add_symbol(const char *nm, Uc_struct_symbol *s);// Add var. to current scope.
+	Uc_var_symbol *add_symbol(const char *nm, bool bind_offset);// Add var. to current scope.
+	Uc_var_symbol *add_symbol(const char *nm, Uc_class *c, bool bind_offset);// Add var. to current scope.
+	Uc_var_symbol *add_symbol(const char *nm, Uc_struct_symbol *s, bool bind_offset);// Add var. to current scope.
 	Uc_var_symbol *add_symbol(Uc_var_symbol *var);// Add var. to current scope.
 	// Add alias to current scope.
 	Uc_var_symbol *add_alias(char *nm, Uc_var_symbol *var);

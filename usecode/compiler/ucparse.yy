@@ -174,6 +174,7 @@ struct Loop_Vars
 %token WITH "'with'"
 %token TO "'to'"
 %token EXTERN "'extern'"
+%token DECLARE_ "'declare'"
 %token BREAK "'break'"
 %token GOTO "'goto'"
 %token CASE "'case'"
@@ -833,7 +834,32 @@ alias_tok:
 	;
 
 stmt_declaration:
-	VAR var_decl_list ';'
+	DECLARE_ VAR IDENTIFIER ';'
+		{
+		if (cur_fun)
+			cur_fun->add_symbol($3, false);
+		else
+			cur_class->add_symbol($3);
+		$$ = nullptr;
+		}
+	| DECLARE_ STRUCT '<' defined_struct '>' { struct_type = $4; } IDENTIFIER ';'
+		{
+		if (cur_fun)
+			cur_fun->add_symbol($7, struct_type, false);
+		else
+			cur_class->add_symbol($7, struct_type);
+		$$ = nullptr;
+		}
+	| DECLARE_ CLASS '<' defined_class '>' { class_type = $4; } IDENTIFIER ';'
+		{
+		if (class_type && cur_fun)
+			cur_fun->add_symbol($7, class_type, false);
+		else
+			// Unsupported for now
+			{   }
+		$$ = nullptr;
+		}
+	| VAR var_decl_list ';'
 		{ $$ = $2; }
 	| VAR alias_tok IDENTIFIER '=' declared_var ';'
 		{ cur_fun->add_alias($3, $5); $$ = nullptr; }
@@ -966,7 +992,7 @@ var_decl:
 	IDENTIFIER
 		{
 		if (cur_fun)
-			cur_fun->add_symbol($1);
+			cur_fun->add_symbol($1, true);
 		else
 			cur_class->add_symbol($1);
 		$$ = nullptr;
@@ -982,7 +1008,7 @@ var_decl:
 			}
 		else
 			{
-			auto *var = cur_fun ? cur_fun->add_symbol($1)
+			auto *var = cur_fun ? cur_fun->add_symbol($1, true)
 			                    : cur_class->add_symbol($1);
 			var->set_is_obj_fun($3->is_object_function(false));
 			$$ = new Uc_assignment_statement(new Uc_var_expression(var), $3);
@@ -999,7 +1025,7 @@ var_decl:
 			}
 		else
 			{
-			auto *var = cur_fun ? cur_fun->add_symbol($1)
+			auto *var = cur_fun ? cur_fun->add_symbol($1, true)
 			                    : cur_class->add_symbol($1);
 			$$ = new Uc_assignment_statement(new Uc_var_expression(var), $3);
 			}
@@ -1033,7 +1059,7 @@ class_decl:
 	IDENTIFIER
 		{
 		if (class_type && cur_fun)
-			cur_fun->add_symbol($1, class_type);
+			cur_fun->add_symbol($1, class_type, true);
 		else
 			// Unsupported for now
 			{   }
@@ -1050,7 +1076,7 @@ class_decl:
 				$$ = nullptr;
 			else
 				{
-				auto *v = cur_fun->add_symbol($1, class_type);
+				auto *v = cur_fun->add_symbol($1, class_type, true);
 				$$ = new Uc_assignment_statement(new Uc_class_expression(v), $3);
 				}
 			}
@@ -1084,7 +1110,7 @@ struct_decl:
 	IDENTIFIER
 		{
 		if (cur_fun)
-			cur_fun->add_symbol($1, struct_type);
+			cur_fun->add_symbol($1, struct_type, true);
 		else
 			cur_class->add_symbol($1, struct_type);
 		$$ = nullptr;
@@ -1100,7 +1126,7 @@ struct_decl:
 			}
 		else
 			{
-			auto *var = cur_fun ? cur_fun->add_symbol($1, struct_type)
+			auto *var = cur_fun ? cur_fun->add_symbol($1, struct_type, true)
 							 : cur_class->add_symbol($1, struct_type);
 			var->set_is_obj_fun($3->is_object_function(false));
 			$$ = new Uc_assignment_statement(new Uc_var_expression(var), $3);
@@ -1120,7 +1146,7 @@ class_expr:
 			char buf[150];
 			snprintf(buf, array_size(buf), "'%s' not declared", $1);
 			yyerror(buf);
-			cur_fun->add_symbol($1);
+			cur_fun->add_symbol($1, false);
 			$$ = nullptr;
 			}
 		else if (sym->get_sym_type() != Uc_symbol::Class)
@@ -1132,9 +1158,8 @@ class_expr:
 			}
 		else
 			{
-				// Tests above guarantee this will always work.
-			auto *cls =
-					dynamic_cast<Uc_class_inst_symbol *>(sym->get_sym());
+			// Tests above guarantee this will always work.
+			auto *cls = dynamic_cast<Uc_class_inst_symbol *>(sym->get_sym());
 			$$ = new Uc_class_expression(cls);
 			}
 		}
@@ -1418,7 +1443,7 @@ trystart_statement:
 		cur_fun->pop_scope();
 		cur_fun->push_scope();
 		auto *stmt = new Uc_trycatch_statement($2);
-		stmt->set_catch_variable(cur_fun->add_symbol($7));
+		stmt->set_catch_variable(cur_fun->add_symbol($7, true));
 		$$ = stmt;
 		}
 	;
@@ -1557,8 +1582,8 @@ array_loop_statement:
 start_array_variables:
 	start_array_loop ')'
 		{
-		Uc_var_symbol *index = cur_fun->add_symbol("$$for_loop_index_tempvar");
-		Uc_var_symbol *length = cur_fun->add_symbol("$$for_loop_length_tempvar");
+		Uc_var_symbol *index = cur_fun->add_symbol("$$for_loop_index_tempvar", true);
+		Uc_var_symbol *length = cur_fun->add_symbol("$$for_loop_length_tempvar", true);
 		Uc_var_symbol *var = Get_variable($1->var);
 		$$ = new Loop_Vars(var, $1->array, index, length);
 		delete $1;
@@ -1566,7 +1591,7 @@ start_array_variables:
 	| start_array_loop WITH IDENTIFIER ')'
 		{
 		Uc_var_symbol *index = Get_variable($3);
-		Uc_var_symbol *length = cur_fun->add_symbol("$$for_loop_length_tempvar");
+		Uc_var_symbol *length = cur_fun->add_symbol("$$for_loop_length_tempvar", true);
 		Uc_var_symbol *var = Get_variable($1->var);
 		$$ = new Loop_Vars(var, $1->array, index, length);
 		delete $1;
@@ -2815,7 +2840,7 @@ declared_var:
 			snprintf(buf, array_size(buf), "'%s' not a 'var'", $1->get_name());
 			yyerror(buf);
 			snprintf(buf, array_size(buf), "%s_needvar", $1->get_name());
-			var = cur_fun->add_symbol(buf);
+			var = cur_fun->add_symbol(buf, false);
 			}
 		$$ = var;
 		}
@@ -2830,7 +2855,7 @@ declared_sym:
 			char buf[150];
 			snprintf(buf, array_size(buf), "'%s' not declared", $1);
 			yyerror(buf);
-			sym = cur_fun->add_symbol($1);
+			sym = cur_fun->add_symbol($1, false);
 			}
 		$$ = sym;
 		}
@@ -2873,7 +2898,7 @@ static Uc_var_symbol *Get_variable
 	auto *var = dynamic_cast<Uc_var_symbol *>(sym);
 	if (!var)
 		{
-		var = cur_fun->add_symbol(ident);
+		var = cur_fun->add_symbol(ident, true);
 		}
 	return var;
 	}

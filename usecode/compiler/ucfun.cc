@@ -22,6 +22,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "ucsym.h"
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -88,6 +89,36 @@ Uc_function::~Uc_function(
 	labels.clear();
 }
 
+Uc_symbol *Uc_function::search(const char *nm) { // Search current scope.
+	Uc_symbol *sym = cur_scope->search(nm);
+	if (sym != nullptr) {
+		auto *var = dynamic_cast<Uc_var_symbol*>(sym);
+		if (var == nullptr) {
+			return sym;
+		}
+		if (var->get_offset() < 0) {
+			var->set_offset(num_parms + num_locals++);
+		}
+	}
+	return sym;
+}
+
+Uc_symbol *Uc_function::search_up(const char *nm) {
+	Uc_symbol *sym = cur_scope->search_up(nm);
+	if (sym != nullptr) {
+		auto *var = dynamic_cast<Uc_var_symbol*>(sym);
+		if (var == nullptr) {
+			return sym;
+		}
+		if (var->get_offset() < 0) {
+			var->set_offset(num_parms + num_locals++);
+		}
+		return sym;
+	}
+	setup_intrinsics();
+	return globals.search(nm);
+}
+
 /*
  *  Add a new variable to the current scope.
  *
@@ -95,12 +126,16 @@ Uc_function::~Uc_function(
  */
 
 Uc_var_symbol *Uc_function::add_symbol(
-    const char *nm
+    const char *nm,
+    bool bind_offset
 ) {
 	if (cur_scope->is_dup(nm))
 		return nullptr;
 	// Create & assign slot.
-	auto *var = new Uc_var_symbol(nm, num_parms + num_locals++);
+	auto *var = new Uc_var_symbol(nm, -1);
+	if (bind_offset) {
+		var->set_offset(num_parms + num_locals++);
+	}
 	cur_scope->add(var);
 	return var;
 }
@@ -113,12 +148,16 @@ Uc_var_symbol *Uc_function::add_symbol(
 
 Uc_var_symbol *Uc_function::add_symbol(
     const char *nm,
-    Uc_class *c
+    Uc_class *c,
+    bool bind_offset
 ) {
 	if (cur_scope->is_dup(nm))
 		return nullptr;
 	// Create & assign slot.
-	Uc_var_symbol *var = new Uc_class_inst_symbol(nm, c, num_parms + num_locals++);
+	Uc_var_symbol *var = new Uc_class_inst_symbol(nm, c, -1);
+	if (bind_offset) {
+		var->set_offset(num_parms + num_locals++);
+	}
 	cur_scope->add(var);
 	return var;
 }
@@ -131,12 +170,16 @@ Uc_var_symbol *Uc_function::add_symbol(
 
 Uc_var_symbol *Uc_function::add_symbol(
     const char *nm,
-    Uc_struct_symbol *s
+    Uc_struct_symbol *s,
+    bool bind_offset
 ) {
 	if (cur_scope->is_dup(nm))
 		return nullptr;
 	// Create & assign slot.
-	Uc_var_symbol *var = new Uc_struct_var_symbol(nm, s, num_parms + num_locals++);
+	Uc_var_symbol *var = new Uc_struct_var_symbol(nm, s, -1);
+	if (bind_offset) {
+		var->set_offset(num_parms + num_locals++);
+	}
 	cur_scope->add(var);
 	return var;
 }

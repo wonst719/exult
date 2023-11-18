@@ -371,6 +371,7 @@ long	return UCC_LONG;
 const		return UCC_CONST;
 string		return STRING;
 enum		return ENUM;
+declare		return DECLARE_;
 extern		return EXTERN;
 true		return UCTRUE;
 false		return UCFALSE;

@@ -211,7 +211,7 @@ void Uc_trycatch_statement::gen(
 		char buf[50];
 		snprintf(buf, array_size(buf), "_tmperror_%d", cnt++);
 		// Create a 'tmp' variable.
-		catch_var = fun->add_symbol(buf);
+		catch_var = fun->add_symbol(buf, true);
 		assert(catch_var != nullptr);
 	}
 	// Generate error variable assignment (push is handled by abort/throw)
@@ -520,11 +520,11 @@ void Uc_arrayloop_statement_base::finish(
 	char buf[100];
 	if (index == nullptr) {       // Create vars. if not given.
 		snprintf(buf, array_size(buf), "_%s_index", array->get_name());
-		index = fun->add_symbol(buf);
+		index = fun->add_symbol(buf, true);
 	}
 	if (array_len == nullptr) {
 		snprintf(buf, array_size(buf), "_%s_size", array->get_name());
-		array_len = fun->add_symbol(buf);
+		array_len = fun->add_symbol(buf, true);
 	}
 }
 

@@ -77,9 +77,10 @@ Uc_var_symbol *Uc_expression::need_var(
 	char buf[50];
 	snprintf(buf, array_size(buf), "_tmpval_%d", cnt++);
 	// Create a 'tmp' variable.
-	Uc_var_symbol *var = fun->add_symbol(buf);
-	if (!var)
+	Uc_var_symbol *var = fun->add_symbol(buf, true);
+	if (var == nullptr) {
 		return nullptr;       // Shouldn't happen.  Err. reported.
+	}
 	gen_value(out);         // Want to assign this value to it.
 	var->gen_assign(out);
 	return var;
