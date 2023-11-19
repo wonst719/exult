@@ -848,6 +848,7 @@ stmt_declaration:
 			cur_fun->add_symbol($7, struct_type, false);
 		else
 			cur_class->add_symbol($7, struct_type);
+		struct_type = nullptr;
 		$$ = nullptr;
 		}
 	| DECLARE_ CLASS '<' defined_class '>' { class_type = $4; } IDENTIFIER ';'
@@ -857,6 +858,7 @@ stmt_declaration:
 		else
 			// Unsupported for now
 			{   }
+		class_type = nullptr;
 		$$ = nullptr;
 		}
 	| VAR var_decl_list ';'
