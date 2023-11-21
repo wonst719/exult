@@ -1738,18 +1738,16 @@ opt_nest:
 
 converse_statement:
 	CONVERSE start_conv
-			noncase_statement_list response_case_list '}' { end_loop(); } opt_nobreak_conv
+			noncase_statement_list response_case_list '}' { end_converse(); } opt_nobreak_conv
 		{
 		cur_fun->pop_scope();
-		end_converse();
 		--converse;
 		$$ = new Uc_converse_statement(nullptr, $3, $4, false, $7);
 		}
 	| CONVERSE opt_nest conv_expression start_conv
-			noncase_statement_list converse_case_list '}' { end_loop(); } opt_nobreak_conv
+			noncase_statement_list converse_case_list '}' { end_converse(); } opt_nobreak_conv
 		{
 		cur_fun->pop_scope();
-		end_converse();
 		--converse;
 		$$ = new Uc_converse_statement($3, $5, $6, $2, $9);
 		}
