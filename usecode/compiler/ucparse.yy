@@ -1458,37 +1458,34 @@ try_statement:
 	;
 
 opt_nobreak:
-	NOBREAK { end_loop(); } statement
+	NOBREAK statement
 		{
-		start_loop();
-		$$ = $3;
+		$$ = $2;
 		}
 	| %empty %prec LOOP
 		{ $$ = nullptr; }
 	;
 
 opt_nobreak_do:
-	NOBREAK { end_loop(); } statement
+	NOBREAK statement
 		{
-		start_loop();
-		$$ = $3;
+		$$ = $2;
 		}
 	| ';' %prec LOOP
 		{ $$ = nullptr; }
 	;
 
 opt_nobreak_conv:
-	NOBREAK { end_converse(); } statement
+	NOBREAK statement
 		{
-		start_converse();
-		$$ = $3;
+		$$ = $2;
 		}
 	| %empty %prec LOOP
 		{ $$ = nullptr; }
 	;
 
 while_statement:
-	WHILE '(' nonclass_expr ')' { start_loop(); } scoped_statement opt_nobreak
+	WHILE '(' nonclass_expr ')' { start_loop(); } scoped_statement { end_loop(); } opt_nobreak
 		{
 		int val;
 		if ($3->eval_const(val))
@@ -1498,27 +1495,25 @@ while_statement:
 				if (dynamic_cast<Uc_bool_expression*>($3) == nullptr) {
 					$3->warning("Infinite loop detected");
 				}
-				$$ = new Uc_infinite_loop_statement($6, $7);
+				$$ = new Uc_infinite_loop_statement($6, $8);
 				}
 			else
 				{	// Need 'may' because of those pesky GOTOs...
 				if (dynamic_cast<Uc_bool_expression*>($3) == nullptr) {
 					$3->warning("Body of 'while' statement may never execute");
 				}
-				$$ = new Uc_while_statement(nullptr, $6, $7);
+				$$ = new Uc_while_statement(nullptr, $6, $8);
 				}
 			delete $3;
 			}
 		else
-			$$ = new Uc_while_statement($3, $6, $7);
-		end_loop();
+			$$ = new Uc_while_statement($3, $6, $8);
 		}
-	| FOREVER { start_loop(); } scoped_statement opt_nobreak
+	| FOREVER { start_loop(); } scoped_statement { end_loop(); } opt_nobreak
 		{
-		$$ = new Uc_infinite_loop_statement($3, $4);
-		end_loop();
+		$$ = new Uc_infinite_loop_statement($3, $5);
 		}
-	| DO { start_loop(); } scoped_statement WHILE '(' nonclass_expr ')' opt_nobreak_do
+	| DO { start_loop(); } scoped_statement WHILE '(' nonclass_expr ')' { end_loop(); } opt_nobreak_do
 		{
 		int val;
 		if ($6->eval_const(val))
@@ -1528,22 +1523,20 @@ while_statement:
 				if (dynamic_cast<Uc_bool_expression*>($6) == nullptr) {
 					$6->warning("Infinite loop detected");
 				}
-				$$ = new Uc_infinite_loop_statement($3, $8);
+				$$ = new Uc_infinite_loop_statement($3, $9);
 				}
 			else	// Optimize loop away.
 				{
-				$$ = new Uc_breakable_statement($3, $8);
+				$$ = new Uc_breakable_statement($3, $9);
 				}
 			delete $6;
 			}
 		else
-			$$ = new Uc_dowhile_statement($6, $3, $8);
-		end_loop();
+			$$ = new Uc_dowhile_statement($6, $3, $9);
 		}
-	| BREAKABLE { start_loop(); } scoped_statement opt_nobreak
+	| BREAKABLE { start_loop(); } scoped_statement { end_loop(); } opt_nobreak
 		{
-		$$ = new Uc_breakable_statement($3, $4);
-		end_loop();
+		$$ = new Uc_breakable_statement($3, $5);
 		}
 	;
 
@@ -1555,16 +1548,15 @@ array_enum_statement:
 	;
 
 array_loop_statement:
-	start_array_variables { start_loop(); } scoped_statement opt_nobreak
+	start_array_variables { start_loop(); } scoped_statement { end_loop(); } opt_nobreak
 		{
 		auto *expr = new Uc_arrayloop_statement($1->var, $1->array);
 		expr->set_statement($3);
-		expr->set_nobreak($4);
+		expr->set_nobreak($5);
 		expr->set_index($1->index);
 		expr->set_array_size($1->length);
 		expr->finish(cur_fun);
 		cur_fun->pop_scope();
-		end_loop();
 		delete $1;	// No onger needed
 		$$ = expr;
 		}
@@ -1746,20 +1738,20 @@ opt_nest:
 
 converse_statement:
 	CONVERSE start_conv
-			noncase_statement_list response_case_list '}' opt_nobreak_conv
+			noncase_statement_list response_case_list '}' { end_loop(); } opt_nobreak_conv
 		{
 		cur_fun->pop_scope();
 		end_converse();
 		--converse;
-		$$ = new Uc_converse_statement(nullptr, $3, $4, false, $6);
+		$$ = new Uc_converse_statement(nullptr, $3, $4, false, $7);
 		}
 	| CONVERSE opt_nest conv_expression start_conv
-			noncase_statement_list converse_case_list '}' opt_nobreak_conv
+			noncase_statement_list converse_case_list '}' { end_loop(); } opt_nobreak_conv
 		{
 		cur_fun->pop_scope();
 		end_converse();
 		--converse;
-		$$ = new Uc_converse_statement($3, $5, $6, $2, $8);
+		$$ = new Uc_converse_statement($3, $5, $6, $2, $9);
 		}
 	| CONVERSE ATTEND IDENTIFIER ';'
 		{
