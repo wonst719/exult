@@ -5313,7 +5313,7 @@ void Schedule_change::set(
     unsigned char stype,
     unsigned char stime
 ) {
-	time = stime;
+	time = stime % 8;	// Matches original behavior.
 	type = stype;
 	pos = Tile_coord(ax, ay, az);
 }
