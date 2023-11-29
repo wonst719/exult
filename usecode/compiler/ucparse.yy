@@ -405,6 +405,7 @@ struct Loop_Vars
 %type <exprlist> opt_nonclass_expr_list nonclass_expr_list appended_element_list
 %type <stmtlist> switch_case_list converse_case_list response_case_list
 %type <funcall> function_call script_expr run_script_expression
+%type <strval> string_literal string_prefix
 
 %%
 
@@ -1228,13 +1229,43 @@ static_cls:
 		}
 	;
 
+string_literal:
+	string_literal STRING_LITERAL
+		{
+		size_t left_len = strlen($1);
+		size_t right_len = strlen($2);
+		char *ret = new char[left_len + right_len + 1];
+		std::memcpy(ret           , $1, left_len );
+		std::memcpy(ret + left_len, $2, right_len);
+		ret[left_len + right_len] = '\0';
+		delete [] $1;
+		delete [] $2;
+		$$ = ret;
+		}
+	| STRING_LITERAL
+
+string_prefix:
+	string_literal STRING_PREFIX
+		{
+		size_t left_len = strlen($1);
+		size_t right_len = strlen($2);
+		char *ret = new char[left_len + right_len + 1];
+		std::memcpy(ret           , $1, left_len );
+		std::memcpy(ret + left_len, $2, right_len);
+		ret[left_len + right_len] = '\0';
+		delete [] $1;
+		delete [] $2;
+		$$ = ret;
+		}
+	| STRING_PREFIX
+
 string_decl_list:
 	string_decl_list ',' string_decl
 	| string_decl
 	;
 
 string_decl:
-	IDENTIFIER '=' STRING_LITERAL
+	IDENTIFIER '=' string_literal
 		{
 		cur_fun->add_string_symbol($1, $3);
 		}
@@ -1886,7 +1917,7 @@ response_case:
 	;
 
 response_expression:
-	IF '(' RESPONSE EQUALS STRING_LITERAL ')'
+	IF '(' RESPONSE EQUALS string_literal ')'
 		{
 		$$ = new vector<int>;
 		$$->push_back(cur_fun->add_string($5));
@@ -1896,9 +1927,9 @@ response_expression:
 	;
 
 string_list:
-	string_list ',' STRING_LITERAL
+	string_list ',' string_literal
 		{ $$->push_back(cur_fun->add_string($3)); }
-	| STRING_LITERAL
+	| string_literal
 		{
 		$$ = new vector<int>;
 		$$->push_back(cur_fun->add_string($1));
@@ -1943,7 +1974,7 @@ switch_case_list:
 switch_case:
 	CASE int_literal ':' noncase_statement_list
 		{	$$ = new Uc_switch_expression_case_statement($2, $4);	}
-	| CASE STRING_LITERAL ':' noncase_statement_list
+	| CASE string_literal ':' noncase_statement_list
 		{	$$ = new Uc_switch_expression_case_statement(
 				new Uc_string_expression(cur_fun->add_string($2)), $4);	}
 	| DEFAULT ':' noncase_statement_list
@@ -2442,9 +2473,9 @@ expression:
 		{ $$ = new Uc_unary_expression(UC_NOT, $2); }
 	| '[' opt_expression_list ']'	/* Concat. into an array. */
 		{ $$ = $2; }
-	| STRING_LITERAL
+	| string_literal
 		{ $$ = new Uc_string_expression(cur_fun->add_string($1)); }
-	| STRING_PREFIX
+	| string_prefix
 		{ $$ = new Uc_string_prefix_expression(cur_fun, $1); }
 	| new_expr
 	| run_script_expression
