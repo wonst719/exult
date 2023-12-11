@@ -518,8 +518,9 @@ int exult_main(const char *runpath) {
 	add_system_path("<MODS>", "mods");
 
 	std::cout << "Exult path settings:" << std::endl;
-#ifdef __IPHONEOS__
-	std::cout << "Bundle        : " << get_system_path("<BUNDLE>") << std::endl;
+#if defined(MACOSX) || defined(__IPHONEOS__)
+	if (is_system_path_defined("<APP_BUNDLE_RES>"))
+		std::cout << "Bundled Data  : " << get_system_path("<BUNDLE>") << std::endl;
 #endif
 	std::cout << "Data          : " << get_system_path("<DATA>") << std::endl;
 	std::cout << "Digital music : " << get_system_path("<MUSIC>") << std::endl;

@@ -710,6 +710,26 @@ struct CFDeleter
 		if (ptr) CFRelease(ptr);
 	}
 };
+
+void setup_app_bundle_resource() {
+	// setup the location of the resource folder inside the app bundle
+	std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter> fileUrl {std::move(CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle()))};
+	if (fileUrl) {
+		unsigned char buf[MAXPATHLEN];
+		if (CFURLGetFileSystemRepresentation(fileUrl.get(), true, buf, sizeof(buf))) {
+			string path(reinterpret_cast<const char *>(buf));
+			add_system_path("<APP_BUNDLE_RES>", path);
+#ifdef MACOSX
+			path += "/exult.icns";
+#else
+			path += "/Info.plist";
+#endif
+			if (!U7exists(path))
+				clear_system_path("<APP_BUNDLE_RES>");
+			
+		}
+	}
+}
 #endif
 
 void setup_data_dir(
@@ -718,16 +738,13 @@ void setup_data_dir(
 ) {
 #if defined(MACOSX) || defined(__IPHONEOS__)
 	// Can we try from the bundle?
-	std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter> fileUrl {std::move(CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle()))};
-	if (fileUrl) {
-		unsigned char buf[MAXPATHLEN];
-		if (CFURLGetFileSystemRepresentation(fileUrl.get(), true, buf, sizeof(buf))) {
-			string path(reinterpret_cast<const char *>(buf));
-			path += "/data";
-			add_system_path("<BUNDLE>", path);
-			if (!U7exists(BUNDLE_EXULT_FLX))
-				clear_system_path("<BUNDLE>");
-		}
+	setup_app_bundle_resource();
+	if (is_system_path_defined("<APP_BUNDLE_RES>")) {
+		std::string path = get_system_path("<APP_BUNDLE_RES>");
+		path += "/data";
+		add_system_path("<BUNDLE>", path);
+		if (!U7exists(BUNDLE_EXULT_FLX))
+			clear_system_path("<BUNDLE>");
 	}
 #endif
 #ifdef __IPHONEOS__
@@ -872,21 +889,6 @@ void setup_program_paths() {
 	U7mkdir("<HOME>", 0755);
 	U7mkdir("<CONFIG>", 0755);
 	U7mkdir("<SAVEHOME>", 0755);
-#ifdef MACOSX
-	// setup APPBUNDLE needed to launch Exult Studio from one
-	std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter> fileUrl {std::move(CFBundleCopyBundleURL(CFBundleGetMainBundle()))};
-	if (fileUrl) {
-		unsigned char buf[MAXPATHLEN];
-		if (CFURLGetFileSystemRepresentation(fileUrl.get(), true, buf, sizeof(buf))) {
-			string path(reinterpret_cast<const char *>(buf));
-			add_system_path("<APPBUNDLE>", path);
-			// test whether it is actually an app bundle
-			path += "/Contents/Info.plist";
-			if (!U7exists(path))
-				clear_system_path("<APPBUNDLE>");
-		}
-	}
-#endif
 }
 
 /*
