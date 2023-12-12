@@ -713,20 +713,26 @@ struct CFDeleter
 
 void setup_app_bundle_resource() {
 	// setup the location of the resource folder inside the app bundle
-	std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter> fileUrl {std::move(CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle()))};
-	if (fileUrl) {
-		unsigned char buf[MAXPATHLEN];
-		if (CFURLGetFileSystemRepresentation(fileUrl.get(), true, buf, sizeof(buf))) {
-			string path(reinterpret_cast<const char *>(buf));
-			add_system_path("<APP_BUNDLE_RES>", path);
+	std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter> bundleUrl {std::move(CFBundleCopyBundleURL(CFBundleGetMainBundle()))};
+	if (bundleUrl) {
+		unsigned char bundlebuf[MAXPATHLEN];
+		if (CFURLGetFileSystemRepresentation(bundleUrl.get(), true, bundlebuf, sizeof(bundlebuf))) {
+			string bundlepath(reinterpret_cast<const char *>(bundlebuf));
 #ifdef MACOSX
-			path += "/exult.icns";
+			bundlepath += "/Contents/Info.plist";
 #else
-			path += "/Info.plist";
+			bundlepath += "/Info.plist";
 #endif
-			if (!U7exists(path))
-				clear_system_path("<APP_BUNDLE_RES>");
-			
+			if (U7exists(bundlepath)) {
+				std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter> fileUrl {std::move(CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle()))};
+				if (fileUrl) {
+					unsigned char buf[MAXPATHLEN];
+					if (CFURLGetFileSystemRepresentation(fileUrl.get(), true, buf, sizeof(buf))) {
+						string path(reinterpret_cast<const char *>(buf));
+						add_system_path("<APP_BUNDLE_RES>", path);
+					}
+				}
+			}
 		}
 	}
 }
