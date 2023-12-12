@@ -79,8 +79,11 @@ static const ROMImage *getROM(
 
 int MT32EmuMidiDriver::open() {
 	// Must be stereo
-	if (!stereo)
+	if (!stereo) {
+		std::cerr << "Audio output is not stereo. Mt32EMU cannot be used "
+				  << std::endl;
 		return 1;
+	}
 
 	// Make sure dir exists; this is the dir where data will be saved.
 	U7mkdir("<SAVEHOME>/data", 0755);
@@ -107,8 +110,11 @@ int MT32EmuMidiDriver::open() {
 			}
 		}
 	}
-	if (!controlROMImage)
-		return 1;
+	if (!controlROMImage) {
+		std::cerr << "Failed to open Control rom file. Mt32EMU cannot be used "
+				  << std::endl;
+		return 2;
+	}
 
 	FileStream pcmROMFile;
 	const ROMImage *pcmROMImage;
@@ -116,22 +122,39 @@ int MT32EmuMidiDriver::open() {
 	if (!pcmROMImage)
 		pcmROMImage = getROM(pcmROMFile, "MT32_PCM.ROM");
 	if (!pcmROMImage) {
+		std::cerr << "Failed to open PCM rom file. Mt32EMU cannot be used "
+				  << std::endl;
 		ROMImage::freeROMImage(controlROMImage);
-		return 1;
+		return 3;
 	}
 
 	mt32 = new Synth(nullptr);
 
 	if (!mt32->open(*controlROMImage, *pcmROMImage)) {
+		std::cerr << "Failed open emulated mt32. Mt32EMU cannot be used "
+				  << std::endl;
 		ROMImage::freeROMImage(controlROMImage);
 		ROMImage::freeROMImage(pcmROMImage);
 		delete mt32;
 		mt32 = nullptr;
-		return 1;
+		return 4;
 	}
-	if (mt32->getStereoOutputSampleRate() != sample_rate)
-	mt32src = new SampleRateConverter(
+	if (mt32->getStereoOutputSampleRate() != sample_rate) {
+		if (SampleRateConverter::getSupportedOutputSampleRate(sample_rate)
+			== 0) {
+			std::cerr << "LibMt32EMU was not compiled with a Sample Rate "
+						 "Converter. Mt32EMU cannot be used "
+					  << std::endl;
+			delete mt32;
+			mt32 = nullptr;
+			ROMImage::freeROMImage(controlROMImage);
+			ROMImage::freeROMImage(pcmROMImage);
+			return 5;
+		}
+
+		mt32src = new SampleRateConverter(
 				*mt32, sample_rate, SamplerateConversionQuality_GOOD);
+	}
 
 	ROMImage::freeROMImage(controlROMImage);
 	ROMImage::freeROMImage(pcmROMImage);
