@@ -10,9 +10,6 @@
 		<destination overwrite="yes">
 			${prefix:source}
 		</destination>
-		<launcher-script>
-			${project}/exult_studio_launcher.sh
-		</launcher-script >
 		<gtk>
 			gtk+-3.0
 		</gtk>

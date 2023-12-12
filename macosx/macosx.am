@@ -36,9 +36,9 @@ endif
 studiobundle: $(exult_studio)
 	SOURCE=$(abs_top_srcdir) gtk-mac-bundler ./macosx/exult_studio.bundle
 if WITH_OSX_CODE_SIGNATURE
-	codesign --options runtime --deep --timestamp -f -s "$(OSX_CODE_SIGNATURE)" --entitlements ./macosx/exult_studio_entitlements.plist $(studio_name)
 	codesign --options runtime --timestamp -f -s "$(OSX_CODE_SIGNATURE)" $(studio_name)/contents/resources/lib/*.dylib
 	codesign --options runtime --timestamp -f -s "$(OSX_CODE_SIGNATURE)" $(studio_name)/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.so
+	codesign --options runtime --deep --timestamp -f -s "$(OSX_CODE_SIGNATURE)" --entitlements ./macosx/exult_studio_entitlements.plist $(studio_name)
 endif
 
 # Don't try to build/install the MacOS bundle if we are building libexult
