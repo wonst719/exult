@@ -29,6 +29,7 @@
 #include "ignore_unused_variable_warning.h"
 #include <cstddef>
 #include <cstdlib>
+#include <utility>
 
 #define XBR_VARIANT 4   // Tweaked xBR-z (Zenju's version)
 //#define XBR_VARIANT 3  // xBR-C: Hyllian's "squared flavor" version
@@ -248,12 +249,10 @@ static inline void cycle_buffers(
     Buffer_Type *&b4,
     Buffer_Type *&b5
 ) {
-	Buffer_Type *b0 = b1;
-	b1 = b2;
-	b2 = b3;
-	b3 = b4;
-	b4 = b5;
-	b5 = b0;
+	std::swap(b1, b2);
+	std::swap(b2, b3);
+	std::swap(b3, b4);
+	std::swap(b4, b5);
 }
 
 template <class Dest_pixel, class Manip_pixels, class Scaler>

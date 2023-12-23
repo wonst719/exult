@@ -499,21 +499,23 @@ method:
 		struct_type = nullptr;
 
 		cur_fun = new Uc_function(funsym, cur_class->get_scope());
+		cur_class->add_method(cur_fun);
 		}
 	function_body
 		{
-		cur_class->add_method(cur_fun);
 		cur_fun = nullptr;
 		}
 	;
 
 struct_definition:
 	STRUCT IDENTIFIER
-		{ cur_struct = new Uc_struct_symbol($2); }
+		{
+		cur_struct = new Uc_struct_symbol($2);
+		Uc_function::add_global_struct_symbol(cur_struct);
+		}
 		'{' struct_item_list '}'
 		{
 		// Add to 'globals' symbol table.
-		Uc_function::add_global_struct_symbol(cur_struct);
 		cur_struct = nullptr;
 		}
 	;
@@ -533,10 +535,13 @@ struct_item:
 	;
 
 function:
-	function_proto { cur_fun = new Uc_function($1); }
+	function_proto
+		{
+		cur_fun = new Uc_function($1);
+		units.push_back(cur_fun);
+		}
 	function_body
 		{
-		units.push_back(cur_fun);
 		cur_fun = nullptr;
 		}
 	;
