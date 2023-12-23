@@ -409,16 +409,14 @@ void Image_window::static_init() {
 		p_resolutions[(res.width << 16) | res.height] = res;
 	}
 
-	bool ok_pal = false;
-	bool ok_rgb = false;
+	bool mode_ok = false;
 
 	for (auto it = p_resolutions.begin(); it != p_resolutions.end();) {
 		const Image_window::Resolution &res = it->second;
 		bool ok = false;
 
 		if (VideoModeOK(res.width, res.height)) {
-			ok_pal = true;
-			ok_rgb = true;
+			mode_ok = true;
 			ok = true;
 		}
 
@@ -436,12 +434,8 @@ void Image_window::static_init() {
 		cerr << "SDL Reports 640x400 windowed surfaces are not OK. Windowed scalers may not work properly." << endl;
 #endif
 
-	if (!ok_pal && !ok_rgb)
+	if (!mode_ok)
 		cerr << "SDL Reports no usable fullscreen resolutions." << endl;
-	else if (!ok_pal)
-		cerr << "SDL Reports no usable paletted fullscreen resolutions." << endl;
-	else if (!ok_rgb)
-		cerr << "SDL Reports no usable rgb fullscreen resolutions." << endl;
 
 	config->value("config/video/force_bpp", force_bpp, 0);
 

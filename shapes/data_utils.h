@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define INCL_DATA_UTILS 1
 
 #include <algorithm>
+#include <iterator>
 #include <map>
 #include <sstream>
 #include <string>
@@ -774,8 +775,7 @@ public:
 		Write2(out, index);
 		out.write(reinterpret_cast<char *>(&(info.*data1)), sizeof(T1));
 		out.write(reinterpret_cast<char *>(&(info.*data2)), sizeof(T2));
-		for (int i = 0; i < pad; i++)
-			out.put(0);
+		std::fill_n(std::ostream_iterator<char>(out), pad, 0);
 	}
 	bool operator()(Info &info) {
 		return check(info);
