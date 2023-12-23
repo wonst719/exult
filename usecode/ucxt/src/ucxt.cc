@@ -246,7 +246,7 @@ void open_usecode_file(UCData &uc, const Configuration &config) {
 			cout << "Configuring for " << game << "." << endl;
 	} else if (uc.options.game_u8()) {
 		if (uc.options.verbose) cout << "Configuring for u8." << endl;
-		path      = u8path;
+		path      = std::move(u8path);
 		ucspecial = "usecode.u8";
 		mucc_l  = mucc_u8l;
 		mucc_c  = mucc_u8c;

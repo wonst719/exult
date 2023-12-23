@@ -118,7 +118,7 @@ int Read_text_msg_file(IDataSource *in, vector<string> &strings,
 		}
 		if (index >= strings.size())
 			strings.resize(index + 1);
-		strings[index] = lineVal;
+		strings[index] = std::move(lineVal);
 		if (index < first)
 			first = index;
 	}

@@ -1501,7 +1501,7 @@ void Usecode_internal::create_script(
 	        Game::get_game_type() == SERPENT_ISLE &&
 	        obj && obj->get_shapenum() == 470 && obj->get_lift() == 0) {
 		// We want the TOP of the well.
-		Usecode_value v2 = objval.get_elem(1);
+		Usecode_value& v2 = objval.get_elem(1);
 		Game_object *o2 = get_item(v2);
 		if (o2->get_shapenum() == obj->get_shapenum() &&
 		        o2->get_lift() == 2) {

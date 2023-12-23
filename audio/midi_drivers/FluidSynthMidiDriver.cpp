@@ -77,7 +77,7 @@ int FluidSynthMidiDriver::open() {
 					f = soundfont;
 				}
 				if (U7exists(f.c_str()))
-					soundfont = f;
+					soundfont = std::move(f);
 			}
 			soundfonts.push_back(soundfont);
 		}
@@ -98,7 +98,7 @@ int FluidSynthMidiDriver::open() {
 				f = soundfont;
 			}
 			if (U7exists(f.c_str()))
-				soundfont = f;
+				soundfont = std::move(f);
 		}
 		soundfonts.push_back(soundfont);
 	}

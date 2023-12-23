@@ -554,7 +554,7 @@ int ExultStudio::save_npc_window(
 	GtkWidget *fw = get_widget("npc_face_frame");
 	const int face = reinterpret_cast<sintptr>(g_object_get_data(G_OBJECT(fw), "user_data"));
 	const int usecode = get_num_entry("npc_usecode_entry");
-	std::string usecodefun;
+	const char *usecodefun = "";
 	if (!usecode)
 		usecodefun = get_text_entry("npc_usecode_entry");
 	const short attack_mode = get_optmenu("npc_attack_mode");

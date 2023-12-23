@@ -871,7 +871,7 @@ bool Egg_object::edit(
 		editing.reset();
 		const Tile_coord t = get_tile();
 		// Usecode function name.
-		const string str1 = get_str1();
+		const char *str1 = get_str1();
 		if (Egg_object_out(client_socket, this, t.tx, t.ty, t.tz,
 		                   get_shapenum(), get_framenum(),
 		                   type, criteria, probability, distance,

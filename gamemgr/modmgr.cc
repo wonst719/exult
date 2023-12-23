@@ -112,15 +112,11 @@ ModInfo::ModInfo(
 
 	config_path = "mod_info/mod_title";
 	default_dir = mod;
-	string modname;
-	modconfig.value(config_path, modname, default_dir.c_str());
-	mod_title = modname;
+	modconfig.value(config_path, mod_title, default_dir.c_str());
 
 	config_path = "mod_info/display_string";
 	default_dir = "Description missing!";
-	string menustr;
-	modconfig.value(config_path, menustr, default_dir.c_str());
-	menustring = menustr;
+	modconfig.value(config_path, menustring, default_dir.c_str());
 
 	config_path = "mod_info/required_version";
 	default_dir = "0.0.00R";

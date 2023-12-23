@@ -1353,7 +1353,7 @@ void readbin_U7UCFunc(
 								varname.swap(temp);
 							} else if (varname == "item")
 								varname = "_item";
-							ucf._varmap[i] = varname;
+							ucf._varmap[i] = std::move(varname);
 						}
 					}
 				}

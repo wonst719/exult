@@ -79,7 +79,7 @@ public:
 			first->prev->next = nobj;
 			first->prev = nobj.get();
 		}
-		first = nobj;
+		first = std::move(nobj);
 	}
 	// Insert before given obj.
 	void insert_before(TShared nobj, T *before) {

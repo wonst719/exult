@@ -606,7 +606,6 @@ void KeyBinder::ParseLine(char *line) {
 	k.mod      = KMOD_NONE;
 	string s = line;
 	string u;
-	string d;
 	string desc;
 	string keycode;
 	bool show;
@@ -734,14 +733,13 @@ void KeyBinder::ParseLine(char *line) {
 		} else {
 			s.erase(0, 1);
 			skipspace(s);
-			d = s;
 			// Always show if there is a comment.
 			show = true;
 		}
 	} else {
 		// Action::dont_show doesn't have default display names, so do not
 		// show them if they don't have a comment.
-		d = a.action->desc;
+		s = a.action->desc;
 		show = a.action->key_type != Action::dont_show;
 	}
 
@@ -762,7 +760,7 @@ void KeyBinder::ParseLine(char *line) {
 		if (!strcmp(a.action->s, "CREATE_ITEM") && a.params[0] == -1)
 			last_created_key.push_back(desc);
 
-		desc += " - " + d;
+		desc += " - " + s;
 
 		// add to help list
 		if (a.action->key_type == Action::cheat_keys)

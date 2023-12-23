@@ -366,7 +366,7 @@ int ExultStudio::save_egg_window(
 	int data1 = -1;
 	int data2 = -1;
 	int data3 = 0;
-	string str1;
+	const char *str1 = "";
 	switch (type) {         // Set notebook page.
 	case 1: {           // Monster:
 		const int shnum = get_num_entry("monst_shape");

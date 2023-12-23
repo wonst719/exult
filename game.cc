@@ -361,9 +361,8 @@ void Game::write_game_xml() {
 		if (val.str)
 			xml.set(key.c_str(), val.str, false);
 		if (val.num != 0) {
-			string valkey = key;
-			valkey += "/num";
-			xml.set(valkey.c_str(), val.num, false);
+			key += "/num";
+			xml.set(key.c_str(), val.num, false);
 		}
 	}
 	for (auto& shape : shapes) {

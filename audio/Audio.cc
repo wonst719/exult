@@ -97,10 +97,10 @@ AudioSample *SFX_cache_manager::request(Flex *sfx_file, int id)
 {
 	SFX_cached *loaded = find_sfx(id);
 	if (!loaded) {
-		SFX_cached new_sfx;
+		SFX_cached& new_sfx = cache[id];
 		new_sfx.first = 0;
 		new_sfx.second = nullptr;
-		loaded = &(cache[id] = new_sfx);
+		loaded = &new_sfx;
 	}
 
 	if (!loaded->second)
@@ -286,7 +286,7 @@ bool	Audio::can_sfx(const std::string &file, std::string *out)
 		}
 		if (U7exists(f.c_str())) {
 			if (out)
-				*out = f;
+				*out = std::move(f);
 			return true;
 		}
 	}
@@ -424,8 +424,8 @@ sint32 Audio::play(std::unique_ptr<uint8[]> sound_data, uint32 len, bool wait)
 		sint32 id = mixer->playSample(audio_sample,0,128);
 		audio_sample->Release();
 		return id;
-	} 
-	
+	}
+
 	return -1;
 
 }
@@ -610,11 +610,11 @@ int Audio::wait_for_speech(std::function<int(Uint32 ms)> waitfunc) {
 			speech_id = -1;
 			return canceled;
 		}
-			
+
 	}
 	speech_id = -1;
 	return 0;
-	
+
 }
 
 /*

@@ -31,12 +31,8 @@ using std::strtol;
 using std::strtoul;
 
 void    Args::declare(const char *s, bool *b, bool defval) {
-	string  ss;
-
-	ss = s;
-
 	Opts o;
-	o.option = ss;
+	o.option = s;
 	o.bval = b;
 	o.dbval = defval;
 	o.valuetype = Opts::type_bool;
@@ -44,12 +40,8 @@ void    Args::declare(const char *s, bool *b, bool defval) {
 }
 
 void    Args::declare(const char *s, string *b, const char *defval) {
-	string  ss;
-
-	ss = s;
-
 	Opts o;
-	o.option = ss;
+	o.option = s;
 	o.sval = b;
 	o.dsval = defval ? defval : "";
 	*o.sval = defval ? defval : "";
@@ -58,12 +50,8 @@ void    Args::declare(const char *s, string *b, const char *defval) {
 }
 
 void    Args::declare(const char *s, int *b, int defval) {
-	string  ss;
-
-	ss = s;
-
 	Opts o;
-	o.option = ss;
+	o.option = s;
 	o.ival = b;
 	o.dival = defval;
 	*o.ival = defval;
@@ -72,12 +60,8 @@ void    Args::declare(const char *s, int *b, int defval) {
 }
 
 void    Args::declare(const char *s, uint32 *b, uint32 defval) {
-	string  ss;
-
-	ss = s;
-
 	Opts o;
-	o.option = ss;
+	o.option = s;
 	o.uval = b;
 	o.duval = defval;
 	*o.uval = defval;
