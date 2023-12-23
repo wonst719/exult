@@ -127,7 +127,7 @@ using std::toupper;
 using std::string;
 using std::vector;
 
-#if (defined(_WIN32) || (defined(MACOSX) && defined(USE_EXULTSTUDIO)))
+#if (defined(_WIN32) || (defined(MACOSX) && defined(XWIN) && defined(USE_EXULTSTUDIO)))
 
 static int SDLCALL SDL_putenv(const char *_var) {
     char *ptr = nullptr;
