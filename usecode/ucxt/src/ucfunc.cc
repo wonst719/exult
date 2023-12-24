@@ -124,8 +124,12 @@ bool UCFunc::output_list(ostream &o, unsigned int funcno, const UCOptions &optio
 	  << std::setw(4) << _datasize  << "  "
 	  << std::setw(4) << codesize() << "  ";
 
-	if (options.ucdebug)
-		o << _data.find(0)->second;
+	if (options.ucdebug) {
+		auto iter = _data.find(0);
+		if (iter != _data.cend()) {
+			o << iter->second;
+		}
+	}
 
 	o << endl;
 
@@ -140,7 +144,11 @@ bool UCFunc::output_ucs(ostream &o, const FuncMap &funcmap, const map<unsigned i
 	// output the 'externs'
 	for (const unsigned int ext : _externs) {
 		auto fmp = funcmap.find(ext);
-		output_ucs_funcname(tab_indent(indent, o) << "extern ", funcmap, ext, fmp->second.num_args, symtbl) << ';' << endl;
+		if (fmp != funcmap.cend()) {
+			output_ucs_funcname(tab_indent(indent, o) << "extern ", funcmap, ext, fmp->second.num_args, symtbl) << ';' << endl;
+		} else {
+			std::cerr << "Error: data for extern " << ext << "was not found." << std::endl;
+		}
 	}
 
 	if (!_externs.empty()) o << endl;
@@ -180,7 +188,7 @@ ostream &UCFunc::output_ucs_funcname(ostream &o, const FuncMap &funcmap,
 	ignore_unused_variable_warning(symtbl);
 	auto fmp = funcmap.find(funcid);
 	// do we return a variable
-	if (fmp->second.return_var) o << VARNAME << ' ';
+	if (fmp != funcmap.cend() && fmp->second.return_var) o << VARNAME << ' ';
 	else o << NORETURN << ' ';
 
 	// output the "function name"
