@@ -554,7 +554,7 @@ void ModManager::gather_mods() {
 			std::filesystem::path modcfg(filenames[i]);
 			auto modtitle = modcfg.stem();
 #else
-			auto filename = filenames[i];
+			const auto& filename = filenames[i];
 			auto pathend  = filename.find_last_of("/\\") + 1;
 			auto modtitle = filename.substr(
 					pathend, filename.length() - pathend - strlen(".cfg"));
