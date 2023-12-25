@@ -79,12 +79,12 @@ jobs:
           rm ./app/build/outputs/apk/release/app-release-unsigned.apk
       - name: Sign APK
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
-        uses: kevin-david/zipalign-sign-android-release@v1.1.1
+        uses: ilharp/sign-android-release@v1
         id: sign_app
         with:
-          releaseDirectory: ./../build/android/app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          releaseDir: ./../build/android/app/build/outputs/apk/release
+          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
+          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
           # this corrupts the APK for some reason thus we do it in the previous step
