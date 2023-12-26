@@ -82,13 +82,11 @@ jobs:
         uses: ilharp/sign-android-release@v1
         id: sign_app
         with:
-          releaseDir: ./../build/android/app/build/outputs/apk/release
+          releaseDir: /home/runner/work/exult/build/android/app/build/outputs/apk/release
           signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
           keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          # this corrupts the APK for some reason thus we do it in the previous step
-          zipAlign: false
       - name: Save release artifact
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: cp ${{steps.sign_app.outputs.signedReleaseFile}} ./android-snapshot/exult-snapshot-signed.apk
