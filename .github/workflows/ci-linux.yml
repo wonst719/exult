@@ -88,7 +88,7 @@ jobs:
         with:
           severity: info
           username: github-actions
-          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           text: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           title: "The Linux build succeeded."
       - name: Discord failure notification
@@ -97,7 +97,7 @@ jobs:
         with:
           severity: error
           username: github-actions
-          webhookURL: ${{ secrets.DISCORD_WEBHOOK }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           text: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           title: "The Linux build failed."
   ci-linux:
