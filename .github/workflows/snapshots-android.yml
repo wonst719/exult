@@ -89,7 +89,7 @@ jobs:
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
       - name: Save release artifact
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
-        run: cp ${{steps.sign_app.outputs.signedReleaseFile}} ./android-snapshot/exult-snapshot-signed.apk
+        run: cp ${{steps.sign_app.outputs.signedFile}} ./android-snapshot/exult-snapshot-signed.apk
       - name: Upload artifacts
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: actions/upload-artifact@v3
