@@ -28,18 +28,21 @@
 #endif
 
 #ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#if !defined(__llvm__) && !defined(__clang__)
-#pragma GCC diagnostic ignored "-Wuseless-cast"
-#else
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#	if !defined(__llvm__) && !defined(__clang__)
+#		pragma GCC diagnostic ignored "-Wuseless-cast"
+#	else
+#		pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#		if __clang_major__ >= 16
+#			pragma GCC diagnostic ignored "-Wcast-function-type-strict"
+#		endif
+#	endif
 #endif  // __GNUC__
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #ifdef __GNUC__
-#pragma GCC diagnostic pop
+#	pragma GCC diagnostic pop
 #endif  // __GNUC__
 
 #include "exceptions.h"

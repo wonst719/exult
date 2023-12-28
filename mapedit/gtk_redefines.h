@@ -23,11 +23,26 @@
 #ifndef INCL_GTK_REDEFINES
 #define INCL_GTK_REDEFINES  1
 
+#include <cstring>
+#include <type_traits>
+
 namespace {
+// Do casts from pointers without too much undefined behavior.
+template <typename To, typename From>
+To safe_pointer_cast(From pointer) {
+	// NOLINTNEXTLINE(bugprone-sizeof-expression)
+	static_assert(std::is_pointer<From>::value && std::is_pointer<To>::value && sizeof(From) == sizeof(To), "Pointer sizes do not match");
+	To output;
+	std::memcpy(static_cast<void*>(&output),
+				static_cast<void*>(&pointer),
+				sizeof(From*));
+	return output;
+}
+
 template <typename T1, typename T2>
 struct gtk_cast_internal {
 	static T1 *cast(T2 *obj) {
-		return reinterpret_cast<T1 *>(obj);
+		return safe_pointer_cast<T1 *>(obj);
 	}
 };
 
@@ -67,7 +82,7 @@ inline T1 *gtk_cast(T2 *obj) {
 
 #ifdef G_CALLBACK
 #  undef G_CALLBACK
-#  define G_CALLBACK(f)       (reinterpret_cast<GCallback>((f)))
+#  define G_CALLBACK(f)       (safe_pointer_cast<GCallback>((f)))
 #endif /* G_CALLBACK */
 
 #ifdef G_TYPE_MAKE_FUNDAMENTAL
@@ -90,7 +105,7 @@ inline T1 *gtk_cast(T2 *obj) {
 
 #ifdef g_utf8_next_char
 #  undef g_utf8_next_char
-#define g_utf8_next_char(p)   ((p) + g_utf8_skip[*reinterpret_cast<const guchar *>((p))])
+#define g_utf8_next_char(p)   ((p) + g_utf8_skip[*safe_pointer_cast<const guchar *>((p))])
 #endif /* g_utf8_next_char */
 
 #ifdef G_LOG_DOMAIN

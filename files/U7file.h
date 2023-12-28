@@ -185,7 +185,6 @@ protected:
 
 public:
 	explicit File_data(const File_spec &spec);
-	File_data(const File_data &other) noexcept = default;
 	bool from_patch() const {
 		return patch;
 	}

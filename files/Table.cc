@@ -41,7 +41,6 @@ void Table::index_file() {
 	if (!is_table(data.get())) {    // Not a table file we recognise
 		throw wrong_file_type_exception(identifier.name, "TABLE");
 	}
-	unsigned int i = 0;
 	while (true) {
 		Reference f;
 		f.size = data->read2();
@@ -51,7 +50,6 @@ void Table::index_file() {
 		}
 		f.offset = data->read4();
 		object_list.push_back(f);
-		i++;
 	}
 }
 

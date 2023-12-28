@@ -36,6 +36,9 @@
 #	else
 #		pragma GCC diagnostic ignored "-Wc99-extensions"
 #		pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#		if __clang_major__ >= 16
+#			pragma GCC diagnostic ignored "-Wcast-function-type-strict"
+#		endif
 #	endif
 #endif    // __GNUC__
 #ifdef USE_STRICT_GTK

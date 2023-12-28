@@ -28,6 +28,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #		pragma GCC diagnostic ignored "-Wuseless-cast"
 #	else
 #		pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#		if __clang_major__ >= 16
+#			pragma GCC diagnostic ignored "-Wcast-function-type-strict"
+#		endif
 #	endif
 #endif    // __GNUC__
 #ifdef USE_STRICT_GTK

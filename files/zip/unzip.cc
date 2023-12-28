@@ -134,6 +134,17 @@ static int U7fclose(void* handle) {
 const char unz_copyright[] =
     " unzip 0.15 Copyright 1998 Gilles Vollant ";
 
+#ifdef __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif  // __GNUC__
+static int U7inflateInit2(z_stream *stream) {
+	return inflateInit2(stream, -MAX_WBITS);
+}
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#endif  // __GNUC__
+
 /* unz_file_info_interntal contain internal info about a file in zipfile*/
 struct unz_file_info_internal {
 	uLong offset_curfile;/* relative offset of local header 4 bytes */
@@ -924,7 +935,7 @@ extern int ZEXPORT unzOpenCurrentFile(unzFile file) {
 	  pfile_in_zip_read_info->stream.zfree = nullptr;
 	  pfile_in_zip_read_info->stream.opaque = nullptr;
 
-		err = inflateInit2(&pfile_in_zip_read_info->stream, -MAX_WBITS);
+		err = U7inflateInit2(&pfile_in_zip_read_info->stream);
 		if (err == Z_OK)
 			pfile_in_zip_read_info->stream_initialised = 1;
 		/* windowBits is passed < 0 to tell that there is no zlib header.

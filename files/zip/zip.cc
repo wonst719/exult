@@ -80,6 +80,18 @@ using namespace std;
 
 #define SIZECENTRALHEADER (0x2e) /* 46 */
 
+#ifdef __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif  // __GNUC__
+static int U7deflateInit2(z_stream *stream, int level) {
+	return deflateInit2(stream, level,
+	                    Z_DEFLATED, -MAX_WBITS, DEF_MEM_LEVEL, 0);
+}
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#endif  // __GNUC__
+
 struct linkedlist_datablock_internal {
 	linkedlist_datablock_internal *next_datablock;
 	uLong  avail_in_this_block;
@@ -423,8 +435,7 @@ extern int ZEXPORT zipOpenNewFileInZip(zipFile file,
 		file->ci.stream.zfree = nullptr;
 		file->ci.stream.opaque = nullptr;
 
-		err = deflateInit2(&file->ci.stream, level,
-		                   Z_DEFLATED, -MAX_WBITS, DEF_MEM_LEVEL, 0);
+		err = U7deflateInit2(&file->ci.stream, level);
 
 		if (err == Z_OK)
 			file->ci.stream_initialised = 1;
