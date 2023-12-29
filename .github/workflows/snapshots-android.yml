@@ -79,17 +79,18 @@ jobs:
           rm ./app/build/outputs/apk/release/app-release-unsigned.apk
       - name: Sign APK
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
-        uses: ilharp/sign-android-release@v1
+        uses: kevin-david/zipalign-sign-android-release@v1.1.1
         id: sign_app
         with:
-          releaseDir: /home/runner/work/exult/build/android/app/build/outputs/apk/release
-          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
-          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          releaseDirectory: ./../build/android/app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          zipAlign: false
       - name: Save release artifact
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
-        run: cp ${{steps.sign_app.outputs.signedFile}} ./android-snapshot/exult-snapshot-signed.apk
+        run: cp ${{steps.sign_app.outputs.signedReleaseFile}} ./android-snapshot/exult-snapshot-signed.apk
       - name: Upload artifacts
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: actions/upload-artifact@v3
