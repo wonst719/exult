@@ -40,11 +40,14 @@
 template <typename To, typename From>
 To safe_pointer_cast(From pointer) {
 	// NOLINTNEXTLINE(bugprone-sizeof-expression)
-	static_assert(std::is_pointer<From>::value && std::is_pointer<To>::value && sizeof(From) == sizeof(To), "Pointer sizes do not match");
+	constexpr const size_t SizeFrom = sizeof(From);
+	// NOLINTNEXTLINE(bugprone-sizeof-expression)
+	constexpr const size_t SizeTo = sizeof(To);
+	static_assert(std::is_pointer<From>::value && std::is_pointer<To>::value && SizeFrom == SizeTo, "Pointer sizes do not match");
 	To output;
 	std::memcpy(static_cast<void*>(&output),
-	            static_cast<void*>(&pointer),
-	            sizeof(From*));
+				static_cast<void*>(&pointer),
+				SizeFrom);
 	return output;
 }
 
