@@ -145,7 +145,7 @@ bool BilinearScalerInternal_X2Y24(SDL_Surface *tex, sint32 sx, sint32 sy, sint32
 
 			X2xY24xInnerLoop(1, 1);
 			pixel -= pitch * 12 - sizeof(uintX) * 2;
-		};
+		}
 	}
 
 	return true;

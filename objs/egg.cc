@@ -800,7 +800,7 @@ bool Egg_object::is_active(
 				   obj->as_actor();
 		else
 			return area.has_world_point(tx, ty) && deltaz == 0 &&
-			       obj->get_flag(Obj_flags::in_party);;
+			       obj->get_flag(Obj_flags::in_party);
 	case something_on:
 		// force close gumps when gumps pause game
 		if (!gumpman->gumps_dont_pause_game())

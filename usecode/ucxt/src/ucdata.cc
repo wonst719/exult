@@ -343,7 +343,7 @@ void UCData::load_globals(ostream &o) {
 			}
 			ii++;
 			std::getline(gflags, flagname, '\0');
-		};
+		}
 		o << endl << "};" << endl << endl;
 	} catch (const std::exception &err) {
 		cout << "error. failed to open " << _global_flags_file << ". exiting." << endl;

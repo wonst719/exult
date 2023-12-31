@@ -2803,7 +2803,7 @@ void Desk_schedule::now_what(
 			frames[1] = npc->get_dir_framenum(dir, (rand()%2)
 					  ? Actor::reach1_frame : Actor::reach2_frame);
 			frames[2] = npc->get_dir_framenum(dir, Actor::standing);
-			Actor_action *face = new Face_pos_actor_action(tbl.get(), 200);;
+			Actor_action *face = new Face_pos_actor_action(tbl.get(), 200);
 			npc->set_action(new Sequence_actor_action(face,
 			                    new Frames_actor_action(frames,
 			                            array_size(frames))));

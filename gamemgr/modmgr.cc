@@ -416,7 +416,7 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 			if (needtitle)
 				new_title = CFG_BG_TITLE;
 			break;
-		};
+		}
 	} else if (static_identity == "FORGE") {
 		type = BLACK_GATE;
 		language = ENGLISH;
@@ -459,7 +459,7 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 				new_title = CFG_SI_TITLE;
 			sibeta = false;
 			break;
-		};
+		}
 	} else if (static_identity == "SILVER SEED") {
 		type = SERPENT_ISLE;
 		language = ENGLISH;

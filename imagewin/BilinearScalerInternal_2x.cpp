@@ -111,7 +111,7 @@ bool BilinearScalerInternal_2x(SDL_Surface *tex, sint32 sx, sint32 sy, sint32 sw
 
 			pixel -= pitch * 8;
 			pixel += sizeof(uintX) * 2;
-		};
+		}
 
 		pixel  += p_diff;
 
@@ -169,7 +169,7 @@ bool BilinearScalerInternal_2x(SDL_Surface *tex, sint32 sx, sint32 sy, sint32 sw
 
 			pixel -= pitch * 8;
 			pixel += sizeof(uintX) * 2;
-		};
+		}
 
 		pixel  += p_diff;
 

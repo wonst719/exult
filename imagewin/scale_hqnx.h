@@ -190,7 +190,7 @@ inline int hqx_init(int *w, int *c, int *yuv, const unsigned char *from,
 		// The following is so the Interp routines work correctly.
 		r &= ~3;
 		g &= ~3;
-		c[k] = (r << 16) + (g << 8) + b;;
+		c[k] = (r << 16) + (g << 8) + b;
 		yuv[k] = RGBtoYUV(r, g, b);
 	}
 

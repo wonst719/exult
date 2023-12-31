@@ -89,7 +89,7 @@ int write(int file, const void *v, unsigned int len) {
 int read(int file, void *v, unsigned int len) {
 	ignore_unused_variable_warning(file);
 	if (len == 0) return 0;
-	return recv(gDataSocket, static_cast<char *>(v), len, 0);;
+	return recv(gDataSocket, static_cast<char *>(v), len, 0);
 	/*
 	WSABUF buffer;
 	buffer.buf = (char*)v;

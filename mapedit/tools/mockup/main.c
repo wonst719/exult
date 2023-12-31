@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
 	if ((f = fopen("u7map", "wb")) == NULL) {
 		perror("Can't open file u7map: ");
 		exit(-1);
-	};
+	}
 	for (int i = 0; i < 192 * 192 * 2; i++) {
 		fputc(mymap[i], f);
 	}

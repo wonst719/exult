@@ -271,7 +271,7 @@ bool VocAudioSample::advanceChunk(void *DecompData) const
 		l|=(buffer[0+decomp->pos]);
 		decomp->pos += 3 + l;
 		return advanceChunk(decomp);
-	};
+	}
 
 	if (!chunk_length)
 	{

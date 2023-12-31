@@ -218,7 +218,7 @@ Usecode_browser::Usecode_browser(
 	            G_TYPE_STRING);     // Type:  function, class.
 	// Create view, and set our model.
 	tree = studio->get_widget("usecodes_treeview");
-	gtk_tree_view_set_model(GTK_TREE_VIEW(tree), GTK_TREE_MODEL(model));;
+	gtk_tree_view_set_model(GTK_TREE_VIEW(tree), GTK_TREE_MODEL(model));
 	// Set up sorting.
 	GtkTreeSortable *sortable = GTK_TREE_SORTABLE(model);
 	gint *iname = new gint(NAME_COL);

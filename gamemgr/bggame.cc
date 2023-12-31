@@ -317,40 +317,54 @@ BG_Game::BG_Game()
 		                                     Tile_coord(811, 955, 5), 874, 0, 0)));
 }
 
-#define WAITDELAY(x) switch(wait_delay(x)) { \
-	case 1: throw UserBreakException(); break; \
-	case 2: throw UserSkipException(); break; \
-	}
+#define WAITDELAY(x) do {\
+		switch(wait_delay(x)) { \
+			case 1: throw UserBreakException(); break; \
+			case 2: throw UserSkipException(); break; \
+		} \
+	} while (false)
 
-#define WAITDELAYCYCLE1(x) switch (wait_delay((x), 16, 78, 50)) { \
-	case 1: throw UserBreakException(); break; \
-	case 2: throw UserSkipException(); break; \
-	}
+#define WAITDELAYCYCLE1(x) do {\
+		switch (wait_delay((x), 16, 78, 50)) { \
+			case 1: throw UserBreakException(); break; \
+			case 2: throw UserSkipException(); break; \
+		} \
+	} while (false)
 
-#define WAITDELAYCYCLE2(x) switch (wait_delay((x), 250, 5)) { \
-	case 1: throw UserBreakException(); break; \
-	case 2: throw UserSkipException(); break; \
-	}
+#define WAITDELAYCYCLE2(x) do {\
+		switch (wait_delay((x), 250, 5)) { \
+			case 1: throw UserBreakException(); break; \
+			case 2: throw UserSkipException(); break; \
+		} \
+	} while (false)
 
-#define WAITDELAYCYCLE3(x) switch (wait_delay((x), 240, 15)) { \
-	case 1: throw UserBreakException(); break; \
-	case 2: throw UserSkipException(); break; \
-	}
+#define WAITDELAYCYCLE3(x) do {\
+		switch (wait_delay((x), 240, 15)) { \
+			case 1: throw UserBreakException(); break; \
+			case 2: throw UserSkipException(); break; \
+		} \
+	} while (false)
 
-#define WAITDELAYCYCLE4(x) switch (wait_delay((x), 16, 78, 15)) { \
-	case 1: throw UserBreakException(); break; \
-	case 2: throw UserSkipException(); break; \
-	}
+#define WAITDELAYCYCLE4(x) do {\
+		switch (wait_delay((x), 16, 78, 15)) { \
+			case 1: throw UserBreakException(); break; \
+			case 2: throw UserSkipException(); break; \
+		} \
+	} while (false)
 
-#define WAITDELAYCYCLE5(x) switch (wait_delay((x), 16, -78, 50)) { \
-	case 1: throw UserBreakException(); break; \
-	case 2: throw UserSkipException(); break; \
-	}
+#define WAITDELAYCYCLE5(x) do {\
+		switch (wait_delay((x), 16, -78, 50)) { \
+			case 1: throw UserBreakException(); break; \
+			case 2: throw UserSkipException(); break; \
+		} \
+	} while (false)
 
-#define WAITDELAYCYCLE6(x) switch (wait_delay((x), 16, -78, 15)) { \
-	case 1: throw UserBreakException(); break; \
-	case 2: throw UserSkipException(); break; \
-	}
+#define WAITDELAYCYCLE6(x) do {\
+		switch (wait_delay((x), 16, -78, 15)) { \
+			case 1: throw UserBreakException(); break; \
+			case 2: throw UserSkipException(); break; \
+		} \
+	} while (false)
 
 void BG_Game::play_intro() {
 	Audio *audio = Audio::get_ptr();
@@ -1162,7 +1176,7 @@ bool Hand_Handler::draw_frame() {
 			break;
 		default:
 			break;
-	};
+	}
 	if (drawHand) {
 		if (handFrame && handBackup) {
 			restore_shape_bkgnd(handFrame, handBackup);
@@ -1223,7 +1237,7 @@ bool Hand_Handler::draw_frame() {
 		break;
 	default:        // Just in case
 		return false;
-	};
+	}
 
 	if (drawHand) {
 		win->show();

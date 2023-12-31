@@ -63,7 +63,7 @@ int verify_files(BaseGameInfo* game) {
 				return schwarzepforte_files;
 			case SPANISH:
 				return puertanegra_files;
-			};
+			}
 			break;
 		case SERPENT_ISLE:
 			if (game->have_expansion()) {
@@ -81,7 +81,7 @@ int verify_files(BaseGameInfo* game) {
 				break;
 			case SPANISH:
 				return islaserpiente_files;
-			};
+			}
 			break;
 		case EXULT_DEVEL_GAME:
 		case NONE:

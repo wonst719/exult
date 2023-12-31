@@ -439,7 +439,7 @@ BaseGameInfo *ExultMenu::run() {
 	// Erase the old logo.
 	gwin->clear_screen(true);
 
-	auto menu = create_main_menu(first_game);;
+	auto menu = create_main_menu(first_game);
 	BaseGameInfo *sel_game = nullptr;
 
 	do {

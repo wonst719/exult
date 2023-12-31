@@ -152,7 +152,7 @@ bool BilinearScalerInternal_Arb(SDL_Surface *tex, sint32 sx, sint32 sy, sint32 s
 			end_y -= 4 << 16;
 			dst_x = pos_x;
 			end_x += 1 << 16;
-		};
+		}
 
 		pixel += pitch - sizeof(uintX) * (dw);
 
@@ -245,7 +245,7 @@ bool BilinearScalerInternal_Arb(SDL_Surface *tex, sint32 sx, sint32 sy, sint32 s
 			end_y -= 4 << 16;
 			dst_x = pos_x;
 			end_x += 1 << 16;
-		};
+		}
 	}
 
 

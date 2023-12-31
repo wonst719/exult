@@ -332,7 +332,7 @@ void Scale_2xSaI(
 		srcPtr += sline_pixels;
 		dstPtr += 2 * dline_pixels;
 		prev1_yoff = 1;
-	};
+	}
 }
 
 
@@ -537,7 +537,7 @@ void Scale_Super2xSaI(
 		}
 		srcPtr += sline_pixels;
 		dstPtr += 2 * dline_pixels;
-	};
+	}
 }
 
 
@@ -779,7 +779,7 @@ void Scale_SuperEagle(
 		}
 		srcPtr += sline_pixels;
 		dstPtr += 2 * dline_pixels;
-	};
+	}
 }
 
 

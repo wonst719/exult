@@ -772,7 +772,7 @@ static void Init(
 
 	// KBD repeat should be nice.
 	SDL_ShowCursor(0);
-	SDL_VERSION(&info.version);
+	SDL_VERSION(&info.version)
 
 	// Open any connected game controllers.
 	for (int i = 0, n = SDL_NumJoysticks(); i < n; ++i) {
@@ -962,7 +962,7 @@ static void Init(
 	                    Drop_dragged_npc, Drop_dragged_combo);
 	if (FAILED(RegisterDragDrop(hgwin, windnd))) {
 		cout << "Something's wrong with OLE2 ..." << endl;
-	};
+	}
 #endif
 #endif
 }
