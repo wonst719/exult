@@ -30,16 +30,20 @@ private:
 public:
 	Pathfinder_client(int mf) : move_flags(mf) {  }
 	virtual ~Pathfinder_client() = default;
+	Pathfinder_client(const Pathfinder_client&) = delete;
+	Pathfinder_client(Pathfinder_client&&) = delete;
+	Pathfinder_client operator=(const Pathfinder_client&) = delete;
+	Pathfinder_client operator=(Pathfinder_client&&) = delete;
 	// Figure when to give up.
-	virtual int get_max_cost(int cost_to_goal);
+	virtual int get_max_cost(int cost_to_goal) const;
 	// Figure cost for a single step.
-	virtual int get_step_cost(Tile_coord const &from, Tile_coord &to) = 0;
+	virtual int get_step_cost(Tile_coord const &from, Tile_coord &to) const = 0;
 	// Estimate cost between two points.
-	virtual int estimate_cost(Tile_coord const &from, Tile_coord const &to) = 0;
+	virtual int estimate_cost(Tile_coord const &from, Tile_coord const &to) const = 0;
 	// Is tile at the goal?
-	virtual bool at_goal(Tile_coord const &tile, Tile_coord const &goal);
+	virtual bool at_goal(Tile_coord const &tile, Tile_coord const &goal) const;
 
-	int get_move_flags() {
+	int get_move_flags() const {
 		return move_flags;
 	}
 	void set_move_flags(int m) {
@@ -60,7 +64,7 @@ public:
 	// Return true if path found
 	PathFinder() = default;
 	virtual bool NewPath(Tile_coord const &s, Tile_coord const &d,
-	                    Pathfinder_client *client) = 0;
+	                    Pathfinder_client const *client) = 0;
 	// Retrieve starting point (set by subclasses).
 	Tile_coord get_src() {
 		return src;

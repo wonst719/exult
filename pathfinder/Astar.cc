@@ -28,9 +28,9 @@
  *
  *  Output: true if successful, else false.
  */
-bool Astar::NewPath(Tile_coord const &s, Tile_coord const &d, Pathfinder_client *client) {
+bool Astar::NewPath(Tile_coord const &s, Tile_coord const &d, Pathfinder_client const *client) {
 	extern Tile_coord *Find_path(Tile_coord const &, Tile_coord const &,
-	                             Pathfinder_client * client, int & plen);
+	                             Pathfinder_client const * client, int & plen);
 	src = s;            // Store start, destination.
 	dest = d;
 	path.clear();       // Clear out old path, if there.

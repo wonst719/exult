@@ -4156,8 +4156,8 @@ Bake_schedule::Bake_schedule(Actor *n) : Schedule(n),
 
 void Bake_schedule::now_what() {
 	const Tile_coord npcpos = npc->get_tile();
-	Actor_pathfinder_client cost(npc, 1);
-	Actor_pathfinder_client cost2(npc, 2);
+	const Actor_pathfinder_client cost1(npc, 1);
+	const Actor_pathfinder_client cost2(npc, 2);
 	int delay = 100;
 	int dough_shp(GAME_SI ? 863 : 658);
 	Game_object *stove = npc->find_closest(664);
@@ -4243,7 +4243,7 @@ void Bake_schedule::now_what() {
 
 		const Tile_coord tpos = flourbag_obj->get_tile();
 		Actor_action *pact = Path_walking_actor_action::create_path(
-		                         npcpos, tpos, cost);
+		                         npcpos, tpos, cost1);
 		if (pact) {
 			npc->set_action(pact);
 		} else {
@@ -4316,7 +4316,7 @@ void Bake_schedule::now_what() {
 		cpos.tz = 0;
 
 		Actor_action *pact = Path_walking_actor_action::create_path(
-		                         npcpos, cpos, cost);
+		                         npcpos, cpos, cost1);
 		if (pact) {
 		    Game_object_shared dough_obj = dough.lock();
 			if (dough_obj) {
@@ -4413,7 +4413,7 @@ void Bake_schedule::now_what() {
 		const Tile_coord tpos = oven_obj->get_tile() +
 		                  Tile_coord(1, 1, 0);
 		Actor_action *pact = Path_walking_actor_action::create_path(
-		                         npcpos, tpos, cost);
+		                         npcpos, tpos, cost1);
 		if (pact) {
 			npc->set_action(new Sequence_actor_action(
                     pact,
@@ -4470,7 +4470,7 @@ void Bake_schedule::now_what() {
 		Tile_coord spot;    // Also get closest spot on table.
 		Tile_coord spot_on_table;
 		p.get(rand() % p.size(), spot, spot_on_table);
-		Actor_pathfinder_client COST = (GAME_SI ? cost : cost2);
+		const Actor_pathfinder_client& COST = (GAME_SI ? cost1 : cost2);
 		Actor_action *pact = Path_walking_actor_action::create_path(
 		                         npcpos, spot, COST);
 		const Shape_info &info = displaytable_obj->get_info();
@@ -4488,7 +4488,7 @@ void Bake_schedule::now_what() {
 		} else {
 			delete pact;
 			pact = Path_walking_actor_action::create_path(
-			                         npcpos, displaytable_obj->get_tile(), cost);
+			                         npcpos, displaytable_obj->get_tile(), cost1);
 			npc->set_action(new Sequence_actor_action(pact,
 			                new Face_pos_actor_action(displaytable_obj->get_tile(), 250)));
 			delay = 250;
@@ -4587,7 +4587,7 @@ void Bake_schedule::now_what() {
 		const Tile_coord tpos = oven_obj->get_tile() +
 		                  Tile_coord(1, 1, 0);
 		Actor_action *pact = Path_walking_actor_action::create_path(
-		                         npcpos, tpos, cost);
+		                         npcpos, tpos, cost1);
 
 		// offsets for oven placement
 		int offX = +1;

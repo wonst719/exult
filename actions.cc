@@ -182,7 +182,7 @@ Path_walking_actor_action::~Path_walking_actor_action(
 Path_walking_actor_action *Path_walking_actor_action::create_path(
     Tile_coord const &src,      // Starting position.
     Tile_coord const &dest,     // Destination.
-    Pathfinder_client &cost     // Cost for Astar.
+    Pathfinder_client const &cost     // Cost for Astar.
 ) {
 	auto *path = new Astar();
 	// Get to within 1 tile.

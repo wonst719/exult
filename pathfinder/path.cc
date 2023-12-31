@@ -37,7 +37,7 @@ using std::vector;
 Tile_coord *Find_path(
     Tile_coord const &start,        // Where to start from.
     Tile_coord const &goal,     // Where to end up.
-    Pathfinder_client *client,  // Provides costs.
+    Pathfinder_client const *client,  // Provides costs.
     int &pathlen            // Length of path returned.
 );
 
@@ -345,7 +345,7 @@ static int tracing = 0;
 Tile_coord *Find_path(
     Tile_coord const &start,        // Where to start from.
     Tile_coord const &goal,     // Where to end up.
-    Pathfinder_client *client,  // Provides costs.
+    Pathfinder_client const *client,  // Provides costs.
     int &pathlen            // Length of path returned.
 ) {
 	A_star_queue nodes;     // The priority queue & hash table.

@@ -49,7 +49,7 @@ Actor_pathfinder_client::Actor_pathfinder_client(
 
 int Actor_pathfinder_client::get_max_cost(
     int cost_to_goal        // From estimate_cost().
-) {
+) const {
 	const int max_cost = 3 * cost_to_goal;
 	Game_window *gwin = Game_window::get_instance();
 	// Do at least 3 screens width.
@@ -60,7 +60,7 @@ int Actor_pathfinder_client::get_max_cost(
 int Actor_pathfinder_client::check_blocking(
     Tile_coord const &from,
     Tile_coord const &to
-) {
+) const {
 	if (ignores_npcs()) {
 		Game_object *block = Game_object::find_blocking(to);
 		if (!block)
@@ -110,7 +110,7 @@ int Actor_pathfinder_client::get_step_cost(
     Tile_coord const &frm,
     Tile_coord &to          // The tile we're going to.  The 'tz'
     //   field may be modified.
-) {
+) const {
 	Game_window *gwin = Game_window::get_instance();
 	const int cx = to.tx / c_tiles_per_chunk;
 	const int cy = to.ty / c_tiles_per_chunk;
@@ -159,7 +159,7 @@ int Actor_pathfinder_client::get_step_cost(
 int Actor_pathfinder_client::estimate_cost(
     Tile_coord const &from,
     Tile_coord const &to
-) {
+) const {
 	int dx = to.tx - from.tx;
 	if (dx < -c_num_tiles / 2)  // Wrap around the world.
 		dx += c_num_tiles;
@@ -189,7 +189,7 @@ int Actor_pathfinder_client::estimate_cost(
 bool Actor_pathfinder_client::at_goal(
     Tile_coord const &tile,
     Tile_coord const &goal
-) {
+) const {
 	return (goal.tz == -1 ? tile.distance_2d(goal) : tile.distance(goal)) <= dist;
 }
 
@@ -200,7 +200,7 @@ bool Actor_pathfinder_client::at_goal(
 int Onecoord_pathfinder_client::estimate_cost(
     Tile_coord const &from,
     Tile_coord const &to            // Should be the goal.
-) {
+) const {
 	if (to.tx == -1) {      // Just care about Y?
 		// Cost = 2/tile.
 		int dy = to.ty - from.ty;
@@ -227,7 +227,7 @@ int Onecoord_pathfinder_client::estimate_cost(
 bool Onecoord_pathfinder_client::at_goal(
     Tile_coord const &tile,
     Tile_coord const &goal
-) {
+) const {
 	return (goal.tx == -1 || tile.tx == goal.tx) &&
 	        (goal.ty == -1 || tile.ty == goal.ty) &&
 	        (goal.tz == -1 || tile.tz == goal.tz);
@@ -293,7 +293,7 @@ int Offscreen_pathfinder_client::get_step_cost(
     Tile_coord const &from,
     Tile_coord &to          // The tile we're going to.  The 'tz'
     //   field may be modified.
-) {
+) const {
 	int cost = Actor_pathfinder_client::get_step_cost(from, to);
 	if (cost == -1)
 		return cost;
@@ -313,7 +313,7 @@ int Offscreen_pathfinder_client::get_step_cost(
 int Offscreen_pathfinder_client::estimate_cost(
     Tile_coord const &from,
     Tile_coord const &to            // Should be the goal.
-) {
+) const {
 	if (best.tx != -1)      // Off-screen goal?
 		return Actor_pathfinder_client::estimate_cost(from, best);
 //++++++World-wrapping here????
@@ -340,7 +340,7 @@ int Offscreen_pathfinder_client::estimate_cost(
 bool Offscreen_pathfinder_client::at_goal(
     Tile_coord const &tile,
     Tile_coord const &goal
-) {
+) const {
 	ignore_unused_variable_warning(goal);
 	return !screen.has_world_point(tile.tx - tile.tz / 2, tile.ty - tile.tz / 2); //&&
 	// Z-coord shouldn't matter.
@@ -380,7 +380,7 @@ Approach_object_pathfinder_client::Approach_object_pathfinder_client(
 bool Approach_object_pathfinder_client::at_goal(
     Tile_coord const &tile,
     Tile_coord const &goal
-) {
+) const {
 	const int dz = tile.tz - goal.tz; // Got to be on same floor.
 	if (dz > 5 || dz < -5)
 		return false;
@@ -463,7 +463,7 @@ void Fast_pathfinder_client::init(
 
 int Fast_pathfinder_client::get_max_cost(
     int cost_to_goal        // From estimate_cost().
-) {
+) const {
 	int max_cost = 2 * cost_to_goal; // Don't try too hard.
 	if (max_cost < 8)
 		max_cost = 8;
@@ -483,7 +483,7 @@ int Fast_pathfinder_client::get_step_cost(
     Tile_coord const &from,
     Tile_coord &to          // The tile we're going to.  The 'tz'
     //   field may be modified.
-) {
+) const {
 	ignore_unused_variable_warning(from);
 	Game_window *gwin = Game_window::get_instance();
 	const int cx = to.tx / c_tiles_per_chunk;
@@ -508,7 +508,7 @@ int Fast_pathfinder_client::get_step_cost(
 int Fast_pathfinder_client::estimate_cost(
     Tile_coord const &from,
     Tile_coord const &to
-) {
+) const {
 	return from.distance(to);   // Distance() does world-wrapping.
 }
 
@@ -519,7 +519,7 @@ int Fast_pathfinder_client::estimate_cost(
 bool Fast_pathfinder_client::at_goal(
     Tile_coord const &tile,
     Tile_coord const &goal
-) {
+) const {
 	const int dz = tile.tz - goal.tz; // Got to be on same floor.
 	if (dz > 5 || dz < -5)
 		return false;
@@ -766,7 +766,7 @@ Monster_pathfinder_client::Monster_pathfinder_client(
 
 int Monster_pathfinder_client::get_max_cost(
     int cost_to_goal        // From estimate_cost().
-) {
+) const {
 	int max_cost = 2 * cost_to_goal; // Don't try to hard.
 	// Use intelligence.
 	max_cost += intelligence / 2;
@@ -791,7 +791,7 @@ int Monster_pathfinder_client::get_step_cost(
     Tile_coord const &from,
     Tile_coord &to          // The tile we're going to.  The 'tz'
     //   field may be modified.
-) {
+) const {
 	if (Map_chunk::is_blocked(get_axtiles(), get_aytiles(), get_aztiles(),
 	                          from, to, get_move_flags()))
 		return -1;

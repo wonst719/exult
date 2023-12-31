@@ -66,8 +66,8 @@ public:
 	virtual ~U7file() noexcept = default;
 	U7file(const U7file&) = delete;
 	U7file& operator=(const U7file&) = delete;
-	U7file(U7file&&) = default;
-	U7file& operator=(U7file&&) = default;
+	U7file(U7file&&) = delete;
+	U7file& operator=(U7file&&) = delete;
 
 	virtual size_t number_of_objects() = 0;
 	/**
