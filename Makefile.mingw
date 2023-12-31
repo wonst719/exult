@@ -224,7 +224,7 @@ WARNINGS := \
 	-Wstringop-overflow=4 \
 	-Wunused-const-variable=1
 
-CXXFLAGS:=-MMD -std=c++14 -fdiagnostics-color=always $(ARCHFLAGS) $(strip $(OPT_LEVEL) $(WARNINGS) -mms-bitfields)
+CXXFLAGS:=-MMD -std=c++17 -fdiagnostics-color=always $(ARCHFLAGS) $(strip $(OPT_LEVEL) $(WARNINGS) -mms-bitfields)
 
 LDFLAGS:=$(ARCHFLAGS)
 LIBS:=-lmingw32 $(SDL_LIBS) $(ZIP_LIBS) -lpng $(OGG_LIBS) $(FLUIDSYNTH_LIBS) $(MT32EMU_LIBS) -ldsound -luuid -lole32 -lwinmm -lws2_32 $(SUBSYSTEM) $(MTHREADS)

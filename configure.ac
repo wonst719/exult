@@ -135,10 +135,7 @@ AC_PROG_CXX([$cxx_compilers])
 
 AC_LANG([C++])
 
-AX_CXX_COMPILE_STDCXX_17([noext],[optional])
-if test "$HAVE_CXX17" = "0"; then
-	AX_CXX_COMPILE_STDCXX_14([noext],[mandatory])
-fi
+AX_CXX_COMPILE_STDCXX([17], [noext],[mandatory])
 AC_PROG_CXXCPP
 
 AC_PROG_INSTALL
@@ -351,7 +348,7 @@ if test x$enable_android_apk != xno; then
 		enable_exult=no
 		enable_tools=no
 	fi
-	
+
 else
 	AC_MSG_RESULT(no)
 fi
