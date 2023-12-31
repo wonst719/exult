@@ -17,17 +17,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
 #include "studio.h"
 
 #if defined(MACOSX) || defined(_WIN32)
-#include "utils.h"
+#	include "utils.h"
 #endif
 
-int main(int argc, char **argv) {
-
+int main(int argc, char** argv) {
 #ifdef MACOSX
 	// setting up environment for Exult Studio in an app bundle
 	setup_app_bundle_resource();
@@ -43,10 +42,10 @@ int main(int argc, char **argv) {
 			bundle_pixbuf += "/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
 			bundle_im = bundle_res;
 			bundle_im += "/lib/gtk-3.0/3.0.0/immodules.cache";
-			const gchar *b_res = bundle_res.c_str();
-			const gchar *b_share = bundle_share.c_str();
-			const gchar *b_pixbuf= bundle_pixbuf.c_str();
-			const gchar *b_im = bundle_im.c_str();
+			const gchar* b_res    = bundle_res.c_str();
+			const gchar* b_share  = bundle_share.c_str();
+			const gchar* b_pixbuf = bundle_pixbuf.c_str();
+			const gchar* b_im     = bundle_im.c_str();
 			g_setenv("XDG_DATA_DIRS", b_share, 1);
 			g_setenv("GTK_DATA_PREFIX", b_res, 1);
 			g_setenv("GTK_EXE_PREFIX", b_res, 1);
@@ -63,5 +62,4 @@ int main(int argc, char **argv) {
 #ifdef _WIN32
 	cleanup_output("studio_");
 #endif
-
 }

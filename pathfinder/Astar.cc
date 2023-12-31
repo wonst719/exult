@@ -17,9 +17,8 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
-
 
 #include "Astar.h"
 
@@ -28,20 +27,24 @@
  *
  *  Output: true if successful, else false.
  */
-bool Astar::NewPath(Tile_coord const &s, Tile_coord const &d, Pathfinder_client const *client) {
-	extern Tile_coord *Find_path(Tile_coord const &, Tile_coord const &,
-	                             Pathfinder_client const * client, int & plen);
-	src = s;            // Store start, destination.
+bool Astar::NewPath(
+		const Tile_coord& s, const Tile_coord& d,
+		const Pathfinder_client* client) {
+	extern Tile_coord* Find_path(
+			const Tile_coord&, const Tile_coord&,
+			const Pathfinder_client* client, int& plen);
+	src  = s;    // Store start, destination.
 	dest = d;
-	path.clear();       // Clear out old path, if there.
-	Tile_coord *t = Find_path(s, d, client, pathlen);
-	const bool success = (t != nullptr);
-	for (int i = 0; i < pathlen; i++)
+	path.clear();    // Clear out old path, if there.
+	Tile_coord* t       = Find_path(s, d, client, pathlen);
+	const bool  success = (t != nullptr);
+	for (int i = 0; i < pathlen; i++) {
 		path.push_back(t[i]);
-	delete [] t;    // Discard temporary storage
+	}
+	delete[] t;    // Discard temporary storage
 	next_index = 0;
-	dir = 1;
-	stop = pathlen;
+	dir        = 1;
+	stop       = pathlen;
 	return success;
 }
 
@@ -50,7 +53,7 @@ bool Astar::NewPath(Tile_coord const &s, Tile_coord const &d, Pathfinder_client 
  *
  *  Output: false if all done.
  */
-bool Astar::GetNextStep(Tile_coord &n, bool &done) {
+bool Astar::GetNextStep(Tile_coord& n, bool& done) {
 	if (next_index == stop) {
 		done = true;
 		return false;
@@ -66,10 +69,9 @@ bool Astar::GetNextStep(Tile_coord &n, bool &done) {
  *
  *  Output: true always (we succeeded).
  */
-bool Astar::set_backwards(
-) {
-	dir = -1;
-	stop = -1;
+bool Astar::set_backwards() {
+	dir        = -1;
+	stop       = -1;
 	next_index = pathlen - 1;
 	return true;
 }
@@ -77,7 +79,6 @@ bool Astar::set_backwards(
 /*
  *  Get # steps left.
  */
-int Astar::get_num_steps(
-) {
+int Astar::get_num_steps() {
 	return (stop - next_index) * dir;
 }

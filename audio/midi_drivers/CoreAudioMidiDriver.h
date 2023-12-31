@@ -22,38 +22,38 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define COREAUDIOMIDIDRIVER_H_INCLUDED
 
 #if defined(MACOSX) || defined(__IPHONEOS__)
-#define USE_CORE_AUDIO_MIDI
+#	define USE_CORE_AUDIO_MIDI
 
-#include "LowLevelMidiDriver.h"
+#	include "LowLevelMidiDriver.h"
 
-#include <AudioToolbox/AUGraph.h>
+#	include <AudioToolbox/AUGraph.h>
 
 class CoreAudioMidiDriver : public LowLevelMidiDriver {
-	AUGraph _auGraph;
+	AUGraph   _auGraph;
 	AudioUnit _synth;
 
-
 	static const MidiDriverDesc desc;
-	static MidiDriver *createInstance() {
+
+	static MidiDriver* createInstance() {
 		return new CoreAudioMidiDriver();
 	}
 
 public:
-	static const MidiDriverDesc *getDesc() {
+	static const MidiDriverDesc* getDesc() {
 		return &desc;
 	}
 
 	CoreAudioMidiDriver();
 
 protected:
-	int         open() override;
-	void        close() override;
-	void        send(uint32 message) override;
-	void        send_sysex(uint8 status, const uint8 *msg, uint16 length) override;
-	void        increaseThreadPriority() override;
-	void        yield() override;
+	int  open() override;
+	void close() override;
+	void send(uint32 message) override;
+	void send_sysex(uint8 status, const uint8* msg, uint16 length) override;
+	void increaseThreadPriority() override;
+	void yield() override;
 };
 
-#endif //MACOSX || __IPHONEOS__
+#endif    // MACOSX || __IPHONEOS__
 
-#endif //COREAUDIOMIDIDRIVER_H_INCLUDED
+#endif    // COREAUDIOMIDIDRIVER_H_INCLUDED

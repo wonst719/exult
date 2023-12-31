@@ -20,13 +20,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ENABLED_BUTTON_H
 
 #include "Text_button.h"
+
 #include <string>
 
 class Enabled_button : public Text_button {
 public:
-	Enabled_button(Gump *par, int selectionnum,
-	               int px, int py, int width, int height = 0)
-		: Text_button(par, "", px, py, width, height) {
+	Enabled_button(
+			Gump* par, int selectionnum, int px, int py, int width,
+			int height = 0)
+			: Text_button(par, "", px, py, width, height) {
 		set_frame(selectionnum);
 		text = selections[selectionnum];
 		init();
@@ -39,10 +41,11 @@ public:
 	int getselection() const {
 		return get_framenum();
 	}
+
 	virtual void toggle(int state) = 0;
 
 protected:
-	static const char *selections[];
+	static const char* selections[];
 };
 
 template <typename Parent>
@@ -52,8 +55,8 @@ public:
 
 	template <typename... Ts>
 	CallbackEnabledButton(Parent* par, CallbackType&& callback, Ts&&... args)
-		: Enabled_button(par, std::forward<Ts>(args)...),
-		  parent(par), on_toggle(std::forward<CallbackType>(callback)) {}
+			: Enabled_button(par, std::forward<Ts>(args)...), parent(par),
+			  on_toggle(std::forward<CallbackType>(callback)) {}
 
 	void toggle(int state) override {
 		(parent->*on_toggle)(state);
@@ -61,7 +64,7 @@ public:
 	}
 
 private:
-	Parent* parent;
+	Parent*      parent;
 	CallbackType on_toggle;
 };
 

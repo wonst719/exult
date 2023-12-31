@@ -16,25 +16,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include "gamewin.h"
-#include "Gump.h"
 #include "Gump_widget.h"
+
+#include "Gump.h"
+#include "gamewin.h"
 
 /*
  *  Is a given screen point on this widget?
  */
 
 bool Gump_widget::on_widget(
-    int mx, int my          // Point in window.
+		int mx, int my    // Point in window.
 ) const {
-	mx -= parent->get_x() + x;  // Get point rel. to gump.
+	mx -= parent->get_x() + x;    // Get point rel. to gump.
 	my -= parent->get_y() + y;
-	Shape_frame *cshape = get_shape();
+	Shape_frame* cshape = get_shape();
 	return (cshape != nullptr) ? cshape->has_point(mx, my) : false;
 }
 
@@ -42,8 +42,7 @@ bool Gump_widget::on_widget(
  *  Repaint checkmark, etc.
  */
 
-void Gump_widget::paint(
-) {
+void Gump_widget::paint() {
 	int px = 0;
 	int py = 0;
 
@@ -68,10 +67,13 @@ TileRect Gump_widget::get_rect() {
 		py += parent->get_y();
 	}
 
-	Shape_frame *s = get_shape();
+	Shape_frame* s = get_shape();
 
-	if (!s) return TileRect(0, 0, 0, 0);
+	if (!s) {
+		return TileRect(0, 0, 0, 0);
+	}
 
-	return TileRect(px - s->get_xleft(),   py - s->get_yabove(),
-	                 s->get_width(), s->get_height());
+	return TileRect(
+			px - s->get_xleft(), py - s->get_yabove(), s->get_width(),
+			s->get_height());
 }

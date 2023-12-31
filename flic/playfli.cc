@@ -24,16 +24,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
+
+#include "playfli.h"
+
+#include "databuf.h"
+#include "gamewin.h"
+#include "palette.h"
+#include "utils.h"
 
 #include <cstring>
 #include <iostream>
-#include "databuf.h"
-#include "playfli.h"
-#include "utils.h"
-#include "gamewin.h"
-#include "palette.h"
 
 #ifdef __GNUC__
 #	pragma GCC diagnostic push
@@ -45,31 +47,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
 
-using std::ifstream;
-using std::size_t;
 using std::cout;
 using std::endl;
+using std::ifstream;
+using std::size_t;
 
 void playfli::initfli() {
 	fli_data.read(fli_name, 8);
-	fli_size = fli_data.read4();
-	fli_magic = fli_data.read2();
+	fli_size   = fli_data.read4();
+	fli_magic  = fli_data.read2();
 	fli_frames = fli_data.read2();
-	fli_width = fli_data.read2();
+	fli_width  = fli_data.read2();
 	fli_height = fli_data.read2();
-	fli_depth = fli_data.read2();
-	fli_flags = fli_data.read2();
-	fli_speed = fli_data.read2();
+	fli_depth  = fli_data.read2();
+	fli_flags  = fli_data.read2();
+	fli_speed  = fli_data.read2();
 	fli_data.skip(110);
 	streampos = streamstart = fli_data.getPos();
-	frame = 0;
-	thispal = -1;
-	nextpal = 0;
-	changepal = false;
+	frame                   = 0;
+	thispal                 = -1;
+	nextpal                 = 0;
+	changepal               = false;
 }
 
-
-void playfli::info(fliinfo *fi) {
+void playfli::info(fliinfo* fi) {
 #ifdef DEBUG
 	cout << "Flic name :   " << fli_name << endl;
 	cout << "Frame count : " << fli_frames << endl;
@@ -80,37 +81,51 @@ void playfli::info(fliinfo *fi) {
 #endif
 	if (fi) {
 		fi->frames = fli_frames;
-		fi->width = fli_width;
+		fi->width  = fli_width;
 		fi->height = fli_height;
-		fi->depth = fli_depth;
-		fi->speed = fli_speed;
+		fi->depth  = fli_depth;
+		fi->speed  = fli_speed;
 	}
 }
 
-int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned long ticks, int brightness) {
-	const int xoffset = (win->get_game_width() - fli_width) / 2;
-	const int yoffset = (win->get_game_height() - fli_height) / 2;
-	bool dont_show = false;
+int playfli::play(
+		Image_window* win, int first_frame, int last_frame, unsigned long ticks,
+		int brightness) {
+	const int xoffset   = (win->get_game_width() - fli_width) / 2;
+	const int yoffset   = (win->get_game_height() - fli_height) / 2;
+	bool      dont_show = false;
 
 	if (!fli_buf) {
 		fli_buf = win->create_buffer(fli_width, fli_height);
 	}
 
 	// Set up last frame
-	if (first_frame == last_frame) dont_show = true;
-	if (first_frame < 0) first_frame += fli_frames;
-	if (last_frame < 0) last_frame += 1 + fli_frames;
-	if (first_frame == last_frame) last_frame++;
-	if (last_frame < 0 || last_frame > fli_frames) last_frame = fli_frames;
+	if (first_frame == last_frame) {
+		dont_show = true;
+	}
+	if (first_frame < 0) {
+		first_frame += fli_frames;
+	}
+	if (last_frame < 0) {
+		last_frame += 1 + fli_frames;
+	}
+	if (first_frame == last_frame) {
+		last_frame++;
+	}
+	if (last_frame < 0 || last_frame > fli_frames) {
+		last_frame = fli_frames;
+	}
 
-	if (!ticks) ticks = SDL_GetTicks();
+	if (!ticks) {
+		ticks = SDL_GetTicks();
+	}
 
 	if (first_frame < frame) {
-		nextpal = 0;
-		frame = 0;
+		nextpal   = 0;
+		frame     = 0;
 		streampos = streamstart;
 	}
-	auto *pixbuf = new uint8[fli_width];
+	auto* pixbuf = new uint8[fli_width];
 
 	if (brightness != palette->get_brightness()) {
 		palette->set_brightness(brightness);
@@ -121,76 +136,76 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 	for (; frame < last_frame; frame++) {
 		fli_data.seek(streampos);
 		const int frame_size = fli_data.read4();
-		//frame_magic = fli_data.read2();
+		// frame_magic = fli_data.read2();
 		fli_data.skip(2);
 		const int frame_chunks = fli_data.read2();
 		fli_data.skip(8);
 		for (int chunk = 0; chunk < frame_chunks; chunk++) {
-			//chunk_size = fli_data.read4();
+			// chunk_size = fli_data.read4();
 			fli_data.skip(4);
 			const int chunk_type = fli_data.read2();
 
 			switch (chunk_type) {
 			case 11: {
-				const int packets = fli_data.read2();
+				const int     packets = fli_data.read2();
 				unsigned char colors[3 * 256];
 
 				memset(colors, 0, 3 * 256);
 				int current = 0;
 
-				for (int p_count = 0; p_count < packets;
-				        p_count++) {
+				for (int p_count = 0; p_count < packets; p_count++) {
 					const int skip = fli_data.read1();
 
 					current += skip;
 					int change = fli_data.read1();
 
-					if (change == 0)
+					if (change == 0) {
 						change = 256;
-					fli_data.read(reinterpret_cast<char *>(&colors[current * 3]), change * 3);
+					}
+					fli_data.read(
+							reinterpret_cast<char*>(&colors[current * 3]),
+							change * 3);
 				}
 				// Set palette
 				palette->set_palette(colors);
 				if (thispal != nextpal) {
-					thispal = nextpal;
+					thispal   = nextpal;
 					changepal = true;
 				}
 				nextpal++;
 
-			}
-			break;
+			} break;
 
 			case 12: {
-
-				const int skip_lines = fli_data.read2();
+				const int skip_lines   = fli_data.read2();
 				const int change_lines = fli_data.read2();
 				for (int line = 0; line < change_lines; line++) {
 					const int packets = fli_data.read1();
-					int pixpos = 0;
-					for (int p_count = 0; p_count < packets;
-					        p_count++) {
+					int       pixpos  = 0;
+					for (int p_count = 0; p_count < packets; p_count++) {
 						const int skip_count = fli_data.read1();
 						pixpos += skip_count;
 						sint8 size_count = fli_data.read1();
 						if (size_count < 0) {
-							size_count = -size_count;
+							size_count       = -size_count;
 							const uint8 data = fli_data.read1();
 							memset(pixbuf, data, size_count);
-							fli_buf->copy8(pixbuf, size_count, 1,
-								               pixpos, skip_lines + line);
+							fli_buf->copy8(
+									pixbuf, size_count, 1, pixpos,
+									skip_lines + line);
 							pixpos += size_count;
 
 						} else {
 							fli_data.read(pixbuf, size_count);
-							fli_buf->copy8(pixbuf, size_count, 1,
-								               pixpos, skip_lines + line);
+							fli_buf->copy8(
+									pixbuf, size_count, 1, pixpos,
+									skip_lines + line);
 							pixpos += size_count;
 						}
 					}
 				}
 
-			}
-			break;
+			} break;
 
 			case 13:
 				break;
@@ -198,24 +213,21 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 			case 15: {
 				for (int line = 0; line < fli_height; line++) {
 					const int packets = fli_data.read1();
-					int pixpos = 0;
-					for (int p_count = 0; p_count < packets;
-					        p_count++) {
+					int       pixpos  = 0;
+					for (int p_count = 0; p_count < packets; p_count++) {
 						const sint8 size_count = fli_data.read1();
 						if (size_count > 0) {
 							const uint8 data = fli_data.read1();
 							memset(&pixbuf[pixpos], data, size_count);
 							pixpos += size_count;
 						} else {
-							fli_data.read(&pixbuf[pixpos],
-							               -size_count);
+							fli_data.read(&pixbuf[pixpos], -size_count);
 							pixpos -= size_count;
 						}
 					}
 					fli_buf->copy8(pixbuf, fli_width, 1, 0, line);
 				}
-			}
-			break;
+			} break;
 
 			case 16:
 				fli_data.skip(fli_width * fli_height);
@@ -229,18 +241,25 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 
 		streampos += frame_size;
 
-		if (changepal) palette->apply(false);
+		if (changepal) {
+			palette->apply(false);
+		}
 		changepal = false;
 
-		if (frame < first_frame)
+		if (frame < first_frame) {
 			continue;
+		}
 
 		// Speed related frame skipping detection
-		const bool skip_frame = Game_window::get_instance()->get_frame_skipping() && SDL_GetTicks() >= ticks;
+		const bool skip_frame
+				= Game_window::get_instance()->get_frame_skipping()
+				  && SDL_GetTicks() >= ticks;
 
 		win->put(fli_buf.get(), xoffset, yoffset);
 
-		if (ticks > SDL_GetTicks()) SDL_Delay(ticks - SDL_GetTicks());
+		if (ticks > SDL_GetTicks()) {
+			SDL_Delay(ticks - SDL_GetTicks());
+		}
 
 		ticks += fli_speed * 10;
 
@@ -254,7 +273,7 @@ int playfli::play(Image_window *win, int first_frame, int last_frame, unsigned l
 	return ticks;
 }
 
-void playfli::put_buffer(Image_window *win) {
+void playfli::put_buffer(Image_window* win) {
 	const int xoffset = (win->get_game_width() - fli_width) / 2;
 	const int yoffset = (win->get_game_height() - fli_height) / 2;
 

@@ -26,21 +26,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 class Text_gump : public Gump {
 protected:
-	char *text;         // The text.
-	int textlen;            // Length of text.
-	int curtop;         // Offset of top of current page.
-	int curend;         // Offset past end of current page(s).
-	int font;       // The shape in fonts.vga to use
+	char* text;       // The text.
+	int   textlen;    // Length of text.
+	int   curtop;     // Offset of top of current page.
+	int   curend;     // Offset past end of current page(s).
+	int   font;       // The shape in fonts.vga to use
 
 public:
-	Text_gump(int shapenum, int fnt = 4) : Gump(nullptr, shapenum),
-		text(nullptr), textlen(0), curtop(0), curend(0), font(fnt)
-	{  }
+	Text_gump(int shapenum, int fnt = 4)
+			: Gump(nullptr, shapenum), text(nullptr), textlen(0), curtop(0),
+			  curend(0), font(fnt) {}
+
 	~Text_gump() override {
-		delete [] text;
+		delete[] text;
 	}
-	void add_text(const char *str); // Append text.
-	int paint_page(TileRect const &box, int start);
+
+	void add_text(const char* str);    // Append text.
+	int  paint_page(const TileRect& box, int start);
 	// Next page of book/scroll.
 	int show_next_page();
 };

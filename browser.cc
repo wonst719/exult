@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
 #ifdef __GNUC__
@@ -30,158 +30,182 @@
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
 
-#include "files/U7file.h"
-#include "gamewin.h"
-#include "game.h"
 #include "browser.h"
 #include "exult.h"
+#include "files/U7file.h"
 #include "font.h"
+#include "game.h"
+#include "gamewin.h"
 #include "items.h"
-#include "shapeid.h"
 #include "keys.h"
+#include "shapeid.h"
 
 ShapeBrowser::ShapeBrowser() {
-	num_shapes = 0;
-	current_shape = 0;
-	num_frames = 0;
-	current_frame = 0;
-	num_files = game->get_resource("files/shapes/count").num;
-	current_file = 0;
-	shapes = nullptr;
-	num_palettes = game->get_resource("palettes/count").num;
+	num_shapes      = 0;
+	current_shape   = 0;
+	num_frames      = 0;
+	current_frame   = 0;
+	num_files       = game->get_resource("files/shapes/count").num;
+	current_file    = 0;
+	shapes          = nullptr;
+	num_palettes    = game->get_resource("palettes/count").num;
 	current_palette = 0;
-	num_xforms = game->get_resource("xforms/count").num;
-	current_xform = -1;
+	num_xforms      = game->get_resource("xforms/count").num;
+	current_xform   = -1;
 }
 
 ShapeBrowser::~ShapeBrowser() {
 	delete shapes;
 }
 
-static void handle_key(bool shift, int &value, int max, int amt = 1) {
-	if (max == 0) return;
+static void handle_key(bool shift, int& value, int max, int amt = 1) {
+	if (max == 0) {
+		return;
+	}
 
-	if (shift)
+	if (shift) {
 		value -= amt;
-	else
+	} else {
 		value += amt;
+	}
 
-	while (value < 0)
+	while (value < 0) {
 		value = max + value;
-	while (value >= max)
+	}
+	while (value >= max) {
 		value = value - max;
+	}
 }
 
 void ShapeBrowser::browse_shapes() {
+	Game_window*   gwin = Game_window::get_instance();
+	Shape_manager* sman = Shape_manager::get_instance();
+	Image_buffer8* ibuf = gwin->get_win()->get_ib8();
+	Font*          font = fontManager.get_font("MENU_FONT");
 
-	Game_window *gwin = Game_window::get_instance();
-	Shape_manager *sman = Shape_manager::get_instance();
-	Image_buffer8 *ibuf = gwin->get_win()->get_ib8();
-	Font *font = fontManager.get_font("MENU_FONT");
-
-	const int maxx = gwin->get_width();
-	const int centerx = maxx / 2;
-	const int maxy = gwin->get_height();
-	const int centery = maxy / 2;
-	Palette pal;
-	char buf[255];
-	const char *fname;
+	const int   maxx    = gwin->get_width();
+	const int   centerx = maxx / 2;
+	const int   maxy    = gwin->get_height();
+	const int   centery = maxy / 2;
+	Palette     pal;
+	char        buf[255];
+	const char* fname;
 
 	snprintf(buf, sizeof(buf), "files/shapes/%d", current_file);
 	fname = game->get_resource(buf).str;
-	if (!shapes)
+	if (!shapes) {
 		shapes = new Vga_file(fname);
-	bool looping = true;
-	bool redraw = true;
+	}
+	bool      looping = true;
+	bool      redraw  = true;
 	SDL_Event event;
-	//int active;
+	// int active;
 
 	do {
 		if (redraw) {
 			gwin->clear_screen();
 			snprintf(buf, sizeof(buf), "palettes/%d", current_palette);
-			const str_int_pair &pal_tuple = game->get_resource(buf);
+			const str_int_pair& pal_tuple = game->get_resource(buf);
 			snprintf(buf, sizeof(buf), "palettes/patch/%d", current_palette);
-			const str_int_pair &patch_tuple = game->get_resource(buf);
+			const str_int_pair& patch_tuple = game->get_resource(buf);
 			if (current_xform > 0) {
 				char xfrsc[256];
-				snprintf(xfrsc, sizeof(xfrsc), "xforms/%d",
-				         current_xform);
-				const str_int_pair &xform_tuple = game->get_resource(xfrsc);
-				pal.load(pal_tuple.str, patch_tuple.str,
-				         pal_tuple.num, xform_tuple.str, xform_tuple.num);
-			} else
+				snprintf(xfrsc, sizeof(xfrsc), "xforms/%d", current_xform);
+				const str_int_pair& xform_tuple = game->get_resource(xfrsc);
+				pal.load(
+						pal_tuple.str, patch_tuple.str, pal_tuple.num,
+						xform_tuple.str, xform_tuple.num);
+			} else {
 				pal.load(pal_tuple.str, patch_tuple.str, pal_tuple.num);
+			}
 
 			pal.apply();
 			font->paint_text_fixedwidth(ibuf, "Show [K]eys", 2, maxy - 50, 8);
 
 			snprintf(buf, sizeof(buf), "VGA File: '%s'", fname);
-			//font->draw_text(ibuf, 0, 170, buf);
+			// font->draw_text(ibuf, 0, 170, buf);
 			font->paint_text_fixedwidth(ibuf, buf, 2, maxy - 30, 8);
 
 			num_shapes = shapes->get_num_shapes();
-			snprintf(buf, sizeof(buf), "Shape: %2d/%d", current_shape, num_shapes - 1);
-			//font->draw_text(ibuf, 0, 180, buf);
+			snprintf(
+					buf, sizeof(buf), "Shape: %2d/%d", current_shape,
+					num_shapes - 1);
+			// font->draw_text(ibuf, 0, 180, buf);
 			font->paint_text_fixedwidth(ibuf, buf, 2, maxy - 20, 8);
 
 			num_frames = shapes->get_num_frames(current_shape);
-			snprintf(buf, sizeof(buf), "Frame: %2d/%d", current_frame, num_frames - 1);
-			//font->draw_text(ibuf, 160, 180, buf);
+			snprintf(
+					buf, sizeof(buf), "Frame: %2d/%d", current_frame,
+					num_frames - 1);
+			// font->draw_text(ibuf, 160, 180, buf);
 			font->paint_text_fixedwidth(ibuf, buf, 162, maxy - 20, 8);
 
-			snprintf(buf, sizeof(buf), "Palette: %s, %d", pal_tuple.str, pal_tuple.num);
-			//font->draw_text(ibuf, 0, 190, buf);
+			snprintf(
+					buf, sizeof(buf), "Palette: %s, %d", pal_tuple.str,
+					pal_tuple.num);
+			// font->draw_text(ibuf, 0, 190, buf);
 			font->paint_text_fixedwidth(ibuf, buf, 2, maxy - 10, 8);
 
 			if (num_frames) {
-				Shape_frame *frame = shapes->get_shape(
-				                         current_shape, current_frame);
+				Shape_frame* frame
+						= shapes->get_shape(current_shape, current_frame);
 
 				if (frame) {
-					snprintf(buf, sizeof(buf), "%d x %d", frame->get_width(), frame->get_height());
-					//font->draw_text(ibuf, 32, 32, buf);
+					snprintf(
+							buf, sizeof(buf), "%d x %d", frame->get_width(),
+							frame->get_height());
+					// font->draw_text(ibuf, 32, 32, buf);
 					font->paint_text_fixedwidth(ibuf, buf, 2, 22, 8);
 
-					const Shape_info &info =
-					    ShapeID::get_info(current_shape);
+					const Shape_info& info = ShapeID::get_info(current_shape);
 
-					snprintf(buf, sizeof(buf), "class: %2i  ready_type: 0x%02x", info.get_shape_class(), info.get_ready_type());
+					snprintf(
+							buf, sizeof(buf), "class: %2i  ready_type: 0x%02x",
+							info.get_shape_class(), info.get_ready_type());
 					font->paint_text_fixedwidth(ibuf, buf, 2, 12, 8);
 
 					// TODO: do we want to display something other than
 					// this for shapes >= 1024?
-					if (current_shape < get_num_item_names() && get_item_name(current_shape)) {
-						//font->draw_text(ibuf, 32, 16, get_item_name(current_shape));
-						font->paint_text_fixedwidth(ibuf, get_item_name(current_shape), 2, 2, 8);
+					if (current_shape < get_num_item_names()
+						&& get_item_name(current_shape)) {
+						// font->draw_text(ibuf, 32, 16,
+						// get_item_name(current_shape));
+						font->paint_text_fixedwidth(
+								ibuf, get_item_name(current_shape), 2, 2, 8);
 					}
 
-					//draw outline
-					gwin->get_win()->fill8(255,
-					                       frame->get_width() + 4, frame->get_height() + 4,
-					                       gwin->get_width() / 2 - frame->get_xleft() - 2,
-					                       gwin->get_height() / 2 - frame->get_yabove() - 2);
-					gwin->get_win()->fill8(0,
-					                       frame->get_width() + 2, frame->get_height() + 2,
-					                       gwin->get_width() / 2 - frame->get_xleft() - 1,
-					                       gwin->get_height() / 2 - frame->get_yabove() - 1);
+					// draw outline
+					gwin->get_win()->fill8(
+							255, frame->get_width() + 4,
+							frame->get_height() + 4,
+							gwin->get_width() / 2 - frame->get_xleft() - 2,
+							gwin->get_height() / 2 - frame->get_yabove() - 2);
+					gwin->get_win()->fill8(
+							0, frame->get_width() + 2, frame->get_height() + 2,
+							gwin->get_width() / 2 - frame->get_xleft() - 1,
+							gwin->get_height() / 2 - frame->get_yabove() - 1);
 
-					//draw shape
-					sman->paint_shape(gwin->get_width() / 2, gwin->get_height() / 2, frame, true);
+					// draw shape
+					sman->paint_shape(
+							gwin->get_width() / 2, gwin->get_height() / 2,
+							frame, true);
 
-				} else
-					font->draw_text(ibuf, centerx - 20, centery - 5, "No Shape");
-			} else
+				} else {
+					font->draw_text(
+							ibuf, centerx - 20, centery - 5, "No Shape");
+				}
+			} else {
 				font->draw_text(ibuf, centerx - 20, centery - 5, "No Shape");
+			}
 
 			pal.apply();
 			redraw = false;
 		}
 		SDL_WaitEvent(&event);
 		if (event.type == SDL_KEYDOWN) {
-			redraw = true;
+			redraw           = true;
 			const bool shift = event.key.keysym.mod & KMOD_SHIFT;
-			//int ctrl = event.key.keysym.mod & KMOD_CTRL;
+			// int ctrl = event.key.keysym.mod & KMOD_CTRL;
 			switch (event.key.keysym.sym) {
 			case SDLK_ESCAPE:
 				looping = false;
@@ -192,7 +216,7 @@ void ShapeBrowser::browse_shapes() {
 				current_frame = 0;
 				delete shapes;
 				snprintf(buf, sizeof(buf), "files/shapes/%d", current_file);
-				fname = game->get_resource(buf).str;
+				fname  = game->get_resource(buf).str;
 				shapes = new Vga_file(fname);
 				break;
 			case SDLK_p:
@@ -200,14 +224,14 @@ void ShapeBrowser::browse_shapes() {
 				current_xform = -1;
 				break;
 			case SDLK_x:
-				handle_key(shift, current_xform,
-				           num_xforms);
+				handle_key(shift, current_xform, num_xforms);
 				break;
 				// Shapes
 			case SDLK_s:
-				if ((event.key.keysym.mod & KMOD_ALT) && (event.key.keysym.mod & KMOD_CTRL))
+				if ((event.key.keysym.mod & KMOD_ALT)
+					&& (event.key.keysym.mod & KMOD_CTRL)) {
 					make_screenshot(true);
-				else {
+				} else {
 					handle_key(shift, current_shape, num_shapes);
 					current_frame = 0;
 				}
@@ -221,8 +245,7 @@ void ShapeBrowser::browse_shapes() {
 				current_frame = 0;
 				break;
 			case SDLK_j:    // Jump by 20.
-				handle_key(shift, current_shape,
-				           num_shapes, 20);
+				handle_key(shift, current_shape, num_shapes, 20);
 				current_frame = 0;
 				break;
 			case SDLK_PAGEUP:
@@ -254,10 +277,10 @@ void ShapeBrowser::browse_shapes() {
 	} while (looping);
 }
 
-bool ShapeBrowser::get_shape(int &shape, int &frame) {
-	if (!shapes || current_file != 0)
+bool ShapeBrowser::get_shape(int& shape, int& frame) {
+	if (!shapes || current_file != 0) {
 		return false;
-	else {
+	} else {
 		shape = current_shape;
 		frame = current_frame;
 		return true;

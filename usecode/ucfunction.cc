@@ -19,40 +19,39 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include <iostream>
-using std::istream;
-
 #include "ucfunction.h"
+
 #include "utils.h"
+
+#include <iostream>
+
+using std::istream;
 
 /*
  *  Read in a function.
  */
 
-Usecode_function::Usecode_function(
-    istream &file
-) : orig(nullptr) {
+Usecode_function::Usecode_function(istream& file) : orig(nullptr) {
 	id = Read2(file);
 
 	// support for our extended usecode format. (32 bit lengths and ids)
 	if (id == 0xfffe) {
-		id = Read4s(file);
-		len = Read4(file);
+		id       = Read4s(file);
+		len      = Read4(file);
 		extended = true;
 		// older extended usecode format. (32 bit lengths)
 	} else if (id == 0xffff) {
-		id = Read2(file);
-		len = Read4(file);
+		id       = Read2(file);
+		len      = Read4(file);
 		extended = true;
 	} else {
-		len = Read2(file);
+		len      = Read2(file);
 		extended = false;
 	}
 
-	code = new unsigned char[len];  // Allocate buffer & read it in.
-	file.read(reinterpret_cast<char *>(code), len);
+	code = new unsigned char[len];    // Allocate buffer & read it in.
+	file.read(reinterpret_cast<char*>(code), len);
 }
-

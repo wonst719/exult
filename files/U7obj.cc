@@ -22,11 +22,12 @@
 
 #include "U7obj.h"
 
-#include <vector>
-#include <algorithm>
-#include "U7fileman.h"
 #include "U7file.h"
+#include "U7fileman.h"
 #include "utils.h"
+
+#include <algorithm>
+#include <vector>
 
 using std::make_unique;
 using std::unique_ptr;
@@ -37,7 +38,7 @@ using std::unique_ptr;
  *  if any failure happened.
  */
 size_t U7object::number_of_objects() {
-	U7file *uf = U7FileManager::get_ptr()->get_file_object(identifier, true);
+	U7file* uf = U7FileManager::get_ptr()->get_file_object(identifier, true);
 	return uf ? uf->number_of_objects() : 0UL;
 }
 
@@ -48,9 +49,9 @@ size_t U7object::number_of_objects() {
  *  @return Buffer created with new[] containing the contents of
  *  the object or null on any failure.
  */
-unique_ptr<unsigned char[]> U7object::retrieve(size_t &len) const {
-	U7file *uf = U7FileManager::get_ptr()->get_file_object(identifier, true);
-	len = 0;
+unique_ptr<unsigned char[]> U7object::retrieve(size_t& len) const {
+	U7file* uf = U7FileManager::get_ptr()->get_file_object(identifier, true);
+	len        = 0;
 	return uf ? uf->retrieve(objnumber, len) : nullptr;
 }
 
@@ -62,34 +63,32 @@ unique_ptr<unsigned char[]> U7object::retrieve(size_t &len) const {
  *  U7object information.
  *  @param objects  Vector containing U7objects we will test.
  */
-void U7multiobject::set_object(const std::vector<U7object> &objects) {
+void U7multiobject::set_object(const std::vector<U7object>& objects) {
 	for (const auto& object : objects) {
 		size_t len;
-		auto buf = object.retrieve(len);
+		auto   buf = object.retrieve(len);
 		// Only len > 0 means a valid object.
 		if (buf && len > 0) {
-			buffer = std::move(buf);   // Gets deleted with class.
-			length = len;
+			buffer     = std::move(buf);    // Gets deleted with class.
+			length     = len;
 			identifier = object.get_identifier();
 			break;
 		}
 	}
 }
+
 /**
  *  Single object constructor. Why bother?
  *  @param file0    Specification for first file/buffer.
  *  @param objnum   Object number we are looking for.
  */
-U7multiobject::U7multiobject(
-    const File_spec &file0,
-    int objnum
-)
-	: U7object(file0, objnum), buffer(nullptr), length(0) {
+U7multiobject::U7multiobject(const File_spec& file0, int objnum)
+		: U7object(file0, objnum), buffer(nullptr), length(0) {
 	size_t len;
-	auto buf = U7object::retrieve(len);
+	auto   buf = U7object::retrieve(len);
 	// Only len > 0 means a valid object.
 	if (buf && len > 0) {
-		buffer = std::move(buf);   // Gets deleted with class.
+		buffer = std::move(buf);    // Gets deleted with class.
 		length = len;
 	}
 }
@@ -101,11 +100,8 @@ U7multiobject::U7multiobject(
  *  @param objnum   Object number we are looking for.
  */
 U7multiobject::U7multiobject(
-    const File_spec &file0,
-    const File_spec &file1,
-    int objnum
-)
-	: U7object(file0, objnum), buffer(nullptr), length(0) {
+		const File_spec& file0, const File_spec& file1, int objnum)
+		: U7object(file0, objnum), buffer(nullptr), length(0) {
 	std::vector<U7object> objects;
 	objects.emplace_back(file1, objnum);
 	objects.emplace_back(file0, objnum);
@@ -120,12 +116,9 @@ U7multiobject::U7multiobject(
  *  @param objnum   Object number we are looking for.
  */
 U7multiobject::U7multiobject(
-    const File_spec &file0,
-    const File_spec &file1,
-    const File_spec &file2,
-    int objnum
-)
-	: U7object(file0, objnum), buffer(nullptr), length(0) {
+		const File_spec& file0, const File_spec& file1, const File_spec& file2,
+		int objnum)
+		: U7object(file0, objnum), buffer(nullptr), length(0) {
 	std::vector<U7object> objects;
 	objects.emplace_back(file2, objnum);
 	objects.emplace_back(file1, objnum);
@@ -142,13 +135,9 @@ U7multiobject::U7multiobject(
  *  @param objnum   Object number we are looking for.
  */
 U7multiobject::U7multiobject(
-    const File_spec &file0,
-    const File_spec &file1,
-    const File_spec &file2,
-    const File_spec &file3,
-    int objnum
-)
-	: U7object(file0, objnum), buffer(nullptr), length(0) {
+		const File_spec& file0, const File_spec& file1, const File_spec& file2,
+		const File_spec& file3, int objnum)
+		: U7object(file0, objnum), buffer(nullptr), length(0) {
 	std::vector<U7object> objects;
 	objects.emplace_back(file3, objnum);
 	objects.emplace_back(file2, objnum);
@@ -162,17 +151,15 @@ U7multiobject::U7multiobject(
  *  @param files    Vector with all the file specifications.
  *  @param objnum   Object number we are looking for.
  */
-U7multiobject::U7multiobject(
-    const std::vector<File_spec> &files,
-    int objnum
-)
-	: U7object("", objnum), buffer(nullptr), length(0) {
+U7multiobject::U7multiobject(const std::vector<File_spec>& files, int objnum)
+		: U7object("", objnum), buffer(nullptr), length(0) {
 	if (!files.empty()) {
 		identifier = files[0];
 		std::vector<U7object> objects;
 		objects.reserve(files.size());
-		for (const auto& file : files)
+		for (const auto& file : files) {
 			objects.emplace_back(file, objnum);
+		}
 		set_object(objects);
 	}
 }
@@ -184,7 +171,7 @@ U7multiobject::U7multiobject(
  *  @return Buffer created with new[] containing the contents of
  *  the object or null on any failure.
  */
-unique_ptr<unsigned char[]> U7multiobject::retrieve(size_t &len) const {
+unique_ptr<unsigned char[]> U7multiobject::retrieve(size_t& len) const {
 	len = length;
 	if (length == 0) {
 		// This means we didn't find the object on construction.
@@ -195,4 +182,3 @@ unique_ptr<unsigned char[]> U7multiobject::retrieve(size_t &len) const {
 		return buf;
 	}
 }
-

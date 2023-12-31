@@ -1,36 +1,38 @@
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#	include <config.h>
 #endif
 
-#include <iostream>
-#include <cstdlib>
-#include <string>
-#include <iomanip>
-#include <vector>
-#include <fstream>
 #include "array_size.h"
 
-using std::cout;
+#include <cstdlib>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <vector>
+
 using std::cerr;
+using std::cout;
 using std::endl;
-using std::ostream;
-using std::string;
-using std::setfill;
-using std::setbase;
-using std::setw;
 using std::ios;
 using std::ofstream;
+using std::ostream;
+using std::setbase;
+using std::setfill;
+using std::setw;
+using std::string;
 
 #ifndef TO_STRING
-#if defined __STDC__ && __STDC__
-#define TO_STRING(x) #x
-#else
-#define TO_STRING(x) "x"
-#endif
+#	if defined __STDC__ && __STDC__
+#		define TO_STRING(x) #x
+#	else
+#		define TO_STRING(x) "x"
+#	endif
 #endif
 
-void gen_intrinsic_table(ofstream& o, std::string const table[], unsigned int len) {
+void gen_intrinsic_table(
+		ofstream& o, const std::string table[], unsigned int len) {
 	o << "<intrinsics>" << endl;
 	for (unsigned int i = 0; i < len; i++) {
 		o << "\t<0x" << setw(2) << i << "> " << table[i];
@@ -42,7 +44,7 @@ void gen_intrinsic_table(ofstream& o, std::string const table[], unsigned int le
 	o << "</>" << endl;
 }
 
-void bg_out(const string &fname) {
+void bg_out(const string& fname) {
 	ofstream o;
 	o.open(fname.c_str());
 
@@ -64,7 +66,7 @@ void bg_out(const string &fname) {
 	o.close();
 }
 
-void si_out(const string &fname) {
+void si_out(const string& fname) {
 	ofstream o;
 	o.open(fname.c_str());
 
@@ -87,7 +89,7 @@ void si_out(const string &fname) {
 	o.close();
 }
 
-void sibeta_out(const string &fname) {
+void sibeta_out(const string& fname) {
 	ofstream o;
 	o.open(fname.c_str());
 
@@ -110,14 +112,20 @@ void sibeta_out(const string &fname) {
 	o.close();
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 	if (argc != 4) {
 		cout << "usage:" << endl
-		     << "\thead2data <bg outputfile> <si outputfile> <si beta outputfile>" << endl
-		     << endl
-		     << "\tWhere the output files are the relative pathnames to the datafiles" << endl
-		     << "\tto be output." << endl
-		     << "\teg. head2data data/u7bgintrinsics.data data/u7siintrinsics.data data/u7sibetaintrinsics.data" << endl;
+			 << "\thead2data <bg outputfile> <si outputfile> <si beta "
+				"outputfile>"
+			 << endl
+			 << endl
+			 << "\tWhere the output files are the relative pathnames to the "
+				"datafiles"
+			 << endl
+			 << "\tto be output." << endl
+			 << "\teg. head2data data/u7bgintrinsics.data "
+				"data/u7siintrinsics.data data/u7sibetaintrinsics.data"
+			 << endl;
 		return 1;
 	}
 
@@ -127,4 +135,3 @@ int main(int argc, char **argv) {
 
 	return 0;
 }
-

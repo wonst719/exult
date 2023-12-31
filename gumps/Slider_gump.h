@@ -28,25 +28,27 @@ class Slider_button;
  */
 class Slider_gump : public Modal_gump {
 protected:
-	int diamondx;           // Rel. pos. where diamond is shown.
-	static short diamondy;
-	int min_val, max_val;       // Max., min. values to choose from.
-	int step_val;           // Amount to step by.
-	int val;            // Current value.
-	unsigned char dragging;     // 1 if dragging the diamond.
-	int prev_dragx;         // Prev. x-coord. of mouse.
-	void set_val(int newval);   // Set to new value.
+	int           diamondx;    // Rel. pos. where diamond is shown.
+	static short  diamondy;
+	int           min_val, max_val;       // Max., min. values to choose from.
+	int           step_val;               // Amount to step by.
+	int           val;                    // Current value.
+	unsigned char dragging;               // 1 if dragging the diamond.
+	int           prev_dragx;             // Prev. x-coord. of mouse.
+	void          set_val(int newval);    // Set to new value.
 	// Coords:
 	static short leftbtnx, rightbtnx, btny;
 	static short xmin, xmax;
 
-	ShapeID diamond;        // Diamond
+	ShapeID diamond;    // Diamond
 
 public:
 	Slider_gump(int mival, int mxval, int step, int defval);
-	int get_val() {         // Get last value set.
+
+	int get_val() {    // Get last value set.
 		return val;
 	}
+
 	// An arrow was clicked on.
 	void clicked_left_arrow();
 	void clicked_right_arrow();
@@ -54,14 +56,16 @@ public:
 
 	// Paint it and its contents.
 	void paint() override;
+
 	void close() override {
 		done = true;
 	}
+
 	// Handle events:
 	bool mouse_down(int mx, int my, int button) override;
 	bool mouse_up(int mx, int my, int button) override;
 	void mouse_drag(int mx, int my) override;
-	void key_down(int chr) override; // Character typed.
+	void key_down(int chr) override;    // Character typed.
 
 	void mousewheel_up() override;
 	void mousewheel_down() override;

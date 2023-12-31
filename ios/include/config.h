@@ -46,27 +46,31 @@
 #define USE_MT32EMU_MIDI
 
 #ifndef MT32EMU_CONFIG_H
-#define MT32EMU_CONFIG_H
+#	define MT32EMU_CONFIG_H
 
-#define MT32EMU_WITH_INTERNAL_RESAMPLER 1
+#	define MT32EMU_WITH_INTERNAL_RESAMPLER 1
 
 /* MT32EMU Version */
-#define MT32EMU_VERSION_MAJOR 2
-#define MT32EMU_VERSION_MINOR 7
-#define MT32EMU_VERSION_PATCH 0
-#define MT32EMU_VERSION "$(MT32EMU_VERSION_MAJOR).$(MT32EMU_VERSION_MINOR).$(MT32EMU_VERSION_PATCH)" 
+#	define MT32EMU_VERSION_MAJOR 2
+#	define MT32EMU_VERSION_MINOR 7
+#	define MT32EMU_VERSION_PATCH 0
+#	define MT32EMU_VERSION                                                    \
+		"$(MT32EMU_VERSION_MAJOR).$(MT32EMU_VERSION_MINOR).$(MT32EMU_VERSION_" \
+		"PATCH)"
 
 /* Library Exports Configuration
  *
  * This reflects the API types actually provided by the library build.
- * 0: The full-featured C++ API is only available in this build. The client application may ONLY use MT32EMU_API_TYPE 0.
- * 1: The C-compatible API is only available. The library is built as a shared object, only C functions are exported,
- *    and thus the client application may NOT use MT32EMU_API_TYPE 0.
- * 2: The C-compatible API is only available. The library is built as a shared object, only the factory function
- *    is exported, and thus the client application may ONLY use MT32EMU_API_TYPE 2.
- * 3: All the available API types are provided by the library build.
+ * 0: The full-featured C++ API is only available in this build. The client
+ * application may ONLY use MT32EMU_API_TYPE 0. 1: The C-compatible API is only
+ * available. The library is built as a shared object, only C functions are
+ * exported, and thus the client application may NOT use MT32EMU_API_TYPE 0. 2:
+ * The C-compatible API is only available. The library is built as a shared
+ * object, only the factory function is exported, and thus the client
+ * application may ONLY use MT32EMU_API_TYPE 2. 3: All the available API types
+ * are provided by the library build.
  */
-#define MT32EMU_EXPORTS_TYPE  3
+#	define MT32EMU_EXPORTS_TYPE 3
 #endif
 
 /* Enable Midi Sfx */
@@ -139,7 +143,7 @@
 #define HAVE_CXX17 1
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
-   */
+ */
 #define HAVE_DIRENT_H 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
@@ -257,11 +261,11 @@
 /* #undef HAVE_NDIR_H */
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
-   */
+ */
 /* #undef HAVE_SYS_DIR_H */
 
 /* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
-   */
+ */
 /* #undef HAVE_SYS_NDIR_H */
 
 /* Define to 1 if you have the <sys/socket.h> header file. */
@@ -301,9 +305,9 @@
 #define LT_OBJDIR ".libs/"
 
 #ifdef __LP64__
-#define SIZEOF_VOIDP 8
+#	define SIZEOF_VOIDP 8
 #else
-#define SIZEOF_VOIDP 4
+#	define SIZEOF_VOIDP 4
 #endif
 
 /* The size of `int', as computed by sizeof. */

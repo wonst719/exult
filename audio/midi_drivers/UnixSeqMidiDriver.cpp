@@ -23,30 +23,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
+
 #include "UnixSeqMidiDriver.h"
 
 #ifdef USE_UNIX_SEQ_MIDI
 
-#include <fcntl.h>
-#include <unistd.h>
-#include <cerrno>
+#	include <fcntl.h>
+#	include <unistd.h>
 
-const MidiDriver::MidiDriverDesc UnixSeqMidiDriver::desc =
-		MidiDriver::MidiDriverDesc ("UnixSeq", createInstance);
+#	include <cerrno>
 
-#define SEQ_MIDIPUTC 5
-#define SEQ_DEVICE "/dev/sequencer"
+const MidiDriver::MidiDriverDesc UnixSeqMidiDriver::desc
+		= MidiDriver::MidiDriverDesc("UnixSeq", createInstance);
+
+#	define SEQ_MIDIPUTC 5
+#	define SEQ_DEVICE   "/dev/sequencer"
 
 UnixSeqMidiDriver::UnixSeqMidiDriver()
-	: isOpen(false), device(0), deviceNum(0)
-{
+		: isOpen(false), device(0), deviceNum(0) {
 	// see if the config file specifies an alternate midi device
 	devname = getConfigSetting("unixseqdevice", SEQ_DEVICE);
 }
 
-int UnixSeqMidiDriver::open()
-{
-	if (isOpen) return 1;
+int UnixSeqMidiDriver::open() {
+	if (isOpen) {
+		return 1;
+	}
 	isOpen = true;
 	device = 0;
 
@@ -62,16 +64,15 @@ int UnixSeqMidiDriver::open()
 	return 0;
 }
 
-void UnixSeqMidiDriver::close()
-{
+void UnixSeqMidiDriver::close() {
 	::close(device);
 	isOpen = false;
 }
 
 void UnixSeqMidiDriver::send(uint32 b) {
 	unsigned char buf[256];
-	size_t position = 0;
-	size_t err;
+	size_t        position = 0;
+	size_t        err;
 
 	switch (b & 0xF0) {
 	case 0x80:
@@ -104,27 +105,27 @@ void UnixSeqMidiDriver::send(uint32 b) {
 		buf[position++] = 0;
 		break;
 	default:
-		perr << "UnixSeqMidiDriver: Unknown Command: "
-			 << std::hex << static_cast<int>(b) << std::dec << std::endl;
+		perr << "UnixSeqMidiDriver: Unknown Command: " << std::hex
+			 << static_cast<int>(b) << std::dec << std::endl;
 		break;
 	}
 
 	err = ::write(device, buf, position);
-	assert (err == position);
+	assert(err == position);
 }
 
-void UnixSeqMidiDriver::send_sysex(uint8 status,const uint8 *msg,uint16 length)
-{
+void UnixSeqMidiDriver::send_sysex(
+		uint8 status, const uint8* msg, uint16 length) {
 	if (length > 511) {
 		perr << "UnixSeqMidiDriver: "
 			 << "Cannot send SysEx block - data too large" << std::endl;
 		return;
 	}
 
-	unsigned char buf [2048];
-	size_t position = 0;
-	const uint8 *chr = msg;
-	size_t err;
+	unsigned char buf[2048];
+	size_t        position = 0;
+	const uint8*  chr      = msg;
+	size_t        err;
 
 	buf[position++] = SEQ_MIDIPUTC;
 	buf[position++] = status;
@@ -138,8 +139,8 @@ void UnixSeqMidiDriver::send_sysex(uint8 status,const uint8 *msg,uint16 length)
 		buf[position++] = 0;
 	}
 
-	err = ::write (device, buf, position);
-	assert (err == position);
+	err = ::write(device, buf, position);
+	assert(err == position);
 }
 
 #endif

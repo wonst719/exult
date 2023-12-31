@@ -17,16 +17,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
+#include "Slider_gump.h"
+
+#include "Gump_button.h"
+#include "Gump_manager.h"
 #include "game.h"
 #include "gamewin.h"
-#include "Gump_button.h"
-#include "misc_buttons.h"
-#include "Slider_gump.h"
-#include "Gump_manager.h"
 #include "ignore_unused_variable_warning.h"
+#include "misc_buttons.h"
 
 using std::cout;
 using std::endl;
@@ -35,22 +36,23 @@ using std::endl;
  *  Statics:
  */
 
-short Slider_gump::leftbtnx = 31;
+short Slider_gump::leftbtnx  = 31;
 short Slider_gump::rightbtnx = 103;
-short Slider_gump::btny = 14;
-short Slider_gump::diamondy = 6;
-short Slider_gump::xmin = 35;   // Min., max. positions of diamond.
-short Slider_gump::xmax = 93;
+short Slider_gump::btny      = 14;
+short Slider_gump::diamondy  = 6;
+short Slider_gump::xmin      = 35;    // Min., max. positions of diamond.
+short Slider_gump::xmax      = 93;
 
 /*
  *  One of the two arrow button on the slider:
  */
 class Slider_button : public Gump_button {
 	bool is_left;
+
 public:
-	Slider_button(Gump *par, int px, int py, int shapenum, bool left)
-		: Gump_button(par, shapenum, px, py), is_left(left)
-	{  }
+	Slider_button(Gump* par, int px, int py, int shapenum, bool left)
+			: Gump_button(par, shapenum, px, py), is_left(left) {}
+
 	// What to do when 'clicked':
 	bool activate(int button = 1) override;
 };
@@ -59,14 +61,15 @@ public:
  *  Handle click on a slider's arrow.
  */
 
-bool Slider_button::activate(
-    int button
-) {
-	if (button != 1) return false;
-	if (is_left)
-		static_cast<Slider_gump *>(parent)->clicked_left_arrow();
-	else
-		static_cast<Slider_gump *>(parent)->clicked_right_arrow();
+bool Slider_button::activate(int button) {
+	if (button != 1) {
+		return false;
+	}
+	if (is_left) {
+		static_cast<Slider_gump*>(parent)->clicked_left_arrow();
+	} else {
+		static_cast<Slider_gump*>(parent)->clicked_right_arrow();
+	}
 	return true;
 }
 
@@ -74,16 +77,15 @@ bool Slider_button::activate(
  *  Set slider value.
  */
 
-void Slider_gump::set_val(
-    int newval
-) {
-	val = newval;
+void Slider_gump::set_val(int newval) {
+	val                    = newval;
 	static const int xdist = xmax - xmin;
 	if (max_val - min_val == 0) {
-		val = 0;
+		val      = 0;
 		diamondx = xmin;
-	} else
+	} else {
 		diamondx = xmin + ((val - min_val) * xdist) / (max_val - min_val);
+	}
 }
 
 /*
@@ -91,27 +93,31 @@ void Slider_gump::set_val(
  */
 
 Slider_gump::Slider_gump(
-    int mival, int mxval,       // Value range.
-    int step,           // Amt. to change by.
-    int defval          // Default value.
-) : Modal_gump(nullptr, game->get_shape("gumps/slider")),
-	min_val(mival), max_val(mxval), step_val(step),
-	val(defval), dragging(0), prev_dragx(0) {
+		int mival, int mxval,    // Value range.
+		int step,                // Amt. to change by.
+		int defval               // Default value.
+		)
+		: Modal_gump(nullptr, game->get_shape("gumps/slider")), min_val(mival),
+		  max_val(mxval), step_val(step), val(defval), dragging(0),
+		  prev_dragx(0) {
 	diamond = ShapeID(game->get_shape("gumps/slider_diamond"), 0, SF_GUMPS_VGA);
 	set_object_area(TileRect(0, 0, 0, 0), 6, 30);
 
 #ifdef DEBUG
-	cout << "Slider:  " << min_val << " to " << max_val << " by " << step << endl;
+	cout << "Slider:  " << min_val << " to " << max_val << " by " << step
+		 << endl;
 #endif
-	add_elem(new Slider_button(this, leftbtnx, btny,
-	                           game->get_shape("gumps/slider_left"), true));
-	add_elem(new Slider_button(this, rightbtnx, btny,
-	                           game->get_shape("gumps/slider_right"), false));
+	add_elem(new Slider_button(
+			this, leftbtnx, btny, game->get_shape("gumps/slider_left"), true));
+	add_elem(new Slider_button(
+			this, rightbtnx, btny, game->get_shape("gumps/slider_right"),
+			false));
 	// Init. to middle value.
-	if (defval < min_val)
+	if (defval < min_val) {
 		defval = min_val;
-	else if (defval > max_val)
+	} else if (defval > max_val) {
 		defval = max_val;
+	}
 	set_val(defval);
 }
 
@@ -119,36 +125,34 @@ Slider_gump::Slider_gump(
  *  An arrow on the slider was clicked.
  */
 
-void Slider_gump::clicked_left_arrow(
-) {
+void Slider_gump::clicked_left_arrow() {
 	move_diamond(-step_val);
 }
 
-void Slider_gump::clicked_right_arrow(
-) {
+void Slider_gump::clicked_right_arrow() {
 	move_diamond(step_val);
 }
 
 void Slider_gump::move_diamond(int dir) {
 	int newval = val;
 	newval += dir;
-	if (newval < min_val)
+	if (newval < min_val) {
 		newval = min_val;
-	if (newval > max_val)
+	}
+	if (newval > max_val) {
 		newval = max_val;
+	}
 
 	set_val(newval);
 	paint();
 	gwin->set_painted();
 }
 
-
 /*
  *  Paint on screen.
  */
 
-void Slider_gump::paint(
-) {
+void Slider_gump::paint() {
 	const int textx = 128;
 	const int texty = 7;
 	// Paint the gump itself.
@@ -167,39 +171,48 @@ void Slider_gump::paint(
  */
 
 bool Slider_gump::mouse_down(
-    int mx, int my, int button          // Position in window.
+		int mx, int my, int button    // Position in window.
 ) {
-	if (button != 1) return false;
+	if (button != 1) {
+		return false;
+	}
 
-	dragging = 0;
-	Gump_button *btn = Gump::on_button(mx, my);
-	if (btn)
+	dragging         = 0;
+	Gump_button* btn = Gump::on_button(mx, my);
+	if (btn) {
 		pushed = btn;
-	else
+	} else {
 		pushed = nullptr;
+	}
 	if (pushed) {
-		if (!pushed->push(button)) pushed = nullptr;
+		if (!pushed->push(button)) {
+			pushed = nullptr;
+		}
 		return true;
 	}
 	// See if on diamond.
-	Shape_frame *d_shape = diamond.get_shape();
+	Shape_frame* d_shape = diamond.get_shape();
 	if (d_shape->has_point(mx - (x + diamondx), my - (y + diamondy))) {
 		// Start to drag it.
-		dragging = 1;
+		dragging   = 1;
 		prev_dragx = mx;
 	} else {
-		if (my - get_y() < diamondy || my - get_y() > diamondy + d_shape->get_height())
+		if (my - get_y() < diamondy
+			|| my - get_y() > diamondy + d_shape->get_height()) {
 			return true;
-		if (mx - get_x() < xmin || mx - get_x() > xmax)
+		}
+		if (mx - get_x() < xmin || mx - get_x() > xmax) {
 			return true;
-		diamondx = mx - get_x();
+		}
+		diamondx               = mx - get_x();
 		static const int xdist = xmax - xmin;
 		int delta = (diamondx - xmin) * (max_val - min_val) / xdist;
 		// Round down to nearest step.
 		delta -= delta % step_val;
 		const int newval = min_val + delta;
-		if (newval != val)      // Set value.
+		if (newval != val) {    // Set value.
 			val = newval;
+		}
 		paint();
 	}
 
@@ -211,21 +224,25 @@ bool Slider_gump::mouse_down(
  */
 
 bool Slider_gump::mouse_up(
-    int mx, int my, int button      // Position in window.
+		int mx, int my, int button    // Position in window.
 ) {
-	if (button != 1) return false;
+	if (button != 1) {
+		return false;
+	}
 
-	if (dragging) {         // Done dragging?
-		set_val(val);       // Set diamond in correct pos.
+	if (dragging) {      // Done dragging?
+		set_val(val);    // Set diamond in correct pos.
 		paint();
 		gwin->set_painted();
 		dragging = 0;
 	}
-	if (!pushed)
+	if (!pushed) {
 		return true;
+	}
 	pushed->unpush(button);
-	if (pushed->on_button(mx, my))
+	if (pushed->on_button(mx, my)) {
 		pushed->activate(button);
+	}
 	pushed = nullptr;
 
 	return true;
@@ -236,24 +253,27 @@ bool Slider_gump::mouse_up(
  */
 
 void Slider_gump::mouse_drag(
-    int mx, int my          // Where mouse is.
+		int mx, int my    // Where mouse is.
 ) {
 	ignore_unused_variable_warning(mx, my);
-	if (!dragging)
+	if (!dragging) {
 		return;
+	}
 	diamondx += mx - prev_dragx;
 	prev_dragx = mx;
-	if (diamondx < xmin)        // Stop at ends.
+	if (diamondx < xmin) {    // Stop at ends.
 		diamondx = xmin;
-	else if (diamondx > xmax)
+	} else if (diamondx > xmax) {
 		diamondx = xmax;
+	}
 	static const int xdist = xmax - xmin;
-	int delta = (diamondx - xmin) * (max_val - min_val) / xdist;
+	int              delta = (diamondx - xmin) * (max_val - min_val) / xdist;
 	// Round down to nearest step.
 	delta -= delta % step_val;
 	const int newval = min_val + delta;
-	if (newval != val)      // Set value.
+	if (newval != val) {    // Set value.
 		val = newval;
+	}
 	paint();
 }
 
@@ -278,16 +298,18 @@ void Slider_gump::key_down(int chr) {
 
 void Slider_gump::mousewheel_up() {
 	const SDL_Keymod mod = SDL_GetModState();
-	if (mod & KMOD_ALT)
+	if (mod & KMOD_ALT) {
 		move_diamond(-10 * step_val);
-	else
+	} else {
 		move_diamond(-step_val);
+	}
 }
 
 void Slider_gump::mousewheel_down() {
 	const SDL_Keymod mod = SDL_GetModState();
-	if (mod & KMOD_ALT)
+	if (mod & KMOD_ALT) {
 		move_diamond(10 * step_val);
-	else
+	} else {
 		move_diamond(step_val);
+	}
 }

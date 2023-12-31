@@ -28,12 +28,15 @@ class Actor;
  */
 class Checkmark_button : public Gump_button {
 public:
-	Checkmark_button(Gump *par, int px, int py);
-	Gump_widget *clone(Gump *par) override {
+	Checkmark_button(Gump* par, int px, int py);
+
+	Gump_widget* clone(Gump* par) override {
 		return new Checkmark_button(par, x, y);
 	}
+
 	// What to do when 'clicked':
 	bool activate(int button = 1) override;
+
 	bool is_checkmark() const override {
 		return true;
 	}
@@ -44,10 +47,12 @@ public:
  */
 class Heart_button : public Gump_button {
 public:
-	Heart_button(Gump *par, int px, int py);
-	Gump_widget *clone(Gump *par) override {
+	Heart_button(Gump* par, int px, int py);
+
+	Gump_widget* clone(Gump* par) override {
 		return new Heart_button(par, x, y);
 	}
+
 	// What to do when 'clicked':
 	bool activate(int button = 1) override;
 };
@@ -57,10 +62,12 @@ public:
  */
 class Disk_button : public Gump_button {
 public:
-	Disk_button(Gump *par, int px, int py);
-	Gump_widget *clone(Gump *par) override {
+	Disk_button(Gump* par, int px, int py);
+
+	Gump_widget* clone(Gump* par) override {
 		return new Disk_button(par, x, y);
 	}
+
 	// What to do when 'clicked':
 	bool activate(int button = 1) override;
 };
@@ -70,10 +77,12 @@ public:
  */
 class Combat_button : public Gump_button {
 public:
-	Combat_button(Gump *par, int px, int py);
-	Gump_widget *clone(Gump *par) override {
+	Combat_button(Gump* par, int px, int py);
+
+	Gump_widget* clone(Gump* par) override {
 		return new Combat_button(par, x, y);
 	}
+
 	// What to do when 'clicked':
 	bool activate(int button = 1) override;
 	void paint() override;
@@ -83,12 +92,14 @@ public:
  *  The halo button.
  */
 class Halo_button : public Gump_button {
-	Actor *actor;           // Who this represents.
+	Actor* actor;    // Who this represents.
 public:
-	Halo_button(Gump *par, int px, int py, Actor *a);
-	Gump_widget *clone(Gump *par) override {
+	Halo_button(Gump* par, int px, int py, Actor* a);
+
+	Gump_widget* clone(Gump* par) override {
 		return new Halo_button(par, x, y, actor);
 	}
+
 	// What to do when 'clicked':
 	bool activate(int button = 1) override;
 };
@@ -97,12 +108,14 @@ public:
  *  Combat mode.  Has 10 frames corresponding to Actor::Attack_mode.
  */
 class Combat_mode_button : public Gump_button {
-	Actor *actor;           // Who this represents.
+	Actor* actor;    // Who this represents.
 public:
-	Combat_mode_button(Gump *par, int px, int py, Actor *a);
-	Gump_widget *clone(Gump *par) override {
+	Combat_mode_button(Gump* par, int px, int py, Actor* a);
+
+	Gump_widget* clone(Gump* par) override {
 		return new Combat_mode_button(par, x, y, actor);
 	}
+
 	// What to do when 'clicked':
 	bool activate(int button = 1) override;
 };
@@ -112,8 +125,9 @@ public:
  */
 class Cstats_button : public Gump_button {
 public:
-	Cstats_button(Gump *par, int px, int py);
-	Gump_widget *clone(Gump *par) override {
+	Cstats_button(Gump* par, int px, int py);
+
+	Gump_widget* clone(Gump* par) override {
 		return new Cstats_button(par, x, y);
 	}
 
@@ -122,4 +136,3 @@ public:
 };
 
 #endif
-

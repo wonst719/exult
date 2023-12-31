@@ -19,10 +19,11 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
 #include "tqueue.h"
+
 #include <algorithm>
 
 #ifdef __GNUC__
@@ -39,8 +40,7 @@
  *  Remove all entries.
  */
 
-void Time_queue::clear(
-) {
+void Time_queue::clear() {
 	for (auto& ent : data) {
 		ent.handler->dequeue();
 	}
@@ -52,21 +52,22 @@ void Time_queue::clear(
  */
 
 void Time_queue::add(
-    uint32 t,       // When entry is to be activated.
-    Time_sensitive *obj,        // Object to be added.
-    uintptr ud             // User data.
+		uint32          t,      // When entry is to be activated.
+		Time_sensitive* obj,    // Object to be added.
+		uintptr         ud      // User data.
 ) {
-	obj->queue_cnt++;       // It's going in, no matter what.
+	obj->queue_cnt++;    // It's going in, no matter what.
 	Queue_entry newent;
-	if (paused && !obj->always) // Paused?
+	if (paused && !obj->always) {    // Paused?
 		// Messy, but we need to fix time.
 		t -= SDL_GetTicks() - pause_time;
+	}
 	newent.set(t, obj, ud);
 	auto insertionPoint = std::upper_bound(data.begin(), data.end(), newent);
 	data.insert(insertionPoint, newent);
 }
 
-bool    operator <(const Queue_entry &q1, const Queue_entry &q2) {
+bool operator<(const Queue_entry& q1, const Queue_entry& q2) {
 	return q1.time < q2.time;
 }
 
@@ -76,11 +77,11 @@ bool    operator <(const Queue_entry &q1, const Queue_entry &q2) {
  *  Output: 1 if found, else 0.
  */
 
-bool Time_queue::remove(
-    Time_sensitive *obj
-) {
-	auto toRemove = std::find_if(data.begin(), data.end(),
-			[obj](const auto& el) { return el.handler == obj; });
+bool Time_queue::remove(Time_sensitive* obj) {
+	auto toRemove
+			= std::find_if(data.begin(), data.end(), [obj](const auto& el) {
+				  return el.handler == obj;
+			  });
 	auto found = toRemove != data.end();
 	if (found) {
 		toRemove->handler->queue_cnt--;
@@ -95,13 +96,10 @@ bool Time_queue::remove(
  *  Output: 1 if found, else 0.
  */
 
-bool Time_queue::remove(
-    Time_sensitive *obj,
-    uintptr udata
-) {
-	auto it = std::find_if(data.begin(), data.end(),
-			[&](const auto& el) { return el.handler == obj && el.udata == udata; }
-	);
+bool Time_queue::remove(Time_sensitive* obj, uintptr udata) {
+	auto       it = std::find_if(data.begin(), data.end(), [&](const auto& el) {
+        return el.handler == obj && el.udata == udata;
+    });
 	const bool found = it != data.end();
 	if (found) {
 		obj->queue_cnt--;
@@ -116,12 +114,13 @@ bool Time_queue::remove(
  *  Output: true if found, else false.
  */
 
-bool Time_queue::find(
-    Time_sensitive const *obj
-) const {
-	return std::find_if(data.begin(), data.end(),
-			[&](const auto& el) {return el.handler==obj;})
-		!= data.end();
+bool Time_queue::find(const Time_sensitive* obj) const {
+	return std::find_if(
+				   data.begin(), data.end(),
+				   [&](const auto& el) {
+					   return el.handler == obj;
+				   })
+		   != data.end();
 }
 
 /*
@@ -130,16 +129,14 @@ bool Time_queue::find(
  *  Output: delay in msecs. when due, or -1 if not in queue.
  */
 
-long Time_queue::find_delay(
-    Time_sensitive const *obj,
-    uint32 curtime
-) const {
-	auto found = std::find_if(data.begin(), data.end(),
-		[&](const auto& el){return obj == el.handler;});
+long Time_queue::find_delay(const Time_sensitive* obj, uint32 curtime) const {
+	auto found = std::find_if(data.begin(), data.end(), [&](const auto& el) {
+		return obj == el.handler;
+	});
 	if (found == data.end()) {
 		return -1;
 	}
-	if (pause_time) { // Watch for case when paused.
+	if (pause_time) {    // Watch for case when paused.
 		curtime = pause_time;
 	}
 	const long delay = found->time - curtime;
@@ -151,15 +148,14 @@ long Time_queue::find_delay(
  *  known to be due).
  */
 
-void Time_queue::activate0(
-    uint32 curtime      // Current time.
+void Time_queue::activate0(uint32 curtime    // Current time.
 ) {
 	Queue_entry ent;
 	do {
-		ent = data.front();
-		Time_sensitive *obj = ent.handler;
-		const uintptr udata = ent.udata;
-		data.pop_front();   // Remove from chain.
+		ent                   = data.front();
+		Time_sensitive* obj   = ent.handler;
+		const uintptr   udata = ent.udata;
+		data.pop_front();    // Remove from chain.
 		obj->queue_cnt--;
 		obj->handle_event(curtime, udata);
 	} while (!data.empty() && !(curtime < data.front().time));
@@ -170,18 +166,17 @@ void Time_queue::activate0(
  *  the queue is paused.
  */
 
-void Time_queue::activate_always(
-    uint32 curtime      // Current time.
+void Time_queue::activate_always(uint32 curtime    // Current time.
 ) {
-	if (data.empty())
+	if (data.empty()) {
 		return;
+	}
 	Queue_entry ent;
-	for (auto it = data.begin();
-	        it != data.end() && !(curtime < it->time);) {
+	for (auto it = data.begin(); it != data.end() && !(curtime < it->time);) {
 		auto next = it;
-		++next;         // Get ->next in case we erase.
-		ent = *it;
-		Time_sensitive *obj = ent.handler;
+		++next;    // Get ->next in case we erase.
+		ent                 = *it;
+		Time_sensitive* obj = ent.handler;
 		if (obj->always) {
 			obj->queue_cnt--;
 			const uintptr udata = ent.udata;
@@ -196,18 +191,19 @@ void Time_queue::activate_always(
  *  Resume after a pause.
  */
 
-void Time_queue::resume(
-    uint32 curtime
-) {
-	if (!paused || --paused > 0)    // Only unpause when stack empty.
-		return;         // Not paused.
+void Time_queue::resume(uint32 curtime) {
+	if (!paused || --paused > 0) {    // Only unpause when stack empty.
+		return;                       // Not paused.
+	}
 	const int diff = curtime - pause_time;
-	pause_time = 0;
-	if (diff < 0)           // Should not happen.
+	pause_time     = 0;
+	if (diff < 0) {    // Should not happen.
 		return;
+	}
 	for (auto& it : data) {
-		if (!it.handler->always)
-			it.time += diff;   // Push entries ahead.
+		if (!it.handler->always) {
+			it.time += diff;    // Push entries ahead.
+		}
 	}
 }
 
@@ -216,21 +212,21 @@ void Time_queue::resume(
  */
 
 bool Time_queue_iterator::operator()(
-    Time_sensitive  *&obj,      // Main object.
-    uintptr &data          // Data that was added with it.
+		Time_sensitive*& obj,    // Main object.
+		uintptr&         data    // Data that was added with it.
 ) {
 	auto remain = iter;
-	iter = this_obj == nullptr
-		? remain
-		: std::find_if(iter, tqueue->data.end(), [&](const auto& el) {
-			return el.handler == this_obj;
-		}
-	);
-	if (iter == tqueue->data.end())
+	iter        = this_obj == nullptr
+						  ? remain
+						  : std::find_if(
+                           iter, tqueue->data.end(), [&](const auto& el) {
+                               return el.handler == this_obj;
+                           });
+	if (iter == tqueue->data.end()) {
 		return false;
-	obj = iter->handler;      // Return fields.
+	}
+	obj  = iter->handler;    // Return fields.
 	data = iter->udata;
-	++iter;             // On to the next.
+	++iter;    // On to the next.
 	return true;
 }
-

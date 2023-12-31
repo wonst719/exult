@@ -31,24 +31,26 @@
 
 #include "game.h"
 
-#include <vector>
 #include <map>
 #include <string>
+#include <vector>
 
 const int c_maxparams = 4;
 
 struct Action;
+
 struct ActionType {
-	const Action *action;
-	int params[c_maxparams];
+	const Action* action;
+	int           params[c_maxparams];
 };
 
 struct ltSDLkeysym {
 	bool operator()(SDL_Keysym k1, SDL_Keysym k2) const {
-		if (k1.sym == k2.sym)
+		if (k1.sym == k2.sym) {
 			return k1.mod < k2.mod;
-		else
+		} else {
 			return k1.sym < k2.sym;
+		}
 	}
 };
 
@@ -62,13 +64,15 @@ private:
 	std::vector<std::string> cheathelp;
 	std::vector<std::string> mapedithelp;
 	std::vector<std::string> last_created_key;
-	void LoadFromFileInternal(const char *filename);
-	KeyMap::const_iterator TranslateEvent(SDL_Event const &ev) const;
+	void                     LoadFromFileInternal(const char* filename);
+	KeyMap::const_iterator   TranslateEvent(const SDL_Event& ev) const;
+
 public:
 	KeyBinder();
 	/* Add keybinding */
-	void AddKeyBinding(SDL_Keycode key, int mod, const Action *action,
-	                   int nparams, const int *params);
+	void AddKeyBinding(
+			SDL_Keycode key, int mod, const Action* action, int nparams,
+			const int* params);
 
 	/* Delete keybinding */
 	void DelKeyBinding(SDL_Keycode sym, int mod);
@@ -81,20 +85,22 @@ public:
 		mapedithelp.clear();
 		last_created_key.clear();
 	}
-	bool DoAction(ActionType const &action, bool press) const;
-	bool HandleEvent(SDL_Event const &ev) const;
-	bool IsMotionEvent(SDL_Event const &ev) const;
 
-	void LoadFromFile(const char *filename);
+	bool DoAction(const ActionType& action, bool press) const;
+	bool HandleEvent(const SDL_Event& ev) const;
+	bool IsMotionEvent(const SDL_Event& ev) const;
+
+	void LoadFromFile(const char* filename);
 	void LoadFromPatch();
 	void LoadDefaults();
 	void ShowHelp() const;
 	void ShowCheatHelp() const;
 	void ShowMapeditHelp() const;
 	void ShowBrowserKeys() const;
+
 private:
-	void ParseText(char *text, int len);
-	void ParseLine(char *line);
+	void ParseText(char* text, int len);
+	void ParseLine(char* line);
 	void FillParseMaps();
 };
 

@@ -23,57 +23,55 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include <fstream>
-#include <unistd.h>
-#include <cstdio>
-#include <string>
-#include <cstring>
-#include <cstdlib>
-#include <vector>
-#include "ucloc.h"
 #include "ucfun.h"
+#include "ucloc.h"
 #include "ucsymtbl.h"
 #include "utils.h"
 
-#include <iosfwd>
+#include <unistd.h>
 
-using std::strcpy;
-using std::strrchr;
-using std::strlen;
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 using std::ios;
+using std::strcpy;
+using std::strlen;
+using std::strrchr;
 
 // THIS is what the parser produces.
-extern std::vector<Uc_design_unit *> units;
+extern std::vector<Uc_design_unit*> units;
 
-std::vector<char *> include_dirs;   // -I directories.
+std::vector<char*> include_dirs;    // -I directories.
 
 /*
  *  MAIN.
  */
 
-int main(
-    int argc,
-    char **argv
-) {
-	extern int yyparse();
-	extern FILE *yyin;
-	const char *src;
-	char outbuf[256];
-	char *outname = nullptr;
-	bool want_sym_table = true;
-	static const char *optstring = "o:I:sb";
-	Uc_function::Intrinsic_type ty = Uc_function::unset;
-	opterr = 0;         // Don't let getopt() print errs.
+int main(int argc, char** argv) {
+	extern int                  yyparse();
+	extern FILE*                yyin;
+	const char*                 src;
+	char                        outbuf[256];
+	char*                       outname        = nullptr;
+	bool                        want_sym_table = true;
+	static const char*          optstring      = "o:I:sb";
+	Uc_function::Intrinsic_type ty             = Uc_function::unset;
+	opterr = 0;    // Don't let getopt() print errs.
 	int optchr;
-	while ((optchr = getopt(argc, argv, optstring)) != -1)
+	while ((optchr = getopt(argc, argv, optstring)) != -1) {
 		switch (optchr) {
-		case 'o':       // Output to write.
+		case 'o':    // Output to write.
 			outname = optarg;
 			break;
-		case 'I':       // Include dir.
+		case 'I':    // Include dir.
 			include_dirs.push_back(optarg);
 			break;
 		case 's':
@@ -83,51 +81,59 @@ int main(
 			want_sym_table = false;
 			break;
 		}
-	char *env = getenv("UCC_INCLUDE");
-	if (env)
+	}
+	char* env = getenv("UCC_INCLUDE");
+	if (env) {
 		include_dirs.push_back(env);
+	}
 	if (optind < argc) {    // Filename?
-		src = argv[optind];
+		src  = argv[optind];
 		yyin = fopen(argv[optind], "r");
-		if (!outname) {     // No -o option?
+		if (!outname) {    // No -o option?
 			// Set up output name.
 			outname = strncpy(outbuf, src, sizeof(outbuf) - 5);
 			outbuf[sizeof(outbuf) - 5] = 0;
-			char *dot = strrchr(outname, '.');
-			if (!dot)
+			char* dot                  = strrchr(outname, '.');
+			if (!dot) {
 				dot = outname + strlen(outname);
+			}
 			strcpy(dot, ".uco");
 		}
 	} else {
-		src = "<stdin>";
+		src  = "<stdin>";
 		yyin = stdin;
-		if (!outname)
+		if (!outname) {
 			outname = strcpy(outbuf, "a.ucout");
+		}
 	}
 	Uc_location::set_cur(src, 0);
 	Uc_function::set_intrinsic_type(ty);
 	yyparse();
-	if (yyin != stdin) fclose(yyin);
+	if (yyin != stdin) {
+		fclose(yyin);
+	}
 	const int errs = Uc_location::get_num_errors();
-	if (errs > 0)           // Check for errors.
+	if (errs > 0) {    // Check for errors.
 		return errs;
+	}
 	// Open output.
 	std::ofstream out(outname, ios::binary | ios::out);
 	if (!out.good()) {
-		std::cout << "Could not open output file '" << outname << "'!" << std::endl;
+		std::cout << "Could not open output file '" << outname << "'!"
+				  << std::endl;
 		return 1;
 	}
 	if (want_sym_table) {
-		Write4(out, UCSYMTBL_MAGIC0);   // Start with symbol table.
+		Write4(out, UCSYMTBL_MAGIC0);    // Start with symbol table.
 		Write4(out, UCSYMTBL_MAGIC1);
-		auto *symtbl = new Usecode_symbol_table;
-		for (auto *unit : units) {
+		auto* symtbl = new Usecode_symbol_table;
+		for (auto* unit : units) {
 			symtbl->add_sym(unit->create_sym());
 		}
 		symtbl->write(out);
 		delete symtbl;
 	}
-	for (auto *unit : units) {
+	for (auto* unit : units) {
 		unit->gen(out);    // Generate function.
 	}
 	return Uc_location::get_num_errors();
@@ -136,17 +142,13 @@ int main(
 /*
  *  Report error.
  */
-void yyerror(
-    const char *s
-) {
+void yyerror(const char* s) {
 	Uc_location::yyerror(s);
 }
 
 /*
  *  Report warning.
  */
-void yywarning(
-    const char *s
-) {
+void yywarning(const char* s) {
 	Uc_location::yywarning(s);
 }

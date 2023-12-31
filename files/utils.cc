@@ -20,59 +20,63 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
+#include "utils.h"
+
+#include "exceptions.h"
+#include "fnames.h"
+#include "ignore_unused_variable_warning.h"
+
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include <cassert>
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <string>
+#include <exception>
 #include <fstream>
-#include <map>
-#include <vector>
 #include <list>
-#include <sys/stat.h>
-#include <unistd.h>
+#include <map>
+#include <string>
+#include <vector>
 
 #ifdef __IPHONEOS__
-#  include "ios_utils.h"
+#	include "ios_utils.h"
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
-#include <shlobj.h>
-#include <direct.h> // For mkdir and chdir
+#	include <direct.h>    // For mkdir and chdir
+#	include <shlobj.h>
+#	include <windows.h>
 #endif
-
-#include <cassert>
-#include <exception>
-#include "exceptions.h"
-#include "utils.h"
-#include "fnames.h"
-#include "ignore_unused_variable_warning.h"
 
 #if defined(MACOSX) || defined(__IPHONEOS__)
-#  include <CoreFoundation/CoreFoundation.h>
-#  include <sys/param.h> // for MAXPATHLEN
+#	include <CoreFoundation/CoreFoundation.h>
+#	include <sys/param.h>    // for MAXPATHLEN
 #endif
 
-using std::string;
 using std::ios;
+using std::string;
 
 // Function prototypes
 
-static void switch_slashes(string &name);
-static bool base_to_uppercase(string &str, int count);
+static void switch_slashes(string& name);
+static bool base_to_uppercase(string& str, int count);
 
 // Global factories for instantiating file streams
-static U7IstreamFactory istream_factory = [](const char* s, std::ios_base::openmode mode) {
-	return std::make_unique<std::ifstream>(s, mode);
-};
+static U7IstreamFactory istream_factory
+		= [](const char* s, std::ios_base::openmode mode) {
+			  return std::make_unique<std::ifstream>(s, mode);
+		  };
 
-static U7OstreamFactory ostream_factory = [](const char* s, std::ios_base::openmode mode) {
-	return std::make_unique<std::ofstream>(s, mode);
-};
+static U7OstreamFactory ostream_factory
+		= [](const char* s, std::ios_base::openmode mode) {
+			  return std::make_unique<std::ofstream>(s, mode);
+		  };
 
 // Ugly hack for supporting different paths
 
@@ -95,31 +99,33 @@ static bool is_path_separator(char cc) {
 #endif
 }
 
-static string remove_trailing_slash(const string &value) {
+static string remove_trailing_slash(const string& value) {
 	string new_path = value;
 	if (is_path_separator(new_path.back())) {
-		std::cerr << "Warning, trailing slash in path: \"" << new_path << "\"" << std::endl;
+		std::cerr << "Warning, trailing slash in path: \"" << new_path << "\""
+				  << std::endl;
 		new_path.resize(new_path.size() - 1);
 	}
 
 	return new_path;
 }
 
-void add_system_path(const string &key, const string &value) {
+void add_system_path(const string& key, const string& value) {
 	if (!value.empty()) {
 		if (value.find(key) != string::npos) {
 			std::cerr << "Error: system path '" << key
-			          << "' is being defined in terms of itself: '"
-			          << value << "'." << std::endl;
+					  << "' is being defined in terms of itself: '" << value
+					  << "'." << std::endl;
 			exit(1);
-		} else
+		} else {
 			path_map[key] = remove_trailing_slash(value);
+		}
 	} else {
 		clear_system_path(key);
 	}
 }
 
-void clone_system_path(const string &new_key, const string &old_key) {
+void clone_system_path(const string& new_key, const string& old_key) {
 	if (is_system_path_defined(old_key)) {
 		path_map[new_key] = path_map[old_key];
 	} else {
@@ -127,16 +133,17 @@ void clone_system_path(const string &new_key, const string &old_key) {
 	}
 }
 
-void clear_system_path(const string &key) {
+void clear_system_path(const string& key) {
 	auto iter = path_map.find(key);
-	if (iter != path_map.end())
+	if (iter != path_map.end()) {
 		path_map.erase(iter);
+	}
 }
 
 /*
  *  Has a path been entered?
  */
-bool is_system_path_defined(const string &path) {
+bool is_system_path_defined(const string& path) {
 	return path_map.find(path) != path_map.end();
 }
 
@@ -144,12 +151,12 @@ bool is_system_path_defined(const string &path) {
  *  Convert an exult path (e.g. "<DATA>/exult.flx") into a system path
  */
 
-string get_system_path(const string &path) {
-	string new_path = path;
+string get_system_path(const string& path) {
+	string            new_path = path;
 	string::size_type pos;
 	string::size_type pos2;
 
-	pos = new_path.find('>');
+	pos  = new_path.find('>');
 	pos2 = new_path.find('<');
 	// If there is no separator, return the path as is
 	int cnt = 10;
@@ -161,19 +168,21 @@ string get_system_path(const string &path) {
 			string new_prefix = path_map[syspath];
 			new_prefix += new_path.substr(pos);
 			new_path.swap(new_prefix);
-			pos = new_path.find('>');
+			pos  = new_path.find('>');
 			pos2 = new_path.find('<');
 		} else {
 #ifdef DEBUG
 			std::cerr << "Unrecognized system path '" << syspath
-			          << "' in path '" << path << "'." << std::endl;
+					  << "' in path '" << path << "'." << std::endl;
 #endif
 			break;
 		}
 	}
 	if (cnt <= 0) {
 		std::cerr << "Could not convert path '" << path
-		          << "' into a filesystem path, due to mutually recursive system paths." << std::endl;
+				  << "' into a filesystem path, due to mutually recursive "
+					 "system paths."
+				  << std::endl;
 		std::cerr << "Expansion resulted in '" << new_path << "'." << std::endl;
 		exit(1);
 	}
@@ -181,13 +190,16 @@ string get_system_path(const string &path) {
 	switch_slashes(new_path);
 #ifdef _WIN32
 	if (new_path.back() == '/' || new_path.back() == '\\') {
-		//std::cerr << "Trailing slash in path: \"" << new_path << "\"" << std::endl << "...compensating, but go complain to Colourless anyway" << std::endl;
-		std::cerr << "Warning, trailing slash in path: \"" << new_path << "\"" << std::endl;
+		// std::cerr << "Trailing slash in path: \"" << new_path << "\"" <<
+		// std::endl << "...compensating, but go complain to Colourless anyway"
+		// << std::endl;
+		std::cerr << "Warning, trailing slash in path: \"" << new_path << "\""
+				  << std::endl;
 		new_path += '.';
 	}
-#ifdef NO_WIN32_PATH_SPACES
-	pos = new_path.find('*');
-	pos2 = new_path.find('?');
+#	ifdef NO_WIN32_PATH_SPACES
+	pos                    = new_path.find('*');
+	pos2                   = new_path.find('?');
 	string::size_type pos3 = new_path.find(' ');
 	// pos and pos2 will equal each other if neither is found
 	// and we'll only convert to short if a space is found
@@ -199,13 +211,13 @@ string get_system_path(const string &path) {
 			GetShortPathName(new_path.c_str(), &short_path[0], num_chars + 1);
 			new_path = std::move(short_path);
 		}
-		//else std::cerr << "Warning unable to get short path for: " << new_path << std::endl;
+		// else std::cerr << "Warning unable to get short path for: " <<
+		// new_path << std::endl;
 	}
-#endif
+#	endif
 #endif
 	return new_path;
 }
-
 
 /*
  *  Convert a buffer to upper-case.
@@ -213,13 +225,13 @@ string get_system_path(const string &path) {
  *  Output: ->original buffer, changed to upper case.
  */
 
-void to_uppercase(string &str) {
+void to_uppercase(string& str) {
 	for (auto& chr : str) {
 		chr = static_cast<char>(std::toupper(static_cast<unsigned char>(chr)));
 	}
 }
 
-string to_uppercase(const string &str) {
+string to_uppercase(const string& str) {
 	string s(str);
 	to_uppercase(s);
 	return s;
@@ -230,37 +242,39 @@ string to_uppercase(const string &str) {
  *  returns false if there are less than 'count' parts
  */
 
-static bool base_to_uppercase(string &str, int count) {
-	if (count <= 0) return true;
+static bool base_to_uppercase(string& str, int count) {
+	if (count <= 0) {
+		return true;
+	}
 
 	int todo = count;
 	// Go backwards.
 	string::reverse_iterator X;
 	for (X = str.rbegin(); X != str.rend(); ++X) {
 		// Stop at separator.
-		if (*X == '/' || *X == '\\' || *X == ':')
+		if (*X == '/' || *X == '\\' || *X == ':') {
 			todo--;
-		if (todo <= 0)
+		}
+		if (todo <= 0) {
 			break;
+		}
 
 		*X = static_cast<char>(std::toupper(static_cast<unsigned char>(*X)));
 	}
-	if (X == str.rend())
-		todo--; // start of pathname counts as separator too
+	if (X == str.rend()) {
+		todo--;    // start of pathname counts as separator too
+	}
 
 	// false if it didn't reach 'count' parts
 	return todo <= 0;
 }
 
-
-
-static void switch_slashes(
-    string &name
-) {
+static void switch_slashes(string& name) {
 #ifdef _WIN32
 	for (char& X : name) {
-		if (X == '/')
+		if (X == '/') {
 			X = '\\';
+		}
 	}
 #else
 	ignore_unused_variable_warning(name);
@@ -285,23 +299,25 @@ void U7set_ostream_factory(U7OstreamFactory factory) {
  */
 
 std::unique_ptr<std::istream> U7open_in(
-    const char *fname,          // May be converted to upper-case.
-    bool is_text                // Should the file be opened in text mode
+		const char* fname,     // May be converted to upper-case.
+		bool        is_text    // Should the file be opened in text mode
 ) {
 	std::ios_base::openmode mode = std::ios::in;
-	if (!is_text) mode |= std::ios::binary;
-	string name = get_system_path(fname);
-	int uppercasecount = 0;
+	if (!is_text) {
+		mode |= std::ios::binary;
+	}
+	string                        name           = get_system_path(fname);
+	int                           uppercasecount = 0;
 	std::unique_ptr<std::istream> in;
 	do {
 		try {
-			//std::cout << "trying: " << name << std::endl;
+			// std::cout << "trying: " << name << std::endl;
 			in = istream_factory(name.c_str(), mode);
-		} catch (std::exception &) {
+		} catch (std::exception&) {
 		}
 		if (in && in->good() && !in->fail()) {
-			//std::cout << "got it!" << std::endl;
-			return in; // found it!
+			// std::cout << "got it!" << std::endl;
+			return in;    // found it!
 		}
 	} while (base_to_uppercase(name, ++uppercasecount));
 
@@ -319,11 +335,13 @@ std::unique_ptr<std::istream> U7open_in(
  */
 
 std::unique_ptr<std::ostream> U7open_out(
-    const char *fname,          // May be converted to upper-case.
-    bool is_text                // Should the file be opened in text mode
+		const char* fname,     // May be converted to upper-case.
+		bool        is_text    // Should the file be opened in text mode
 ) {
 	std::ios_base::openmode mode = std::ios::out | std::ios::trunc;
-	if (!is_text) mode |= std::ios::binary;
+	if (!is_text) {
+		mode |= std::ios::binary;
+	}
 	string name = get_system_path(fname);
 
 	std::unique_ptr<std::ostream> out;
@@ -331,8 +349,9 @@ std::unique_ptr<std::ostream> U7open_out(
 	int uppercasecount = 0;
 	do {
 		out = ostream_factory(name.c_str(), mode);
-		if (out && out->good())
-			return out; // found it!
+		if (out && out->good()) {
+			return out;    // found it!
+		}
 	} while (base_to_uppercase(name, ++uppercasecount));
 
 	// file not found.
@@ -340,16 +359,16 @@ std::unique_ptr<std::ostream> U7open_out(
 	return nullptr;
 }
 
-DIR *U7opendir(
-    const char *fname			// May be converted to upper-case.
+DIR* U7opendir(const char* fname    // May be converted to upper-case.
 ) {
-	string name = get_system_path(fname);
-	int uppercasecount = 0;
+	string name           = get_system_path(fname);
+	int    uppercasecount = 0;
 
 	do {
-		DIR *dir = opendir(name.c_str()); // Try to open
-		if (dir)
-			return dir; // found it!
+		DIR* dir = opendir(name.c_str());    // Try to open
+		if (dir) {
+			return dir;    // found it!
+		}
 	} while (base_to_uppercase(name, ++uppercasecount));
 	return nullptr;
 }
@@ -359,15 +378,14 @@ DIR *U7opendir(
  *
  */
 
-void U7remove(
-    const char *fname         // May be converted to upper-case.
+void U7remove(const char* fname    // May be converted to upper-case.
 ) {
 	string name = get_system_path(fname);
 
 #if defined(_WIN32) && defined(UNICODE)
-	const char *n = name.c_str();
-	int nLen = std::strlen(n) + 1;
-	LPTSTR lpszT = (LPTSTR) alloca(nLen * 2);
+	const char* n     = name.c_str();
+	int         nLen  = std::strlen(n) + 1;
+	LPTSTR      lpszT = (LPTSTR)alloca(nLen * 2);
 	MultiByteToWideChar(CP_ACP, 0, n, -1, lpszT, nLen);
 	DeleteFile(lpszT);
 #else
@@ -379,9 +397,10 @@ void U7remove(
 			if (istream_factory) {
 				in = istream_factory(name.c_str(), std::ios_base::in);
 			} else {
-				in = std::make_unique<std::ifstream>(name.c_str(), std::ios_base::in);
+				in = std::make_unique<std::ifstream>(
+						name.c_str(), std::ios_base::in);
 			}
-		} catch (std::exception &) {
+		} catch (std::exception&) {
 		}
 		if (in && in->good() && !in->fail()) {
 			in.reset();
@@ -399,24 +418,26 @@ void U7remove(
  */
 
 std::unique_ptr<std::istream> U7open_static(
-    const char *fname,      // May be converted to upper-case.
-    bool is_text            // Should file be opened in text mode
+		const char* fname,     // May be converted to upper-case.
+		bool        is_text    // Should file be opened in text mode
 ) {
 	string name;
 
 	name = string("<PATCH>/") + fname;
 	try {
 		auto in = U7open_in(name.c_str(), is_text);
-		if (in)
+		if (in) {
 			return in;
-	} catch (std::exception &) {
+		}
+	} catch (std::exception&) {
 	}
 	name = string("<STATIC>/") + fname;
 	try {
 		auto in = U7open_in(name.c_str(), is_text);
-		if (in)
+		if (in) {
 			return in;
-	} catch (std::exception &) {
+		}
+	} catch (std::exception&) {
 	}
 	return nullptr;
 }
@@ -425,15 +446,14 @@ std::unique_ptr<std::istream> U7open_static(
  *  See if a file exists.
  */
 
-bool U7exists(
-    const char *fname         // May be converted to upper-case.
+bool U7exists(const char* fname    // May be converted to upper-case.
 ) {
 	try {
 		// First check if we can open it as a file.
 		if (U7open_in(fname)) {
 			return true;
 		}
-	} catch (std::exception &) {
+	} catch (std::exception&) {
 	}
 	try {
 		// If not, try to open it as a directory.
@@ -442,7 +462,7 @@ bool U7exists(
 			closedir(dir);
 			return true;
 		}
-	} catch (std::exception &) {
+	} catch (std::exception&) {
 	}
 	return false;
 }
@@ -452,18 +472,18 @@ bool U7exists(
  */
 
 int U7mkdir(
-    const char *dirname,    // May be converted to upper-case.
-    int mode
-) {
+		const char* dirname,    // May be converted to upper-case.
+		int         mode) {
 	string name = get_system_path(dirname);
 	// remove any trailing slashes
 	const string::size_type pos = name.find_last_not_of('/');
-	if (pos != string::npos)
+	if (pos != string::npos) {
 		name.resize(pos + 1);
+	}
 #if defined(_WIN32) && defined(UNICODE)
-	const char *n = name.c_str();
-	int nLen = std::strlen(n) + 1;
-	LPTSTR lpszT = (LPTSTR) alloca(nLen * 2);
+	const char* n     = name.c_str();
+	int         nLen  = std::strlen(n) + 1;
+	LPTSTR      lpszT = (LPTSTR)alloca(nLen * 2);
 	MultiByteToWideChar(CP_ACP, 0, n, -1, lpszT, nLen);
 	ignore_unused_variable_warning(mode);
 	return CreateDirectory(lpszT, nullptr);
@@ -471,7 +491,7 @@ int U7mkdir(
 	ignore_unused_variable_warning(mode);
 	return mkdir(name.c_str());
 #else
-	return mkdir(name.c_str(), mode); // Create dir. if not already there.
+	return mkdir(name.c_str(), mode);    // Create dir. if not already there.
 #endif
 }
 
@@ -479,29 +499,28 @@ int U7mkdir(
 class shell32_wrapper {
 protected:
 	HMODULE hLib;
-	using SHGetFolderPathFunc = HRESULT (WINAPI*)(
-	    HWND hwndOwner,
-	    int nFolder,
-	    HANDLE hToken,
-	    DWORD dwFlags,
-	    LPTSTR pszPath
-	);
-	SHGetFolderPathFunc      SHGetFolderPath;
+	using SHGetFolderPathFunc = HRESULT(WINAPI*)(
+			HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags,
+			LPTSTR pszPath);
+	SHGetFolderPathFunc SHGetFolderPath;
+
 	/*
 	// Will leave this for someone with Vista/W7 to implement.
 	using SHGetKnownFolderPathFunc = HRESULT (WINAPI*) (
-	    REFKNOWNFOLDERID rfid,
-	    DWORD dwFlags,
-	    HANDLE hToken,
-	    PWSTR *ppszPath
+		REFKNOWNFOLDERID rfid,
+		DWORD dwFlags,
+		HANDLE hToken,
+		PWSTR *ppszPath
 	);
 	SHGetKnownFolderPathFunc SHGetKnownFolderPath;
 	*/
 
 	template <typename Dest>
-	Dest get_function(const char *func) {
-		static_assert(sizeof(Dest) == sizeof(decltype(GetProcAddress(hLib, func))), "sizeof(FARPROC) is not equal to sizeof(Dest)!");
-		Dest fptr;
+	Dest get_function(const char* func) {
+		static_assert(
+				sizeof(Dest) == sizeof(decltype(GetProcAddress(hLib, func))),
+				"sizeof(FARPROC) is not equal to sizeof(Dest)!");
+		Dest    fptr;
 		FARPROC optr = GetProcAddress(hLib, func);
 		std::memcpy(&fptr, &optr, sizeof(optr));
 		return fptr;
@@ -511,39 +530,45 @@ public:
 	shell32_wrapper() {
 		hLib = LoadLibrary("shell32.dll");
 		if (hLib != nullptr) {
-			SHGetFolderPath      = get_function<SHGetFolderPathFunc>("SHGetFolderPathA");
+			SHGetFolderPath
+					= get_function<SHGetFolderPathFunc>("SHGetFolderPathA");
 			/*
-			SHGetKnownFolderPath = get_function<SHGetKnownFolderPathFunc>("SHGetKnownFolderPath");
+			SHGetKnownFolderPath =
+			get_function<SHGetKnownFolderPathFunc>("SHGetKnownFolderPath");
 			*/
 		} else {
-			SHGetFolderPath      = nullptr;
-			//SHGetKnownFolderPath = nullptr;
+			SHGetFolderPath = nullptr;
+			// SHGetKnownFolderPath = nullptr;
 		}
 	}
+
 	~shell32_wrapper() {
 		FreeLibrary(hLib);
 	}
+
 	string Get_local_appdata() {
 		/*  Not yet.
 		if (SHGetKnownFolderPath != nullptr)
-		    {
-		    }
+			{
+			}
 		else */
 		if (SHGetFolderPath != nullptr) {
-			CHAR szPath[MAX_PATH];
-			HRESULT code = SHGetFolderPath(nullptr, CSIDL_LOCAL_APPDATA,
-			                               nullptr, 0, szPath);
-			if (code == E_INVALIDARG)
+			CHAR    szPath[MAX_PATH];
+			HRESULT code = SHGetFolderPath(
+					nullptr, CSIDL_LOCAL_APPDATA, nullptr, 0, szPath);
+			if (code == E_INVALIDARG) {
 				return string();
-			else if (code == S_FALSE)   // E_FAIL for Unicode version.
+			} else if (code == S_FALSE) {    // E_FAIL for Unicode version.
 				// Lets try creating it through the API flag:
-				code = SHGetFolderPath(nullptr,
-				                       CSIDL_LOCAL_APPDATA | CSIDL_FLAG_CREATE,
-				                       nullptr, 0, szPath);
-			if (code == E_INVALIDARG)
+				code = SHGetFolderPath(
+						nullptr, CSIDL_LOCAL_APPDATA | CSIDL_FLAG_CREATE,
+						nullptr, 0, szPath);
+			}
+			if (code == E_INVALIDARG) {
 				return string();
-			else if (code == S_OK)
-				return string(reinterpret_cast<const char *>(szPath));
+			} else if (code == S_OK) {
+				return string(reinterpret_cast<const char*>(szPath));
+			}
 			// We don't have a folder yet at this point. This means we have
 			// a truly ancient version of Windows.
 			// Just to be sure, we fall back to the old behaviour.
@@ -553,36 +578,38 @@ public:
 	}
 };
 
-#ifdef USE_CONSOLE
-void redirect_output(const char *prefix) {
+#	ifdef USE_CONSOLE
+void redirect_output(const char* prefix) {
 	ignore_unused_variable_warning(prefix);
 }
-void cleanup_output(const char *prefix) {
+
+void cleanup_output(const char* prefix) {
 	ignore_unused_variable_warning(prefix);
 }
-#else
+#	else
 static std::string Get_home();
 
 struct unsynch_from_stdio {
 	const bool old_synch_status = std::ostream::sync_with_stdio(false);
+
 	~unsynch_from_stdio() noexcept {
 		std::ostream::sync_with_stdio(old_synch_status);
 	}
 };
 
 // Pulled from exult_studio.cc.
-void redirect_output(const char *prefix) {
+void redirect_output(const char* prefix) {
 	HANDLE stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	HANDLE stderr_handle = GetStdHandle(STD_ERROR_HANDLE);
-	DWORD stdout_type = GetFileType(stdout_handle);
-	DWORD stderr_type = GetFileType(stderr_handle);
+	DWORD  stdout_type   = GetFileType(stdout_handle);
+	DWORD  stderr_type   = GetFileType(stderr_handle);
 	if (stdout_type != FILE_TYPE_UNKNOWN && stderr_type != FILE_TYPE_UNKNOWN) {
 		// If we already have valid destinations for both stdout and stderr,
 		// we don't need to do anything. This happens, for example, on MSYS2
 		// in MinTTY.
 		return;
 	}
-	auto attach_console = [](){
+	auto attach_console = []() {
 		// If we already have a console, quit.
 		if (GetConsoleWindow() != nullptr) {
 			return true;
@@ -591,11 +618,11 @@ void redirect_output(const char *prefix) {
 		if (AttachConsole(ATTACH_PARENT_PROCESS) != 0) {
 			return true;
 		}
-#ifdef DEBUG
+#		ifdef DEBUG
 		return AllocConsole() != 0;
-#else
+#		else
 		return false;
-#endif
+#		endif
 	};
 	auto redirect_stream = [](FILE* stream, const char* device, HANDLE handle,
 							  DWORD& type, int mode, size_t size) {
@@ -614,11 +641,13 @@ void redirect_output(const char *prefix) {
 	};
 	auto redirect_stdout = [&](const char* device) {
 		// Line buffered
-		return redirect_stream(stdout, device, stdout_handle, stdout_type, _IOLBF, BUFSIZ);
+		return redirect_stream(
+				stdout, device, stdout_handle, stdout_type, _IOLBF, BUFSIZ);
 	};
 	auto redirect_stderr = [&](const char* device) {
 		// No buffering
-		return redirect_stream(stderr, device, stderr_handle, stderr_type, _IONBF, 0);
+		return redirect_stream(
+				stderr, device, stderr_handle, stderr_type, _IONBF, 0);
 	};
 	const unsynch_from_stdio resyncher;
 	if (attach_console()) {
@@ -650,15 +679,15 @@ void redirect_output(const char *prefix) {
 	redirect_stderr(stderrPath.c_str());
 }
 
-void cleanup_output(const char *prefix) {
-	const string folderPath = Get_home() + "/" + prefix;
-	auto clear_empty_redirect = [&](FILE* stream, const char* suffix) {
-		fflush(stream);
-		if (ftell(stream) == 0) {
-			fclose(stream);
-			const string stream_path = folderPath + suffix;
-			remove(stream_path.c_str());
-		}
+void cleanup_output(const char* prefix) {
+	const string folderPath           = Get_home() + "/" + prefix;
+	auto         clear_empty_redirect = [&](FILE* stream, const char* suffix) {
+        fflush(stream);
+        if (ftell(stream) == 0) {
+            fclose(stream);
+            const string stream_path = folderPath + suffix;
+            remove(stream_path.c_str());
+        }
 	};
 	clear_empty_redirect(stdout, "out.txt");
 	clear_empty_redirect(stderr, "err.txt");
@@ -666,8 +695,8 @@ void cleanup_output(const char *prefix) {
 		FreeConsole();
 	}
 }
-#endif // USE_CONSOLE
-#endif  // _WIN32
+#	endif    // USE_CONSOLE
+#endif        // _WIN32
 
 static std::string home_directory;
 
@@ -680,55 +709,62 @@ string Get_home() {
 		return home_directory;
 	}
 #ifdef _WIN32
-#ifdef PORTABLE_EXULT_WIN32
+#	ifdef PORTABLE_EXULT_WIN32
 	home_directory = ".";
-#else
-	if (get_system_path("<HOME>") == ".")
+#	else
+	if (get_system_path("<HOME>") == ".") {
 		home_directory = ".";
-	else {
+	} else {
 		shell32_wrapper shell32;
 		home_directory = shell32.Get_local_appdata();
-		if (!home_directory.empty())
+		if (!home_directory.empty()) {
 			home_directory += "\\Exult";
-		else
+		} else {
 			home_directory = ".";
+		}
 	}
-#endif // PORTABLE_WIN32_EXULT
+#	endif    // PORTABLE_WIN32_EXULT
 #else
-	const char *home = nullptr;
-	if ((home = getenv("HOME")) != nullptr)
+	const char* home = nullptr;
+	if ((home = getenv("HOME")) != nullptr) {
 		home_directory = home;
+	}
 #endif
 	return home_directory;
 }
 
 #if defined(MACOSX) || defined(__IPHONEOS__)
-struct CFDeleter
-{
-	void operator()(CFTypeRef ptr) const
-	{
-		if (ptr) CFRelease(ptr);
+struct CFDeleter {
+	void operator()(CFTypeRef ptr) const {
+		if (ptr) {
+			CFRelease(ptr);
+		}
 	}
 };
 
 void setup_app_bundle_resource() {
 	// setup the location of the resource folder inside the app bundle
-	std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter> bundleUrl {std::move(CFBundleCopyBundleURL(CFBundleGetMainBundle()))};
+	std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter> bundleUrl{
+			std::move(CFBundleCopyBundleURL(CFBundleGetMainBundle()))};
 	if (bundleUrl) {
 		unsigned char bundlebuf[MAXPATHLEN];
-		if (CFURLGetFileSystemRepresentation(bundleUrl.get(), true, bundlebuf, sizeof(bundlebuf))) {
-			string bundlepath(reinterpret_cast<const char *>(bundlebuf));
-#ifdef MACOSX
+		if (CFURLGetFileSystemRepresentation(
+					bundleUrl.get(), true, bundlebuf, sizeof(bundlebuf))) {
+			string bundlepath(reinterpret_cast<const char*>(bundlebuf));
+#	ifdef MACOSX
 			bundlepath += "/Contents/Info.plist";
-#else
+#	else
 			bundlepath += "/Info.plist";
-#endif
+#	endif
 			if (U7exists(bundlepath)) {
-				std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter> fileUrl {std::move(CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle()))};
+				std::unique_ptr<std::remove_pointer<CFURLRef>::type, CFDeleter>
+						fileUrl{std::move(CFBundleCopyResourcesDirectoryURL(
+								CFBundleGetMainBundle()))};
 				if (fileUrl) {
 					unsigned char buf[MAXPATHLEN];
-					if (CFURLGetFileSystemRepresentation(fileUrl.get(), true, buf, sizeof(buf))) {
-						string path(reinterpret_cast<const char *>(buf));
+					if (CFURLGetFileSystemRepresentation(
+								fileUrl.get(), true, buf, sizeof(buf))) {
+						string path(reinterpret_cast<const char*>(buf));
 						add_system_path("<APP_BUNDLE_RES>", path);
 					}
 				}
@@ -738,10 +774,7 @@ void setup_app_bundle_resource() {
 }
 #endif
 
-void setup_data_dir(
-    const std::string &data_path,
-    const char *runpath
-) {
+void setup_data_dir(const std::string& data_path, const char* runpath) {
 #if defined(MACOSX) || defined(__IPHONEOS__)
 	// Can we try from the bundle?
 	setup_app_bundle_resource();
@@ -749,8 +782,9 @@ void setup_data_dir(
 		std::string path = get_system_path("<APP_BUNDLE_RES>");
 		path += "/data";
 		add_system_path("<BUNDLE>", path);
-		if (!U7exists(BUNDLE_EXULT_FLX))
+		if (!U7exists(BUNDLE_EXULT_FLX)) {
 			clear_system_path("<BUNDLE>");
+		}
 	}
 #endif
 #ifdef __IPHONEOS__
@@ -766,14 +800,16 @@ void setup_data_dir(
 
 	// First, try the cfg value:
 	add_system_path("<DATA>", data_path);
-	if (U7exists(EXULT_FLX))
+	if (U7exists(EXULT_FLX)) {
 		return;
+	}
 
 	// Now, try default -- if warranted.
 	if (data_path != EXULT_DATADIR) {
 		add_system_path("<DATA>", EXULT_DATADIR);
-		if (U7exists(EXULT_FLX))
+		if (U7exists(EXULT_FLX)) {
 			return;
+		}
 	}
 
 	// Due to SDL_RWops internally using SDL_OpenFPFromBundleOrFallback in OSX
@@ -782,22 +818,27 @@ void setup_data_dir(
 	if (!is_system_path_defined("<BUNDLE>")) {
 		// Try "data" subdirectory for current working directory:
 		add_system_path("<DATA>", "data");
-		if (U7exists(EXULT_FLX))
+		if (U7exists(EXULT_FLX)) {
 			return;
+		}
 	}
 
 	// Try "data" subdirectory for exe directory:
-	const char *sep = std::strrchr(runpath, '/');
-	if (!sep) sep = std::strrchr(runpath, '\\');
+	const char* sep = std::strrchr(runpath, '/');
+	if (!sep) {
+		sep = std::strrchr(runpath, '\\');
+	}
 	if (sep) {
-		const int plen = sep - runpath;
+		const int   plen = sep - runpath;
 		std::string dpath(runpath, plen + 1);
 		dpath += "data";
 		add_system_path("<DATA>", dpath);
-	} else
+	} else {
 		add_system_path("<DATA>", "data");
-	if (U7exists(EXULT_FLX))
+	}
+	if (U7exists(EXULT_FLX)) {
 		return;
+	}
 
 	if (is_system_path_defined("<BUNDLE>")) {
 		// We have the bundle, so lets use it. But lets also leave <DATA>
@@ -809,7 +850,9 @@ void setup_data_dir(
 	// We've tried them all...
 	std::cerr << "Could not find 'exult.flx' anywhere." << std::endl;
 	std::cerr << "Please make sure Exult is correctly installed," << std::endl;
-	std::cerr << "and the Exult data path is specified in the configuration file." << std::endl;
+	std::cerr
+			<< "and the Exult data path is specified in the configuration file."
+			<< std::endl;
 	std::cerr << "(See the README file for more information)" << std::endl;
 	exit(-1);
 }
@@ -831,7 +874,8 @@ static string Get_config_dir(const string& home_dir) {
 #endif
 }
 
-static string Get_savehome_dir(const string& home_dir, const string& config_dir) {
+static string Get_savehome_dir(
+		const string& home_dir, const string& config_dir) {
 #ifdef __IPHONEOS__
 	ignore_unused_variable_warning(home_dir);
 	string savehome_dir(config_dir);
@@ -858,7 +902,8 @@ static string Get_savehome_dir(const string& home_dir, const string& config_dir)
 #endif
 }
 
-static string Get_gamehome_dir(const string& home_dir, const string& config_dir) {
+static string Get_gamehome_dir(
+		const string& home_dir, const string& config_dir) {
 #ifdef __IPHONEOS__
 	ignore_unused_variable_warning(home_dir);
 	string gamehome_dir(config_dir);
@@ -887,8 +932,9 @@ void setup_program_paths() {
 	const string savehome_dir(Get_savehome_dir(home_dir, config_dir));
 	const string gamehome_dir(Get_gamehome_dir(home_dir, config_dir));
 
-	if (get_system_path("<HOME>") != ".")
+	if (get_system_path("<HOME>") != ".") {
 		add_system_path("<HOME>", home_dir);
+	}
 	add_system_path("<CONFIG>", config_dir);
 	add_system_path("<SAVEHOME>", savehome_dir);
 	add_system_path("<GAMEHOME>", gamehome_dir);
@@ -901,8 +947,7 @@ void setup_program_paths() {
  *  Change the current directory
  */
 
-int U7chdir(
-    const char *dirname // May be converted to upper-case.
+int U7chdir(const char* dirname    // May be converted to upper-case.
 ) {
 	return chdir(dirname);
 }
@@ -910,14 +955,11 @@ int U7chdir(
 /*
  *  Copy a file. May throw an exception.
  */
-void U7copy(
-    const char *src,
-    const char *dest
-) {
+void U7copy(const char* src, const char* dest) {
 	std::unique_ptr<std::istream> pIn;
 	std::unique_ptr<std::ostream> pOut;
 	try {
-		pIn = U7open_in(src);
+		pIn  = U7open_in(src);
 		pOut = U7open_out(dest);
 	} catch (exult_exception&) {
 		throw;
@@ -928,16 +970,18 @@ void U7copy(
 	if (!pOut) {
 		throw file_open_exception(dest);
 	}
-	auto& in = *pIn;
+	auto& in  = *pIn;
 	auto& out = *pOut;
 	out << in.rdbuf();
 	out.flush();
-	const bool inok = in.good();
+	const bool inok  = in.good();
 	const bool outok = out.good();
-	if (!inok)
+	if (!inok) {
 		throw file_read_exception(src);
-	if (!outok)
+	}
+	if (!outok) {
 		throw file_write_exception(dest);
+	}
 }
 
 /*
@@ -946,12 +990,11 @@ void U7copy(
  *  Output: Log2 of n (0 if n==0).
  */
 
-int Log2(
-    uint32 n
-) {
+int Log2(uint32 n) {
 	int result = 0;
-	for (n = n >> 1; n; n = n >> 1)
+	for (n = n >> 1; n; n = n >> 1) {
 		result++;
+	}
 	return result;
 }
 
@@ -963,10 +1006,10 @@ int Log2(
  */
 
 uint32 msb32(uint32 x) {
-	x |= (x >>  1);
-	x |= (x >>  2);
-	x |= (x >>  4);
-	x |= (x >>  8);
+	x |= (x >> 1);
+	x |= (x >> 2);
+	x |= (x >> 4);
+	x |= (x >> 8);
 	x |= (x >> 16);
 	return x & ~(x >> 1);
 }
@@ -986,10 +1029,11 @@ int fgepow2(uint32 n) {
  *  Replacement for non-standard strdup function.
  */
 
-char *newstrdup(const char *s) {
-	if (!s)
+char* newstrdup(const char* s) {
+	if (!s) {
 		throw std::invalid_argument("nullptr pointer passed to newstrdup");
-	char *ret = new char[std::strlen(s) + 1];
+	}
+	char* ret = new char[std::strlen(s) + 1];
 	std::strcpy(ret, s);
 	return ret;
 }
@@ -1000,23 +1044,19 @@ char *newstrdup(const char *s) {
  *          "<GAMEDAT>/map03/ireg".
  */
 
-char *Get_mapped_name(
-    const char *from,
-    int num,
-    char *to
-) {
-	if (num == 0)
-		strcpy(to, from);   // Default map.
-	else {
-		const char *sep = strrchr(from, '/');
+char* Get_mapped_name(const char* from, int num, char* to) {
+	if (num == 0) {
+		strcpy(to, from);    // Default map.
+	} else {
+		const char* sep = strrchr(from, '/');
 		assert(sep != nullptr);
 		size_t len = sep - from;
-		memcpy(to, from, len);  // Copy dir.
+		memcpy(to, from, len);    // Copy dir.
 		strcpy(to + len, MULTIMAP_DIR);
-		len = strlen(to);
+		len                                  = strlen(to);
 		constexpr static const char hexLUT[] = "0123456789abcdef";
-		to[len] = hexLUT[num / 16];
-		to[len + 1] = hexLUT[num % 16];
+		to[len]                              = hexLUT[num / 16];
+		to[len + 1]                          = hexLUT[num % 16];
 		strcpy(to + len + 2, sep);
 	}
 	return to;
@@ -1029,16 +1069,16 @@ char *Get_mapped_name(
  */
 
 int Find_next_map(
-    int start,          // Start here.
-    int maxtry          // Max. # to try.
+		int start,    // Start here.
+		int maxtry    // Max. # to try.
 ) {
 	char fname[128];
 
 	for (int i = start; maxtry; --maxtry, ++i) {
-		if (U7exists(Get_mapped_name("<STATIC>/", i, fname)) ||
-		        U7exists(Get_mapped_name("<PATCH>/", i, fname)))
+		if (U7exists(Get_mapped_name("<STATIC>/", i, fname))
+			|| U7exists(Get_mapped_name("<PATCH>/", i, fname))) {
 			return i;
+		}
 	}
 	return -1;
 }
-

@@ -5,7 +5,7 @@
  **/
 
 #ifndef INCL_SHAPEDRAW
-#define INCL_SHAPEDRAW  1
+#define INCL_SHAPEDRAW 1
 
 /*
 Copyright (C) 2001-2022 The Exult Team
@@ -29,8 +29,8 @@ class Vga_file;
 class Shape_frame;
 class Image_buffer8;
 
-using Drop_callback = void (*)(int filenum,
-                               int shapenum, int framenum, void *udata);
+using Drop_callback
+		= void (*)(int filenum, int shapenum, int framenum, void* udata);
 
 #include "studio.h"
 
@@ -39,53 +39,59 @@ using Drop_callback = void (*)(int filenum,
  */
 class Shape_draw {
 protected:
-	Vga_file *ifile;        // Where the shapes come from.
-	GtkWidget *draw;        // GTK draw area to display them in.
-	cairo_t *drawgc;        // For drawing in 'draw'.
-	guint32 drawfg;         // Foreground color.
-	Image_buffer8 *iwin;        // What we render into.
-	ExultRgbCmap *palette;        // For palette indexed image.
-	Drop_callback drop_callback;    // Called when a shape is dropped here.
-	void *drop_user_data;
-	bool dragging;          // Dragging from here.
+	Vga_file*      ifile;            // Where the shapes come from.
+	GtkWidget*     draw;             // GTK draw area to display them in.
+	cairo_t*       drawgc;           // For drawing in 'draw'.
+	guint32        drawfg;           // Foreground color.
+	Image_buffer8* iwin;             // What we render into.
+	ExultRgbCmap*  palette;          // For palette indexed image.
+	Drop_callback  drop_callback;    // Called when a shape is dropped here.
+	void*          drop_user_data;
+	bool           dragging;    // Dragging from here.
 public:
-	Shape_draw(Vga_file *i, const unsigned char *palbuf, GtkWidget *drw);
+	Shape_draw(Vga_file* i, const unsigned char* palbuf, GtkWidget* drw);
 	virtual ~Shape_draw();
+
 	// Manage graphic context.
-	void set_graphic_context(cairo_t *cairo) {
+	void set_graphic_context(cairo_t* cairo) {
 		drawgc = cairo;
 	}
-	cairo_t *get_graphic_context() {
+
+	cairo_t* get_graphic_context() {
 		return drawgc;
 	}
+
 	// Blit onto screen.
 	void show(int x, int y, int w, int h);
+
 	void show() {
 		GtkAllocation alloc = {0, 0, 0, 0};
 		gtk_widget_get_allocation(draw, &alloc);
 		show(0, 0, ZoomDown(alloc.width), ZoomDown(alloc.height));
 	}
+
 	guint32 get_color(int i) {
 		return palette->colors[i];
 	}
-	void draw_shape(Shape_frame *shape, int x, int y);
-	void draw_shape(int shapenum, int framenum, int x, int y);
-	void draw_shape_outline(int shapenum, int framenum,
-	                        int x, int y, unsigned char color);
-	void draw_shape_centered(int shapenum, int framenum);
-	virtual void render();      // Update what gets shown.
-	void set_background_color(guint32 c);
 
-	void configure();       // Configure when created/resized.
+	void draw_shape(Shape_frame* shape, int x, int y);
+	void draw_shape(int shapenum, int framenum, int x, int y);
+	void draw_shape_outline(
+			int shapenum, int framenum, int x, int y, unsigned char color);
+	void         draw_shape_centered(int shapenum, int framenum);
+	virtual void render();    // Update what gets shown.
+	void         set_background_color(guint32 c);
+
+	void configure();    // Configure when created/resized.
 	// Handler for drop.
-	static void drag_data_received(GtkWidget *widget, GdkDragContext *context,
-	                               gint x, gint y,
-	                               GtkSelectionData *seldata,
-	                               guint info, guint time, gpointer udata);
-	gulong enable_drop(Drop_callback callback, void *udata);
-	void set_drag_icon(GdkDragContext *context, Shape_frame *shape);
+	static void drag_data_received(
+			GtkWidget* widget, GdkDragContext* context, gint x, gint y,
+			GtkSelectionData* seldata, guint info, guint time, gpointer udata);
+	gulong enable_drop(Drop_callback callback, void* udata);
+	void   set_drag_icon(GdkDragContext* context, Shape_frame* shape);
 	// Start/end dragging from here.
-	void start_drag(const char *target, int id, GdkEvent *event);
+	void start_drag(const char* target, int id, GdkEvent* event);
+
 	void mouse_up() {
 		dragging = false;
 	}
@@ -93,42 +99,43 @@ public:
 
 class Shape_single : public Shape_draw {
 protected:
-	GtkWidget *shape;         // The ShapeID   holding GtkWidget :
-	                          //     GtkSpinButton / GtkEntry,
-	                          //     or GtkFrame ( NPCEditor NPC Face ).
-	GtkWidget *shapename;     // The ShapeName holding GtkLabel.
-	bool(*shapevalid)(int s); // The ShapeID   validating lambda.
-	GtkWidget *frame;         // The FrameID   holding GtkWidget :
-	                          //     GtkSpinButton / GtkEntry.
-	int vganum;               // For a Drag and Drop enabled Shape_single :
-	bool hide;                // Whether the Shape should be hidden.
-	gulong shape_connect;     // The Shape Widget g_signal_connect changed ID
-	gulong frame_connect;     // The Frame Widget g_signal_connect changed ID
-	gulong draw_connect;      // The Draw  Widget g_signal_connect draw ID
-	gulong drop_connect;      // The Draw  Widget g_signal_connect drop ID
-	gulong hide_connect;      // The Hide  Widget g_signal_connect changed ID
+	GtkWidget* shape;             // The ShapeID   holding GtkWidget :
+								  //     GtkSpinButton / GtkEntry,
+								  //     or GtkFrame ( NPCEditor NPC Face ).
+	GtkWidget* shapename;         // The ShapeName holding GtkLabel.
+	bool (*shapevalid)(int s);    // The ShapeID   validating lambda.
+	GtkWidget* frame;             // The FrameID   holding GtkWidget :
+								  //     GtkSpinButton / GtkEntry.
+	int    vganum;                // For a Drag and Drop enabled Shape_single :
+	bool   hide;                  // Whether the Shape should be hidden.
+	gulong shape_connect;    // The Shape Widget g_signal_connect changed ID
+	gulong frame_connect;    // The Frame Widget g_signal_connect changed ID
+	gulong draw_connect;     // The Draw  Widget g_signal_connect draw ID
+	gulong drop_connect;     // The Draw  Widget g_signal_connect drop ID
+	gulong hide_connect;     // The Hide  Widget g_signal_connect changed ID
 public:
 	Shape_single(
-	    GtkWidget *shp,       // The ShapeID   holding GtkWidget.
-	    GtkWidget *shpnm,     // The ShapeName holding GtkWidget.
-	    bool (*shvld)(int),   // The ShapeUD   validating lambda.
-	    GtkWidget *frm,       // The FrameID   holding GtkWidget.
-	    int vgnum,            // The D&D U7_SHAPE_xxx VGA file category.
-	    Vga_file *vg,         // The VGA File         for the Shape_draw constructor.
-	    const unsigned char *palbuf, // The Palette for the Shape_draw constructor.
-	    GtkWidget *drw,       // The GtkDrawingArea   for the Shape_draw constructor.
-	    bool hdd = false);    // Whether the Shape should be hidden.
+			GtkWidget* shp,        // The ShapeID   holding GtkWidget.
+			GtkWidget* shpnm,      // The ShapeName holding GtkWidget.
+			bool (*shvld)(int),    // The ShapeUD   validating lambda.
+			GtkWidget* frm,        // The FrameID   holding GtkWidget.
+			int        vgnum,      // The D&D U7_SHAPE_xxx VGA file category.
+			Vga_file*  vg,         // The VGA File         for the Shape_draw
+								   // constructor.
+			const unsigned char*
+					   palbuf,    // The Palette for the Shape_draw constructor.
+			GtkWidget* drw,       // The GtkDrawingArea   for the Shape_draw
+								  // constructor.
+			bool hdd = false);    // Whether the Shape should be hidden.
 	~Shape_single() override;
-	static void on_shape_changed(
-	    GtkWidget *widget, gpointer user_data);
-	static void on_frame_changed(
-	    GtkWidget *widget, gpointer user_data);
+	static void     on_shape_changed(GtkWidget* widget, gpointer user_data);
+	static void     on_frame_changed(GtkWidget* widget, gpointer user_data);
 	static gboolean on_draw_expose_event(
-	    GtkWidget *widget, cairo_t  *cairo, gpointer user_data);
+			GtkWidget* widget, cairo_t* cairo, gpointer user_data);
 	static void on_shape_dropped(
-	    int filenum, int shapenum, int framenum, gpointer user_data);
+			int filenum, int shapenum, int framenum, gpointer user_data);
 	static void on_state_changed(
-	    GtkWidget *widget, GtkStateFlags flags, gpointer user_data);
+			GtkWidget* widget, GtkStateFlags flags, gpointer user_data);
 };
 
 #endif

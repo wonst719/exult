@@ -23,18 +23,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include <cstdio>
-#include <cassert>
-#include <vector>
-#include <cstring>
-
 #include "ucclass.h"
-#include "ucsymtbl.h"
+
 #include "ucfun.h"
 #include "ucloc.h"
+#include "ucsymtbl.h"
+
+#include <cassert>
+#include <cstdio>
+#include <cstring>
+#include <vector>
 
 int Uc_class::last_num = -1;
 
@@ -42,20 +43,18 @@ int Uc_class::last_num = -1;
  *  Create.
  */
 
-Uc_class::Uc_class(
-    char *nm
-) : name(nm), scope(nullptr), num_vars(0), base_class(nullptr) {
+Uc_class::Uc_class(char* nm)
+		: name(nm), scope(nullptr), num_vars(0), base_class(nullptr) {
 	num = ++last_num;
 }
 
-Uc_class::Uc_class(
-    char *nm,
-    Uc_class *base
-) : name(nm), scope(&base->scope), num_vars(base->num_vars),
-	methods(base->methods), base_class(base) {
+Uc_class::Uc_class(char* nm, Uc_class* base)
+		: name(nm), scope(&base->scope), num_vars(base->num_vars),
+		  methods(base->methods), base_class(base) {
 	num = ++last_num;
-	for (auto *method : methods)
+	for (auto* method : methods) {
 		method->set_inherited();
+	}
 }
 
 /*
@@ -64,13 +63,12 @@ Uc_class::Uc_class(
  *  Output: New sym, or nullptr if already declared.
  */
 
-Uc_var_symbol *Uc_class::add_symbol(
-    char *nm
-) {
-	if (scope.is_dup(nm))
+Uc_var_symbol* Uc_class::add_symbol(char* nm) {
+	if (scope.is_dup(nm)) {
 		return nullptr;
+	}
 	// Create & assign slot.
-	Uc_var_symbol *var = new Uc_class_var_symbol(nm, num_vars++);
+	Uc_var_symbol* var = new Uc_class_var_symbol(nm, num_vars++);
 	scope.add(var);
 	return var;
 }
@@ -81,14 +79,12 @@ Uc_var_symbol *Uc_class::add_symbol(
  *  Output: New sym, or nullptr if already declared.
  */
 
-Uc_var_symbol *Uc_class::add_symbol(
-    char *nm,
-    Uc_struct_symbol *s
-) {
-	if (scope.is_dup(nm))
+Uc_var_symbol* Uc_class::add_symbol(char* nm, Uc_struct_symbol* s) {
+	if (scope.is_dup(nm)) {
 		return nullptr;
+	}
 	// Create & assign slot.
-	Uc_var_symbol *var = new Uc_class_struct_var_symbol(nm, s, num_vars++);
+	Uc_var_symbol* var = new Uc_class_struct_var_symbol(nm, s, num_vars++);
 	scope.add(var);
 	return var;
 }
@@ -99,14 +95,12 @@ Uc_var_symbol *Uc_class::add_symbol(
  *  Output: New sym, or nullptr if already declared.
  */
 
-Uc_var_symbol *Uc_class::add_alias(
-    char *nm,
-    Uc_var_symbol *var
-) {
-	if (scope.is_dup(nm))
+Uc_var_symbol* Uc_class::add_alias(char* nm, Uc_var_symbol* var) {
+	if (scope.is_dup(nm)) {
 		return nullptr;
+	}
 	// Create & assign slot.
-	auto *alias = new Uc_alias_symbol(nm, var);
+	auto* alias = new Uc_alias_symbol(nm, var);
 	scope.add(alias);
 	return alias;
 }
@@ -117,16 +111,14 @@ Uc_var_symbol *Uc_class::add_alias(
  *  Output: New sym, or nullptr if already declared.
  */
 
-Uc_var_symbol *Uc_class::add_alias(
-    char *nm,
-    Uc_var_symbol *v,
-    Uc_struct_symbol *struc
-) {
-	if (scope.is_dup(nm))
+Uc_var_symbol* Uc_class::add_alias(
+		char* nm, Uc_var_symbol* v, Uc_struct_symbol* struc) {
+	if (scope.is_dup(nm)) {
 		return nullptr;
+	}
 	// Create & assign slot.
-	auto *var = static_cast<Uc_var_symbol *>(v->get_sym());
-	Uc_alias_symbol *alias = new Uc_struct_alias_symbol(nm, var, struc);
+	auto*            var   = static_cast<Uc_var_symbol*>(v->get_sym());
+	Uc_alias_symbol* alias = new Uc_struct_alias_symbol(nm, var, struc);
 	scope.add(alias);
 	return alias;
 }
@@ -135,12 +127,10 @@ Uc_var_symbol *Uc_class::add_alias(
  *  Add method.
  */
 
-void Uc_class::add_method(
-    Uc_function *m
-) {
+void Uc_class::add_method(Uc_function* m) {
 	// If this is a duplicate inherited function,
 	// or an externed class method, override it.
-	for (auto *&method : methods) {
+	for (auto*& method : methods) {
 		if (!strcmp(m->get_name(), method->get_name())) {
 			if (method->is_inherited() || method->is_externed()) {
 				m->set_method_num(method->get_method_num());
@@ -148,7 +138,10 @@ void Uc_class::add_method(
 				return;
 			} else {
 				char buf[150];
-				snprintf(buf, sizeof(buf), "Duplicate decl. of virtual member function '%s'.", m->get_name());
+				snprintf(
+						buf, sizeof(buf),
+						"Duplicate decl. of virtual member function '%s'.",
+						m->get_name());
 				Uc_location::yyerror(buf);
 				return;
 			}
@@ -162,12 +155,11 @@ void Uc_class::add_method(
  *  Generate Usecode.
  */
 
-void Uc_class::gen(
-    std::ostream &out
-) {
-	for (auto *m : methods) {
-		if (m->get_parent() == &scope)
-		m->gen(out);    // Generate function if its ours.
+void Uc_class::gen(std::ostream& out) {
+	for (auto* m : methods) {
+		if (m->get_parent() == &scope) {
+			m->gen(out);    // Generate function if its ours.
+		}
 	}
 }
 
@@ -175,22 +167,20 @@ void Uc_class::gen(
  *  Create symbol for this function.
  */
 
-Usecode_symbol *Uc_class::create_sym(
-) {
-	auto *cs = new Usecode_class_symbol(name.c_str(),
-	        Usecode_symbol::class_scope, num, num_vars);
-	for (auto *m : methods) {
-			cs->add_sym(m->create_sym());
+Usecode_symbol* Uc_class::create_sym() {
+	auto* cs = new Usecode_class_symbol(
+			name.c_str(), Usecode_symbol::class_scope, num, num_vars);
+	for (auto* m : methods) {
+		cs->add_sym(m->create_sym());
 		cs->add_method_num(m->get_usecode_num());
 	}
 	return cs;
 }
 
-bool Uc_class::is_class_compatible(
-    const char *nm
-) {
-	if (name == nm)
+bool Uc_class::is_class_compatible(const char* nm) {
+	if (name == nm) {
 		return true;
-	else
+	} else {
 		return base_class ? base_class->is_class_compatible(nm) : false;
+	}
 }

@@ -17,13 +17,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include <cstring>
+#include "Text_gump.h"
 
 #include "gamewin.h"
-#include "Text_gump.h"
+
+#include <cstring>
 
 using std::strchr;
 
@@ -31,20 +32,20 @@ using std::strchr;
  *  Add to the text, starting a newline.
  */
 
-void Text_gump::add_text(
-    const char *str
-) {
-	const int slen = strlen(str);     // Length of new text.
+void Text_gump::add_text(const char* str) {
+	const int slen = strlen(str);    // Length of new text.
 	// Allocate new space.
-	char *newtext = new char[textlen + (textlen != 0) + slen + 1];
-	if (textlen) {          // Copy over old.
+	char* newtext = new char[textlen + (textlen != 0) + slen + 1];
+	if (textlen) {    // Copy over old.
 		strcpy(newtext, text);
-		// Add new line if not starting a new page and if first char of new string is
-		// not a new line
-		if (newtext[textlen - 1] != '*') newtext[textlen++] = '~';
+		// Add new line if not starting a new page and if first char of new
+		// string is not a new line
+		if (newtext[textlen - 1] != '*') {
+			newtext[textlen++] = '~';
+		}
 	}
-	strcpy(newtext + textlen, str); // Append new.
-	delete [] text;
+	strcpy(newtext + textlen, str);    // Append new.
+	delete[] text;
 	text = newtext;
 	textlen += slen;
 }
@@ -56,45 +57,49 @@ void Text_gump::add_text(
  */
 
 int Text_gump::paint_page(
-    TileRect const &box,           // Display box rel. to gump.
-    int start           // Starting offset into text.
+		const TileRect& box,     // Display box rel. to gump.
+		int             start    // Starting offset into text.
 ) {
-	const int vlead = 1;        // Extra inter-line spacing.
-	int ypos = 0;
+	const int vlead      = 1;    // Extra inter-line spacing.
+	int       ypos       = 0;
 	const int textheight = sman->get_text_height(font) + vlead;
-	char *str = text + start;
+	char*     str        = text + start;
 	while (*str && *str != '*' && ypos + textheight <= box.h) {
-		if (*str == '~') {  // Empty paragraph?
+		if (*str == '~') {    // Empty paragraph?
 			ypos += textheight;
 			str++;
 			continue;
 		}
 		// Look for page break.
-		char *epage = strchr(str, '*');
+		char* epage = strchr(str, '*');
 		// Look for line break.
-		char *eol = strchr(str, '~');
-		if (epage && (!eol || eol > epage))
+		char* eol = strchr(str, '~');
+		if (epage && (!eol || eol > epage)) {
 			eol = epage;
-		if (!eol)       // No end found?
+		}
+		if (!eol) {    // No end found?
 			eol = text + textlen;
-		const char eolchr = *eol; // Save char. at EOL.
-		*eol = 0;
-		const int endoff = sman->paint_text_box(font, str, x + box.x,
-		                                  y + box.y + ypos, box.w, box.h - ypos, vlead);
-		*eol = eolchr;      // Restore char.
-		if (endoff > 0) {   // All painted?
+		}
+		const char eolchr = *eol;    // Save char. at EOL.
+		*eol              = 0;
+		const int endoff  = sman->paint_text_box(
+                font, str, x + box.x, y + box.y + ypos, box.w, box.h - ypos,
+                vlead);
+		*eol = eolchr;       // Restore char.
+		if (endoff > 0) {    // All painted?
 			// Value returned is height.
 			str = eol + (eolchr == '~');
 			ypos += endoff;
-		} else {        // Out of room.
+		} else {    // Out of room.
 			str += -endoff;
 			break;
 		}
 	}
-	if (*str == '*')        // Saw end of page?
+	if (*str == '*') {    // Saw end of page?
 		str++;
-	gwin->set_painted();        // Force blit.
-	return str - text;        // Return offset past end.
+	}
+	gwin->set_painted();    // Force blit.
+	return str - text;      // Return offset past end.
 }
 
 /*
@@ -103,11 +108,11 @@ int Text_gump::paint_page(
  *  Output: 0 if already at end.
  */
 
-int Text_gump::show_next_page(
-) {
-	if (curend >= textlen)
-		return 0;     // That's all, folks.
-	curtop = curend;        // Start next page or pair of pages.
+int Text_gump::show_next_page() {
+	if (curend >= textlen) {
+		return 0;    // That's all, folks.
+	}
+	curtop = curend;    // Start next page or pair of pages.
 	paint();            // Paint.  This updates curend.
 	return 1;
 }

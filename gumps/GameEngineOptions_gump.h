@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GAMEENGINEOPTIONS_GUMP_H
 
 #include "Modal_gump.h"
+
 #include <array>
 #include <memory>
 #include <string>
@@ -28,33 +29,34 @@ class Gump_button;
 
 class GameEngineOptions_gump : public Modal_gump {
 private:
-	bool allow_autonotes;
-	int gumps_pause;
-	bool alternate_drop;
-	int frames;
+	bool                     allow_autonotes;
+	int                      gumps_pause;
+	bool                     alternate_drop;
+	int                      frames;
 	std::vector<std::string> frametext;
-	int difficulty;
-	int show_hits;
-	int mode;
-	bool charmDiff;
-	int cheats;
+	int                      difficulty;
+	int                      show_hits;
+	int                      mode;
+	bool                     charmDiff;
+	int                      cheats;
 
 	enum button_ids {
-	    id_first = 0,
-	    id_ok = id_first,
-	    id_cancel,
-	    id_help,
-	    id_allow_autonotes,
-	    id_gumps_pause,
-	    id_alternate_drop,
-	    id_frames,
-	    id_show_hits,
-	    id_mode,
-	    id_charmDiff,
-	    id_difficulty,
-	    id_cheats,
-	    id_count
+		id_first = 0,
+		id_ok    = id_first,
+		id_cancel,
+		id_help,
+		id_allow_autonotes,
+		id_gumps_pause,
+		id_alternate_drop,
+		id_frames,
+		id_show_hits,
+		id_mode,
+		id_charmDiff,
+		id_difficulty,
+		id_cheats,
+		id_count
 	};
+
 	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
 
 public:

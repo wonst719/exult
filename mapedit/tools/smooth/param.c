@@ -3,44 +3,53 @@
  * licence: GPL
  * date: 20/06/03
  *
- * This file is for parsing the command line and setting up the appropriate variables
+ * This file is for parsing the command line and setting up the appropriate
+ * variables
  */
+
+#include "param.h"
+
+#include "globals.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "globals.h"
-#include "param.h"
-
-void show_help(char *prog_name) {
-	printf("Usage: %s [-h] [-c configfile] [-i inputimage] [-o outputimage.bmp] [-d debuglevel]\n\n", prog_name);
+void show_help(char* prog_name) {
+	printf("Usage: %s [-h] [-c configfile] [-i inputimage] [-o "
+		   "outputimage.bmp] [-d debuglevel]\n\n",
+		   prog_name);
 	printf("-h\t\t\tShows this help\n");
 	printf("-c configfile\t\tSpecify config file for conversion\n");
 	printf("\t\t\t\t(default: smooth.conf)\n");
-	printf("-i inputimage\t\tImage to convert from. Any indexed format supported by SDL_Image\n");
+	printf("-i inputimage\t\tImage to convert from. Any indexed format "
+		   "supported by SDL_Image\n");
 	printf("\t\t\t\t(default: rough.bmp)\n");
-	printf("-o outputimage.bmp\tImage to convert to. The image will be in BMP.\n");
+	printf("-o outputimage.bmp\tImage to convert to. The image will be in "
+		   "BMP.\n");
 	printf("\t\t\t\t(default: smoothed.bmp)\n");
-	printf("-d debuglevel\t\tInteger value for debug level; the higher, the more debug information\n");
+	printf("-d debuglevel\t\tInteger value for debug level; the higher, the "
+		   "more debug information\n");
 	printf("\t\t\t\t(default: 0, max effect: 4)\n");
 	fflush(stdout);
 }
 
-int is_switch(char *val) {
-	// function return true if the parameter has exactly 2 characters and starts with '-'
+int is_switch(char* val) {
+	// function return true if the parameter has exactly 2 characters and starts
+	// with '-'
 	return !strncmp(val, "-", 1) && strlen(val) == 2;
 }
 
-int read_param(int argc, char **argv) {
+int read_param(int argc, char** argv) {
 	int i;
 
 	g_statics.config_file = "smooth.conf";
-	g_statics.filein = "rough.bmp";
-	g_statics.fileout = "smoothed.bmp";
+	g_statics.filein      = "rough.bmp";
+	g_statics.fileout     = "smoothed.bmp";
 
 	for (i = 1; i < argc; i++) {
-		if (is_switch(argv[i])) { // argv[i] starts with - but has more than 1 char
+		if (is_switch(argv[i])) {    // argv[i] starts with - but has more than
+									 // 1 char
 			switch (argv[i][1]) {
 			case 'h': {
 				show_help(argv[0]);
@@ -58,7 +67,7 @@ int read_param(int argc, char **argv) {
 			}
 			case 'c': {
 				if (i + 1 < argc && !is_switch(argv[i + 1])) {
-					//printf("config file: %s\n",argv[i+1]);
+					// printf("config file: %s\n",argv[i+1]);
 					g_statics.config_file = argv[i + 1];
 				} else {
 					printf("missing value for switch 'c'\n");

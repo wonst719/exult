@@ -21,33 +21,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define UNIXSEQMIDIDRIVER_H_INCLUDED
 
 #if (defined(UNIX) || defined(__unix__))
-#define USE_UNIX_SEQ_MIDI
+#	define USE_UNIX_SEQ_MIDI
 
-#include "LowLevelMidiDriver.h"
-#include <string>
+#	include "LowLevelMidiDriver.h"
 
-class UnixSeqMidiDriver : public LowLevelMidiDriver
-{
-	const static MidiDriverDesc desc;
-	static MidiDriver *createInstance() {
+#	include <string>
+
+class UnixSeqMidiDriver : public LowLevelMidiDriver {
+	static const MidiDriverDesc desc;
+
+	static MidiDriver* createInstance() {
 		return new UnixSeqMidiDriver();
 	}
 
-public:	
-	static const MidiDriverDesc* getDesc() { return &desc; }
+public:
+	static const MidiDriverDesc* getDesc() {
+		return &desc;
+	}
+
 	UnixSeqMidiDriver();
 
 protected:
-	int			open() override;
-	void		close() override;
-	void		send(uint32 b) override;
-//	void		yield() override;
-	void		send_sysex(uint8 status, const uint8 *msg,
-								   uint16 length) override;
+	int  open() override;
+	void close() override;
+	void send(uint32 b) override;
+	//	void		yield() override;
+	void send_sysex(uint8 status, const uint8* msg, uint16 length) override;
 
 	std::string devname;
-	bool isOpen;
-	int device, deviceNum;
+	bool        isOpen;
+	int         device, deviceNum;
 };
 
 #endif

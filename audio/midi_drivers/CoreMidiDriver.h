@@ -21,39 +21,40 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define COREMIDIDRIVER_H_INCLUDED
 
 #if defined(MACOSX) || defined(__IPHONEOS__)
-#define USE_CORE_MIDI
+#	define USE_CORE_MIDI
 
-#include "LowLevelMidiDriver.h"
+#	include "LowLevelMidiDriver.h"
 
-#include <CoreMIDI/CoreMIDI.h>
+#	include <CoreMIDI/CoreMIDI.h>
 
-class CoreMidiDriver : public LowLevelMidiDriver
-{
+class CoreMidiDriver : public LowLevelMidiDriver {
+	MIDIClientRef   mClient;
+	MIDIPortRef     mOutPort;
+	MIDIEndpointRef mDest;
 
-	MIDIClientRef	mClient;
-	MIDIPortRef		mOutPort;
-	MIDIEndpointRef	mDest;
+	static const MidiDriverDesc desc;
 
-	static const MidiDriverDesc	desc;
-	static MidiDriver *createInstance() {
+	static MidiDriver* createInstance() {
 		return new CoreMidiDriver();
 	}
 
 public:
-	static const MidiDriverDesc* getDesc() { return &desc; }
+	static const MidiDriverDesc* getDesc() {
+		return &desc;
+	}
 
 	CoreMidiDriver();
 	~CoreMidiDriver();
 
 protected:
-	int			open() override;
-	void		close() override;
-	void		send(uint32 message) override;
-	void		send_sysex(uint8 status, const uint8 *msg, uint16 length) override;
-	void		increaseThreadPriority() override;
-	void		yield() override;
+	int  open() override;
+	void close() override;
+	void send(uint32 message) override;
+	void send_sysex(uint8 status, const uint8* msg, uint16 length) override;
+	void increaseThreadPriority() override;
+	void yield() override;
 };
 
-#endif //MACOSX
+#endif    // MACOSX
 
-#endif //COREMIDIDRIVER_H_INCLUDED
+#endif    // COREMIDIDRIVER_H_INCLUDED

@@ -21,9 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "exceptions.h"
 #include "gump_types.h"
-#include "shapeid.h"
-#include "rect.h"
 #include "ignore_unused_variable_warning.h"
+#include "rect.h"
+#include "shapeid.h"
 
 class Gump;
 class Game_window;
@@ -35,36 +35,44 @@ class Gump_button;
 class Gump_widget : nonreplicatable, public ShapeID {
 protected:
 	Gump_widget() = default;
-	Gump *parent = nullptr;       // Who this is in.
-	short x, y;         // Coords. relative to parent.
+	Gump* parent  = nullptr;    // Who this is in.
+	short x, y;                 // Coords. relative to parent.
 
 public:
 	friend class Gump;
 	friend class Spellbook_gump;
 	friend class Spellscroll_gump;
-	Gump_widget(Gump *par, int shnum, int px, int py, ShapeFile shfile = SF_GUMPS_VGA)
-		: ShapeID(shnum, 0, shfile), parent(par), x(px), y(py)
-	{  }
-	virtual Gump_widget *clone(Gump *par) {
+
+	Gump_widget(
+			Gump* par, int shnum, int px, int py,
+			ShapeFile shfile = SF_GUMPS_VGA)
+			: ShapeID(shnum, 0, shfile), parent(par), x(px), y(py) {}
+
+	virtual Gump_widget* clone(Gump* par) {
 		ignore_unused_variable_warning(par);
 		return nullptr;
 	}
+
 	// Is a given point on the widget?
 	virtual bool on_widget(int mx, int my) const;
+
 	virtual bool on_button(int mx, int my) const {
 		ignore_unused_variable_warning(mx, my);
 		return false;
 	}
+
 	virtual void paint();
 
 	virtual TileRect get_rect();
+
 	// update the widget, if required
-	virtual void update_widget() { }
+	virtual void update_widget() {}
 
 	virtual bool is_draggable() {
 		return true;
 	}
-	virtual Gump_button *as_button() {
+
+	virtual Gump_button* as_button() {
 		return nullptr;
 	}
 };

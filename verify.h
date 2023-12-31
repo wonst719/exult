@@ -20,6 +20,6 @@
 #define VERIFY_H 1
 
 class BaseGameInfo;
-int verify_files(BaseGameInfo *game);
+int verify_files(BaseGameInfo* game);
 
 #endif    // VERIFY_H

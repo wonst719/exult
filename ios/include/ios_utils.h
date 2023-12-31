@@ -23,10 +23,10 @@
 
 #include "touchui.h"
 
-class TouchUI_iOS: public TouchUI {
+class TouchUI_iOS : public TouchUI {
 public:
 	TouchUI_iOS();
-	void promptForName(const char *name) final;
+	void promptForName(const char* name) final;
 	void showGameControls() final;
 	void hideGameControls() final;
 	void showButtonControls() final;

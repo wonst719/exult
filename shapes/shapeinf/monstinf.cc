@@ -22,15 +22,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "utils.h"
-#include "exult_constants.h"
 #include "monstinf.h"
+
+#include "exult_constants.h"
 #include "ignore_unused_variable_warning.h"
+#include "utils.h"
 
 using std::istream;
 
 std::vector<Equip_record> Monster_info::equip;
-Monster_info Monster_info::default_info;
+Monster_info              Monster_info::default_info;
 
 /*
  *  Read in monster info. from 'monsters.dat'.
@@ -39,62 +40,63 @@ Monster_info Monster_info::default_info;
  */
 
 bool Monster_info::read(
-    std::istream &in,   // Input stream.
-    int version,        // Data file version.
-    Exult_Game game     // Loading BG file.
+		std::istream& in,         // Input stream.
+		int           version,    // Data file version.
+		Exult_Game    game        // Loading BG file.
 ) {
 	ignore_unused_variable_warning(version);
 	uint8 buf[Monster_info::entry_size - 2];    // Entry length.
-	in.read(reinterpret_cast<char *>(buf), sizeof(buf));
-	uint8 *ptr = buf;
-	if (buf[Monster_info::entry_size - 3] == 0xff) { // means delete entry.
+	in.read(reinterpret_cast<char*>(buf), sizeof(buf));
+	uint8* ptr = buf;
+	if (buf[Monster_info::entry_size - 3] == 0xff) {    // means delete entry.
 		set_invalid(true);
 		return true;
 	}
 	m_sleep_safe = (*ptr & 1);
 	m_charm_safe = (*ptr >> 1) & 1;
-	strength = (*ptr++ >> 2) & 63;  // Byte 2.
+	strength     = (*ptr++ >> 2) & 63;    // Byte 2.
 
-	m_curse_safe = (*ptr & 1);
+	m_curse_safe     = (*ptr & 1);
 	m_paralysis_safe = (*ptr >> 1) & 1;
-	dexterity = (*ptr++ >> 2) & 63; // Byte 3.
+	dexterity        = (*ptr++ >> 2) & 63;    // Byte 3.
 
-	m_poison_safe = (*ptr & 1); // verified
-	m_int_b1 = (*ptr >> 1) & 1; // What does this do?
-	intelligence = (*ptr++ >> 2) & 63;  // Byte 4.
+	m_poison_safe = (*ptr & 1);            // verified
+	m_int_b1      = (*ptr >> 1) & 1;       // What does this do?
+	intelligence  = (*ptr++ >> 2) & 63;    // Byte 4.
 
-	alignment = *ptr & 3;       // Byte 5.
-	combat = (*ptr++ >> 2) & 63;
+	alignment = *ptr & 3;    // Byte 5.
+	combat    = (*ptr++ >> 2) & 63;
 
-	m_splits = (*ptr & 1);  // Byte 6 (slimes).
-	m_cant_die = (*ptr & 2) != 0;
+	m_splits     = (*ptr & 1);    // Byte 6 (slimes).
+	m_cant_die   = (*ptr & 2) != 0;
 	m_power_safe = (*ptr & 4) != 0;
 	m_death_safe = (*ptr & 8) != 0;
-	armor = (*ptr++ >> 4) & 15;
+	armor        = (*ptr++ >> 4) & 15;
 
-	ptr++;              // Byte 7: Unknown.
-	reach = *ptr & 15;      // Byte 8 - weapon reach.
-	weapon = (*ptr++ >> 4) & 15;
-	flags = *ptr++;         // Byte 9.
-	vulnerable = *ptr++;    // Byte 10.
-	immune = *ptr++;        // Byte 11.
-	m_cant_yell = (*ptr & (1 << 5)) != 0;   // Byte 12.
+	ptr++;                       // Byte 7: Unknown.
+	reach        = *ptr & 15;    // Byte 8 - weapon reach.
+	weapon       = (*ptr++ >> 4) & 15;
+	flags        = *ptr++;                    // Byte 9.
+	vulnerable   = *ptr++;                    // Byte 10.
+	immune       = *ptr++;                    // Byte 11.
+	m_cant_yell  = (*ptr & (1 << 5)) != 0;    // Byte 12.
 	m_cant_bleed = (*ptr & (1 << 6)) != 0;
 	ptr++;
 	m_attackmode = (*ptr & 7);
-	if (m_attackmode == 0)       // Fixes invalid data saved by older
+	if (m_attackmode == 0) {    // Fixes invalid data saved by older
 		m_attackmode = 2;       // versions of ES.
-	else
+	} else {
 		m_attackmode--;
-	m_byte13 = (*ptr++)&~7; // Byte 13: partly unknown.
-	equip_offset = *ptr++;      // Byte 14.
-	m_can_teleport = (*ptr & 1) != 0;   // Exult's extra flags: byte 15.
-	m_can_summon = (*ptr & 2) != 0;
+	}
+	m_byte13           = (*ptr++) & ~7;      // Byte 13: partly unknown.
+	equip_offset       = *ptr++;             // Byte 14.
+	m_can_teleport     = (*ptr & 1) != 0;    // Exult's extra flags: byte 15.
+	m_can_summon       = (*ptr & 2) != 0;
 	m_can_be_invisible = (*ptr & 4) != 0;
 	ptr++;
-	ptr++;      // Byte 16: Unknown (0).
+	ptr++;    // Byte 16: Unknown (0).
 	const int sfx_delta = game == BLACK_GATE ? -1 : 0;
-	sfx = *reinterpret_cast<signed char *>(ptr++) + sfx_delta;  // Byte 17.
+	sfx = *reinterpret_cast<signed char*>(ptr++) + sfx_delta;    // Byte 17.
 	return true;
 }
 
@@ -102,38 +104,26 @@ bool Monster_info::read(
  *  Get a default block for generic NPC's.
  */
 
-const Monster_info *Monster_info::get_default(
-) {
-	if (!default_info.strength) { // First time?
-		default_info.strength =
-		    default_info.dexterity =
-		        default_info.intelligence =
-		            default_info.combat = 10;
-		default_info.alignment = 0;     // Neutral.
-		default_info.armor =
-		    default_info.weapon = 0;
-		default_info.reach = 3;
-		default_info.flags = (1 << static_cast<int>(walk));
+const Monster_info* Monster_info::get_default() {
+	if (!default_info.strength) {    // First time?
+		default_info.strength               = default_info.dexterity
+				= default_info.intelligence = default_info.combat = 10;
+		default_info.alignment = 0;    // Neutral.
+		default_info.armor = default_info.weapon = 0;
+		default_info.reach                       = 3;
+		default_info.flags        = (1 << static_cast<int>(walk));
 		default_info.equip_offset = 0;
-		default_info.immune =
-		    default_info.vulnerable =
-		        default_info.m_byte13 = 0;
-		default_info.m_can_be_invisible =
-		    default_info.m_can_summon =
-		        default_info.m_can_teleport =
-		            default_info.m_cant_bleed =
-		                default_info.m_cant_die =
-		                    default_info.m_cant_yell =
-		                        default_info.m_poison_safe =
-		                            default_info.m_charm_safe =
-		                                default_info.m_sleep_safe =
-		                                    default_info.m_paralysis_safe =
-		                                        default_info.m_curse_safe =
-		                                                default_info.m_power_safe =
-		                                                        default_info.m_death_safe =
-		                                                                default_info.m_int_b1 =
-		                                                                        default_info.m_splits = false;
-		default_info.m_attackmode = 2;
+		default_info.immune = default_info.vulnerable = default_info.m_byte13
+				= 0;
+		default_info.m_can_be_invisible       = default_info.m_can_summon
+				= default_info.m_can_teleport = default_info.m_cant_bleed
+				= default_info.m_cant_die     = default_info.m_cant_yell
+				= default_info.m_poison_safe  = default_info.m_charm_safe
+				= default_info.m_sleep_safe   = default_info.m_paralysis_safe
+				= default_info.m_curse_safe   = default_info.m_power_safe
+				= default_info.m_death_safe   = default_info.m_int_b1
+				= default_info.m_splits       = false;
+		default_info.m_attackmode             = 2;
 	}
 	return &default_info;
 }
@@ -143,20 +133,18 @@ const Monster_info *Monster_info::get_default(
  */
 
 void Monster_info::set_stats(
-    int str, int dex, int intel, int cmb, int armour,
-    int wpn, int rch
-) {
+		int str, int dex, int intel, int cmb, int armour, int wpn, int rch) {
 	if (strength != str || dexterity != dex || intelligence != intel
-	        || combat != cmb || armor != armour || weapon != wpn
-	        || reach != rch)
+		|| combat != cmb || armor != armour || weapon != wpn || reach != rch) {
 		set_modified(true);
-	strength = str;
-	dexterity = dex;
+	}
+	strength     = str;
+	dexterity    = dex;
 	intelligence = intel;
-	combat = cmb;
-	armor = armour;
-	weapon = wpn;
-	reach = rch;
+	combat       = cmb;
+	armor        = armour;
+	weapon       = wpn;
+	reach        = rch;
 }
 
 /*
@@ -181,11 +169,10 @@ int Monster_info::get_base_xp_value() const {
 	expval += (flags & (1 << fly)) ? 1 : 0;
 	expval += (flags & (1 << swim)) ? 1 : 0;
 	expval += (flags & (1 << ethereal)) ? 2 : 0;
-	expval += (flags & (1 << 5)) ? 2 : 0;   // No idea what this does.
+	expval += (flags & (1 << 5)) ? 2 : 0;    // No idea what this does.
 	expval += (flags & (1 << see_invisible)) ? 2 : 0;
 	expval += (flags & (1 << start_invisible)) ? 8 : 0;
 	expval += m_splits ? 2 : 0;
 	expval += reach > 5 ? 2 : (reach > 3 ? 1 : 0);
 	return expval;
 }
-

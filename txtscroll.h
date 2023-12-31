@@ -30,15 +30,16 @@ class Palette;
 
 class TextScroller {
 private:
-	Font *font;
-	Shape *shapes;
-	std::vector<std::string> *text;
+	Font*                     font;
+	Shape*                    shapes;
+	std::vector<std::string>* text;
+
 public:
-	TextScroller(const char *archive, int index, Font *fnt, Shape *shp);
+	TextScroller(const char* archive, int index, Font* fnt, Shape* shp);
 	~TextScroller();
-	bool run(Game_window *gwin);
-	int show_line(Game_window *gwin, int left, int right, int y, int index);
-	int get_count();
+	bool run(Game_window* gwin);
+	int  show_line(Game_window* gwin, int left, int right, int y, int index);
+	int  get_count();
 };
 
 #endif

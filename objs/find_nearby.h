@@ -43,16 +43,20 @@ inline FindMask operator&(FindMask left, FindMask right) {
 	return static_cast<FindMask>(
 			static_cast<int>(left) & static_cast<int>(right));
 }
+
 inline FindMask operator|(FindMask left, FindMask right) {
 	return static_cast<FindMask>(
 			static_cast<int>(left) | static_cast<int>(right));
 }
+
 inline bool operator!(FindMask val) {
 	return static_cast<int>(val) == 0;
 }
+
 inline bool FlagNotSet(FindMask mask, FindMask value) {
 	return !(mask & value);
 }
+
 inline bool FlagIsSet(FindMask mask, FindMask value) {
 	return !FlagNotSet(mask, value);
 }
@@ -60,7 +64,7 @@ inline bool FlagIsSet(FindMask mask, FindMask value) {
 template <typename VecType, typename Cast>
 int Game_object::find_nearby(
 		VecType&          vec,         // Objects appended to this.
-		Tile_coord const& pos,         // Look near this point.
+		const Tile_coord& pos,         // Look near this point.
 		int               shapenum,    // Shape to look for.
 		//   -1=any (but always use mask?),
 		//   c_any_shapenum=any.
@@ -68,7 +72,7 @@ int Game_object::find_nearby(
 		int         find_mask,    // See Check_mask() bellow.
 		int         qual,         // Quality, or c_any_qual for any.
 		int         framenum,     // Frame #, or c_any_framenum for any.
-		Cast const& obj_cast,     // Cast functor.
+		const Cast& obj_cast,     // Cast functor.
 		bool        exclude_okay_to_take) {
 	auto mask_ = static_cast<FindMask>(find_mask);
 	// Check an object in find_nearby() against the mask.

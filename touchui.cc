@@ -19,11 +19,12 @@
  */
 
 #include "touchui.h"
+
 #include <cstring>
 
 uint32 TouchUI::eventType = ~uint32(0);
 
-void TouchUI::onTextInput(const char *text) {
+void TouchUI::onTextInput(const char* text) {
 	SDL_Event event;
 
 	if (text == nullptr) {
@@ -31,8 +32,8 @@ void TouchUI::onTextInput(const char *text) {
 	}
 
 	SDL_zero(event);
-	event.type = TouchUI::eventType;
-	event.user.code = TouchUI::EVENT_CODE_TEXT_INPUT;
+	event.type       = TouchUI::eventType;
+	event.user.code  = TouchUI::EVENT_CODE_TEXT_INPUT;
 	event.user.data1 = strdup(text);
 	event.user.data2 = nullptr;
 	SDL_PushEvent(&event);

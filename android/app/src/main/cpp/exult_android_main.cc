@@ -24,8 +24,7 @@
 
 #include <iostream>
 
-extern "C" JNIEXPORT int JNICALL
-ExultAndroid_main(int argc, char* argv[]) {
+extern "C" JNIEXPORT int JNICALL ExultAndroid_main(int argc, char* argv[]) {
 	AndroidLog_streambuf exult_cout(ANDROID_LOG_DEBUG, "exult-android-wrapper");
 	AndroidLog_streambuf exult_cerr(ANDROID_LOG_ERROR, "exult-android-wrapper");
 	auto                 ndk_cout = std::cout.rdbuf(&exult_cout);
@@ -36,7 +35,8 @@ ExultAndroid_main(int argc, char* argv[]) {
 	std::cout.rdbuf(ndk_cout);
 	std::cerr.rdbuf(ndk_cerr);
 
-	// note: `exit(0)` rather than `return 0` to ensure proper cleanup of resources
+	// note: `exit(0)` rather than `return 0` to ensure proper cleanup of
+	// resources
 	//	 between runs.
 	exit(0);
 }

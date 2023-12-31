@@ -33,11 +33,11 @@
 
 // Partly derived from libc++'s basic_filebuf
 // https://github.com/llvm-mirror/libcxx/blob/master/include/fstream
-//   Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
-//   See https://llvm.org/LICENSE.txt for license information.
+//   Part of the LLVM Project, under the Apache License v2.0 with LLVM
+//   Exceptions. See https://llvm.org/LICENSE.txt for license information.
 //   SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-static constexpr auto NO_OPENMODE = static_cast<std::ios_base::openmode>(0);
+constexpr static auto NO_OPENMODE = static_cast<std::ios_base::openmode>(0);
 
 SdlRwopsStreambuf::SdlRwopsStreambuf()
 		: m_context(nullptr), m_openMode(NO_OPENMODE),
@@ -57,8 +57,8 @@ bool SdlRwopsStreambuf::is_open() const {
 	return m_context;
 }
 
-SdlRwopsStreambuf*
-		SdlRwopsStreambuf::open(const char* s, std::ios_base::openmode mode) {
+SdlRwopsStreambuf* SdlRwopsStreambuf::open(
+		const char* s, std::ios_base::openmode mode) {
 	if (m_context) {
 		return nullptr;
 	}
@@ -136,10 +136,12 @@ SdlRwopsStreambuf* SdlRwopsStreambuf::close() {
 
 	std::unique_ptr<SDL_RWops, int (*)(SDL_RWops*)> h(m_context, SDL_RWclose);
 	auto                                            rt = this;
-	if (sync())
+	if (sync()) {
 		rt = nullptr;
-	if (SDL_RWclose(h.release()))
+	}
+	if (SDL_RWclose(h.release())) {
 		rt = nullptr;
+	}
 	m_context = nullptr;
 	setg(nullptr, nullptr, nullptr);
 	setp(nullptr, nullptr);
@@ -148,8 +150,9 @@ SdlRwopsStreambuf* SdlRwopsStreambuf::close() {
 }
 
 typename SdlRwopsStreambuf::int_type SdlRwopsStreambuf::underflow() {
-	if (!m_context)
+	if (!m_context) {
 		return traits_type::eof();
+	}
 
 	bool initial = false;
 	if (!(m_currentMode & std::ios_base::in)) {
@@ -161,8 +164,9 @@ typename SdlRwopsStreambuf::int_type SdlRwopsStreambuf::underflow() {
 	}
 
 	char_type buf1;
-	if (gptr() == nullptr)
+	if (gptr() == nullptr) {
 		setg(&buf1, &buf1 + 1, &buf1 + 1);
+	}
 	const std::size_t unget_sz
 			= initial ? 0 : std::min<std::size_t>((egptr() - eback()) / 2, 4);
 	int_type c = traits_type::eof();
@@ -174,10 +178,12 @@ typename SdlRwopsStreambuf::int_type SdlRwopsStreambuf::underflow() {
 			setg(eback(), eback() + unget_sz, eback() + unget_sz + nmemb);
 			c = traits_type::to_int_type(*gptr());
 		}
-	} else
+	} else {
 		c = traits_type::to_int_type(*gptr());
-	if (eback() == &buf1)
+	}
+	if (eback() == &buf1) {
 		setg(nullptr, nullptr, nullptr);
+	}
 	return c;
 }
 
@@ -198,8 +204,9 @@ typename SdlRwopsStreambuf::int_type SdlRwopsStreambuf::pbackfail(int_type c) {
 }
 
 typename SdlRwopsStreambuf::int_type SdlRwopsStreambuf::overflow(int_type c) {
-	if (!m_context)
+	if (!m_context) {
 		return traits_type::eof();
+	}
 
 	if (!(m_currentMode & std::ios_base::out)) {
 		setg(nullptr, nullptr, nullptr);
@@ -211,15 +218,18 @@ typename SdlRwopsStreambuf::int_type SdlRwopsStreambuf::overflow(int_type c) {
 	char_type* pb_save  = pbase();
 	char_type* epb_save = epptr();
 	if (!traits_type::eq_int_type(c, traits_type::eof())) {
-		if (pptr() == nullptr)
+		if (pptr() == nullptr) {
 			setp(&buf1, &buf1 + 1);
+		}
 		*pptr() = traits_type::to_char_type(c);
 		pbump(1);
 	}
 	if (pptr() != pbase()) {
 		const std::size_t nmemb = static_cast<std::size_t>(pptr() - pbase());
-		if (SDL_RWwrite(m_context, pbase(), sizeof(char_type), nmemb) != nmemb)
+		if (SDL_RWwrite(m_context, pbase(), sizeof(char_type), nmemb)
+			!= nmemb) {
 			return traits_type::eof();
+		}
 		setp(pb_save, epb_save);
 	}
 	return traits_type::not_eof(c);
@@ -228,8 +238,9 @@ typename SdlRwopsStreambuf::int_type SdlRwopsStreambuf::overflow(int_type c) {
 typename SdlRwopsStreambuf::pos_type SdlRwopsStreambuf::seekoff(
 		off_type off, std::ios_base::seekdir dir, std::ios_base::openmode) {
 	const int width = 1;
-	if (!m_context || sync())
+	if (!m_context || sync()) {
 		return pos_type(off_type(-1));
+	}
 	int whence;
 	switch (dir) {
 	case std::ios_base::beg:
@@ -244,46 +255,48 @@ typename SdlRwopsStreambuf::pos_type SdlRwopsStreambuf::seekoff(
 	default:
 		return pos_type(off_type(-1));
 	}
-	if (SDL_RWseek(m_context, width * off, whence) == -1)
+	if (SDL_RWseek(m_context, width * off, whence) == -1) {
 		return pos_type(off_type(-1));
+	}
 	const pos_type r = SDL_RWtell(m_context);
 	return r;
 }
 
-typename SdlRwopsStreambuf::pos_type
-		SdlRwopsStreambuf::seekpos(pos_type sp, std::ios_base::openmode) {
-	if (!m_context || sync())
+typename SdlRwopsStreambuf::pos_type SdlRwopsStreambuf::seekpos(
+		pos_type sp, std::ios_base::openmode) {
+	if (!m_context || sync()) {
 		return pos_type(off_type(-1));
-	if (SDL_RWseek(m_context, sp, RW_SEEK_SET) == -1)
+	}
+	if (SDL_RWseek(m_context, sp, RW_SEEK_SET) == -1) {
 		return pos_type(off_type(-1));
+	}
 	return sp;
 }
 
-int
-SdlRwopsStreambuf::sync()
-{
-    if (!m_context)
-        return 0;
+int SdlRwopsStreambuf::sync() {
+	if (!m_context) {
+		return 0;
+	}
 
-    if (m_currentMode & std::ios_base::out)
-    {
-        if (pptr() != pbase())
-            if (overflow() == traits_type::eof())
-                return -1;
-        //Would be calling SDL_RWflush() here if it existed.
-        //Consider closing and re-opening the file to simulate a flush.
-        if (SDL_RWOPS_STDFILE == m_context->type) {
-            fflush(m_context->hidden.stdio.fp);
-        }
-    }
-    else if (m_currentMode & std::ios_base::in)
-    {
-        off_type c;
-        c = egptr() - gptr();
-        if (SDL_RWseek(m_context, -c, RW_SEEK_CUR) == -1)
-            return -1;
-        setg(nullptr, nullptr, nullptr);
-        m_currentMode = NO_OPENMODE;
-    }
-    return 0;
+	if (m_currentMode & std::ios_base::out) {
+		if (pptr() != pbase()) {
+			if (overflow() == traits_type::eof()) {
+				return -1;
+			}
+		}
+		// Would be calling SDL_RWflush() here if it existed.
+		// Consider closing and re-opening the file to simulate a flush.
+		if (SDL_RWOPS_STDFILE == m_context->type) {
+			fflush(m_context->hidden.stdio.fp);
+		}
+	} else if (m_currentMode & std::ios_base::in) {
+		off_type c;
+		c = egptr() - gptr();
+		if (SDL_RWseek(m_context, -c, RW_SEEK_CUR) == -1) {
+			return -1;
+		}
+		setg(nullptr, nullptr, nullptr);
+		m_currentMode = NO_OPENMODE;
+	}
+	return 0;
 }

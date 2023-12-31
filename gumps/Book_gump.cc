@@ -17,30 +17,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-
 #include "Book_gump.h"
-#include "gamewin.h"
-#include "game.h"
 
+#include "game.h"
+#include "gamewin.h"
 
 /*
  *  Create book display.
  */
 
-Book_gump::Book_gump(
-    int fnt, int gump
-) : Text_gump(gump < 0 ? game->get_shape("gumps/book") : gump, fnt) {
-}
+Book_gump::Book_gump(int fnt, int gump)
+		: Text_gump(gump < 0 ? game->get_shape("gumps/book") : gump, fnt) {}
 
 /*
  *  Paint book.  Updates curend.
  */
 
-void Book_gump::paint(
-) {
+void Book_gump::paint() {
 	// Paint the gump itself.
 	paint_shape(x, y);
 	// Paint left page.

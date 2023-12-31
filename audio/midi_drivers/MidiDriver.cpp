@@ -18,31 +18,35 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
-#include "MidiDriver.h"
-#include <vector>
 
-#include "WindowsMidiDriver.h"
+#include "MidiDriver.h"
+
+#include "ALSAMidiDriver.h"
+#include "Configuration.h"
 #include "CoreAudioMidiDriver.h"
 #include "CoreMidiDriver.h"
 #include "FMOplMidiDriver.h"
-#include "TimidityMidiDriver.h"
-#include "ALSAMidiDriver.h"
-#include "UnixSeqMidiDriver.h"
 #include "FluidSynthMidiDriver.h"
 #include "MT32EmuMidiDriver.h"
+#include "TimidityMidiDriver.h"
+#include "UnixSeqMidiDriver.h"
+#include "WindowsMidiDriver.h"
 
-#include "Configuration.h"
+#include <vector>
 
-static MidiDriver *Disabled_CreateInstance() { return nullptr; }
+static MidiDriver* Disabled_CreateInstance() {
+	return nullptr;
+}
 
-static const MidiDriver::MidiDriverDesc Disabled_desc =
-		MidiDriver::MidiDriverDesc ("Disabled", Disabled_CreateInstance);
+static const MidiDriver::MidiDriverDesc Disabled_desc
+		= MidiDriver::MidiDriverDesc("Disabled", Disabled_CreateInstance);
 
 static std::vector<const MidiDriver::MidiDriverDesc*> midi_drivers;
 
-static void InitMidiDriverVector()
-{
-	if (!midi_drivers.empty()) return;
+static void InitMidiDriverVector() {
+	if (!midi_drivers.empty()) {
+		return;
+	}
 
 #ifdef USE_FMOPL_MIDI
 	midi_drivers.push_back(FMOplMidiDriver::getDesc());
@@ -75,51 +79,48 @@ static void InitMidiDriverVector()
 	midi_drivers.push_back(&Disabled_desc);
 }
 
-
 // Get the number of devices
-int MidiDriver::getDriverCount()
-{
+int MidiDriver::getDriverCount() {
 	InitMidiDriverVector();
 	return midi_drivers.size();
 }
 
 // Get the name of a driver
-std::string MidiDriver::getDriverName(uint32 index)
-{
+std::string MidiDriver::getDriverName(uint32 index) {
 	InitMidiDriverVector();
 
-	if (index >= midi_drivers.size()) return "";
+	if (index >= midi_drivers.size()) {
+		return "";
+	}
 
 	return midi_drivers[index]->name;
 }
 
 // Create an Instance of a MidiDriver
-MidiDriver *MidiDriver::createInstance(const std::string& desired_driver,uint32 sample_rate,bool stereo)
-{
+MidiDriver* MidiDriver::createInstance(
+		const std::string& desired_driver, uint32 sample_rate, bool stereo) {
 	InitMidiDriverVector();
 
-	MidiDriver *new_driver = nullptr;
+	MidiDriver* new_driver = nullptr;
 
-	const char * drv = desired_driver.c_str();
+	const char* drv = desired_driver.c_str();
 
 	// Has the config file specified disabled midi?
-	if ( Pentagram::strcasecmp(drv, "disabled") != 0)
-	{
+	if (Pentagram::strcasecmp(drv, "disabled") != 0) {
 		// Ok, it hasn't so search for the driver
-		for (const auto *midi_driver : midi_drivers) {
+		for (const auto* midi_driver : midi_drivers) {
 			// Found it (case insensitive)
 			if (!Pentagram::strcasecmp(drv, midi_driver->name)) {
-				pout << "Trying config specified Midi driver: `" << midi_driver->name << "'" << std::endl;
+				pout << "Trying config specified Midi driver: `"
+					 << midi_driver->name << "'" << std::endl;
 
 				new_driver = midi_driver->createInstance();
 				if (new_driver) {
-					if (new_driver->initMidiDriver(sample_rate,stereo)) {
+					if (new_driver->initMidiDriver(sample_rate, stereo)) {
 						pout << "Failed!" << std::endl;
 						delete new_driver;
 						new_driver = nullptr;
-					}
-					else
-					{
+					} else {
 						pout << "Success!" << std::endl;
 						break;
 					}
@@ -130,14 +131,13 @@ MidiDriver *MidiDriver::createInstance(const std::string& desired_driver,uint32 
 		// Uh oh, we didn't manage to load a driver!
 		// Search for the first working one
 		if (!new_driver) {
-			for (const auto *midi_driver : midi_drivers) {
+			for (const auto* midi_driver : midi_drivers) {
 				pout << "Trying: `" << midi_driver->name << "'" << std::endl;
 
 				new_driver = midi_driver->createInstance();
 				if (new_driver) {
 					// Got it
-					if (!new_driver->initMidiDriver(sample_rate,stereo))
-					{
+					if (!new_driver->initMidiDriver(sample_rate, stereo)) {
 						pout << "Success!" << std::endl;
 						break;
 					}
@@ -150,20 +150,18 @@ MidiDriver *MidiDriver::createInstance(const std::string& desired_driver,uint32 
 				}
 			}
 		}
-	}
-	else
-	{
-		new_driver = nullptr; // silence :-)
+	} else {
+		new_driver = nullptr;    // silence :-)
 	}
 
-	pout << "Midi Output: " << (new_driver!=nullptr?"Enabled":"Disabled") << std::endl;
+	pout << "Midi Output: " << (new_driver != nullptr ? "Enabled" : "Disabled")
+		 << std::endl;
 
 	return new_driver;
 }
 
-std::string MidiDriver::getConfigSetting(std::string const &name,
-										 std::string const &defaultval)
-{
+std::string MidiDriver::getConfigSetting(
+		const std::string& name, const std::string& defaultval) {
 	std::string key = "config/audio/midi/";
 	key += name;
 	std::string val;
@@ -171,4 +169,3 @@ std::string MidiDriver::getConfigSetting(std::string const &name,
 
 	return val;
 }
-

@@ -17,21 +17,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
 #include "Gump_ToggleButton.h"
-#include "gamewin.h"
+
 #include "Gump.h"
+#include "gamewin.h"
 
 bool Gump_ToggleButton::activate(int button) {
 	int delta;
-	if (button == 1)
+	if (button == 1) {
 		delta = 2;
-	else if (button == 3)
+	} else if (button == 3) {
 		delta = 2 * numselections - 2;
-	else
+	} else {
 		return false;
+	}
 
 	set_frame((get_framenum() + delta) % (2 * numselections));
 	toggle(get_framenum() / 2);
@@ -50,10 +52,7 @@ bool Gump_ToggleButton::push(int button) {
 	return false;
 }
 
-
-void Gump_ToggleButton::unpush(
-    int button
-) {
+void Gump_ToggleButton::unpush(int button) {
 	if (button == 1 || button == 3) {
 		set_pushed(false);
 		paint();
@@ -62,14 +61,15 @@ void Gump_ToggleButton::unpush(
 }
 
 bool Gump_ToggleTextButton::activate(int button) {
-	int delta;
+	int       delta;
 	const int numselections = selections.size();
-	if (button == 1)
+	if (button == 1) {
 		delta = 1;
-	else if (button == 3)
+	} else if (button == 3) {
 		delta = numselections - 1;
-	else
+	} else {
 		return false;
+	}
 
 	set_frame((get_framenum() + delta) % numselections);
 	text = selections[get_framenum()];
@@ -90,10 +90,7 @@ bool Gump_ToggleTextButton::push(int button) {
 	return false;
 }
 
-
-void Gump_ToggleTextButton::unpush(
-    int button
-) {
+void Gump_ToggleTextButton::unpush(int button) {
 	if (button == 1 || button == 3) {
 		set_pushed(false);
 		paint();

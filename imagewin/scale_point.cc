@@ -18,90 +18,87 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
+#include "scale_point.h"
+
+#include "common_types.h"
 #include "imagewin.h"
+#include "manip.h"
 
 #include <cstring>
 
-#include "common_types.h"
-#include "manip.h"
-#include "scale_point.h"
 //
 // Point Sampling
 //
 void Image_window::show_scaled8to8_point(
-    int x, int y, int w, int h  // Area to show.
+		int x, int y, int w, int h    // Area to show.
 ) {
-	const Manip8to8 manip(paletted_surface->format->palette->colors,
-	                paletted_surface->format);
-	Scale_point<unsigned char, uint8, Manip8to8>
-	(static_cast<uint8 *>(draw_surface->pixels), x, y, w, h,
-	 ibuf->line_width, ibuf->height + guard_band,
-	 static_cast<uint8 *>(display_surface->pixels),
-	 display_surface->pitch,
-	 manip, scale);
+	const Manip8to8 manip(
+			paletted_surface->format->palette->colors,
+			paletted_surface->format);
+	Scale_point<unsigned char, uint8, Manip8to8>(
+			static_cast<uint8*>(draw_surface->pixels), x, y, w, h,
+			ibuf->line_width, ibuf->height + guard_band,
+			static_cast<uint8*>(display_surface->pixels),
+			display_surface->pitch, manip, scale);
 
 	UpdateRect(display_surface, scale * x, scale * y, scale * w, scale * h);
 }
 
 void Image_window::show_scaled8to16_point(
-    int x, int y, int w, int h  // Area to show.
+		int x, int y, int w, int h    // Area to show.
 ) {
-	const Manip8to16 manip(paletted_surface->format->palette->colors,
-	                 display_surface->format);
-	Scale_point<unsigned char, uint16, Manip8to16>
-	(static_cast<uint8 *>(draw_surface->pixels), x, y, w, h,
-	 ibuf->line_width, ibuf->height + guard_band,
-	 static_cast<uint16 *>(display_surface->pixels),
-	 display_surface->pitch /
-	 display_surface->format->BytesPerPixel,
-	 manip, scale);
+	const Manip8to16 manip(
+			paletted_surface->format->palette->colors, display_surface->format);
+	Scale_point<unsigned char, uint16, Manip8to16>(
+			static_cast<uint8*>(draw_surface->pixels), x, y, w, h,
+			ibuf->line_width, ibuf->height + guard_band,
+			static_cast<uint16*>(display_surface->pixels),
+			display_surface->pitch / display_surface->format->BytesPerPixel,
+			manip, scale);
 	UpdateRect(display_surface, scale * x, scale * y, scale * w, scale * h);
 }
 
 void Image_window::show_scaled8to555_point(
-    int x, int y, int w, int h  // Area to show.
+		int x, int y, int w, int h    // Area to show.
 ) {
-	const Manip8to555 manip(paletted_surface->format->palette->colors,
-	                  display_surface->format);
-	Scale_point<unsigned char, uint16, Manip8to555>
-	(static_cast<uint8 *>(draw_surface->pixels), x, y, w, h,
-	 ibuf->line_width, ibuf->height + guard_band,
-	 static_cast<uint16 *>(display_surface->pixels),
-	 display_surface->pitch /
-	 display_surface->format->BytesPerPixel,
-	 manip, scale);
+	const Manip8to555 manip(
+			paletted_surface->format->palette->colors, display_surface->format);
+	Scale_point<unsigned char, uint16, Manip8to555>(
+			static_cast<uint8*>(draw_surface->pixels), x, y, w, h,
+			ibuf->line_width, ibuf->height + guard_band,
+			static_cast<uint16*>(display_surface->pixels),
+			display_surface->pitch / display_surface->format->BytesPerPixel,
+			manip, scale);
 	UpdateRect(display_surface, scale * x, scale * y, scale * w, scale * h);
 }
 
 void Image_window::show_scaled8to565_point(
-    int x, int y, int w, int h  // Area to show.
+		int x, int y, int w, int h    // Area to show.
 ) {
-	const Manip8to565 manip(paletted_surface->format->palette->colors,
-	                  display_surface->format);
-	Scale_point<unsigned char, uint16, Manip8to565>
-	(static_cast<uint8 *>(draw_surface->pixels), x, y, w, h,
-	 ibuf->line_width, ibuf->height + guard_band,
-	 static_cast<uint16 *>(display_surface->pixels),
-	 display_surface->pitch /
-	 display_surface->format->BytesPerPixel,
-	 manip, scale);
+	const Manip8to565 manip(
+			paletted_surface->format->palette->colors, display_surface->format);
+	Scale_point<unsigned char, uint16, Manip8to565>(
+			static_cast<uint8*>(draw_surface->pixels), x, y, w, h,
+			ibuf->line_width, ibuf->height + guard_band,
+			static_cast<uint16*>(display_surface->pixels),
+			display_surface->pitch / display_surface->format->BytesPerPixel,
+			manip, scale);
 	UpdateRect(display_surface, scale * x, scale * y, scale * w, scale * h);
 }
 
 void Image_window::show_scaled8to32_point(
-    int x, int y, int w, int h  // Area to show.
+		int x, int y, int w, int h    // Area to show.
 ) {
-	const Manip8to32 manip(paletted_surface->format->palette->colors,
-	                 display_surface->format);
-	Scale_point<unsigned char, uint32, Manip8to32>
-	(static_cast<uint8 *>(draw_surface->pixels), x, y, w, h,
-	 ibuf->line_width, ibuf->height + guard_band,
-	 static_cast<uint32 *>(display_surface->pixels),
-	 display_surface->pitch /
-	 display_surface->format->BytesPerPixel,
-	 manip, scale);
+	const Manip8to32 manip(
+			paletted_surface->format->palette->colors, display_surface->format);
+	Scale_point<unsigned char, uint32, Manip8to32>(
+			static_cast<uint8*>(draw_surface->pixels), x, y, w, h,
+			ibuf->line_width, ibuf->height + guard_band,
+			static_cast<uint32*>(display_surface->pixels),
+			display_surface->pitch / display_surface->format->BytesPerPixel,
+			manip, scale);
 	UpdateRect(display_surface, scale * x, scale * y, scale * w, scale * h);
 }

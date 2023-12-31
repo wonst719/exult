@@ -25,7 +25,7 @@ Boston, MA  02111-1307, USA.
 */
 
 #ifndef INCL_IMAGEBUF
-#define INCL_IMAGEBUF   1
+#define INCL_IMAGEBUF 1
 
 #include "ignore_unused_variable_warning.h"
 
@@ -38,7 +38,8 @@ Boston, MA  02111-1307, USA.
  */
 class Xform_palette {
 public:
-	unsigned char colors[256];  // For transforming 8-bit colors.
+	unsigned char colors[256];    // For transforming 8-bit colors.
+
 	unsigned char operator[](int i) const {
 		return colors[i];
 	}
@@ -50,71 +51,86 @@ public:
  */
 class Image_buffer {
 protected:
-	int width, height;  // Dimensions (in pixels).
-	int offset_x, offset_y;
-	int depth;          // # bits/pixel.
-	int pixel_size;         // # bytes/pixel.
-	unsigned char *bits;        // Allocated image buffer.
-	int line_width; // # words/scan-line.
+	int            width, height;    // Dimensions (in pixels).
+	int            offset_x, offset_y;
+	int            depth;         // # bits/pixel.
+	int            pixel_size;    // # bytes/pixel.
+	unsigned char* bits;          // Allocated image buffer.
+	int            line_width;    // # words/scan-line.
 private:
-	int clipx, clipy, clipw, cliph; // Clip rectangle.
+	int clipx, clipy, clipw, cliph;    // Clip rectangle.
 
 	// Clip.  Rets. false if nothing to draw.
-	bool clip_internal(int &srcx, int &srcw, int &destx,
-	                  int clips, int clipl) {
+	bool clip_internal(int& srcx, int& srcw, int& destx, int clips, int clipl) {
 		if (destx < clips) {
-			if ((srcw += (destx - clips)) <= 0)
+			if ((srcw += (destx - clips)) <= 0) {
 				return false;
+			}
 			srcx -= (destx - clips);
 			destx = clips;
 		}
-		if (destx + srcw > (clips + clipl))
-			if ((srcw = ((clips + clipl) - destx)) <= 0)
+		if (destx + srcw > (clips + clipl)) {
+			if ((srcw = ((clips + clipl) - destx)) <= 0) {
 				return false;
+			}
+		}
 		return true;
 	}
+
 protected:
-	bool clip_x(int &srcx, int &srcw, int &destx, int desty) {
-		return desty < clipy || desty >= clipy + cliph ? false
-		       : clip_internal(srcx, srcw, destx, clipx, clipw);
+	bool clip_x(int& srcx, int& srcw, int& destx, int desty) {
+		return desty < clipy || desty >= clipy + cliph
+					   ? false
+					   : clip_internal(srcx, srcw, destx, clipx, clipw);
 	}
-	bool clip(int &srcx, int &srcy, int &srcw, int &srch,
-	         int &destx, int &desty) {
+
+	bool clip(
+			int& srcx, int& srcy, int& srcw, int& srch, int& destx,
+			int& desty) {
 		// Start with x-dim.
-		return clip_internal(srcx, srcw, destx, clipx, clipw) &&
-		        clip_internal(srcy, srch, desty, clipy, cliph);
+		return clip_internal(srcx, srcw, destx, clipx, clipw)
+			   && clip_internal(srcy, srch, desty, clipy, cliph);
 	}
+
 	Image_buffer(unsigned int w, unsigned int h, int dpth);
+
 public:
 	friend class Image_buffer8;
+
 	virtual ~Image_buffer() {
-		delete [] bits;     // In case Image_window didn't.
+		delete[] bits;    // In case Image_window didn't.
 	}
 	friend class Image_window;
-	unsigned char *get_bits() { // Get ->data.
+
+	unsigned char* get_bits() {    // Get ->data.
 		return bits;
 	}
+
 	unsigned int get_width() {
 		return width;
 	}
+
 	unsigned int get_height() {
 		return height;
 	}
+
 	unsigned int get_line_width() {
 		return line_width;
 	}
-	void clear_clip() {     // Reset clip to whole window.
+
+	void clear_clip() {    // Reset clip to whole window.
 		clipx = -offset_x;
 		clipy = -offset_y;
 		clipw = width;
 		cliph = height;
 	}
+
 	// Set clip.
 	void set_clip(int x, int y, int w, int h) {
-		//clipx = x;
-		//clipy = y;
-		//clipw = w;
-		//cliph = h;
+		// clipx = x;
+		// clipy = y;
+		// clipw = w;
+		// cliph = h;
 		x += offset_x;
 		y += offset_y;
 		if (x < 0) {
@@ -136,11 +152,13 @@ public:
 		clipw = w;
 		cliph = h;
 	}
+
 	// Is rect. visible within clip?
 	bool is_visible(int x, int y, int w, int h) {
-		return x < clipx + clipw && y < clipy + cliph &&
-		          x + w > clipx && y + h > clipy;
+		return x < clipx + clipw && y < clipy + cliph && x + w > clipx
+			   && y + h > clipy;
 	}
+
 	/*
 	 *  16-bit color methods.  Default is to ignore them.
 	 */
@@ -148,66 +166,83 @@ public:
 	virtual void fill16(unsigned short pix) {
 		ignore_unused_variable_warning(pix);
 	}
+
 	// Fill rect. wth pixel.
-	virtual void fill16(unsigned short pix, int srcw, int srch,
-	                    int destx, int desty) {
+	virtual void fill16(
+			unsigned short pix, int srcw, int srch, int destx, int desty) {
 		ignore_unused_variable_warning(pix, srcw, srch, destx, desty);
 	}
+
 	// Copy rectangle into here.
-	virtual void copy16(const unsigned short *src_pixels,
-	                    int srcw, int srch, int destx, int desty) {
+	virtual void copy16(
+			const unsigned short* src_pixels, int srcw, int srch, int destx,
+			int desty) {
 		ignore_unused_variable_warning(src_pixels, srcw, srch, destx, desty);
 	}
+
 	// Copy rect. with transp. color.
-	virtual void copy_transparent16(const unsigned char *src_pixels, int srcw,
-	                                int srch, int destx, int desty) {
+	virtual void copy_transparent16(
+			const unsigned char* src_pixels, int srcw, int srch, int destx,
+			int desty) {
 		ignore_unused_variable_warning(src_pixels, srcw, srch, destx, desty);
 	}
+
 	/*
 	 *  8-bit color methods:
 	 */
 	// Fill with given (8-bit) value.
 	virtual void fill8(unsigned char val) = 0;
 	// Fill rect. with pixel.
-	virtual void fill8(unsigned char val, int srcw, int srch,
-	                   int destx, int desty) = 0;
+	virtual void fill8(
+			unsigned char val, int srcw, int srch, int destx, int desty)
+			= 0;
 	// Fill line with pixel.
-	virtual void fill_line8(unsigned char val, int srcw,
-	                        int destx, int desty) = 0;
+	virtual void fill_line8(unsigned char val, int srcw, int destx, int desty)
+			= 0;
 	// Copy rectangle into here.
-	virtual void copy8(const unsigned char *src_pixels,
-	                   int srcw, int srch, int destx, int desty) = 0;
+	virtual void copy8(
+			const unsigned char* src_pixels, int srcw, int srch, int destx,
+			int desty)
+			= 0;
 	// Copy line to here.
-	virtual void copy_line8(const unsigned char *src_pixels, int srcw,
-	                        int destx, int desty) = 0;
+	virtual void copy_line8(
+			const unsigned char* src_pixels, int srcw, int destx, int desty)
+			= 0;
 	// Copy with translucency table.
 	virtual void copy_line_translucent8(
-	    const unsigned char *src_pixels, int srcw,
-	    int destx, int desty, int first_translucent,
-	    int last_translucent, const Xform_palette *xforms) = 0;
+			const unsigned char* src_pixels, int srcw, int destx, int desty,
+			int first_translucent, int last_translucent,
+			const Xform_palette* xforms)
+			= 0;
 	// Apply translucency to a line.
-	virtual void fill_line_translucent8(unsigned char val,
-	                                    int srcw, int destx, int desty, const Xform_palette &xform) = 0;
+	virtual void fill_line_translucent8(
+			unsigned char val, int srcw, int destx, int desty,
+			const Xform_palette& xform)
+			= 0;
 	// Apply translucency to a rectangle
-	virtual void fill_translucent8(unsigned char val, int srcw, int srch,
-	                               int destx, int desty, const Xform_palette &xform) = 0;
+	virtual void fill_translucent8(
+			unsigned char val, int srcw, int srch, int destx, int desty,
+			const Xform_palette& xform)
+			= 0;
 	// Copy rect. with transp. color.
-	virtual void copy_transparent8(const unsigned char *src_pixels, int srcw,
-	                               int srch, int destx, int desty) = 0;
+	virtual void copy_transparent8(
+			const unsigned char* src_pixels, int srcw, int srch, int destx,
+			int desty)
+			= 0;
 	/*
 	 *  Depth-independent methods:
 	 */
 	virtual std::unique_ptr<Image_buffer> create_another(int w, int h) = 0;
 	// Copy within itself.
-	virtual void copy(int srcx, int srcy, int srcw, int srch,
-	                  int destx, int desty) = 0;
+	virtual void copy(
+			int srcx, int srcy, int srcw, int srch, int destx, int desty)
+			= 0;
 	// Get rect. into another buf.
-	virtual void get(Image_buffer *dest, int srcx, int srcy) = 0;
+	virtual void get(Image_buffer* dest, int srcx, int srcy) = 0;
 	// Put rect. back.
-	virtual void put(Image_buffer *src, int destx, int desty) = 0;
+	virtual void put(Image_buffer* src, int destx, int desty) = 0;
 
 	virtual void fill_static(int black, int gray, int white) = 0;
-
 };
 
 #endif

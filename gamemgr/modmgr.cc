@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
 #include "modmgr.h"
@@ -41,8 +41,8 @@
 #include <vector>
 
 #ifdef HAVE_ZIP_SUPPORT
-#  include "files/zip/unzip.h"
-#  include "files/zip/zip.h"
+#	include "files/zip/unzip.h"
+#	include "files/zip/zip.h"
 #endif
 
 using std::cerr;
@@ -60,21 +60,25 @@ void BaseGameInfo::setup_game_paths() {
 
 	string mod_path_tag = path_prefix;
 
-	if (!mod_title.empty())
-		mod_path_tag += ("_" + to_uppercase(static_cast<const string>(mod_title)));
+	if (!mod_title.empty()) {
+		mod_path_tag
+				+= ("_" + to_uppercase(static_cast<const string>(mod_title)));
+	}
 
 	clone_system_path("<GAMEDAT>", "<" + mod_path_tag + "_GAMEDAT>");
 	clone_system_path("<SAVEGAME>", "<" + mod_path_tag + "_SAVEGAME>");
 
-	if (is_system_path_defined("<" + mod_path_tag + "_PATCH>"))
+	if (is_system_path_defined("<" + mod_path_tag + "_PATCH>")) {
 		clone_system_path("<PATCH>", "<" + mod_path_tag + "_PATCH>");
-	else
+	} else {
 		clear_system_path("<PATCH>");
+	}
 
-	if (is_system_path_defined("<" + mod_path_tag + "_SOURCE>"))
+	if (is_system_path_defined("<" + mod_path_tag + "_SOURCE>")) {
 		clone_system_path("<SOURCE>", "<" + mod_path_tag + "_SOURCE>");
-	else
+	} else {
 		clear_system_path("<SOURCE>");
+	}
 
 	if (type != EXULT_MENU_GAME) {
 		U7mkdir("<SAVEGAME>", 0755);    // make sure savegame directory exists
@@ -83,28 +87,21 @@ void BaseGameInfo::setup_game_paths() {
 }
 
 static inline void ReplaceMacro(
-    string &path,
-    const string &srch,
-    const string &repl
-) {
+		string& path, const string& srch, const string& repl) {
 	const string::size_type pos = path.find(srch);
-	if (pos != string::npos)
+	if (pos != string::npos) {
 		path.replace(pos, srch.length(), repl);
+	}
 }
 
 // ModInfo: class that manages one mod's information
 ModInfo::ModInfo(
-    Exult_Game game,
-	Game_Language lang,
-    const string &name,
-    const string &mod,
-    const string &path,
-    bool exp,
-    bool sib,
-    bool ed,
-    const string &cfg
-) : BaseGameInfo(game, lang, name, mod, path, "", exp, sib, false, ed, ""),
-    configfile(cfg), compatible(false) {
+		Exult_Game game, Game_Language lang, const string& name,
+		const string& mod, const string& path, bool exp, bool sib, bool ed,
+		const string& cfg)
+		: BaseGameInfo(
+				game, lang, name, mod, path, "", exp, sib, false, ed, ""),
+		  configfile(cfg), compatible(false) {
 	const Configuration modconfig(configfile, "modinfo");
 
 	string config_path;
@@ -122,40 +119,41 @@ ModInfo::ModInfo(
 	default_dir = "0.0.00R";
 	string modversion;
 	modconfig.value(config_path, modversion, default_dir.c_str());
-	if (modversion == default_dir)
+	if (modversion == default_dir) {
 		// Required version is missing; assume the mod to be incompatible
 		compatible = false;
-	else {
-		const char *ptrmod = modversion.c_str();
-		const char *ptrver = VERSION;
-		char *eptrmod;
-		char *eptrver;
-		int modver = strtol(ptrmod, &eptrmod, 0);
-		int exver = strtol(ptrver, &eptrver, 0);
+	} else {
+		const char* ptrmod = modversion.c_str();
+		const char* ptrver = VERSION;
+		char*       eptrmod;
+		char*       eptrver;
+		int         modver = strtol(ptrmod, &eptrmod, 0);
+		int         exver  = strtol(ptrver, &eptrver, 0);
 
 		// Assume compatibility:
 		compatible = true;
 		// Comparing major version number:
-		if (modver > exver)
+		if (modver > exver) {
 			compatible = false;
-		else if (modver == exver) {
+		} else if (modver == exver) {
 			modver = strtol(eptrmod + 1, &eptrmod, 0);
-			exver = strtol(eptrver + 1, &eptrver, 0);
+			exver  = strtol(eptrver + 1, &eptrver, 0);
 			// Comparing minor version number:
-			if (modver > exver)
+			if (modver > exver) {
 				compatible = false;
-			else if (modver == exver) {
+			} else if (modver == exver) {
 				modver = strtol(eptrmod + 1, &eptrmod, 0);
-				exver = strtol(eptrver + 1, &eptrver, 0);
+				exver  = strtol(eptrver + 1, &eptrver, 0);
 				// Comparing revision number:
-				if (modver > exver)
+				if (modver > exver) {
 					compatible = false;
-				else if (modver == exver) {
+				} else if (modver == exver) {
 					const string mver(to_uppercase(eptrmod));
 					const string ever(to_uppercase(eptrver));
 					// Release vs CVS:
-					if (mver == "CVS" && ever == "R")
+					if (mver == "CVS" && ever == "R") {
 						compatible = false;
+					}
 				}
 			}
 		}
@@ -172,7 +170,7 @@ ModInfo::ModInfo(
 
 	// Read codepage first.
 	config_path = "mod_info/codepage";
-	default_dir = "ASCII";  // Ultima VII 7-bit ASCII code page.
+	default_dir = "ASCII";    // Ultima VII 7-bit ASCII code page.
 	modconfig.value(config_path, codepage, default_dir.c_str());
 
 	// Where game data is. This is defaults to a non-writable location because
@@ -183,14 +181,16 @@ ModInfo::ModInfo(
 	modconfig.value(config_path, patchdir, default_dir.c_str());
 	ReplaceMacro(patchdir, mods_macro, mods_dir);
 	ReplaceMacro(patchdir, mod_path_macro, data_directory);
-	add_system_path("<" + system_path_tag + "_PATCH>", get_system_path(patchdir));
+	add_system_path(
+			"<" + system_path_tag + "_PATCH>", get_system_path(patchdir));
 	// Where usecode source is found; defaults to same as patch.
 	config_path = "mod_info/source";
 	string sourcedir;
 	modconfig.value(config_path, sourcedir, default_dir.c_str());
 	ReplaceMacro(sourcedir, mods_macro, mods_dir);
 	ReplaceMacro(sourcedir, mod_path_macro, data_directory);
-	add_system_path("<" + system_path_tag + "_SOURCE>", get_system_path(sourcedir));
+	add_system_path(
+			"<" + system_path_tag + "_SOURCE>", get_system_path(sourcedir));
 
 	U7mkdir(mods_save_dir.c_str(), 0755);
 	U7mkdir(savedata_directory.c_str(), 0755);
@@ -203,7 +203,8 @@ ModInfo::ModInfo(
 	// Path 'macros' for relative paths:
 	ReplaceMacro(gamedatdir, mods_macro, mods_save_dir);
 	ReplaceMacro(gamedatdir, mod_path_macro, savedata_directory);
-	add_system_path("<" + system_path_tag + "_GAMEDAT>", get_system_path(gamedatdir));
+	add_system_path(
+			"<" + system_path_tag + "_GAMEDAT>", get_system_path(gamedatdir));
 	U7mkdir(gamedatdir.c_str(), 0755);
 
 	config_path = "mod_info/savegame_path";
@@ -212,20 +213,21 @@ ModInfo::ModInfo(
 	// Path 'macros' for relative paths:
 	ReplaceMacro(savedir, mods_macro, mods_save_dir);
 	ReplaceMacro(savedir, mod_path_macro, savedata_directory);
-	add_system_path("<" + system_path_tag + "_SAVEGAME>", get_system_path(savedir));
+	add_system_path(
+			"<" + system_path_tag + "_SAVEGAME>", get_system_path(savedir));
 	U7mkdir(savedir.c_str(), 0755);
 
 #ifdef DEBUG_PATHS
 	cout << "path prefix of " << cfgname << " mod " << mod_title
-	     << " is: " << system_path_tag << endl;
+		 << " is: " << system_path_tag << endl;
 	cout << "setting " << cfgname
-	     << " gamedat directory to: " << get_system_path(gamedatdir) << endl;
+		 << " gamedat directory to: " << get_system_path(gamedatdir) << endl;
 	cout << "setting " << cfgname
-	     << " savegame directory to: " << get_system_path(savedir) << endl;
+		 << " savegame directory to: " << get_system_path(savedir) << endl;
 	cout << "setting " << cfgname
-	     << " patch directory to: " << get_system_path(patchdir) << endl;
+		 << " patch directory to: " << get_system_path(patchdir) << endl;
 	cout << "setting " << cfgname
-	     << " source directory to: " << get_system_path(sourcedir) << endl;
+		 << " source directory to: " << get_system_path(sourcedir) << endl;
 #endif
 }
 
@@ -237,10 +239,11 @@ ModInfo::ModInfo(
  *      "" if error (or may throw exception).
  *      "*" if older savegame.
  */
-string get_game_identity(const char *savename, const string &title) {
-	char *game_identity = nullptr;
-	if (!U7exists(savename))
+string get_game_identity(const char* savename, const string& title) {
+	char* game_identity = nullptr;
+	if (!U7exists(savename)) {
 		return title;
+	}
 	if (!Flex::is_flex(savename))
 #ifdef HAVE_ZIP_SUPPORT
 	{
@@ -249,23 +252,25 @@ string get_game_identity(const char *savename, const string &title) {
 			// Find IDENTITY, ignoring case.
 			if (unzLocateFile(unzipfile, "identity", 2) != UNZ_OK) {
 				unzClose(unzipfile);
-				return "*";      // Old game.  Return wildcard.
+				return "*";    // Old game.  Return wildcard.
 			} else {
 				unz_file_info file_info;
-				unzGetCurrentFileInfo(unzipfile, &file_info, nullptr,
-				                      0, nullptr, 0, nullptr, 0);
+				unzGetCurrentFileInfo(
+						unzipfile, &file_info, nullptr, 0, nullptr, 0, nullptr,
+						0);
 				game_identity = new char[file_info.uncompressed_size + 1];
 
 				if (unzOpenCurrentFile(unzipfile) != UNZ_OK) {
 					unzClose(unzipfile);
-					delete [] game_identity;
+					delete[] game_identity;
 					throw file_read_exception(savename);
 				}
-				unzReadCurrentFile(unzipfile, game_identity,
-				                   file_info.uncompressed_size);
-				if (unzCloseCurrentFile(unzipfile) == UNZ_OK)
+				unzReadCurrentFile(
+						unzipfile, game_identity, file_info.uncompressed_size);
+				if (unzCloseCurrentFile(unzipfile) == UNZ_OK) {
 					// 0-delimit.
 					game_identity[file_info.uncompressed_size] = 0;
+				}
 			}
 		}
 	}
@@ -275,23 +280,24 @@ string get_game_identity(const char *savename, const string &title) {
 	else {
 		IFileDataSource in(savename);
 
-		in.seek(0x54);          // Get to where file count sits.
+		in.seek(0x54);    // Get to where file count sits.
 		const size_t numfiles = in.read4();
-		in.seek(0x80);          // Get to file info.
+		in.seek(0x80);    // Get to file info.
 		// Read pos., length of each file.
 		auto finfo = std::make_unique<uint32[]>(2 * numfiles);
 		for (size_t i = 0; i < numfiles; i++) {
-			finfo[2 * i] = in.read4();  // The position, then the length.
+			finfo[2 * i]     = in.read4();    // The position, then the length.
 			finfo[2 * i + 1] = in.read4();
 		}
-		for (size_t i = 0; i < numfiles; i++) { // Now read each file.
+		for (size_t i = 0; i < numfiles; i++) {    // Now read each file.
 			// Get file length.
 			size_t len = finfo[2 * i + 1];
-			if (len <= 13)
+			if (len <= 13) {
 				continue;
+			}
 			len -= 13;
-			in.seek(finfo[2 * i]);  // Get to it.
-			char fname[50];     // Set up name.
+			in.seek(finfo[2 * i]);    // Get to it.
+			char fname[50];           // Set up name.
 			in.read(fname, 13);
 			if (!strcmp("identity", fname)) {
 				game_identity = new char[len];
@@ -300,28 +306,29 @@ string get_game_identity(const char *savename, const string &title) {
 			}
 		}
 	}
-	if (!game_identity)
+	if (!game_identity) {
 		return title;
+	}
 	// Truncate identity
-	char *ptr = game_identity;
+	char* ptr = game_identity;
 	for (; (*ptr != 0x1a && *ptr != 0x0d); ptr++)
 		;
-	*ptr = 0;
+	*ptr      = 0;
 	string id = game_identity;
-	delete [] game_identity;
+	delete[] game_identity;
 	return id;
 }
 
 // ModManager: class that manages a game's modlist and paths
-ModManager::ModManager(const string &name, const string &menu, bool needtitle,
-                       bool silent) {
-	cfgname = name;
+ModManager::ModManager(
+		const string& name, const string& menu, bool needtitle, bool silent) {
+	cfgname   = name;
 	mod_title = "";
 
 	// We will NOT trust config with these values.
 	// We MUST NOT use path tags at this point yet!
-	string game_path;
-	string static_dir;
+	string       game_path;
+	string       static_dir;
 	const string base_cfg_path("config/disk/game/" + cfgname);
 	{
 		string default_dir;
@@ -345,107 +352,118 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 
 		// Read codepage too.
 		config_path = base_cfg_path + "/codepage";
-		default_dir = "ASCII";  // Ultima VII 7-bit ASCII code page.
+		default_dir = "ASCII";    // Ultima VII 7-bit ASCII code page.
 		config->value(config_path, codepage, default_dir.c_str());
 
 		// And edit flag.
 		string cfgediting;
 		config_path = base_cfg_path + "/editing";
-		default_dir = "no";     // Not editing.
+		default_dir = "no";    // Not editing.
 		config->value(config_path, cfgediting, default_dir.c_str());
 		editing = (cfgediting == "yes");
 	}
 
-	if (!silent)
+	if (!silent) {
 		cout << "Looking for '" << cfgname << "' at '" << game_path << "'... ";
+	}
 	const string initgam_path(static_dir + "/initgame.dat");
 	found = U7exists(initgam_path);
 
 	string static_identity;
 	if (found) {
 		static_identity = get_game_identity(initgam_path.c_str(), cfgname);
-		if (!silent)
-			cout << "found game with identity '" << static_identity << "'" << endl;
-	} else { // New game still under development.
+		if (!silent) {
+			cout << "found game with identity '" << static_identity << "'"
+				 << endl;
+		}
+	} else {    // New game still under development.
 		static_identity = "DEVEL GAME";
-		if (!silent)
+		if (!silent) {
 			cout << "but it wasn't there." << endl;
+		}
 	}
 
-	const string mainshp = static_dir + "/mainshp.flx";
-	const uint32 crc = crc32(mainshp.c_str());
-	auto unknown_crc = [crc](const char *game) {
-		cerr << "Warning: Unknown CRC for mainshp.flx: 0x"
-				<< std::hex << crc << std::dec << std::endl;
-		cerr << "Note: Guessing hacked " << game << std::endl;
+	const string mainshp     = static_dir + "/mainshp.flx";
+	const uint32 crc         = crc32(mainshp.c_str());
+	auto         unknown_crc = [crc](const char* game) {
+        cerr << "Warning: Unknown CRC for mainshp.flx: 0x" << std::hex << crc
+             << std::dec << std::endl;
+        cerr << "Note: Guessing hacked " << game << std::endl;
 	};
 	string new_title;
 	if (static_identity == "ULTIMA7") {
-		type = BLACK_GATE;
+		type      = BLACK_GATE;
 		expansion = false;
-		sibeta = false;
+		sibeta    = false;
 		switch (crc) {
 		case 0x36af707f:
 			// French BG
-			language = FRENCH;
+			language    = FRENCH;
 			path_prefix = to_uppercase(CFG_BG_FR_NAME);
-			if (needtitle)
+			if (needtitle) {
 				new_title = CFG_BG_FR_TITLE;
+			}
 			break;
 		case 0x157ca514:
 			// German BG
-			language = GERMAN;
+			language    = GERMAN;
 			path_prefix = to_uppercase(CFG_BG_DE_NAME);
-			if (needtitle)
+			if (needtitle) {
 				new_title = CFG_BG_DE_TITLE;
+			}
 			break;
 		case 0x6d7b7323:
 			// Spanish BG
-			language = SPANISH;
+			language    = SPANISH;
 			path_prefix = to_uppercase(CFG_BG_ES_NAME);
-			if (needtitle)
+			if (needtitle) {
 				new_title = CFG_BG_ES_TITLE;
+			}
 			break;
 		default:
 			unknown_crc("Black Gate");
 			[[fallthrough]];
 		case 0xafc35523:
 			// English BG
-			language = ENGLISH;
+			language    = ENGLISH;
 			path_prefix = to_uppercase(CFG_BG_NAME);
-			if (needtitle)
+			if (needtitle) {
 				new_title = CFG_BG_TITLE;
+			}
 			break;
 		}
 	} else if (static_identity == "FORGE") {
-		type = BLACK_GATE;
-		language = ENGLISH;
+		type      = BLACK_GATE;
+		language  = ENGLISH;
 		expansion = true;
-		sibeta = false;
+		sibeta    = false;
 		if (crc != 0x8a74c26b) {
 			unknown_crc("Forge of Virtue");
 		}
 		path_prefix = to_uppercase(CFG_FOV_NAME);
-		if (needtitle)
+		if (needtitle) {
 			new_title = CFG_FOV_TITLE;
+		}
 	} else if (static_identity == "SERPENT ISLE") {
-		type = SERPENT_ISLE;
+		type      = SERPENT_ISLE;
 		expansion = false;
 		switch (crc) {
 		case 0x96f66a7a:
 			// Spanish SI
-			language = SPANISH;
+			language    = SPANISH;
 			path_prefix = to_uppercase(CFG_SI_ES_NAME);
-			if (needtitle)
+			if (needtitle) {
 				new_title = CFG_SI_ES_TITLE;
+			}
 			sibeta = false;
 			break;
 		case 0xdbdc2676:
 			// SI Beta
-			language = ENGLISH;
+			language    = ENGLISH;
 			path_prefix = to_uppercase(CFG_SIB_NAME);
-			if (needtitle)
+			if (needtitle) {
 				new_title = CFG_SIB_TITLE;
+			}
 			sibeta = true;
 			break;
 		default:
@@ -453,31 +471,33 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 			[[fallthrough]];
 		case 0xf98f5f3e:
 			// English SI
-			language = ENGLISH;
+			language    = ENGLISH;
 			path_prefix = to_uppercase(CFG_SI_NAME);
-			if (needtitle)
+			if (needtitle) {
 				new_title = CFG_SI_TITLE;
+			}
 			sibeta = false;
 			break;
 		}
 	} else if (static_identity == "SILVER SEED") {
-		type = SERPENT_ISLE;
-		language = ENGLISH;
+		type      = SERPENT_ISLE;
+		language  = ENGLISH;
 		expansion = true;
-		sibeta = false;
+		sibeta    = false;
 		if (crc != 0x3e18f9a0) {
 			unknown_crc("Silver Seed");
 		}
 		path_prefix = to_uppercase(CFG_SS_NAME);
-		if (needtitle)
+		if (needtitle) {
 			new_title = CFG_SS_TITLE;
+		}
 	} else {
-		type = EXULT_DEVEL_GAME;
-		language = ENGLISH;
-		expansion = false;
-		sibeta = false;
+		type        = EXULT_DEVEL_GAME;
+		language    = ENGLISH;
+		expansion   = false;
+		sibeta      = false;
 		path_prefix = "DEVEL" + to_uppercase(name);
-		new_title = menu;   // To be safe.
+		new_title   = menu;    // To be safe.
 	}
 
 	// If the "default" path selected above is already taken, then use a unique
@@ -515,16 +535,16 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 		add_system_path("<" + path_prefix + "_SOURCE>", "");
 #ifdef DEBUG_PATHS
 		if (!silent) {
-			cout << "path prefix of " << cfgname
-			     << " is: " << path_prefix << endl;
+			cout << "path prefix of " << cfgname << " is: " << path_prefix
+				 << endl;
 			cout << "setting " << cfgname
-			     << " static directory to: " << static_dir << endl;
+				 << " static directory to: " << static_dir << endl;
 			cout << "setting " << cfgname
-			     << " patch directory to: " << patch_dir << endl;
+				 << " patch directory to: " << patch_dir << endl;
 			cout << "setting " << cfgname
-			     << " modifications directory to: " << mods_dir << endl;
-			cout << "setting " << cfgname
-			     << " source directory to: " << src_dir << endl;
+				 << " modifications directory to: " << mods_dir << endl;
+			cout << "setting " << cfgname << " source directory to: " << src_dir
+				 << endl;
 		}
 #endif
 	}
@@ -536,12 +556,13 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 void ModManager::gather_mods() {
 	modlist.clear();    // Just to be on the safe side.
 
-	FileList filenames;
-	const string   pathname("<" + path_prefix + "_MODS>");
+	FileList     filenames;
+	const string pathname("<" + path_prefix + "_MODS>");
 
 	// If the dir doesn't exist, leave at once.
-	if (!U7exists(pathname))
+	if (!U7exists(pathname)) {
 		return;
+	}
 
 	U7ListFiles(pathname + "/*.cfg", filenames);
 	const int num_mods = filenames.size();
@@ -555,9 +576,9 @@ void ModManager::gather_mods() {
 			auto modtitle = modcfg.stem();
 #else
 			const auto& filename = filenames[i];
-			auto pathend  = filename.find_last_of("/\\") + 1;
-			auto modtitle = filename.substr(
-					pathend, filename.length() - pathend - strlen(".cfg"));
+			auto        pathend  = filename.find_last_of("/\\") + 1;
+			auto        modtitle = filename.substr(
+                    pathend, filename.length() - pathend - strlen(".cfg"));
 #endif
 			modlist.emplace_back(
 					type, language, cfgname, modtitle, path_prefix, expansion,
@@ -566,43 +587,50 @@ void ModManager::gather_mods() {
 	}
 }
 
-ModInfo *ModManager::find_mod(const string &name) {
-	for (auto& mod : modlist)
-		if (mod.get_mod_title() == name)
+ModInfo* ModManager::find_mod(const string& name) {
+	for (auto& mod : modlist) {
+		if (mod.get_mod_title() == name) {
 			return &mod;
+		}
+	}
 	return nullptr;
 }
 
-int ModManager::find_mod_index(const string &name) {
-	for (size_t i = 0; i < modlist.size(); i++)
-		if (modlist[i].get_mod_title() == name)
+int ModManager::find_mod_index(const string& name) {
+	for (size_t i = 0; i < modlist.size(); i++) {
+		if (modlist[i].get_mod_title() == name) {
 			return i;
+		}
+	}
 	return -1;
 }
 
-void ModManager::add_mod(const string &mod, const string &modconfig) {
-	modlist.emplace_back(type, language, cfgname, mod, path_prefix,
-	                          expansion, sibeta, editing, modconfig);
+void ModManager::add_mod(const string& mod, const string& modconfig) {
+	modlist.emplace_back(
+			type, language, cfgname, mod, path_prefix, expansion, sibeta,
+			editing, modconfig);
 	store_system_paths();
 }
 
-
 // Checks the game 'gam' for the presence of the mod given in 'arg_modname'
 // and checks the mod's compatibility. If the mod exists and is compatible with
-// Exult, returns a reference to the mod; otherwise, returns the mod's parent game.
-// Outputs error messages is the mod is not found or is not compatible.
-BaseGameInfo *ModManager::get_mod(const string &name, bool checkversion) {
-	ModInfo *newgame = nullptr;
-	if (has_mods())
+// Exult, returns a reference to the mod; otherwise, returns the mod's parent
+// game. Outputs error messages is the mod is not found or is not compatible.
+BaseGameInfo* ModManager::get_mod(const string& name, bool checkversion) {
+	ModInfo* newgame = nullptr;
+	if (has_mods()) {
 		newgame = find_mod(name);
+	}
 	if (newgame) {
 		if (checkversion && !newgame->is_mod_compatible()) {
-			cerr << "Mod '" << name << "' is not compatible with this version of Exult." << endl;
+			cerr << "Mod '" << name
+				 << "' is not compatible with this version of Exult." << endl;
 			return nullptr;
 		}
 	}
-	if (!newgame)
+	if (!newgame) {
 		cerr << "Mod '" << name << "' not found." << endl;
+	}
 	return newgame;
 }
 
@@ -612,12 +640,12 @@ BaseGameInfo *ModManager::get_mod(const string &name, bool checkversion) {
  *  per-game system_path entries, which are then used later once the
  *  game is selected.
  */
-void ModManager::get_game_paths(const string &game_path) {
-	string saveprefix(get_system_path("<SAVEHOME>") + "/" + cfgname);
-	string default_dir;
-	string config_path;
-	string gamedat_dir;
-	string savegame_dir;
+void ModManager::get_game_paths(const string& game_path) {
+	string       saveprefix(get_system_path("<SAVEHOME>") + "/" + cfgname);
+	string       default_dir;
+	string       config_path;
+	string       gamedat_dir;
+	string       savegame_dir;
 	const string base_cfg_path("config/disk/game/" + cfgname);
 
 	// ++++ All of these are directories with read/write requirements.
@@ -625,8 +653,9 @@ void ModManager::get_game_paths(const string &game_path) {
 	// ++++ with Win9x and old MacOS (possibly others) being exceptions.
 
 	// Usually for Win9x:
-	if (saveprefix == ".")
+	if (saveprefix == ".") {
 		saveprefix = game_path;
+	}
 
 	// <savegame_path> setting: default is "$dataprefix".
 	config_path = base_cfg_path + "/savegame_path";
@@ -643,10 +672,10 @@ void ModManager::get_game_paths(const string &game_path) {
 	U7mkdir(gamedat_dir.c_str(), 0755);
 
 #ifdef DEBUG_PATHS
-	cout << "setting " << cfgname
-	     << " gamedat directory to: " << gamedat_dir << endl;
-	cout << "setting " << cfgname
-	     << " savegame directory to: " << savegame_dir << endl;
+	cout << "setting " << cfgname << " gamedat directory to: " << gamedat_dir
+		 << endl;
+	cout << "setting " << cfgname << " savegame directory to: " << savegame_dir
+		 << endl;
 #endif
 }
 
@@ -656,11 +685,13 @@ GameManager::GameManager(bool silent) {
 	bg = fov = si = ss = sib = nullptr;
 
 	// Search for games defined in exult.cfg:
-	const string config_path("config/disk/game");
-	string game_title;
+	const string              config_path("config/disk/game");
+	string                    game_title;
 	const std::vector<string> gamestrs = config->listkeys(config_path, false);
-	std::vector<string> checkgames;
-	checkgames.reserve(gamestrs.size()+5);	// +5 in case the four below are not in the cfg.
+	std::vector<string>       checkgames;
+	checkgames.reserve(
+			gamestrs.size()
+			+ 5);    // +5 in case the four below are not in the cfg.
 	// The original games plus expansions.
 	checkgames.emplace_back(CFG_BG_NAME);
 	checkgames.emplace_back(CFG_FOV_NAME);
@@ -669,17 +700,18 @@ GameManager::GameManager(bool silent) {
 	checkgames.emplace_back(CFG_SIB_NAME);
 
 	for (const auto& gamestr : gamestrs) {
-		if (gamestr != CFG_BG_NAME && gamestr != CFG_FOV_NAME &&
-		    gamestr != CFG_SI_NAME && gamestr != CFG_SS_NAME &&
-		    gamestr != CFG_SIB_NAME)
+		if (gamestr != CFG_BG_NAME && gamestr != CFG_FOV_NAME
+			&& gamestr != CFG_SI_NAME && gamestr != CFG_SS_NAME
+			&& gamestr != CFG_SIB_NAME) {
 			checkgames.push_back(gamestr);
+		}
 	}
 
 	games.reserve(checkgames.size());
-	int bgind = -1;
+	int bgind  = -1;
 	int fovind = -1;
-	int siind = -1;
-	int ssind = -1;
+	int siind  = -1;
+	int ssind  = -1;
 	int sibind = -1;
 
 	for (const auto& gameentry : checkgames) {
@@ -694,79 +726,94 @@ GameManager::GameManager(bool silent) {
 		config->value(base_conf, game_title, base_title.c_str());
 		const bool need_title = game_title == base_title;
 		// This checks static identity and sets game type.
-		const ModManager game = ModManager(gameentry, game_title, need_title, silent);
-		if (!game.being_edited() && !game.is_there())
+		const ModManager game
+				= ModManager(gameentry, game_title, need_title, silent);
+		if (!game.being_edited() && !game.is_there()) {
 			continue;
+		}
 		if (game.get_game_type() == BLACK_GATE) {
 			if (game.have_expansion()) {
-				if (fovind == -1)
+				if (fovind == -1) {
 					fovind = games.size();
-			} else if (bgind == -1)
+				}
+			} else if (bgind == -1) {
 				bgind = games.size();
+			}
 		} else if (game.get_game_type() == SERPENT_ISLE) {
 			if (game.is_si_beta()) {
-				if (sibind == -1)
+				if (sibind == -1) {
 					sibind = games.size();
+				}
 			} else if (game.have_expansion()) {
-				if (ssind == -1)
+				if (ssind == -1) {
 					ssind = games.size();
-			} else if (siind == -1)
+				}
+			} else if (siind == -1) {
 				siind = games.size();
+			}
 		}
 
 		games.push_back(game);
 	}
 
-	if (bgind >= 0)
+	if (bgind >= 0) {
 		bg = &(games[bgind]);
-	if (fovind >= 0)
+	}
+	if (fovind >= 0) {
 		fov = &(games[fovind]);
-	if (siind >= 0)
+	}
+	if (siind >= 0) {
 		si = &(games[siind]);
-	if (ssind >= 0)
+	}
+	if (ssind >= 0) {
 		ss = &(games[ssind]);
-	if (sibind >= 0)
+	}
+	if (sibind >= 0) {
 		sib = &(games[sibind]);
+	}
 
 	// Sane defaults.
 	add_system_path("<ULTIMA7_STATIC>", ".");
 	add_system_path("<SERPENT_STATIC>", ".");
-	print_found(bg, "exult_bg.flx", "Black Gate", CFG_BG_NAME, "ULTIMA7", silent);
-	print_found(fov, "exult_bg.flx", "Forge of Virtue", CFG_FOV_NAME, "ULTIMA7", silent);
-	print_found(si, "exult_si.flx", "Serpent Isle", CFG_SI_NAME, "SERPENT", silent);
-	print_found(ss, "exult_si.flx", "Silver Seed", CFG_SS_NAME, "SERPENT", silent);
+	print_found(
+			bg, "exult_bg.flx", "Black Gate", CFG_BG_NAME, "ULTIMA7", silent);
+	print_found(
+			fov, "exult_bg.flx", "Forge of Virtue", CFG_FOV_NAME, "ULTIMA7",
+			silent);
+	print_found(
+			si, "exult_si.flx", "Serpent Isle", CFG_SI_NAME, "SERPENT", silent);
+	print_found(
+			ss, "exult_si.flx", "Silver Seed", CFG_SS_NAME, "SERPENT", silent);
 	store_system_paths();
 }
 
 void GameManager::print_found(
-    ModManager *game,
-    const char *flex,
-    const char *title,
-    const char *cfgname,
-    const char *basepath,
-    bool silent
-) {
-	char path[50];
+		ModManager* game, const char* flex, const char* title,
+		const char* cfgname, const char* basepath, bool silent) {
+	char   path[50];
 	string cfgstr(cfgname);
 	to_uppercase(cfgstr);
 	snprintf(path, sizeof(path), "<%s_STATIC>/", cfgstr.c_str());
 
 	if (game == nullptr) {
-		if (!silent)
-			cout << title << "   : not found ("
-			     << get_system_path(path) << ")" << endl;
+		if (!silent) {
+			cout << title << "   : not found (" << get_system_path(path) << ")"
+				 << endl;
+		}
 		return;
 	}
-	if (!silent)
+	if (!silent) {
 		cout << title << "   : found" << endl;
+	}
 	// This stores the BG/SI static paths (preferring the expansions)
 	// for easier support of things like multiracial avatars in BG.
 	char staticpath[50];
 	snprintf(path, sizeof(path), "<%s_STATIC>", cfgstr.c_str());
 	snprintf(staticpath, sizeof(staticpath), "<%s_STATIC>", basepath);
 	clone_system_path(staticpath, path);
-	if (silent)
+	if (silent) {
 		return;
+	}
 	if (is_system_path_defined("<BUNDLE>")) {
 		snprintf(path, sizeof(path), "<BUNDLE>/%s", flex);
 		if (U7exists(path)) {
@@ -775,29 +822,33 @@ void GameManager::print_found(
 		}
 	}
 	snprintf(path, sizeof(path), "<DATA>/%s", flex);
-	if (U7exists(path))
+	if (U7exists(path)) {
 		cout << flex << " : found" << endl;
-	else
-		cout << flex << " : not found ("
-		     << get_system_path(path)
-		     << ")" << endl;
+	} else {
+		cout << flex << " : not found (" << get_system_path(path) << ")"
+			 << endl;
+	}
 }
 
-ModManager *GameManager::find_game(const string &name) {
-	for (auto& game : games)
-		if (game.get_cfgname() == name)
+ModManager* GameManager::find_game(const string& name) {
+	for (auto& game : games) {
+		if (game.get_cfgname() == name) {
 			return &game;
+		}
+	}
 	return nullptr;
 }
 
-int GameManager::find_game_index(const string &name) {
-	for (size_t i = 0; i < games.size(); i++)
-		if (games[i].get_cfgname() == name)
+int GameManager::find_game_index(const string& name) {
+	for (size_t i = 0; i < games.size(); i++) {
+		if (games[i].get_cfgname() == name) {
 			return i;
+		}
+	}
 	return -1;
 }
 
-void GameManager::add_game(const string &name, const string &menu) {
+void GameManager::add_game(const string& name, const string& menu) {
 	games.emplace_back(name, menu, false);
 	store_system_paths();
 }

@@ -28,19 +28,22 @@
  *  Base class of all our exceptions, providing a storage for the error message
  */
 
-class   exult_exception : public std::exception {
-	std::string  what_;
-	int errno_;
+class exult_exception : public std::exception {
+	std::string what_;
+	int         errno_;
+
 public:
-	explicit exult_exception(std::string what_arg): what_(std::move(what_arg)), errno_(errno) {  }
-	const char *what() const noexcept override {
+	explicit exult_exception(std::string what_arg)
+			: what_(std::move(what_arg)), errno_(errno) {}
+
+	const char* what() const noexcept override {
 		return what_.c_str();
 	}
+
 	int get_errno() const {
 		return errno_;
 	}
 };
-
 
 /*
  *  A quit exception can be thrown to quit the program
@@ -48,24 +51,26 @@ public:
 
 class quit_exception : public exult_exception {
 	int result_;
+
 public:
-	explicit quit_exception(int result = 0): exult_exception("Quit"), result_(result) {  }
+	explicit quit_exception(int result = 0)
+			: exult_exception("Quit"), result_(result) {}
+
 	int get_result() const {
 		return result_;
 	}
 };
 
-//Per analogiam to boost::noncopyable
+// Per analogiam to boost::noncopyable
 class nonreplicatable {
 protected:
-	constexpr nonreplicatable() = default;
-	nonreplicatable(const nonreplicatable&) = delete;
-	nonreplicatable(nonreplicatable&&) = delete;
+	constexpr nonreplicatable()                        = default;
+	nonreplicatable(const nonreplicatable&)            = delete;
+	nonreplicatable(nonreplicatable&&)                 = delete;
 	nonreplicatable& operator=(const nonreplicatable&) = delete;
-	nonreplicatable& operator=(nonreplicatable&&) = delete;
-	~nonreplicatable() = default;
+	nonreplicatable& operator=(nonreplicatable&&)      = delete;
+	~nonreplicatable()                                 = default;
 };
-
 
 /*
  *  File errors
@@ -73,40 +78,46 @@ protected:
 
 class file_exception : public exult_exception {
 public:
-	explicit file_exception(std::string what_arg): exult_exception(std::move(what_arg)) {  }
+	explicit file_exception(std::string what_arg)
+			: exult_exception(std::move(what_arg)) {}
 };
 
-class   file_open_exception : public file_exception {
-	static const std::string  prefix_;
+class file_open_exception : public file_exception {
+	static const std::string prefix_;
+
 public:
-	explicit file_open_exception(const std::string &file): file_exception("Error opening file " + file) {  }
+	explicit file_open_exception(const std::string& file)
+			: file_exception("Error opening file " + file) {}
 };
 
-class   file_write_exception : public file_exception {
-	static const std::string  prefix_;
+class file_write_exception : public file_exception {
+	static const std::string prefix_;
+
 public:
-	explicit file_write_exception(const std::string &file): file_exception("Error writing to file " + file) {  }
+	explicit file_write_exception(const std::string& file)
+			: file_exception("Error writing to file " + file) {}
 };
 
-class   file_read_exception : public file_exception {
-	static const std::string  prefix_;
+class file_read_exception : public file_exception {
+	static const std::string prefix_;
+
 public:
-	explicit file_read_exception(const std::string &file): file_exception("Error reading from file " + file) {  }
+	explicit file_read_exception(const std::string& file)
+			: file_exception("Error reading from file " + file) {}
 };
 
-class   wrong_file_type_exception : public file_exception {
+class wrong_file_type_exception : public file_exception {
 public:
-	explicit wrong_file_type_exception(const std::string &file, const std::string &type): file_exception("File " + file + " is not of type " + type) {  }
+	explicit wrong_file_type_exception(
+			const std::string& file, const std::string& type)
+			: file_exception("File " + file + " is not of type " + type) {}
 };
-
 
 /*
  *  Exception that gets fired when the user aborts something
  */
-class UserBreakException {
-};
+class UserBreakException {};
 
-class UserSkipException : public UserBreakException {
-};
+class UserSkipException : public UserBreakException {};
 
 #endif

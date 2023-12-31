@@ -20,8 +20,8 @@
 /*
  *  What is this?
  *
- *  EXCONFIG is a dll that is used by the InstallShield Wizard to get and set the
- *  Black Gate and Serpent Isle paths.
+ *  EXCONFIG is a dll that is used by the InstallShield Wizard to get and set
+ * the Black Gate and Serpent Isle paths.
  *
  */
 
@@ -36,119 +36,133 @@
 #include <cstring>
 #include <string>
 
-#define MAX_STRLEN  512
+#define MAX_STRLEN 512
 
 #ifdef _DEBUF
-#define MessageBoxDebug(a,b,c,d) MessageBox(a,b,c,d);
+#	define MessageBoxDebug(a, b, c, d) MessageBox(a, b, c, d);
 #else
-#define MessageBoxDebug(a,b,c,d)
+#	define MessageBoxDebug(a, b, c, d)
 #endif
 
-const char *config_defaults[] = {
-	"config/disk/game/blackgate/keys",  "(default)",
-	"config/disk/game/serpentisle/keys",    "(default)",
-	"config/audio/enabled",         "yes",
-	"config/audio/effects/enabled",     "yes",
-	"config/audio/effects/convert",     "gs",
-	"config/audio/midi/enabled",        "yes",
-	"config/audio/midi/convert",        "gm",
-	"config/audio/midi/reverb/enabled", "no",
-	"config/audio/midi/reverb/level",   "0",
-	"config/audio/midi/chorus/enabled", "no",
-	"config/audio/midi/chorus/level",   "0",
-	"config/audio/midi/volume_curve",   "1.000000",
-	"config/audio/speech/enabled",      "yes",
-	"config/gameplay/cheat",        "yes",
-	"config/gameplay/skip_intro",       "no",
-	"config/gameplay/skip_splash",      "no",
-	"config/video/width",           "320",
-	"config/video/height",          "200",
-	"config/video/scale",           "2",
-	"config/video/scale_method",        "2xSaI",
-	"config/video/fullscreen",      "no",
-	"config/video/disable_fades",       "no",
-	"config/video/gamma/red",       "1.00",
-	"config/video/gamma/green",     "1.00",
-	"config/video/gamma/blue",      "1.00",
-	nullptr
-};
+const char* config_defaults[]
+		= {"config/disk/game/blackgate/keys",
+		   "(default)",
+		   "config/disk/game/serpentisle/keys",
+		   "(default)",
+		   "config/audio/enabled",
+		   "yes",
+		   "config/audio/effects/enabled",
+		   "yes",
+		   "config/audio/effects/convert",
+		   "gs",
+		   "config/audio/midi/enabled",
+		   "yes",
+		   "config/audio/midi/convert",
+		   "gm",
+		   "config/audio/midi/reverb/enabled",
+		   "no",
+		   "config/audio/midi/reverb/level",
+		   "0",
+		   "config/audio/midi/chorus/enabled",
+		   "no",
+		   "config/audio/midi/chorus/level",
+		   "0",
+		   "config/audio/midi/volume_curve",
+		   "1.000000",
+		   "config/audio/speech/enabled",
+		   "yes",
+		   "config/gameplay/cheat",
+		   "yes",
+		   "config/gameplay/skip_intro",
+		   "no",
+		   "config/gameplay/skip_splash",
+		   "no",
+		   "config/video/width",
+		   "320",
+		   "config/video/height",
+		   "200",
+		   "config/video/scale",
+		   "2",
+		   "config/video/scale_method",
+		   "2xSaI",
+		   "config/video/fullscreen",
+		   "no",
+		   "config/video/disable_fades",
+		   "no",
+		   "config/video/gamma/red",
+		   "1.00",
+		   "config/video/gamma/green",
+		   "1.00",
+		   "config/video/gamma/blue",
+		   "1.00",
+		   nullptr};
 
-const char *BASE_Files[] = {
-	SHAPES_VGA,
-	FACES_VGA,
-	GUMPS_VGA,
-	FONTS_VGA,
-	INITGAME,
-	USECODE,
-	nullptr
-};
+const char* BASE_Files[] = {SHAPES_VGA, FACES_VGA, GUMPS_VGA, FONTS_VGA,
+							INITGAME,   USECODE,   nullptr};
 
-const char *BG_Files[] = {
-	ENDGAME,
-	nullptr
-};
+const char* BG_Files[] = {ENDGAME, nullptr};
 
-const char *SI_Files[] = {
-	PAPERDOL,
-	nullptr
-};
+const char* SI_Files[] = {PAPERDOL, nullptr};
 
 //
 // Path Helper class
 //
 class Path {
 	struct Directory {
-		char        name[256];
-		Directory   *next{};
+		char       name[256];
+		Directory* next{};
 
 		Directory() {
 			name[0] = 0;
 		}
 	};
 
-	bool        network = false;    // Networked?
-	char        drive   = 0;        // Drive letter (if set)
-	Directory   *dirs   = nullptr;  // Directories
+	bool       network = false;      // Networked?
+	char       drive   = 0;          // Drive letter (if set)
+	Directory* dirs    = nullptr;    // Directories
 
 	void RemoveAll();
-	int Addit(const char *p);
+	int  Addit(const char* p);
 
 public:
 	Path() = default;
-	Path(const char *p) {
+
+	Path(const char* p) {
 		AddString(p);
 	}
+
 	~Path();
 
 	void RemoveLast() {
 		Addit("..");
 	}
-	void AddString(const char *p);
-	void GetString(char *p, int max_strlen = MAX_STRLEN);
+
+	void AddString(const char* p);
+	void GetString(char* p, int max_strlen = MAX_STRLEN);
 };
 
 // Destructor
 Path::~Path() {
 	RemoveAll();
 	network = false;
-	drive = 0;
+	drive   = 0;
 }
 
 void Path::RemoveAll() {
-	Directory *d = dirs;
+	Directory* d = dirs;
 	while (d) {
-		Directory *next = d->next;
+		Directory* next = d->next;
 		delete d;
 		d = next;
 	}
 	dirs = nullptr;
 }
 
-int Path::Addit(const char *p) {
-	Directory *d = dirs;
-	Directory *prev = nullptr;
-	Directory *prevprev = nullptr;
-	int i;
+int Path::Addit(const char* p) {
+	Directory* d        = dirs;
+	Directory* prev     = nullptr;
+	Directory* prevprev = nullptr;
+	int        i;
 
 	// Check for . and ..
 
@@ -158,20 +172,23 @@ int Path::Addit(const char *p) {
 	} else {
 		while (d->next) {
 			prevprev = d;
-			d = d->next;
+			d        = d->next;
 		}
 		d->next = new Directory;
-		prev = d;
-		d = d->next;
+		prev    = d;
+		d       = d->next;
 	}
 
-	for (i = 0; p[i] != 0 && p[i] != '\\' && p[i] != '/'; i++)
+	for (i = 0; p[i] != 0 && p[i] != '\\' && p[i] != '/'; i++) {
 		d->name[i] = p[i];
+	}
 
 	d->name[i] = 0;
 
 	// Skip all 'slashes'
-	while (p[i] && (p[i] == '\\' || p[i] == '/')) i++;
+	while (p[i] && (p[i] == '\\' || p[i] == '/')) {
+		i++;
+	}
 
 	// Check for . and ..
 	if (!std::strcmp(d->name, ".")) {
@@ -187,7 +204,7 @@ int Path::Addit(const char *p) {
 }
 
 // Add path
-void Path::AddString(const char *p) {
+void Path::AddString(const char* p) {
 	// Root dir of this drive
 	if (*p == '\\' || *p == '/') {
 		// Remove all the entires
@@ -200,9 +217,9 @@ void Path::AddString(const char *p) {
 			network = true;
 			p++;
 		}
-	} else if (p[0] && p[1] == ':') { // Drive
+	} else if (p[0] && p[1] == ':') {    // Drive
 		RemoveAll();
-		drive = *p;
+		drive   = *p;
 		network = false;
 		p += 2;
 	}
@@ -217,7 +234,7 @@ void Path::AddString(const char *p) {
 	}
 }
 
-void Path::GetString(char *p, int max_strlen) {
+void Path::GetString(char* p, int max_strlen) {
 	p[0] = 0;
 
 	if (network) {
@@ -228,7 +245,7 @@ void Path::GetString(char *p, int max_strlen) {
 		std::strncat(p, "\\", max_strlen);
 	}
 
-	Directory *d = dirs;
+	Directory* d = dirs;
 	while (d) {
 		std::strncat(p, d->name, max_strlen);
 		d = d->next;
@@ -247,220 +264,222 @@ extern "C" {
 //
 // Get the Game paths from the config file
 //
-	__declspec(dllexport) void __stdcall GetExultGamePaths(char *ExultDir, char *BGPath, char *SIPath, int MaxPath) {
-		MessageBoxDebug(nullptr, ExultDir, "ExultDir", MB_OK);
-		MessageBoxDebug(nullptr, BGPath, "BGPath", MB_OK);
-		MessageBoxDebug(nullptr, SIPath, "SIPath", MB_OK);
+__declspec(dllexport) void __stdcall GetExultGamePaths(
+		char* ExultDir, char* BGPath, char* SIPath, int MaxPath) {
+	MessageBoxDebug(nullptr, ExultDir, "ExultDir", MB_OK);
+	MessageBoxDebug(nullptr, BGPath, "BGPath", MB_OK);
+	MessageBoxDebug(nullptr, SIPath, "SIPath", MB_OK);
 
-		const int p_size = strlen(ExultDir) + strlen("/exult.cfg") + MAX_STRLEN;
-		char *p = new char[p_size];
+	const int p_size = strlen(ExultDir) + strlen("/exult.cfg") + MAX_STRLEN;
+	char*     p      = new char[p_size];
 
-		// Get the complete path for the config file
-		Path config_path(ExultDir);
-		config_path.AddString("exult.cfg");
-		config_path.GetString(p, p_size);
-		setup_program_paths();
+	// Get the complete path for the config file
+	Path config_path(ExultDir);
+	config_path.AddString("exult.cfg");
+	config_path.GetString(p, p_size);
+	setup_program_paths();
 
-		const static char *si_pathdef = CFG_SI_NAME;
-		const static char *bg_pathdef = CFG_BG_NAME;
+	static const char* si_pathdef = CFG_SI_NAME;
+	static const char* bg_pathdef = CFG_BG_NAME;
 
-		MessageBoxDebug(nullptr, ExultDir, p, MB_OK);
+	MessageBoxDebug(nullptr, ExultDir, p, MB_OK);
 
-		try {
-			// Open config file
-			Configuration config;
-			if (get_system_path("<CONFIG>") == ".") {
-				config.read_config_file(p);
-			} else {
-				config.read_config_file("exult.cfg");
-			}
-			std::string dir;
+	try {
+		// Open config file
+		Configuration config;
+		if (get_system_path("<CONFIG>") == ".") {
+			config.read_config_file(p);
+		} else {
+			config.read_config_file("exult.cfg");
+		}
+		std::string dir;
 
-			// SI Path
-			config.value("config/disk/game/serpentisle/path", dir, si_pathdef);
-			if (dir != si_pathdef) {
-				Path si(ExultDir);
-				si.AddString(dir.c_str());
-				si.GetString(SIPath, MaxPath);
-			} else {
-				std::strncpy(SIPath, si_pathdef, MaxPath);
-			}
-
-			// BG Path
-			config.value("config/disk/game/blackgate/path", dir, bg_pathdef);
-			if (dir != bg_pathdef) {
-				Path bg(ExultDir);
-				bg.AddString(dir.c_str());
-				bg.GetString(BGPath, MaxPath);
-			} else {
-				std::strncpy(BGPath, bg_pathdef, MaxPath);
-			}
-		} catch (...) {
-			std::strncpy(BGPath, bg_pathdef, MaxPath);
+		// SI Path
+		config.value("config/disk/game/serpentisle/path", dir, si_pathdef);
+		if (dir != si_pathdef) {
+			Path si(ExultDir);
+			si.AddString(dir.c_str());
+			si.GetString(SIPath, MaxPath);
+		} else {
 			std::strncpy(SIPath, si_pathdef, MaxPath);
 		}
 
-		delete [] p;
+		// BG Path
+		config.value("config/disk/game/blackgate/path", dir, bg_pathdef);
+		if (dir != bg_pathdef) {
+			Path bg(ExultDir);
+			bg.AddString(dir.c_str());
+			bg.GetString(BGPath, MaxPath);
+		} else {
+			std::strncpy(BGPath, bg_pathdef, MaxPath);
+		}
+	} catch (...) {
+		std::strncpy(BGPath, bg_pathdef, MaxPath);
+		std::strncpy(SIPath, si_pathdef, MaxPath);
 	}
+
+	delete[] p;
+}
 
 //
 // Set Game paths in the config file
 //
-	__declspec(dllexport) void __stdcall SetExultGamePaths(char *ExultDir, char *BGPath, char *SIPath) {
-		MessageBoxDebug(nullptr, ExultDir, "ExultDir", MB_OK);
-		MessageBoxDebug(nullptr, BGPath, "BGPath", MB_OK);
-		MessageBoxDebug(nullptr, SIPath, "SIPath", MB_OK);
+__declspec(dllexport) void __stdcall SetExultGamePaths(
+		char* ExultDir, char* BGPath, char* SIPath) {
+	MessageBoxDebug(nullptr, ExultDir, "ExultDir", MB_OK);
+	MessageBoxDebug(nullptr, BGPath, "BGPath", MB_OK);
+	MessageBoxDebug(nullptr, SIPath, "SIPath", MB_OK);
 
-		int i;
+	int i;
 
-		const int p_size = strlen(ExultDir) + strlen("/exult.cfg") + MAX_STRLEN;
-		char *p = new char[p_size];
+	const int p_size = strlen(ExultDir) + strlen("/exult.cfg") + MAX_STRLEN;
+	char*     p      = new char[p_size];
 
-		Path config_path(ExultDir);
-		config_path.AddString("exult.cfg");
-		config_path.GetString(p, p_size);
-		setup_program_paths();
+	Path config_path(ExultDir);
+	config_path.AddString("exult.cfg");
+	config_path.GetString(p, p_size);
+	setup_program_paths();
 
-		MessageBoxDebug(nullptr, p, "WriteConfig: p", MB_OK);
+	MessageBoxDebug(nullptr, p, "WriteConfig: p", MB_OK);
 
-		try {
-			// Open config file
-			Configuration config;
-			if (get_system_path("<CONFIG>") == ".")
-				config.read_config_file(p);
-			else
-				config.read_config_file("exult.cfg");
-
-			// Set BG Path
-			MessageBoxDebug(nullptr, p, "WriteConfig: BG", MB_OK);
-			if (BGPath) {
-				config.set("config/disk/game/blackgate/path", BGPath, true);
-			} else {
-				config.set("config/disk/game/blackgate/path", "blackgate", true);
-			}
-			// Set SI Path
-			MessageBoxDebug(nullptr, p, "WriteConfig: SI", MB_OK);
-			if (SIPath) {
-				config.set("config/disk/game/serpentisle/path", SIPath, true);
-			} else {
-				config.set("config/disk/game/serpentisle/path", "serpentisle", true);
-			}
-			// Set Defaults
-			std::string s;
-			for (i = 0; config_defaults[i]; i += 2) {
-				config.value(config_defaults[i], s, "");
-				if (s.empty()) {
-					config.set(config_defaults[i], config_defaults[i + 1], true);
-				}
-			}
-
-			// Fix broken SI SFX stuff
-			config.value("config/disk/game/serpentisle/waves", s, "");
-
-			const char *si_sfx = s.c_str();
-			int slen = std::strlen(si_sfx);
-			slen -= std::strlen("jmsfxsi.flx");
-
-			if (slen >= 0 && !std::strcmp(si_sfx + slen, "jmsfxsi.flx")) {
-				char *fixed = new char[slen + 1];
-				std::strncpy(fixed, si_sfx, slen);
-				fixed[slen] = 0;
-				s = fixed;
-				s += "jmsisfx.flx";
-
-				config.set("config/disk/game/serpentisle/waves", s, true);
-			}
-
-			config.write_back();
-		} catch (...) {
+	try {
+		// Open config file
+		Configuration config;
+		if (get_system_path("<CONFIG>") == ".") {
+			config.read_config_file(p);
+		} else {
+			config.read_config_file("exult.cfg");
 		}
 
-		delete [] p;
+		// Set BG Path
+		MessageBoxDebug(nullptr, p, "WriteConfig: BG", MB_OK);
+		if (BGPath) {
+			config.set("config/disk/game/blackgate/path", BGPath, true);
+		} else {
+			config.set("config/disk/game/blackgate/path", "blackgate", true);
+		}
+		// Set SI Path
+		MessageBoxDebug(nullptr, p, "WriteConfig: SI", MB_OK);
+		if (SIPath) {
+			config.set("config/disk/game/serpentisle/path", SIPath, true);
+		} else {
+			config.set(
+					"config/disk/game/serpentisle/path", "serpentisle", true);
+		}
+		// Set Defaults
+		std::string s;
+		for (i = 0; config_defaults[i]; i += 2) {
+			config.value(config_defaults[i], s, "");
+			if (s.empty()) {
+				config.set(config_defaults[i], config_defaults[i + 1], true);
+			}
+		}
+
+		// Fix broken SI SFX stuff
+		config.value("config/disk/game/serpentisle/waves", s, "");
+
+		const char* si_sfx = s.c_str();
+		int         slen   = std::strlen(si_sfx);
+		slen -= std::strlen("jmsfxsi.flx");
+
+		if (slen >= 0 && !std::strcmp(si_sfx + slen, "jmsfxsi.flx")) {
+			char* fixed = new char[slen + 1];
+			std::strncpy(fixed, si_sfx, slen);
+			fixed[slen] = 0;
+			s           = fixed;
+			s += "jmsisfx.flx";
+
+			config.set("config/disk/game/serpentisle/waves", s, true);
+		}
+
+		config.write_back();
+	} catch (...) {
 	}
+
+	delete[] p;
+}
 
 //
 // Verify the BG Directory contains the right stuff
 //
-	__declspec(dllexport) int __stdcall VerifyBGDirectory(char *path) {
-		int i;
+__declspec(dllexport) int __stdcall VerifyBGDirectory(char* path) {
+	int i;
 
-		const std::string s(path);
-		add_system_path("<STATIC>", s + "/static");
+	const std::string s(path);
+	add_system_path("<STATIC>", s + "/static");
 
-		// Check all the BASE files
-		for (i = 0; BASE_Files[i]; i++) {
-			if (!U7exists(BASE_Files[i])) {
-				return false;
-			}
+	// Check all the BASE files
+	for (i = 0; BASE_Files[i]; i++) {
+		if (!U7exists(BASE_Files[i])) {
+			return false;
 		}
-
-		// Check all the IFIX files
-		//for (i = 0; i < 144; i++) {
-		//  char num[4];
-		//  std::snprintf(num, sizeof(num), "%02X", i);
-		//
-		//  string s(U7IFIX);
-		//  s += num;
-		//
-		//  if (!U7exists(s.c_str())) {
-		//      return false;
-		//  }
-		//}
-
-		// Check all the BG files
-		for (i = 0; BG_Files[i]; i++) {
-			if (!U7exists(BG_Files[i])) {
-				return false;
-			}
-		}
-
-		return true;
 	}
+
+	// Check all the IFIX files
+	// for (i = 0; i < 144; i++) {
+	// 	char num[4];
+	// 	std::snprintf(num, sizeof(num), "%02X", i);
+
+	// 	std::string s(U7IFIX);
+	// 	s += num;
+
+	// 	if (!U7exists(s.c_str())) {
+	// 		return false;
+	// 	}
+	// }
+
+	// Check all the BG files
+	for (i = 0; BG_Files[i]; i++) {
+		if (!U7exists(BG_Files[i])) {
+			return false;
+		}
+	}
+
+	return true;
+}
 
 //
 // Verify the SI Directorys contains the right stuff
 //
-	__declspec(dllexport) int __stdcall VerifySIDirectory(char *path) {
-		int i;
+__declspec(dllexport) int __stdcall VerifySIDirectory(char* path) {
+	int i;
 
-		const std::string s(path);
-		add_system_path("<STATIC>", s + "/static");
+	const std::string s(path);
+	add_system_path("<STATIC>", s + "/static");
 
-		// Check all the BASE files
-		for (i = 0; BASE_Files[i]; i++) {
-			if (!U7exists(BASE_Files[i])) {
-				return false;
-			}
+	// Check all the BASE files
+	for (i = 0; BASE_Files[i]; i++) {
+		if (!U7exists(BASE_Files[i])) {
+			return false;
 		}
-
-		// Check all the IFIX files
-		//for (i = 0; i < 144; i++) {
-		//  char num[4];
-		//  std::snprintf(num, sizeof(num), "%02X", i);
-		//
-		//  string s(U7IFIX);
-		//  s += num;
-		//
-		//  if (!U7exists(s.c_str())) {
-		//      return false;
-		//  }
-		//}
-
-		// Check all the SI files
-		for (i = 0; SI_Files[i]; i++) {
-			if (!U7exists(SI_Files[i])) {
-				return false;
-			}
-		}
-
-		return true;
 	}
+
+	// Check all the IFIX files
+	// for (i = 0; i < 144; i++) {
+	// 	char num[4];
+	// 	std::snprintf(num, sizeof(num), "%02X", i);
+
+	// 	std::string s(U7IFIX);
+	// 	s += num;
+
+	// 	if (!U7exists(s.c_str())) {
+	// 		return false;
+	// 	}
+	// }
+
+	// Check all the SI files
+	for (i = 0; SI_Files[i]; i++) {
+		if (!U7exists(SI_Files[i])) {
+			return false;
+		}
+	}
+
+	return true;
+}
 }
 
-BOOL APIENTRY DllMain(HINSTANCE hModule,
-                      DWORD  ul_reason_for_call,
-                      LPVOID lpReserved
-                     ) {
+BOOL APIENTRY DllMain(
+		HINSTANCE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
 	ignore_unused_variable_warning(hModule, lpReserved);
 	switch (ul_reason_for_call) {
 	case DLL_PROCESS_ATTACH:
@@ -471,4 +490,3 @@ BOOL APIENTRY DllMain(HINSTANCE hModule,
 	}
 	return TRUE;
 }
-

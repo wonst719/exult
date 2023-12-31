@@ -28,40 +28,45 @@ class Gump_text;
  */
 class File_gump : public Modal_gump {
 protected:
-	static short textx, texty;  // Where to draw first text field.
-	static short texth;     // Distance down to next text field.
-	static short btn_rows[2];   // y-coord of each button row.
-	static short btn_cols[3];   // x-coord of each button column.
-	Gump_text *names[10];       // 10 filename slots.
-	Gump_button *buttons[6];    // 2 rows, 3 cols of buttons.
-	Gump_text *pushed_text = nullptr;     // Text mouse is down on.
-	Gump_text *focus = nullptr;       // Text line that has focus.
-	unsigned char restored = 0;     // Set to 1 if we restored a game.
+	static short  textx, texty;             // Where to draw first text field.
+	static short  texth;                    // Distance down to next text field.
+	static short  btn_rows[2];              // y-coord of each button row.
+	static short  btn_cols[3];              // x-coord of each button column.
+	Gump_text*    names[10];                // 10 filename slots.
+	Gump_button*  buttons[6];               // 2 rows, 3 cols of buttons.
+	Gump_text*    pushed_text = nullptr;    // Text mouse is down on.
+	Gump_text*    focus       = nullptr;    // Text line that has focus.
+	unsigned char restored    = 0;          // Set to 1 if we restored a game.
 
 public:
 	File_gump();
 	~File_gump() override;
 	// Find savegame index of text field.
-	int get_save_index(Gump_text *txt);
-	void remove_focus();        // Unfocus text.
+	int  get_save_index(Gump_text* txt);
+	void remove_focus();    // Unfocus text.
 	void load();            // 'Load' was clicked.
 	void save();            // 'Save' was clicked.
 	void quit();            // 'Quit' was clicked.
 	// Handle one of the toggles.
-	int toggle_option(Gump_button *btn);
-	int restored_game() {   // 1 if user restored.
+	int toggle_option(Gump_button* btn);
+
+	int restored_game() {    // 1 if user restored.
 		return restored;
 	}
+
 	// Paint it and its contents.
 	void paint() override;
+
 	void close() override {
 		done = true;
 	}
+
 	// Handle events:
 	bool mouse_down(int mx, int my, int button) override;
 	bool mouse_up(int mx, int my, int button) override;
 	using Modal_gump::text_input;
-	void text_input(int chr, int unicode, bool shift_pressed) override; // Character typed.
+	void text_input(int chr, int unicode, bool shift_pressed)
+			override;    // Character typed.
 };
 
 #endif

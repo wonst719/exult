@@ -23,19 +23,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include <fstream>
-#include <iostream>
 #include "fontvga.h"
-#include "fnames.h"
 
-#include <cctype>
-
-#include "utils.h"
 #include "Flex.h"
 #include "array_size.h"
+#include "fnames.h"
+#include "utils.h"
+
+#include <cctype>
+#include <fstream>
+#include <iostream>
 
 // using std::string;
 
@@ -63,23 +63,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *  However, their values are set elsewhere
  */
 // +TODO: This shouldn't be hard-coded.
-static int hlead[] = { -2, -1, 0, -1, 0, 0, -1, -2, -1, -1};
+static int hlead[] = {-2, -1, 0, -1, 0, 0, -1, -2, -1, -1};
+
 /*
  *  Initialize.
  */
 
-void Fonts_vga_file::init(
-) {
+void Fonts_vga_file::init() {
 	const int cnt = array_size(hlead);
 
-	FlexFile sfonts(FONTS_VGA);
-	FlexFile pfonts(PATCH_FONTS);
-	const int sn = static_cast<int>(sfonts.number_of_objects());
-	const int pn = static_cast<int>(pfonts.number_of_objects());
+	FlexFile  sfonts(FONTS_VGA);
+	FlexFile  pfonts(PATCH_FONTS);
+	const int sn       = static_cast<int>(sfonts.number_of_objects());
+	const int pn       = static_cast<int>(pfonts.number_of_objects());
 	const int numfonts = pn > sn ? pn : sn;
 	fonts.resize(numfonts);
 
-	for (int i = 0; i < numfonts; i++)
+	for (int i = 0; i < numfonts; i++) {
 		fonts[i].load(FONTS_VGA, PATCH_FONTS, i, i < cnt ? hlead[i] : 0, 0);
+	}
 }
-

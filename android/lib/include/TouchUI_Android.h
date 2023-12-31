@@ -22,7 +22,7 @@
 #include <jni.h>
 #include <touchui.h>
 
-class TouchUI_Android: public TouchUI {
+class TouchUI_Android : public TouchUI {
 public:
 	TouchUI_Android();
 	~TouchUI_Android() final;

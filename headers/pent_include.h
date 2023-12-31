@@ -24,30 +24,15 @@
 
 // Include config.h first if we have it
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-//
-// Common/base types
-//
 #include "common_types.h"
-
-//
-// assert
-//
-#include <cassert>
-
-//
-// Strings
-//
 #include "istring.h"
 
-//
-// The Console
-//
-
-//#include "Console.h"
+#include <cassert>
 #include <iostream>
+
 #define pout std::cout
 #define perr std::cerr
 
@@ -55,11 +40,23 @@
 // Debugging
 //
 #ifdef DEBUG
-#  define POUT(x)       do { pout << x << std::endl; pout.flush(); } while (0)
-#  define PERR(x)       do { perr << x << std::endl; perr.flush(); } while (0)
+#	define POUT(x)                 \
+		do {                        \
+			pout << x << std::endl; \
+			pout.flush();           \
+		} while (0)
+#	define PERR(x)                 \
+		do {                        \
+			perr << x << std::endl; \
+			perr.flush();           \
+		} while (0)
 #else
-#  define POUT(x)       do { } while(0)
-#  define PERR(x)       do { } while(0)
+#	define POUT(x) \
+		do {        \
+		} while (0)
+#	define PERR(x) \
+		do {        \
+		} while (0)
 #endif
 
 ////////////////////
@@ -74,4 +71,4 @@
 
 #include "databuf.h"
 
-#endif //PENT_INCLUDE_H
+#endif    // PENT_INCLUDE_H

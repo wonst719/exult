@@ -18,25 +18,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
-#include "MT32EmuMidiDriver.h"
 
 #ifdef USE_MT32EMU_MIDI
+#	include "MT32EmuMidiDriver.h"
 
-#include "ignore_unused_variable_warning.h"
+#	include "XMidiEvent.h"
+#	include "XMidiEventList.h"
+#	include "XMidiFile.h"
+#	include "databuf.h"
+#	include "ignore_unused_variable_warning.h"
+#	include "utils.h"
 
-#include <cstring>
-
-#include "XMidiFile.h"
-#include "XMidiEvent.h"
-#include "XMidiEventList.h"
-
-#include "databuf.h"
-#include "utils.h"
+#	include <cstring>
 
 using namespace MT32Emu;
 
-const MidiDriver::MidiDriverDesc MT32EmuMidiDriver::desc =
-		MidiDriver::MidiDriverDesc ("MT32Emu", createInstance);
+const MidiDriver::MidiDriverDesc MT32EmuMidiDriver::desc
+		= MidiDriver::MidiDriverDesc("MT32Emu", createInstance);
 
 /*
  *	This file open proc redirects writes to a writable directory
@@ -44,22 +42,21 @@ const MidiDriver::MidiDriverDesc MT32EmuMidiDriver::desc =
  */
 
 static bool openROMFile(
-	FileStream& file,
-	const std::string& filename,
-	bool writable
-) {
+		FileStream& file, const std::string& filename, bool writable) {
 	std::string basedir;
 	if (!writable) {
 		// May be in bundle.
 		if (is_system_path_defined("<BUNDLE>")) {
 			basedir = "<BUNDLE>/" + filename;
-			if (file.open(get_system_path(basedir).c_str()))
+			if (file.open(get_system_path(basedir).c_str())) {
 				return true;
+			}
 		}
 		// Now try data dir.
 		basedir = "<DATA>/" + filename;
-		if (file.open(get_system_path(basedir).c_str()))
+		if (file.open(get_system_path(basedir).c_str())) {
 			return true;
+		}
 		// We now fall back to a writable data dir, as the emulator
 		// may have written something there.
 	}
@@ -67,10 +64,7 @@ static bool openROMFile(
 	return file.open(get_system_path(basedir).c_str());
 }
 
-static const ROMImage *getROM(
-	FileStream& file,
-	const std::string& filename
-) {
+static const ROMImage* getROM(FileStream& file, const std::string& filename) {
 	if (openROMFile(file, filename, false)) {
 		return ROMImage::makeROMImage(&file);
 	}
@@ -88,21 +82,24 @@ int MT32EmuMidiDriver::open() {
 	// Make sure dir exists; this is the dir where data will be saved.
 	U7mkdir("<SAVEHOME>/data", 0755);
 
-	FileStream controlROMFile;
-	const ROMImage *controlROMImage;
+	FileStream      controlROMFile;
+	const ROMImage* controlROMImage;
 	controlROMImage = getROM(controlROMFile, "CM32L_CONTROL.ROM");
-	if (!controlROMImage)
+	if (!controlROMImage) {
 		controlROMImage = getROM(controlROMFile, "MT32_CONTROL.ROM");
+	}
 	if (!controlROMImage) {
 		FileStream part1;
 		FileStream part2;
-		if (openROMFile(part1, "MT32A.BIN", false) && openROMFile(part2, "MT32B.BIN", false)) {
+		if (openROMFile(part1, "MT32A.BIN", false)
+			&& openROMFile(part2, "MT32B.BIN", false)) {
 			auto pOut = U7open_out("<SAVEHOME>/data/MT32_CONTROL.ROM", false);
 			if (pOut) {
-				auto& out = *pOut;
-				const Bit8u *data1 = part1.getData();
-				const Bit8u *data2 = part2.getData();
-				for (size_t ii = 0; ii < std::min(part1.getSize(), part2.getSize()); ii++) {
+				auto&        out   = *pOut;
+				const Bit8u* data1 = part1.getData();
+				const Bit8u* data2 = part2.getData();
+				for (size_t ii = 0;
+					 ii < std::min(part1.getSize(), part2.getSize()); ii++) {
 					out.put(static_cast<char>(data1[ii]));
 					out.put(static_cast<char>(data2[ii]));
 				}
@@ -116,11 +113,12 @@ int MT32EmuMidiDriver::open() {
 		return 2;
 	}
 
-	FileStream pcmROMFile;
-	const ROMImage *pcmROMImage;
+	FileStream      pcmROMFile;
+	const ROMImage* pcmROMImage;
 	pcmROMImage = getROM(pcmROMFile, "CM32L_PCM.ROM");
-	if (!pcmROMImage)
+	if (!pcmROMImage) {
 		pcmROMImage = getROM(pcmROMFile, "MT32_PCM.ROM");
+	}
 	if (!pcmROMImage) {
 		std::cerr << "Failed to open PCM rom file. MT32Emu cannot be used."
 				  << std::endl;
@@ -178,28 +176,25 @@ void MT32EmuMidiDriver::send(uint32 b) {
 }
 
 void MT32EmuMidiDriver::send_sysex(
-	uint8 status,
-	const uint8 *msg,
-	uint16 length
-) {
-	if (!msg || !length)
+		uint8 status, const uint8* msg, uint16 length) {
+	if (!msg || !length) {
 		return;
+	}
 
-	if (status != 0xF0 && msg[length-1] != 0xF7)
+	if (status != 0xF0 && msg[length - 1] != 0xF7) {
 		return;
+	}
 
-	mt32->playSysexWithoutFraming(msg, length-1);
+	mt32->playSysexWithoutFraming(msg, length - 1);
 }
 
 void MT32EmuMidiDriver::lowLevelProduceSamples(
-	sint16 *samples,
-	uint32 num_samples
-) {
-	if (mt32src)
+		sint16* samples, uint32 num_samples) {
+	if (mt32src) {
 		mt32src->getOutputSamples(samples, num_samples);
-		else
-	mt32->render(samples,num_samples);
+	} else {
+		mt32->render(samples, num_samples);
+	}
 }
 
-#endif //USE_MT32EMU_MIDI
-
+#endif    // USE_MT32EMU_MIDI

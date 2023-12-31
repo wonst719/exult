@@ -19,19 +19,22 @@
 #ifndef UCC_H
 #define UCC_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 class UCc;
 
 class UCc {
 public:
-	UCc(const unsigned int offset = 0, const unsigned int id = 0, const std::vector<unsigned char> &params = std::vector<unsigned char>())
-		: _id(id), _offset(offset), _params(params) {}
-	UCc(const unsigned int id, const std::string &miscstr)
-		: _id(id), _miscstr(miscstr) {}
-	UCc(const std::vector<unsigned int> &params_parsed)
-		: _params_parsed(params_parsed) {}
+	UCc(const unsigned int offset = 0, const unsigned int id = 0,
+		const std::vector<unsigned char>& params = std::vector<unsigned char>())
+			: _id(id), _offset(offset), _params(params) {}
+
+	UCc(const unsigned int id, const std::string& miscstr)
+			: _id(id), _miscstr(miscstr) {}
+
+	UCc(const std::vector<unsigned int>& params_parsed)
+			: _params_parsed(params_parsed) {}
 
 	unsigned int               _id = 0;
 	std::string                _miscstr;
@@ -45,57 +48,72 @@ public:
 	/* A temporary array to hold the items this opcode theoretically popped
 	   from the stack. This should probably go in it's own wrapper class with
 	   the current UCc. */
-	std::vector<UCc *>    _popped;
+	std::vector<UCc*> _popped;
 };
 
 class UCOptions {
 public:
-	bool game_bg()      const {
+	bool game_bg() const {
 		return _game == GAME_BG;
 	}
-	bool game_si()      const {
+
+	bool game_si() const {
 		return _game == GAME_SI;
 	}
-	bool game_fov()     const {
+
+	bool game_fov() const {
 		return _game == GAME_FOV;
 	}
-	bool game_ss()      const {
+
+	bool game_ss() const {
 		return _game == GAME_SS;
 	}
-	bool game_sib()      const {
+
+	bool game_sib() const {
 		return _game == GAME_SIB;
 	}
-	bool game_u7()      const {
+
+	bool game_u7() const {
 		return game_bg() || game_si() || game_fov() || game_ss() || game_sib();
 	}
-	bool game_u8()      const {
+
+	bool game_u8() const {
 		return _game == GAME_U8;
 	}
 
 	bool output_extern_header = false;
 
-	bool noconf = false;
-	bool rawops = false;
-	bool autocomment = false;
+	bool noconf         = false;
+	bool rawops         = false;
+	bool autocomment    = false;
 	bool uselesscomment = false;
-	bool verbose = false;
-	bool very_verbose = false;
-	bool ucdebug = false;
-	bool basic = false;
+	bool verbose        = false;
+	bool very_verbose   = false;
+	bool ucdebug        = false;
+	bool basic          = false;
 
-	bool output_list = false;
-	bool output_asm = false;
-	bool output_ucs = false;
-	bool output_flag = false;
+	bool output_list        = false;
+	bool output_asm         = false;
+	bool output_ucs         = false;
+	bool output_flag        = false;
 	bool output_trans_table = false;
 
 	bool mode_all = false;
 	bool mode_dis = false;
 
-	bool force_ext32 = false; // force ext32 function format output for all functions
+	bool force_ext32
+			= false;    // force ext32 function format output for all functions
 
-	//private:
-	enum { GAME_BG = 1, GAME_FOV = 2, GAME_SI = 3, GAME_SS = 4, GAME_SIB = 5, GAME_U8 = 6 };
+	// private:
+	enum {
+		GAME_BG  = 1,
+		GAME_FOV = 2,
+		GAME_SI  = 3,
+		GAME_SS  = 4,
+		GAME_SIB = 5,
+		GAME_U8  = 6
+	};
+
 	unsigned int _game = GAME_BG;
 };
 

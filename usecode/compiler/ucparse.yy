@@ -26,19 +26,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
+
+#include "opcodes.h"
+#include "ucclass.h"
+#include "ucexpr.h"
+#include "ucfun.h"
+#include "ucscriptop.h"
+#include "ucstmt.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "ucfun.h"
-#include "ucclass.h"
-#include "ucexpr.h"
-#include "ucstmt.h"
-#include "opcodes.h"
-#include "ucscriptop.h"
 
 using std::string;
 using std::vector;

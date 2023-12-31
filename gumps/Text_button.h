@@ -20,20 +20,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define TEXT_BUTTON_H
 
 #include "Gump_button.h"
+
 #include <string>
 
 class Text_button : public Gump_button {
 protected:
 	std::string text;
-	int     text_x;
-	int     text_y;
-	int     width;
-	int     height;
+	int         text_x;
+	int         text_y;
+	int         width;
+	int         height;
 
 	void init();
 
 public:
-	Text_button(Gump *p, const std::string &str, int x, int y, int w = 0, int h = 0);
+	Text_button(
+			Gump* p, const std::string& str, int x, int y, int w = 0,
+			int h = 0);
 	void paint() override;
 
 	bool on_widget(int mx, int my) const override;
@@ -41,7 +44,6 @@ public:
 	bool on_button(int mx, int my) const override {
 		return on_widget(mx, my);
 	}
-
 };
 
 template <typename Parent, typename... Args>

@@ -26,42 +26,44 @@ class ODataSource;
 
 #include "XMidiEvent.h"
 
-class XMidiEventList
-{
-	int				counter;
+class XMidiEventList {
+	int counter;
 
 	// Helper funcs for Write
-	int				putVLQ(ODataSource *dest, uint32 value);
-	uint32			convertListToMTrk (ODataSource *dest);
+	int    putVLQ(ODataSource* dest, uint32 value);
+	uint32 convertListToMTrk(ODataSource* dest);
 
 public:
-	uint16			chan_mask;
-	XMidiEvent		*events;
+	uint16      chan_mask;
+	XMidiEvent* events;
 
 	//! XMidiFile Seq Branch Index controllers. For Ult126 = loop start
-	XMidiEvent		*branches;
+	XMidiEvent* branches;
 
 	//! Patch and Bank change events
-	XMidiEvent		*x_patch_bank;
+	XMidiEvent* x_patch_bank;
 
 	//! Write the list to a DataSource
-	int				write (ODataSource *dest);
+	int write(ODataSource* dest);
 
 	//! Increments the counter
-	void			incrementCounter () { counter++; }
+	void incrementCounter() {
+		counter++;
+	}
 
 	//! Decrement the counter and delete the event list, if possible
-	void			decrementCounter ();
+	void decrementCounter();
 
 	//! Find the Sequence Branch Event for the index
 	//! \param index The index to search for
 	//! \return The event found, or 0
-	XMidiEvent *	findBranchEvent(int index) {
-
-		XMidiEvent *b = branches;
+	XMidiEvent* findBranchEvent(int index) {
+		XMidiEvent* b = branches;
 
 		while (b) {
-			if (b->data[1] == (index&0xFF)) break;
+			if (b->data[1] == (index & 0xFF)) {
+				break;
+			}
 			b = b->ex.branch_index.next_branch;
 		}
 
@@ -69,4 +71,4 @@ public:
 	}
 };
 
-#endif //XMIDIEVENTLIST_H_INCLUDED
+#endif    // XMIDIEVENTLIST_H_INCLUDED

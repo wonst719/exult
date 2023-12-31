@@ -36,20 +36,22 @@
 class TouchUI {
 public:
 	static uint32 eventType;
+
 	enum {
-		EVENT_CODE_INVALID = 0,
+		EVENT_CODE_INVALID    = 0,
 		EVENT_CODE_TEXT_INPUT = 1
 	};
-	static void onTextInput(const char *text);
+
+	static void onTextInput(const char* text);
 
 	TouchUI();
-	virtual ~TouchUI() = default;
-	virtual void promptForName(const char *name) = 0;
-	virtual void showGameControls() = 0;
-	virtual void hideGameControls() = 0;
-	virtual void showButtonControls() = 0;
-	virtual void hideButtonControls() = 0;
-	virtual void onDpadLocationChanged() = 0;
+	virtual ~TouchUI()                           = default;
+	virtual void promptForName(const char* name) = 0;
+	virtual void showGameControls()              = 0;
+	virtual void hideGameControls()              = 0;
+	virtual void showButtonControls()            = 0;
+	virtual void hideButtonControls()            = 0;
+	virtual void onDpadLocationChanged()         = 0;
 };
 
 #endif

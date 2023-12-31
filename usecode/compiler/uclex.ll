@@ -35,13 +35,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "ucfun.h"
+#include "ucloc.h"
+#include "ucparse.h"
+
 #include <cstring>
+#include <set>
 #include <string>
 #include <vector>
-#include <set>
-#include "ucparse.h"
-#include "ucloc.h"
-#include "ucfun.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

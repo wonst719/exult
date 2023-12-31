@@ -29,6 +29,7 @@ CompileFlags:
         -Wno-global-constructors,
         -Wno-exit-time-destructors,
         -Wno-missing-prototypes,
+        -DUSE_TIMIDITY_MIDI,
       ]
     Remove: -W*
     Compiler: D:/msys64/mingw64/bin/clang++.exe

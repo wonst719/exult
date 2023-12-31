@@ -22,8 +22,9 @@
 #include <string>
 
 /**
- * Implementation of @c std::streambuf which routes all content to the android logger.  This is
- * useful for redirecting @c std::cout and @c std::cerr to simplify debugging.
+ * Implementation of @c std::streambuf which routes all content to the android
+ * logger.  This is useful for redirecting @c std::cout and @c std::cerr to
+ * simplify debugging.
  */
 class AndroidLog_streambuf : public std::streambuf {
 public:
@@ -49,11 +50,11 @@ private:
 	std::string m_lineBuf;
 
 	/// JNI Environment for routing logs to UI
-	JNIEnv*			m_jniEnv;
+	JNIEnv* m_jniEnv;
 
 	/// The Activity to use for routing logs to UI
-	jobject			m_exultActivityObject;
+	jobject m_exultActivityObject;
 
 	/// The Method to use for routing logs to UI
-	jmethodID		m_writeToConsoleMethod;
+	jmethodID m_writeToConsoleMethod;
 };

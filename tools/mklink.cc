@@ -6,22 +6,22 @@
  * Copyright (c) 2017 Marzo Sette Torres Junior
  */
 
+#include "utils.h"
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <vector>
 
-#include "utils.h"
-
 using namespace std;
 
 // Info about one usecode function
 struct usecode_func {
-	vector<uint16> called;	// List of called functions
-	uint32 where;			// Location in usecode
-	uint16 size;			// Size of function in bytes
-	uint16 num_call;		// Number of called functions
-	bool visited;			// Have we been visited
+	vector<uint16> called;      // List of called functions
+	uint32         where;       // Location in usecode
+	uint16         size;        // Size of function in bytes
+	uint16         num_call;    // Number of called functions
+	bool           visited;     // Have we been visited
 };
 
 struct usecode_functions {
@@ -30,13 +30,16 @@ private:
 
 public:
 	usecode_functions() : functions(4096) {}
-	uint16 get_total_size(vector<uint16>& call_tree) const;
+
+	uint16         get_total_size(vector<uint16>& call_tree) const;
 	vector<uint16> get_tree(uint16 func_num);
-	void clear_visited();
-	void fix_tree(vector<uint16>& tree) const;
+	void           clear_visited();
+	void           fix_tree(vector<uint16>& tree) const;
+
 	usecode_func& get(size_t num) {
 		return functions[num];
 	}
+
 	const usecode_func& get(size_t num) const {
 		return functions[num];
 	}
@@ -62,7 +65,7 @@ uint16 usecode_functions::get_total_size(vector<uint16>& call_tree) const {
  */
 vector<uint16> usecode_functions::get_tree(uint16 func_num) {
 	vector<uint16> our_tree;
-	usecode_func& u_ptr = functions[func_num];
+	usecode_func&  u_ptr = functions[func_num];
 
 	// No need to return a tree
 	if (u_ptr.visited) {
@@ -123,20 +126,20 @@ int main() {
 	}
 
 	// Read the position and number of first function
-	uint32 func_pos = usecode.tellg();
-	uint16 func_num = Read2(usecode);
-	uint16 max_func = 0;
+	uint32            func_pos = usecode.tellg();
+	uint16            func_num = Read2(usecode);
+	uint16            max_func = 0;
 	usecode_functions functions;
 
 	// Process the usecode file
 	while (!usecode.eof()) {
-		usecode_func& u_ptr = functions.get(func_num);
-		u_ptr.where = func_pos;				// Remember start of function
-		u_ptr.size = Read2(usecode);		// Read the function size
-		const uint16 data_size = Read2(usecode);	// Read the data size
+		usecode_func& u_ptr    = functions.get(func_num);
+		u_ptr.where            = func_pos;    // Remember start of function
+		u_ptr.size             = Read2(usecode);    // Read the function size
+		const uint16 data_size = Read2(usecode);    // Read the data size
 		// Skip the data section, number of args and local vars
 		usecode.ignore(data_size + 4);
-		u_ptr.num_call = Read2(usecode);	// Read number of called functions
+		u_ptr.num_call = Read2(usecode);    // Read number of called functions
 		// Read table
 		u_ptr.called.reserve(u_ptr.num_call);
 		for (size_t i = 0; i < u_ptr.num_call; i++) {

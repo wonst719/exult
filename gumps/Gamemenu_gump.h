@@ -29,16 +29,17 @@ class Gump_button;
 class Gamemenu_gump : public Modal_gump {
 private:
 	enum button_ids {
-	    id_first = 0,
-	    id_load_save = id_first,
-	    id_video_options,
-	    id_audio_options,
-	    id_game_display_options,
-	    id_game_engine_options,
-	    id_input,
-	    id_quit,
-	    id_count
+		id_first     = 0,
+		id_load_save = id_first,
+		id_video_options,
+		id_audio_options,
+		id_game_display_options,
+		id_game_engine_options,
+		id_input,
+		id_quit,
+		id_count
 	};
+
 	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
 
 public:
@@ -46,20 +47,25 @@ public:
 
 	// Paint it and its contents.
 	void paint() override;
+
 	void close() override {
 		done = true;
 	}
+
 	// Handle events:
 	bool mouse_down(int mx, int my, int button) override;
 	bool mouse_up(int mx, int my, int button) override;
 
 	void quit(bool return_to_menu = false);
+
 	void quit_exult() {
 		quit(false);
 	}
+
 	void quit_to_menu() {
 		quit(true);
 	}
+
 	void loadsave();
 	void video_options();
 	void audio_options();

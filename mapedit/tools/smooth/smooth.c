@@ -9,12 +9,9 @@
  * date: 20/06/03
  *
  * syntax: smooth [-i image_in] [-o image_out.bmp] [-c config_file]
- * image_in must be in indexed image with less than 256 colours (whatever type: BMP, GIF, PNG)
- * and of resolution 192x192
- * if image_out exists, it will be erased
- * default values:
- * image_in = rough.bmp
- * image_out = smoothed.bmp
+ * image_in must be in indexed image with less than 256 colours (whatever type:
+ * BMP, GIF, PNG) and of resolution 192x192 if image_out exists, it will be
+ * erased default values: image_in = rough.bmp image_out = smoothed.bmp
  * config_file = smooth.conf
  */
 
@@ -22,16 +19,17 @@
 #include <stdlib.h>
 
 #if !defined(MAIN)
-#define MAIN
+#	define MAIN
 #endif
 
-#include "globals.h"
-#include "smooth.h"
-#include "linked.h"
-#include "plugin.h"
-#include "param.h"
 #include "config.h"
+
+#include "globals.h"
 #include "image.h"
+#include "linked.h"
+#include "param.h"
+#include "plugin.h"
+#include "smooth.h"
 
 void clean_up(int ret) {
 	// clean up everything that might be loaded
@@ -62,10 +60,9 @@ void clean_up(int ret) {
 	exit(ret);
 }
 
-int main(int argc, char **argv) {
-
-	FILE *config;
-	int r;
+int main(int argc, char** argv) {
+	FILE* config;
+	int   r;
 
 	// initialise some variables
 	hdl_list = NULL;
@@ -103,7 +100,8 @@ int main(int argc, char **argv) {
 		clean_up(-1);
 	}
 	// make sure we can close it properly
-	if (close_config(config) == EOF) { // shouldn't happen, but you never know
+	if (close_config(config)
+		== EOF) {    // shouldn't happen, but you never know
 		perror("");
 		clean_up(-1);
 	}
@@ -124,5 +122,5 @@ int main(int argc, char **argv) {
 	SDL_Quit();
 	printf("Done!\n");
 	clean_up(0);
-	return 0; // to avoid warnings
+	return 0;    // to avoid warnings
 }

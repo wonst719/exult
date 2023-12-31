@@ -22,14 +22,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define XMIDIEVENT_H_INCLUDED
 
 // Midi Status Bytes
-#define MIDI_STATUS_NOTE_OFF	0x8
-#define MIDI_STATUS_NOTE_ON		0x9
-#define MIDI_STATUS_AFTERTOUCH	0xA
-#define MIDI_STATUS_CONTROLLER	0xB
-#define MIDI_STATUS_PROG_CHANGE	0xC
-#define MIDI_STATUS_PRESSURE	0xD
-#define MIDI_STATUS_PITCH_WHEEL	0xE
-#define MIDI_STATUS_SYSEX		0xF
+#define MIDI_STATUS_NOTE_OFF    0x8
+#define MIDI_STATUS_NOTE_ON     0x9
+#define MIDI_STATUS_AFTERTOUCH  0xA
+#define MIDI_STATUS_CONTROLLER  0xB
+#define MIDI_STATUS_PROG_CHANGE 0xC
+#define MIDI_STATUS_PRESSURE    0xD
+#define MIDI_STATUS_PITCH_WHEEL 0xE
+#define MIDI_STATUS_SYSEX       0xF
 
 //
 // XMidiFile Controllers
@@ -42,76 +42,73 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //         by this logical channel. Traditionally the physical channel would be
 //         bettween 1 and 9, and the logical channel between 11 and 16
 //
-// When a channel is locked, any notes already playing on it are turned off. 
+// When a channel is locked, any notes already playing on it are turned off.
 // When the lock is released, the previous state of the channel is restored.
 // Locks are automatically released when the sequences finishes playing
 //
-#define XMIDI_CONTROLLER_CHAN_LOCK			0x6e	
+#define XMIDI_CONTROLLER_CHAN_LOCK 0x6e
 
-#define XMIDI_CONTROLLER_CHAN_LOCK_PROT		0x6f	// Channel Lock Protect
-#define XMIDI_CONTROLLER_VOICE_PROT			0x70	// Voice Protect
-#define XMIDI_CONTROLLER_TIMBRE_PROT		0x71	// Timbre Protect
-#define XMIDI_CONTROLLER_BANK_CHANGE		0x72	// Bank Change
-#define XMIDI_CONTROLLER_IND_CTRL_PREFIX	0x73	// Indirect Controller Prefix
-#define XMIDI_CONTROLLER_FOR_LOOP			0x74	// For Loop
-#define XMIDI_CONTROLLER_NEXT_BREAK			0x75	// Next/Break
-#define XMIDI_CONTROLLER_CLEAR_BB_COUNT		0x76	// Clear Beat/Bar Count
-#define XMIDI_CONTROLLER_CALLBACK_TRIG		0x77	// Callback Trigger
-#define XMIDI_CONTROLLER_SEQ_BRANCH_INDEX	0x78	// Sequence Branch Index
+#define XMIDI_CONTROLLER_CHAN_LOCK_PROT   0x6f    // Channel Lock Protect
+#define XMIDI_CONTROLLER_VOICE_PROT       0x70    // Voice Protect
+#define XMIDI_CONTROLLER_TIMBRE_PROT      0x71    // Timbre Protect
+#define XMIDI_CONTROLLER_BANK_CHANGE      0x72    // Bank Change
+#define XMIDI_CONTROLLER_IND_CTRL_PREFIX  0x73    // Indirect Controller Prefix
+#define XMIDI_CONTROLLER_FOR_LOOP         0x74    // For Loop
+#define XMIDI_CONTROLLER_NEXT_BREAK       0x75    // Next/Break
+#define XMIDI_CONTROLLER_CLEAR_BB_COUNT   0x76    // Clear Beat/Bar Count
+#define XMIDI_CONTROLLER_CALLBACK_TRIG    0x77    // Callback Trigger
+#define XMIDI_CONTROLLER_SEQ_BRANCH_INDEX 0x78    // Sequence Branch Index
 
 #include "common_types.h"
 
 // Maximum number of for loops we'll allow (used by LowLevelMidiDriver)
 // The specs say 4, so that is what we;ll use
-#define XMIDI_MAX_FOR_LOOP_COUNT	4
+#define XMIDI_MAX_FOR_LOOP_COUNT 4
 
-struct XMidiEvent
-{
-	int				time;
-	unsigned char	status;
+struct XMidiEvent {
+	int           time;
+	unsigned char status;
 
-	unsigned char	data[2];
+	unsigned char data[2];
 
-	union 
-	{
+	union {
 		struct {
-			uint32			len;			// Length of SysEx Data
-			unsigned char	*buffer;		// SysEx Data
+			uint32         len;       // Length of SysEx Data
+			unsigned char* buffer;    // SysEx Data
 		} sysex_data;
 
 		struct {
-			int				duration;		// Duration of note (120 Hz)
-			XMidiEvent		*next_note;		// The next note on the stack
-			uint32			note_time;		// Time note stops playing (6000th of second)
-			uint8			actualvel;		// Actual velocity of playing note
+			int         duration;     // Duration of note (120 Hz)
+			XMidiEvent* next_note;    // The next note on the stack
+			uint32 note_time;    // Time note stops playing (6000th of second)
+			uint8  actualvel;    // Actual velocity of playing note
 		} note_on;
 
 		struct {
-			XMidiEvent		*next_branch;	// Next branch index contoller
+			XMidiEvent* next_branch;    // Next branch index contoller
 		} branch_index;
 
 	} ex;
 
-	XMidiEvent		*next;
+	XMidiEvent* next;
 
-	XMidiEvent		*next_patch_bank;		// next patch or bank change event
+	XMidiEvent* next_patch_bank;    // next patch or bank change event
 
-	void FreeThis() 
-	{
-		// Free all our children first. Using a loop instead of recursive 
+	void FreeThis() {
+		// Free all our children first. Using a loop instead of recursive
 		// because it could have nasty effects on the stack otherwise
-		for (XMidiEvent *e = next; e; e = next)
-		{
-			next = e->next;
+		for (XMidiEvent* e = next; e; e = next) {
+			next    = e->next;
 			e->next = nullptr;
 			e->FreeThis();
 		}
 
 		// We only do this with sysex
-		if ((status>>4) == 0xF && ex.sysex_data.buffer) delete [] ex.sysex_data.buffer;
+		if ((status >> 4) == 0xF && ex.sysex_data.buffer) {
+			delete[] ex.sysex_data.buffer;
+		}
 		delete this;
 	}
-
 };
 
-#endif //XMIDIEVENT_H_INCLUDED
+#endif    // XMIDIEVENT_H_INCLUDED

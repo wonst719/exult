@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2011 The ScummVM project
  * Copyright (C) 2005 The Pentagram Team
  * Copyright (C) 2006-2022 The Exult Team
@@ -19,43 +19,51 @@
  */
 
 #ifdef USE_FLUIDSYNTH_MIDI
+#	include "LowLevelMidiDriver.h"
+#	include "common_types.h"
 
-#include "LowLevelMidiDriver.h"
-#include "common_types.h"
-#include <fluidsynth.h>
-#include <stack>
+#	include <fluidsynth.h>
+
+#	include <stack>
 
 class FluidSynthMidiDriver : public LowLevelMidiDriver {
 private:
-	fluid_settings_t *_settings = nullptr;
-	fluid_synth_t *_synth = nullptr;
-	std::stack<int> _soundFont;
+	fluid_settings_t* _settings = nullptr;
+	fluid_synth_t*    _synth    = nullptr;
+	std::stack<int>   _soundFont;
 
-	const static MidiDriverDesc	desc;
-	static MidiDriver *createInstance() {
+	static const MidiDriverDesc desc;
+
+	static MidiDriver* createInstance() {
 		return new FluidSynthMidiDriver();
 	}
 
 public:
-	static const MidiDriverDesc* getDesc() { return &desc; }
+	static const MidiDriverDesc* getDesc() {
+		return &desc;
+	}
 
 protected:
 	// Because GCC complains about casting from const to non-const...
-	int setInt(const char *name, int val);
-	int setNum(const char *name, double val);
-	int setStr(const char *name, const char *val);
-	int getStr(const char *name, char **pval);
+	int setInt(const char* name, int val);
+	int setNum(const char* name, double val);
+	int setStr(const char* name, const char* val);
+	int getStr(const char* name, char** pval);
 
 	// LowLevelMidiDriver implementation
-	int open() override;
+	int  open() override;
 	void close() override;
 	void send(uint32 b) override;
-	void lowLevelProduceSamples(sint16 *samples, uint32 num_samples) override;
+	void lowLevelProduceSamples(sint16* samples, uint32 num_samples) override;
 
 	// MidiDriver overloads
-	bool		isSampleProducer() override { return true; }
-	bool		noTimbreSupport() override { return true; }
-};
+	bool isSampleProducer() override {
+		return true;
+	}
 
+	bool noTimbreSupport() override {
+		return true;
+	}
+};
 
 #endif

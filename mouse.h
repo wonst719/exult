@@ -21,49 +21,49 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
-#include "rect.h"
 #include "dir.h"
-#include "iwin8.h"
-#include "vgafile.h"
 #include "gamewin.h"
+#include "iwin8.h"
+#include "rect.h"
+#include "vgafile.h"
 
 /*
  *  Handle custom mouse pointers.
  */
 class Mouse {
 protected:
-	Shape_file pointers;        // Pointers from 'pointers.shp'.
-	Game_window *gwin;      // Where to draw.
-	Image_window8 *iwin;        // From gwin.
-	std::unique_ptr<Image_buffer> backup;       // Stores image below mouse shape.
-	TileRect box;           // Area backed up.
-	TileRect dirty;         // Dirty area from mouse move.
-	int mousex, mousey;     // Last place where mouse was.
-	int cur_framenum;       // Frame # of current shape.
-	Shape_frame *cur;       // Current shape.
-	bool onscreen;          // true if mouse is drawn on screen.
-	static short short_arrows[8];   // Frame #'s of short arrows, indexed
+	Shape_file                    pointers;    // Pointers from 'pointers.shp'.
+	Game_window*                  gwin;        // Where to draw.
+	Image_window8*                iwin;        // From gwin.
+	std::unique_ptr<Image_buffer> backup;    // Stores image below mouse shape.
+	TileRect                      box;       // Area backed up.
+	TileRect                      dirty;     // Dirty area from mouse move.
+	int          mousex, mousey;             // Last place where mouse was.
+	int          cur_framenum;               // Frame # of current shape.
+	Shape_frame* cur;                        // Current shape.
+	bool         onscreen;           // true if mouse is drawn on screen.
+	static short short_arrows[8];    // Frame #'s of short arrows, indexed
 	//   by direction (0-7, 0=east).
-	static short med_arrows[8]; // Medium arrows.
-	static short long_arrows[8];    // Frame #'s of long arrows.
+	static short med_arrows[8];             // Medium arrows.
+	static short long_arrows[8];            // Frame #'s of long arrows.
 	static short short_combat_arrows[8];    // Short red arrows
-	static short med_combat_arrows[8];  // Medium red arrows
-	void set_shape0(int framenum);  // Set shape without checking first.
+	static short med_combat_arrows[8];      // Medium red arrows
+	void set_shape0(int framenum);          // Set shape without checking first.
 	void Init();
 
 public:
-	enum Mouse_shapes {     // List of shapes' frame #'s.
-	    dontchange = 1000,  // Flag to not change.
-	    hand = 0,
-	    redx = 1,
-	    greenselect = 2,    // For modal select.
-	    tooheavy = 3,
-	    outofrange = 4,
-	    outofammo = 5,
-	    wontfit = 6,
-	    hourglass = 7,
-	    greensquare = 23,
-	    blocked = 49
+	enum Mouse_shapes {        // List of shapes' frame #'s.
+		dontchange  = 1000,    // Flag to not change.
+		hand        = 0,
+		redx        = 1,
+		greenselect = 2,    // For modal select.
+		tooheavy    = 3,
+		outofrange  = 4,
+		outofammo   = 5,
+		wontfit     = 6,
+		hourglass   = 7,
+		greensquare = 23,
+		blocked     = 49
 	};
 
 	/* Avatar speed, relative to standard delay:
@@ -77,7 +77,7 @@ public:
 	 * "long" arrow (non-combat, non-threat only) outside
 	 *
 	 * relative speeds:
-	     * (movement type           - time for a certain dist. - rel. speed)
+	 * (movement type           - time for a certain dist. - rel. speed)
 	 *  non-combat short arrow  -          8               -   1
 	 *  non-combat medium arrow -          4               -   2
 	 *  non-combat long arrow   -          2               -   4
@@ -85,61 +85,74 @@ public:
 	 *  combat medium arrow     -          6               -   4/3
 	 */
 	enum Avatar_Speed_Factors {
-	    slow_speed_factor          = 100,
-	    medium_combat_speed_factor = 150,
-	    medium_speed_factor        = 200,
-	    fast_speed_factor          = 400
+		slow_speed_factor          = 100,
+		medium_combat_speed_factor = 150,
+		medium_speed_factor        = 200,
+		fast_speed_factor          = 400
 	};
+
 	int avatar_speed;
 
-	static bool mouse_update;
-	static Mouse *mouse;
+	static bool   mouse_update;
+	static Mouse* mouse;
 
-	Mouse(Game_window *gw);
-	Mouse(Game_window *gw, IDataSource &shapes);
+	Mouse(Game_window* gw);
+	Mouse(Game_window* gw, IDataSource& shapes);
 
-	void show();            // Paint it.
-	void hide() {       // Restore area under mouse.
+	void show();    // Paint it.
+
+	void hide() {    // Restore area under mouse.
 		if (onscreen) {
 			onscreen = false;
 			iwin->put(backup.get(), box.x, box.y);
 			dirty = box;    // Init. dirty to box.
 		}
 	}
-	void set_shape(int framenum) {  // Set to desired shape.
-		if (framenum != cur_framenum)
+
+	void set_shape(int framenum) {    // Set to desired shape.
+		if (framenum != cur_framenum) {
 			set_shape0(framenum);
+		}
 	}
+
 	void set_shape(Mouse_shapes shape) {
 		set_shape(static_cast<int>(shape));
 	}
+
 	Mouse_shapes get_shape() {
 		return static_cast<Mouse_shapes>(cur_framenum);
 	}
+
 	void move(int x, int y);    // Move to new location (mouse motion).
-	void blit_dirty() {     // Blit dirty area.
-		iwin->show(dirty.x - 1, dirty.y - 1, dirty.w + 2,
-					dirty.h + 2);
+
+	void blit_dirty() {    // Blit dirty area.
+		iwin->show(dirty.x - 1, dirty.y - 1, dirty.w + 2, dirty.h + 2);
 	}
-	void set_location(int x, int y);// Set to given location.
+
+	void set_location(int x, int y);    // Set to given location.
 	// Flash desired shape for 1/2 sec.
 	void flash_shape(Mouse_shapes flash);
+
 	// Set to short arrow.
 	int get_short_arrow(Direction dir) {
 		return short_arrows[static_cast<int>(dir)];
 	}
+
 	// Set to medium arrow.
 	int get_medium_arrow(Direction dir) {
 		return med_arrows[static_cast<int>(dir)];
 	}
+
 	// Set to long arrow.
 	int get_long_arrow(Direction dir) {
 		return long_arrows[static_cast<int>(dir)];
 	}
+
 	// Set to short combat mode arrow.
 	int get_short_combat_arrow(Direction dir) {
 		return short_combat_arrows[static_cast<int>(dir)];
 	}
+
 	// Set to medium combat mode arrow.
 	int get_medium_combat_arrow(Direction dir) {
 		return med_combat_arrows[static_cast<int>(dir)];
@@ -149,12 +162,12 @@ public:
 		return onscreen;
 	}
 
-	//inline const int get_mousex() const { return mousex; }
-	//inline const int get_mousey() const { return mousey; }
+	// inline const int get_mousex() const { return mousex; }
+	// inline const int get_mousey() const { return mousey; }
 
 	// Sets hand or speed cursors
 	void set_speed_cursor();
-	
+
 	// only use touch input?
 	static bool use_touch_input;
 };

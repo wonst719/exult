@@ -22,9 +22,8 @@
 #include <cstddef>
 
 template <typename T, size_t N>
-constexpr inline size_t array_size(const T(&)[N]) {
+constexpr inline size_t array_size(const T (&)[N]) {
 	return N;
 }
 
-#endif // ARRAY_SIZE_H
-
+#endif    // ARRAY_SIZE_H

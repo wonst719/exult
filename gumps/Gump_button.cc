@@ -17,21 +17,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
-#include "gamewin.h"
 #include "Gump_button.h"
+
 #include "Gump.h"
+#include "gamewin.h"
 #include "ignore_unused_variable_warning.h"
 
 /*
  *  Redisplay as 'pushed'.
  */
 
-bool Gump_button::push(
-    int button
-) {
+bool Gump_button::push(int button) {
 	if (button == 1) {
 		set_pushed(button);
 		paint();
@@ -45,9 +44,7 @@ bool Gump_button::push(
  *  Redisplay as 'unpushed'.
  */
 
-void Gump_button::unpush(
-    int button
-) {
+void Gump_button::unpush(int button) {
 	if (button == 1) {
 		set_pushed(false);
 		paint();
@@ -59,9 +56,7 @@ void Gump_button::unpush(
  *  Default method for double-click.
  */
 
-void Gump_button::double_clicked(
-    int x, int y
-) {
+void Gump_button::double_clicked(int x, int y) {
 	ignore_unused_variable_warning(x, y);
 }
 
@@ -69,8 +64,7 @@ void Gump_button::double_clicked(
  *  Repaint checkmark, etc.
  */
 
-void Gump_button::paint(
-) {
+void Gump_button::paint() {
 	int px = 0;
 	int py = 0;
 

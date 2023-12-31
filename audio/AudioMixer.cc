@@ -17,12 +17,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "pent_include.h"
+
 #include "AudioMixer.h"
-#include "Configuration.h"
 
 #include "AudioChannel.h"
-
+#include "Configuration.h"
+#include "Midi.h"
 #include "MidiDriver.h"
+
+#include <algorithm>
+#include <iostream>
+#include <limits>
+#include <mutex>
 
 #ifdef __GNUC__
 #	pragma GCC diagnostic push
@@ -34,17 +40,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
 
-#include <algorithm>
-#include <iostream>
-#include <limits>
-#include <mutex>
-
-#include "Midi.h"
-
 namespace Pentagram {
 	class SDLAudioDevice {
 	public:
 		SDLAudioDevice(SDL_AudioDeviceID dev_) : dev(dev_) {}
+
 		~SDLAudioDevice() {
 			SDL_CloseAudioDevice(dev);
 		}
@@ -68,18 +68,15 @@ namespace Pentagram {
 	private:
 		SDL_AudioDeviceID dev;
 	};
-}
+}    // namespace Pentagram
 
 using namespace Pentagram;
 
-AudioMixer *AudioMixer::the_audio_mixer = nullptr;
+AudioMixer* AudioMixer::the_audio_mixer = nullptr;
 
-AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_) :
-audio_ok(false),
-sample_rate(sample_rate_), stereo(stereo_),
-midi(nullptr), midi_volume(255),
-id_counter(0)
-{
+AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_)
+		: audio_ok(false), sample_rate(sample_rate_), stereo(stereo_),
+		  midi(nullptr), midi_volume(255), id_counter(0) {
 	the_audio_mixer = this;
 
 	std::cout << "Creating AudioMixer..." << std::endl;
@@ -87,34 +84,39 @@ id_counter(0)
 	SDL_AudioSpec desired{};
 	SDL_AudioSpec obtained;
 
-	desired.format = AUDIO_S16SYS;
-	desired.freq = sample_rate_;
-	desired.channels = stereo_?2:1;
+	desired.format   = AUDIO_S16SYS;
+	desired.freq     = sample_rate_;
+	desired.channels = stereo_ ? 2 : 1;
 	desired.callback = sdlAudioCallback;
 	desired.userdata = this;
 
-	// Set update rate to 5 Hz, or there abouts. This should be more than adequate for everyone
-	// Note: setting this to 1 Hz (/1) causes Exult to hang on MacOS.
-	desired.samples=1;
-	while(desired.samples<=desired.freq/5) desired.samples<<=1;
+	// Set update rate to 5 Hz, or there abouts. This should be more than
+	// adequate for everyone Note: setting this to 1 Hz (/1) causes Exult to
+	// hang on MacOS.
+	desired.samples = 1;
+	while (desired.samples <= desired.freq / 5) {
+		desired.samples <<= 1;
+	}
 
 	// Open SDL Audio (even though we may not need it)
 	SDL_InitSubSystem(SDL_INIT_AUDIO);
-	const SDL_AudioDeviceID dev = SDL_OpenAudioDevice(nullptr, 0, &desired, &obtained, SDL_AUDIO_ALLOW_ANY_CHANGE);
+	const SDL_AudioDeviceID dev = SDL_OpenAudioDevice(
+			nullptr, 0, &desired, &obtained, SDL_AUDIO_ALLOW_ANY_CHANGE);
 	audio_ok = (dev != 0);
 
 	if (audio_ok) {
 		pout << "Audio opened using format: " << obtained.freq << " Hz "
-		     << static_cast<int>(obtained.channels) << " Channels" <<  std::endl;
+			 << static_cast<int>(obtained.channels) << " Channels" << std::endl;
 		device = std::make_unique<SDLAudioDevice>(dev);
 		{
 			const std::lock_guard<SDLAudioDevice> lock(*device);
 			sample_rate = obtained.freq;
-			stereo = obtained.channels == 2;
+			stereo      = obtained.channels == 2;
 
 			internal_buffer.resize((obtained.size + 1) / 2);
-			for (int i = 0; i < num_channels_; i++)
+			for (int i = 0; i < num_channels_; i++) {
 				channels.emplace_back(sample_rate, stereo);
+			}
 		}
 
 		// GO GO GO!
@@ -122,8 +124,7 @@ id_counter(0)
 	}
 }
 
-AudioMixer::~AudioMixer()
-{
+AudioMixer::~AudioMixer() {
 	std::cout << "Destroying AudioMixer..." << std::endl;
 
 	closeMidiOutput();
@@ -131,169 +132,200 @@ AudioMixer::~AudioMixer()
 	the_audio_mixer = nullptr;
 }
 
-void AudioMixer::reset()
-{
-	if (!audio_ok) return;
+void AudioMixer::reset() {
+	if (!audio_ok) {
+		return;
+	}
 
 	std::cout << "Resetting AudioMixer..." << std::endl;
 
 	midi->stop_music();
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	for (auto& channel : channels) channel.stop();
+	for (auto& channel : channels) {
+		channel.stop();
+	}
 }
 
-sint32 AudioMixer::playSample(AudioSample *sample, int loop, int priority, bool paused, uint32 pitch_shift_, int lvol, int rvol)
-{
-	if (!audio_ok || channels.empty()) return -1;
+sint32 AudioMixer::playSample(
+		AudioSample* sample, int loop, int priority, bool paused,
+		uint32 pitch_shift_, int lvol, int rvol) {
+	if (!audio_ok || channels.empty()) {
+		return -1;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
 	auto it = std::find_if(channels.begin(), channels.end(), [](auto& channel) {
 		return !channel.isPlaying();
 	});
 	if (it == channels.end()) {
-		it = std::min_element(channels.begin(), channels.end(), [](auto& c1, auto& c2) {
-			return c1.getPriority() < c2.getPriority();
-		});
+		it = std::min_element(
+				channels.begin(), channels.end(), [](auto& c1, auto& c2) {
+					return c1.getPriority() < c2.getPriority();
+				});
 	}
-	if (it != channels.end() && (!it->isPlaying() || it->getPriority() < priority)) {
+	if (it != channels.end()
+		&& (!it->isPlaying() || it->getPriority() < priority)) {
 		if (id_counter == std::numeric_limits<decltype(id_counter)>::max()) {
 			id_counter = 0;
 		} else {
 			++id_counter;
 		}
-		it->playSample(sample, loop, priority, paused, pitch_shift_, lvol, rvol, id_counter);
+		it->playSample(
+				sample, loop, priority, paused, pitch_shift_, lvol, rvol,
+				id_counter);
 		return id_counter;
 	}
 	return -1;
 }
 
-bool AudioMixer::isPlaying(sint32 instance_id) const
-{
-	if (instance_id < 0 || channels.empty() || !audio_ok) return false;
+bool AudioMixer::isPlaying(sint32 instance_id) const {
+	if (instance_id < 0 || channels.empty() || !audio_ok) {
+		return false;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
-		return channel.getInstanceId() == instance_id;
-	});
+	auto                                  it = std::find_if(
+            channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
+                return channel.getInstanceId() == instance_id;
+            });
 	return it != channels.end() && it->isPlaying();
 }
 
-bool AudioMixer::isPlaying(AudioSample *sample) const
-{
-	if (!sample || channels.empty() || !audio_ok) return false;
+bool AudioMixer::isPlaying(AudioSample* sample) const {
+	if (!sample || channels.empty() || !audio_ok) {
+		return false;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	auto it = std::find_if(channels.cbegin(), channels.cend(), [sample](auto& channel) {
-		return channel.getSample() == sample;
-	});
+	auto                                  it = std::find_if(
+            channels.cbegin(), channels.cend(), [sample](auto& channel) {
+                return channel.getSample() == sample;
+            });
 	return it != channels.end();
 }
 
-bool AudioMixer::isPlayingVoice() const
-{
-	if (channels.empty() || !audio_ok) return false;
+bool AudioMixer::isPlayingVoice() const {
+	if (channels.empty() || !audio_ok) {
+		return false;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	auto it = std::find_if(channels.cbegin(), channels.cend(), [](auto& channel) {
-		return channel.isPlaying() && channel.getSample()->isVocSample();
-	});
+	auto                                  it = std::find_if(
+            channels.cbegin(), channels.cend(), [](auto& channel) {
+                return channel.isPlaying()
+                       && channel.getSample()->isVocSample();
+            });
 	return it != channels.end();
 }
 
-void AudioMixer::stopSample(sint32 instance_id)
-{
-	if (instance_id < 0 || channels.empty() || !audio_ok) return;
+void AudioMixer::stopSample(sint32 instance_id) {
+	if (instance_id < 0 || channels.empty() || !audio_ok) {
+		return;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
-		return channel.getInstanceId() == instance_id;
-	});
+	auto                                  it = std::find_if(
+            channels.begin(), channels.end(), [instance_id](auto& channel) {
+                return channel.getInstanceId() == instance_id;
+            });
 	if (it != channels.end()) {
 		it->stop();
 	}
 }
 
-void AudioMixer::stopSample(AudioSample *sample)
-{
-	if (!sample || channels.empty() || !audio_ok) return;
+void AudioMixer::stopSample(AudioSample* sample) {
+	if (!sample || channels.empty() || !audio_ok) {
+		return;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	for (auto& channel : channels)
-	{
-		if (channel.getSample() == sample)
+	for (auto& channel : channels) {
+		if (channel.getSample() == sample) {
 			channel.stop();
+		}
 	}
 }
 
-void AudioMixer::setPaused(sint32 instance_id, bool paused)
-{
-	if (instance_id < 0 || channels.empty() || !audio_ok) return;
+void AudioMixer::setPaused(sint32 instance_id, bool paused) {
+	if (instance_id < 0 || channels.empty() || !audio_ok) {
+		return;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
-		return channel.getInstanceId() == instance_id;
-	});
+	auto                                  it = std::find_if(
+            channels.begin(), channels.end(), [instance_id](auto& channel) {
+                return channel.getInstanceId() == instance_id;
+            });
 	if (it != channels.end()) {
 		it->setPaused(paused);
 	}
 }
 
-bool AudioMixer::isPaused(sint32 instance_id) const
-{
-	if (instance_id < 0 || channels.empty() || !audio_ok) return false;
+bool AudioMixer::isPaused(sint32 instance_id) const {
+	if (instance_id < 0 || channels.empty() || !audio_ok) {
+		return false;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
-		return channel.getInstanceId() == instance_id;
-	});
+	auto                                  it = std::find_if(
+            channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
+                return channel.getInstanceId() == instance_id;
+            });
 	return it != channels.end() && it->isPaused();
 }
 
-void AudioMixer::setPausedAll(bool paused)
-{
-	if (channels.empty() || !audio_ok) return;
+void AudioMixer::setPausedAll(bool paused) {
+	if (channels.empty() || !audio_ok) {
+		return;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	for (auto& channel : channels)
+	for (auto& channel : channels) {
 		channel.setPaused(paused);
+	}
 }
 
-void AudioMixer::setVolume(sint32 instance_id, int lvol, int rvol)
-{
-	if (instance_id < 0 || channels.empty() || !audio_ok) return;
+void AudioMixer::setVolume(sint32 instance_id, int lvol, int rvol) {
+	if (instance_id < 0 || channels.empty() || !audio_ok) {
+		return;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
-		return channel.getInstanceId() == instance_id;
-	});
+	auto                                  it = std::find_if(
+            channels.begin(), channels.end(), [instance_id](auto& channel) {
+                return channel.getInstanceId() == instance_id;
+            });
 	if (it != channels.end()) {
 		it->setVolume(lvol, rvol);
 	}
 }
 
-void AudioMixer::getVolume(sint32 instance_id, int &lvol, int &rvol) const
-{
-	if (instance_id < 0 || channels.empty() || !audio_ok) return;
+void AudioMixer::getVolume(sint32 instance_id, int& lvol, int& rvol) const {
+	if (instance_id < 0 || channels.empty() || !audio_ok) {
+		return;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
-		return channel.getInstanceId() == instance_id;
-	});
+	auto                                  it = std::find_if(
+            channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
+                return channel.getInstanceId() == instance_id;
+            });
 	if (it != channels.end()) {
 		it->getVolume(lvol, rvol);
 	}
 }
 
-
-bool AudioMixer::set2DPosition(sint32 instance_id, int distance, int angle)
-{
-	if (instance_id < 0 || channels.empty() || !audio_ok) return false;
+bool AudioMixer::set2DPosition(sint32 instance_id, int distance, int angle) {
+	if (instance_id < 0 || channels.empty() || !audio_ok) {
+		return false;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	auto it = std::find_if(channels.begin(), channels.end(), [instance_id](auto& channel) {
-		return channel.getInstanceId() == instance_id;
-	});
+	auto                                  it = std::find_if(
+            channels.begin(), channels.end(), [instance_id](auto& channel) {
+                return channel.getInstanceId() == instance_id;
+            });
 	if (it != channels.end()) {
 		it->set2DPosition(distance, angle);
 		return it->isPlaying();
@@ -301,22 +333,24 @@ bool AudioMixer::set2DPosition(sint32 instance_id, int distance, int angle)
 	return false;
 }
 
-void AudioMixer::get2DPosition(sint32 instance_id, int &distance, int &angle) const
-{
-	if (instance_id < 0 || channels.empty() || !audio_ok) return;
+void AudioMixer::get2DPosition(
+		sint32 instance_id, int& distance, int& angle) const {
+	if (instance_id < 0 || channels.empty() || !audio_ok) {
+		return;
+	}
 
 	const std::lock_guard<SDLAudioDevice> lock(*device);
-	auto it = std::find_if(channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
-		return channel.getInstanceId() == instance_id;
-	});
+	auto                                  it = std::find_if(
+            channels.cbegin(), channels.cend(), [instance_id](auto& channel) {
+                return channel.getInstanceId() == instance_id;
+            });
 	if (it != channels.end()) {
 		it->get2DPosition(distance, angle);
 	}
 }
 
-void AudioMixer::sdlAudioCallback(void *userdata, Uint8 *stream, int len)
-{
-	auto *mixer = static_cast<AudioMixer *>(userdata);
+void AudioMixer::sdlAudioCallback(void* userdata, Uint8* stream, int len) {
+	auto* mixer = static_cast<AudioMixer*>(userdata);
 	// Unfortunately, SDL does not guarantee that stream will be aligned to
 	// the correct alignment for sint16.
 	// There is no real solution except using an aligned buffer and copying.
@@ -331,33 +365,43 @@ void AudioMixer::sdlAudioCallback(void *userdata, Uint8 *stream, int len)
 	std::memcpy(stream, mixer->internal_buffer.data(), len);
 }
 
-void AudioMixer::MixAudio(sint16 *stream, uint32 bytes)
-{
-	if (!audio_ok) return;
-	std::memset(stream,0,bytes);
-	if (midi) midi->produceSamples(stream, bytes);
-	for (auto& channel : channels)
-		if (channel.isPlaying()) channel.resampleAndMix(stream,bytes);
+void AudioMixer::MixAudio(sint16* stream, uint32 bytes) {
+	if (!audio_ok) {
+		return;
+	}
+	std::memset(stream, 0, bytes);
+	if (midi) {
+		midi->produceSamples(stream, bytes);
+	}
+	for (auto& channel : channels) {
+		if (channel.isPlaying()) {
+			channel.resampleAndMix(stream, bytes);
+		}
+	}
 }
 
-void AudioMixer::openMidiOutput()
-{
-	if (midi) return;
-	if (!audio_ok) return;
+void AudioMixer::openMidiOutput() {
+	if (midi) {
+		return;
+	}
+	if (!audio_ok) {
+		return;
+	}
 
-	auto * new_driver = new MyMidiPlayer();
+	auto* new_driver = new MyMidiPlayer();
 
 	{
 		const std::lock_guard<SDLAudioDevice> lock(*device);
 		midi = new_driver;
 	}
 	midi->load_timbres();
-	//midi_driver->setGlobalVolume(midi_volume);
+	// midi_driver->setGlobalVolume(midi_volume);
 }
 
-void AudioMixer::closeMidiOutput()
-{
-	if (!midi) return;
+void AudioMixer::closeMidiOutput() {
+	if (!midi) {
+		return;
+	}
 	std::cout << "Destroying MidiDriver..." << std::endl;
 
 	midi->stop_music(true);

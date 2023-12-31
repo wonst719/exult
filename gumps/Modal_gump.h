@@ -27,42 +27,53 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *  the user clicks okay.
  */
 class Modal_gump : public Gump {
-
 protected:
-	bool done;          // true when user clicks checkmark.
-	Gump_button *pushed;        // Button currently being pushed.
+	bool         done;      // true when user clicks checkmark.
+	Gump_button* pushed;    // Button currently being pushed.
 
 public:
-	Modal_gump(Container_game_object *cont, int initx, int inity,
-	           int shnum, ShapeFile shfile = SF_GUMPS_VGA)
-		: Gump(cont, initx, inity, shnum, shfile), done(false),
-		  pushed(nullptr)
-	{  }
+	Modal_gump(
+			Container_game_object* cont, int initx, int inity, int shnum,
+			ShapeFile shfile = SF_GUMPS_VGA)
+			: Gump(cont, initx, inity, shnum, shfile), done(false),
+			  pushed(nullptr) {}
+
 	// Create centered.
-	Modal_gump(Container_game_object *cont, int shnum,
-	           ShapeFile shfile = SF_GUMPS_VGA)
-		: Gump(cont, shnum, shfile), done(false), pushed(nullptr)
-	{  }
+	Modal_gump(
+			Container_game_object* cont, int shnum,
+			ShapeFile shfile = SF_GUMPS_VGA)
+			: Gump(cont, shnum, shfile), done(false), pushed(nullptr) {}
+
 	bool is_done() {
 		return done;
 	}
+
 	// Handle events:
 	virtual bool mouse_down(int mx, int my, int button) = 0;
-	virtual bool mouse_up(int mx, int my, int button) = 0;
-	virtual void mousewheel_down() { }
-	virtual void mousewheel_up() { }
+	virtual bool mouse_up(int mx, int my, int button)   = 0;
+
+	virtual void mousewheel_down() {}
+
+	virtual void mousewheel_up() {}
+
 	virtual void mouse_drag(int mx, int my) {
 		ignore_unused_variable_warning(mx, my);
 	}
-	virtual void key_down(int chr) { // Key pressed
+
+	virtual void key_down(int chr) {    // Key pressed
 		ignore_unused_variable_warning(chr);
 	}
-	virtual void text_input(int chr, int unicode, bool shift_pressed) { // Character typed (unicode)
+
+	virtual void text_input(
+			int chr, int unicode,
+			bool shift_pressed) {    // Character typed (unicode)
 		ignore_unused_variable_warning(chr, unicode, shift_pressed);
 	}
-	virtual void text_input(const char *text) { // complete string input
+
+	virtual void text_input(const char* text) {    // complete string input
 		ignore_unused_variable_warning(text);
 	}
+
 	bool is_modal() const override {
 		return true;
 	}

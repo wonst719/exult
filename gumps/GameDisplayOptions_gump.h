@@ -29,35 +29,36 @@ class Gump_button;
 
 class GameDisplayOptions_gump : public Modal_gump {
 private:
-	int facestats;
-	int sc_enabled;
-	int sc_outline;
-	bool sb_hide_missing;
+	int                      facestats;
+	int                      sc_enabled;
+	int                      sc_outline;
+	bool                     sb_hide_missing;
 	std::vector<std::string> sc_outline_txt;
-	int text_bg;
-	int smooth_scrolling;
-	bool usecode_intro;
-	bool extended_intro;
-	bool menu_intro;
-	int paperdolls;
+	int                      text_bg;
+	int                      smooth_scrolling;
+	bool                     usecode_intro;
+	bool                     extended_intro;
+	bool                     menu_intro;
+	int                      paperdolls;
 
 	enum button_ids {
-	    id_first = 0,
-	    id_ok = id_first,
-	    id_cancel,
-	    id_help,
-	    id_facestats,
-	    id_sc_enabled,
-	    id_sc_outline,
-	    id_sb_hide_missing,
-	    id_text_bg,
-	    id_smooth_scrolling,
-	    id_menu_intro,
-	    id_usecode_intro,
-	    id_extended_intro,
-	    id_paperdolls,
-	    id_count
+		id_first = 0,
+		id_ok    = id_first,
+		id_cancel,
+		id_help,
+		id_facestats,
+		id_sc_enabled,
+		id_sc_outline,
+		id_sb_hide_missing,
+		id_text_bg,
+		id_smooth_scrolling,
+		id_menu_intro,
+		id_usecode_intro,
+		id_extended_intro,
+		id_paperdolls,
+		id_count
 	};
+
 	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
 
 public:

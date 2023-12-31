@@ -19,20 +19,20 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
 #include "Table.h"
 
-#include <iostream>
-#include <cstdlib>
 #include "exceptions.h"
 #include "utils.h"
 
-using std::string;
+#include <cstdlib>
+#include <iostream>
 
 using std::FILE;
 using std::size_t;
+using std::string;
 
 void Table::index_file() {
 	if (!data) {
@@ -58,8 +58,8 @@ void Table::index_file() {
  *  @param in   DataSource to verify.
  *  @return Whether or not the DataSource is a table file.
  */
-bool Table::is_table(IDataSource *in) {
-	const size_t pos = in->getPos();
+bool Table::is_table(IDataSource* in) {
+	const size_t pos       = in->getPos();
 	const size_t file_size = in->getSize();
 
 	in->seek(0);

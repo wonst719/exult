@@ -31,10 +31,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Gump_ToggleButton : public Gump_button {
 public:
-	Gump_ToggleButton(Gump *par, int px, int py, int shapenum,
-	                  int selectionnum, int numsel)
-		: Gump_button(par, shapenum, px, py, SF_EXULT_FLX),
-		  numselections(numsel) {
+	Gump_ToggleButton(
+			Gump* par, int px, int py, int shapenum, int selectionnum,
+			int numsel)
+			: Gump_button(par, shapenum, px, py, SF_EXULT_FLX),
+			  numselections(numsel) {
 		set_frame(2 * selectionnum);
 	}
 
@@ -45,6 +46,7 @@ public:
 	int getselection() const {
 		return get_framenum() / 2;
 	}
+
 	virtual void toggle(int state) = 0;
 
 private:
@@ -57,18 +59,20 @@ private:
 
 class Gump_ToggleTextButton : public Text_button {
 public:
-	Gump_ToggleTextButton(Gump *par, const std::vector<std::string>& s,  int selectionnum,
-	                      int px, int py, int width, int height = 0)
-		: Text_button(par, "", px, py, width, height),
-		  selections(s) {
+	Gump_ToggleTextButton(
+			Gump* par, const std::vector<std::string>& s, int selectionnum,
+			int px, int py, int width, int height = 0)
+			: Text_button(par, "", px, py, width, height), selections(s) {
 		set_frame(selectionnum);
 		text = selections[selectionnum];
 		init();
 	}
-	Gump_ToggleTextButton(Gump *par, std::vector<std::string>&& s,  int selectionnum,
-	                      int px, int py, int width, int height = 0)
-		: Text_button(par, "", px, py, width, height),
-		  selections(std::move(s)) {
+
+	Gump_ToggleTextButton(
+			Gump* par, std::vector<std::string>&& s, int selectionnum, int px,
+			int py, int width, int height = 0)
+			: Text_button(par, "", px, py, width, height),
+			  selections(std::move(s)) {
 		set_frame(selectionnum);
 		text = selections[selectionnum];
 		init();
@@ -81,6 +85,7 @@ public:
 	int getselection() const {
 		return get_framenum();
 	}
+
 	virtual void toggle(int state) = 0;
 
 private:
@@ -94,8 +99,8 @@ public:
 
 	template <typename... Ts>
 	CallbackToggleTextButton(Parent* par, CallbackType&& callback, Ts&&... args)
-		: Gump_ToggleTextButton(par, std::forward<Ts>(args)...),
-		  parent(par), on_toggle(std::forward<CallbackType>(callback)) {}
+			: Gump_ToggleTextButton(par, std::forward<Ts>(args)...),
+			  parent(par), on_toggle(std::forward<CallbackType>(callback)) {}
 
 	void toggle(int state) override {
 		(parent->*on_toggle)(state);
@@ -103,7 +108,7 @@ public:
 	}
 
 private:
-	Parent* parent;
+	Parent*      parent;
 	CallbackType on_toggle;
 };
 

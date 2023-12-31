@@ -35,16 +35,20 @@
  *  Delay between animations.
  */
 
-#define DELAY_TOTAL_MS 10
+#define DELAY_TOTAL_MS  10
 #define DELAY_SINGLE_MS 1
 
-inline void Delay(
-) {
+inline void Delay() {
 	const Uint32 expiration = DELAY_TOTAL_MS + SDL_GetTicks();
 	for (;;) {
 		SDL_PumpEvents();
-		if ((SDL_PeepEvents(nullptr, 0, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT) != 0) ||
-		    (static_cast<Sint32>(SDL_GetTicks()) >= static_cast<Sint32>(expiration))) return;
+		if ((SDL_PeepEvents(
+					 nullptr, 0, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT)
+			 != 0)
+			|| (static_cast<Sint32>(SDL_GetTicks())
+				>= static_cast<Sint32>(expiration))) {
+			return;
+		}
 
 		SDL_Delay(DELAY_SINGLE_MS);
 	}

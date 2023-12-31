@@ -28,60 +28,90 @@ class IDataSource;
 
 namespace Pentagram {
 
-class AudioSample
-{
-protected:
-	uint32	bits;
-	int		frame_size;
-	uint32	decompressor_size;
-	uint32	decompressor_align;
-	uint32	length;
+	class AudioSample {
+	protected:
+		uint32 bits;
+		int    frame_size;
+		uint32 decompressor_size;
+		uint32 decompressor_align;
+		uint32 length;
 
-	uint32	buffer_size;
-	std::unique_ptr<uint8[]> buffer;
+		uint32                   buffer_size;
+		std::unique_ptr<uint8[]> buffer;
 
-	uint32	refcount;
+		uint32 refcount;
 
-	mutable uint32	sample_rate;
-	mutable bool	stereo;
+		mutable uint32 sample_rate;
+		mutable bool   stereo;
 
-public:
-	AudioSample(std::unique_ptr<uint8[]> buffer, uint32 size);
-	virtual ~AudioSample() = default;
+	public:
+		AudioSample(std::unique_ptr<uint8[]> buffer, uint32 size);
+		virtual ~AudioSample() = default;
 
-	inline uint32 getRate() const { return sample_rate; }
-	inline uint32 getBits() const { return bits; }
-	inline bool isStereo() const { return stereo; }
-	inline uint32 getFrameSize() const { return frame_size; }
-	inline uint32 getDecompressorDataSize() const { return decompressor_size; }
-	inline uint32 getDecompressorAlignment() const { return decompressor_align; }
+		inline uint32 getRate() const {
+			return sample_rate;
+		}
 
-	//! get AudioSample length (in samples)
-	inline uint32 getLength() const { return length; }
+		inline uint32 getBits() const {
+			return bits;
+		}
 
-	virtual void initDecompressor(void *DecompData) const = 0;
-	virtual uint32 decompressFrame(void *DecompData, void *samples) const = 0;
-	void rewind(void *DecompData) const {
-		freeDecompressor(DecompData);
-		initDecompressor(DecompData);
-	}
-	virtual void freeDecompressor(void *DecompData) const {
-		ignore_unused_variable_warning(DecompData);
-	}
+		inline bool isStereo() const {
+			return stereo;
+		}
 
-	void			IncRef() { refcount++; }
-	void			Release() {
-		if (!--refcount)
-			delete this;
-	}
-	uint32			getRefCount() { return refcount; }
-	virtual bool isVocSample() const {
-		return false;
-	}
+		inline uint32 getFrameSize() const {
+			return frame_size;
+		}
 
-	static AudioSample *createAudioSample(std::unique_ptr<uint8[]> data, uint32 size);
-};
+		inline uint32 getDecompressorDataSize() const {
+			return decompressor_size;
+		}
 
-}
+		inline uint32 getDecompressorAlignment() const {
+			return decompressor_align;
+		}
 
-#endif //AUDIOSAMPLE_H_INCLUDED
+		//! get AudioSample length (in samples)
+		inline uint32 getLength() const {
+			return length;
+		}
+
+		virtual void   initDecompressor(void* DecompData) const = 0;
+		virtual uint32 decompressFrame(void* DecompData, void* samples) const
+				= 0;
+
+		void rewind(void* DecompData) const {
+			freeDecompressor(DecompData);
+			initDecompressor(DecompData);
+		}
+
+		virtual void freeDecompressor(void* DecompData) const {
+			ignore_unused_variable_warning(DecompData);
+		}
+
+		void IncRef() {
+			refcount++;
+		}
+
+		void Release() {
+			if (!--refcount) {
+				delete this;
+			}
+		}
+
+		uint32 getRefCount() {
+			return refcount;
+		}
+
+		virtual bool isVocSample() const {
+			return false;
+		}
+
+		static AudioSample* createAudioSample(
+				std::unique_ptr<uint8[]> data, uint32 size);
+	};
+
+}    // namespace Pentagram
+
+#endif    // AUDIOSAMPLE_H_INCLUDED

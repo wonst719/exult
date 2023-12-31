@@ -19,13 +19,13 @@
 #ifndef UCDATA_H
 #define UCDATA_H
 
-#include <string>
+#include "ucfunc.h"
+
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <memory>
-
-#include "ucfunc.h"
+#include <string>
 
 class Usecode_symbol_table;
 
@@ -37,19 +37,20 @@ public:
 	void dump_unknown_opcodes();
 	void dump_unknown_intrinsics();
 
-	void parse_params(const unsigned int argc, char **argv);
-	void open_usecode(const std::string &filename);
-	void load_globals(std::ostream &o);
-	void load_funcs(std::ostream &o);
+	void parse_params(const unsigned int argc, char** argv);
+	void open_usecode(const std::string& filename);
+	void load_globals(std::ostream& o);
+	void load_funcs(std::ostream& o);
 	void analyse_classes();
 
-	void disassamble(std::ostream &o);
-	void dump_flags(std::ostream &o);
-	void output_extern_header(std::ostream &o);
+	void disassamble(std::ostream& o);
+	void dump_flags(std::ostream& o);
+	void output_extern_header(std::ostream& o);
 
 	std::string output_redirect() const {
 		return _output_redirect;
 	}
+
 	std::string input_usecode_file() const {
 		return _input_usecode_file;
 	}
@@ -59,23 +60,24 @@ public:
 		return _file.fail();
 	}
 
-	const std::map<unsigned int, UCFuncSet> &funcmap() {
+	const std::map<unsigned int, UCFuncSet>& funcmap() {
 		return _funcmap;
 	}
 
-	const UCOptions &opt() {
+	const UCOptions& opt() {
 		return options;
 	}
 
 	UCOptions options;
 
 private:
+	void file_open(const std::string& filename);
 
-	void file_open(const std::string &filename);
 	void file_seek_start() {
 		auto& _file = *_pFile;
 		_file.seekg(0, std::ios::beg);
 	}
+
 	void file_seek_end() {
 		auto& _file = *_pFile;
 		_file.seekg(0, std::ios::end);
@@ -91,20 +93,20 @@ private:
 
 	std::vector<UCc> _codes;
 
-	std::vector<UCFunc *> _funcs;
-	Usecode_symbol_table *_symtbl = nullptr;
- 
+	std::vector<UCFunc*>  _funcs;
+	Usecode_symbol_table* _symtbl = nullptr;
+
 	/* Just a quick mapping between funcs and basic data on them.
 	   Just something we can quickly pass to the parsing functions
 	   so we don't have to give them an entire function to play with. */
 	FuncMap _funcmap;
 
 	/* Usecode class inheritance map. */
-	using InheritMap = std::map<Usecode_class_symbol *, Usecode_class_symbol *>;
+	using InheritMap = std::map<Usecode_class_symbol*, Usecode_class_symbol*>;
 	InheritMap _clsmap;
 
-	long _search_opcode = -1;
-	long _search_intrinsic = -1;
+	long                      _search_opcode    = -1;
+	long                      _search_intrinsic = -1;
 	std::vector<unsigned int> search_funcs;
 };
 

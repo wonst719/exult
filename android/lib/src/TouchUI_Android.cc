@@ -36,13 +36,12 @@ extern "C" JNIEXPORT void JNICALL
 extern "C" JNIEXPORT void JNICALL
 		Java_info_exult_ExultActivity_sendEscapeKeypress(
 				JNIEnv* env, jobject /* this */) {
-	auto   touchUI = TouchUI_Android::getInstance();
+	auto touchUI = TouchUI_Android::getInstance();
 	touchUI->sendEscapeKeypress();
 }
 
-extern "C" JNIEXPORT void JNICALL
-		Java_info_exult_ExultActivity_setName(
-				JNIEnv* env, jobject /* this */, jstring javaName) {
+extern "C" JNIEXPORT void JNICALL Java_info_exult_ExultActivity_setName(
+		JNIEnv* env, jobject /* this */, jstring javaName) {
 	const char* name = env->GetStringUTFChars(javaName, nullptr);
 	TouchUI::onTextInput(name);
 	env->ReleaseStringUTFChars(javaName, name);
@@ -60,14 +59,14 @@ void TouchUI_Android::setVirtualJoystick(Sint16 x, Sint16 y) {
 }
 
 void TouchUI_Android::sendEscapeKeypress() {
-    SDL_Event event = {};
-    event.key.keysym.sym = SDLK_ESCAPE;
+	SDL_Event event      = {};
+	event.key.keysym.sym = SDLK_ESCAPE;
 
-    event.type = SDL_KEYDOWN;
-    SDL_PushEvent(&event);
+	event.type = SDL_KEYDOWN;
+	SDL_PushEvent(&event);
 
-    event.type = SDL_KEYUP;
-    SDL_PushEvent(&event);
+	event.type = SDL_KEYUP;
+	SDL_PushEvent(&event);
 }
 
 TouchUI_Android::TouchUI_Android() {
@@ -140,12 +139,12 @@ void TouchUI_Android::showButtonControls() {
 	config->value("config/touch/dpad_location", dpadLocation, "right");
 	auto javaDpadLocation = m_jniEnv->NewStringUTF(dpadLocation.c_str());
 	m_jniEnv->CallVoidMethod(
-			m_exultActivityObject, m_showButtonControlsMethod, javaDpadLocation);
+			m_exultActivityObject, m_showButtonControlsMethod,
+			javaDpadLocation);
 }
 
 void TouchUI_Android::hideButtonControls() {
 	m_jniEnv->CallVoidMethod(m_exultActivityObject, m_hideButtonControlsMethod);
 }
 
-void TouchUI_Android::onDpadLocationChanged() {
-}
+void TouchUI_Android::onDpadLocationChanged() {}

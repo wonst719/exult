@@ -3,28 +3,32 @@
  * licence: GPL
  * date: 20/06/03
  *
- * This file is for reading the config files and setting up the appropriate conversions
+ * This file is for reading the config files and setting up the appropriate
+ * conversions
  */
+
+#ifdef HAVE_CONFIG_H
+#	include <config.h>
+#endif
+
+#include "globals.h"
+#include "plugin.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "globals.h"
-#include "config.h"
-#include "plugin.h"
-
-int close_config(FILE *f) {
+int close_config(FILE* f) {
 	return fclose(f);
 }
 
-FILE *open_config(char *configfile) {
+FILE* open_config(char* configfile) {
 	if (g_statics.debug) {
 		printf("\nConfig file: %s\n********************\n", configfile);
 	}
 
-	if (!strcmp(configfile, "-")) { // they match
-		if (!strcmp(g_statics.filein, "-")) { // is filein also stdin?
+	if (!strcmp(configfile, "-")) {              // they match
+		if (!strcmp(g_statics.filein, "-")) {    // is filein also stdin?
 			// IT IS!! That's no good
 			fprintf(stderr, "ERROR: Already using stdin for inputimage\n");
 			return NULL;
@@ -32,18 +36,19 @@ FILE *open_config(char *configfile) {
 			return stdin;
 		}
 	} else {
-		FILE *f = fopen(configfile, "ra");
+		FILE* f = fopen(configfile, "ra");
 		if (f == NULL) {
-			fprintf(stderr, "ERROR: Couldn't open config file %s\n", configfile);
+			fprintf(stderr, "ERROR: Couldn't open config file %s\n",
+					configfile);
 			return NULL;
 		}
 		return f;
 	}
 }
 
-int read_config(FILE *f) {
-	char *pluginname = NULL;
-	libhandle_t a_hdl = NULL;
+int read_config(FILE* f) {
+	char*       pluginname = NULL;
+	libhandle_t a_hdl      = NULL;
 
 	rewind(f);
 	while (!feof(f)) {
@@ -75,9 +80,11 @@ int read_config(FILE *f) {
 					fflush(stdout);
 				}
 				const size_t namelen = (13 + line_length) * sizeof(char);
-				pluginname = (char *)malloc(namelen);
-				strncpy(line, line + 1, line_length - 3); // what's between the '[' and the ']'
-				line[line_length - 3] = '\0'; // and add a \0 at the end
+				pluginname           = (char*)malloc(namelen);
+				strncpy(line, line + 1,
+						line_length
+								- 3);    // what's between the '[' and the ']'
+				line[line_length - 3] = '\0';    // and add a \0 at the end
 #ifdef _WIN32
 				snprintf(pluginname, namelen, "libsmooth_%s.dll", line);
 #else
@@ -92,13 +99,16 @@ int read_config(FILE *f) {
 					if (g_statics.debug > 2) {
 						printf("Adding %s to list\n", pluginname);
 					}
-					// TODO: load the init function with our global stuff to initialise the plugin
-					void *(*init)(glob_statics * g_var);
+					// TODO: load the init function with our global stuff to
+					// initialise the plugin
+					void* (*init)(glob_statics* g_var);
 					*(void**)&init = plug_load_func(a_hdl, "init_plugin");
 					(*init)(&g_statics);
 					hdl_list = add_handle(a_hdl, hdl_list);
 				}
-			} else if (line[0] == '#' || line[0] == '\n' || line[0] == '\r' || line[0] == ';') {
+			} else if (
+					line[0] == '#' || line[0] == '\n' || line[0] == '\r'
+					|| line[0] == ';') {
 				if (g_statics.debug > 3) {
 					printf("skipping: %s", line);
 					fflush(stdout);
@@ -109,15 +119,24 @@ int read_config(FILE *f) {
 					fflush(stdout);
 				}
 				// send the line to the plugin_process_line from pluginname
-				// we should use the head of hdl_list as the handle of the loaded plugin
+				// we should use the head of hdl_list as the handle of the
+				// loaded plugin
 				if (pluginname == NULL || a_hdl == NULL) {
-					fprintf(stderr, "WARNING: line entered before first section. Use comments (# or ;) please.\nIgnoring line: %s", line);
+					fprintf(stderr,
+							"WARNING: line entered before first section. Use "
+							"comments (# or ;) please.\nIgnoring line: %s",
+							line);
 				} else {
-					// extract the first colour from the line, get index from palette and populate action_table at right index with hdl
+					// extract the first colour from the line, get index from
+					// palette and populate action_table at right index with hdl
 					colour_hex col;
-					if (sscanf(line, "%6s", col) != 1 || strlen(col) != 6) { // just read 6 characters to prevent buffer overflow
+					if (sscanf(line, "%6s", col) != 1
+						|| strlen(col) != 6) {    // just read 6 characters to
+												  // prevent buffer overflow
 						// problem
-						fprintf(stderr, "ERROR: couldn't read the slave value of %s\n", line);
+						fprintf(stderr,
+								"ERROR: couldn't read the slave value of %s\n",
+								line);
 						fflush(stderr);
 						return -1;
 					} else {
@@ -126,10 +145,12 @@ int read_config(FILE *f) {
 						unsigned b;
 						sscanf(col, "%02x%02x%02x", &r, &g, &b);
 						// get index of col from palette
-						int idx = SDL_MapRGB(g_statics.image_in->format, r, g, b);
+						int idx = SDL_MapRGB(
+								g_statics.image_in->format, r, g, b);
 						// some reporting
 						if (g_statics.debug > 3) {
-							printf("slave is %s (idx=%d: r=%u g=%u b=%u)\n", col, idx, r, g, b);
+							printf("slave is %s (idx=%d: r=%u g=%u b=%u)\n",
+								   col, idx, r, g, b);
 							fflush(stdout);
 						}
 						// teach the plugin how to convert what
@@ -157,4 +178,3 @@ int read_config(FILE *f) {
 
 	return 0;
 }
-

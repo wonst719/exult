@@ -17,22 +17,23 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#	include <config.h>
 #endif
 
 #include <iostream>
 
 #ifdef _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <cstring>
-#include <windows.h>
+#	ifndef WIN32_LEAN_AND_MEAN
+#		define WIN32_LEAN_AND_MEAN
+#	endif
+#	include <windows.h>
+
+#	include <cstring>
 #endif
 
 #if (defined(__linux__) || defined(__linux) || defined(linux))
-#include <fstream>
-#include <string>
+#	include <fstream>
+#	include <string>
 #endif
 
 #ifdef _WIN32
@@ -43,17 +44,20 @@ To safe_pointer_cast(From pointer) {
 	constexpr const size_t SizeFrom = sizeof(From);
 	// NOLINTNEXTLINE(bugprone-sizeof-expression)
 	constexpr const size_t SizeTo = sizeof(To);
-	static_assert(std::is_pointer<From>::value && std::is_pointer<To>::value && SizeFrom == SizeTo, "Pointer sizes do not match");
+	static_assert(
+			std::is_pointer<From>::value && std::is_pointer<To>::value
+					&& SizeFrom == SizeTo,
+			"Pointer sizes do not match");
 	To output;
-	std::memcpy(static_cast<void*>(&output),
-				static_cast<void*>(&pointer),
-				SizeFrom);
+	std::memcpy(
+			static_cast<void*>(&output), static_cast<void*>(&pointer),
+			SizeFrom);
 	return output;
 }
 
 #endif
 
-void getVersionInfo(std::ostream &out) {
+void getVersionInfo(std::ostream& out) {
 	/*
 	 * 1. Exult version
 	 */
@@ -61,37 +65,36 @@ void getVersionInfo(std::ostream &out) {
 	out << "Exult version " << VERSION << std::endl;
 
 	/*
-	* 2. Build Architechture
-	*/
+	 * 2. Build Architechture
+	 */
 	out << "Build Architechture: ";
 
 	// AMD64 x86_64
 #if defined(__amd64__) || defined(__amd64) || defined(__amd64__) \
-|| defined(__amd64) || defined(_M_X64) || defined(_M_AMD64)
+		|| defined(__amd64) || defined(_M_X64) || defined(_M_AMD64)
 	out << "x86_64";
 	// ARM THUMB
 #elif defined(__thumb__) || defined(__TARGET_ARCH_THUMB) || defined(_M_ARMT)
-		out << "ARM Thumb";
+	out << "ARM Thumb";
 #elif defined(__arm__) || defined(__TARGET_ARCH_ARM) || defined(_ARM) \
-|| defined(_M_ARM) || defined(__arm)
+		|| defined(_M_ARM) || defined(__arm)
 	out << "ARM";
 	// ARM64
 #elif defined(__aarch64__) || defined(_M_ARM64)
-			out << "ARM64";
+	out << "ARM64";
 
-			//X86
-#elif defined(i386) || defined(__i386) || defined(__i386__) \
-|| defined(__i386) || defined(_M_IX86) || defined(__386)
+	// X86
+#elif defined(i386) || defined(__i386) || defined(__i386__) || defined(__i386) \
+		|| defined(_M_IX86) || defined(__386)
 	out << "x86";
 #elif defined(__riscv)
 	out << "RISC-V"
 #else
-			out << "unknown architechture update version.cc ";
+	out << "unknown architechture update version.cc ";
 
 #endif
 
 	out << std::endl;
-
 
 	/*
 	 * 2. Build time
@@ -99,12 +102,12 @@ void getVersionInfo(std::ostream &out) {
 
 #if (defined(__TIME__) || defined(__DATE__))
 	out << "Built at: ";
-#ifdef __DATE__
+#	ifdef __DATE__
 	out << __DATE__ << " ";
-#endif
-#ifdef __TIME__
+#	endif
+#	ifdef __TIME__
 	out << __TIME__;
-#endif
+#	endif
 	out << std::endl;
 #endif
 
@@ -116,66 +119,88 @@ void getVersionInfo(std::ostream &out) {
 	bool firstoption = true;
 
 #ifdef DEBUG
-	if (!firstoption) out << ", ";
+	if (!firstoption) {
+		out << ", ";
+	}
 	firstoption = false;
 	out << "DEBUG";
 #endif
 
 #ifdef USE_TIMIDITY_MIDI
-	if (!firstoption) out << ", ";
+	if (!firstoption) {
+		out << ", ";
+	}
 	firstoption = false;
 	out << "USE_TIMIDITY_MIDI";
 #endif
 
 #ifdef USE_FMOPL_MIDI
-	if (!firstoption) out << ", ";
+	if (!firstoption) {
+		out << ", ";
+	}
 	firstoption = false;
 	out << "USE_FMOPL_MIDI";
 #endif
 
 #ifdef USE_MT32EMU_MIDI
-	if (!firstoption) out << ", ";
+	if (!firstoption) {
+		out << ", ";
+	}
 	firstoption = false;
 	out << "USE_MT32EMU_MIDI";
 #endif
 
 #ifdef USE_ALSA_MIDI
-	if (!firstoption) out << ", ";
+	if (!firstoption) {
+		out << ", ";
+	}
 	firstoption = false;
 	out << "USE_ALSA_MIDI";
 #endif
 
 #ifdef USE_EXULTSTUDIO
-	if (!firstoption) out << ", ";
+	if (!firstoption) {
+		out << ", ";
+	}
 	firstoption = false;
 	out << "USE_EXULTSTUDIO";
 #endif
 
 #ifdef USECODE_DEBUGGER
-	if (!firstoption) out << ", ";
+	if (!firstoption) {
+		out << ", ";
+	}
 	firstoption = false;
 	out << "USECODE_DEBUGGER";
 #endif
 
 #ifdef NO_SDL_PARACHUTE
-	if (!firstoption) out << ", ";
+	if (!firstoption) {
+		out << ", ";
+	}
 	firstoption = false;
 	out << "NO_SDL_PARACHUTE";
 #endif
 
 #ifdef HAVE_ZIP_SUPPORT
-	if (!firstoption) out << ", ";
+	if (!firstoption) {
+		out << ", ";
+	}
 	firstoption = false;
 	out << "HAVE_ZIP_SUPPORT";
 #endif
 
 #ifdef ENABLE_MIDISFX
-	if (!firstoption) out << ", ";
+	if (!firstoption) {
+		out << ", ";
+	}
 	firstoption = false;
 	out << "ENABLE_MIDISFX";
 #endif
 
-	if (firstoption) out << "(none)";
+	if (firstoption) {
+		out << "(none)";
+	}
 	out << std::endl;
 
 	/*
@@ -190,10 +215,10 @@ void getVersionInfo(std::ostream &out) {
 #elif defined(__GNUC__)
 #	define COMPILER "GCC " __VERSION__
 #elif defined(_MSC_FULL_VER)
-#	define COMPILER "Microsoft C/C++ Compiler " \
-                    << (_MSC_FULL_VER / 10'000'000) << '.' \
-                    << ((_MSC_FULL_VER / 100'000) % 100) << '.'   \
-                    << ((_MSC_FULL_VER % 100'000))
+#	define COMPILER                                                       \
+		"Microsoft C/C++ Compiler " << (_MSC_FULL_VER / 10'000'000) << '.' \
+									<< ((_MSC_FULL_VER / 100'000) % 100)   \
+									<< '.' << ((_MSC_FULL_VER % 100'000))
 #else
 #	define COMPILER "unknown compiler"
 #endif
@@ -242,18 +267,24 @@ void getVersionInfo(std::ostream &out) {
 					out << "NT";
 				} else if (info.dwMajorVersion == 4) {
 					out << "NT4";
-				} else if (info.dwMajorVersion == 5 && info.dwMinorVersion == 0) {
+				} else if (
+						info.dwMajorVersion == 5 && info.dwMinorVersion == 0) {
 					out << 2000;
-				} else if (info.dwMajorVersion == 5 && info.dwMinorVersion == 1) {
+				} else if (
+						info.dwMajorVersion == 5 && info.dwMinorVersion == 1) {
 					out << "XP";
-				} else if (info.dwMajorVersion == 5 && info.dwMinorVersion == 2) {
+				} else if (
+						info.dwMajorVersion == 5 && info.dwMinorVersion == 2) {
 					// Only workstation release with version 5.2 was XP x64
 					out << "XP";
-				} else if (info.dwMajorVersion == 6 && info.dwMinorVersion == 0) {
+				} else if (
+						info.dwMajorVersion == 6 && info.dwMinorVersion == 0) {
 					out << "Vista";
-				} else if (info.dwMajorVersion == 6 && info.dwMinorVersion == 1) {
+				} else if (
+						info.dwMajorVersion == 6 && info.dwMinorVersion == 1) {
 					out << "7";
-				} else if (info.dwMajorVersion == 6 && info.dwMinorVersion == 2) {
+				} else if (
+						info.dwMajorVersion == 6 && info.dwMinorVersion == 2) {
 					out << "8";
 				} else {
 					// Note: Without the proper manifest file, GetVersionEx will
@@ -261,9 +292,9 @@ void getVersionInfo(std::ostream &out) {
 					if (info.dwMajorVersion == 6 && info.dwMinorVersion == 3) {
 						out << "8.1";
 					} else if (info.dwMajorVersion == 10) {
-						// cut off for Windows 10 and 11 is build 22000 (11 builds
-						// with a build number lower than 22000 are not public
-						// releases so I don't care)
+						// cut off for Windows 10 and 11 is build 22000 (11
+						// builds with a build number lower than 22000 are not
+						// public releases so I don't care)
 						if (LOWORD(info.dwBuildNumber & 0xFFFF) < 22000) {
 							out << "10";
 						} else {
@@ -280,15 +311,20 @@ void getVersionInfo(std::ostream &out) {
 					out << "NT Server";
 				} else if (info.dwMajorVersion == 4) {
 					out << "NT4 Server";
-				} else if (info.dwMajorVersion == 5 && info.dwMinorVersion == 0) {
+				} else if (
+						info.dwMajorVersion == 5 && info.dwMinorVersion == 0) {
 					out << "2000 Server";
-				} else if (info.dwMajorVersion == 5 && info.dwMinorVersion == 2) {
+				} else if (
+						info.dwMajorVersion == 5 && info.dwMinorVersion == 2) {
 					out << " Windows Server 2003";
-				} else if (info.dwMajorVersion == 6 && info.dwMinorVersion == 0) {
+				} else if (
+						info.dwMajorVersion == 6 && info.dwMinorVersion == 0) {
 					out << "Windows Server 2008";
-				} else if (info.dwMajorVersion == 6 && info.dwMinorVersion == 1) {
+				} else if (
+						info.dwMajorVersion == 6 && info.dwMinorVersion == 1) {
 					out << "Windows Server 2008 R2";
-				} else if (info.dwMajorVersion == 6 && info.dwMinorVersion == 2) {
+				} else if (
+						info.dwMajorVersion == 6 && info.dwMinorVersion == 2) {
 					out << "Windows Server 2012";
 				} else {
 					// Note: Without the proper manifest file, GetVersionEx will
@@ -298,7 +334,8 @@ void getVersionInfo(std::ostream &out) {
 					} else if (info.dwMajorVersion == 10) {
 						if (LOWORD(info.dwBuildNumber & 0xFFFF) < 17000) {
 							out << "Server 2016";
-						} else if (LOWORD(info.dwBuildNumber & 0xFFFF) < 19000) {
+						} else if (
+								LOWORD(info.dwBuildNumber & 0xFFFF) < 19000) {
 							out << "Server 2019";
 						} else {
 							out << "Server 2022";
@@ -336,13 +373,15 @@ void getVersionInfo(std::ostream &out) {
 
 		// This function only exists in XP or newer but I see no reason to break
 		// compatibility with older windows version here so using it dynamically
-		void (WINAPI *fpGetNativeSystemInfo)(LPSYSTEM_INFO lpSystemInfo) = nullptr;
+		void(WINAPI * fpGetNativeSystemInfo)(LPSYSTEM_INFO lpSystemInfo)
+				= nullptr;
 		HMODULE kernel32 = GetModuleHandleA("KERNEL32");
 		if (kernel32 != nullptr) {
 			using LPNativeSystemInfo = decltype(fpGetNativeSystemInfo);
-			fpGetNativeSystemInfo = safe_pointer_cast<LPNativeSystemInfo>(
-					GetProcAddress(kernel32, "GetNativeSystemInfo"));
-			// We default to GetSystemInfo (win2000 req) if we couldn't get GetNativeSystemInfo
+			fpGetNativeSystemInfo    = safe_pointer_cast<LPNativeSystemInfo>(
+                    GetProcAddress(kernel32, "GetNativeSystemInfo"));
+			// We default to GetSystemInfo (win2000 req) if we couldn't get
+			// GetNativeSystemInfo
 			if (fpGetNativeSystemInfo == nullptr) {
 				fpGetNativeSystemInfo = safe_pointer_cast<LPNativeSystemInfo>(
 						GetProcAddress(kernel32, "GetSystemInfo"));
