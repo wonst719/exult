@@ -32,8 +32,8 @@ public:
 	virtual ~Pathfinder_client() = default;
 	Pathfinder_client(const Pathfinder_client&) = delete;
 	Pathfinder_client(Pathfinder_client&&) = delete;
-	Pathfinder_client operator=(const Pathfinder_client&) = delete;
-	Pathfinder_client operator=(Pathfinder_client&&) = delete;
+	Pathfinder_client& operator=(const Pathfinder_client&) = delete;
+	Pathfinder_client& operator=(Pathfinder_client&&) = delete;
 	// Figure when to give up.
 	virtual int get_max_cost(int cost_to_goal) const;
 	// Figure cost for a single step.
