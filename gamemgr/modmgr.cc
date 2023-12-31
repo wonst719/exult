@@ -408,7 +408,7 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 			break;
 		default:
 			unknown_crc("Black Gate");
-			// FALLTHROUGH
+			[[fallthrough]];
 		case 0xafc35523:
 			// English BG
 			language = ENGLISH;
@@ -450,7 +450,7 @@ ModManager::ModManager(const string &name, const string &menu, bool needtitle,
 			break;
 		default:
 			unknown_crc("Serpent Isle");
-			// FALLTHROUGH
+			[[fallthrough]];
 		case 0xf98f5f3e:
 			// English SI
 			language = ENGLISH;

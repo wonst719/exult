@@ -1196,7 +1196,7 @@ bool Hand_Handler::draw_frame() {
 		if (currBackground != eSHOW_STATIC) {
 			break;
 		}
-		// FALL THROUGH
+		[[fallthrough]];
 	case eSHOW_STATIC:
 	case eNOP:
 		if (currOp == eSHOW_STATIC) {
@@ -1224,7 +1224,7 @@ bool Hand_Handler::draw_frame() {
 			currBackground = currOp;
 			break;
 		}
-		// FALL THROUGH
+		[[fallthrough]];
 	case eBLACK_SCREEN:
 		win->fill8(0, screenShape->get_width(), screenShape->get_height(),
 		           centerx + 12 - screenShape->get_width()/2,

@@ -764,7 +764,7 @@ bool Egg_object::is_active(
 #ifdef DEBUG
 		print_debug();
 #endif
-		// fall through
+		[[fallthrough]];
 	case party_near:        // Avatar or party member.
 		if (!obj->get_flag(Obj_flags::in_party))
 			return false;
@@ -1268,7 +1268,7 @@ bool Field_object::field_effect(
 		// Campfire (Fire in SI) doesn't hurt when burnt out
 		if (frame == 0)
 			return false;
-		// FALLTHROUGH
+		[[fallthrough]];
 	case fire_field:
 		actor->reduce_health(2 + rand() % 3, Weapon_data::fire_damage);
 		// But no sleeping here.

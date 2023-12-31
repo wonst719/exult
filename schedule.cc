@@ -1027,8 +1027,8 @@ void Patrol_schedule::now_what(
 		Game_object_vector nearby;
 		npc->find_nearby(nearby, PATH_SHAPE, 25, 0x10, c_any_qual, c_any_framenum);
 		gotpath = !nearby.empty();
+		[[fallthrough]];
 	}
-	// FALLTHROUGH
 	case 0: { // Find next path.
 		if (!gotpath) {
 			// SI seems to try switching to preprogrammed schedules
@@ -1122,7 +1122,7 @@ void Patrol_schedule::now_what(
 			case 25:        // 50% wrap to 0.
 				if (rand() % 2)
 					break;
-				// FALLTHROUGH
+				[[fallthrough]];
 			case 1:         // Wrap to 0.
 				pathnum = -1;
 				dir = 1;
@@ -1134,7 +1134,7 @@ void Patrol_schedule::now_what(
 			case 24:       // Read
 				// Find the book which will be read.
 				book = weak_from_obj(npc->find_closest(642, 4));
-				// FALLTHROUGH
+				[[fallthrough]];
 			case 3:         // Sit.
 				if (Sit_schedule::set_action(npc)) {
 					scr->start();   // Start next tick.
@@ -1840,7 +1840,7 @@ void Farmer_schedule::now_what(
 	switch (state) {
 	case start:
 		state = find_crop;
-		/* FALL THROUGH */
+		[[fallthrough]];
 	case find_crop: {
 		Game_object_vector crops;
 		crop = Game_object_weak();
@@ -2724,7 +2724,7 @@ void Desk_schedule::now_what(
 		}
 		state = sit_at_desk;
 		}
-		/* FALL THROUGH */
+		[[fallthrough]];
 	case sit_at_desk: {
 		const int frnum = npc->get_framenum();
 		// Not sitting?
@@ -3577,7 +3577,7 @@ void Waiter_schedule::now_what(
 		find_tables(964, 24);
 		find_prep_tables();
 		state = get_customer;
-		/* FALL THROUGH */
+		[[fallthrough]];
 	case get_customer:
 		if (!find_customer()) {
 			walk_to_prep();
@@ -3602,8 +3602,8 @@ void Waiter_schedule::now_what(
 			customers_ordered.push_back(customer);
 		}
 		state = took_order;
+		[[fallthrough]];
 	}
-	/* FALL THROUGH */
 	case took_order:
 		// Get up to 4 orders before serving them.
 		if (customers_ordered.size() >= 4 || customers.empty()) {
@@ -3659,8 +3659,8 @@ void Waiter_schedule::now_what(
 		Ready_food(npc);
 		cooking = false;
 		state = bring_food;
+		[[fallthrough]];
 	}
-		/* FALL THROUGH. */
 	case bring_food:
 		if (customers_ordered.empty()) {		// All done serving them?
 			if (rand() % 3 == 0)
@@ -3712,8 +3712,8 @@ void Waiter_schedule::now_what(
 			++items_in_hand;
 			break;
 		}
+		[[fallthrough]];
 	}
-		/* FALL THROUGH */
 	case picked_up_item:
 		set_current_item(nullptr);
 		if (cooking) {

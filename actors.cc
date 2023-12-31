@@ -3066,13 +3066,13 @@ int Actor::get_effective_prop(
 		if (get_flag(Obj_flags::paralyzed) || get_flag(Obj_flags::asleep) ||
 		        is_knocked_out())
 			return prop == Actor::dexterity ? 0 : 1;
-		// FALL THROUGH
+		[[fallthrough]];
 	case Actor::intelligence:
 		if (is_dead())
 			return prop == Actor::dexterity ? 0 : 1;
 		else if (get_flag(Obj_flags::charmed) || get_flag(Obj_flags::asleep))
 			val--;
-		// FALL THROUGH
+		[[fallthrough]];
 	case Actor::strength:
 		if (get_flag(Obj_flags::might))
 			val += (val < 15 ? val : 15);   // Add up to 15.
