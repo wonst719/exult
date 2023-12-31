@@ -72,7 +72,7 @@ void SwordBlank shape#(0x29C) () {
 	} else if (event == SCRIPTED) {
 		//Swordblank is now carried and is ready to be used on something
 		UI_close_gumps();
-		var target = UI_click_on_item();
+		struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
 
 		//Now, decide what to do based on the shape of the target item
