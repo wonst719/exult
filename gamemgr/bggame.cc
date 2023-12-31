@@ -1085,7 +1085,7 @@ enum HandlerScriptOps {
 	eSHOW_FAKE_TITLE,       // Draw fake title screen permanently
 };
 
-static constexpr const HandlerScriptOps HandlerScript[] = {
+constexpr const HandlerScriptOps HandlerScript[] = {
 	eHAND_HIT        ,
 	eBLACK_SCREEN    ,
 	eSHOW_FAKE_TITLE ,
