@@ -580,8 +580,8 @@ static void Read_text_data_file(
 					in, static_strings, sections.data(), sections.size());
 		} catch (std::exception&) {
 			if (!editing) {
-				for (int i = 0; i < parsers.size(); i++) {
-					delete parsers[i];
+				for (auto* parser : parsers) {
+					delete parser;
 				}
 				throw;
 			}
