@@ -480,10 +480,9 @@ void Game_window::write_saveinfo() {
 				npc = get_npc(party_man->get_member(i - 1));
 			}
 
-			char              name[18];
-			const std::string namestr = npc->get_npc_name();
-			strncpy(name, namestr.c_str(), 18);
-			out.write(name, 18);
+			std::string name(npc->get_npc_name());
+			name.resize(18, '\0');
+			out.write(name.data(), name.size());
 			out.write2(npc->get_shapenum());
 
 			out.write4(npc->get_property(Actor::exp));
@@ -1108,12 +1107,11 @@ bool Game_window::save_gamedat_zip(
 
 	// Name
 	{
-		char title[0x50];
-		memset(title, 0, 0x50);
-		std::strncpy(title, savename, 0x50);
 		auto out = U7open_out(fname);
 		if (out) {
-			out->write(title, 0x50);
+			std::string title(savename);
+			title.resize(0x50, '\0');
+			out->write(title.data(), title.size());
 		}
 	}
 

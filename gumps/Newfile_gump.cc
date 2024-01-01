@@ -978,8 +978,7 @@ void Newfile_gump::LoadSaveGameDetails() {
 	cur_shot = gwin->create_mini_screenshot();
 
 	// Current Details
-	cur_details = new SaveGame_Details;
-	memset(cur_details, 0, sizeof(SaveGame_Details));
+	cur_details = new SaveGame_Details{};
 
 	gwin->get_win()->put(back.get(), 0, 0);
 
@@ -1014,23 +1013,25 @@ void Newfile_gump::LoadSaveGameDetails() {
 			npc = gwin->get_npc(partyman->get_member(i - 1));
 		}
 
-		const std::string namestr = npc->get_npc_name();
-		strncpy(cur_party[i].name, namestr.c_str(), 18);
-		cur_party[i].shape      = npc->get_shapenum();
-		cur_party[i].shape_file = npc->get_shapefile();
+		SaveGame_Party& current = cur_party[i];
+		std::string     namestr = npc->get_npc_name();
+		namestr.resize(sizeof(current.name), '\0');
+		std::memmove(current.name, namestr.data(), sizeof(current.name));
+		current.shape      = npc->get_shapenum();
+		current.shape_file = npc->get_shapefile();
 
-		cur_party[i].dext     = npc->get_property(Actor::dexterity);
-		cur_party[i].str      = npc->get_property(Actor::strength);
-		cur_party[i].intel    = npc->get_property(Actor::intelligence);
-		cur_party[i].health   = npc->get_property(Actor::health);
-		cur_party[i].combat   = npc->get_property(Actor::combat);
-		cur_party[i].mana     = npc->get_property(Actor::mana);
-		cur_party[i].magic    = npc->get_property(Actor::magic);
-		cur_party[i].training = npc->get_property(Actor::training);
-		cur_party[i].exp      = npc->get_property(Actor::exp);
-		cur_party[i].food     = npc->get_property(Actor::food_level);
-		cur_party[i].flags    = npc->get_flags();
-		cur_party[i].flags2   = npc->get_flags2();
+		current.dext     = npc->get_property(Actor::dexterity);
+		current.str      = npc->get_property(Actor::strength);
+		current.intel    = npc->get_property(Actor::intelligence);
+		current.health   = npc->get_property(Actor::health);
+		current.combat   = npc->get_property(Actor::combat);
+		current.mana     = npc->get_property(Actor::mana);
+		current.magic    = npc->get_property(Actor::magic);
+		current.training = npc->get_property(Actor::training);
+		current.exp      = npc->get_property(Actor::exp);
+		current.food     = npc->get_property(Actor::food_level);
+		current.flags    = npc->get_flags();
+		current.flags2   = npc->get_flags2();
 	}
 
 	party      = cur_party;
