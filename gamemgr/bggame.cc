@@ -1257,10 +1257,10 @@ namespace {    // anonymous
 				  playedStaticSFX(false) {
 			const str_int_pair& resource
 					= game->get_resource("files/intro_hand");
-			const U7object    shpobj(resource.str, resource.num);
-			std::size_t       len;
-			auto              handBuffer = shpobj.retrieve(len);
-			IBufferDataSource ds(std::move(handBuffer), len);
+			const U7object  shpobj(resource.str, resource.num);
+			std::size_t     len;
+			auto            handBuffer = shpobj.retrieve(len);
+			IBufferDataView ds(handBuffer, len);
 			handshp = std::make_unique<Shape_file>(&ds);
 		}
 

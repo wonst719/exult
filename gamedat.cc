@@ -89,25 +89,30 @@ extern int save_compression;
  */
 void Game_window::restore_flex_files(IDataSource& in, const char* basepath) {
 	in.seek(0x54);    // Get to where file count sits.
-	const int numfiles = in.read4();
+	const size_t numfiles = in.read4();
 	in.seek(0x80);    // Get to file info.
+
 	// Read pos., length of each file.
-	long* finfo = new long[2 * numfiles];
-	int   i;
-	for (i = 0; i < numfiles; i++) {
-		finfo[2 * i]     = in.read4();    // The position, then the length.
-		finfo[2 * i + 1] = in.read4();
+	struct file_info {
+		size_t location;
+		size_t length;
+	};
+
+	std::vector<file_info> finfo(numfiles);
+	for (auto& [location, length] : finfo) {
+		location = in.read4();    // The position, then the length.
+		length   = in.read4();
 	}
-	const int baselen = strlen(basepath);
-	for (i = 0; i < numfiles; i++) {    // Now read each file.
+	const size_t baselen = strlen(basepath);
+	for (const auto& [location, length] : finfo) {    // Now read each file.
 		// Get file length.
-		size_t len = finfo[2 * i + 1];
+		size_t len = length;
 		if (len <= 13) {
 			continue;
 		}
 		len -= 13;
-		in.seek(finfo[2 * i]);    // Get to it.
-		char fname[50];           // Set up name.
+		in.seek(location);    // Get to it.
+		char fname[50];       // Set up name.
 		strcpy(fname, basepath);
 		in.read(&fname[baselen], 13);
 		size_t namelen = strlen(fname);
@@ -116,8 +121,7 @@ void Game_window::restore_flex_files(IDataSource& in, const char* basepath) {
 			fname[namelen - 1] = 0;
 		}
 		// Now read the file.
-		char* buf = new char[len];
-		in.read(buf, len);
+		auto buf = in.readN(len);
 		if (!memcmp(&fname[baselen], "map", 3)) {
 			// Multimap directory entry.
 			// Just for safety, we will force-terminate the filename
@@ -125,7 +129,7 @@ void Game_window::restore_flex_files(IDataSource& in, const char* basepath) {
 			namelen        = baselen + 5;
 			fname[namelen] = 0;
 
-			IBufferDataSource ds(buf, len);
+			IBufferDataView ds(buf, len);
 			if (!Flex::is_flex(&ds)) {
 				// Save is most likely corrupted. Ignore the file but keep
 				// reading the savegame.
@@ -147,15 +151,13 @@ void Game_window::restore_flex_files(IDataSource& in, const char* basepath) {
 		if (!pOut) {
 			abort("Error opening '%s'.", fname);
 		}
-		auto& out = *pOut;
-		out.write(buf, len);    // Then write it out.
-		delete[] buf;
-		if (!out.good()) {
+		OStreamDataSource sout(pOut.get());
+		sout.write(buf.get(), len);    // Then write it out.
+		if (!sout.good()) {
 			abort("Error writing '%s'.", fname);
 		}
 		cycle_load_palette();
 	}
-	delete[] finfo;
 }
 
 // In gamemgr/modmgr.cc because it is also needed by ES.
@@ -626,23 +628,30 @@ bool Game_window::get_saveinfo(
 	in.seek(0x54);    // Get to where file count sits.
 	const size_t numfiles = in.read4();
 	in.seek(0x80);    // Get to file info.
+
 	// Read pos., length of each file.
-	auto finfo = std::make_unique<uint32[]>(2 * numfiles);
-	for (size_t i = 0; i < numfiles; i++) {
-		finfo[2 * i]     = in.read4();    // The position, then the length.
-		finfo[2 * i + 1] = in.read4();
+	struct file_info {
+		size_t location;
+		size_t length;
+	};
+
+	std::vector<file_info> finfo(numfiles);
+	for (auto& [location, length] : finfo) {
+		location = in.read4();    // The position, then the length.
+		length   = in.read4();
 	}
 
 	// Always first two entires
 	for (size_t i = 0; i < 2; i++) {    // Now read each file.
 		// Get file length.
-		size_t len = finfo[2 * i + 1];
+		auto& [location, length] = finfo[i];
+		size_t len               = location;
 		if (len <= 13) {
 			continue;
 		}
 		len -= 13;
-		in.seek(finfo[2 * i]);    // Get to it.
-		char fname[50];           // Set up name.
+		in.seek(length);    // Get to it.
+		char fname[50];     // Set up name.
 		strcpy(fname, GAMEDAT);
 		in.read(&fname[sizeof(GAMEDAT) - 1], 13);
 		const size_t namelen = strlen(fname);
@@ -723,21 +732,18 @@ bool Game_window::get_saveinfo_zip(
 
 	// Things we need
 	unz_file_info file_info;
-	char*         buf = nullptr;
 
 	// Get the screenshot first
 	if (unzLocateFile(unzipfile, remove_dir(GSCRNSHOT), 2) == UNZ_OK) {
 		unzGetCurrentFileInfo(
 				unzipfile, &file_info, nullptr, 0, nullptr, 0, nullptr, 0);
-		buf = new char[file_info.uncompressed_size];
 
+		std::vector<char> buf(file_info.uncompressed_size);
 		unzOpenCurrentFile(unzipfile);
-		unzReadCurrentFile(unzipfile, buf, file_info.uncompressed_size);
+		unzReadCurrentFile(unzipfile, buf.data(), file_info.uncompressed_size);
 		if (unzCloseCurrentFile(unzipfile) == UNZ_OK) {
-			IBufferDataSource ds(buf, file_info.uncompressed_size);
+			IBufferDataView ds(buf.data(), file_info.uncompressed_size);
 			map = std::make_unique<Shape_file>(&ds);
-		} else {
-			delete[] buf;
 		}
 	}
 
@@ -745,15 +751,13 @@ bool Game_window::get_saveinfo_zip(
 	if (unzLocateFile(unzipfile, remove_dir(GSAVEINFO), 2) == UNZ_OK) {
 		unzGetCurrentFileInfo(
 				unzipfile, &file_info, nullptr, 0, nullptr, 0, nullptr, 0);
-		buf = new char[file_info.uncompressed_size];
 
+		std::vector<char> buf(file_info.uncompressed_size);
 		unzOpenCurrentFile(unzipfile);
-		unzReadCurrentFile(unzipfile, buf, file_info.uncompressed_size);
+		unzReadCurrentFile(unzipfile, buf.data(), file_info.uncompressed_size);
 		if (unzCloseCurrentFile(unzipfile) == UNZ_OK) {
-			IBufferDataSource ds(buf, file_info.uncompressed_size);
+			IBufferDataView ds(buf.data(), buf.size());
 			read_saveinfo(&ds, details, party);
-		} else {
-			delete[] buf;
 		}
 	}
 
@@ -807,9 +811,8 @@ bool Game_window::Restore_level2(void* uzf, const char* dirname, int dirlen) {
 			}
 
 			// Now read the file.
-			char* buf = new char[size];
-			if (unzReadCurrentFile(unzipfile, buf, size) != size) {
-				delete[] buf;
+			std::vector<char> buf(size);
+			if (unzReadCurrentFile(unzipfile, buf.data(), buf.size()) != size) {
 				std::cerr << "Couldn't read for buf" << std::endl;
 				return false;
 			}
@@ -821,9 +824,8 @@ bool Game_window::Restore_level2(void* uzf, const char* dirname, int dirlen) {
 				return false;
 			}
 			auto& out = *pOut;
-			out.write(buf, size);
+			out.write(buf.data(), buf.size());
 
-			delete[] buf;
 			if (!out.good()) {
 				std::cerr << "out was bad" << std::endl;
 				return false;
@@ -951,8 +953,8 @@ bool Game_window::restore_gamedat_zip(
 		}
 
 		// Now read the file.
-		char* buf = new char[len];
-		if (unzReadCurrentFile(unzipfile, buf, len) != len) {
+		std::vector<char> buf(len);
+		if (unzReadCurrentFile(unzipfile, buf.data(), buf.size()) != len) {
 			abort("Error reading current from zip '%s'.", fname);
 		}
 
@@ -962,7 +964,7 @@ bool Game_window::restore_gamedat_zip(
 			abort("Error opening '%s'.", oname);
 		}
 		auto& out = *pOut;
-		out.write(buf, len);
+		out.write(buf.data(), buf.size());
 		if (!out.good()) {
 			abort("Error writing to '%s'.", oname);
 		}
@@ -971,7 +973,6 @@ bool Game_window::restore_gamedat_zip(
 		if (unzCloseCurrentFile(unzipfile) != UNZ_OK) {
 			abort("Error closing current in zip '%s'.", fname);
 		}
-		delete[] buf;
 
 		cycle_load_palette();
 	} while (unzGoToNextFile(unzipfile) == UNZ_OK);
@@ -1035,12 +1036,10 @@ static bool Save_level2(zipFile zipfile, const char* fname) {
 		throw file_read_exception(fname);
 	}
 
-	const size_t size = ds.getSize();
-	char* const  buf
-			= new char[size < 13 ? 13 : size];    // We want at least 13 bytes
+	const size_t      size = ds.getSize();
+	std::vector<char> buf(std::max<size_t>(13, size), 0);
 
 	// Filename first
-	memset(buf, 0, 13);
 	const char* fname2 = strrchr(fname, '/');
 	if (!fname2) {
 		fname2 = strchr(fname, '\\');
@@ -1050,24 +1049,22 @@ static bool Save_level2(zipFile zipfile, const char* fname) {
 	} else {
 		fname2 = fname;
 	}
-	strncpy(buf, fname2, 13);
-	int err = zipWriteInFileInZip(zipfile, buf, 12);
+	strncpy(buf.data(), fname2, 13);
+	int err = zipWriteInFileInZip(zipfile, buf.data(), 12);
 
 	// Size of the file
 	if (err == ZIP_OK) {
-		// Must be platform independant
-		auto* ptr = reinterpret_cast<unsigned char*>(buf);
+		// Must be platform independent
+		auto* ptr = buf.data();
 		Write4(ptr, size);
-		err = zipWriteInFileInZip(zipfile, buf, 4);
+		err = zipWriteInFileInZip(zipfile, buf.data(), 4);
 	}
 
 	// Now the actual file
 	if (err == ZIP_OK) {
-		ds.read(buf, size);
-		err = zipWriteInFileInZip(zipfile, buf, size);
+		ds.read(buf.data(), size);
+		err = zipWriteInFileInZip(zipfile, buf.data(), size);
 	}
-
-	delete[] buf;
 
 	return err == ZIP_OK;
 }

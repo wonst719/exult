@@ -297,6 +297,10 @@ inline void Write1(sint8*& out, uint8 val) {
 	*out++ = static_cast<sint8>(val);
 }
 
+inline void Write1(char*& out, uint8 val) {
+	*out++ = static_cast<sint8>(val);
+}
+
 /*
  *  Write a 2-byte value, lsb first.
  */
