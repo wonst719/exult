@@ -81,9 +81,8 @@ int read_config(FILE* f) {
 				}
 				const size_t namelen = (13 + line_length) * sizeof(char);
 				pluginname           = (char*)malloc(namelen);
-				strncpy(line, line + 1,
-						line_length
-								- 3);    // what's between the '[' and the ']'
+				// what's between the '[' and the ']'
+				memmove(line, line + 1, line_length - 3);
 				line[line_length - 3] = '\0';    // and add a \0 at the end
 #ifdef _WIN32
 				snprintf(pluginname, namelen, "libsmooth_%s.dll", line);
