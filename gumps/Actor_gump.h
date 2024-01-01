@@ -32,20 +32,9 @@ class Combat_mode_button;
  */
 class Actor_gump : public Gump {
 protected:
-	struct Position {
-		short x;
-		short y;
-	};
-
-	static Position coords[12];    // Coords. of where to draw things,
 	// Find index of closest spot.
-	int             find_closest(int mx, int my, int only_empty = 0);
-	void            set_to_spot(Game_object* obj, int index);
-	static Position disk;      // Where to show 'diskette' button.
-	static Position heart;     // Where to show 'stats' button.
-	static Position combat;    // Combat button.
-	static Position halo;      // "Protected" halo.
-	static Position cmode;     // Combat mode.
+	int  find_closest(int mx, int my, int only_empty = 0);
+	void set_to_spot(Game_object* obj, int index);
 
 public:
 	Actor_gump(Container_game_object* cont, int initx, int inity, int shnum);

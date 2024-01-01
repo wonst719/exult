@@ -35,7 +35,6 @@
 #include "ammoinf.h"
 #include "animate.h"
 #include "armorinf.h"
-#include "array_size.h"
 #include "cheat.h"
 #include "chunks.h"
 #include "combat.h"
@@ -409,7 +408,7 @@ Game_object* Actor::find_weapon_ammo(int weapon, int needed, bool recursive) {
 	// Search readied weapons first.
 	static const Ready_type_Exult wspots[] = {lhand, rhand, back_2h, belt};
 	for (auto wspot : wspots) {
-		Game_object* obj = spots[static_cast<int>(wspot)];
+		Game_object* obj = spots[wspot];
 		if (!obj || obj->get_shapenum() != weapon) {
 			continue;
 		}
@@ -501,7 +500,7 @@ static inline bool Is_weapon_usable(
  */
 
 bool Actor::ready_ammo() {
-	Game_object* weapon = spots[static_cast<int>(lhand)];
+	Game_object* weapon = spots[lhand];
 	if (!weapon) {
 		return false;
 	}
@@ -978,7 +977,7 @@ void Actor::refigure_gear() {
 	int immune    = 0;
 	light_sources = 0;
 	for (auto loc : locs) {
-		Game_object* worn = spots[static_cast<int>(loc)];
+		Game_object* worn = spots[loc];
 		if (worn) {
 			const Shape_info& info = worn->get_info();
 			const char        rdy  = info.get_ready_type();
@@ -3544,7 +3543,7 @@ int Actor::figure_warmth() {
 	static const Ready_type_Exult locs[]
 			= {head, cloak, feet, torso, gloves, legs};
 	for (auto loc : locs) {
-		Game_object* worn = spots[static_cast<int>(loc)];
+		Game_object* worn = spots[loc];
 		if (worn) {
 			warmth += worn->get_info().get_object_warmth(worn->get_framenum());
 		}
@@ -3616,7 +3615,7 @@ bool Actor::usecode_attack() {
  */
 
 void Actor::init_readied() {
-	for (size_t i = 0; i < array_size(spots); i++) {
+	for (size_t i = 0; i < spots.size(); i++) {
 		if (spots[i]) {
 			call_readied_usecode(i, spots[i], Usecode_machine::readied);
 		}
@@ -3774,7 +3773,7 @@ bool Actor::add_readied(
 		int          index,    // Spot #.
 		bool dont_check, bool force_pos, bool noset) {
 	// Is Out of range?
-	if (index < 0 || index >= static_cast<int>(array_size(spots))) {
+	if (index < 0 || static_cast<unsigned>(index) >= spots.size()) {
 		return false;
 	}
 
@@ -3853,7 +3852,7 @@ bool Actor::add_readied(
  */
 
 int Actor::find_readied(Game_object* obj) {
-	for (size_t i = 0; i < array_size(spots); i++) {
+	for (size_t i = 0; i < spots.size(); i++) {
 		if (spots[i] == obj) {
 			return i;
 		}
@@ -3868,7 +3867,7 @@ int Actor::find_readied(Game_object* obj) {
  */
 
 Game_object* Actor::get_readied(int index) const {
-	return index >= 0 && index < static_cast<int>(array_size(spots))
+	return index >= 0 && static_cast<unsigned>(index) < spots.size()
 				   ? spots[index]
 				   : nullptr;
 }
@@ -3963,7 +3962,7 @@ int Actor::get_armor_points() const {
 			= {head,    amulet,  torso, cloak, belt,     lhand, rhand,
 			   lfinger, rfinger, legs,  feet,  earrings, gloves};
 	for (auto aspot : aspots) {
-		Game_object* armor = spots[static_cast<int>(aspot)];
+		Game_object* armor = spots[aspot];
 		if (armor) {
 			points += armor->get_info().get_armor();
 		}
@@ -4027,7 +4026,7 @@ const Weapon_info* Actor::get_weapon(
 	points                    = 1;     // Bare hands = 1.
 	shape                     = -1;    // Bare hands.
 	const Weapon_info* winf   = nullptr;
-	Game_object*       weapon = spots[static_cast<int>(lhand)];
+	Game_object*       weapon = spots[lhand];
 	obj                       = weapon;
 	if (weapon) {
 		if ((winf = weapon->get_info().get_weapon_info()) != nullptr) {

@@ -399,13 +399,6 @@ void save_image(
 }
 
 int main(int argc, char* argv[]) {
-	char*    palfilename;
-	char*    infilename;
-	char*    outprefix;
-	char     outfilename[255];
-	u7shape* sh;
-	uint8*   palette;
-
 	if (argc < 4) {
 		cout << "Usage: shp2pcx [input file] [output file prefix] [palette "
 				"file]"
@@ -413,26 +406,27 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 
-	infilename  = argv[1];
-	outprefix   = argv[2];
-	palfilename = argv[3];
+	char* infilename  = argv[1];
+	char* outprefix   = argv[2];
+	char* palfilename = argv[3];
 
 	if (strlen(outprefix) > 128) {
 		cerr << "Output file prefix too long!" << endl;
 		return -1;
 	}
 
-	sh = load_shape(infilename);
+	u7shape* sh = load_shape(infilename);
 	if (!sh) {
 		return 1;
 	}
-	palette = load_palette(palfilename);
+	uint8* palette = load_palette(palfilename);
 	if (!palette) {
 		delete sh;
 		return 1;
 	}
 
 	for (int i = 0; i < sh->num_frames; i++) {
+		char outfilename[255];
 		snprintf(outfilename, sizeof(outfilename), "%s%02i.pcx", outprefix, i);
 		cout << "Writing frame " << i << " to " << outfilename << "..." << endl;
 		save_image(

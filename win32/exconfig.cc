@@ -32,8 +32,8 @@
 #include "headers/ignore_unused_variable_warning.h"
 #include "utils.h"
 
-#include <cstdio>
 #include <cstring>
+#include <map>
 #include <string>
 
 #define MAX_STRLEN 512
@@ -44,65 +44,40 @@
 #	define MessageBoxDebug(a, b, c, d)
 #endif
 
-const char* config_defaults[]
-		= {"config/disk/game/blackgate/keys",
-		   "(default)",
-		   "config/disk/game/serpentisle/keys",
-		   "(default)",
-		   "config/audio/enabled",
-		   "yes",
-		   "config/audio/effects/enabled",
-		   "yes",
-		   "config/audio/effects/convert",
-		   "gs",
-		   "config/audio/midi/enabled",
-		   "yes",
-		   "config/audio/midi/convert",
-		   "gm",
-		   "config/audio/midi/reverb/enabled",
-		   "no",
-		   "config/audio/midi/reverb/level",
-		   "0",
-		   "config/audio/midi/chorus/enabled",
-		   "no",
-		   "config/audio/midi/chorus/level",
-		   "0",
-		   "config/audio/midi/volume_curve",
-		   "1.000000",
-		   "config/audio/speech/enabled",
-		   "yes",
-		   "config/gameplay/cheat",
-		   "yes",
-		   "config/gameplay/skip_intro",
-		   "no",
-		   "config/gameplay/skip_splash",
-		   "no",
-		   "config/video/width",
-		   "320",
-		   "config/video/height",
-		   "200",
-		   "config/video/scale",
-		   "2",
-		   "config/video/scale_method",
-		   "2xSaI",
-		   "config/video/fullscreen",
-		   "no",
-		   "config/video/disable_fades",
-		   "no",
-		   "config/video/gamma/red",
-		   "1.00",
-		   "config/video/gamma/green",
-		   "1.00",
-		   "config/video/gamma/blue",
-		   "1.00",
-		   nullptr};
+static const std::map<const char*, const char*> config_defaults{
+		{  "config/disk/game/blackgate/keys", "(default)"},
+		{"config/disk/game/serpentisle/keys", "(default)"},
+		{             "config/audio/enabled",       "yes"},
+		{     "config/audio/effects/enabled",       "yes"},
+		{     "config/audio/effects/convert",        "gs"},
+		{        "config/audio/midi/enabled",       "yes"},
+		{        "config/audio/midi/convert",        "gm"},
+		{ "config/audio/midi/reverb/enabled",        "no"},
+		{   "config/audio/midi/reverb/level",         "0"},
+		{ "config/audio/midi/chorus/enabled",        "no"},
+		{   "config/audio/midi/chorus/level",         "0"},
+		{   "config/audio/midi/volume_curve",  "1.000000"},
+		{      "config/audio/speech/enabled",       "yes"},
+		{            "config/gameplay/cheat",       "yes"},
+		{       "config/gameplay/skip_intro",        "no"},
+		{      "config/gameplay/skip_splash",        "no"},
+		{			   "config/video/width",       "320"},
+		{              "config/video/height",       "200"},
+		{			   "config/video/scale",         "2"},
+		{        "config/video/scale_method",     "2xSaI"},
+		{          "config/video/fullscreen",        "no"},
+		{       "config/video/disable_fades",        "no"},
+		{           "config/video/gamma/red",      "1.00"},
+		{         "config/video/gamma/green",      "1.00"},
+		{          "config/video/gamma/blue",      "1.00"}
+};
 
-const char* BASE_Files[] = {SHAPES_VGA, FACES_VGA, GUMPS_VGA, FONTS_VGA,
-							INITGAME,   USECODE,   nullptr};
+constexpr static const std::array BASE_Files{SHAPES_VGA, FACES_VGA, GUMPS_VGA,
+											 FONTS_VGA,  INITGAME,  USECODE};
 
-const char* BG_Files[] = {ENDGAME, nullptr};
+constexpr static const std::array BG_Files{ENDGAME};
 
-const char* SI_Files[] = {PAPERDOL, nullptr};
+constexpr static const std::array SI_Files{PAPERDOL};
 
 //
 // Path Helper class
@@ -330,8 +305,6 @@ __declspec(dllexport) void __stdcall SetExultGamePaths(
 	MessageBoxDebug(nullptr, BGPath, "BGPath", MB_OK);
 	MessageBoxDebug(nullptr, SIPath, "SIPath", MB_OK);
 
-	int i;
-
 	const int p_size = strlen(ExultDir) + strlen("/exult.cfg") + MAX_STRLEN;
 	char*     p      = new char[p_size];
 
@@ -368,10 +341,10 @@ __declspec(dllexport) void __stdcall SetExultGamePaths(
 		}
 		// Set Defaults
 		std::string s;
-		for (i = 0; config_defaults[i]; i += 2) {
-			config.value(config_defaults[i], s, "");
+		for (const auto& [key, value] : config_defaults) {
+			config.value(key, s, "");
 			if (s.empty()) {
-				config.set(config_defaults[i], config_defaults[i + 1], true);
+				config.set(key, value, true);
 			}
 		}
 
@@ -403,14 +376,12 @@ __declspec(dllexport) void __stdcall SetExultGamePaths(
 // Verify the BG Directory contains the right stuff
 //
 __declspec(dllexport) int __stdcall VerifyBGDirectory(char* path) {
-	int i;
-
 	const std::string s(path);
 	add_system_path("<STATIC>", s + "/static");
 
 	// Check all the BASE files
-	for (i = 0; BASE_Files[i]; i++) {
-		if (!U7exists(BASE_Files[i])) {
+	for (const auto* file : BASE_Files) {
+		if (!U7exists(file)) {
 			return false;
 		}
 	}
@@ -429,8 +400,8 @@ __declspec(dllexport) int __stdcall VerifyBGDirectory(char* path) {
 	// }
 
 	// Check all the BG files
-	for (i = 0; BG_Files[i]; i++) {
-		if (!U7exists(BG_Files[i])) {
+	for (const auto* file : BG_Files) {
+		if (!U7exists(file)) {
 			return false;
 		}
 	}
@@ -442,14 +413,12 @@ __declspec(dllexport) int __stdcall VerifyBGDirectory(char* path) {
 // Verify the SI Directorys contains the right stuff
 //
 __declspec(dllexport) int __stdcall VerifySIDirectory(char* path) {
-	int i;
-
 	const std::string s(path);
 	add_system_path("<STATIC>", s + "/static");
 
 	// Check all the BASE files
-	for (i = 0; BASE_Files[i]; i++) {
-		if (!U7exists(BASE_Files[i])) {
+	for (const auto* file : BASE_Files) {
+		if (!U7exists(file)) {
 			return false;
 		}
 	}
@@ -468,8 +437,8 @@ __declspec(dllexport) int __stdcall VerifySIDirectory(char* path) {
 	// }
 
 	// Check all the SI files
-	for (i = 0; SI_Files[i]; i++) {
-		if (!U7exists(SI_Files[i])) {
+	for (const auto* file : SI_Files) {
+		if (!U7exists(file)) {
 			return false;
 		}
 	}

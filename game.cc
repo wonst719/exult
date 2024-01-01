@@ -24,7 +24,6 @@
 
 #include "Audio.h"
 #include "Configuration.h"
-#include "array_size.h"
 #include "databuf.h"
 #include "exult.h"
 #include "exult_constants.h"
@@ -422,8 +421,8 @@ bool Game::show_menu(bool skip) {
 	top_menu();
 	MenuList* menu = nullptr;
 
-	const int menuchoices[] = {0x04, 0x05, 0x08, 0x06, 0x11, 0x12, 0x07};
-	const int num_choices   = array_size(menuchoices);
+	constexpr static const std::array menuchoices{0x04, 0x05, 0x08, 0x06,
+												  0x11, 0x12, 0x07};
 
 	const Vga_file exult_flx(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX));
 	char           npc_name[16];
@@ -436,7 +435,7 @@ bool Game::show_menu(bool skip) {
 		if (!menu) {
 			menu       = new MenuList();
 			int offset = 0;
-			for (int i = 0; i < num_choices; i++) {
+			for (size_t i = 0; i < menuchoices.size(); i++) {
 				if ((i != 4 && i != 5)
 					|| (i == 4 && U7exists("<SAVEGAME>/quotes.flg"))
 					|| (i == 5 && U7exists("<SAVEGAME>/endgame.flg"))) {

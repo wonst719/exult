@@ -36,8 +36,8 @@ public:
 	~Conversation() override;
 
 private:
-	Npc_face_info* face_info[2]
-			= {nullptr, nullptr};    // NPC's on-screen faces in convers.
+	std::array<Npc_face_info*, 2> face_info{
+			nullptr, nullptr};    // NPC's on-screen faces in convers.
 	int      num_faces       = 0;
 	int      last_face_shown = 0;    // Index of last npc face shown.
 	TileRect avatar_face

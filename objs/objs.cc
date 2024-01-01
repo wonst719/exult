@@ -720,22 +720,19 @@ public:
  */
 
 Game_object* Game_object::find_closest(
-		Game_object_vector& vec,          // List returned here, closest 1st.
-		int*                shapenums,    // Shapes to look for.
+		Game_object_vector&  vec,          // List returned here, closest 1st.
+		tcb::span<const int> shapenums,    // Shapes to look for.
 		//   c_any_shapenum=any NPC.
-		int num_shapes,    // Size of shapenums.
-		int dist           // Distance to look (tiles).
+		int dist    // Distance to look (tiles).
 ) {
-	int i;
-	for (i = 0; i < num_shapes; i++) {
+	for (auto shape : shapenums) {
 		// 0xb0 mask finds anything.
-		find_nearby(vec, shapenums[i], dist, 0xb0);
+		find_nearby(vec, shape, dist, 0xb0);
 	}
-	const int cnt = vec.size();
-	if (!cnt) {
+	if (vec.empty()) {
 		return nullptr;
 	}
-	if (cnt > 1) {
+	if (vec.size() > 1) {
 		std::sort(vec.begin(), vec.end(), Object_closest_sorter(get_tile()));
 	}
 	return *(vec.begin());
@@ -748,20 +745,18 @@ Game_object* Game_object::find_closest(
  */
 
 Game_object* Game_object::find_closest(
-		const Tile_coord& pos,          // Where to look from.
-		int*              shapenums,    // Shapes to look for.
+		const Tile_coord&    pos,          // Where to look from.
+		tcb::span<const int> shapenums,    // Shapes to look for.
 		//   c_any_shapenum=any NPC.
-		int num_shapes,    // Size of shapenums.
-		int dist           // Distance to look (tiles).
+		int dist    // Distance to look (tiles).
 ) {
 	Game_object_vector vec;    // Gets objects found.
-	int                i;
-	for (i = 0; i < num_shapes; i++) {
+	for (auto shape : shapenums) {
 		// 0xb0 mask finds anything.
-		find_nearby(vec, pos, shapenums[i], dist, 0xb0);
+		find_nearby(vec, pos, shape, dist, 0xb0);
 	}
-	const int cnt = vec.size();
-	if (!cnt) {
+	const size_t cnt = vec.size();
+	if (vec.empty()) {
 		return nullptr;
 	}
 	Game_object* closest   = nullptr;    // Get closest.

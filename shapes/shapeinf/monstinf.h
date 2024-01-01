@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "baseinf.h"
 #include "exult_constants.h"
 
+#include <array>
 #include <cassert>
 #include <iosfwd>
 #include <vector>
@@ -69,7 +70,7 @@ public:
  *  A record from 'equip.dat' consists of 10 elements.
  */
 class Equip_record {
-	Equip_element elements[10];
+	std::array<Equip_element, 10> elements;
 
 public:
 	friend class Monster_info;

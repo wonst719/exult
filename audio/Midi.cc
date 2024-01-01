@@ -29,7 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LowLevelMidiDriver.h"
 #include "MidiDriver.h"
 #include "OggAudioSample.h"
-#include "array_size.h"
 #include "conv.h"
 #include "convmusic.h"
 #include "data/exult_flx.h"
@@ -857,7 +856,7 @@ bool MyMidiPlayer::ogg_play_track(
 		} else if (filename == R_SEND || filename == A_SEND) {
 			ogg_name = "si13.ogg";
 		} else if (filename == MAINMUS || filename == MAINMUS_AD) {
-			if (static_cast<unsigned>(num) < array_size(bgconvmusic)) {
+			if (static_cast<unsigned>(num) < bgconvmusic.size()) {
 				ogg_name = bgconvmusic[num];
 			} else {
 				char outputstr[255];

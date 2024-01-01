@@ -21,6 +21,8 @@
 
 #include "Modal_gump.h"
 
+#include <array>
+
 class Gump_text;
 
 /*
@@ -28,15 +30,15 @@ class Gump_text;
  */
 class File_gump : public Modal_gump {
 protected:
-	static short  textx, texty;             // Where to draw first text field.
-	static short  texth;                    // Distance down to next text field.
-	static short  btn_rows[2];              // y-coord of each button row.
-	static short  btn_cols[3];              // x-coord of each button column.
-	Gump_text*    names[10];                // 10 filename slots.
-	Gump_button*  buttons[6];               // 2 rows, 3 cols of buttons.
-	Gump_text*    pushed_text = nullptr;    // Text mouse is down on.
-	Gump_text*    focus       = nullptr;    // Text line that has focus.
-	unsigned char restored    = 0;          // Set to 1 if we restored a game.
+	static short textx, texty;    // Where to draw first text field.
+	static short texth;           // Distance down to next text field.
+	static std::array<short, 2> btn_rows;    // y-coord of each button row.
+	static std::array<short, 3> btn_cols;    // x-coord of each button column.
+	std::array<Gump_text*, 10>  names;       // 10 filename slots.
+	std::array<Gump_button*, 6> buttons;     // 2 rows, 3 cols of buttons.
+	Gump_text*    pushed_text = nullptr;     // Text mouse is down on.
+	Gump_text*    focus       = nullptr;     // Text line that has focus.
+	unsigned char restored    = 0;           // Set to 1 if we restored a game.
 
 public:
 	File_gump();

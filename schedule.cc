@@ -36,7 +36,6 @@
 #include "Zombie.h"
 #include "actions.h"
 #include "actors.h"
-#include "array_size.h"
 #include "combat.h"
 #include "dir.h"
 #include "frameseq.h"
@@ -49,6 +48,7 @@
 #include "monstinf.h"
 #include "paths.h"
 #include "schedule.h"
+#include "span.h"
 #include "ucmachine.h"
 #include "ucsched.h"
 #include "ucscriptop.h"
@@ -215,9 +215,9 @@ bool Schedule::seek_foes() {
 
 int Schedule::try_street_maintenance() {
 	// What to look for: shutters, light sources,
-	static int night[]   = {322, 372, 336, 997, 889};
-	static int sinight[] = {290, 291, 336, 997, 889};
-	static int day[]     = {290, 291, 338, 997, 526};
+	constexpr static const std::array night{322, 372, 336, 997, 889};
+	constexpr static const std::array sinight{290, 291, 336, 997, 889};
+	constexpr static const std::array day{290, 291, 338, 997, 526};
 
 	const long curtime = Game::get_ticks();
 	if (curtime < street_maintenance_time) {
@@ -229,13 +229,13 @@ int Schedule::try_street_maintenance() {
 	// At least 30secs. before next one.
 	street_maintenance_time
 			= curtime + 30000 + street_maintenance_failures * 5000;
-	int*       shapes;
-	const int  hour = gclock->get_hour();
-	const bool bg   = GAME_BG;
+	const int            hour = gclock->get_hour();
+	const bool           bg   = GAME_BG;
+	tcb::span<const int> shapes;
 	if (hour >= 9 && hour < 18) {
-		shapes = &day[0];
+		shapes = day;
 	} else if (hour >= 18 || hour < 6) {
-		shapes = bg ? &night[0] : &sinight[0];
+		shapes = bg ? night : sinight;
 	} else {
 		return 0;    // Dusk or dawn.
 	}
@@ -250,7 +250,7 @@ int Schedule::try_street_maintenance() {
 	Game_object* found = nullptr;    // Find one we can get to.
 	std::unique_ptr<Path_walking_actor_action>
 			pact;    // Gets ->action to walk there.
-	for (size_t i = 0; !found && i < array_size(night); i++) {
+	for (size_t i = 0; !found && i < shapes.size(); i++) {
 		Game_object_vector objs;    // Find nearby.
 		const int          cnt = npc->find_nearby(objs, shapes[i], 20, 0);
 		int                j;
@@ -262,7 +262,7 @@ int Schedule::try_street_maintenance() {
 				if ((shnum == 290 || shnum == 291)
 					&&    // Shutters?
 						  // Want closed during day.
-					(shapes == day) != (frnum <= 3)) {
+					(shapes.data() == day.data()) != (frnum <= 3)) {
 					continue;
 				}
 				// Serpent lamp posts can't toggle.
@@ -485,10 +485,12 @@ void Street_maintenance_schedule::now_what() {
 		&& objptr->get_framenum() == framenum) {
 		cout << npc->get_name() << " is about to perform street maintenance"
 			 << endl;
-		const int   dir = npc->get_direction(objptr.get());
-		signed char frames[2];
-		frames[0]                = npc->get_dir_framenum(dir, Actor::standing);
-		frames[1]                = npc->get_dir_framenum(dir, 3);
+		const int        dir = npc->get_direction(objptr.get());
+		const std::array frames{
+				static_cast<signed char>(
+						npc->get_dir_framenum(dir, Actor::standing)),
+				static_cast<signed char>(npc->get_dir_framenum(dir, 3)),
+		};
 		signed char   standframe = frames[0];
 		Actor_action* pact       = nullptr;
 		if (shapenum == 997) {    // Spent light source
@@ -509,7 +511,7 @@ void Street_maintenance_schedule::now_what() {
 		}
 
 		npc->set_action(new Sequence_actor_action(
-				new Frames_actor_action(frames, array_size(frames)),
+				new Frames_actor_action(frames.data(), frames.size()),
 				new Face_pos_actor_action(
 						objptr->get_tile(), gwin->get_std_delay()),
 				pact, new Frames_actor_action(&standframe, 1)));
@@ -788,9 +790,9 @@ void Eat_at_inn_schedule::now_what() {
 	const int frnum = npc->get_framenum() & 0xf;
 	if (!sitting_at_chair || frnum != Actor::sit_frame) {
 		// First have to sit down.
-		static int chairs[2] = {873, 292};
+		constexpr static const std::array chairs{873, 292};
 		// Already good?
-		if (frnum == Actor::sit_frame && npc->find_closest(chairs, 2, 1)) {
+		if (frnum == Actor::sit_frame && npc->find_closest(chairs, 1)) {
 			sitting_at_chair = true;
 		} else {
 			if (!Sit_schedule::set_action(npc)) {
@@ -915,13 +917,13 @@ void Preach_schedule::now_what() {
 		}
 		return;
 	case exhort: {
-		signed char frames[8];    // Frames.
-		const int   cnt = 1 + rand() % (array_size(frames) - 1);
+		signed char  frames[8];    // Frames.
+		const size_t cnt = 1 + rand() % (sizeof(frames) - 1);
 		// Frames to choose from:
-		static const char choices[3] = {0, 8, 9};
-		for (int i = 0; i < cnt - 1; i++) {
+		static const char choices[]{0, 8, 9};
+		for (size_t i = 0; i < cnt - 1; i++) {
 			frames[i] = npc->get_dir_framenum(
-					choices[rand() % (array_size(choices))]);
+					choices[rand() % (sizeof(choices))]);
 		}
 		// Make last one standing.
 		frames[cnt - 1] = npc->get_dir_framenum(Actor::standing);
@@ -1650,13 +1652,17 @@ void Graze_schedule::now_what() {
 	case 2:
 		if (npc->get_shapenum() == 0x1fd) {    // Fish?
 			if (rand() % 12 == 0) {
-				signed char frames[3];
-				const int   dir = npc->get_dir_facing();
-				frames[0]       = npc->get_dir_framenum(dir, 0xe);
-				frames[1]       = npc->get_dir_framenum(dir, 0xf);
-				frames[2]       = npc->get_dir_framenum(dir, Actor::standing);
+				const int        dir = npc->get_dir_facing();
+				const std::array frames{
+						static_cast<signed char>(
+								npc->get_dir_framenum(dir, 0xe)),
+						static_cast<signed char>(
+								npc->get_dir_framenum(dir, 0xf)),
+						static_cast<signed char>(
+								npc->get_dir_framenum(dir, Actor::standing)),
+				};
 				npc->set_action(
-						new Frames_actor_action(frames, array_size(frames)));
+						new Frames_actor_action(frames.data(), frames.size()));
 			}
 		} else {
 			npc->add_dirty();
@@ -1753,19 +1759,19 @@ void Dance_schedule::now_what() {
 	if (try_proximity_usecode(8)) {
 		return;
 	}
-	signed char*      frames;
-	int               nframes;
-	static const char base_frames[]
-			= {Actor::standing, Actor::up_frame, Actor::out_frame};
-	const int danceroutine = rand() % 5;
-	const int speed        = 2 * gwin->get_std_delay();
+	signed char* frames;
+	size_t       nframes;
+	const int    danceroutine = rand() % 5;
+	const int    speed        = 2 * gwin->get_std_delay();
 	switch (danceroutine) {
 	default: {
 		// Spin in place using one of several frames.
+		constexpr static const std::array base_frames{
+				Actor::standing, Actor::up_frame, Actor::out_frame};
 		const signed char basefr = base_frames[danceroutine];
 		nframes                  = 6;
 		frames                   = new signed char[nframes];
-		int i;
+		size_t i;
 		for (i = 0; i < nframes - 2; i++) {
 			frames[i] = npc->get_dir_framenum((dir + 2 * i) % 8, basefr);
 		}
@@ -1776,23 +1782,23 @@ void Dance_schedule::now_what() {
 	}
 	case 3: {    // Flap arms
 		// Seems to repeat a random number of times.
-		static const char flap_frames[] = {Actor::up_frame, Actor::out_frame};
-		nframes                         = 5 + 4 * (rand() % 4);
-		frames                          = new signed char[nframes];
-		int i;
-		for (i = 0; i < nframes - 1; i++) {
+		constexpr static const std::array flap_frames{
+				Actor::up_frame, Actor::out_frame};
+		nframes = 5 + 4 * (rand() % 4);
+		frames  = new signed char[nframes];
+		for (size_t i = 0; i < nframes - 1; i++) {
 			frames[i] = npc->get_dir_framenum(dir, flap_frames[i % 2]);
 		}
-		frames[i] = npc->get_dir_framenum(dir, Actor::standing);
+		frames[nframes - 1] = npc->get_dir_framenum(dir, Actor::standing);
 		break;
 	}
 	case 4: {    // Punch
-		static const signed char swing_frames[]
-				= {Actor::ready_frame, Actor::raise1_frame, Actor::reach1_frame,
-				   Actor::strike1_frame, Actor::ready_frame};
-		nframes = array_size(swing_frames);
+		constexpr static const std::array swing_frames{
+				Actor::ready_frame, Actor::raise1_frame, Actor::reach1_frame,
+				Actor::strike1_frame, Actor::ready_frame};
+		nframes = swing_frames.size();
 		frames  = new signed char[nframes];
-		for (int i = 0; i < nframes; i++) {
+		for (size_t i = 0; i < swing_frames.size(); i++) {
 			frames[i] = npc->get_dir_framenum(dir, swing_frames[i]);
 		}
 		break;
@@ -1836,11 +1842,11 @@ void Tool_schedule::ending(int newtype) {
 	}
 }
 
-static int cropshapes[] = {423};
+constexpr static const std::array cropshapes{423};
 
 static void Grow_crops(Actor* npc, int frame_group0) {
 	Game_object_vector crops;
-	npc->find_closest(crops, cropshapes, array_size(cropshapes));
+	npc->find_closest(crops, cropshapes);
 	// Grow the farther ones.
 	const int cnt = crops.size();
 	for (auto it = crops.begin() + cnt / 2; it != crops.end(); ++it) {
@@ -1877,7 +1883,7 @@ void Farmer_schedule::now_what() {
 		if (npc->can_speak() && rand() % 5 == 0) {
 			npc->say(first_farmer2, last_farmer2);
 		}
-		npc->find_closest(crops, cropshapes, array_size(cropshapes));
+		npc->find_closest(crops, cropshapes);
 		// Filter out frame #3 (already cut).
 		for (auto* crop : crops) {
 			if (crop->get_framenum() % 4 != 3) {
@@ -1974,14 +1980,13 @@ void Miner_schedule::now_what() {
 	}
 	switch (state) {
 	case find_ore: {
-		static int         oreshapes[] = {915, 916};
-		Game_object_vector ores;
-		npc->find_closest(ores, oreshapes, array_size(oreshapes));
-		int from;
-		int to;
-		int cnt = ores.size();
+		constexpr static const std::array oreshapes{915, 916};
+		Game_object_vector                ores;
+		npc->find_closest(ores, oreshapes);
+		size_t to;
+		size_t cnt = ores.size();
 		// Filter out frame #3 (dust).
-		for (from = to = 0; from < cnt; ++from) {
+		for (size_t from = to = 0; from < cnt; ++from) {
 			if (ores[from]->get_framenum() < 3) {
 				ores[to++] = ores[from];
 			}
@@ -2629,8 +2634,8 @@ bool Sit_schedule::set_action(
 		*chair_found = nullptr;    // Init. in case we fail.
 	}
 	if (!chairobj) {    // Find chair if not given.
-		static int chairshapes[] = {873, 292};
-		actor->find_closest(chairs, chairshapes, array_size(chairshapes));
+		constexpr static const std::array chairshapes{873, 292};
+		actor->find_closest(chairs, chairshapes);
 		for (auto& chair : chairs) {
 			if (!Sit_actor_action::is_occupied(chair, actor)) {
 				Path_walking_actor_action action(nullptr, 6);
@@ -2711,10 +2716,9 @@ bool Desk_schedule::walk_to_table() {
 	return false;
 }
 
-static char desk_frames[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15};
-#define DESK_FRAMES_CNT array_size(desk_frames)
-
 int Desk_schedule::find_items(Game_object_vector& vec, int dist) {
+	constexpr static const std::array desk_frames{0, 1, 2, 3,  4,  5,  6,
+												  7, 8, 9, 12, 13, 14, 15};
 	npc->find_nearby(vec, 675, dist, 0);
 	const int floor = npc->get_lift() / 5;    // Make sure it's on same floor.
 	vec.erase(
@@ -2722,9 +2726,11 @@ int Desk_schedule::find_items(Game_object_vector& vec, int dist) {
 					vec.begin(), vec.end(),
 					[floor](Game_object* item) {
 						return item->get_lift() / 5 != floor
-							   || memchr(desk_frames, item->get_framenum(),
-										 DESK_FRAMES_CNT)
-										  == nullptr;
+							   || std::find(
+										  desk_frames.cbegin(),
+										  desk_frames.cend(),
+										  item->get_framenum())
+										  == desk_frames.cend();
 					}),
 			vec.end());
 	return vec.size();
@@ -2806,9 +2812,9 @@ void Desk_schedule::now_what() {
 		}
 		Game_object* found = npc->find_closest(desks, 2);
 		if (found) {
-			static int chairs[] = {873, 292};
-			desk                = found->weak_from_this();
-			found = found->find_closest(chairs, array_size(chairs));
+			constexpr static const std::array chairs{873, 292};
+			desk  = found->weak_from_this();
+			found = found->find_closest(chairs);
 			if (found) {
 				chair = found->weak_from_this();
 			}
@@ -2839,14 +2845,20 @@ void Desk_schedule::now_what() {
 		} else if (rand() % 2 && walk_to_random_item()) {
 			state = get_desk_item;
 		} else {    // Stand up a second.
-			signed char frames[5];
-			frames[0] = npc->get_dir_framenum(Actor::standing);
-			frames[1] = npc->get_dir_framenum(Actor::reach1_frame);
-			frames[2] = npc->get_dir_framenum(Actor::standing);
-			frames[3] = npc->get_dir_framenum(Actor::bow_frame);
-			frames[4] = npc->get_dir_framenum(Actor::sit_frame);
+			const std::array frames{
+					static_cast<signed char>(
+							npc->get_dir_framenum(Actor::standing)),
+					static_cast<signed char>(
+							npc->get_dir_framenum(Actor::reach1_frame)),
+					static_cast<signed char>(
+							npc->get_dir_framenum(Actor::standing)),
+					static_cast<signed char>(
+							npc->get_dir_framenum(Actor::bow_frame)),
+					static_cast<signed char>(
+							npc->get_dir_framenum(Actor::sit_frame)),
+			};
 			npc->set_action(
-					new Frames_actor_action(frames, array_size(frames)));
+					new Frames_actor_action(frames.data(), frames.size()));
 			npc->start(250, 3000 + rand() % 2000);
 		}
 		break;
@@ -2899,16 +2911,20 @@ void Desk_schedule::now_what() {
 				state = sit_at_desk;
 			}
 		} else {
-			const int   dir = npc->get_facing_direction(tbl.get());
-			signed char frames[3];
-			frames[0] = npc->get_dir_framenum(dir, Actor::standing);
-			frames[1] = npc->get_dir_framenum(
-					dir,
-					(rand() % 2) ? Actor::reach1_frame : Actor::reach2_frame);
-			frames[2]          = npc->get_dir_framenum(dir, Actor::standing);
+			const int        dir = npc->get_facing_direction(tbl.get());
+			const std::array frames{
+					static_cast<signed char>(
+							npc->get_dir_framenum(dir, Actor::standing)),
+					static_cast<signed char>(npc->get_dir_framenum(
+							dir, (rand() % 2) ? Actor::reach1_frame
+											  : Actor::reach2_frame)),
+					static_cast<signed char>(
+							npc->get_dir_framenum(dir, Actor::standing)),
+			};
 			Actor_action* face = new Face_pos_actor_action(tbl.get(), 200);
 			npc->set_action(new Sequence_actor_action(
-					face, new Frames_actor_action(frames, array_size(frames))));
+					face,
+					new Frames_actor_action(frames.data(), frames.size())));
 		}
 		npc->start(250, 1000 + rand() % 500);
 		break;
@@ -3016,8 +3032,8 @@ void Lab_schedule::init() {
 			}
 		}
 		if (!chair_obj) {
-			static int chairs[2] = {873, 292};
-			chair_obj            = table->find_closest(chairs, 2, 4);
+			constexpr static const std::array chairs{873, 292};
+			chair_obj = table->find_closest(chairs, 4);
 		}
 	}
 	book  = weak_from_obj(book_obj);
@@ -3346,10 +3362,9 @@ static int Get_waiter_objects(
  */
 bool Waiter_schedule::find_unattended_plate() {
 	if (unattended_plates.empty()) {
-		static int           shapes[] = {717};
-		const int            shapecnt = array_size(shapes);
-		vector<Game_object*> plates;
-		(void)npc->find_closest(plates, shapes, shapecnt, 32);
+		constexpr static const std::array shapes{717};
+		vector<Game_object*>              plates;
+		npc->find_closest(plates, shapes, 32);
 		const int floor
 				= npc->get_lift() / 5;    // Make sure it's on same floor.
 

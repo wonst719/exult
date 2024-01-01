@@ -545,16 +545,16 @@ public:
  */
 template <class Parser>
 static void Read_text_data_file(
-		const char* fname,          // Name of file to read, sans extension
-		Parser*     parsers[],      // What to use to parse data.
-		const char* sections[],     // The names of the sections
-		int         numsections,    // Number of sections
+		const char*           fname,    // Name of file to read, sans extension
+		std::vector<Parser*>& parsers,         // What to use to parse data.
+		std::vector<const char*>& sections,    // The names of the sections
 		bool editing, Exult_Game game, int resource) {
-	int                                   static_version = 1;
-	int                                   patch_version  = 1;
 	std::vector<std::vector<std::string>> static_strings;
 	std::vector<std::vector<std::string>> patch_strings;
-	char                                  buf[50];
+
+	int  static_version = 1;
+	int  patch_version  = 1;
+	char buf[50];
 	if (game == BLACK_GATE || game == SERPENT_ISLE) {
 		/*  ++++ Not because of ES.
 		snprintf(buf, sizeof(buf), "config/%s", fname);
@@ -567,7 +567,7 @@ static void Read_text_data_file(
 					 : BUNDLE_CHECK(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX);
 		IExultDataSource ds(flexfile, resource);
 		static_version = Read_text_msg_file_sections(
-				&ds, static_strings, sections, numsections);
+				&ds, static_strings, sections.data(), sections.size());
 	} else {
 		try {
 			snprintf(buf, sizeof(buf), "<STATIC>/%s.txt", fname);
@@ -577,18 +577,18 @@ static void Read_text_data_file(
 			}
 			auto& in       = *pIn;
 			static_version = Read_text_msg_file_sections(
-					in, static_strings, sections, numsections);
+					in, static_strings, sections.data(), sections.size());
 		} catch (std::exception&) {
 			if (!editing) {
-				for (int i = 0; i < numsections; i++) {
+				for (int i = 0; i < parsers.size(); i++) {
 					delete parsers[i];
 				}
 				throw;
 			}
-			static_strings.resize(numsections);
+			static_strings.resize(sections.size());
 		}
 	}
-	patch_strings.resize(numsections);
+	patch_strings.resize(sections.size());
 	snprintf(buf, sizeof(buf), "<PATCH>/%s.txt", fname);
 	if (U7exists(buf)) {
 		auto pIn = U7open_in(buf, false);
@@ -597,14 +597,12 @@ static void Read_text_data_file(
 		}
 		auto& in      = *pIn;
 		patch_version = Read_text_msg_file_sections(
-				in, patch_strings, sections, numsections);
+				in, patch_strings, sections.data(), sections.size());
 	}
-	for (int i = 0; i < numsections; i++) {
+	for (size_t i = 0; i < sections.size(); i++) {
 		parsers[i]->parse(static_strings[i], static_version, false, game);
 		parsers[i]->parse(patch_strings[i], patch_version, true, game);
 	}
-	static_strings.clear();
-	patch_strings.clear();
 }
 
 /*
@@ -932,19 +930,15 @@ public:
  */
 template <class Writer>
 static void Write_text_data_file(
-		const char* fname,          // Name of file to read, sans extension
-		Writer*     writers[],      // What to use to write data.
-		int         numsections,    // Number of sections
+		const char*           fname,    // Name of file to read, sans extension
+		std::vector<Writer*>& writers,    // What to use to write data.
 		int version, Exult_Game game) {
-	int cnt = 0;
-	for (int i = 0; i < numsections; i++) {
-		cnt += writers[i]->check();
+	size_t cnt = 0;
+	for (auto* writer : writers) {
+		cnt += writer->check();
 	}
 	if (!cnt) {
-		// Nothing to do but delete the writers.
-		for (int i = 0; i < numsections; i++) {
-			delete writers[i];
-		}
+		// Nothing to do.
 		return;
 	}
 	char buf[50];
@@ -959,9 +953,8 @@ static void Write_text_data_file(
 	out << "%%section version" << std::endl
 		<< ":" << version << std::endl
 		<< "%%endsection" << std::endl;
-	for (int i = 0; i < numsections; i++) {
-		writers[i]->write_text(out, game);
-		delete writers[i];
+	for (auto* writer : writers) {
+		writer->write_text(out, game);
 	}
 }
 

@@ -22,7 +22,6 @@
 #	include <config.h>
 #endif
 
-#include "array_size.h"
 #include "chunks.h"
 #include "databuf.h"
 #include "egg.h"
@@ -38,6 +37,7 @@
 #include "ucmachine.h"
 #include "utils.h"
 
+#include <algorithm>
 #include <cstring>
 
 using std::cout;
@@ -838,15 +838,12 @@ void Monster_actor::write(ODataSource* nfile    // Generally 'npc.dat'.
 
 void Actor::write_contents(ODataSource* out) {
 	if (!objects.is_empty()) {    // Now write out what's inside.
-		const int num_spots = static_cast<int>(array_size(spots));
-		int       i;
-
-		for (i = 0; i < num_spots; ++i) {
+		for (size_t i = 0; i < spots.size(); ++i) {
 			// Spot Increment
 			if (spots[i]) {
 				// Write 2 byte index id
 				out->write1(0x02);
-				out->write2(static_cast<uint8>(i));
+				out->write2(static_cast<uint16>(i));
 				spots[i]->write_ireg(out);
 			}
 		}
@@ -855,17 +852,11 @@ void Actor::write_contents(ODataSource* out) {
 		Object_iterator next(objects);
 
 		while ((obj = next.get_next()) != nullptr) {
-			for (i = 0; i < num_spots; ++i) {
-				if (spots[i] == obj) {
-					break;
-				}
-			}
-
-			if (i == num_spots) {
+			auto iter = std::find(spots.cbegin(), spots.cend(), obj);
+			if (iter == spots.cend()) {
 				// Write 2 byte index id (-1 = no slot)
-				i = -1;
 				out->write1(0x02);
-				out->write2(static_cast<uint8>(i));
+				out->write2(0xff);
 				obj->write_ireg(out);
 			}
 		}

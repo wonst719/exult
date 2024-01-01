@@ -26,6 +26,9 @@
 #include "singles.h"
 #include "tiles.h"
 
+#include <array>
+#include <cstddef>
+
 class Actor;
 
 #define EXULT_PARTY_MAX 8
@@ -34,12 +37,18 @@ class Actor;
  *  Manage the party.
  */
 class Party_manager : public Game_singletons {
-	int    party[EXULT_PARTY_MAX];    // NPC #'s of party members.
-	int    party_count;               // # of NPC's in party.
-	int    dead_party[16];            // NPC #'s of dead party members.
-	int    dead_party_count;
-	Actor* valid[EXULT_PARTY_MAX];    // NPC's able to walk with Avatar.
-	int    validcnt;
+	// NPC #'s of party members.
+	std::array<int, EXULT_PARTY_MAX> party;
+	// # of NPC's in party.
+	size_t party_count;
+	// NPC #'s of dead party members.
+	std::array<int, 16> dead_party;
+	// # of dead NPC's in party.
+	size_t dead_party_count;
+	// NPC's able to walk with Avatar.
+	std::array<Actor*, EXULT_PARTY_MAX> valid;
+	// # of valid NPC's in party.
+	size_t validcnt;
 	// Formation-walking:
 	void move_followers(Actor* npc, int vindex, int dir) const;
 	int  step(Actor* npc, Actor* leader, int dir, const Tile_coord& dest) const;

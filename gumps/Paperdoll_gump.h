@@ -35,47 +35,6 @@ class Paperdoll_npc;
 
 class Paperdoll_gump : public Gump {
 protected:
-	struct Position {
-		short x;
-		short y;
-	};
-
-	// Statics
-	static Position coords[18];         // Coords. of where to draw things,
-	static Position coords_blue[18];    // indexed by spot # (0-17).
-	static Position shapes_blue[18];
-	static Position coords_hot[18];    // Hot spots
-
-	static Position disk;      // Where to show 'diskette' button.
-	static Position heart;     // Where to show 'stats' button.
-	static Position combat;    // Combat button.
-	static Position cstat;     // Combat mode.
-	static Position halo;      // "Protected" halo.
-	static Position cmode;     // Combat mode.
-
-	static Position body;      // Body
-	static Position headp;     // Head
-	static Position beltf;     // Female Belt
-	static Position neckf;     // Female Neck
-	static Position beltm;     // Male Belt
-	static Position neckm;     // Male Neck
-	static Position legsp;     // Legs
-	static Position feetp;     // Feet
-	static Position hands;     // Hands
-	static Position lhandp;    // Left Hand
-	static Position rhandp;    // Right Hand
-	static Position ahand;     // Ammo in Left Hand
-	static Position ammo;      // Quiver
-
-	static Position backf;      // Female Back
-	static Position backm;      // Male Back
-	static Position back2f;     // Female Back Weapon
-	static Position back2m;     // Male Back Weapon
-	static Position shieldf;    // Female Back Shield
-	static Position shieldm;    // Male Back Shield
-
-	// Non Statics
-
 	Heart_button*  heart_button;    // For bringing up stats.
 	Disk_button*   disk_button;     // For bringing up 'save' box. (Avatar Only)
 	Combat_button* combat_button;        // Combat Toggle (Avatar Only)

@@ -29,6 +29,7 @@
 #include "tiles.h"
 #include "vgafile.h"
 
+#include <array>
 #include <memory>
 #include <string>    // STL string
 #include <vector>
@@ -131,7 +132,7 @@ class Game_window {
 	TileRect scroll_bounds;         // Walking outside this scrolls.
 	TileRect dirty;                 // Dirty rectangle.
 	// Savegames:
-	char* save_names[10];    // Names of saved games.
+	std::array<std::string, 10> save_names;    // Names of saved games.
 	// Options:
 	bool mouse3rd;    // use third (middle) mouse button
 	bool fastmouse;
@@ -731,7 +732,8 @@ private:
 public:
 	void write_saveinfo();    // Write the save info to gamedat
 
-	inline char* get_save_name(int i) const {    // Get ->saved-game name.
+	// Get saved-game name.
+	inline const std::string& get_save_name(size_t i) const {
 		return save_names[i];
 	}
 

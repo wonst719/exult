@@ -40,7 +40,6 @@ EXULTSOURCES =	\
 	actors.h	\
 	args.cc		\
 	args.h		\
-	headers/array_size.h	\
 	browser.cc	\
 	browser.h	\
 	cheat.cc	\
@@ -111,6 +110,7 @@ EXULTSOURCES =	\
 	shapeid.cc	\
 	shapeid.h	\
 	singles.h	\
+	headers/span.h	\
 	touchui.cc	\
 	touchui.h	\
 	tiles.h		\

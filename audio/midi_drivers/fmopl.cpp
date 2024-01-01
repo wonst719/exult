@@ -29,8 +29,7 @@
 #ifdef USE_FMOPL_MIDI
 #	include "fmopl.h"
 
-#	include "array_size.h"
-
+#	include <array>
 #	include <cmath>
 #	include <cstdarg>
 #	include <cstdio>
@@ -40,10 +39,6 @@
 
 #	ifndef M_PI
 #		define M_PI 3.14159265358979323846
-#	endif
-
-#	ifndef ARRAYSIZE
-#		define ARRAYSIZE(x) (array_size(x))
 #	endif
 
 namespace FMOpl_Pentagram {
@@ -108,13 +103,14 @@ namespace FMOpl_Pentagram {
 #	define ENV_MOD_AR 0x02
 
 	/* -------------------- tables --------------------- */
-	static const int slot_array[32]
-			= {0,  2,  4,  1,  3,  5,  -1, -1, 6,  8,  10, 7,  9,  11, -1, -1,
-			   12, 14, 16, 13, 15, 17, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+	constexpr static const std::array slot_array{
+			0,  2,  4,  1,  3,  5,  -1, -1, 6,  8,  10, 7,  9,  11, -1, -1,
+			12, 14, 16, 13, 15, 17, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+	static_assert(slot_array.size() == 32);
 
-	static uint32 KSL_TABLE[8 * 16];
+	static std::array<uint32, 8 * 16> KSL_TABLE;
 
-	static const double KSL_TABLE_SEED[8 * 16] = {
+	constexpr static const std::array KSL_TABLE_SEED{
 			/* OCT 0 */
 			0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000,
 			0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000,
@@ -139,14 +135,17 @@ namespace FMOpl_Pentagram {
 			/* OCT 7 */
 			0.000, 9.000, 12.000, 13.875, 15.000, 16.125, 16.875, 17.625,
 			18.000, 18.750, 19.125, 19.500, 19.875, 20.250, 20.625, 21.000};
+	static_assert(KSL_TABLE.size() == KSL_TABLE_SEED.size());
 
 	/* sustain level table (3db per step) */
 	/* 0 - 15: 0, 3, 6, 9,12,15,18,21,24,27,30,33,36,39,42,93 (dB)*/
 
-	static int SL_TABLE[16];
+	static std::array<int, 16> SL_TABLE;
 
-	static const uint32 SL_TABLE_SEED[16]
-			= {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 31};
+	constexpr static const std::array SL_TABLE_SEED{0u,  1u,  2u,  3u, 4u,  5u,
+													6u,  7u,  8u,  9u, 10u, 11u,
+													12u, 13u, 14u, 31u};
+	static_assert(SL_TABLE.size() == SL_TABLE_SEED.size());
 
 #	define TL_MAX (EG_ENT * 2) /* limit(tl + ksr + envelope) + sinwave */
 	/* TotalLevel : 48 24 12  6  3 1.5 0.75 (dB) */
@@ -169,15 +168,17 @@ namespace FMOpl_Pentagram {
 
 /* multiple table */
 #	define ML(a) static_cast<uint32>((a) * 2)
-	static const uint32 MUL_TABLE[16] = {
+	constexpr static const std::array MUL_TABLE{
 			/* 1/2, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15 */
 			ML(0.50),  ML(1.00),  ML(2.00),  ML(3.00), ML(4.00),  ML(5.00),
 			ML(6.00),  ML(7.00),  ML(8.00),  ML(9.00), ML(10.00), ML(10.00),
 			ML(12.00), ML(12.00), ML(15.00), ML(15.00)};
+	static_assert(MUL_TABLE.size() == 16);
 #	undef ML
 
 	/* dummy attack / decay rate ( when rate == 0 ) */
-	static int RATE_0[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	static std::array RATE_0{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	static_assert(RATE_0.size() == 16);
 
 	/* -------------------- static state --------------------- */
 
@@ -228,11 +229,11 @@ namespace FMOpl_Pentagram {
 		EG_AED   = EG_DST;
 		// EG_STEP = (96.0/EG_ENT);
 
-		for (unsigned i = 0; i < ARRAYSIZE(KSL_TABLE_SEED); i++) {
+		for (size_t i = 0; i < KSL_TABLE_SEED.size(); i++) {
 			KSL_TABLE[i] = SC_KSL(KSL_TABLE_SEED[i]);
 		}
 
-		for (unsigned i = 0; i < ARRAYSIZE(SL_TABLE_SEED); i++) {
+		for (size_t i = 0; i < SL_TABLE_SEED.size(); i++) {
 			SL_TABLE[i] = SC_SL(SL_TABLE_SEED[i]);
 		}
 	}
@@ -431,13 +432,13 @@ namespace FMOpl_Pentagram {
 		const int ar   = v >> 4;
 		const int dr   = v & 0x0f;
 
-		SLOT->AR   = ar ? &OPL->AR_TABLE[ar << 2] : RATE_0;
+		SLOT->AR   = ar ? &OPL->AR_TABLE[ar << 2] : RATE_0.data();
 		SLOT->evsa = SLOT->AR[SLOT->ksr];
 		if (SLOT->evm == ENV_MOD_AR) {
 			SLOT->evs = SLOT->evsa;
 		}
 
-		SLOT->DR   = dr ? &OPL->DR_TABLE[dr << 2] : RATE_0;
+		SLOT->DR   = dr ? &OPL->DR_TABLE[dr << 2] : RATE_0.data();
 		SLOT->evsd = SLOT->DR[SLOT->ksr];
 		if (SLOT->evm == ENV_MOD_DR) {
 			SLOT->evs = SLOT->evsd;

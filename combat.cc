@@ -1607,12 +1607,12 @@ void Combat_schedule::now_what() {
 					npc->get_dir_framenum(Actor::ready_frame));
 			npc->set_action(new Frames_actor_action(&frame, 1, delay));
 		} else if (!npc->is_slime()) {    // Sea serpent?
-			signed char frames[]
-					= {static_cast<signed char>(npc->get_dir_framenum(3)),
-					   static_cast<signed char>(npc->get_dir_framenum(2)),
-					   static_cast<signed char>(npc->get_dir_framenum(1))};
-			npc->set_action(
-					new Frames_actor_action(frames, sizeof(frames), delay));
+			const std::array frames{
+					static_cast<signed char>(npc->get_dir_framenum(3)),
+					static_cast<signed char>(npc->get_dir_framenum(2)),
+					static_cast<signed char>(npc->get_dir_framenum(1))};
+			npc->set_action(new Frames_actor_action(
+					frames.data(), frames.size(), delay));
 		}
 		npc->start(delay, delay);
 		if (attack_target(
@@ -1654,12 +1654,12 @@ void Combat_schedule::now_what() {
 					npc->get_dir_framenum(Actor::ready_frame));
 			npc->set_action(new Frames_actor_action(&frame, 1, delay));
 		} else if (!npc->is_slime()) {    // Sea serpent?
-			signed char frames[]
-					= {static_cast<signed char>(npc->get_dir_framenum(3)),
-					   static_cast<signed char>(npc->get_dir_framenum(2)),
-					   static_cast<signed char>(npc->get_dir_framenum(1))};
+			const std::array frames{
+					static_cast<signed char>(npc->get_dir_framenum(3)),
+					static_cast<signed char>(npc->get_dir_framenum(2)),
+					static_cast<signed char>(npc->get_dir_framenum(1))};
 			npc->set_action(
-					new Frames_actor_action(frames, sizeof(frames), delay));
+					new Frames_actor_action(frames.data(), frames.size(), delay));
 		}
 		npc->start(gwin->get_std_delay(), delay);
 

@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Configuration.h"
 #include "Flex.h"
 #include "U7fileman.h"
-#include "array_size.h"
 #include "combo.h"
 #include "databuf.h"
 #include "exceptions.h"
@@ -48,11 +47,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <glib.h>
 #include <unistd.h>
 
+#include <array>
 #include <cerrno>
 #include <cstdarg>
 #include <cstdio> /* These are for sockets. */
 #include <cstdlib>
 #include <memory>
+#include <type_traits>
 
 #ifdef _WIN32
 #	include "servewin32.h"
@@ -103,9 +104,9 @@ Configuration* config            = nullptr;
 GameManager*   gamemanager       = nullptr;
 
 // Mode menu items:
-static const char* mode_names[5]
-		= {"move1", "paint1", "paint_with_chunks1", "pick_for_combo1",
-		   "select_chunks1"};
+constexpr static const std::array mode_names{
+		"move1", "paint1", "paint_with_chunks1", "pick_for_combo1",
+		"select_chunks1"};
 
 enum ExultFileTypes {
 	ShapeArchive = 1,
@@ -919,7 +920,7 @@ ExultStudio::ExultStudio(int argc, char** argv)
 	// Init. 'Mode' menu, since Glade
 	//   doesn't seem to do it right.
 	GSList* group = nullptr;
-	for (size_t i = 0; i < array_size(mode_names); i++) {
+	for (size_t i = 0; i < mode_names.size(); i++) {
 		GtkWidget* item = get_widget(mode_names[i]);
 		gtk_radio_menu_item_set_group(GTK_RADIO_MENU_ITEM(item), group);
 		group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(item));
@@ -2097,11 +2098,10 @@ void ExultStudio::set_toggle(const char* name, bool val, bool sensitive) {
  */
 
 unsigned int ExultStudio::get_bit_toggles(
-		const char** names,    // Names for bit 0, 1, 2,...
-		int          num       // # of names/bits.
+		tcb::span<const char* const> names    // Names for bit 0, 1, 2,...
 ) {
 	unsigned int bits = 0;
-	for (int i = 0; i < num; i++) {
+	for (size_t i = 0; i < names.size(); i++) {
 		bits |= (get_toggle(names[i]) ? 1 : 0) << i;
 	}
 	return bits;
@@ -2113,10 +2113,9 @@ unsigned int ExultStudio::get_bit_toggles(
  */
 
 void ExultStudio::set_bit_toggles(
-		const char** names,    // Names for bit 0, 1, 2,...
-		int          num,      // # of names/bits.
-		unsigned int bits) {
-	for (int i = 0; i < num; i++) {
+		tcb::span<const char* const> names,    // Names for bit 0, 1, 2,...
+		unsigned int                 bits) {
+	for (size_t i = 0; i < names.size(); i++) {
 		set_toggle(names[i], (bits & (1 << i)) != 0);
 	}
 }
@@ -2928,7 +2927,7 @@ void ExultStudio::info_received(
 	set_spin("hide_lift_spin", hdlift);
 	set_toggle("play_button", !editing);
 	set_toggle("tile_grid_button", grid);
-	if (edmode >= 0 && unsigned(edmode) < array_size(mode_names)) {
+	if (edmode >= 0 && static_cast<unsigned>(edmode) < mode_names.size()) {
 		GtkWidget* mitem = get_widget(mode_names[edmode]);
 
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mitem), TRUE);
@@ -2982,42 +2981,17 @@ BaseGameInfo* ExultStudio::get_game() const {
 }
 
 // List partially copied from Firefox and from GLib's config.charset.
-static const gchar* encodings[] = {
-		"ASCII",       "CP437",  "CP850",
-
-		"ISO-8859-1",  "CP1252", "ISO-8859-15",
-
-		"ISO-8859-2",  "CP1250",
-
-		"ISO-8859-3",
-
-		"ISO-8859-4",  "CP1257", "ISO-8859-13",
-
-		"ISO-8859-5",  "CP1251", "KOI8-R",
-
-		"CP866",
-
-		"KOI8-U",
-
-		"ISO-8859-6",  "CP1256",
-
-		"ISO-8859-7",  "CP1253",
-
-		"ISO-8859-8",
-
-		"CP1255",
-
-		"ISO-8859-9",  "CP1254",
-
-		"ISO-8859-10",
-
-		"ISO-8859-11", "CP874",
-
-		"ISO-8859-14",
+constexpr static const std::array encodings{
+		"ASCII",       "CP437",       "CP850",      "ISO-8859-1",  "CP1252",
+		"ISO-8859-15", "ISO-8859-2",  "CP1250",     "ISO-8859-3",  "ISO-8859-4",
+		"CP1257",      "ISO-8859-13", "ISO-8859-5", "CP1251",      "KOI8-R",
+		"CP866",       "KOI8-U",      "ISO-8859-6", "CP1256",      "ISO-8859-7",
+		"CP1253",      "ISO-8859-8",  "CP1255",     "ISO-8859-9",  "CP1254",
+		"ISO-8859-10", "ISO-8859-11", "CP874",      "ISO-8859-14",
 };
 
 static inline int Find_Encoding_Index(const char* enc) {
-	for (size_t i = 0; i < array_size(encodings); i++) {
+	for (size_t i = 0; i < encodings.size(); i++) {
 		if (!strcmp(encodings[i], enc)) {
 			return i;
 		}
@@ -3026,7 +3000,7 @@ static inline int Find_Encoding_Index(const char* enc) {
 }
 
 static inline const char* Get_Encoding(int index) {
-	if (index >= 0 && unsigned(index) < array_size(encodings)) {
+	if (index >= 0 && unsigned(index) < encodings.size()) {
 		return encodings[index];
 	} else {
 		return encodings[0];
@@ -3334,7 +3308,7 @@ std::string convertFromUTF8(const char* src_str, const char* enc) {
 
 	auto src_ptr = src_str;
 	auto src_end = src_ptr + src_len + 1;
-	auto tgt_ptr = const_cast<char*>(tgt_str.data());
+	auto tgt_ptr = tgt_str.data();
 	auto tgt_end = tgt_str.data() + tgt_str.size();
 
 	UErrorCode status{U_ZERO_ERROR};
@@ -3505,7 +3479,7 @@ std::string convertToUTF8(const char* src_str, const char* enc) {
 
 	auto src_ptr = src_str;
 	auto src_end = src_ptr + src_len + 1;
-	auto tgt_ptr = const_cast<char*>(tgt_str.data());
+	auto tgt_ptr = tgt_str.data();
 	auto tgt_end = tgt_str.data() + tgt_str.size();
 
 	UErrorCode status{U_ZERO_ERROR};

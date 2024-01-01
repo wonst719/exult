@@ -770,11 +770,7 @@ time_t Shape_chooser::export_tiled_png(
 		}
 		if (frame->is_rle() || frame->get_width() != c_tilesize
 			|| frame->get_height() != c_tilesize) {
-			char buf[250];
-			snprintf(
-					buf, sizeof(buf), "Can only tile %dx%d flat shapes",
-					c_tilesize, c_tilesize);
-			Alert("%s", buf);
+			Alert("Can only tile %dx%d flat shapes", c_tilesize, c_tilesize);
 			return 0;
 		}
 		int x;

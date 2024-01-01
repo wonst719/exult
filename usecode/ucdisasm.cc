@@ -23,9 +23,9 @@
 #	include <config.h>
 #endif
 
-#include "array_size.h"
 #include "game.h"
 #include "ignore_unused_variable_warning.h"
+#include "span.h"
 #include "stackframe.h"
 #include "ucfunction.h"
 #include "ucinternal.h"
@@ -42,7 +42,7 @@ using std::strlen;
 
 int Usecode_internal::get_opcode_length(int opcode) {
 	if (opcode >= 0
-		&& static_cast<unsigned>(opcode) < array_size(opcode_table)) {
+		&& static_cast<unsigned>(opcode) < opcode_table.size()) {
 		return opcode_table[opcode].nbytes + 1;
 	} else {
 		return 0;
@@ -67,7 +67,7 @@ void Usecode_internal::uc_trace_disasm(
 	const opcode_desc* pdesc = nullptr;
 
 	if (opcode >= 0
-		&& static_cast<unsigned>(opcode) < array_size(opcode_table)) {
+		&& static_cast<unsigned>(opcode) < opcode_table.size()) {
 		pdesc = &(opcode_table[opcode]);
 	}
 
@@ -178,17 +178,20 @@ void Usecode_internal::uc_trace_disasm(
 					offset + func_ip + 1 + pdesc->nbytes);
 			break;
 		case op_call: {
-			const unsigned short func     = Read2(ip);
-			immed                         = *ip++;
-			const char* const* func_table = bg_intrinsic_table;
+			const unsigned short func = Read2(ip);
+			immed                     = *ip++;
+			tcb::span<const std::string_view> func_table;
 			if (Game::get_game_type() == SERPENT_ISLE) {
 				if (Game::is_si_beta()) {
 					func_table = sibeta_intrinsic_table;
 				} else {
 					func_table = si_intrinsic_table;
 				}
+			} else {
+				func_table = bg_intrinsic_table;
 			}
-			std::printf("\t_%s@%d\t; %04X", func_table[func], immed, func);
+			std::printf(
+					"\t_%s@%d\t; %04X", func_table[func].data(), immed, func);
 		} break;
 		case op_extcall: {
 			// Print extern call
@@ -196,7 +199,8 @@ void Usecode_internal::uc_trace_disasm(
 			std::printf(
 					"\t[%04X]\t\t; %04XH", offset,
 					externals[2 * offset] + 256 * externals[2 * offset + 1]);
-		} break;
+			break;
+		}
 		case op_varref:
 			// Print variable reference
 			varref = Read2(ip);

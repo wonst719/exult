@@ -38,7 +38,6 @@
 #include "Gump_manager.h"
 #include "Notebook_gump.h"
 #include "Text_button.h"
-#include "array_size.h"
 #include "cheat.h"
 #include "combat_opts.h"
 #include "exult.h"
@@ -47,28 +46,31 @@
 #include "game.h"
 #include "gamewin.h"
 
+#include <array>
 #include <cstring>
 #include <iostream>
 
 using std::string;
 
-static const int rowy[]
-		= {5, 17, 29, 41, 53, 65, 77, 89, 101, 113, 125, 137, 146};
-static const int colx[] = {35, 50, 120, 170, 192, 209};
+namespace {
+	constexpr const std::array rowy{5,  17,  29,  41,  53,  65, 77,
+									89, 101, 113, 125, 137, 146};
+	constexpr const std::array colx{35, 50, 120, 170, 192, 209};
 
-static const char* oktext     = "OK";
-static const char* canceltext = "CANCEL";
-static const char* helptext   = "HELP";
+	const char* oktext     = "OK";
+	const char* canceltext = "CANCEL";
+	const char* helptext   = "HELP";
 
-static int framerates[] = {2, 4, 6, 5, 8, 10, -1};
-// -1 is placeholder for custom framerate
-static const int num_default_rates = array_size(framerates) - 1;
+	std::array framerates{2, 4, 6, 5, 8, 10, -1};
+	// -1 is placeholder for custom framerate
+	constexpr const size_t num_default_rates = framerates.size() - 1;
 
-static string framestring(int fr) {
-	char buf[100];
-	snprintf(buf, sizeof(buf), "%i fps", fr);
-	return buf;
-}
+	string framestring(int fr) {
+		char buf[100];
+		snprintf(buf, sizeof(buf), "%i fps", fr);
+		return buf;
+	}
+}    // namespace
 
 using GameEngineOptions_button = CallbackTextButton<GameEngineOptions_gump>;
 using GameEngineTextToggle = CallbackToggleTextButton<GameEngineOptions_gump>;
@@ -162,20 +164,20 @@ void GameEngineOptions_gump::load_settings() {
 
 	frames                        = -1;
 	framerates[num_default_rates] = realframes;
-	for (int i = 0; i < num_default_rates; i++) {
+	for (size_t i = 0; i < num_default_rates; i++) {
 		if (realframes == framerates[i]) {
 			frames = i;
 			break;
 		}
 	}
 
-	int num_framerates = num_default_rates;
+	size_t num_framerates = num_default_rates;
 	if (frames == -1) {
 		num_framerates++;
 		frames = num_default_rates;
 	}
 	frametext.clear();
-	for (int i = 0; i < num_framerates; i++) {
+	for (size_t i = 0; i < num_framerates; i++) {
 		frametext.emplace_back(framestring(framerates[i]));
 	}
 }

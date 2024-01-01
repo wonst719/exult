@@ -61,16 +61,16 @@ public:
 class Shape_sfx : public Game_singletons {
 	const Game_object* obj;    // Object that caused the sound.
 	const SFX_info*    sfxinf;
-	int                channel[2];    // ID of sound effect being played.
-	int                distance;      // Distance in tiles from Avatar.
-	int                dir;           // Direction (0-15) from Avatar.
-	int                last_sfx;      // For playing sequential sfx ranges.
-	bool               looping;       // If the SFX should loop until stopped.
+	std::array<int, 2> channel;     // ID of sound effect being played.
+	int                distance;    // Distance in tiles from Avatar.
+	int                dir;         // Direction (0-15) from Avatar.
+	int                last_sfx;    // For playing sequential sfx ranges.
+	bool               looping;     // If the SFX should loop until stopped.
 public:
 	// Create & start playing sound.
-	Shape_sfx(Game_object* o) : obj(o), distance(0), last_sfx(-1) {
-		channel[0] = channel[1] = -1;
-		sfxinf                  = obj->get_info().get_sfx_info();
+	Shape_sfx(Game_object* o)
+			: obj(o), channel{-1, -1}, distance(0), last_sfx(-1) {
+		sfxinf = obj->get_info().get_sfx_info();
 		if (sfxinf) {
 			last_sfx = 0;
 		}

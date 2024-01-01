@@ -29,7 +29,6 @@
 #include "Face_stats.h"
 #include "ShortcutBar_gump.h"
 #include "actors.h"
-#include "array_size.h"
 #include "dir.h"
 #include "exult.h"
 #include "frameseq.h"
@@ -49,12 +48,8 @@ using std::endl;
  */
 
 Party_manager::Party_manager()
-		: party_count(0), dead_party_count(0), validcnt(0) {
-	// Clear party list.
-	std::memset(&party[0], 0, sizeof(party));
-	std::memset(&dead_party[0], 0, sizeof(dead_party));
-	std::memset(&valid[0], 0, sizeof(valid));
-}
+		: party{}, party_count(0), dead_party{}, dead_party_count(0), valid{},
+		  validcnt(0) {}
 
 /*
  *  Add NPC to party.
@@ -64,7 +59,7 @@ Party_manager::Party_manager()
 
 bool Party_manager::add_to_party(Actor* npc    // (Should not be the Avatar.)
 ) {
-	const int maxparty = array_size(party);
+	const size_t maxparty = party.size();
 	if (!npc || party_count == maxparty || npc->is_in_party()) {
 		return false;
 	}
@@ -102,7 +97,7 @@ bool Party_manager::remove_from_party(Actor* npc) {
 		return false;
 	}
 	// Shift the rest down.
-	for (int i = id + 1; i < party_count; i++) {
+	for (size_t i = id + 1; i < party_count; i++) {
 		Actor* npc2 = gwin->get_npc(party[i]);
 		if (npc2) {
 			npc2->set_party_id(i - 1);
@@ -128,7 +123,7 @@ bool Party_manager::remove_from_party(Actor* npc) {
 
 int Party_manager::in_dead_party(Actor* npc) const {
 	const int num = npc->get_npc_num();
-	for (int i = 0; i < dead_party_count; i++) {
+	for (size_t i = 0; i < dead_party_count; i++) {
 		if (dead_party[i] == num) {
 			return i;
 		}
@@ -145,7 +140,7 @@ int Party_manager::in_dead_party(Actor* npc) const {
 bool Party_manager::add_to_dead_party(
 		Actor* npc    // (Should not be the Avatar.)
 ) {
-	const int maxparty = array_size(dead_party);
+	const size_t maxparty = dead_party.size();
 	if (!npc || dead_party_count == maxparty || in_dead_party(npc) >= 0) {
 		return false;
 	}
@@ -168,7 +163,7 @@ bool Party_manager::remove_from_dead_party(Actor* npc) {
 		return false;
 	}
 	// Shift the rest down.
-	for (int i = id + 1; i < dead_party_count; i++) {
+	for (size_t i = id + 1; i < dead_party_count; i++) {
 		dead_party[i - 1] = dead_party[i];
 	}
 	dead_party_count--;
@@ -203,26 +198,27 @@ void Party_manager::link_party() {
 	gwin->get_main_actor()->set_flag(Obj_flags::in_party);
 	// You own your own stuff.
 	gwin->get_main_actor()->set_flag_recursively(Obj_flags::okay_to_take);
-	const int tmp_party_count = party_count;
-	int       i;
+	const size_t tmp_party_count = party_count;
 	party_count = dead_party_count = 0;
 	// Now process them.
-	for (i = 0; i < tmp_party_count; i++) {
+	for (size_t i = 0; i < tmp_party_count; i++) {
 		if (party[i] <= 0) {    // Fix corruption.
 			continue;
 		}
 		Actor* npc = gwin->get_npc(party[i]);
-		int    oldid;
-		if (!npc ||    // Shouldn't happen!
-					   // But this has happened:
-			((oldid = npc->get_party_id()) >= 0 && oldid < party_count)) {
+		// Shouldn't happen!
+		if (!npc) {
+			continue;    // Skip bad entry.
+		}
+		int oldid = npc->get_party_id();
+		// But this has happened:
+		if (oldid >= 0 && static_cast<unsigned int>(oldid) < party_count) {
 			continue;    // Skip bad entry.
 		}
 		const int npc_num = npc->get_npc_num();
 		if (npc->is_dead()) {    // Put dead in special list.
 			npc->set_party_id(-1);
-			if (static_cast<unsigned int>(dead_party_count)
-				>= array_size(dead_party)) {
+			if (dead_party_count >= dead_party.size()) {
 				continue;
 			}
 			dead_party[dead_party_count++] = npc_num;
@@ -287,7 +283,7 @@ void Party_manager::get_followers(
 		int dir    // Direction (0-7) Avatar just stepped.
 ) {
 	validcnt = 0;    // Get party members to control.
-	for (int i = 0; i < party_count; i++) {
+	for (size_t i = 0; i < party_count; i++) {
 		Actor* npc = gwin->get_npc(party[i]);
 		if (!npc || npc->get_flag(Obj_flags::asleep)
 			|| npc->get_flag(Obj_flags::paralyzed) || npc->is_dead()) {
@@ -326,8 +322,12 @@ void Party_manager::move_followers(
 		return;    // Nothing to do.
 	}
 	const int dir4 = dir / 2;    // 0-3 now.
-	Actor*    lnpc = (lnum == -1 || lnum >= validcnt) ? nullptr : valid[lnum];
-	Actor*    rnpc = (rnum == -1 || rnum >= validcnt) ? nullptr : valid[rnum];
+	Actor*    lnpc = (lnum == -1 || static_cast<unsigned>(lnum) >= validcnt)
+							 ? nullptr
+							 : valid[lnum];
+	Actor*    rnpc = (rnum == -1 || static_cast<unsigned>(rnum) >= validcnt)
+							 ? nullptr
+							 : valid[rnum];
 	int       ldir = -1;
 	int       rdir = -1;
 	// Have each take a step.

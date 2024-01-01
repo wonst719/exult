@@ -25,7 +25,6 @@
 #include "Audio.h"
 #include "AudioMixer.h"
 #include "Configuration.h"
-#include "array_size.h"
 #include "data/bg/introsfx_mt32_flx.h"
 #include "data/exult_bg_flx.h"
 #include "data/exult_flx.h"
@@ -52,6 +51,7 @@
 #include "touchui.h"
 #include "txtscroll.h"
 
+#include <array>
 #include <cctype>
 #include <cstring>
 #include <string>
@@ -493,32 +493,32 @@ void BG_Game::scene_butterfly() {
 			= 23;    // - used to be 16.. too fast.
 	constexpr static const int frame_count = 3;
 
-	constexpr static int butterfly_x[]
-			= {6,   18,  30,  41,  52,  62,  70,  78,  86,  95,  104, 113,
-			   122, 132, 139, 146, 151, 155, 157, 158, 157, 155, 151, 146,
-			   139, 132, 124, 116, 108, 102, 96,  93,  93,  93,  95,  99,
-			   109, 111, 118, 125, 132, 140, 148, 157, 164, 171, 178, 184,
-			   190, 196, 203, 211, 219, 228, 237, 246, 254, 259, 262, 264,
-			   265, 265, 263, 260, 256, 251, 245, 239, 232, 226, 219, 212,
-			   208, 206, 206, 209, 212, 216, 220, 224, 227, 234, 231, 232,
-			   233, 233, 233, 233, 234, 236, 239, 243, 247, 250, 258, 265};
+	constexpr static const std::array butterfly_x{
+			6,   18,  30,  41,  52,  62,  70,  78,  86,  95,  104, 113,
+			122, 132, 139, 146, 151, 155, 157, 158, 157, 155, 151, 146,
+			139, 132, 124, 116, 108, 102, 96,  93,  93,  93,  95,  99,
+			109, 111, 118, 125, 132, 140, 148, 157, 164, 171, 178, 184,
+			190, 196, 203, 211, 219, 228, 237, 246, 254, 259, 262, 264,
+			265, 265, 263, 260, 256, 251, 245, 239, 232, 226, 219, 212,
+			208, 206, 206, 209, 212, 216, 220, 224, 227, 234, 231, 232,
+			233, 233, 233, 233, 234, 236, 239, 243, 247, 250, 258, 265};
 
-	constexpr static int butterfly_y[]
-			= {155, 153, 151, 150, 149, 148, 148, 148, 148, 149, 150, 150,
-			   150, 149, 147, 142, 137, 131, 125, 118, 110, 103, 98,  94,
-			   92,  91,  91,  91,  92,  95,  99,  104, 110, 117, 123, 127,
-			   131, 134, 135, 135, 135, 135, 135, 134, 132, 129, 127, 123,
-			   119, 115, 112, 109, 104, 102, 101, 102, 109, 109, 114, 119,
-			   125, 131, 138, 144, 149, 152, 156, 158, 159, 159, 158, 155,
-			   150, 144, 137, 130, 124, 118, 112, 105, 99,  93,  86,  80,
-			   73,  66,  59,  53,  47,  42,  38,  35,  32,  29,  26,  25};
+	constexpr static const std::array butterfly_y{
+			155, 153, 151, 150, 149, 148, 148, 148, 148, 149, 150, 150,
+			150, 149, 147, 142, 137, 131, 125, 118, 110, 103, 98,  94,
+			92,  91,  91,  91,  92,  95,  99,  104, 110, 117, 123, 127,
+			131, 134, 135, 135, 135, 135, 135, 134, 132, 129, 127, 123,
+			119, 115, 112, 109, 104, 102, 101, 102, 109, 109, 114, 119,
+			125, 131, 138, 144, 149, 152, 156, 158, 159, 159, 158, 155,
+			150, 144, 137, 130, 124, 118, 112, 105, 99,  93,  86,  80,
+			73,  66,  59,  53,  47,  42,  38,  35,  32,  29,  26,  25};
+	static_assert(butterfly_x.size() == butterfly_y.size());
+	constexpr static const size_t butterfly_num_coords = butterfly_x.size();
 
-	constexpr static const int butterfly_num_coords = array_size(butterfly_x);
-
-	constexpr static const int butterfly_end_frames[]
-			= {3, 4, 3, 4, 3, 2, 1, 0};
-	constexpr static const int butterfly_end_delay[]
-			= {167, 416, 250, 416, 416, 416, 416, 333};
+	constexpr static const std::array butterfly_end_frames{3, 4, 3, 4,
+														   3, 2, 1, 0};
+	constexpr static const std::array butterfly_end_delay{167, 416, 250, 416,
+														  416, 416, 416, 333};
 
 	int frame;
 
@@ -582,7 +582,7 @@ void BG_Game::scene_butterfly() {
 		//
 		frame        = 0;
 		Sint32 delay = frame_duration;
-		for (int i = 0; i < butterfly_num_coords - 1; ++i) {
+		for (size_t i = 0; i < butterfly_num_coords - 1; ++i) {
 			for (int j = 0; j < frame_count; ++j) {
 				Sint32    ticks = SDL_GetTicks();
 				const int x     = butterfly_x[i]
@@ -770,19 +770,19 @@ void BG_Game::scene_guardian() {
 	constexpr static const int Eyes_Dist     = 12;
 	constexpr static const int Forehead_Dist = 49;
 
-	constexpr static const int text_times[]
-			= {250,   1700,  5250,  8200,  10550, 12900, 16000,
-			   19950, 22700, 27200, 32400, 36400, 39650, 42400};
+	constexpr static const std::array text_times{
+			250,   1700,  5250,  8200,  10550, 12900, 16000,
+			19950, 22700, 27200, 32400, 36400, 39650, 42400};
 
-	constexpr static const int text_num_frames = array_size(text_times);
+	constexpr static const size_t text_num_frames = text_times.size();
 
-	constexpr static const char surfacing_data[]
-			= {0x03, 0x00, 0x02,    // Eyebrows -> neutral
-			   0x03, 0x00, 0x05,    // Eyes -> half-open
-			   0x15, 0x00, 0x04,    // Eyes -> fully open
-			   0x33, 0x00, 0x07,    // Eyes -> Look down
-			   0x54, 0x00, 0x04,    // Eyes -> fully open
-			   0x77, 0x00, 0x00};
+	constexpr static const char surfacing_data[]{
+			0x03, 0x00, 0x02,    // Eyebrows -> neutral
+			0x03, 0x00, 0x05,    // Eyes -> half-open
+			0x15, 0x00, 0x04,    // Eyes -> fully open
+			0x33, 0x00, 0x07,    // Eyes -> Look down
+			0x54, 0x00, 0x04,    // Eyes -> fully open
+			0x77, 0x00, 0x00};
 
 	try {
 		Uint32          ticks;
@@ -1050,7 +1050,9 @@ void BG_Game::scene_guardian() {
 					EraseAndDraw(
 							backup.get(), s, guardian_mouth_shp, mouth_frame,
 							0);
-					if (text_index > 0 && text_index < text_num_frames) {
+					if (text_index > 0
+						&& static_cast<unsigned>(text_index)
+								   < text_num_frames) {
 						// Draw text
 						font->center_text(
 								win->get_ib8(), centerx, txt_ypos, txt_ptr);
@@ -1099,7 +1101,7 @@ void BG_Game::scene_guardian() {
 						need_redraw = true;
 					}
 
-					if (text_index < text_num_frames
+					if (static_cast<unsigned>(text_index) < text_num_frames
 						&& time >= text_times[text_index]) {
 						text_index++;
 						AdvanceTextPointer();
@@ -1218,7 +1220,7 @@ namespace {    // anonymous
 		eSHOW_FAKE_TITLE,     // Draw fake title screen permanently
 	};
 
-	constexpr const HandlerScriptOps HandlerScript[] = {
+	constexpr const std::array HandlerScript{
 			eHAND_HIT,         eBLACK_SCREEN, eSHOW_FAKE_TITLE,  eSHOW_STATIC,
 			eHAND_RECOIL,      eNOP,          eHAND_RECOIL,      eNOP,
 			eHAND_RECOIL,      eBLACK_SCREEN, eHAND_HIT,         eNOP,
@@ -1284,7 +1286,7 @@ namespace {    // anonymous
 	};
 
 	bool Hand_Handler::draw_frame() {
-		if (scriptPosition >= array_size(HandlerScript)) {
+		if (scriptPosition >= HandlerScript.size()) {
 			return false;
 		}
 		const HandlerScriptOps currOp   = HandlerScript[scriptPosition];
@@ -1376,7 +1378,7 @@ namespace {    // anonymous
 		}
 
 		scriptPosition++;
-		return scriptPosition < array_size(HandlerScript);
+		return scriptPosition < HandlerScript.size();
 	}
 }    // End of anonymous namespace
 

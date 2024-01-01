@@ -1223,9 +1223,6 @@
     <ClInclude Include="..\..\headers\pent_include.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\headers\array_size.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\headers\common_types.h">
       <Filter>headers</Filter>
     </ClInclude>
@@ -1435,6 +1432,9 @@
     </ClInclude>
     <ClInclude Include="..\..\audio\midi_drivers\MT32EmuMidiDriver.h">
       <Filter>audio\midi_drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\headers\span.h">
+      <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

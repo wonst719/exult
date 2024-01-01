@@ -29,7 +29,6 @@
 #include "Text_button.h"
 #include "Yesno_gump.h"
 #include "actors.h"
-#include "array_size.h"
 #include "exult.h"
 #include "exult_flx.h"
 #include "game.h"

@@ -739,13 +739,13 @@
     <ClInclude Include="..\..\gumps\VideoOptions_gump.h" />
     <ClInclude Include="..\..\gumps\Yesno_gump.h" />
     <ClInclude Include="..\..\hash_utils.h" />
-    <ClInclude Include="..\..\headers\array_size.h" />
     <ClInclude Include="..\..\headers\common_types.h" />
     <ClInclude Include="..\..\headers\exceptions.h" />
     <ClInclude Include="..\..\headers\gamma.h" />
     <ClInclude Include="..\..\headers\ignore_unused_variable_warning.h" />
     <ClInclude Include="..\..\headers\ios_state.hpp" />
     <ClInclude Include="..\..\headers\pent_include.h" />
+    <ClInclude Include="..\..\headers\span.h" />
     <ClInclude Include="..\..\imagewin\AffineScaler.h" />
     <ClInclude Include="..\..\imagewin\ArbScaler.h" />
     <ClInclude Include="..\..\imagewin\BilinearScaler.h" />

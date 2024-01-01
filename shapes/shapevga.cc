@@ -29,7 +29,6 @@
 #include "ammoinf.h"
 #include "aniinf.h"
 #include "armorinf.h"
-#include "array_size.h"
 #include "bodyinf.h"
 #include "continf.h"
 #include "data/exult_bg_flx.h"
@@ -195,33 +194,33 @@ public:
 
 void Shapes_vga_file::Read_Shapeinf_text_data_file(
 		bool editing, Exult_Game game_type) {
-	const char* sections[]
-			= {"explosions",
-			   "shape_sfx",
-			   "animation",
-			   "usecode_events",
-			   "mountain_tops",
-			   "monster_food",
-			   "actor_flags",
-			   "effective_hps",
-			   "lightweight_object",
-			   "light_data",
-			   "warmth_data",
-			   "quantity_frames",
-			   "locked_containers",
-			   "content_rules",
-			   "volatile_explosive",
-			   "framenames",
-			   "altready",
-			   "barge_type",
-			   "frame_powers",
-			   "is_jawbone",
-			   "is_mirror",
-			   "on_fire",
-			   "extradimensional_storage",
-			   "field_type",
-			   "frame_usecode"};
-	Base_reader* readers[] = {
+	std::vector sections{
+			"explosions",
+			"shape_sfx",
+			"animation",
+			"usecode_events",
+			"mountain_tops",
+			"monster_food",
+			"actor_flags",
+			"effective_hps",
+			"lightweight_object",
+			"light_data",
+			"warmth_data",
+			"quantity_frames",
+			"locked_containers",
+			"content_rules",
+			"volatile_explosive",
+			"framenames",
+			"altready",
+			"barge_type",
+			"frame_powers",
+			"is_jawbone",
+			"is_mirror",
+			"on_fire",
+			"extradimensional_storage",
+			"field_type",
+			"frame_usecode"};
+	std::vector<Base_reader*> readers{
 			// For explosions.
 			new Functor_multidata_reader<
 					Shape_info, Class_reader_functor<
@@ -386,67 +385,67 @@ void Shapes_vga_file::Read_Shapeinf_text_data_file(
 										Frame_usecode_info, Shape_info,
 										&Shape_info::frucinf>>(info),
 	};
-	const int numsections = array_size(sections);
-	const int numreaders  = array_size(readers);
-	assert(numsections == numreaders);
+	assert(sections.size() == readers.size());
 	const int flxres = game_type == BLACK_GATE ? EXULT_BG_FLX_SHAPE_INFO_TXT
 											   : EXULT_SI_FLX_SHAPE_INFO_TXT;
 
 	Read_text_data_file(
-			"shape_info", readers, sections, numsections, editing, game_type,
-			flxres);
+			"shape_info", readers, sections, editing, game_type, flxres);
+	for (auto* reader : readers) {
+		delete reader;
+	}
 }
 
 void Shapes_vga_file::Read_Bodies_text_data_file(
 		bool editing, Exult_Game game_type) {
-	const char*  sections[] = {"bodyshapes", "bodylist"};
-	Base_reader* readers[]  = {
-            new Functor_multidata_reader<
-                    Shape_info,
-                    Bit_text_reader_functor<
-                            unsigned short, Shape_info,
-                            &Shape_info::shape_flags, Shape_info::is_body>,
-                    Patch_flags_functor<is_body_flag, Shape_info>,
-                    Body_ID_reader>(info),
-            new Functor_multidata_reader<
-                    Shape_info,
-                    Class_reader_functor<
-                            Body_info, Shape_info, &Shape_info::body>>(info)};
-	const int numsections = array_size(sections);
-	const int numreaders  = array_size(readers);
-	assert(numsections == numreaders);
+	std::vector               sections{"bodyshapes", "bodylist"};
+	std::vector<Base_reader*> readers{
+			new Functor_multidata_reader<
+					Shape_info,
+					Bit_text_reader_functor<
+							unsigned short, Shape_info,
+							&Shape_info::shape_flags, Shape_info::is_body>,
+					Patch_flags_functor<is_body_flag, Shape_info>,
+					Body_ID_reader>(info),
+			new Functor_multidata_reader<
+					Shape_info,
+					Class_reader_functor<
+							Body_info, Shape_info, &Shape_info::body>>(info)};
+	assert(sections.size() == readers.size());
 	const int flxres = game_type == BLACK_GATE ? EXULT_BG_FLX_BODIES_TXT
 											   : EXULT_SI_FLX_BODIES_TXT;
 
 	Read_text_data_file(
-			"bodies", readers, sections, numsections, editing, game_type,
-			flxres);
+			"bodies", readers, sections, editing, game_type, flxres);
+	for (auto* reader : readers) {
+		delete reader;
+	}
 }
 
 void Shapes_vga_file::Read_Paperdoll_text_data_file(
 		bool editing, Exult_Game game_type) {
-	const char*  sections[] = {"characters", "items"};
-	Base_reader* readers[]  = {
-            new Functor_multidata_reader<
-                    Shape_info,
-                    Class_reader_functor<
-                            Paperdoll_npc, Shape_info,
-                            &Shape_info::npcpaperdoll>,
-                    Paperdoll_npc_functor, Paperdoll_npc_ID_reader>(info),
-            new Functor_multidata_reader<
-                    Shape_info, Vector_reader_functor<
-                                        Paperdoll_item, Shape_info,
-                                        &Shape_info::objpaperdoll>>(info),
-    };
-	const int numsections = array_size(sections);
-	const int numreaders  = array_size(readers);
-	assert(numsections == numreaders);
+	std::vector               sections{"characters", "items"};
+	std::vector<Base_reader*> readers{
+			new Functor_multidata_reader<
+					Shape_info,
+					Class_reader_functor<
+							Paperdoll_npc, Shape_info,
+							&Shape_info::npcpaperdoll>,
+					Paperdoll_npc_functor, Paperdoll_npc_ID_reader>(info),
+			new Functor_multidata_reader<
+					Shape_info, Vector_reader_functor<
+										Paperdoll_item, Shape_info,
+										&Shape_info::objpaperdoll>>(info),
+	};
+	assert(sections.size() == readers.size());
 	const int flxres = game_type == BLACK_GATE ? EXULT_BG_FLX_PAPERDOL_INFO_TXT
 											   : EXULT_SI_FLX_PAPERDOL_INFO_TXT;
 
 	Read_text_data_file(
-			"paperdol_info", readers, sections, numsections, editing, game_type,
-			flxres);
+			"paperdol_info", readers, sections, editing, game_type, flxres);
+	for (auto* reader : readers) {
+		delete reader;
+	}
 }
 
 /*

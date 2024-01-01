@@ -3,14 +3,15 @@
 #	include <config.h>
 #endif
 
-#include "array_size.h"
+#include "span.h"
 
+#include <array>
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include <vector>
+#include <string_view>
 
 using std::cerr;
 using std::cout;
@@ -22,19 +23,14 @@ using std::setbase;
 using std::setfill;
 using std::setw;
 using std::string;
+using std::string_view;
 
-#ifndef TO_STRING
-#	if defined __STDC__ && __STDC__
-#		define TO_STRING(x) #x
-#	else
-#		define TO_STRING(x) "x"
-#	endif
-#endif
+using namespace std::string_view_literals;
 
 void gen_intrinsic_table(
-		ofstream& o, const std::string table[], unsigned int len) {
+		ofstream& o, const tcb::span<const string_view>& table) {
 	o << "<intrinsics>" << endl;
-	for (unsigned int i = 0; i < len; i++) {
+	for (size_t i = 0; i < table.size(); i++) {
 		o << "\t<0x" << setw(2) << i << "> " << table[i];
 		if (table[i] == "UNKNOWN") {
 			o << '_' << setw(2) << i;
@@ -56,13 +52,12 @@ void bg_out(const string& fname) {
 	o << setfill('0') << setbase(16);
 	o.setf(ios::uppercase);
 
-#define USECODE_INTRINSIC_PTR(NAME) std::string(TO_STRING(NAME))
-	std::string bgut[] = {
+#define USECODE_INTRINSIC_PTR(NAME) #NAME##sv
+	constexpr static const std::array bgut{
 #include "bgintrinsics.h"
 	};
 #undef USECODE_INTRINSIC_PTR
-
-	gen_intrinsic_table(o, bgut, array_size(bgut));
+	gen_intrinsic_table(o, bgut);
 	o.close();
 }
 
@@ -78,13 +73,13 @@ void si_out(const string& fname) {
 	o << setfill('0') << setbase(16);
 	o.setf(ios::uppercase);
 
-#define USECODE_INTRINSIC_PTR(NAME) std::string(TO_STRING(NAME))
-	std::string siut[] = {
+#define USECODE_INTRINSIC_PTR(NAME) #NAME##sv
+	constexpr static const std::array siut{
 #include "siintrinsics.h"
 	};
 #undef USECODE_INTRINSIC_PTR
 
-	gen_intrinsic_table(o, siut, array_size(siut));
+	gen_intrinsic_table(o, siut);
 
 	o.close();
 }
@@ -101,13 +96,13 @@ void sibeta_out(const string& fname) {
 	o << setfill('0') << setbase(16);
 	o.setf(ios::uppercase);
 
-#define USECODE_INTRINSIC_PTR(NAME) std::string(TO_STRING(NAME))
-	std::string sibut[] = {
+#define USECODE_INTRINSIC_PTR(NAME) #NAME##sv
+	constexpr static const std::array sibut{
 #include "sibetaintrinsics.h"
 	};
 #undef USECODE_INTRINSIC_PTR
 
-	gen_intrinsic_table(o, sibut, array_size(sibut));
+	gen_intrinsic_table(o, sibut);
 
 	o.close();
 }

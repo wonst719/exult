@@ -18,7 +18,9 @@
 
 // Converts the SI OGG track requests to the BG OGG track numbers
 
-static const char* const bgconvmusic[] = {
+#include <array>
+
+constexpr const std::array bgconvmusic{
 		"09bg.ogg",    // 0
 		"10bg.ogg",    // 1
 		"11bg.ogg",    // 2

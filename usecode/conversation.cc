@@ -23,7 +23,6 @@
 #include "conversation.h"
 
 #include "actors.h"
-#include "array_size.h"
 #include "data/exult_bg_flx.h"
 #include "exult.h"
 #include "game.h"
@@ -124,12 +123,9 @@ void Conversation::remove_answer(Usecode_value& val) {
  */
 
 void Conversation::init_faces() {
-	const int max_faces = array_size(face_info);
-	for (int i = 0; i < max_faces; i++) {
-		if (face_info[i]) {
-			delete face_info[i];
-		}
-		face_info[i] = nullptr;
+	for (Npc_face_info*& finfo : face_info) {
+		delete finfo;
+		finfo = nullptr;
 		if (touchui != nullptr) {
 			touchui->showGameControls();
 		}
@@ -206,8 +202,6 @@ void Conversation::set_face_rect(
 void Conversation::show_face(int shape, int frame, int slot) {
 	ShapeID face_sid(shape, frame, SF_FACES_VGA);
 
-	const int max_faces = array_size(face_info);
-
 	// Make sure mode is set right.
 	Palette* pal = gwin->get_pal();    // Watch for weirdness (lightning).
 	if (pal->get_brightness() >= 300) {
@@ -219,7 +213,7 @@ void Conversation::show_face(int shape, int frame, int slot) {
 	const int      screenh = gwin->get_height();
 	Npc_face_info* info    = nullptr;
 	// See if already on screen.
-	for (int i = 0; i < max_faces; i++) {
+	for (size_t i = 0; i < face_info.size(); i++) {
 		if (face_info[i] && face_info[i]->face_num == shape) {
 			info            = face_info[i];
 			last_face_shown = i;
@@ -227,9 +221,9 @@ void Conversation::show_face(int shape, int frame, int slot) {
 		}
 	}
 	if (!info) {    // New one?
-		if (num_faces == max_faces) {
+		if (static_cast<unsigned>(num_faces) == face_info.size()) {
 			// None free?  Steal last one.
-			remove_slot_face(max_faces - 1);
+			remove_slot_face(face_info.size() - 1);
 		}
 		info = new Npc_face_info(face_sid, shape);
 		if (slot == -1) {    // Want next one?
@@ -259,14 +253,14 @@ void Conversation::show_face(int shape, int frame, int slot) {
  */
 
 void Conversation::change_face_frame(int frame, int slot) {
-	const int max_faces = array_size(face_info);
 	// Make sure mode is set right.
 	Palette* pal = gwin->get_pal();    // Watch for weirdness (lightning).
 	if (pal->get_brightness() >= 300) {
 		pal->set(-1, 100);
 	}
 
-	if (slot >= max_faces || !face_info[slot]) {
+	if (static_cast<unsigned>(slot) >= face_info.size()
+		|| !face_info[slot]) {
 		return;    // Invalid slot.
 	}
 
@@ -299,17 +293,12 @@ void Conversation::change_face_frame(int frame, int slot) {
  */
 
 void Conversation::remove_face(int shape) {
-	const int max_faces = array_size(face_info);
-	int       i;    // See if already on screen.
-	for (i = 0; i < max_faces; i++) {
+	for (size_t i = 0; i < face_info.size(); i++) {
 		if (face_info[i] && face_info[i]->face_num == shape) {
-			break;
+			remove_slot_face(i);
+			return;
 		}
 	}
-	if (i == max_faces) {
-		return;    // Not found.
-	}
-	remove_slot_face(i);
 }
 
 /*
@@ -317,13 +306,12 @@ void Conversation::remove_face(int shape) {
  */
 
 void Conversation::remove_slot_face(int slot) {
-	const int max_faces = array_size(face_info);
-	if (slot >= max_faces || !face_info[slot]) {
+	if (static_cast<unsigned>(slot) >= face_info.size()
+		|| !face_info[slot]) {
 		return;    // Invalid.
 	}
 	Npc_face_info* info = face_info[slot];
-	// These are needed in case conversa-
-	//   tion is done.
+	// These are needed in case conversation is done.
 	if (info->large_face) {
 		gwin->set_all_dirty();
 	} else {
@@ -334,9 +322,9 @@ void Conversation::remove_slot_face(int slot) {
 	face_info[slot] = nullptr;
 	num_faces--;
 	if (last_face_shown == slot) {    // Just in case.
-		int j;
-		for (j = max_faces - 1; j >= 0; j--) {
-			if (face_info[j]) {
+		size_t j;
+		for (j = face_info.size(); j > 0; j--) {
+			if (face_info[j - 1]) {
 				break;
 			}
 		}
@@ -392,9 +380,8 @@ void Conversation::show_npc_message(const char* msg) {
  */
 
 bool Conversation::is_npc_text_pending() {
-	const int max_faces = array_size(face_info);
-	for (int i = 0; i < max_faces; i++) {
-		if (face_info[i] && face_info[i]->text_pending) {
+	for (const Npc_face_info* finfo : face_info) {
+		if (finfo && finfo->text_pending) {
 			return true;
 		}
 	}
@@ -406,10 +393,9 @@ bool Conversation::is_npc_text_pending() {
  */
 
 void Conversation::clear_text_pending() {
-	const int max_faces = array_size(face_info);
-	for (int i = 0; i < max_faces; i++) {    // Clear 'pending' flags.
-		if (face_info[i]) {
-			face_info[i]->text_pending = false;
+	for (Npc_face_info* finfo : face_info) {    // Clear 'pending' flags.
+		if (finfo) {
+			finfo->text_pending = false;
 		}
 	}
 }
@@ -421,7 +407,6 @@ void Conversation::clear_text_pending() {
 void Conversation::show_avatar_choices(int num_choices, char** choices) {
 	const bool  SI         = Game::get_game_type() == SERPENT_ISLE;
 	Main_actor* main_actor = gwin->get_main_actor();
-	const int   max_faces  = array_size(face_info);
 	// Get screen rectangle.
 	const TileRect sbox        = gwin->get_game_rect();
 	int            x           = 0;
@@ -446,8 +431,8 @@ void Conversation::show_avatar_choices(int num_choices, char** choices) {
 
 	const ShapeID face_sid(shape, frame, SF_FACES_VGA);
 	Shape_frame*  face = face_sid.get_shape();
-	int           empty;    // Find face prev. to 1st empty slot.
-	for (empty = 0; empty < max_faces; empty++) {
+	size_t           empty;    // Find face prev. to 1st empty slot.
+	for (empty = 0; empty < face_info.size(); empty++) {
 		if (!face_info[empty]) {
 			break;
 		}
@@ -457,9 +442,9 @@ void Conversation::show_avatar_choices(int num_choices, char** choices) {
 	int            fx   = prev ? prev->face_rect.x + prev->face_rect.w + 4 : 16;
 	int            fy;
 	if (SI) {
-		if (num_faces == max_faces) {
+		if (static_cast<unsigned>(num_faces) == face_info.size()) {
 			// Remove face #1 if still there.
-			remove_slot_face(max_faces - 1);
+			remove_slot_face(face_info.size() - 1);
 		}
 		fy = sbox.h - 2 - face->get_height();
 		fx = 8;
@@ -571,9 +556,7 @@ void Conversation::paint_faces(bool text    // Show text too.
 	if (!num_faces) {
 		return;
 	}
-	const int max_faces = array_size(face_info);
-	for (int i = 0; i < max_faces; i++) {
-		Npc_face_info* finfo = face_info[i];
+	for (const Npc_face_info* finfo : face_info) {
 		if (!finfo) {
 			continue;
 		}

@@ -27,9 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	include <config.h>
 #endif
 
-#include "array_size.h"
 #include "basic_block.h"
 #include "opcodes.h"
+#include "span.h"
 #include "ucexpr.h" /* Needed only for Write2(). */
 #include "ucfun.h"
 #include "ucstmt.h"
@@ -41,14 +41,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 using std::map;
 using std::memcpy;
 using std::pair;
 using std::string;
+using std::string_view;
 using std::strlen;
 using std::vector;
+
+using namespace std::string_view_literals;
 
 Uc_scope Uc_function::globals(nullptr);    // Stores intrinic symbols.
 vector<Uc_intrinsic_symbol*> Uc_function::intrinsics;
@@ -853,81 +857,68 @@ void Uc_function::gen(std::ostream& out) {
 	out.flush();
 }
 
-#ifndef TO_STRING
-#	if defined __STDC__ && __STDC__
-#		define TO_STRING(x) #x
-#	else
-#		define TO_STRING(x) "x"
-#	endif
-#endif
-
 /*
  *  Tables of usecode intrinsics:
  */
-#define USECODE_INTRINSIC_PTR(NAME) TO_STRING(UI_##NAME)
+#define STRVIEW(x)                  #x##sv
+#define USECODE_INTRINSIC_PTR(NAME) STRVIEW(UI_##NAME)
 
-const char* bg_intrinsic_table[] = {
+constexpr const std::array bg_intrinsic_table{
 #include "../bgintrinsics.h"
 };
 
-const char* si_intrinsic_table[] = {
+constexpr const std::array si_intrinsic_table{
 #include "../siintrinsics.h"
 };
 
-const char* sibeta_intrinsic_table[] = {
+constexpr const std::array sibeta_intrinsic_table{
 #include "../sibetaintrinsics.h"
 };
+#undef USECODE_INTRINSIC_PTR
+#undef STRVIEW
 
 /*
  *  Add one of the intrinsic tables to the 'intrinsics' scope.
  */
 
 void Uc_function::set_intrinsics() {
-	int          cnt;
-	const char** table;
 	if (intrinsic_type == unset) {
 		Uc_location::yywarning(
 				"Use '#game \"[blackgate|serpentisle|serpentbeta]\" to specify "
 				"intrinsics to use (default = blackgate).");
 		intrinsic_type = bg;
 	}
+	tcb::span<const std::string_view> table;
 	if (intrinsic_type == bg) {
-		table         = bg_intrinsic_table;
-		cnt           = array_size(bg_intrinsic_table);
-		add_answer    = 5;
-		remove_answer = 6;
-		push_answers  = 7;
-		pop_answers   = 8;
+		table = bg_intrinsic_table;
 	} else if (intrinsic_type == si) {
-		table         = si_intrinsic_table;
-		cnt           = array_size(si_intrinsic_table);
-		add_answer    = 0xc;
-		remove_answer = 0xd;
-		push_answers  = 0xe;
-		pop_answers   = 0xf;
+		table = si_intrinsic_table;
 	} else {
-		table         = sibeta_intrinsic_table;
-		cnt           = array_size(sibeta_intrinsic_table);
-		add_answer    = 0xc;
-		remove_answer = 0xd;
-		push_answers  = 0xe;
-		pop_answers   = 0xf;
+		table = sibeta_intrinsic_table;
 	}
-	show_face   = 3;
-	remove_face = 4;
-	intrinsics.resize(cnt);
-	for (int i = 0; i < cnt; i++) {
-		const char* nm = table[i];
-		if (!strncmp(nm, "UI_get_usecode_fun", sizeof("UI_get_usecode_fun"))) {
-			get_usecode_fun = i;
-		} else if (!strncmp(
-						   nm, "UI_get_item_shape",
-						   sizeof("UI_get_item_shape"))) {
-			get_item_shape = i;
+	intrinsics.resize(table.size());
+	for (size_t i = 0; i < table.size(); i++) {
+		std::string_view nm = table[i];
+		if (nm == "UI_add_answer") {
+			add_answer = static_cast<int>(i);
+		} else if (nm == "UI_remove_answer") {
+			remove_answer = static_cast<int>(i);
+		} else if (nm == "UI_push_answers") {
+			push_answers = static_cast<int>(i);
+		} else if (nm == "UI_pop_answers") {
+			pop_answers = static_cast<int>(i);
+		} else if (nm == "UI_show_npc_face") {
+			show_face = static_cast<int>(i);
+		} else if (nm == "UI_remove_npc_face") {
+			remove_face = static_cast<int>(i);
+		} else if (nm == "UI_get_usecode_fun") {
+			get_usecode_fun = static_cast<int>(i);
+		} else if (nm == "UI_get_item_shape") {
+			get_item_shape = static_cast<int>(i);
 		}
-		auto* sym     = new Uc_intrinsic_symbol(nm, i);
+		auto* sym     = new Uc_intrinsic_symbol(nm.data(), static_cast<int>(i));
 		intrinsics[i] = sym;    // Store in indexed list.
-		if (!globals.search(nm)) {
+		if (!globals.search(nm.data())) {
 			// ++++Later, get num parms.
 			globals.add(sym);
 		}

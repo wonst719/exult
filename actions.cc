@@ -389,14 +389,17 @@ bool Path_walking_actor_action::open_door(Actor* actor, Game_object* door) {
 #ifdef DEBUG
 		cout << "Path_walking_actor_action::open_door()" << endl;
 #endif
-		signed char frames[2];
-		frames[0] = actor->get_dir_framenum(dir, Actor::standing);
-		frames[1] = actor->get_dir_framenum(dir, Actor::ready_frame);
+		const std::array frames{
+				static_cast<signed char>(
+						actor->get_dir_framenum(dir, Actor::standing)),
+				static_cast<signed char>(
+						actor->get_dir_framenum(dir, Actor::ready_frame)),
+		};
 		signed char standframe = frames[0];
 		set_subseq(create_action_sequence(
 				actor, past,
 				new Sequence_actor_action(
-						new Frames_actor_action(frames, sizeof(frames)),
+						new Frames_actor_action(frames.data(), frames.size()),
 						new Activate_actor_action(door),
 						new Frames_actor_action(&standframe, 1))));
 		return true;
@@ -747,13 +750,13 @@ int Usecode_actor_action::handle_event(Actor* actor) {
  */
 
 Frames_actor_action::Frames_actor_action(
-		signed char* f,      // Frames.  -1 means don't change.
-		int          c,      // Count.
-		int          spd,    // Frame delay in 1/1000 secs.
-		Game_object* o)
-		: cnt(c), index(0), speed(spd), obj(weak_from_obj(o)) {
-	frames = new signed char[cnt];
-	std::memcpy(frames, f, cnt);
+		const signed char* f,      // Frames.  -1 means don't change.
+		int                c,      // Count.
+		int                spd,    // Frame delay in 1/1000 secs.
+		Game_object*       o)
+		: index(0), speed(spd), obj(weak_from_obj(o)) {
+	frames.resize(c);
+	std::copy_n(f, c, frames.begin());
 	use_actor = (o == nullptr);
 }
 
@@ -765,9 +768,7 @@ Frames_actor_action::Frames_actor_action(
 		signed char  f,      // Frames.  -1 means don't change.
 		int          spd,    // Frame delay in 1/1000 secs.
 		Game_object* o)
-		: cnt(1), index(0), speed(spd), obj(weak_from_obj(o)) {
-	frames    = new signed char[1];
-	frames[0] = f;
+		: frames{f}, index(0), speed(spd), obj(weak_from_obj(o)) {
 	use_actor = (o == nullptr);
 }
 
@@ -779,7 +780,7 @@ Frames_actor_action::Frames_actor_action(
 
 int Frames_actor_action::handle_event(Actor* actor) {
 	const Game_object_shared o = obj.lock();
-	if (index == cnt || (!o && !use_actor)) {
+	if (index == frames.size() || (!o && !use_actor)) {
 		return 0;    // Done.
 	}
 	const int frnum = frames[index++];    // Get frame.
@@ -801,12 +802,10 @@ Sequence_actor_action::Sequence_actor_action(
 		Actor_action* a0,    // (These will be deleted when done.)
 		Actor_action* a1, Actor_action* a2, Actor_action* a3)
 		: index(0), speed(100) {
-	actions    = new Actor_action*[5];    // Create list.
-	actions[0] = a0;
-	actions[1] = a1;
-	actions[2] = a2;
-	actions[3] = a3;
-	actions[4] = nullptr;    // 0-delimit.
+	// Create 0-delimited list.
+	actions = new Actor_action* [] {
+		a0, a1, a2, a3, nullptr,
+	};
 }
 
 /**

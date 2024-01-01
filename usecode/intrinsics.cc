@@ -28,7 +28,6 @@
 #include "Sign_gump.h"
 #include "actions.h"
 #include "animate.h"
-#include "array_size.h"
 #include "barge.h"
 #include "cheat.h"
 #include "chunks.h"
@@ -65,9 +64,11 @@
 #include "useval.h"
 #include "virstone.h"
 
+#include <array>
 #include <cmath>
 #include <map>
 #include <memory>
+#include <string_view>
 
 using std::cerr;
 using std::cout;
@@ -79,8 +80,6 @@ extern Usecode_value no_ret;
 
 static Game_object* sailor = nullptr;    // The current barge captain.  Maybe
 //   this needs to be saved/restored.
-
-#define PARTY_MAX (array_size(party))
 
 #define USECODE_INTRINSIC(NAME)                \
 	Usecode_value Usecode_internal::UI_##NAME( \
@@ -1854,11 +1853,11 @@ static inline void Armageddon_death(
 		Actor* npc, bool barks, const TileRect& screen) {
 	// Leave a select few alive (like LB, Batlin).
 	if (npc && !npc->is_dead() && !npc->get_info().survives_armageddon()) {
-		const char* const text[]  = {"Aiiiieee!", "Noooo!", "#!?*#%!"};
-		const int         numtext = array_size(text);
-		const Tile_coord  loc     = npc->get_tile();
+		constexpr static const std::array text{
+				"Aiiiieee!", "Noooo!", "#!?*#%!"};
+		const Tile_coord loc = npc->get_tile();
 		if (barks && screen.has_world_point(loc.tx, loc.ty)) {
-			npc->say(text[rand() % numtext]);
+			npc->say(text[rand() % text.size()]);
 		}
 		// Lay down and lie animation.
 		npc->lay_down(false);

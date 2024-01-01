@@ -27,7 +27,6 @@
 #include "Audio.h"
 #include "actors.h"
 #include "animate.h"
-#include "array_size.h"
 #include "chunks.h"
 #include "effects.h"
 #include "game.h"
@@ -138,15 +137,14 @@ Monster_actor::~Monster_actor() {
 
 void Monster_actor::equip(const Monster_info* inf, bool temporary) {
 	// Get equipment.
-	const int             equip_offset = inf->equip_offset;
-	vector<Equip_record>& equip        = Monster_info::equip;
+	const int equip_offset = inf->equip_offset;
 	if (!equip_offset || equip_offset - 1 >= Monster_info::get_equip_cnt()) {
 		return;
 	}
-	const Equip_record& rec = equip[equip_offset - 1];
-	for (size_t i = 0; i < array_size(equip[0].elements); i++) {
+	vector<Equip_record>& equip = Monster_info::equip;
+	const Equip_record&   rec   = equip[equip_offset - 1];
+	for (const Equip_element& elem : rec.elements) {
 		// Give equipment.
-		const Equip_element& elem = rec.elements[i];
 		if (!elem.shapenum || 1 + rand() % 100 > elem.probability) {
 			continue;    // You lose.
 		}

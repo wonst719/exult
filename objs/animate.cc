@@ -34,7 +34,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Flex.h"
 #include "actors.h" /* Only need this for Object_sfx. */
 #include "aniinf.h"
-#include "array_size.h"
 #include "dir.h"
 #include "game.h"
 #include "gameclk.h"
@@ -167,10 +166,10 @@ void Object_sfx::handle_event(
  *  Stop playing the sound effect if needed.
  */
 void Shape_sfx::stop() {
-	for (size_t i = 0; i < array_size(channel); i++) {
-		if (channel[i] >= 0) {
-			Audio::get_ptr()->stop_sound_effect(channel[i]);
-			channel[i] = -1;
+	for (auto& chan : channel) {
+		if (chan >= 0) {
+			Audio::get_ptr()->stop_sound_effect(chan);
+			chan = -1;
 		}
 	}
 }
@@ -205,7 +204,7 @@ void Shape_sfx::update(bool play) {
 	AudioMixer* mixer = AudioMixer::get_instance();
 
 	bool active[2] = {false, false};
-	for (size_t i = 0; i < array_size(channel); i++) {
+	for (size_t i = 0; i < channel.size(); i++) {
 		if (channel[i] != -1) {
 			active[i] = mixer->isPlaying(channel[i]);
 		}
@@ -246,7 +245,7 @@ void Shape_sfx::update(bool play) {
 		play = false;
 	}
 
-	for (size_t i = 0; i < array_size(channel); i++) {
+	for (size_t i = 0; i < channel.size(); i++) {
 		if (play && channel[i] == -1 && sfxnum[i] > -1) {    // First time?
 			// Start playing.
 			channel[i] = Audio::get_ptr()->play_sound_effect(

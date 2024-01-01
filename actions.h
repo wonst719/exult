@@ -25,6 +25,7 @@
 #include "tiles.h"
 
 #include <memory>
+#include <vector>
 
 class Actor;
 class Game_object;
@@ -243,27 +244,24 @@ public:
  *  Go through a series of frames.
  */
 class Frames_actor_action : public Actor_action {
-	signed char* frames;    // List to go through (a -1 means to
+	std::vector<signed char> frames;    // List to go through (a -1 means to
 	//   leave frame alone.)
-	int              cnt;      // Size of list.
-	int              index;    // Index for next.
+	size_t           index;    // Index for next.
 	int              speed;    // Frame delay in 1/1000 secs.
 	Game_object_weak obj;      // Object to animate
 	bool             use_actor;
 
 public:
 	Frames_actor_action(
-			signed char* f, int c, int spd = 200, Game_object* o = nullptr);
-	Frames_actor_action(signed char f, int spd = 200, Game_object* o = nullptr);
+			const signed char* f, int c, int spd = 200,
+			Game_object* o = nullptr);
 
-	~Frames_actor_action() override {
-		delete[] frames;
-	}
+	Frames_actor_action(signed char f, int spd = 200, Game_object* o = nullptr);
 
 	// Handle time event.
 	int handle_event(Actor* actor) override;
 
-	int get_index() const {
+	size_t get_index() const {
 		return index;
 	}
 

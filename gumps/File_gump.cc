@@ -35,7 +35,6 @@
 #include "File_gump.h"
 #include "Gump_button.h"
 #include "Yesno_gump.h"
-#include "array_size.h"
 #include "exult.h"
 #include "game.h"
 #include "gamewin.h"
@@ -52,9 +51,11 @@ using std::strncpy;
 /*
  *  Statics:
  */
-short File_gump::btn_rows[2] = {143, 156};
-short File_gump::btn_cols[3] = {94, 163, 232};
-short File_gump::textx = 237, File_gump::texty = 14, File_gump::texth = 13;
+std::array<short, 2> File_gump::btn_rows{143, 156};
+std::array<short, 3> File_gump::btn_cols{94, 163, 232};
+short                File_gump::textx = 237;
+short                File_gump::texty = 14;
+short                File_gump::texth = 13;
 
 /*
  *  Load or save button.
@@ -315,12 +316,11 @@ void Gump_text::lose_focus() {
 File_gump::File_gump() : Modal_gump(nullptr, game->get_shape("gumps/fileio")) {
 	set_object_area(TileRect(0, 0, 0, 0), 8, 150);
 
-	size_t i;
-	int    ty = texty;
-	for (i = 0; i < array_size(names); i++, ty += texth) {
+	int ty = texty;
+	for (size_t i = 0; i < names.size(); i++, ty += texth) {
 		names[i] = new Gump_text(
 				this, game->get_shape("gumps/fntext"), textx, ty, 30, 12, 2);
-		names[i]->set_text(gwin->get_save_name(i));
+		names[i]->set_text(gwin->get_save_name(i).c_str());
 	}
 	// First row of buttons:
 	buttons[0] = buttons[1] = nullptr;    // No load/save until name chosen.
@@ -342,12 +342,11 @@ File_gump::File_gump() : Modal_gump(nullptr, game->get_shape("gumps/fileio")) {
  */
 
 File_gump::~File_gump() {
-	size_t i;
-	for (i = 0; i < array_size(names); i++) {
-		delete names[i];
+	for (auto& name : names) {
+		delete name;
 	}
-	for (i = 0; i < array_size(buttons); i++) {
-		delete buttons[i];
+	for (auto& button : buttons) {
+		delete button;
 	}
 }
 
@@ -358,7 +357,7 @@ File_gump::~File_gump() {
  */
 
 int File_gump::get_save_index(Gump_text* txt) {
-	for (size_t i = 0; i < array_size(names); i++) {
+	for (size_t i = 0; i < names.size(); i++) {
 		if (names[i] == txt) {
 			return i;
 		}
@@ -418,7 +417,7 @@ void File_gump::save() {
 	if (num == -1) {
 		return;    // Shouldn't ever happen.
 	}
-	if (*gwin->get_save_name(num)) {    // Already a game in this slot?
+	if (!gwin->get_save_name(num).empty()) {    // Already a game in this slot?
 		if (!Yesno_gump::ask("Okay to write over existing saved game?")) {
 			return;
 		}
@@ -490,15 +489,14 @@ int File_gump::toggle_option(Gump_button* btn    // Button that was clicked.
 void File_gump::paint() {
 	Gump::paint();    // Paint background
 	// Paint text objects.
-	size_t i;
-	for (i = 0; i < array_size(names); i++) {
-		if (names[i]) {
-			names[i]->paint();
+	for (auto& name : names) {
+		if (name) {
+			name->paint();
 		}
 	}
-	for (i = 0; i < array_size(buttons); i++) {
-		if (buttons[i]) {
-			buttons[i]->paint();
+	for (auto& button : buttons) {
+		if (button) {
+			button->paint();
 		}
 	}
 }
@@ -521,9 +519,9 @@ bool File_gump::mouse_down(
 	if (btn) {
 		pushed = btn;
 	} else {    // Try buttons at bottom.
-		for (size_t i = 0; i < array_size(buttons); i++) {
-			if (buttons[i] && buttons[i]->on_button(mx, my)) {
-				pushed = buttons[i];
+		for (auto& button : buttons) {
+			if (button && button->on_button(mx, my)) {
+				pushed = button;
 				break;
 			}
 		}
@@ -533,9 +531,9 @@ bool File_gump::mouse_down(
 		return true;
 	}
 	// See if on text field.
-	for (size_t i = 0; i < array_size(names); i++) {
-		if (names[i]->on_widget(mx, my)) {
-			pushed_text = names[i];
+	for (auto& name : names) {
+		if (name->on_widget(mx, my)) {
+			pushed_text = name;
 			break;
 		}
 	}
@@ -572,7 +570,7 @@ bool File_gump::mouse_up(
 		return true;
 	}
 	if (focus) {    // Another had focus.
-		focus->set_text(gwin->get_save_name(get_save_index(focus)));
+		focus->set_text(gwin->get_save_name(get_save_index(focus)).c_str());
 		focus->lose_focus();
 	}
 	focus       = pushed_text;    // Switch focus to new field.

@@ -1,23 +1,23 @@
-#include "array_size.h"
+#include "span.h"
 #include "uctools.h"
 
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
-static opcode_desc push_table[] = {
-		{   "true", 0, 0x13, 0, 0},
-		{  "false", 0, 0x14, 0, 0},
-		{"itemref", 0, 0x3e, 0, 0},
-		{"eventid", 0, 0x48, 0, 0}
+constexpr static const std::array push_table{
+		opcode_desc{   "true", 0, 0x13, 0, 0},
+        opcode_desc{  "false", 0, 0x14, 0, 0},
+		opcode_desc{"itemref", 0, 0x3e, 0, 0},
+		opcode_desc{"eventid", 0, 0x48, 0, 0}
 };
 
-static opcode_desc pop_table[] = {
-		{"eventid", 0, 0x4b, 0, 0}
+constexpr static const std::array pop_table{
+		opcode_desc{"eventid", 0, 0x4b, 0, 0}
 };
 
-static const char* compiler_table[]
-		= {".argc", ".extern", ".externsize", ".localc"};
+constexpr static const std::array compiler_table{
+		".argc", ".extern", ".externsize", ".localc"};
 
 #define MAX_LABELS   3500
 #define TOKEN_LENGTH 25600
@@ -116,10 +116,9 @@ void check_data_label_16(int label) {
 }
 
 int find_intrinsic(
-		const char* const* func_table, unsigned funsize, const char* name) {
-	unsigned i;
-	for (i = 0; i < funsize; i++) {
-		if (!strcasecmp(name, func_table[i])) {
+		tcb::span<const std::string_view> func_table, const char* name) {
+	for (size_t i = 0; i < func_table.size(); i++) {
+		if (name == func_table[i]) {
 			return i;
 		}
 	}
@@ -168,16 +167,14 @@ void read_token(FILE* fi) {
 }
 
 int main(int argc, char* argv[]) {
-	unsigned           i;
-	const unsigned     opsize   = array_size(opcode_table);
-	const unsigned     pushsize = array_size(push_table);
-	const unsigned     popsize  = array_size(pop_table);
-	const unsigned     compsize = array_size(compiler_table);
-	int                label;
-	const char* const* func_table = bg_intrinsic_table;
-	int                funsize    = bg_intrinsic_size;
-	int                findex     = 1;    // Index in argv of 1st filename.
-	unsigned int       opcodetype;
+	unsigned       i;
+	const unsigned opsize   = opcode_table.size();
+	const unsigned pushsize = push_table.size();
+	const unsigned popsize  = pop_table.size();
+	const unsigned compsize = compiler_table.size();
+	int            label;
+	int            findex = 1;    // Index in argv of 1st filename.
+	unsigned int   opcodetype;
 	indata = codesize = datasize = 0;
 	/*  printf("Wody's Usecode Compiler v0.009\nCopyright (c) 1999 Wody "
 		"Dragon (a.k.a. Wouter Dijkslag)\n");*/
@@ -185,15 +182,16 @@ int main(int argc, char* argv[]) {
 		printf("syntax: %s [-s|-b] infile outfile\n", argv[0]);
 		exit(0);
 	}
+	tcb::span<const std::string_view> func_table;
 	// Serpent Isle?
 	if (strcmp(argv[1], "-s") == 0) {
 		findex++;
 		func_table = si_intrinsic_table;
-		funsize    = si_intrinsic_size;
 	} else if (strcmp(argv[1], "-b") == 0) {
 		findex++;
 		func_table = sibeta_intrinsic_table;
-		funsize    = sibeta_intrinsic_size;
+	} else {
+		func_table = bg_intrinsic_table;
 	}
 
 	lindex = 0;
@@ -325,7 +323,7 @@ int main(int argc, char* argv[]) {
 									*token2++ = 0;
 									if (token[0] != '_') {
 										word = find_intrinsic(
-												func_table, funsize, token);
+												func_table, token);
 									} else {
 										read_token(fi);
 										sscanf(token, "(%x)", &word);

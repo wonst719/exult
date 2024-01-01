@@ -113,14 +113,14 @@ protected:
 	unsigned char next_schedule;       // Used so correct schedule type
 	//   will be saved
 	std::unique_ptr<Schedule> schedule;    // Current schedule.
-	int          restored_schedule;        // Just restored schedule type.
-	bool         dormant;                  // I.e., off-screen.
-	bool         hit;                      // Just hit in combat.
-	bool         combat_protected;         // 'Halo' on paperdoll screen.
-	bool         user_set_attack;          // True if player set attack_mode.
-	short        alignment;                // 'Feelings' towards Ava. See below.
-	short        charmalign;               // Alignment of charmed NPC.
-	Game_object* spots[18];                // Where things can go.  See 'Spots'
+	int   restored_schedule;               // Just restored schedule type.
+	bool  dormant;                         // I.e., off-screen.
+	bool  hit;                             // Just hit in combat.
+	bool  combat_protected;                // 'Halo' on paperdoll screen.
+	bool  user_set_attack;                 // True if player set attack_mode.
+	short alignment;                       // 'Feelings' towards Ava. See below.
+	short charmalign;                      // Alignment of charmed NPC.
+	std::array<Game_object*, 18> spots;    // Where things can go.  See 'Spots'
 	//   below for description.
 	bool two_handed;           // Carrying a two-handed item.
 	bool two_fingered;         // Carrying gauntlets (both fingers)

@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Gump_button.h"
 #include "actors.h"
 #include "ammoinf.h"
-#include "array_size.h"
 #include "cheat.h"
 #include "contain.h"
 #include "game.h"
@@ -40,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "shapeid.h"
 #include "weaponinf.h"
 
+#include <array>
 #include <cstdio>
 
 using std::size_t;
@@ -56,104 +56,114 @@ using std::size_t;
 /*
  *  Statics:
  */
+namespace {
+	struct Position {
+		short x;
+		short y;
+	};
 
-// Paperdoll is completely different to Actor
-Paperdoll_gump::Position Paperdoll_gump::disk   = {123, 137};
-Paperdoll_gump::Position Paperdoll_gump::heart  = {97, 137};
-Paperdoll_gump::Position Paperdoll_gump::combat = {51, 142};
-Paperdoll_gump::Position Paperdoll_gump::cstat  = {72, 137};
-Paperdoll_gump::Position Paperdoll_gump::cmode  = {75, 140};
-Paperdoll_gump::Position Paperdoll_gump::halo   = {123, 120};
+	// Paperdoll is completely different to Actor
+	Position disk{123, 137};
+	Position heart{97, 137};
+	Position combat{51, 142};
+	Position cstat{72, 137};
+	Position cmode{75, 140};
+	Position halo{123, 120};
 
-Paperdoll_gump::Position Paperdoll_gump::coords[18] = {
-		{ 76,  20}, /* head */
-		{115,  27}, /* back */
-		{105,  65}, /* belt */
-		{ 38,  55}, /* lhand */
-		{ 55,  62}, /* lfinger */
-		{ 80,  80}, /* legs */
-		{ 84, 105}, /* feet */
-		{ 90,  50}, /* rfinger */
-		{117,  55}, /* rhand */
-		{ 45,  35}, /* torso */
-		{ 44,  26}, /* neck */
-		{ 69,  59}, /* ammo */
-		{ 59,  19}, /* back2 */
-		{ 94,  20}, /* back 3 (shield) */
-		{ 76,  26}, /* ears */
-		{ 76,  33}, /* cloak */
-		{ 73,  53}, /* gloves */
-		{  0,   0}  /* usecode container */
-};
-Paperdoll_gump::Position Paperdoll_gump::coords_blue[18] = {
-		{76,  20}, /* head */
-		{64,  27}, /* back */
-		{54,  56}, /* belt */
-		{30,  58}, /* lhand */
-		{55,  62}, /* lfinger */
-		{80,  80}, /* legs */
-		{84, 105}, /* feet */
-		{90,  50}, /* rfinger */
-		{68,  50}, /* rhand */
-		{45,  37}, /* torso */
-		{22,  26}, /* neck */
-		{69,  59}, /* ammo */
-		{59,  19}, /* back2 */
-		{94,  20}, /* back 3 (shield) */
-		{76,  26}, /* ears */
-		{76,  33}, /* cloak */
-		{73,  53}, /* gloves */
-		{ 0,   0}  /* usecode container */
-};
-Paperdoll_gump::Position Paperdoll_gump::coords_hot[18] = {
-		{ 76,  20}, /* head */
-		{ 94,  27}, /* back */
-		{ 92,  61}, /* belt */
-		{ 38,  55}, /* lhand */
-		{ 55,  62}, /* lfinger */
-		{ 80,  80}, /* legs */
-		{ 84, 105}, /* feet */
-		{ 90,  50}, /* rfinger */
-		{117,  55}, /* rhand */
-		{ 83,  43}, /* torso */
-		{ 76,  41}, /* neck */
-		{ 69,  59}, /* ammo */
-		{ 59,  19}, /* back2 */
-		{ 94,  20}, /* back 3 (shield) */
-		{ 76,  26}, /* ears */
-		{ 76,  33}, /* cloak */
-		{ 73,  53}, /* gloves */
-		{  0,   0}  /* usecode container */
-};
+	std::array coords{
+			Position{ 76,  20}, /* head */
+			Position{115,  27}, /* back */
+			Position{105,  65}, /* belt */
+			Position{ 38,  55}, /* lhand */
+			Position{ 55,  62}, /* lfinger */
+			Position{ 80,  80}, /* legs */
+			Position{ 84, 105}, /* feet */
+			Position{ 90,  50}, /* rfinger */
+			Position{117,  55}, /* rhand */
+			Position{ 45,  35}, /* torso */
+			Position{ 44,  26}, /* neck */
+			Position{ 69,  59}, /* ammo */
+			Position{ 59,  19}, /* back2 */
+			Position{ 94,  20}, /* back 3 (shield) */
+			Position{ 76,  26}, /* ears */
+			Position{ 76,  33}, /* cloak */
+			Position{ 73,  53}, /* gloves */
+			Position{  0,   0}  /* usecode container */
+	};
+	std::array coords_blue{
+			Position{76,  20}, /* head */
+			Position{64,  27}, /* back */
+			Position{54,  56}, /* belt */
+			Position{30,  58}, /* lhand */
+			Position{55,  62}, /* lfinger */
+			Position{80,  80}, /* legs */
+			Position{84, 105}, /* feet */
+			Position{90,  50}, /* rfinger */
+			Position{68,  50}, /* rhand */
+			Position{45,  37}, /* torso */
+			Position{22,  26}, /* neck */
+			Position{69,  59}, /* ammo */
+			Position{59,  19}, /* back2 */
+			Position{94,  20}, /* back 3 (shield) */
+			Position{76,  26}, /* ears */
+			Position{76,  33}, /* cloak */
+			Position{73,  53}, /* gloves */
+			Position{ 0,   0}  /* usecode container */
+	};
+	std::array coords_hot{
+			Position{ 76,  20}, /* head */
+			Position{ 94,  27}, /* back */
+			Position{ 92,  61}, /* belt */
+			Position{ 38,  55}, /* lhand */
+			Position{ 55,  62}, /* lfinger */
+			Position{ 80,  80}, /* legs */
+			Position{ 84, 105}, /* feet */
+			Position{ 90,  50}, /* rfinger */
+			Position{117,  55}, /* rhand */
+			Position{ 83,  43}, /* torso */
+			Position{ 76,  41}, /* neck */
+			Position{ 69,  59}, /* ammo */
+			Position{ 59,  19}, /* back2 */
+			Position{ 94,  20}, /* back 3 (shield) */
+			Position{ 76,  26}, /* ears */
+			Position{ 76,  33}, /* cloak */
+			Position{ 73,  53}, /* gloves */
+			Position{  0,   0}  /* usecode container */
+	};
 
-//
-// Paperdoll Coords
-//
+	static_assert(
+			coords.size() == coords_blue.size()
+			&& coords.size() == coords_hot.size());
 
-Paperdoll_gump::Position Paperdoll_gump::body  = {46, 33};
-Paperdoll_gump::Position Paperdoll_gump::headp = {46, 22};
+	//
+	// Paperdoll Coords
+	//
 
-Paperdoll_gump::Position Paperdoll_gump::beltf = {58, 52};
-Paperdoll_gump::Position Paperdoll_gump::neckf = {46, 47};
-Paperdoll_gump::Position Paperdoll_gump::beltm = {57, 55};
-Paperdoll_gump::Position Paperdoll_gump::neckm = {46, 44};
+	Position body{46, 33};
+	Position headp{46, 22};
 
-Paperdoll_gump::Position Paperdoll_gump::legsp = {57, 66};
-Paperdoll_gump::Position Paperdoll_gump::feetp = {46, 99};
+	Position beltf{58, 52};
+	Position neckf{46, 47};
+	Position beltm{57, 55};
+	Position neckm{46, 44};
 
-Paperdoll_gump::Position Paperdoll_gump::hands  = {68, 44};
-Paperdoll_gump::Position Paperdoll_gump::rhandp = {68, 44};
-Paperdoll_gump::Position Paperdoll_gump::lhandp = {34, 65};
+	Position legsp{57, 66};
+	Position feetp{46, 99};
 
-Paperdoll_gump::Position Paperdoll_gump::ahand = {28, 59};
-Paperdoll_gump::Position Paperdoll_gump::ammo  = {28, 59};
+	Position hands{68, 44};
+	Position rhandp{68, 44};
+	Position lhandp{34, 65};
 
-Paperdoll_gump::Position Paperdoll_gump::backf   = {68, 28};
-Paperdoll_gump::Position Paperdoll_gump::back2f  = {34, 22};
-Paperdoll_gump::Position Paperdoll_gump::backm   = {68, 22};
-Paperdoll_gump::Position Paperdoll_gump::back2m  = {35, 22};
-Paperdoll_gump::Position Paperdoll_gump::shieldf = {56, 25};
-Paperdoll_gump::Position Paperdoll_gump::shieldm = {57, 22};
+	Position ahand{28, 59};
+	Position ammo{28, 59};
+
+	Position backf{68, 28};
+	Position back2f{34, 22};
+	Position backm{68, 22};
+	Position back2m{35, 22};
+	Position shieldf{56, 25};
+	Position shieldm{57, 22};
+}    // namespace
 
 /*
  *  Find the index of the closest 'spot' to a mouse point.
@@ -172,7 +182,7 @@ int Paperdoll_gump::find_closest(
 
 	Actor* npc = container->as_actor();
 
-	for (size_t i = 0; i < array_size(coords_hot); i++) {
+	for (size_t i = 0; i < coords_hot.size(); i++) {
 		int spot = i;
 
 		const int  dx       = mx - coords_hot[spot].x;
@@ -248,7 +258,7 @@ Paperdoll_gump::Paperdoll_gump(
 	}
 
 	// Put all the objects in the right place
-	for (size_t i = 0; i < array_size(coords); i++) {
+	for (size_t i = 0; i < coords.size(); i++) {
 		Game_object* obj = container->get_readied(i);
 		if (obj) {
 			set_to_spot(obj, i);
@@ -332,7 +342,7 @@ bool Paperdoll_gump::add(
 	} while (false);
 
 	// Put all the objects in the right place
-	for (size_t i = 0; i < array_size(coords); i++) {
+	for (size_t i = 0; i < coords.size(); i++) {
 		obj = container->get_readied(i);
 		if (obj) {
 			set_to_spot(obj, i);

@@ -26,7 +26,6 @@
 #include "Newfile_gump.h"
 #include "Yesno_gump.h"
 #include "actors.h"
-#include "array_size.h"
 #include "databuf.h"
 #include "exceptions.h"
 #include "fnames.h"
@@ -36,6 +35,7 @@
 #include "gamewin.h"
 #include "gump_utils.h"
 #include "party.h"
+#include "span.h"
 #include "utils.h"
 #include "version.h"
 
@@ -250,19 +250,17 @@ void Game_window::restore_gamedat(int num    // 0-9, currently.
 /*
  *  List of 'gamedat' files to save (in addition to 'iregxx'):
  */
-static const char* bgsavefiles[]
-		= {GSCRNSHOT, GSAVEINFO,    // MUST BE FIRST!!
-		   IDENTITY,                // MUST BE #2
-		   GEXULTVER, GNEWGAMEVER, NPC_DAT, MONSNPCS,  USEVARS,
-		   USEDAT,    FLAGINIT,    GWINDAT, GSCHEDULE, NOTEBOOKXML};
-static const int bgnumsavefiles = array_size(bgsavefiles);
+constexpr static const std::array bgsavefiles{
+		GSCRNSHOT, GSAVEINFO,    // MUST BE FIRST!!
+		IDENTITY,                // MUST BE #2
+		GEXULTVER, GNEWGAMEVER, NPC_DAT, MONSNPCS,  USEVARS,
+		USEDAT,    FLAGINIT,    GWINDAT, GSCHEDULE, NOTEBOOKXML};
 
-static const char* sisavefiles[]
-		= {GSCRNSHOT, GSAVEINFO,    // MUST BE FIRST!!
-		   IDENTITY,                // MUST BE #2
-		   GEXULTVER, GNEWGAMEVER, NPC_DAT,   MONSNPCS,   USEVARS,    USEDAT,
-		   FLAGINIT,  GWINDAT,     GSCHEDULE, KEYRINGDAT, NOTEBOOKXML};
-static const int sinumsavefiles = array_size(sisavefiles);
+constexpr static const std::array sisavefiles{
+		GSCRNSHOT, GSAVEINFO,    // MUST BE FIRST!!
+		IDENTITY,                // MUST BE #2
+		GEXULTVER, GNEWGAMEVER, NPC_DAT,   MONSNPCS,   USEVARS,    USEDAT,
+		FLAGINIT,  GWINDAT,     GSCHEDULE, KEYRINGDAT, NOTEBOOKXML};
 
 static void SavefileFromDataSource(
 		Flex_writer& flex,
@@ -323,15 +321,15 @@ void Game_window::save_gamedat(
 #endif
 
 	// setup correct file list
-	const int    numsavefiles = (Game::get_game_type() == BLACK_GATE)
-										? bgnumsavefiles
-										: sinumsavefiles;
-	const char** savefiles
-			= (Game::get_game_type() == BLACK_GATE) ? bgsavefiles : sisavefiles;
+	tcb::span<const char* const> savefiles;
+	if (Game::get_game_type() == BLACK_GATE) {
+		savefiles = bgsavefiles;
+	} else {
+		savefiles = sisavefiles;
+	}
 
-	OFileDataSource out(fname);
-	int             count = numsavefiles;    // Count up #files to write.
-	count += 12 * 12 - 1;    // First map outputs IREG's directly to
+	size_t count = savefiles.size();    // Count up #files to write.
+	count += 12 * 12 - 1;               // First map outputs IREG's directly to
 	// gamedat flex, while all others have a flex
 	// of their own contained in gamedat flex.
 	for (auto* map : maps) {
@@ -340,10 +338,10 @@ void Game_window::save_gamedat(
 		}
 	}
 	// Use samename for title.
-	Flex_writer flex(out, savename, count);
-	int         i;    // Start with listed files.
-	for (i = 0; i < numsavefiles; i++) {
-		Savefile(flex, savefiles[i]);
+	OFileDataSource out(fname);
+	Flex_writer     flex(out, savename, count);
+	for (const auto *savefile : savefiles) {
+		Savefile(flex, savefile);
 	}
 	// Now the Ireg's.
 	for (auto* map : maps) {
@@ -392,8 +390,8 @@ void Game_window::save_gamedat(
 													: "dev");
 	save_gamedat(fname, savename);
 	if (num >= 0 && num < 10) {
-		delete[] save_names[num];    // Update name
-		save_names[num] = newstrdup(savename);
+		// Update name
+		save_names[num] = savename;
 	}
 }
 
@@ -401,7 +399,7 @@ void Game_window::save_gamedat(
  *  Read in the saved game names.
  */
 void Game_window::read_save_names() {
-	for (unsigned int i = 0; i < array_size(save_names); i++) {
+	for (size_t i = 0; i < save_names.size(); i++) {
 		char fname[50];    // Set up name.
 		snprintf(
 				fname, sizeof(fname), SAVENAME, static_cast<int>(i),
@@ -409,20 +407,19 @@ void Game_window::read_save_names() {
 		try {
 			auto pIn = U7open_in(fname);
 			if (!pIn) {    // Okay if file not there.
-				save_names[i] = newstrdup("");
+				save_names[i].clear();
 				continue;
 			}
 			auto& in = *pIn;
-			char  buf[0x50];    // It's at start of file.
-			memset(buf, 0, sizeof(buf));
+			char  buf[0x50]{};    // It's at start of file.
 			in.read(buf, sizeof(buf) - 1);
 			if (in.good()) {    // Okay if file not there.
-				save_names[i] = newstrdup(buf);
+				save_names[i] = buf;
 			} else {
-				save_names[i] = newstrdup("");
+				save_names[i].clear();
 			}
 		} catch (const file_exception& /*f*/) {
-			save_names[i] = newstrdup("");
+			save_names[i].clear();
 		}
 	}
 }
@@ -1101,11 +1098,12 @@ bool Game_window::save_gamedat_zip(
 	}
 
 	// setup correct file list
-	const int    numsavefiles = (Game::get_game_type() == BLACK_GATE)
-										? bgnumsavefiles
-										: sinumsavefiles;
-	const char** savefiles
-			= (Game::get_game_type() == BLACK_GATE) ? bgsavefiles : sisavefiles;
+	tcb::span<const char* const> savefiles;
+	if (Game::get_game_type() == BLACK_GATE) {
+		savefiles = bgsavefiles;
+	} else {
+		savefiles = sisavefiles;
+	}
 
 	// Name
 	{
@@ -1123,8 +1121,8 @@ bool Game_window::save_gamedat_zip(
 
 	// Level 1 Compression
 	if (save_compression != 2) {
-		for (int i = 0; i < numsavefiles; i++) {
-			Save_level1(zipfile, savefiles[i]);
+		for (const auto *savefile : savefiles) {
+			Save_level1(zipfile, savefile);
 		}
 
 		// Now the Ireg's.
@@ -1154,7 +1152,7 @@ bool Game_window::save_gamedat_zip(
 		// Start the GAMEDAT file.
 		Begin_level2(zipfile, 0);
 
-		for (int i = 3; i < numsavefiles; i++) {
+		for (size_t i = 3; i < savefiles.size(); i++) {
 			Save_level2(zipfile, savefiles[i]);
 		}
 

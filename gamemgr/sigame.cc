@@ -23,7 +23,6 @@
 #include "sigame.h"
 
 #include "Audio.h"
-#include "array_size.h"
 #include "common_types.h"
 #include "data/exult_flx.h"
 #include "data/exult_si_flx.h"
@@ -41,9 +40,11 @@
 #include "miscinf.h"
 #include "palette.h"
 #include "shapeid.h"
+#include "span.h"
 #include "touchui.h"
 #include "txtscroll.h"
 
+#include <array>
 #include <cctype>
 
 using std::cout;
@@ -274,18 +275,18 @@ void SI_Game::play_intro() {
 		}
 		return playfli(INTRO_DAT, PATCH_INTRO, orig_id);
 	};
-	constexpr static const int original_intro_counts[]
-			= {20, 20,  20, 50, 10,  75, 20, 20, 37, 55, 73, 220, 290, 50,
-			   81, 200, 20, 61, 320, 20, 20, 61, 61, 61, 20, 300, 20};
-	constexpr static const int extended_intro_counts[]
-			= {20, 20,  20, 25, 10,  25, 20, 20,  37,  55, 73, 220, 290, 50,
-			   81, 200, 20, 61, 320, 20, 10, 115, 115, 91, 20, 300, 20};
+	constexpr static const std::array original_intro_counts{
+			20, 20,  20, 50, 10,  75, 20, 20, 37, 55, 73, 220, 290, 50,
+			81, 200, 20, 61, 320, 20, 20, 61, 61, 61, 20, 300, 20};
+	constexpr static const std::array extended_intro_counts{
+			20, 20,  20, 25, 10,  25, 20, 20,  37,  55, 73, 220, 290, 50,
+			81, 200, 20, 61, 320, 20, 10, 115, 115, 91, 20, 300, 20};
 	static_assert(
-			array_size(original_intro_counts)
-					== array_size(extended_intro_counts),
+			original_intro_counts.size() == extended_intro_counts.size(),
 			"Missing array count in one of the arrays");
-	const int* selected_intro_counts
+	tcb::span selected_intro
 			= extended_intro ? extended_intro_counts : original_intro_counts;
+	const auto* selected_intro_counts = selected_intro.begin();
 
 	gwin->clear_screen(true);
 
@@ -1202,36 +1203,36 @@ void SI_Game::end_game(bool success, bool within_game) {
 	*/
 
 	// Flic List
-	ExCineFlic flics[]
-			= {ExCineFlic(0, INTRO_DAT, PATCH_INTRO, 9, 0, 61, true, 75),
-			   ExCineFlic(6350, INTRO_DAT, PATCH_INTRO, 10, 0, 156, false, 95),
-			   ExCineFlic(21170, INTRO_DAT, PATCH_INTRO, 9, 0, 61, true, 75),
-			   ExCineFlic(39800, INTRO_DAT, PATCH_INTRO, 11, 0, 4, true, 75),
-			   ExCineFlic(48900, INTRO_DAT, PATCH_INTRO, 13, 0, 61, true, 75),
-			   ExCineFlic(62500, INTRO_DAT, PATCH_INTRO, 12, 0, 61, true, 75),
-			   ExCineFlic(70250, INTRO_DAT, PATCH_INTRO, 13, 0, 121, false, 75),
-			   ExCineFlic(82300)};
-	const int   last_flic = array_size(flics) - 1;
+	std::array flics{
+			ExCineFlic(0, INTRO_DAT, PATCH_INTRO, 9, 0, 61, true, 75),
+			ExCineFlic(6350, INTRO_DAT, PATCH_INTRO, 10, 0, 156, false, 95),
+			ExCineFlic(21170, INTRO_DAT, PATCH_INTRO, 9, 0, 61, true, 75),
+			ExCineFlic(39800, INTRO_DAT, PATCH_INTRO, 11, 0, 4, true, 75),
+			ExCineFlic(48900, INTRO_DAT, PATCH_INTRO, 13, 0, 61, true, 75),
+			ExCineFlic(62500, INTRO_DAT, PATCH_INTRO, 12, 0, 61, true, 75),
+			ExCineFlic(70250, INTRO_DAT, PATCH_INTRO, 13, 0, 121, false, 75),
+			ExCineFlic(82300)};
+	const int   last_flic = flics.size() - 1;
 	int         cur_flic  = -1;
 	ExCineFlic* flic      = nullptr;
 	ExCineFlic* pal_flic  = nullptr;
 
 	// Voc List
-	ExCineVoc vocs[]
-			= {ExCineVoc(14700, INTRO_DAT, PATCH_INTRO, 22),
-			   ExCineVoc(21300, INTRO_DAT, PATCH_INTRO, 23),
-			   ExCineVoc(39800, INTRO_DAT, PATCH_INTRO, 24),
-			   ExCineVoc(47700, INTRO_DAT, PATCH_INTRO, 25),
-			   ExCineVoc(55400, INTRO_DAT, PATCH_INTRO, 26),
-			   ExCineVoc(62500, INTRO_DAT, PATCH_INTRO, 27),
-			   ExCineVoc(70250, INTRO_DAT, PATCH_INTRO, 28),
-			   ExCineVoc(74750, INTRO_DAT, PATCH_INTRO, 29)};
+	std::array vocs{
+			ExCineVoc(14700, INTRO_DAT, PATCH_INTRO, 22),
+			ExCineVoc(21300, INTRO_DAT, PATCH_INTRO, 23),
+			ExCineVoc(39800, INTRO_DAT, PATCH_INTRO, 24),
+			ExCineVoc(47700, INTRO_DAT, PATCH_INTRO, 25),
+			ExCineVoc(55400, INTRO_DAT, PATCH_INTRO, 26),
+			ExCineVoc(62500, INTRO_DAT, PATCH_INTRO, 27),
+			ExCineVoc(70250, INTRO_DAT, PATCH_INTRO, 28),
+			ExCineVoc(74750, INTRO_DAT, PATCH_INTRO, 29)};
 
-	const int last_voc = array_size(vocs) - 1;
+	const int last_voc = vocs.size() - 1;
 	int       cur_voc  = -1;
 
 	// Subtitle times
-	ExSubEvent subs[] = {
+	std::array subs{
 			ExSubEvent(
 					14643, balance, 2,
 					sifont),    // "There, we are done.\nBalance is restored"
@@ -1268,7 +1269,7 @@ void SI_Game::end_game(bool success, bool within_game) {
 								// alltogether?\nWe do have a score to settle!"
 	};
 
-	const int last_sub = array_size(subs) - 1;
+	const int last_sub = subs.size() - 1;
 	int       cur_sub  = -1;
 
 	// Start the music
@@ -1307,7 +1308,7 @@ void SI_Game::end_game(bool success, bool within_game) {
 			}
 
 			cur_flic++;
-			flic = flics + cur_flic;
+			flic = std::addressof(flics[cur_flic]);
 
 			if (next_play) {
 				// Clear the screen to prevent palette corruption

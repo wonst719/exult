@@ -29,6 +29,7 @@
 #include "objlist.h"
 #include "rect.h"
 #include "shapeid.h"
+#include "span.h"
 #include "tiles.h"
 #include "tqueue.h"
 
@@ -285,23 +286,23 @@ public:
 			Game_object_vector& vec, int shapenum, int delta, int mask,
 			int qual = c_any_qual, int framenum = c_any_framenum) const;
 	Game_object* find_closest(
-			Game_object_vector& vec, int* shapenums, int num_shapes,
+			Game_object_vector& vec, tcb::span<const int> shapenums,
 			int dist = 24);
 	static Game_object* find_closest(
-			const Tile_coord& pos, int* shapenums, int num_shapes,
+			const Tile_coord& pos, tcb::span<const int> shapenums,
 			int dist = 24);
 
-	Game_object* find_closest(int* shapenums, int num_shapes, int dist = 24) {
-		return find_closest(get_tile(), shapenums, num_shapes, dist);
+	Game_object* find_closest(tcb::span<const int> shapenums, int dist = 24) {
+		return find_closest(get_tile(), shapenums, dist);
 	}
 
 	Game_object* find_closest(int shapenum, int dist = 24) {
-		return find_closest(&shapenum, 1, dist);
+		return find_closest({&shapenum, 1}, dist);
 	}
 
 	static Game_object* find_closest(
 			const Tile_coord& pos, int shapenum, int dist = 24) {
-		return find_closest(pos, &shapenum, 1, dist);
+		return find_closest(pos, {&shapenum, 1}, dist);
 	}
 
 	TileRect get_footprint();    // Get tile footprint.

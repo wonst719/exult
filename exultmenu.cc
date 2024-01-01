@@ -25,7 +25,6 @@
 #include "Audio.h"
 #include "Configuration.h"
 #include "XMidiFile.h"
-#include "array_size.h"
 #include "bggame.h"
 #include "cheat.h"
 #include "data/exult_flx.h"
@@ -44,6 +43,7 @@
 #include "palette.h"
 #include "shapeid.h"
 #include "sigame.h"
+#include "span.h"
 #include "txtscroll.h"
 
 #include <memory>
@@ -77,11 +77,11 @@ static inline bool handle_menu_click(
 }
 
 int maximum_size(
-		Font* font, const char* options[], int num_choices, int centerx) {
+		Font* font, tcb::span<const char* const> options, int centerx) {
 	ignore_unused_variable_warning(centerx);
 	int max_width = 0;
-	for (int i = 0; i < num_choices; i++) {
-		const int width = font->get_text_width(options[i]);
+	for (const auto* option : options) {
+		const int width = font->get_text_width(option);
 		if (width > max_width) {
 			max_width = width;
 		}
@@ -93,16 +93,16 @@ int maximum_size(
 void create_scroller_menu(
 		MenuList* menu, Font* fonton, Font* font, int first, int pagesize,
 		int num_choices, int xpos, int ypos) {
-	const char* menuscroller[] = {"FIRST", "PREVIOUS", "NEXT", "LAST"};
-	const int   ncount         = array_size(menuscroller);
-	assert(ncount == 4);
-	const int max_width = maximum_size(font, menuscroller, ncount, xpos);
+	constexpr static const std::array menuscroller{
+			"FIRST", "PREVIOUS", "NEXT", "LAST"};
+	assert(menuscroller.size() == 4);
+	const int max_width = maximum_size(font, menuscroller, xpos);
 	xpos                = xpos - max_width * 3 / 2;
 
 	num_choices--;
 	const int lastpage = num_choices - num_choices % pagesize;
 
-	for (int i = 0; i < ncount; i++) {
+	for (size_t i = 0; i < menuscroller.size(); i++) {
 		// Check to see if this entry is needed at all:
 		if ((i >= 2 || first != 0) && (i != 0 || first != pagesize)
 			&& (i < 2 || lastpage != first)
@@ -232,19 +232,18 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 			centerx,
 			gwin->get_win()->get_end_y() - 5 * font->get_text_height());
 
-	const char* menuchoices[]
-			= {"SETUP", "CREDITS", "QUOTES",
+	constexpr static const std::array menuchoices{
+			"SETUP", "CREDITS", "QUOTES",
 #ifdef __IPHONEOS__
-			   "HELP"
+			"HELP"
 #else
-			   "EXIT"
+			"EXIT"
 #endif
-			};
-	const int num_entries = array_size(menuchoices);
-	const int max_width = maximum_size(font, menuchoices, num_entries, centerx);
-	xpos                = centerx - max_width * (num_entries - 1) / 2;
+	};
+	const int max_width = maximum_size(font, menuchoices, centerx);
+	xpos                = centerx - max_width * (menuchoices.size() - 1) / 2;
 	ypos = gwin->get_win()->get_end_y() - 3 * font->get_text_height();
-	for (int i = 0; i < 4; i++) {
+	for (size_t i = 0; i < menuchoices.size(); i++) {
 		auto* entry
 				= new MenuTextEntry(fonton, font, menuchoices[i], xpos, ypos);
 		// These commands have negative ids:
@@ -296,12 +295,11 @@ std::unique_ptr<MenuList> ExultMenu::create_mods_menu(
 			centerx,
 			gwin->get_win()->get_end_y() - 5 * font->get_text_height());
 
-	const char* menuchoices[] = {"RETURN TO MAIN MENU"};
-	const int   num_entries   = array_size(menuchoices);
-	const int max_width = maximum_size(font, menuchoices, num_entries, centerx);
-	xpos                = centerx - max_width * (num_entries - 1) / 2;
+	constexpr static const std::array menuchoices{"RETURN TO MAIN MENU"};
+	const int max_width = maximum_size(font, menuchoices, centerx);
+	xpos                = centerx - max_width * (menuchoices.size() - 1) / 2;
 	ypos = gwin->get_win()->get_end_y() - 3 * font->get_text_height();
-	for (int i = 0; i < num_entries; i++) {
+	for (size_t i = 0; i < menuchoices.size(); i++) {
 		auto* entry
 				= new MenuTextEntry(fonton, font, menuchoices[i], xpos, ypos);
 		// These commands have negative ids:

@@ -33,7 +33,6 @@ Boston, MA  02111-1307, USA.
 #include "BilinearScaler.h"
 #include "Configuration.h"
 #include "PointScaler.h"
-#include "array_size.h"
 #include "common_types.h"
 #include "istring.h"
 #include "manip.h"

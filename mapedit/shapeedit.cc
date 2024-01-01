@@ -26,14 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	include <config.h>
 #endif
 
-#ifdef HAVE_CONFIG_H
-#	include <config.h>
-#endif
-
 #include "ammoinf.h"
 #include "aniinf.h"
 #include "armorinf.h"
-#include "array_size.h"
 #include "bodyinf.h"
 #include "continf.h"
 #include "data_utils.h"
@@ -62,6 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "warminf.h"
 #include "weaponinf.h"
 
+#include <array>
 #include <cstdlib>
 #include <cstring>
 #include <map>
@@ -1412,15 +1408,15 @@ static inline void Get_frameflags_fields(
 	const bool anyq = studio->get_toggle("shinfo_frameflags_qual_type");
 	qual = anyq ? ~0u : studio->get_spin("shinfo_frameflags_qual_num");
 	if (flags) {
-		static const char* frflags[]
-				= {"shinfo_frameflags_flag0",  "shinfo_frameflags_flag1",
-				   "shinfo_frameflags_flag2",  "shinfo_frameflags_flag3",
-				   "shinfo_frameflags_flag4",  "shinfo_frameflags_flag5",
-				   "shinfo_frameflags_flag6",  "shinfo_frameflags_flag7",
-				   "shinfo_frameflags_flag8",  "shinfo_frameflags_flag9",
-				   "shinfo_frameflags_flag10", "shinfo_frameflags_flag11",
-				   "shinfo_frameflags_flag12"};
-		*flags = studio->get_bit_toggles(&frflags[0], array_size(frflags));
+		constexpr static const std::array frflags{
+				"shinfo_frameflags_flag0",  "shinfo_frameflags_flag1",
+				"shinfo_frameflags_flag2",  "shinfo_frameflags_flag3",
+				"shinfo_frameflags_flag4",  "shinfo_frameflags_flag5",
+				"shinfo_frameflags_flag6",  "shinfo_frameflags_flag7",
+				"shinfo_frameflags_flag8",  "shinfo_frameflags_flag9",
+				"shinfo_frameflags_flag10", "shinfo_frameflags_flag11",
+				"shinfo_frameflags_flag12"};
+		*flags = studio->get_bit_toggles(frflags);
 	}
 }
 
@@ -1434,15 +1430,15 @@ static void Set_frameflags_fields(
 	studio->set_toggle("shinfo_frameflags_qual_type", qual == -1);
 	studio->set_spin(
 			"shinfo_frameflags_qual_num", qual == -1 ? 0 : qual, qual != -1);
-	static const char* frflags[]
-			= {"shinfo_frameflags_flag0",  "shinfo_frameflags_flag1",
-			   "shinfo_frameflags_flag2",  "shinfo_frameflags_flag3",
-			   "shinfo_frameflags_flag4",  "shinfo_frameflags_flag5",
-			   "shinfo_frameflags_flag6",  "shinfo_frameflags_flag7",
-			   "shinfo_frameflags_flag8",  "shinfo_frameflags_flag9",
-			   "shinfo_frameflags_flag10", "shinfo_frameflags_flag11",
-			   "shinfo_frameflags_flag12"};
-	studio->set_bit_toggles(&frflags[0], array_size(frflags), flags);
+	constexpr static const std::array frflags{
+			"shinfo_frameflags_flag0",  "shinfo_frameflags_flag1",
+			"shinfo_frameflags_flag2",  "shinfo_frameflags_flag3",
+			"shinfo_frameflags_flag4",  "shinfo_frameflags_flag5",
+			"shinfo_frameflags_flag6",  "shinfo_frameflags_flag7",
+			"shinfo_frameflags_flag8",  "shinfo_frameflags_flag9",
+			"shinfo_frameflags_flag10", "shinfo_frameflags_flag11",
+			"shinfo_frameflags_flag12"};
+	studio->set_bit_toggles(frflags, flags);
 }
 
 /*
@@ -2516,12 +2512,12 @@ void ExultStudio::init_shape_notebook(
 	auto* shpfile = static_cast<Shape_file_info*>(
 							g_object_get_data(G_OBJECT(shapewin), "file_info"))
 							->get_ifile();
-	static const int classes[]
-			= {0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 0, 9, 10, 11, 12, 0};
-	const int numclasses = array_size(classes);
-	const int shclass    = static_cast<int>(info.get_shape_class());
+	constexpr static const std::array classes{0, 0, 1, 2, 3,  4,  5,  6,
+											  7, 8, 0, 9, 10, 11, 12, 0};
+	const size_t shclass = static_cast<size_t>(info.get_shape_class());
 	set_optmenu(
-			"shinfo_shape_class", shclass < numclasses ? classes[shclass] : 0);
+			"shinfo_shape_class",
+			shclass < classes.size() ? classes[shclass] : 0);
 	set_shape_notebook_frame(frnum);
 	set_spin("shinfo_ztiles", info.get_3d_height());
 	int spot = get_spots(info.get_ready_type());
@@ -2553,12 +2549,12 @@ void ExultStudio::init_shape_notebook(
 	set_toggle("shinfo_obstacley_check", info.is_yobstacle());
 	set_toggle("shinfo_occludes_check", info.occludes());
 	// More flags, originally hard-coded:
-	static const char* shpflags[]
-			= {"shinfo_shape_flag0", "shinfo_shape_flag1", "shinfo_shape_flag2",
-			   "shinfo_shape_flag3", "shinfo_shape_flag4", "shinfo_shape_flag5",
-			   "shinfo_shape_flag6", "shinfo_shape_flag7", "shinfo_shape_flag8",
-			   "shinfo_shape_flag9"};
-	set_bit_toggles(&shpflags[0], array_size(shpflags), info.get_shape_flags());
+	constexpr static const std::array shpflags{
+			"shinfo_shape_flag0", "shinfo_shape_flag1", "shinfo_shape_flag2",
+			"shinfo_shape_flag3", "shinfo_shape_flag4", "shinfo_shape_flag5",
+			"shinfo_shape_flag6", "shinfo_shape_flag7", "shinfo_shape_flag8",
+			"shinfo_shape_flag9"};
+	set_bit_toggles(shpflags, info.get_shape_flags());
 	// Extras.
 	const Weapon_info* winfo = info.get_weapon_info();
 	set_toggle("shinfo_weapon_check", winfo != nullptr);
@@ -2580,12 +2576,12 @@ void ExultStudio::init_shape_notebook(
 		set_spin("shinfo_weapon_hitsfx", winfo->get_hitsfx(), 0, 255);
 		// Show usecode in hex.
 		set_entry("shinfo_weapon_uc", winfo->get_usecode(), true);
-		static const char* powers[]
-				= {"shinfo_weapon_pow0", "shinfo_weapon_pow1",
-				   "shinfo_weapon_pow2", "shinfo_weapon_pow3",
-				   "shinfo_weapon_pow4", "shinfo_weapon_pow5",
-				   "shinfo_weapon_pow6", "shinfo_weapon_pow7"};
-		set_bit_toggles(&powers[0], array_size(powers), winfo->get_powers());
+		constexpr static const std::array powers{
+				"shinfo_weapon_pow0", "shinfo_weapon_pow1",
+				"shinfo_weapon_pow2", "shinfo_weapon_pow3",
+				"shinfo_weapon_pow4", "shinfo_weapon_pow5",
+				"shinfo_weapon_pow6", "shinfo_weapon_pow7"};
+		set_bit_toggles(powers, winfo->get_powers());
 		set_toggle("shinfo_weapon_flag0", winfo->lucky());
 		set_toggle("shinfo_weapon_flag1", winfo->explodes());
 		set_toggle("shinfo_weapon_flag2", winfo->no_blocking());
@@ -2609,11 +2605,11 @@ void ExultStudio::init_shape_notebook(
 		set_optmenu("shinfo_ammo_sprite", proj_type);
 		set_spin("shinfo_ammo_proj", proj >= 0 ? proj : 0, proj >= 0);
 		set_optmenu("shinfo_ammo_type", ainfo->get_damage_type());
-		static const char* powers[]
-				= {"shinfo_ammo_pow0", "shinfo_ammo_pow1", "shinfo_ammo_pow2",
-				   "shinfo_ammo_pow3", "shinfo_ammo_pow4", "shinfo_ammo_pow5",
-				   "shinfo_ammo_pow6", "shinfo_ammo_pow7"};
-		set_bit_toggles(&powers[0], array_size(powers), ainfo->get_powers());
+		constexpr static const std::array powers{
+				"shinfo_ammo_pow0", "shinfo_ammo_pow1", "shinfo_ammo_pow2",
+				"shinfo_ammo_pow3", "shinfo_ammo_pow4", "shinfo_ammo_pow5",
+				"shinfo_ammo_pow6", "shinfo_ammo_pow7"};
+		set_bit_toggles(powers, ainfo->get_powers());
 		// 'Explode'???
 		set_toggle("shinfo_ammo_flag0", ainfo->lucky());
 		set_toggle("shinfo_ammo_flag1", ainfo->autohits());
@@ -2629,24 +2625,24 @@ void ExultStudio::init_shape_notebook(
 	set_toggle("shinfo_armor_check", arinfo != nullptr);
 	set_visible("shinfo_armor_box", arinfo != nullptr);
 	if (arinfo) {    // Setup armor page.
-		static const char* immun[]
-				= {"shinfo_armor_immun0", "shinfo_armor_immun1",
-				   "shinfo_armor_immun2", "shinfo_armor_immun3",
-				   "shinfo_armor_immun4", "shinfo_armor_immun5",
-				   "shinfo_armor_immun6", "shinfo_armor_immun7"};
+		constexpr static const std::array immun{
+				"shinfo_armor_immun0", "shinfo_armor_immun1",
+				"shinfo_armor_immun2", "shinfo_armor_immun3",
+				"shinfo_armor_immun4", "shinfo_armor_immun5",
+				"shinfo_armor_immun6", "shinfo_armor_immun7"};
 		set_spin("shinfo_armor_value", arinfo->get_prot());
-		set_bit_toggles(&immun[0], array_size(immun), arinfo->get_immune());
+		set_bit_toggles(immun, arinfo->get_immune());
 	}
 	const unsigned char aflags = info.get_actor_flags();
 	set_toggle("shinfo_npcflags_check", aflags != 0);
 	set_visible("shinfo_npcflags_box", aflags != 0);
 	if (aflags) {
-		static const char* flags[]
-				= {"shinfo_actor_flag0", "shinfo_actor_flag1",
-				   "shinfo_actor_flag2", "shinfo_actor_flag3",
-				   "shinfo_actor_flag4", "shinfo_actor_flag5",
-				   "shinfo_actor_flag6", "shinfo_actor_flag7"};
-		set_bit_toggles(&flags[0], array_size(flags), aflags);
+		constexpr static const std::array flags{
+				"shinfo_actor_flag0", "shinfo_actor_flag1",
+				"shinfo_actor_flag2", "shinfo_actor_flag3",
+				"shinfo_actor_flag4", "shinfo_actor_flag5",
+				"shinfo_actor_flag6", "shinfo_actor_flag7"};
+		set_bit_toggles(flags, aflags);
 	}
 	const Monster_info* minfo = info.get_monster_info();
 	set_toggle("shinfo_monster_check", minfo != nullptr);
@@ -2664,18 +2660,18 @@ void ExultStudio::init_shape_notebook(
 		set_spin("shinfo_monster_food", info.get_monster_food());
 		set_optmenu("shinfo_monster_align", minfo->get_alignment());
 		set_optmenu("shinfo_monster_attackmode", minfo->get_attackmode());
-		static const char* vuln[]
-				= {"shinfo_monster_vuln0", "shinfo_monster_vuln1",
-				   "shinfo_monster_vuln2", "shinfo_monster_vuln3",
-				   "shinfo_monster_vuln4", "shinfo_monster_vuln5",
-				   "shinfo_monster_vuln6", "shinfo_monster_vuln7"};
-		static const char* immun[]
-				= {"shinfo_monster_immun0", "shinfo_monster_immun1",
-				   "shinfo_monster_immun2", "shinfo_monster_immun3",
-				   "shinfo_monster_immun4", "shinfo_monster_immun5",
-				   "shinfo_monster_immun6", "shinfo_monster_immun7"};
-		set_bit_toggles(&vuln[0], array_size(vuln), minfo->get_vulnerable());
-		set_bit_toggles(&immun[0], array_size(immun), minfo->get_immune());
+		constexpr static const std::array vuln{
+				"shinfo_monster_vuln0", "shinfo_monster_vuln1",
+				"shinfo_monster_vuln2", "shinfo_monster_vuln3",
+				"shinfo_monster_vuln4", "shinfo_monster_vuln5",
+				"shinfo_monster_vuln6", "shinfo_monster_vuln7"};
+		constexpr static const std::array immun{
+				"shinfo_monster_immun0", "shinfo_monster_immun1",
+				"shinfo_monster_immun2", "shinfo_monster_immun3",
+				"shinfo_monster_immun4", "shinfo_monster_immun5",
+				"shinfo_monster_immun6", "shinfo_monster_immun7"};
+		set_bit_toggles(vuln, minfo->get_vulnerable());
+		set_bit_toggles(immun, minfo->get_immune());
 		set_toggle("shinfo_monster_splits", minfo->splits());
 		set_toggle("shinfo_monster_cant_yell", minfo->cant_yell());
 		set_toggle("shinfo_monster_cant_bleed", minfo->cant_bleed());
@@ -2687,12 +2683,12 @@ void ExultStudio::init_shape_notebook(
 		set_toggle("shinfo_monster_death_safe", minfo->death_safe());
 		set_toggle("shinfo_monster_power_safe", minfo->power_safe());
 		set_toggle("shinfo_monster_cant_die", minfo->cant_die());
-		static const char* flags[]
-				= {"shinfo_monster_flag0", "shinfo_monster_flag1",
-				   "shinfo_monster_flag2", "shinfo_monster_flag3",
-				   "shinfo_monster_flag4", "shinfo_monster_flag5",
-				   "shinfo_monster_flag6", "shinfo_monster_flag7"};
-		set_bit_toggles(&flags[0], array_size(flags), minfo->get_flags());
+		constexpr static const std::array flags{
+				"shinfo_monster_flag0", "shinfo_monster_flag1",
+				"shinfo_monster_flag2", "shinfo_monster_flag3",
+				"shinfo_monster_flag4", "shinfo_monster_flag5",
+				"shinfo_monster_flag6", "shinfo_monster_flag7"};
+		set_bit_toggles(flags, minfo->get_flags());
 	}
 	const int gump_shape = info.get_gump_shape();
 	const int gump_font  = info.get_gump_font();
@@ -2785,10 +2781,10 @@ void ExultStudio::init_shape_notebook(
 		set_spin("shinfo_npcpaperdoll_hframe", npcinf->get_head_frame());
 		set_spin("shinfo_npcpaperdoll_hhelm", npcinf->get_head_frame_helm());
 		set_spin("shinfo_npcpaperdoll_ashape", npcinf->get_arms_shape());
-		static const char* const arm_names[] = {
+		constexpr static const std::array arm_names{
 				"shinfo_npcpaperdoll_aframe", "shinfo_npcpaperdoll_atwohanded",
 				"shinfo_npcpaperdoll_astaff"};
-		for (size_t i = 0; i < array_size(arm_names); i++) {
+		for (size_t i = 0; i < arm_names.size(); i++) {
 			set_spin(arm_names[i], npcinf->get_arms_frame(i));
 		}
 	}
@@ -3552,12 +3548,12 @@ void ExultStudio::save_shape_notebook(
 			get_toggle("shinfo_obstacley_check"));
 	info.set_occludes(get_toggle("shinfo_occludes_check"));
 	// More flags, originally hard-coded:
-	static const char* shpflags[]
-			= {"shinfo_shape_flag0", "shinfo_shape_flag1", "shinfo_shape_flag2",
-			   "shinfo_shape_flag3", "shinfo_shape_flag4", "shinfo_shape_flag5",
-			   "shinfo_shape_flag6", "shinfo_shape_flag7", "shinfo_shape_flag8",
-			   "shinfo_shape_flag9"};
-	info.set_shape_flags(get_bit_toggles(&shpflags[0], array_size(shpflags)));
+	constexpr static const std::array shpflags{
+			"shinfo_shape_flag0", "shinfo_shape_flag1", "shinfo_shape_flag2",
+			"shinfo_shape_flag3", "shinfo_shape_flag4", "shinfo_shape_flag5",
+			"shinfo_shape_flag6", "shinfo_shape_flag7", "shinfo_shape_flag8",
+			"shinfo_shape_flag9"};
+	info.set_shape_flags(get_bit_toggles(shpflags));
 	// Extras.
 	if (!get_toggle("shinfo_weapon_check")) {
 		info.set_weapon_info(false);    // Not a weapon.
@@ -3584,12 +3580,12 @@ void ExultStudio::save_shape_notebook(
 				get_spin("shinfo_weapon_hitsfx"));
 		// Get usecode in hex.
 		winfo->set_usecode(get_num_entry("shinfo_weapon_uc"));
-		static const char* powers[]
-				= {"shinfo_weapon_pow0", "shinfo_weapon_pow1",
-				   "shinfo_weapon_pow2", "shinfo_weapon_pow3",
-				   "shinfo_weapon_pow4", "shinfo_weapon_pow5",
-				   "shinfo_weapon_pow6", "shinfo_weapon_pow7"};
-		winfo->set_powers(get_bit_toggles(&powers[0], array_size(powers)));
+		constexpr static const std::array powers{
+				"shinfo_weapon_pow0", "shinfo_weapon_pow1",
+				"shinfo_weapon_pow2", "shinfo_weapon_pow3",
+				"shinfo_weapon_pow4", "shinfo_weapon_pow5",
+				"shinfo_weapon_pow6", "shinfo_weapon_pow7"};
+		winfo->set_powers(get_bit_toggles(powers));
 		winfo->set_lucky(get_toggle("shinfo_weapon_flag0"));
 		winfo->set_explodes(get_toggle("shinfo_weapon_flag1"));
 		winfo->set_no_blocking(get_toggle("shinfo_weapon_flag2"));
@@ -3616,11 +3612,11 @@ void ExultStudio::save_shape_notebook(
 							  : proj_type == 2 ? -3     // Weapon.
 											   : -1;    // None.
 		ainfo->set_sprite_shape(proj);
-		static const char* powers[]
-				= {"shinfo_ammo_pow0", "shinfo_ammo_pow1", "shinfo_ammo_pow2",
-				   "shinfo_ammo_pow3", "shinfo_ammo_pow4", "shinfo_ammo_pow5",
-				   "shinfo_ammo_pow6", "shinfo_ammo_pow7"};
-		ainfo->set_powers(get_bit_toggles(&powers[0], array_size(powers)));
+		constexpr static const std::array powers{
+				"shinfo_ammo_pow0", "shinfo_ammo_pow1", "shinfo_ammo_pow2",
+				"shinfo_ammo_pow3", "shinfo_ammo_pow4", "shinfo_ammo_pow5",
+				"shinfo_ammo_pow6", "shinfo_ammo_pow7"};
+		ainfo->set_powers(get_bit_toggles(powers));
 		ainfo->set_lucky(get_toggle("shinfo_ammo_flag0"));
 		ainfo->set_autohits(get_toggle("shinfo_ammo_flag1"));
 		ainfo->set_returns(get_toggle("shinfo_ammo_flag2"));
@@ -3639,23 +3635,23 @@ void ExultStudio::save_shape_notebook(
 	if (!get_toggle("shinfo_armor_check")) {
 		info.set_armor_info(false);    // Not armor.
 	} else {
-		Armor_info*        arinfo = info.set_armor_info(true);
-		static const char* immun[]
-				= {"shinfo_armor_immun0", "shinfo_armor_immun1",
-				   "shinfo_armor_immun2", "shinfo_armor_immun3",
-				   "shinfo_armor_immun4", "shinfo_armor_immun5"};
+		Armor_info*                       arinfo = info.set_armor_info(true);
+		constexpr static const std::array immun{
+				"shinfo_armor_immun0", "shinfo_armor_immun1",
+				"shinfo_armor_immun2", "shinfo_armor_immun3",
+				"shinfo_armor_immun4", "shinfo_armor_immun5"};
 		arinfo->set_prot(get_spin("shinfo_armor_value"));
-		arinfo->set_immune(get_bit_toggles(&immun[0], array_size(immun)));
+		arinfo->set_immune(get_bit_toggles(immun));
 	}
 	if (!get_toggle("shinfo_npcflags_check")) {
 		info.set_actor_flags(0);
 	} else {
-		static const char* flags[]
-				= {"shinfo_actor_flag0", "shinfo_actor_flag1",
-				   "shinfo_actor_flag2", "shinfo_actor_flag3",
-				   "shinfo_actor_flag4", "shinfo_actor_flag5",
-				   "shinfo_actor_flag6", "shinfo_actor_flag7"};
-		info.set_actor_flags(get_bit_toggles(&flags[0], array_size(flags)));
+		constexpr static const std::array flags{
+				"shinfo_actor_flag0", "shinfo_actor_flag1",
+				"shinfo_actor_flag2", "shinfo_actor_flag3",
+				"shinfo_actor_flag4", "shinfo_actor_flag5",
+				"shinfo_actor_flag6", "shinfo_actor_flag7"};
+		info.set_actor_flags(get_bit_toggles(flags));
 	}
 	if (!get_toggle("shinfo_monster_check")) {
 		info.set_monster_info(false);
@@ -3672,18 +3668,18 @@ void ExultStudio::save_shape_notebook(
 		minfo->set_hitsfx(get_spin("shinfo_monster_sfx"));
 		minfo->set_alignment(get_optmenu("shinfo_monster_align"));
 		minfo->set_attackmode(get_optmenu("shinfo_monster_attackmode"));
-		static const char* vuln[]
-				= {"shinfo_monster_vuln0", "shinfo_monster_vuln1",
-				   "shinfo_monster_vuln2", "shinfo_monster_vuln3",
-				   "shinfo_monster_vuln4", "shinfo_monster_vuln5",
-				   "shinfo_monster_vuln6", "shinfo_monster_vuln7"};
-		static const char* immun[]
-				= {"shinfo_monster_immun0", "shinfo_monster_immun1",
-				   "shinfo_monster_immun2", "shinfo_monster_immun3",
-				   "shinfo_monster_immun4", "shinfo_monster_immun5",
-				   "shinfo_monster_immun6", "shinfo_monster_immun7"};
-		minfo->set_vulnerable(get_bit_toggles(&vuln[0], array_size(vuln)));
-		minfo->set_immune(get_bit_toggles(&immun[0], array_size(immun)));
+		constexpr static const std::array vuln{
+				"shinfo_monster_vuln0", "shinfo_monster_vuln1",
+				"shinfo_monster_vuln2", "shinfo_monster_vuln3",
+				"shinfo_monster_vuln4", "shinfo_monster_vuln5",
+				"shinfo_monster_vuln6", "shinfo_monster_vuln7"};
+		constexpr static const std::array immun{
+				"shinfo_monster_immun0", "shinfo_monster_immun1",
+				"shinfo_monster_immun2", "shinfo_monster_immun3",
+				"shinfo_monster_immun4", "shinfo_monster_immun5",
+				"shinfo_monster_immun6", "shinfo_monster_immun7"};
+		minfo->set_vulnerable(get_bit_toggles(vuln));
+		minfo->set_immune(get_bit_toggles(immun));
 		minfo->set_splits(get_toggle("shinfo_monster_splits"));
 		minfo->set_cant_yell(get_toggle("shinfo_monster_cant_yell"));
 		minfo->set_cant_bleed(get_toggle("shinfo_monster_cant_bleed"));
@@ -3695,12 +3691,12 @@ void ExultStudio::save_shape_notebook(
 		minfo->set_death_safe(get_toggle("shinfo_monster_death_safe"));
 		minfo->set_power_safe(get_toggle("shinfo_monster_power_safe"));
 		minfo->set_cant_die(get_toggle("shinfo_monster_cant_die"));
-		static const char* flags[]
-				= {"shinfo_monster_flag0", "shinfo_monster_flag1",
-				   "shinfo_monster_flag2", "shinfo_monster_flag3",
-				   "shinfo_monster_flag4", "shinfo_monster_flag5",
-				   "shinfo_monster_flag6", "shinfo_monster_flag7"};
-		minfo->set_flags(get_bit_toggles(&flags[0], array_size(flags)));
+		constexpr static const std::array flags{
+				"shinfo_monster_flag0", "shinfo_monster_flag1",
+				"shinfo_monster_flag2", "shinfo_monster_flag3",
+				"shinfo_monster_flag4", "shinfo_monster_flag5",
+				"shinfo_monster_flag6", "shinfo_monster_flag7"};
+		minfo->set_flags(get_bit_toggles(flags));
 		info.set_monster_food(get_spin("shinfo_monster_food"));
 	}
 	if (!get_toggle("shinfo_container_check")) {
@@ -3768,10 +3764,10 @@ void ExultStudio::save_shape_notebook(
 		npcinf->set_head_frame(get_spin("shinfo_npcpaperdoll_hframe"));
 		npcinf->set_head_frame_helm(get_spin("shinfo_npcpaperdoll_hhelm"));
 		npcinf->set_arms_shape(get_spin("shinfo_npcpaperdoll_ashape"));
-		static const char* const arm_names[] = {
+		constexpr static const std::array arm_names{
 				"shinfo_npcpaperdoll_aframe", "shinfo_npcpaperdoll_atwohanded",
 				"shinfo_npcpaperdoll_astaff"};
-		for (size_t i = 0; i < array_size(arm_names); i++) {
+		for (size_t i = 0; i < arm_names.size(); i++) {
 			npcinf->set_arms_frame(i, get_spin(arm_names[i]));
 		}
 	}
@@ -4378,10 +4374,10 @@ void ExultStudio::open_shape_window(
 		col      = gtk_tree_view_column_new_with_attributes(
                 "Spot", renderer, "text", DOLL_SPOT, nullptr);
 		gtk_tree_view_append_column(dolltree, col);
-		const char* const columns[]
-				= {"Trans",   "Gender",  "Spot frame", "DShape",
-				   "DFrame0", "DFrame1", "DFrame2",    "DFrame3"};
-		for (size_t i = 0; i < array_size(columns); i++) {
+		constexpr static const std::array columns{
+				"Trans",   "Gender",  "Spot frame", "DShape",
+				"DFrame0", "DFrame1", "DFrame2",    "DFrame3"};
+		for (size_t i = 0; i < columns.size(); i++) {
 			renderer = gtk_cell_renderer_text_new();
 			col      = gtk_tree_view_column_new_with_attributes(
                     columns[i], renderer, "text", i + DOLL_TRANSLUCENT,

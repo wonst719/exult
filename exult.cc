@@ -40,7 +40,6 @@
 #include "VideoOptions_gump.h"
 #include "actors.h"
 #include "args.h"
-#include "array_size.h"
 #include "cheat.h"
 #include "combat_opts.h"
 #include "crc.h"
@@ -182,24 +181,6 @@ bool        usecode_debugging = false;    // Do we enable the usecode debugger?
 extern void initialise_usecode_debugger();
 #endif
 
-struct resolution {
-	int x;
-	int y;
-	int scale;
-} res_list[] = {
-		{320, 200, 1},
-        {320, 240, 1},
-        {400, 300, 1},
-		{320, 200, 2},
-        {320, 240, 2},
-        {400, 300, 2},
-		{512, 384, 1},
-        {640, 480, 1},
-        {800, 600, 1}
-};
-
-int num_res          = array_size(res_list);
-int current_res      = 0;
 int current_scaleval = 1;
 
 #if defined(_WIN32) && defined(USE_EXULTSTUDIO)
@@ -215,7 +196,6 @@ static void Init();
 static int  Play();
 static bool Get_click(
 		int& x, int& y, char* chr, bool drag_ok, bool rotate_colors = false);
-static int  find_resolution(int w, int h, int s);
 static void set_scaleval(int new_scaleval);
 #ifdef USE_EXULTSTUDIO
 static void Move_dragged_shape(
@@ -2351,17 +2331,6 @@ void Wizard_eye(long msecs    // Length of time in milliseconds.
 	gwin->center_view(gwin->get_main_actor()->get_tile());
 }
 
-int find_resolution(int w, int h, int s) {
-	int res = 0;
-	for (int i = 0; i < num_res; i++) {
-		if (res_list[i].x == w && res_list[i].y == h
-			&& res_list[i].scale == s) {
-			res = i;
-		}
-	}
-	return res;
-}
-
 void increase_scaleval() {
 	if (!cheat()) {
 		return;
@@ -2517,7 +2486,6 @@ void BuildGameMap(BaseGameInfo* game, int mapnum) {
 		// restore original fullscreen setting
 		// config->set("config/video/fullscreen",fullscreenstr,true);
 		Audio::Init();
-		current_res = find_resolution(w, h, sc);
 		Game::create_game(game);
 		gwin->init_files(false);    // init, but don't show plasma
 		gwin->get_map()->init();    // +++++Got to clean this up.
@@ -2704,8 +2672,6 @@ void setup_video(
 				fill_scaler);
 		// Ensure proper clipping:
 		gwin->get_win()->clear_clip();
-		// is find_resolution outdated?
-		current_res = find_resolution(resx, resy, scaleval);
 	} else if (change_gwin) {
 #ifdef DEBUG
 		if (!set_config) {

@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Actor_gump.h"
 
 #include "actors.h"
-#include "array_size.h"
 #include "gamewin.h"
 #include "ignore_unused_variable_warning.h"
 #include "misc_buttons.h"
@@ -40,26 +39,33 @@ using std::size_t;
 /*
  *  Statics:
  */
+namespace {
+	struct Position {
+		short x;
+		short y;
+	};
 
-Actor_gump::Position Actor_gump::disk       = {124, 115};
-Actor_gump::Position Actor_gump::heart      = {124, 132};
-Actor_gump::Position Actor_gump::combat     = {52, 100};
-Actor_gump::Position Actor_gump::halo       = {47, 110};
-Actor_gump::Position Actor_gump::cmode      = {48, 132};
-Actor_gump::Position Actor_gump::coords[12] = {
-		{114, 10}, /* head */
-		{115, 24}, /* back */
-		{115, 37}, /* belt */
-		{115, 55}, /* lhand */
-		{115, 71}, /* lfinger */
-		{114, 85}, /* legs */
-		{ 76, 98}, /* feet */
-		{ 35, 70}, /* rfinger */
-		{ 37, 56}, /* rhand */
-		{ 37, 37}, /* torso */
-		{ 37, 24}, /* neck */
-		{ 37, 11}  /* ammo */
-};
+	Position disk{124, 115};     // Where to show 'diskette' button.
+	Position heart{124, 132};    // Where to show 'stats' button.
+	Position combat{52, 100};    // Combat button.
+	Position halo{47, 110};      // "Protected" halo.
+	Position cmode{48, 132};     // Combat mode.
+	// Coords. of where to draw things,
+	std::array coords{
+			Position{114, 10}, /* head */
+			Position{115, 24}, /* back */
+			Position{115, 37}, /* belt */
+			Position{115, 55}, /* lhand */
+			Position{115, 71}, /* lfinger */
+			Position{114, 85}, /* legs */
+			Position{ 76, 98}, /* feet */
+			Position{ 35, 70}, /* rfinger */
+			Position{ 37, 56}, /* rhand */
+			Position{ 37, 37}, /* torso */
+			Position{ 37, 24}, /* neck */
+			Position{ 37, 11}  /* ammo */
+	};
+}    // namespace
 
 /*
  *  Find the index of the closest 'spot' to a mouse point.
@@ -75,7 +81,7 @@ int Actor_gump::find_closest(
 	my -= y;                           // Get point rel. to us.
 	long closest_squared = 1000000;    // Best distance squared.
 	int  closest         = -1;         // Best index.
-	for (size_t i = 0; i < array_size(coords); i++) {
+	for (size_t i = 0; i < coords.size(); i++) {
 		const int  dx       = mx - coords[i].x;
 		const int  dy       = my - coords[i].y;
 		const long dsquared = dx * dx + dy * dy;
@@ -110,7 +116,7 @@ Actor_gump::Actor_gump(
 	add_elem(new Halo_button(this, halo.x, halo.y, npc));
 	add_elem(new Combat_mode_button(this, cmode.x, cmode.y, npc));
 
-	for (size_t i = 0; i < array_size(coords); i++) {
+	for (size_t i = 0; i < coords.size(); i++) {
 		// Set object coords.
 		Game_object* obj = container->get_readied(i);
 		if (obj) {
@@ -199,7 +205,7 @@ void Actor_gump::set_to_spot(
 
 void Actor_gump::paint() {
 	// Watch for any newly added objs.
-	for (size_t i = 0; i < array_size(coords); i++) {
+	for (size_t i = 0; i < coords.size(); i++) {
 		// Set object coords.
 		Game_object* obj = container->get_readied(i);
 		if (obj) {    //&& !obj->get_tx() && !obj->get_ty())
