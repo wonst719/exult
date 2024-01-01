@@ -253,6 +253,35 @@ void Shape_frame::create_rle(
  *  Output: ->allocated RLE data.
  */
 
+#ifdef _MSC_VER
+#	ifndef __clang__
+#		define assume(x) __assume(x)
+#	elif defined(__has_builtin)
+#		if __has_builtin(__builtin_assume)
+#			define __builtin_assume(x) __assume(x)
+#		endif
+#	endif
+#
+#elif defined(__has_builtin)
+#	if __has_builtin(__builtin_assume)
+#		define assume(x) __builtin_assume(x)
+#	elif __has_builtin(__builtin_unreachable)
+#		define assume(x)                \
+			if (!(x)) {                  \
+				__builtin_unreachable(); \
+			}
+#	endif
+#elif defined(__GNUG__)
+#	define assume(x)                \
+		if (!(x)) {                  \
+			__builtin_unreachable(); \
+		}
+#else
+#	define assume(x) \
+		do {          \
+		} while (false)
+#endif
+
 unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 		unsigned char* pixels,    // 8-bit uncompressed data.
 		int w, int h,             // Width, height.
@@ -260,9 +289,11 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 		int& datalen              // Length of RLE data returned.
 ) {
 	// Create an oversized buffer.
-	std::vector<uint8> buf(w * h * 2 + 16 * h);
-	auto*              out = buf.data();
-	int                newx;         // Gets new x at end of a scan line.
+	std::vector<uint8> buf(w * h * 2 + 16 * h + 2);
+
+	auto* out = buf.data();
+	assume(out != nullptr);
+	int newx;                        // Gets new x at end of a scan line.
 	for (int y = 0; y < h; y++) {    // Go through rows.
 		for (int x = 0; (x = Skip_transparent(pixels, x, w)) < w; x = newx) {
 			unsigned short runs[200];    // Get runs.
@@ -319,6 +350,8 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 	std::copy_n(buf.begin(), datalen, data.get());
 	return data;
 }
+
+#undef assume
 
 /*
  *  Create from data.
