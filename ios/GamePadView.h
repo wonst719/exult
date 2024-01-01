@@ -18,10 +18,8 @@
  * Boston, MA  02111-1307, USA.
  */
 
-#import <UIKit/UIKit.h>
-
-
 #include <SDL.h>
+#import <UIKit/UIKit.h>
 
 @protocol KeyInputDelegate
 
@@ -30,27 +28,24 @@
 
 @end
 
+const float vjoy_radius = 80.f;    // max-radius of vjoy
 
-const float vjoy_radius = 80.f;  // max-radius of vjoy
-
-@interface DPadView : UIView
-{
-	UIImage *backgroundImage;
-	bool vjoy_is_active; 		            // true when the vjoy is active
-	CGPoint vjoy_center;     	            // center of the vjoy
-	CGPoint vjoy_current;     	            // current position of the vjoy
-	SDL_GameController *vjoy_controller;    // the vjoy's SDL_GameController
-	UITouch * __weak vjoy_input_source;	    // where vjoy input is actively coming from
+@interface DPadView : UIView {
+	UIImage*            backgroundImage;
+	bool                vjoy_is_active;     // true when the vjoy is active
+	CGPoint             vjoy_center;        // center of the vjoy
+	CGPoint             vjoy_current;       // current position of the vjoy
+	SDL_GameController* vjoy_controller;    // the vjoy's SDL_GameController
+	UITouch* __weak
+			vjoy_input_source;    // where vjoy input is actively coming from
 }
 
-@property (nonatomic, retain) NSArray *images;
-@property (nonatomic, retain) UIImage *backgroundImage;
+@property(nonatomic, retain) NSArray* images;
+@property(nonatomic, retain) UIImage* backgroundImage;
 
 @end
 
-
-typedef enum
-{
+typedef enum {
 	GamePadButtonStyleRoundedRectangle,
 	GamePadButtonStyleCircle,
 } GamePadButtonStyle;
@@ -62,26 +57,25 @@ typedef enum
 - (void)buttonUp:(GamePadButton*)btn;
 @end
 
-@interface GamePadButton : UIView
-{
+@interface GamePadButton : UIView {
 	/* Bindings */
-	NSArray *keyCodes;
+	NSArray* keyCodes;
 
-	NSString *title;
-	BOOL pressed;
+	NSString*          title;
+	BOOL               pressed;
 	GamePadButtonStyle style;
 
-	NSArray *images;
-	UIColor *textColor;
+	NSArray*                  images;
+	UIColor*                  textColor;
 	id<GamePadButtonDelegate> delegate;
 }
 
-@property (nonatomic, assign) id<GamePadButtonDelegate> delegate;
-@property (nonatomic, retain) UIColor *textColor;
-@property (nonatomic, retain) NSArray *images;
-@property (nonatomic, retain) NSString *title;
-@property (nonatomic, assign) BOOL pressed;
-@property (nonatomic, retain) NSArray *keyCodes;
-@property (nonatomic, assign) GamePadButtonStyle style;
+@property(nonatomic, assign) id<GamePadButtonDelegate> delegate;
+@property(nonatomic, retain) UIColor*                  textColor;
+@property(nonatomic, retain) NSArray*                  images;
+@property(nonatomic, retain) NSString*                 title;
+@property(nonatomic, assign) BOOL                      pressed;
+@property(nonatomic, retain) NSArray*                  keyCodes;
+@property(nonatomic, assign) GamePadButtonStyle        style;
 
 @end
