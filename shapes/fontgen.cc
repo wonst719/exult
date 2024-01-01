@@ -34,6 +34,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using std::make_unique;
 
+#define USE_WIN32_FONTGEN
+
+#if defined(_WIN32) && defined(USE_WIN32_FONTGEN)
+
+#	undef NOGDI
+#	ifdef _WIN32_WINNT
+#		undef _WIN32_WINNT
+#	endif
+#	define _WIN32_WINNT 0x0500
+
+#	ifndef WIN32_LEAN_AND_MEAN
+#		define WIN32_LEAN_AND_MEAN
+#	endif
+#	include <windows.h>
+
 /*
  *  Generate a shadow around a character.
  */
@@ -66,21 +81,6 @@ static void Gen_shadow(
 		}
 	}
 }
-
-#define USE_WIN32_FONTGEN
-
-#if defined(_WIN32) && defined(USE_WIN32_FONTGEN)
-
-#	undef NOGDI
-#	ifdef _WIN32_WINNT
-#		undef _WIN32_WINNT
-#	endif
-#	define _WIN32_WINNT 0x0500
-
-#	ifndef WIN32_LEAN_AND_MEAN
-#		define WIN32_LEAN_AND_MEAN
-#	endif
-#	include <windows.h>
 
 static bool Gen_font_shape_win32(
 		HDC dc, HFONT font,
