@@ -92,7 +92,7 @@ void Image_buffer8::get(
 	const int from_next = line_width - srcw;
 	while (srch--) {    // Do each line.
 		for (int cnt = srcw; cnt; cnt--) {
-			*to++ = *from++;
+			Write1(to, Read1(from));
 		}
 		to += to_next;
 		from += from_next;
@@ -121,14 +121,14 @@ void Image_buffer8::fill_static(int black, int gray, int white) {
 			switch (std::rand() % 5) {
 			case 0:
 			case 1:
-				*p++ = black;
+				Write1(p, black);
 				break;
 			case 2:
 			case 3:
-				*p++ = gray;
+				Write1(p, gray);
 				break;
 			case 4:
-				*p++ = white;
+				Write1(p, white);
 				break;
 			}
 		}
@@ -143,7 +143,7 @@ void Image_buffer8::fill8(unsigned char pix) {
 	unsigned char* pixels = bits - offset_y * line_width - offset_x;
 	const int      cnt    = line_width * height;
 	for (int i = 0; i < cnt; i++) {
-		*pixels++ = pix;
+		Write1(pixels, pix);
 	}
 }
 
@@ -163,7 +163,7 @@ void Image_buffer8::fill8(
 	const int      to_next = line_width - srcw;    // # pixels to next line.
 	while (srch--) {                               // Do each line.
 		for (int cnt = srcw; cnt; cnt--) {
-			*pixels++ = pix;
+			Write1(pixels, pix);
 		}
 		pixels += to_next;    // Get to start of next line.
 	}
@@ -255,12 +255,12 @@ void Image_buffer8::copy_line_translucent8(
 	const unsigned char* from = src_pixels + srcx;
 	for (int i = srcw; i; i--) {
 		// Get char., and transform.
-		unsigned char c = *from++;
+		unsigned char c = Read1(from);
 		if (c >= first_translucent && c <= last_translucent) {
 			// Use table to shift existing pixel.
 			c = xforms[c - first_translucent][*to];
 		}
-		*to++ = c;
+		Write1(to, c);
 	}
 }
 
@@ -333,7 +333,7 @@ void Image_buffer8::copy_transparent8(
 	const int from_next       = src_width - srcw;
 	while (srch--) {    // Do each line.
 		for (int cnt = srcw; cnt; cnt--, to++) {
-			const int chr = *from++;
+			const int chr = Read1(from);
 			if (chr) {
 				*to = chr;
 			}
@@ -386,7 +386,7 @@ void Image_buffer8::paint_rle(int xoff, int yoff, const unsigned char* inptr) {
 					unsigned char* dest = bits + scany * line_width + scanx;
 					const unsigned char* end = in + scanlen - skip;
 					while (in < end) {
-						*dest++ = *in++;
+						Write1(dest, Read1(in));
 					}
 					in += skip;
 					continue;
@@ -398,7 +398,7 @@ void Image_buffer8::paint_rle(int xoff, int yoff, const unsigned char* inptr) {
 			unsigned char* dest = bits + scany * line_width + scanx;
 
 			while (scanlen) {
-				unsigned char bcnt = *in++;
+				unsigned char bcnt = Read1(in);
 				// Repeat next char. if odd.
 				const int repeat = bcnt & 1;
 				bcnt             = bcnt >> 1;    // Get count.
@@ -423,10 +423,10 @@ void Image_buffer8::paint_rle(int xoff, int yoff, const unsigned char* inptr) {
 
 						// Is there anything to put on the screen?
 						if (skip < bcnt) {
-							const unsigned char col = *in++;
+							const unsigned char col = Read1(in);
 							unsigned char*      end = dest + bcnt - skip;
 							while (dest < end) {
-								*dest++ = col;
+								Write1(dest, col);
 							}
 
 							// dest += skip; - Don't need it
@@ -464,7 +464,7 @@ void Image_buffer8::paint_rle(int xoff, int yoff, const unsigned char* inptr) {
 						if (skip < bcnt) {
 							unsigned char* end = dest + bcnt - skip;
 							while (dest < end) {
-								*dest++ = *in++;
+								Write1(dest, Read1(in));
 							}
 							// dest += skip; - Don't need it
 							in += skip;
@@ -545,7 +545,7 @@ void Image_buffer8::paint_rle_remapped(
 					unsigned char* dest = bits + scany * line_width + scanx;
 					const unsigned char* end = in + scanlen - skip;
 					while (in < end) {
-						*dest++ = trans[*in++];
+						Write1(dest, trans[Read1(in)]);
 					}
 					in += skip;
 					continue;
@@ -557,7 +557,7 @@ void Image_buffer8::paint_rle_remapped(
 			unsigned char* dest = bits + scany * line_width + scanx;
 
 			while (scanlen) {
-				unsigned char bcnt = *in++;
+				unsigned char bcnt = Read1(in);
 				// Repeat next char. if odd.
 				const int repeat = bcnt & 1;
 				bcnt             = bcnt >> 1;    // Get count.
@@ -582,10 +582,10 @@ void Image_buffer8::paint_rle_remapped(
 
 						// Is there anything to put on the screen?
 						if (skip < bcnt) {
-							const unsigned char col = *in++;
+							const unsigned char col = Read1(in);
 							unsigned char*      end = dest + bcnt - skip;
 							while (dest < end) {
-								*dest++ = trans[col];
+								Write1(dest, trans[col]);
 							}
 
 							// dest += skip; - Don't need it
@@ -623,7 +623,7 @@ void Image_buffer8::paint_rle_remapped(
 						if (skip < bcnt) {
 							unsigned char* end = dest + bcnt - skip;
 							while (dest < end) {
-								*dest++ = trans[*in++];
+								Write1(dest, trans[Read1(in)]);
 							}
 							// dest += skip; - Don't need it
 							in += skip;

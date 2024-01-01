@@ -58,6 +58,50 @@ inline uint8 Read1(const uint8*& in) {
 	return *in++;
 }
 
+inline uint8 Read1(uint8*& in) {
+	return *in++;
+}
+
+inline uint8 Read1(const sint8*& in) {
+	return static_cast<uint8>(*in++);
+}
+
+inline uint8 Read1(sint8*& in) {
+	return static_cast<uint8>(*in++);
+}
+
+inline sint8 Read1s(const uint8*& in) {
+	return static_cast<sint8>(*in++);
+}
+
+inline sint8 Read1s(uint8*& in) {
+	return static_cast<sint8>(*in++);
+}
+
+inline sint8 Read1s(const sint8*& in) {
+	return *in++;
+}
+
+inline sint8 Read1s(sint8*& in) {
+	return *in++;
+}
+
+inline uint8 Read1(const char*& in) {
+	return static_cast<uint8>(*in++);
+}
+
+inline uint8 Read1(char*& in) {
+	return static_cast<uint8>(*in++);
+}
+
+inline sint8 Read1s(const char*& in) {
+	return static_cast<sint8>(*in++);
+}
+
+inline sint8 Read1s(char*& in) {
+	return static_cast<sint8>(*in++);
+}
+
 /*
  *  Read a 2-byte value, lsb first.
  */
@@ -247,6 +291,10 @@ inline void Write1(std::ostream* out, uint8 val) {
 
 inline void Write1(uint8*& out, uint8 val) {
 	*out++ = val;
+}
+
+inline void Write1(sint8*& out, uint8 val) {
+	*out++ = static_cast<sint8>(val);
 }
 
 /*

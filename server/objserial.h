@@ -43,7 +43,7 @@ public:
 	}
 
 	Serial_out& operator<<(bool v) {
-		*buf++ = (v ? 1 : 0);
+		Write1(buf, (v ? 1 : 0));
 		return *this;
 	}
 
@@ -72,7 +72,7 @@ public:
 	}
 
 	Serial_in& operator<<(bool& v) {
-		v = *buf++ != 0;
+		v = Read1(buf) != 0;
 		return *this;
 	}
 

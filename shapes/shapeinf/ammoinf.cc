@@ -88,8 +88,8 @@ bool Ammo_info::read(
 	}
 	family_shape               = Read2(ptr);
 	sprite                     = Read2(ptr);    // How the missile looks like
-	damage                     = *ptr++;
-	const unsigned char flags0 = *ptr++;
+	damage                     = Read1(ptr);
+	const unsigned char flags0 = Read1(ptr);
 	m_lucky                    = (flags0) & 1;
 	m_autohit                  = (flags0 >> 1) & 1;
 	m_returns                  = (flags0 >> 2) & 1;
@@ -97,10 +97,10 @@ bool Ammo_info::read(
 	homing                     = ((flags0 >> 4) & 3) == 3;
 	drop_type                  = homing ? 0 : (flags0 >> 4) & 3;
 	m_explodes                 = (flags0 >> 6) & 1;
-	ptr++;    // 1 unknown.
-	const unsigned char flags1 = *ptr++;
+	Read1(ptr);    // 1 unknown.
+	const unsigned char flags1 = Read1(ptr);
 	damage_type                = (flags1 >> 4) & 15;
-	powers                     = *ptr++;
+	powers                     = Read1(ptr);
 	// Last 2 unknown.
 	return true;
 }

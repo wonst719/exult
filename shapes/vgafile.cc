@@ -110,12 +110,12 @@ unique_ptr<Shape_frame> Shape_frame::reflect() {
 			continue;
 		}
 		for (int b = 0; b < scanlen;) {
-			unsigned char bcnt = *in++;
+			unsigned char bcnt = Read1(in);
 			// Repeat next char. if odd.
 			const int repeat = bcnt & 1;
 			bcnt             = bcnt >> 1;    // Get count.
 			if (repeat) {
-				const unsigned char pix = *in++;
+				const unsigned char pix = Read1(in);
 				ibuf.fill8(pix, 1, bcnt, xoff + scany, yoff + scanx + b);
 			} else {    // Get that # of bytes.
 				ibuf.copy8(in, 1, bcnt, xoff + scany, yoff + scanx + b);
@@ -203,7 +203,7 @@ unsigned char Shape_frame::get_topleft_pix(unsigned char def) const {
 		return def;
 	}
 	ptr += 2;
-	if (*ptr++ || *ptr++ || *ptr++ || *ptr++) {
+	if (Read1(ptr) || Read1(ptr) || Read1(ptr) || Read1(ptr)) {
 		return def;
 	}
 	if ((scanlen & 1) == 0) {
@@ -290,16 +290,16 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 				if (runs[i] & 1) {
 					while (len) {
 						const int c = len > 127 ? 127 : len;
-						*out++      = (c << 1) | 1;
-						*out++      = *pixels;
+						Write1(out, (c << 1) | 1);
+						Write1(out, *pixels);
 						pixels += c;
 						len -= c;
 					}
 				} else {
 					while (len > 0) {
 						const int c = len > 127 ? 127 : len;
-						*out++      = c << 1;
-						out         = std::copy_n(pixels, c, out);
+						Write1(out, c << 1);
+						out = std::copy_n(pixels, c, out);
 						pixels += c;
 						len -= c;
 					}
@@ -548,12 +548,12 @@ void Shape_frame::paint_rle_translucent(
 			continue;
 		}
 		for (int b = 0; b < scanlen;) {
-			unsigned char bcnt = *in++;
+			unsigned char bcnt = Read1(in);
 			// Repeat next char. if odd.
 			const int repeat = bcnt & 1;
 			bcnt             = bcnt >> 1;    // Get count.
 			if (repeat) {
-				const unsigned char pix = *in++;
+				const unsigned char pix = Read1(in);
 				if (pix >= xfstart && pix <= 0xfe) {
 					win->fill_line_translucent8(
 							pix, bcnt, xoff + scanx + b, yoff + scany,
@@ -608,7 +608,7 @@ void Shape_frame::paint_rle_transformed(
 			continue;
 		}
 		for (int b = 0; b < scanlen;) {
-			unsigned char bcnt = *in++;
+			unsigned char bcnt = Read1(in);
 			// Repeat next char. if odd.
 			const int repeat = bcnt & 1;
 			bcnt             = bcnt >> 1;    // Get count.
@@ -668,7 +668,7 @@ void Shape_frame::paint_rle_outline(
 			continue;
 		}
 		for (int b = 0; b < scanlen;) {
-			unsigned char bcnt = *in++;
+			unsigned char bcnt = Read1(in);
 			// Repeat next char. if odd.
 			const int repeat = bcnt & 1;
 			bcnt             = bcnt >> 1;    // Get count.
@@ -714,7 +714,7 @@ bool Shape_frame::has_point(
 			continue;
 		}
 		for (int b = 0; b < scanlen;) {
-			unsigned char bcnt = *in++;
+			unsigned char bcnt = Read1(in);
 			// Repeat next char. if odd.
 			const int repeat = bcnt & 1;
 			bcnt             = bcnt >> 1;    // Get count.
@@ -768,7 +768,7 @@ void Shape_frame::set_offset(int new_xright, int new_ybelow) {
 			in += scanlen;
 		} else {
 			for (int b = 0; b < scanlen;) {
-				unsigned char bcnt = *in++;
+				unsigned char bcnt = Read1(in);
 				// Repeat next char. if odd.
 				const int repeat = bcnt & 1;
 				bcnt             = bcnt >> 1;    // Get count.

@@ -297,12 +297,12 @@ int Chunk_terrain::write_flats(
 			const int     shapenum = id.get_shapenum();
 			const int     framenum = id.get_framenum();
 			if (v2_chunks) {
-				*chunk_data++ = shapenum & 0xff;
-				*chunk_data++ = (shapenum >> 8) & 0xff;
-				*chunk_data++ = framenum;
+				Write1(chunk_data, shapenum & 0xff);
+				Write1(chunk_data, (shapenum >> 8) & 0xff);
+				Write1(chunk_data, framenum);
 			} else {
-				*chunk_data++ = shapenum & 0xff;
-				*chunk_data++ = ((shapenum >> 8) & 3) | (framenum << 2);
+				Write1(chunk_data, shapenum & 0xff);
+				Write1(chunk_data, ((shapenum >> 8) & 3) | (framenum << 2));
 			}
 		}
 	}

@@ -126,7 +126,7 @@ unsigned char* Ireg_game_object::write_common_ireg(
 	const int      shapenum = get_shapenum();
 	const int      framenum = get_framenum();
 	if (shapenum >= 1024 || framenum >= 64) {
-		*buf++ = IREG_EXTENDED;
+		Write1(buf, IREG_EXTENDED);
 		norm_len++;
 		buf[3] = shapenum & 0xff;
 		buf[4] = shapenum >> 8;
@@ -134,7 +134,7 @@ unsigned char* Ireg_game_object::write_common_ireg(
 		endptr = buf + 6;
 	} else {
 		if (get_lift() > 15) {
-			*buf++ = IREG_EXTENDED2;
+			Write1(buf, IREG_EXTENDED2);
 		}
 		buf[3] = shapenum & 0xff;
 		buf[4] = ((shapenum >> 8) & 3) | (framenum << 2);
@@ -158,24 +158,24 @@ unsigned char* Ireg_game_object::write_common_ireg(
 
 void Ireg_game_object::write_ireg(ODataSource* out) {
 	unsigned char buf[20];    // 10-byte entry;
-	uint8*        ptr      = write_common_ireg(10, buf);
-	*ptr++                 = nibble_swap(get_lift());
-	*ptr                   = get_quality();
-	const Shape_info& info = get_info();
+	uint8*        ptr = write_common_ireg(10, buf);
+	Write1(ptr, nibble_swap(get_lift()));
+	const Shape_info& info  = get_info();
+	uint8             value = get_quality();
 	if (info.has_quality_flags()) {
 		// Store 'quality_flags'.
-		*ptr = (get_flag(Obj_flags::invisible) ? 1 : 0)
-			   + (get_flag(Obj_flags::okay_to_take) ? (1 << 3) : 0);
+		value = (get_flag(Obj_flags::invisible) ? 1 : 0)
+				+ (get_flag(Obj_flags::okay_to_take) ? (1 << 3) : 0);
 	}
 	// Special case for 'quantity' items:
 	else if (get_flag(Obj_flags::okay_to_take) && info.has_quantity()) {
-		*ptr |= 0x80;
+		value |= 0x80;
 	}
-	++ptr;
-	*ptr++ = (get_flag(Obj_flags::is_temporary));
-	*ptr++ = 0;    // Filler, I guess.
-	*ptr++ = 0;
-	*ptr++ = 0;
+	Write1(ptr, value);
+	Write1(ptr, static_cast<uint8>(get_flag(Obj_flags::is_temporary)));
+	Write1(ptr, 0);    // Filler, I guess.
+	Write1(ptr, 0);
+	Write1(ptr, 0);
 	out->write(reinterpret_cast<char*>(buf), ptr - buf);
 	// Write scheduled usecode.
 	Game_map::write_scheduled(out, this);

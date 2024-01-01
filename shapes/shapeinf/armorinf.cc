@@ -58,9 +58,9 @@ bool Armor_info::read(
 		set_invalid(true);
 		return true;
 	}
-	prot = *ptr++;      // Protection value.
-	ptr++;              // Unknown.
-	immune = *ptr++;    // Immunity flags.
+	prot = Read1(ptr);      // Protection value.
+	Read1(ptr);             // Unknown.
+	immune = Read1(ptr);    // Immunity flags.
 	// Last 5 are unknown/unused.
 	return true;
 }

@@ -1179,7 +1179,7 @@ int Actor::get_attack_frames(
 		}
 	}
 	for (int i = 0; i < cnt; i++) {    // Copy frames with correct dir.
-		int frame = get_dir_framenum(dir, *which++);
+		int frame = get_dir_framenum(dir, Read1(which));
 		// Check for empty shape.
 		ShapeID      id(get_shapenum(), frame, get_shapefile());
 		Shape_frame* shape = id.get_shape();
@@ -1191,7 +1191,7 @@ int Actor::get_attack_frames(
 				frame = get_dir_framenum(dir, Actor::standing);
 			}
 		}
-		*frames++ = frame;
+		Write1(frames, frame);
 	}
 	return cnt;
 }
@@ -5531,16 +5531,16 @@ void Dead_body::write_ireg(ODataSource* out) {
 	Game_object*         first = objects.get_first();    // Guessing: +++++
 	const unsigned short tword = first ? first->get_prev()->get_shapenum() : 0;
 	Write2(ptr, tword);
-	*ptr++        = 0;    // Unknown.
-	*ptr++        = get_quality();
+	Write1(ptr, 0);    // Unknown.
+	Write1(ptr, get_quality());
 	const int npc = get_live_npc_num();    // If body, get source.
 	// Here, store NPC # more simply.
-	Write2(ptr, npc);                    // Allowing larger range of NPC bodies.
-	*ptr++ = nibble_swap(get_lift());    // Lift
-	*ptr++ = static_cast<unsigned char>(get_obj_hp());    // Resistance.
+	Write2(ptr, npc);    // Allowing larger range of NPC bodies.
+	Write1(ptr, nibble_swap(get_lift()));                     // Lift
+	Write1(ptr, static_cast<unsigned char>(get_obj_hp()));    // Resistance.
 	// Flags:  B0=invis. B3=okay_to_take.
-	*ptr++ = (get_flag(Obj_flags::invisible) ? 1 : 0)
-			 + (get_flag(Obj_flags::okay_to_take) ? (1 << 3) : 0);
+	Write1(ptr, (get_flag(Obj_flags::invisible) ? 1 : 0)
+						+ (get_flag(Obj_flags::okay_to_take) ? (1 << 3) : 0));
 	out->write(reinterpret_cast<char*>(buf), ptr - buf);
 	write_contents(out);    // Write what's contained within.
 	// Write scheduled usecode.

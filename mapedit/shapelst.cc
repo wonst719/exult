@@ -1019,7 +1019,7 @@ static void Convert_indexed_image(
 					newpal, oldpal[3 * pix], oldpal[3 * pix + 1],
 					oldpal[3 * pix + 2]);
 		}
-		*pixels++ = map[pix];
+		Write1(pixels, map[pix]);
 	}
 }
 
@@ -2195,7 +2195,7 @@ void Shape_chooser::locate(bool upwards) {
 	Write2(ptr, info[selected].shapenum);
 	Write2(ptr, frnum < 0 ? c_any_framenum : frnum);
 	Write2(ptr, qual < 0 ? c_any_qual : qual);
-	*ptr++              = upwards ? 1 : 0;
+	Write1(ptr, upwards ? 1 : 0);
 	ExultStudio* studio = ExultStudio::get_instance();
 	studio->send_to_server(Exult_server::locate_shape, data, ptr - data);
 }

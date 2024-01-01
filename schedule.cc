@@ -5438,10 +5438,10 @@ void Schedule_change::set8(
 ) {
 	pos.tx = Read2(entry);
 	pos.ty = Read2(entry);
-	pos.tz = *entry++;
-	time   = *entry++;
-	type   = *entry++;
-	days   = *entry++;
+	pos.tz = Read1(entry);
+	time   = Read1(entry);
+	type   = Read1(entry);
+	days   = Read1(entry);
 }
 
 /*
@@ -5452,11 +5452,11 @@ void Schedule_change::write8(
 		unsigned char* entry    // 8 bytes to write to schedule.dat.
 ) const {
 	Write2(entry, pos.tx);
-	Write2(entry, pos.ty);                    // 4
-	*entry++ = static_cast<uint8>(pos.tz);    // 5
-	*entry++ = time;                          // 6
-	*entry++ = type;                          // 7
-	*entry++ = days;                          // 8
+	Write2(entry, pos.ty);                        // 4
+	Write1(entry, static_cast<uint8>(pos.tz));    // 5
+	Write1(entry, time);                          // 6
+	Write1(entry, type);                          // 7
+	Write1(entry, days);                          // 8
 }
 
 /*

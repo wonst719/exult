@@ -269,14 +269,14 @@ void Chunk_chooser::render_chunk(
 			for (int tx = 0; tx < c_tiles_per_chunk; tx++, x += c_tilesize) {
 				int                 shapenum;
 				int                 framenum;
-				const unsigned char l = *data++;
-				const unsigned char h = *data++;
+				const unsigned char l = Read1(data);
+				const unsigned char h = Read1(data);
 				if (!headersz) {
 					shapenum = l + 256 * (h & 0x3);
 					framenum = h >> 2;
 				} else {    // Version 2.
 					shapenum = l + 256 * h;
-					framenum = *data++;
+					framenum = Read1(data);
 				}
 				Shape_frame* s = ifile->get_shape(shapenum, framenum);
 				// First pass over non RLE flats :
@@ -906,7 +906,7 @@ void Chunk_chooser::locate(int dir    // 1=downwards, -1=upwards, 0=from top.
 	Write2(ptr, tnum);
 	Write2(ptr, cx);    // Current chunk, or -1.
 	Write2(ptr, cy);
-	*ptr++              = upwards ? 1 : 0;
+	Write1(ptr, upwards ? 1 : 0);
 	ExultStudio* studio = ExultStudio::get_instance();
 	if (!studio->send_to_server(
 				Exult_server::locate_terrain, data, ptr - data)) {
@@ -966,7 +966,7 @@ void Chunk_chooser::insert(bool dup) {
 	unsigned char* ptr  = &data[0];
 	const int      tnum = selected >= 0 ? info[selected].num : -1;
 	Write2(ptr, tnum);
-	*ptr++              = dup ? 1 : 0;
+	Write1(ptr, dup ? 1 : 0);
 	ExultStudio* studio = ExultStudio::get_instance();
 	studio->send_to_server(Exult_server::insert_terrain, data, ptr - data);
 }
@@ -991,7 +991,7 @@ void Chunk_chooser::insert_response(const unsigned char* data, int datalen) {
 	ignore_unused_variable_warning(datalen);
 	const unsigned char* ptr  = data;
 	const int            tnum = static_cast<short>(Read2(ptr));
-	const bool           dup  = *ptr++ != 0;
+	const bool           dup  = Read1(ptr) != 0;
 	if (!*ptr) {
 		EStudio::Alert("Terrain insert failed.");
 	} else {

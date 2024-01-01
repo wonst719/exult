@@ -266,14 +266,14 @@ static void Handle_client_message(
 		const int      tnum = Read2(ptr);
 		int            cx   = Read2s(ptr);
 		int            cy   = Read2s(ptr);
-		const bool     up   = *ptr++ != 0;
+		const bool     up   = Read1(ptr) != 0;
 		const bool     okay = gwin->get_map()->locate_terrain(tnum, cx, cy, up);
 		unsigned char* wptr = &data[2];
 		// Set back reply.
 		Write2(wptr, cx);
 		Write2(wptr, cy);
 		wptr++;    // Skip 'up' flag.
-		*wptr++ = okay ? 1 : 0;
+		Write1(wptr, okay ? 1 : 0);
 		Exult_server::Send_data(
 				client_socket, Exult_server::locate_terrain, data, wptr - data);
 		break;
@@ -282,17 +282,17 @@ static void Handle_client_message(
 		const int      tnum = Read2(ptr);
 		const bool     okay = Game_map::swap_terrains(tnum);
 		unsigned char* wptr = &data[2];
-		*wptr++             = okay ? 1 : 0;
+		Write1(wptr, okay ? 1 : 0);
 		Exult_server::Send_data(
 				client_socket, Exult_server::swap_terrain, data, wptr - data);
 		break;
 	}
 	case Exult_server::insert_terrain: {
 		const int      tnum = Read2s(ptr);
-		const bool     dup  = *ptr++ != 0;
+		const bool     dup  = Read1(ptr) != 0;
 		const bool     okay = Game_map::insert_terrain(tnum, dup);
 		unsigned char* wptr = &data[3];
-		*wptr++             = okay ? 1 : 0;
+		Write1(wptr, okay ? 1 : 0);
 		Exult_server::Send_data(
 				client_socket, Exult_server::insert_terrain, data, wptr - data);
 		break;
@@ -301,7 +301,7 @@ static void Handle_client_message(
 		const int      tnum = Read2s(ptr);
 		const bool     okay = Game_map::delete_terrain(tnum);
 		unsigned char* wptr = &data[2];
-		*wptr++             = okay ? 1 : 0;
+		Write1(wptr, okay ? 1 : 0);
 		Exult_server::Send_data(
 				client_socket, Exult_server::delete_terrain, data, wptr - data);
 		break;
@@ -392,11 +392,11 @@ static void Handle_client_message(
 		const int      shnum = Read2(ptr);
 		const int      frnum = Read2s(ptr);
 		const int      qual  = Read2s(ptr);
-		const bool     up    = *ptr++ != 0;
+		const bool     up    = Read1(ptr) != 0;
 		const bool     okay  = gwin->locate_shape(shnum, up, frnum, qual);
 		unsigned char* wptr  = &data[6];    // Send back reply.
 		wptr++;                             // Skip 'up' flag.
-		*wptr++ = okay ? 1 : 0;
+		Write1(wptr, okay ? 1 : 0);
 		Exult_server::Send_data(
 				client_socket, Exult_server::locate_shape, data, wptr - data);
 		break;
@@ -421,7 +421,7 @@ static void Handle_client_message(
 		unsigned char* wptr   = &data[2];
 		if (npc) {
 			Write2(wptr, npc->get_shapenum());
-			*wptr++              = npc->is_unused();
+			Write1(wptr, npc->is_unused());
 			const std::string nm = npc->get_npc_name();
 			strcpy(reinterpret_cast<char*>(wptr), nm.c_str());
 			// Point past ending nullptr.

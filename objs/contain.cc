@@ -664,14 +664,14 @@ void Container_game_object::write_ireg(ODataSource* out) {
 	Game_object*         first = objects.get_first();    // Guessing: +++++
 	const unsigned short tword = first ? first->get_prev()->get_shapenum() : 0;
 	Write2(ptr, tword);
-	*ptr++ = 0;    // Unknown.
-	*ptr++ = get_quality();
-	*ptr++ = 0;                                         // "Quantity".
-	*ptr++ = nibble_swap(get_lift());                   // Lift
-	*ptr++ = static_cast<unsigned char>(resistance);    // Resistance.
+	Write1(ptr, 0);    // Unknown.
+	Write1(ptr, get_quality());
+	Write1(ptr, 0);                                         // "Quantity".
+	Write1(ptr, nibble_swap(get_lift()));                   // Lift
+	Write1(ptr, static_cast<unsigned char>(resistance));    // Resistance.
 	// Flags:  B0=invis. B3=okay_to_take.
-	*ptr++ = (get_flag(Obj_flags::invisible) ? 1 : 0)
-			 + (get_flag(Obj_flags::okay_to_take) ? (1 << 3) : 0);
+	Write1(ptr, (get_flag(Obj_flags::invisible) ? 1 : 0)
+						+ (get_flag(Obj_flags::okay_to_take) ? (1 << 3) : 0));
 	out->write(reinterpret_cast<char*>(buf), ptr - buf);
 	write_contents(out);    // Write what's contained within.
 	// Write scheduled usecode.

@@ -52,51 +52,64 @@ bool Monster_info::read(
 		set_invalid(true);
 		return true;
 	}
-	m_sleep_safe = (*ptr & 1);
-	m_charm_safe = (*ptr >> 1) & 1;
-	strength     = (*ptr++ >> 2) & 63;    // Byte 2.
+	uint8 value  = Read1(ptr);    // Byte 2.
+	m_sleep_safe = (value & 1) != 0;
+	m_charm_safe = (value & 2) != 0;
+	strength     = (value >> 2) & 63;
 
-	m_curse_safe     = (*ptr & 1);
-	m_paralysis_safe = (*ptr >> 1) & 1;
-	dexterity        = (*ptr++ >> 2) & 63;    // Byte 3.
+	value            = Read1(ptr);    // Byte 3.
+	m_curse_safe     = (value & 1) != 0;
+	m_paralysis_safe = (value & 2) != 0;
+	dexterity        = (value >> 2) & 63;
 
-	m_poison_safe = (*ptr & 1);            // verified
-	m_int_b1      = (*ptr >> 1) & 1;       // What does this do?
-	intelligence  = (*ptr++ >> 2) & 63;    // Byte 4.
+	value         = Read1(ptr);          // Byte 4.
+	m_poison_safe = (value & 1) != 0;    // verified
+	m_int_b1      = (value & 2) != 0;    // What does this do?
+	intelligence  = (value >> 2) & 63;
 
-	alignment = *ptr & 3;    // Byte 5.
-	combat    = (*ptr++ >> 2) & 63;
+	value     = Read1(ptr);    // Byte 5.
+	alignment = value & 3;
+	combat    = (value >> 2) & 63;
 
-	m_splits     = (*ptr & 1);    // Byte 6 (slimes).
-	m_cant_die   = (*ptr & 2) != 0;
-	m_power_safe = (*ptr & 4) != 0;
-	m_death_safe = (*ptr & 8) != 0;
-	armor        = (*ptr++ >> 4) & 15;
+	value        = Read1(ptr);    // Byte 6 (slimes).
+	m_splits     = (value & 1) != 0;
+	m_cant_die   = (value & 2) != 0;
+	m_power_safe = (value & 4) != 0;
+	m_death_safe = (value & 8) != 0;
+	armor        = (value >> 4) & 15;
 
-	ptr++;                       // Byte 7: Unknown.
-	reach        = *ptr & 15;    // Byte 8 - weapon reach.
-	weapon       = (*ptr++ >> 4) & 15;
-	flags        = *ptr++;                    // Byte 9.
-	vulnerable   = *ptr++;                    // Byte 10.
-	immune       = *ptr++;                    // Byte 11.
-	m_cant_yell  = (*ptr & (1 << 5)) != 0;    // Byte 12.
-	m_cant_bleed = (*ptr & (1 << 6)) != 0;
-	ptr++;
-	m_attackmode = (*ptr & 7);
+	Read1(ptr);    // Byte 7: Unknown.
+
+	value      = Read1(ptr);    // Byte 8 - weapon reach.
+	reach      = value & 15;
+	weapon     = (value >> 4) & 15;
+	flags      = Read1(ptr);    // Byte 9.
+	vulnerable = Read1(ptr);    // Byte 10.
+	immune     = Read1(ptr);    // Byte 11.
+
+	value        = Read1(ptr);    // Byte 12.
+	m_cant_yell  = (value & (1 << 5)) != 0;
+	m_cant_bleed = (value & (1 << 6)) != 0;
+
+	value        = Read1(ptr);    // Byte 13: partly unknown.
+	m_attackmode = (value & 7);
 	if (m_attackmode == 0) {    // Fixes invalid data saved by older
 		m_attackmode = 2;       // versions of ES.
 	} else {
 		m_attackmode--;
 	}
-	m_byte13           = (*ptr++) & ~7;      // Byte 13: partly unknown.
-	equip_offset       = *ptr++;             // Byte 14.
-	m_can_teleport     = (*ptr & 1) != 0;    // Exult's extra flags: byte 15.
-	m_can_summon       = (*ptr & 2) != 0;
-	m_can_be_invisible = (*ptr & 4) != 0;
-	ptr++;
-	ptr++;    // Byte 16: Unknown (0).
+	m_byte13 = value & ~7;
+
+	equip_offset = Read1(ptr);    // Byte 14.
+
+	value              = Read1(ptr);    // Exult's extra flags: byte 15.
+	m_can_teleport     = (value & 1) != 0;
+	m_can_summon       = (value & 2) != 0;
+	m_can_be_invisible = (value & 4) != 0;
+
+	Read1(ptr);    // Byte 16: Unknown (0).
 	const int sfx_delta = game == BLACK_GATE ? -1 : 0;
-	sfx = *reinterpret_cast<signed char*>(ptr++) + sfx_delta;    // Byte 17.
+	sfx                 = Read1s(ptr) + sfx_delta;    // Byte 17.
 	return true;
 }
 

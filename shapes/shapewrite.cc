@@ -683,22 +683,22 @@ void Weapon_info::write(
 	Write2(ptr, shapenum);    // Bytes 0-1.
 	Write2(ptr, ammo);
 	Write2(ptr, projectile);
-	*ptr++ = damage;
+	Write1(ptr, damage);
 	const unsigned char flags0
 			= (damage_type << 4) | (m_delete_depleted ? (1 << 3) : 0)
 			  | (m_no_blocking ? (1 << 2) : 0) | (m_explodes ? (1 << 1) : 0)
 			  | (m_lucky ? 1 : 0);
-	*ptr++ = flags0;
-	*ptr++ = (range << 3) | (uses << 1) | (m_autohit ? 1 : 0);
+	Write1(ptr, flags0);
+	Write1(ptr, (range << 3) | (uses << 1) | (m_autohit ? 1 : 0));
 	const unsigned char flags1
 			= (m_returns ? 1 : 0) | (m_need_target ? (1 << 1) : 0)
 			  | (rotation_speed << 4) | ((missile_speed == 4 ? 1 : 0) << 2);
-	*ptr++          = flags1;
+	Write1(ptr, flags1);
 	const int delay = missile_speed >= 3 ? 0 : (missile_speed == 2 ? 2 : 3);
 	const unsigned char flags2 = actor_frames | (delay << 5);
-	*ptr++                     = flags2;
-	*ptr++                     = powers;
-	*ptr++                     = 0;    // ??
+	Write1(ptr, flags2);
+	Write1(ptr, powers);
+	Write1(ptr, 0);    // ??
 	Write2(ptr, usecode);
 	// BG:  Subtracted 1 from each sfx.
 	const int sfx_delta = game == BLACK_GATE ? -1 : 0;
@@ -724,15 +724,15 @@ void Ammo_info::write(
 	Write2(ptr, shapenum);
 	Write2(ptr, family_shape);
 	Write2(ptr, sprite);
-	*ptr++ = damage;
+	Write1(ptr, damage);
 	unsigned char flags0;
 	flags0 = (m_explodes ? (1 << 6) : 0) | ((homing ? 3 : drop_type) << 4)
 			 | (m_lucky ? 1 : 0) | (m_autohit ? (1 << 1) : 0)
 			 | (m_returns ? (1 << 2) : 0) | (m_no_blocking ? (1 << 3) : 0);
-	*ptr++ = flags0;
-	*ptr++ = 0;    // Unknown.
-	*ptr++ = damage_type << 4;
-	*ptr++ = powers;
+	Write1(ptr, flags0);
+	Write1(ptr, 0);    // Unknown.
+	Write1(ptr, damage_type << 4);
+	Write1(ptr, powers);
 	Write2(ptr, 0);    // Unknown.
 	out.write(reinterpret_cast<char*>(buf), sizeof(buf));
 }
@@ -750,10 +750,10 @@ void Armor_info::write(
 	uint8  buf[10];    // Entry length.
 	uint8* ptr = buf;
 	Write2(ptr, shapenum);
-	*ptr++ = prot;      // Protection value.
-	*ptr++ = 0;         // Unknown.
-	*ptr++ = immune;    // Immunity flags.
-	Write4(ptr, 0);     // Last 5 are unknown/unused.
+	Write1(ptr, prot);      // Protection value.
+	Write1(ptr, 0);         // Unknown.
+	Write1(ptr, immune);    // Immunity flags.
+	Write4(ptr, 0);         // Last 5 are unknown/unused.
 	*ptr = 0;
 	out.write(reinterpret_cast<char*>(buf), sizeof(buf));
 }
@@ -771,25 +771,27 @@ void Monster_info::write(
 	memset(&buf[0], 0, sizeof(buf));
 	uint8* ptr = buf;
 	Write2(ptr, shapenum);
-	*ptr++ = (strength << 2) | (m_charm_safe ? 2 : 0) | (m_sleep_safe ? 1 : 0);
-	*ptr++ = (dexterity << 2) | (m_paralysis_safe ? 2 : 0)
-			 | (m_curse_safe ? 1 : 0);
-	*ptr++ = (intelligence << 2) | (m_int_b1 ? 2 : 0) | (m_poison_safe ? 1 : 0);
-	*ptr++ = (combat << 2) | alignment;
-	*ptr++ = (armor << 4) | (m_splits ? 1 : 0) | (m_cant_die ? 2 : 0)
-			 | (m_power_safe ? 4 : 0) | (m_death_safe ? 8 : 0);
-	*ptr++ = 0;    // Unknown.
-	*ptr++ = (weapon << 4) | reach;
-	*ptr++ = flags;    // Byte 9.
-	*ptr++ = vulnerable;
-	*ptr++ = immune;
-	*ptr++ = (m_cant_yell ? (1 << 5) : 0) | (m_cant_bleed ? (1 << 6) : 0);
-	*ptr++ = m_byte13 | (m_attackmode + 1);
-	*ptr++ = equip_offset;
-	*ptr++ = (m_can_teleport ? (1 << 0) : 0) | (m_can_summon ? (1 << 1) : 0)
-			 | (m_can_be_invisible ? (1 << 2) : 0);
-	*ptr++              = 0;    // Unknown.
+	Write1(ptr,
+		   (strength << 2) | (m_charm_safe ? 2 : 0) | (m_sleep_safe ? 1 : 0));
+	Write1(ptr, (dexterity << 2) | (m_paralysis_safe ? 2 : 0)
+						| (m_curse_safe ? 1 : 0));
+	Write1(ptr,
+		   (intelligence << 2) | (m_int_b1 ? 2 : 0) | (m_poison_safe ? 1 : 0));
+	Write1(ptr, (combat << 2) | alignment);
+	Write1(ptr, (armor << 4) | (m_splits ? 1 : 0) | (m_cant_die ? 2 : 0)
+						| (m_power_safe ? 4 : 0) | (m_death_safe ? 8 : 0));
+	Write1(ptr, 0);    // Unknown).
+	Write1(ptr, (weapon << 4) | reach);
+	Write1(ptr, flags);    // Byte 9).
+	Write1(ptr, vulnerable);
+	Write1(ptr, immune);
+	Write1(ptr, (m_cant_yell ? (1 << 5) : 0) | (m_cant_bleed ? (1 << 6) : 0));
+	Write1(ptr, m_byte13 | (m_attackmode + 1));
+	Write1(ptr, equip_offset);
+	Write1(ptr, (m_can_teleport ? (1 << 0) : 0) | (m_can_summon ? (1 << 1) : 0)
+						| (m_can_be_invisible ? (1 << 2) : 0));
+	Write1(ptr, 0);    // Unknown.
 	const int sfx_delta = game == BLACK_GATE ? -1 : 0;
-	*ptr++              = static_cast<unsigned char>((sfx & 0xff) - sfx_delta);
+	Write1(ptr, static_cast<unsigned char>((sfx & 0xff) - sfx_delta));
 	out.write(reinterpret_cast<char*>(buf), sizeof(buf));
 }

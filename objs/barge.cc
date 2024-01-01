@@ -915,16 +915,16 @@ void Barge_object::write_ireg(ODataSource* out) {
 	unsigned char  buf[20];    // 13-byte entry + length-byte.
 	unsigned char* ptr = write_common_ireg(12, buf);
 	// Write size.
-	*ptr++ = xtiles;
-	*ptr++ = ytiles;
-	*ptr++ = 0;    // Unknown.
-	// Flags (quality).  Taking B3 to in-
-	//   dicate barge mode.
-	*ptr++ = (dir << 1) | ((gwin->get_moving_barge() == this) ? (1 << 3) : 0);
-	*ptr++ = 0;    // (Quantity).
-	*ptr++ = nibble_swap(get_lift());
-	*ptr++ = 0;    // Data2.
-	*ptr++ = 0;    //
+	Write1(ptr, xtiles);
+	Write1(ptr, ytiles);
+	Write1(ptr, 0);    // Unknown.
+	// Flags (quality).  Taking B3 to indicate barge mode.
+	Write1(ptr,
+		   (dir << 1) | ((gwin->get_moving_barge() == this) ? (1 << 3) : 0));
+	Write1(ptr, 0);    // (Quantity).
+	Write1(ptr, nibble_swap(get_lift()));
+	Write1(ptr, 0);    // Data2.
+	Write1(ptr, 0);    //
 	out->write(reinterpret_cast<char*>(buf), ptr - buf);
 	// Write permanent objects.
 	for (int i = 0; i < perm_count; i++) {

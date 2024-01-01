@@ -318,13 +318,13 @@ void Spellbook_object::write_ireg(ODataSource* out) {
 	uint8*        ptr = write_common_ireg(18, buf);
 	memcpy(ptr, &circles[0], 5);    // Store the way U7 does it.
 	ptr += 5;
-	*ptr++ = nibble_swap(get_lift());
+	Write1(ptr, nibble_swap(get_lift()));
 	memcpy(ptr, &circles[5], 4);    // Rest of spell circles.
 	ptr += 4;
-	*ptr++ = 0;    // 3 unknowns.
-	*ptr++ = 0;
-	*ptr++ = 0;
-	*ptr++ = bookmark >= 0 ? bookmark : 255;
+	Write1(ptr, 0);    // 3 unknowns.
+	Write1(ptr, 0);
+	Write1(ptr, 0);
+	Write1(ptr, bookmark >= 0 ? bookmark : 255);
 	out->write(reinterpret_cast<char*>(buf), ptr - buf);
 	// Write scheduled usecode.
 	Game_map::write_scheduled(out, this);

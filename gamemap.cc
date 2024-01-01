@@ -1397,13 +1397,13 @@ bool Game_map::insert_terrain(
 				const int     shnum = id.get_shapenum();
 				const int     frnum = id.get_framenum();
 				if (v2_chunks) {
-					*data++ = shnum & 0xff;
-					*data++ = (shnum >> 8) & 0xff;
-					*data++ = frnum;
+					Write1(data, shnum & 0xff);
+					Write1(data, (shnum >> 8) & 0xff);
+					Write1(data, frnum);
 				} else {
-					*data++ = id.get_shapenum() & 0xff;
-					*data++ = ((id.get_shapenum() >> 8) & 3)
-							  | (id.get_framenum() << 2);
+					Write1(data, id.get_shapenum() & 0xff);
+					Write1(data, ((id.get_shapenum() >> 8) & 3)
+										 | (id.get_framenum() << 2));
 				}
 			}
 		}
@@ -1745,7 +1745,7 @@ bool Game_map::write_minimap() {
 		r /= w * h;
 		b /= w * h;
 		g /= w * h;
-		*ptr++ = pal.find_color(r, g, b);
+		Write1(ptr, pal.find_color(r, g, b));
 	}
 	eman->remove_text_effects();
 	const vector<Game_map*>& maps  = gwin->get_maps();

@@ -61,7 +61,7 @@ void Usecode_internal::uc_trace_disasm(
 		const uint8* externals, const uint8* code, const uint8* ip) {
 	ignore_unused_variable_warning(num_locals);
 	const int func_ip = static_cast<int>(ip - code);
-	const int opcode  = *ip++;
+	const int opcode  = Read1(ip);
 	// const uint8 *param_ip = ip;
 	const opcode_desc* pdesc = nullptr;
 
@@ -86,7 +86,7 @@ void Usecode_internal::uc_trace_disasm(
 		int          offset;
 		switch (pdesc->type) {
 		case op_byte:
-			std::printf("\t%02x", *ip++);
+			std::printf("\t%02x", Read1(ip));
 			break;
 		case op_immed:
 			// Print immediate operand
@@ -177,7 +177,7 @@ void Usecode_internal::uc_trace_disasm(
 			break;
 		case op_call: {
 			const unsigned short func = Read2(ip);
-			immed                     = *ip++;
+			immed                     = Read1(ip);
 			tcb::span<const std::string_view> func_table;
 			if (Game::get_game_type() == SERPENT_ISLE) {
 				if (Game::is_si_beta()) {

@@ -207,8 +207,8 @@ class ShapeID : public Game_singletons {
 public:
 	// Read from buffer & incr. ptr.
 	ShapeID(unsigned char*& data) {
-		const unsigned char l = *data++;
-		const unsigned char h = *data++;
+		const unsigned char l = Read1(data);
+		const unsigned char h = Read1(data);
 		shapenum              = l + 256 * (h & 0x3);
 		framenum              = h >> 2;
 	}
