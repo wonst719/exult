@@ -45,23 +45,31 @@ using sintptr = intptr_t;
 
 // Debug
 #ifdef DEBUG
-#	define COUT(x)                      \
-		do {                             \
-			std::cout << x << std::endl; \
-			std::cout.flush();           \
-		} while (0)
-#	define CERR(x)                      \
-		do {                             \
-			std::cerr << x << std::endl; \
-			std::cerr.flush();           \
-		} while (0)
+#	ifndef COUT
+#		define COUT(x)                      \
+			do {                             \
+				std::cout << x << std::endl; \
+				std::cout.flush();           \
+			} while (0)
+#	endif
+#	ifndef CERR
+#		define CERR(x)                      \
+			do {                             \
+				std::cerr << x << std::endl; \
+				std::cerr.flush();           \
+			} while (0)
+#	endif
 #else
-#	define COUT(x) \
-		do {        \
-		} while (0)
-#	define CERR(x) \
-		do {        \
-		} while (0)
+#	ifndef COUT
+#		define COUT(x) \
+			do {        \
+			} while (0)
+#	endif
+#	ifndef CERR
+#		define CERR(x) \
+			do {        \
+			} while (0)
+#	endif
 #endif
 
 #endif    // COMMON_TYPES_H

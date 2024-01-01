@@ -97,23 +97,31 @@ constexpr inline int SUB_TILE(int x, int y) {
 
 // Debug
 #ifdef DEBUG
-#	define COUT(x)                      \
-		do {                             \
-			std::cout << x << std::endl; \
-			std::cout.flush();           \
-		} while (0)
-#	define CERR(x)                      \
-		do {                             \
-			std::cerr << x << std::endl; \
-			std::cerr.flush();           \
-		} while (0)
+#	ifndef COUT
+#		define COUT(x)                      \
+			do {                             \
+				std::cout << x << std::endl; \
+				std::cout.flush();           \
+			} while (0)
+#	endif
+#	ifndef CERR
+#		define CERR(x)                      \
+			do {                             \
+				std::cerr << x << std::endl; \
+				std::cerr.flush();           \
+			} while (0)
+#	endif
 #else
-#	define COUT(x) \
-		do {        \
-		} while (0)
-#	define CERR(x) \
-		do {        \
-		} while (0)
+#	ifndef COUT
+#		define COUT(x) \
+			do {        \
+			} while (0)
+#	endif
+#	ifndef CERR
+#		define CERR(x) \
+			do {        \
+			} while (0)
+#	endif
 #endif
 
 enum Exult_Game {
