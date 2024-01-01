@@ -319,6 +319,7 @@ char* Handle_string(
 #if !defined(__llvm__) && !defined(__clang__)
 #	pragma GCC diagnostic ignored "-Wredundant-tags"
 #endif
+#pragma GCC diagnostic ignored "-Wnull-dereference"
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #if !defined(__llvm__) && !defined(__clang__)
