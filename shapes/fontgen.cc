@@ -36,18 +36,7 @@ using std::make_unique;
 
 #define USE_WIN32_FONTGEN
 
-#if defined(_WIN32) && defined(USE_WIN32_FONTGEN)
-
-#	undef NOGDI
-#	ifdef _WIN32_WINNT
-#		undef _WIN32_WINNT
-#	endif
-#	define _WIN32_WINNT 0x0500
-
-#	ifndef WIN32_LEAN_AND_MEAN
-#		define WIN32_LEAN_AND_MEAN
-#	endif
-#	include <windows.h>
+#if defined(HAVE_FREETYPE2) || (defined(_WIN32) && defined(USE_WIN32_FONTGEN))
 
 /*
  *  Generate a shadow around a character.
@@ -82,6 +71,21 @@ static void Gen_shadow(
 	}
 }
 
+#endif
+
+#if defined(_WIN32) && defined(USE_WIN32_FONTGEN)
+
+#	undef NOGDI
+#	ifdef _WIN32_WINNT
+#		undef _WIN32_WINNT
+#	endif
+#	define _WIN32_WINNT 0x0500
+
+#	ifndef WIN32_LEAN_AND_MEAN
+#		define WIN32_LEAN_AND_MEAN
+#	endif
+#	include <windows.h>
+
 static bool Gen_font_shape_win32(
 		HDC dc, HFONT font,
 		Shape*        shape,        // Shape to set frames.
@@ -92,8 +96,7 @@ static bool Gen_font_shape_win32(
 		int           shadow        // Shadow color, or -1
 ) {
 	ignore_unused_variable_warning(font, pixels_ht);
-	MAT2 matrix;
-	memset(&matrix, 0, sizeof(matrix));
+	MAT2 matrix{};
 	matrix.eM11.value = 1;
 	matrix.eM22.value = 1;
 	// matrix.eM22.fract = 0x10000 * 10 / 12;
@@ -293,8 +296,8 @@ static bool Gen_font_shape_win32(
 }
 
 #endif
-#if defined(HAVE_FREETYPE2)
 
+#if defined(HAVE_FREETYPE2)
 #	include <ft2build.h>
 #	ifdef __GNUC__
 #		pragma GCC diagnostic push
