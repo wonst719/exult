@@ -19,7 +19,7 @@
  */
 
 #ifndef USCRIPTOP_H
-#	define USCRIPTOP_H
+#define USCRIPTOP_H
 
 /*
  *  Opcodes for Usecode_script's:
@@ -99,4 +99,4 @@ namespace Ucscript {
 		resurrect = 0x81     // Parm. is body.
 	};
 }    // namespace Ucscript
-#	endif
+#endif
