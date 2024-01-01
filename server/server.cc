@@ -22,12 +22,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+#	include <config.h>    // All the ifdefs aren't useful if we don't do this
+#endif
+
 // only if compiled with "exult studio support"
 #ifdef USE_EXULTSTUDIO
-
-#	ifdef HAVE_CONFIG_H
-#		include <config.h>    // All the ifdefs aren't useful if we don't do this
-#	endif
 
 #	include "server.h"
 

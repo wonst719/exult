@@ -19,10 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#ifdef USE_CORE_MIDI
-#	include "CoreMidiDriver.h"
+#include "CoreMidiDriver.h"
 
-#	include "ignore_unused_variable_warning.h"
+#include "ignore_unused_variable_warning.h"
+
+#ifdef USE_CORE_MIDI
 
 #	include <algorithm>
 #	include <iomanip>
