@@ -28,6 +28,8 @@
 #include "ready.h"
 #include "utils.h"    // This is only included for Log2...
 
+#include <array>
+
 class Image_window;
 class Game_window;
 class Npc_actor;

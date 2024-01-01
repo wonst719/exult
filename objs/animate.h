@@ -29,6 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "iregobjs.h"
 #include "miscinf.h"
 
+#include <array>
+
 /*
  *  A class for playing sound effects that get updated by position
  *  and distance. Adds itself to time-queue, deletes itself when done.

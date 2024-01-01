@@ -259,8 +259,7 @@ void Conversation::change_face_frame(int frame, int slot) {
 		pal->set(-1, 100);
 	}
 
-	if (static_cast<unsigned>(slot) >= face_info.size()
-		|| !face_info[slot]) {
+	if (static_cast<unsigned>(slot) >= face_info.size() || !face_info[slot]) {
 		return;    // Invalid slot.
 	}
 
@@ -306,8 +305,7 @@ void Conversation::remove_face(int shape) {
  */
 
 void Conversation::remove_slot_face(int slot) {
-	if (static_cast<unsigned>(slot) >= face_info.size()
-		|| !face_info[slot]) {
+	if (static_cast<unsigned>(slot) >= face_info.size() || !face_info[slot]) {
 		return;    // Invalid.
 	}
 	Npc_face_info* info = face_info[slot];
@@ -431,7 +429,7 @@ void Conversation::show_avatar_choices(int num_choices, char** choices) {
 
 	const ShapeID face_sid(shape, frame, SF_FACES_VGA);
 	Shape_frame*  face = face_sid.get_shape();
-	size_t           empty;    // Find face prev. to 1st empty slot.
+	size_t        empty;    // Find face prev. to 1st empty slot.
 	for (empty = 0; empty < face_info.size(); empty++) {
 		if (!face_info[empty]) {
 			break;

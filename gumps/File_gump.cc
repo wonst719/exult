@@ -40,6 +40,7 @@
 #include "gamewin.h"
 #include "mouse.h"
 
+#include <array>
 #include <cctype>
 #include <cstring>
 

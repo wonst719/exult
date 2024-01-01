@@ -46,6 +46,7 @@
 #include "span.h"
 #include "txtscroll.h"
 
+#include <array>
 #include <memory>
 
 #ifdef __IPHONEOS__

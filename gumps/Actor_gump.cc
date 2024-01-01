@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ignore_unused_variable_warning.h"
 #include "misc_buttons.h"
 
+#include <array>
 #include <cstdio>
 
 using std::size_t;

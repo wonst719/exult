@@ -56,6 +56,10 @@
 #include "usefuns.h"
 #include "useval.h"
 
+#include <array>
+#include <string>
+#include <vector>
+
 using std::cerr;
 using std::cout;
 using std::endl;

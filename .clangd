@@ -3,7 +3,7 @@ CompileFlags:
       [
         -xc++,
         -std=c++17,
-        -stdlib=libstdc++,
+        -stdlib=libc++,
         -Weverything,
         -Wno-pre-c++14-compat,
         -Wno-pre-c++14-compat-pedantic,

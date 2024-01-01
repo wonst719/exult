@@ -1,6 +1,7 @@
 #include "span.h"
 #include "uctools.h"
 
+#include <array>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

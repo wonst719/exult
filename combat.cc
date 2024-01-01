@@ -51,6 +51,7 @@
 #include "usefuns.h"
 #include "weaponinf.h"
 
+#include <array>
 #include <memory>
 
 using std::cout;
@@ -1658,8 +1659,8 @@ void Combat_schedule::now_what() {
 					static_cast<signed char>(npc->get_dir_framenum(3)),
 					static_cast<signed char>(npc->get_dir_framenum(2)),
 					static_cast<signed char>(npc->get_dir_framenum(1))};
-			npc->set_action(
-					new Frames_actor_action(frames.data(), frames.size(), delay));
+			npc->set_action(new Frames_actor_action(
+					frames.data(), frames.size(), delay));
 		}
 		npc->start(gwin->get_std_delay(), delay);
 

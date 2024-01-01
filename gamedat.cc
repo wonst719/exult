@@ -39,6 +39,7 @@
 #include "utils.h"
 #include "version.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -340,7 +341,7 @@ void Game_window::save_gamedat(
 	// Use samename for title.
 	OFileDataSource out(fname);
 	Flex_writer     flex(out, savename, count);
-	for (const auto *savefile : savefiles) {
+	for (const auto* savefile : savefiles) {
 		Savefile(flex, savefile);
 	}
 	// Now the Ireg's.
@@ -1121,7 +1122,7 @@ bool Game_window::save_gamedat_zip(
 
 	// Level 1 Compression
 	if (save_compression != 2) {
-		for (const auto *savefile : savefiles) {
+		for (const auto* savefile : savefiles) {
 			Save_level1(zipfile, savefile);
 		}
 

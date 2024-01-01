@@ -32,6 +32,7 @@
 #include "headers/ignore_unused_variable_warning.h"
 #include "utils.h"
 
+#include <array>
 #include <cstring>
 #include <map>
 #include <string>
@@ -47,7 +48,7 @@
 static const std::map<const char*, const char*> config_defaults{
 		{  "config/disk/game/blackgate/keys", "(default)"},
 		{"config/disk/game/serpentisle/keys", "(default)"},
-		{             "config/audio/enabled",       "yes"},
+		{			 "config/audio/enabled",       "yes"},
 		{     "config/audio/effects/enabled",       "yes"},
 		{     "config/audio/effects/convert",        "gs"},
 		{        "config/audio/midi/enabled",       "yes"},
@@ -58,18 +59,18 @@ static const std::map<const char*, const char*> config_defaults{
 		{   "config/audio/midi/chorus/level",         "0"},
 		{   "config/audio/midi/volume_curve",  "1.000000"},
 		{      "config/audio/speech/enabled",       "yes"},
-		{            "config/gameplay/cheat",       "yes"},
+		{			"config/gameplay/cheat",       "yes"},
 		{       "config/gameplay/skip_intro",        "no"},
 		{      "config/gameplay/skip_splash",        "no"},
 		{			   "config/video/width",       "320"},
-		{              "config/video/height",       "200"},
+		{			  "config/video/height",       "200"},
 		{			   "config/video/scale",         "2"},
 		{        "config/video/scale_method",     "2xSaI"},
-		{          "config/video/fullscreen",        "no"},
+		{		  "config/video/fullscreen",        "no"},
 		{       "config/video/disable_fades",        "no"},
-		{           "config/video/gamma/red",      "1.00"},
-		{         "config/video/gamma/green",      "1.00"},
-		{          "config/video/gamma/blue",      "1.00"}
+		{		   "config/video/gamma/red",      "1.00"},
+		{		 "config/video/gamma/green",      "1.00"},
+		{		  "config/video/gamma/blue",      "1.00"}
 };
 
 constexpr static const std::array BASE_Files{SHAPES_VGA, FACES_VGA, GUMPS_VGA,

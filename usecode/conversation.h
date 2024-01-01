@@ -23,6 +23,7 @@
 #include "shapeid.h"
 #include "singles.h"
 
+#include <array>
 #include <deque>
 #include <string>
 #include <vector>

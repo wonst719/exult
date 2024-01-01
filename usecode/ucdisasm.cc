@@ -41,8 +41,7 @@ using std::cout;
 using std::strlen;
 
 int Usecode_internal::get_opcode_length(int opcode) {
-	if (opcode >= 0
-		&& static_cast<unsigned>(opcode) < opcode_table.size()) {
+	if (opcode >= 0 && static_cast<unsigned>(opcode) < opcode_table.size()) {
 		return opcode_table[opcode].nbytes + 1;
 	} else {
 		return 0;
@@ -66,8 +65,7 @@ void Usecode_internal::uc_trace_disasm(
 	// const uint8 *param_ip = ip;
 	const opcode_desc* pdesc = nullptr;
 
-	if (opcode >= 0
-		&& static_cast<unsigned>(opcode) < opcode_table.size()) {
+	if (opcode >= 0 && static_cast<unsigned>(opcode) < opcode_table.size()) {
 		pdesc = &(opcode_table[opcode]);
 	}
 
