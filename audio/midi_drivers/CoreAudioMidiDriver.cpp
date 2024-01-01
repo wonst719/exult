@@ -21,11 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#ifdef USE_CORE_AUDIO_MIDI
-#	include "CoreAudioMidiDriver.h"
+#include "CoreAudioMidiDriver.h"
 
-#	include "Configuration.h"
-#	include "exceptions.h"
+#include "Configuration.h"
+#include "exceptions.h"
+
+#ifdef USE_CORE_AUDIO_MIDI
 
 #	include <pthread.h>
 #	include <sched.h>
