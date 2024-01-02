@@ -514,15 +514,15 @@ void Game_window::write_saveinfo() {
 	{
 		// Save Shape
 		std::unique_ptr<Shape_file> map = create_mini_screenshot();
-		OFileDataSource             out(
-                GSCRNSHOT);    // Open file; throws an exception - Don't care
+		// Open file; throws an exception - Don't care
+		OFileDataSource out(GSCRNSHOT);
 		map->save(&out);
 	}
 
 	{
 		// Current Exult version
-		auto out_stream = U7open_out(
-				GEXULTVER);    // Open file; throws an exception - Don't care
+		// Open file; throws an exception - Don't care
+		auto out_stream = U7open_out(GEXULTVER);
 		if (out_stream) {
 			getVersionInfo(*out_stream);
 		}
