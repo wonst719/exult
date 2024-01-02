@@ -1817,7 +1817,7 @@ Usecode_internal::Usecode_internal() : stack(new Usecode_value[1024]) {
 		}
 		auto& file = *pFile;
 		read_usecode(file);
-	} catch (const file_exception& f) {
+	} catch (const file_exception& /*f*/) {
 		if (!Game::is_editing()) {    // Ok if map-editing.
 			throw;
 		}
@@ -3289,7 +3289,7 @@ void Usecode_internal::write() {
 			if (fsym) {
 				const char* nm = fsym->get_name();
 				nfile.write4(0xfffffffeU);
-				nfile.write2(strlen(nm));
+				nfile.write2(static_cast<uint16>(strlen(nm)));
 				nfile.write(nm, strlen(nm));
 			} else {
 				nfile.write4(fun->id);
@@ -3332,7 +3332,7 @@ void Usecode_internal::read() {
 		}
 		memset(&gflags[0], 0, sizeof(gflags));
 		in.read(reinterpret_cast<char*>(gflags), filesize);
-	} catch (const exult_exception& e) {
+	} catch (const exult_exception& /*e*/) {
 		if (!Game::is_editing()) {
 			throw;
 		}
