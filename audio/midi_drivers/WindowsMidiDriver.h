@@ -22,9 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #if defined(_WIN32)
 // Guard the define in case the build process already has defined it
-#   ifndef USE_WINDOWS_MIDI
-#	    define USE_WINDOWS_MIDI
-#   endif
+#	ifndef USE_WINDOWS_MIDI
+#		define USE_WINDOWS_MIDI
+#	endif
 
 #	include "LowLevelMidiDriver.h"
 

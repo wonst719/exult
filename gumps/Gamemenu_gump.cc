@@ -55,7 +55,7 @@ static const char* enginetext   = "Game Engine";
 static const char* inputtext    = "Game Input";
 #ifndef __IPHONEOS__
 [[maybe_unused]] static const char* quitmenutext = "Quit to Menu";
-static const char* quittext     = "Quit";
+static const char*                  quittext     = "Quit";
 #endif
 
 using Gamemenu_button = CallbackTextButton<Gamemenu_gump>;
