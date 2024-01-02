@@ -433,10 +433,10 @@ class_definition:
 		} else {
 			cur_class = new Uc_class($2);
 		}
+		units.push_back(cur_class);
 		}
 		'{' class_item_list '}'
 		{
-		units.push_back(cur_class);
 		// Add to 'globals' symbol table.
 		Uc_class_symbol::create($2, cur_class);
 		cur_class = nullptr;
