@@ -35,8 +35,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "misc_buttons.h"
 #include "objs.h"
 
-#define SHORTCUT_BAR_USER_EVENT 0x53425545    // "SBUE"
-
 /* -------------------------------------------- */
 
 enum ShortcutBarButtonItemType {
@@ -90,13 +88,20 @@ public:
 		return true;
 	}
 
+	static uint32 eventType;
+
+	enum {
+		EVENT_CODE_INVALID    = 0,
+		SHORTCUT_BAR_MOUSE_UP = 0x53425545
+	};
+
 	int  startx;
 	int  resx;
 	int  gamex;
 	int  starty;
 	int  resy;
 	int  gamey;
-	void onUserEvent(SDL_Event* event);
+	void handleMouseUp(SDL_Event& event);
 	// add dirty region, if dirty
 	void update_gump() override;
 

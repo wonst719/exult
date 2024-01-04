@@ -40,6 +40,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "shapeid.h"
 #include "ucmachine.h"
 
+#include <limits>
+
+uint32 ShortcutBar_gump::eventType = std::numeric_limits<uint32>::max();
+
 /*
  * some buttons should only be there or change appearance
  * when a certain item is in the party's inventory
@@ -298,6 +302,10 @@ ShortcutBar_gump::ShortcutBar_gump(int placex, int placey)
 	assert(init == 0); // Protect against re-entry
 	init = true;*/
 
+	if (ShortcutBar_gump::eventType == std::numeric_limits<uint32>::max()) {
+		ShortcutBar_gump::eventType = SDL_RegisterEvents(1);
+	}
+
 	resx   = gwin->get_win()->get_full_width();
 	width  = resx;
 	height = 25;
@@ -393,8 +401,6 @@ void ShortcutBar_gump::mouse_down(SDL_Event* event, int mx, int my) {
 	}
 }
 
-#define DID_MOUSE_UP 1
-
 /*
  * Runs on timer thread. Should never directly access anything in main thread.
  * Just push an event to main thread so that our global shortcut bar instance
@@ -402,15 +408,12 @@ void ShortcutBar_gump::mouse_down(SDL_Event* event, int mx, int my) {
  */
 static Uint32 didMouseUp(Uint32 interval, void* param) {
 	ignore_unused_variable_warning(interval);
-	SDL_UserEvent userevent;
-	userevent.type  = SDL_USEREVENT;
-	userevent.code  = SHORTCUT_BAR_USER_EVENT;
-	userevent.data1 = param;
-	userevent.data2 = reinterpret_cast<void*>(DID_MOUSE_UP);
-
 	SDL_Event event;
-	event.type = SDL_USEREVENT;
-	event.user = userevent;
+	SDL_zero(event);
+	event.type       = ShortcutBar_gump::eventType;
+	event.user.code  = ShortcutBar_gump::SHORTCUT_BAR_MOUSE_UP;
+	event.user.data1 = param;
+	event.user.data2 = nullptr;
 	SDL_PushEvent(&event);
 	return 0;
 }
@@ -418,20 +421,17 @@ static Uint32 didMouseUp(Uint32 interval, void* param) {
 /*
  * Runs on main thread.
  */
-void ShortcutBar_gump::onUserEvent(SDL_Event* event) {
-	switch (reinterpret_cast<uintptr>(event->user.data2)) {
-	case DID_MOUSE_UP:
-		if (lastClickedButton >= 0 && lastClickedButton < numButtons) {
-			onItemClicked(lastClickedButton, false);
-			lastClickedButton = -1;
-			if (timerId) {
-				SDL_RemoveTimer(timerId);
-				timerId = SDL_TimerID{};
-			}
+void ShortcutBar_gump::handleMouseUp(SDL_Event& event) {
+	if (event.user.code != ShortcutBar_gump::SHORTCUT_BAR_MOUSE_UP) {
+		return;
+	}
+	if (lastClickedButton >= 0 && lastClickedButton < numButtons) {
+		onItemClicked(lastClickedButton, false);
+		lastClickedButton = -1;
+		if (timerId) {
+			SDL_RemoveTimer(timerId);
+			timerId = SDL_TimerID{};
 		}
-		break;
-	default:
-		break;
 	}
 }
 

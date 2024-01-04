@@ -1403,22 +1403,6 @@ static void Handle_event(SDL_Event& event) {
 		}
 		break;
 	}
-	case SDL_USEREVENT: {
-		if (!dragged) {
-			switch (event.user.code) {
-			case SHORTCUT_BAR_USER_EVENT: {
-				if (g_shortcutBar) {    // just in case
-					g_shortcutBar->onUserEvent(&event);
-				}
-				break;
-			}
-			default:
-				break;
-			}
-		}
-		dragging = dragged = false;
-		break;
-	}
 	case SDL_CONTROLLERAXISMOTION: {
 		// Ignore axis changes on anything but a specific thumb-stick
 		// on the game-controller.
@@ -1906,6 +1890,16 @@ static void Handle_event(SDL_Event& event) {
 #endif
 		break;
 	}
+	default:
+		if (event.type == ShortcutBar_gump::eventType) {
+			if (!dragged) {
+				if (g_shortcutBar) {    // just in case
+					g_shortcutBar->handleMouseUp(event);
+				}
+			}
+			dragging = dragged = false;
+		}
+		break;
 	}
 }
 
