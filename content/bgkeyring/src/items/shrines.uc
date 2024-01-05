@@ -47,10 +47,6 @@ enum shrine_codex_quest_levels {
 const int BOOK_OF_FORGOTTEN_MANTRAS		= 29;
 
 void Shrine shape#(0x463) () {
-	var dir;
-	var pathegg;
-	var pos;
-	var shrine_frame;
 	var shrines = [
 		"Sacrifice", "Justice", "Humility", "Spirituality",
 		"Valor", "Compassion", "Honor", "Honesty"
@@ -59,22 +55,9 @@ void Shrine shape#(0x463) () {
 		"Cah", "Beh", "Lum", "Om",
 		"Ra", "Mu", "Summ", "Ahm"
 	];
-	var forgotten_mantras = [
-		"Akk" , "Hor", "Kra", "Maow", "Detra", "Sa"   , "Nok", "Spank", "A"   , "Mi"   , "Ah"  ,
-		"Xiop", "Yof", "Ow" , "Ta"  , "Goo"  , "Si"   , "Yam", "Vil"  , "Wez" , "Forat", "Asg" ,
-		"Sem" , "Tex", "As" , "Hiy" , "Eyac" , "Hodis", "Ni" , "Baw"  , "Fes" , "Upa"  , "Yuit",
-		"Swer", "Xes", "Led", "Zep" , "Bok"  , "Mar"  , "Sak", "Ces"  , "Blah", "Swu"
-	];
-	var words_of_power = [
-		"Avidus", "Malum", "Ignavus", "Veramocor",
-		"Inopia", "Vilis", "Infama", "Fallax"
-	];
-	var chosen_mantra;
-	var cycles;
-
 	if (event == DOUBLECLICK) {
 		//Determine shrine's face and position:
-		shrine_frame = get_item_frame() + 1;
+		var shrine_frame = get_item_frame() + 1;
 		struct<Position> pos = get_object_position();
 		var runes;
 		//Determine if the party has the correct rune:
@@ -109,42 +92,132 @@ void Shrine shape#(0x463) () {
 					} else if (choice == 2) {
 						//Poor, poor Avatar...
 						say("Which mantra do you speak?");
-						var choices = [mantras];
 						if (PARTY->count_objects(SHAPE_BOOK, BOOK_OF_FORGOTTEN_MANTRAS, FRAME_ANY)) {
 							//Easter egg: the Book of Forgotten Mantras adds more options
-							choices = [choices, forgotten_mantras];
+							var all_mantras;
+							all_mantras[1] = mantras;
+							all_mantras[2] = [
+									"Akk", "Hor", "Kra", "Maow", "Detra", "Sa",
+									"Nok", "Spank"
+							];
+							all_mantras[3] = [
+									"A", "Mi", "Ah", "Xiop", "Yof", "Ow", "Ta",
+									"Goo"
+							];
+							all_mantras[4] = [
+									"Si", "Yam", "Vil", "Wez", "Forat", "Asg",
+									"Sem", "Tex"
+							];
+							all_mantras[5] = [
+									"As", "Hiy", "Eyac", "Hodis", "Ni", "Baw",
+									"Fes", "Upa"
+							];
+							all_mantras[6] = [
+									"Yuit", "Swer", "Xes", "Led", "Zep", "Bok",
+									"Mar", "Sak"
+							];
+							all_mantras[7] = [
+									"Ces", "Blah", "Swu"
+							];
+							var page = 1;
+							var numpages = 7;
+							while (true) {
+								var choices;
+								var next;
+								var prev;
+								var shift;
+								if (page == 1) {
+									choices = [
+											"nothing", "next",
+											all_mantras[page]
+									];
+									next  =  2;
+									prev  = -1;
+									shift =  1;
+								} else if (page == numpages) {
+									choices = [
+											"nothing", "previous",
+											all_mantras[page]
+									];
+									next  = -1;
+									prev  =  2;
+									shift =  1;
+								} else {
+									choices = [
+											"nothing", "next", "previous",
+											all_mantras[page]
+									];
+									next  = 2;
+									prev  = 3;
+									shift = 2;
+								}
+								choice = chooseFromMenu2(choices);
+								if (choice == 1) {
+									break;
+								} else if (choice == prev) {
+									page -= 1;
+								} else if (choice == next) {
+									page += 1;
+								} else {
+									choice -= 2;
+									break;
+								}
+							}
+							if (choice != 1) {
+								var mantras = all_mantras[page];
+								choice = mantras[choice - 1];
+							}
 						}
-						choice = askForResponse(choices);
-						say("In an ominous tone, you speak the mantra: @",
-							choice, "!@",
-							"~After waiting for a while, you realize nothing has happened.");
-						if (isNearby(DUPRE) && choice == "Ni") {
-							DUPRE.say("@We are the knights who say... Ni!@");
+						else {
+							choice = chooseFromMenu2(["nothing", mantras]);
+							if (choice != 1) {
+								choice = mantras[choice - 1];
+							}
 						}
-
+						if (choice == 1) {
+							//Or maybe not...
+							say("You walk away from the shrine, leaving it in its present state.");
+						} else {
+							say("In an ominous tone, you speak the mantra: @",
+								choice, "!@",
+								"~After waiting for a while, you realize nothing has happened.");
+							if (isNearby(DUPRE) && choice == "Ni") {
+								DUPRE.say("@We are the knights who say... Ni!@");
+							}
+						}
 					} else {
 						//This is a wise Avatar!
 						say("Which Word of Power do you speak?");
-						choice = askForResponse(words_of_power);
-						say("In an ominous tone, you speak the Word of Power: @",
-							choice, "!@ The ground suddenly trembles.");
-						UI_earthquake(12);
-
-						if (choice == "Avidus") {
-							//The right choice, of course.
-							giveExperience(50);
-							AVATAR.hide();
-							//Cleanse the shrine:
-							obj_sprite_effect(ANIMATION_TELEPORT, 0, 0, 0, 0, 0, -1);
-							set_item_frame(SHRINE_SACRIFICE - 1);
-							UI_play_sound_effect2(64, item);
-
-							var bloodstains = pos->find_nearby(SHAPE_BLOOD, 20, MASK_TRANSLUCENT);
-							for (blood in bloodstains) {
-								script blood after (3*get_distance(blood))/2 ticks remove;
-							}
+						var words_of_power = [
+							"Avidus", "Malum", "Ignavus", "Veramocor",
+							"Inopia", "Vilis", "Infama", "Fallax"
+						];
+						choice = chooseFromMenu2(["nothing", words_of_power]);
+						if (choice == 1) {
+							//Or maybe not...
+							say("You walk away from the shrine, leaving it in its present state.");
 						} else {
-							say("After a while, you realize that nothing else happened.");
+							choice = words_of_power[choice - 1];
+							say("In an ominous tone, you speak the Word of Power: @",
+								choice, "!@ The ground suddenly trembles.");
+							UI_earthquake(12);
+
+							if (choice == "Avidus") {
+								//The right choice, of course.
+								giveExperience(50);
+								AVATAR.hide();
+								//Cleanse the shrine:
+								obj_sprite_effect(ANIMATION_TELEPORT, 0, 0, 0, 0, 0, -1);
+								set_item_frame(SHRINE_SACRIFICE - 1);
+								UI_play_sound_effect2(64, item);
+
+								var bloodstains = pos->find_nearby(SHAPE_BLOOD, 20, MASK_TRANSLUCENT);
+								for (blood in bloodstains) {
+									script blood after (3*get_distance(blood))/2 ticks remove;
+								}
+							} else {
+								say("After a while, you realize that nothing else happened.");
+							}
 						}
 					}
 				}
@@ -162,10 +235,10 @@ void Shrine shape#(0x463) () {
 			}
 			//Ask for mantra...
 			say("@Upon which mantra wilt thou meditate, seeker?@");
-			chosen_mantra = chooseFromMenu2(mantras);
+			var chosen_mantra = chooseFromMenu2(mantras);
 			//... and for number of cycles:
 			say("@For how many cycles wilt thou meditate, seeker?@");
-			cycles = chooseFromMenu2(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]) - 1;
+			var cycles = chooseFromMenu2(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]) - 1;
 			if (!cycles) {
 				//0 cycles...
 				SHRINE_FACES.hide();
@@ -175,7 +248,7 @@ void Shrine shape#(0x463) () {
 			}
 
 			//Determine the place where the Avatar will meditate:
-			dir = direction_from(AVATAR);
+			var dir = direction_from(AVATAR);
 			pos.z -= 4;
 			if (dir in [NORTHWEST, NORTH, NORTHEAST]) {
 				pos.y -= 2;
@@ -191,7 +264,7 @@ void Shrine shape#(0x463) () {
 			UI_set_path_failure(Shrine, AVATAR, PATH_FAILURE);
 			//Create a path egg containing the info about mantra
 			//in the frame and cycles in the quality:
-			pathegg = UI_create_new_object(SHAPE_PATH_EGG);
+			var pathegg = UI_create_new_object(SHAPE_PATH_EGG);
 			pathegg->set_item_frame(chosen_mantra);
 			pathegg->set_item_flag(TEMPORARY);
 			pathegg->set_item_quality(cycles);
@@ -219,16 +292,16 @@ void Shrine shape#(0x463) () {
 	} else if (event == PATH_SUCCESS) {
 		//Avatar reached destination
 		//Find the path egg:
-		pathegg = find_nearest(SHAPE_PATH_EGG, 5);
+		var pathegg = find_nearest(SHAPE_PATH_EGG, 5);
 		if (!pathegg) {
 			//Not found means nothing to do; shouldn't happen...
 			abort;
 		}
-		dir = direction_from(pathegg);
+		var dir = direction_from(pathegg);
 		//Retrieve mantra and # of cycles:
-		chosen_mantra = pathegg->get_item_frame();
+		var chosen_mantra = pathegg->get_item_frame();
 		var mantra = "@" + mantras[chosen_mantra] + "@";
-		cycles = pathegg->get_item_quality();
+		var cycles = pathegg->get_item_quality();
 
 		//Meditation with a frozen Avatar:
 		script item {
@@ -264,20 +337,20 @@ void Shrine shape#(0x463) () {
 		item_say("@I can't get there@");
 	} else if (event == SCRIPTED) {
 		//Once again, find path egg:
-		pathegg = find_nearest(SHAPE_PATH_EGG, 5);
+		var pathegg = find_nearest(SHAPE_PATH_EGG, 5);
 		if (!pathegg) {
 			//Once again, should never happen...
 			abort;
 		}
 
 		//Retrieve mantra and # of cycles
-		chosen_mantra = pathegg->get_item_frame();
-		cycles = pathegg->get_item_quality();
+		var chosen_mantra = pathegg->get_item_frame();
+		var cycles = pathegg->get_item_quality();
 		//destroy path egg (no longer needed):
 		pathegg->remove_item();
 		//Find shrine and determine which shrine it is:
 		var shrine = find_nearest(SHAPE_SHRINE, 5);
-		shrine_frame = shrine->get_item_frame() + 1;
+		var shrine_frame = shrine->get_item_frame() + 1;
 
 		if (chosen_mantra != shrine_frame) {
 			//Wrong mantra for shrine
