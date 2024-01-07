@@ -1836,6 +1836,11 @@ static void Handle_event(SDL_Event& event) {
 			 << ", file (" << strlen(event.drop.file) << ") = '"
 			 << event.drop.file << "', at x = " << x << ", y = " << y << endl;
 #		endif
+		constexpr static auto deleter = [](char* file) {
+			SDL_free(file);
+		};
+		std::unique_ptr<char, decltype(deleter)> file_owner(
+				event.drop.file, deleter);
 		const unsigned char* data
 				= reinterpret_cast<const unsigned char*>(event.drop.file);
 		if (Is_u7_shapeid(data) == true) {
@@ -1873,6 +1878,7 @@ static void Handle_event(SDL_Event& event) {
 			Get_u7_comboid(
 					data, combo_xtiles, combo_ytiles, combo_tiles_right,
 					combo_tiles_below, combo_cnt, combo);
+			std::unique_ptr<U7_combo_data[]> combo_owner(combo);
 			cout << "(EXULT) SDL_DROPFILE Event, Combo: xtiles = "
 				 << combo_xtiles << ", ytiles = " << combo_ytiles
 				 << ", tiles_right = " << combo_tiles_right
@@ -1881,7 +1887,6 @@ static void Handle_event(SDL_Event& event) {
 			if (combo_cnt >= 0 && combo) {
 				Drop_dragged_combo(combo_cnt, combo, x, y);
 			}
-			delete[] combo;
 		}
 #		ifdef DEBUG
 		cout << "(EXULT) SDL_DROPFILE Event complete" << endl;
