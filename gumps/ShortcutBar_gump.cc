@@ -425,12 +425,13 @@ void ShortcutBar_gump::handleMouseUp(SDL_Event& event) {
 	if (event.user.code != ShortcutBar_gump::SHORTCUT_BAR_MOUSE_UP) {
 		return;
 	}
-	if (lastClickedButton >= 0 && lastClickedButton < numButtons) {
-		onItemClicked(lastClickedButton, false);
-		lastClickedButton = -1;
-		if (timerId) {
+	sintptr button;
+	std::memcpy(&button, &event.user.data1, sizeof(sintptr));
+	if (button >= 0 && button < numButtons) {
+		onItemClicked(button, false);
+		if (timerId != 0) {
 			SDL_RemoveTimer(timerId);
-			timerId = SDL_TimerID{};
+			timerId = 0;
 		}
 	}
 }
@@ -454,7 +455,6 @@ void ShortcutBar_gump::mouse_up(SDL_Event* event, int mx, int my) {
 			SDL_RemoveTimer(timerId);
 			timerId = SDL_TimerID{};
 		}
-		lastClickedButton = -1;
 
 		/*
 		 * For every double click,
@@ -467,8 +467,10 @@ void ShortcutBar_gump::mouse_up(SDL_Event* event, int mx, int my) {
 		if (event->button.clicks >= 2) {
 			onItemClicked(i, true);
 		} else {
-			lastClickedButton = i;
-			timerId = SDL_AddTimer(500 /*ms delay*/, didMouseUp, this);
+			sintptr button_id = i;
+			void*   data;
+			std::memcpy(&data, &button_id, sizeof(sintptr));
+			timerId = SDL_AddTimer(500 /*ms delay*/, didMouseUp, data);
 		}
 	}
 

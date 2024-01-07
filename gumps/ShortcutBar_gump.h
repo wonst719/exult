@@ -114,7 +114,6 @@ public:
 private:
 	ShortcutBarButtonItem buttonItems[MAX_SHORTCUT_BAR_ITEMS];
 	int                   numButtons;
-	int                   lastClickedButton;
 	SDL_TimerID           timerId;
 	void                  createButtons();
 	void                  deleteButtons();
