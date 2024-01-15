@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\YY.NuGet.Import.Helper.1.0.0.4\build\native\YY.NuGet.Import.Helper.props" Condition="Exists('packages\YY.NuGet.Import.Helper.1.0.0.4\build\native\YY.NuGet.Import.Helper.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug Mt32Emu|Win32">
       <Configuration>Debug Mt32Emu</Configuration>
@@ -63,20 +62,20 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Mt32Emu|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <VCToolsVersion>
     </VCToolsVersion>
   </PropertyGroup>
@@ -106,42 +105,53 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     <OutDir>$(SolutionDir)..\..\</OutDir>
     <IntDir>$(ProjectDir)$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
+    <Linkage-zlib_static>static</Linkage-zlib_static>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Mt32Emu|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    <OutDir>$(SolutionDir)..\..\</OutDir>
+    <IntDir>$(ProjectDir)$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>G:\Programming\munt\mt32emu\out\build\x86-Release\include;$(IncludePath)</IncludePath>
+    <LibraryPath>G:\Programming\munt\mt32emu\win32\Debug;$(LibraryPath)</LibraryPath>
+    <Linkage-zlib_static>static</Linkage-zlib_static>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     <OutDir>$(SolutionDir)..\..\</OutDir>
     <IntDir>$(ProjectDir)$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>G:\Programming\munt\mt32emu\out\build\x86-Release\include;$(IncludePath)</IncludePath>
     <LibraryPath>G:\Programming\munt\mt32emu\out\build\x86-Release;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-    <OutDir>$(SolutionDir)..\..</OutDir>
-    <IntDir>$(ProjectDir)$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>G:\Programming\munt\mt32emu\out\build\x86-Release\include;$(IncludePath)</IncludePath>
-    <LibraryPath>G:\Programming\munt\mt32emu\out\build\x86-Release;$(LibraryPath)</LibraryPath>
+    <Linkage-zlib_static>static</Linkage-zlib_static>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\..\</OutDir>
     <IntDir>$(ProjectDir)$(Configuration)\$(ProjectName)\</IntDir>
+    <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    <Linkage-zlib_static>static</Linkage-zlib_static>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Mt32Emu|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\..\</OutDir>
     <IntDir>$(ProjectDir)$(Configuration)\$(ProjectName)\</IntDir>
+    <LibraryPath>G:\Programming\munt\mt32emu\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>G:\Programming\munt\mt32emu\include;$(IncludePath)</IncludePath>
+    <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    <Linkage-zlib_static>static</Linkage-zlib_static>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..</OutDir>
+    <OutDir>$(SolutionDir)..\..\</OutDir>
     <IntDir>$(ProjectDir)$(Configuration)\$(ProjectName)\</IntDir>
+    <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    <Linkage-zlib_static>static</Linkage-zlib_static>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -158,11 +168,15 @@
       <DisableSpecificWarnings>4244;4805</DisableSpecificWarnings>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Mt32Emu|Win32'">
@@ -180,11 +194,13 @@
       <DisableSpecificWarnings>4244;4805</DisableSpecificWarnings>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>winmm.lib;mt32emu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -204,6 +220,7 @@
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4244;4805</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -227,6 +244,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -238,7 +256,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;USE_CONSOLE;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;USE_CONSOLE;_CONSOLE;USE_MT32EMU_MIDI=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)../..;$(SolutionDir)../../files;$(SolutionDir)..\..\Gamemgr;$(SolutionDir)..\..\Gumps;$(SolutionDir)..\..\data;$(SolutionDir)..\..\conf;$(SolutionDir)..\..\filc;$(SolutionDir)..\..\imagewin;$(SolutionDir)..\..\objs;$(SolutionDir)..\..\pathfinder;$(SolutionDir)..\..\shapes;$(SolutionDir)..\..\shapes\shapeinf;$(SolutionDir)..\..\usecode;$(SolutionDir)..\..\Audio;$(SolutionDir)..\..\Audio\MIDI_drivers;$(SolutionDir)..\..\server;$(SolutionDir)..\..\Headers;$(SolutionDir)..\..\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(SolutionDir)msvc_include.h</ForcedIncludeFiles>
@@ -248,11 +266,13 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;mt32emu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -271,6 +291,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -424,9 +445,6 @@
     <None Include="..\..\shapes\shapeinf\Makefile.am" />
     <None Include="..\..\usecode\Makefile.am" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="any\any\zlib.static.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\actions.cc" />
@@ -874,10 +892,11 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\vorbis-msvc-x86.1.3.5.8787\build\native\vorbis-msvc-x86.targets" Condition="Exists('packages\vorbis-msvc-x86.1.3.5.8787\build\native\vorbis-msvc-x86.targets')" />
     <Import Project="packages\ogg-msvc-x86.1.3.2.8787\build\native\ogg-msvc-x86.targets" Condition="Exists('packages\ogg-msvc-x86.1.3.2.8787\build\native\ogg-msvc-x86.targets')" />
-    <Import Project="packages\YY.NuGet.Import.Helper.1.0.0.4\build\native\YY.NuGet.Import.Helper.targets" Condition="Exists('packages\YY.NuGet.Import.Helper.1.0.0.4\build\native\YY.NuGet.Import.Helper.targets')" />
-    <Import Project="packages\zlib.static.1.2.11\build\native\zlib.static.targets" Condition="Exists('packages\zlib.static.1.2.11\build\native\zlib.static.targets')" />
-    <Import Project="packages\sdl2.nuget.redist.2.28.4\build\native\sdl2.nuget.redist.targets" Condition="Exists('packages\sdl2.nuget.redist.2.28.4\build\native\sdl2.nuget.redist.targets')" />
-    <Import Project="packages\sdl2.nuget.2.28.4\build\native\sdl2.nuget.targets" Condition="Exists('packages\sdl2.nuget.2.28.4\build\native\sdl2.nuget.targets')" />
+    <Import Project="packages\vorbis-msvc-x64.1.3.5.8787\build\native\vorbis-msvc-x64.targets" Condition="Exists('packages\vorbis-msvc-x64.1.3.5.8787\build\native\vorbis-msvc-x64.targets')" />
+    <Import Project="packages\ogg-msvc-x64.1.3.2.8787\build\native\ogg-msvc-x64.targets" Condition="Exists('packages\ogg-msvc-x64.1.3.2.8787\build\native\ogg-msvc-x64.targets')" />
+    <Import Project="packages\sdl2.nuget.redist.2.28.5\build\native\sdl2.nuget.redist.targets" Condition="Exists('packages\sdl2.nuget.redist.2.28.5\build\native\sdl2.nuget.redist.targets')" />
+    <Import Project="packages\sdl2.nuget.2.28.5\build\native\sdl2.nuget.targets" Condition="Exists('packages\sdl2.nuget.2.28.5\build\native\sdl2.nuget.targets')" />
+    <Import Project="packages\zlib_static.1.2.11.12\build\native\zlib_static.targets" Condition="Exists('packages\zlib_static.1.2.11.12\build\native\zlib_static.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -885,10 +904,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('packages\vorbis-msvc-x86.1.3.5.8787\build\native\vorbis-msvc-x86.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\vorbis-msvc-x86.1.3.5.8787\build\native\vorbis-msvc-x86.targets'))" />
     <Error Condition="!Exists('packages\ogg-msvc-x86.1.3.2.8787\build\native\ogg-msvc-x86.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ogg-msvc-x86.1.3.2.8787\build\native\ogg-msvc-x86.targets'))" />
-    <Error Condition="!Exists('packages\YY.NuGet.Import.Helper.1.0.0.4\build\native\YY.NuGet.Import.Helper.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\YY.NuGet.Import.Helper.1.0.0.4\build\native\YY.NuGet.Import.Helper.props'))" />
-    <Error Condition="!Exists('packages\YY.NuGet.Import.Helper.1.0.0.4\build\native\YY.NuGet.Import.Helper.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\YY.NuGet.Import.Helper.1.0.0.4\build\native\YY.NuGet.Import.Helper.targets'))" />
-    <Error Condition="!Exists('packages\zlib.static.1.2.11\build\native\zlib.static.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib.static.1.2.11\build\native\zlib.static.targets'))" />
-    <Error Condition="!Exists('packages\sdl2.nuget.redist.2.28.4\build\native\sdl2.nuget.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\sdl2.nuget.redist.2.28.4\build\native\sdl2.nuget.redist.targets'))" />
-    <Error Condition="!Exists('packages\sdl2.nuget.2.28.4\build\native\sdl2.nuget.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\sdl2.nuget.2.28.4\build\native\sdl2.nuget.targets'))" />
+    <Error Condition="!Exists('packages\vorbis-msvc-x64.1.3.5.8787\build\native\vorbis-msvc-x64.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\vorbis-msvc-x64.1.3.5.8787\build\native\vorbis-msvc-x64.targets'))" />
+    <Error Condition="!Exists('packages\ogg-msvc-x64.1.3.2.8787\build\native\ogg-msvc-x64.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ogg-msvc-x64.1.3.2.8787\build\native\ogg-msvc-x64.targets'))" />
+    <Error Condition="!Exists('packages\sdl2.nuget.redist.2.28.5\build\native\sdl2.nuget.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\sdl2.nuget.redist.2.28.5\build\native\sdl2.nuget.redist.targets'))" />
+    <Error Condition="!Exists('packages\sdl2.nuget.2.28.5\build\native\sdl2.nuget.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\sdl2.nuget.2.28.5\build\native\sdl2.nuget.targets'))" />
+    <Error Condition="!Exists('packages\zlib_static.1.2.11.12\build\native\zlib_static.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib_static.1.2.11.12\build\native\zlib_static.targets'))" />
   </Target>
 </Project>

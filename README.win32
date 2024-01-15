@@ -1,6 +1,11 @@
 Exult instructions for Windows
 ------------------------------------
 
+Supported versions of Windows
+------------------------------
+Exult only officialy supports Windows Vista and newer. Windows XP is not supported. 
+It may be possible to use a modified build process to generate XP compatible executables but the default build process does not. 
+This document will not detail how to do that.
 
 To play
 ---------
@@ -193,19 +198,28 @@ Run Exult.exe and enjoy the game :-)
 
 To build in Windows using Visual Studio
 ---------------------------------------
-NOTE: This has only been tested with Visual Studio 2019 and Visual Studio 2022 
-At this stage only projects for expack and exult are included.
-There are no projects for the other exult tools including no exult studio.
+NOTE: This has only been tested to work with Visual Studio 2019 and  2022 
+Visual Studio 2017  does NOT work. It will load the projects but v141 build 
+tools do not support all the C++ features needed by the exult source code. You
+can not sucessfully build all source files with VS 2017 v141 build tools. 
+At this stage only projects for expack and exult which are required to build
+Exult are included. There are no projects for the other exult tools including no exult studio.
 
-1) Install visual studio community edition 2019 or newer make sure MSVC v142 VS 2019 C++ x86 build tools are selected for install
+1) Install visual studio community edition 2019 or newer make sure MSVC v142 VS 2019 C++ x86 build tools 
+are selected for install. If you do not install the v142 build tools you may 
+need to change the build tools being used by the projects to v143 or whatever version your VS has installed.
 
-2) open the solution included in the exult source msvcstuff\vs2019\Exult.sln
+2) open the solution included in the exult source msvcstuff\vs2019\Exult.sln. 
 
-3) restore nuget packages. (nuget packages are used for all the dependencies needed by exult: sdl2, ogg, vorbis, ZLib)
+3) restore nuget packages. (nuget packages are used for all the critical dependencies needed by exult: sdl2, ogg, vorbis, ZLib)
 
-4) Build the exult project using a x86 Configuration. x64 is not supported at this time. 
+4) If you want MT32Emu support you will need to download 
+MUNT https://github.com/munt/munt and build libmt32emu yourself and and add
+libmt32emu to the Visual C++ include and lib search paths.
+
+5) Build the exult project using whichever Configuration you want. x86 and x64 builds are supported
 Exult.exe will be placed in the root of the source tree. 
-The build process will generate expack.exe and the flx files needed by exult in the data directory.
+The build process will generate expack.exe and the flx files needed by exult will be generated in the data directory.
 
 
 To cross-build from Linux

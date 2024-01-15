@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="any">
-      <UniqueIdentifier>{4cc737a5-16e8-4166-9675-d5eb19d226c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="any\any">
-      <UniqueIdentifier>{cfe3163c-108c-492f-85a1-de335d9fef99}</UniqueIdentifier>
-    </Filter>
     <Filter Include="data">
       <UniqueIdentifier>{824b0bc2-4de5-42db-a120-3ada9c9ec32a}</UniqueIdentifier>
     </Filter>
@@ -131,11 +125,6 @@
     <None Include="..\..\server\Makefile.am">
       <Filter>server</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="any\any\zlib.static.txt">
-      <Filter>any\any</Filter>
-    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\files\crc.cc">

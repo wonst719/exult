@@ -292,5 +292,8 @@ ios/libogg
 ios/libvorbis
 project.xcworkspace
 
+#Visual studio garbage
 *.ilk
 *.pdb
+*.iobj
+*.ipdb
