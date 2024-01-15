@@ -400,9 +400,14 @@ void getVersionInfo(std::ostream& out) {
 			case PROCESSOR_ARCHITECTURE_IA64:
 				out << "IA64 ";
 				break;
-			case PROCESSOR_ARCHITECTURE_ARM64:
+#	if defined(PROCESSOR_ARCHITECTURE_ARM64)    // This only exists in Windows
+			case PROCESSOR_ARCHITECTURE_ARM64:    // 10 sdks or newer, Will fail
+#	else                                        // with vista, 7 or 8 sdks
+			case 12:
+#	endif
 				out << "ARM64 ";
 				break;
+
 			case PROCESSOR_ARCHITECTURE_ARM:
 				out << "ARM ";
 				break;
