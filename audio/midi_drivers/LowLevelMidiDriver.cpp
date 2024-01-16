@@ -26,22 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiFile.h"
 #include "XMidiSequence.h"
 
+#include <chrono>
 #include <cstring>
 #include <mutex>
-
-LowLevelMidiDriver::SDLMutex::SDLMutex() : mutex(SDL_CreateMutex()) {}
-
-LowLevelMidiDriver::SDLMutex::~SDLMutex() {
-	SDL_DestroyMutex(mutex);
-}
-
-void LowLevelMidiDriver::SDLMutex::lock() {
-	SDL_LockMutex(mutex);
-}
-
-void LowLevelMidiDriver::SDLMutex::unlock() {
-	SDL_UnlockMutex(mutex);
-}
 
 // If the time to wait is less than this then we yield instead of waiting on the
 // condition variable This must be great than or equal to 2
@@ -190,9 +177,9 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo) {
 		callback_data[i] = -1;
 	}
 
-	mutex             = std::make_unique<SDLMutex>();
-	cbmutex           = std::make_unique<SDLMutex>();
-	cond              = SDL_CreateCond();
+	mutex             = std::make_unique<std::mutex>();
+	cbmutex           = std::make_unique<std::mutex>();
+	cond              = std::make_unique<std::condition_variable>();
 	thread            = nullptr;
 	sample_rate       = samp_rate;
 	stereo            = is_stereo;
@@ -231,9 +218,8 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo) {
 			 << endl;
 		mutex.reset();
 		cbmutex.reset();
-		SDL_DestroyCond(cond);
+		cond.reset();
 		thread = nullptr;
-		cond   = nullptr;
 	} else {
 		initialized = true;
 	}
@@ -258,9 +244,9 @@ void LowLevelMidiDriver::destroyMidiDriver() {
 
 	mutex.reset();
 	cbmutex.reset();
-	SDL_DestroyCond(cond);
+	cond.reset();
+
 	thread = nullptr;
-	cond   = nullptr;
 
 	giveinfo();
 }
@@ -286,7 +272,7 @@ void LowLevelMidiDriver::startSequence(
 		waitTillNoComMessages();
 
 		const bool isplaying = [this]() {
-			const std::lock_guard<SDLMutex> lock(*mutex);
+			const std::lock_guard<std::mutex> lock(*mutex);
 			return playing[3];
 		}();
 
@@ -395,7 +381,7 @@ bool LowLevelMidiDriver::isSequencePlaying(int seq_num) {
 
 	waitTillNoComMessages();
 
-	const std::lock_guard<SDLMutex> lock(*mutex);
+	const std::lock_guard<std::mutex> lock(*mutex);
 	return playing[seq_num];
 }
 
@@ -438,7 +424,7 @@ uint32 LowLevelMidiDriver::getSequenceCallbackData(int seq_num) {
 		return 0;
 	}
 
-	const std::lock_guard<SDLMutex> lock(*cbmutex);
+	const std::lock_guard<std::mutex> lock(*cbmutex);
 	return callback_data[seq_num];
 }
 
@@ -447,7 +433,7 @@ uint32 LowLevelMidiDriver::getSequenceCallbackData(int seq_num) {
 //
 
 sint32 LowLevelMidiDriver::peekComMessageType() {
-	const std::lock_guard<SDLMutex> lock(*mutex);
+	const std::lock_guard<std::mutex> lock(*mutex);
 	if (!messages.empty()) {
 		return messages.front().type;
 	}
@@ -455,9 +441,9 @@ sint32 LowLevelMidiDriver::peekComMessageType() {
 }
 
 void LowLevelMidiDriver::sendComMessage(ComMessage& message) {
-	const std::lock_guard<SDLMutex> lock(*mutex);
+	const std::lock_guard<std::mutex> lock(*mutex);
 	messages.push(message);
-	SDL_CondSignal(cond);
+	cond->notify_one();
 }
 
 void LowLevelMidiDriver::waitTillNoComMessages() {
@@ -484,8 +470,8 @@ int LowLevelMidiDriver::initThreadedSynth() {
 		yield();
 	}
 
-	int                             code = 0;
-	const std::lock_guard<SDLMutex> lock(*mutex);
+	int                               code = 0;
+	const std::lock_guard<std::mutex> lock(*mutex);
 	while (!messages.empty()) {
 		if (messages.front().type == LLMD_MSG_THREAD_INIT_FAILED) {
 			code = messages.front().data.init_failed.code;
@@ -526,7 +512,7 @@ void LowLevelMidiDriver::destroyThreadedSynth() {
 		SDL_WaitThread(thread, &status_thread);
 	}
 
-	const std::lock_guard<SDLMutex> lock(*mutex);
+	const std::lock_guard<std::mutex> lock(*mutex);
 	// Get rid of all the messages
 	while (!messages.empty()) {
 		messages.pop();
@@ -546,7 +532,7 @@ int LowLevelMidiDriver::threadMain() {
 	// Open the device
 	const int code = open();
 	{
-		const std::lock_guard<SDLMutex> lock(*mutex);
+		const std::lock_guard<std::mutex> lock(*mutex);
 		// Pop all the messages
 		while (!messages.empty()) {
 			messages.pop();
@@ -591,9 +577,13 @@ int LowLevelMidiDriver::threadMain() {
 		if (time_till_next <= LLMD_MINIMUM_YIELD_THRESHOLD) {
 			bool wait = false;
 			{
-				const std::lock_guard<SDLMutex> lock(*mutex);
-				if (messages.empty()) {
-					wait = true;
+				// No Blocking allowed here!
+				if (mutex->try_lock()) {
+					const std::lock_guard<std::mutex> lock(
+							*mutex, std::adopt_lock);
+					if (messages.empty()) {
+						wait = true;
+					}
 				}
 			}
 			if (wait) {
@@ -604,11 +594,13 @@ int LowLevelMidiDriver::threadMain() {
 				// printf("Messages in queue, not Yielding\n");
 			}
 		} else {
-			const std::lock_guard<SDLMutex> lock(*mutex);
+			// FIXME we do not want blocking here
+			std::unique_lock<std::mutex> lock(*mutex);
 			if (messages.empty()) {
 				// printf("Waiting %i ms\n", time_till_next-2);
-				SDL_CondWaitTimeout(cond, *mutex, time_till_next - 2);
-				// printf("Finished Waiting\n");
+				cond->wait_for(
+						lock, std::chrono::milliseconds(time_till_next - 2));
+				//  printf("Finished Waiting\n");
 			} else {
 				// printf("Messages in queue, not waiting\n");
 			}
@@ -624,7 +616,7 @@ int LowLevelMidiDriver::threadMain() {
 	// Close the device
 	close();
 
-	const std::lock_guard<SDLMutex> lock(*mutex);
+	const std::lock_guard<std::mutex> lock(*mutex);
 	// Pop all messages
 	while (!messages.empty()) {
 		messages.pop();
@@ -723,7 +715,7 @@ void LowLevelMidiDriver::produceSamples(sint16* samples, uint32 bytes) {
 
 		// We care about the return code now
 		if (playSequences()) {
-			const std::lock_guard<SDLMutex> lock(*mutex);
+			const std::lock_guard<std::mutex> lock(*mutex);
 			// Pop all messages
 			while (!messages.empty()) {
 				messages.pop();
@@ -760,14 +752,14 @@ bool LowLevelMidiDriver::playSequences() {
 			} else if (pending_events == -1) {
 				delete sequences[seq];
 				sequences[seq] = nullptr;
-				const std::lock_guard<SDLMutex> lock(*mutex);
+				const std::lock_guard<std::mutex> lock(*mutex);
 				playing[seq] = false;
 			}
 		}
 	}
 
 	// Did we get issued a music command?
-	const std::lock_guard<SDLMutex> lock(*mutex);
+	const std::lock_guard<std::mutex> lock(*mutex);
 	while (!messages.empty()) {
 		ComMessage message = messages.front();
 
@@ -1093,7 +1085,7 @@ uint32 LowLevelMidiDriver::getTickCount(uint16 sequence_id) {
 }
 
 void LowLevelMidiDriver::handleCallbackTrigger(uint16 sequence_id, uint8 data) {
-	const std::lock_guard<SDLMutex> lock(*cbmutex);
+	const std::lock_guard<std::mutex> lock(*cbmutex);
 	callback_data[sequence_id] = data;
 }
 
@@ -1274,7 +1266,7 @@ void LowLevelMidiDriver::loadTimbreLibrary(
 
 	{
 		// Lock!
-		const std::lock_guard<SDLMutex> lock(*mutex);
+		const std::lock_guard<std::mutex> lock(*mutex);
 
 		// Kill all existing timbres and stuff
 
@@ -1425,7 +1417,7 @@ void LowLevelMidiDriver::loadTimbreLibrary(
 
 		do {
 			{
-				const std::lock_guard<SDLMutex> lock(*mutex);
+				const std::lock_guard<std::mutex> lock(*mutex);
 				is_playing = playing[3];
 			}
 

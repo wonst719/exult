@@ -25,8 +25,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "common_types.h"
 #include "ignore_unused_variable_warning.h"
 
+#include <condition_variable>
 #include <cstring>
 #include <memory>
+#include <mutex>
 #include <queue>
 
 #ifdef __GNUC__
@@ -137,7 +139,9 @@ private:
 	};
 
 	struct ComMessage {
-		ComMessage(Messages T, int seq) : type(T), sequence(seq) {}
+		ComMessage(Messages T, int seq) : type(T), sequence(seq) {
+			std::memset(&data, 0, sizeof(data));
+		}
 
 		ComMessage(const ComMessage& other) {
 			type     = other.type;
@@ -186,32 +190,16 @@ private:
 		} data;
 	};
 
-	class SDLMutex {
-	public:
-		SDLMutex();
-		~SDLMutex();
-
-		operator SDL_mutex*() {
-			return mutex;
-		}
-
-		void lock();
-		void unlock();
-
-	private:
-		SDL_mutex* mutex;
-	};
-
 	bool uploading_timbres;    // Set in 'uploading' timbres mode
 
 	// Communications
-	std::queue<ComMessage>    messages;
-	std::unique_ptr<SDLMutex> mutex;
-	std::unique_ptr<SDLMutex> cbmutex;
-	SDL_cond*                 cond = nullptr;
-	sint32                    peekComMessageType();
-	void                      sendComMessage(ComMessage& message);
-	void                      waitTillNoComMessages();
+	std::queue<ComMessage>                   messages;
+	std::unique_ptr<std::mutex>              mutex;
+	std::unique_ptr<std::mutex>              cbmutex;
+	std::unique_ptr<std::condition_variable> cond;
+	sint32                                   peekComMessageType();
+	void sendComMessage(ComMessage& message);
+	void waitTillNoComMessages();
 
 	// State
 	bool   playing[LLMD_NUM_SEQ];          // Only set by thread
