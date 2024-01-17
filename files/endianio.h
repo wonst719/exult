@@ -44,9 +44,17 @@
 #	endif
 
 #	if defined(_MSC_VER)
-#		define ENDIANIO_FORCE_INLINE __forceinline
+#		define ENDIANIO_INLINE       __forceinline
+#		define ENDIANIO_CONST_INLINE __forceinline
+// #    define ENDIANIO_PURE_INLINE  __forceinline
+#	elif defined(__GNUG__)
+#		define ENDIANIO_INLINE       [[gnu::always_inline]] inline
+#		define ENDIANIO_CONST_INLINE [[using gnu: const, always_inline]] inline
+// #    define PURE_INLINE  [[using gnu: pure, always_inline]] inline
 #	else
-#		define ENDIANIO_FORCE_INLINE inline
+#		define ENDIANIO_INLINE       inline
+#		define ENDIANIO_CONST_INLINE inline
+// #    define ENDIANIO_PURE_INLINE  inline
 #	endif
 
 // Some things cannot be constexpr on MSVC compiler.
@@ -70,8 +78,7 @@ namespace {    // anonymous
 	namespace detail {
 		template <typename T>
 		using is_an_integer_t = std::enable_if_t<
-				std::is_integral<T>::value && !std::is_same<T, bool>::value,
-				bool>;
+				std::is_integral_v<T> && !std::is_same_v<T, bool>, bool>;
 
 		template <typename T>
 		struct is_byte_type_impl : std::integral_constant<bool, false> {};
@@ -83,11 +90,9 @@ namespace {    // anonymous
 		struct is_byte_type_impl<unsigned char>
 				: std::integral_constant<bool, true> {};
 
-#	if __cplusplus >= 201703L
 		template <>
 		struct is_byte_type_impl<std::byte>
 				: std::integral_constant<bool, true> {};
-#	endif
 
 		template <typename T>
 		using is_byte_type_t = std::enable_if_t<
@@ -96,17 +101,15 @@ namespace {    // anonymous
 		enum class endian {
 			big    = __ORDER_BIG_ENDIAN__,
 			little = __ORDER_LITTLE_ENDIAN__,
-			native = __BYTE_ORDER__
+			native = __BYTE_ORDER__,
 		};
 
-		[[gnu::const,
-		  gnu::always_inline]] ENDIANIO_FORCE_INLINE ENDIANIO_CONSTEXPR uint8_t
+		ENDIANIO_CONST_INLINE ENDIANIO_CONSTEXPR uint8_t
 				bswap(uint8_t val) noexcept {
 			return val;
 		}
 
-		[[gnu::const,
-		  gnu::always_inline]] ENDIANIO_FORCE_INLINE ENDIANIO_CONSTEXPR uint16_t
+		ENDIANIO_CONST_INLINE ENDIANIO_CONSTEXPR uint16_t
 				bswap(uint16_t val) noexcept {
 #	if defined(__GNUG__)
 #		ifdef __INTEL_COMPILER
@@ -122,8 +125,7 @@ namespace {    // anonymous
 #	endif
 		}
 
-		[[gnu::const,
-		  gnu::always_inline]] ENDIANIO_FORCE_INLINE ENDIANIO_CONSTEXPR uint32_t
+		ENDIANIO_CONST_INLINE ENDIANIO_CONSTEXPR uint32_t
 				bswap(uint32_t val) noexcept {
 #	if defined(__GNUG__)
 #		ifdef __INTEL_COMPILER
@@ -140,8 +142,7 @@ namespace {    // anonymous
 #	endif
 		}
 
-		[[gnu::const,
-		  gnu::always_inline]] ENDIANIO_FORCE_INLINE ENDIANIO_CONSTEXPR uint64_t
+		ENDIANIO_CONST_INLINE ENDIANIO_CONSTEXPR uint64_t
 				bswap(uint64_t val) noexcept {
 #	if defined(__GNUG__)
 #		ifdef __INTEL_COMPILER
@@ -168,8 +169,7 @@ namespace {    // anonymous
 		template <endian from_endian, endian to_endian>
 		struct endian_convert {
 			template <typename Int, is_an_integer_t<Int> = true>
-			[[gnu::const,
-			  gnu::always_inline]] ENDIANIO_FORCE_INLINE ENDIANIO_CONSTEXPR Int
+			ENDIANIO_CONST_INLINE ENDIANIO_CONSTEXPR Int
 					operator()(Int val) const {
 				// Being very pedantic here.
 				using UInt = typename std::make_unsigned_t<Int>;
@@ -210,7 +210,7 @@ namespace {    // anonymous
 			template <
 					typename Byte, is_an_integer_t<Int> = true,
 					is_byte_type_t<Byte> = true>
-			[[gnu::always_inline]] ENDIANIO_FORCE_INLINE ENDIANIO_CONSTEXPR Int
+			ENDIANIO_INLINE ENDIANIO_CONSTEXPR Int
 					operator()(Byte*&& source) const {
 				const any_endian<FromEndian> convert;
 				Int                          val;
@@ -221,7 +221,7 @@ namespace {    // anonymous
 			template <
 					typename Byte, is_an_integer_t<Int> = true,
 					is_byte_type_t<Byte> = true>
-			[[gnu::always_inline]] ENDIANIO_FORCE_INLINE ENDIANIO_CONSTEXPR Int
+			ENDIANIO_INLINE ENDIANIO_CONSTEXPR Int
 					operator()(Byte*& source) const {
 				const any_endian<FromEndian> convert;
 				Int                          val;
@@ -236,8 +236,8 @@ namespace {    // anonymous
 			template <
 					typename Byte, is_an_integer_t<Int> = true,
 					is_byte_type_t<Byte> = true>
-			[[gnu::always_inline]] ENDIANIO_FORCE_INLINE ENDIANIO_CONSTEXPR void
-					operator()(Byte*&& dest, Int val) const {
+			ENDIANIO_INLINE ENDIANIO_CONSTEXPR void operator()(
+					Byte*&& dest, Int val) const {
 				const any_endian<ToEndian> convert;
 				Int                        valcvt = convert.from_native(val);
 				std::memcpy(dest, &valcvt, sizeof(Int));
@@ -246,8 +246,8 @@ namespace {    // anonymous
 			template <
 					typename Byte, is_an_integer_t<Int> = true,
 					is_byte_type_t<Byte> = true>
-			[[gnu::always_inline]] ENDIANIO_FORCE_INLINE ENDIANIO_CONSTEXPR void
-					operator()(Byte*& dest, Int val) const {
+			ENDIANIO_INLINE ENDIANIO_CONSTEXPR void operator()(
+					Byte*& dest, Int val) const {
 				const any_endian<ToEndian> convert;
 				Int                        valcvt = convert.from_native(val);
 				std::memcpy(dest, &valcvt, sizeof(Int));
@@ -283,7 +283,7 @@ using little_endian = detail::endian_base<detail::endian::little>;
 using native_endian = detail::endian_base<detail::endian::native>;
 
 #	undef ENDIANIO_CONSTEXPR
-#	undef ENDIANIO_FORCE_INLINE
+#	undef ENDIANIO_INLINE
 #	undef ENDIANIO_LITTLE_ENDIAN
 
 #endif    // LIB_ENDIAN_IO_H
