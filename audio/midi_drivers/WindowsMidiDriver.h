@@ -72,7 +72,6 @@ protected:
 	void send(uint32 message) override;
 	void send_sysex(uint8 status, const uint8* msg, uint16 length) override;
 	void increaseThreadPriority() override;
-	void yield() override;
 };
 
 #endif    //_WIN32

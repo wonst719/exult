@@ -240,8 +240,6 @@ void WindowsMidiDriver::increaseThreadPriority() {
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 }
 
-void WindowsMidiDriver::yield() {
-	Sleep(1);
-}
+
 
 #endif    // USE_WINDOWS_MIDI

@@ -205,8 +205,6 @@ void CoreMidiDriver::increaseThreadPriority() {
 	pthread_setschedparam(self, policy, &param);
 }
 
-void CoreMidiDriver::yield() {
-	sched_yield();
-}
+
 
 #endif    // USE_CORE_MIDI

@@ -25,21 +25,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "common_types.h"
 #include "ignore_unused_variable_warning.h"
 
+#include <atomic>
 #include <condition_variable>
 #include <cstring>
 #include <memory>
 #include <mutex>
 #include <queue>
-
-#ifdef __GNUC__
-#	pragma GCC diagnostic push
-#	pragma GCC diagnostic ignored "-Wold-style-cast"
-#	pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif    // __GNUC__
-#include <SDL.h>
-#ifdef __GNUC__
-#	pragma GCC diagnostic pop
-#endif    // __GNUC__
+#include <thread>
 
 class XMidiEventList;
 class XMidiSequence;
@@ -120,8 +112,8 @@ protected:
 	}
 
 	//! Yield execution of the current thread
-	virtual void yield() {
-		SDL_Delay(1);
+	void yield() {
+		std::this_thread::yield();
 	}
 
 private:
@@ -206,14 +198,17 @@ private:
 	sint32 callback_data[LLMD_NUM_SEQ];    // Only set by thread
 
 	// Shared Data
-	int    global_volume = 255;
-	uint32 xmidi_clock;       // Xmidi clock, returned by getTickCount
-	int    chan_locks[16];    // Which seq a chan has been locked by
-	int    chan_map[LLMD_NUM_SEQ]
-				[16];    // Maps from locked logical chan to phyiscal
+	int global_volume = 255;
+	// Xmidi clock 1/6000th second granuality
+
+	std::chrono::duration<uint32, std::ratio<1, 6000>> xmidi_clock;
+	// Which seq a chan has been locked by
+	int chan_locks[16];
+	// Maps from locked logical chan to phyiscal
+	int            chan_map[LLMD_NUM_SEQ][16];
 	XMidiSequence* sequences[LLMD_NUM_SEQ];
-	int next_sysex;    // Time we can next send sysex at (is SDL_GetTick()
-					   // value)
+	// Time we can next send sysex at
+	std::chrono::milliseconds next_sysex;
 
 	// Software Synth only Data
 	uint32 total_seconds;          // xmidi_clock = total_seconds*6000
@@ -222,7 +217,7 @@ private:
 	uint32 samples_per_iteration;
 
 	// Thread Based Only Data
-	SDL_Thread* thread = nullptr;
+	std::unique_ptr<std::thread> thread;
 
 	// Timbre Banks
 	struct MT32Timbre {
@@ -283,10 +278,10 @@ private:
 	// Thread Methods
 	int        initThreadedSynth();
 	void       destroyThreadedSynth();
-	static int threadMain_Static(void* data);
+	static int threadMain_Static(LowLevelMidiDriver* data);
 	int        threadMain();
 	// Thread flag -- set to true when ready to quit
-	bool quit_thread;
+	std::atomic_bool quit_thread;
 
 	// Software methods
 	int  initSoftwareSynth();

@@ -287,8 +287,5 @@ void CoreAudioMidiDriver::increaseThreadPriority() {
 	pthread_setschedparam(self, policy, &param);
 }
 
-void CoreAudioMidiDriver::yield() {
-	sched_yield();
-}
 
 #endif    // USE_CORE_AUDIO_MIDI

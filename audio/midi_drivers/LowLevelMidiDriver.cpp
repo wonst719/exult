@@ -147,13 +147,15 @@ LowLevelMidiDriver::~LowLevelMidiDriver() {
 			 << std::endl;
 		// destroyMidiDriver();
 		if (thread) {
-			int status_thread;
 			quit_thread
-					= true;    // The thread should stop based upon this flag
-			SDL_WaitThread(thread, &status_thread);
+					= true;      // The thread should stop based upon this flag
+			thread->detach();    // calling join might not be safe as the driver
+								 // is kind of in a imdeterminate state and
+								 // joping might block this thread forever so
+								 // use detach instead
 		}
 	}
-	thread = nullptr;
+	thread.reset();
 }
 
 //
@@ -184,7 +186,7 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo) {
 	sample_rate       = samp_rate;
 	stereo            = is_stereo;
 	uploading_timbres = false;
-	next_sysex        = 0;
+	next_sysex        = std::chrono::milliseconds(0);
 
 	// Zero the memory
 	std::fill(
@@ -246,7 +248,7 @@ void LowLevelMidiDriver::destroyMidiDriver() {
 	cbmutex.reset();
 	cond.reset();
 
-	thread = nullptr;
+	thread.reset();
 
 	giveinfo();
 }
@@ -464,7 +466,7 @@ int LowLevelMidiDriver::initThreadedSynth() {
 	sendComMessage(message);
 
 	quit_thread = false;
-	thread = SDL_CreateThread(threadMain_Static, "LowLevelMidiDriver", this);
+	thread      = std::make_unique<std::thread>(threadMain_Static, this);
 
 	while (peekComMessageType() == LLMD_MSG_THREAD_INIT) {
 		yield();
@@ -495,7 +497,7 @@ void LowLevelMidiDriver::destroyThreadedSynth() {
 		// Wait 1 MS before trying again
 		if (peekComMessageType() != 0) {
 			yield();
-			SDL_Delay(1);
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		} else {
 			break;
 		}
@@ -503,15 +505,15 @@ void LowLevelMidiDriver::destroyThreadedSynth() {
 		count++;
 	}
 
+	quit_thread = true;    // The thread should stop based upon this flag
 	// We waited a while and it still didn't terminate
 	if (count == 400 && peekComMessageType() != 0) {
 		perr << "MidiPlayer Thread failed to stop in time. Killing it."
 			 << std::endl;
-		int status_thread;
-		quit_thread = true;    // The thread should stop based upon this flag
-		SDL_WaitThread(thread, &status_thread);
+		thread->join();
+	} else {
+		thread->detach();
 	}
-
 	const std::lock_guard<std::mutex> lock(*mutex);
 	// Get rid of all the messages
 	while (!messages.empty()) {
@@ -519,9 +521,7 @@ void LowLevelMidiDriver::destroyThreadedSynth() {
 	}
 }
 
-int LowLevelMidiDriver::threadMain_Static(void* data) {
-	giveinfo();
-	auto* ptr = static_cast<LowLevelMidiDriver*>(data);
+int LowLevelMidiDriver::threadMain_Static(LowLevelMidiDriver* ptr) {
 	giveinfo();
 	return ptr->threadMain();
 }
@@ -554,9 +554,12 @@ int LowLevelMidiDriver::threadMain() {
 	// Increase the thread priority, IF possible
 	increaseThreadPriority();
 
+	auto clock_start = std::chrono::steady_clock::now();
 	// Execute the play loop
 	while (!quit_thread) {
-		xmidi_clock = SDL_GetTicks() * 6;
+		xmidi_clock = std::chrono::duration_cast<decltype(xmidi_clock)>(
+				std::chrono::steady_clock::now() - clock_start);
+
 		if (playSequences()) {
 			break;
 		}
@@ -611,7 +614,7 @@ int LowLevelMidiDriver::threadMain() {
 	const char exit_display[] = "Poor Poor Avatar... ";
 	sendMT32SystemMessage(display_base, 0, display_mem_size, exit_display);
 	sendMT32SystemMessage(all_dev_reset_base, 0, 1, exit_display);
-	SDL_Delay(40);
+	std::this_thread::sleep_for(std::chrono::milliseconds(40));
 
 	// Close the device
 	close();
@@ -710,8 +713,9 @@ void LowLevelMidiDriver::produceSamples(sint16* samples, uint32 bytes) {
 		}
 
 		// Calc Xmidi Clock
-		xmidi_clock = (total_seconds * 6000)
-					  + (samples_this_second * 6000) / sample_rate;
+		xmidi_clock = decltype(xmidi_clock)(
+				(total_seconds * 6000)
+				+ (samples_this_second * 6000) / sample_rate);
 
 		// We care about the return code now
 		if (playSequences()) {
@@ -977,7 +981,7 @@ void LowLevelMidiDriver::sequenceSendEvent(uint16 sequence_id, uint32 message) {
 			(message & 0x00F0) == (MIDI_STATUS_NOTE_ON << 4)
 			&& log_chan == 0x9) {
 		const int temp = (message >> 8) & 0xFF;
-		if (mt32_rhythm_bank[temp]) {
+		if (temp < 127 && mt32_rhythm_bank[temp]) {
 			loadRhythmTemp(temp);
 		}
 	}
@@ -1069,19 +1073,22 @@ void LowLevelMidiDriver::sequenceSendSysEx(
 
 	// Just send it
 
-	const int ticks = SDL_GetTicks();
-	if (next_sysex > ticks) {
-		SDL_Delay(
-				next_sysex
-				- ticks);    // Wait till we think the buffer is empty
+	auto now = std::chrono::steady_clock::now().time_since_epoch();
+	// Making assumption that software MT32 can instantly consume sysex
+	if (!isSampleProducer() && next_sysex > now) {
+		std::this_thread::sleep_for(
+				next_sysex - now);    // Wait till we think the buffer is empty
 	}
 	send_sysex(status, msg, length);
-	next_sysex = SDL_GetTicks() + 40 + (length + 2) * 1000.0 / 3125.0;
+	next_sysex = std::chrono::duration_cast<decltype(next_sysex)>(
+			std::chrono::steady_clock::now().time_since_epoch()
+			+ std::chrono::milliseconds(static_cast<long long>(
+					(40 + (length + 2) * 1000.0) / 3125.0)));
 }
 
 uint32 LowLevelMidiDriver::getTickCount(uint16 sequence_id) {
 	ignore_unused_variable_warning(sequence_id);
-	return xmidi_clock;
+	return xmidi_clock.count();
 }
 
 void LowLevelMidiDriver::handleCallbackTrigger(uint16 sequence_id, uint8 data) {
@@ -1633,16 +1640,18 @@ void LowLevelMidiDriver::sendMT32SystemMessage(
 
 	// Just send it
 
-	const int ticks = SDL_GetTicks();
+	auto now = std::chrono::steady_clock::now().time_since_epoch();
 	// Making assumption that software MT32 can instantly consume sysex
-	if (!isSampleProducer() && next_sysex > ticks) {
-		SDL_Delay(
-				next_sysex
-				- ticks);    // Wait till we think the buffer is empty
+	if (!isSampleProducer() && next_sysex > now) {
+		std::this_thread::sleep_for(
+				next_sysex - now);    // Wait till we think the buffer is empty
 	}
 	send_sysex(0xF0, sysex_buffer, sysex_data_start + len + 2);
-	next_sysex = SDL_GetTicks() + 40
-				 + (sysex_data_start + len + 2 + 2) * 1000.0 / 3125.0;
+	next_sysex = std::chrono::duration_cast<decltype(next_sysex)>(
+			std::chrono::steady_clock::now().time_since_epoch()
+			+ std::chrono::milliseconds(static_cast<long long>(
+					(40 + (sysex_data_start + len + 2 + 2) * 1000.0)
+					/ 3125.0)));
 }
 
 void LowLevelMidiDriver::setPatchBank(int bank, int patch) {
@@ -1833,7 +1842,7 @@ void LowLevelMidiDriver::uploadTimbre(int bank, int patch) {
 
 	mt32_timbre_banks[bank][patch]->index         = lru_index;
 	mt32_timbre_banks[bank][patch]->protect       = false;
-	mt32_timbre_banks[bank][patch]->time_uploaded = xmidi_clock;
+	mt32_timbre_banks[bank][patch]->time_uploaded = xmidi_clock.count();
 
 	// Now send the SysEx message
 	char name[11] = {0};
