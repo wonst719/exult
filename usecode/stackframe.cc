@@ -37,11 +37,11 @@ int Stack_frame::LastCallChainID = 0;
 Stack_frame::Stack_frame(
 		Usecode_function* fun, int event, Game_object* caller, int chain,
 		int depth)
-		: function(fun), ip(nullptr), data(nullptr), externs(nullptr),
-		  code(nullptr), endp(nullptr), line_number(-1), call_chain(chain),
-		  call_depth(depth), num_externs(0), num_args(0), num_vars(0),
-		  locals(nullptr), eventid(event), caller_item(shared_from_obj(caller)),
-		  save_sp(nullptr) {
+		: function(fun), ins_ip(nullptr), ip(nullptr), data(nullptr),
+		  externs(nullptr), code(nullptr), endp(nullptr), line_number(-1),
+		  call_chain(chain), call_depth(depth), num_externs(0), num_args(0),
+		  num_vars(0), locals(nullptr), eventid(event),
+		  caller_item(shared_from_obj(caller)), save_sp(nullptr) {
 	ip   = function->code;
 	endp = ip + function->len;
 
@@ -69,7 +69,7 @@ Stack_frame::Stack_frame(
 
 	ip += 2 * num_externs;    // now points to actual code
 
-	code = ip;
+	code = ins_ip = ip;
 }
 
 Stack_frame::~Stack_frame() {
@@ -83,7 +83,7 @@ std::ostream& operator<<(std::ostream& out, Stack_frame& frame) {
 	// #depth: 0xIP in functionname (obj=...,event=..., arg1name=..., ...)
 
 	out << "#" << frame.call_depth << ": 0x" << std::hex << std::setw(4)
-		<< std::setfill('0') << static_cast<int>(frame.ip - frame.code)
+		<< std::setfill('0') << static_cast<int>(frame.ins_ip - frame.code)
 		<< " in 0x" << std::setw(4) << frame.function->id
 		<< "(obj=" << std::setw(8) << frame.caller_item.get()
 		<< ",ev=" << frame.eventid << std::setfill(' ') << std::dec;

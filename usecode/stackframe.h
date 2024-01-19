@@ -39,6 +39,7 @@ public:
 	~Stack_frame();
 
 	Usecode_function* function;
+	const uint8*      ins_ip;         // IP for current instruction
 	const uint8*      ip;             // current IP
 	const uint8*      data;           // pointer to start of data segment
 	const uint8*      externs;        // pointer to start of externs

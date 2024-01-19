@@ -321,6 +321,19 @@ void Usecode_internal::previous_stack_frame() {
 	delete frame;
 }
 
+static ostream& print_usecode_function(
+		Usecode_symbol_table* symtbl, const int function) {
+	Usecode_symbol* fsym = symtbl ? (*symtbl)[function] : nullptr;
+	if (fsym) {
+		cout << fsym->get_name() << " (";
+	}
+	cout << hex << setw(4) << setfill('0') << function << dec << setfill(' ');
+	if (fsym) {
+		cout << ')';
+	}
+	return cout;
+};
+
 void Usecode_internal::return_from_function(Usecode_value& retval) {
 #ifdef DEBUG
 	// store old function ID for debugging output
@@ -339,27 +352,12 @@ void Usecode_internal::return_from_function(Usecode_value& retval) {
 	cout << "Returning (";
 	retval.print(cout);
 	cout << ") from usecode ";
-	Usecode_symbol* fsym = symtbl ? (*symtbl)[oldfunction] : nullptr;
-	if (fsym) {
-		cout << fsym->get_name();
-	} else {
-		cout << hex << setw(4) << setfill('0') << oldfunction << dec
-			 << setfill(' ');
-	}
-	cout << endl;
+	print_usecode_function(symtbl, oldfunction) << endl;
 
 	if (parent_frame) {
-		const int       newfunction = call_stack.front()->function->id;
-		Usecode_symbol* fsym        = symtbl ? (*symtbl)[newfunction] : nullptr;
-
+		const int newfunction = call_stack.front()->function->id;
 		cout << "...back into usecode ";
-		if (fsym) {
-			cout << fsym->get_name();
-		} else {
-			cout << hex << setw(4) << setfill('0') << newfunction << dec
-				 << setfill(' ');
-		}
-		cout << endl;
+		print_usecode_function(symtbl, newfunction) << endl;
 	}
 #endif
 }
@@ -374,30 +372,15 @@ void Usecode_internal::return_from_procedure() {
 	previous_stack_frame();
 
 #ifdef DEBUG
-	Stack_frame*    parent_frame = call_stack.front();
-	Usecode_symbol* fsym         = symtbl ? (*symtbl)[oldfunction] : nullptr;
+	Stack_frame* parent_frame = call_stack.front();
 
 	cout << "Returning from usecode ";
-	if (fsym) {
-		cout << fsym->get_name();
-	} else {
-		cout << hex << setw(4) << setfill('0') << oldfunction << dec
-			 << setfill(' ');
-	}
-	cout << endl;
+	print_usecode_function(symtbl, oldfunction) << endl;
 
 	if (parent_frame) {
-		const int       newfunction = call_stack.front()->function->id;
-		Usecode_symbol* fsym        = symtbl ? (*symtbl)[newfunction] : nullptr;
-
+		const int newfunction = call_stack.front()->function->id;
 		cout << "...back into usecode ";
-		if (fsym) {
-			cout << fsym->get_name();
-		} else {
-			cout << hex << setw(4) << setfill('0') << newfunction << dec
-				 << setfill(' ');
-		}
-		cout << endl;
+		print_usecode_function(symtbl, newfunction) << endl;
 	}
 #endif
 }
@@ -462,9 +445,14 @@ inline void Usecode_internal::push(const Usecode_value& val) {
 inline Usecode_value Usecode_internal::pop() {
 	if (sp <= stack) {
 		// Happens in SI #0x939
-		cerr << "Stack underflow" << endl;
+		cerr << "Stack underflow on function ";
+		print_usecode_function(symtbl, call_stack.front()->function->id);
+		cerr << " at IP ";
+		cout << hex << setw(4) << setfill('0') << (frame->ins_ip - frame->code)
+			 << dec << setfill(' ') << std::endl;
 		return Usecode_value(0);
 	}
+
 	// +++++SHARED:  Shouldn't we reset *sp.
 	return *--sp;
 }
@@ -644,20 +632,6 @@ void Usecode_internal::say_string() {
 	}
 	delete[] String;
 	String = nullptr;
-}
-
-/*
- *  Stack error.
- */
-
-void Usecode_internal::stack_error(int under    // 1 if underflow.
-) {
-	if (under) {
-		cerr << "Stack underflow." << endl;
-	} else {
-		cerr << "Stack overflow." << endl;
-	}
-	exit(1);
 }
 
 /*
@@ -1979,7 +1953,8 @@ int Usecode_internal::run() {
 				continue;
 			}
 
-			const int current_IP = frame->ip - frame->code;
+			const auto current_IP = frame->ip - frame->code;
+			frame->ins_ip         = frame->ip;
 
 			auto opcode = static_cast<UsecodeOps>(*(frame->ip));
 
