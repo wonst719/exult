@@ -326,7 +326,7 @@ void Conversation::remove_slot_face(int slot) {
 				break;
 			}
 		}
-		last_face_shown = j;
+		last_face_shown = j - 1;
 		if (touchui != nullptr && num_faces == 0) {
 			touchui->showGameControls();
 		}
