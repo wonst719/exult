@@ -332,7 +332,7 @@ static ostream& print_usecode_function(
 		cout << ')';
 	}
 	return cout;
-};
+}
 
 void Usecode_internal::return_from_function(Usecode_value& retval) {
 #ifdef DEBUG
