@@ -135,10 +135,11 @@ void ExultMenu::calc_win() {
 	centerx   = gwin->get_width() / 2;
 	centery   = gwin->get_height() / 2;
 	Font* fnt = font ? font : fontManager.get_font("CREDITS_FONT");
-	pagesize  = 2
-			   * ((gwin->get_win()->get_full_height()
-				   - 5 * fnt->get_text_height() - 15)
-				  / 45);
+	pagesize  = std::max(
+            1, 2
+                       * ((gwin->get_win()->get_full_height()
+                           - 5 * fnt->get_text_height() - 15)
+                          / 45));
 }
 
 void ExultMenu::setup() {
