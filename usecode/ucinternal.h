@@ -188,10 +188,14 @@ class Usecode_internal : public Usecode_machine {
 	 *  Embedded intrinsics
 	 */
 
-	static struct IntrinsicTableEntry {
+	struct IntrinsicTableEntry {
 		UsecodeIntrinsicFn func;
 		const char*        name;
-	} intrinsic_table[], serpent_table[], serpentbeta_table[];
+	};
+
+	static IntrinsicTableEntry intrinsics_bg[];
+	static IntrinsicTableEntry intrinsics_si[];
+	static IntrinsicTableEntry intrinsics_sib[];
 
 	Usecode_value Execute_Intrinsic(
 			UsecodeIntrinsicFn func, const char* name, int intrinsic,

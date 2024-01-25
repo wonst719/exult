@@ -19,11 +19,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <limits>
 #ifdef HAVE_CONFIG_H
 #	include <config.h>
 #endif
-
-#include "ucinternal.h"
 
 #include "Audio.h"
 #include "Gump.h"
@@ -55,6 +54,7 @@
 #include "touchui.h"
 #include "tqueue.h"
 #include "ucfunction.h"
+#include "ucinternal.h"
 #include "ucsched.h"
 #include "ucsymtbl.h"
 #include "usefuns.h"
@@ -1617,24 +1617,20 @@ using UsecodeIntrinsicFn = Usecode_value (Usecode_internal::*)(
 #define USECODE_INTRINSIC_PTR(NAME) \
 	{ &Usecode_internal::UI_##NAME, TO_STRING(NAME) }
 
-Usecode_internal::IntrinsicTableEntry Usecode_internal::intrinsic_table[] = {
+// Black Gate Intrinsic Function Table
+Usecode_internal::IntrinsicTableEntry Usecode_internal::intrinsics_bg[] = {
 #include "bgintrinsics.h"
 };
 
-// Serpent Isle Intrinsic Function Tablee
-// It's different to the Black Gate one.
-Usecode_internal::IntrinsicTableEntry Usecode_internal::serpent_table[] = {
+// Serpent Isle Intrinsic Function Table
+Usecode_internal::IntrinsicTableEntry Usecode_internal::intrinsics_si[] = {
 #include "siintrinsics.h"
 };
 
-// Serpent Isle Beta Intrinsic Function Tablee
-// It's different to the Black Gate and Seroent Isle one.
-Usecode_internal::IntrinsicTableEntry Usecode_internal::serpentbeta_table[] = {
+// Serpent Isle Beta Intrinsic Function Table
+Usecode_internal::IntrinsicTableEntry Usecode_internal::intrinsics_sib[] = {
 #include "sibetaintrinsics.h"
 };
-
-int max_bundled_intrinsics
-		= 0x3ff;    // Index of the last intrinsic in this table
 
 /*
  *  Call an intrinsic function.
@@ -1644,25 +1640,31 @@ Usecode_value Usecode_internal::call_intrinsic(
 		int intrinsic,    // The ID.
 		int num_parms     // # parms on stack.
 ) {
+	static_assert(
+			std::size(intrinsics_bg) <= std::numeric_limits<uint16>::max());
+	static_assert(
+			std::size(intrinsics_si) <= std::numeric_limits<uint16>::max());
+	static_assert(
+			std::size(intrinsics_sib) <= std::numeric_limits<uint16>::max());
 	Usecode_value parms[13];    // Get parms.
 	for (int i = 0; i < num_parms; i++) {
 		const Usecode_value val = pop();
 		parms[i]                = val;
 	}
-	if (intrinsic <= max_bundled_intrinsics) {
-		Usecode_internal::IntrinsicTableEntry* table_entry;
-
-		if (Game::get_game_type() == SERPENT_ISLE) {
-			if (Game::is_si_beta()) {
-				table_entry = serpentbeta_table + intrinsic;
-			} else {
-				table_entry = serpent_table + intrinsic;
-			}
+	tcb::span<Usecode_internal::IntrinsicTableEntry> table;
+	if (Game::get_game_type() == SERPENT_ISLE) {
+		if (Game::is_si_beta()) {
+			table = intrinsics_sib;
 		} else {
-			table_entry = intrinsic_table + intrinsic;
+			table = intrinsics_si;
 		}
-		const UsecodeIntrinsicFn func = table_entry->func;
-		const char*              name = table_entry->name;
+	} else {
+		table = intrinsics_bg;
+	}
+	if (static_cast<size_t>(intrinsic) <= table.size()) {
+		auto&                    table_entry = table[intrinsic];
+		const UsecodeIntrinsicFn func        = table_entry.func;
+		const char*              name        = table_entry.name;
 		return Execute_Intrinsic(func, name, intrinsic, num_parms, parms);
 	}
 	return no_ret;
