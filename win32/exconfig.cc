@@ -80,6 +80,10 @@ constexpr static const std::array BG_Files{ENDGAME};
 
 constexpr static const std::array SI_Files{PAPERDOL};
 
+int __stdcall VerifySIDirectory(char* path);
+
+int __stdcall VerifyBGDirectory(char* path);
+
 //
 // Path Helper class
 //
@@ -300,6 +304,7 @@ __declspec(dllexport) void __stdcall GetExultGamePaths(
 //
 // Set Game paths in the config file
 //
+
 __declspec(dllexport) void __stdcall SetExultGamePaths(
 		char* ExultDir, char* BGPath, char* SIPath) {
 	MessageBoxDebug(nullptr, ExultDir, "ExultDir", MB_OK);
@@ -327,16 +332,20 @@ __declspec(dllexport) void __stdcall SetExultGamePaths(
 
 		// Set BG Path
 		MessageBoxDebug(nullptr, p, "WriteConfig: BG", MB_OK);
-		if (BGPath) {
+		// Only write new path if it is actually valid
+		if (BGPath && VerifyBGDirectory(BGPath)) {
 			config.set("config/disk/game/blackgate/path", BGPath, true);
-		} else {
+			// Only write default if there isn't already a value set.
+		} else if (!config.key_exists("config/disk/game/blackgate/path")) {
 			config.set("config/disk/game/blackgate/path", "blackgate", true);
 		}
 		// Set SI Path
 		MessageBoxDebug(nullptr, p, "WriteConfig: SI", MB_OK);
-		if (SIPath) {
+		// Only write new path if it is actually valid
+		if (SIPath && VerifySIDirectory(SIPath)) {
 			config.set("config/disk/game/serpentisle/path", SIPath, true);
-		} else {
+			// Only write default if there isn't already a value set.
+		} else if (!config.key_exists("config/disk/game/serpentisle/path")) {
 			config.set(
 					"config/disk/game/serpentisle/path", "serpentisle", true);
 		}
