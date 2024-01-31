@@ -78,6 +78,7 @@ case "$host_os" in
 		AC_DEFINE(FREEBSD, 1, [Using FreeBSD])
 		AC_MSG_RESULT([X11 (FreeBSD)])
 		CXXFLAGS="$CXXFLAGS -I/usr/local/include"
+		SYSLIBS="-lpthread"
 		;;
 	netbsd* )
 		WINDOWING_SYSTEM="-DXWIN"
