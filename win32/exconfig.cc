@@ -80,9 +80,11 @@ constexpr static const std::array BG_Files{ENDGAME};
 
 constexpr static const std::array SI_Files{PAPERDOL};
 
-int __stdcall VerifySIDirectory(char* path);
+extern "C" {
+__declspec(dllexport) int __stdcall VerifySIDirectory(char* path);
 
-int __stdcall VerifyBGDirectory(char* path);
+__declspec(dllexport) int __stdcall VerifyBGDirectory(char* path);
+}
 
 //
 // Path Helper class
