@@ -86,6 +86,14 @@ __declspec(dllexport) int __stdcall VerifySIDirectory(char* path);
 __declspec(dllexport) int __stdcall VerifyBGDirectory(char* path);
 }
 
+void strcat_safe(char* dest, const char* src, size_t size_dest) {
+	size_t cur = std::strlen(dest);
+	if (cur > size_dest) {
+		return;
+	}
+	std::strncat(dest, src, size_dest - cur - 1);
+}
+
 //
 // Path Helper class
 //
@@ -220,19 +228,19 @@ void Path::GetString(char* p, int max_strlen) {
 	p[0] = 0;
 
 	if (network) {
-		std::strncat(p, "\\\\", max_strlen);
+		strcat_safe(p, "\\\\", max_strlen);
 	} else if (drive) {
 		_snprintf(p, max_strlen, "%c:\\", drive);
 	} else {
-		std::strncat(p, "\\", max_strlen);
+		strcat_safe(p, "\\", max_strlen);
 	}
 
 	Directory* d = dirs;
 	while (d) {
-		std::strncat(p, d->name, max_strlen);
+		strcat_safe(p, d->name, max_strlen);
 		d = d->next;
 		if (d) {
-			std::strncat(p, "\\", max_strlen);
+			strcat_safe(p, "\\", max_strlen);
 		}
 	}
 }
