@@ -49,10 +49,11 @@
 #include "ibuf8.h"
 #include "ignore_unused_variable_warning.h"
 #include "pngio.h"
-#include "utils.h"
+#include "span.h"
 #include "vgafile.h"
 
 #include <array>
+#include <cstddef>
 #include <iostream>
 
 using namespace std;
@@ -141,7 +142,7 @@ unsigned intSqrt(unsigned remainder) {
 	}
 
 	unsigned root = 0;
-	while (place) {
+	while (place != 0u) {
 		if (remainder >= root + place) {
 			remainder -= root + place;
 			root += place * 2;
@@ -154,18 +155,20 @@ unsigned intSqrt(unsigned remainder) {
 
 const unsigned char transp = 255;    // Transparent pixel.
 
-static unsigned char* Convert8to32(
-		const unsigned char* bits, size_t nsize, const U7Palette& palette) {
-	auto* out = new unsigned char[nsize * 4];
-	for (size_t i = 0; i < nsize; i++) {
-		const size_t pix = bits[i];
-		out[4 * i]       = palette[3 * pix];
-		out[4 * i + 1]   = palette[3 * pix + 1];
-		out[4 * i + 2]   = palette[3 * pix + 2];
-		out[4 * i + 3]   = pix == transp ? 0 : 255;
+namespace {
+	std::vector<unsigned char> Convert8to32(
+			tcb::span<unsigned char> bits, const U7Palette& palette) {
+		std::vector<unsigned char> out(bits.size() * 4);
+		for (size_t i = 0; i < bits.size(); i++) {
+			const size_t pix = bits[i];
+			out[4 * i]       = palette[3 * pix];
+			out[4 * i + 1]   = palette[3 * pix + 1];
+			out[4 * i + 2]   = palette[3 * pix + 2];
+			out[4 * i + 3]   = pix == transp ? 0 : 255;
+		}
+		return out;
 	}
-	return out;
-}
+}    // namespace
 
 /*
  *  Single frame renderer.
@@ -212,46 +215,53 @@ struct Render_tiles {
 /*
  *  Write out the desired data as a .png. Yes, this is overkill :-)
  */
-
-template <typename Data, typename Render>
-static void Write_thumbnail(
-		char*            filename,    // Base filename to write.
-		Data&            data,        // What to write.
-		const U7Palette& palette,     // 3*256 bytes.
-		int w, int h,                 // Width, height of rendered image.
-		int size                      // Desired thumbnail size
-) {
-	cout << "Writing " << filename << endl;
-	// Make into a padded square of the largest dimension, but limit it
-	// to a minimum of 16x16 to avoid blurring.
-	const int     w1 = std::max(std::max(w, h), 16);
-	const int     h1 = w1;
-	Image_buffer8 img(w1, h1);    // Render into a buffer.
-	img.fill8(transp);            // Fill with transparent pixel.
-	Render r;
-	r(img, data, w, h, (w1 - w) / 2, (h1 - h) / 2);
-	unsigned char* bits = Convert8to32(img.get_bits(), w1 * h1, palette);
-	if (w1 != size) {
-		GdkPixbuf* pixbuf = gdk_pixbuf_new_from_data(
-				bits, GDK_COLORSPACE_RGB, true, 8, w1, h1, 4 * w1, nullptr,
-				nullptr);
-		GdkPixbuf* smallpixbuf
-				= gdk_pixbuf_scale_simple(pixbuf, size, size, GDK_INTERP_HYPER);
+namespace {
+	template <typename Data, typename Render>
+	void Write_thumbnail(
+			char*            filename,    // Base filename to write.
+			Data&            data,        // What to write.
+			const U7Palette& palette,     // 3*256 bytes.
+			int w, int h,                 // Width, height of rendered image.
+			int size                      // Desired thumbnail size
+	) {
+		constexpr static auto deleter = [](GdkPixbuf* pixbuf) {
+			g_object_unref(pixbuf);
+		};
+		using GdkPixbufOwner = std::unique_ptr<GdkPixbuf, decltype(deleter)>;
+		cout << "Writing " << filename << endl;
+		// Make into a padded square of the largest dimension, but limit it
+		// to a minimum of 16x16 to avoid blurring.
+		const int     w1 = std::max(std::max(w, h), 16);
+		const int     h1 = w1;
+		Image_buffer8 img(w1, h1);    // Render into a buffer.
+		img.fill8(transp);            // Fill with transparent pixel.
+		Render r;
+		r(img, data, w, h, (w1 - w) / 2, (h1 - h) / 2);
+		auto bits = Convert8to32(
+				{img.get_bits(), static_cast<size_t>(w1) * h1}, palette);
+		if (w1 != size) {
+			GdkPixbufOwner pixbuf(
+					gdk_pixbuf_new_from_data(
+							bits.data(), GDK_COLORSPACE_RGB, true, 8, w1, h1,
+							4 * w1, nullptr, nullptr),
+					deleter);
+			GdkPixbufOwner smallpixbuf(
+					gdk_pixbuf_scale_simple(
+							pixbuf.get(), size, size, GDK_INTERP_HYPER),
+					deleter);
+			// Write out to the .png.
+			if (!Export_png32(
+						filename, size, size, 4 * size, 0, 0,
+						gdk_pixbuf_get_pixels(smallpixbuf.get()))) {
+				throw file_write_exception(filename);
+			}
+		}
 		// Write out to the .png.
-		if (!Export_png32(
-					filename, size, size, 4 * size, 0, 0,
-					gdk_pixbuf_get_pixels(smallpixbuf))) {
+		else if (!Export_png32(filename, w1, h1, 4 * w1, 0, 0, bits.data())) {
 			throw file_write_exception(filename);
 		}
-		g_object_unref(smallpixbuf);
-		g_object_unref(pixbuf);
 	}
-	// Write out to the .png.
-	else if (!Export_png32(filename, w1, h1, 4 * w1, 0, 0, bits)) {
-		throw file_write_exception(filename);
-	}
-	delete[] bits;
-}
+}    // namespace
 
 int main(int argc, char* argv[]) {
 	if (argc < 5) {
@@ -259,13 +269,14 @@ int main(int argc, char* argv[]) {
 			 << endl;
 		return 1;
 	}
-	const int size = atoi(argv[2]);
+	tcb::span<char*> args{argv, argc};
+	const int        size = atoi(args[2]);
 	if (size < 0 || size > 2048) {
 		cerr << "Invalid thumbnail size: " << size << "!" << endl;
 		return 2;
 	}
-	char*      inputfile  = argv[3];
-	char*      outputfile = argv[4];
+	char*      inputfile  = args[3];
+	char*      outputfile = args[4];
 	Shape_file shape(inputfile);    // May throw an exception.
 	if (shape.is_empty()) {
 		cerr << "Shape is empty!" << endl;
