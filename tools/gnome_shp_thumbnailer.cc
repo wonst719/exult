@@ -269,7 +269,7 @@ int main(int argc, char* argv[]) {
 			 << endl;
 		return 1;
 	}
-	tcb::span<char*> args{argv, argc};
+	tcb::span<char*> args(argv, argc);
 	const int        size = atoi(args[2]);
 	if (size < 0 || size > 2048) {
 		cerr << "Invalid thumbnail size: " << size << "!" << endl;
