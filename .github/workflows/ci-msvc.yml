@@ -122,7 +122,7 @@ jobs:
           message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The MSVC build \x034failed\x03."
       - name: Discord success notification
         uses: BubbleProd/discord-webhook-notify@v2.0.1
-        if: needs.ci-windows.result == 'success'
+        if: needs.ci-msvc.result == 'success'
         with:
           severity: info
           username: github-actions
