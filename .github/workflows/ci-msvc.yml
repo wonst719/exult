@@ -54,10 +54,7 @@ on:
       - "!.gitattributes"
       - "!.github/workflows/*"
       - ".github/workflows/ci-msvc.yml"
-  schedule: # include aschedule so any errors get emailed to me
-    - cron: "0 23 * * *" # Daily at 23:00 UTC
-  workflow_dispatch:
-
+  
 env:
   # Path to the solution file relative to the root of the project.
   SOLUTION_FILE_PATH: msvcstuff\vs2019
