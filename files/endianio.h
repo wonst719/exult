@@ -22,9 +22,11 @@
 #include <cstdint>
 #include <cstring>
 #include <ios>
+#include <limits>
 #include <type_traits>
 
 // Need to define manually for MSVC.
+// FIXME: What about ARM/ARM64?
 #if defined(_MSC_VER) || defined(_WIN32)
 #	ifndef __ORDER_BIG_ENDIAN__
 #		define __ORDER_BIG_ENDIAN__ 4321
@@ -70,6 +72,24 @@
 #	pragma intrinsic(_byteswap_ushort)
 #	pragma intrinsic(_byteswap_ulong)
 #	pragma intrinsic(_byteswap_uint64)
+#	if (defined(_M_ARM64) || defined(_M_ARM64EC)            \
+		 || defined(_M_HYBRID_X86_ARM64))                    \
+			&& !defined(_M_CEE_PURE) && !defined(__CUDACC__) \
+			&& !defined(__INTEL_COMPILER)                    \
+			&& !defined(__clang__)
+#		define HAS_NEON_INTRINSICS 1
+#		include <arm64_neon.h>
+#	else
+#		define HAS_NEON_INTRINSICS 0
+#	endif
+#	if ((defined(_M_IX86) && !defined(_M_HYBRID_X86_ARM64)) \
+		 || (defined(_M_X64) && !defined(_M_ARM64EC)))       \
+			&& !defined(_M_CEE_PURE) && !defined(__CUDACC__) \
+			&& !defined(__INTEL_COMPILER)
+#		define HAS_POPCNT_INTRINSICS 1
+#	else
+#		define HAS_POPCNT_INTRINSICS 0
+#	endif
 #endif
 
 namespace {    // anonymous
@@ -162,6 +182,11 @@ namespace {    // anonymous
 			native = __BYTE_ORDER__,
 		};
 
+#ifdef __clang__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wunused-template"
+#endif
+
 		ENDIANIO_CONST_INLINE ENDIANIO_CONSTEXPR uint8_t
 				bswap(uint8_t val) noexcept {
 			return val;
@@ -193,7 +218,6 @@ namespace {    // anonymous
 			return __builtin_bswap64(val);
 		}
 #	else
-
 		ENDIANIO_CONST_INLINE ENDIANIO_CONSTEXPR uint16_t
 				bswap(uint16_t val) noexcept {
 			return __builtin_bswap16(val);
@@ -208,7 +232,6 @@ namespace {    // anonymous
 				bswap(uint64_t val) noexcept {
 			return __builtin_bswap64(val);
 		}
-
 #	endif
 #elif defined(_MSC_VER)
 		ENDIANIO_CONST_INLINE ENDIANIO_CONSTEXPR uint16_t
@@ -255,10 +278,6 @@ namespace {    // anonymous
 			return static_cast<Int>(bswap(static_cast<UT>(val)));
 		}
 
-#ifdef __clang__
-#	pragma GCC diagnostic push
-#	pragma GCC diagnostic ignored "-Wunused-template"
-#endif
 		struct EndianBaseImpl {
 			template <
 					endian FromEndian, typename Int, typename Byte,
@@ -480,29 +499,32 @@ ENDIANIO_INLINE ENDIANIO_CONSTEXPR static void Write1s(Dst&& out, int8_t val) {
 			std::forward<Dst>(out), val);
 }
 
-inline int bitcount(unsigned char n) {
 #ifdef __GNUG__
-	return __builtin_popcount(n);
-#elif defined(_MSC_VER)
-	return __popcnt(n);
-#else
-	auto two = [](auto c) {
-		return 1U << c;
-	};
-	auto mask = [&](auto c) {
-		return static_cast<uint8_t>(
-				std::numeric_limits<uint8_t>::max() / (two(two(c)) + 1U));
-	};
-	auto count = [&](auto x, auto c) {
-		return (x & mask(c)) + ((x >> two(c)) & mask(c));
-	};
-	// Only works for 8-bit numbers.
-	n = static_cast<unsigned char>(count(n, 0));
-	n = static_cast<unsigned char>(count(n, 1));
-	n = static_cast<unsigned char>(count(n, 2));
-	return n;
-#endif
+ENDIANIO_INLINE ENDIANIO_CONSTEXPR uint32_t bitcount(uint32_t val) {
+	return static_cast<uint32_t>(__builtin_popcount(val));
 }
+#elif defined(_MSC_VER) && HAS_NEON_INTRINSICS
+ENDIANIO_INLINE ENDIANIO_CONSTEXPR int bitcount(uint32_t val) noexcept {
+	const __n64 _Temp = neon_cnt(__uint64ToN64_v(val));
+	return neon_addv8(_Temp).n8_i8[0];
+}
+#elif defined(_MSC_VER) && HAS_POPCNT_INTRINSICS
+ENDIANIO_INLINE ENDIANIO_CONSTEXPR uint32_t bitcount(uint32_t val) {
+	return __popcnt(val);
+}
+#else
+ENDIANIO_INLINE ENDIANIO_CONSTEXPR uint32_t bitcount(uint32_t val) {
+	val = val - ((val >> 1) & static_cast<uint32_t>(0x5555'5555'5555'5555ull));
+	val = (val & static_cast<uint32_t>(0x3333'3333'3333'3333ull))
+		  + ((val >> 2) & static_cast<uint32_t>(0x3333'3333'3333'3333ull));
+	val = (val + (val >> 4)) & static_cast<uint32_t>(0x0F0F'0F0F'0F0F'0F0Full);
+	// Multiply by one in each byte, so that it will have the sum of all
+	// source bytes in the highest byte
+	val = val * static_cast<uint32_t>(0x0101'0101ull);
+	// Extract highest byte
+	return val >> (std::numeric_limits<uint32_t>::digits - 8);
+}
+#endif
 
 #undef ENDIANIO_CONSTEXPR
 #undef ENDIANIO_INLINE
