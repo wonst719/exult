@@ -44,6 +44,7 @@ libu7file_la_SOURCES =	\
 	U7obj.h	\
 	utils.cc	\
 	utils.h		\
+	endianio.h	\
 	databuf.h	\
 	listfiles.cc	\
 	listfiles.h	\

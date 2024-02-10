@@ -23,6 +23,7 @@
 #include "Configuration.h"
 
 #include "exceptions.h"
+#include "ignore_unused_variable_warning.h"
 #include "utils.h"
 
 #include <cassert>

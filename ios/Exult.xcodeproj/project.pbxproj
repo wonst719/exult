@@ -683,6 +683,7 @@
 		E700DD7D1A6E3161006C8BE4 /* U7obj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = U7obj.h; path = ../files/U7obj.h; sourceTree = "<group>"; };
 		E700DD7E1A6E3161006C8BE4 /* utils.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utils.cc; path = ../files/utils.cc; sourceTree = "<group>"; };
 		E700DD7F1A6E3161006C8BE4 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = ../files/utils.h; sourceTree = "<group>"; };
+		1E8448CF81742D9F535F9713 /* endianio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = endianio.h; path = ../files/endianio.h; sourceTree = "<group>"; };
 		E700DD881A6E3161006C8BE4 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		E700DD8A1A6E3161006C8BE4 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		E700DDDF1A6E3425006C8BE4 /* ArbScaler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArbScaler.h; path = ../imagewin/ArbScaler.h; sourceTree = "<group>"; };
@@ -1355,6 +1356,7 @@
 				E700DD7D1A6E3161006C8BE4 /* U7obj.h */,
 				E700DD7E1A6E3161006C8BE4 /* utils.cc */,
 				E700DD7F1A6E3161006C8BE4 /* utils.h */,
+				1E8448CF81742D9F535F9713 /* endianio.h */,
 				8A9EB724281878EC0025C639 /* sdlrwopsistream.cc */,
 				8A9EB723281878EC0025C639 /* sdlrwopsistream.h */,
 				8A9EB722281878EC0025C639 /* sdlrwopsostream.cc */,

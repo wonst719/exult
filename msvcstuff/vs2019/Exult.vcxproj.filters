@@ -1374,6 +1374,9 @@
     <ClInclude Include="..\..\files\databuf.h">
       <Filter>files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\files\endianio.h">
+      <Filter>files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\files\crc.h">
       <Filter>files</Filter>
     </ClInclude>

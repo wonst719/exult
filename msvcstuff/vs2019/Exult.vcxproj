@@ -160,7 +160,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;USE_CONSOLE;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)../..;$(SolutionDir)../../files;$(SolutionDir)..\..\Gamemgr;$(SolutionDir)..\..\Gumps;$(SolutionDir)..\..\data;$(SolutionDir)..\..\conf;$(SolutionDir)..\..\filc;$(SolutionDir)..\..\imagewin;$(SolutionDir)..\..\objs;$(SolutionDir)..\..\pathfinder;$(SolutionDir)..\..\shapes;$(SolutionDir)..\..\shapes\shapeinf;$(SolutionDir)..\..\usecode;$(SolutionDir)..\..\Audio;$(SolutionDir)..\..\Audio\MIDI_drivers;$(SolutionDir)..\..\server;$(SolutionDir)..\..\Headers;$(SolutionDir)..\..\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(SolutionDir)msvc_include.h</ForcedIncludeFiles>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -186,7 +186,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;USE_CONSOLE;_CONSOLE;USE_MT32EMU_MIDI=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)../..;$(SolutionDir)../../files;$(SolutionDir)..\..\Gamemgr;$(SolutionDir)..\..\Gumps;$(SolutionDir)..\..\data;$(SolutionDir)..\..\conf;$(SolutionDir)..\..\filc;$(SolutionDir)..\..\imagewin;$(SolutionDir)..\..\objs;$(SolutionDir)..\..\pathfinder;$(SolutionDir)..\..\shapes;$(SolutionDir)..\..\shapes\shapeinf;$(SolutionDir)..\..\usecode;$(SolutionDir)..\..\Audio;$(SolutionDir)..\..\Audio\MIDI_drivers;$(SolutionDir)..\..\server;$(SolutionDir)..\..\Headers;$(SolutionDir)..\..\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(SolutionDir)msvc_include.h</ForcedIncludeFiles>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -212,7 +212,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)../..;$(SolutionDir)../../files;$(SolutionDir)..\..\Gamemgr;$(SolutionDir)..\..\Gumps;$(SolutionDir)..\..\data;$(SolutionDir)..\..\conf;$(SolutionDir)..\..\filc;$(SolutionDir)..\..\imagewin;$(SolutionDir)..\..\objs;$(SolutionDir)..\..\pathfinder;$(SolutionDir)..\..\shapes;$(SolutionDir)..\..\shapes\shapeinf;$(SolutionDir)..\..\usecode;$(SolutionDir)..\..\Audio;$(SolutionDir)..\..\Audio\MIDI_drivers;$(SolutionDir)..\..\server;$(SolutionDir)..\..\Headers;$(SolutionDir)..\..\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(SolutionDir)msvc_include.h</ForcedIncludeFiles>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -240,8 +240,8 @@
       <ForcedIncludeFiles>$(SolutionDir)msvc_include.h</ForcedIncludeFiles>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>$(SolutionDir)msvc_include.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -262,8 +262,8 @@
       <ForcedIncludeFiles>$(SolutionDir)msvc_include.h</ForcedIncludeFiles>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>$(SolutionDir)msvc_include.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -287,8 +287,8 @@
       <ForcedIncludeFiles>$(SolutionDir)msvc_include.h</ForcedIncludeFiles>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>$(SolutionDir)msvc_include.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -692,6 +692,7 @@
     <ClInclude Include="..\..\exult_constants.h" />
     <ClInclude Include="..\..\files\crc.h" />
     <ClInclude Include="..\..\files\databuf.h" />
+    <ClInclude Include="..\..\files\endianio.h" />
     <ClInclude Include="..\..\files\Flat.h" />
     <ClInclude Include="..\..\files\Flex.h" />
     <ClInclude Include="..\..\files\IFF.h" />

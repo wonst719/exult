@@ -153,6 +153,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)../..;$(SolutionDir)../../files;$(SolutionDir)..\..\Gumps;$(SolutionDir)..\..\conf;$(SolutionDir)..\..\filc;$(SolutionDir)..\..\imagewin;$(SolutionDir)..\..\objs;$(SolutionDir)..\..\pathfinder;$(SolutionDir)..\..\shapes;$(SolutionDir)..\..\usecode;$(SolutionDir)..\..\Audio;$(SolutionDir)..\..\Audio\MIDI_drivers;$(SolutionDir)..\..\data;$(SolutionDir)..\..\server;$(SolutionDir)..\..\Headers;$(SolutionDir)..\..\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(SolutionDir)msvc_include.h</ForcedIncludeFiles>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -177,6 +179,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)../..;$(SolutionDir)../../files;$(SolutionDir)..\..\Gumps;$(SolutionDir)..\..\conf;$(SolutionDir)..\..\filc;$(SolutionDir)..\..\imagewin;$(SolutionDir)..\..\objs;$(SolutionDir)..\..\pathfinder;$(SolutionDir)..\..\shapes;$(SolutionDir)..\..\usecode;$(SolutionDir)..\..\Audio;$(SolutionDir)..\..\Audio\MIDI_drivers;$(SolutionDir)..\..\data;$(SolutionDir)..\..\server;$(SolutionDir)..\..\Headers;$(SolutionDir)..\..\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(SolutionDir)msvc_include.h</ForcedIncludeFiles>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -209,6 +213,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\files\crc.h" />
+    <ClInclude Include="..\..\..\files\endianio.h" />
     <ClInclude Include="..\..\..\files\Flat.h" />
     <ClInclude Include="..\..\..\files\Flex.h" />
     <ClInclude Include="..\..\..\files\IFF.h" />
