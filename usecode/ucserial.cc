@@ -28,7 +28,6 @@
 #include "debugmsg.h"
 #include "servemsg.h"
 #include "useval.h"
-#include "utils.h"
 
 /*
  *  Read/write out data common to all objects.

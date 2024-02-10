@@ -19,6 +19,7 @@
 #ifndef SHAPEID_H
 #define SHAPEID_H 1
 
+#include "endianio.h"
 #include "exult_constants.h"
 #include "fontvga.h"
 #include "shapevga.h"

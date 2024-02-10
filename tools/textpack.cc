@@ -29,7 +29,6 @@
 #include "Flex.h"
 #include "exceptions.h"
 #include "msgfile.h"
-#include "utils.h"
 
 #include <unistd.h>
 

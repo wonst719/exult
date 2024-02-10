@@ -24,16 +24,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "armorinf.h"
 
+#include "common_types.h"
+#include "endianio.h"
 #include "exult_constants.h"
 #include "ignore_unused_variable_warning.h"
-#include "utils.h"
+
+#include <istream>
 
 using std::istream;
 
 int Armor_info::get_base_strength() const {
 	// ++++The strength values are utter guesses.
 	int strength = prot;
-	if (immune) {    // Double strength for any immunities? Give bonus for each?
+	if (immune
+		!= 0u) {    // Double strength for any immunities? Give bonus for each?
 		strength *= 2;
 	}
 	return strength;

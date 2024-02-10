@@ -1896,7 +1896,7 @@ void ExultStudio::set_play(gboolean play    // True to play, false to edit.
 ) {
 	unsigned char  data[Exult_server::maxlength];
 	unsigned char* ptr = &data[0];
-	Write2(ptr, play ? 0 : 1);    // Map_edit = !play.
+	little_endian::Write2(ptr, play ? 0 : 1);    // Map_edit = !play.
 	send_to_server(Exult_server::map_editing_mode, data, ptr - data);
 }
 
@@ -1908,7 +1908,7 @@ void ExultStudio::set_tile_grid(gboolean grid    // True to show.
 ) {
 	unsigned char  data[Exult_server::maxlength];
 	unsigned char* ptr = &data[0];
-	Write2(ptr, grid ? 1 : 0);    // Map_edit = !play.
+	little_endian::Write2(ptr, grid ? 1 : 0);    // Map_edit = !play.
 	send_to_server(Exult_server::tile_grid, data, ptr - data);
 }
 
@@ -1919,7 +1919,7 @@ void ExultStudio::set_tile_grid(gboolean grid    // True to show.
 void ExultStudio::set_edit_lift(int lift) {
 	unsigned char  data[Exult_server::maxlength];
 	unsigned char* ptr = &data[0];
-	Write2(ptr, lift);
+	little_endian::Write2(ptr, lift);
 	send_to_server(Exult_server::edit_lift, data, ptr - data);
 }
 
@@ -1930,7 +1930,7 @@ void ExultStudio::set_edit_lift(int lift) {
 void ExultStudio::set_hide_lift(int lift) {
 	unsigned char  data[Exult_server::maxlength];
 	unsigned char* ptr = &data[0];
-	Write2(ptr, lift);
+	little_endian::Write2(ptr, lift);
 	send_to_server(Exult_server::hide_lift, data, ptr - data);
 }
 
@@ -1942,7 +1942,8 @@ void ExultStudio::set_edit_terrain(gboolean terrain    // True/false
 ) {
 	unsigned char  data[Exult_server::maxlength];
 	unsigned char* ptr = &data[0];
-	Write2(ptr, terrain ? 1 : 0);    // NOTE:  Pass -1 to abort.  But I
+	little_endian::Write2(
+			ptr, terrain ? 1 : 0);    // NOTE:  Pass -1 to abort.  But I
 	//   haven't got an interface yet.
 	send_to_server(Exult_server::terrain_editing_mode, data, ptr - data);
 	if (!terrain) {
@@ -1964,7 +1965,7 @@ void ExultStudio::set_edit_mode(int md    // 0-2 (drag, paint, pick.
 ) {
 	unsigned char  data[Exult_server::maxlength];
 	unsigned char* ptr = &data[0];
-	Write2(ptr, md);
+	little_endian::Write2(ptr, md);
 	//   haven't got an interface yet.
 	send_to_server(Exult_server::set_edit_mode, data, ptr - data);
 }

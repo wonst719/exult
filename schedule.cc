@@ -5436,8 +5436,8 @@ void Schedule_change::set4(
 void Schedule_change::set8(
 		const unsigned char* entry    // 8 bytes read from schedule.dat.
 ) {
-	pos.tx = Read2(entry);
-	pos.ty = Read2(entry);
+	pos.tx = little_endian::Read2(entry);
+	pos.ty = little_endian::Read2(entry);
 	pos.tz = Read1(entry);
 	time   = Read1(entry);
 	type   = Read1(entry);
@@ -5451,8 +5451,8 @@ void Schedule_change::set8(
 void Schedule_change::write8(
 		unsigned char* entry    // 8 bytes to write to schedule.dat.
 ) const {
-	Write2(entry, pos.tx);
-	Write2(entry, pos.ty);                        // 4
+	little_endian::Write2(entry, pos.tx);
+	little_endian::Write2(entry, pos.ty);         // 4
 	Write1(entry, static_cast<uint8>(pos.tz));    // 5
 	Write1(entry, time);                          // 6
 	Write1(entry, type);                          // 7

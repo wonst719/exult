@@ -31,7 +31,6 @@
 #include "exceptions.h"
 #include "ibuf8.h"
 #include "pngio.h"
-#include "utils.h"
 #include "vgafile.h"
 
 #include <unistd.h>

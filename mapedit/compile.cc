@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "execbox.h"
-#include "exult_constants.h"
 #include "utils.h"
 
 #include <string>

@@ -49,15 +49,14 @@
 #include "shapeinf.h"
 #include "spellbook.h"
 #include "ucsched.h"
-#include "utils.h"
 #include "virstone.h"
 #include "weaponinf.h"
 
-#include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <iomanip>
 #include <memory>
 #include <sstream>
 
@@ -239,7 +238,7 @@ void Game_map::init() {
 		// Go through chunks.
 		for (int cy = 0; cy < 16; cy++) {
 			for (int cx = 0; cx < 16; cx++) {
-				terrain_map[scx + cx][scy + cy] = Read2(mapdata);
+				terrain_map[scx + cx][scy + cy] = little_endian::Read2(mapdata);
 			}
 		}
 	}
@@ -530,7 +529,7 @@ void Game_map::write_static() {
 		// Go through chunks.
 		for (int cy = 0; cy < 16; cy++) {
 			for (int cx = 0; cx < 16; cx++) {
-				Write2(mapdata, terrain_map[scx + cx][scy + cy]);
+				little_endian::Write2(mapdata, terrain_map[scx + cx][scy + cy]);
 			}
 		}
 		u7map.write(reinterpret_cast<char*>(buf), sizeof(buf));

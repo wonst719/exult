@@ -21,15 +21,24 @@
 #ifndef UCSYMTBL_H
 #define UCSYMTBL_H
 
+#include "common_types.h"
+
 #include <iosfwd>
 #include <map>
 #include <string>
 #include <vector>
 
-#define UCSYMTBL_MAGIC0 0xffffffffu
-#define UCSYMTBL_MAGIC1                                                  \
-	((static_cast<uint32>('U') << 24) + (static_cast<uint32>('C') << 16) \
-	 + (static_cast<uint32>('S') << 8) + 'Y')
+#ifdef __clang__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wunused-const-variable"
+#endif
+constexpr const uint32 UCSYMTBL_MAGIC0 = 0xffffffffu;
+constexpr const uint32 UCSYMTBL_MAGIC1
+		= (static_cast<uint32>('U') << 24) + (static_cast<uint32>('C') << 16)
+		  + (static_cast<uint32>('S') << 8) + 'Y';
+#ifdef __clang__
+#	pragma GCC diagnostic pop
+#endif
 
 class Usecode_class_symbol;
 class Usecode_symbol_table;

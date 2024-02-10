@@ -34,7 +34,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ucclass.h"
 #include "ucexpr.h"
 #include "ucfun.h"
-#include "utils.h"
 
 #include <cstdio>
 #include <cstring>

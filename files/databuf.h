@@ -18,6 +18,7 @@
 #define DATA_H
 
 #include "U7obj.h"
+#include "endianio.h"
 #include "utils.h"
 
 #include <cassert>
@@ -25,10 +26,8 @@
 #include <cstdio>
 #include <cstring>
 #include <fstream>
-#include <iomanip>
 #include <memory>
 #include <string>
-#include <vector>
 
 class ODataSource;
 
@@ -117,19 +116,19 @@ public:
 	}
 
 	uint16 read2() final {
-		return Read2(in);
+		return little_endian::Read2(in);
 	}
 
 	uint16 read2high() final {
-		return Read2high(in);
+		return big_endian::Read2(in);
 	}
 
 	uint32 read4() final {
-		return Read4(in);
+		return little_endian::Read4(in);
 	}
 
 	uint32 read4high() final {
-		return Read4high(in);
+		return big_endian::Read4(in);
 	}
 
 	void read(void* b, size_t len) final {
@@ -138,7 +137,7 @@ public:
 
 	void read(std::string& s, size_t len) final {
 		s.resize(len);
-		in->read(&s[0], len);
+		in->read(s.data(), len);
 	}
 
 	std::unique_ptr<IDataSource> makeSource(size_t len) final;
@@ -232,19 +231,19 @@ public:
 	}
 
 	uint16 read2() final {
-		return Read2(buf_ptr);
+		return little_endian::Read2(buf_ptr);
 	}
 
 	uint16 read2high() final {
-		return Read2high(buf_ptr);
+		return big_endian::Read2(buf_ptr);
 	}
 
 	uint32 read4() final {
-		return Read4(buf_ptr);
+		return little_endian::Read4(buf_ptr);
 	}
 
 	uint32 read4high() final {
-		return Read4high(buf_ptr);
+		return big_endian::Read4(buf_ptr);
 	}
 
 	void read(void* b, size_t len) final {
@@ -391,19 +390,19 @@ public:
 	}
 
 	void write2(uint16 val) final {
-		Write2(out, val);
+		little_endian::Write2(out, val);
 	}
 
 	void write2high(uint16 val) final {
-		Write2high(out, val);
+		big_endian::Write2(out, val);
 	}
 
 	void write4(uint32 val) final {
-		Write4(out, val);
+		little_endian::Write4(out, val);
 	}
 
 	void write4high(uint32 val) final {
-		Write4high(out, val);
+		big_endian::Write4(out, val);
 	}
 
 	void write(const void* b, size_t len) final {
@@ -485,19 +484,19 @@ public:
 	}
 
 	void write2(uint16 val) final {
-		Write2(buf_ptr, val);
+		little_endian::Write2(buf_ptr, val);
 	}
 
 	void write2high(uint16 val) final {
-		Write2high(buf_ptr, val);
+		big_endian::Write2(buf_ptr, val);
 	}
 
 	void write4(uint32 val) final {
-		Write4(buf_ptr, val);
+		little_endian::Write4(buf_ptr, val);
 	}
 
 	void write4high(uint32 val) final {
-		Write4high(buf_ptr, val);
+		big_endian::Write4(buf_ptr, val);
 	}
 
 	void write(const void* b, size_t len) final {

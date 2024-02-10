@@ -132,7 +132,7 @@ void Image_file_info::flush() {
 	// Tell Exult to reload this file.
 	unsigned char  buf[Exult_server::maxlength];
 	unsigned char* ptr = &buf[0];
-	Write2(ptr, ifile->get_u7drag_type());
+	little_endian::Write2(ptr, ifile->get_u7drag_type());
 	ExultStudio* studio = ExultStudio::get_instance();
 	studio->send_to_server(Exult_server::reload_shapes, buf, ptr - buf);
 }
@@ -238,15 +238,16 @@ bool Npcs_file_info::read_npc(unsigned num) {
 	unsigned char*         ptr;
 	const unsigned char*   newptr;
 	newptr = ptr = &buf[0];
-	Write2(ptr, num);
+	little_endian::Write2(ptr, num);
 	if (!studio->send_to_server(Exult_server::npc_info, buf, ptr - buf)
 		|| !Exult_server::wait_for_response(server_socket, 100)
 		|| Exult_server::Receive_data(server_socket, id, buf, sizeof(buf)) == -1
-		|| id != Exult_server::npc_info || Read2(newptr) != num) {
+		|| id != Exult_server::npc_info
+		|| little_endian::Read2(newptr) != num) {
 		return false;
 	}
 
-	npcs[num].shapenum = Read2(newptr);    // -1 if unused.
+	npcs[num].shapenum = little_endian::Read2(newptr);    // -1 if unused.
 	if (npcs[num].shapenum >= 0) {
 		npcs[num].unused = Read1(newptr) != 0;
 		const string utf8name(
@@ -281,21 +282,22 @@ void Npcs_file_info::setup() {
 	}
 	unsigned char*       ptr;
 	const unsigned char* newptr = &buf[0];
-	num_npcs                    = Read2(newptr);
+	num_npcs                    = little_endian::Read2(newptr);
 	npcs.resize(num_npcs);
 	for (int i = 0; i < num_npcs; ++i) {
 		newptr = ptr = &buf[0];
-		Write2(ptr, i);
+		little_endian::Write2(ptr, i);
 		if (!studio->send_to_server(Exult_server::npc_info, buf, ptr - buf)
 			|| !Exult_server::wait_for_response(server_socket, 100)
 			|| Exult_server::Receive_data(server_socket, id, buf, sizeof(buf))
 					   == -1
-			|| id != Exult_server::npc_info || Read2(newptr) != i) {
+			|| id != Exult_server::npc_info
+			|| little_endian::Read2(newptr) != i) {
 			npcs.resize(0);
 			cerr << "Error getting info for NPC #" << i << endl;
 			return;
 		}
-		npcs[i].shapenum = Read2(newptr);    // -1 if unused.
+		npcs[i].shapenum = little_endian::Read2(newptr);    // -1 if unused.
 		if (npcs[i].shapenum >= 0) {
 			npcs[i].unused = Read1(newptr) != 0;
 			const string utf8name(

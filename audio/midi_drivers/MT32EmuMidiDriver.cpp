@@ -22,11 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef USE_MT32EMU_MIDI
 #	include "MT32EmuMidiDriver.h"
 
-#	include "XMidiEvent.h"
-#	include "XMidiEventList.h"
-#	include "XMidiFile.h"
-#	include "databuf.h"
-#	include "ignore_unused_variable_warning.h"
 #	include "utils.h"
 
 #	include <cstring>

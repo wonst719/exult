@@ -26,18 +26,14 @@
 #include "vgafile.h"
 
 #include "Flex.h"
-#include "U7file.h"
 #include "databuf.h"
+#include "endianio.h"
 #include "exceptions.h"
 #include "ibuf8.h"
-#include "items.h"
 #include "palette.h"
-#include "rect.h"
-#include "utils.h"
 
 #include <cassert>
 #include <cstring>
-#include <iomanip>
 #include <map>
 #include <string>
 #include <utility>
@@ -98,12 +94,12 @@ unique_ptr<Shape_frame> Shape_frame::reflect() {
 	const int    yoff = reflected->yabove;
 	const uint8* in   = data.get();    // Point to data, and draw.
 	int          scanlen;
-	while ((scanlen = Read2(in)) != 0) {
+	while ((scanlen = little_endian::Read2(in)) != 0) {
 		// Get length of scan line.
 		const int encoded = scanlen & 1;    // Is it encoded?
 		scanlen           = scanlen >> 1;
-		const short scanx = Read2(in);
-		const short scany = Read2(in);
+		const short scanx = little_endian::Read2(in);
+		const short scany = little_endian::Read2(in);
 		if (!encoded) {    // Raw data?
 			ibuf.copy8(in, 1, scanlen, xoff + scany, yoff + scanx);
 			in += scanlen;
@@ -301,19 +297,19 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 			// Just 1 non-repeated run?
 			if (!runs[1] && !(runs[0] & 1)) {
 				const int len = runs[0] >> 1;
-				Write2(out, runs[0]);
+				little_endian::Write2(out, runs[0]);
 				// Write position.
-				Write2(out, x - xoff);
-				Write2(out, y - yoff);
+				little_endian::Write2(out, x - xoff);
+				little_endian::Write2(out, y - yoff);
 				out = std::copy_n(pixels, len, out);
 				pixels += len;
 				continue;
 			}
 			// Encoded, so write it with bit0==1.
-			Write2(out, ((newx - x) << 1) | 1);
+			little_endian::Write2(out, ((newx - x) << 1) | 1);
 			// Write position.
-			Write2(out, x - xoff);
-			Write2(out, y - yoff);
+			little_endian::Write2(out, x - xoff);
+			little_endian::Write2(out, y - yoff);
 			// Go through runs.
 			for (int i = 0; runs[i]; i++) {
 				int len = runs[i] >> 1;
@@ -338,8 +334,8 @@ unique_ptr<unsigned char[]> Shape_frame::encode_rle(
 			}
 		}
 	}
-	Write2(out, 0);                // End with 0 length.
-	datalen = out - buf.data();    // Create buffer of correct size.
+	little_endian::Write2(out, 0);    // End with 0 length.
+	datalen = out - buf.data();       // Create buffer of correct size.
 #ifdef DEBUG
 	if (datalen > w * h * 2 + 16 * h) {
 		cout << "create_rle: datalen: " << datalen << " w: " << w << " h: " << h
@@ -567,12 +563,12 @@ void Shape_frame::paint_rle_translucent(
 	const int    xfstart = 0xff - xfcnt;
 	const uint8* in      = data.get();
 	int          scanlen;
-	while ((scanlen = Read2(in)) != 0) {
+	while ((scanlen = little_endian::Read2(in)) != 0) {
 		// Get length of scan line.
 		const int encoded = scanlen & 1;    // Is it encoded?
 		scanlen           = scanlen >> 1;
-		const short scanx = Read2(in);
-		const short scany = Read2(in);
+		const short scanx = little_endian::Read2(in);
+		const short scany = little_endian::Read2(in);
 		if (!encoded) {    // Raw data?
 			win->copy_line_translucent8(
 					in, scanlen, xoff + scanx, yoff + scany, xfstart, 0xfe,
@@ -627,12 +623,12 @@ void Shape_frame::paint_rle_transformed(
 	}
 	const uint8* in = data.get();
 	int          scanlen;
-	while ((scanlen = Read2(in)) != 0) {
+	while ((scanlen = little_endian::Read2(in)) != 0) {
 		// Get length of scan line.
 		const int encoded = scanlen & 1;    // Is it encoded?
 		scanlen           = scanlen >> 1;
-		const short scanx = Read2(in);
-		const short scany = Read2(in);
+		const short scanx = little_endian::Read2(in);
+		const short scany = little_endian::Read2(in);
 		if (!encoded) {    // Raw data?
 			// (Note: 1st parm is ignored).
 			win->fill_line_translucent8(
@@ -676,12 +672,12 @@ void Shape_frame::paint_rle_outline(
 	int          lasty  = -10000;
 	const uint8* in     = data.get();
 	int          scanlen;
-	while ((scanlen = Read2(in)) != 0) {
+	while ((scanlen = little_endian::Read2(in)) != 0) {
 		// Get length of scan line.
 		const int encoded = scanlen & 1;    // Is it encoded?
 		scanlen           = scanlen >> 1;
-		const short scanx = Read2(in);
-		const short scany = Read2(in);
+		const short scanx = little_endian::Read2(in);
+		const short scany = little_endian::Read2(in);
 		const int   x     = xoff + scanx;
 		const int   y     = yoff + scany;
 		if (firsty == -10000) {
@@ -732,12 +728,12 @@ bool Shape_frame::has_point(
 	}
 	const uint8* in = data.get();    // Point to data.
 	int          scanlen;
-	while ((scanlen = Read2(in)) != 0) {
+	while ((scanlen = little_endian::Read2(in)) != 0) {
 		// Get length of scan line.
 		const int encoded = scanlen & 1;    // Is it encoded?
 		scanlen           = scanlen >> 1;
-		const short scanx = Read2(in);
-		const short scany = Read2(in);
+		const short scanx = little_endian::Read2(in);
+		const short scany = little_endian::Read2(in);
 		// Be liberal by 1 pixel.
 		if (y == scany && x >= scanx - 1 && x <= scanx + scanlen) {
 			return true;
@@ -786,16 +782,16 @@ void Shape_frame::set_offset(int new_xright, int new_ybelow) {
 	yabove           = h - ybelow - 1;
 	uint8* in        = data.get();    // Got to update all scan lines!
 	int    scanlen;
-	while ((scanlen = MRead2(in)) != 0) {
+	while ((scanlen = little_endian::Read2(in)) != 0) {
 		// Get length of scan line.
 		const int encoded = scanlen & 1;    // Is it encoded?
 		scanlen           = scanlen >> 1;
-		const short scanx = MRead2(in);
+		const short scanx = little_endian::Read2(in);
 		in -= 2;
-		Write2(in, scanx + deltax);
-		const short scany = MRead2(in);
+		little_endian::Write2(in, scanx + deltax);
+		const short scany = little_endian::Read2(in);
 		in -= 2;
-		Write2(in, scany + deltay);
+		little_endian::Write2(in, scany + deltay);
 		// Just need to scan past EOL.
 		if (!encoded) {    // Raw data?
 			in += scanlen;

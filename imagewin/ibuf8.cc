@@ -26,13 +26,12 @@
 #include "ibuf8.h"
 
 #include "common_types.h"
+#include "endianio.h"
 #include "ignore_unused_variable_warning.h"
-#include "utils.h"
 
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <string>
 
 using std::cerr;
 using std::endl;
@@ -350,12 +349,12 @@ void Image_buffer8::paint_rle(int xoff, int yoff, const unsigned char* inptr) {
 	const int    right  = clipx + clipw;
 	const int    bottom = clipy + cliph;
 
-	while ((scanlen = Read2(in)) != 0) {
+	while ((scanlen = little_endian::Read2(in)) != 0) {
 		// Get length of scan line.
 		const int encoded = scanlen & 1;    // Is it encoded?
 		scanlen           = scanlen >> 1;
-		int       scanx   = xoff + static_cast<sint16>(Read2(in));
-		const int scany   = yoff + static_cast<sint16>(Read2(in));
+		int       scanx = xoff + static_cast<sint16>(little_endian::Read2(in));
+		const int scany = yoff + static_cast<sint16>(little_endian::Read2(in));
 
 		// Is there somthing on screen?
 		bool on_screen = true;
@@ -509,12 +508,12 @@ void Image_buffer8::paint_rle_remapped(
 	const int    right  = clipx + clipw;
 	const int    bottom = clipy + cliph;
 
-	while ((scanlen = Read2(in)) != 0) {
+	while ((scanlen = little_endian::Read2(in)) != 0) {
 		// Get length of scan line.
 		const int encoded = scanlen & 1;    // Is it encoded?
 		scanlen           = scanlen >> 1;
-		int       scanx   = xoff + static_cast<sint16>(Read2(in));
-		const int scany   = yoff + static_cast<sint16>(Read2(in));
+		int       scanx = xoff + static_cast<sint16>(little_endian::Read2(in));
+		const int scany = yoff + static_cast<sint16>(little_endian::Read2(in));
 
 		// Is there somthing on screen?
 		bool on_screen = true;

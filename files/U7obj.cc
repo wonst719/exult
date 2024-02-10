@@ -24,7 +24,6 @@
 
 #include "U7file.h"
 #include "U7fileman.h"
-#include "utils.h"
 
 #include <algorithm>
 #include <vector>

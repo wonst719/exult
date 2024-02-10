@@ -35,14 +35,12 @@
 
 #include <cstdlib>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
 
 #ifdef HAVE_ZIP_SUPPORT
 #	include "files/zip/unzip.h"
-#	include "files/zip/zip.h"
 #endif
 
 using std::cerr;

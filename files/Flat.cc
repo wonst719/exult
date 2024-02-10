@@ -25,7 +25,6 @@
 #include "Flat.h"
 
 #include "databuf.h"
-#include "ignore_unused_variable_warning.h"
 #include "utils.h"
 
 #include <fstream>

@@ -6,7 +6,8 @@
  * Copyright (c) 2017 Marzo Sette Torres Junior
  */
 
-#include "utils.h"
+#include "common_types.h"
+#include "endianio.h"
 
 #include <algorithm>
 #include <fstream>
@@ -127,23 +128,25 @@ int main() {
 
 	// Read the position and number of first function
 	uint32            func_pos = usecode.tellg();
-	uint16            func_num = Read2(usecode);
+	uint16            func_num = little_endian::Read2(usecode);
 	uint16            max_func = 0;
 	usecode_functions functions;
 
 	// Process the usecode file
 	while (!usecode.eof()) {
-		usecode_func& u_ptr    = functions.get(func_num);
-		u_ptr.where            = func_pos;    // Remember start of function
-		u_ptr.size             = Read2(usecode);    // Read the function size
-		const uint16 data_size = Read2(usecode);    // Read the data size
+		usecode_func& u_ptr = functions.get(func_num);
+		u_ptr.where         = func_pos;    // Remember start of function
+		u_ptr.size = little_endian::Read2(usecode);    // Read the function size
+		const uint16 data_size
+				= little_endian::Read2(usecode);    // Read the data size
 		// Skip the data section, number of args and local vars
 		usecode.ignore(data_size + 4);
-		u_ptr.num_call = Read2(usecode);    // Read number of called functions
+		u_ptr.num_call = little_endian::Read2(
+				usecode);    // Read number of called functions
 		// Read table
 		u_ptr.called.reserve(u_ptr.num_call);
 		for (size_t i = 0; i < u_ptr.num_call; i++) {
-			u_ptr.called.push_back(Read2(usecode));
+			u_ptr.called.push_back(little_endian::Read2(usecode));
 		}
 		// Skip past end of function
 		usecode.seekg(u_ptr.where + u_ptr.size + 4, ios::beg);
@@ -153,7 +156,7 @@ int main() {
 		}
 		// Read the position and number of next function
 		func_pos = usecode.tellg();
-		func_num = Read2(usecode);
+		func_num = little_endian::Read2(usecode);
 	}
 
 	// Open the linkdep files for writing
@@ -166,8 +169,8 @@ int main() {
 		const usecode_func& u_ptr = functions.get(i);
 		if (!u_ptr.size) {
 			// Write null entry for null function
-			Write2(linkdep1, lnk2_written);
-			Write2(linkdep1, 0xffffu);
+			little_endian::Write2(linkdep1, lnk2_written);
+			little_endian::Write2(linkdep1, 0xffffu);
 			continue;
 		}
 		// Get function tree
@@ -177,18 +180,18 @@ int main() {
 		// Get total size of function + all called functions
 		const uint16 total_size = functions.get_total_size(func_tree);
 		// Write to linkdep1
-		Write2(linkdep1, lnk2_written);
-		Write2(linkdep1, total_size);
+		little_endian::Write2(linkdep1, lnk2_written);
+		little_endian::Write2(linkdep1, total_size);
 		// Write each pointer
 		for (const unsigned short j : func_tree) {
-			Write4(linkdep2, functions.get(j).where);
+			little_endian::Write4(linkdep2, functions.get(j).where);
 			lnk2_written++;
 		}
 	}
 
 	// Write ending on linkdep1
-	Write2(linkdep1, lnk2_written);
-	Write2(linkdep1, 0);
+	little_endian::Write2(linkdep1, lnk2_written);
+	little_endian::Write2(linkdep1, 0);
 
 	return 0;
 }

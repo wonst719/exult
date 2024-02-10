@@ -20,7 +20,8 @@
 #	include <config.h>
 #endif
 
-#include "utils.h"
+#include "common_types.h"
+#include "endianio.h"
 
 #include <cassert>
 #include <iostream>
@@ -41,7 +42,7 @@ int main() {
 
 	assert(static_cast<char>(Read1(iss)) == ' ');
 
-	const uint16 outread2 = Read2(iss);
+	const uint16 outread2 = little_endian::Read2(iss);
 	cout << static_cast<char>(outread2 & 0xff)
 		 << static_cast<char>((outread2 >> 8) & 0xff) << endl;
 	assert(static_cast<char>(outread2 & 0xff) == 'B');
@@ -49,7 +50,7 @@ int main() {
 
 	assert(static_cast<char>(Read1(iss)) == ' ');
 
-	const uint16 outread2high = Read2high(iss);
+	const uint16 outread2high = big_endian::Read2(iss);
 	cout << static_cast<char>((outread2high >> 8) & 0xff)
 		 << static_cast<char>(outread2high & 0xff) << endl;
 	assert(static_cast<char>(outread2high & 0xff) == 'E');
@@ -57,7 +58,7 @@ int main() {
 
 	assert(static_cast<char>(Read1(iss)) == ' ');
 
-	const uint32 outread4 = Read4(iss);
+	const uint32 outread4 = little_endian::Read4(iss);
 	cout << static_cast<char>(outread4 & 0xff)
 		 << static_cast<char>((outread4 >> 8) & 0xff)
 		 << static_cast<char>((outread4 >> 16) & 0xff)
@@ -69,7 +70,7 @@ int main() {
 
 	assert(static_cast<char>(Read1(iss)) == ' ');
 
-	const uint32 outread4high = Read4high(iss);
+	const uint32 outread4high = big_endian::Read4(iss);
 	cout << static_cast<char>((outread4high >> 24) & 0xff)
 		 << static_cast<char>((outread4high >> 16) & 0xff)
 		 << static_cast<char>((outread4high >> 8) & 0xff)

@@ -28,7 +28,6 @@
 #include "data/exult_si_flx.h"
 #include "databuf.h"
 #include "exult.h"
-#include "files/U7file.h"
 #include "files/utils.h"
 #include "flic/playfli.h"
 #include "font.h"

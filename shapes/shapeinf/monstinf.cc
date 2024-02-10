@@ -24,9 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "monstinf.h"
 
+#include "common_types.h"
+#include "endianio.h"
 #include "exult_constants.h"
 #include "ignore_unused_variable_warning.h"
-#include "utils.h"
+
+#include <istream>
 
 using std::istream;
 
@@ -118,7 +121,7 @@ bool Monster_info::read(
  */
 
 const Monster_info* Monster_info::get_default() {
-	if (!default_info.strength) {    // First time?
+	if (default_info.strength == 0u) {    // First time?
 		default_info.strength               = default_info.dexterity
 				= default_info.intelligence = default_info.combat = 10;
 		default_info.alignment = 0;    // Neutral.
@@ -179,12 +182,12 @@ int Monster_info::get_base_xp_value() const {
 	// This prevents death from Death Bolt.
 	expval += m_death_safe ? 1 : 0;
 	expval += m_power_safe ? 8 : 0;
-	expval += (flags & (1 << fly)) ? 1 : 0;
-	expval += (flags & (1 << swim)) ? 1 : 0;
-	expval += (flags & (1 << ethereal)) ? 2 : 0;
-	expval += (flags & (1 << 5)) ? 2 : 0;    // No idea what this does.
-	expval += (flags & (1 << see_invisible)) ? 2 : 0;
-	expval += (flags & (1 << start_invisible)) ? 8 : 0;
+	expval += (flags & (1 << fly)) != 0 ? 1 : 0;
+	expval += (flags & (1 << swim)) != 0 ? 1 : 0;
+	expval += (flags & (1 << ethereal)) != 0 ? 2 : 0;
+	expval += (flags & (1 << 5)) != 0 ? 2 : 0;    // No idea what this does.
+	expval += (flags & (1 << see_invisible)) != 0 ? 2 : 0;
+	expval += (flags & (1 << start_invisible)) != 0 ? 8 : 0;
 	expval += m_splits ? 2 : 0;
 	expval += reach > 5 ? 2 : (reach > 3 ? 1 : 0);
 	return expval;

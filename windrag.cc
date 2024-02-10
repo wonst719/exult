@@ -14,6 +14,7 @@
 #	include "ignore_unused_variable_warning.h"
 #	include "u7drag.h"
 
+#	include <cstring>
 #	include <iostream>
 
 static UINT CF_EXULT = RegisterClipboardFormat(U7_TARGET_DROPFILE_NAME_MIME);

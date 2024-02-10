@@ -28,11 +28,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "chunklst.h"
 
+#include "endianio.h"
 #include "exult_constants.h"
 #include "ibuf8.h"
 #include "shapegroup.h"
 #include "u7drag.h"
-#include "utils.h"
 #include "vgafile.h"
 
 #include <glib.h>
@@ -80,7 +80,7 @@ void Chunk_chooser::tell_server() {
 	}
 	unsigned char  buf[Exult_server::maxlength];
 	unsigned char* ptr = &buf[0];
-	Write2(ptr, info[selected].num);
+	little_endian::Write2(ptr, info[selected].num);
 	ExultStudio* studio = ExultStudio::get_instance();
 	studio->send_to_server(Exult_server::set_edit_chunknum, buf, ptr - buf);
 }
@@ -180,7 +180,7 @@ unsigned char* Chunk_chooser::get_chunk(int chunknum) {
 	unsigned char        buf[Exult_server::maxlength];
 	unsigned char*       ptr    = &buf[0];
 	const unsigned char* newptr = &buf[0];
-	Write2(ptr, chunknum);
+	little_endian::Write2(ptr, chunknum);
 	ExultStudio*           studio        = ExultStudio::get_instance();
 	int                    server_socket = studio->get_server_socket();
 	Exult_server::Msg_type id;    // Expect immediate answer.
@@ -190,7 +190,8 @@ unsigned char* Chunk_chooser::get_chunk(int chunknum) {
 		|| (datalen
 			= Exult_server::Receive_data(server_socket, id, buf, sizeof(buf)))
 				   == -1
-		|| id != Exult_server::send_terrain || Read2(newptr) != chunknum) {
+		|| id != Exult_server::send_terrain
+		|| little_endian::Read2(newptr) != chunknum) {
 		// No server?  Get from file.
 		data                = new unsigned char[chunksz];
 		chunklist[chunknum] = data;
@@ -228,8 +229,9 @@ void Chunk_chooser::update_num_chunks(int new_num_chunks) {
 void Chunk_chooser::set_chunk(
 		const unsigned char* data,    // Message from server.
 		int                  datalen) {
-	const int tnum           = Read2(data);    // First the terrain #.
-	const int new_num_chunks = Read2(data);    // Always sends total.
+	const int tnum = little_endian::Read2(data);    // First the terrain #.
+	const int new_num_chunks
+			= little_endian::Read2(data);    // Always sends total.
 	datalen -= 4;
 	if (datalen != chunksz) {
 		cout << "Set_chunk:  Wrong data length" << endl;
@@ -903,9 +905,9 @@ void Chunk_chooser::locate(int dir    // 1=downwards, -1=upwards, 0=from top.
 	} else if (dir == -1) {
 		upwards = true;
 	}
-	Write2(ptr, tnum);
-	Write2(ptr, cx);    // Current chunk, or -1.
-	Write2(ptr, cy);
+	little_endian::Write2(ptr, tnum);
+	little_endian::Write2(ptr, cx);    // Current chunk, or -1.
+	little_endian::Write2(ptr, cy);
 	Write1(ptr, upwards ? 1 : 0);
 	ExultStudio* studio = ExultStudio::get_instance();
 	if (!studio->send_to_server(
@@ -925,19 +927,19 @@ void Chunk_chooser::locate(bool upwards) {
 void Chunk_chooser::locate_response(const unsigned char* data, int datalen) {
 	ignore_unused_variable_warning(datalen);
 	const unsigned char* ptr  = data;
-	const int            tnum = Read2(ptr);
+	const int            tnum = little_endian::Read2(ptr);
 	if (selected < 0 || tnum != info[selected].num) {
 		to_del = -1;
 		return;    // Not the current selection.
 	}
-	auto cx = static_cast<short>(Read2(ptr));    // Get chunk found.
-	auto cy = static_cast<short>(Read2(ptr));
+	auto cx = little_endian::Read2s(ptr);    // Get chunk found.
+	auto cy = little_endian::Read2s(ptr);
 	ptr++;    // Skip upwards flag.
 	if (!*ptr) {
 		if (to_del >= 0 && to_del == tnum) {
 			unsigned char  data[Exult_server::maxlength];
 			unsigned char* ptr = &data[0];
-			Write2(ptr, tnum);
+			little_endian::Write2(ptr, tnum);
 			ExultStudio* studio = ExultStudio::get_instance();
 			studio->send_to_server(
 					Exult_server::delete_terrain, data, ptr - data);
@@ -965,7 +967,7 @@ void Chunk_chooser::insert(bool dup) {
 	unsigned char  data[Exult_server::maxlength];
 	unsigned char* ptr  = &data[0];
 	const int      tnum = selected >= 0 ? info[selected].num : -1;
-	Write2(ptr, tnum);
+	little_endian::Write2(ptr, tnum);
 	Write1(ptr, dup ? 1 : 0);
 	ExultStudio* studio = ExultStudio::get_instance();
 	studio->send_to_server(Exult_server::insert_terrain, data, ptr - data);
@@ -990,7 +992,7 @@ void Chunk_chooser::del() {
 void Chunk_chooser::insert_response(const unsigned char* data, int datalen) {
 	ignore_unused_variable_warning(datalen);
 	const unsigned char* ptr  = data;
-	const int            tnum = static_cast<short>(Read2(ptr));
+	const int            tnum = little_endian::Read2s(ptr);
 	const bool           dup  = Read1(ptr) != 0;
 	if (!*ptr) {
 		EStudio::Alert("Terrain insert failed.");
@@ -1019,7 +1021,7 @@ void Chunk_chooser::insert_response(const unsigned char* data, int datalen) {
 void Chunk_chooser::delete_response(const unsigned char* data, int datalen) {
 	ignore_unused_variable_warning(datalen);
 	const unsigned char* ptr  = data;
-	const int            tnum = static_cast<short>(Read2(ptr));
+	const int            tnum = little_endian::Read2s(ptr);
 	if (!*ptr) {
 		EStudio::Alert("Terrain delete failed.");
 	} else {
@@ -1048,7 +1050,7 @@ void Chunk_chooser::move(bool upwards) {
 	if (upwards) {    // Going to swap tnum & tnum+1.
 		tnum--;
 	}
-	Write2(ptr, tnum);
+	little_endian::Write2(ptr, tnum);
 	ExultStudio* studio = ExultStudio::get_instance();
 	studio->send_to_server(Exult_server::swap_terrain, data, ptr - data);
 }
@@ -1060,7 +1062,7 @@ void Chunk_chooser::move(bool upwards) {
 void Chunk_chooser::swap_response(const unsigned char* data, int datalen) {
 	ignore_unused_variable_warning(datalen);
 	const unsigned char* ptr  = data;
-	const int            tnum = static_cast<short>(Read2(ptr));
+	const int            tnum = little_endian::Read2s(ptr);
 	if (!*ptr) {
 		cout << "Terrain insert failed." << endl;
 	} else if (tnum >= 0 && tnum < num_chunks - 1) {

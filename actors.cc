@@ -189,15 +189,15 @@ static Frames_sequence avatar_west_frames(3, avatar_west_framenums);
 Frames_sequence* Actor::avatar_frames[4] = {nullptr, nullptr, nullptr, nullptr};
 Frames_sequence* Actor::npc_frames[4]    = {nullptr, nullptr, nullptr, nullptr};
 
-const signed char sea_serpent_attack_frames[] = {1, 2, 3};
-const signed char reach_attack_frames1[]      = {3, 6};
-const signed char raise_attack_frames1[]      = {3, 4, 6};
-const signed char fast_swing_attack_frames1[] = {3, 5, 6};
-const signed char slow_swing_attack_frames1[] = {3, 4, 5, 6};
-const signed char reach_attack_frames2[]      = {3, 9};
-const signed char raise_attack_frames2[]      = {3, 7, 9};
-const signed char fast_swing_attack_frames2[] = {3, 8, 9};
-const signed char slow_swing_attack_frames2[] = {3, 7, 8, 9};
+const std::array sea_serpent_attack_frames = {1, 2, 3};
+const std::array reach_attack_frames1      = {3, 6};
+const std::array raise_attack_frames1      = {3, 4, 6};
+const std::array fast_swing_attack_frames1 = {3, 5, 6};
+const std::array slow_swing_attack_frames1 = {3, 4, 5, 6};
+const std::array reach_attack_frames2      = {3, 9};
+const std::array raise_attack_frames2      = {3, 7, 9};
+const std::array fast_swing_attack_frames2 = {3, 8, 9};
+const std::array slow_swing_attack_frames2 = {3, 7, 8, 9};
 
 // inline int Is_attack_frame(int i) { return i >= 3 && i <= 9; }
 inline bool Is_attack_frame(int i) {
@@ -1125,29 +1125,12 @@ int Actor::get_attack_frames(
 		int          dir,           // 0-7 (as in dir.h).
 		signed char* frames         // Frames stored here.
 ) const {
-	const signed char* which;
-	int                cnt = 0;
+	tcb::span<const int> which;
 	if (is_slime()) {
 		return 0;
 	} else if (get_info().has_strange_movement()) {
 		which = sea_serpent_attack_frames;
-		cnt   = sizeof(sea_serpent_attack_frames);
 	} else {
-		const signed char* reach_attack_frames;
-		const signed char* raise_attack_frames;
-		const signed char* fast_swing_attack_frames;
-		const signed char* slow_swing_attack_frames;
-		if (two_handed) {
-			reach_attack_frames      = reach_attack_frames2;
-			raise_attack_frames      = raise_attack_frames2;
-			fast_swing_attack_frames = fast_swing_attack_frames2;
-			slow_swing_attack_frames = slow_swing_attack_frames2;
-		} else {
-			reach_attack_frames      = reach_attack_frames1;
-			raise_attack_frames      = raise_attack_frames1;
-			fast_swing_attack_frames = fast_swing_attack_frames1;
-			slow_swing_attack_frames = slow_swing_attack_frames1;
-		}
 		unsigned char      frame_flags;    // Get Actor_frame flags.
 		const Weapon_info* winfo;
 		if (weapon >= 0
@@ -1158,28 +1141,42 @@ int Actor::get_attack_frames(
 			frame_flags
 					= projectile ? Weapon_info::reach : Weapon_info::fast_swing;
 		}
-		switch (frame_flags) {
-		case Weapon_info::reach:
-			which = reach_attack_frames;
-			cnt   = sizeof(reach_attack_frames1);
-			break;
-		case Weapon_info::raise:
-			which = raise_attack_frames;
-			cnt   = sizeof(raise_attack_frames1);
-			break;
-		case Weapon_info::fast_swing:
-			which = fast_swing_attack_frames;
-			cnt   = sizeof(fast_swing_attack_frames1);
-			break;
-		case Weapon_info::slow_swing:
-		default:
-			which = slow_swing_attack_frames;
-			cnt   = sizeof(slow_swing_attack_frames1);
-			break;
+		if (two_handed) {
+			switch (frame_flags) {
+			case Weapon_info::reach:
+				which = reach_attack_frames2;
+				break;
+			case Weapon_info::raise:
+				which = raise_attack_frames2;
+				break;
+			case Weapon_info::fast_swing:
+				which = fast_swing_attack_frames2;
+				break;
+			case Weapon_info::slow_swing:
+			default:
+				which = slow_swing_attack_frames2;
+				break;
+			}
+		} else {
+			switch (frame_flags) {
+			case Weapon_info::reach:
+				which = reach_attack_frames1;
+				break;
+			case Weapon_info::raise:
+				which = raise_attack_frames1;
+				break;
+			case Weapon_info::fast_swing:
+				which = fast_swing_attack_frames1;
+				break;
+			case Weapon_info::slow_swing:
+			default:
+				which = slow_swing_attack_frames1;
+				break;
+			}
 		}
 	}
-	for (int i = 0; i < cnt; i++) {    // Copy frames with correct dir.
-		int frame = get_dir_framenum(dir, Read1(which));
+	for (auto fr : which) {    // Copy frames with correct dir.
+		int frame = get_dir_framenum(dir, fr);
 		// Check for empty shape.
 		ShapeID      id(get_shapenum(), frame, get_shapefile());
 		Shape_frame* shape = id.get_shape();
@@ -1191,9 +1188,9 @@ int Actor::get_attack_frames(
 				frame = get_dir_framenum(dir, Actor::standing);
 			}
 		}
-		Write1(frames, frame);
+		*frames++ = frame;
 	}
-	return cnt;
+	return which.size();
 }
 
 void Actor::add_light_source(Game_object* obj) {
@@ -3296,7 +3293,7 @@ void Actor::read_attributes(
 		const char* att = reinterpret_cast<const char*>(ptr);
 		ptr += strlen(att) + 1;
 		assert(ptr + 2 <= endbuf);
-		const int val = Read2(ptr);
+		const int val = little_endian::Read2(ptr);
 		set_attribute(att, val);
 	}
 }
@@ -5530,12 +5527,12 @@ void Dead_body::write_ireg(ODataSource* out) {
 	uint8*               ptr   = write_common_ireg(13, buf);
 	Game_object*         first = objects.get_first();    // Guessing: +++++
 	const unsigned short tword = first ? first->get_prev()->get_shapenum() : 0;
-	Write2(ptr, tword);
+	little_endian::Write2(ptr, tword);
 	Write1(ptr, 0);    // Unknown.
 	Write1(ptr, get_quality());
 	const int npc = get_live_npc_num();    // If body, get source.
 	// Here, store NPC # more simply.
-	Write2(ptr, npc);    // Allowing larger range of NPC bodies.
+	little_endian::Write2(ptr, npc);    // Allowing larger range of NPC bodies.
 	Write1(ptr, nibble_swap(get_lift()));                     // Lift
 	Write1(ptr, static_cast<unsigned char>(get_obj_hp()));    // Resistance.
 	// Flags:  B0=invis. B3=okay_to_take.

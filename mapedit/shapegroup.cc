@@ -38,7 +38,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <cassert>
 #include <cstdlib>
-#include <fstream>
 
 using EStudio::Alert;
 using std::ios;
@@ -305,12 +304,12 @@ Shape_group_file::Shape_group_file(const char* nm    // Basename.
 			const char* gname = reinterpret_cast<const char*>(
 					buf.get());    // Starts with name.
 			const unsigned char* ptr = buf.get() + strlen(gname) + 1;
-			const size_t         sz  = Read2(ptr);    // Get # entries.
+			const size_t sz = little_endian::Read2(ptr);    // Get # entries.
 			assert((len - (ptr - buf.get())) / 2 == sz);
 			auto* grp = new Shape_group(gname, this);
 			grp->reserve(sz);
 			for (size_t j = 0; j < sz; j++) {
-				grp->push_back(Read2(ptr));
+				grp->push_back(little_endian::Read2(ptr));
 			}
 			groups.push_back(grp);
 		}

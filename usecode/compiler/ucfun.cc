@@ -28,13 +28,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "basic_block.h"
+#include "endianio.h"
 #include "opcodes.h"
 #include "span.h"
 #include "ucexpr.h" /* Needed only for Write2(). */
 #include "ucfun.h"
 #include "ucstmt.h"
 #include "ucsymtbl.h"
-#include "utils.h"
 
 #include <array>
 #include <cassert>
@@ -828,30 +828,31 @@ void Uc_function::gen(std::ostream& out) {
 	if (is_int_32bit(totallen) || proto->has_high_id() || need_ext_header) {
 		totallen += 2;    // Extra space for text_data_size.
 		if (proto->has_high_id()) {
-			Write2(out, 0xfffe);
-			Write4(out, proto->get_usecode_num());
+			little_endian::Write2(out, 0xfffe);
+			little_endian::Write4(out, proto->get_usecode_num());
 		} else {
-			Write2(out, 0xffff);
-			Write2(out, proto->get_usecode_num());
+			little_endian::Write2(out, 0xffff);
+			little_endian::Write2(out, proto->get_usecode_num());
 		}
-		Write4(out, totallen);
-		Write4(out, text_data_size);
+		little_endian::Write4(out, totallen);
+		little_endian::Write4(out, text_data_size);
 	} else {
-		Write2(out, proto->get_usecode_num());
-		Write2(out, totallen);
-		Write2(out, text_data_size);
+		little_endian::Write2(out, proto->get_usecode_num());
+		little_endian::Write2(out, totallen);
+		little_endian::Write2(out, text_data_size);
 	}
 	// Now data.
 	out.write(text_data, text_data_size);
 	// Counts.
-	Write2(out,
-		   num_parms
-				   + (get_function_type() != Uc_function_symbol::utility_fun));
-	Write2(out, num_locals);
-	Write2(out, num_links);
+	little_endian::Write2(
+			out,
+			num_parms
+					+ (get_function_type() != Uc_function_symbol::utility_fun));
+	little_endian::Write2(out, num_locals);
+	little_endian::Write2(out, num_links);
 	// Write external links.
 	for (auto* link : links) {
-		Write2(out, link->get_usecode_num());
+		little_endian::Write2(out, link->get_usecode_num());
 	}
 	char* ucstr = &code[0];    // Finally, the code itself.
 	out.write(ucstr, codelen);

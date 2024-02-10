@@ -27,11 +27,9 @@ Send patches using: 2,tnum,24,50,24,0,1,0 (enables reverb)
 #endif
 
 #include "Flex.h"
-#include "U7file.h"
 #include "databuf.h"
 #include "exceptions.h"
 #include "ignore_unused_variable_warning.h"
-#include "utils.h"
 
 #include <cstddef>
 #include <cstring>

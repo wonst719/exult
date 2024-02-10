@@ -24,7 +24,7 @@
 
 #include "ucfunction.h"
 
-#include "utils.h"
+#include "endianio.h"
 
 #include <iostream>
 
@@ -35,20 +35,20 @@ using std::istream;
  */
 
 Usecode_function::Usecode_function(istream& file) : orig(nullptr) {
-	id = Read2(file);
+	id = little_endian::Read2(file);
 
 	// support for our extended usecode format. (32 bit lengths and ids)
 	if (id == 0xfffe) {
-		id       = Read4s(file);
-		len      = Read4(file);
+		id       = little_endian::Read4s(file);
+		len      = little_endian::Read4(file);
 		extended = true;
 		// older extended usecode format. (32 bit lengths)
 	} else if (id == 0xffff) {
-		id       = Read2(file);
-		len      = Read4(file);
+		id       = little_endian::Read2(file);
+		len      = little_endian::Read4(file);
 		extended = true;
 	} else {
-		len      = Read2(file);
+		len      = little_endian::Read2(file);
 		extended = false;
 	}
 

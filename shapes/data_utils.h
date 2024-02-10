@@ -30,7 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "fnames.h"
 #include "ignore_unused_variable_warning.h"
 #include "msgfile.h"
-#include "utils.h"
 
 #include <algorithm>
 #include <iterator>
@@ -205,7 +204,7 @@ T* set_info(bool tf, T*& pt) {
 inline int Read_count(std::istream& in) {
 	int cnt = Read1(in);    // How the originals did it.
 	if (cnt == 255) {
-		cnt = Read2(in);    // Exult extension.
+		cnt = little_endian::Read2(in);    // Exult extension.
 	}
 	return cnt;
 }
@@ -217,7 +216,7 @@ inline void Write_count(std::ostream& out, int cnt) {
 	if (cnt >= 255) {
 		// Exult extension.
 		out.put(static_cast<char>(255));
-		Write2(out, cnt);
+		little_endian::Write2(out, cnt);
 	} else {
 		out.put(static_cast<char>(cnt));
 	}
@@ -307,7 +306,7 @@ class ID_reader_functor {
 public:
 	int operator()(std::istream& in, int index, int version, bool binary) {
 		ignore_unused_variable_warning(index, version);
-		return binary ? Read2(in) : ReadInt(in);
+		return binary ? little_endian::Read2(in) : ReadInt(in);
 	}
 };
 
@@ -827,7 +826,7 @@ class Binary_writer_functor {
 public:
 	void operator()(std::ostream& out, int index, Exult_Game game, Info& info) {
 		ignore_unused_variable_warning(game);
-		Write2(out, index);
+		little_endian::Write2(out, index);
 		out.write(reinterpret_cast<char*>(&(info.*data)), sizeof(T));
 		for (int i = 0; i < pad; i++) {
 			out.put(0);
@@ -848,7 +847,7 @@ class Binary_pair_writer_functor {
 public:
 	void operator()(std::ostream& out, int index, Exult_Game game, Info& info) {
 		ignore_unused_variable_warning(game);
-		Write2(out, index);
+		little_endian::Write2(out, index);
 		out.write(reinterpret_cast<char*>(&(info.*data1)), sizeof(T1));
 		out.write(reinterpret_cast<char*>(&(info.*data2)), sizeof(T2));
 		std::fill_n(std::ostream_iterator<char>(out), pad, 0);
@@ -873,7 +872,7 @@ public:
 				const size_t   nelems = T::entry_size >= 3 ? T::entry_size : 1;
 				auto*          buf    = new unsigned char[nelems];
 				unsigned char* ptr    = buf;
-				Write2(ptr, index);
+				little_endian::Write2(ptr, index);
 				if (T::entry_size >= 4) {
 					memset(ptr, 0, T::entry_size - 3);
 				}

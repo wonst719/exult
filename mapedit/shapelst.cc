@@ -145,8 +145,8 @@ void Shape_chooser::tell_server_shape() {
 	}
 	unsigned char  buf[Exult_server::maxlength];
 	unsigned char* ptr = &buf[0];
-	Write2(ptr, shnum);
-	Write2(ptr, frnum);
+	little_endian::Write2(ptr, shnum);
+	little_endian::Write2(ptr, frnum);
 	ExultStudio* studio = ExultStudio::get_instance();
 	studio->send_to_server(Exult_server::set_edit_shape, buf, ptr - buf);
 }
@@ -2192,9 +2192,9 @@ void Shape_chooser::locate(bool upwards) {
 	unsigned char* ptr   = &data[0];
 	const int      qual  = ExultStudio::get_num_entry(get_loc_q(), -1);
 	const int      frnum = ExultStudio::get_num_entry(get_loc_f(), -1);
-	Write2(ptr, info[selected].shapenum);
-	Write2(ptr, frnum < 0 ? c_any_framenum : frnum);
-	Write2(ptr, qual < 0 ? c_any_qual : qual);
+	little_endian::Write2(ptr, info[selected].shapenum);
+	little_endian::Write2(ptr, frnum < 0 ? c_any_framenum : frnum);
+	little_endian::Write2(ptr, qual < 0 ? c_any_qual : qual);
 	Write1(ptr, upwards ? 1 : 0);
 	ExultStudio* studio = ExultStudio::get_instance();
 	studio->send_to_server(Exult_server::locate_shape, data, ptr - data);

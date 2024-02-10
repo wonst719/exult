@@ -30,13 +30,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // #include <iomanip>           /* Debugging */
 #include "items.h"
 
-#include "data_utils.h"
+#include "U7obj.h"
+#include "endianio.h"
 #include "exult_flx.h"
 #include "fnames.h"
 #include "msgfile.h"
 #include "utils.h"
 
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -204,7 +206,7 @@ static void Setup_item_names(
 	int num_misc_names = 0;
 
 	items.seekg(0x54);
-	int flxcnt = Read4(items);
+	int flxcnt = little_endian::Read4(items);
 	first_msg = num_item_names = flxcnt;
 	if (flxcnt > 0x400) {
 		num_item_names = 0x400;
@@ -251,11 +253,11 @@ static void Setup_item_names(
 	int i;
 	for (i = 0; i < flxcnt; i++) {
 		items.seekg(0x80 + i * 8);
-		const int itemoffs = Read4(items);
+		const int itemoffs = little_endian::Read4(items);
 		if (!itemoffs) {
 			continue;
 		}
-		const int itemlen = Read4(items);
+		const int itemlen = little_endian::Read4(items);
 		items.seekg(itemoffs);
 		char* newitem = new char[itemlen];
 		items.read(newitem, itemlen);

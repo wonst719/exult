@@ -28,9 +28,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "locator.h"
 
+#include "endianio.h"
 #include "exult_constants.h"
 #include "servemsg.h"
-#include "utils.h"
 
 using std::cout;
 using std::endl;
@@ -339,10 +339,10 @@ void Locator::view_changed(
 	if (dragging) {
 		return;    //+++++++Not sure about this.
 	}
-	tx  = Read4(data);
-	ty  = Read4(data);
-	txs = Read4(data);
-	tys = Read4(data);
+	tx  = little_endian::Read4(data);
+	ty  = little_endian::Read4(data);
+	txs = little_endian::Read4(data);
+	tys = little_endian::Read4(data);
 	// ++++Scale?  Later.
 	// Do things by chunk.
 	const int cx = tx / c_tiles_per_chunk;
@@ -398,11 +398,11 @@ void Locator::hscrolled(       // For horizontal scrollbar.
 void Locator::send_location() {
 	unsigned char  data[50];
 	unsigned char* ptr = &data[0];
-	Write4(ptr, tx);
-	Write4(ptr, ty);
-	Write4(ptr, txs);
-	Write4(ptr, tys);
-	Write4(ptr, static_cast<uint32>(-1));    // Don't change.
+	little_endian::Write4(ptr, tx);
+	little_endian::Write4(ptr, ty);
+	little_endian::Write4(ptr, txs);
+	little_endian::Write4(ptr, tys);
+	little_endian::Write4(ptr, static_cast<uint32>(-1));    // Don't change.
 	cout << "Locator::send_location" << endl;
 	ExultStudio::get_instance()->send_to_server(
 			Exult_server::view_pos, &data[0], ptr - data);
@@ -415,11 +415,11 @@ void Locator::send_location() {
 void Locator::query_location() {
 	unsigned char  data[50];
 	unsigned char* ptr = &data[0];
-	Write4(ptr, static_cast<uint32>(-1));
-	Write4(ptr, static_cast<uint32>(-1));
-	Write4(ptr, static_cast<uint32>(-1));
-	Write4(ptr, static_cast<uint32>(-1));
-	Write4(ptr, static_cast<uint32>(-1));
+	little_endian::Write4(ptr, static_cast<uint32>(-1));
+	little_endian::Write4(ptr, static_cast<uint32>(-1));
+	little_endian::Write4(ptr, static_cast<uint32>(-1));
+	little_endian::Write4(ptr, static_cast<uint32>(-1));
+	little_endian::Write4(ptr, static_cast<uint32>(-1));
 	ExultStudio::get_instance()->send_to_server(
 			Exult_server::view_pos, &data[0], ptr - data);
 }

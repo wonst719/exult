@@ -25,10 +25,6 @@
 #include "Table.h"
 
 #include "exceptions.h"
-#include "utils.h"
-
-#include <cstdlib>
-#include <iostream>
 
 using std::FILE;
 using std::size_t;

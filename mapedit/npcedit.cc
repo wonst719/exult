@@ -35,7 +35,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "shapevga.h"
 #include "studio.h"
 #include "u7drag.h"
-#include "utils.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -340,8 +339,8 @@ void ExultStudio::init_new_npc() {
 	Exult_server::wait_for_response(server_socket, 100);
 	Exult_server::Receive_data(server_socket, id, data, sizeof(data));
 	const unsigned char* ptr = &data[0];
-	Read2(ptr);    // Snip number of NPCs
-	const int first_unused = Read2(ptr);
+	little_endian::Read2(ptr);    // Snip number of NPCs
+	const int first_unused = little_endian::Read2(ptr);
 	npc_num                = first_unused;
 	set_entry("npc_num_entry", npc_num, true, false);
 	// Usually, usecode = 0x400 + num.
@@ -702,9 +701,9 @@ static void Game_loc_response(
 	}
 	// Get box with loc. spin btns.
 	auto*     box = static_cast<GtkBox*>(client);
-	const int tx  = Read2(data);
-	const int ty  = Read2(data);
-	const int tz  = Read2(data);
+	const int tx  = little_endian::Read2(data);
+	const int ty  = little_endian::Read2(data);
+	const int tz  = little_endian::Read2(data);
 	GList*    children
 			= g_list_first(gtk_container_get_children(GTK_CONTAINER(box)));
 	GList*     list = children;

@@ -35,7 +35,6 @@
 #include "schedule.h"
 #include "shapeinf.h"
 #include "ucmachine.h"
-#include "utils.h"
 
 #include <algorithm>
 #include <cstring>

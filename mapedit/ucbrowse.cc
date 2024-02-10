@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ucbrowse.h"
 
+#include "endianio.h"
 #include "ucsymtbl.h"
 #include "utils.h"
 
@@ -314,7 +315,8 @@ void Usecode_browser::setup_list() {
 		return;
 	}
 	// Test for symbol table.
-	if (Read4(in) != UCSYMTBL_MAGIC0 || Read4(in) != UCSYMTBL_MAGIC1) {
+	if (little_endian::Read4(in) != UCSYMTBL_MAGIC0
+		|| little_endian::Read4(in) != UCSYMTBL_MAGIC1) {
 		return;
 	}
 	symtbl.read(in);

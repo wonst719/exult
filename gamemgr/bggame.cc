@@ -24,19 +24,16 @@
 
 #include "Audio.h"
 #include "AudioMixer.h"
-#include "Configuration.h"
 #include "data/bg/introsfx_mt32_flx.h"
 #include "data/exult_bg_flx.h"
 #include "data/exult_flx.h"
 #include "databuf.h"
 #include "exult.h"
 #include "exult_constants.h"
-#include "files/U7file.h"
 #include "files/utils.h"
 #include "flic/playfli.h"
 #include "fnames.h"
 #include "font.h"
-#include "gameclk.h"
 #include "gamewin.h"
 #include "gump_utils.h"
 #include "imagewin/ArbScaler.h"
@@ -47,15 +44,12 @@
 #include "modmgr.h"
 #include "palette.h"
 #include "shapeid.h"
-#include "sigame.h"
 #include "touchui.h"
 #include "txtscroll.h"
 
 #include <array>
-#include <cctype>
 #include <cstring>
 #include <string>
-#include <typeinfo>
 #include <utility>
 #include <vector>
 

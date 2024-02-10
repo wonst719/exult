@@ -22,7 +22,8 @@
 
 #include "ucfunc.h"
 
-#include "files/utils.h"
+#include "common_types.h"
+#include "files/endianio.h"
 #include "headers/ignore_unused_variable_warning.h"
 #include "headers/ios_state.hpp"
 #include "ops.h"
@@ -1443,7 +1444,7 @@ void readbin_U7UCFunc(
 	DEBUG_READ_PAIR("  Offset: ", ucf._offset);
 
 	// Read Function Header
-	ucf._funcid = Read2(f);
+	ucf._funcid = little_endian::Read2(f);
 
 	if (options.very_verbose) {
 		cout << "\tReading Function: " << setw(4) << ucf._funcid << endl;
@@ -1453,31 +1454,31 @@ void readbin_U7UCFunc(
 
 	if (ucf._funcid != 0xFFFF) {
 		// This is the original usecode function header
-		ucf._funcsize = Read2(f);
+		ucf._funcsize = little_endian::Read2(f);
 		DEBUG_READ_PAIR("  FuncSize: ", ucf._funcsize);
 
 		// save body offset in case we need it
 		ucf._bodyoffset = f.tellg();
 
-		ucf._datasize = Read2(f);
+		ucf._datasize = little_endian::Read2(f);
 		DEBUG_READ_PAIR("  DataSize: ", ucf._datasize);
 	} else {
 		// This is the ext32 extended usecode function header
 		ucf.ext32   = true;
-		ucf._funcid = Read2(f);
+		ucf._funcid = little_endian::Read2(f);
 
 		if (options.very_verbose) {
 			cout << "\tReading Function: " << setw(4) << ucf._funcid << endl;
 		}
 
 		DEBUG_READ_PAIR("  extFuncID: ", ucf._funcid);
-		ucf._funcsize = Read4(f);
+		ucf._funcsize = little_endian::Read4(f);
 		DEBUG_READ_PAIR("  extFuncSize: ", ucf._funcsize);
 
 		// save body offset in case we need it
 		ucf._bodyoffset = f.tellg();
 
-		ucf._datasize = Read4(f);
+		ucf._datasize = little_endian::Read4(f);
 		DEBUG_READ_PAIR("  extDataSize: ", ucf._datasize);
 	}
 
@@ -1532,21 +1533,21 @@ void readbin_U7UCFunc(
 		ucf._codeoffset = f.tellg();
 
 		// get the number of arguments to the function
-		ucf._num_args = Read2(f);
+		ucf._num_args = little_endian::Read2(f);
 
 		if (options.output_ucs && ucf._funcid < 0x800) {
 			ucf._num_args--;
 		}
 
 		// get the number of local variables
-		ucf._num_locals = Read2(f);
+		ucf._num_locals = little_endian::Read2(f);
 
 		// get the number of external function numbers
-		ucf._num_externs = Read2(f);
+		ucf._num_externs = little_endian::Read2(f);
 
 		// load the external function numbers
 		for (unsigned int i = 0; i < ucf._num_externs; i++) {
-			ucf._externs.push_back(Read2(f));
+			ucf._externs.push_back(little_endian::Read2(f));
 		}
 
 		// ok, now to load the usecode

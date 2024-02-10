@@ -28,8 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	include "servewin32.h"
 
 #	include "ignore_unused_variable_warning.h"
-#	include "servemsg.h"
-#	include "utils.h"
 
 #	include <winsock2.h>
 

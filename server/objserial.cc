@@ -29,19 +29,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "objserial.h"
 
 #include "servemsg.h"
-#include "utils.h"
 
 #include <cstring>
-#include <iostream>
 
 /*
  *  Write out a string.
  */
 Serial_out& Serial_out::operator<<(std::string& s) {
-	const char* str = s.c_str();
-	const int   len = std::strlen(str);    // Get length.
-	*this << len;                          // First the length.
-	std::memcpy(buf, str, len);            // Then the bytes.
+	const char*  str = s.c_str();
+	const size_t len = std::strlen(str);    // Get length.
+	*this << len;                           // First the length.
+	std::memcpy(buf, str, len);             // Then the bytes.
 	buf += len;
 	return *this;
 }

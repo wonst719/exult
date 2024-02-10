@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "RawAudioSample.h"
 
-#include "databuf.h"
+#include "endianio.h"
 
 #include <cstring>
 #include <new>
@@ -72,56 +72,41 @@ namespace Pentagram {
 			return 0;
 		}
 
-		// 8 bit unsigned, or 16 Bit signed
 		if ((!signeddata && bits == 8)
 			|| (signeddata && bits == 16 && !byte_swap)) {
+			// 8 bit unsigned, or 16 Bit signed
 			std::memcpy(samples, buffer.get() + decomp->pos, count);
-			// 8 bit signed
 		} else if (bits == 8) {
+			// 8 bit signed
 			auto*        dest = static_cast<uint8*>(samples);
 			uint8*       end  = static_cast<uint8*>(samples) + count;
 			const uint8* src  = buffer.get() + decomp->pos;
 			while (dest != end) {
 				*dest++ = *src++ + 128;
 			}
-		}
-		// 16 bit signed with byte swap
-		else if (signeddata && bits == 16 && byte_swap) {
+		} else if (signeddata && bits == 16 && byte_swap) {
+			// 16 bit signed with byte swap
 			auto*        dest = static_cast<sint16*>(samples);
 			sint16*      end  = static_cast<sint16*>(samples) + count / 2;
 			const uint8* src  = buffer.get() + decomp->pos;
 			while (dest != end) {
-				sint16 s;
-				reinterpret_cast<uint8*>(&s)[1] = *src++;
-				reinterpret_cast<uint8*>(&s)[0] = *src++;
-				*dest++                         = s;
+				*dest++ = big_endian::Read2(src);
 			}
-		}
-		// 16 bit unsigned
-		else if (!signeddata && bits == 16 && !byte_swap) {
-			auto*        dest  = static_cast<sint16*>(samples);
-			sint16*      end   = static_cast<sint16*>(samples) + count / 2;
-			const uint8* src   = buffer.get() + decomp->pos;
-			auto         Read2 = [&src]() {
-                uint16 val;
-                std::memcpy(&val, src, sizeof(uint16));
-                src += sizeof(uint16);
-                return val;
-			};
-			while (dest != end) {
-				*dest++ = Read2() - 32768;
-			}
-		}
-		// 16 bit unsigned with byte swap
-		else if (!signeddata && bits == 16 && byte_swap) {
+		} else if (!signeddata && bits == 16 && !byte_swap) {
+			// 16 bit unsigned
 			auto*        dest = static_cast<sint16*>(samples);
 			sint16*      end  = static_cast<sint16*>(samples) + count / 2;
 			const uint8* src  = buffer.get() + decomp->pos;
 			while (dest != end) {
-				uint16 s;
-				reinterpret_cast<uint8*>(&s)[1] = *src++;
-				reinterpret_cast<uint8*>(&s)[0] = *src++;
-				*dest++                         = s - 32768;
+				*dest++ = little_endian::Read2(src) - 32768;
+			}
+		} else if (!signeddata && bits == 16 && byte_swap) {
+			// 16 bit unsigned with byte swap
+			auto*        dest = static_cast<sint16*>(samples);
+			sint16*      end  = static_cast<sint16*>(samples) + count / 2;
+			const uint8* src  = buffer.get() + decomp->pos;
+			while (dest != end) {
+				*dest++ = big_endian::Read2(src) - 32768;
 			}
 		}
 

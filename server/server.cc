@@ -38,11 +38,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	include "chunkter.h"
 #	include "effects.h"
 #	include "egg.h"
+#	include "endianio.h"
 #	include "gamemap.h"
 #	include "gamewin.h"
 #	include "objserial.h"
 #	include "servemsg.h"
-#	include "utils.h"
 
 #	include <fcntl.h>
 #	include <unistd.h>
@@ -241,21 +241,21 @@ static void Handle_client_message(
 		gwin->read_map();
 		break;
 	case Exult_server::map_editing_mode: {
-		const int onoff = Read2(ptr);
+		const int onoff = little_endian::Read2(ptr);
 		if ((onoff != 0) != cheat.in_map_editor()) {
 			cheat.toggle_map_editor();
 		}
 		break;
 	}
 	case Exult_server::tile_grid: {
-		const int onoff = Read2(ptr);
+		const int onoff = little_endian::Read2(ptr);
 		if ((onoff != 0) != cheat.show_tile_grid()) {
 			cheat.toggle_tile_grid();
 		}
 		break;
 	}
 	case Exult_server::edit_lift: {
-		const int lift = Read2(ptr);
+		const int lift = little_endian::Read2(ptr);
 		cheat.set_edit_lift(lift);
 		break;
 	}
@@ -263,15 +263,15 @@ static void Handle_client_message(
 		gwin->reload_usecode();
 		break;
 	case Exult_server::locate_terrain: {
-		const int      tnum = Read2(ptr);
-		int            cx   = Read2s(ptr);
-		int            cy   = Read2s(ptr);
+		const int      tnum = little_endian::Read2(ptr);
+		int            cx   = little_endian::Read2s(ptr);
+		int            cy   = little_endian::Read2s(ptr);
 		const bool     up   = Read1(ptr) != 0;
 		const bool     okay = gwin->get_map()->locate_terrain(tnum, cx, cy, up);
 		unsigned char* wptr = &data[2];
 		// Set back reply.
-		Write2(wptr, cx);
-		Write2(wptr, cy);
+		little_endian::Write2(wptr, cx);
+		little_endian::Write2(wptr, cy);
 		wptr++;    // Skip 'up' flag.
 		Write1(wptr, okay ? 1 : 0);
 		Exult_server::Send_data(
@@ -279,7 +279,7 @@ static void Handle_client_message(
 		break;
 	}
 	case Exult_server::swap_terrain: {
-		const int      tnum = Read2(ptr);
+		const int      tnum = little_endian::Read2(ptr);
 		const bool     okay = Game_map::swap_terrains(tnum);
 		unsigned char* wptr = &data[2];
 		Write1(wptr, okay ? 1 : 0);
@@ -288,7 +288,7 @@ static void Handle_client_message(
 		break;
 	}
 	case Exult_server::insert_terrain: {
-		const int      tnum = Read2s(ptr);
+		const int      tnum = little_endian::Read2s(ptr);
 		const bool     dup  = Read1(ptr) != 0;
 		const bool     okay = Game_map::insert_terrain(tnum, dup);
 		unsigned char* wptr = &data[3];
@@ -298,7 +298,7 @@ static void Handle_client_message(
 		break;
 	}
 	case Exult_server::delete_terrain: {
-		const int      tnum = Read2s(ptr);
+		const int      tnum = little_endian::Read2s(ptr);
 		const bool     okay = Game_map::delete_terrain(tnum);
 		unsigned char* wptr = &data[2];
 		Write1(wptr, okay ? 1 : 0);
@@ -308,9 +308,9 @@ static void Handle_client_message(
 	}
 	case Exult_server::send_terrain: {
 		// Send back #, total, 512-bytes data.
-		const int      tnum = Read2s(ptr);
+		const int      tnum = little_endian::Read2s(ptr);
 		unsigned char* wptr = &data[2];
-		Write2(wptr, gwin->get_map()->get_num_chunk_terrains());
+		little_endian::Write2(wptr, gwin->get_map()->get_num_chunk_terrains());
 		Chunk_terrain* ter = Game_map::get_terrain(tnum);
 		// Serialize it.
 		wptr += ter->write_flats(wptr, Game_map::is_v2_chunks());
@@ -320,7 +320,7 @@ static void Handle_client_message(
 	}
 	case Exult_server::terrain_editing_mode: {
 		// 1=on, 0=off, -1=undo.
-		const int onoff = Read2s(ptr);
+		const int onoff = little_endian::Read2s(ptr);
 		// skip_lift==0 <==> terrain-editing.
 		gwin->skip_lift = onoff == 1 ? 0 : 256;
 		static const char* const msgs[3]
@@ -338,18 +338,18 @@ static void Handle_client_message(
 		break;
 	}
 	case Exult_server::set_edit_shape: {
-		const int shnum = Read2s(ptr);
-		const int frnum = Read2s(ptr);
+		const int shnum = little_endian::Read2s(ptr);
+		const int frnum = little_endian::Read2s(ptr);
 		cheat.set_edit_shape(shnum, frnum);
 		break;
 	}
 	case Exult_server::view_pos: {
-		const int tx = Read4(ptr);
+		const int tx = little_endian::Read4(ptr);
 		if (tx == -1) {    // This is a query?
 			gwin->send_location();
 			break;
 		}
-		const int ty = Read4(ptr);
+		const int ty = little_endian::Read4(ptr);
 		// +++Later int txs = Read4(ptr);
 		// int tys = Read4(ptr);
 		// int scale = Read4(ptr);
@@ -363,20 +363,20 @@ static void Handle_client_message(
 		break;
 	}
 	case Exult_server::set_edit_mode: {
-		const int md = Read2(ptr);
+		const int md = little_endian::Read2(ptr);
 		if (md >= 0 && md <= 4) {
 			cheat.set_edit_mode(static_cast<Cheat::Map_editor_mode>(md));
 		}
 		break;
 	}
 	case Exult_server::hide_lift: {
-		const int lift  = Read2(ptr);
+		const int lift  = little_endian::Read2(ptr);
 		gwin->skip_lift = lift;
 		gwin->set_all_dirty();
 		break;
 	}
 	case Exult_server::reload_shapes:
-		Shape_manager::get_instance()->reload_shapes(Read2(ptr));
+		Shape_manager::get_instance()->reload_shapes(little_endian::Read2(ptr));
 		break;
 	case Exult_server::unused_shapes: {
 		// Send back shapes not used in game.
@@ -389,9 +389,9 @@ static void Handle_client_message(
 		break;
 	}
 	case Exult_server::locate_shape: {
-		const int      shnum = Read2(ptr);
-		const int      frnum = Read2s(ptr);
-		const int      qual  = Read2s(ptr);
+		const int      shnum = little_endian::Read2(ptr);
+		const int      frnum = little_endian::Read2s(ptr);
+		const int      qual  = little_endian::Read2s(ptr);
 		const bool     up    = Read1(ptr) != 0;
 		const bool     okay  = gwin->locate_shape(shnum, up, frnum, qual);
 		unsigned char* wptr  = &data[6];    // Send back reply.
@@ -409,35 +409,35 @@ static void Handle_client_message(
 		break;
 	case Exult_server::npc_unused: {
 		unsigned char* wptr = &data[0];
-		Write2(wptr, gwin->get_num_npcs());
-		Write2(wptr, gwin->get_unused_npc());
+		little_endian::Write2(wptr, gwin->get_num_npcs());
+		little_endian::Write2(wptr, gwin->get_unused_npc());
 		Exult_server::Send_data(
 				client_socket, Exult_server::npc_unused, data, wptr - data);
 		break;
 	}
 	case Exult_server::npc_info: {
-		const int      npcnum = Read2(ptr);
+		const int      npcnum = little_endian::Read2(ptr);
 		Actor*         npc    = gwin->get_npc(npcnum);
 		unsigned char* wptr   = &data[2];
 		if (npc) {
-			Write2(wptr, npc->get_shapenum());
+			little_endian::Write2(wptr, npc->get_shapenum());
 			Write1(wptr, npc->is_unused());
 			const std::string nm = npc->get_npc_name();
 			strcpy(reinterpret_cast<char*>(wptr), nm.c_str());
 			// Point past ending nullptr.
 			wptr += strlen(reinterpret_cast<char*>(wptr)) + 1;
 		} else {
-			Write2(wptr, static_cast<unsigned short>(-1));
+			little_endian::Write2(wptr, static_cast<unsigned short>(-1));
 		}
 		Exult_server::Send_data(
 				client_socket, Exult_server::npc_info, data, wptr - data);
 		break;
 	}
 	case Exult_server::locate_npc:
-		gwin->locate_npc(Read2(ptr));
+		gwin->locate_npc(little_endian::Read2(ptr));
 		break;
 	case Exult_server::edit_npc: {
-		const int npcnum = Read2(ptr);
+		const int npcnum = little_endian::Read2(ptr);
 		Actor*    npc    = gwin->get_npc(npcnum);
 		if (npc) {
 			npc->edit();
@@ -457,14 +457,14 @@ static void Handle_client_message(
 		break;
 	}
 	case Exult_server::set_edit_chunknum:
-		cheat.set_edit_chunknum(Read2s(ptr));
+		cheat.set_edit_chunknum(little_endian::Read2s(ptr));
 		break;
 	case Exult_server::game_pos: {
 		const Tile_coord pos  = gwin->get_main_actor()->get_tile();
 		unsigned char*   wptr = &data[0];
-		Write2(wptr, pos.tx);
-		Write2(wptr, pos.ty);
-		Write2(wptr, pos.tz);
+		little_endian::Write2(wptr, pos.tx);
+		little_endian::Write2(wptr, pos.ty);
+		little_endian::Write2(wptr, pos.tz);
 		Exult_server::Send_data(
 				client_socket, Exult_server::game_pos, data, wptr - data);
 		break;
@@ -472,7 +472,7 @@ static void Handle_client_message(
 	case Exult_server::goto_map: {
 		char             msg[80];
 		const Tile_coord pos = gwin->get_main_actor()->get_tile();
-		const int        num = Read2(ptr);
+		const int        num = little_endian::Read2(ptr);
 		gwin->teleport_party(pos, true, num);
 		snprintf(msg, sizeof(msg), "Map #%02x", num);
 		gwin->get_effects()->center_text(msg);

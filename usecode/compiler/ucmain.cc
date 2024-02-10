@@ -26,10 +26,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	include <config.h>
 #endif
 
+#include "endianio.h"
 #include "ucfun.h"
 #include "ucloc.h"
 #include "ucsymtbl.h"
-#include "utils.h"
 
 #include <unistd.h>
 
@@ -124,8 +124,9 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 	if (want_sym_table) {
-		Write4(out, UCSYMTBL_MAGIC0);    // Start with symbol table.
-		Write4(out, UCSYMTBL_MAGIC1);
+		little_endian::Write4(
+				out, UCSYMTBL_MAGIC0);    // Start with symbol table.
+		little_endian::Write4(out, UCSYMTBL_MAGIC1);
 		auto* symtbl = new Usecode_symbol_table;
 		for (auto* unit : units) {
 			symtbl->add_sym(unit->create_sym());

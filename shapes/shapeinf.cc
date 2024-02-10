@@ -47,12 +47,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "objdollinf.h"
 #include "ready.h"
 #include "sfxinf.h"
-#include "utils.h"
 #include "warminf.h"
 #include "weaponinf.h"
 
-#include <map>
-#include <string>
 #include <vector>
 
 using std::cerr;

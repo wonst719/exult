@@ -29,7 +29,6 @@
 #include "stackframe.h"
 #include "ucfunction.h"
 #include "ucinternal.h"
-#include "utils.h"
 
 Breakpoint::Breakpoint(bool once) {
 	this->once = once;
@@ -53,9 +52,9 @@ void LocationBreakpoint::serialize(int fd) const {
 	unsigned char d[13];
 	d[0] = static_cast<unsigned char>(Exult_server::dbg_set_location_bp);
 	unsigned char* dptr = &d[1];
-	Write4(dptr, functionid);
-	Write4(dptr, ip);
-	Write4(dptr, id);
+	little_endian::Write4(dptr, functionid);
+	little_endian::Write4(dptr, ip);
+	little_endian::Write4(dptr, id);
 	Exult_server::Send_data(fd, Exult_server::usecode_debugging, d, 13);
 }
 

@@ -26,6 +26,7 @@
 
 #	include "debugmsg.h"
 #	include "debugserver.h"
+#	include "endianio.h"
 #	include "gamewin.h"
 #	include "servemsg.h"
 #	include "server.h"
@@ -35,7 +36,6 @@
 #	include "ucinternal.h"
 #	include "ucserial.h"
 #	include "useval.h"
-#	include "utils.h"
 
 #	include <algorithm>
 #	include <iomanip>
@@ -100,7 +100,7 @@ void Handle_debug_message(unsigned char* data, int datalen) {
 			d[0] = static_cast<unsigned char>(Exult_server::dbg_callstack);
 			unsigned char* ptr           = &d[1];
 			const int      callstacksize = uci->get_callstack_size();
-			Write2(ptr, callstacksize);
+			little_endian::Write2(ptr, callstacksize);
 			Exult_server::Send_data(
 					client_socket, Exult_server::usecode_debugging, d, 3);
 			for (int i = 0; i < callstacksize; i++) {
@@ -169,8 +169,8 @@ void Handle_debug_message(unsigned char* data, int datalen) {
 	}
 	case Exult_server::dbg_set_location_bp: {
 		ptr++;
-		const int funcid = Read4(ptr);
-		const int ip     = Read4(ptr);
+		const int funcid = little_endian::Read4(ptr);
+		const int ip     = little_endian::Read4(ptr);
 
 		std::cout << "Setting breakpoint at " << std::hex << std::setfill('0')
 				  << std::setw(4) << funcid << ", " << std::setw(4) << ip
@@ -182,16 +182,16 @@ void Handle_debug_message(unsigned char* data, int datalen) {
 		unsigned char d[13];
 		d[0] = static_cast<unsigned char>(Exult_server::dbg_set_location_bp);
 		unsigned char* dptr = &d[1];
-		Write4(dptr, funcid);
-		Write4(dptr, ip);
-		Write4(dptr, breakpoint_id);
+		little_endian::Write4(dptr, funcid);
+		little_endian::Write4(dptr, ip);
+		little_endian::Write4(dptr, breakpoint_id);
 		Exult_server::Send_data(
 				client_socket, Exult_server::usecode_debugging, d, 13);
 		break;
 	}
 	case Exult_server::dbg_clear_breakpoint: {
 		ptr++;
-		const int  breakpoint_id = Read4(ptr);
+		const int  breakpoint_id = little_endian::Read4(ptr);
 		const bool ok            = uci->clear_breakpoint(breakpoint_id);
 		if (ok) {
 			// reply

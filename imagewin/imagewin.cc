@@ -36,11 +36,8 @@ Boston, MA  02111-1307, USA.
 #include "common_types.h"
 #include "istring.h"
 #include "manip.h"
-#include "utils.h"
 
-#include <algorithm>
 #include <cstdlib>
-#include <cstring>
 #include <iostream>
 #include <string>
 

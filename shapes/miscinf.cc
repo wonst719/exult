@@ -24,7 +24,6 @@
 
 #include "miscinf.h"
 
-#include "U7file.h"
 #include "actors.h"
 #include "databuf.h"
 #include "exult_constants.h"
@@ -37,7 +36,6 @@
 #include "utils.h"
 
 #include <fstream>
-#include <iomanip>
 #include <iostream>
 #include <map>
 #include <sstream>

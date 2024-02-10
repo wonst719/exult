@@ -22,14 +22,9 @@
 
 #include "ops.h"
 
-#include "exceptions.h"
-#include "files/utils.h"
-
 #include <cstdlib>
 #include <fstream>
-#include <iomanip>
 #include <sstream>
-#include <stack>
 
 using std::cerr;
 using std::cout;

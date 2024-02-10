@@ -27,13 +27,11 @@
 #include "crc.h"
 #include "databuf.h"
 #include "exceptions.h"
-#include "utils.h"
 
 #include <unistd.h>
 
 #include <cstdlib>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <string>

@@ -50,11 +50,8 @@
 #include "gtk_redefines.h"
 #include "ibuf8.h"
 #include "ignore_unused_variable_warning.h"
-#include "utils.h"
 #include "vgafile.h"
 
-#include <cctype>
-#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>

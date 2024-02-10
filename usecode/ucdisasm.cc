@@ -31,7 +31,6 @@
 #include "ucinternal.h"
 #include "uctools.h"
 #include "useval.h"
-#include "utils.h"
 
 #include <cstdio>
 #include <cstring>
@@ -43,9 +42,8 @@ using std::strlen;
 int Usecode_internal::get_opcode_length(int opcode) {
 	if (opcode >= 0 && static_cast<unsigned>(opcode) < opcode_table.size()) {
 		return opcode_table[opcode].nbytes + 1;
-	} else {
-		return 0;
 	}
+	return 0;
 }
 
 void Usecode_internal::uc_trace_disasm(Stack_frame* frame) {
@@ -90,11 +88,11 @@ void Usecode_internal::uc_trace_disasm(
 			break;
 		case op_immed:
 			// Print immediate operand
-			immed = Read2(ip);
+			immed = little_endian::Read2(ip);
 			std::printf("\t%04hXH\t\t; %d", immed, immed);
 			break;
 		case op_immed32: {
-			const int immed32 = Read4s(ip);
+			const int immed32 = little_endian::Read4s(ip);
 			std::printf("\t%08XH\t\t; %d", immed32, immed32);
 			break;
 		}
@@ -104,9 +102,9 @@ void Usecode_internal::uc_trace_disasm(
 			size_t      len;
 			// Print data string operand
 			if (pdesc->type == op_data_string) {
-				offset = Read2(ip);
+				offset = little_endian::Read2(ip);
 			} else {
-				offset = Read4s(ip);
+				offset = little_endian::Read4s(ip);
 			}
 
 			pstr = reinterpret_cast<const char*>(data + offset);
@@ -125,23 +123,23 @@ void Usecode_internal::uc_trace_disasm(
 		} break;
 		case op_relative_jump:
 			// Print jump desination
-			offset = Read2(ip);
+			offset = little_endian::Read2(ip);
 			std::printf(
 					"\t%04X", (offset + func_ip + 1 + pdesc->nbytes) & 0xFFFF);
 			break;
 		case op_relative_jump32:
-			offset = Read4s(ip);
+			offset = little_endian::Read4s(ip);
 			std::printf("\t%04X", offset + func_ip + 1 + pdesc->nbytes);
 			break;
 		case op_sloop:
 			if (pdesc->nbytes == 11) {
 				ip++;
 			}
-			Read2(ip);
-			Read2(ip);
-			Read2(ip);
-			varref = Read2(ip);
-			offset = Read2(ip);
+			little_endian::Read2(ip);
+			little_endian::Read2(ip);
+			little_endian::Read2(ip);
+			varref = little_endian::Read2(ip);
+			offset = little_endian::Read2(ip);
 			std::printf(
 					"\t[%04X], %04X\t= ", varref,
 					(offset + func_ip + 1 + pdesc->nbytes) & 0xFFFF);
@@ -151,32 +149,32 @@ void Usecode_internal::uc_trace_disasm(
 			if (pdesc->nbytes == 13) {
 				ip++;
 			}
-			Read2(ip);
-			Read2(ip);
-			Read2(ip);
-			varref = Read2(ip);
-			offset = Read4s(ip);
+			little_endian::Read2(ip);
+			little_endian::Read2(ip);
+			little_endian::Read2(ip);
+			varref = little_endian::Read2(ip);
+			offset = little_endian::Read4s(ip);
 			std::printf(
 					"\t[%04X], %04X\t= ", varref,
 					offset + func_ip + 1 + pdesc->nbytes);
 			locals[varref].print(cout, true);    // print value (short format)
 			break;
 		case op_immed_and_relative_jump:
-			immed  = Read2(ip);
-			offset = Read2(ip);
+			immed  = little_endian::Read2(ip);
+			offset = little_endian::Read2(ip);
 			std::printf(
 					"\t%04hXH, %04X", immed,
 					(offset + func_ip + 1 + pdesc->nbytes) & 0xFFFF);
 			break;
 		case op_immedreljump32:
-			immed  = Read2(ip);
-			offset = Read4s(ip);
+			immed  = little_endian::Read2(ip);
+			offset = little_endian::Read4s(ip);
 			std::printf(
 					"\t%04hXH, %04X", immed,
 					offset + func_ip + 1 + pdesc->nbytes);
 			break;
 		case op_call: {
-			const unsigned short func = Read2(ip);
+			const unsigned short func = little_endian::Read2(ip);
 			immed                     = Read1(ip);
 			tcb::span<const std::string_view> func_table;
 			if (Game::get_game_type() == SERPENT_ISLE) {
@@ -193,7 +191,7 @@ void Usecode_internal::uc_trace_disasm(
 		} break;
 		case op_extcall: {
 			// Print extern call
-			offset = Read2(ip);
+			offset = little_endian::Read2(ip);
 			std::printf(
 					"\t[%04X]\t\t; %04XH", offset,
 					externals[2 * offset] + 256 * externals[2 * offset + 1]);
@@ -201,13 +199,13 @@ void Usecode_internal::uc_trace_disasm(
 		}
 		case op_varref:
 			// Print variable reference
-			varref = Read2(ip);
+			varref = little_endian::Read2(ip);
 			std::printf("\t[%04X]\t\t= ", varref);
 			locals[varref].print(cout, true);    // print value (short)
 			break;
 		case op_flgref:
 			// Print global flag reference
-			offset = Read2(ip);
+			offset = little_endian::Read2(ip);
 			std::printf("\tflag:[%04X]\t= ", offset);
 			if (gflags[offset]) {
 				std::printf("set");
@@ -216,7 +214,7 @@ void Usecode_internal::uc_trace_disasm(
 			}
 			break;
 		case op_staticref: {
-			const sint16 staticref = Read2(ip);
+			const sint16 staticref = little_endian::Read2(ip);
 			std::printf("[%04X]\t= ", static_cast<uint16>(staticref));
 			if (staticref < 0) {
 				// global
@@ -261,7 +259,7 @@ void Usecode_internal::uc_trace_disasm(
 		/*  maybe predict this?
 		case 0x07:       // CMPS/CMPS32.
 		{
-			int cnt = Read2(param_ip);    // # strings.
+			int cnt = little_endian::Read2(param_ip);    // # strings.
 			bool matched = false;
 
 			// only try to match if we haven't found an answer yet

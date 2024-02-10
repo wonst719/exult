@@ -1256,13 +1256,13 @@ void Egg_object::write_ireg(ODataSource* out) {
 	tword |= (((flags >> hatched) & 1) << 9);
 	tword |= ((distance & 0x1f) << 10);
 	tword |= (((flags >> auto_reset) & 1) << 15);
-	Write2(ptr, tword);
+	little_endian::Write2(ptr, tword);
 	Write1(ptr, probability);
-	Write2(ptr, data1);
+	little_endian::Write2(ptr, data1);
 	Write1(ptr, nibble_swap(get_lift()));
-	Write2(ptr, data2);
+	little_endian::Write2(ptr, data2);
 	if (data3 > 0) {
-		Write2(ptr, data3);
+		little_endian::Write2(ptr, data3);
 	}
 	out->write(reinterpret_cast<char*>(buf), ptr - buf);
 	const char* str1 = get_str1();

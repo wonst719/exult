@@ -40,7 +40,6 @@
 #include <unistd.h>
 
 #include <climits>
-#include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

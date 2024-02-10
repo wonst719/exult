@@ -1015,11 +1015,11 @@ inline void Send_location(Game_window* gwin) {
 		cheat.in_map_editor()) {
 		unsigned char  data[50];
 		unsigned char* ptr = &data[0];
-		Write4(ptr, gwin->get_scrolltx());
-		Write4(ptr, gwin->get_scrollty());
-		Write4(ptr, gwin->get_width() / c_tilesize);
-		Write4(ptr, gwin->get_height() / c_tilesize);
-		Write4(ptr, gwin->get_win()->get_scale_factor());
+		little_endian::Write4(ptr, gwin->get_scrolltx());
+		little_endian::Write4(ptr, gwin->get_scrollty());
+		little_endian::Write4(ptr, gwin->get_width() / c_tilesize);
+		little_endian::Write4(ptr, gwin->get_height() / c_tilesize);
+		little_endian::Write4(ptr, gwin->get_win()->get_scale_factor());
 		Exult_server::Send_data(
 				client_socket, Exult_server::view_pos, &data[0], ptr - data);
 	}

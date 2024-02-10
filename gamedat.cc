@@ -33,7 +33,6 @@
 #include "gameclk.h"
 #include "gamemap.h"
 #include "gamewin.h"
-#include "gump_utils.h"
 #include "party.h"
 #include "span.h"
 #include "utils.h"
@@ -801,7 +800,7 @@ bool Game_window::Restore_level2(void* uzf, const char* dirname, int dirlen) {
 			return false;
 		}
 		const unsigned char* ptr  = size_buffer;
-		const int            size = Read4(ptr);
+		const int            size = little_endian::Read4(ptr);
 
 		if (size) {
 			// Watch for names ending in '.'.
@@ -1056,7 +1055,7 @@ static bool Save_level2(zipFile zipfile, const char* fname) {
 	if (err == ZIP_OK) {
 		// Must be platform independent
 		auto* ptr = buf.data();
-		Write4(ptr, size);
+		little_endian::Write4(ptr, size);
 		err = zipWriteInFileInZip(zipfile, buf.data(), 4);
 	}
 

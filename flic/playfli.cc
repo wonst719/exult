@@ -32,7 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "databuf.h"
 #include "gamewin.h"
 #include "palette.h"
-#include "utils.h"
 
 #include <cstring>
 #include <iostream>

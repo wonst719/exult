@@ -30,11 +30,6 @@
 #include "Table.h"
 #include "U7file.h"
 #include "U7obj.h"
-#include "utils.h"
-
-#include <cstdio>
-#include <cstdlib>
-#include <iostream>
 
 using std::make_unique;
 using std::string;

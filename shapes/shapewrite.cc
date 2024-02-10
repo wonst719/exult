@@ -31,6 +31,7 @@
 #include "continf.h"
 #include "data_utils.h"
 #include "effhpinf.h"
+#include "endianio.h"
 #include "exceptions.h"
 #include "expinf.h"
 #include "frflags.h"
@@ -45,7 +46,6 @@
 #include "sfxinf.h"
 #include "shapeinf.h"
 #include "shapevga.h"
-#include "utils.h"
 #include "warminf.h"
 #include "weaponinf.h"
 
@@ -66,7 +66,7 @@ class Readytype_writer_functor {
 public:
 	void operator()(
 			ostream& out, int index, Exult_Game game, Shape_info& info) {
-		Write2(out, index);
+		little_endian::Write2(out, index);
 		unsigned char data = info.ready_type;
 		data               = game == BLACK_GATE ? Ready_spot_to_BG(data)
 												: Ready_spot_to_SI(data);
@@ -342,9 +342,9 @@ void Shapes_vga_file::write_info(Exult_Game game) {
 	size_t cnt  = 0;    // Keep track of actual entries.
 	for (size_t i = 0; i < num_shapes; i++) {
 		if (info[i].weapon_offsets == nullptr) {
-			Write2(wihh, 0);    // None for this shape.
-		} else {                // Write where it will go.
-			Write2(wihh, 2 * num_shapes + 64 * (cnt++));
+			little_endian::Write2(wihh, 0);    // None for this shape.
+		} else {                               // Write where it will go.
+			little_endian::Write2(wihh, 2 * num_shapes + 64 * (cnt++));
 		}
 	}
 	for (size_t i = 0; i < num_shapes; i++) {
@@ -390,10 +390,10 @@ void Shapes_vga_file::write_info(Exult_Game game) {
 		// 10 elements/record.
 		for (int e = 0; e < 10; e++) {
 			const Equip_element& elem = rec.get(e);
-			Write2(mfile, elem.get_shapenum());
+			little_endian::Write2(mfile, elem.get_shapenum());
 			mfile.put(elem.get_probability());
 			mfile.put(elem.get_quantity());
-			Write2(mfile, 0);
+			little_endian::Write2(mfile, 0);
 		}
 	}
 
@@ -680,9 +680,9 @@ void Weapon_info::write(
 ) {
 	uint8  buf[21];    // Entry length.
 	uint8* ptr = buf;
-	Write2(ptr, shapenum);    // Bytes 0-1.
-	Write2(ptr, ammo);
-	Write2(ptr, projectile);
+	little_endian::Write2(ptr, shapenum);    // Bytes 0-1.
+	little_endian::Write2(ptr, ammo);
+	little_endian::Write2(ptr, projectile);
 	Write1(ptr, damage);
 	const unsigned char flags0
 			= (damage_type << 4) | (m_delete_depleted ? (1 << 3) : 0)
@@ -699,13 +699,13 @@ void Weapon_info::write(
 	Write1(ptr, flags2);
 	Write1(ptr, powers);
 	Write1(ptr, 0);    // ??
-	Write2(ptr, usecode);
+	little_endian::Write2(ptr, usecode);
 	// BG:  Subtracted 1 from each sfx.
 	const int sfx_delta = game == BLACK_GATE ? -1 : 0;
-	Write2(ptr, sfx - sfx_delta);
-	Write2(ptr, hitsfx - sfx_delta);
+	little_endian::Write2(ptr, sfx - sfx_delta);
+	little_endian::Write2(ptr, hitsfx - sfx_delta);
 	// Last 2 bytes unknown/unused.
-	Write2(ptr, 0);
+	little_endian::Write2(ptr, 0);
 	out.write(reinterpret_cast<char*>(buf), sizeof(buf));
 }
 
@@ -721,9 +721,9 @@ void Ammo_info::write(
 	ignore_unused_variable_warning(game);
 	uint8  buf[13];    // Entry length.
 	uint8* ptr = buf;
-	Write2(ptr, shapenum);
-	Write2(ptr, family_shape);
-	Write2(ptr, sprite);
+	little_endian::Write2(ptr, shapenum);
+	little_endian::Write2(ptr, family_shape);
+	little_endian::Write2(ptr, sprite);
 	Write1(ptr, damage);
 	unsigned char flags0;
 	flags0 = (m_explodes ? (1 << 6) : 0) | ((homing ? 3 : drop_type) << 4)
@@ -733,7 +733,7 @@ void Ammo_info::write(
 	Write1(ptr, 0);    // Unknown.
 	Write1(ptr, damage_type << 4);
 	Write1(ptr, powers);
-	Write2(ptr, 0);    // Unknown.
+	little_endian::Write2(ptr, 0);    // Unknown.
 	out.write(reinterpret_cast<char*>(buf), sizeof(buf));
 }
 
@@ -749,11 +749,11 @@ void Armor_info::write(
 	ignore_unused_variable_warning(game);
 	uint8  buf[10];    // Entry length.
 	uint8* ptr = buf;
-	Write2(ptr, shapenum);
-	Write1(ptr, prot);      // Protection value.
-	Write1(ptr, 0);         // Unknown.
-	Write1(ptr, immune);    // Immunity flags.
-	Write4(ptr, 0);         // Last 5 are unknown/unused.
+	little_endian::Write2(ptr, shapenum);
+	Write1(ptr, prot);                // Protection value.
+	Write1(ptr, 0);                   // Unknown.
+	Write1(ptr, immune);              // Immunity flags.
+	little_endian::Write4(ptr, 0);    // Last 5 are unknown/unused.
 	*ptr = 0;
 	out.write(reinterpret_cast<char*>(buf), sizeof(buf));
 }
@@ -770,7 +770,7 @@ void Monster_info::write(
 	uint8 buf[25];    // Entry length.
 	memset(&buf[0], 0, sizeof(buf));
 	uint8* ptr = buf;
-	Write2(ptr, shapenum);
+	little_endian::Write2(ptr, shapenum);
 	Write1(ptr,
 		   (strength << 2) | (m_charm_safe ? 2 : 0) | (m_sleep_safe ? 1 : 0));
 	Write1(ptr, (dexterity << 2) | (m_paralysis_safe ? 2 : 0)

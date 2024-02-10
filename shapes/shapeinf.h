@@ -27,12 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "baseinf.h"
-#include "utils.h"
 
-#include <algorithm>
-#include <iosfwd>
-#include <iostream>
-#include <map>
 #include <vector>
 
 class Armor_info;

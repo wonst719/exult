@@ -28,9 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "u7drag.h"
 
-#include "utils.h"
-
-#include <cassert>
+#include <cstdio>
+#include <cstring>
 
 #define FILE_URI "file://"
 static const size_t FileUriLen = strlen(FILE_URI);

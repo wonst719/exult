@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "npclst.h"
 
+#include "endianio.h"
 #include "fontgen.h"
 #include "ibuf8.h"
 #include "pngio.h"
@@ -35,7 +36,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "shapegroup.h"
 #include "shapevga.h"
 #include "u7drag.h"
-#include "utils.h"
 
 #include <glib.h>
 #include <sys/stat.h>
@@ -616,7 +616,7 @@ void Npc_chooser::edit_npc() {
 	unsigned char  buf[Exult_server::maxlength];
 	unsigned char* ptr;
 	ptr = &buf[0];
-	Write2(ptr, npcnum);
+	little_endian::Write2(ptr, npcnum);
 	if (!studio->send_to_server(Exult_server::edit_npc, buf, ptr - buf)) {
 		cerr << "Error sending data to server." << endl;
 	}
@@ -1026,7 +1026,7 @@ void Npc_chooser::locate(bool upwards) {
 	}
 	unsigned char  data[Exult_server::maxlength];
 	unsigned char* ptr = &data[0];
-	Write2(ptr, npcnum);
+	little_endian::Write2(ptr, npcnum);
 	ExultStudio* studio = ExultStudio::get_instance();
 	studio->send_to_server(Exult_server::locate_npc, data, ptr - data);
 }

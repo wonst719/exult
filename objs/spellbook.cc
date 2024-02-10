@@ -40,7 +40,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ucmachine.h"
 #include "ucsched.h"
 #include "usefuns.h"
-#include "utils.h"
 
 using std::ostream;
 

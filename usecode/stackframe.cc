@@ -24,10 +24,10 @@
 
 #include "stackframe.h"
 
+#include "endianio.h"
 #include "ucfunction.h"
 #include "ucinternal.h"
 #include "useval.h"
-#include "utils.h"
 
 #include <iomanip>
 #include <iostream>
@@ -47,24 +47,24 @@ Stack_frame::Stack_frame(
 
 	int data_len;
 	if (!fun->extended) {
-		data_len = Read2(ip);    // Get length of (text) data.
+		data_len = little_endian::Read2(ip);    // Get length of (text) data.
 	} else {
-		data_len = Read4s(ip);    // 32 bit lengths
+		data_len = little_endian::Read4s(ip);    // 32 bit lengths
 	}
 
 	data = ip;
 
-	ip += data_len;          // Point past text.
-	num_args = Read2(ip);    // # of args. this function takes.
+	ip += data_len;                         // Point past text.
+	num_args = little_endian::Read2(ip);    // # of args. this function takes.
 
 	// Local variables follow args.
-	num_vars = Read2(ip);
+	num_vars = little_endian::Read2(ip);
 
 	// Allocate locals.
 	const int num_locals = num_vars + num_args;
 	locals               = new Usecode_value[num_locals];
 
-	num_externs = Read2(ip);    // external function references
+	num_externs = little_endian::Read2(ip);    // external function references
 	externs     = ip;
 
 	ip += 2 * num_externs;    // now points to actual code

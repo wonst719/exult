@@ -25,10 +25,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef OBJSERIAL_H
 #define OBJSERIAL_H 1
 
+#include "endianio.h"
 #include "servemsg.h"
-#include "utils.h"
 
 #include <string>
+
 
 class Serial_out {
 	unsigned char*& buf;
@@ -38,7 +39,7 @@ public:
 
 	template <typename T>
 	Serial_out& operator<<(T v) {
-		WriteN(buf, v);
+		little_endian::WriteN(buf, v);
 		return *this;
 	}
 
@@ -51,7 +52,7 @@ public:
 
 	template <typename T>
 	Serial_out& operator<<(const T* v) {
-		(*this) << reinterpret_cast<uintptr>(v);
+		(*this) << reinterpret_cast<uintptr_t>(v);
 		return *this;
 	}
 };
@@ -67,7 +68,7 @@ public:
 
 	template <typename T>
 	Serial_in& operator<<(T& v) {
-		v = ReadN<T>(buf);
+		v = little_endian::ReadN<T>(buf);
 		return *this;
 	}
 
@@ -80,7 +81,7 @@ public:
 
 	template <typename T>
 	Serial_in& operator<<(T*& v) {
-		uintptr val;
+		uintptr_t val;
 		(*this) << val;
 		v = reinterpret_cast<T*>(val);
 		return *this;

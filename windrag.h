@@ -11,12 +11,10 @@
 #	endif
 
 #	include "u7drag.h"
-#	include "utils.h"
 
 #	include <ole2.h>
 
 #	include <atomic>
-#	include <vector>
 
 /*
  * The 'IDropTarget' implementation

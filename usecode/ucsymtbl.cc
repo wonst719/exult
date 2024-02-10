@@ -20,7 +20,7 @@
 
 #include "ucsymtbl.h"
 
-#include "utils.h"
+#include "endianio.h"
 
 #include <cassert>
 #include <iostream>
@@ -44,15 +44,16 @@ Usecode_scope_symbol::~Usecode_scope_symbol() {
  *  Read from a file.
  */
 void Usecode_scope_symbol::read(istream& in) {
-	const int cnt = Read4(in);
-	Read4(in);    // Version.
+	const int cnt = little_endian::Read4(in);
+	little_endian::Read4(in);    // Version.
 	const int oldsize = symbols.size();
 	symbols.reserve(oldsize + cnt);
 	for (int i = 0; i < cnt; ++i) {
 		char nm[256];
 		in.getline(nm, sizeof(nm), 0);
-		auto      kind = static_cast<Usecode_symbol::Symbol_kind>(Read2(in));
-		const int val  = Read4(in);
+		auto kind = static_cast<Usecode_symbol::Symbol_kind>(
+				little_endian::Read2(in));
+		const int       val = little_endian::Read4(in);
 		Usecode_symbol* sym;
 		if (kind == Usecode_symbol::class_scope) {
 			auto* s = new Usecode_class_symbol(nm, kind, val);
@@ -64,7 +65,7 @@ void Usecode_scope_symbol::read(istream& in) {
 			int shape = 0;
 			// Shape function table:
 			if (kind == Usecode_symbol::shape_fun) {
-				shape             = Read4(in);
+				shape             = little_endian::Read4(in);
 				shape_funs[shape] = val;
 			}
 			sym = new Usecode_symbol(nm, kind, val, shape);
@@ -86,17 +87,17 @@ void Usecode_scope_symbol::read(istream& in) {
  *  Write to a file.
  */
 void Usecode_scope_symbol::write(ostream& out) {
-	Write4(out, symbols.size());
-	Write4(out, curvers);
+	little_endian::Write4(out, symbols.size());
+	little_endian::Write4(out, curvers);
 	for (auto* sym : symbols) {
 		const char* nm = sym->get_name();
 		out.write(nm, strlen(nm) + 1);
-		Write2(out, static_cast<int>(sym->get_kind()));
-		Write4(out, sym->get_val());
+		little_endian::Write2(out, static_cast<int>(sym->get_kind()));
+		little_endian::Write4(out, sym->get_val());
 		if (sym->get_kind() == class_scope) {
 			static_cast<Usecode_class_symbol*>(sym)->write(out);
 		} else if (sym->get_kind() == shape_fun) {
-			Write4(out, sym->get_extra());
+			little_endian::Write4(out, sym->get_extra());
 		}
 	}
 }
@@ -216,12 +217,12 @@ bool Usecode_scope_symbol::is_object_fun(int val) {
  */
 void Usecode_class_symbol::read(istream& in) {
 	Usecode_scope_symbol::read(in);
-	const int num_methods = Read2(in);
+	const int num_methods = little_endian::Read2(in);
 	methods.resize(num_methods);
 	for (int i = 0; i < num_methods; ++i) {
-		methods[i] = Read2(in);
+		methods[i] = little_endian::Read2(in);
 	}
-	num_vars = Read2(in);
+	num_vars = little_endian::Read2(in);
 }
 
 /*
@@ -230,16 +231,17 @@ void Usecode_class_symbol::read(istream& in) {
 void Usecode_class_symbol::write(ostream& out) {
 	Usecode_scope_symbol::write(out);
 	const int num_methods = methods.size();
-	Write2(out, num_methods);
+	little_endian::Write2(out, num_methods);
 	for (const int method : methods) {
-		Write2(out, method);
+		little_endian::Write2(out, method);
 	}
-	Write2(out, num_vars);
+	little_endian::Write2(out, num_vars);
 }
 
 bool Usecode_symbol_table::has_symbol_table(std::istream& in) {
 	// Test for symbol table.
-	if (Read4(in) == UCSYMTBL_MAGIC0 && Read4(in) == UCSYMTBL_MAGIC1) {
+	if (little_endian::Read4(in) == UCSYMTBL_MAGIC0
+		&& little_endian::Read4(in) == UCSYMTBL_MAGIC1) {
 		return true;
 	} else {
 		in.seekg(0);

@@ -59,7 +59,6 @@
 #include "ucsymtbl.h"
 #include "usefuns.h"
 #include "useval.h"
-#include "utils.h"
 
 #if (defined(USE_EXULTSTUDIO) && defined(USECODE_DEBUGGER))
 #	include "debugmsg.h"
@@ -2050,9 +2049,9 @@ int Usecode_internal::run() {
 			case UC_CONVERSE:        // start conversation
 			case UC_CONVERSE32: {    // (32 bit version)
 				if (opcode < UC_EXTOPCODE) {
-					offset = Read2s(frame->ip);
+					offset = little_endian::Read2s(frame->ip);
 				} else {
-					offset = Read4s(frame->ip);
+					offset = little_endian::Read4s(frame->ip);
 				}
 
 				found_answer = false;
@@ -2064,9 +2063,9 @@ int Usecode_internal::run() {
 			case UC_JNE:        // JNE.
 			case UC_JNE32: {    // JNE32
 				if (opcode < UC_EXTOPCODE) {
-					offset = Read2s(frame->ip);
+					offset = little_endian::Read2s(frame->ip);
 				} else {
-					offset = Read4s(frame->ip);
+					offset = little_endian::Read4s(frame->ip);
 				}
 				const Usecode_value val = pop();
 				if (val.is_false()) {
@@ -2077,19 +2076,19 @@ int Usecode_internal::run() {
 			case UC_JMP:      // JMP.
 			case UC_JMP32:    // JMP32
 				if (opcode < UC_EXTOPCODE) {
-					offset = Read2s(frame->ip);
+					offset = little_endian::Read2s(frame->ip);
 				} else {
-					offset = Read4s(frame->ip);
+					offset = little_endian::Read4s(frame->ip);
 				}
 				frame->ip += offset;
 				break;
-			case UC_CMPS:                      // CMPS.
-			case UC_CMPS32: {                  // (32 bit version)
-				int cnt = Read2(frame->ip);    // # strings.
+			case UC_CMPS:        // CMPS.
+			case UC_CMPS32: {    // (32 bit version)
+				int cnt = little_endian::Read2(frame->ip);    // # strings.
 				if (opcode < UC_EXTOPCODE) {
-					offset = Read2s(frame->ip);
+					offset = little_endian::Read2s(frame->ip);
 				} else {
-					offset = Read4s(frame->ip);
+					offset = little_endian::Read4s(frame->ip);
 				}
 
 				bool matched = false;
@@ -2163,7 +2162,7 @@ int Usecode_internal::run() {
 				pushi(!pop().is_true());
 				break;
 			case UC_POP: {    // POP into a variable.
-				offset = Read2(frame->ip);
+				offset = little_endian::Read2(frame->ip);
 				// Get value.
 				const Usecode_value val = pop();
 				if (offset < 0 || offset >= num_locals) {
@@ -2204,9 +2203,9 @@ int Usecode_internal::run() {
 			case UC_ADDSI:      // ADDSI.
 			case UC_ADDSI32:    // ADDSI32
 				if (opcode < UC_EXTOPCODE) {
-					offset = Read2(frame->ip);
+					offset = little_endian::Read2(frame->ip);
 				} else {
-					offset = Read4s(frame->ip);
+					offset = little_endian::Read4s(frame->ip);
 				}
 				if (offset < 0 || frame->data + offset >= frame->externs - 6) {
 					DATA_SEGMENT_ERROR();
@@ -2217,9 +2216,9 @@ int Usecode_internal::run() {
 			case UC_PUSHS:      // PUSHS.
 			case UC_PUSHS32:    // PUSHS32
 				if (opcode < UC_EXTOPCODE) {
-					offset = Read2(frame->ip);
+					offset = little_endian::Read2(frame->ip);
 				} else {
-					offset = Read4s(frame->ip);
+					offset = little_endian::Read4s(frame->ip);
 				}
 				if (offset < 0 || frame->data + offset >= frame->externs - 6) {
 					DATA_SEGMENT_ERROR();
@@ -2229,7 +2228,7 @@ int Usecode_internal::run() {
 				break;
 			case UC_ARRC: {    // ARRC.
 				// Get # values to pop into array.
-				const int     num = Read2(frame->ip);
+				const int     num = little_endian::Read2(frame->ip);
 				int           cnt = num;
 				Usecode_value arr(num, nullptr);
 				int           to = 0;    // Store at this index.
@@ -2248,15 +2247,15 @@ int Usecode_internal::run() {
 				// Might be negative.
 				int ival;
 				if (opcode < UC_EXTOPCODE) {
-					ival = Read2s(frame->ip);
+					ival = little_endian::Read2s(frame->ip);
 				} else {
-					ival = Read4s(frame->ip);
+					ival = little_endian::Read4s(frame->ip);
 				}
 				pushi(ival);
 				break;
 			}
 			case UC_PUSH:    // PUSH.
-				offset = Read2(frame->ip);
+				offset = little_endian::Read2(frame->ip);
 				if (offset < 0 || offset >= num_locals) {
 					LOCAL_VAR_ERROR(offset);
 					pushi(0);
@@ -2271,21 +2270,21 @@ int Usecode_internal::run() {
 				break;
 			}
 			case UC_CALL: {    // CALL.
-				offset = Read2(frame->ip);
+				offset = little_endian::Read2(frame->ip);
 				if (offset < 0 || offset >= frame->num_externs) {
 					EXTERN_ERROR();
 					break;
 				}
 
 				const uint8* tempptr = frame->externs + 2 * offset;
-				const int    funcid  = Read2(tempptr);
+				const int    funcid  = little_endian::Read2(tempptr);
 
 				call_function(funcid, frame->eventid);
 				frame_changed = true;
 				break;
 			}
 			case UC_CALL32: {    // 32-bit CALL.
-				offset = Read4s(frame->ip);
+				offset = little_endian::Read4s(frame->ip);
 				call_function(offset, frame->eventid);
 				frame_changed = true;
 				break;
@@ -2305,7 +2304,7 @@ int Usecode_internal::run() {
 				// Get # of local to index.
 				Usecode_value* val;
 				if (opcode == UC_AIDX) {
-					offset = Read2(frame->ip);
+					offset = little_endian::Read2(frame->ip);
 					if (offset < 0 || offset >= num_locals) {
 						LOCAL_VAR_ERROR(offset);
 						pushi(0);
@@ -2313,7 +2312,7 @@ int Usecode_internal::run() {
 					}
 					val = &(frame->locals[offset]);
 				} else if (opcode == UC_AIDXTHV) {
-					offset             = Read2(frame->ip);
+					offset             = little_endian::Read2(frame->ip);
 					Usecode_value& ths = frame->get_this();
 					if (offset < 0 || offset >= ths.get_class_var_count()) {
 						cerr << "Class variable #" << (offset)
@@ -2323,7 +2322,7 @@ int Usecode_internal::run() {
 					}
 					val = &(ths.nth_class_var(offset));
 				} else {
-					offset = Read2s(frame->ip);
+					offset = little_endian::Read2s(frame->ip);
 					if (offset < 0) {    // Global static.
 						if (static_cast<unsigned>(-offset) < statics.size()) {
 							val = &(statics[-offset]);
@@ -2392,26 +2391,27 @@ int Usecode_internal::run() {
 								   // array
 			case UC_LOOPTOPTHV32: {    // (32 bit version)
 				// Counter (1-based).
-				const int local1 = Read2(frame->ip);
+				const int local1 = little_endian::Read2(frame->ip);
 				// Total count.
-				const int local2 = Read2(frame->ip);
+				const int local2 = little_endian::Read2(frame->ip);
 				// Current value of loop var.
-				const int local3 = Read2(frame->ip);
+				const int local3 = little_endian::Read2(frame->ip);
 				// Array of values to loop over.
 				int        local4;
 				const bool is_32bit = (opcode >= UC_EXTOPCODE);
 				// Mask off 32bit flag.
 				opcode &= 0x7f;
 				if (opcode == UC_LOOPTOPS) {
-					local4 = Read2s(frame->ip);
+					local4 = little_endian::Read2s(frame->ip);
 				} else {
-					local4 = Read2(frame->ip);
+					local4 = little_endian::Read2(frame->ip);
 				}
 				// Get offset to end of loop.
 				if (is_32bit) {
-					offset = Read4s(frame->ip);    // 32 bit offset
+					offset = little_endian::Read4s(
+							frame->ip);    // 32 bit offset
 				} else {
-					offset = Read2s(frame->ip);
+					offset = little_endian::Read2s(frame->ip);
 				}
 
 				if (local1 < 0 || local1 >= num_locals) {
@@ -2563,7 +2563,7 @@ int Usecode_internal::run() {
 				break;
 			}
 			case UC_ADDSV: {    // ADDSV.
-				offset = Read2(frame->ip);
+				offset = little_endian::Read2(frame->ip);
 				if (offset < 0 || offset >= num_locals) {
 					LOCAL_VAR_ERROR(offset);
 					break;
@@ -2604,9 +2604,9 @@ int Usecode_internal::run() {
 				// CMPS cases, as they will never match.
 				frame->ip += 2;
 				if (opcode < UC_EXTOPCODE) {
-					offset = Read2s(frame->ip);
+					offset = little_endian::Read2s(frame->ip);
 				} else {
-					offset = Read4s(frame->ip);
+					offset = little_endian::Read4s(frame->ip);
 				}
 
 				if (!found_answer) {
@@ -2628,7 +2628,7 @@ int Usecode_internal::run() {
 				say_string();
 				break;
 			case UC_CALLIS: {    // CALLIS.
-				offset = Read2(frame->ip);
+				offset = little_endian::Read2(frame->ip);
 				sval   = *(frame->ip)++;    // # of parameters.
 				const Usecode_value ival = call_intrinsic(offset, sval);
 				push(ival);
@@ -2636,7 +2636,7 @@ int Usecode_internal::run() {
 				break;
 			}
 			case UC_CALLI:    // CALLI.
-				offset = Read2(frame->ip);
+				offset = little_endian::Read2(frame->ip);
 				sval   = *(frame->ip)++;    // # of parameters.
 				call_intrinsic(offset, sval);
 				frame_changed = true;
@@ -2665,9 +2665,9 @@ int Usecode_internal::run() {
 			case UC_TRYSTART:
 			case UC_TRYSTART32:
 				if (opcode < UC_EXTOPCODE) {
-					offset = Read2s(frame->ip);
+					offset = little_endian::Read2s(frame->ip);
 				} else {
-					offset = Read4s(frame->ip);
+					offset = little_endian::Read4s(frame->ip);
 				}
 				except_stack[frame] = frame->ip + offset;
 				break;
@@ -2686,7 +2686,7 @@ int Usecode_internal::run() {
 				if (opcode >= UC_EXTOPCODE) {
 					offset = popi();
 				} else {
-					offset = Read2(frame->ip);
+					offset = little_endian::Read2(frame->ip);
 				}
 				if (offset < 0
 					|| static_cast<unsigned>(offset) >= sizeof(gflags)) {
@@ -2701,7 +2701,7 @@ int Usecode_internal::run() {
 				if (opcode >= UC_EXTOPCODE) {
 					offset = popi();
 				} else {
-					offset = Read2(frame->ip);
+					offset = little_endian::Read2(frame->ip);
 				}
 				if (offset < 0
 					|| static_cast<unsigned>(offset) >= sizeof(gflags)) {
@@ -2728,7 +2728,7 @@ int Usecode_internal::run() {
 			case UC_POPARRTHV: {    // Set class member array element.
 				Usecode_value* arr;
 				if (opcode == UC_POPARR) {
-					offset = Read2(frame->ip);
+					offset = little_endian::Read2(frame->ip);
 					// Get # of local array.
 					if (offset < 0 || offset >= num_locals) {
 						LOCAL_VAR_ERROR(offset);
@@ -2736,7 +2736,7 @@ int Usecode_internal::run() {
 					}
 					arr = &(frame->locals[offset]);
 				} else if (opcode == UC_POPARRTHV) {
-					offset             = Read2(frame->ip);
+					offset             = little_endian::Read2(frame->ip);
 					Usecode_value& ths = frame->get_this();
 					if (offset < 0 || offset >= ths.get_class_var_count()) {
 						cerr << "Class variable #" << (offset)
@@ -2746,7 +2746,7 @@ int Usecode_internal::run() {
 					}
 					arr = &(ths.nth_class_var(offset));
 				} else {
-					offset = Read2s(frame->ip);
+					offset = little_endian::Read2s(frame->ip);
 					if (offset < 0) {    // Global static.
 						if (static_cast<unsigned>(-offset) < statics.size()) {
 							arr = &(statics[-offset]);
@@ -2782,9 +2782,9 @@ int Usecode_internal::run() {
 				Usecode_value ival   = pop();
 				Game_object*  caller = get_item(ival);
 				if (opcode < UC_EXTOPCODE) {
-					offset = Read2(frame->ip);
+					offset = little_endian::Read2(frame->ip);
 				} else {
-					offset = Read4s(frame->ip);
+					offset = little_endian::Read4s(frame->ip);
 				}
 				call_function(offset, frame->eventid, caller);
 				frame_changed = true;
@@ -2804,7 +2804,7 @@ int Usecode_internal::run() {
 				break;
 			case UC_DBGLINE: {    // debugging opcode from spanish SI (line
 								  // number)
-				frame->line_number = Read2(frame->ip);
+				frame->line_number = little_endian::Read2(frame->ip);
 				break;
 			}
 			case UC_DBGFUNC:    // debugging opcode from spanish SI (function
@@ -2813,11 +2813,11 @@ int Usecode_internal::run() {
 				int funcname;
 				int paramnames;
 				if (opcode < UC_EXTOPCODE) {
-					funcname   = Read2(frame->ip);
-					paramnames = Read2(frame->ip);
+					funcname   = little_endian::Read2(frame->ip);
+					paramnames = little_endian::Read2(frame->ip);
 				} else {
-					funcname   = Read4s(frame->ip);
-					paramnames = Read4s(frame->ip);
+					funcname   = little_endian::Read4s(frame->ip);
+					paramnames = little_endian::Read4s(frame->ip);
 				}
 				if (funcname < 0
 					|| frame->data + funcname >= frame->externs - 6) {
@@ -2898,7 +2898,7 @@ int Usecode_internal::run() {
 				break;
 			}
 			case UC_PUSHSTATIC:    // PUSH static.
-				offset = Read2s(frame->ip);
+				offset = little_endian::Read2s(frame->ip);
 				if (offset < 0) {    // Global static.
 					if (static_cast<unsigned>(-offset) < statics.size()) {
 						push(statics[-offset]);
@@ -2915,7 +2915,7 @@ int Usecode_internal::run() {
 				}
 				break;
 			case UC_POPSTATIC: {    // POP static.
-				offset = Read2s(frame->ip);
+				offset = little_endian::Read2s(frame->ip);
 				// Get value.
 				const Usecode_value val = pop();
 				if (offset < 0) {
@@ -2936,7 +2936,7 @@ int Usecode_internal::run() {
 				// Otherwise, like CALLE.
 				Usecode_value ival   = pop();
 				Game_object*  caller = get_item(ival);
-				offset               = Read2(frame->ip);
+				offset               = little_endian::Read2(frame->ip);
 				call_function(offset, frame->eventid, caller, false, true);
 				frame_changed = true;
 				break;
@@ -2964,7 +2964,7 @@ int Usecode_internal::run() {
 				break;
 			}
 			case UC_PUSHTHV: {    // PUSH class this->var.
-				offset             = Read2(frame->ip);
+				offset             = little_endian::Read2(frame->ip);
 				Usecode_value& ths = frame->get_this();
 				push(ths.nth_class_var(offset));
 				break;
@@ -2972,20 +2972,20 @@ int Usecode_internal::run() {
 			case UC_POPTHV: {    // POP class this->var.
 				// Get value.
 				const Usecode_value val   = pop();
-				offset                    = Read2(frame->ip);
+				offset                    = little_endian::Read2(frame->ip);
 				Usecode_value& ths        = frame->get_this();
 				ths.nth_class_var(offset) = val;
 				break;
 			}
 			case UC_CALLM:       // CALLM - call method, use pushed var vtable.
 			case UC_CALLMS: {    // CALLMS - call method, use parameter vtable.
-				offset = Read2(frame->ip);
+				offset = little_endian::Read2(frame->ip);
 				Usecode_class_symbol* c;
 				if (opcode == UC_CALLM) {
 					const Usecode_value thisptr = peek();
 					c                           = thisptr.get_class_ptr();
 				} else {
-					c = get_class(Read2(frame->ip));
+					c = get_class(little_endian::Read2(frame->ip));
 				}
 				if (!c) {
 					THIS_ERROR();
@@ -2998,7 +2998,7 @@ int Usecode_internal::run() {
 				break;
 			}
 			case UC_CLSCREATE: {    // CLSCREATE
-				const int             cnum = Read2(frame->ip);
+				const int             cnum = little_endian::Read2(frame->ip);
 				Usecode_class_symbol* cls  = symtbl->get_class(cnum);
 				if (!cls) {
 					cerr << "Can't create obj. for class #" << cnum << endl;
@@ -3330,36 +3330,36 @@ void Usecode_internal::read() {
 		throw file_read_exception(USEDAT);
 	}
 	auto& in = *pIn;
-	partyman->set_count(Read2(in));    // Read party.
-	size_t i;                          // Blame MSVC
+	partyman->set_count(little_endian::Read2(in));    // Read party.
+	size_t i;                                         // Blame MSVC
 	for (i = 0; i < EXULT_PARTY_MAX; i++) {
-		partyman->set_member(i, Read2(in));
+		partyman->set_member(i, little_endian::Read2(in));
 	}
 	partyman->link_party();
 	// Timers.
-	const int cnt = Read4(in);
+	const int cnt = little_endian::Read4(in);
 	if (cnt == -1) {
 		int tmr = 0;
-		while ((tmr = Read2(in)) != 0xffff) {
-			timers[tmr] = Read4(in);
+		while ((tmr = little_endian::Read2(in)) != 0xffff) {
+			timers[tmr] = little_endian::Read4(in);
 		}
 	} else {
 		timers[0] = cnt;
 		for (size_t t = 1; t < 20; t++) {
-			timers[t] = Read4(in);
+			timers[t] = little_endian::Read4(in);
 		}
 	}
 	if (!in.good()) {
 		throw file_read_exception(USEDAT);
 	}
-	saved_pos.tx = Read2(in);    // Read in saved position.
-	saved_pos.ty = Read2(in);
-	saved_pos.tz = Read2(in);
+	saved_pos.tx = little_endian::Read2(in);    // Read in saved position.
+	saved_pos.ty = little_endian::Read2(in);
+	saved_pos.tz = little_endian::Read2(in);
 	if (!in.good() ||    // Failed.+++++Can remove this later.
 		saved_pos.tz < 0 || saved_pos.tz > 13) {
 		saved_pos = Tile_coord(-1, -1, -1);
 	}
-	saved_map = Read2(in);
+	saved_map = little_endian::Read2(in);
 	if (!in.good()) {    // For compat. with older saves.
 		saved_map = -1;
 	}

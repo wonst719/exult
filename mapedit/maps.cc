@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	include <config.h>
 #endif
 
-#include "exult_constants.h"
+#include "endianio.h"
 #include "fnames.h"
 #include "servemsg.h"
 #include "studio.h"
@@ -56,7 +56,7 @@ static void on_map_activate(GtkMenuItem* item, gpointer udata) {
 	ignore_unused_variable_warning(item);
 	unsigned char  data[50];
 	unsigned char* ptr = &data[0];
-	Write2(ptr, reinterpret_cast<uintptr>(udata));
+	little_endian::Write2(ptr, reinterpret_cast<uintptr>(udata));
 	ExultStudio::get_instance()->send_to_server(
 			Exult_server::goto_map, &data[0], ptr - data);
 }

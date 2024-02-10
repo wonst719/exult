@@ -22,6 +22,7 @@
 
 #include "keyring.h"
 
+#include "endianio.h"
 #include "exceptions.h"
 #include "fnames.h"
 #include "utils.h"
@@ -49,7 +50,7 @@ void Keyring::read() {
 	auto& in = *pIn;
 
 	do {
-		const int val = Read2(in);
+		const int val = little_endian::Read2(in);
 		if (in.good()) {
 			addkey(val);
 		}
@@ -64,7 +65,7 @@ void Keyring::write() {
 	auto& out = *pOut;
 
 	for (const int key : keys) {
-		Write2(out, key);
+		little_endian::Write2(out, key);
 	}
 }
 

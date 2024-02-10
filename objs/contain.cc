@@ -29,6 +29,7 @@
 #include "ShortcutBar_gump.h"
 #include "cheat.h"
 #include "databuf.h"
+#include "endianio.h"
 #include "exult.h"
 #include "frflags.h"
 #include "game.h"
@@ -40,7 +41,6 @@
 #include "ready.h"
 #include "ucmachine.h"
 #include "ucsched.h"
-#include "utils.h"
 #include "weaponinf.h"
 
 #ifdef USE_EXULTSTUDIO
@@ -663,7 +663,7 @@ void Container_game_object::write_ireg(ODataSource* out) {
 	uint8*               ptr   = write_common_ireg(12, buf);
 	Game_object*         first = objects.get_first();    // Guessing: +++++
 	const unsigned short tword = first ? first->get_prev()->get_shapenum() : 0;
-	Write2(ptr, tword);
+	little_endian::Write2(ptr, tword);
 	Write1(ptr, 0);    // Unknown.
 	Write1(ptr, get_quality());
 	Write1(ptr, 0);                                         // "Quantity".

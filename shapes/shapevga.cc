@@ -25,7 +25,6 @@
 
 #include "shapevga.h"
 
-#include "U7file.h"
 #include "ammoinf.h"
 #include "aniinf.h"
 #include "armorinf.h"
@@ -34,7 +33,6 @@
 #include "data/exult_bg_flx.h"
 #include "data/exult_si_flx.h"
 #include "data_utils.h"
-#include "databuf.h"
 #include "effhpinf.h"
 #include "exceptions.h"
 #include "expinf.h"
@@ -44,7 +42,6 @@
 #include "ignore_unused_variable_warning.h"
 #include "lightinf.h"
 #include "monstinf.h"
-#include "msgfile.h"
 #include "npcdollinf.h"
 #include "objdollinf.h"
 #include "ready.h"
@@ -52,9 +49,6 @@
 #include "utils.h"
 #include "warminf.h"
 #include "weaponinf.h"
-
-#include <iomanip> /* For debugging only. */
-#include <sstream>
 
 using std::ifstream;
 using std::ios;
@@ -124,9 +118,9 @@ public:
 			std::istream& in, int version, bool patch, Exult_Game game,
 			Shape_info& info) {
 		ignore_unused_variable_warning(patch, game);
-		info.gump_shape = Read2(in);
+		info.gump_shape = little_endian::Read2(in);
 		if (version >= 2) {
-			info.gump_font = Read2(in);
+			info.gump_font = little_endian::Read2(in);
 		} else {
 			info.gump_font = -1;
 		}
@@ -569,7 +563,7 @@ bool Shapes_vga_file::read_info(
 		const size_t   cnt  = shapes.size();
 		unsigned short offsets[c_max_shapes];
 		for (size_t i = 0; i < cnt; i++) {
-			offsets[i] = Read2(wihh);
+			offsets[i] = little_endian::Read2(wihh);
 		}
 		for (size_t i = 0; i < cnt; i++) {
 			// A zero offset means there is no record
@@ -625,10 +619,10 @@ bool Shapes_vga_file::read_info(
 			Equip_record equip;
 			// 10 elements/record.
 			for (int elem = 0; elem < 10; elem++) {
-				const int      shnum = Read2(mfile);
+				const int      shnum = little_endian::Read2(mfile);
 				const unsigned prob  = Read1(mfile);
 				const unsigned quant = Read1(mfile);
-				Read2(mfile);
+				little_endian::Read2(mfile);
 				equip.set(elem, shnum, prob, quant);
 			}
 			Monster_info::add_equip(equip);

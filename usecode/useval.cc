@@ -30,12 +30,10 @@
 #include "ios_state.hpp"
 #include "ucmachine.h"
 #include "ucsymtbl.h"
-#include "utils.h"
 
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <fstream>
 #include <functional>
 #include <iomanip>
 #include <iostream>

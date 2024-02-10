@@ -24,11 +24,8 @@
 
 #include "databuf.h"
 #include "ios_state.hpp"
-#include "utils.h"
 
-#include <cctype>
 #include <cstdlib>
-#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>

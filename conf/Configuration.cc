@@ -22,18 +22,14 @@
 
 #include "Configuration.h"
 
-#include "common_types.h"
 #include "exceptions.h"
-#include "ignore_unused_variable_warning.h"
 #include "utils.h"
 
 #include <cassert>
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
-#include <fstream>
 #include <iostream>
-#include <sstream>
 
 using std::atoi;
 using std::endl;
