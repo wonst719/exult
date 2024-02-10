@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../conf/Configuration.h"
 #include "Audio.h"
 #include "AudioMixer.h"
+#include "conv.h"
 #include "LowLevelMidiDriver.h"
 #include "MidiDriver.h"
 #include "OggAudioSample.h"
