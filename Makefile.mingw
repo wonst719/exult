@@ -34,6 +34,13 @@ else
 	ARCHFLAGS:=-m32
 endif
 
+# Lets target CPUs around 16 years old or newer for snapshots.
+ifdef SNAPSHOT
+	ARCHTYPE:=-march=x86-64-v2
+else
+	ARCHTYPE:=-march=native
+endif
+
 ifdef USE_CONSOLE
 	SUBSYSTEM:=-mconsole
 	SYSFLAGS:=-DUSE_CONSOLE
@@ -223,9 +230,9 @@ WARNINGS := \
 	-Wstringop-overflow=4 \
 	-Wunused-const-variable=1
 
-CXXFLAGS:=-MMD -std=c++17 -fdiagnostics-color=always $(ARCHFLAGS) $(strip $(OPT_LEVEL) $(WARNINGS) -mms-bitfields)
+CXXFLAGS:=-MMD -std=c++17 -fdiagnostics-color=always $(ARCHFLAGS) $(ARCHTYPE) $(strip $(OPT_LEVEL) $(WARNINGS) -mms-bitfields)
 
-LDFLAGS:=$(ARCHFLAGS)
+LDFLAGS:=$(ARCHFLAGS) $(ARCHTYPE)
 LIBS:=-lmingw32 $(SDL_LIBS) $(ZIP_LIBS) -lpng $(OGG_LIBS) $(FLUIDSYNTH_LIBS) $(MT32EMU_LIBS) -ldsound -luuid -lole32 -lwinmm -lws2_32 $(SUBSYSTEM) $(MTHREADS)
 
 EXEC:=Exult.exe
@@ -356,7 +363,7 @@ PLUGIN_CPPFLAGS:=$(strip -DVERSION=\"$(VERSION)\" -DEXULT_DATADIR=\"data\" \
 	$(call make_system, $(call clean_includes, $(GIMP_INCLUDES))) \
 	$(EXTRA_OPTIONS))
 
-CFLAGS:=-MMD -fdiagnostics-color=always $(ARCHFLAGS) $(strip $(OPT_LEVEL) -Wall -Wextra -pedantic -mms-bitfields) \
+CFLAGS:=-MMD -fdiagnostics-color=always $(ARCHFLAGS) $(ARCHTYPE) $(strip $(OPT_LEVEL) -Wall -Wextra -pedantic -mms-bitfields) \
 	$(call make_system, $(call clean_includes, $(GIMP_INCLUDES)))
 
 OBJECTS:=$(OBJS) $(TOOL_OBJS) $(ES_OBJS) mapedit/u7shp.o
