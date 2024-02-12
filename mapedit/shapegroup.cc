@@ -622,7 +622,7 @@ void ExultStudio::setup_groups() {
 	set_visible("groups_frame", true);
 	// Show builtins for shapes.vga.
 	set_visible("builtin_groups", curfile == vgafile);
-	gtk_tree_view_set_reorderable(tview, true);
+	gtk_tree_view_set_reorderable(tview, false);
 	const int   cnt = groups->size();    // Add groups from file.
 	GtkTreeIter iter;
 	for (int i = 0; i < cnt; i++) {
