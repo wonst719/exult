@@ -496,6 +496,9 @@ studioinstall: exult_studio$(EXEEXT)
 	mkdir -p $(U7PATH)
 	strip exult_studio$(EXEEXT) -o $(U7PATH)/exult_studio$(EXEEXT)
 	$(call copy_dlls_for_exe, exult_studio$(EXEEXT), $(U7PATH))
+	cp $(MSYSTEM_PREFIX)/librsvg*.dll $(U7PATH)
+	cp $(MSYSTEM_PREFIX)/libxml2*.dll $(U7PATH)
+	cp $(MSYSTEM_PREFIX)/liblzma*.dll $(U7PATH)
 	mkdir -p $(U7PATH)/data
 	cp mapedit/exult_studio.glade $(U7PATH)/data
 	mkdir -p $(U7PATH)/data/estudio
