@@ -445,8 +445,7 @@ toolsinstall: tools
 	mkdir -p $(U7PATH)/tools
 	strip ucxt$(EXEEXT) -o $(U7PATH)/ucxt$(EXEEXT)
 	for ff in $(TOOL_EXES); do strip $$ff -o $(U7PATH)/tools/$$ff; done
-	$(call copy_dlls_for_exe, ucxt$(EXEEXT), $(U7PATH))
-	$(call copy_dlls_for_exe, $(TOOL_EXES), $(U7PATH)/tools)
+	$(call copy_dlls_for_exe, ucxt$(EXEEXT) $(TOOL_EXES), $(U7PATH))
 	mkdir -p $(U7PATH)/data
 	cp usecode/ucxt/data/events.data $(U7PATH)/data
 	cp usecode/ucxt/data/flags.data $(U7PATH)/data
@@ -495,10 +494,6 @@ studio: exult_studio$(EXEEXT)
 studioinstall: exult_studio$(EXEEXT)
 	mkdir -p $(U7PATH)
 	strip exult_studio$(EXEEXT) -o $(U7PATH)/exult_studio$(EXEEXT)
-	$(call copy_dlls_for_exe, exult_studio$(EXEEXT), $(U7PATH))
-	cp $(MSYSTEM_PREFIX)/librsvg*.dll $(U7PATH)
-	cp $(MSYSTEM_PREFIX)/libxml2*.dll $(U7PATH)
-	cp $(MSYSTEM_PREFIX)/liblzma*.dll $(U7PATH)
 	mkdir -p $(U7PATH)/data
 	cp mapedit/exult_studio.glade $(U7PATH)/data
 	mkdir -p $(U7PATH)/data/estudio
@@ -511,6 +506,7 @@ studioinstall: exult_studio$(EXEEXT)
 	gdk-pixbuf-query-loaders --update-cache
 	cp $(MSYSTEM_PREFIX)/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache $(U7PATH)/lib/gdk-pixbuf-2.0/2.10.0
 	cp $(MSYSTEM_PREFIX)/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll $(U7PATH)/lib/gdk-pixbuf-2.0/2.10.0/loaders
+	$(call copy_dlls_for_exe, exult_studio$(EXEEXT) $(wildcard $(MSYSTEM_PREFIX)/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll), $(U7PATH))
 	mkdir -p $(U7PATH)/share/glib-2.0/schemas
 	cp $(MSYSTEM_PREFIX)/share/glib-2.0/schemas/gschemas.compiled $(U7PATH)/share/glib-2.0/schemas
 	mkdir -p $(U7PATH)/share/icons
