@@ -32,4 +32,3 @@ CompileFlags:
         -DUSE_TIMIDITY_MIDI,
       ]
     Remove: -W*
-    Compiler: D:/msys64/mingw64/bin/clang++.exe
