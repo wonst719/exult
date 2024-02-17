@@ -20,9 +20,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef UNIXSEQMIDIDRIVER_H_INCLUDED
 #define UNIXSEQMIDIDRIVER_H_INCLUDED
 
-#if (defined(UNIX) || defined(__unix__) || defined(__unix))
+#if !defined(USE_UNIX_SEQ_MIDI) \
+		&& (defined(UNIX) || defined(__unix__) || defined(__unix))
 #	define USE_UNIX_SEQ_MIDI
+#endif
 
+#ifdef USE_UNIX_SEQ_MIDI
 #	include "LowLevelMidiDriver.h"
 
 #	include <string>
