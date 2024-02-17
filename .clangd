@@ -29,6 +29,5 @@ CompileFlags:
         -Wno-global-constructors,
         -Wno-exit-time-destructors,
         -Wno-missing-prototypes,
-        -DUSE_TIMIDITY_MIDI,
       ]
     Remove: -W*

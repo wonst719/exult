@@ -78,6 +78,11 @@ endif
 FLUIDSYNTH_LIBS:=$(shell pkg-config --libs fluidsynth)
 FLUIDSYNTH_CFLAGS:=-DUSE_FLUIDSYNTH_MIDI
 
+### TIMIDITY libs, for Exult.
+# If this doesn't work, insert output of `pkg-config --libs libtimidity` manually
+TIMIDITY_LIBS:=$(shell pkg-config --libs libtimidity)
+TIMIDITY_CFLAGS:=-DUSE_TIMIDITY_MIDI
+
 ### GTK+ libs and includes, for Exult Studio.
 # If this doesn't work, insert output of `pkg-config --cflags gtk+-win32-2.0` manually
 GTK_INCLUDES:=$(shell pkg-config --cflags gtk+-3.0)
@@ -233,7 +238,7 @@ WARNINGS := \
 CXXFLAGS:=-MMD -std=c++17 -fdiagnostics-color=always $(ARCHFLAGS) $(ARCHTYPE) $(strip $(OPT_LEVEL) $(WARNINGS) -mms-bitfields)
 
 LDFLAGS:=$(ARCHFLAGS) $(ARCHTYPE)
-LIBS:=-lmingw32 $(SDL_LIBS) $(ZIP_LIBS) -lpng $(OGG_LIBS) $(FLUIDSYNTH_LIBS) $(MT32EMU_LIBS) -ldsound -luuid -lole32 -lwinmm -lws2_32 $(SUBSYSTEM) $(MTHREADS)
+LIBS:=-lmingw32 $(SDL_LIBS) $(ZIP_LIBS) -lpng $(OGG_LIBS) $(FLUIDSYNTH_LIBS) $(TIMIDITY_LIBS) $(MT32EMU_LIBS) -ldsound -luuid -lole32 -lwinmm -lws2_32 $(SUBSYSTEM) $(MTHREADS)
 
 EXEC:=Exult.exe
 EXEEXT:=.exe
@@ -346,7 +351,7 @@ CPPFLAGS:=$(strip -DVERSION=\"$(VERSION)\" -DEXULT_DATADIR=\"data\" \
 	-I$(SRC)/imagewin -I$(SRC)/ios/include -I$(SRC)/objs -I$(SRC)/pathfinder -I$(SRC)/server \
 	-I$(SRC)/shapes -I$(SRC)/tools -I$(SRC)/usecode -I$(SRC)/usecode/compiler \
 	-I$(SRC)/usecode/ucxt/include -I$(SRC)/mapedit -I$(SRC)/shapes/shapeinf \
-	$(call make_system, $(call clean_includes, $(FLUIDSYNTH_CFLAGS) $(SDL_CFLAGS) $(ZIP_CFLAGS) $(MT32EMU_CFLAGS) $(ES_INCLUDES))) \
+	$(call make_system, $(call clean_includes, $(FLUIDSYNTH_CFLAGS) $(TIMIDITY_CFLAGS) $(SDL_CFLAGS) $(ZIP_CFLAGS) $(MT32EMU_CFLAGS) $(ES_INCLUDES))) \
 	$(EXTRA_OPTIONS))
 
 PLUGIN_CPPFLAGS:=$(strip -DVERSION=\"$(VERSION)\" -DEXULT_DATADIR=\"data\" \
