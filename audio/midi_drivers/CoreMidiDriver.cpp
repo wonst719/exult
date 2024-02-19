@@ -21,13 +21,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "CoreMidiDriver.h"
 
-#include "ignore_unused_variable_warning.h"
-
 #ifdef USE_CORE_MIDI
+#	include "ignore_unused_variable_warning.h"
+
+#	include <pthread.h>
+#	include <sched.h>
+
 #	include <algorithm>
 #	include <iomanip>
-#	include <new>
 #	include <type_traits>
+
 using namespace std;
 
 const MidiDriver::MidiDriverDesc CoreMidiDriver::desc

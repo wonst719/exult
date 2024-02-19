@@ -23,10 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "CoreAudioMidiDriver.h"
 
-#include "Configuration.h"
-#include "exceptions.h"
-
 #ifdef USE_CORE_AUDIO_MIDI
+#	include "Configuration.h"
+#	include "exceptions.h"
 
 #	include <pthread.h>
 #	include <sched.h>
