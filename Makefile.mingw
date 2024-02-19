@@ -168,6 +168,72 @@ ifdef DEBUG_SYMBOLS
 	OPT_LEVEL:=-Og
 endif
 
+ifeq (n,$(findstring n,$(firstword -$(MAKEFLAGS))))
+	# run with -n / --dry-run
+	# Have ALSA headers for clangd checks.
+	# Expected structure is:
+	# - '$(WITH_ALSA_HEADERS)/alsa' directory with headers
+	# You can nab the headers from https://github.com/alsa-project/alsa-lib
+	# and generate "asoundlib.h".
+	ifdef WITH_ALSA_HEADERS
+		ALSA_CFLAGS:=-DUSE_ALSA_MIDI=1 -isystem $(WITH_ALSA_HEADERS)
+	else
+		ALSA_CFLAGS:=
+	endif
+	# Have MacOS headers for clangd checks.
+	# Expected structure is:
+	# - '$(WITH_MACOS_HEADERS)/Frameworks' directory with per-framework headers
+	# - '$(WITH_MACOS_HEADERS)/usr/include' directory with OSX headers
+	# For this, nab a framework from https://github.com/phracker/MacOSX-SDKs
+	# and make symlinks with the appropriate structure.
+	ifdef WITH_MACOS_HEADERS
+		MACOS_CFLAGS:=-target x86_64-apple-macosx10.11 -fno-common \
+			-D_THREAD_SAFE -DMACOSX \
+			-isystem $(MSYSTEM_PREFIX)/include/c++/v1 \
+			-isystem $(WITH_MACOS_HEADERS)/Frameworks \
+			-isystem $(WITH_MACOS_HEADERS)/usr/include
+	else
+		MACOS_CFLAGS:=
+	endif
+	# Have iOS headers for clangd checks.
+	# Expected structure is:
+	# - '$(WITH_IOS_HEADERS)/Frameworks' directory with per-framework headers
+	# - '$(WITH_IOS_HEADERS)/usr/include' directory with OSX headers
+	# For this, nab a framework from https://github.com/xybp888/iOS-SDKs and
+	# make symlinks with the appropriate structure.
+	ifdef WITH_IOS_HEADERS
+		IOS_CFLAGS:=-target arm64-apple-ios12.0 -fmessage-length=0 \
+			-fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 \
+			-fobjc-weak -fpascal-strings -fno-common -fvisibility-inlines-hidden \
+			-D__IPHONEOS__=1 \
+			-DMAC_OS_X_VERSION_MIN_REQUIRED=101100 \
+			-D__AVAILABILITY_MACROS_USES_AVAILABILITY=0 \
+			-DOBJC_OLD_DISPATCH_PROTOTYPES=0 -D_THREAD_SAFE \
+			-isystem $(MSYSTEM_PREFIX)/include/c++/v1 \
+			-isystem $(WITH_IOS_HEADERS)/Frameworks \
+			-isystem $(WITH_IOS_HEADERS)/usr/include
+		IOS_OBJS:=\
+			ios/ios_utils.o \
+			ios/GamePadView.o
+	else
+		IOS_CFLAGS:=
+		IOS_OBJS:=
+	endif
+	# Force enable /dev/sequencer midi driver for clangd checks.
+	ifdef WANT_UNIXSEQ
+		UNIXSEQ_CFLAGS:=-DUSE_UNIX_SEQ_MIDI=1
+	else
+		UNIXSEQ_CFLAGS:=
+	endif
+else
+	# not run with -n / --dry-run
+	ALSA_CFLAGS:=
+	MACOS_CFLAGS:=
+	IOS_CFLAGS:=
+	IOS_OBJS:=
+	UNIXSEQ_CFLAGS:=
+endif
+
 WARNINGS := \
 	-Wall \
 	-Wextra \
