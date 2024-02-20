@@ -270,7 +270,7 @@ USECODE_OBJS:= \
 	usecode/ucsymtbl.o \
 	usecode/useval.o
 
-OBJS:=$(MAIN_OBJS) $(PATH_OBJS) $(CONF_OBJS) $(AUDIO_OBJS) $(FLIC_OBJS) $(FILE_OBJS) $(SDLRWOPS_OBJS) $(GAMEMGR_OBJS) $(GUMPS_OBJS) $(OBJS_OBJS) $(SHAPES_OBJS) $(IMAGEWIN_OBJS) $(USECODE_OBJS) $(ZIP_OBJS) $(SERVER_OBJS) $(ICON_OBJS) $(IOS_OBJS)
+OBJS:=$(MAIN_OBJS) $(PATH_OBJS) $(CONF_OBJS) $(AUDIO_OBJS) $(FLIC_OBJS) $(FILE_OBJS) $(SDLRWOPS_OBJS) $(GAMEMGR_OBJS) $(GUMPS_OBJS) $(OBJS_OBJS) $(SHAPES_OBJS) $(IMAGEWIN_OBJS) $(USECODE_OBJS) $(ZIP_OBJS) $(SERVER_OBJS) $(ICON_OBJS) $(IOS_OBJS) $(ANDROID_OBJS)
 
 EXULT_FLX := data/exult.flx data/exult_flx.h
 EXULT_FLX_OBJECTS := \
@@ -466,9 +466,13 @@ $(MIDI_DRV_ALSA_OBJS) : CXXFLAGS:=$(ALSA_CFLAGS) $(CXXFLAGS)
 
 $(MIDI_DRV_MACOSX_OBJS) : CXXFLAGS:=$(MACOS_CFLAGS) $(patsubst $(ARCHFLAGS),,$(CXXFLAGS))
 
-ios/ios_utils.o : CXXFLAGS:=-MMD -std=c++17 -fdiagnostics-color=always $(IOS_CFLAGS) $(strip $(OPT_LEVEL) $(WARNINGS) -mms-bitfields)
+ios/ios_utils.o : CXXFLAGS:=-MMD -std=c++17 -fdiagnostics-color=always $(IOS_CFLAGS) $(strip $(OPT_LEVEL) $(WARNINGS))
 
-ios/GamePadView.o : CFLAGS:=-MMD -std=c11 -fdiagnostics-color=always $(IOS_CFLAGS) $(strip $(OPT_LEVEL) $(WARNINGS) -mms-bitfields)
+ios/GamePadView.o : CFLAGS:=-MMD -std=c11 -fdiagnostics-color=always $(IOS_CFLAGS) $(strip $(OPT_LEVEL) $(WARNINGS))
+
+ifneq ($(ANDROID_OBJS),)
+$(ANDROID_OBJS) : CXXFLAGS:=-MMD -std=c++17 -fdiagnostics-color=always $(ANDROID_CFLAGS) $(strip $(OPT_LEVEL) $(WARNINGS))
+endif
 
 %.o: %.mm
 	$(CXX) -x objective-c++ $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<

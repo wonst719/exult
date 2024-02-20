@@ -180,6 +180,27 @@ ifeq (n,$(findstring n,$(firstword -$(MAKEFLAGS))))
 	else
 		ALSA_CFLAGS:=
 	endif
+	# Have Android NDK headers for clangd checks.
+	# Nab the NDK from https://github.com/android/ndk and define the variable
+	# WITH_ANDROID_HEADERS to point to the following NDK directory:
+	#   toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include
+	# Then create a symlink to $(MSYSTEM_PREFIX)/include/SDL2 inside this dir.
+	ifdef WITH_ANDROID_HEADERS
+		ANDROID_CFLAGS:=-target x86_64-linux-android28 \
+			-DANDROID -fdata-sections -ffunction-sections -funwind-tables \
+			-fstack-protector-strong -no-canonical-prefixes $(ARCHTYPE) \
+			-isystem $(MSYSTEM_PREFIX)/include/c++/v1 \
+			-isystem $(WITH_ANDROID_HEADERS) \
+			-isystem $(WITH_ANDROID_HEADERS)/x86_64-linux-android \
+			-Iandroid/lib/include -Iandroid/app/src/main/cpp
+		ANDROID_OBJS:=\
+			android/app/src/main/cpp/android_log_streambuf.o \
+			android/app/src/main/cpp/exult_android_main.o \
+			android/lib/src/TouchUI_Android.o
+	else
+		ANDROID_CFLAGS:=
+		ANDROID_OBJS:=
+	endif
 	# Have MacOS headers for clangd checks.
 	# Expected structure is:
 	# - '$(WITH_MACOS_HEADERS)/Frameworks' directory with per-framework headers
@@ -228,6 +249,8 @@ ifeq (n,$(findstring n,$(firstword -$(MAKEFLAGS))))
 else
 	# not run with -n / --dry-run
 	ALSA_CFLAGS:=
+	ANDROID_CFLAGS:=
+	ANDROID_OBJS:=
 	MACOS_CFLAGS:=
 	IOS_CFLAGS:=
 	IOS_OBJS:=
