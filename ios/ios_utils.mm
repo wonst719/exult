@@ -22,31 +22,40 @@
 
 #include "Configuration.h"
 #import "GamePadView.h"
+#include "ignore_unused_variable_warning.h"
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
 #include <cassert>
 
-static char    docs_dir[512];
+namespace {
+	char docs_dir[512];
+}
+
 extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 
-@interface UIManager : NSObject <KeyInputDelegate, GamePadButtonDelegate> {
-	TouchUI_iOS*   touchUI;
-	DPadView*      dpad;
-	GamePadButton* btn1;
-	GamePadButton* btn2;
-	SDL_Scancode   recurringKeycode;
-};
+@interface UIManager : NSObject <KeyInputDelegate, GamePadButtonDelegate>
+
+@property(nonatomic, assign) TouchUI_iOS*   touchUI;
+@property(nonatomic, retain) DPadView*      dpad;
+@property(nonatomic, retain) GamePadButton* btn1;
+@property(nonatomic, retain) GamePadButton* btn2;
+@property(nonatomic, assign) SDL_Scancode   recurringKeycode;
 
 - (void)promptForName:(NSString*)name;
 
 @end
 
 @implementation UIManager
+@synthesize     touchUI;
+@synthesize     dpad;
+@synthesize     btn1;
+@synthesize     btn2;
+@synthesize     recurringKeycode;
 
 - (void)sendRecurringKeycode {
-	SDL_SendKeyboardKey(SDL_PRESSED, recurringKeycode);
+	SDL_SendKeyboardKey(SDL_PRESSED, self.recurringKeycode);
 	[self performSelector:@selector(sendRecurringKeycode)
 			   withObject:nil
 			   afterDelay:.5];
@@ -54,7 +63,7 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 
 - (void)keydown:(SDL_Scancode)keycode {
 	SDL_SendKeyboardKey(SDL_PRESSED, keycode);
-	recurringKeycode = keycode;
+	self.recurringKeycode = keycode;
 	[NSObject cancelPreviousPerformRequestsWithTarget:self
 											 selector:@selector
 											 (sendRecurringKeycode)
@@ -73,13 +82,15 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 }
 
 - (void)buttonDown:(GamePadButton*)btn {
-	SDL_SendKeyboardKey(
-			SDL_PRESSED, (SDL_Scancode)[btn.keyCodes[0] integerValue]);
+	NSNumber*  code     = btn.keyCodes[0];
+	const auto scancode = static_cast<SDL_Scancode>([code integerValue]);
+	SDL_SendKeyboardKey(SDL_PRESSED, scancode);
 }
 
 - (void)buttonUp:(GamePadButton*)btn {
-	SDL_SendKeyboardKey(
-			SDL_RELEASED, (SDL_Scancode)[btn.keyCodes[0] integerValue]);
+	NSNumber*  code     = btn.keyCodes[0];
+	const auto scancode = static_cast<SDL_Scancode>([code integerValue]);
+	SDL_SendKeyboardKey(SDL_RELEASED, scancode);
 }
 
 - (void)promptForName:(NSString*)name {
@@ -89,31 +100,35 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 	alertWindow.rootViewController = [UIViewController new];
 	[alertWindow makeKeyAndVisible];
 
-	UIAlertController* alert  = [UIAlertController
-            alertControllerWithTitle:@""
-                             message:@""
-                      preferredStyle:UIAlertControllerStyleAlert];
-	UIAlertAction*     ok     = [UIAlertAction
-            actionWithTitle:@"OK"
-                      style:UIAlertActionStyleDefault
-                    handler:^(UIAlertAction* action) {
-                      UITextField* textField = alert.textFields.firstObject;
-                      TouchUI::onTextInput(textField.text.UTF8String);
-                      alertWindow.hidden = YES;
-                      [alert dismissViewControllerAnimated:YES completion:nil];
-                    }];
-	UIAlertAction*     cancel = [UIAlertAction
-            actionWithTitle:@"Cancel"
-                      style:UIAlertActionStyleDefault
-                    handler:^(UIAlertAction* action) {
-                      alertWindow.hidden = YES;
-                      [alert dismissViewControllerAnimated:YES completion:nil];
-                    }];
+	UIAlertController* alert = [UIAlertController
+			alertControllerWithTitle:@""
+							 message:@""
+					  preferredStyle:UIAlertControllerStyleAlert];
+
+	UIAlertAction* ok = [UIAlertAction
+			actionWithTitle:@"OK"
+					  style:UIAlertActionStyleDefault
+					handler:^(UIAlertAction* action) {
+					  ignore_unused_variable_warning(action);
+					  UITextField* textField = alert.textFields.firstObject;
+					  TouchUI::onTextInput(textField.text.UTF8String);
+					  alertWindow.hidden = YES;
+					  [alert dismissViewControllerAnimated:YES completion:nil];
+					}];
+
+	UIAlertAction* cancel = [UIAlertAction
+			actionWithTitle:@"Cancel"
+					  style:UIAlertActionStyleDefault
+					handler:^(UIAlertAction* action) {
+					  ignore_unused_variable_warning(action);
+					  alertWindow.hidden = YES;
+					  [alert dismissViewControllerAnimated:YES completion:nil];
+					}];
 	[alert addAction:ok];
 	[alert addAction:cancel];
 	[alert addTextFieldWithConfigurationHandler:^(UITextField* textField) {
 	  textField.placeholder = @"";
-	  if (name) {
+	  if (name != nullptr) {
 		  [textField setText:name];
 	  }
 	}];
@@ -128,14 +143,15 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 	UIViewController* controller = window.rootViewController;
 	CGRect            rcScreen   = controller.view.bounds;
 	CGSize            sizeDpad   = CGSizeMake(100, 100);
-	float             margin     = 100;
+	double            margin     = 100;
 
 	std::string str;
-	float       left = rcScreen.size.width - sizeDpad.width - margin;
+	double      left = rcScreen.size.width - sizeDpad.width - margin;
 	config->value("config/touch/dpad_location", str, "right");
 	if (str == "no") {
 		return CGRectZero;
-	} else if (str == "left") {
+	}
+	if (str == "left") {
 		left = 0;
 	}
 	CGRect rcDpad = CGRectMake(
@@ -145,7 +161,7 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 }
 
 - (void)onDpadLocationChanged {
-	dpad.frame = [self calcRectForDPad];
+	self.dpad.frame = [self calcRectForDPad];
 }
 
 - (GamePadButton*)createButton:(NSString*)title
@@ -153,9 +169,15 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 						  rect:(CGRect)rect {
 	GamePadButton* btn = [[GamePadButton alloc] initWithFrame:rect];
 	btn.keyCodes       = @[@(keycode)];
-	btn.images         = @[
-        [UIImage imageNamed:@"btn.png"],
-        [UIImage imageNamed:@"btnpressed.png"],
+
+	auto* button        = [UIImage imageNamed:@"btn.png"];
+	auto* buttonPressed = [UIImage imageNamed:@"btnpressed.png"];
+	NSAssert(button != nil, @"Failed to load image 'btn.png'");
+	NSAssert(buttonPressed != nil, @"Failed to load image 'btnpressed.png'");
+
+	btn.images = @[
+		button,
+		buttonPressed,
 	];
 	btn.textColor = [UIColor whiteColor];
 	btn.title     = title;
@@ -164,27 +186,27 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 }
 
 - (void)showGameControls {
-	if (dpad == nil) {
-		dpad = [[DPadView alloc] initWithFrame:CGRectZero];
+	if (self.dpad == nil) {
+		self.dpad = [[DPadView alloc] initWithFrame:CGRectZero];
 	}
 	UIWindow* window = [[[UIApplication sharedApplication] delegate] window];
 	UIViewController* controller = window.rootViewController;
 
-	dpad.frame = [self calcRectForDPad];
-	[controller.view addSubview:dpad];
+	self.dpad.frame = [self calcRectForDPad];
+	[controller.view addSubview:self.dpad];
 
-	dpad.alpha = 1;
+	self.dpad.alpha = 1;
 }
 
 - (void)hideGameControls {
-	dpad.alpha = 0;
+	self.dpad.alpha = 0;
 }
 
 - (void)showButtonControls {
-	if (btn1 == nil) {
-		btn1 = [self createButton:@"ESC"
-						  keycode:(int)SDL_SCANCODE_ESCAPE
-							 rect:CGRectZero];
+	if (self.btn1 == nil) {
+		self.btn1 = [self createButton:@"ESC"
+							   keycode:static_cast<int>(SDL_SCANCODE_ESCAPE)
+								  rect:CGRectZero];
 	}
 
 	UIWindow* window = [[[UIApplication sharedApplication] delegate] window];
@@ -192,58 +214,61 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 
 	CGRect rcScreen   = controller.view.bounds;
 	CGSize sizeButton = CGSizeMake(60, 30);
-	CGRect rcButton   = CGRectMake(
-            10, rcScreen.size.height - sizeButton.height, sizeButton.width,
-            sizeButton.height);
-	btn1.frame = rcButton;
-	[controller.view addSubview:btn1];
 
-	btn1.alpha = 1;
+	CGRect rcButton = CGRectMake(
+			10, rcScreen.size.height - sizeButton.height, sizeButton.width,
+			sizeButton.height);
+	self.btn1.frame = rcButton;
+	[controller.view addSubview:self.btn1];
+
+	self.btn1.alpha = 1;
 }
 
 - (void)hideButtonControls {
-	btn1.alpha = 0;
+	self.btn1.alpha = 0;
 }
 
 @end
 
-static UIManager* _defaultManager;
+namespace {
+	UIManager* DefaultManager;
+}
 
 /* ---------------------------------------------------------------------- */
 #pragma mark TouchUI iOS
 
-TouchUI_iOS::TouchUI_iOS() : TouchUI() {
-	if (_defaultManager == nil) {
-		_defaultManager = [[UIManager alloc] init];
+TouchUI_iOS::TouchUI_iOS() {
+	if (DefaultManager == nil) {
+		DefaultManager = [[UIManager alloc] init];
 	}
 }
 
 void TouchUI_iOS::promptForName(const char* name) {
-	if (name == NULL) {
-		[_defaultManager promptForName:nil];
+	if (name == nullptr) {
+		[DefaultManager promptForName:nil];
 	} else {
-		[_defaultManager promptForName:[NSString stringWithUTF8String:name]];
+		[DefaultManager promptForName:[NSString stringWithUTF8String:name]];
 	}
 }
 
 void TouchUI_iOS::showGameControls() {
-	[_defaultManager showGameControls];
+	[DefaultManager showGameControls];
 }
 
 void TouchUI_iOS::hideGameControls() {
-	[_defaultManager hideGameControls];
+	[DefaultManager hideGameControls];
 }
 
 void TouchUI_iOS::showButtonControls() {
-	[_defaultManager showButtonControls];
+	[DefaultManager showButtonControls];
 }
 
 void TouchUI_iOS::hideButtonControls() {
-	[_defaultManager hideButtonControls];
+	[DefaultManager hideButtonControls];
 }
 
 void TouchUI_iOS::onDpadLocationChanged() {
-	[_defaultManager onDpadLocationChanged];
+	[DefaultManager onDpadLocationChanged];
 }
 
 /* ---------------------------------------------------------------------- */

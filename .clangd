@@ -38,4 +38,9 @@ CompileFlags:
 If:
   PathMatch: [.*\.c, mapedit/tools/mockup/.*\.h, mapedit/tools/smooth/.*\.h]
 CompileFlags:
-  Add: [-xc, -std=c11]
+  Add: [-xc, -std=c11, -Wno-declaration-after-statement]
+---
+If:
+  PathMatch: [.*\.m]
+CompileFlags:
+  Add: [-Wno-declaration-after-statement]
