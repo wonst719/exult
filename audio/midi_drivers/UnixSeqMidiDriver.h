@@ -50,9 +50,11 @@ protected:
 	void send(uint32 b) override;
 	void send_sysex(uint8 status, const uint8* msg, uint16 length) override;
 
+private:
 	std::string devname;
-	bool        isOpen;
-	int         device, deviceNum;
+	bool        isOpen    = false;
+	int         device    = 0;
+	int         deviceNum = 0;
 };
 
 #endif
