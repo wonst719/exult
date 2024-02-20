@@ -93,19 +93,22 @@ int CoreMidiDriver::open() {
 	// Default to the first CoreMidi device (ID 0)
 	// when the device ID in the cfg isn't possible anymore
 	if (deviceId < 0 || static_cast<ItemCount>(deviceId) >= dests) {
+		if (dests == 0) {
+			// Bail out if we simply don't have any midi devices.
+			return 3;
+		}
 		std::cout << "CoreMidi destination " << deviceId
 				  << " not available, trying destination 0 instead."
 				  << std::endl;
 		deviceId = 0;
 	}
 
-	if (dests > static_cast<ItemCount>(deviceId) && (mClient != 0u)) {
-		mDest = MIDIGetDestination(deviceId);
-		err   = MIDIOutputPortCreate(
-                mClient, CFSTR("exult_output_port"), &mOutPort);
-	} else {
+	if (deviceId < 0 || dests < static_cast<ItemCount>(deviceId)
+		|| mClient == 0u) {
 		return 3;
 	}
+	mDest = MIDIGetDestination(deviceId);
+	err = MIDIOutputPortCreate(mClient, CFSTR("exult_output_port"), &mOutPort);
 
 	if (err != noErr) {
 		return 1;
