@@ -23,6 +23,7 @@
 #include <Configuration.h>
 #include <SDL_system.h>
 
+#include <cmath>
 #include <iostream>
 
 extern "C" JNIEXPORT void JNICALL
