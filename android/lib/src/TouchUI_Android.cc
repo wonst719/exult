@@ -16,18 +16,22 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "TouchUI_Android.h"
+
+#include "ignore_unused_variable_warning.h"
+
 #include <Configuration.h>
 #include <SDL_system.h>
-#include <TouchUI_Android.h>
 
 #include <iostream>
 
 extern "C" JNIEXPORT void JNICALL
 		Java_info_exult_ExultActivity_setVirtualJoystick(
-				JNIEnv* env, jobject /* this */, jfloat x, jfloat y) {
-	Sint32 axisX   = x * SDL_JOYSTICK_AXIS_MAX;
-	Sint32 axisY   = y * SDL_JOYSTICK_AXIS_MAX;
-	auto   touchUI = TouchUI_Android::getInstance();
+				JNIEnv* env, jobject self, jfloat x, jfloat y) {
+	ignore_unused_variable_warning(env, self);
+	auto  axisX   = static_cast<Sint32>(std::round(x * SDL_JOYSTICK_AXIS_MAX));
+	auto  axisY   = static_cast<Sint32>(std::round(y * SDL_JOYSTICK_AXIS_MAX));
+	auto* touchUI = TouchUI_Android::getInstance();
 	touchUI->setVirtualJoystick(
 			std::clamp(axisX, SDL_JOYSTICK_AXIS_MIN, SDL_JOYSTICK_AXIS_MAX),
 			std::clamp(axisY, SDL_JOYSTICK_AXIS_MIN, SDL_JOYSTICK_AXIS_MAX));
@@ -35,13 +39,15 @@ extern "C" JNIEXPORT void JNICALL
 
 extern "C" JNIEXPORT void JNICALL
 		Java_info_exult_ExultActivity_sendEscapeKeypress(
-				JNIEnv* env, jobject /* this */) {
-	auto touchUI = TouchUI_Android::getInstance();
+				JNIEnv* env, jobject self) {
+	ignore_unused_variable_warning(env, self);
+	auto* touchUI = TouchUI_Android::getInstance();
 	touchUI->sendEscapeKeypress();
 }
 
 extern "C" JNIEXPORT void JNICALL Java_info_exult_ExultActivity_setName(
-		JNIEnv* env, jobject /* this */, jstring javaName) {
+		JNIEnv* env, jobject self, jstring javaName) {
+	ignore_unused_variable_warning(self);
 	const char* name = env->GetStringUTFChars(javaName, nullptr);
 	TouchUI::onTextInput(name);
 	env->ReleaseStringUTFChars(javaName, name);
@@ -70,10 +76,10 @@ void TouchUI_Android::sendEscapeKeypress() {
 }
 
 TouchUI_Android::TouchUI_Android() {
-	m_instance   = this;
-	m_jniEnv     = static_cast<JNIEnv*>(SDL_AndroidGetJNIEnv());
-	auto jclass  = m_jniEnv->FindClass("info/exult/ExultActivity");
-	auto jmethod = m_jniEnv->GetStaticMethodID(
+	m_instance    = this;
+	m_jniEnv      = static_cast<JNIEnv*>(SDL_AndroidGetJNIEnv());
+	auto* jclass  = m_jniEnv->FindClass("info/exult/ExultActivity");
+	auto* jmethod = m_jniEnv->GetStaticMethodID(
 			jclass, "instance", "()Linfo/exult/ExultActivity;");
 	m_exultActivityObject = m_jniEnv->CallStaticObjectMethod(jclass, jmethod);
 	m_showGameControlsMethod = m_jniEnv->GetMethodID(
@@ -95,7 +101,7 @@ TouchUI_Android::TouchUI_Android() {
 				  << std::endl;
 	} else {
 		m_joystick = SDL_JoystickOpen(joystickDeviceIndex);
-		if (!m_joystick) {
+		if (m_joystick == nullptr) {
 			std::cerr << "SDL_JoystickOpen failed for virtual joystick: "
 					  << SDL_GetError() << std::endl;
 			SDL_JoystickDetachVirtual(joystickDeviceIndex);
@@ -104,7 +110,7 @@ TouchUI_Android::TouchUI_Android() {
 }
 
 TouchUI_Android::~TouchUI_Android() {
-	if (m_joystick) {
+	if (m_joystick != nullptr) {
 		const auto joystickId = SDL_JoystickInstanceID(m_joystick);
 		SDL_JoystickClose(m_joystick);
 		for (int i = 0, n = SDL_NumJoysticks(); i < n; ++i) {
@@ -117,7 +123,7 @@ TouchUI_Android::~TouchUI_Android() {
 }
 
 void TouchUI_Android::promptForName(const char* name) {
-	auto javaName = m_jniEnv->NewStringUTF(name);
+	auto* javaName = m_jniEnv->NewStringUTF(name);
 	m_jniEnv->CallVoidMethod(
 			m_exultActivityObject, m_promptForNameMethod, javaName);
 }
@@ -125,7 +131,7 @@ void TouchUI_Android::promptForName(const char* name) {
 void TouchUI_Android::showGameControls() {
 	std::string dpadLocation;
 	config->value("config/touch/dpad_location", dpadLocation, "right");
-	auto javaDpadLocation = m_jniEnv->NewStringUTF(dpadLocation.c_str());
+	auto* javaDpadLocation = m_jniEnv->NewStringUTF(dpadLocation.c_str());
 	m_jniEnv->CallVoidMethod(
 			m_exultActivityObject, m_showGameControlsMethod, javaDpadLocation);
 }
@@ -137,7 +143,7 @@ void TouchUI_Android::hideGameControls() {
 void TouchUI_Android::showButtonControls() {
 	std::string dpadLocation;
 	config->value("config/touch/dpad_location", dpadLocation, "right");
-	auto javaDpadLocation = m_jniEnv->NewStringUTF(dpadLocation.c_str());
+	auto* javaDpadLocation = m_jniEnv->NewStringUTF(dpadLocation.c_str());
 	m_jniEnv->CallVoidMethod(
 			m_exultActivityObject, m_showButtonControlsMethod,
 			javaDpadLocation);

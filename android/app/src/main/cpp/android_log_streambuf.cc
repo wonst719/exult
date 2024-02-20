@@ -25,9 +25,9 @@
 
 AndroidLog_streambuf::AndroidLog_streambuf(int priority, const char* tag)
 		: m_priority{priority}, m_tag{tag} {
-	m_jniEnv     = static_cast<JNIEnv*>(SDL_AndroidGetJNIEnv());
-	auto jclass  = m_jniEnv->FindClass("info/exult/ExultActivity");
-	auto jmethod = m_jniEnv->GetStaticMethodID(
+	m_jniEnv      = static_cast<JNIEnv*>(SDL_AndroidGetJNIEnv());
+	auto* jclass  = m_jniEnv->FindClass("info/exult/ExultActivity");
+	auto* jmethod = m_jniEnv->GetStaticMethodID(
 			jclass, "instance", "()Linfo/exult/ExultActivity;");
 	m_exultActivityObject  = m_jniEnv->CallStaticObjectMethod(jclass, jmethod);
 	m_writeToConsoleMethod = m_jniEnv->GetMethodID(
@@ -42,9 +42,9 @@ std::streambuf::int_type AndroidLog_streambuf::overflow(int_type ch) {
 		m_jniEnv->CallVoidMethod(
 				m_exultActivityObject, m_writeToConsoleMethod, jline_buf);
 
-		m_lineBuf = "";
+		m_lineBuf.clear();
 	} else {
-		m_lineBuf += ch;
+		m_lineBuf += static_cast<char>(ch);
 	}
 	return ch;
 }
