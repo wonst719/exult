@@ -24,14 +24,14 @@
 
 // Include config.h first if we have it
 #ifdef HAVE_CONFIG_H
-#	include <config.h>
+#	include <config.h>    // IWYU pragma: export
 #endif
 
-#include "common_types.h"
-#include "istring.h"
+#include "common_types.h"    // IWYU pragma: export
+#include "istring.h"         // IWYU pragma: export
 
-#include <cassert>
-#include <iostream>
+#include <cassert>     // IWYU pragma: export
+#include <iostream>    // IWYU pragma: export
 
 #define pout std::cout
 #define perr std::cerr
@@ -69,6 +69,6 @@
 // DataSources
 //
 
-#include "databuf.h"
+#include "databuf.h"    // IWYU pragma: export
 
 #endif    // PENT_INCLUDE_H
