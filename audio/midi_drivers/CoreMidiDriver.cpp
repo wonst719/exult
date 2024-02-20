@@ -46,14 +46,14 @@ CoreMidiDriver::CoreMidiDriver() : mClient(0), mOutPort(0), mDest(0) {
 }
 
 CoreMidiDriver::~CoreMidiDriver() {
-	if (mClient) {
+	if (mClient != 0u) {
 		MIDIClientDispose(mClient);
 	}
 	mClient = 0;
 }
 
 int CoreMidiDriver::open() {
-	if (mDest) {
+	if (mDest != 0u) {
 		return 1;
 	}
 
@@ -61,23 +61,23 @@ int CoreMidiDriver::open() {
 
 	mOutPort = 0;
 
-	int dests = MIDIGetNumberOfDestinations();
+	ItemCount dests = MIDIGetNumberOfDestinations();
 
 	// List device ID and names of CoreMidi destinations
 	// kMIDIPropertyDisplayName is not compatible with OS X SDK < 10.4
 	std::cout << "CoreMidi driver found " << dests
 			  << " destinations:" << std::endl;
-	for (int i = 0; i < dests; i++) {
+	for (ItemCount i = 0; i < dests; i++) {
 		MIDIEndpointRef dest     = MIDIGetDestination(i);
 		std::string     destname = "Unknown / Invalid";
-		if (dest) {
+		if (dest != 0u) {
 			CFStringRef midiname = nullptr;
 			if (MIDIObjectGetStringProperty(
 						dest, kMIDIPropertyDisplayName, &midiname)
 				== noErr) {
 				const char* s = CFStringGetCStringPtr(
 						midiname, kCFStringEncodingMacRoman);
-				if (s) {
+				if (s != nullptr) {
 					destname = std::string(s);
 				}
 			}
@@ -92,14 +92,14 @@ int CoreMidiDriver::open() {
 
 	// Default to the first CoreMidi device (ID 0)
 	// when the device ID in the cfg isn't possible anymore
-	if (deviceId < 0 || deviceId >= dests) {
+	if (deviceId < 0 || static_cast<ItemCount>(deviceId) >= dests) {
 		std::cout << "CoreMidi destination " << deviceId
 				  << " not available, trying destination 0 instead."
 				  << std::endl;
 		deviceId = 0;
 	}
 
-	if (dests > deviceId && mClient) {
+	if (dests > static_cast<ItemCount>(deviceId) && (mClient != 0u)) {
 		mDest = MIDIGetDestination(deviceId);
 		err   = MIDIOutputPortCreate(
                 mClient, CFSTR("exult_output_port"), &mOutPort);
@@ -115,21 +115,21 @@ int CoreMidiDriver::open() {
 }
 
 void CoreMidiDriver::close() {
-	if (mOutPort && mDest) {
+	if (mOutPort != 0u && mDest != 0u) {
 		MIDIPortDispose(mOutPort);
 		mOutPort = 0;
 		mDest    = 0;
 	}
 }
 
-void CoreMidiDriver::send(uint32 b) {
+void CoreMidiDriver::send(uint32 message) {
 	assert(mOutPort != 0);
 	assert(mDest != 0);
 
 	// Extract the MIDI data
-	uint8 status_byte = (b & 0x000000FF);
-	uint8 first_byte  = (b & 0x0000FF00) >> 8;
-	uint8 second_byte = (b & 0x00FF0000) >> 16;
+	uint8 status_byte = (message & 0x000000FF);
+	uint8 first_byte  = (message & 0x0000FF00) >> 8;
+	uint8 second_byte = (message & 0x00FF0000) >> 16;
 
 	// Generate a single MIDI packet with that data
 	MIDIPacketList packetList;
@@ -138,9 +138,10 @@ void CoreMidiDriver::send(uint32 b) {
 	packetList.numPackets = 1;
 
 	packet->timeStamp = 0;
-	packet->data[0]   = status_byte;
-	packet->data[1]   = first_byte;
-	packet->data[2]   = second_byte;
+	auto* data        = packet->data;
+	Write1(data, status_byte);
+	Write1(data, first_byte);
+	Write1(data, second_byte);
 
 	// Compute the correct length of the MIDI command. This is important,
 	// else things may screw up badly...
@@ -174,9 +175,9 @@ void CoreMidiDriver::send_sysex(uint8 status, const uint8* msg, uint16 length) {
 
 	std::aligned_storage_t<
 			sizeof(MIDIPacketList) + 128, alignof(MIDIPacketList)>
-					buf;
-	MIDIPacketList* packetList = new (&buf) MIDIPacketList;
-	MIDIPacket*     packet     = packetList->packet;
+				buf;
+	auto*       packetList = new (&buf) MIDIPacketList;
+	MIDIPacket* packet     = packetList->packet;
 
 	assert(sizeof(packet->data) + 128 >= length + 2);
 
@@ -187,9 +188,9 @@ void CoreMidiDriver::send_sysex(uint8 status, const uint8* msg, uint16 length) {
 	// Add SysEx frame
 	packet->length = length + 2;
 	auto* data     = packet->data;
-	*data++        = 0xF0;
-	data           = std::copy(msg, msg + length, data);
-	*data++        = 0xF7;
+	Write1(data, 0xF0);
+	data = std::copy_n(msg, length, data);
+	Write1(data, 0xF7);
 
 	// Send it
 	MIDISend(mOutPort, mDest, packetList);

@@ -46,7 +46,7 @@ public:
 	}
 
 	CoreMidiDriver();
-	~CoreMidiDriver();
+	~CoreMidiDriver() override;
 
 protected:
 	int  open() override;

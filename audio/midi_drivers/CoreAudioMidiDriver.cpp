@@ -53,7 +53,7 @@ public:
 // A macro to simplify error handling a bit.
 #	define RequireNoErr_Inner(error, location)          \
 		do {                                             \
-			err = error;                                 \
+			OSStatus err = error;                        \
 			if (err != noErr)                            \
 				throw CoreAudioException(err, location); \
 		} while (false)
@@ -64,42 +64,38 @@ const MidiDriver::MidiDriverDesc CoreAudioMidiDriver::desc
 
 CoreAudioMidiDriver::CoreAudioMidiDriver() : _auGraph(nullptr) {}
 
-int CoreAudioMidiDriver::open() {
-	OSStatus err = noErr;
+#	ifdef __IPHONEOS__
+constexpr static const AudioComponentDescription dev_desc{
+		kAudioUnitType_Output, kAudioUnitSubType_RemoteIO,
+		kAudioUnitManufacturer_Apple, 0, 0};
+constexpr static const AudioComponentDescription midi_desc{
+		kAudioUnitType_MusicDevice, kAudioUnitSubType_MIDISynth,
+		kAudioUnitManufacturer_Apple, 0, 0};
+#	else
+constexpr static const AudioComponentDescription dev_desc{
+		kAudioUnitType_Output, kAudioUnitSubType_DefaultOutput,
+		kAudioUnitManufacturer_Apple, 0, 0};
+constexpr static const AudioComponentDescription midi_desc{
+		kAudioUnitType_MusicDevice, kAudioUnitSubType_DLSSynth,
+		kAudioUnitManufacturer_Apple, 0, 0};
+#	endif
 
-	if (_auGraph) {
+int CoreAudioMidiDriver::open() {
+	if (_auGraph != nullptr) {
 		return 1;
 	}
 
 	try {
 		// Open the Music Device.
 		RequireNoErr(NewAUGraph(&_auGraph));
-		AUNode                    outputNode, synthNode;
-		AudioComponentDescription desc;
 
+		AUNode outputNode;
 		// The default output device
-		desc.componentType = kAudioUnitType_Output;
-#	ifdef __IPHONEOS__
-		desc.componentSubType = kAudioUnitSubType_RemoteIO;
-#	else
-		desc.componentSubType = kAudioUnitSubType_DefaultOutput;
-#	endif
-		desc.componentManufacturer = kAudioUnitManufacturer_Apple;
-		desc.componentFlags        = 0;
-		desc.componentFlagsMask    = 0;
+		RequireNoErr(AUGraphAddNode(_auGraph, &dev_desc, &outputNode));
 
-		RequireNoErr(AUGraphAddNode(_auGraph, &desc, &outputNode));
-
+		AUNode synthNode;
 		// The built-in default (softsynth) music device
-		desc.componentType = kAudioUnitType_MusicDevice;
-#	ifdef __IPHONEOS__
-		desc.componentSubType = kAudioUnitSubType_MIDISynth;
-#	else
-		desc.componentSubType = kAudioUnitSubType_DLSSynth;
-#	endif
-		desc.componentManufacturer = kAudioUnitManufacturer_Apple;
-
-		RequireNoErr(AUGraphAddNode(_auGraph, &desc, &synthNode));
+		RequireNoErr(AUGraphAddNode(_auGraph, &midi_desc, &synthNode));
 
 		// Connect the softsynth to the default output
 		RequireNoErr(
@@ -146,12 +142,12 @@ int CoreAudioMidiDriver::open() {
 				std::cout << "Loading SoundFont '" << soundfont << "'"
 						  << std::endl;
 				if (!soundfont.empty() && U7exists(soundfont.c_str())) {
-					OSErr    err;
+					OSErr    err = noErr;
 					CFURLRef url = CFURLCreateFromFileSystemRepresentation(
 							kCFAllocatorDefault,
 							reinterpret_cast<const UInt8*>(soundfont.c_str()),
-							soundfont.size(), false);
-					if (url) {
+							soundfont.size(), FALSE);
+					if (url != nullptr) {
 						err = AudioUnitSetProperty(
 								_synth, kMusicDeviceProperty_SoundBankURL,
 								kAudioUnitScope_Global, 0, &url, sizeof(url));
@@ -164,7 +160,7 @@ int CoreAudioMidiDriver::open() {
 						// it might crash
 						return 1;
 					}
-					if (!err) {
+					if (err == noErr) {
 						std::cout << "Loaded!" << std::endl;
 					} else {
 						std::cout << "Error loading SoundFont '" << soundfont
@@ -190,7 +186,7 @@ int CoreAudioMidiDriver::open() {
 				  << error.get_line() << " with error code "
 				  << static_cast<int>(error.get_err()) << std::endl;
 #	endif
-		if (_auGraph) {
+		if (_auGraph != nullptr) {
 			AUGraphStop(_auGraph);
 			DisposeAUGraph(_auGraph);
 			_auGraph = nullptr;
@@ -201,7 +197,7 @@ int CoreAudioMidiDriver::open() {
 
 void CoreAudioMidiDriver::close() {
 	// Stop the output
-	if (_auGraph) {
+	if (_auGraph != nullptr) {
 		AUGraphStop(_auGraph);
 		DisposeAUGraph(_auGraph);
 		_auGraph = nullptr;
@@ -268,9 +264,10 @@ void CoreAudioMidiDriver::send_sysex(
 	assert(_auGraph != nullptr);
 
 	// Add SysEx frame
-	buf[0] = status;
-	memcpy(buf + 1, msg, length);
-	buf[length + 1] = 0xF7;
+	uint8* out = buf;
+	Write1(out, status);
+	out = std::copy_n(msg, length, out);
+	Write1(out, 0xF7);
 
 	MusicDeviceSysEx(_synth, buf, length + 2);
 }
