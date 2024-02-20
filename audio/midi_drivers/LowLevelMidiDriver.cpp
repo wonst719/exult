@@ -150,8 +150,8 @@ LowLevelMidiDriver::~LowLevelMidiDriver() {
 			quit_thread
 					= true;      // The thread should stop based upon this flag
 			thread->detach();    // calling join might not be safe as the driver
-								 // is kind of in a imdeterminate state and
-								 // joping might block this thread forever so
+								 // is kind of in a indeterminate state and
+								 // joining might block this thread forever so
 								 // use detach instead
 		}
 	}
@@ -182,11 +182,11 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo) {
 	mutex             = std::make_unique<std::mutex>();
 	cbmutex           = std::make_unique<std::mutex>();
 	cond              = std::make_unique<std::condition_variable>();
-	thread            = nullptr;
 	sample_rate       = samp_rate;
 	stereo            = is_stereo;
 	uploading_timbres = false;
 	next_sysex        = std::chrono::milliseconds(0);
+	do_quit_thread(false);
 
 	// Zero the memory
 	std::fill(
@@ -221,7 +221,7 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo) {
 		mutex.reset();
 		cbmutex.reset();
 		cond.reset();
-		thread = nullptr;
+		do_quit_thread(false);
 	} else {
 		initialized = true;
 	}
@@ -248,7 +248,7 @@ void LowLevelMidiDriver::destroyMidiDriver() {
 	cbmutex.reset();
 	cond.reset();
 
-	thread.reset();
+	do_quit_thread(false);
 
 	giveinfo();
 }
@@ -465,6 +465,7 @@ int LowLevelMidiDriver::initThreadedSynth() {
 	ComMessage message(LLMD_MSG_THREAD_INIT, -1);
 	sendComMessage(message);
 
+	do_quit_thread(false);
 	quit_thread = false;
 	thread      = std::make_unique<std::thread>(threadMain_Static, this);
 
@@ -626,6 +627,18 @@ int LowLevelMidiDriver::threadMain() {
 	}
 	initialized = false;
 	return 0;
+}
+
+void LowLevelMidiDriver::do_quit_thread(bool detach) {
+	if (thread) {
+		quit_thread = true;
+		if (detach) {
+			thread->detach();
+		} else {
+			thread->join();
+		}
+	}
+	thread.reset();
 }
 
 //
