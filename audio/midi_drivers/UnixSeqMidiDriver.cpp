@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	include <fcntl.h>
 #	include <unistd.h>
 
+#	include <array>
 #	include <cerrno>
 
 const MidiDriver::MidiDriverDesc UnixSeqMidiDriver::desc

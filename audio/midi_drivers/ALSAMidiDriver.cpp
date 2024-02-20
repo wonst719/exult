@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef USE_ALSA_MIDI
 #	include "ALSAMidiDriver.h"
 
+#	include <array>
 #	include <string_view>
 
 const MidiDriver::MidiDriverDesc ALSAMidiDriver::desc
@@ -263,17 +264,15 @@ void ALSAMidiDriver::close() {
 }
 
 void ALSAMidiDriver::send(uint32 b) {
-	ev.type                    = SND_SEQ_EVENT_OSS;
-	const unsigned int command = (b & 0x000000FF);
-	const unsigned int param1  = (b & 0x0000FF00) >> 8;
-	const unsigned int param2  = (b & 0x00FF0000) >> 16;
-	const unsigned int param3  = (b & 0xFF000000) >> 24;
-	std::array         midiCmd{
-            command,
-            param1,
-            param2,
-            param3,
-    };
+	ev.type = SND_SEQ_EVENT_OSS;
+	std::array midiCmd{
+			(b & 0x000000FF),
+			(b & 0x0000FF00) >> 8,
+			(b & 0x00FF0000) >> 16,
+			(b & 0xFF000000) >> 24,
+	};
+	const auto& [command, param1, param2, param3] = midiCmd;
+
 	const size_t num_elements = std::distance(
 			std::begin(ev.data.raw32.d), std::end(ev.data.raw32.d));
 	std::copy_n(
