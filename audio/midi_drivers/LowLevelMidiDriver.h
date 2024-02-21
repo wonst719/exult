@@ -280,7 +280,6 @@ private:
 	void       destroyThreadedSynth();
 	static int threadMain_Static(LowLevelMidiDriver* data);
 	int        threadMain();
-	void do_quit_thread(bool detach);
 	// Thread flag -- set to true when ready to quit
 	std::atomic_bool quit_thread;
 

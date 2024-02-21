@@ -154,8 +154,8 @@ LowLevelMidiDriver::~LowLevelMidiDriver() {
 								 // joining might block this thread forever so
 								 // use detach instead
 		}
+		thread.reset();
 	}
-	thread.reset();
 }
 
 //
@@ -179,6 +179,10 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo) {
 		callback_data[i] = -1;
 	}
 
+	if (thread) {
+		destroyThreadedSynth();
+		thread.reset();
+	}
 	mutex             = std::make_unique<std::mutex>();
 	cbmutex           = std::make_unique<std::mutex>();
 	cond              = std::make_unique<std::condition_variable>();
@@ -186,7 +190,6 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo) {
 	stereo            = is_stereo;
 	uploading_timbres = false;
 	next_sysex        = std::chrono::milliseconds(0);
-	do_quit_thread(false);
 
 	// Zero the memory
 	std::fill(
@@ -218,10 +221,13 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo) {
 	if (code) {
 		perr << "Failed to initialize midi player (code: " << code << ")"
 			 << endl;
+		if (thread) {
+			destroyThreadedSynth();
+			thread.reset();
+		}
 		mutex.reset();
 		cbmutex.reset();
 		cond.reset();
-		do_quit_thread(false);
 	} else {
 		initialized = true;
 	}
@@ -248,7 +254,7 @@ void LowLevelMidiDriver::destroyMidiDriver() {
 	cbmutex.reset();
 	cond.reset();
 
-	do_quit_thread(false);
+	thread.reset();
 
 	giveinfo();
 }
@@ -465,7 +471,9 @@ int LowLevelMidiDriver::initThreadedSynth() {
 	ComMessage message(LLMD_MSG_THREAD_INIT, -1);
 	sendComMessage(message);
 
-	do_quit_thread(false);
+	if (thread) {
+		destroyThreadedSynth();
+	}
 	quit_thread = false;
 	thread      = std::make_unique<std::thread>(threadMain_Static, this);
 
@@ -627,18 +635,6 @@ int LowLevelMidiDriver::threadMain() {
 	}
 	initialized = false;
 	return 0;
-}
-
-void LowLevelMidiDriver::do_quit_thread(bool detach) {
-	if (thread) {
-		quit_thread = true;
-		if (detach) {
-			thread->detach();
-		} else {
-			thread->join();
-		}
-	}
-	thread.reset();
 }
 
 //
