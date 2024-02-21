@@ -33,14 +33,24 @@ If:
   PathMatch: .*\.h
   PathExclude: [ios/.*, mapedit/tools/mockup/.*, mapedit/tools/smooth/.*]
 CompileFlags:
-  Add: [-xc++, -std=c++17]
+  Add: [-xc++-user-header, -std=c++17]
 ---
 If:
-  PathMatch: [.*\.c, mapedit/tools/mockup/.*\.h, mapedit/tools/smooth/.*\.h]
+  PathMatch: [.*\.c]
 CompileFlags:
   Add: [-xc, -std=c11, -Wno-declaration-after-statement]
+---
+If:
+  PathMatch: [mapedit/tools/mockup/.*\.h, mapedit/tools/smooth/.*\.h]
+CompileFlags:
+  Add: [-xc-header, -std=c11, -Wno-declaration-after-statement]
 ---
 If:
   PathMatch: [.*\.m]
 CompileFlags:
   Add: [-Wno-declaration-after-statement]
+---
+If:
+  PathMatch: [ios/.\.h]
+CompileFlags:
+  Add: [-xobjective-c-header, -Wno-declaration-after-statement]
