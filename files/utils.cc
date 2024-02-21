@@ -791,7 +791,7 @@ void setup_data_dir(const std::string& data_path, const char* runpath) {
 	if (is_system_path_defined("<BUNDLE>")) {
 		// We have the flxfiles in the bundle, so lets use it.
 		// But lets use <DATA> in the iTunes file sharing.
-		string path(ios_get_documents_dir());
+		string path(IOSGetDocumentsDir());
 		path += "/data";
 		add_system_path("<DATA>", path);
 		return;
@@ -860,7 +860,7 @@ void setup_data_dir(const std::string& data_path, const char* runpath) {
 static string Get_config_dir(const string& home_dir) {
 #ifdef __IPHONEOS__
 	ignore_unused_variable_warning(home_dir);
-	return ios_get_documents_dir();
+	return IOSGetDocumentsDir();
 #elif defined(MACOSX)
 	string config_dir(home_dir);
 	config_dir += "/Library/Preferences";

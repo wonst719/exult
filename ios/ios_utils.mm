@@ -30,9 +30,10 @@
 #include <cassert>
 
 namespace {
-	char docs_dir[512];
+	char gDocsDir[512];
 }
 
+// NOLINTNEXTLINE(google-objc-function-naming)
 extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 
 @interface UIManager : NSObject <KeyInputDelegate, GamePadButtonDelegate>
@@ -97,7 +98,7 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 	UIWindow* alertWindow =
 			[[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	alertWindow.windowLevel        = UIWindowLevelAlert;
-	alertWindow.rootViewController = [UIViewController new];
+	alertWindow.rootViewController = [[UIViewController alloc] init];
 	[alertWindow makeKeyAndVisible];
 
 	UIAlertController* alert = [UIAlertController
@@ -231,57 +232,57 @@ extern "C" int SDL_SendKeyboardKey(Uint8 state, SDL_Scancode scancode);
 @end
 
 namespace {
-	UIManager* DefaultManager;
+	UIManager* gDefaultManager;
 }
 
 /* ---------------------------------------------------------------------- */
 #pragma mark TouchUI iOS
 
 TouchUI_iOS::TouchUI_iOS() {
-	if (DefaultManager == nil) {
-		DefaultManager = [[UIManager alloc] init];
+	if (gDefaultManager == nil) {
+		gDefaultManager = [[UIManager alloc] init];
 	}
 }
 
 void TouchUI_iOS::promptForName(const char* name) {
 	if (name == nullptr) {
-		[DefaultManager promptForName:nil];
+		[gDefaultManager promptForName:nil];
 	} else {
-		[DefaultManager promptForName:[NSString stringWithUTF8String:name]];
+		[gDefaultManager promptForName:[NSString stringWithUTF8String:name]];
 	}
 }
 
 void TouchUI_iOS::showGameControls() {
-	[DefaultManager showGameControls];
+	[gDefaultManager showGameControls];
 }
 
 void TouchUI_iOS::hideGameControls() {
-	[DefaultManager hideGameControls];
+	[gDefaultManager hideGameControls];
 }
 
 void TouchUI_iOS::showButtonControls() {
-	[DefaultManager showButtonControls];
+	[gDefaultManager showButtonControls];
 }
 
 void TouchUI_iOS::hideButtonControls() {
-	[DefaultManager hideButtonControls];
+	[gDefaultManager hideButtonControls];
 }
 
 void TouchUI_iOS::onDpadLocationChanged() {
-	[DefaultManager onDpadLocationChanged];
+	[gDefaultManager onDpadLocationChanged];
 }
 
 /* ---------------------------------------------------------------------- */
 
-const char* ios_get_documents_dir() {
-	if (docs_dir[0] == 0) {
+const char* IOSGetDocumentsDir() {
+	if (gDocsDir[0] == 0) {
 		NSArray* paths = NSSearchPathForDirectoriesInDomains(
 				NSDocumentDirectory, NSUserDomainMask, YES);
 		NSString* docDirectory = [paths objectAtIndex:0];
-		strcpy(docs_dir, docDirectory.UTF8String);
-		printf("Documents: %s\n", docs_dir);
-		//	chdir(docs_dir);
-		//		*strncpy(docs_dir, , sizeof(docs_dir)-1) = 0;
+		strcpy(gDocsDir, docDirectory.UTF8String);
+		printf("Documents: %s\n", gDocsDir);
+		// chdir(gDocsDir);
+		// *strncpy(gDocsDir, , sizeof(gDocsDir) - 1) = 0;
 	}
-	return docs_dir;
+	return gDocsDir;
 }

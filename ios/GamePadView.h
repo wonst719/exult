@@ -30,11 +30,11 @@
 
 @property(nonatomic, retain) UIImage*            backgroundImage;
 @property(nonatomic, retain) NSArray*            images;
-@property(nonatomic, assign) bool                vjoy_is_active;
-@property(nonatomic, assign) CGPoint             vjoy_center;
-@property(nonatomic, assign) CGPoint             vjoy_current;
-@property(nonatomic, assign) SDL_GameController* vjoy_controller;
-@property(nonatomic, weak) UITouch*              vjoy_input_source;
+@property(nonatomic, assign) bool                vjoyIsActive;
+@property(nonatomic, assign) CGPoint             vjoyCenter;
+@property(nonatomic, assign) CGPoint             vjoyCurrent;
+@property(nonatomic, assign) SDL_GameController* vjoyController;
+@property(nonatomic, weak) UITouch*              vjoyInputSource;
 
 @end
 

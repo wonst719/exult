@@ -34,17 +34,17 @@
 	} else {                 \
 	}
 
-const double vjoy_radius = 80.;    // max-radius of vjoy
+const double gVJoyRadius = 80.0;    // max-radius of vjoy
 
 /** DPadView */
 @implementation DPadView
 @synthesize     backgroundImage;
 @synthesize     images;
-@synthesize     vjoy_is_active;       // true when the vjoy is active
-@synthesize     vjoy_center;          // center of the vjoy
-@synthesize     vjoy_current;         // current position of the vjoy
-@synthesize     vjoy_controller;      // the vjoy's SDL_GameController
-@synthesize     vjoy_input_source;    // where vjoy input is coming from
+@synthesize     vjoyIsActive;       // true when the vjoy is active
+@synthesize     vjoyCenter;         // center of the vjoy
+@synthesize     vjoyCurrent;        // current position of the vjoy
+@synthesize     vjoyController;     // the vjoy's SDL_GameController
+@synthesize     vjoyInputSource;    // where vjoy input is coming from
 
 - (id)initWithFrame:(CGRect)frame {
 	self = [super initWithFrame:frame];
@@ -58,8 +58,8 @@ const double vjoy_radius = 80.;    // max-radius of vjoy
 		if (vjoy_index < 0) {
 			printf("SDL_JoystickAttachVirtual failed: %s\n", SDL_GetError());
 		} else {
-			vjoy_controller = SDL_GameControllerOpen(vjoy_index);
-			if (!vjoy_controller) {
+			self.vjoyController = SDL_GameControllerOpen(vjoy_index);
+			if (!self.vjoyController) {
 				printf("SDL_GameControllerOpen failed for virtual joystick: "
 					   "%s\n",
 					   SDL_GetError());
@@ -67,7 +67,7 @@ const double vjoy_radius = 80.;    // max-radius of vjoy
 			}
 		}
 		[self reset];
-		// printf("VJOY INIT, controller=%p\n", vjoy_controller);
+		// printf("VJOY INIT, controller=%p\n", (void*)self.vjoyController);
 	}
 	return self;
 }
@@ -79,10 +79,10 @@ const double vjoy_radius = 80.;    // max-radius of vjoy
 }
 
 - (void)dealloc {
-	if (vjoy_controller) {
+	if (vjoyController) {
 		const SDL_JoystickID vjoy_controller_id = SDL_JoystickInstanceID(
-				SDL_GameControllerGetJoystick(vjoy_controller));
-		SDL_GameControllerClose(vjoy_controller);
+				SDL_GameControllerGetJoystick(vjoyController));
+		SDL_GameControllerClose(vjoyController);
 		for (int i = 0, n = SDL_NumJoysticks(); i < n; ++i) {
 			const SDL_JoystickID current_id
 					= SDL_JoystickGetDeviceInstanceID(i);
@@ -100,30 +100,29 @@ const double vjoy_radius = 80.;    // max-radius of vjoy
 }
 
 - (void)reset {
-	self.vjoy_is_active = false;
+	self.vjoyIsActive = false;
 	SDL_JoystickSetVirtualAxis(
-			SDL_GameControllerGetJoystick(self.vjoy_controller),
+			SDL_GameControllerGetJoystick(self.vjoyController),
 			SDL_CONTROLLER_AXIS_LEFTX, 0);
 	SDL_JoystickSetVirtualAxis(
-			SDL_GameControllerGetJoystick(self.vjoy_controller),
+			SDL_GameControllerGetJoystick(self.vjoyController),
 			SDL_CONTROLLER_AXIS_LEFTY, 0);
-	self.vjoy_center = self.vjoy_current = CGPointMake(0, 0);
-	self.vjoy_input_source               = nil;
+	self.vjoyCenter = self.vjoyCurrent = CGPointMake(0, 0);
+	self.vjoyInputSource               = nil;
 	[self updateViewTransform];
 }
 
 - (void)updateViewTransform {
-	if (!self.vjoy_is_active) {
+	if (!self.vjoyIsActive) {
 		self.transform = CGAffineTransformIdentity;
-		//        printf("updateViewTransform: reset to identity\n");
+		// printf("updateViewTransform: reset to identity\n");
 	} else {
 		// Calculate the position of vjoy_center within this view's
-		// parent/super-view.  This requires first resetting this view's
-		// UIKit 'transform' to an untransformed state, as UIView's
-		// method, 'convertPoint:toView:', will apply any existing
-		// transform.
+		// parent/super-view.  This requires first resetting this view's UIKit
+		// 'transform' to an untransformed state, as UIView's method,
+		// 'convertPoint:toView:', will apply any existing transform.
 		self.transform                     = CGAffineTransformIdentity;
-		CGPoint vjoy_center_in_parent_view = [self convertPoint:self.vjoy_center
+		CGPoint vjoy_center_in_parent_view = [self convertPoint:self.vjoyCenter
 														 toView:self.superview];
 
 		const CGPoint translation = CGPointMake(
@@ -137,17 +136,17 @@ const double vjoy_radius = 80.;    // max-radius of vjoy
 
 - (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event {
 	UITouch* touch = [touches anyObject];
-	// printf("touchesBegan, %p\n", touch);
+	// printf("touchesBegan, %p\n", (void*)touch);
 
-	if (!self.vjoy_is_active && touch != nil) {
-		self.vjoy_input_source = touch;
-		self.vjoy_center = self.vjoy_current = [touch locationInView:self];
-		self.vjoy_is_active                  = true;
+	if (!self.vjoyIsActive && touch != nil) {
+		self.vjoyInputSource = touch;
+		self.vjoyCenter = self.vjoyCurrent = [touch locationInView:self];
+		self.vjoyIsActive                  = true;
 		SDL_JoystickSetVirtualAxis(
-				SDL_GameControllerGetJoystick(self.vjoy_controller),
+				SDL_GameControllerGetJoystick(self.vjoyController),
 				SDL_CONTROLLER_AXIS_LEFTX, 0);
 		SDL_JoystickSetVirtualAxis(
-				SDL_GameControllerGetJoystick(self.vjoy_controller),
+				SDL_GameControllerGetJoystick(self.vjoyController),
 				SDL_CONTROLLER_AXIS_LEFTY, 0);
 		[self updateViewTransform];
 		// printf("VJOY START\n");
@@ -155,57 +154,57 @@ const double vjoy_radius = 80.;    // max-radius of vjoy
 }
 
 - (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event {
-	//    printf("touchesMoved, self.vjoy_input_source:%p, touch:%p\n",
-	//    self.vjoy_input_source, touch);
+	// printf("touchesMoved, self.vjoy_input_source:%p, touch:%p\n",
+	//	   (void*)self.vjoyInputSource, (void*)touches);
 
-	UITouch* __strong current_input_source = self.vjoy_input_source;
-	if (self.vjoy_is_active && [touches containsObject:current_input_source]) {
-		// Calculate new vjoy_current, but first, reset this view's
-		// UIKit-transform, lest the call to UITouch's 'locationInView:'
-		// method reports incorrect values (due to a previously-applied
-		// transform).
-		self.transform    = CGAffineTransformIdentity;
-		self.vjoy_current = [current_input_source locationInView:self];
+	UITouch* __strong current_input_source = self.vjoyInputSource;
+	if (self.vjoyIsActive && [touches containsObject:current_input_source]) {
+		// Calculate new vjoyCurrent, but first, reset this view's
+		// UIKit-transform, lest the call to UITouch's 'locationInView:' method
+		// reports incorrect values (due to a previously-applied transform).
+		self.transform   = CGAffineTransformIdentity;
+		self.vjoyCurrent = [current_input_source locationInView:self];
 
-		double dx = self.vjoy_current.x - self.vjoy_center.x;
-		double dy = self.vjoy_current.y - self.vjoy_center.y;
+		double dx = self.vjoyCurrent.x - self.vjoyCenter.x;
+		double dy = self.vjoyCurrent.y - self.vjoyCenter.y;
 
 		// Move the vjoy's center if it's outside of its radius
 		double dlength = sqrt((dx * dx) + (dy * dy));
-		if (dlength > vjoy_radius) {
+		if (dlength > gVJoyRadius) {
 			const CGPoint point = CGPointMake(
-					self.vjoy_current.x - (dx * (vjoy_radius / dlength)),
-					self.vjoy_current.y - (dy * (vjoy_radius / dlength)));
-			self.vjoy_center = point;
-			dx               = self.vjoy_current.x - self.vjoy_center.x;
-			dy               = self.vjoy_current.y - self.vjoy_center.y;
+					self.vjoyCurrent.x - (dx * (gVJoyRadius / dlength)),
+					self.vjoyCurrent.y - (dy * (gVJoyRadius / dlength)));
+			self.vjoyCenter = point;
+			dx              = self.vjoyCurrent.x - self.vjoyCenter.x;
+			dy              = self.vjoyCurrent.y - self.vjoyCenter.y;
 		}
 
 		// Update vjoy state
 		const Sint16 joy_axis_x_raw
-				= (Sint16)((dx / vjoy_radius) * SDL_JOYSTICK_AXIS_MAX);
+				= (Sint16)((dx / gVJoyRadius) * SDL_JOYSTICK_AXIS_MAX);
 		SDL_JoystickSetVirtualAxis(
-				SDL_GameControllerGetJoystick(self.vjoy_controller),
+				SDL_GameControllerGetJoystick(self.vjoyController),
 				SDL_CONTROLLER_AXIS_LEFTX, joy_axis_x_raw);
 		const Sint16 joy_axis_y_raw
-				= (Sint16)((dy / vjoy_radius) * SDL_JOYSTICK_AXIS_MAX);
+				= (Sint16)((dy / gVJoyRadius) * SDL_JOYSTICK_AXIS_MAX);
 		SDL_JoystickSetVirtualAxis(
-				SDL_GameControllerGetJoystick(self.vjoy_controller),
+				SDL_GameControllerGetJoystick(self.vjoyController),
 				SDL_CONTROLLER_AXIS_LEFTY, joy_axis_y_raw);
 
 		// Update visuals
 		[self updateViewTransform];
 
 		// printf("VJOY MOVE: %d, %d\n", (int)joy_axis_x_raw,
-		// (int)joy_axis_y_raw);
+		//	   (int)joy_axis_y_raw);
 	}
 }
 
 - (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
+	UITouch* __strong current_input_source = self.vjoyInputSource;
 	// printf("touchesEnded, self.vjoy_input_source:%p, touch:%p\n",
-	// self.vjoy_input_source, touch);
+	// 	   (void*)current_input_source, (void*)touches);
 
-	if ([touches containsObject:self.vjoy_input_source]) {
+	if ([touches containsObject:current_input_source]) {
 		// Mark vjoy as inactive
 		[self reset];
 	}
@@ -280,11 +279,11 @@ const double vjoy_radius = 80.;    // max-radius of vjoy
 
 - (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
 	self.pressed = NO;
-	//	[[self superview] touchesEnded:touches withEvent:event];
+	// [[self superview] touchesEnded:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event {
-	//	[[self superview] touchesMoved:touches withEvent:event];
+	// [[self superview] touchesMoved:touches withEvent:event];
 }
 
 - (void)drawRect:(CGRect)rect {

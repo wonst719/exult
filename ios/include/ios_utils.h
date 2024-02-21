@@ -34,6 +34,6 @@ public:
 	void onDpadLocationChanged() final;
 };
 
-const char* ios_get_documents_dir();
+const char* IOSGetDocumentsDir();
 
 #endif
