@@ -590,12 +590,10 @@ int LowLevelMidiDriver::threadMain() {
 			bool wait = false;
 			{
 				// No Blocking allowed here!
-				if (mutex->try_lock()) {
-					const std::lock_guard<std::mutex> lock(
-							*mutex, std::adopt_lock);
-					if (messages.empty()) {
-						wait = true;
-					}
+				const std::unique_lock<std::mutex> lock(
+						*mutex, std::try_to_lock);
+				if (lock.owns_lock() && messages.empty()) {
+					wait = true;
 				}
 			}
 			if (wait) {
@@ -606,15 +604,18 @@ int LowLevelMidiDriver::threadMain() {
 				// printf("Messages in queue, not Yielding\n");
 			}
 		} else {
-			// FIXME we do not want blocking here
-			std::unique_lock<std::mutex> lock(*mutex);
-			if (messages.empty()) {
-				// printf("Waiting %i ms\n", time_till_next-2);
-				cond->wait_for(
-						lock, std::chrono::milliseconds(time_till_next - 2));
-				//  printf("Finished Waiting\n");
-			} else {
-				// printf("Messages in queue, not waiting\n");
+			// We do not want blocking here
+			std::unique_lock<std::mutex> lock(*mutex, std::try_to_lock);
+			if (lock.owns_lock()) {
+				if (messages.empty()) {
+					// printf("Waiting %i ms\n", time_till_next - 2);
+					cond->wait_for(
+							lock,
+							std::chrono::milliseconds(time_till_next - 2));
+					// printf("Finished Waiting\n");
+				} else {
+					// printf("Messages in queue, not waiting\n");
+				}
 			}
 		}
 	}
