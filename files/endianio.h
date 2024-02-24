@@ -337,7 +337,7 @@ namespace {    // anonymous
 			ENDIANIO_INLINE static auto Read(Stream& in) {
 				using UC = typename Stream::char_type;
 				alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
-				in.read(std::begin(buffer), sizeof(Int));
+				in.read(buffer.data(), sizeof(Int));
 				return Read<FromEndian, Int>(std::begin(buffer));
 			}
 
@@ -347,7 +347,7 @@ namespace {    // anonymous
 			ENDIANIO_INLINE static auto Read(Stream* in) {
 				using UC = typename Stream::char_type;
 				alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
-				in->read(std::begin(buffer), sizeof(Int));
+				in->read(buffer.data(), sizeof(Int));
 				return Read<FromEndian, Int>(std::begin(buffer));
 			}
 
@@ -379,7 +379,7 @@ namespace {    // anonymous
 				using UC = typename Stream::char_type;
 				alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
 				Write<ToEndian>(std::begin(buffer), val);
-				out.write(std::cbegin(buffer), sizeof(Int));
+				out.write(buffer.data(), sizeof(Int));
 			}
 
 			template <
@@ -389,7 +389,7 @@ namespace {    // anonymous
 				using UC = typename Stream::char_type;
 				alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
 				Write<ToEndian>(std::begin(buffer), val);
-				out->write(std::cbegin(buffer), sizeof(Int));
+				out->write(buffer.data(), sizeof(Int));
 			}
 		};
 
