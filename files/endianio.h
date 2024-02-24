@@ -294,10 +294,7 @@ namespace {    // anonymous
 
 		template <
 				typename Int,
-				std::enable_if_t<
-						std::is_integral_v<Int> && !std::is_unsigned_v<Int>,
-						bool>
-				= true>
+				std::enable_if_t<std::is_integral_v<Int>, bool> = true>
 		ENDIANIO_CONST_CONSTEXPR Int byteswap(Int value) noexcept {
 			using UInt = std::make_unsigned_t<std::remove_cv_t<Int>>;
 			if constexpr (std::is_same_v<UInt, std::remove_cv_t<Int>>) {
