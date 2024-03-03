@@ -48,7 +48,7 @@ Serial_out& Serial_out::operator<<(std::string& s) {
  *  Read in a string.
  */
 Serial_in& Serial_in::operator<<(std::string& s) {
-	int len;
+	size_t len;
 	(*this) << len;                                       // Get length.
 	s.assign(reinterpret_cast<const char*>(buf), len);    // Set string.
 	buf += len;
