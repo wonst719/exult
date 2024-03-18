@@ -311,15 +311,19 @@ __declspec(dllexport) void __stdcall GetExultGamePaths(
 	delete[] p;
 }
 
-bool IsNullOrWhitespace(const char*s)
+//
+// Check if a string is Null or Empty or Entirely whitespace
+//
+bool IsNullEmptyOrWhitespace(const char*s)
 {
-	// is null
-	if(s) while (*s++)
-	{
+	// if it is not null check for non white space charactere
+	if(s)
+		for (; *s; ++s) {
 		// if any charaxter is not space and not blank return false;
 		if (!std::isspace(*s) && !std::isblank(*s))
 			return false;
 	}
+	// string is null or has no non whitespace characters
 	return true;
 }
 
@@ -351,11 +355,15 @@ __declspec(dllexport) void __stdcall SetExultGamePaths(
 		} else {
 			config.read_config_file("exult.cfg");
 		}
-
+		char existing_bgpath[MAX_PATH];
+		char existing_sipath[MAX_PATH];
+		GetExultGamePaths(ExultDir, existing_bgpath, existing_sipath, MAX_PATH);
+		
 		// Set BG Path
 		MessageBoxDebug(nullptr, p, "WriteConfig: BG", MB_OK);
-		// Only write new path if it is actually valid
-		if (!IsNullOrWhitespace(BGPath) && VerifyBGDirectory(BGPath)) {
+		
+		// Only write new path if it is actually valid or existing value is invalid
+		if (!IsNullEmptyOrWhitespace(BGPath) && (VerifyBGDirectory(BGPath) || !VerifyBGDirectory(existing_bgpath))) {
 			config.set("config/disk/game/blackgate/path", BGPath, true);
 			// Only write default if there isn't already a value set.
 		} else if (!config.key_exists("config/disk/game/blackgate/path")) {
@@ -363,8 +371,8 @@ __declspec(dllexport) void __stdcall SetExultGamePaths(
 		}
 		// Set SI Path
 		MessageBoxDebug(nullptr, p, "WriteConfig: SI", MB_OK);
-		// Only write new path if it is actually valid
-		if (!IsNullOrWhitespace(SIPath) && VerifySIDirectory(SIPath)) {
+		// Only write new path if it is actually valid or existing value is invalid
+		if (!IsNullEmptyOrWhitespace(SIPath) && (VerifySIDirectory(SIPath) || !VerifyBGDirectory(existing_sipath))) {
 			config.set("config/disk/game/serpentisle/path", SIPath, true);
 			// Only write default if there isn't already a value set.
 		} else if (!config.key_exists("config/disk/game/serpentisle/path")) {
@@ -408,6 +416,8 @@ __declspec(dllexport) void __stdcall SetExultGamePaths(
 // Verify the BG Directory contains the right stuff
 //
 __declspec(dllexport) int __stdcall VerifyBGDirectory(char* path) {
+	if(IsNullEmptyOrWhitespace(path))
+		return false;
 	const std::string s(path);
 	add_system_path("<STATIC>", s + "/static");
 
@@ -445,6 +455,8 @@ __declspec(dllexport) int __stdcall VerifyBGDirectory(char* path) {
 // Verify the SI Directorys contains the right stuff
 //
 __declspec(dllexport) int __stdcall VerifySIDirectory(char* path) {
+	if(IsNullEmptyOrWhitespace(path))
+		return false;
 	const std::string s(path);
 	add_system_path("<STATIC>", s + "/static");
 
