@@ -311,6 +311,18 @@ __declspec(dllexport) void __stdcall GetExultGamePaths(
 	delete[] p;
 }
 
+bool IsNullOrWhitespace(const char*s)
+{
+	// is null
+	if(s) while (*s++)
+	{
+		// if any charaxter is not space and not blank return false;
+		if (!std::isspace(*s) && !std::isblank(*s))
+			return false;
+	}
+	return true;
+}
+
 //
 // Set Game paths in the config file
 //
@@ -343,7 +355,7 @@ __declspec(dllexport) void __stdcall SetExultGamePaths(
 		// Set BG Path
 		MessageBoxDebug(nullptr, p, "WriteConfig: BG", MB_OK);
 		// Only write new path if it is actually valid
-		if (BGPath && VerifyBGDirectory(BGPath)) {
+		if (!IsNullOrWhitespace(BGPath) && VerifyBGDirectory(BGPath)) {
 			config.set("config/disk/game/blackgate/path", BGPath, true);
 			// Only write default if there isn't already a value set.
 		} else if (!config.key_exists("config/disk/game/blackgate/path")) {
@@ -352,7 +364,7 @@ __declspec(dllexport) void __stdcall SetExultGamePaths(
 		// Set SI Path
 		MessageBoxDebug(nullptr, p, "WriteConfig: SI", MB_OK);
 		// Only write new path if it is actually valid
-		if (SIPath && VerifySIDirectory(SIPath)) {
+		if (!IsNullOrWhitespace(SIPath) && VerifySIDirectory(SIPath)) {
 			config.set("config/disk/game/serpentisle/path", SIPath, true);
 			// Only write default if there isn't already a value set.
 		} else if (!config.key_exists("config/disk/game/serpentisle/path")) {

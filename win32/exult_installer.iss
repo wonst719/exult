@@ -98,6 +98,8 @@ var
   SIText: TNewStaticText;
   BGEdit: TEdit;
   SIEdit: TEdit;
+  BGPath: String;
+  SIPath: String;
   DownloadPage: TDownloadWizardPage;
   PrevItemAChecked: Boolean;
   iBGVerified: Integer;
@@ -158,6 +160,7 @@ begin
         end
       end else
         BGEdit.Text := sDir;
+        BGPath := sDir;
     end;
 end;
 
@@ -174,6 +177,7 @@ begin
         end
       end else
         SIEdit.Text := sDir;
+          SIPath := sDir;
     end;
 end;
 
@@ -245,6 +249,7 @@ begin
   BGEdit.Top := BGText.Top + BGText.Height + ScaleY(8);
   BGEdit.Width := DataDirPage.SurfaceWidth - (BGBrowseButton.Width + ScaleX(8));
   BGEdit.Text := '';
+  BGPath := '';
   BGEdit.Parent := DataDirPage.Surface;
 
 
@@ -267,6 +272,7 @@ begin
   SIEdit.Top := SIText.Top + SIText.Height + ScaleY(8);
   SIEdit.Width := DataDirPage.SurfaceWidth - (SIBrowseButton.Width + ScaleX(8));
   SIEdit.Text := '';
+  SIPath := '';
   SIEdit.Parent := DataDirPage.Surface;
 
   bSetPaths := False;
@@ -309,9 +315,13 @@ begin
       if Length(sDir) > 0 then begin iBGVerified := VerifyBGDirectory ( sDir );
       end else iBGVerified := 0;
 
-      sDir := SIEdit.Text;
+      if (iBGVerified = 1) then  BGPath := sDir; 
+
+     sDir := SIEdit.Text;
       if Length(sDir) > 0 then begin iSIVerified := VerifySIDirectory ( sDir );
       end else iSIVerified := 0;
+
+      if (iSIVerified = 1) then SIPath := sDir; 
 
       if (iBGVerified = 0) AND (iSIVerified = 0) then begin
         if MsgBox ('Warning: No valid game installations found. Do you wish to continue?', mbError, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
@@ -380,6 +390,8 @@ begin
 
         BGEdit.Text := sBGPath;
         SIEdit.Text := sSIPath;
+        BGPath := sBGPath;
+        SIPath := sSIPath;
       end;
 
       if ( CompareStr(BGEdit.Text,'') = 0) and (CompareStr(SIEdit.Text,'') = 0) then
@@ -402,9 +414,9 @@ var
 begin
   if CurStep = ssPostInstall then
   begin
-    sBGmods := BGEdit.Text + '\mods';
-    sSImods := SIEdit.Text + '\mods';
-    SetExultGamePaths(ExpandConstant('{app}'), BGEdit.Text, SIEdit.Text );
+    sBGmods := BGPath + '\mods';
+    sSImods := SIPath + '\mods';
+    SetExultGamePaths(ExpandConstant('{app}'), BGPath, SIPath );
     RegWriteStringValue(HKEY_LOCAL_MACHINE, 'Software\Exult', 'Path', ExpandConstant('{app}'));
     if WizardIsComponentSelected('Icons') then
       RegWriteStringValue(HKEY_LOCAL_MACHINE, 'Software\Exult', 'ShellObjectFolder', ExpandConstant('{groupname}'));
