@@ -115,7 +115,7 @@ inline T1* gtk_cast(T2* obj) {
 #ifdef _G_TYPE_CIT
 #	undef _G_TYPE_CIT
 #	define _G_TYPE_CIT(ip, gt)                              \
-		[&](GTypeInstance* ins, GType t) {                   \
+		[&](GTypeInstance* ins, GType t) -> gboolean {       \
 			if (!ins) {                                      \
 				return FALSE;                                \
 			}                                                \
@@ -129,7 +129,7 @@ inline T1* gtk_cast(T2* obj) {
 #ifdef _G_TYPE_CCT
 #	undef _G_TYPE_CCT
 #	define _G_TYPE_CCT(cp, gt)                     \
-		[&](GTypeClass* cls, GType t) {             \
+		[&](GTypeClass* cls, GType t) -> gboolean { \
 			if (!cls) {                             \
 				return FALSE;                       \
 			}                                       \
@@ -142,15 +142,15 @@ inline T1* gtk_cast(T2* obj) {
 
 #ifdef _G_TYPE_CVH
 #	undef _G_TYPE_CVH
-#	define _G_TYPE_CVH(vl, gt)                      \
-		[&](const GValue* val, GType t) {            \
-			if (!val) {                              \
-				return FALSE;                        \
-			}                                        \
-			if (val->g_type == t) {                  \
-				return TRUE;                         \
-			}                                        \
-			return g_type_check_value_holds(val, t); \
+#	define _G_TYPE_CVH(vl, gt)                       \
+		[&](const GValue* val, GType t) -> gboolean { \
+			if (!val) {                               \
+				return FALSE;                         \
+			}                                         \
+			if (val->g_type == t) {                   \
+				return TRUE;                          \
+			}                                         \
+			return g_type_check_value_holds(val, t);  \
 		}(gtk_cast<const GValue>(vl), gt)
 #endif /* _G_TYPE_CVH */
 
