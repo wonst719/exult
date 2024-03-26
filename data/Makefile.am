@@ -225,8 +225,8 @@ else
 expack = $(top_builddir)/tools/expack$(EXEEXT)
 endif
 
-$(top_srcdir)/tools/expack$(EXEEXT):
-	+(cd $(top_srcdir)/tools;$(MAKE) expack$(EXEEXT))
+$(top_builddir)/tools/expack$(EXEEXT):
+	+(cd $(top_builddir)/tools;$(MAKE) expack$(EXEEXT))
 
 bg/bg_paperdol.vga: $(expack) $(EXULT_BG_PAPERDOL_VGA_OBJECTS)
 	$(expack) -i $(srcdir)/bg/bg_paperdol.in

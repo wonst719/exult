@@ -69,7 +69,7 @@ if BUILD_GTHUMB
 #thumbnailerdir=$(datadir)/thumbnailers
 ## Needs to be in /usr/share/thumbnailers
 thumbnailerdir=/usr/share/thumbnailers
-thumbnailer_in_files=gnome_u7shapes.thumbnailer.in
+thumbnailer_in_files=$(top_srcdir)/tools/gnome_u7shapes.thumbnailer.in
 thumbnailer_DATA=$(thumbnailer_in_files:.thumbnailer.in=.thumbnailer)
 gnome_shp_thumbnailer_DATA=x-shapefile.xml
 gnome_shp_thumbnailerdir=$(DESTDIR)$(datadir)/mime/packages
