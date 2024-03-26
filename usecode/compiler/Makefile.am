@@ -24,7 +24,7 @@ bin_PROGRAMS = ucc
 endif
 
 ucc_LDADD = 			\
-	../libusecode.la	\
+	$(top_builddir)/usecode/libusecode.la	\
 	$(SYSLIBS)
 
 ucparse.h: ucparse.cc

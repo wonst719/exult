@@ -25,9 +25,9 @@ u7shp_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/files -I$(top_srcdir)/headers \
 	$(DEBUG_LEVEL) $(OPT_LEVEL) $(WARNINGS) $(CPPFLAGS) -DHAVE_CONFIG_H
 
 u7shp_LDADD = \
-	../imagewin/libimagewin.la	\
-	../shapes/libshapes.la \
-	../files/libu7file.la \
+	$(top_builddir)/imagewin/libimagewin.la	\
+	$(top_builddir)/shapes/libshapes.la \
+	$(top_builddir)/files/libu7file.la \
 	$(GIMP_LIBS)
 
 exult_studio_SOURCES = \
@@ -72,15 +72,15 @@ exult_studio_SOURCES = \
 noinst_PROGRAMS = $(GIMP_PLUGINS)
 
 exult_studio_LDADD = \
-	../conf/libconf.la		\
-	../imagewin/libimagewin.la	\
-	../gamemgr/libgamemgr.la	\
-	../shapes/libshapes.la 		\
-	../files/libu7file.la		\
-	../files/zip/libminizip.la		\
-	../server/libserver.la		\
-	../usecode/libusecode.la		\
-	../shapes/shapeinf/libshapeinf.la	\
+	$(top_builddir)/conf/libconf.la		\
+	$(top_builddir)/imagewin/libimagewin.la	\
+	$(top_builddir)/gamemgr/libgamemgr.la	\
+	$(top_builddir)/shapes/libshapes.la 		\
+	$(top_builddir)/files/libu7file.la		\
+	$(top_builddir)/files/zip/libminizip.la		\
+	$(top_builddir)/server/libserver.la		\
+	$(top_builddir)/usecode/libusecode.la		\
+	$(top_builddir)/shapes/shapeinf/libshapeinf.la	\
 	$(PNG_LIBS) $(FREETYPE2_LIBS) $(SYSLIBS) $(x_libraries) $(GTK_LIBS) $(ICU_LIBS) $(ZLIB_LIBS)
 
 exult_studio_CFLAGS = $(GTK_CFLAGS) $(PNG_CFLAGS) $(ICU_CFLAGS)

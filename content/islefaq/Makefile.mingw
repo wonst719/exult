@@ -23,7 +23,11 @@ USECODE_OBJECTS = \
 
 FACES_VGA_OBJECTS = \
 	src/graphics/faces.in	\
-	src/graphics/faces/dominus.shp	
+	src/graphics/faces/colourless.shp	\
+	src/graphics/faces/dominus.shp	\
+	src/graphics/faces/drcode.shp	\
+	src/graphics/faces/fingolfin.shp	\
+	src/graphics/faces/wjp.shp	
 
 SHAPES_VGA_OBJECTS = \
 	src/graphics/shapes.in	\
@@ -45,14 +49,19 @@ install: all
 	cp patch/usecode $(islefaqdir)/islefaq/patch/usecode
 	cp patch/faces.vga $(islefaqdir)/islefaq/patch/faces.vga
 	cp patch/shapes.vga $(islefaqdir)/islefaq/patch/shapes.vga
+	cp patch/equip.dat $(islefaqdir)/islefaq/patch/equip.dat
 	cp patch/initgame.dat $(islefaqdir)/islefaq/patch/initgame.dat
+	cp patch/minimaps.vga $(islefaqdir)/islefaq/patch/minimaps.vga
+	cp patch/occlude.dat $(islefaqdir)/islefaq/patch/occlude.dat
 	cp patch/ready.dat $(islefaqdir)/islefaq/patch/ready.dat
 	cp patch/shpdims.dat $(islefaqdir)/islefaq/patch/shpdims.dat
+	cp patch/textmsg.txt $(islefaqdir)/islefaq/patch/textmsg.txt
 	cp patch/tfa.dat $(islefaqdir)/islefaq/patch/tfa.dat
 	cp patch/u7ifix0d $(islefaqdir)/islefaq/patch/u7ifix0d
 	cp patch/u7ifix64 $(islefaqdir)/islefaq/patch/u7ifix64
 	cp patch/u7ifix65 $(islefaqdir)/islefaq/patch/u7ifix65
 	cp patch/u7map $(islefaqdir)/islefaq/patch/u7map
+	cp patch/wgtvol.dat $(islefaqdir)/islefaq/patch/wgtvol.dat
 	cp patch/wihh.dat $(islefaqdir)/islefaq/patch/wihh.dat
 	cp README $(islefaqdir)/islefaq/Readme.txt
 	cp ./../../COPYING $(islefaqdir)/islefaq/License.txt

@@ -9,11 +9,11 @@ ucxt_SOURCES = \
 	ucfunc.cc
 
 ucxt_LDADD = \
-	../../../conf/libconf.la \
-	../../../gamemgr/libgamemgr.la \
-	../../../files/libu7file.la \
-	../../../files/zip/libminizip.la \
-	../../../usecode/libusecode.la \
+	$(top_builddir)/conf/libconf.la \
+	$(top_builddir)/gamemgr/libgamemgr.la \
+	$(top_builddir)/files/libu7file.la \
+	$(top_builddir)/files/zip/libminizip.la \
+	$(top_builddir)/usecode/libusecode.la \
 	$(ZLIB_LIBS) \
 	$(SYSLIBS)
 

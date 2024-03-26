@@ -222,11 +222,11 @@ EXTRA_DIST = flx.in $(EXULT_FLX_OBJECTS) $(EXULT_BG_FLX_OBJECTS) \
 if CROSS_COMPILING
 expack = $(EXPACK)
 else
-expack = ../tools/expack$(EXEEXT)
+expack = $(top_builddir)/tools/expack$(EXEEXT)
 endif
 
-../tools/expack$(EXEEXT):
-	+(cd ../tools;$(MAKE) expack$(EXEEXT))
+$(top_srcdir)/tools/expack$(EXEEXT):
+	+(cd $(top_srcdir)/tools;$(MAKE) expack$(EXEEXT))
 
 bg/bg_paperdol.vga: $(expack) $(EXULT_BG_PAPERDOL_VGA_OBJECTS)
 	$(expack) -i $(srcdir)/bg/bg_paperdol.in

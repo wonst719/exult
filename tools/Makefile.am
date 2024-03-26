@@ -43,25 +43,25 @@ expack_SOURCES = \
 	expack.cc
 
 expack_LDADD = \
-	../files/libu7file.la \
+	$(top_builddir)/files/libu7file.la \
 	$(SYSLIBS)
 
 ipack_SOURCES = \
 	ipack.cc
 
 ipack_LDADD = \
-	../files/libu7file.la \
-	../shapes/libshapes.la \
-	../imagewin/libimagewin.la \
+	$(top_builddir)/files/libu7file.la \
+	$(top_builddir)/shapes/libshapes.la \
+	$(top_builddir)/imagewin/libimagewin.la \
 	$(PNG_LIBS) $(ZLIB_LIBS) $(SYSLIBS)
 
 gnome_shp_thumbnailer_SOURCES = \
 	gnome_shp_thumbnailer.cc
 
 gnome_shp_thumbnailer_LDADD = \
-	../shapes/libshapes.la \
-	../imagewin/libimagewin.la \
-	../files/libu7file.la \
+	$(top_builddir)/shapes/libshapes.la \
+	$(top_builddir)/imagewin/libimagewin.la \
+	$(top_builddir)/files/libu7file.la \
 	$(PNG_LIBS) $(ZLIB_LIBS) $(SYSLIBS) $(GDK_PIXBUF_LIBS)
 
 if BUILD_GTHUMB
@@ -98,21 +98,21 @@ splitshp_LDADD = $(SYSLIBS)
 textpack_SOURCES = textpack.cc
 
 textpack_LDADD = \
-	../files/libu7file.la \
+	$(top_builddir)/files/libu7file.la \
 	$(SYSLIBS)
 
 u7voice2syx_SOURCES = u7voice2syx.cc
 
 u7voice2syx_LDADD = \
-	../files/libu7file.la \
+	$(top_builddir)/files/libu7file.la \
 	$(SYSLIBS)
 
 cmanip_SOURCES = \
 	cmanip.cc
 
 cmanip_LDADD = \
-	../conf/libconf.la \
-	../files/libu7file.la \
+	$(top_builddir)/conf/libconf.la \
+	$(top_builddir)/files/libu7file.la \
 	$(SYSLIBS)
 
 if BUILD_GTHUMB
