@@ -175,8 +175,11 @@ void Monster_actor::equip(const Monster_info* inf, bool temporary) {
 					elem.quantity, elem.shapenum, c_any_qual, frnum, temporary);
 		}
 		const int ammo = winfo != nullptr ? winfo->get_ammo_consumed() : -1;
-		if (ammo >= 0) {    // Weapon requires ammo.
-			create_quantity(5 + rand() % 25, ammo, c_any_qual, 0, temporary);
+		if (ammo >= 0) {
+			// Weapon requires ammo.
+			create_quantity(
+					(1 + (rand() % 10)) + (1 + (rand() % 10)), ammo, c_any_qual,
+					0, temporary);
 		}
 	}
 }
