@@ -150,8 +150,14 @@ void Monster_actor::equip(const Monster_info* inf, bool temporary) {
 			continue;    // You lose.
 		}
 		int frnum = (elem.shapenum == 377) ? get_info().get_monster_food() : 0;
-		if (frnum < 0) {    // Food.
-			frnum = rand() % ShapeID(377, 0).get_num_frames();
+		if (frnum < 0) {
+			// Food. Want top randomize frame for each object.
+			const int num_frames = ShapeID(elem.shapenum, 0).get_num_frames();
+			for (int i = 0; i < elem.quantity; i++) {
+				frnum = rand() % num_frames;
+				create_quantity(1, elem.shapenum, c_any_qual, frnum, temporary);
+			}
+			continue;
 		}
 		const Shape_info&  einfo = ShapeID::get_info(elem.shapenum);
 		const Weapon_info* winfo = einfo.get_weapon_info();
