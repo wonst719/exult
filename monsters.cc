@@ -138,14 +138,15 @@ Monster_actor::~Monster_actor() {
 void Monster_actor::equip(const Monster_info* inf, bool temporary) {
 	// Get equipment.
 	const int equip_offset = inf->equip_offset;
-	if (!equip_offset || equip_offset - 1 >= Monster_info::get_equip_cnt()) {
+	if (equip_offset == 0
+		|| equip_offset - 1 >= Monster_info::get_equip_cnt()) {
 		return;
 	}
 	vector<Equip_record>& equip = Monster_info::equip;
 	const Equip_record&   rec   = equip[equip_offset - 1];
 	for (const Equip_element& elem : rec.elements) {
 		// Give equipment.
-		if (!elem.shapenum || 1 + rand() % 100 > elem.probability) {
+		if (elem.shapenum <= 0 || (1 + (rand() % 100)) > elem.probability) {
 			continue;    // You lose.
 		}
 		int frnum = (elem.shapenum == 377) ? get_info().get_monster_food() : 0;
@@ -154,13 +155,13 @@ void Monster_actor::equip(const Monster_info* inf, bool temporary) {
 		}
 		const Shape_info&  einfo = ShapeID::get_info(elem.shapenum);
 		const Weapon_info* winfo = einfo.get_weapon_info();
-		if (einfo.has_quality() && winfo && winfo->uses_charges()) {
+		if (einfo.has_quality() && winfo != nullptr && winfo->uses_charges()) {
 			create_quantity(1, elem.shapenum, elem.quantity, frnum, temporary);
 		} else {
 			create_quantity(
 					elem.quantity, elem.shapenum, c_any_qual, frnum, temporary);
 		}
-		const int ammo = winfo ? winfo->get_ammo_consumed() : -1;
+		const int ammo = winfo != nullptr ? winfo->get_ammo_consumed() : -1;
 		if (ammo >= 0) {    // Weapon requires ammo.
 			create_quantity(5 + rand() % 25, ammo, c_any_qual, 0, temporary);
 		}
