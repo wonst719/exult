@@ -163,6 +163,13 @@ void Monster_actor::equip(const Monster_info* inf, bool temporary) {
 		const Weapon_info* winfo = einfo.get_weapon_info();
 		if (einfo.has_quality() && winfo != nullptr && winfo->uses_charges()) {
 			create_quantity(1, elem.shapenum, elem.quantity, frnum, temporary);
+		} else if (einfo.has_quantity()) {
+			// Randomize quantity for shapes that have a quantity value. This
+			// matches behavior of the original games, where some items (like
+			// gold coins) can be any amount in this range.
+			int amount = 1 + (rand() % elem.quantity);
+			create_quantity(
+					amount, elem.shapenum, c_any_qual, frnum, temporary);
 		} else {
 			create_quantity(
 					elem.quantity, elem.shapenum, c_any_qual, frnum, temporary);
