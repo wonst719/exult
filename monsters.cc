@@ -34,6 +34,8 @@
 #include "gamewin.h"
 #include "ignore_unused_variable_warning.h"
 #include "monstinf.h"
+#include "objiter.h"
+#include "objs/contain.h"
 #include "schedule.h"
 #include "ucmachine.h"
 #include "weaponinf.h"
@@ -180,6 +182,61 @@ void Monster_actor::equip(const Monster_info* inf, bool temporary) {
 			create_quantity(
 					(1 + (rand() % 10)) + (1 + (rand() % 10)), ammo, c_any_qual,
 					0, temporary);
+		}
+	}
+	if (inf->cant_yell()) {
+		// TODO: This seems to match originals, but it is a bit of a kludge.
+		return;
+	}
+	// This is a presumably sentient, so we will put all the equipment that is
+	// not equipped inside a container.
+	std::vector<Game_object*> contents;
+	size_t                    num_items = 0;
+	{
+		Game_object*    obj;
+		Object_iterator next(this->get_objects());
+		while ((obj = next.get_next()) != nullptr) {
+			// The originals never created a container only for food.
+			if (find_readied(obj) == -1 && !obj->get_info().is_spell()) {
+				contents.push_back(obj);
+				if (obj->get_shapenum() != 377) {
+					num_items++;
+				}
+			}
+		}
+	}
+	if (num_items > 0) {
+		struct container_info {
+			int shape;
+			int qual;
+		};
+
+		const std::array<container_info, 5> containers = {
+				container_info{522,   0}, // Locked chest, pickable
+				container_info{522, 255}, // Locked chest, pickable, trapped
+				container_info{800,   0}, // Unlocked chest
+				container_info{801,   0}, // Backpack
+				container_info{802,   0}, // Bag
+		};
+		const auto [shape, qual]     = containers[rand() % containers.size()];
+		Game_object_shared container = gmap->create_ireg_object(
+				ShapeID::get_info(shape), shape, 0, 0, 0, 0);
+
+		// Set temporary
+		if (temporary) {
+			container->set_flag(Obj_flags::is_temporary);
+		}
+		for (auto* obj : contents) {
+			Game_object_shared keep;
+			obj->remove_this(&keep);
+			if (!container->add(obj, true)) {
+				add(obj, true);
+			}
+		}
+
+		if (!add(container.get(), true)) {
+			container.reset();
+			return;
 		}
 	}
 }
