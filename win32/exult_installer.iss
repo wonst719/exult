@@ -376,8 +376,8 @@ end;
 //
 function ShouldSkipPage(PageID: Integer): Boolean;
 var
-  sBGPath: String;
-  sSIPath: String;
+  sBGPath: AnsiString;
+  sSIPath: AnsiString;
 begin
   if PageID = DataDirPage.ID then begin
     Result := (WizardIsComponentSelected('Paths') = False);
