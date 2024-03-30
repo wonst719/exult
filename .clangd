@@ -54,3 +54,8 @@ If:
   PathMatch: [ios/.\.h]
 CompileFlags:
   Add: [-xobjective-c-header, -Wno-declaration-after-statement]
+---
+If:
+  PathMatch: [audio/midi_drivers/Core(Audio)?MidiDriver\.h]
+CompileFlags:
+  Add: [-xc++-user-header]
