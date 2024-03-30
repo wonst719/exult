@@ -656,12 +656,10 @@ ucc$(EXEEXT) : $(UCC_OBJS) files/utils.h usecode/bgintrinsics.h usecode/siintrin
 	$(CXX) $(LDFLAGS) -o $(@) $(UCC_OBJS)
 
 ucparse.cc: usecode/compiler/ucparse.yy
-	bison -d -v -Wno-yacc usecode/compiler/ucparse.yy -o ucparse.c
-	mv ucparse.c ucparse.cc
+	bison -d -Wno-yacc usecode/compiler/ucparse.yy -o ucparse.cc
 
 uclex.cc: usecode/compiler/uclex.ll
-	flex usecode/compiler/uclex.ll
-	mv lex.yy.c uclex.cc
+	flex -o uclex.cc usecode/compiler/uclex.ll
 
 UCXT_OBJS:=\
 	$(CONF_OBJS) \
