@@ -151,6 +151,8 @@
 #include "cutscenes/fawn_trial.uc"
 // Prevents deletion of the training pikeman egg
 #include "cutscenes/monitor_banquet.uc"
+// Fix invisible party members not joining back.
+#include "cutscenes/moonshade_banquet.uc"
 // Absolutely force companions to be there and force-kills them after
 #include "cutscenes/wall_of_lights.uc"
 // Fixes gang planck blocking check
