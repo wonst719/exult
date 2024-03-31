@@ -46,7 +46,7 @@ jobs:
           fi
           echo "GITHUB_REF=v1.9.0.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
       - name: Install SSH key
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
         uses: shimataro/ssh-key-action@v2
         with:
           key: "${{ secrets.SSH_PRIVATE_KEY }}"
@@ -54,7 +54,7 @@ jobs:
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
       - name: VirusTotal Scan
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
         id: scan_files
         uses: crazy-max/ghaction-virustotal@v3
         with:
@@ -67,7 +67,7 @@ jobs:
             ExultTools.exe
             Gimp20Plugin.exe
       - name: Generate VirusTotal Body
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
         run: |
           echo "Snapshot ${{ env.GITHUB_REF }}" > body.txt
           echo "" >> body.txt
@@ -79,7 +79,7 @@ jobs:
             echo "* [$(basename $filename)]($analysisURL)" >> body.txt
           done <<<"$analysis,"
       - name: Create release
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
@@ -101,12 +101,12 @@ jobs:
             exult-snapshot-debug.apk
       - name: Upload snapshots
         shell: bash
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
         run: |
           cd $GITHUB_WORKSPACE
           (for ii in $(seq 1 5); do scp -o BatchMode=yes -o PasswordAuthentication=no -i ~/.ssh/id_ed25519 *.exe *.zip *.apk ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/ && exit 0 || true; done; exit 255)
       - name: Delete artifacts
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
         uses: geekyeggo/delete-artifact@v2
         with:
           name: |
