@@ -36,13 +36,14 @@ jobs:
             echo HAVE_WINDOWS_SNAPSHOT=true >> $GITHUB_ENV
           else
             echo HAVE_WINDOWS_SNAPSHOT=false >> $GITHUB_ENV
-            echo Couldn't find Exult.exe for Windows snapshot. No release will be made
-            fi
+            echo Couldn\'t find Exult.exe for Windows snapshot. No release will be made
+          fi
+            
           if [ -f exult-snapshot-signed.apk ]; then
             echo HAVE_ANDROID_SNAPSHOT=true >> $GITHUB_ENV
           else
             echo HAVE_ANDROID_SNAPSHOT=false >> $GITHUB_ENV
-            echo Couldn't find exult-snapshot-signed.apk for Android snapshot. No release will be made
+            echo Couldn\'t find exult-snapshot-signed.apk for Android snapshot. No release will be made
           fi
           echo "GITHUB_REF=v1.9.0.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
       - name: Install SSH key
