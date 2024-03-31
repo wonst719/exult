@@ -20,41 +20,41 @@ jobs:
     if: ${{ github.repository_owner == 'exult' }}
     needs: [snapshots-windows, snapshots-android]
     steps:
-      - name: Activity check
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: "windows snapshot"
+      - name: Download Android artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: "android snapshot"
+      - name: Check if artifacts downloaded
         shell: bash
         run: |
-          DATEUTC=$(curl -sL https://api.github.com/repos/exult/exult/commits | jq -r '[.[]][0]' | jq -r '.commit.committer.date')
-          TIMESTAMP=$(date --utc -d "$DATEUTC" +%s)
-          DAYS=$(( ($(date --utc +%s) - $TIMESTAMP) / 86400 ))
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
+
+          if [ -f Exult.exe ]; then
+            echo HAVE_WINDOWS_SNAPSHOT=true >> $GITHUB_ENV
           else
-            if [ $DAYS -gt 0 ]; then
-              echo EXULT_REPO_ALIVE=false >> $GITHUB_ENV
-            else
-              echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
+            echo HAVE_WINDOWS_SNAPSHOT=false >> $GITHUB_ENV
+            echo Couldn't find Exult.exe for Windows snapshot. No release will be made
             fi
+          if [ -f exult-snapshot-signed.apk ]; then
+            echo HAVE_ANDROID_SNAPSHOT=true >> $GITHUB_ENV
+          else
+            echo HAVE_ANDROID_SNAPSHOT=false >> $GITHUB_ENV
+            echo Couldn't find exult-snapshot-signed.apk for Android snapshot. No release will be made
           fi
           echo "GITHUB_REF=v1.9.0.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
       - name: Install SSH key
-        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
         uses: shimataro/ssh-key-action@v2
         with:
           key: "${{ secrets.SSH_PRIVATE_KEY }}"
           name: id_ed25519
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-      - name: Download Windows artifacts
-        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
-        uses: actions/download-artifact@v3
-        with:
-          name: "windows snapshot"
-      - name: Download Android artifacts
-        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
-        uses: actions/download-artifact@v3
-        with:
-          name: "android snapshot"
+
       - name: VirusTotal Scan
-        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
         id: scan_files
         uses: crazy-max/ghaction-virustotal@v3
         with:
@@ -66,9 +66,8 @@ jobs:
             ExultStudio.exe
             ExultTools.exe
             Gimp20Plugin.exe
-            Gimp20Plugin.exe
       - name: Generate VirusTotal Body
-        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
         run: |
           echo "Snapshot ${{ env.GITHUB_REF }}" > body.txt
           echo "" >> body.txt
@@ -80,7 +79,7 @@ jobs:
             echo "* [$(basename $filename)]($analysisURL)" >> body.txt
           done <<<"$analysis,"
       - name: Create release
-        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
@@ -102,12 +101,12 @@ jobs:
             exult-snapshot-debug.apk
       - name: Upload snapshots
         shell: bash
-        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
         run: |
           cd $GITHUB_WORKSPACE
           (for ii in $(seq 1 5); do scp -o BatchMode=yes -o PasswordAuthentication=no -i ~/.ssh/id_ed25519 *.exe *.zip *.apk ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/ && exit 0 || true; done; exit 255)
       - name: Delete artifacts
-        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
+        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHO == 'true')}}
         uses: geekyeggo/delete-artifact@v2
         with:
           name: |
