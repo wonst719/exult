@@ -2,13 +2,13 @@
 # Instead, run makefile_builder.sh from the parent directory.
 
 # Base of the exult source
-UCCDIR=$(top_srcdir)/usecode/compiler
-UCC=$(UCCDIR)/ucc
+UCCDIR:=$(top_srcdir)/usecode/compiler
+UCC:=$(UCCDIR)/ucc
 
-EXPACKDIR=$(top_srcdir)/tools
-EXPACK=$(EXPACKDIR)/expack
+EXPACKDIR:=$(top_srcdir)/tools
+EXPACK:=$(EXPACKDIR)/expack
 
-USECODE_OBJECTS = \
+USECODE_OBJECTS :=	\
 	src/cutscenes/fawn_storm.uc	\
 	src/cutscenes/fawn_trial.uc	\
 	src/cutscenes/monitor_banquet.uc	\
@@ -66,13 +66,13 @@ USECODE_OBJECTS = \
 	src/npcs/skullcrusher_automatons.uc	\
 	src/npcs/thoxa.uc	\
 	src/spells/spells.uc	\
-	src/usecode.uc	
+	src/usecode.uc
 
-FACES_VGA_OBJECTS = \
+FACES_VGA_OBJECTS :=	\
 	src/graphics/faces.in	\
-	src/graphics/faces/317_smith_horse_by_rhona.shp	
+	src/graphics/faces/317_smith_horse_by_rhona.shp
 
-GUMPS_VGA_OBJECTS = \
+GUMPS_VGA_OBJECTS :=	\
 	src/graphics/gumps.in	\
 	src/graphics/gumps/magic_scroll_1st.shp	\
 	src/graphics/gumps/magic_scroll_4th.shp	\
@@ -84,46 +84,46 @@ GUMPS_VGA_OBJECTS = \
 	src/graphics/gumps/spellbook_3.shp	\
 	src/graphics/gumps/spellbook_5.shp	\
 	src/graphics/gumps/spellbook_6.shp	\
-	src/graphics/gumps/spellbook_7.shp	
+	src/graphics/gumps/spellbook_7.shp
 
-MAINSHP_FLX_OBJECTS = \
+MAINSHP_FLX_OBJECTS :=	\
 	src/graphics/mainshp.in	\
-	src/graphics/mainshp/title.shp	
+	src/graphics/mainshp/title.shp
 
-PAPERDOL_VGA_OBJECTS = \
+PAPERDOL_VGA_OBJECTS :=	\
 	src/graphics/paperdol.in	\
 	src/graphics/paperdol/152_moonsilk_stockings.shp	\
-	src/graphics/paperdol/153_fishnet_stockings.shp	
+	src/graphics/paperdol/153_fishnet_stockings.shp
 
-SHAPES_VGA_OBJECTS = \
+SHAPES_VGA_OBJECTS :=	\
 	src/graphics/shapes.in	\
-	src/graphics/shapes/sails.shp	
+	src/graphics/shapes/sails.shp
 
-SPRITES_VGA_OBJECTS = \
+SPRITES_VGA_OBJECTS :=	\
 	src/graphics/sprites.in	\
 	src/graphics/sprites/map_en.shp	\
-	src/graphics/sprites/sprite_07_teleport_here.shp	
+	src/graphics/sprites/sprite_07_teleport_here.shp
 
-sifixesdir = $(datadir)/exult/silverseed/mods
+sifixesdir := $(datadir)/exult/silverseed/mods
 
-sifixes_DATA = \
+sifixes_DATA :=	\
 	sifixes.cfg
 
-sifixesdatadir = $(sifixesdir)/sifixes/data
+sifixesdatadir =	$(sifixesdir)/sifixes/data
 
-nodist_sifixesdata_DATA = \
+nodist_sifixesdata_DATA :=	\
 	data/usecode	\
 	data/faces.vga	\
 	data/gumps.vga	\
 	data/mainshp.flx	\
 	data/paperdol.vga	\
 	data/shapes.vga	\
-	data/sprites.vga	
+	data/sprites.vga
 
-sifixesdata_DATA = \
-	data/initgame.dat	
+sifixesdata_DATA :=	\
+	data/initgame.dat
 
-EXTRA_DIST = \
+EXTRA_DIST :=	\
 	Makefile.mingw	\
 	Readme.txt	\
 	sifixes.ico	\
@@ -140,7 +140,7 @@ EXTRA_DIST = \
 	$(sifixes_DATA)	\
 	$(sifixesdata_DATA)
 
-CLEANFILES = \
+CLEANFILES :=	\
 	data/usecode	\
 	data/faces.vga	\
 	data/faces_vga.h	\
@@ -153,7 +153,7 @@ CLEANFILES = \
 	data/shapes.vga	\
 	data/shapes_vga.h	\
 	data/sprites.vga	\
-	data/sprites_vga.h	
+	data/sprites_vga.h
 
 $(EXPACK):
 	+(cd $(EXPACKDIR);$(MAKE) expack)

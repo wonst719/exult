@@ -2,32 +2,32 @@
 # Instead, run makefile_builder.sh from the parent directory.
 
 # Base of the exult source
-UCCDIR=$(top_srcdir)/usecode/compiler
-UCC=$(UCCDIR)/ucc
+UCCDIR:=$(top_srcdir)/usecode/compiler
+UCC:=$(UCCDIR)/ucc
 
-EXPACKDIR=$(top_srcdir)/tools
-EXPACK=$(EXPACKDIR)/expack
+EXPACKDIR:=$(top_srcdir)/tools
+EXPACK:=$(EXPACKDIR)/expack
 
-USECODE_OBJECTS = \
-	usecode.uc	
+USECODE_OBJECTS :=	\
+	usecode.uc
 
-bgdir = $(datadir)/exult/forgeofvirtue/mods
+bgdir := $(datadir)/exult/forgeofvirtue/mods
 
-bg_DATA = \
+bg_DATA :=	\
 	lbjoin.cfg
 
-bgpatchdir = $(bgdir)/lbjoin/patch
+bgpatchdir := $(bgdir)/lbjoin/patch
 
-nodist_bgpatch_DATA = \
-	usecode	
+nodist_bgpatch_DATA :=	\
+	usecode
 
-EXTRA_DIST = \
+EXTRA_DIST :=	\
 	Makefile.mingw	\
 	$(USECODE_OBJECTS)	\
 	$(bg_DATA)
 
-CLEANFILES = \
-	usecode	
+CLEANFILES :=	\
+	usecode
 
 $(UCC):
 	+(cd $(UCCDIR);$(MAKE))
