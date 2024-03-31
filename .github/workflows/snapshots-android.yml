@@ -22,7 +22,7 @@ jobs:
           else
             if [ $DAYS -gt 0 ]; then
               echo EXULT_REPO_ALIVE=false >> $GITHUB_ENV
-              echo No activity in 24 hours beggor midnight UTC not building snapshot. Last activity at $DATEUTC.
+              echo No activity in 24 hours before midnight UTC not building snapshot. Last activity at $DATEUTC.
             else
               echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
             fi
