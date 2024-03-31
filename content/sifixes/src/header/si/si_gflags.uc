@@ -259,6 +259,11 @@ enum Skullcrusher_townplot {
 	SKULLCRUSHER_AUTOMATONS = 614
 };
 
+enum Spinebreaker_townplot {
+	OPENED_SPINEBREAKER_DOOR = 0x251,
+	READ_STRUCTURE_OF_ORDER = 0x252,
+};
+
 // The quotes are from http://www.it-he.org
 enum Bane_flags {
 	BANES_RELEASED = 0x4,

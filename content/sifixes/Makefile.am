@@ -64,6 +64,7 @@ USECODE_OBJECTS :=	\
 	src/npcs/neyobi.uc	\
 	src/npcs/shamino.uc	\
 	src/npcs/skullcrusher_automatons.uc	\
+	src/npcs/spinebreaker_automatons.uc	\
 	src/npcs/thoxa.uc	\
 	src/spells/spells.uc	\
 	src/usecode.uc

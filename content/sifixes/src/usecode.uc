@@ -120,6 +120,8 @@
 #include "npcs/mwaerno.uc"
 // Brings the automatons in Skullcrusher to life
 #include "npcs/skullcrusher_automatons.uc"
+// Fixing wrong book quoting from automaton guard.
+#include "npcs/spinebreaker_automatons.uc"
 
 // For curing Cantra, from exult/content/si; modified to allow companions
 // to thank you (and rejoin) after you cure them but before Xenka returns
