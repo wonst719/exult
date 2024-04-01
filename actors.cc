@@ -4156,10 +4156,14 @@ int Actor::figure_hit_points(
 	}
 	// Apply weapon powers if needed.
 	// wpoints == 0 ==> some spells that don't hurt (but need to apply powers).
-	if (powers && (hits || !wpoints || nodamage)) {
+	const bool powers_only = !wpoints || nodamage;
+	if (powers && (hits || powers_only)) {
 		// Protection prevents powers.
 		if (!get_flag(Obj_flags::protection)) {
-			const int attint = Get_effective_prop(npc, Actor::intelligence, 16);
+			const int attint
+					= powers_only
+							  ? Get_effective_prop(npc, Actor::intelligence, 16)
+							  : 16;
 			const int defstr = Get_effective_prop(this, Actor::strength);
 			const int defint = Get_effective_prop(this, Actor::intelligence);
 
