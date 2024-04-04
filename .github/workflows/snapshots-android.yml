@@ -23,7 +23,9 @@ jobs:
             if [ $DAYS -gt 0 ]; then
               echo EXULT_REPO_ALIVE=false >> $GITHUB_ENV
               echo No activity in 24 hours before midnight UTC not building snapshot. Last activity at $DATEUTC.
-            else
+              mkdir -p android-snapshot
+              echo "No activity" >> android-snapshot/Android-not-built
+           else
               echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
             fi
           fi
@@ -107,7 +109,6 @@ jobs:
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: cp ${{steps.sign_app.outputs.signedReleaseFile}} ./android-snapshot/exult-snapshot-signed.apk
       - name: Upload artifacts
-        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: actions/upload-artifact@v3
         with:
           name: "android snapshot"

@@ -21,7 +21,9 @@ jobs:
           else
             if [ $DAYS -gt 0 ]; then
               echo EXULT_REPO_ALIVE=false >> $GITHUB_ENV
-              echo No activity in 24 hours before midnight UTC not building snapshot. Last activity at $DATEUTC.
+              echo "No activity in 24 hours before midnight UTC not building snapshot. Last activity at $DATEUTC."
+              mkdir -p windows-snapshot
+              echo "No activity" >> windows-snapshot/Windows-not-built
             else
               echo EXULT_REPO_ALIVE=true >> $GITHUB_ENV
             fi
@@ -106,7 +108,6 @@ jobs:
           cp ${{ env.EXULT_SNAPSHOT_PATH }}/SFisland.zip ./windows-snapshot
           cp ${{ env.EXULT_SNAPSHOT_PATH }}/Sifixes.zip ./windows-snapshot
       - name: Upload artifacts
-        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: actions/upload-artifact@v3
         with:
           name: "windows snapshot"
