@@ -107,7 +107,6 @@ jobs:
           cd $GITHUB_WORKSPACE
           (for ii in $(seq 1 5); do scp -o BatchMode=yes -o PasswordAuthentication=no -i ~/.ssh/id_ed25519 *.exe *.zip *.apk ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/ && exit 0 || true; done; exit 255)
       - name: Delete artifacts
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
         uses: geekyeggo/delete-artifact@v2
         with:
           name: |
