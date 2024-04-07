@@ -542,7 +542,7 @@ Exult\ Source\ Code.url:
 ifneq  ($(git_tag),)
 	echo URL=https://github.com/exult/exult/tree/$(git_tag) >> Exult\ Source\ Code.url
 else ifneq ($(git_revision),)
-	echo URL=https://github.com/exult/exult/commit/$(git_revision) >> Exult\ Source\ Code.url
+	echo URL=https://github.com/exult/exult/tree/$(git_revision) >> Exult\ Source\ Code.url
 else
 	echo URL=https://github.com/exult/exult/ >> Exult\ Source\ Code.url
 endif
