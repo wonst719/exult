@@ -2,9 +2,9 @@
 AppName=Exult
 AppVerName=Exult 1.9.0git Snapshot
 AppPublisher=The Exult Team
-AppPublisherURL=http://exult.info/
-AppSupportURL=http://exult.info/
-AppUpdatesURL=http://exult.info/
+AppPublisherURL=https://exult.info/
+AppSupportURL=https://exult.info/
+AppUpdatesURL=https://exult.info/
 ; Setup exe version number:
 VersionInfoVersion=1.9.0
 DisableDirPage=no
