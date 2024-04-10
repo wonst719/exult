@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "common_types.h"
 #include "ignore_unused_variable_warning.h"
 
-#include <string>
 #include <atomic>
+#include <string>
 class XMidiEventList;
 class IDataSource;
 
@@ -121,10 +121,9 @@ public:
 	virtual bool isSequencePlaying(int seq_num) = 0;
 
 	//! Set or Unset Sequence repeat flat
-	//! \param seq_num The Sequence number to change 
+	//! \param seq_num The Sequence number to change
 	//! \param repeat The new value for the repeaat flag
-	//! \return The previous value of the repeat flag
-	virtual bool setSequenceRepeat(int seq_num, bool repeat) = 0;
+	virtual void setSequenceRepeat(int seq_num, bool repeat) = 0;
 
 	//! Get the callback data for a specified sequence
 	//! \param seq_num The Sequence to get callback data from

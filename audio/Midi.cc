@@ -24,10 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../conf/Configuration.h"
 #include "Audio.h"
 #include "AudioMixer.h"
-#include "conv.h"
 #include "LowLevelMidiDriver.h"
 #include "MidiDriver.h"
 #include "OggAudioSample.h"
+#include "conv.h"
 #include "convmusic.h"
 #include "data/exult_flx.h"
 #include "databuf.h"
@@ -261,6 +261,15 @@ void MyMidiPlayer::start_music(std::string fname, int num, bool repeat) {
 	if (eventlist) {
 		midi_driver->startSequence(SEQ_NUM_MUSIC, eventlist, repeat, 255);
 	}
+}
+
+void MyMidiPlayer::set_repeat(bool newrepeat) {
+	if (ogg_enabled) {
+		ogg_set_repeat(newrepeat);
+	} else if (midi_driver) {
+		midi_driver->setSequenceRepeat(SEQ_NUM_MUSIC, newrepeat);
+	}
+	repeating = newrepeat;
 }
 
 void MyMidiPlayer::set_timbre_lib(TimbreLibrary lib) {
@@ -934,6 +943,13 @@ void MyMidiPlayer::ogg_stop_track() {
 		Pentagram::AudioMixer* mixer = Pentagram::AudioMixer::get_instance();
 		mixer->stopSample(ogg_instance_id);
 		ogg_instance_id = -1;
+	}
+}
+
+void MyMidiPlayer::ogg_set_repeat(bool newrepeat) {
+	Pentagram::AudioMixer* mixer = Pentagram::AudioMixer::get_instance();
+	if (mixer->isPlaying(ogg_instance_id)) {
+		mixer->getLoop(newrepeat ? -1 : 0);
 	}
 }
 

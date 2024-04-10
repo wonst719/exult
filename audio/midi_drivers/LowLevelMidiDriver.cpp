@@ -391,6 +391,13 @@ bool LowLevelMidiDriver::isSequencePlaying(int seq_num) {
 	return playing[seq_num];
 }
 
+void LowLevelMidiDriver::setSequenceRepeat(int seq_num, bool newrepeat) {
+	ComMessage message(LLMD_MSG_SET_REPEAT, seq_num);
+	message.data.set_repeat.newrepeat = newrepeat;
+
+	sendComMessage(message);
+}
+
 void LowLevelMidiDriver::pauseSequence(int seq_num) {
 	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) {
 		return;
@@ -831,6 +838,13 @@ bool LowLevelMidiDriver::playSequences() {
 				} else {
 					sequences[message.sequence]->pause();
 				}
+			}
+		} break;
+
+		case LLMD_MSG_SET_REPEAT: {
+			if (sequences[message.sequence]) {
+				sequences[message.sequence]->setRepeat(
+						message.data.set_repeat.newrepeat);
 			}
 		} break;
 
