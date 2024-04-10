@@ -551,7 +551,6 @@ void MyMidiPlayer::set_midi_driver(
 		if (midi_driver) {
 			midi_driver->destroyMidiDriver();
 		}
-		delete midi_driver;
 		midi_driver = nullptr;
 		initialized = false;
 	}
@@ -722,7 +721,6 @@ MyMidiPlayer::~MyMidiPlayer() {
 	ogg_stop_track();
 	if (midi_driver) {
 		midi_driver->destroyMidiDriver();
-		delete midi_driver;
 		midi_driver = nullptr;
 	}
 }
@@ -734,9 +732,16 @@ void MyMidiPlayer::destroyMidiDriver() {
 }
 
 void MyMidiPlayer::produceSamples(sint16* stream, uint32 bytes) {
-	if (midi_driver && midi_driver->isInitialized()
-		&& midi_driver->isSampleProducer()) {
-		midi_driver->produceSamples(stream, bytes);
+	// If by chance this gets called on a different thread from Exult's main
+	// thread it would be a good idea to prevent the midi driver from being
+	// deallocated while executing ProduceSamples. The midi drivers can handle
+	// being destroyed by another thread as long as the this pointer remains
+	// valid. Deallocating the this pointer while it is being used will crash
+	// exult if you're lucky.
+	auto keepalive = midi_driver;
+	if (keepalive && keepalive->isInitialized()
+		&& keepalive->isSampleProducer()) {
+		keepalive->produceSamples(stream, bytes);
 	}
 }
 

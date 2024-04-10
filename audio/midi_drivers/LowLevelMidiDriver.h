@@ -278,7 +278,7 @@ private:
 	// Thread Methods
 	int        initThreadedSynth();
 	void       destroyThreadedSynth();
-	static int threadMain_Static(LowLevelMidiDriver* data);
+	static int threadMain_Static(std::shared_ptr<LowLevelMidiDriver> data);
 	int        threadMain();
 	// Thread flag -- set to true when ready to quit
 	std::atomic_bool quit_thread;

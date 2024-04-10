@@ -24,24 +24,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ignore_unused_variable_warning.h"
 
 #include <string>
-
+#include <atomic>
 class XMidiEventList;
 class IDataSource;
 
 //! The Basic High Level Pentagram Midi Driver interface.
 class MidiDriver {
 protected:
-	bool initialized = false;
+	std::atomic_bool initialized = false;
+
+	// Weak pointer to ourself In case something needs to keep us alive like in
+	// another thread
+	std::weak_ptr<MidiDriver> selfptr;
 
 public:
 	//! Midi driver desription
 	struct MidiDriverDesc {
-		MidiDriverDesc(const char* const n, MidiDriver* (*c)())
+		MidiDriverDesc(const char* const n, std::shared_ptr<MidiDriver> (*c)())
 				: name(n), createInstance(c) {}
 
 		const char* const name;    //!< Name of the driver (for config, dialogs)
-		MidiDriver* (*createInstance)();    //!< Pointer to a function to create
-											//!< an instance
+		std::shared_ptr<MidiDriver> (
+				*createInstance)();    //!< Pointer to a function
+									   //!< to create
+									   //!< an instance
 	};
 
 	enum TimbreLibraryType {
@@ -114,6 +120,12 @@ public:
 	//! \return true is sequence is playing, false if not playing
 	virtual bool isSequencePlaying(int seq_num) = 0;
 
+	//! Set or Unset Sequence repeat flat
+	//! \param seq_num The Sequence number to change 
+	//! \param repeat The new value for the repeaat flag
+	//! \return The previous value of the repeat flag
+	virtual bool setSequenceRepeat(int seq_num, bool repeat) = 0;
+
 	//! Get the callback data for a specified sequence
 	//! \param seq_num The Sequence to get callback data from
 	virtual uint32 getSequenceCallbackData(int seq_num) {
@@ -170,7 +182,7 @@ public:
 	//! Create an Instance of a MidiDriver
 	//! \param driverName Name of the prefered driver to create
 	//! \return The created MidiDriver instance
-	static MidiDriver* createInstance(
+	static std::shared_ptr<MidiDriver> createInstance(
 			const std::string& desired_driver, uint32 sample_rate, bool stereo);
 
 protected:

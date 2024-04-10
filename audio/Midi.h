@@ -105,7 +105,7 @@ private:
 	int  current_track = -1;
 
 	std::string midi_driver_name = "default";
-	MidiDriver* midi_driver      = nullptr;
+	std::shared_ptr<MidiDriver> midi_driver      = nullptr;
 	bool        initialized      = false;
 	bool        init_device(bool timbre_load = false);
 
