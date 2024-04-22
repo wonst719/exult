@@ -406,6 +406,13 @@ fi
 AC_ARG_ENABLE(static-libraries, AS_HELP_STRING([--enable-static-libraries], [Enable static linking of libraries]),,enable_static_libs=no)
 AC_MSG_CHECKING([if we want to statically compile libraries])
 if test x$enable_static_libs != xno; then
+	if test x$ARCH != xmacosx; then
+		# Assuming GCC. This is probably not portable.
+		STATIC_LD="-static"
+		LDFLAGS="$LDFLAGS -static"
+	else
+		AC_MSG_ERROR([*** static linking is not supported on macOS])
+	fi
 	AC_MSG_RESULT(yes)
 else
 	AC_MSG_RESULT(no)
@@ -450,54 +457,6 @@ fi
 
 if test x$enable_android_apk = xno -a x$enable_exult = xyes; then
 	PKG_CHECK_MODULES(OGG, ogg >= 1.0 vorbis >= 1.0.1 vorbisfile, , AC_MSG_ERROR([*** must have Ogg/Vorbis installed!]))
-fi
-
-# ---------------------------------------------------------------------
-# Black magic for static linking.
-# ---------------------------------------------------------------------
-
-if test x$ARCH = xmacosx; then
-	AC_ARG_WITH(macosx-static-lib-path,
-		AS_HELP_STRING([--with-macosx-static-lib-path=path], [path to location of static library files (macOS bundles only)]),
-		[with_macosx_static_lib_path="$withval"],
-		[with_macosx_static_lib_path=""])
-	if test x$with_macosx_static_lib_path != x; then
-		if test ! -d $with_macosx_static_lib_path; then
-			AC_MSG_ERROR([*** a directory is expected for --macosx-static-lib-path!])
-		fi
-		with_macosx_static_lib_path=`echo "$with_macosx_static_lib_path" | sed 's/\/*$//'`
-	else
-		enable_static_libs=no
-	fi
-fi
-
-if test x$enable_static_libs != xno; then
-	if test x$ARCH != xmacosx; then
-		# Assuming GCC. This is probably not portable.
-		STATIC_LD="-static"
-		LDFLAGS="$LDFLAGS -static"
-	else
-		# Apple has done its best to prevent the above from working, so we
-		# need this stuff here.
-		# Using -static doesn't work because of system libraries that cannot be
-		# linked statically; using the usual -Wl,-static -lvorbis -Wl,-dynamic
-		# also fails if there is a non-static version of libvorbis in the lib
-		# search path before or at the same location as the static lib because
-		# the linker tries to use these even with the flags. The only way to get
-		# reliable static compiles in Mac OS X is to hard-code the path to the
-		# static library and link to *that*.
-		# Damn you, Apple!
-
-		# SDL Mac OS X readme lists this as needed.
-		# We should have sdl-config by this point, or we would have
-		# died in EXULT_CHECK_SDL.
-		SDL_LIBS=`$SDL_CONFIG $sdl_config_args --static-libs`
-		OGG_LIBS="$with_macosx_static_lib_path/libogg.a"
-		VORBISFILE_LIBS="$with_macosx_static_lib_path/libvorbisfile.a"
-		VORBIS_LIBS="$with_macosx_static_lib_path/libvorbis.a -lm"
-		ZLIB_LIBS="$with_macosx_static_lib_path/libz.a"
-		MT32EMU_LIBS="$with_macosx_static_lib_path/libmt32emu.a"
-	fi
 fi
 
 # ---------------------------------------------------------------------
@@ -590,7 +549,6 @@ else
 	AC_MSG_RESULT(no; mt32emu.h not found)
 	AM_CONDITIONAL(BUILD_MT32EMU, false)
 fi
-
 
 # zipped savegame support
 AC_ARG_ENABLE(zip-support, AS_HELP_STRING([--enable-zip-support], [Enable zipped savegame support @<:@default yes@:>@]),,enable_zip_support=yes)
