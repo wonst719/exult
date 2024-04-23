@@ -1,5 +1,5 @@
 Exult Documentation
-last changed: 11 February 2022 (GMT)
+last changed: 23 April 2024 (GMT)
 
 The latest version of this document can be found at http://exult.info/docs.php
 
@@ -74,6 +74,7 @@ The latest version of this document can be found at http://exult.info/docs.php
 9.3. Installing the games on your iPhone/iPad
 9.4. Installing sfx and digital music
 9.5. iOS controls
+9.6. iOS automatic saves
 
 10. The exult.cfg file
 10.1. Settings in exult.cfg
@@ -84,26 +85,26 @@ The latest version of this document can be found at http://exult.info/docs.php
 10.6. Advanced Configuration: Using both the original and the Add-Ons
 
 11. Installing the original Ultima VII games for use with Exult
-11.1. Installing the floppy disks of BG/SI on Windows
-11.2. Installing the floppy disks of the Add-Ons FoV/SS on Windows
-11.3. Installing the floppy disks of BG/SI using DOSBox
-11.4. Installing the floppy disks of the Add-Ons FoV/SS using DOSBox
-11.5. Manual installation of the BG floppy disks
-11.6. Manual installation of the SI floppy disks
-11.7. Installing the CD-ROM versions of Ultima VII
-11.8. Fixing permissions of Ultima Collection on *nix systems
-11.9. Using the version for Windows from GOG.com
-11.10. Using the version for macOS from GOG.com
+11.1. Using GOG.com's installer for Windows
+11.2. Using GOG.com's installer for macOS
+11.3. Installing the CD-ROM versions of Ultima VII
+11.4. Installing the floppy disks of BG/SI using DOSBox
+11.5. Installing the floppy disks of the Add-Ons FoV/SS using DOSBox
+11.6. Manual installation of the BG floppy disks
+11.7. Manual installation of the SI floppy disks
+11.8. Installing the floppy disks of BG/SI on Windows
+11.9. Installing the floppy disks of the Add-Ons FoV/SS on Windows
+11.10. Exult only needs one folder
 
 12. Credits and Contact
 12.1. Thanks
 12.2. Contacting us
 
 13. Changes to the Documentation
-13.1. - 11 February 2022
-13.2. - 24 January 2022
-13.3. - 20 February 2021
-13.4. - 08 December 2018
+13.1. - 23 April 2024
+13.2. - 11 February 2022
+13.3. - 24 January 2022
+13.4. - 20 February 2021
 13.5. older changes
 
 
@@ -145,7 +146,7 @@ We are using many terms in this documentation, the FAQ and other documentation f
 * Exult data folder:
  that's the folder where Exult stores its data files (exult.flx, exult_bg.flx and exult_si.flx).
 * gamename
- name of games that are set in exult.cfg's <game>, Exult knows by default the gamenames blackgate, forgeofvirtue, serpentisle and silverseed
+ name of games that are set in exult.cfg's <game>, Exult knows by default the gamenames blackgate, forgeofvirtue, serpentisle, silverseed and serpentbeta.
 
 
 
@@ -172,8 +173,8 @@ Most of the options in Exult can be changed from the Setup menu when you run Exu
 The location of the file varies depending on the Operating System and in the case of Windows OS it also depends on the version of Windows.
 * On UNIX systems you can expect to find it in $HOME/.exult.cfg
 * macOS saves it to ~/Library/Preferences/exult.cfg
-* Windows XP save exult.cfg to LOCAL_APPDATA\Exult, which translates to C:\Documents and Settings\YourUsername\Local Settings\Application Data\Exult on an English version of Windows
 * Windows Vista and newer up to Windows 11 also save exult.cfg to LOCAL_APPDATA\Exult, but on these this translates to C:\Users\YourUsername\AppData\Local\Exult
+* Windows XP save exult.cfg to LOCAL_APPDATA\Exult, which translates to C:\Documents and Settings\YourUsername\Local Settings\Application Data\Exult on an English version of Windows
 * On all supported Windows versions you can quickly access this folder by executing shell:Local AppData\Exult in the 'Qucik Acess' of Explorer (or the address bar of Explorer in older Windows versions)
 
 
@@ -213,8 +214,8 @@ Exult offers some command line options:
 * -c configfile
  Specify alternate config file (relative or absolute paths work).
 * -p
- Portable option for Windows only. Exult will read cfg file from the folder it got installed to (or make one) and will also save to gamename folders in the Exult install folder.
- For example if Exult got installed to E:\Exult, a BG game will be saved to E:\Exult\blackgate.
+ Portable option for Windows only. Exult will read cfg file from the folder it got installed to (or make one) and will assume the games to be in the gamename subfolders (see 1.3.).
+ For example if Exult got installed to E:\Exult, a BG game will be expected to be in E:\Exult\blackgate. Savegames will also be saved in these folders.
  Be careful that you have actually writing permissions in the Exult folder or this will fail.
 * --bg
  Starts the game with the Black Gate menu (prefers original game).
@@ -224,6 +225,8 @@ Exult offers some command line options:
  Starts the game with the Serpent Isle menu (prefers original game).
 * --ss
  Starts the game with the menu of the Serpent Isle with Silver Seed expansion. Only useful if you have SS added as described at 10.6., otherwise it will just work like the command '--si'.
+* --sib
+ Starts the game with the menu of the Serpent Isle beta version.
 * --nomenu
  Skips game menu.
 * --game gamename
@@ -556,7 +559,7 @@ Exult needs the so called SFX packs to enable sound effects for Ultima VII. You 
 
 4.8. All-in-One Audio Data pack and installers
 
-We've combined all the audio data we offer, Digital Music and Digital Wave Sound Effects, into an all-in-one pack which saves you downloading several smaller zip files. You can download a zip file for manual installation or an installer for either Windows or macOS. Chose the one you want to use on our download page at http://exult.info/download.php.
+We've combined all the audio data we offer, Digital Music and Digital Wave Sound Effects, into an all-in-one pack which saves you downloading several smaller zip files. You can download a zip file for manual installation or an installer for either Windows or macOS. Chose the one you want to use on our download page at https://exult.info/download.php.
  The Windows installer for Exult gives you the option to download and install the zip automatically, so we recommend you use this method.
  On macOS, we recommend you download and run the installer.
  On *nix or if you want to install the all-in-one pack, you will need to grab the zip file.
@@ -567,7 +570,7 @@ Below you can read the instructions on how to use and install the individual pac
 4.9. Installation of the digital music packs
 
 If you downloaded and installed the above All-in-One Audio Data pack you don't need to bother with the following instructions.
-The Digital Music pack can be downloaded from http://exult.info/download.php, the files are called Ogg encoded Music files for Exult Part 1 (U7MusicOGG_1of2.zip) and Ogg encoded Music files for Exult Part 2 (U7MusicOGG_2of2.zip). The readme.txt found in the ZIP files contains installation instructions that are no longer 100% valid and should not be followed.
+The Digital Music pack can be downloaded from https://exult.info/download.php, the files are called Ogg encoded Music files for Exult Part 1 (U7MusicOGG_1of2.zip) and Ogg encoded Music files for Exult Part 2 (U7MusicOGG_2of2.zip). The readme.txt found in the ZIP files contains installation instructions that are no longer 100% valid and should not be followed.
  Create a music folder in exult/data (i.e. exult/data/music/) and extract the two ZIP files U7MusicOGG_1of2.zip and U7MusicOGG_2of2.zip into this folder.
  If you are not sure where the data folder is, search for the file exult_bg.flx on your hard drive as this file is always in the data folder.
  Now start up Exult and start either a game of BG or SI. Hit 'ESC' to enter the game menu. Here select Audio Options and in the 'Music options' enable the digital music option.
@@ -585,7 +588,7 @@ It isn't necessary but you can also customize the location of the music files by
 4.10. Installation of the digital wave sound effects
 
 If you downloaded and installed the above All-in-One Audio Data pack you don't need to bother with the following instructions.
-We currently have two soundpacks for each game. Joseph Morris recorded the original SoundBlaster SFX and Simon Quinn recorded the Roland MT32 SFX. You can find them on our download page at http://exult.info/download.php.
+We currently have two soundpacks for each game. Joseph Morris recorded the original SoundBlaster SFX and Simon Quinn recorded the Roland MT32 SFX. You can find them on our download page at https://exult.info/download.php.
  'Sound pack for Blackgate' and 'Sound pack for Serpent Isle' are the SoundBlaster sound effects.
  'Sound pack for Black Gate (Roland MT-32)' and 'Sound pack for Serpent Isle (Roland MT-32)' are the Roland MT32 sound effects.
 
@@ -616,7 +619,12 @@ Press 'Esc' to enter the in-game menu and toggle Audio or change the settings in
 
 4.13. Linux and Audio
 
-You can configure the ALSA port for your distribution in .exult.cfg (see 10.1.). By default we use 65:0, e.g. Gentoo needs 128:0.
+You can configure the ALSA port for your distribution in .exult.cfg (see 10.1.), by default we use 65:0.
+ If the default or the port you set is not working Exult tries to figure out a working port and will connect to the first port that satisfies these requirements:
+* It is available
+* It has a non zero number of channels
+* It does not accept READ, SUBSCRIBED_READ or DUPLEX requests. This may be a problem for keyboard synths.
+
 
 
 
@@ -720,7 +728,9 @@ On iOS we display a virtual D-Pad on screen with which you control the movement.
 6.2. Keyboard commands
 
 All key commands of Exult can be changed for either BG or SI. However, there is a default setting which closely follows the original with the addition of some improvements.
-To change your key bindings first edit the defaultkeys file in your Exult folder (bgdefaultkeys.txt for BG and sidefaultkeys.txt for SI), change the bindings and save the file (e.g. as my_keys.txt). Now you have to change exult.cfg to use that file. See the keys settings at 10.1.. Change (default) to my_keys.txt.
+You can change your key bindings by providing your own defaultkeys file.
+ Download defaultkeys.txt for BG or defaultkeys.txt for BG, change the bindings and save the file (e.g. as my_keys.txt). Now you have to change exult.cfg to use that file. See the keys settings at 10.1. and change (default) to my_keys.txt.
+ Our installer for Windows installs the defaultkeys files to your Exult folder (bgdefaultkeys.txt for BG and sidefaultkeys.txt for SI).
 During the game press 'h' to see a help screen with most of the keys (for macOS use Alt for Cmd - however the in-game help screen shows the correct key combination). 'KP' means keypad.
 
 Default keyboard commands
@@ -1042,6 +1052,11 @@ When playing you have a dpad overlaying the game screen which by default is on t
  The green (and eventually red (combat)) movement cursor and the hand pointer are invisible on iOS as they are more distracting than helping when you control and click with your finger.
 When you do a long touch on a location and then release the finger, the Avatar will pathfind to this spot.
 There is also a helper menu when you click near objects in the games, which can be helpful on the smaller iPhone screens but can be disabled in 3.7. Game Input .
+
+
+9.6. iOS automatic saves
+
+One important addition to the iOS port is that Exult autosaves when it is no longer the focused app. Apple enforces apps to terminate very quickly once they lose focus and to prevent the loss of your current progress, we implemented this automatic saving.
 
 
 
@@ -1617,8 +1632,8 @@ These folders are used for:
 Some notes for all Operating Systems:
 * On Windows all of these settings, except for the <path> setting, are optional and not required, Exult will sort this out on its own.
 * On *nix and macOS you might even not need to touch the <path> setting, if you stick to our standard gamenames.
-* You can either use the relative (e.g. ./ultima7) or absolute (e.g. c:\exult\ultima7) path to point to the correct folder. The relative path uses the exult.exe, exult binary or Exult.app as base.
-* Better don't use spaces in the path (e.g. c:\exult\the black gate\). Some people seem to have reported problems with that.
+* You can either use the relative (e.g. ./ultima7) or absolute (e.g. C:\Games\ultima7) path to point to the correct folder. The relative path uses the exult.exe, exult binary or Exult.app as base.
+* Better don't use spaces in the path (e.g. C:\Games\the black gate\). Some people seem to have reported problems with that.
 * Path settings in exult.cfg are the same on all operating systems. Of course you need to make adjustments on *nix based systems when you enter the absolute path.
 * Exult and Exult Studio don't trust the exult.cfg 100% and will recognize which games you entered the path for. This means, that if you entered the path to SI in the <blackgate><path> Exult and Exult Studio will not be fooled.
 * Don't ever point <static_path> and <gamedat_path> to the same folder.
@@ -1764,121 +1779,19 @@ And again, Exult and Exult Studio will not be fooled by false games under <gamen
 --------------------------------------------------------------------------------
 
 11. Installing the original Ultima VII games for use with Exult
-11.1. Installing the floppy disks of BG/SI on Windows
-
-Insert Disk 1 in your floppy drive, open explorer and click on the floppy drive (a:\). Double click on install.exe, choose the drive you want to install to, and then in which folder you want BG/SI to be installed to (Let's assume C:\Exult\ULTIMA7 for BG and C:\Exult\SERPENT for SI).
- Next you choose the sound card, but as this is not relevant for Exult, choose 'No sound card'. Confirm the settings with 'Y' and the installer begins to make noise in your floppy drive...
- When asked to insert the next floppy disk and hit any key (or ESC to cancel). When the installation is done, the installer will complain, that 'something has put your system in protected mode...', ignore that and press any key to continue. Again it will complain that 'your current system configuration is not compatible with Ultima VII!...', ignore that as well and press 'N' (you don't need a boot disk for playing U7 with Exult). Finally hit any key to finish your installation. The installer will finish and the game can be found at C:\Exult\ULTIMA7 or C:\Exult\SERPENT.
-When installing Ultima VII from floppy disks in Windows you can run into some problems.
- The installer assumes that all drives in the computer are hard drives and can't cope with drives like CD-ROMs and card readers. It tries to read how much free space the drives have and if there is no media in the drive it gives an error and you can't proceed.
- To solve this you have to insert a CD-ROM in your CD/DVD-ROM drive. If you have a multi card reader disconnect that if possible (or insert cards in all the slots if you have them). If disconnecting the reader is not possible you have to use one of the other ways to install the floppy versions or use a different computer.
-Unfortunately it is possible that one of the floppies is no longer working. In that case the installation will fail and the installer might suggest that there is a device error and asks you to reboot your computer. Don't follow that advice a reboot is not likely to fix it.
-
-
-11.2. Installing the floppy disks of the Add-Ons FoV/SS on Windows
-
-Insert the add-on floppy disk in your floppy drive, open explorer and click on the floppy drive (a:\). Double click on install.exe, and then you first have to choose the drive where you installed the game (BG/SI) to. Default is C:\, the installer will then search in which folder BG/SI has been installed to. This is unfortunately not working on every computer, for some unknown reason the installer might crash at this point.
- If it doesn't crash the installer will write where it found BG/SI installed to and will ask whether you want to proceed with the installation. Hit 'Y' and the installation will begin, at the end press any key to finish the installation and to close the installer.
-When installing the add-ons you might run into the same problems as when installing the full games (see above 11.1.).
-
-
-11.3. Installing the floppy disks of BG/SI using DOSBox
-
-DOSBox is a program that emulates the old Dos and should run on any operating system that Exult runs on (and more). So this is perfect for users that don't run Windows.
-To install Ultima VII with DOSBox, download and install DOSBox from http://http://dosbox.com. Make a new folder in your C:\ drive called Exult.
- Insert Disk 1 in your floppy drive, start DOSBox and type the following:
-mount c C:\Exult
-mount a a:\ -t floppy
-a:
-install
-
-The installer will start and ask you on which drive to install Ultima VII to. Choose c and when it asks for the target folder choose C:\ULTIMA7 for BG or C:\SERPENT for SI (in both cases you can just hit enter). Next you choose the sound card, but as this is not relevant for Exult, choose 'No sound card'. Confirm the settings with 'Y' and the installer begins to make noise in your floppy drive...
- When asked to insert the next floppy disk and hit any key (or ESC to cancel). When the installation is done, the installer will complain, that 'something has put your system in protected mode...', ignore that and press any key to continue. Again it will complain that 'your current system configuration is not compatible with Ultima VII!...', ignore that as well and press 'N' (you don't need a boot disk for playing U7 with Exult). Finally hit any key to finish your installation. Close DOSBox. The game can now be found at C:\Exult\ULTIMA7 or C:\Exult\SERPENT.
-
-
-11.4. Installing the floppy disks of the Add-Ons FoV/SS using DOSBox
-
-We assume you followed the above guide on how to 11.3. Installing the floppy disks of BG/SI using DOSBox , so you should have BG/SI installed to C:\Exult\ULTIMA7 or C:\Exult\SERPENT.
-Insert the add-on floppy disk in your floppy drive, start DOSBox and type the following:
-mount c C:\Exult
-mount a a:\ -t floppy
-a:
-install
-
-Now you have to choose the drive where you installed the game to. Choose C and the installer will find the correct folder of BG/SI and will ask for your confirmation to proceed with the installation. Hit 'Y' and the installation will begin, at the end press any key to finish the installation and to close the installer. Close DOSBox.
- FoV is then installed in C:\Exult\ULTIMA7. SS is then installed in C:\Exult\SERPENT.
-Unfortunately you might run into a DOSBox bug when installing the add-ons in DOSBox. You might have to rename the file C:\Exult\ULTIMA7\static\usecode.new to just C:\Exult\ULTIMA7\static\usecode (or C:\Exult\SERPENT\static\usecode.new to just C:\Exult\SERPENT\static\usecode)
-
-
-11.5. Manual installation of the BG floppy disks
-
-If for some reason you can't use the above guides to install BG, there is also a way to install BG without using the installer.
-Copy all the files of your floppy files in one folder (e.g. C:\Exult\BGfloppy). If you are using Windows open a command prompt (run -> cmd.exe) and change into this folder (enter cd C:\Exult\BGfloppy). There enter the following lines and press return after each line:
-copy /b u7disk00 + U7disk01 + u7disk02 u7disk00.zip
-copy /b u7disk10 + u7disk11 + u7disk12 u7disk10.zip
-copy /b u7disk20 + u7disk21 u7disk20.zip
- If you are on a *nix system you use the cat command instead of copy /b, for example
-cat u7disk00 U7disk01 u7disk02 >u7disk00.zip
-In that folder you can now find 3 zip files. You can now use winzip/winrar/any unarchiver to extract the files (keep folder structure in the settings) to C:\Exult\ULTIMA7. Also copy the files INSTALL.EXE, PKUNZIP.EXE, INSTALL.PRM to C:\Exult\ULTIMA7. Or enter the following lines on the command prompt:
-pkunzip -d -e u7disk00.zip C:\Exult\ULTIMA7
-pkunzip -d -e u7disk10.zip C:\Exult\ULTIMA7
-pkunzip -d -e u7disk20.zip C:\Exult\ULTIMA7
-copy *.exe C:\Exult\ULTIMA7
-copy install.prm C:\Exult\ULTIMA7
- Installation is now finished and you can delete the folder C:\Exult\BGfloppy.
-
-
-11.6. Manual installation of the SI floppy disks
-
-If for some reason you can't use the above guides to install SI, there is also a way to install SI without using the installer.
-Copy all the files of your floppy files in one folder (e.g. C:\Exult\SIfloppy). If you are using Windows open a command prompt (run -> cmd.exe) and change into this folder (enter cd C:\Exult\SIfloppy). There enter the following lines and press return after each line:
-copy sidisk00 sidisk00.zip
-copy /b sidisk10 + sidisk11 + sidisk12 + sidisk13 sidisk10.zip
-copy /b sidisk20 + sidisk21 + sidisk22 sidisk20.zip
-copy /b sidisk30 + sidisk31 sidisk30.zip
-copy sidisk40 sidisk40.zip
- If you are on a *nix system you use the cat command instead of copy /b, for example
-cat sidisk10 sidisk11 sidisk12 sidisk13 >sidisk10.zip
-In that folder you can now find 5 zip files. You can now use winzip/winrar/any unarchiver to extract the files (keep folder structure in the settings) to C:\Exult\SERPENT. Also copy the files Also copy the files 386STEP.EXE, INSTALL.EXE, PKUNZIP.EXE, INSTALL.PRM to C:\Exult\SERPENT.
- Or enter the following lines on the command prompt:
-pkunzip -d -e sidisk00.zip C:\Exult\SERPENT
-pkunzip -d -e sidisk10.zip C:\Exult\SERPENT
-pkunzip -d -e sidisk20.zip C:\Exult\SERPENT
-pkunzip -d -e sidisk30.zip C:\Exult\SERPENT
-pkunzip -d -e sidisk40.zip C:\Exult\SERPENT
-copy *.exe C:\Exult\SERPENT
-copy install.prm C:\Exult\SERPENT
- Installation is now finished and you can delete the folder C:\Exult\SIfloppy.
-
-
-11.7. Installing the CD-ROM versions of Ultima VII
-
-There are a couple of CD-ROM versions of Ultima VII. Most of these come with the add-ons pre-installed so with these you don't have to bother with installing the floppy disk version of the add-ons. To our knowledge the following CD-ROM versions exist:
-* EA Compilation
- This includes BG and a couple of other games (Savage Empire, Ultima Underworld and other non-Ultima games). Unfortunately BG does not have the add-on FoV included. From the CD just copy the folder Ultima7 to C:\Exult.
-* Ultima Collection
- From the CD just copy the folders Serpent and Ultima7 to C:\Exult. Don't bother with the Ultima Collection installer. Both games come with the add-ons included.
-* The Complete Ultima VII (EA presents CD-ROM Classics)
- On this CD-ROM the games are zipped in Serpent.zip and Ultima7.zip. Unzip serpent.zip to C:\Exult\SERPENT and unzip Ultima7.zip to C:\Exult\ULTIMA7.
- Both games come with the add-ons included.
-
-
-
-11.8. Fixing permissions of Ultima Collection on *nix systems
-
-If you are following the above guide and copied the games from the Ultima Collection CD you might run into a permissions problem on *nix systems, including macOS. You need to set group permissions to read and write.
-On macOS select both game folders, bring up info, go to Ownership and Permissions, expand details, change Access under Group from read only to read and write, then click Apply.
-
-
-11.9. Using the version for Windows from GOG.com
+11.1. Using GOG.com's installer for Windows
 
 Since November 2011 you can buy Ultima VII from GOG. Unfortunately GOG only offers a Windows installer that you can't easily circumvent, which makes it a challenge for users that use a different OS than Windows.
 Right now the only way to get at the game files is to run the installer on Windows (or in WINE if you are not a Windows user). After the installation you will find the game files in C:\GOG Games\Ultima 7 and C:\GOG Games\Ultima 7 - Serpent Isle.
 After installation you can just run our installer and when asked where the games are installed enter or browse to the above paths.
- Unfortunately GOG changes the download of the games for some unknown reason again and again. So our instructions are sometimes out of date. These ones are for the latest GOG release at the time of writing. If it doesn't work, please visit our forum and tell us.
+ Unfortunately GOG changes the download of the games for some unknown reason again and again. So our instructions are sometimes out of date. These ones are for the latest GOG release at the time of writing (version 1.0_(22309)). If it doesn't work, please let us know.
+On *nix systems you can use innoextract.
+innoextract -L -d /share/exult/forgeofvirtue -e "path to GOG UltimaVII BG installer/setup_ultima_vii_-_the_black_gate_1.0_(22309).exe"
+innoextract -L -d /share/exult/silverseed -e "path to GOG Ultima VII SI installer/setup_ultima_vii_-_serpent_isle_1.0_(22309).exe"
 
 
-11.10. Using the version for macOS from GOG.com
+
+11.2. Using GOG.com's installer for macOS
 
 Since January 2013 GOG also offers a macOS download for each of the Ultima VII parts. These are install packages for macOS that will install the two parts into your Applications folder as applications that use a modified version of DOSBox to play the game. If you want to make Exult automatically find the games, you will need to copy the game files from these applications to a different folder on your hard drive. To do this follow the next few steps.
  These instructions are the same whether you used the manual download from GOG or GOG Galaxy to install the games.
@@ -1889,7 +1802,126 @@ sudo cp -p -R "/Applications/Ultima VII™  - The Black Gate + The Forge of Vir
 sudo cp -p -R "/Applications/Ultima VII™  - Serpent Isle + The Silver Seed.app/Contents/Resources/game/STATIC" "/Library/Application Support/Exult/serpentisle"
  Because we need elevated rights the commands are using sudo and will ask for your password and you will need to do this with an administrator account. If you don't have that, please ask your administrator to do this for you.
  Unfortunately GOG changes the download of the games for some unknown reason again and again. So our instructions are sometimes out of date. These ones are for the latest GOG release at the time of writing (gog_3_34095). If it doesn't work, please visit our forum and tell us.
-If you are on a *nix system you can extract the files from the install packages via xar, in the extrracted folder package.pkg you will find a file called Scripts which is a cpio.gz archive.
+If you are on a *nix system you can extract the files from the install packages via xar, in the extracted folder package.pkg you will find a file called Scripts which is a cpio.gz archive.
+
+
+11.3. Installing the CD-ROM versions of Ultima VII
+
+There are a couple of CD-ROM versions of Ultima VII. Most of these come with the add-ons pre-installed so with these you don't have to bother with installing the floppy disk version of the add-ons. To our knowledge the following CD-ROM versions exist:
+* EA Compilation
+ This includes BG and a couple of other games (Savage Empire, Ultima Underworld and other non-Ultima games). Unfortunately BG does not have the add-on FoV included. From the CD just copy the folder Ultima7 to C:\Exult.
+* Ultima Collection
+ From the CD just copy the folders Serpent and Ultima7 to C:\Exult. Don't bother with the Ultima Collection installer. Both games come with the add-ons included.
+* The Complete Ultima VII (EA presents CD-ROM Classics)
+ On this CD-ROM the games are zipped in Serpent.zip and Ultima7.zip. Unzip serpent.zip to C:\Games\SERPENT and unzip Ultima7.zip to C:\Games\ULTIMA7.
+ Both games come with the add-ons included.
+
+On *nix systems, including macOS, you might run into a permissions problem. You need to set group permissions to read and write.
+ On macOS select both game folders, bring up info, go to Ownership and Permissions, expand details, change Access under Group from read only to read and write, then click Apply.
+
+
+11.4. Installing the floppy disks of BG/SI using DOSBox
+
+DOSBox is a program that emulates the old Dos and should run on any operating system that Exult runs on (and more). So this is perfect for users that don't run Windows.
+To install Ultima VII with DOSBox, download and install DOSBox from https://dosbox.com. Make a new folder in your C:\ drive called Games.
+ Insert Disk 1 in your floppy drive, start DOSBox and enter the following:
+mount c C:\Games
+mount a a:\ -t floppy
+a:
+install
+
+These days you are less likely to have floppy drive in your computer. But if you created images of your game floppies you can use these to install the games.
+ Follow the above instructions until you are asked to insert Disk 1. Instead enter these commands:
+mount c C:\Games
+imgmount a /path/bg-1.img /path/bg-2.img /path/bg-3.img /path/bg-4.img /path/bg-5.img /path/bg-6.img -t floppy
+a:
+install
+ Replace path with the path to your image files. In case of installing Serpent Isle enter this for the imgmount command:
+imgmount a /path/si-1.img /path/si-2.img /path/si-3.img /path/si-4.img /path/si-5.img /path/si-6.img /path/si-7.img -t floppy When you are asked to change disk use the keyboard shortcut 'Ctrl+F4', which will use the next image.
+The installer will start and ask you on which drive to install Ultima VII to. Choose c and when it asks for the target folder choose C:\ULTIMA7 for BG or C:\SERPENT for SI (in both cases you can just hit enter). Next you choose the sound card, but as this is not relevant for Exult, choose 'No sound card'. Confirm the settings with 'Y' and the installer begins to make noise in your floppy drive...
+ When asked to insert the next floppy disk and hit any key (or ESC to cancel). When the installation is done, the installer will complain, that 'something has put your system in protected mode...', ignore that and press any key to continue. Again it will complain that 'your current system configuration is not compatible with Ultima VII!...', ignore that as well and press 'N' (you don't need a boot disk for playing U7 with Exult). Finally hit any key to finish your installation. Close DOSBox. The game can now be found at C:\Games\ULTIMA7 or C:\Games\SERPENT.
+
+
+11.5. Installing the floppy disks of the Add-Ons FoV/SS using DOSBox
+
+We assume you followed the above guide on how to 11.4. Installing the floppy disks of BG/SI using DOSBox , so you should have BG/SI installed to C:\Games\ULTIMA7 or C:\Games\SERPENT.
+Insert the add-on floppy disk in your floppy drive, start DOSBox and type the following:
+mount c C:\Games
+mount a a:\ -t floppy
+a:
+install
+
+Similar to the previous guide you can use a floppy image to install the add-ons. Just use
+imgmount a /path/fov.img -t floppy instead of mount a a:\ -t floppy.
+Now you have to choose the drive where you installed the game to. Choose C and the installer will find the correct folder of BG/SI and will ask for your confirmation to proceed with the installation. Hit 'Y' and the installation will begin, at the end press any key to finish the installation and to close the installer. Close DOSBox.
+ FoV is then installed in C:\Games\ULTIMA7. SS is then installed in C:\Games\SERPENT.
+Unfortunately you might run into a DOSBox bug when installing the add-ons in DOSBox. You might have to rename the file C:\Games\ULTIMA7\static\usecode.new to just C:\Games\ULTIMA7\static\usecode (or C:\Games\SERPENT\static\usecode.new to just C:\Games\SERPENT\static\usecode), overwriting the existing usecode file.
+
+
+11.6. Manual installation of the BG floppy disks
+
+If for some reason you can't use the above guides to install BG, there is also a way to install BG without using the installer.
+Copy all the files of your floppy files in one folder (e.g. C:\Exult\BGfloppy). If you are using Windows open a command prompt (run -> cmd.exe) and change into this folder (enter cd C:\Exult\BGfloppy). There enter the following lines and press return after each line:
+copy /b u7disk00 + U7disk01 + u7disk02 u7disk00.zip
+copy /b u7disk10 + u7disk11 + u7disk12 u7disk10.zip
+copy /b u7disk20 + u7disk21 u7disk20.zip
+ If you are on a *nix system you use the cat command instead of copy /b, for example
+cat u7disk00 U7disk01 u7disk02 >u7disk00.zip
+In that folder you can now find 3 zip files. You can now use winzip/winrar/any unarchiver to extract the files (keep folder structure in the settings) to C:\Games\ULTIMA7. Also copy the files INSTALL.EXE, PKUNZIP.EXE, INSTALL.PRM to C:\Games\ULTIMA7. Or enter the following lines on the command prompt:
+pkunzip -d -e u7disk00.zip C:\Games\ULTIMA7
+pkunzip -d -e u7disk10.zip C:\Games\ULTIMA7
+pkunzip -d -e u7disk20.zip C:\Games\ULTIMA7
+copy *.exe C:\Games\ULTIMA7
+copy install.prm C:\Games\ULTIMA7
+ Installation is now finished and you can delete the folder C:\Exult\BGfloppy.
+
+
+11.7. Manual installation of the SI floppy disks
+
+If for some reason you can't use the above guides to install SI, there is also a way to install SI without using the installer.
+Copy all the files of your floppy files in one folder (e.g. C:\Exult\SIfloppy). If you are using Windows open a command prompt (run -> cmd.exe) and change into this folder (enter cd C:\Exult\SIfloppy). There enter the following lines and press return after each line:
+copy sidisk00 sidisk00.zip
+copy /b sidisk10 + sidisk11 + sidisk12 + sidisk13 sidisk10.zip
+copy /b sidisk20 + sidisk21 + sidisk22 sidisk20.zip
+copy /b sidisk30 + sidisk31 sidisk30.zip
+copy sidisk40 sidisk40.zip
+ If you are on a *nix system you use the cat command instead of copy /b, for example
+cat sidisk10 sidisk11 sidisk12 sidisk13 >sidisk10.zip
+In that folder you can now find 5 zip files. You can now use winzip/winrar/any unarchiver to extract the files (keep folder structure in the settings) to C:\Games\SERPENT. Also copy the files Also copy the files 386STEP.EXE, INSTALL.EXE, PKUNZIP.EXE, INSTALL.PRM to C:\Games\SERPENT.
+ Or enter the following lines on the command prompt:
+pkunzip -d -e sidisk00.zip C:\Games\SERPENT
+pkunzip -d -e sidisk10.zip C:\Games\SERPENT
+pkunzip -d -e sidisk20.zip C:\Games\SERPENT
+pkunzip -d -e sidisk30.zip C:\Games\SERPENT
+pkunzip -d -e sidisk40.zip C:\Games\SERPENT
+copy *.exe C:\Games\SERPENT
+copy install.prm C:\Games\SERPENT
+ Installation is now finished and you can delete the folder C:\Exult\SIfloppy.
+
+
+11.8. Installing the floppy disks of BG/SI on Windows
+
+Modern Windows versions do not actually run 16bit DOS programs anymore, not to mention that modern computers are not likely to have a floppy drive. So this guide only remains for completeness' sake.
+Insert Disk 1 in your floppy drive, open explorer and click on the floppy drive (a:\). Double click on install.exe, choose the drive you want to install to, and then in which folder you want BG/SI to be installed to (Let's assume C:\Games\ULTIMA7 for BG and C:\Games\SERPENT for SI).
+ Next you choose the sound card, but as this is not relevant for Exult, choose 'No sound card'. Confirm the settings with 'Y' and the installer begins to make noise in your floppy drive...
+ When asked to insert the next floppy disk and hit any key (or ESC to cancel). When the installation is done, the installer will complain, that 'something has put your system in protected mode...', ignore that and press any key to continue. Again it will complain that 'your current system configuration is not compatible with Ultima VII!...', ignore that as well and press 'N' (you don't need a boot disk for playing U7 with Exult). Finally hit any key to finish your installation. The installer will finish and the game can be found at C:\Games\ULTIMA7 or C:\Games\SERPENT.
+When installing Ultima VII from floppy disks in Windows you can run into some problems.
+ The installer assumes that all drives in the computer are hard drives and can't cope with drives like CD-ROMs and card readers. It tries to read how much free space the drives have and if there is no media in the drive it gives an error and you can't proceed.
+ To solve this you have to insert a CD-ROM in your CD/DVD-ROM drive. If you have a multi card reader disconnect that if possible (or insert cards in all the slots if you have them). If disconnecting the reader is not possible you have to use one of the other ways to install the floppy versions or use a different computer.
+Unfortunately it is possible that one of the floppies is no longer working. In that case the installation will fail and the installer might suggest that there is a device error and asks you to reboot your computer. Don't follow that advice a reboot is not likely to fix it.
+
+
+11.9. Installing the floppy disks of the Add-Ons FoV/SS on Windows
+
+Modern Windows versions do not actually run 16bit DOS programs anymore, not to mention that modern computers are not likely to have a floppy drive. So this guide only remains for completeness' sake.
+Insert the add-on floppy disk in your floppy drive, open explorer and click on the floppy drive (a:\). Double click on install.exe, and then you first have to choose the drive where you installed the game (BG/SI) to. Default is C:\, the installer will then search in which folder BG/SI has been installed to. This is unfortunately not working on every computer, for some unknown reason the installer might crash at this point.
+ If it doesn't crash the installer will write where it found BG/SI installed to and will ask whether you want to proceed with the installation. Hit 'Y' and the installation will begin, at the end press any key to finish the installation and to close the installer.
+When installing the add-ons you might run into the same problems as when installing the full games (see above 11.8.).
+
+
+11.10. Exult only needs one folder
+
+For the ease of use the following guides mostly ask you to use all files from the original. But Exult only really needs the STATIC folder of the games. So if you want to trim down your installed files, you can delete all files except that folder and its content.
 
 
 
@@ -1909,28 +1941,37 @@ If you are on a *nix system you can extract the files from the install packages 
 
 12.2. Contacting us
 
-You can contact the Exult team and/or get more information from:
-http://exult.info or
-http://sourceforge.net/projects/exult/
-
+You can contact the Exult team through our Github Discussions page.
 
 
 
 --------------------------------------------------------------------------------
 
 13. Changes to the Documentation
-13.1. - 11 February 2022
+13.1. - 23 April 2024
+
+* 2.5. Command line options Added the shortcut to starting the Serpent Isle beta.
+* 4.13. Linux and Audio Alsa port magic by Dragon Baroque.
+* 6.2. Keyboard commands More custom keybinding instructions.
+* 9.6. iOS automatic saves Explained why we have automatic saving on iOS.
+* 11. Installing the original Ultima VII games for use with Exult Resorted this since installing from floppies is very outdated.
+* 11.10. Exult only needs one folder Added a note that we only need the STATIC folder.
+* 11.1. Using GOG.com's installer for Windows added innoextract instructions for *nix.
+
+
+
+13.2. - 11 February 2022
 
 * 2.5. Command line options Add t'--verify-files'.
 * 3. Exult Setup and Game Menu Moved this section closer to the top.
-* 4.2. MIDI Music Mentioend that UnixSeqDevice is shortened in the Audio options menu.
+* 4.2. MIDI Music Mentioned that UnixSeqDevice is shortened in the Audio options menu.
 * 5.4. Scaler reordered and deleted OpenGl scaler.
 * 9.3. Installing the games on your iPhone/iPad Don't use the Files app on iOS to transfer the games.
 * 10. The exult.cfg file Moved the in depth explanation of the cfg file to the bottom.
 
 
 
-13.2. - 24 January 2022
+13.3. - 24 January 2022
 
 * 10.1. Settings in exult.cfg cfg setting to disable the extended SI intro.
 * 4.8. All-in-One Audio Data pack and installers The Windows installer will optionally install the audio pack.
@@ -1940,7 +1981,7 @@ http://sourceforge.net/projects/exult/
 
 
 
-13.3. - 20 February 2021
+13.4. - 20 February 2021
 
 * Changed links to our homepage to exult.info, SDL to SDL2, Mac OS X to macOS.
 * Removed references to Windows CE/Pocket PC.
@@ -1949,22 +1990,7 @@ http://sourceforge.net/projects/exult/
 * 6.1. Movement iOS movement added.
 * 1.1. is new and needed a screenshot as well.
 * 9.3. Installing the games on your iPhone/iPad iTunes file sharing is done differently on newer macOS systems.
-* 11.10. Using the version for macOS from GOG.com again adapted to GOG changes of the Mac installer.
-
-
-
-13.4. - 08 December 2018
-
-* 2.1. Installation Pointing at our GOG instructions, too.
-* 2.2. Location of exult.cfg Windows 9x and 2k are no longer supported.
-* 10.1. Settings in exult.cfg eliminated forked and kmidi mentions.
-* 10.3. Path-Settings for Windows Windows 9x and 2k are no longer supported.
-* 4.2. MIDI Music forked midi and kmid (kmidi) are no longer supported
-* 7.4. Screenshots PCX format is out of date.
-* 9.5. iOS controls mentioned long touch pathfind
-* 1.1. long touch pathfind added and the HighDPI Video Option.
-* 11.9. Using the version for Windows from GOG.com adapted to GOG changes of the Windows installer
-* 11.10. Using the version for macOS from GOG.com adapted to GOG changes of the Mac installer.
+* 11.2. Using GOG.com's installer for macOS again adapted to GOG changes of the Mac installer.
 
 
 
