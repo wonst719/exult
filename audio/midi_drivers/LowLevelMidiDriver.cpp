@@ -482,7 +482,7 @@ int LowLevelMidiDriver::initThreadedSynth() {
 	quit_thread = false;
 	thread      = std::make_unique<std::thread>(
             threadMain_Static,
-            std::static_pointer_cast<LowLevelMidiDriver>(selfptr.lock()));
+            std::static_pointer_cast<LowLevelMidiDriver>(shared_from_this()));
 
 	while (peekComMessageType() == LLMD_MSG_THREAD_INIT) {
 		yield();
