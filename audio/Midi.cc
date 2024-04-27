@@ -81,7 +81,7 @@ using std::string;
 #define SEQ_NUM_MUSIC 0
 #define SEQ_NUM_SFX   1
 
-static std::unique_ptr<IDataSource> open_music_flex(
+std::unique_ptr<IDataSource> open_music_flex(
 		const std::string& flex, int num) {
 	// Try in patch dir first.
 	string pflex("<PATCH>/");
