@@ -31,11 +31,11 @@
 #endif    // __GNUC__
 
 #include "Audio.h"
+#include "Midi.h"
 #include "Scroll_gump.h"
 #include "XMidiEvent.h"
 #include "XMidiEventList.h"
 #include "XMidiFile.h"
-#include "Midi.h"
 #include "exult.h"
 #include "font.h"
 #include "gamewin.h"
@@ -167,19 +167,22 @@ void SoundTester::test_sound() {
 #ifdef DEBUG
 			case SDLK_d: {
 				MyMidiPlayer* player = Audio::get_ptr()->get_midi();
-				std::string   flex= player && player->is_adlib() ?MAINMUS_AD : MAINMUS;
-				
+				std::string   flex
+						= player && player->is_adlib() ? MAINMUS_AD : MAINMUS;
+
 				std::unique_ptr<IDataSource> mid_data
 						= open_music_flex(flex, song);
-				int           convert = XMIDIFILE_CONVERT_NOCONVERSION;
+				int convert = XMIDIFILE_CONVERT_NOCONVERSION;
 				if (player) {
 					convert = player->setup_timbre_for_track(flex);
 				}
 
+				if (mid_data && mid_data->good()) {
 					XMidiFile midfile(mid_data.get(), convert);
-				for (int i = 0; i < midfile.number_of_tracks(); i++) {
-					std::cout << " track " << i << std::endl;
-					midfile.GetEventList(i)->events->DumpText(std::cout);
+					for (int i = 0; i < midfile.number_of_tracks(); i++) {
+						std::cout << " track " << i << std::endl;
+						midfile.GetEventList(i)->events->DumpText(std::cout);
+					}
 				}
 			} break;
 #endif
