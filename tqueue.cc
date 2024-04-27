@@ -52,8 +52,7 @@ void Time_queue::clear() {
  */
 
 void Time_queue::add(
-		uint32 t, std::shared_ptr<Time_sensitive> obj, uintptr ud) 
-{
+		uint32 t, std::shared_ptr<Time_sensitive> obj, uintptr ud) {
 	obj->queue_cnt++;    // It's going in, no matter what.
 	Queue_entry newent;
 	if (paused && !obj->always) {    // Paused?
@@ -192,13 +191,15 @@ void Time_queue::activate0(uint32 curtime    // Current time.
 ) {
 	Queue_entry ent;
 	do {
-		ent                   = data.front();
-		Time_sensitive* obj   = ent.handler;
+		ent                                    = data.front();
+		Time_sensitive*                 obj    = ent.handler;
 		std::shared_ptr<Time_sensitive> sp_obj = ent.sp_handler;
-		const uintptr   udata = ent.udata;
+		const uintptr                   udata  = ent.udata;
 		data.pop_front();    // Remove from chain.
 
-		if (!obj && sp_obj) obj = sp_obj.get();
+		if (!obj && sp_obj) {
+			obj = sp_obj.get();
+		}
 		if (obj) {
 			obj->queue_cnt--;
 			obj->handle_event(curtime, udata);
@@ -221,10 +222,12 @@ void Time_queue::activate_always(uint32 curtime    // Current time.
 	for (auto it = data.begin(); it != data.end() && !(curtime < it->time);) {
 		auto next = it;
 		++next;    // Get ->next in case we erase.
-		ent                 = *it;
+		ent                                    = *it;
 		std::shared_ptr<Time_sensitive> sp_obj = ent.sp_handler;
 		Time_sensitive*                 obj    = ent.handler;
-		if (!obj && sp_obj) obj = sp_obj.get();
+		if (!obj && sp_obj) {
+			obj = sp_obj.get();
+		}
 		if (obj && obj->always) {
 			obj->queue_cnt--;
 			const uintptr udata = ent.udata;
@@ -267,10 +270,10 @@ bool Time_queue_iterator::operator()(
 	iter        = this_obj == nullptr
 						  ? remain
 						  : std::find_if(
-                           iter, tqueue->data.end(), [&](const auto& el) {
-                               return el.handler == this_obj
-                                      || el.sp_handler.get() == this_obj;
-                           });
+                             iter, tqueue->data.end(), [&](const auto& el) {
+                                 return el.handler == this_obj
+                                        || el.sp_handler.get() == this_obj;
+                             });
 	if (iter == tqueue->data.end()) {
 		return false;
 	}

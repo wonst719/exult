@@ -62,16 +62,17 @@ class Time_queue;
 struct Queue_entry {
 	// Queue_entry *next, *prev;    // Next, prev. in queue.
 	Time_sensitive* handler;    // Object to activate.
-	std::shared_ptr<Time_sensitive>	sp_handler;    // Shared pointer to object to activate
-	uintptr         udata;      // Data to pass to handler.
-	uint32          time;       // Time when this is due.
+	std::shared_ptr<Time_sensitive>
+			sp_handler;    // Shared pointer to object to activate
+	uintptr udata;         // Data to pass to handler.
+	uint32  time;          // Time when this is due.
 
 	inline void set(
 			uint32 t, Time_sensitive* h, uintptr ud,
 			std::shared_ptr<Time_sensitive> sp) {
-		time    = t;
-		handler = h;
-		udata   = ud;
+		time       = t;
+		handler    = h;
+		udata      = ud;
 		sp_handler = sp;
 	}
 };
@@ -107,22 +108,23 @@ public:
 
 	void add(uint32 t, Time_sensitive* obj, void* ud) {
 		add(t, obj, reinterpret_cast<uintptr>(ud));
-	}	
-	void add(uint32 t, std::shared_ptr < Time_sensitive> obj, void* ud) {
+	}
+
+	void add(uint32 t, std::shared_ptr<Time_sensitive> obj, void* ud) {
 		add(t, obj, reinterpret_cast<uintptr>(ud));
 	}
 
-	void add(uint32 t, std::shared_ptr < Time_sensitive> obj, uintptr ud);
+	void add(uint32 t, std::shared_ptr<Time_sensitive> obj, uintptr ud);
 	void add(uint32 t, Time_sensitive* obj, uintptr ud);
 	// Remove object's entry.
 	bool remove(Time_sensitive* obj);
-	bool remove(std::shared_ptr < Time_sensitive > obj);
+	bool remove(std::shared_ptr<Time_sensitive> obj);
 
 	void remove(Time_sensitive* obj, void* ud) {
 		remove(obj, reinterpret_cast<uintptr>(ud));
 	}
 
-	void remove(std::shared_ptr < Time_sensitive> obj, void* ud) {
+	void remove(std::shared_ptr<Time_sensitive> obj, void* ud) {
 		remove(obj, reinterpret_cast<uintptr>(ud));
 	}
 

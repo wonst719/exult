@@ -29,7 +29,7 @@ class XMidiEventList;
 class IDataSource;
 
 //! The Basic High Level Pentagram Midi Driver interface.
-class MidiDriver : public  std::enable_shared_from_this<MidiDriver> {
+class MidiDriver : public std::enable_shared_from_this<MidiDriver> {
 protected:
 	std::atomic_bool initialized = false;
 

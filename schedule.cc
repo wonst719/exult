@@ -1565,7 +1565,7 @@ void Talk_schedule::now_what() {
 
 Arrest_avatar_schedule::Arrest_avatar_schedule(Actor* n)
 		: Talk_schedule(
-				n, first_arrest, last_arrest, Usecode_machine::double_click) {
+				  n, first_arrest, last_arrest, Usecode_machine::double_click) {
 	npc->set_usecode(ArrestUsecode);
 }
 
@@ -4078,7 +4078,7 @@ void Sew_schedule::now_what() {
 	case get_cloth: {
 		const Game_object_shared loom_obj = loom.lock();
 		const Tile_coord         t        = loom_obj ? Map_chunk::find_spot(
-                                     loom_obj->get_tile(), 1, 851, 0)
+                                                loom_obj->get_tile(), 1, 851, 0)
 													 : Tile_coord(-1, -1, -1);
 		if (t.tx != -1) {    // Space to create it?
 			const Game_object_shared newobj
@@ -5221,7 +5221,7 @@ void Eat_schedule::now_what() {
 				gwin->add_dirty(food);
 				food->remove_this();
 			}
-		}         // loops back to itself since npc can be pushed
+		}    // loops back to itself since npc can be pushed
 		break;    // out of their chair and not eat right away
 	}
 	case find_plate: {

@@ -587,7 +587,7 @@ int LowLevelMidiDriver::threadMain() {
 			const int seq = i;
 
 			if (sequences[seq]) {
-				 sint32 ms = sequences[seq]->timeTillNext();
+				sint32 ms = sequences[seq]->timeTillNext();
 				if (ms < time_till_next) {
 					time_till_next = ms;
 				}
