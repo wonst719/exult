@@ -252,6 +252,32 @@ struct XMidiEvent {
 			next->DumpText(out);
 		}
 	}
+
+	// time critical events cannot have their time shifted
+	// non time critcal events can be moved as long as they are played in order
+	// pretty much time critical are notes and events that affect playing notes
+	bool is_time_critical() {
+		int type = status >> 4;
+		if (type == MIDI_STATUS_CONTROLLER) {
+			switch (data[0]) {
+			case MIDI_CONTROLLER_BANK:
+			case MIDI_CONTROLLER_BANK + 32:
+			case XMIDI_CONTROLLER_BANK_CHANGE:
+			case XMIDI_CONTROLLER_CHAN_LOCK_PROT:
+			case XMIDI_CONTROLLER_VOICE_PROT:
+			case XMIDI_CONTROLLER_TIMBRE_PROT:
+				return false;
+
+			default:
+				return true;
+			}
+		}
+		// these shouldn't be time critical. needed to fix BG21 and SI12
+		if (type == MIDI_STATUS_PROG_CHANGE || type == MIDI_STATUS_SYSEX) {
+			return false;
+		}
+		return true;
+	};
 };
 
 #endif    // XMIDIEVENT_H_INCLUDED

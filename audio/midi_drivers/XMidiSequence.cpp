@@ -31,6 +31,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // later resumed.
 #define XMIDISEQUENCER_NO_CATCHUP_WAIT_OVER 1200
 
+// Play non time critical events at most this many ticks after last event. 60 seems like a good value to my ears
+#define NON_CRIT_ADJUSTMENT                60
+
 const uint16 XMidiSequence::ChannelShadow::centre_value = 0x2000;
 const uint8  XMidiSequence::ChannelShadow::fine_value   = centre_value & 127;
 const uint8  XMidiSequence::ChannelShadow::coarse_value = centre_value >> 7;
@@ -164,9 +167,23 @@ int XMidiSequence::playEvent() {
 		return 1;
 	}
 
-	// Play all waiting notes;
+	// Play all waiting events;
 	sint32 aim  = ((event->time - last_tick) * 5000) / speed;
+#ifdef NON_CRIT_ADJUSTMENT
+	int nc_ticks = event->time - last_tick;
+
+	if (!event->is_time_critical() && nc_ticks > NON_CRIT_ADJUSTMENT) {
+		if (event->next) {
+			nc_ticks = std::min(
+					NON_CRIT_ADJUSTMENT, event->next->time - event->time);
+		}
+		aim = nc_ticks * 5000 / speed;
+	}
+#endif    // NON_CRIT_ADJUSTMENT
+
+		
 	sint32 diff = aim - getTime();
+	
 
 	if (diff > 5) {
 		return 1;
@@ -174,7 +191,13 @@ int XMidiSequence::playEvent() {
 
 	addOffset(aim);
 
-	last_tick = event->time;
+#ifdef NON_CRIT_ADJUSTMENT
+	if (event->is_time_critical()) 
+		last_tick += nc_ticks;
+		else
+#endif
+		last_tick = event->time;
+	
 
 #ifdef XMIDISEQUENCER_NO_CATCHUP_WAIT_OVER
 	if (diff < -XMIDISEQUENCER_NO_CATCHUP_WAIT_OVER) {
@@ -280,15 +303,17 @@ int XMidiSequence::playEvent() {
 		}
 	}
 
-	aim  = ((event->time - last_tick) * 5000) / speed;
+	aim  = ((event->time - last_tick) * 5000) / speed;	
+	if (!event->is_time_critical()) {
+		aim = getTime();
+	}
 	diff = aim - getTime();
-
+	
 	if (diff < 0) {
 		return 0;    // Next event is ready now!
 	}
 	return 1;
 }
-
 sint32 XMidiSequence::timeTillNext() {
 	sint32 sixthoToNext = 0x7FFFFFFF;    // Int max
 
@@ -303,7 +328,18 @@ sint32 XMidiSequence::timeTillNext() {
 
 	// Time till the next event, if we are playing
 	if (speed > 0 && event && !paused) {
-		const sint32 aim  = ((event->time - last_tick) * 5000) / speed;
+		 sint32 aim  = ((event->time - last_tick) * 5000) / speed;
+#ifdef  NON_CRIT_ADJUSTMENT
+		if (!event->is_time_critical()
+			&& (event->time - last_tick) > NON_CRIT_ADJUSTMENT) {
+			int ticks = NON_CRIT_ADJUSTMENT;
+			if (event->next) {
+				ticks = std::min(ticks, event->next->time - event->time);
+			}
+			aim = ticks * 5000 / speed;
+		}
+#endif    // NON_CRIT_ADJUSTMENT
+		
 		const sint32 diff = aim - getTime();
 
 		if (diff < sixthoToNext) {
