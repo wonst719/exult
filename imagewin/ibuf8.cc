@@ -28,7 +28,7 @@
 #include "common_types.h"
 #include "endianio.h"
 #include "ignore_unused_variable_warning.h"
-#include "shapeid.h"
+// #include "shapeid.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -200,7 +200,7 @@ static bool clipline(
 		return false;
 	}
 	if (*start0 < startc) {
-		int offscreen = startc - *start0;
+		//int offscreen = startc - *start0;
 
 		int olddelta0 = *end0 - *start0;
 		int newdelta0 = *end0 - startc;
@@ -212,7 +212,7 @@ static bool clipline(
 		*start1 = *end1 - newdelta1;
 	}
 	if (*end0 > endc) {
-		int offscreen = *end0 - endc;
+		//int offscreen = *end0 - endc;
 
 		int olddelta0 = *end0 - *start0;
 		int newdelta0 = endc - *start0;
