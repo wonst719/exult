@@ -121,7 +121,6 @@ struct XMidiEvent {
 		delete this;
 	}
 
-
 	void DumpText(std::ostream& out) {
 		out << time << " Ch " << ((int)status & 0xf) << " ";
 
@@ -214,7 +213,8 @@ struct XMidiEvent {
 				out << "Controller XBank Change " << (int)data[1];
 				break;
 			case XMIDI_CONTROLLER_IND_CTRL_PREFIX:
-				out << "Controller XIndirect Controller Prefix " << (int)data[1];
+				out << "Controller XIndirect Controller Prefix "
+					<< (int)data[1];
 				break;
 			case XMIDI_CONTROLLER_FOR_LOOP:
 				out << "Controller XFor Loop " << (int)data[1];
@@ -235,15 +235,16 @@ struct XMidiEvent {
 			default:
 				out << "Controller " << (int)data[0] << " " << (int)data[1];
 			}
+		} break;
+
 		case MIDI_STATUS_SYSEX:
 			out << "sysex " << ex.sysex_data.len << " bytes";
 			break;
 
 			// default should never happen
 		default:
-			out << "Status_" << ((int)status >>4)
-				<< " " << (int)data[0] << " " << (int)data[1];
-		}
+			out << "Status_" << ((int)status >> 4) << " " << (int)data[0] << " "
+				<< (int)data[1];
 		}
 
 		out << std::endl;
