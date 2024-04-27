@@ -101,7 +101,7 @@ extern bool combat_trace;
 // Please Don't Touch - Colourless
 //
 const short Actor::party_pos[4][10][2] = {
-  // North Facing
+		// North Facing
 		{ {-2, 2},
 		 {2, 2},
 		 {0, 4},
@@ -112,7 +112,7 @@ const short Actor::party_pos[4][10][2] = {
 		 {0, 8},
 		 {-4, 8},
 		 {4, 8} },
- // East Facing,
+		// East Facing,
 		{{-2, -2},
 		 {-2, 2},
 		 {-4, 0},
@@ -123,7 +123,7 @@ const short Actor::party_pos[4][10][2] = {
 		 {-8, 0},
 		 {-8, -4},
 		 {-8, 4}},
- // South Facing
+		// South Facing
 		{{-2, -2},
 		 {2, -2},
 		 {0, -4},
@@ -134,7 +134,7 @@ const short Actor::party_pos[4][10][2] = {
 		 {0, -8},
 		 {-4, -8},
 		 {4, -8}},
- // West Facing
+		// West Facing
 		{ {2, -2},
 		 {2, 2},
 		 {4, 0},

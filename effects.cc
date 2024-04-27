@@ -1301,7 +1301,7 @@ protected:
 using Raindrop  = Basicdrop<3, 7, 6, false>;
 using Snowflake = Basicdrop<13, 20, 1, false>;
 using Sparkle   = Basicdrop<21, 27, 0, true>;    // delta is zero as sparkles
-											   // should not fall
+												 // should not fall
 
 /*
  *  Raining.
