@@ -329,15 +329,15 @@ void Image_buffer8::draw_line8(
 	int delta0 = end0 - start0;
 	int delta1 = end1 - start1;
 
-	// change in dim 1 for each increment of dim0
+	// change in dim1 for each increment of dim0
 	const fixedu1616 slope
 			= (delta1 << 16)
 			  / std::max(
 					  delta0,
-					  1);    // prevent div by zero is line is only 1 pixel long
+					  1);    // prevent div by zero if line is only 1 pixel long
 
 	// relative dim1 of current pixel. offset by rounding error from when
-	// calculating xpery to ensure endpoint pixel is actually drawn
+	// calculating slope to ensure endpoint pixel is actually drawn
 	fixedu1616 cur1 = (delta1 << 16) - slope * delta0;
 
 	// draw the line
@@ -346,12 +346,13 @@ void Image_buffer8::draw_line8(
 	if (xform == nullptr) {
 		for (;;) {
 			*to = val;
+			// if last pixel was drawn, break out of loop before incrementing
+			// pointer to next pixel
 			if (to == end) {
 				break;
 			}
 			cur1 += slope;
-			int temp = cur1 >> 16;
-			to += inc0 + inc1 * temp;
+			to += inc0 + inc1 * (cur1 >> 16);
 			cur1 &= 0xffff;
 		}
 	} else {
