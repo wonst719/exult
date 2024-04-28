@@ -176,7 +176,10 @@ int XMidiSequence::playEvent() {
 	if (!event->is_time_critical() && nc_ticks > NON_CRIT_ADJUSTMENT) {
 		if (event->next) {
 			nc_ticks = std::min(
-					NON_CRIT_ADJUSTMENT, event->next->time - event->time);
+					NON_CRIT_ADJUSTMENT,
+					event->next->time - static_cast<int>(last_tick));
+		} else {
+			nc_ticks = NON_CRIT_ADJUSTMENT;
 		}
 		aim = nc_ticks * 5000 / speed;
 	}
@@ -333,7 +336,10 @@ sint32 XMidiSequence::timeTillNext() {
 			&& (event->time - last_tick) > NON_CRIT_ADJUSTMENT) {
 			int ticks = NON_CRIT_ADJUSTMENT;
 			if (event->next) {
-				ticks = std::min(ticks, event->next->time - event->time);
+				ticks = std::min(
+						ticks, event->next->time - static_cast<int>(last_tick));
+			} else {
+				ticks = NON_CRIT_ADJUSTMENT;
 			}
 			aim = ticks * 5000 / speed;
 		}
