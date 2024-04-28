@@ -351,7 +351,7 @@ void Image_buffer8::draw_line8(
 				break;
 			}
 			cur1 += slope;
-			to += inc0 + inc1 * (cur1 >> 16);
+			to += inc0 + inc1 * static_cast<int>(cur1 >> 16);
 			cur1 &= 0xffff;
 		}
 	} else {
@@ -362,7 +362,7 @@ void Image_buffer8::draw_line8(
 				break;
 			}
 			cur1 += slope;
-			to += inc0 + inc1 * (cur1 >> 16);
+			to += inc0 + inc1 * static_cast<int>(cur1 >> 16);
 			cur1 &= 0xffff;
 		}
 	}
