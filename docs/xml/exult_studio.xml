@@ -560,7 +560,7 @@
 						Very useful when you edit the usecode of a game or add new usecode to an
 						existing game. Normally this would require a restart of Exult.<br/>
 						<strong>Style CSS</strong><br/>
-						<Studio/> now supports customization via a CSS file (exult_studio.css) and if you
+						The interface of <Studio/> now supports customization via a CSS file (exult_studio.css) and if you
 						changed that you can reload it without having to restart <Studio/>.</li>
 					<li><strong>Connect</strong><br/>
 						Connects <Exult/> and <Studio/> if one of them had to be restarted.</li>
@@ -673,7 +673,7 @@
 						Compiles the usecode script usecode.uc in the patch folder
 						(see <ref target="usecode_edit"/>)</li>
 					<li><strong>Fix old shape info</strong><br/>
-						Old versions of <Studio/> discarded some shpe info data on saving. This option adds
+						Old versions of <Studio/> discarded some shape info data on saving. This option adds
 						the discarded information back to old mods and patches.</li>
 				</ul>
 			</body>
@@ -1205,7 +1205,7 @@
 					<li><strong>Ident</strong><br/>
 						This is a number used in usecode in SI to differentiate between different NPC possibilities.
 						It can be used to decide which set of conversation options some party members have, as well
-						as making some ¨monster¨ NPCs have a more persistent identity despite not having a set NPC
+						as making some "monster¨" NPCs have a more persistent identity despite not having a set NPC
 						number</li>
 					<li><strong>Shape #</strong><br/>
 						Either drag and drop a shape from shapes.vga into the line (or the black box to the
