@@ -2,31 +2,26 @@
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns="http://www.w3.org/1999/xhtml">
-	<xsl:output method="xml"
-		indent="no" omit-xml-declaration="yes" />
+	<xsl:output method="xml" indent="no" omit-xml-declaration="yes" />
 	<!-- Keys -->
 	<xsl:key name="sub_ref" match="sub" use="@name" />
 	<xsl:key name="section_ref" match="section" use="@title" />
+	<xsl:template match="br"><br/></xsl:template>
+	<xsl:template match="hr"><hr/></xsl:template>
 	<xsl:strip-space elements="*" />
 	<!-- FAQ Templates -->
 	<xsl:template name="TOC">
 		<xsl:for-each select="section">
 			<p>
 				<a>
-					<xsl:attribute name="href">#
-						<xsl:value-of select="@title" />
-					</xsl:attribute>
-					<xsl:number level="multiple"
-						count="section"
-						format="1. " />
+					<xsl:attribute name="href">#<xsl:value-of select="@title" /></xsl:attribute>
+					<xsl:number level="multiple" count="section" format="1. " />
 					<xsl:value-of select="@title" />
 				</a>
 				<br />
 				<xsl:for-each select="sub">
 					<a>
-						<xsl:attribute name="href">#
-							<xsl:value-of select="@name" />
-						</xsl:attribute>
+						<xsl:attribute name="href">#<xsl:value-of select="@name" /></xsl:attribute>
 						<xsl:number level="multiple"
 							count="section|sub"
 							format="1."
@@ -100,12 +95,9 @@
 	<xsl:template match="section">
 		<hr width="100%" />
 		<table width="100%">
-			<tr>
-				<th align="left">
+			<tr><th align="left">
 					<a>
-						<xsl:attribute name="name">
-							<xsl:value-of select="@title" />
-						</xsl:attribute>
+						<xsl:attribute name="name"><xsl:value-of select="@title" /></xsl:attribute>
 						<xsl:number format="1. " />
 						<xsl:value-of select="@title" />
 					</a>
@@ -121,8 +113,7 @@
 				count="section"
 				format="1."
 				value="count(ancestor::section/preceding-sibling::section)+1" />
-			<xsl:number
-				format="1. " />
+			<xsl:number format="1. " />
 		</xsl:variable>
 		<tr>
 			<td>
@@ -133,9 +124,7 @@
 			<td>
 				<strong>
 					<a>
-						<xsl:attribute name="name">
-							<xsl:value-of select="@name" />
-						</xsl:attribute>
+						<xsl:attribute name="name"><xsl:value-of select="@name" /></xsl:attribute>
 						<xsl:value-of select="$num_idx" />
 						<xsl:apply-templates select="header" />
 					</a>
@@ -169,9 +158,7 @@
 	<!-- Internal Link Templates -->
 	<xsl:template match="ref">
 		<a>
-			<xsl:attribute name="href">#
-				<xsl:value-of select="@target" />
-			</xsl:attribute>
+			<xsl:attribute name="href">#<xsl:value-of select="@target" /></xsl:attribute>
 			<xsl:value-of
 				select="count(key('sub_ref',@target)/parent::section/preceding-sibling::section)+1" />
 			<xsl:text>.</xsl:text>
@@ -181,9 +168,7 @@
 	</xsl:template>
 	<xsl:template match="ref1">
 		<a>
-			<xsl:attribute name="href">#
-				<xsl:value-of select="@target" />
-			</xsl:attribute>
+			<xsl:attribute name="href">#<xsl:value-of select="@target" /></xsl:attribute>
 			<xsl:value-of
 				select="count(key('sub_ref',@target)/parent::section/preceding-sibling::section)+1" />
 			<xsl:text>.</xsl:text>
@@ -194,9 +179,7 @@
 	</xsl:template>
 	<xsl:template match="section_ref">
 		<a>
-			<xsl:attribute name="href">#
-				<xsl:value-of select="@target" />
-			</xsl:attribute>
+			<xsl:attribute name="href">#<xsl:value-of select="@target" /></xsl:attribute>
 			<xsl:value-of select="count(key('section_ref',@target)/preceding-sibling::section)+1" />
 			<xsl:text>. </xsl:text>
 			<xsl:apply-templates select="key('section_ref',@target)/@title" />
@@ -217,8 +200,7 @@
 						<xsl:text>studio.php#</xsl:text>
 					</xsl:when>
 				</xsl:choose>
-				<xsl:value-of
-					select="@target" />
+				<xsl:value-of select="@target" />
 			</xsl:attribute>
 			<xsl:choose>
 				<xsl:when test="count(child::node())>0">
@@ -241,11 +223,11 @@
 	</xsl:template>
 	<!-- Image Link Template -->
 	<xsl:template match="img">
-		<xsl:copy>
+		<xsl:element name="{local-name()}">
 			<xsl:for-each select="@*|node()">
 				<xsl:copy />
 			</xsl:for-each>
-		</xsl:copy>
+		</xsl:element>
 	</xsl:template>
 	<!-- Misc Templates -->
 	<xsl:template match="Exult">
@@ -259,8 +241,7 @@
 	</xsl:template>
 	<xsl:template match="cite">
 		<p>
-			<xsl:value-of select="@name" />:
-			<br />
+			<xsl:value-of select="@name" />:<br />
 			<cite>
 				<xsl:apply-templates />
 			</cite>
@@ -271,11 +252,7 @@
 			<xsl:apply-templates />
 		</p>
 	</xsl:template>
-	<xsl:template match="key"> '
-		<span class="highlight">
-			<xsl:value-of select="." />
-		</span>'
-	</xsl:template>
+	<xsl:template match="key">'<span class="highlight"><xsl:value-of select="." /></span>'</xsl:template>
 	<xsl:template match="kbd">
 		<span class="highlight">
 			<kbd>
@@ -287,10 +264,10 @@
 		<xsl:text disable-output-escaping="yes">&amp;trade;&amp;nbsp;</xsl:text>
 	</xsl:template>
 	<!-- ...................ol|dl|ul + em............... -->
-	<xsl:template match="ul|ol|li|strong|q|br">
-		<xsl:copy>
+	<xsl:template match="ul|ol|li|strong|q">
+		<xsl:element name="{local-name()}">
 			<xsl:apply-templates select="@*|node()" />
-		</xsl:copy>
+		</xsl:element>
 	</xsl:template>
 	<xsl:template match="em">
 		<b>
@@ -315,9 +292,7 @@
 	<xsl:template match="keydesc">
 		<tr>
 			<td nowrap="nowrap" valign="top">
-				<span class="highlight">
-					<xsl:value-of select="@name" />
-				</span>
+				<span class="highlight"><xsl:value-of select="@name" /></span>
 			</td>
 			<td width="10">
 				<xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text>

@@ -1,13 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE stylesheet
 [
-<!ENTITY space "
-<xsl:text> </xsl:text>">
-<!ENTITY cr "
-<xsl:text>
-</xsl:text>">
-<!ENTITY tab "
-<xsl:text>	</xsl:text>">
+<!ENTITY space "&#x20;">
+<!ENTITY cr "&#xa;">
+<!ENTITY tab "&#x9;">
 ]>
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -252,9 +248,7 @@
 		</xsl:for-each>
 		<xsl:text>&#xA;</xsl:text>
 	</xsl:template>
-	<xsl:template match="key">'
-		<xsl:value-of select="." />'
-	</xsl:template>
+	<xsl:template match="key">'<xsl:value-of select="." />'</xsl:template>
 	<xsl:template match="Exult">
 		<xsl:text>Exult</xsl:text>
 	</xsl:template>
@@ -313,18 +307,18 @@
 		<xsl:text>&lt;</xsl:text>
 		<xsl:value-of
 			select="@name" />
-		<xsl:text>&gt;</xsl:text>&cr;
+		<xsl:text>&gt;&cr;</xsl:text>
 		<xsl:choose>
 			<xsl:when test="count(child::configtag)>0">
 				<xsl:apply-templates select="configtag">
 					<xsl:with-param name="indent">
-						<xsl:value-of select="$indent" />&space;&space;
+						<xsl:value-of select="$indent" /><xsl:text>&space;&space;</xsl:text>
 					</xsl:with-param>
 				</xsl:apply-templates>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$indent" />
-				<xsl:value-of select="normalize-space(text())" />&cr;
+				<xsl:value-of select="normalize-space(text())" /><xsl:text>&cr;</xsl:text>
 				<xsl:apply-templates select="comment" />
 			</xsl:otherwise>
 		</xsl:choose>
@@ -333,11 +327,11 @@
 			<xsl:value-of select="$indent" />
 			<xsl:text>&lt;/</xsl:text>
 			<xsl:value-of select="@name" />
-			<xsl:text>&gt;</xsl:text>&cr;
+			<xsl:text>&gt;&cr;</xsl:text>
 		</xsl:if>
 	</xsl:template>
-	<xsl:template match="comment"> &tab;&tab;&tab;&tab;
-		<xsl:apply-templates /> &cr;
+	<xsl:template match="comment"><xsl:text>&tab;&tab;&tab;&tab;</xsl:text>
+		<xsl:apply-templates /><xsl:text>&cr;</xsl:text>
 	</xsl:template>
 	<!-- Clone template. Allows one to use any XHTML in the source file -->
 	<!--
