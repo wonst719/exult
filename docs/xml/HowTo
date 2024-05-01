@@ -4,9 +4,10 @@ Quick and dirty guide to generating our documentation
 1. Preparations
 ---------------
 
-To transform the Readme/FAQ you need xsltproc. This is usually either bundled
-with libxslt, or a standalone package dependent on it. Here is how you can
-install it on a few common platforms (probably needing to add `sudo`):
+To transform the Readme/FAQ/Exult Studio documentation you need xsltproc.
+This is usually either bundled with libxslt, or a standalone package
+dependent on it. Here is how you can install it on a few common platforms
+(probably needing to add `sudo`):
 
 - MSYS2 on Windows:
     pacman -S --noconfirm libxslt
@@ -22,9 +23,9 @@ install it on a few common platforms (probably needing to add `sudo`):
     dnf install libxslt
 - FreeBSD:
     pkg install -y libxslt
-- Homebrew on Mac OS X:
+- Homebrew on macOS:
     brew install libxslt
-- MacPorts on Mac OS X:
+- MacPorts on macOS:
     port install libxslt
 
 2. Generating the docs
@@ -35,15 +36,17 @@ install it on a few common platforms (probably needing to add `sudo`):
 3. What to do with the files
 ----------------------------
 
-By running make you get readme.txt/html/dat and faq.txt/html/dat.
+By running make you get README, docs.txt, readme.txt/html/dat, FAQ,
+faq.txt/html/dat and exult_studio.txt/html/dat.
 
 - Replace Readme and FAQ in the root directory of the exult Git with the text
-  files, replace ReadMe.html, faq.html and exult_studio.html in /docs with the
-  newly generated files.
+  files, replace ReadMe.html, faq.html, exult_studio.html and exult_studio.txt
+  in /docs with the newly generated files.
 
 - Copy the text files docs.txt, faq.txt and exult_studio.txt to the root of the
-  web module and the *.dat files to /content dir of the web module
+  web module and the *.dat files to /content dir of the web module.
 
-- To properly use the php files (readme.dat, faq.dat) you have to to strip the
-  <test xmlns=".*"> ... </test> stuff surrounding everything else.
+- To properly use the php files (readme.dat, faq.dat, exult_studio.dat) you
+  have to to strip the <test xmlns=".*"> ... </test> stuff surrounding
+  everything else.
   The Makefile uses sed to do that automatically.
