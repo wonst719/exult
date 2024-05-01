@@ -242,7 +242,7 @@ void Background_noise::handle_event(unsigned long curtime, uintptr udata) {
 	Main_actor* ava = gwin->get_main_actor();
 	// Testing. When outside play birds during daytime or crickets at night
 	if (ava && !gwin->is_main_actor_inside() && currentstate != Dungeon) {
-		int                        sound;    // SFX #.
+        int                        sound = 0;    // SFX #.
 		static const unsigned char bgnight[] = {61, 61, 255};
 		static const unsigned char bgday[]   = {82, 85, 85};
 		if (repeats > 0) {    // Repeating?
