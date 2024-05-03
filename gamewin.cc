@@ -190,7 +190,7 @@ void Background_noise::handle_event(unsigned long curtime, uintptr udata) {
 		if ((curr_track == -1 || laststate != currentstate)
 			&& Audio::get_ptr()->is_music_enabled()) {
 			// Conditions: not playing music, playing a background music
-			if (curr_track == -1 || gwin->is_bg_track(curr_track)
+			if (curr_track == -1 || gwin->is_background_track(curr_track)
 				|| (((currentstate == Dungeon) || currentstate == DangerNear)
 					&& !is_combat_music(curr_track))) {
 				// Not already playing music
@@ -537,7 +537,7 @@ void Game_window::abort(const char* msg, ...) {
 	throw quit_exception(-1);
 }
 
-bool Game_window::is_bg_track(
+bool Game_window::is_background_track(
 		int num) const {    // ripped out of Background_noise
 	// Have to do it this way because of SI.
 	return num == Audio::game_music(4) || num == Audio::game_music(5)
@@ -1457,7 +1457,7 @@ void Game_window::read_gwin() {
 		return;
 	}
 	MyMidiPlayer* midi = Audio::get_ptr()->get_midi();
-	if (!is_bg_track(track_num)
+	if (!is_background_track(track_num)
 		|| (midi && (midi->get_ogg_enabled() || midi->is_mt32()))) {
 		Audio::get_ptr()->start_music(track_num, repeat & 0x1);
 		if (midi) midi->set_egg_count(static_cast<uint16>(repeat >> 16));

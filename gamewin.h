@@ -444,7 +444,7 @@ public:
 		return clock;
 	}
 
-	bool      is_bg_track(int num) const;    // ripped out of Background_noise
+	bool      is_background_track(int num) const;    // ripped out of Background_noise
 	Game_map* get_map(int num);              // Read in additional map.
 	void      set_map(int num);              // Make map #num the current map.
 	/*

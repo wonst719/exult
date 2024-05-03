@@ -624,7 +624,7 @@ void AudioOptions_gump::save_settings() {
 	// restart music track if one was playing and isn't anymore
 	if (midi && Audio::get_ptr()->is_music_enabled()
 		&& midi->get_current_track() != track_playing
-		&& (!gwin->is_bg_track(track_playing) || midi->get_ogg_enabled()
+		&& (!gwin->is_background_track(track_playing) || midi->get_ogg_enabled()
 			|| midi->is_mt32())) {
 		if (gwin->is_in_exult_menu()) {
 			Audio::get_ptr()->start_music(
