@@ -36,10 +36,10 @@
 	</xsl:template>
 	<xsl:template name="NAVBAR">
 		<tr>
-			<td align="center">
-				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<td class="centered">
+				<table class="borderless full-width">
 					<tr>
-						<td align="center">
+						<td class="centered">
 							<img src="images/exult_logo.gif" width="181" height="127" alt="Exult Logo" />
 						</td>
 					</tr>
@@ -66,19 +66,19 @@
 		</tr>
 		<tr>
 			<td>
-				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<table class="borderless full-width">
 					<tr>
-						<td align="center">
+						<td class="centered">
 							<xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text>
 						</td>
 					</tr>
 					<tr>
-						<td align="center">
+						<td class="centered">
 							<xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text>
 						</td>
 					</tr>
 					<tr>
-						<td align="center">
+						<td class="centered">
 							<address>
 								<font size="-1">Problems with Exult or this webpage?
 									<a href="http://exult.info/forum/post.php?f=1">Contact us.</a>
@@ -90,7 +90,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td align="center">
+			<td class="centered">
 				<address>
 					<font size="-1">Last modified:
 						<xsl:value-of select="@changed" />
@@ -99,7 +99,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td align="center">
+			<td class="centered">
 				<div align="center">
 					<xsl:comment>#exec cgi="cgi-bin/vipcounter_xml.pl"</xsl:comment>
 				</div>
@@ -117,13 +117,13 @@
 				</title>
 				<style>
 					body {
-					font-family: helvetica, sans-serif;
-					font-size: medium;
-					text-align: justify;
-					line-height: 1.4em;
-					background-color: #cccccc;
-					color: #333366;
-					background-image: url("images/back.gif");
+						font-family: helvetica, sans-serif;
+						font-size: medium;
+						text-align: justify;
+						line-height: 1.4em;
+						background-color: #cccccc;
+						color: #333366;
+						background-image: url("images/back.gif");
 					}
 					:link { color: #666699; }
 					:visited { color: #669966; }
@@ -131,10 +131,40 @@
 					div.centered { display: block; }
 					span.highlight { color: maroon; }
 					tr.highlight { color: #62186f; }
+					table.borderless {
+						border-spacing: 0;
+						border-width: 0;
+					}
+					table.borderless th, table.borderless td { padding: 0; }
+					table.key_table {
+						border-spacing: 2px;
+						border-width: 0;
+					}
+					table.key_table th { padding: 0; }
+					table.key_table td {
+						padding: 0;
+						vertical-align: top;
+						white-space: nowrap;
+					}
+					table.site-width { width: 75%; }
+					table.wide-table { width: 80%; }
+					table.narrow-table { width: 20%; }
+					td.blank-column { width: 0.75em; }
+					*.full-width { width: 100%; }
+					th.left-aligned, td.left-aligned { text-align: left; }
+					th.left-aligned > *, td.left-aligned > * {
+						margin-left: 0;
+						margin-right: auto;
+					}
+					th.centered, td.centered { text-align: center; }
+					th.centered > *, td.centered > * {
+						margin-left: auto;
+						margin-right: auto;
+					}
 				</style>
 			</head>
 			<body>
-				<table border="0" cellpadding="0" cellspacing="0" width="90%">
+				<table class="borderless site-width">
 					<xsl:call-template name="NAVBAR" />
 					<tr>
 						<td>
@@ -173,13 +203,13 @@
 				</title>
 				<style>
 					body {
-					font-family: helvetica, sans-serif;
-					font-size: medium;
-					text-align: justify;
-					line-height: 1.4em;
-					background-color: #cccccc;
-					color: #333366;
-					background-image: url("images/back.gif");
+						font-family: helvetica, sans-serif;
+						font-size: medium;
+						text-align: justify;
+						line-height: 1.4em;
+						background-color: #cccccc;
+						color: #333366;
+						background-image: url("images/back.gif");
 					}
 					:link { color: #666699; }
 					:visited { color: #669966; }
@@ -187,11 +217,41 @@
 					div.centered { display: block; }
 					span.highlight { color: maroon; }
 					tr.highlight { color: #62186f; }
+					table.borderless {
+						border-spacing: 0;
+						border-width: 0;
+					}
+					table.borderless th, table.borderless td { padding: 0; }
+					table.key_table {
+						border-spacing: 2px;
+						border-width: 0;
+					}
+					table.key_table th { padding: 0; }
+					table.key_table td {
+						padding: 0;
+						vertical-align: top;
+						white-space: nowrap;
+					}
+					table.site-width { width: 75%; }
+					table.wide-table { width: 80%; }
+					table.narrow-table { width: 20%; }
+					td.blank-column { width: 0.75em; }
+					*.full-width { width: 100%; }
+					th.left-aligned, td.left-aligned { text-align: left; }
+					th.left-aligned > *, td.left-aligned > * {
+						margin-left: 0;
+						margin-right: auto;
+					}
+					th.centered, td.centered { text-align: center; }
+					th.centered > *, td.centered > * {
+						margin-left: auto;
+						margin-right: auto;
+					}
 				</style>
 			</head>
 			<body>
 				<div align="center">
-					<table border="0" cellpadding="0" cellspacing="0" width="90%">
+					<table class="borderless site-width">
 						<xsl:call-template name="NAVBAR" />
 						<tr>
 							<td>
@@ -231,13 +291,13 @@
 				</title>
 				<style>
 					body {
-					font-family: helvetica, sans-serif;
-					font-size: medium;
-					text-align: justify;
-					line-height: 1.4em;
-					background-color: #cccccc;
-					color: #333366;
-					background-image: url("images/back.gif");
+						font-family: helvetica, sans-serif;
+						font-size: medium;
+						text-align: justify;
+						line-height: 1.4em;
+						background-color: #cccccc;
+						color: #333366;
+						background-image: url("images/back.gif");
 					}
 					:link { color: #666699; }
 					:visited { color: #669966; }
@@ -245,11 +305,41 @@
 					div.centered { display: block; }
 					span.highlight { color: maroon; }
 					tr.highlight { color: #62186f; }
+					table.borderless {
+						border-spacing: 0;
+						border-width: 0;
+					}
+					table.borderless th, table.borderless td { padding: 0; }
+					table.key_table {
+						border-spacing: 2px;
+						border-width: 0;
+					}
+					table.key_table th { padding: 0; }
+					table.key_table td {
+						padding: 0;
+						vertical-align: top;
+						white-space: nowrap;
+					}
+					table.site-width { width: 75%; }
+					table.wide-table { width: 80%; }
+					table.narrow-table { width: 20%; }
+					td.blank-column { width: 0.75em; }
+					*.full-width { width: 100%; }
+					th.left-aligned, td.left-aligned { text-align: left; }
+					th.left-aligned > *, td.left-aligned > * {
+						margin-left: 0;
+						margin-right: auto;
+					}
+					th.centered, td.centered { text-align: center; }
+					th.centered > *, td.centered > * {
+						margin-left: auto;
+						margin-right: auto;
+					}
 				</style>
 			</head>
 			<body>
 				<div align="center">
-					<table border="0" cellpadding="0" cellspacing="0" width="90%">
+					<table class="borderless site-width">
 						<xsl:call-template name="NAVBAR" />
 						<tr>
 							<td>
@@ -280,9 +370,9 @@
 	</xsl:template>
 	<!-- Group Template -->
 	<xsl:template match="section">
-		<hr width="100%" />
-		<table width="100%">
-			<tr><th align="left">
+		<hr class="full-width" />
+		<table class="full-width">
+			<tr><th class="left-aligned">
 					<a>
 						<xsl:attribute name="name"><xsl:value-of select="@title" /></xsl:attribute>
 						<xsl:number format="1. " />
@@ -455,9 +545,9 @@
 	</xsl:template>
 	<!-- Key Command Templates -->
 	<xsl:template match="keytable">
-		<table border="0" cellpadding="0" cellspacing="2" width="80%">
+		<table class="key_table wide-table">
 			<tr>
-				<th colspan="3" align="left">
+				<th colspan="3" class="left-aligned">
 					<xsl:value-of select="@title" />
 				</th>
 			</tr>
@@ -466,12 +556,10 @@
 	</xsl:template>
 	<xsl:template match="keydesc">
 		<tr>
-			<td nowrap="nowrap" valign="top">
+			<td>
 				<span class="highlight"><xsl:value-of select="@name" /></span>
 			</td>
-			<td width="10">
-				<xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text>
-			</td>
+			<td class="blank-column"></td>
 			<td>
 				<xsl:value-of select="." />
 			</td>
@@ -479,7 +567,7 @@
 	</xsl:template>
 	<!-- Config Table Templates -->
 	<xsl:template match="configdesc">
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table class="borderless">
 			<xsl:apply-templates select="configtag" />
 		</table>
 	</xsl:template>

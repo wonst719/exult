@@ -7,13 +7,13 @@
 				</title>
 <style>
 					body {
-					font-family: helvetica, sans-serif;
-					font-size: medium;
-					text-align: justify;
-					line-height: 1.4em;
-					background-color: #cccccc;
-					color: #333366;
-					background-image: url("images/back.gif");
+						font-family: helvetica, sans-serif;
+						font-size: medium;
+						text-align: justify;
+						line-height: 1.4em;
+						background-color: #cccccc;
+						color: #333366;
+						background-image: url("images/back.gif");
 					}
 					:link { color: #666699; }
 					:visited { color: #669966; }
@@ -21,11 +21,41 @@
 					div.centered { display: block; }
 					span.highlight { color: maroon; }
 					tr.highlight { color: #62186f; }
+					table.borderless {
+						border-spacing: 0;
+						border-width: 0;
+					}
+					table.borderless th, table.borderless td { padding: 0; }
+					table.key_table {
+						border-spacing: 2px;
+						border-width: 0;
+					}
+					table.key_table th { padding: 0; }
+					table.key_table td {
+						padding: 0;
+						vertical-align: top;
+						white-space: nowrap;
+					}
+					table.site-width { width: 75%; }
+					table.wide-table { width: 80%; }
+					table.narrow-table { width: 20%; }
+					td.blank-column { width: 0.75em; }
+					*.full-width { width: 100%; }
+					th.left-aligned, td.left-aligned { text-align: left; }
+					th.left-aligned > *, td.left-aligned > * {
+						margin-left: 0;
+						margin-right: auto;
+					}
+					th.centered, td.centered { text-align: center; }
+					th.centered > *, td.centered > * {
+						margin-left: auto;
+						margin-right: auto;
+					}
 				</style>
 </head>
-<body><table border="0" cellpadding="0" cellspacing="0" width="90%">
-<tr><td align="center"><table border="0" cellpadding="0" cellspacing="0" width="100%">
-<tr><td align="center"><img src="images/exult_logo.gif" width="181" height="127" alt="Exult Logo"></td></tr>
+<body><table class="borderless site-width">
+<tr><td class="centered"><table class="borderless full-width">
+<tr><td class="centered"><img src="images/exult_logo.gif" width="181" height="127" alt="Exult Logo"></td></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td>&nbsp;</td></tr>
 </table></td></tr>
@@ -54,9 +84,9 @@
 			</a><br><a href="#contact">6.2. How do I contact the author of this FAQ?</a><br></p>
 <p><a href="#Important%20Links">7. Important Links</a><br><a href="#main_links">7.1. Important Links</a><br></p>
 <p><a href="#Changes%20to%20the%20FAQ">8. Changes to the FAQ</a><br><a href="#25042024">8.1. - 25 April 2024</a><br><a href="#23042024">8.2. - 23 April 2024</a><br><a href="#24012022">8.3. - 24 January 2022</a><br><a href="#03102021">8.4. - 03 October 2021</a><br><a href="#20022021">8.5. - 20 February 2021</a><br><a href="#older_changes">8.6. older changes</a><br></p>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Introduction">1. Introduction</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Introduction">1. Introduction</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="exult_version">1.1. Exult Version</a></strong></td></tr>
 <tr><td>
@@ -343,9 +373,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Exult%20and%20Ultima%20VII">2. Exult and Ultima VII</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Exult%20and%20Ultima%20VII">2. Exult and Ultima VII</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="u7_needed">2.1. Do I need Ultima VII?</a></strong></td></tr>
 <tr><td>
@@ -457,9 +487,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Miscellaneous">3. Miscellaneous</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Miscellaneous">3. Miscellaneous</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="walkthroughs">3.1. Where do I find a walkthrough?</a></strong></td></tr>
 <tr><td>
@@ -794,9 +824,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Bugs,%20known%20issues%20and%20not%20yet%20implemented%20features">4. Bugs, known issues and not yet implemented features</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Bugs,%20known%20issues%20and%20not%20yet%20implemented%20features">4. Bugs, known issues and not yet implemented features</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="known_bugs">4.1. Bugs</a></strong></td></tr>
 <tr><td>
@@ -919,9 +949,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Gameplay%20FAQ">5. Gameplay FAQ</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Gameplay%20FAQ">5. Gameplay FAQ</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="why_gameplayfaq">5.1. Why is there a gameplay FAQ?</a></strong></td></tr>
 <tr><td>
@@ -1265,9 +1295,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Questions%20and%20Answers">6. Questions and Answers</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Questions%20and%20Answers">6. Questions and Answers</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="howto_get_answers">6.1. 
 				How can I get answers concerning Ultima VII/<em>Exult</em>?
@@ -1300,9 +1330,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Important%20Links">7. Important Links</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Important%20Links">7. Important Links</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="main_links">7.1. Important Links</a></strong></td></tr>
 <tr><td>
@@ -1319,9 +1349,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Changes%20to%20the%20FAQ">8. Changes to the FAQ</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Changes%20to%20the%20FAQ">8. Changes to the FAQ</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="25042024">8.1. - 25 April 2024</a></strong></td></tr>
 <tr><td>
@@ -1402,14 +1432,14 @@
 <tr><td>
 <br><hr>
 </td></tr>
-<tr><td><table border="0" cellpadding="0" cellspacing="0" width="100%">
-<tr><td align="center">&nbsp;</td></tr>
-<tr><td align="center">&nbsp;</td></tr>
-<tr><td align="center"><address><font size="-1">Problems with Exult or this webpage?
+<tr><td><table class="borderless full-width">
+<tr><td class="centered">&nbsp;</td></tr>
+<tr><td class="centered">&nbsp;</td></tr>
+<tr><td class="centered"><address><font size="-1">Problems with Exult or this webpage?
 									<a href="http://exult.info/forum/post.php?f=1">Contact us.</a></font></address></td></tr>
 </table></td></tr>
-<tr><td align="center"><address><font size="-1">Last modified:
+<tr><td class="centered"><address><font size="-1">Last modified:
 						25 April 2024 (GMT)</font></address></td></tr>
-<tr><td align="center"><div align="center"><!--#exec cgi="cgi-bin/vipcounter_xml.pl"--></div></td></tr>
+<tr><td class="centered"><div align="center"><!--#exec cgi="cgi-bin/vipcounter_xml.pl"--></div></td></tr>
 </table></body>
 </html>

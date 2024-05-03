@@ -7,13 +7,13 @@
 				</title>
 <style>
 					body {
-					font-family: helvetica, sans-serif;
-					font-size: medium;
-					text-align: justify;
-					line-height: 1.4em;
-					background-color: #cccccc;
-					color: #333366;
-					background-image: url("images/back.gif");
+						font-family: helvetica, sans-serif;
+						font-size: medium;
+						text-align: justify;
+						line-height: 1.4em;
+						background-color: #cccccc;
+						color: #333366;
+						background-image: url("images/back.gif");
 					}
 					:link { color: #666699; }
 					:visited { color: #669966; }
@@ -21,11 +21,41 @@
 					div.centered { display: block; }
 					span.highlight { color: maroon; }
 					tr.highlight { color: #62186f; }
+					table.borderless {
+						border-spacing: 0;
+						border-width: 0;
+					}
+					table.borderless th, table.borderless td { padding: 0; }
+					table.key_table {
+						border-spacing: 2px;
+						border-width: 0;
+					}
+					table.key_table th { padding: 0; }
+					table.key_table td {
+						padding: 0;
+						vertical-align: top;
+						white-space: nowrap;
+					}
+					table.site-width { width: 75%; }
+					table.wide-table { width: 80%; }
+					table.narrow-table { width: 20%; }
+					td.blank-column { width: 0.75em; }
+					*.full-width { width: 100%; }
+					th.left-aligned, td.left-aligned { text-align: left; }
+					th.left-aligned > *, td.left-aligned > * {
+						margin-left: 0;
+						margin-right: auto;
+					}
+					th.centered, td.centered { text-align: center; }
+					th.centered > *, td.centered > * {
+						margin-left: auto;
+						margin-right: auto;
+					}
 				</style>
 </head>
-<body><div align="center"><table border="0" cellpadding="0" cellspacing="0" width="90%">
-<tr><td align="center"><table border="0" cellpadding="0" cellspacing="0" width="100%">
-<tr><td align="center"><img src="images/exult_logo.gif" width="181" height="127" alt="Exult Logo"></td></tr>
+<body><div align="center"><table class="borderless site-width">
+<tr><td class="centered"><table class="borderless full-width">
+<tr><td class="centered"><img src="images/exult_logo.gif" width="181" height="127" alt="Exult Logo"></td></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td>&nbsp;</td></tr>
 </table></td></tr>
@@ -49,9 +79,9 @@
 				drag objects to where you want.</a><br><a href="#ifix_iregs">9.8. ifix and ireg reference chart</a><br><a href="#what_next">9.9. What's next?</a><br><a href="#linux_bugs">9.10. Known Bugs with the Linux port</a><br></p>
 <p><a href="#Credits">10. Credits</a><br><a href="#thanks">10.1. Thanks</a><br></p>
 <p><a href="#Changes%20to%20the%20Documentation">11. Changes to the Documentation</a><br><a href="#20022021">11.1. - 20 February 2021</a><br><a href="#13032016">11.2. - 13 March 2016</a><br><a href="#21112013">11.3. - 21 November 2013</a><br><a href="#19022011">11.4. - 19 February 2011</a><br><a href="#23012011">11.5. - 23 January 2011</a><br><a href="#18122010">11.6. - 18 December 2010</a><br><a href="#11032010">11.7. - 11 March 2010</a><br><a href="#01032005">11.8. - 01 March 2005</a><br><a href="#23052004">11.9. - 23 May 2004</a><br><a href="#06022004">11.10. - 06 February 2004</a><br></p>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Introduction">1. Introduction</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Introduction">1. Introduction</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="whatis_studio">1.1. What is <em>Exult Studio</em>?</a></strong></td></tr>
 <tr><td>
@@ -156,9 +186,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Configurations">2. Configurations</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Configurations">2. Configurations</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="installation">2.1. Installation</a></strong></td></tr>
 <tr><td>
@@ -281,7 +311,7 @@
 						a 'patch' folder that you specify in your 'exult.cfg' file. Here's
 						an example for editing BG:</li>
 				</ul>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								game&gt;
 							</td></tr>
@@ -347,7 +377,7 @@
 					You can change the settings of <em>Exult Studio</em> either with the preferences dialog or
 					via exult.cfg. Those settings are:
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -461,9 +491,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Exult%20Studio%20basics">3. Exult Studio basics</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Exult%20Studio%20basics">3. Exult Studio basics</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="overview">3.1. Description</a></strong></td></tr>
 <tr><td>
@@ -663,9 +693,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Exult%20Studio's%20menus">4. Exult Studio's menus</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Exult%20Studio's%20menus">4. Exult Studio's menus</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="overview">4.1. An overview</a></strong></td></tr>
 <tr><td>
@@ -900,9 +930,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Basic%20editors">5. Basic editors</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Basic%20editors">5. Basic editors</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="shape_edit">5.1. The shape editor</a></strong></td></tr>
 <tr><td>
@@ -1013,9 +1043,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Egg%20editing">6. Egg editing</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Egg%20editing">6. Egg editing</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="eggs_explained">6.1. Explaining eggs</a></strong></td></tr>
 <tr><td>
@@ -1379,9 +1409,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="NPC%20editing">7. NPC editing</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="NPC%20editing">7. NPC editing</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="npc_edit">7.1. Editing an existing NPC</a></strong></td></tr>
 <tr><td>
@@ -1576,9 +1606,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Basic%20map%20editing">8. Basic map editing</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Basic%20map%20editing">8. Basic map editing</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="learn_edit">8.1. Learning the basics of map editing</a></strong></td></tr>
 <tr><td>
@@ -1745,9 +1775,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Miscellaneous">9. Miscellaneous</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Miscellaneous">9. Miscellaneous</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="barge_edit">9.1. Creating a boat, flying carpet, or horse drawn carriage</a></strong></td></tr>
 <tr><td>
@@ -2005,9 +2035,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Credits">10. Credits</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Credits">10. Credits</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="thanks">10.1. Thanks</a></strong></td></tr>
 <tr><td>
@@ -2017,9 +2047,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Changes%20to%20the%20Documentation">11. Changes to the Documentation</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Changes%20to%20the%20Documentation">11. Changes to the Documentation</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="20022021">11.1. - 20 February 2021</a></strong></td></tr>
 <tr><td>
@@ -2145,14 +2175,14 @@
 <tr><td>
 <br><hr>
 </td></tr>
-<tr><td><table border="0" cellpadding="0" cellspacing="0" width="100%">
-<tr><td align="center">&nbsp;</td></tr>
-<tr><td align="center">&nbsp;</td></tr>
-<tr><td align="center"><address><font size="-1">Problems with Exult or this webpage?
+<tr><td><table class="borderless full-width">
+<tr><td class="centered">&nbsp;</td></tr>
+<tr><td class="centered">&nbsp;</td></tr>
+<tr><td class="centered"><address><font size="-1">Problems with Exult or this webpage?
 									<a href="http://exult.info/forum/post.php?f=1">Contact us.</a></font></address></td></tr>
 </table></td></tr>
-<tr><td align="center"><address><font size="-1">Last modified:
+<tr><td class="centered"><address><font size="-1">Last modified:
 						20 February 2021 (GMT)</font></address></td></tr>
-<tr><td align="center"><div align="center"><!--#exec cgi="cgi-bin/vipcounter_xml.pl"--></div></td></tr>
+<tr><td class="centered"><div align="center"><!--#exec cgi="cgi-bin/vipcounter_xml.pl"--></div></td></tr>
 </table></div></body>
 </html>

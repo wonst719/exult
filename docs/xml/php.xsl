@@ -93,9 +93,9 @@
 	</xsl:template>
 	<!-- Group Template -->
 	<xsl:template match="section">
-		<hr width="100%" />
-		<table width="100%">
-			<tr><th align="left">
+		<hr class="full-width" />
+		<table class="full-width">
+			<tr><th class="left-aligned">
 					<a>
 						<xsl:attribute name="name"><xsl:value-of select="@title" /></xsl:attribute>
 						<xsl:number format="1. " />
@@ -280,9 +280,9 @@
 	</xsl:template>
 	<!-- Key Command Templates -->
 	<xsl:template match="keytable">
-		<table border="0" cellpadding="0" cellspacing="2" width="80%">
+		<table class="key_table wide-table">
 			<tr>
-				<th colspan="3" align="left">
+				<th colspan="3" class="left-aligned">
 					<xsl:value-of select="@title" />
 				</th>
 			</tr>
@@ -291,12 +291,10 @@
 	</xsl:template>
 	<xsl:template match="keydesc">
 		<tr>
-			<td nowrap="nowrap" valign="top">
+			<td>
 				<span class="highlight"><xsl:value-of select="@name" /></span>
 			</td>
-			<td width="10">
-				<xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text>
-			</td>
+			<td></td>
 			<td>
 				<xsl:value-of select="." />
 			</td>
@@ -304,7 +302,7 @@
 	</xsl:template>
 	<!-- Config Table Templates -->
 	<xsl:template match="configdesc">
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table class="borderless">
 			<xsl:apply-templates select="configtag" />
 		</table>
 	</xsl:template>

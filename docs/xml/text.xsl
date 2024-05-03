@@ -267,7 +267,7 @@
 	<xsl:template match="keytable">
 		<table border="0" cellpadding="0" cellspacing="0" width="0">
 			<tr>
-				<th colspan="3" align="left">
+				<th colspan="3" class="left-aligned">
 					<xsl:text>&#xA;</xsl:text>
 					<xsl:value-of select="@title" />
 					<xsl:text>&#xA;</xsl:text>
@@ -278,7 +278,7 @@
 	</xsl:template>
 	<xsl:template match="keydesc">
 		<tr>
-			<td nowrap="nowrap" valign="top">
+			<td>
 				<span class="highlight">
 					<xsl:value-of select="@name" />
 				</span>

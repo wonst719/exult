@@ -7,13 +7,13 @@
 				</title>
 <style>
 					body {
-					font-family: helvetica, sans-serif;
-					font-size: medium;
-					text-align: justify;
-					line-height: 1.4em;
-					background-color: #cccccc;
-					color: #333366;
-					background-image: url("images/back.gif");
+						font-family: helvetica, sans-serif;
+						font-size: medium;
+						text-align: justify;
+						line-height: 1.4em;
+						background-color: #cccccc;
+						color: #333366;
+						background-image: url("images/back.gif");
 					}
 					:link { color: #666699; }
 					:visited { color: #669966; }
@@ -21,11 +21,41 @@
 					div.centered { display: block; }
 					span.highlight { color: maroon; }
 					tr.highlight { color: #62186f; }
+					table.borderless {
+						border-spacing: 0;
+						border-width: 0;
+					}
+					table.borderless th, table.borderless td { padding: 0; }
+					table.key_table {
+						border-spacing: 2px;
+						border-width: 0;
+					}
+					table.key_table th { padding: 0; }
+					table.key_table td {
+						padding: 0;
+						vertical-align: top;
+						white-space: nowrap;
+					}
+					table.site-width { width: 75%; }
+					table.wide-table { width: 80%; }
+					table.narrow-table { width: 20%; }
+					td.blank-column { width: 0.75em; }
+					*.full-width { width: 100%; }
+					th.left-aligned, td.left-aligned { text-align: left; }
+					th.left-aligned > *, td.left-aligned > * {
+						margin-left: 0;
+						margin-right: auto;
+					}
+					th.centered, td.centered { text-align: center; }
+					th.centered > *, td.centered > * {
+						margin-left: auto;
+						margin-right: auto;
+					}
 				</style>
 </head>
-<body><div align="center"><table border="0" cellpadding="0" cellspacing="0" width="90%">
-<tr><td align="center"><table border="0" cellpadding="0" cellspacing="0" width="100%">
-<tr><td align="center"><img src="images/exult_logo.gif" width="181" height="127" alt="Exult Logo"></td></tr>
+<body><div align="center"><table class="borderless site-width">
+<tr><td class="centered"><table class="borderless full-width">
+<tr><td class="centered"><img src="images/exult_logo.gif" width="181" height="127" alt="Exult Logo"></td></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td>&nbsp;</td></tr>
 </table></td></tr>
@@ -50,9 +80,9 @@
 <p><a href="#Installing%20the%20original%20Ultima%20VII%20games%20for%20use%20with%20Exult">11. Installing the original Ultima VII games for use with Exult</a><br><a href="#gog_windows">11.1. Using GOG.com's installer for Windows</a><br><a href="#gog_mac">11.2. Using GOG.com's installer for macOS</a><br><a href="#cdrom_install">11.3. Installing the CD-ROM versions of Ultima VII</a><br><a href="#dosbox_floppy">11.4. Installing the floppy disks of BG/SI using DOSBox</a><br><a href="#dosbox_addons">11.5. Installing the floppy disks of the Add-Ons FoV/SS using DOSBox</a><br><a href="#bg_manual">11.6. Manual installation of the BG floppy disks</a><br><a href="#si_manual">11.7. Manual installation of the SI floppy disks</a><br><a href="#win32_floppy">11.8. Installing the floppy disks of BG/SI on Windows</a><br><a href="#win32_addons">11.9. Installing the floppy disks of the Add-Ons FoV/SS on Windows</a><br><a href="#files_note">11.10. Exult only needs one folder</a><br></p>
 <p><a href="#Credits%20and%20Contact">12. Credits and Contact</a><br><a href="#thanks">12.1. Thanks</a><br><a href="#contact">12.2. Contacting us</a><br></p>
 <p><a href="#Changes%20to%20the%20Documentation">13. Changes to the Documentation</a><br><a href="#25042024">13.1. - 25 April 2024</a><br><a href="#23042024">13.2. - 23 April 2024</a><br><a href="#11022022">13.3. - 11 February 2022</a><br><a href="#24012022">13.4. - 24 January 2022</a><br><a href="#20022021">13.5. - 20 February 2021</a><br><a href="#older_changes">13.6. older changes</a><br></p>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Introduction">1. Introduction</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Introduction">1. Introduction</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="exult_version">1.1. Exult Version</a></strong></td></tr>
 <tr><td>
@@ -149,9 +179,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Configurations">2. Configurations</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Configurations">2. Configurations</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="installation">2.1. Installation</a></strong></td></tr>
 <tr><td>
@@ -387,9 +417,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Exult%20Setup%20and%20Game%20Menu">3. Exult Setup and Game Menu</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Exult%20Setup%20and%20Game%20Menu">3. Exult Setup and Game Menu</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="open_menu">3.1. Access to the <em>Exult</em> Setup and Game menu</a></strong></td></tr>
 <tr><td>
@@ -688,9 +718,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Audio">4. Audio</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Audio">4. Audio</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="music">4.1. Music</a></strong></td></tr>
 <tr><td>
@@ -858,7 +888,7 @@
 					in the Windows Multimedia Properties).
 					To change the MIDI Device open exult.cfg and change
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -917,7 +947,7 @@
 					By default <em>Exult</em> uses the first device with the device ID 0, in this case 'USB Midi Cable'.
 					To change the MIDI Device open exult.cfg and change
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -1037,7 +1067,7 @@
 					It isn't necessary but you can also customize the location of the music files by adding
 					&lt;music_path&gt; to exult.cfg. Example:
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -1098,7 +1128,7 @@
 					exult.cfg (see <a href="#exult_config">10.1.</a>).
 					An example of how the relevant part of exult.cfg looks when you prefer the SoundBlaster SFX:
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								blackgate&gt;
 							</td></tr>
@@ -1174,9 +1204,9 @@
 				</ul>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Video">5. Video</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Video">5. Video</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="resolution">5.1. Resolution</a></strong></td></tr>
 <tr><td>
@@ -1338,9 +1368,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Movement%20and%20Keys">6. Movement and Keys</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Movement%20and%20Keys">6. Movement and Keys</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="movement">6.1. Movement</a></strong></td></tr>
 <tr><td>
@@ -1391,326 +1421,326 @@
 					screen with most of the keys (for macOS use Alt for Cmd - however the in-game help
 					screen shows the correct key combination). '<span class="highlight">KP</span>' means keypad.
 				</p>
-				<table border="0" cellpadding="0" cellspacing="2" width="80%">
-<tr><th colspan="3" align="left">Default keyboard commands</th></tr>
+				<table class="key_table wide-table">
+<tr><th colspan="3" class="left-aligned">Default keyboard commands</th></tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">KP+/-</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">KP+/-</span></td>
+<td class="blank-column"></td>
 <td>Change brightness</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Esc</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Esc</span></td>
+<td class="blank-column"></td>
 <td>Show Game menu box and closes all open boxes</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">right</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">right</span></td>
+<td class="blank-column"></td>
 <td>run east</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">left</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">left</span></td>
+<td class="blank-column"></td>
 <td>run west</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">up</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">up</span></td>
+<td class="blank-column"></td>
 <td>run north</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">down</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">down</span></td>
+<td class="blank-column"></td>
 <td>run south</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">KP1</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">KP1</span></td>
+<td class="blank-column"></td>
 <td>run southwest</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">KP2</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">KP2</span></td>
+<td class="blank-column"></td>
 <td>run south</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">KP3</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">KP3</span></td>
+<td class="blank-column"></td>
 <td>run southeast</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">KP4</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">KP4</span></td>
+<td class="blank-column"></td>
 <td>run west</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">KP5</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">KP5</span></td>
+<td class="blank-column"></td>
 <td>recenter map</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">KP6</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">KP6</span></td>
+<td class="blank-column"></td>
 <td>run east</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">KP7</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">KP7</span></td>
+<td class="blank-column"></td>
 <td>run northwest</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">KP8</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">KP8</span></td>
+<td class="blank-column"></td>
 <td>run north</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">KP9</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">KP9</span></td>
+<td class="blank-column"></td>
 <td>run northeast</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-right</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-right</span></td>
+<td class="blank-column"></td>
 <td>walk east</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-left</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-left</span></td>
+<td class="blank-column"></td>
 <td>walk west</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-up</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-up</span></td>
+<td class="blank-column"></td>
 <td>walk north</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-down</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-down</span></td>
+<td class="blank-column"></td>
 <td>walk south</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-KP1</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-KP1</span></td>
+<td class="blank-column"></td>
 <td>walk southwest</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-KP2</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-KP2</span></td>
+<td class="blank-column"></td>
 <td>walk south</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-KP3</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-KP3</span></td>
+<td class="blank-column"></td>
 <td>walk southeast</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-KP4</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-KP4</span></td>
+<td class="blank-column"></td>
 <td>walk west</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-KP6</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-KP6</span></td>
+<td class="blank-column"></td>
 <td>walk east</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-KP7</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-KP7</span></td>
+<td class="blank-column"></td>
 <td>walk northwest</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-KP8</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-KP8</span></td>
+<td class="blank-column"></td>
 <td>walk north</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-KP9</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-KP9</span></td>
+<td class="blank-column"></td>
 <td>walk northeast</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">F4</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">F4</span></td>
+<td class="blank-column"></td>
 <td>Toggle full screen</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-Enter</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-Enter</span></td>
+<td class="blank-column"></td>
 <td>Toggle full screen</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">b</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">b</span></td>
+<td class="blank-column"></td>
 <td>Use spell book</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">c</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">c</span></td>
+<td class="blank-column"></td>
 <td>Combat mode</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Space</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Space</span></td>
+<td class="blank-column"></td>
 <td>pause combat</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">f</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">f</span></td>
+<td class="blank-column"></td>
 <td>Use food</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">g</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">g</span></td>
+<td class="blank-column"></td>
 <td>Use Abacus</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">h</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">h</span></td>
+<td class="blank-column"></td>
 <td>Show list of keyboard commands</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">i</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">i</span></td>
+<td class="blank-column"></td>
 <td>Show inventory</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">j</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">j</span></td>
+<td class="blank-column"></td>
 <td>SI: Show jawbone</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">k</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">k</span></td>
+<td class="blank-column"></td>
 <td>BG: Try all keys to unlock a lock</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">k</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">k</span></td>
+<td class="blank-column"></td>
 <td>SI: Use keyring</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-k</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-k</span></td>
+<td class="blank-column"></td>
 <td>SI: Try all keys to unlock a lock</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">l</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">l</span></td>
+<td class="blank-column"></td>
 <td>SI: Show combat stats</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">m</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">m</span></td>
+<td class="blank-column"></td>
 <td>Show map</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">n</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">n</span></td>
+<td class="blank-column"></td>
 <td>Show notebook</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">o</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">o</span></td>
+<td class="blank-column"></td>
 <td>BG: Use the Orb of the Moons</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">p</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">p</span></td>
+<td class="blank-column"></td>
 <td>Use lockpicks</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-q</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-q</span></td>
+<td class="blank-column"></td>
 <td>Exit game</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">r</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">r</span></td>
+<td class="blank-column"></td>
 <td>Brings up status bars. First three strokes change the location of the bar. The fourth disables it again.</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-r</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-r</span></td>
+<td class="blank-column"></td>
 <td>Quick restore</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-s</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-s</span></td>
+<td class="blank-column"></td>
 <td>Quick save</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">s</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">s</span></td>
+<td class="blank-column"></td>
 <td>Show save/load box</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-Alt-s</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-Alt-s</span></td>
+<td class="blank-column"></td>
 <td>Screenshot</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">t</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">t</span></td>
+<td class="blank-column"></td>
 <td>Target, instead of double clicking, shows a cursor and pauses the game until you click on something</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">v</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">v</span></td>
+<td class="blank-column"></td>
 <td>About screen</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">w</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">w</span></td>
+<td class="blank-column"></td>
 <td>Use watch, shows the time if you got a watch</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-x</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-x</span></td>
+<td class="blank-column"></td>
 <td>Exit game</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">z</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">z</span></td>
+<td class="blank-column"></td>
 <td>Show stats</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">1</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">1</span></td>
+<td class="blank-column"></td>
 <td>Show inventory for Avatar</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">2</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">2</span></td>
+<td class="blank-column"></td>
 <td>Show inventory for character 2</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">3</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">3</span></td>
+<td class="blank-column"></td>
 <td>Show inventory for character 3</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">4</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">4</span></td>
+<td class="blank-column"></td>
 <td>Show inventory for character 4</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">5</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">5</span></td>
+<td class="blank-column"></td>
 <td>Show inventory for character 5</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">6</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">6</span></td>
+<td class="blank-column"></td>
 <td>Show inventory for character 6</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">7</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">7</span></td>
+<td class="blank-column"></td>
 <td>Show inventory for character 7</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">8</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">8</span></td>
+<td class="blank-column"></td>
 <td>Show inventory for character 8</td>
 </tr>
 </table>
@@ -1728,171 +1758,171 @@
 					Press '<span class="highlight">ctrl-h</span>' during the game to see a help screen with all
 					the cheat keys. '<span class="highlight">KP</span>' means keypad.
 				</p>
-				<table border="0" cellpadding="0" cellspacing="2" width="80%">
-<tr><th colspan="3" align="left">Cheat commands</th></tr>
+				<table class="key_table wide-table">
+<tr><th colspan="3" class="left-aligned">Cheat commands</th></tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-Arrow keys</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-Arrow keys</span></td>
+<td class="blank-column"></td>
 <td>Scroll map</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">home</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">home</span></td>
+<td class="blank-column"></td>
 <td>Recenter map on the Avatar</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">KP5</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">KP5</span></td>
+<td class="blank-column"></td>
 <td>Recenter map on the Avatar</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">F2</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">F2</span></td>
+<td class="blank-column"></td>
 <td>Cheat screen similar to the originals'. Allows for some level of NPC editing and other cheat options</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">F3</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">F3</span></td>
+<td class="blank-column"></td>
 <td>Map teleport</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">F10</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">F10</span></td>
+<td class="blank-column"></td>
 <td>Show endgame</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">F11</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">F11</span></td>
+<td class="blank-column"></td>
 <td>SI: Play alternate intro</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-b</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-b</span></td>
+<td class="blank-column"></td>
 <td>Shape browser</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Insert</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Insert</span></td>
+<td class="blank-column"></td>
 <td>Create object (that is chosen in  the shape browser)</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-V</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-V</span></td>
+<td class="blank-column"></td>
 <td>Create object (alternative key combination)</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-d</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-d</span></td>
+<td class="blank-column"></td>
 <td>Delete object</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">e</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">e</span></td>
+<td class="blank-column"></td>
 <td>Toggle egg display</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-g</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-g</span></td>
+<td class="blank-column"></td>
 <td>Toggle God mode</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-g</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-g</span></td>
+<td class="blank-column"></td>
 <td>Change avatar gender</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-h</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-h</span></td>
+<td class="blank-column"></td>
 <td>Hackmover (you can move all objects around and it disables weight check</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-h</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-h</span></td>
+<td class="blank-column"></td>
 <td>list cheat keys</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-Alt-h</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-Alt-h</span></td>
+<td class="blank-column"></td>
 <td>Resurrect, heal party, cure poison and still hunger</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-i</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-i</span></td>
+<td class="blank-column"></td>
 <td>Toggle infravision</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-l</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-l</span></td>
+<td class="blank-column"></td>
 <td>Level up party</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-m</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-m</span></td>
+<td class="blank-column"></td>
 <td>Get 100 gold coins</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-Shift-m</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-Shift-m</span></td>
+<td class="blank-column"></td>
 <td>Play previous song</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-m</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-m</span></td>
+<td class="blank-column"></td>
 <td>Play next song</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-n</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-n</span></td>
+<td class="blank-column"></td>
 <td>SI: Toggle naked flag</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-p</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-p</span></td>
+<td class="blank-column"></td>
 <td>SI: Toggle Petra mode</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-s</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-s</span></td>
+<td class="blank-column"></td>
 <td>Change skin color</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-Alt-t</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-Alt-t</span></td>
+<td class="blank-column"></td>
 <td>Map teleport</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-t</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-t</span></td>
+<td class="blank-column"></td>
 <td>Advance to next time period</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-t</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-t</span></td>
+<td class="blank-column"></td>
 <td>Teleport (to current cursor position)</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-w</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-w</span></td>
+<td class="blank-column"></td>
 <td>Toggle archwizard mode (all spells etc.)</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-1</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-1</span></td>
+<td class="blank-column"></td>
 <td>Test music, SFX, speech</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-Alt-g</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-Alt-g</span></td>
+<td class="blank-column"></td>
 <td>Grab NPC for cheat screen</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-Alt-p</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-Alt-p</span></td>
+<td class="blank-column"></td>
 <td>Pick pocket cheat, when enabled double-clicking on a NPC displays the actors inventory</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-n</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-n</span></td>
+<td class="blank-column"></td>
 <td>NPC number, When enabled, clicking an a NPC will display their number instead of their name. Useful for the cheat screen.</td>
 </tr>
 </table>
@@ -1904,64 +1934,64 @@
 					With the ongoing development of <em>Exult</em> a lot of keys were added that are mainly useful
 					for map editing with <em>Exult Studio</em>. Hit '<span class="highlight">shift-h</span>' to see the map edit keys help screen.
 				</p>
-				<table border="0" cellpadding="0" cellspacing="2" width="80%">
-<tr><th colspan="3" align="left">Map edit commands</th></tr>
+				<table class="key_table wide-table">
+<tr><th colspan="3" class="left-aligned">Map edit commands</th></tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Del</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Del</span></td>
+<td class="blank-column"></td>
 <td>Delete selection</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-Arrow keys</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-Arrow keys</span></td>
+<td class="blank-column"></td>
 <td>move selection (x, y coordinates)</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-Page keys</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-Page keys</span></td>
+<td class="blank-column"></td>
 <td>move selection (z coordinates)</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-c</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-c</span></td>
+<td class="blank-column"></td>
 <td>Copy selected object</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-x</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-x</span></td>
+<td class="blank-column"></td>
 <td>Cut selected object</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-v</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-v</span></td>
+<td class="blank-column"></td>
 <td>Paste selected object</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-F3</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-F3</span></td>
+<td class="blank-column"></td>
 <td>write Minimap</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Shift-h</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Shift-h</span></td>
+<td class="blank-column"></td>
 <td>List map edit keys</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Alt-l</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Alt-l</span></td>
+<td class="blank-column"></td>
 <td>Decrement skiplift</td>
 </tr>
 <tr>
-<td nowrap valign="top"><span class="highlight">Ctrl-Alt-m</span></td>
-<td width="10">&nbsp;</td>
+<td><span class="highlight">Ctrl-Alt-m</span></td>
+<td class="blank-column"></td>
 <td>Toggle Map editor</td>
 </tr>
 </table>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="ShortcutBar,%20Notebook%20and%20Screenshots">7. ShortcutBar, Notebook and Screenshots</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="ShortcutBar,%20Notebook%20and%20Screenshots">7. ShortcutBar, Notebook and Screenshots</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="shortcutbar">7.1. ShortcutBar for single or double click actions</a></strong></td></tr>
 <tr><td>
@@ -2050,7 +2080,7 @@
 					of being set to (default).
 					Example:
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -2108,9 +2138,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Mods%20and%20Patches">8. Mods and Patches</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Mods%20and%20Patches">8. Mods and Patches</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="mods_intro">8.1. Introduction to Mods and Patches</a></strong></td></tr>
 <tr><td>
@@ -2179,7 +2209,7 @@
 					so stick to that for the location of mods and patches, and only edit the config
 					file if you need to.
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -2269,9 +2299,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="iOS%20Guide">9. iOS Guide</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="iOS%20Guide">9. iOS Guide</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="ios_port">9.1. The port to iOS</a></strong></td></tr>
 <tr><td>
@@ -2403,9 +2433,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="The%20exult.cfg%20file">10. The exult.cfg file</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="The%20exult.cfg%20file">10. The exult.cfg file</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="exult_config">10.1. Settings in exult.cfg</a></strong></td></tr>
 <tr><td>
@@ -2425,7 +2455,7 @@
 					<b><i><font size="+1">Note:</font></i></b> the settings in exult.cfg are the <strong>same</strong> on
 					<strong>all</strong> operating systems (except when explicitly stated below).
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -3993,7 +4023,7 @@
 					If you were to override these paths you would need to change the following tags (you can substitute gamename with the
 					'known games' - see <a href="#terms">1.3.</a>):
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -4173,7 +4203,7 @@
 				<p>
 					On Windows (7, 8, 10, 11), <em>Exult</em> uses the special system folder <span class="highlight"><kbd>LOCAL_APPDATA</kbd></span>:
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -4325,7 +4355,7 @@
 				<p>
 					On macOS <em>Exult</em> uses a couple of different folders to follow Apple's guidelines:
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -4454,7 +4484,7 @@
 				<p>
 					On Linux/Unix based systems <em>Exult</em> uses:
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -4586,7 +4616,7 @@
 					you had to edit the exult.cfg when you wanted to switch the games.
 					You now just have to add the tags for the two games.
 				</p>
-				<table border="0" cellpadding="0" cellspacing="0">
+				<table class="borderless">
 <tr><td style="text-indent:0pt">&lt;
 								config&gt;
 							</td></tr>
@@ -4701,9 +4731,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Installing%20the%20original%20Ultima%20VII%20games%20for%20use%20with%20Exult">11. Installing the original Ultima VII games for use with Exult</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Installing%20the%20original%20Ultima%20VII%20games%20for%20use%20with%20Exult">11. Installing the original Ultima VII games for use with Exult</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="gog_windows">11.1. Using GOG.com's installer for Windows</a></strong></td></tr>
 <tr><td>
@@ -5025,9 +5055,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Credits%20and%20Contact">12. Credits and Contact</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Credits%20and%20Contact">12. Credits and Contact</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="thanks">12.1. Thanks</a></strong></td></tr>
 <tr><td>
@@ -5054,9 +5084,9 @@
 				</p>
 			</td></tr>
 </table>
-<hr width="100%">
-<table width="100%">
-<tr><th align="left"><a name="Changes%20to%20the%20Documentation">13. Changes to the Documentation</a></th></tr>
+<hr class="full-width">
+<table class="full-width">
+<tr><th class="left-aligned"><a name="Changes%20to%20the%20Documentation">13. Changes to the Documentation</a></th></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td><strong><a name="25042024">13.1. - 25 April 2024</a></strong></td></tr>
 <tr><td>
@@ -5155,14 +5185,14 @@
 <tr><td>
 <br><hr>
 </td></tr>
-<tr><td><table border="0" cellpadding="0" cellspacing="0" width="100%">
-<tr><td align="center">&nbsp;</td></tr>
-<tr><td align="center">&nbsp;</td></tr>
-<tr><td align="center"><address><font size="-1">Problems with Exult or this webpage?
+<tr><td><table class="borderless full-width">
+<tr><td class="centered">&nbsp;</td></tr>
+<tr><td class="centered">&nbsp;</td></tr>
+<tr><td class="centered"><address><font size="-1">Problems with Exult or this webpage?
 									<a href="http://exult.info/forum/post.php?f=1">Contact us.</a></font></address></td></tr>
 </table></td></tr>
-<tr><td align="center"><address><font size="-1">Last modified:
+<tr><td class="centered"><address><font size="-1">Last modified:
 						25 April 2024 (GMT)</font></address></td></tr>
-<tr><td align="center"><div align="center"><!--#exec cgi="cgi-bin/vipcounter_xml.pl"--></div></td></tr>
+<tr><td class="centered"><div align="center"><!--#exec cgi="cgi-bin/vipcounter_xml.pl"--></div></td></tr>
 </table></div></body>
 </html>
