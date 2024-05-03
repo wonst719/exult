@@ -65,6 +65,7 @@ jobs:
     steps:
       - name: IRC success notification (ircs://irc.libera.chat:6697/#exult)
         uses: Gottox/irc-message-action@v2
+        continue-on-error: true
         if: needs.ci-omnios.result == 'success'
         with:
           server: irc.libera.chat
@@ -75,6 +76,7 @@ jobs:
           message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The OmniOS build \x033succeeded\x03."
       - name: IRC failure notification (ircs://irc.libera.chat:6697/#exult)
         uses: Gottox/irc-message-action@v2
+        continue-on-error: true
         if: needs.ci-omnios.result != 'success'
         with:
           server: irc.libera.chat
@@ -85,6 +87,7 @@ jobs:
           message: "\x0313exult\x03/\x0306${{ github.ref }}\x03 \x0314${{ github.sha }}\x03 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} The OmniOS build \x034failed\x03."
       - name: Discord success notification
         uses: BubbleProd/discord-webhook-notify@v2.0.1
+        continue-on-error: true
         if: needs.ci-omnios.result == 'success'
         with:
           severity: info
@@ -94,6 +97,7 @@ jobs:
           title: "The OmniOS build succeeded."
       - name: Discord failure notification
         uses: BubbleProd/discord-webhook-notify@v2.0.1
+        continue-on-error: true
         if: needs.ci-omnios.result != 'success'
         with:
           severity: error
