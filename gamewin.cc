@@ -251,7 +251,7 @@ void Background_noise::handle_event(unsigned long curtime, uintptr udata) {
 			if (nighttime) {
 				sound = bgnight[rand() % sizeof(bgnight)];
 				// only play daytime sfx when no music track is playing
-			} else if (!play_bg_tracks && player->get_current_track() == -1) {
+			} else if (!play_bg_tracks && (!player || player->get_current_track() == -1)) {
 				sound = bgday[rand() % sizeof(bgday)];
 			}
 			last_sound = sound;
