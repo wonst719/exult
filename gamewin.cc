@@ -1460,7 +1460,7 @@ void Game_window::read_gwin() {
 	if (!is_bg_track(track_num)
 		|| (midi && (midi->get_ogg_enabled() || midi->is_mt32()))) {
 		Audio::get_ptr()->start_music(track_num, repeat & 0x1);
-		midi->set_egg_count(static_cast<uint16>(repeat >> 16));
+		if (midi) midi->set_egg_count(static_cast<uint16>(repeat >> 16));
 	}
 	armageddon = gin.read1() == 1;
 	if (!gin.good()) {
