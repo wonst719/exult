@@ -298,3 +298,7 @@ project.xcworkspace
 *.iobj
 *.ipdb
 /Exult Source Code.url
+
+docs/xml/*.txt
+docs/xml/*.dat
+docs/xml/*.html
