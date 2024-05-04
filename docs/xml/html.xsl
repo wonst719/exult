@@ -143,12 +143,12 @@
 	td.blank-column { width: 0.75em; }
 	*.full-width { width: 100%; }
 	th.left-aligned, td.left-aligned { text-align: left; }
-	th.left-aligned > *, td.left-aligned > * {
+	th.left-aligned &gt; *, td.left-aligned &gt; * {
 		margin-left: 0;
 		margin-right: auto;
 	}
 	th.centered, td.centered { text-align: center; }
-	th.centered > *, td.centered > * {
+	th.centered &gt; *, td.centered &gt; * {
 		margin-left: auto;
 		margin-right: auto;
 	}
