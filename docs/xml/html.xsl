@@ -128,7 +128,6 @@
 					:link { color: #666699; }
 					:visited { color: #669966; }
 					:link:active :visited:active { color: #ffcc33; }
-					div.centered { display: block; }
 					span.highlight { color: maroon; }
 					tr.highlight { color: #62186f; }
 					table.borderless {
@@ -214,7 +213,6 @@
 					:link { color: #666699; }
 					:visited { color: #669966; }
 					:link:active :visited:active { color: #ffcc33; }
-					div.centered { display: block; }
 					span.highlight { color: maroon; }
 					tr.highlight { color: #62186f; }
 					table.borderless {
@@ -302,7 +300,6 @@
 					:link { color: #666699; }
 					:visited { color: #669966; }
 					:link:active :visited:active { color: #ffcc33; }
-					div.centered { display: block; }
 					span.highlight { color: maroon; }
 					tr.highlight { color: #62186f; }
 					table.borderless {
