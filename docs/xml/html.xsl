@@ -600,8 +600,7 @@
 								<xsl:apply-templates select="comment" />
 							</td>
 						</tr>
-						<tr
-							class="{$row-class}">
+						<tr class="{$row-class}">
 							<td style="text-indent:{$indent}pt">
 								<xsl:value-of select="text()" />
 							</td>
