@@ -337,10 +337,6 @@
 								<xsl:value-of select="@name" />&gt;
 								<xsl:comment></xsl:comment>
 							</td>
-							<td rowspan="3">
-								<xsl:apply-templates select="comment" />
-								<xsl:comment></xsl:comment>
-							</td>
 						</tr>
 						<tr class="{$row-class}">
 							<td style="text-indent:{$indent}pt">
@@ -379,10 +375,6 @@
 						<tr>
 							<td style="text-indent:{$indent}pt">&lt;
 								<xsl:value-of select="@name" />&gt;
-								<xsl:comment></xsl:comment>
-							</td>
-							<td rowspan="3">
-								<xsl:apply-templates select="comment" />
 								<xsl:comment></xsl:comment>
 							</td>
 						</tr>
