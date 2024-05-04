@@ -272,9 +272,9 @@
 	<xsl:template match="em">
 		<b>
 			<i>
-				<font size="+1">
+				<span style="font-size: larger">
 					<xsl:apply-templates />
-				</font>
+				</span>
 			</i>
 		</b>
 	</xsl:template>

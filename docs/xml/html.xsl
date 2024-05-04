@@ -80,9 +80,9 @@
 					<tr>
 						<td class="centered">
 							<address>
-								<font size="-1">Problems with Exult or this webpage?
+								<span style="font-size: smaller">Problems with Exult or this webpage?
 									<a href="http://exult.info/forum/post.php?f=1">Contact us.</a>
-								</font>
+								</span>
 							</address>
 						</td>
 					</tr>
@@ -92,9 +92,9 @@
 		<tr>
 			<td class="centered">
 				<address>
-					<font size="-1">Last modified:
+					<span style="font-size: smaller">Last modified:
 						<xsl:value-of select="@changed" />
-					</font>
+					</span>
 				</address>
 			</td>
 		</tr>
@@ -536,9 +536,9 @@
 	<xsl:template match="em">
 		<b>
 			<i>
-				<font size="+1">
+				<span style="font-size: larger">
 					<xsl:apply-templates />
-				</font>
+				</span>
 			</i>
 		</b>
 	</xsl:template>
