@@ -19,11 +19,12 @@ endif
 
 define build_output_files
 	xsltproc -o $(1) $(2) $(3)
+	sed -i'' 's/[[:blank:]]*$$//' $(1)
 endef
 
 define build_php_dats
 	xsltproc -o $(1) $(2) $(3)
-	sed -i'' -e '1s@<test xmlns="http://www.w3.org/1999/xhtml">@@; $$s@</test>@@' $(1)
+	sed -i'' -e '1s@<test xmlns="http://www.w3.org/1999/xhtml">@@; $$s@</test>@@ ; s/[[:blank:]]*$$//' $(1)
 endef
 
 # Rules for transforming the XML source
