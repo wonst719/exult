@@ -584,6 +584,7 @@ toolsdist: tools toolsinstall Exult\ Source\ Code.url
 	cp mapedit/tools/mockup/mappings_alternative.txt $(U7PATH)/tools
 	cp mapedit/tools/mockup/map.png $(U7PATH)/tools
 	cp mapedit/tools/smooth/README $(U7PATH)/tools/smooth.txt
+	cp mapedit/tools/smooth/smooth.conf $(U7PATH)/tools
 	cp mapedit/tools/smooth/rough.bmp $(U7PATH)/tools
 	cp mapedit/tools/smooth/smoothed.bmp $(U7PATH)/tools
 	cp usecode/ucxt/Docs/README $(U7PATH)/ucxt.txt
