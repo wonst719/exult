@@ -223,7 +223,8 @@ static void Set_autonum(char* text    // Contains number.
 
 char* Handle_string(
 		const char* from,    // Ends with a '"'.
-		size_t      length) {
+		size_t      length,
+		bool        special) {
 	char* to  = new char[length];    // (Bigger than needed.)
 	char* str = to;
 
@@ -293,6 +294,20 @@ char* Handle_string(
 			from = term;
 			break;
 		}
+		case '<':
+			if (!special) {
+				char buf[150];
+				snprintf(
+						buf, sizeof(buf),
+						"The special sequence '\\<' is only valid in '$\"'
+						strings. If you are trying to use string "
+						"interpolation, add a '$' before the initial"
+						"'\"'.");
+				Uc_location::yywarning(buf);
+				*to++ = '\\';
+			}
+			*to++ = *from;
+			break;
 		default: {
 			char buf[150];
 			snprintf(
@@ -341,6 +356,8 @@ char* Handle_string(
 %s in_loop
 %s in_conversation
 %s in_breakable
+
+string_literal		\"([^"]|\\\{(dot|ea|ee|ng|st|th)\}|\\[^\{])*\"
 
 %%
 
@@ -500,13 +517,13 @@ sonic_damage	return SONIC_DAMAGE;
 			yylval.strval = strdup(yytext);
 			return IDENTIFIER;
 		}
-\"([^"]|\\\{(dot|ea|ee|ng|st|th)\}|\\[^\{])*\"		{
+{string_literal}		{
 			// Remove ending quote.
 			const char* strval = yytext + 1;
 			yylval.strval      = Handle_string(strval, strlen(strval) + 1);
 			return STRING_LITERAL;
 		}
-\"([^"]|\\\{(dot|ea|ee|ng|st|th)\}|\\[^\{])*\"\*		{
+{string_literal}\*		{
 			// Remove ending quote and asterisk.
 			const char* strval = yytext + 1;
 			yylval.strval      = Handle_string(strval, strlen(strval) + 1);
