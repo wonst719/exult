@@ -768,7 +768,8 @@ void Audio::get_2d_position_for_tile(
 
 int Audio::play_sound_effect(
 		int num, const Game_object* obj, int volume, int repeat) {
-	const Tile_coord tile = obj->get_center_tile();
+	const Game_object* outer = obj->get_outermost();
+	const Tile_coord   tile  = outer->get_center_tile();
 	return play_sound_effect(num, tile, volume, repeat);
 }
 
@@ -784,7 +785,8 @@ int Audio::play_sound_effect(
 }
 
 int Audio::update_sound_effect(int chan, const Game_object* obj) {
-	const Tile_coord tile = obj->get_center_tile();
+	const Game_object* outer = obj->get_outermost();
+	const Tile_coord   tile  = outer->get_center_tile();
 	return update_sound_effect(chan, tile);
 }
 
