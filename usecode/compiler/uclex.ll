@@ -223,8 +223,7 @@ static void Set_autonum(char* text    // Contains number.
 
 char* Handle_string(
 		const char* from,    // Ends with a '"'.
-		size_t      length,
-		bool        special) {
+		size_t      length) {
 	char* to  = new char[length];    // (Bigger than needed.)
 	char* str = to;
 
@@ -294,20 +293,6 @@ char* Handle_string(
 			from = term;
 			break;
 		}
-		case '<':
-			if (!special) {
-				char buf[150];
-				snprintf(
-						buf, sizeof(buf),
-						"The special sequence '\\<' is only valid in '$\"'
-						strings. If you are trying to use string "
-						"interpolation, add a '$' before the initial"
-						"'\"'.");
-				Uc_location::yywarning(buf);
-				*to++ = '\\';
-			}
-			*to++ = *from;
-			break;
 		default: {
 			char buf[150];
 			snprintf(
