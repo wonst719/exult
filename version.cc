@@ -20,7 +20,18 @@
 #	include <config.h>
 #endif
 
+#include <cstring>
 #include <iostream>
+
+// Only include gitinfo.h if it exists and none of the macros have already been defined
+#if __has_include(                                                  \
+		"gitinfo.h") && !defined(GIT_REVISION) && !defined(GIT_TAG) \
+		&& !defined(GIT_REMOTE_BRANCH) && !defined(GIT_REMOTE_URL)
+#	include "gitinfo.h"
+#endif
+
+#define STRINGIFY(macro)  STRINGIFY2(macro)
+#define STRINGIFY2(macro) #macro
 
 #ifdef _WIN32
 #	ifndef WIN32_LEAN_AND_MEAN
@@ -63,6 +74,71 @@ void getVersionInfo(std::ostream& out) {
 	 */
 
 	out << "Exult version " << VERSION << std::endl;
+
+#ifdef GIT_REVISION
+	const char git_rev[] = GIT_REVISION;
+#else
+	const char git_rev[] = "";
+#endif
+#ifdef GIT_TAG
+	const char git_tag[] = GIT_TAG;
+#else
+	const char git_tag[] = "";
+#endif
+#ifdef GIT_REMOTE_BRANCH
+	const char git_branch[] = GIT_REMOTE_BRANCH;
+#else
+	const char git_branch[] = "";
+#endif
+#ifdef GIT_REMOTE_URL
+	const char git_url[] = GIT_REMOTE_URL;
+#else
+	const char git_url[] = "";
+#endif
+
+	if (git_branch[0]) {
+		out << "Git Branch: " << git_branch << std::endl;
+	}
+	if (git_rev[0]) {
+		out << "Git Revision: " << git_rev << std::endl;
+	}
+	if (git_tag[0]) {
+		out << "Git Tag: " << git_tag << std::endl;
+	}
+
+	// Default to the Exult origin repo on github
+	std::string src_url = "https://github.com/exult/exult";
+
+	// if the remote url was supplied in the build make sure it is git hub https
+	if (!std::strncmp(git_url, "https://github.com/", 19)) {
+		src_url = git_url;
+		// if it ends in '.git remove it
+#ifdef __cpp_lib_starts_ends_with    // c++20
+		if (src_url.ends_with(".git"))
+#else    // older
+		if (!src_url.compare(src_url.size() - 4, 4, ".git"))
+#endif
+		{
+			src_url.resize(src_url.size() - 4);
+		}
+		// remove ending slash if any
+		if (src_url.back() == '/') {
+			src_url.pop_back();
+		}
+
+		// As we have github remote we can create url to exact revision/tag
+		if (git_tag[0]) {
+			src_url.reserve(src_url.size() + std::size(git_tag) + 6);
+			src_url += "/tree/";
+			src_url += git_tag;
+		} else if (git_rev[0]) {
+			src_url.reserve(src_url.size() + std::size(git_rev) + 6);
+			src_url += "/tree/";
+			src_url += git_rev;
+		}
+	}
+
+	out << "Source url: " << src_url << std::endl;
 
 	/*
 	 * 2. Build Architechture
@@ -257,8 +333,9 @@ void getVersionInfo(std::ostream& out) {
 	{
 		// Get the version
 		OSVERSIONINFOEXA info;
+		ZeroMemory(&info, sizeof(info));
 		info.dwOSVersionInfoSize = sizeof(info);
-		GetVersionEx(safe_pointer_cast<LPOSVERSIONINFOA>(&info));
+		GetVersionExA(safe_pointer_cast<LPOSVERSIONINFOA>(&info));
 
 		// Platform is NT
 		if (info.dwPlatformId == VER_PLATFORM_WIN32_NT) {
@@ -345,29 +422,29 @@ void getVersionInfo(std::ostream& out) {
 					}
 				}
 			}
+			if (info.szCSDVersion[0] != 0) {
+				out << " " << info.szCSDVersion;
+			}
 
 		} else {
-			out << "Unknown NT";
-		}
+			out << "Windows ";
 
-		if (info.szCSDVersion[0] != 0) {
-			out << " " << info.szCSDVersion;
-		} else if (info.dwMajorVersion == 4 && info.dwMinorVersion == 0) {
-			out << 95;
-			if (info.szCSDVersion[1] != ' ') {
-				out << info.szCSDVersion;
+			if (info.dwMajorVersion == 4 && info.dwMinorVersion == 0) {
+				out << 95;
+				if (info.szCSDVersion[1] != ' ') {
+					out << info.szCSDVersion;
+				}
+			} else if (info.dwMajorVersion == 4 && info.dwMinorVersion == 10) {
+				out << 98;
+				if (info.szCSDVersion[1] == 'A') {
+					out << " SE";
+				} else if (info.szCSDVersion[1] != ' ') {
+					out << info.szCSDVersion;
+				}
+			} else if (info.dwMajorVersion == 4 && info.dwMinorVersion == 90) {
+				out << "Me";
 			}
-		} else if (info.dwMajorVersion == 4 && info.dwMinorVersion == 10) {
-			out << 98;
-			if (info.szCSDVersion[1] == 'A') {
-				out << " SE";
-			} else if (info.szCSDVersion[1] != ' ') {
-				out << info.szCSDVersion;
-			}
-		} else if (info.dwMajorVersion == 4 && info.dwMinorVersion == 90) {
-			out << "Me";
 		}
-
 		out << " Version " << info.dwMajorVersion << "." << info.dwMinorVersion
 			<< " Build " << LOWORD(info.dwBuildNumber & 0xFFFF) << " ";
 

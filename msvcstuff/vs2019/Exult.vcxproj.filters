@@ -1428,6 +1428,9 @@
     <ClInclude Include="..\..\headers\span.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\gitinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\data\flx.in">
@@ -1451,6 +1454,7 @@
     <CustomBuild Include="..\..\data\bg\bg_mr_faces.in">
       <Filter>data\bg</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\.git\index" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\conf\config.xml">

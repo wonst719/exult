@@ -302,3 +302,4 @@ project.xcworkspace
 docs/xml/*.txt
 docs/xml/*.dat
 docs/xml/*.html
+gitinfo.h
