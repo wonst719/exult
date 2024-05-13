@@ -273,7 +273,6 @@ WARNINGS := \
 	-Wcomma-subscript \
 	-Wconditionally-supported \
 	-Wctor-dtor-privacy \
-	-Wdate-time \
 	-Wdeprecated-copy-dtor \
 	-Wdisabled-optimization \
 	-Wdouble-promotion \
