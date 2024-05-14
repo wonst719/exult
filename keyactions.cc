@@ -49,6 +49,7 @@
 #include "palette.h"
 #include "party.h"
 #include "ucmachine.h"
+#include "version.h"
 
 /*
  *  Get the i'th party member, with the 0'th being the Avatar.
@@ -132,11 +133,18 @@ void ActionAbout(const int* params) {
 	Scroll_gump* scroll;
 	scroll = new Scroll_gump();
 
-	scroll->add_text("Exult V" VERSION "\n");
-	scroll->add_text("(C) 1998-2022 Exult Team\n\n");
+	// add_text has strange behaviour
+	// \n and ~ both act as a newline with slightly different spacing
+	// it automatically adds a newline if the
+	// added text does not start with a ~
+	// so ending a line with a newline causes double newlines
+	scroll->add_text("Exult V" VERSION "~");
+	scroll->add_text("(C) 1998-2022 Exult Team~");
 	scroll->add_text("Available under the terms of the ");
-	scroll->add_text("GNU General Public License\n\n");
-	scroll->add_text("http://exult.info\n");
+	scroll->add_text("GNU General Public License~");
+	scroll->add_text("http://exult.info~");
+	std::string gitinfo = VersionGetGitInfo(true);
+	scroll->add_text(gitinfo.c_str());
 
 	scroll->paint();
 	do {

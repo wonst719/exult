@@ -20,18 +20,18 @@
 #	include <config.h>
 #endif
 
+#include "version.h"
+
 #include <cstring>
 #include <iostream>
 
-// Only include gitinfo.h if it exists and none of the macros have already been defined
+// Only include gitinfo.h if it exists and none of the macros have already been
+// defined
 #if __has_include(                                                  \
 		"gitinfo.h") && !defined(GIT_REVISION) && !defined(GIT_TAG) \
 		&& !defined(GIT_REMOTE_BRANCH) && !defined(GIT_REMOTE_URL)
 #	include "gitinfo.h"
 #endif
-
-#define STRINGIFY(macro)  STRINGIFY2(macro)
-#define STRINGIFY2(macro) #macro
 
 #ifdef _WIN32
 #	ifndef WIN32_LEAN_AND_MEAN
@@ -67,43 +67,59 @@ To safe_pointer_cast(From pointer) {
 }
 
 #endif
-
-void getVersionInfo(std::ostream& out) {
-	/*
-	 * 1. Exult version
-	 */
-
-	out << "Exult version " << VERSION << std::endl;
-
 #ifdef GIT_REVISION
-	const char git_rev[] = GIT_REVISION;
+static const char git_rev[] = GIT_REVISION;
 #else
-	const char git_rev[] = "";
+static const char git_rev[] = "";
 #endif
 #ifdef GIT_TAG
-	const char git_tag[] = GIT_TAG;
+static const char git_tag[] = GIT_TAG;
 #else
-	const char git_tag[] = "";
+static const char git_tag[] = "";
 #endif
 #ifdef GIT_REMOTE_BRANCH
-	const char git_branch[] = GIT_REMOTE_BRANCH;
+static const char git_branch[] = GIT_REMOTE_BRANCH;
 #else
-	const char git_branch[] = "";
+static const char git_branch[] = "";
 #endif
 #ifdef GIT_REMOTE_URL
-	const char git_url[] = GIT_REMOTE_URL;
+static const char git_url[] = GIT_REMOTE_URL;
 #else
-	const char git_url[] = "";
+static const char git_url[] = "";
 #endif
 
+std::string VersionGetGitRevision(bool shortrev) {
+	if (git_rev[0]) {
+		if (shortrev) {
+			return std::string(git_rev, 7);
+		} else {
+			return git_rev;
+		}
+	}
+	return std::string();
+}
+
+std::string VersionGetGitInfo(bool limitedwidth) {
+	// Everything for this function can be known at compile time
+	// so could probably be made constexpr with a new enough c++ standard
+	// and compiler support
+	std::string result;
+	result.reserve(256);
+
 	if (git_branch[0]) {
-		out << "Git Branch: " << git_branch << std::endl;
+		result += "Git Branch: ";
+		result += git_branch;
+		result += "\n";
 	}
 	if (git_rev[0]) {
-		out << "Git Revision: " << git_rev << std::endl;
+		result += "Git Revision: ";
+		result += VersionGetGitRevision(limitedwidth);
+		result += "\n";
 	}
 	if (git_tag[0]) {
-		out << "Git Tag: " << git_tag << std::endl;
+		result += "Git Tag: ";
+		result += git_tag;
+		result += "\n";
 	}
 
 	// Default to the Exult origin repo on github
@@ -128,20 +144,43 @@ void getVersionInfo(std::ostream& out) {
 
 		// As we have github remote we can create url to exact revision/tag
 		if (git_tag[0]) {
-			src_url.reserve(src_url.size() + std::size(git_tag) + 6);
+			src_url.reserve(src_url.size() + std::size(git_tag) + 7);
+			if (limitedwidth) {
+				src_url += "\n";
+			}
 			src_url += "/tree/";
 			src_url += git_tag;
 		} else if (git_rev[0]) {
 			src_url.reserve(src_url.size() + std::size(git_rev) + 6);
+			if (limitedwidth) {
+				src_url += "\n";
+			}
 			src_url += "/tree/";
-			src_url += git_rev;
+			src_url += VersionGetGitRevision(limitedwidth);
 		}
 	}
 
-	out << "Source url: " << src_url << std::endl;
+	result += "Source url: ";
+	// if (limitedwidth) {
+	//	result += "\n";
+	// }
+	result += src_url;
+	return result;
+}
+
+void getVersionInfo(std::ostream& out) {
+	/*
+	 * 1. Exult version
+	 */
+
+	out << "Exult version " << VERSION << std::endl;
+	/*
+	 * 4. Git revision information
+	 */
+	out << VersionGetGitInfo(false) << std::endl;
 
 	/*
-	 * 2. Build Architechture
+	 * 3. Build Architechture
 	 */
 	out << "Build Architechture: ";
 
@@ -173,7 +212,7 @@ void getVersionInfo(std::ostream& out) {
 	out << std::endl;
 
 	/*
-	 * 2. Build time
+	 * 4. Build time
 	 */
 
 #if (defined(__TIME__) || defined(__DATE__))
@@ -188,7 +227,7 @@ void getVersionInfo(std::ostream& out) {
 #endif
 
 	/*
-	 * 4. Various important build options in effect
+	 * 5. Various important build options in effect
 	 */
 
 	out << "Compile-time options: ";
@@ -280,7 +319,7 @@ void getVersionInfo(std::ostream& out) {
 	out << std::endl;
 
 	/*
-	 * 4. Compiler used to create this binary
+	 * 6. Compiler used to create this binary
 	 */
 
 	out << "Compiler: ";
@@ -303,7 +342,7 @@ void getVersionInfo(std::ostream& out) {
 #undef COMPILER
 
 	/*
-	 * 5. Platform
+	 * 7. Platform
 	 */
 
 	out << std::endl << "Platform: ";

@@ -446,7 +446,7 @@ echo.  &gt;&gt;..\..\gitinfo.h</Command>
       <OutputItemType>ClInclude</OutputItemType>
       <BuildInParallel>true</BuildInParallel>
       <AdditionalInputs>..\..\.git\HEAD;..\..\.git\config</AdditionalInputs>
-      <DeploymentContent >false</DeploymentContent>
+      <DeploymentContent>false</DeploymentContent>
     </CustomBuild>
     <None Include="..\..\audio\Makefile.am" />
     <None Include="..\..\audio\module.mk" />
