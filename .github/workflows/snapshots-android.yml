@@ -36,7 +36,7 @@ jobs:
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: 7.6.4
+          gradle-version: 8.7
       - name: Install dependencies
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: |
