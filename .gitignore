@@ -303,3 +303,7 @@ docs/xml/*.txt
 docs/xml/*.dat
 docs/xml/*.html
 gitinfo.h
+
+#Android
+android/app/build.gradle
+android/app/src/main/res/drawable/*.png

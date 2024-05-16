@@ -303,42 +303,54 @@ if test x$enable_android_apk != xno; then
 	AC_PATH_PROGS(SDKMANAGER, sdkmanager)
 
 	# Check for required Android SDK version.
-	ANDROID_SDK_VERSION=33
+	AC_ARG_WITH(android_sdk,
+		AS_HELP_STRING([--with-android-sdk=sdk_version], [Android SDK version @<:@default 33@:>@]),
+		[with_android_sdk="$withval"],[with_android_sdk=33])
+	ANDROID_SDK_VERSION="$with_android_sdk"
 	AC_MSG_CHECKING([for Android SDK $ANDROID_SDK_VERSION])
 	if $SDKMANAGER --list|grep -q "platforms;android-$ANDROID_SDK_VERSION"; then
 		AC_MSG_RESULT([yes])
 	else
-		AC_MSG_ERROR([no])
+		AC_MSG_ERROR([$ANDROID_SDK_VERSION is not a valid Android SDK version.])
 	fi
 	AC_SUBST(ANDROID_SDK_VERSION, $ANDROID_SDK_VERSION)
 
 	# Check for required Android SDK Build-Tools version.
-	ANDROID_BUILD_TOOLS_VERSION=34.0.0
+	AC_ARG_WITH(android_build_tools,
+		AS_HELP_STRING([--with-android-build-tools=build_tools_version], [Android build tools version @<:@default 34.0.0@:>@]),
+		[with_android_build_tools="$withval"],[with_android_build_tools=34.0.0])
+	ANDROID_BUILD_TOOLS_VERSION="$with_android_build_tools"
 	AC_MSG_CHECKING([for Android SDK Build-Tools $ANDROID_BUILD_TOOLS_VERSION])
 	if $SDKMANAGER --list|grep -q "build-tools;$ANDROID_BUILD_TOOLS_VERSION"; then
 		AC_MSG_RESULT([yes])
 	else
-		AC_MSG_ERROR([no])
+		AC_MSG_ERROR([$ANDROID_BUILD_TOOLS_VERSION is not a valid Android build tools version.])
 	fi
 	AC_SUBST(ANDROID_BUILD_TOOLS_VERSION, $ANDROID_BUILD_TOOLS_VERSION)
 
 	# Check for required Android NDK version.
-	ANDROID_NDK_VERSION=22.1.7171670
+	AC_ARG_WITH(android_ndk,
+		AS_HELP_STRING([--with-android-ndk=ndk_version], [Android NDK version @<:@default 22.1.7171670@:>@]),
+		[with_android_sdk="$withval"],[with_android_ndk=22.1.7171670])
+	ANDROID_NDK_VERSION="$with_android_ndk"
 	AC_MSG_CHECKING([for Android NDK $ANDROID_NDK_VERSION])
 	if $SDKMANAGER --list|grep -q "ndk;$ANDROID_NDK_VERSION"; then
 		AC_MSG_RESULT([yes])
 	else
-		AC_MSG_ERROR([no])
+		AC_MSG_ERROR([$ANDROID_NDK_VERSION is not a valid Android NDK version.])
 	fi
 	AC_SUBST(ANDROID_NDK_VERSION, $ANDROID_NDK_VERSION)
 
 	# Check for required Android CMake version.
-	ANDROID_CMAKE_VERSION=3.22.1
+	AC_ARG_WITH(android_cmake,
+		AS_HELP_STRING([--with-android-cmake=cmake_version], [Android CMake version @<:@default 3.22.1@:>@]),
+		[with_android_cmake="$withval"],[with_android_cmake=3.22.1])
+	ANDROID_CMAKE_VERSION="$with_android_cmake"
 	AC_MSG_CHECKING([for Android CMake $ANDROID_CMAKE_VERSION])
 	if $SDKMANAGER --list|grep -q "cmake;$ANDROID_CMAKE_VERSION"; then
 		AC_MSG_RESULT([yes])
 	else
-		AC_MSG_ERROR([no])
+		AC_MSG_ERROR([$ANDROID_CMAKE_VERSION is not a valid Android CMake version.])
 	fi
 	AC_SUBST(ANDROID_CMAKE_VERSION, $ANDROID_CMAKE_VERSION)
 

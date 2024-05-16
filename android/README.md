@@ -14,27 +14,27 @@ The launcher has been tested and can automatically install content from the foll
   - Look, under "DOWNLOAD OFFLINE BACKUP GAME INSTALLERS"
   - Download the `.pkg` file(s)
 - [Zipped all-in-one audio pack for manual installation](http://prdownloads.sourceforge.net/exult/exult_audio.zip)
-- [Marzo's Black Gate Keyring (requires FoV)](http://exult.info/snapshots/Keyring.zip)
-- [Marzo's Serpent Isle Fixes (requires SS)](http://exult.info/snapshots/Sifixes.zip)
-- [SourceForge Island (requires FoV)](http://exult.info/snapshots/SFisland.zip)
+- [Marzo's Black Gate Keyring (requires FoV)](https://exult.info/snapshots/Keyring.zip)
+- [Marzo's Serpent Isle Fixes (requires SS)](https://exult.info/snapshots/Sifixes.zip)
+- [SourceForge Island (requires FoV)](https://exult.info/snapshots/SFisland.zip)
 
 Now download Exult, and have fun!
 
 ## More Information
 
-More information can be found in the accompanying files README and FAQ.  In addition, you might want to check out our homepage at http://exult.info
+More information can be found in the accompanying files README and FAQ.  In addition, you might want to check out our homepage at https://exult.info
 
 ## How to compile for Android
 
 The following guide is only for people that want to compile Exult for Android on their own. This is not needed if there is a current snapshot for Android available on our download page.
 
-The Android APK is built as an optional component of a regular native Exult build.  Before attempting to build the Android APK, follow [the instructions](..//INSTALL) to install any dependencies and build Exult for your desktop.
+The Android APK is built as an optional component of a regular native Exult build. Before attempting to build the Android APK, follow [the instructions](..//INSTALL) to install any dependencies and build Exult for your desktop.
 
-In addition to the regular desktop Exult dependencies, you will need the android SDK and NDK.  The easiest way to get these is to install Android Studio.  You will also need to edit your path so that the build can find the `gradle` and `sdkmanager` commands.  Android Studio can be installed for free from [Google](https://developer.android.com/studio).
+In addition to the regular desktop Exult dependencies, you will need the android SDK and NDK. The easiest way to get these is to install Android Studio. You will also need to edit your path so that the build can find the `gradle` and `sdkmanager` commands.  Android Studio can be installed for free from [Google](https://developer.android.com/studio).
 
-Now you also need Gradle, follow the instructions at https://linuxize.com/post/how-to-install-gradle-on-ubuntu-20-04/ and install Gradle version 7.6.1 (or newer but currently it needs to be at least version  >= 6.8.2 or version 7.x , version 8.x or higher are not supported at the moment).
+Now you also need Gradle, follow the instructions at https://linuxize.com/post/how-to-install-gradle-on-ubuntu-20-04/ and install Gradle version 7.6.1 (or newer but currently it needs to be at least version >= 7.5.
 
-With those dependencies in place, you can build Exult, but pass the `--enable-android-apk` flag to the `configure` script.  However you need to make sure to build Exult outside of its source to prevent any problems when you cross compile the varios Android arches. You can also disable a lot of build options as the Android build is done via Cmake. 
+With those dependencies in place, you can build Exult, but pass the `--enable-android-apk` flag to the `configure` script. However you need to make sure to build Exult outside of its source to prevent any problems when you cross compile the various Android arches. You can also disable most build options as the Android build is done via CMake. 
 The following is a quick summary of the commands to build (assuming you are in the exult source):
 
 ```
@@ -48,8 +48,7 @@ $ cd files && make
 $ cd ./../data && make
 $ cd ./../android && make
 ```
-
-The final APK will be located in `./android/app/build/outputs/apk/debug/app-debug.apk`.
+The final debug APK will be located in `./android/app/build/outputs/apk/debug/app-debug.apk`.
 
 Building a release build is similar, but requires signing the binary:
 
@@ -67,3 +66,4 @@ $ /path/to/Android/Sdk/build-tools/version/zipalign -v -p 4 ./../exult/android/a
 $ /path/to/Android/Sdk/build-tools/version/apksigner sign --ks path/to/my/android-keystore.jks --out ./../exult/android/app/build/outputs/apk/release/app-release-signed.apk ./../exult/android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk
 
 ```
+The final release APK will be located in `app-release-signed.apk`.

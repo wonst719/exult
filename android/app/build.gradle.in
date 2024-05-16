@@ -15,7 +15,7 @@ android {
         applicationId "info.exult"
         namespace 'info.exult'
         minSdkVersion 28 // could lower to 18 if we locally implement glob()
-        targetSdkVersion 33
+        targetSdkVersion @ANDROID_SDK_VERSION@
         versionCode 1
         versionName "@VERSION@ (" + getGitCommitId() + ")"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
