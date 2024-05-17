@@ -76,7 +76,7 @@ void AudioOptions_gump::cancel() {
 }
 
 void AudioOptions_gump::help() {
-	SDL_OpenURL("http://exult.info/docs.php#audio_gump");
+	SDL_OpenURL("https://exult.info/docs.php#audio_gump");
 }
 
 void AudioOptions_gump::toggle_sfx_pack(int state) {

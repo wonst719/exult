@@ -86,7 +86,7 @@ void GameEngineOptions_gump::cancel() {
 }
 
 void GameEngineOptions_gump::help() {
-	SDL_OpenURL("http://exult.info/docs.php#game_engine_gump");
+	SDL_OpenURL("https://exult.info/docs.php#game_engine_gump");
 }
 
 void GameEngineOptions_gump::build_buttons() {

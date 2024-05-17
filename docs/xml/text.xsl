@@ -8,7 +8,7 @@
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns="http://www.w3.org/1999/xhtml">
-	<!-- FIX ME - <br> is translated but then immediatly filtered out again.
+	<!-- FIX ME - <br> is translated but then immediately filtered out again.
 	|   Furthermore, indention of list entries etc. is not done at all. We should
 	|   fix this somehow, but how?
 	+-->
@@ -55,7 +55,7 @@
 		<xsl:value-of
 			select="@changed" />
 		<xsl:text>&#xA;&#xA;</xsl:text>
-		<xsl:text>The latest version of this document can be found at http://exult.info/faq.php&#xA;</xsl:text>
+		<xsl:text>The latest version of this document can be found at https://exult.info/faq.php&#xA;</xsl:text>
 		<xsl:text>&#xA;&#xA;</xsl:text>
 		<!-- BEGIN TOC -->
 		<xsl:call-template
@@ -73,7 +73,7 @@
 		<xsl:value-of
 			select="@changed" />
 		<xsl:text>&#xA;&#xA;</xsl:text>
-		<xsl:text>The latest version of this document can be found at http://exult.info/docs.php&#xA;</xsl:text>
+		<xsl:text>The latest version of this document can be found at https://exult.info/docs.php&#xA;</xsl:text>
 		<xsl:text>&#xA;&#xA;</xsl:text>
 		<!-- BEGIN TOC -->
 		<xsl:call-template
@@ -91,7 +91,7 @@
 		<xsl:value-of
 			select="@changed" />
 		<xsl:text>&#xA;&#xA;</xsl:text>
-		<xsl:text>The latest version of this document can be found at http://exult.info/studio.php&#xA;</xsl:text>
+		<xsl:text>The latest version of this document can be found at https://exult.info/studio.php&#xA;</xsl:text>
 		<xsl:text>&#xA;&#xA;</xsl:text>
 		<!-- BEGIN TOC -->
 		<xsl:call-template

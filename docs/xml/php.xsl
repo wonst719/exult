@@ -42,7 +42,7 @@
 			</p>
 			<hr />
 			<p> A text only version can be found
-				<a href="http://exult.info/faq.txt">here</a>
+				<a href="https://exult.info/faq.txt">here</a>
 			</p>
 			<br />
 			<!-- BEGIN TOC -->
@@ -61,7 +61,7 @@
 			</p>
 			<hr />
 			<p> A text only version can be found
-				<a href="http://exult.info/docs.txt">here</a>
+				<a href="https://exult.info/docs.txt">here</a>
 			</p>
 			<br />
 			<!-- BEGIN TOC -->
@@ -80,7 +80,7 @@
 			</p>
 			<hr />
 			<p> A text only version can be found
-				<a href="http://exult.info/exult_studio.txt">here</a>
+				<a href="https://exult.info/exult_studio.txt">here</a>
 			</p>
 			<br />
 			<!-- BEGIN TOC -->

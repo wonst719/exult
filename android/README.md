@@ -3,7 +3,7 @@
 ## To Play
 First you need to get Ultima 7 or Serpent Isle. Either you own it already, or you buy it somewhere.
 
-Second, you need the Android Exult app itself.  It is not yet available in any app stores, but you can download builds from [here](http://exult.info/download.php) (recommended) or build from source as described below.
+Second, you need the Android Exult app itself.  It is not yet available in any app stores, but you can download builds from [here](https://exult.info/download.php) (recommended) or build from source as described below.
 
 The Android app starts up with a launcher screen that assists with installing the content (game files, music pack, and mods).  You will need to get the content archives copied/downloaded to your Android device.  Then you can browse to them from the launcher, which will extract the archives and install the content in the correct locations so Exult finds them automatically.
 

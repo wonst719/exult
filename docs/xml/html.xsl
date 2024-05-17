@@ -81,7 +81,7 @@
 						<td class="centered">
 							<address>
 								<span style="font-size: smaller">Problems with Exult or this webpage?
-									<a href="http://exult.info/forum/post.php?f=1">Contact us.</a>
+									<a href="https://github.com/exult/exult/discussions">Contact us.</a>
 								</span>
 							</address>
 						</td>
@@ -178,7 +178,7 @@
 								</p>
 								<hr />
 								<p> The latest version of this document can be found
-									<a href="http://exult.info/faq.php">here</a>
+									<a href="https://exult.info/faq.php">here</a>
 								</p>
 								<br />
 								<!-- BEGIN TOC -->
@@ -219,7 +219,7 @@
 								</p>
 								<hr />
 								<p> The latest version of this document can be found
-									<a href="http://exult.info/docs.php">here</a>
+									<a href="https://exult.info/docs.php">here</a>
 								</p>
 								<br />
 								<!-- BEGIN TOC -->
@@ -260,7 +260,7 @@
 								</p>
 								<hr />
 								<p> The latest version of this document can be found
-									<a href="http://exult.info/studio.php">here</a>
+									<a href="https://exult.info/studio.php">here</a>
 								</p>
 								<br />
 								<!-- BEGIN TOC -->

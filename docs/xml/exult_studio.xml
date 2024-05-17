@@ -105,12 +105,12 @@
 						you are using the <strong>latest snapshot</strong> of <Exult/>.<br/>
 						<Studio/> <strong>only</strong> works with the latest snapshot, not the latest release.</li>
 					<li>For U*ix platforms you need to build <Studio/> from the source available from our
-						source snapshot at <extref target="http://exult.info/download.php"/>.</li>
+						source snapshot at <extref target="https://exult.info/download.php"/>.</li>
 					<li>For Windows platforms (XP,Vista,7,8,10) you need to download <Studio/> from our
-						<extref target="http://exult.info/download.php">download page</extref>
+						<extref target="https://exult.info/download.php">download page</extref>
 						and install it in the same folder where you installed <Exult/>.</li>
 					<li>For macOS we also provide a snapshot on our
-						<extref target="http://exult.info/download.php">download page</extref>. Download the disk image
+						<extref target="https://exult.info/download.php">download page</extref>. Download the disk image
 						and move the app to the Applications.</li>
 				</ul>
 			</body>
@@ -165,7 +165,7 @@
 						on your machine this is probably done right. To make sure you have the correct version,
 						ensure that it says X.XX GIT (X.XX stands for some version number) during <Exult/>'s
 						start-up screen (for example see
-						<extref target="http://exult.info/images/screenshots/mainmenu.png"/>).</li>
+						<extref target="https://exult.info/images/screenshots/mainmenu.png"/>).</li>
 					<li>You need to make sure the newest version of <Studio/> is installed properly onto your
 						computer as well. <Studio/> should be installed in the same folder as the <Exult/>
 						snapshot.</li>
@@ -525,7 +525,7 @@
 						This lets you begin the work on a new game. Jeff wrote an extensive description of
 						how to use this and how it works.<br/>
 						See
-						<extref target="http://exult.info/newgame.txt">New Game manual</extref>.</li>
+						<extref target="https://exult.info/newgame.txt">New Game manual</extref>.</li>
 					<li><strong>New Mod...</strong><br/>
 						Easily start a new mod for an existing game. The dialog that opens lets you select
 						the game you want to mod, the name of the mod and its name in the Exult menu (menu string).</li>
@@ -792,8 +792,8 @@
 					that easy.
 				</para>
 				<para>
-					For an example of how Usecode may look like download our experimental patch for BG at
-					<extref target="http://exult.info/snapshots/patch.zip"/>.<br/>
+					For an example of how Usecode may look like download our SF Island mod for BG at
+					<extref target="https://exult.info/snapshots/SFisland.zip"/>.<br/>
 					In that zip you'll find a readme.txt which tells you how to run it.<br/>
 					You will also see two files called usecode.uc and usecode.
 				</para>
@@ -1601,7 +1601,7 @@
 					tools that might help in editing/making a game.<br/>
 					These can be built from the <Exult/> source or you can download
 					the Windows binary snapshot. The source and binary snapshot can be found at
-					<extref target="http://exult.info/download.php"/>.<br/>
+					<extref target="https://exult.info/download.php"/>.<br/>
 					The tools are:
 				</para>
 				<ul>
