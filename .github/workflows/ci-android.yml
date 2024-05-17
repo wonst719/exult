@@ -130,7 +130,7 @@ jobs:
           fi
           sudo apt-fast install -y autoconf-archive
       - name: Checkout code
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
       - name: Run autoreconf
         run: |
           mkdir ./../build

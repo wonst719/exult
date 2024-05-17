@@ -108,7 +108,7 @@ jobs:
   ci-freebsd:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
     - name: Build Exult in FreeBSD
       id: ci-freebsd
       uses: vmactions/freebsd-vm@v1

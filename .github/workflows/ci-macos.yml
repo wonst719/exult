@@ -113,7 +113,7 @@ jobs:
           brew install automake libtool pkg-config libpng zlib libogg libvorbis fluid-synth freetype gtk+3 libxml2 bison flex
           brew install sdl2 icu4c mt32emu autoconf-archive
       - name: Checkout code
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
       - name: Run autoreconf
         run: |
           autoreconf -v -i
