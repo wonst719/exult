@@ -948,7 +948,7 @@ void MyMidiPlayer::ogg_stop_track() {
 void MyMidiPlayer::ogg_set_repeat(bool newrepeat) {
 	Pentagram::AudioMixer* mixer = Pentagram::AudioMixer::get_instance();
 	if (mixer->isPlaying(ogg_instance_id)) {
-		mixer->getLoop(newrepeat ? -1 : 0);
+		mixer->setLoop(ogg_instance_id, newrepeat ? -1 : 0);
 	}
 }
 
