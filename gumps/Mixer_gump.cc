@@ -96,7 +96,7 @@ void Mixer_gump::help() {
 #if SDL_VERSION_ATLEAST(2, 0, 14)
 	// Pointing at Audio section for help as there is no item for the mixer
 	// yet
-	SDL_OpenURL("http://exult.info/docs.php#Audio");
+	SDL_OpenURL("http://exult.info/docs.php#volume_mixer_gump");
 #endif
 }
 
