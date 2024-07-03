@@ -222,10 +222,10 @@ Audio::Audio() {
 	config->set("config/audio/enabled", audio_enabled ? "yes" : "no", false);
 
 	config->value("config/audio/effects/sfx_volume", sfx_volume, sfx_volume);
-	config->value("config/audio/speech/speech_volume", speech_volume, false);
-	config->set("config/audio/effects/sfx_volume", sfx_volume, false);
-	config->set(
+	config->value(
 			"config/audio/speech/speech_volume", speech_volume, speech_volume);
+	config->set("config/audio/effects/sfx_volume", sfx_volume, false);
+	config->set("config/audio/speech/speech_volume", speech_volume, false);
 
 	config->value("config/audio/speech/enabled", s, "yes");
 	speech_enabled = (s != "no");
