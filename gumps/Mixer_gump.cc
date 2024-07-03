@@ -59,7 +59,7 @@ using Mixer_Textbutton = CallbackTextButton<Mixer_gump>;
 
 void Mixer_gump::close() {
 	save_settings();
-	done   = true;
+	done = true;
 }
 
 void Mixer_gump::cancel() {
@@ -154,7 +154,8 @@ void Mixer_gump::load_settings() {
 		speechslider   = nullptr;
 		std::cout << "Mixer_gump speech is disabled." << std::endl;
 	}
-	// must always have space forat least 3 sliders b ecause of the disabled messages
+	// must always have space forat least 3 sliders b ecause of the disabled
+	// messages
 	if (num_sliders < 3) {
 		num_sliders = 3;
 	}

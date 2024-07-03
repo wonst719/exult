@@ -66,7 +66,6 @@ namespace {
 	}
 }    // namespace
 
-
 bool ALSAMidiDriver::find_next_port(bool first) {
 	if (first) {
 		snd_seq_client_info_set_client(clt_info, -1);

@@ -76,7 +76,7 @@ void AudioOptions_gump::mixer() {
 }
 
 void AudioOptions_gump::close() {
-//	save_settings();
+	//	save_settings();
 	done = true;
 }
 
@@ -196,7 +196,7 @@ void AudioOptions_gump::rebuild_midi_buttons() {
 	buttons[id_music_looping] = std::make_unique<AudioTextToggle>(
 			this, &AudioOptions_gump::change_music_looping,
 			std::move(looping_options), static_cast<int>(midi_looping), colx[2],
-			rowy[4], 59);
+			rowy[5], 59);
 	rebuild_midi_driver_buttons();
 }
 
@@ -453,8 +453,7 @@ void AudioOptions_gump::load_settings() {
 	}
 }
 
-AudioOptions_gump::AudioOptions_gump()
-		: Modal_gump(nullptr, -1) {
+AudioOptions_gump::AudioOptions_gump() : Modal_gump(nullptr, -1) {
 	SetProceduralBackground(TileRect(29, 2, 166, 186), -1);
 
 	const Exult_Game  game  = Game::get_game_type();

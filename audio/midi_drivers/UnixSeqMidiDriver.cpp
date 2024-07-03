@@ -39,7 +39,8 @@ const MidiDriver::MidiDriverDesc UnixSeqMidiDriver::desc
 constexpr const int              SeqMidiPutC = 5;
 constexpr const std::string_view SeqDevice   = "/dev/sequencer";
 
-UnixSeqMidiDriver::UnixSeqMidiDriver() : LowLevelMidiDriver(std::string(desc.name)) {
+UnixSeqMidiDriver::UnixSeqMidiDriver()
+		: LowLevelMidiDriver(std::string(desc.name)) {
 	// see if the config file specifies an alternate midi device
 	devname = getConfigSetting("unixseqdevice", SeqDevice.data());
 }

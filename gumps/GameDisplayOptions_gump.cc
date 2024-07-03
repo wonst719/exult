@@ -171,8 +171,7 @@ void GameDisplayOptions_gump::load_settings() {
 	smooth_scrolling = gwin->is_lerping_enabled() / 25;
 }
 
-GameDisplayOptions_gump::GameDisplayOptions_gump()
-		: Modal_gump(nullptr, -1) {
+GameDisplayOptions_gump::GameDisplayOptions_gump() : Modal_gump(nullptr, -1) {
 	SetProceduralBackground(TileRect(29, 2, 226, 156), -1);
 
 	for (auto& btn : buttons) {

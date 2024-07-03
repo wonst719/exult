@@ -137,8 +137,7 @@ public:          // Let's make it all public.
 	}
 
 	// Conversion to bool return true if any value is non zero
-	operator bool()const noexcept
-	{
+	operator bool() const noexcept {
 		return h != 0 || w != 0 || x != 0 || y != 0;
 	}
 };

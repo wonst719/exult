@@ -501,8 +501,10 @@ void Palette::set_palette(unsigned char palnew[768]) {
 }
 
 const Palette::Ramp* Palette::get_ramps(unsigned int& num_ramps) {
-	static Ramp   ramps[32] = {{0,0}};
-	static uint32 rampgame  = 0;
+	static Ramp ramps[32] = {
+			{0, 0}
+    };
+	static uint32 rampgame = 0;
 
 	uint32 currentgame = Game::Get_unique_gamecode();
 
@@ -521,7 +523,7 @@ const Palette::Ramp* Palette::get_ramps(unsigned int& num_ramps) {
 			}
 		}
 		unsigned int r    = 0;
-		int last = pal1[3] + pal1[4] + pal1[5];
+		int          last = pal1[3] + pal1[4] + pal1[5];
 		ramps[0].start    = 1;
 		for (int c = 2; c < 256; c++) {
 			int brightness = pal1[c * 3] + pal1[c * 3 + 1] + pal1[c * 3 + 2];
@@ -546,7 +548,7 @@ const Palette::Ramp* Palette::get_ramps(unsigned int& num_ramps) {
 				num_ramps    = r + 1;
 				ramps[r].end = 255;
 			} else {
-				num_ramps    = r;
+				num_ramps = r;
 			}
 		} else {
 			ramps[0].start = 0;
@@ -627,10 +629,15 @@ void Palette::Generate_remap_xformtable(uint8 table[256], int* remaps) {
 		auto toramp   = ramps[to];
 		int  fromsize = fromramp.end - fromramp.start;
 		int  tosize   = toramp.end - toramp.start;
-		if(fromramp.start) for (std::uint_fast16_t c = fromramp.start; c <= fromramp.end; c++) {
-			int offset = fromsize?((c - fromramp.start) * 256) / (fromsize):0;
+		if (fromramp.start) {
+			for (std::uint_fast16_t c = fromramp.start; c <= fromramp.end;
+				 c++) {
+				int offset = fromsize
+									 ? ((c - fromramp.start) * 256) / (fromsize)
+									 : 0;
 
-			table[c] = toramp.start + (offset * tosize) / 256;
+				table[c] = toramp.start + (offset * tosize) / 256;
+			}
 		}
 	}
 }

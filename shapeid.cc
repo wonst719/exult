@@ -530,32 +530,29 @@ uint8* ShapeID::Get_palette_transform_table(uint8 table[256]) const {
 	uint16 xform = palette_transform & PT_xForm;
 	uint16 index = palette_transform & 0xff;
 	if (palette_transform & PT_RampRemap) {
-		uint16 to = palette_transform & 31;
-		uint16 from   = ((palette_transform & ~32768) >> 5);
+		uint16 to   = palette_transform & 31;
+		uint16 from = ((palette_transform & ~32768) >> 5);
 
 		int remaps[32];
 
-		if (from > std::size(remaps)-1 && from != 255) {
+		if (from > std::size(remaps) - 1 && from != 255) {
 			return nullptr;
 		}
-		for (int i = 0; i < std::size(remaps); i++) {
+		for (unsigned int i = 0; i < std::size(remaps); i++) {
 			if (from == 255) {
 				remaps[i] = to;
-			}
-			else if (i == from) {
+			} else if (i == from) {
 				remaps[i]     = to;
 				remaps[i + 1] = -1;
 				break;
-			} 
-			else {
+			} else {
 				remaps[i] = i;
 			}
 		}
 		remaps[31] = -1;
 
 		gwin->get_pal()->Generate_remap_xformtable(table, remaps);
-	}
-	else if (xform == 0) {
+	} else if (xform == 0) {
 		for (int i = 0; i < 256; i++) {
 			table[i] = (i + index) & 0xff;
 		}
@@ -564,7 +561,7 @@ uint8* ShapeID::Get_palette_transform_table(uint8 table[256]) const {
 		table[255] = 255;
 		// Bound check xform table
 	} else if (xform && index < sman->get_xforms_cnt()) {
-		return  sman->get_xform(index).colors;
+		return sman->get_xform(index).colors;
 	}
 	return table;
 }

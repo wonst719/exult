@@ -330,7 +330,8 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 	o_highdpi         = highdpi;
 }
 
-VideoOptions_gump::VideoOptions_gump() : Modal_gump(nullptr, -1), 
+VideoOptions_gump::VideoOptions_gump()
+		: Modal_gump(nullptr, -1),
 		  startup_fill_mode(static_cast<Image_window::FillMode>(0)) {
 	SetProceduralBackground(TileRect(29, 2, 166, 166), -1);
 	video_options_gump = this;

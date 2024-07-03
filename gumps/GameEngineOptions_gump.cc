@@ -178,10 +178,8 @@ void GameEngineOptions_gump::load_settings() {
 	}
 }
 
-GameEngineOptions_gump::GameEngineOptions_gump()
-		: Modal_gump(nullptr, -1) {
+GameEngineOptions_gump::GameEngineOptions_gump() : Modal_gump(nullptr, -1) {
 	SetProceduralBackground(TileRect(29, 2, 224, 156), -1);
-
 
 	load_settings();
 	build_buttons();

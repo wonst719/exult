@@ -87,10 +87,10 @@ const struct Action {
 	bool       allow_if_cant_act_charmed;
 	bool       is_movement;
 } ExultActions[] = {
-		{        "VOLUME_MIXER",           ActionMixerGump,           nullptr,              "Volume Mixer",
-		 Action::normal_keys,         NONE,  true,   true,  true,  false },
-		{				"QUIT",               ActionQuit,           nullptr,"Quit",Action::normal_keys,NONE,true,
-		 true,true,false																  },
+		{        "VOLUME_MIXER",          ActionMixerGump,           nullptr,"Volume Mixer",
+		 Action::normal_keys,NONE,true,true,true,false																  },
+		{				"QUIT",               ActionQuit,           nullptr,                      "Quit",  Action::normal_keys,         NONE,  true,
+		 true,  true,  false											 },
 		{        "SAVE_RESTORE",           ActionFileGump,           nullptr,              "Save/restore",
 		 Action::normal_keys,         NONE,  true,   true,  true,  false },
 		{		   "QUICKSAVE",          ActionQuicksave,           nullptr,                "Quick-save",

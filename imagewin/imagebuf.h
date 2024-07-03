@@ -263,16 +263,17 @@ public:
 	//! /param y Y coord of top left
 	//! /param w Outer Width of the box to draw
 	//! /param h Outer Height of the Box to draw
-	//! /param depth The depth of the 3d effect, the beveled edge will be this many pixels wide
-	//! /param colfill Colour to fill the box and for the topleft and bottomright corner
-	//! /param coltop Colour for the the top edge and the right edge
-	//! /param coltr Colour for the topright corner
-	//! /param colbottom Colour for the bottom edge and the left edge
-	//! /param colbl Colour for the bottom left corner
-	//! /remark set colours to 0xff to not draw that element
+	//! /param depth The depth of the 3d effect, the beveled edge will be this
+	//! many pixels wide /param colfill Colour to fill the box and for the
+	//! topleft and bottomright corner /param coltop Colour for the the top edge
+	//! and the right edge /param coltr Colour for the topright corner /param
+	//! colbottom Colour for the bottom edge and the left edge /param colbl
+	//! Colour for the bottom left corner /remark set colours to 0xff to not
+	//! draw that element
 	virtual void draw_beveled_box(
 			int x, int y, int w, int h, int depth, uint8 colfill, uint8 coltop,
-			uint8 coltr, uint8 colbottom, uint8 colbl) = 0;
+			uint8 coltr, uint8 colbottom, uint8 colbl)
+			= 0;
 
 	//! Draw a box witha given stroke and fill
 	//! /param x X coord of top left

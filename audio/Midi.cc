@@ -108,7 +108,7 @@ bool MyMidiPlayer::start_music(
 		int num, bool repeat, ForceType force, std::string flex) {
 	// Check output for no output device
 	if (force == Force_None && (!ogg_enabled) && !midi_driver
-			&& !init_device(true)) {
+		&& !init_device(true)) {
 		return false;
 	}
 	if (force == Force_Midi && !can_play_midi()) {
@@ -131,14 +131,15 @@ bool MyMidiPlayer::start_music(
 			return true;
 		}
 		// Midi driver is playing?
-		if (force != Force_Ogg && midi_driver && midi_driver->isSequencePlaying(SEQ_NUM_MUSIC)) {
+		if (force != Force_Ogg && midi_driver
+			&& midi_driver->isSequencePlaying(SEQ_NUM_MUSIC)) {
 			return true;
 		}
 	}
 
 	// Work around Usecode bug where track 0 is played at Intro Earthquake
 	if (num == 0 && flex == MAINMUS && Game::get_game_type() == BLACK_GATE) {
-		return false; 
+		return false;
 	}
 
 #ifdef DEBUG
@@ -931,11 +932,11 @@ bool MyMidiPlayer::ogg_play_track(
 	}
 
 	const bool flex_source = ogg_name == filename;
-	auto       ds          = [&ogg_name, &basepath, num,
-               flex_source,this]() -> std::unique_ptr<IDataSource> {
+	auto       ds          = [&ogg_name, &basepath, num, flex_source,
+               this]() -> std::unique_ptr<IDataSource> {
         if (flex_source) {
             oggfailed += ':';
-			oggfailed += std::to_string(num);
+            oggfailed += std::to_string(num);
             return open_music_flex(ogg_name, num);
         }
         if (U7exists("<PATCH>/music/" + ogg_name)) {
@@ -960,7 +961,8 @@ bool MyMidiPlayer::ogg_play_track(
 
 	if (!Pentagram::OggAudioSample::isThis(ds.get())) {
 		std::cerr << "Failed to play OGG Music Track " << ogg_name
-				  << ". Reason: " << "Unknown" << std::endl;
+				  << ". Reason: "
+				  << "Unknown" << std::endl;
 		oggfailed = ogg_name;
 		return false;
 	}

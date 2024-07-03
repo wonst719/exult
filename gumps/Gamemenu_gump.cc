@@ -60,8 +60,7 @@ static const char*                  quittext     = "Quit";
 
 using Gamemenu_button = CallbackTextButton<Gamemenu_gump>;
 
-Gamemenu_gump::Gamemenu_gump()
-		: Modal_gump(nullptr, -1) {
+Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, -1) {
 	SetProceduralBackground(TileRect(29, 2, 112, 91), -1);
 
 	int y = 0;

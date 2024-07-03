@@ -58,6 +58,7 @@ public:
 		Force_Midi,
 		Force_Ogg
 	};
+
 	bool start_music(
 			int num, bool repeat = false, ForceType force = Force_None,
 			std::string flex = MAINMUS);
@@ -133,7 +134,7 @@ public:
 		if (!midi_driver) {
 			init_device(true);
 		}
-		return midi_driver!=nullptr;
+		return midi_driver != nullptr;
 	}
 
 private:
@@ -154,9 +155,9 @@ private:
 	int           setup_timbre_for_track(std::string& str);
 
 	// Ogg Stuff
-	bool   ogg_enabled     = false;
-	sint32 ogg_instance_id = -1;
-	int    ogg_volume      = 100;
+	bool        ogg_enabled     = false;
+	sint32      ogg_instance_id = -1;
+	int         ogg_volume      = 100;
 	std::string oggfailed;
 
 public:

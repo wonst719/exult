@@ -21,7 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Gump.h"
 #include "ignore_unused_variable_warning.h"
+
 #include <chrono>
+
 /*
  *  A modal gump object represents a 'dialog' that grabs the mouse until
  *  the user clicks okay.
@@ -86,7 +88,6 @@ protected:
 	// If set this gump cannot be dragged
 	bool no_dragging;
 
-
 	TileRect procedural_background;
 
 	ShapeID checkmark_background;
@@ -121,18 +122,16 @@ protected:
 	//! \param Checkbg_paletteramp Colour ramp to use for the checkmark
 	//!  button background. if -1 use default green that is the same as 11
 	//! \param centre_gump_on_screen automatically centre the gump on screen when done
-	//! \remarks This will reset procedural_colours to default 
+	//! \remarks This will reset procedural_colours to default
 	//! and create the checkmark button if it doesn't aready exist
-	//! This will not supress rendeing of a background shape. 
+	//! This will not supress rendeing of a background shape.
 	//! To use this:
 	//! set shnum to -1 in the constructor Argument
 	//! and then call this funcion in the constructor. Do not call
 	//! Gump::set_object_area() to create the checkmark button
 	void SetProceduralBackground(
-			TileRect backrect,
-			int    Checkbg_paletteramp
-			= -1,
-		bool centre_gump_on_screen = true);
+			TileRect backrect, int Checkbg_paletteramp = -1,
+			bool centre_gump_on_screen = true);
 
 public:
 	void paint() override;

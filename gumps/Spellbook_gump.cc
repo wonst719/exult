@@ -459,8 +459,8 @@ void Spellbook_gump::paint() {
 	const int numx = 1;
 	const int numy = -4;    // Where to draw numbers on spells,
 	//   with numx being the right edge.
-	Spelltype_gump::paint();     // Paint outside & checkmark.
-	if (page > 0) {    // Not the first?
+	Spelltype_gump::paint();    // Paint outside & checkmark.
+	if (page > 0) {             // Not the first?
 		paint_button(leftpage);
 	}
 	if (page < 8) {    // Not the last?

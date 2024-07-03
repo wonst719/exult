@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "objiter.h"
 
 #include <algorithm>
+
 /*
  *  Create a gump.
  */
@@ -60,7 +61,8 @@ Gump::Gump(
 		Container_game_object* cont,     // Container it represents.
 		int                    shnum,    // Shape #.
 		ShapeFile              shfile)
-		: Gump_Base(shnum, shnum == -1?-1:0, shfile), container(cont), handles_kbd(false) {
+		: Gump_Base(shnum, shnum == -1 ? -1 : 0, shfile), container(cont),
+		  handles_kbd(false) {
 	set_pos();
 }
 
@@ -100,13 +102,12 @@ Gump::~Gump() {
 
 void Gump::set_pos() {
 	// reset coords to 0 while getting rect
-	x            = 0;
-	y            = 0;
-	auto rect    = get_rect();
+	x         = 0;
+	y         = 0;
+	auto rect = get_rect();
 
-
-	x = (gwin->get_width() - rect.w) / 2 +rect.x;
-	y = (gwin->get_height() - rect.h) / 2 +rect.y;
+	x = (gwin->get_width() - rect.w) / 2 + rect.x;
+	y = (gwin->get_height() - rect.h) / 2 + rect.y;
 }
 
 void Gump::set_pos(int newx, int newy) {    // Set new spot on screen.
@@ -351,7 +352,9 @@ void check_elem_positions(Object_list& objects) {
 
 void Gump::paint() {
 	// Paint the gump itself.
-	if (get_shape()) paint_shape(x, y);
+	if (get_shape()) {
+		paint_shape(x, y);
+	}
 	gwin->set_painted();
 
 	// Paint red "checkmark".
@@ -455,6 +458,7 @@ TileRect Gump::get_rect() const {
 			x - s->get_xleft(), y - s->get_yabove(), s->get_width(),
 			s->get_height());
 }
+
 bool Gump::isOffscreen(bool partially) const {
 	auto rect = get_rect();
 

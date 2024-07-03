@@ -480,7 +480,7 @@ sint32 Audio::playSpeechfile(
 		CERR("Audio::playfile: Error reading file '" << fname << "'");
 		return -1;
 	}
-	volume = (volume * speech_volume) / 100;
+	volume           = (volume * speech_volume) / 100;
 	return speech_id = play(std::move(buf), len, wait, volume);
 }
 
@@ -505,7 +505,7 @@ void Audio::change_repeat(bool newrepeat) {
 
 bool Audio::start_music(
 		const std::string& fname, int num, bool continuous,
-		MyMidiPlayer::ForceType force ) {
+		MyMidiPlayer::ForceType force) {
 	if (audio_enabled && music_enabled && mixer && mixer->getMidiPlayer()) {
 		return mixer->getMidiPlayer()->start_music(
 				fname, num,
@@ -700,7 +700,8 @@ int Audio::play_wave_sfx(
 		return -1;
 	}
 
-	CERR("Playing SFX: " << num << " with real volume " << std::hex << volume << std::dec);
+	CERR("Playing SFX: " << num << " with real volume " << std::hex << volume
+						 << std::dec);
 
 	mixer->set2DPosition(instance_id, distance, balance);
 	mixer->setPaused(instance_id, false);

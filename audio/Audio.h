@@ -157,8 +157,9 @@ public:
 			const char* fname, const char* fpatch, bool wait, int volume = 255);
 	bool playing();
 	bool start_music(
-			int num, bool continuous = false, MyMidiPlayer::ForceType force= MyMidiPlayer::Force_None,
-			const std::string& flex = MAINMUS);
+			int num, bool continuous = false,
+			MyMidiPlayer::ForceType force = MyMidiPlayer::Force_None,
+			const std::string&      flex  = MAINMUS);
 	void change_repeat(bool newrepeat);
 	bool start_music(
 			const std::string& fname, int num, bool continuous = false,

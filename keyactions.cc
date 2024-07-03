@@ -27,12 +27,12 @@
 #include "File_gump.h"
 #include "Gamemenu_gump.h"
 #include "Gump_manager.h"
+#include "Mixer_gump.h"
 #include "Newfile_gump.h"
 #include "Notebook_gump.h"
 #include "Scroll_gump.h"
 #include "ShortcutBar_gump.h"
 #include "Yesno_gump.h"
-#include "Mixer_gump.h"
 #include "actors.h"
 #include "cheat.h"
 #include "combat_opts.h"
@@ -51,7 +51,6 @@
 #include "party.h"
 #include "ucmachine.h"
 #include "version.h"
-
 
 /*
  *  Get the i'th party member, with the 0'th being the Avatar.

@@ -76,7 +76,7 @@ Slider_widget::Slider_widget(
 			= leftbtnx + lshape->get_xright() + width + rshape->get_xleft() + 1;
 	btny = lshape->get_height() - 1;
 	// centre the diamond between button height
-	//int buttontop    = btny + lshape->get_yabove();
+	// int buttontop    = btny + lshape->get_yabove();
 	int buttonbottom = btny + lshape->get_ybelow();
 	diamondy         = buttonbottom - dshape->get_ybelow()
 			   - (lshape->get_height() - dshape->get_height()) / 2;

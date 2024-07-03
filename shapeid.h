@@ -202,8 +202,8 @@ public:
  *  as a 2-byte quantity.
  */
 class ShapeID : public Game_singletons {
-	short       shapenum = -1;    // Shape #.
-	signed char framenum = -1;    // Frame # within shape.
+	short       shapenum          = -1;    // Shape #.
+	signed char framenum          = -1;    // Frame # within shape.
 	uint16      palette_transform = 0;
 
 	ShapeFile shapefile = SF_SHAPES_VGA;
