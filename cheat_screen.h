@@ -89,7 +89,8 @@ private:
 
 		CP_HexXCoord          = 37,
 		CP_HexYCoord          = 38,
-		CP_EnterValueNoCancel = 39
+		CP_EnterValueNoCancel = 39,
+		CP_CustomValue
 	};
 
 	Game_window*   gwin  = nullptr;
@@ -99,6 +100,8 @@ private:
 	int            maxx = 0, maxy = 0;
 	int            centerx = 0, centery = 0;
 	Palette        pal;
+	const char*    custom_prompt = nullptr;
+	int            saved_value   = 0;
 
 	void SharedPrompt(char* input, const Cheat_Prompt& mode);
 	bool SharedInput(
@@ -154,7 +157,13 @@ private:
 	bool StatCheck(
 			char* input, int& command, Cheat_Prompt& mode, bool& activate,
 			Actor* actor);
-
+	void PalEffectLoop(Actor*);
+	void PalEffectMenu(Actor* actor, int command);
+	void PalEffectActivate(
+			char* input, int& command, Cheat_Prompt& mode, Actor* actor);
+	bool PalEffectCheck(
+			char* input, int& command, Cheat_Prompt& mode, bool& activate,
+			Actor* actor);
 	void TeleportLoop();
 	void TeleportDisplay();
 	void TeleportMenu();

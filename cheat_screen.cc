@@ -219,6 +219,7 @@ void CheatScreen::SharedPrompt(char* input, const Cheat_Prompt& mode) {
 	// ...and Prompt Message
 	switch (mode) {
 	default:
+
 	case CP_Command:
 		font->paint_text_fixedwidth(
 				ibuf, "Enter Command.", offsetx, promptmes, 8);
@@ -302,6 +303,12 @@ void CheatScreen::SharedPrompt(char* input, const Cheat_Prompt& mode) {
 	case CP_EnterValue:
 		font->paint_text_fixedwidth(
 				ibuf, "Enter Value. (-1 to cancel.)", offsetx, promptmes, 8);
+		break;
+
+	case CP_CustomValue:
+		if (custom_prompt) font->paint_text_fixedwidth(
+				ibuf, custom_prompt, offsetx, promptmes,
+				8);
 		break;
 
 	case CP_EnterValueNoCancel:
@@ -480,7 +487,14 @@ bool CheatScreen::SharedInput(
 			}
 			const SDL_Keysym& key = event.key.keysym;
 
-			if ((key.sym == SDLK_s) && (key.mod & KMOD_ALT)
+			// Escape will cancel current mode
+			if (key.sym == SDLK_ESCAPE && mode != CP_Command) {
+				command = 0;
+				mode    = CP_Command;
+				return false;
+			}
+	
+				if ((key.sym == SDLK_s) && (key.mod & KMOD_ALT)
 				&& (key.mod & KMOD_CTRL)) {
 				make_screenshot(true);
 				return false;
@@ -528,6 +542,7 @@ bool CheatScreen::SharedInput(
 					}
 				}
 			} else if (mode >= CP_Name) {    // Want Text input (len chars)
+
 				if (key.sym == SDLK_RETURN || key.sym == SDLK_KP_ENTER) {
 					activate = true;
 				} else if (
@@ -551,7 +566,7 @@ bool CheatScreen::SharedInput(
 				}
 			} else if (mode >= CP_ChooseNPC) {    // Need to grab numerical
 												  // input
-				// Browse shape
+ // Browse shape
 				if (mode == CP_Shape && !input[0] && key.sym == 'b') {
 					cheat.shape_browser();
 					input[0] = 'b';
@@ -1454,6 +1469,10 @@ void CheatScreen::NPCMenu(Actor* actor, int& num) {
 		font->paint_text_fixedwidth(
 				ibuf, "[T]eleport", offsetx + 160, maxy - offsety1 - 81, 8);
 
+		// Palette Effect
+		font->paint_text_fixedwidth(
+				ibuf, "[P]alete Effect", offsetx+160, maxy - offsety1 - 72, 8);
+
 		// Change NPC
 		font->paint_text_fixedwidth(
 				ibuf, "[*] Change NPC", offsetx3, offsety3, 8);
@@ -1504,6 +1523,10 @@ void CheatScreen::NPCActivate(
 
 		case 's':    // stats
 			StatLoop(actor);
+			break;
+
+		case 'p':
+			PalEffectLoop(actor);
 			break;
 
 		case 't':    // Teleport
@@ -1600,6 +1623,15 @@ bool CheatScreen::NPCCheck(
 			mode = CP_InvalidCom;
 		} else {
 			mode = CP_EnterValue;
+		}
+		break;
+
+		// Palette Effect
+	case 'p':
+		if (!actor) {
+			mode = CP_InvalidCom;
+		} else {
+			activate = true;
 		}
 		break;
 
@@ -2907,6 +2939,260 @@ bool CheatScreen::StatCheck(
 	case 'x':
 		input[0] = command;
 		return false;
+
+		// Unknown
+	default:
+		command = 0;
+		break;
+	}
+
+	return true;
+}
+
+//
+// Pallete Effect
+//
+
+void CheatScreen::PalEffectLoop(Actor* actor) {
+#if !defined(__IPHONEOS__) && !defined(ANDROID)
+	int num = actor->get_npc_num();
+#endif
+	bool looping = true;
+
+	// This is for the prompt message
+	Cheat_Prompt mode = CP_Command;
+
+	// This is the command
+	char input[17];
+	int  i;
+	int  command=0;
+	bool activate = false;
+
+	for (i = 0; i < 17; i++) {
+		input[i] = 0;
+	}
+
+	while (looping) {
+		gwin->clear_screen();
+
+#if !defined(__IPHONEOS__) && !defined(ANDROID)
+		// First the display
+		NPCDisplay(actor, num);
+#endif
+
+		// Now the Menu Column
+		PalEffectMenu(actor,command);
+
+		// Finally the Prompt...
+		SharedPrompt(input, mode);
+
+		// Draw it!
+		gwin->get_win()->show();
+
+		// Check to see if we need to change menus
+		if (activate) {
+			PalEffectActivate(input, command, mode, actor);
+			activate = false;
+			continue;
+		}
+
+		if (SharedInput(input, 17, command, mode, activate)) {
+			looping = PalEffectCheck(input, command, mode, activate, actor);
+		}
+	}
+}
+
+void CheatScreen::PalEffectMenu(Actor* actor,int command) {
+	char buf[512];
+#if defined(__IPHONEOS__) || defined(ANDROID)
+	const int offsetx  = 15;
+	const int offsety1 = 92;
+#else
+	const int offsetx  = 0;
+	const int offsety1 = 0;
+
+#endif
+	int pt = actor->get_palette_transform();
+	if (pt == 0) {
+		snprintf(buf, sizeof(buf), "Current effect: None");
+	} else if (
+			(pt & ShapeID::PT_RampRemapAllFrom)
+			== ShapeID::PT_RampRemapAllFrom) {
+		snprintf(
+				buf, sizeof(buf), "Current effect: Ramp Remap All To %i",
+				pt & 31);
+	} else if ((pt & ShapeID::PT_RampRemap) == ShapeID::PT_RampRemap) {
+		snprintf(
+				buf, sizeof(buf), "Current effect: Ramp Remap %i To %i",
+				(pt >> 5) & 31, pt & 31);
+	} else if ((pt & ShapeID::PT_xForm) == ShapeID::PT_xForm) {
+		snprintf(buf, sizeof(buf), "Current effect: XForm %i", pt & 31);
+	} else if (pt < 256) {
+		snprintf(buf, sizeof(buf), "Current effect: Shift by %i", pt & 0xff);
+	}
+	font->paint_text_fixedwidth(ibuf, buf, offsetx, maxy - offsety1 - 135, 8);
+
+	if (command == 't') {
+		if (saved_value == 255)
+			snprintf(buf, sizeof(buf), "From Ramp: All");
+		else
+		snprintf(buf, sizeof(buf), "From Ramp: %i", saved_value&31);
+	
+	font->paint_text_fixedwidth(
+				ibuf, buf, offsetx, maxy - offsety1 - 126, 8);
+	}
+
+	// Left Column
+
+	// ramp remap
+	font->paint_text_fixedwidth(ibuf, "[R]amp Remap", offsetx, maxy - offsety1 - 108, 8);
+
+	// xform
+	font->paint_text_fixedwidth(ibuf, "[X]form.", offsetx, maxy - offsety1 - 99, 8);
+
+	// Shift
+	font->paint_text_fixedwidth(ibuf, "[S]hift", offsetx, maxy - offsety1 - 90, 8);
+
+	//clear
+	font->paint_text_fixedwidth(
+			ibuf, "[C]lear", offsetx, maxy - offsety1 - 81, 8);
+
+	// Exit
+	font->paint_text_fixedwidth(
+			ibuf, "[E]xit", offsetx, maxy - offsety1 - 36, 8);
+}
+
+void CheatScreen::PalEffectActivate(
+		char* input, int& command, Cheat_Prompt& mode, Actor* actor) {
+	int i = std::atoi(input);
+	char* end;
+	auto  u = std::strtoul(input, &end, 10);
+	mode  = CP_Command;
+	for (int ii = 0; ii < 17; ii++) {
+		input[ii] = 0;    // Enforce sane bounds.
+	}
+
+
+	switch (command) {
+	case 'x':    // Dexterity
+		actor->set_palette_transform(
+				ShapeID::PT_xForm
+				| i % Shape_manager::get_instance()->get_xforms_cnt());
+		break;
+
+	case 'f':    // from Ramp
+	{
+		const char   prompttext[] = "enter To Ramp number Index (0-%i)";
+		static char  staticPrompttext[sizeof(prompttext) + 16];
+		unsigned int numramps = 0;
+		gwin->get_pal()->get_ramps(numramps);
+		if (u >= numramps && u!=255) {
+			mode = CP_InvalidValue;
+			break;
+		}
+		std::snprintf(
+				staticPrompttext, sizeof(staticPrompttext), prompttext,
+				numramps);
+		input[0]      = 0;
+		custom_prompt = staticPrompttext;
+		mode          = CP_CustomValue;
+		command       = 't';
+		saved_value   = i;
+		return;
+	}
+
+	case 't':    // to ramp
+	{
+		unsigned int numramps = 0;
+		gwin->get_pal()->get_ramps(numramps);
+		if (u >= numramps) {
+			mode = CP_InvalidValue;
+			break;
+		}
+		if (saved_value == 255)
+		actor->set_palette_transform(
+				ShapeID::PT_RampRemapAllFrom | (i & 31) );
+		else
+		actor->set_palette_transform(
+				ShapeID::PT_RampRemap | (i & 31) | ((saved_value & 0xff) << 5));
+	}
+		break;
+
+	case 's':    // Strength
+		actor->set_palette_transform(ShapeID::PT_Shift | (i&0xff));
+		break;
+
+		
+	case 'c':    // clear
+		actor->set_palette_transform(0);
+		break;
+
+
+	default:
+		break;
+	}
+	command = 0;
+}
+
+// Checks the input
+bool CheatScreen::PalEffectCheck(
+		char* input, int& command, Cheat_Prompt& mode, bool& activate,
+		Actor* actor) {
+	ignore_unused_variable_warning(activate, actor);
+	switch (command) {
+	case 'r':    // [R]amp Remap
+	{
+		const char prompttext[]
+				= "enter From Ramp (0-%i) or 255 for all";
+		static char  staticPrompttext[sizeof(prompttext) + 16];
+		unsigned int numramps = 0;
+		gwin->get_pal()->get_ramps(numramps);
+		if (numramps) {
+			numramps--;
+		}
+		std::snprintf(
+				staticPrompttext, sizeof(staticPrompttext), prompttext,
+				numramps);
+		input[0]      = 0;
+		custom_prompt = staticPrompttext;
+		mode          = CP_CustomValue;
+		command       = 'f';
+	} break;
+
+	case 'x':    // [X]Form
+	{
+		const char  prompttext[] = "enter XFORM Index (0-%i)";
+		static char staticPrompttext[sizeof(prompttext) + 16];
+		int         numxforms = Shape_manager::get_instance()->get_xforms_cnt();
+		if (numxforms) {
+			numxforms--;
+		}
+		std::snprintf(
+				staticPrompttext, sizeof(staticPrompttext), prompttext,
+				numxforms);
+		input[0]      = 0;
+		custom_prompt = staticPrompttext;
+		mode          = CP_CustomValue;
+	} break;
+
+	case 's':    // [S]hift
+		input[0]      = 0;
+		custom_prompt = "enter shift amount (0-255)";
+		mode          = CP_EnterValue;
+		break;
+
+		// Escape leaves
+		// X and Escape leave
+	case SDLK_ESCAPE:
+	case 'e':
+		input[0] = command;
+		return false;
+
+		// clear
+	case 'c':
+		activate = true;
+		break;
+
 
 		// Unknown
 	default:
