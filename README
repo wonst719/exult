@@ -1,5 +1,5 @@
 Exult Documentation
-last changed: 25 April 2024 (GMT)
+last changed: 03 July 2024 (GMT)
 
 The latest version of this document can be found at https://exult.info/docs.php
 
@@ -22,10 +22,11 @@ The latest version of this document can be found at https://exult.info/docs.php
 3.2. Load/Save Game
 3.3. Video Options
 3.4. Audio Options
-3.5. Game Engine
-3.6. Game Display
-3.7. Game Input
-3.8. Quit
+3.5. Volume Mixer
+3.6. Game Engine
+3.7. Game Display
+3.8. Game Input
+3.9. Quit
 
 4. Audio
 4.1. Music
@@ -67,6 +68,7 @@ The latest version of this document can be found at https://exult.info/docs.php
 8.4. Adapting the location of Mods and Patches
 8.5. Where to find the savegames of modded games
 8.6. Exchanging Savegames between original games and Mods
+8.7. Problems with case sensitive file systems (e.g. Linux)
 
 9. iOS Guide
 9.1. The port to iOS
@@ -101,12 +103,13 @@ The latest version of this document can be found at https://exult.info/docs.php
 12.2. Contacting us
 
 13. Changes to the Documentation
-13.1. - 25 April 2024
-13.2. - 23 April 2024
-13.3. - 11 February 2022
-13.4. - 24 January 2022
-13.5. - 20 February 2021
-13.6. older changes
+13.1. - 03 July 2024
+13.2. - 25 April 2024
+13.3. - 23 April 2024
+13.4. - 11 February 2022
+13.5. - 24 January 2022
+13.6. - 20 February 2021
+13.7. older changes
 
 
 --------------------------------------------------------------------------------
@@ -331,12 +334,18 @@ In this option screen you are able to determine how Exult displays the game.
 
 Look at 4. Audio to see explanation on the settings.
 
+* Volume Mixer
+ opens our Volume Mixer, see see 3.5..
 * Audio
  Enable or disable all Audio in Exult.
+* sample rate
+ changes the sample rate between 11025 and 48000.
+* speaker type
+ toggle between mono and stereo.
 * Music
  Enable or disable music.
 * looping
- Disable restores the (broken) way the original handled the music looping flag.
+ Toggles several ways the music can loop, see 4.1. Music .
 * digital music
  Enables/disables Digital Music.
 * MIDI driver
@@ -350,15 +359,21 @@ Look at 4. Audio to see explanation on the settings.
 * Pack
  choose between our standard SFX packs, Roland MT32 and Soundblaster, see 4.7.. This option is not available in the Exult Setup.
 * Speech
- enable or disable speech. When disabled you will see subtitles when the Guardian or the Great Earth Serpent speaks.
-* subtitles
- Show subtitles while speech is being played. In the original the subtitles were only shown when speech was disabled.
-* OK/Cancel
- Ok accepts your changes, Cancel discards your changes.
+ ptions on whether you hear the voices of the Guardian or the Great Earth Serpent, also toggles subtitles.
+* APPLY/HELP/CANCEL
+ Applies your changes without closing the Audio Options. If you don't want to apply your changes, click CANCEL.
 
 
 
-3.5. Game Engine
+3.5. Volume Mixer
+
+Our Volume Mixer allows changing the volume of music, sfx and speech independently. Our different midi drivers each save their own volume.
+
+When you have enabled digital music and and another midi driver you can set both volumes for music.
+
+
+
+3.6. Game Engine
 
 
 * Take automatic Notes
@@ -385,7 +400,7 @@ Look at 4. Audio to see explanation on the settings.
 
 
 
-3.6. Game Display
+3.7. Game Display
 
 
 * Status Bars
@@ -404,14 +419,14 @@ Look at 4. Audio to see explanation on the settings.
  When enabled you don't have to watch the splash screen and intro when you select a game from the Exult menu.
 * Skip scripted first scene
  When you start a new game of BG the game starts with a scripted scene during which you can't move the Avatar. Enable this to skip this part but only do this if you have already played the game and have seen this scene.
-* Use extended SI intro
- To fit the intro of SI onto the constraints of floppy disks, it was cut and made much simpler than originally envisioned by Denis Loubet. We have restored the intro and made it possible to watch it.
 * Paperdolls
  only available in Black Gate and only if you have Serpent Isle installed as well. Enables or disable Paperdolls (inventory screen) in the style of Serpent Isle.
+* Use extended SI intro
+ To fit the intro of SI onto the constraints of floppy disks, it was cut and made much simpler than originally envisioned by Denis Loubet. We have restored the intro and made it possible to watch it.
 
 
 
-3.7. Game Input
+3.8. Game Input
 
 
 * Doubleclick closes gumps
@@ -435,10 +450,10 @@ Look at 4. Audio to see explanation on the settings.
 
 
 
-3.8. Quit
+3.9. Quit
 
 Exits Exult. This option is only available in the in-game menu.
- On iOS this is not available (iOS doesn't allow you to quit apps directly).
+ On iOS and Android this is not available (both don't allow you to quit apps directly).
 
 
 
@@ -451,6 +466,16 @@ There are three general ways that music is played in Exult. One is using MIDI, w
  The MIDI files are converted on-the-fly from the original Ultima VII MT-32 files to General MIDI format so that they will be playable on modern General MIDI and General MIDI/GS supporting sound cards.
 The Music driver options can be changed in the in-game menu that you open by hitting 'ESC'.
  There you can enable Digital Music and change the MIDI driver, through which you can also select the FMOpl emulation. When you enable Digital Music, it takes precedence over the MIDI driver.
+Exult allows changing of how the games' music loops.
+* never
+ disables music looping entirely.
+* endless
+ lopping music will not stop until a new music piece is being played.
+* auto
+ Music will loop but music started by a jukebox egg will stop looping when the avatar is too far away. The music will play through to the end of the track.
+* limited
+ same as auto but music will immediately stop when too far from the egg instead of playing through to the end.
+
 
 
 4.2. MIDI Music
@@ -991,6 +1016,11 @@ You cannot exchange savegames between original games and mods. For example, when
  So don't do it.
 
 
+8.7. Problems with case sensitive file systems (e.g. Linux)
+
+The way our mods and patches work, require that both the original games' files and the mod files are using the same case (lower or upper or mixed) on a case sensitive file system as is the standard with Linux. Otherwise some original files won't be patched as the operating system will assume that these are different files.
+
+
 
 --------------------------------------------------------------------------------
 
@@ -1058,7 +1088,7 @@ When playing you have a dpad overlaying the game screen which by default is on t
  Tapping with your finger is equal to a left click in the game.
  The green (and eventually red (combat)) movement cursor and the hand pointer are invisible on iOS as they are more distracting than helping when you control and click with your finger.
 When you do a long touch on a location and then release the finger, the Avatar will pathfind to this spot.
-There is also a helper menu when you click near objects in the games, which can be helpful on the smaller iPhone screens but can be disabled in 3.7. Game Input .
+There is also a helper menu when you click near objects in the games, which can be helpful on the smaller iPhone screens but can be disabled in 3.8. Game Input .
 
 
 9.6. iOS automatic saves
@@ -1319,6 +1349,10 @@ Note: the settings in exult.cfg are the same on all operating systems (except wh
       yes
 				**enable/disable sound effects.
       </enabled>
+      <sfx_volume>
+      100
+				**Sound effects volume.
+      </sfx_volume>
     </effects>
     <speech>
       <enabled>
@@ -1329,6 +1363,10 @@ Note: the settings in exult.cfg are the same on all operating systems (except wh
       no
 				**enable/disable displaying subtitles while speech plays.
       </with_subs>
+      <speech_volume>
+      100
+				**Speech volume.
+      </speech_volume>
     </speech>
     <midi>
       <enabled>
@@ -1352,7 +1390,7 @@ Note: the settings in exult.cfg are the same on all operating systems (except wh
       </convert>
       <looping>
       yes
-				**No disables music looping. See 3.4.
+				**Changes music looping, options are auto, never, endless, limited. See 4.1.
       </looping>
       <chorus>
         <enabled>
@@ -1424,6 +1462,26 @@ Note: the settings in exult.cfg are the same on all operating systems (except wh
       1.000000
 				**set volume (kind of at least, best don't change)
       </volume_curve>
+      <volume_FMOpl>
+      100
+				**FMOpl volume
+      </volume_FMOpl>
+      <volume_ogg>
+      100
+				**Digital Music volume
+      </volume_ogg>
+      <volume_CoreAudio>
+      100
+				**CoreAudio volume
+      </volume_CoreAudio>
+      <volume_MT32Emu>
+      100
+				**MT32 volume
+      </volume_MT32Emu>
+      <volume_FluidSynth>
+      100
+				**FluidSynth volume
+      </volume_FluidSynth>
     </midi>
   </audio>
   <video>
@@ -1956,7 +2014,17 @@ You can contact the Exult team through our Github Discussions page.
 --------------------------------------------------------------------------------
 
 13. Changes to the Documentation
-13.1. - 25 April 2024
+13.1. - 03 July 2024
+
+* 3.4. Audio Options settings changed and Volume Mixer was added.
+* 3.5. Volume Mixer macOS no longer uses the Console.app to show stdout.
+* 4.1. Music explain different looping settings.
+* 8.7. Problems with case sensitive file systems (e.g. Linux) added note about possible problems with mods.
+* 10.1. Settings in exult.cfg added volume settings.
+
+
+
+13.2. - 25 April 2024
 
 * Replaced *nix with Linux as people are mostly looking for Linux and might get confused.
 * Removed documentation for unsupported Windows versions.
@@ -1966,7 +2034,7 @@ You can contact the Exult team through our Github Discussions page.
 
 
 
-13.2. - 23 April 2024
+13.3. - 23 April 2024
 
 * 2.5. Command line options Added the shortcut to starting the Serpent Isle beta.
 * 4.13. Linux and Audio Alsa port magic by Dragon Baroque.
@@ -1978,7 +2046,7 @@ You can contact the Exult team through our Github Discussions page.
 
 
 
-13.3. - 11 February 2022
+13.4. - 11 February 2022
 
 * 2.5. Command line options Add t'--verify-files'.
 * 3. Exult Setup and Game Menu Moved this section closer to the top.
@@ -1989,7 +2057,7 @@ You can contact the Exult team through our Github Discussions page.
 
 
 
-13.4. - 24 January 2022
+13.5. - 24 January 2022
 
 * 10.1. Settings in exult.cfg cfg setting to disable the extended SI intro.
 * 4.8. All-in-One Audio Data pack and installers The Windows installer will optionally install the audio pack.
@@ -1999,7 +2067,7 @@ You can contact the Exult team through our Github Discussions page.
 
 
 
-13.5. - 20 February 2021
+13.6. - 20 February 2021
 
 * Changed links to our homepage to exult.info, SDL to SDL2, Mac OS X to macOS.
 * Removed references to Windows CE/Pocket PC.
@@ -2012,7 +2080,7 @@ You can contact the Exult team through our Github Discussions page.
 
 
 
-13.6. older changes
+13.7. older changes
 
 For older changes of the documentation, please see its git history.
 

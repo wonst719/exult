@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE readme SYSTEM "docs.dtd">
-<readme title="Exult" changed="25 April 2024 (GMT)">
+<readme title="Exult" changed="03 July 2024 (GMT)">
 	<section title="Introduction">
 		<sub name="exult_version">
 			<header>Exult Version</header>
@@ -340,7 +340,9 @@
 					<Exult/> Setup can only be opened on the <Exult/> menu by selecting the 'Setup' option.<br/>
 					And you can access the Game menu either by pressing the disk icon in the Avatar's
 					inventory screen or by pressing <key>Esc</key>.<br/>
-					The following options are available for the <Exult/> Setup menu and the Game menu:<br/>
+					The following options are available for the <Exult/> Setup menu and the Game menu:
+				</para>
+				<para>
 					<img alt="the Game menu" src="images/docs01.png"/>
 				</para>
 				<para>
@@ -358,7 +360,9 @@
 					If you have a wheel mouse you can scroll one line up/down by using the wheel. Pressing
 					<key>Alt</key> while using the wheel scrolls by pages.<br/>
 					Pressing <strong>Cancel</strong> exits the Load/Save options.<br/>
-					This is only available in game through the Game menu.<br/>
+					This is only available in game through the Game menu.
+				</para>
+				<para>
 					<img alt="saving/loading a game" src="images/docs02.png"/>
 				</para>
 			</body>
@@ -367,7 +371,9 @@
 			<header>Video Options</header>
 			<body>
 				<para>
-					In this option screen you are able to determine how <Exult/> displays the game.<br/>
+					In this option screen you are able to determine how <Exult/> displays the game.
+				</para>
+				<para>
 					<img alt="Video Options" src="images/docs03.png"/>
 				</para>
 				<ul>
@@ -408,16 +414,24 @@
 			<header>Audio Options</header>
 			<body>
 				<para>
-					Look at <section_ref target="Audio"/> to see explanation on the settings.<br/>
+					Look at <section_ref target="Audio"/> to see explanation on the settings.
+				</para>
+				<para>
 					<img alt="Audio Options" src="images/docs04.png"/>
 				</para>
 				<ul>
+					<li><strong>Volume Mixer</strong><br/>
+						opens our Volume Mixer, see see <ref target="volume_mixer_gump"/>.</li>
 					<li><strong>Audio</strong><br/>
 						Enable or disable all Audio in <Exult/>.</li>
+					<li><strong>sample rate</strong><br/>
+						changes the sample rate between 11025 and 48000.</li>
+					<li><strong>speaker type</strong><br/>
+						toggle between mono and stereo.</li>
 					<li><strong>Music</strong><br/>
 						Enable or disable music.</li>
 					<li><strong>looping</strong><br/>
-						Disable restores the (broken) way the original handled the music looping flag.</li>
+						Toggles several ways the music can loop, see <ref1 target="music"/>.</li>
 					<li><strong>digital music</strong><br/>
 						Enables/disables Digital Music.</li>
 					<li><strong>MIDI driver</strong><br/>
@@ -433,15 +447,30 @@
 						choose between our standard SFX packs, Roland MT32 and Soundblaster, see <ref target="wave_sfx"/>.
 						This option is not available in the <Exult/> Setup.</li>
 					<li><strong>Speech</strong><br/>
-						enable or disable speech. When disabled you will see subtitles when the Guardian
-						or the Great Earth Serpent speaks.</li>
-					<li><strong>subtitles</strong><br/>
-						 Show subtitles while speech is being played. In the original
-						 the subtitles were only shown when speech was disabled.
-						</li>
-					<li><strong>OK/Cancel</strong><br/>
-						Ok accepts your changes, Cancel discards your changes.</li>
+						ptions on whether you hear the voices of the Guardian or the Great Earth Serpent, also toggles subtitles.</li>
+					<li><strong>APPLY/HELP/CANCEL</strong><br/>
+						Applies your changes without closing the Audio Options. If you don't want to apply your changes,
+						click CANCEL.</li>
 				</ul>
+			</body>
+		</sub>
+		<sub name="volume_mixer_gump">
+			<header>Volume Mixer</header>
+			<body>
+				<para>
+					Our Volume Mixer allows changing the volume of music, sfx and speech independently.
+					Our different midi drivers each save their own volume.
+				</para>
+				<para>
+					<img alt="Volume Mixer" src="images/docs08.png"/>
+				</para>
+				<para>
+					When you have enabled digital music <strong>and</strong> and another midi driver you can set 
+					both volumes for music.
+				</para>
+				<para>
+					<img alt="Volume Mixer" src="images/docs09.png"/>
+				</para>
 			</body>
 		</sub>
 		<sub name="game_engine_gump">
@@ -524,14 +553,14 @@
 						When you start a new game of BG the game starts with a scripted scene during which
 						you can't move the Avatar. Enable this to skip this part but only do this
 						if you have already played the game and have seen this scene.</li>
-					<li><strong>Use extended SI intro</strong><br/>
-						To fit the intro of SI onto the constraints of floppy disks, it was cut and made
-						much simpler than originally envisioned by Denis Loubet. We have restored the
-						intro and made it possible to watch it.</li>
 					<li><strong>Paperdolls</strong><br/>
 						only available in <strong>Black Gate</strong> and only if you have
 						<strong>Serpent Isle</strong> installed as well. Enables or disable Paperdolls
 						(inventory screen) in the style of <strong>Serpent Isle</strong>.</li>
+					<li><strong>Use extended SI intro</strong><br/>
+						To fit the intro of SI onto the constraints of floppy disks, it was cut and made
+						much simpler than originally envisioned by Denis Loubet. We have restored the
+						intro and made it possible to watch it.</li>
 				</ul>
 			</body>
 		</sub>
@@ -578,7 +607,7 @@
 			<body>
 				<para>
 					Exits <Exult/>. This option is only available in the in-game menu.<br/>
-					On iOS this is not available (iOS doesn't allow you to quit apps directly).
+					On iOS and Android this is not available (both don't allow you to quit apps directly).
 				</para>
 			</body>
 		</sub>
@@ -604,6 +633,21 @@
 					also select the FMOpl emulation. When you enable Digital Music, it takes precedence over
 					the MIDI driver.
 				</para>
+				<para>
+					<Exult/> allows changing of how the games' music loops.
+				</para>
+				<ul>
+					<li><strong>never</strong><br/>
+						disables music looping entirely.</li>
+					<li><strong>endless</strong><br/>
+						lopping music will not stop until a new music piece is being played.</li>
+					<li><strong>auto</strong><br/>
+						Music will loop but music started by a jukebox egg will stop looping when the avatar
+						is too far away. The music will play through to the end of the track.</li>
+					<li><strong>limited</strong><br/>
+						same as auto but music will immediately stop when too far from the egg instead of
+						playing through to the end.</li>
+				</ul>
 			</body>
 		</sub>
 		<sub name="midi_music">
@@ -1562,6 +1606,17 @@
 				</para>
 			</body>
 		</sub>
+		<sub name="mods_case_sensitivity">
+			<header>Problems with case sensitive file systems (e.g. Linux)</header>
+			<body>
+				<para>
+					The way our mods and patches work, require that both the original games' files and the
+					mod files are using the same case (lower or upper or mixed) on a case sensitive
+					file system as is the standard with Linux. Otherwise some original files won't be patched
+					as the operating system will assume that these are different files.
+				</para>
+			</body>
+		</sub>
 	</section>
 	<section title="iOS Guide">
 		<sub name="ios_port">
@@ -1965,6 +2020,10 @@
 									yes
 									<comment>**enable/disable sound effects.</comment>
 								</configtag>
+							<configtag name="sfx_volume">
+								100
+								<comment>**Sound effects volume.</comment>
+							</configtag>
 							</configtag>
 							<configtag name="speech">
 								<configtag name="enabled">
@@ -1974,6 +2033,10 @@
 								<configtag name="with_subs">
 								no
 								<comment>**enable/disable displaying subtitles while speech plays.</comment>
+								</configtag>
+								<configtag name="speech_volume">
+									100
+									<comment>**Speech volume.</comment>
 								</configtag>
 							</configtag>
 							<configtag name="midi">
@@ -1998,7 +2061,7 @@
 								</configtag>
 								<configtag name="looping">
 								yes
-								<comment>**No disables music looping. See <ref target="audio_gump"/></comment>
+								<comment>**Changes music looping, options are auto, never, endless, limited. See <ref target="music"/></comment>
 								</configtag>
 								<configtag name="chorus">
 									<configtag name="enabled">
@@ -2069,6 +2132,26 @@
 								<configtag name="volume_curve" manual="true">
 								1.000000
 								<comment>**set volume (kind of at least, best don't change)</comment>
+								</configtag>
+								<configtag name="volume_FMOpl">
+								100
+								<comment>**FMOpl volume</comment>
+								</configtag>
+								<configtag name="volume_ogg">
+								100
+								<comment>**Digital Music volume</comment>
+								</configtag>
+								<configtag name="volume_CoreAudio">
+								100
+								<comment>**CoreAudio volume</comment>
+								</configtag>
+								<configtag name="volume_MT32Emu">
+								100
+								<comment>**MT32 volume</comment>
+								</configtag>
+								<configtag name="volume_FluidSynth">
+								100
+								<comment>**FluidSynth volume</comment>
 								</configtag>
 							</configtag>
 						</configtag>
@@ -2883,6 +2966,18 @@
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
+		<sub name="030742024">
+			<header>- 03 July 2024</header>
+			<body>
+				<ul>
+					<li><ref1 target="audio_gump"/> settings changed and Volume Mixer was added.</li>
+					<li><ref1 target="volume_mixer_gump"/> macOS no longer uses the Console.app to show stdout.</li>
+					<li><ref1 target="music"/> explain different looping settings.</li>
+					<li><ref1 target="mods_case_sensitivity"/> added note about possible problems with mods.</li>
+					<li><ref1 target="exult_config"/> added volume settings.</li>
+				</ul>
+			</body>
+		</sub>
 		<sub name="25042024">
 			<header>- 25 April 2024</header>
 			<body>
