@@ -3006,31 +3006,33 @@ void CheatScreen::PalEffectMenu(Actor* actor,int command) {
 	char buf[512];
 #if defined(__IPHONEOS__) || defined(ANDROID)
 	const int offsetx  = 15;
-	const int offsety1 = 92;
+	const int offsety1 = 81;
+	const int offsety2 = 72;
 #else
 	const int offsetx  = 0;
 	const int offsety1 = 0;
+	const int offsety2 = maxy - 36;
 
 #endif
 	int pt = actor->get_palette_transform();
 	if (pt == 0) {
-		snprintf(buf, sizeof(buf), "Current effect: None");
+		snprintf(buf, sizeof(buf), "Palette effect: None");
 	} else if (
 			(pt & ShapeID::PT_RampRemapAllFrom)
 			== ShapeID::PT_RampRemapAllFrom) {
 		snprintf(
-				buf, sizeof(buf), "Current effect: Ramp Remap All To %i",
+				buf, sizeof(buf), "Palette effect: Ramp Remap All To %i",
 				pt & 31);
 	} else if ((pt & ShapeID::PT_RampRemap) == ShapeID::PT_RampRemap) {
 		snprintf(
-				buf, sizeof(buf), "Current effect: Ramp Remap %i To %i",
+				buf, sizeof(buf), "Palette effect: Ramp Remap %i To %i",
 				(pt >> 5) & 31, pt & 31);
 	} else if ((pt & ShapeID::PT_xForm) == ShapeID::PT_xForm) {
-		snprintf(buf, sizeof(buf), "Current effect: XForm %i", pt & 31);
+		snprintf(buf, sizeof(buf), "Palette effect: XForm %i", pt & 31);
 	} else if (pt < 256) {
-		snprintf(buf, sizeof(buf), "Current effect: Shift by %i", pt & 0xff);
+		snprintf(buf, sizeof(buf), "Palette effect: Shift by %i", pt & 0xff);
 	}
-	font->paint_text_fixedwidth(ibuf, buf, offsetx, maxy - offsety1 - 135, 8);
+	font->paint_text_fixedwidth(ibuf, buf, offsetx, maxy - offsety1 - 119, 8);
 
 	if (command == 't') {
 		if (saved_value == 255)
@@ -3039,27 +3041,27 @@ void CheatScreen::PalEffectMenu(Actor* actor,int command) {
 		snprintf(buf, sizeof(buf), "From Ramp: %i", saved_value&31);
 	
 	font->paint_text_fixedwidth(
-				ibuf, buf, offsetx, maxy - offsety1 - 126, 8);
+				ibuf, buf, offsetx, maxy - offsety1 - 110, 8);
 	}
 
 	// Left Column
 
 	// ramp remap
-	font->paint_text_fixedwidth(ibuf, "[R]amp Remap", offsetx, maxy - offsety1 - 108, 8);
+	font->paint_text_fixedwidth(ibuf, "[R]amp Remap", offsetx, maxy - offsety1 - 99, 8);
 
 	// xform
-	font->paint_text_fixedwidth(ibuf, "[X]form.", offsetx, maxy - offsety1 - 99, 8);
+	font->paint_text_fixedwidth(ibuf, "[X]form.", offsetx, maxy - offsety1 - 90, 8);
 
 	// Shift
-	font->paint_text_fixedwidth(ibuf, "[S]hift", offsetx, maxy - offsety1 - 90, 8);
+	font->paint_text_fixedwidth(ibuf, "[S]hift", offsetx, maxy - offsety1 - 81, 8);
 
 	//clear
 	font->paint_text_fixedwidth(
-			ibuf, "[C]lear", offsetx, maxy - offsety1 - 81, 8);
+			ibuf, "[C]lear", offsetx, maxy - offsety1 - 72, 8);
 
 	// Exit
 	font->paint_text_fixedwidth(
-			ibuf, "[E]xit", offsetx, maxy - offsety1 - 36, 8);
+			ibuf, "[E]xit", offsetx, offsety2, 8);
 }
 
 void CheatScreen::PalEffectActivate(
