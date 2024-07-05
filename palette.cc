@@ -528,17 +528,22 @@ const Palette::Ramp* Palette::get_ramps(unsigned int& num_ramps) {
 		ramps[0].start    = 1;
 		// Where the palette sycling ramps start
 		uint8 palette_cycling[] = {
-				0xe0, 0xe8,0xf0, 0xf4,0xf8,0xfc, 0xff,
+				0xe0, 0xe8, 0xf0, 0xf4, 0xf8, 0xfc, 0xff,
 		};
-		
-		for (int c = 2; c < 256; c++) {
+
+		for (unsigned int c = 2; c < 256; c++) {
 			int brightness = pal1[c * 3] + pal1[c * 3 + 1] + pal1[c * 3 + 2];
 
 			// Big change in brightness means start of a ramp (note 6 bit colour
 			// so 48 is equiv to 192 in 8 bit)
 			// Special handling for palette cycling ranges so they behave better
 			if ((c < palette_cycling[0] && std::abs(brightness - last) > 48)
-				|| c == *std::find(palette_cycling,palette_cycling + std::size(palette_cycling)- 1, c)) {
+				|| c
+						   == *std::find(
+								   palette_cycling,
+								   palette_cycling + std::size(palette_cycling)
+										   - 1,
+								   c)) {
 				// set the end point of the previous ramp
 				ramps[r].end = c - 1;
 				r++;

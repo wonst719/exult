@@ -1440,6 +1440,12 @@
     <ClInclude Include="..\..\gitinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\gumps\Mixer_gump.h">
+      <Filter>gumps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gumps\Slider_widget.h">
+      <Filter>gumps</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\data\flx.in">

@@ -43,6 +43,10 @@
 											// 'bool' in operation
 
 #endif
+// Enable all the signed/unsigned warnings at level 3
+#pragma warning(3 : 4018)
+#pragma warning(3 : 4388)
+#pragma warning(3 : 4389)
 
 #include <windows.h>
 
