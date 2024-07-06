@@ -47,6 +47,7 @@
 #define SPRITES_VGA     "<STATIC>/sprites.vga"
 #define PATCH_SPRITES   "<PATCH>/sprites.vga"
 #define MAINSHP_FLX     "<STATIC>/mainshp.flx"
+#define U7MAINSHP_FLX   "<ULTIMA7_STATIC>/mainshp.flx"
 #define PATCH_MAINSHP   "<PATCH>/mainshp.flx"
 #define ENDSHAPE_FLX    "<STATIC>/endshape.flx"
 #define PATCH_ENDSHAPE  "<PATCH>/endshape.flx"

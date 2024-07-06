@@ -81,8 +81,18 @@ void ShapeBrowser::browse_shapes() {
 	Game_window*   gwin = Game_window::get_instance();
 	Shape_manager* sman = Shape_manager::get_instance();
 	Image_buffer8* ibuf = gwin->get_win()->get_ib8();
-	auto           font = fontManager.get_font("MENU_FONT");
 
+	// Try to get the Font form Blackgate first because it looks better than the
+	// SI one
+	auto font = std::make_shared<Font>();
+	if (font->load(U7MAINSHP_FLX, 9, 1) != 0) {
+		font.reset();
+	}
+
+	// Get the font for this game if don't already have it
+	if (!font) {
+		font = fontManager.get_font("MENU_FONT");
+	}
 	const int   maxx    = gwin->get_width();
 	const int   centerx = maxx / 2;
 	const int   maxy    = gwin->get_height();

@@ -141,9 +141,22 @@ static int Find_highest_map() {
 }
 
 void CheatScreen::show_screen() {
-	gwin  = Game_window::get_instance();
-	ibuf  = gwin->get_win()->get_ib8();
-	font  = fontManager.get_font("MENU_FONT");
+	gwin = Game_window::get_instance();
+	ibuf = gwin->get_win()->get_ib8();
+
+	if (!font) {
+		// Try to get the Font form Blackgate first because it looks better than
+		// the SI one
+		font = std::make_shared<Font>();
+		if (font->load(U7MAINSHP_FLX, 9, 1) != 0) {
+			font.reset();
+		}
+	}
+
+	// Get the font for this game if don't already have it
+	if (!font) {
+		font = fontManager.get_font("MENU_FONT");
+	}
 	clock = gwin->get_clock();
 	maxx  = gwin->get_width();
 #if defined(__IPHONEOS__) || defined(ANDROID)
