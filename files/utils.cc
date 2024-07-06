@@ -712,7 +712,7 @@ string Get_home() {
 #	ifdef PORTABLE_EXULT_WIN32
 	home_directory = ".";
 #	else
-	if (get_system_path("<HOME>") == ".") {
+	if (is_system_path_defined("<HOME>") && get_system_path("<HOME>") == ".") {
 		home_directory = ".";
 	} else {
 		shell32_wrapper shell32;
@@ -932,7 +932,7 @@ void setup_program_paths() {
 	const string savehome_dir(Get_savehome_dir(home_dir, config_dir));
 	const string gamehome_dir(Get_gamehome_dir(home_dir, config_dir));
 
-	if (get_system_path("<HOME>") != ".") {
+	if (!is_system_path_defined("<HOME>") || get_system_path("<HOME>") != ".") {
 		add_system_path("<HOME>", home_dir);
 	}
 	add_system_path("<CONFIG>", config_dir);
