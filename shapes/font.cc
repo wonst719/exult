@@ -747,6 +747,7 @@ int Font::load_internal(IDataSource& data, int hlead, int vlead) {
 		font_shapes.reset();
 		hor_lead = 0;
 		ver_lead = 0;
+		return -1;
 	} else {
 		// Is it an IFF archive?
 		char hdr[5] = {0};
@@ -763,27 +764,12 @@ int Font::load_internal(IDataSource& data, int hlead, int vlead) {
 	return 0;
 }
 
-/**
- *  Loads a font from a File_spec.
- *  @param fname0   First file spec.
- *  @param index    Number of font to load.
- *  @param hleah    Horizontal lead of the font.
- *  @param vleah    Vertical lead of the font.
- */
 int Font::load(const File_spec& fname0, int index, int hlead, int vlead) {
 	clean_up();
 	IExultDataSource data(fname0, index);
 	return load_internal(data, hlead, vlead);
 }
 
-/**
- *  Loads a font from a File_spec.
- *  @param fname0   First file spec.
- *  @param fname1   Second file spec.
- *  @param index    Number of font to load.
- *  @param hleah    Horizontal lead of the font.
- *  @param vleah    Vertical lead of the font.
- */
 int Font::load(
 		const File_spec& fname0, const File_spec& fname1, int index, int hlead,
 		int vlead) {

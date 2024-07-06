@@ -67,7 +67,24 @@ public:
 	Font(Font&&) noexcept            = default;
 	Font& operator=(Font&&) noexcept = default;
 	~Font() noexcept                 = default;
+	/**
+	 *  Loads a font from a File_spec.
+	 *  @param fname0   First file spec.
+	 *  @param index    Number of font to load.
+	 *  @param hleah    Horizontal lead of the font.
+	 *  @param vleah    Vertical lead of the font.
+	 *  @return 0 on success
+	 */
 	int load(const File_spec& fname0, int index, int hlead = 0, int vlead = 1);
+	/**
+	 *  Loads a font from a File_spec.
+	 *  @param fname0   First file spec.
+	 *  @param fname1   Second file spec.
+	 *  @param index    Number of font to load.
+	 *  @param hleah    Horizontal lead of the font.
+	 *  @param vleah    Vertical lead of the font.
+	 *  @return 0 on success
+	 */
 	int load(
 			const File_spec& fname0, const File_spec& fname1, int index,
 			int hlead = 0, int vlead = 1);
