@@ -207,7 +207,7 @@ void CheatScreen::show_screen() {
 // Shared
 //
 
-void CheatScreen::SharedPrompt(char* input, const Cheat_Prompt& mode) {
+void CheatScreen::SharedPrompt(const char* input, const Cheat_Prompt& mode) {
 	char buf[512];
 
 #if defined(__IPHONEOS__) || defined(ANDROID)
@@ -221,6 +221,12 @@ void CheatScreen::SharedPrompt(char* input, const Cheat_Prompt& mode) {
 #endif
 	font->paint_text_fixedwidth(ibuf, "Select->", offsetx, prompt, 8);
 
+	// Special handling for arrows in CP_Command
+	if (mode == CP_Command && !input[1]
+		&& (*input == '<' || *input == '>' || *input == '^' || *input == 'V')) {
+		PaintArrow(64 + offsetx, prompt, *input);
+		input = " ";
+	}
 	if (input && std::strlen(input)) {
 		font->paint_text_fixedwidth(ibuf, input, 64 + offsetx, prompt, 8);
 		font->paint_text_fixedwidth(
@@ -319,9 +325,10 @@ void CheatScreen::SharedPrompt(char* input, const Cheat_Prompt& mode) {
 		break;
 
 	case CP_CustomValue:
-		if (custom_prompt) font->paint_text_fixedwidth(
-				ibuf, custom_prompt, offsetx, promptmes,
-				8);
+		if (custom_prompt) {
+			font->paint_text_fixedwidth(
+					ibuf, custom_prompt, offsetx, promptmes, 8);
+		}
 		break;
 
 	case CP_EnterValueNoCancel:
@@ -506,8 +513,8 @@ bool CheatScreen::SharedInput(
 				mode    = CP_Command;
 				return false;
 			}
-	
-				if ((key.sym == SDLK_s) && (key.mod & KMOD_ALT)
+
+			if ((key.sym == SDLK_s) && (key.mod & KMOD_ALT)
 				&& (key.mod & KMOD_CTRL)) {
 				make_screenshot(true);
 				return false;
@@ -579,7 +586,7 @@ bool CheatScreen::SharedInput(
 				}
 			} else if (mode >= CP_ChooseNPC) {    // Need to grab numerical
 												  // input
- // Browse shape
+												  // Browse shape
 				if (mode == CP_Shape && !input[0] && key.sym == 'b') {
 					cheat.shape_browser();
 					input[0] = 'b';
@@ -807,7 +814,11 @@ void CheatScreen::NormalMenu() {
 #if !defined(__IPHONEOS__) && !defined(ANDROID)
 	// for small screens taking the liberty of leaving that out
 	// Time Rate
-	snprintf(buf, sizeof(buf), "[+-] Time Rate: %3i", clock->get_time_rate());
+	if (clock->get_time_rate() > 1) {
+		PaintArrow(8, maxy - 36, '<');
+	}
+	PaintArrow(17, maxy - 36, '>');
+	snprintf(buf, sizeof(buf), "[  ] Time Rate: %3i", clock->get_time_rate());
 	font->paint_text_fixedwidth(ibuf, buf, 0, maxy - 36, 8);
 #endif
 
@@ -869,14 +880,14 @@ void CheatScreen::NormalActivate(
 		break;
 
 		// - Time Rate
-	case '-':
+	case '<':
 		if (clock->get_time_rate() > 0) {
 			clock->set_time_rate(clock->get_time_rate() - 1);
 		}
 		break;
 
 		// + Time Rate
-	case '+':
+	case '>':
 		if (clock->get_time_rate() < 20) {
 			clock->set_time_rate(clock->get_time_rate() + 1);
 		}
@@ -955,17 +966,15 @@ bool CheatScreen::NormalCheck(
 		break;
 
 		// - Time
-	case SDLK_KP_MINUS:
-	case '-':
-		command  = '-';
+	case SDLK_LEFT:
+		command  = '<';
 		input[0] = command;
 		activate = true;
 		break;
 
-		// + Time
-	case SDLK_KP_PLUS:
-	case '=':
-		command  = '+';
+	// + Time
+	case SDLK_RIGHT:
+		command  = '>';
 		input[0] = command;
 		activate = true;
 		break;
@@ -1019,6 +1028,60 @@ void CheatScreen::ActivityDisplay() {
 			snprintf(buf, sizeof(buf), "%2i %s", i + 22, schedules[i + 22]);
 			font->paint_text_fixedwidth(ibuf, buf, 224, i * 9 + offsety1, 8);
 		}
+	}
+}
+
+void CheatScreen::PaintArrow(int offsetx, int offsety, int type) {
+	// up arrow
+	if (type == '^') {
+		// Need to draw up arrow with overlapping characters
+		// Use an i as the stem of the arrow
+		font->paint_text_fixedwidth(ibuf, "i", offsetx, offsety, 8);
+		// Draw a black line to narrow the stem
+		ibuf->draw_line8(0, offsetx + 4, offsety, offsetx + 4, offsety + 8);
+		// Draw point of arrow
+		font->paint_text_fixedwidth(ibuf, "^", offsetx, offsety, 8);
+
+	}    // down arrow
+	else if (type == 'V') {
+		// Need to draw up arrow with overlapping characters
+		// Use an l as the stem of the arrow
+		font->paint_text_fixedwidth(ibuf, "l", offsetx, offsety, 8);
+		// Draw a black lines to narrow the stem
+		ibuf->draw_line8(0, offsetx + 2, offsety, offsetx + 2, offsety + 2);
+		ibuf->draw_line8(0, offsetx + 4, offsety, offsetx + 4, offsety + 6);
+		// Draw point of arrow
+
+		font->paint_text_fixedwidth(ibuf, "m", offsetx, offsety + 2, 8);
+		// Paint black lines to make it pointy
+		ibuf->draw_line8(0, offsetx + 0, offsety + 5, offsetx + 0, offsety + 8);
+		ibuf->draw_line8(0, offsetx + 6, offsety + 5, offsetx + 6, offsety + 8);
+		ibuf->draw_line8(0, offsetx + 1, offsety + 6, offsetx + 1, offsety + 8);
+		ibuf->draw_line8(0, offsetx + 5, offsety + 6, offsetx + 5, offsety + 8);
+	}
+
+	// left arrow
+	else if (type == '<') {
+		// Stem of arrow
+		font->paint_text_fixedwidth(ibuf, "-", offsetx + 1, offsety, 8);
+		// Paint black line to make it pointier
+		ibuf->draw_line8(0, offsetx + 0, offsety + 4, offsetx + 7, offsety + 4);
+		// Point of  arrow
+		font->paint_text_fixedwidth(ibuf, "<", offsetx, offsety, 8);
+		// Paint black line to make it pointier
+		ibuf->draw_line8(0, offsetx + 1, offsety + 4, offsetx + 4, offsety + 7);
+		ibuf->put_pixel8(0, offsetx + 5, offsety + 7);
+
+		// Right Arrow
+	} else if (type == '>') {
+		// Stem of arrow
+		font->paint_text_fixedwidth(ibuf, "-", offsetx, offsety, 8);
+		// Paint black line to make it pointier
+		ibuf->draw_line8(0, offsetx + 0, offsety + 4, offsetx + 7, offsety + 4);
+		// Point of arrow
+		font->paint_text_fixedwidth(ibuf, ">", offsetx + 2, offsety, 8);
+		// Paint black line to make it pointier
+		ibuf->draw_line8(0, offsetx + 7, offsety + 4, offsetx + 3, offsety + 7);
 	}
 }
 
@@ -1159,18 +1222,24 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 
 		// Change Flag
 
+		PaintArrow(offsetx + 8, maxy - offsety1 - 72, '^');
 		font->paint_text_fixedwidth(
-				ibuf, "[*] Change Flag", offsetx, maxy - offsety1 - 72, 8);
+				ibuf, "[ ] Change Flag", offsetx, maxy - offsety1 - 72, 8);
 		if (num > 0 && num < c_last_gflag) {
+			PaintArrow(offsetx + 8, maxy - offsety1 - 63, '<');
+			PaintArrow(offsetx + 17, maxy - offsety1 - 63, '>');
+
 			font->paint_text_fixedwidth(
-					ibuf, "[+-] Scroll Flags", offsetx, maxy - offsety1 - 63,
+					ibuf, "[  ] Scroll Flags", offsetx, maxy - offsety1 - 63,
 					8);
 		} else if (num == 0) {
+			PaintArrow(offsetx + 8, maxy - offsety1 - 63, '<');
 			font->paint_text_fixedwidth(
-					ibuf, "[+] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
+					ibuf, "[ ] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
 		} else {
+			PaintArrow(offsetx + 8, maxy - offsety1 - 63, '>');
 			font->paint_text_fixedwidth(
-					ibuf, "[-] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
+					ibuf, "[ ] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
 		}
 		font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, offsety2, 8);
 
@@ -1183,17 +1252,17 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 		// Check to see if we need to change menus
 		if (activate) {
 			mode = CP_Command;
-			if (command == '-') {    // Decrement
+			if (command == '<') {    // Decrement
 				num--;
 				if (num < 0) {
 					num = 0;
 				}
-			} else if (command == '+') {    // Increment
+			} else if (command == '>') {    // Increment
 				num++;
 				if (num > c_last_gflag) {
 					num = c_last_gflag;
 				}
-			} else if (command == '*') {    // Change Flag
+			} else if (command == '^') {    // Change Flag
 				i = std::atoi(input);
 				if (i < -1 || i > c_last_gflag) {
 					mode = CP_InvalidValue;
@@ -1226,25 +1295,22 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 				break;
 
 				// Decrement
-			case SDLK_KP_MINUS:
-			case '-':
-				command  = '-';
+			case SDLK_LEFT:
+				command  = '<';
 				input[0] = command;
 				activate = true;
 				break;
 
 				// Increment
-			case SDLK_KP_PLUS:
-			case '=':
-				command  = '+';
+			case SDLK_RIGHT:
+				command  = '>';
 				input[0] = command;
 				activate = true;
 				break;
 
 				// * Change Flag
-			case SDLK_KP_MULTIPLY:
-			case '8':
-				command  = '*';
+			case SDLK_UP:
+				command  = '^';
 				input[0] = 0;
 				mode     = CP_GFlagNum;
 				break;
@@ -1484,16 +1550,35 @@ void CheatScreen::NPCMenu(Actor* actor, int& num) {
 
 		// Palette Effect
 		font->paint_text_fixedwidth(
-				ibuf, "[P]alete Effect", offsetx+160, maxy - offsety1 - 72, 8);
+				ibuf, "[P]alete Effect", offsetx + 160, maxy - offsety1 - 72,
+				8);
 
 		// Change NPC
+
+		PaintArrow(offsetx3 + 8, offsety3, '^');
+
 		font->paint_text_fixedwidth(
-				ibuf, "[*] Change NPC", offsetx3, offsety3, 8);
+				ibuf, "[ ] Change NPC", offsetx3, offsety3, 8);
 	}
 
 	// Change NPC
-	font->paint_text_fixedwidth(
-			ibuf, "[+-] Scroll NPCs", offsetx3, offsety4, 8);
+	int num_arrows = 0;
+	if (num > 0) {
+		PaintArrow(offsetx3 + 8, offsety4, '<');
+		num_arrows++;
+	}
+	if (num < gwin->get_num_npcs()) {
+		PaintArrow(offsetx3 + 9 + num_arrows*8, offsety4, '>');
+		num_arrows++;
+	}
+
+	if (num_arrows == 2) {
+		font->paint_text_fixedwidth(
+				ibuf, "[  ] Scroll NPCs", offsetx3, offsety4, 8);
+	} else {
+		font->paint_text_fixedwidth(
+				ibuf, "[ ]  Scroll NPCs", offsetx3, offsety4, 8);
+	}
 }
 
 void CheatScreen::NPCActivate(
@@ -1504,19 +1589,19 @@ void CheatScreen::NPCActivate(
 
 	mode = CP_Command;
 
-	if (command == '-') {
+	if (command == '<') {
 		num--;
 		if (num < 0) {
 			num = 0;
 		} else if (num >= 356 && num <= 359) {
 			num = 355;
 		}
-	} else if (command == '+') {
+	} else if (command == '>') {
 		num++;
 		if (num >= 356 && num <= 359) {
 			num = 360;
 		}
-	} else if (command == '*') {    // Change NPC
+	} else if (command == '^') {    // Change NPC
 		if (i < -1 || (i >= 356 && i <= 359)) {
 			mode = CP_InvalidNPC;
 		} else if (i == -1) {
@@ -1667,25 +1752,22 @@ bool CheatScreen::NPCCheck(
 		break;
 
 		// - NPC
-	case SDLK_KP_MINUS:
-	case '-':
-		command  = '-';
+	case SDLK_LEFT:
+		command  = '<';
 		input[0] = command;
 		activate = true;
 		break;
 
 		// + NPC
-	case SDLK_KP_PLUS:
-	case '=':
-		command  = '+';
+	case SDLK_RIGHT:
+		command  = '>';
 		input[0] = command;
 		activate = true;
 		break;
 
 		// * Change NPC
-	case SDLK_KP_MULTIPLY:
-	case '8':
-		command  = '*';
+	case SDLK_UP:
+		command  = '^';
 		input[0] = 0;
 		mode     = CP_ChooseNPC;
 		break;
@@ -1810,8 +1892,9 @@ void CheatScreen::FlagMenu(Actor* actor) {
 	font->paint_text_fixedwidth(ibuf, buf, offsetx, maxy - offsety1 - 63, 8);
 
 	// Advanced Editor
+	PaintArrow(offsetx + 8, maxy - offsety1 - 45, '^');
 	font->paint_text_fixedwidth(
-			ibuf, "[*] Advanced", offsetx, maxy - offsety1 - 45, 8);
+			ibuf, "[ ] Advanced", offsetx, maxy - offsety1 - 45, 8);
 
 	// Exit
 	font->paint_text_fixedwidth(
@@ -2253,7 +2336,7 @@ void CheatScreen::FlagActivate(
 		break;
 
 		// Advanced Numeric Flag Editor
-	case '*':
+	case '^':
 		if (i < -1) {
 			mode = CP_InvalidValue;
 		} else if (i > 63) {
@@ -2387,9 +2470,8 @@ bool CheatScreen::FlagCheck(
 
 		// NPC Flag Editor
 
-	case SDLK_KP_MULTIPLY:
-	case '8':
-		command  = '*';
+	case SDLK_UP:
+		command  = '^';
 		input[0] = 0;
 		mode     = CP_NFlagNum;
 		break;
@@ -2978,7 +3060,7 @@ void CheatScreen::PalEffectLoop(Actor* actor) {
 	// This is the command
 	char input[17];
 	int  i;
-	int  command=0;
+	int  command  = 0;
 	bool activate = false;
 
 	for (i = 0; i < 17; i++) {
@@ -2994,7 +3076,7 @@ void CheatScreen::PalEffectLoop(Actor* actor) {
 #endif
 
 		// Now the Menu Column
-		PalEffectMenu(actor,command);
+		PalEffectMenu(actor, command);
 
 		// Finally the Prompt...
 		SharedPrompt(input, mode);
@@ -3015,7 +3097,7 @@ void CheatScreen::PalEffectLoop(Actor* actor) {
 	}
 }
 
-void CheatScreen::PalEffectMenu(Actor* actor,int command) {
+void CheatScreen::PalEffectMenu(Actor* actor, int command) {
 	char buf[512];
 #if defined(__IPHONEOS__) || defined(ANDROID)
 	const int offsetx  = 15;
@@ -3048,45 +3130,47 @@ void CheatScreen::PalEffectMenu(Actor* actor,int command) {
 	font->paint_text_fixedwidth(ibuf, buf, offsetx, maxy - offsety1 - 119, 8);
 
 	if (command == 't') {
-		if (saved_value == 255)
+		if (saved_value == 255) {
 			snprintf(buf, sizeof(buf), "From Ramp: All");
-		else
-		snprintf(buf, sizeof(buf), "From Ramp: %i", saved_value&31);
-	
-	font->paint_text_fixedwidth(
+		} else {
+			snprintf(buf, sizeof(buf), "From Ramp: %i", saved_value & 31);
+		}
+
+		font->paint_text_fixedwidth(
 				ibuf, buf, offsetx, maxy - offsety1 - 110, 8);
 	}
 
 	// Left Column
 
 	// ramp remap
-	font->paint_text_fixedwidth(ibuf, "[R]amp Remap", offsetx, maxy - offsety1 - 99, 8);
+	font->paint_text_fixedwidth(
+			ibuf, "[R]amp Remap", offsetx, maxy - offsety1 - 99, 8);
 
 	// xform
-	font->paint_text_fixedwidth(ibuf, "[X]form.", offsetx, maxy - offsety1 - 90, 8);
+	font->paint_text_fixedwidth(
+			ibuf, "[X]form.", offsetx, maxy - offsety1 - 90, 8);
 
 	// Shift
-	font->paint_text_fixedwidth(ibuf, "[S]hift", offsetx, maxy - offsety1 - 81, 8);
+	font->paint_text_fixedwidth(
+			ibuf, "[S]hift", offsetx, maxy - offsety1 - 81, 8);
 
-	//clear
+	// clear
 	font->paint_text_fixedwidth(
 			ibuf, "[C]lear", offsetx, maxy - offsety1 - 72, 8);
 
 	// Exit
-	font->paint_text_fixedwidth(
-			ibuf, "[E]xit", offsetx, offsety2, 8);
+	font->paint_text_fixedwidth(ibuf, "[E]xit", offsetx, offsety2, 8);
 }
 
 void CheatScreen::PalEffectActivate(
 		char* input, int& command, Cheat_Prompt& mode, Actor* actor) {
-	int i = std::atoi(input);
+	int   i = std::atoi(input);
 	char* end;
 	auto  u = std::strtoul(input, &end, 10);
-	mode  = CP_Command;
+	mode    = CP_Command;
 	for (int ii = 0; ii < 17; ii++) {
 		input[ii] = 0;    // Enforce sane bounds.
 	}
-
 
 	switch (command) {
 	case 'x':    // Dexterity
@@ -3101,7 +3185,7 @@ void CheatScreen::PalEffectActivate(
 		static char  staticPrompttext[sizeof(prompttext) + 16];
 		unsigned int numramps = 0;
 		gwin->get_pal()->get_ramps(numramps);
-		if (u >= numramps && u!=255) {
+		if (u >= numramps && u != 255) {
 			mode = CP_InvalidValue;
 			break;
 		}
@@ -3124,24 +3208,23 @@ void CheatScreen::PalEffectActivate(
 			mode = CP_InvalidValue;
 			break;
 		}
-		if (saved_value == 255)
-		actor->set_palette_transform(
-				ShapeID::PT_RampRemapAllFrom | (i & 31) );
-		else
-		actor->set_palette_transform(
-				ShapeID::PT_RampRemap | (i & 31) | ((saved_value & 0xff) << 5));
-	}
-		break;
+		if (saved_value == 255) {
+			actor->set_palette_transform(
+					ShapeID::PT_RampRemapAllFrom | (i & 31));
+		} else {
+			actor->set_palette_transform(
+					ShapeID::PT_RampRemap | (i & 31)
+					| ((saved_value & 0xff) << 5));
+		}
+	} break;
 
 	case 's':    // Strength
-		actor->set_palette_transform(ShapeID::PT_Shift | (i&0xff));
+		actor->set_palette_transform(ShapeID::PT_Shift | (i & 0xff));
 		break;
 
-		
 	case 'c':    // clear
 		actor->set_palette_transform(0);
 		break;
-
 
 	default:
 		break;
@@ -3157,8 +3240,7 @@ bool CheatScreen::PalEffectCheck(
 	switch (command) {
 	case 'r':    // [R]amp Remap
 	{
-		const char prompttext[]
-				= "enter From Ramp (0-%i) or 255 for all";
+		const char   prompttext[] = "enter From Ramp (0-%i) or 255 for all";
 		static char  staticPrompttext[sizeof(prompttext) + 16];
 		unsigned int numramps = 0;
 		gwin->get_pal()->get_ramps(numramps);
@@ -3207,7 +3289,6 @@ bool CheatScreen::PalEffectCheck(
 	case 'c':
 		activate = true;
 		break;
-
 
 		// Unknown
 	default:
@@ -3287,18 +3368,24 @@ CheatScreen::Cheat_Prompt CheatScreen::AdvancedFlagLoop(int num, Actor* actor) {
 		}
 
 		// Change Flag
+		PaintArrow(offsetx + 8, maxy - offsety1 - 72, '^');
 		font->paint_text_fixedwidth(
-				ibuf, "[*] Change Flag", offsetx, maxy - offsety1 - 72, 8);
+				ibuf, "[ ] Change Flag", offsetx, maxy - offsety1 - 72, 8);
 		if (num > 0 && num < 63) {
+			PaintArrow(offsetx + 8, maxy - offsety1 - 63, '<');
+			PaintArrow(offsetx + 17, maxy - offsety1 - 63, '>');
+
 			font->paint_text_fixedwidth(
-					ibuf, "[+-] Scroll Flags", offsetx, maxy - offsety1 - 63,
+					ibuf, "[  ] Scroll Flags", offsetx, maxy - offsety1 - 63,
 					8);
 		} else if (num == 0) {
+			PaintArrow(offsetx + 8, maxy - offsety1 - 63, '>');
 			font->paint_text_fixedwidth(
-					ibuf, "[+] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
+					ibuf, "[ ] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
 		} else {
+			PaintArrow(offsetx + 8, maxy - offsety1 - 63, '<');
 			font->paint_text_fixedwidth(
-					ibuf, "[-] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
+					ibuf, "[ ] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
 		}
 
 		font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, offsety2, 8);
@@ -3312,17 +3399,17 @@ CheatScreen::Cheat_Prompt CheatScreen::AdvancedFlagLoop(int num, Actor* actor) {
 		// Check to see if we need to change menus
 		if (activate) {
 			mode = CP_Command;
-			if (command == '-') {    // Decrement
+			if (command == '<') {    // Decrement
 				num--;
 				if (num < 0) {
 					num = 0;
 				}
-			} else if (command == '+') {    // Increment
+			} else if (command == '>') {    // Increment
 				num++;
 				if (num > 63) {
 					num = 63;
 				}
-			} else if (command == '*') {    // Change Flag
+			} else if (command == '^') {    // Change Flag
 				i = std::atoi(input);
 				if (i < -1 || i > 63) {
 					mode = CP_InvalidValue;
@@ -3363,25 +3450,22 @@ CheatScreen::Cheat_Prompt CheatScreen::AdvancedFlagLoop(int num, Actor* actor) {
 				break;
 
 				// Decrement
-			case SDLK_KP_MINUS:
-			case '-':
-				command  = '-';
+			case SDLK_LEFT:
+				command  = '<';
 				input[0] = command;
 				activate = true;
 				break;
 
 				// Increment
-			case SDLK_KP_PLUS:
-			case '=':
-				command  = '+';
+			case SDLK_RIGHT:
+				command  = '>';
 				input[0] = command;
 				activate = true;
 				break;
 
 				// * Change Flag
-			case SDLK_KP_MULTIPLY:
-			case '8':
-				command  = '*';
+			case SDLK_UP:
+				command  = '^';
 				input[0] = 0;
 				mode     = CP_NFlagNum;
 				break;

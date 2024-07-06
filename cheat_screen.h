@@ -104,7 +104,7 @@ private:
 	const char*           custom_prompt = nullptr;
 	int                   saved_value   = 0;
 
-	void SharedPrompt(char* input, const Cheat_Prompt& mode);
+	void SharedPrompt(const char* input, const Cheat_Prompt& mode);
 	bool SharedInput(
 			char* input, int len, int& command, Cheat_Prompt& mode,
 			bool& activate);
