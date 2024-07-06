@@ -79,7 +79,8 @@ static inline bool handle_menu_click(
 }
 
 int maximum_size(
-		Font* font, tcb::span<const char* const> options, int centerx) {
+		std::shared_ptr<Font> font, tcb::span<const char* const> options,
+		int centerx) {
 	ignore_unused_variable_warning(centerx);
 	int max_width = 0;
 	for (const auto* option : options) {
@@ -93,8 +94,9 @@ int maximum_size(
 }
 
 void create_scroller_menu(
-		MenuList* menu, Font* fonton, Font* font, int first, int pagesize,
-		int num_choices, int xpos, int ypos) {
+		MenuList* menu, std::shared_ptr<Font> fonton,
+		std::shared_ptr<Font> font, int first, int pagesize, int num_choices,
+		int xpos, int ypos) {
 	constexpr static const std::array menuscroller{
 			"FIRST", "PREVIOUS", "NEXT", "LAST"};
 	assert(menuscroller.size() == 4);
@@ -119,8 +121,7 @@ void create_scroller_menu(
 	}
 }
 
-ExultMenu::ExultMenu(Game_window* gw)
-		: font(nullptr), fonton(nullptr), navfont(nullptr), navfonton(nullptr) {
+ExultMenu::ExultMenu(Game_window* gw) {
 	gwin              = gw;
 	ibuf              = gwin->get_win()->get_ib8();
 	const char* fname = BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX);
@@ -133,14 +134,14 @@ ExultMenu::ExultMenu(Game_window* gw)
 }
 
 void ExultMenu::calc_win() {
-	centerx   = gwin->get_width() / 2;
-	centery   = gwin->get_height() / 2;
-	Font* fnt = font ? font : fontManager.get_font("CREDITS_FONT");
-	pagesize  = std::max(
-            1, 2
-                       * ((gwin->get_win()->get_full_height()
-                           - 5 * fnt->get_text_height() - 15)
-                          / 45));
+	centerx  = gwin->get_width() / 2;
+	centery  = gwin->get_height() / 2;
+	auto fnt = font ? font : fontManager.get_font("CREDITS_FONT");
+	pagesize = std::max(
+			1, 2
+					   * ((gwin->get_win()->get_full_height()
+						   - 5 * fnt->get_text_height() - 15)
+						  / 45));
 }
 
 void ExultMenu::setup() {

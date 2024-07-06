@@ -44,9 +44,9 @@
 #include "tqueue.h"
 
 void SoundTester::test_sound() {
-	Game_window*   gwin = Game_window::get_instance();
-	Image_buffer8* ibuf = gwin->get_win()->get_ib8();
-	Font*          font = Shape_manager::get_instance()->get_font(4);
+	Game_window*          gwin = Game_window::get_instance();
+	Image_buffer8*        ibuf = gwin->get_win()->get_ib8();
+	std::shared_ptr<Font> font = Shape_manager::get_instance()->get_font(4);
 
 	Audio* audio = Audio::get_ptr();
 

@@ -658,7 +658,7 @@ void AudioOptions_gump::paint() {
 		}
 	}
 
-	Font*          font = fontManager.get_font("SMALL_BLACK_FONT");
+	std::shared_ptr<Font>          font = fontManager.get_font("SMALL_BLACK_FONT");
 	Image_window8* iwin = gwin->get_win();
 
 	font->paint_text(iwin->get_ib8(), "Audio:", x + colx[0], y + rowy[1] + 1);

@@ -74,7 +74,7 @@ void Fonts_vga_file::init() {
 	fonts.resize(numfonts);
 
 	for (size_t i = 0; i < numfonts; i++) {
-		fonts[i].load(
+		fonts[i] = std::make_shared<Font>(
 				FONTS_VGA, PATCH_FONTS, i, i < hlead.size() ? hlead[i] : 0, 0);
 	}
 }

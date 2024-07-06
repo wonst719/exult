@@ -984,7 +984,7 @@ void BG_Game::scene_guardian() {
 
 			// prepare Guardian speech
 			{
-				Font* font = fontManager.get_font("GUARDIAN_FONT");
+				std::shared_ptr<Font> font = fontManager.get_font("GUARDIAN_FONT");
 				const U7multiobject textobj(MAINSHP_FLX, PATCH_MAINSHP, 0x0D);
 				size_t              txt_len;
 				auto                txt = textobj.retrieve(txt_len);
@@ -1716,7 +1716,7 @@ std::vector<unsigned int> BG_Game::get_congratulations_messages() {
 void BG_Game::end_game(bool success, bool within_game) {
 	waitforspeech();
 
-	Font* font = fontManager.get_font("MENU_FONT");
+	std::shared_ptr<Font> font = fontManager.get_font("MENU_FONT");
 
 	if (!success) {
 		TextScroller text(MAINSHP_FLX, 0x15, font, nullptr);
@@ -1803,9 +1803,9 @@ void BG_Game::end_game(bool success, bool within_game) {
 		if (speech) {
 			speech1.play_it();
 		}
-		Font* endfont2 = fontManager.get_font("END2_FONT");
-		Font* endfont3 = fontManager.get_font("END3_FONT");
-		Font* normal   = fontManager.get_font("NORMAL_FONT");
+		std::shared_ptr<Font> endfont2 = fontManager.get_font("END2_FONT");
+		std::shared_ptr<Font> endfont3 = fontManager.get_font("END3_FONT");
+		std::shared_ptr<Font> normal   = fontManager.get_font("NORMAL_FONT");
 
 		{
 			const char* message = get_text_msg(you_cannot_do_that);
@@ -2164,7 +2164,7 @@ void BG_Game::show_credits() {
 
 bool BG_Game::new_game(Vga_file& shapes) {
 	const int menuy = topy + 110;
-	Font*     font  = fontManager.get_font("MENU_FONT");
+	std::shared_ptr<Font>     font  = fontManager.get_font("MENU_FONT");
 
 	Vga_file faces_vga;
 	// Need to know if SI is installed

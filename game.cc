@@ -177,7 +177,7 @@ void Game::show_congratulations(Palette* pal0) {
 	gwin->clear_screen(true);
 	win->fill8(0);
 
-	Font*     end_font = fontManager.get_font("EXULT_END_FONT");
+	std::shared_ptr<Font>     end_font = fontManager.get_font("EXULT_END_FONT");
 	const int starty
 			= (gwin->get_height() - end_font->get_text_height() * 8) / 2;
 
@@ -538,7 +538,7 @@ bool Game::show_menu(bool skip) {
 }
 
 void Game::journey_failed_text() {
-	Font* font = fontManager.get_font("MENU_FONT");
+	std::shared_ptr<Font> font = fontManager.get_font("MENU_FONT");
 	font->center_text(
 			ibuf, centerx, centery + 30, "You must start a new game first.");
 	font->center_text(ibuf, centerx, centery + 42, "Press ESC to return.");

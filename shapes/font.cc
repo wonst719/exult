@@ -839,7 +839,7 @@ void FontManager::add_font(
 		int vlead) {
 	remove_font(name);
 
-	Font* font = new Font(fname0, index, hlead, vlead);
+	auto font = std::make_shared<Font>(fname0, index, hlead, vlead);
 
 	fonts[name] = font;
 }
@@ -858,26 +858,19 @@ void FontManager::add_font(
 		int index, int hlead, int vlead) {
 	remove_font(name);
 
-	Font* font = new Font(fname0, fname1, index, hlead, vlead);
+	auto font = std::make_shared<Font>(fname0, fname1, index, hlead, vlead);
 
 	fonts[name] = font;
 }
 
 void FontManager::remove_font(const char* name) {
-	if (fonts[name] != nullptr) {
-		delete fonts[name];
-		fonts.erase(name);
-	}
+	fonts.erase(name);
 }
 
-Font* FontManager::get_font(const char* name) {
+std::shared_ptr<Font> FontManager::get_font(const char* name) {
 	return fonts[name];
 }
 
 void FontManager::reset() {
-	for (auto& font : fonts) {
-		delete font.second;
-	}
-
 	fonts.clear();
 }

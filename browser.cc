@@ -81,7 +81,7 @@ void ShapeBrowser::browse_shapes() {
 	Game_window*   gwin = Game_window::get_instance();
 	Shape_manager* sman = Shape_manager::get_instance();
 	Image_buffer8* ibuf = gwin->get_win()->get_ib8();
-	Font*          font = fontManager.get_font("MENU_FONT");
+	auto           font = fontManager.get_font("MENU_FONT");
 
 	const int   maxx    = gwin->get_width();
 	const int   centerx = maxx / 2;

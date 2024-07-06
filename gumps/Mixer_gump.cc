@@ -277,7 +277,7 @@ void Mixer_gump::paint() {
 			btn->paint();
 		}
 	}
-	Font* font = fontManager.get_font("SMALL_BLACK_FONT");
+	std::shared_ptr<Font> font = fontManager.get_font("SMALL_BLACK_FONT");
 	// font is required
 	if (!font) {
 		std::cerr << "Mixer_gump::paint() unable to get SMALL_BLACK_FONT "

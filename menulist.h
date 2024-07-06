@@ -98,11 +98,13 @@ public:
 
 class MenuTextObject : public MenuObject {
 public:
-	Font*       font;
-	Font*       font_on;
-	std::string text;
+	std::shared_ptr<Font> font;
+	std::shared_ptr<Font> font_on;
+	std::string           text;
 
-	MenuTextObject(Font* fnt, Font* fnton, std::string txt)
+	MenuTextObject(
+			std::shared_ptr<Font> fnt, std::shared_ptr<Font> fnton,
+			std::string txt)
 			: font(fnt), font_on(fnton), text(std::move(txt)) {}
 
 	virtual int get_height() {
@@ -118,7 +120,9 @@ private:
 	bool enabled;
 
 public:
-	MenuTextEntry(Font* fnton, Font* fnt, const char* txt, int xpos, int ypos);
+	MenuTextEntry(
+			std::shared_ptr<Font> fnton, std::shared_ptr<Font> fnt,
+			const char* txt, int xpos, int ypos);
 
 	void paint(Game_window* gwin) override;
 	bool handle_event(SDL_Event& event) override;
@@ -138,8 +142,8 @@ private:
 
 public:
 	MenuGameEntry(
-			Font* fnton, Font* fnt, const char* txt, Shape_frame* sfx, int xpos,
-			int ypos);
+			std::shared_ptr<Font> fnton, std::shared_ptr<Font> fnt,
+			const char* txt, Shape_frame* sfx, int xpos, int ypos);
 
 	void paint(Game_window* gwin) override;
 	bool handle_event(SDL_Event& event) override;
@@ -152,7 +156,9 @@ private:
 	int                      max_choice_width;
 
 public:
-	MenuTextChoice(Font* fnton, Font* fnt, const char* txt, int xpos, int ypos);
+	MenuTextChoice(
+			std::shared_ptr<Font> fnton, std::shared_ptr<Font> fnt,
+			const char* txt, int xpos, int ypos);
 	void add_choice(const char* s);
 
 	int get_choice() {

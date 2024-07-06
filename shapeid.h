@@ -176,9 +176,11 @@ public:
 	int paint_text(int fontnum, const char* text, int xoff, int yoff);
 	int paint_text(
 			int fontnum, const char* text, int textlen, int xoff, int yoff);
-	int paint_text(Font* font, const char* text, int xoff, int yoff);
 	int paint_text(
-			Font* font, const char* text, int textlen, int xoff, int yoff);
+			std::shared_ptr<Font> font, const char* text, int xoff, int yoff);
+	int paint_text(
+			std::shared_ptr<Font> font, const char* text, int textlen, int xoff,
+			int yoff);
 	// Get text width.
 	int get_text_width(int fontnum, const char* text);
 	int get_text_width(int fontnum, const char* text, int textlen);
@@ -188,7 +190,7 @@ public:
 	int find_cursor(
 			int fontnum, const char* text, int x, int y, int w, int h, int cx,
 			int cy, int vert_lead);
-	Font* get_font(int fontnum);
+	std::shared_ptr<Font> get_font(int fontnum);
 
 	size_t get_xforms_cnt() const {
 		return xforms.size();

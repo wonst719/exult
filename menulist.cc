@@ -74,7 +74,8 @@ bool MenuEntry::handle_event(SDL_Event& event) {
 
 // MenuTextEntry: a selectable menu entry (a button)
 MenuTextEntry::MenuTextEntry(
-		Font* fnton, Font* fnt, const char* txt, int xpos, int ypos)
+		std::shared_ptr<Font> fnton, std::shared_ptr<Font> fnt, const char* txt,
+		int xpos, int ypos)
 		: MenuTextObject(fnt, fnton, txt), enabled(true) {
 	const int max_width  = font->get_text_width(text.c_str());
 	const int max_height = font->get_text_height();
@@ -93,7 +94,7 @@ void MenuTextEntry::paint(Game_window* gwin) {
 	}
 	dirty = false;
 
-	Font* fnt;
+	std::shared_ptr<Font> fnt;
 	if (selected && enabled) {
 		fnt = font_on;
 	} else {
@@ -115,8 +116,8 @@ bool MenuTextEntry::handle_event(SDL_Event& event) {
 
 // MenuGameEntry: a selectable menu entry (a button)
 MenuGameEntry::MenuGameEntry(
-		Font* fnton, Font* fnt, const char* txt, Shape_frame* sfx, int xpos,
-		int ypos)
+		std::shared_ptr<Font> fnton, std::shared_ptr<Font> fnt, const char* txt,
+		Shape_frame* sfx, int xpos, int ypos)
 		: MenuTextEntry(fnton, fnt, txt, xpos, ypos) {
 	sfxicon       = sfx;
 	int max_width = 0;
@@ -168,7 +169,7 @@ void MenuGameEntry::paint(Game_window* gwin) {
 				sfxicon->get_height());
 	}
 
-	Font* fnt;
+	std::shared_ptr<Font> fnt;
 	if (selected && is_enabled()) {
 		fnt = font_on;
 	} else {
@@ -190,7 +191,8 @@ bool MenuGameEntry::handle_event(SDL_Event& event) {
 
 // MenuTextChoice: a multiple-choice menu entry
 MenuTextChoice::MenuTextChoice(
-		Font* fnton, Font* fnt, const char* txt, int xpos, int ypos)
+		std::shared_ptr<Font> fnton, std::shared_ptr<Font> fnt, const char* txt,
+		int xpos, int ypos)
 		: MenuTextObject(fnt, fnton, txt) {
 	const int max_width  = font->get_text_width(text.c_str());
 	const int max_height = font->get_text_height();
@@ -217,7 +219,7 @@ void MenuTextChoice::paint(Game_window* gwin) {
 	}
 	dirty = false;
 
-	Font* fnt;
+	std::shared_ptr<Font> fnt;
 	if (selected) {
 		fnt = font_on;
 	} else {

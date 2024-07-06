@@ -128,7 +128,8 @@ public:
  */
 class FontManager {
 private:
-	std::unordered_map<const char*, Font*, hashstr, eqstr> fonts;
+	std::unordered_map<const char*, std::shared_ptr<Font>, hashstr, eqstr>
+			fonts;
 
 public:
 	~FontManager();
@@ -138,8 +139,8 @@ public:
 	void add_font(
 			const char* name, const File_spec& fname0, const File_spec& fname1,
 			int index, int hlead = 0, int vlead = 1);
-	void  remove_font(const char* name);
-	Font* get_font(const char* name);
+	void                  remove_font(const char* name);
+	std::shared_ptr<Font> get_font(const char* name);
 
 	void reset();
 };

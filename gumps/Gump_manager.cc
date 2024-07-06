@@ -868,10 +868,10 @@ int Gump_manager::prompt_for_number(
  */
 
 void Gump_manager::paint_num(
-		int   num,
-		int   x,    // Coord. of right edge of #.
-		int   y,    // Coord. of top of #.
-		Font* font) {
+		int                   num,
+		int                   x,    // Coord. of right edge of #.
+		int                   y,    // Coord. of top of #.
+		std::shared_ptr<Font> font) {
 	//  Shape_manager *sman = Shape_manager::get_instance();
 	char buf[20];
 	snprintf(buf, sizeof(buf), "%d", num);

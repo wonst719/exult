@@ -35,13 +35,13 @@ class Shape_frame;
 
 class ExultMenu {
 private:
-	Font*          font;
-	Font*          fonton;
-	Font*          navfont;
-	Font*          navfonton;
-	Game_window*   gwin;
-	Image_buffer8* ibuf;
-	Vga_file       exult_flx;
+	std::shared_ptr<Font> font;
+	std::shared_ptr<Font> fonton;
+	std::shared_ptr<Font> navfont;
+	std::shared_ptr<Font> navfonton;
+	Game_window*          gwin;
+	Image_buffer8*        ibuf;
+	Vga_file              exult_flx;
 	//  Palette pal;
 	int                       centerx, centery;
 	int                       pagesize;

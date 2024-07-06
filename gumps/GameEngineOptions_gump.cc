@@ -239,9 +239,9 @@ void GameEngineOptions_gump::paint() {
 			btn->paint();
 		}
 	}
-	Font*          font    = fontManager.get_font("SMALL_BLACK_FONT");
-	Image_window8* iwin    = gwin->get_win();
-	int            y_index = 0;
+	std::shared_ptr<Font> font    = fontManager.get_font("SMALL_BLACK_FONT");
+	Image_window8*        iwin    = gwin->get_win();
+	int                   y_index = 0;
 	font->paint_text(
 			iwin->get_ib8(), "Take automatic notes:", x + colx[0],
 			y + rowy[y_index] + 1);

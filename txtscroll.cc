@@ -52,7 +52,7 @@ using std::unique_ptr;
 using std::vector;
 
 TextScroller::TextScroller(
-		const char* archive, int index, Font* fnt, Shape* shp) {
+		const char* archive, int index, std::shared_ptr<Font> fnt, Shape* shp) {
 	font   = fnt;
 	shapes = shp;
 	unique_ptr<U7object> txtobj;

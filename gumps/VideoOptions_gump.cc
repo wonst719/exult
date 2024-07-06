@@ -460,8 +460,8 @@ void VideoOptions_gump::paint() {
 		}
 	}
 
-	Font*          font = fontManager.get_font("SMALL_BLACK_FONT");
-	Image_window8* iwin = gwin->get_win();
+	std::shared_ptr<Font> font = fontManager.get_font("SMALL_BLACK_FONT");
+	Image_window8*        iwin = gwin->get_win();
 #if !defined(__IPHONEOS__) && !defined(ANDROID)
 	font->paint_text(
 			iwin->get_ib8(), "Full Screen:", x + colx[0], y + rowy[0] + 1);

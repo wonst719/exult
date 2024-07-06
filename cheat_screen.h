@@ -21,6 +21,7 @@
 
 #include "palette.h"
 
+#include <memory>
 class Game_window;
 class Image_buffer8;
 class Font;
@@ -93,15 +94,15 @@ private:
 		CP_CustomValue
 	};
 
-	Game_window*   gwin  = nullptr;
-	Image_buffer8* ibuf  = nullptr;
-	Font*          font  = nullptr;
-	Game_clock*    clock = nullptr;
-	int            maxx = 0, maxy = 0;
-	int            centerx = 0, centery = 0;
-	Palette        pal;
-	const char*    custom_prompt = nullptr;
-	int            saved_value   = 0;
+	Game_window*          gwin  = nullptr;
+	Image_buffer8*        ibuf  = nullptr;
+	std::shared_ptr<Font> font  = nullptr;
+	Game_clock*           clock = nullptr;
+	int                   maxx = 0, maxy = 0;
+	int                   centerx = 0, centery = 0;
+	Palette               pal;
+	const char*           custom_prompt = nullptr;
+	int                   saved_value   = 0;
 
 	void SharedPrompt(char* input, const Cheat_Prompt& mode);
 	bool SharedInput(
@@ -116,6 +117,9 @@ private:
 			char* input, int& command, Cheat_Prompt& mode, bool& activate);
 
 	void ActivityDisplay();
+
+	// Paint an arrow using the font, type is one of '^' 'v' '<' '>'
+	void PaintArrow(int offsetx, int offsety, int type);
 
 	Cheat_Prompt GlobalFlagLoop(int num);
 
