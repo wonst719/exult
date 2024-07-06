@@ -484,10 +484,15 @@ BaseGameInfo* ExultMenu::run() {
 				gwin->get_win()->get_end_y() - font->get_text_height() - 5,
 				VERSION);
 		const int choice = menu->handle_events(gwin, menu_mouse);
+
 		switch (choice) {
 		case -4:    // Setup
 			gpal->fade_out(c_fade_out_time);
 			setup();
+			if (quitting_time == QUIT_TIME_YES) {
+				throw quit_exception();
+			}
+
 			if (Audio::get_ptr()->is_audio_enabled()) {
 				// Make sure timbre library is correct!
 				// Audio::get_ptr()->get_midi()->set_timbre_lib(MyMidiPlayer::TIMBRE_LIB_GM);
