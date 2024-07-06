@@ -486,9 +486,16 @@ void Gump_manager::paint(bool modal) {
  *  Output: true to quit.
  */
 bool Gump_manager::okay_to_quit() {
+	// Prevent reentering this function
+	static bool inthis = false;
+	if (inthis) {
+		return false;
+	}
+	inthis = true;
 	if (Yesno_gump::ask("Do you really want to quit?")) {
 		quitting_time = QUIT_TIME_YES;
 	}
+	inthis = false;
 	return quitting_time != QUIT_TIME_NO;
 }
 
@@ -645,6 +652,14 @@ bool Gump_manager::handle_modal_gump_event(Modal_gump* gump, SDL_Event& event) {
 				&& (event.key.keysym.mod & KMOD_CTRL)) {
 				make_screenshot(true);
 				return true;
+			}
+			// Alt-x for quit
+			if ((event.key.keysym.sym == SDLK_x)
+				&& (event.key.keysym.mod & KMOD_ALT
+						|| event.key.keysym.mod & KMOD_GUI)) {
+				if (okay_to_quit()) {
+					return false;
+				}
 			}
 
 			if (event.key.keysym.sym > +'~') {
@@ -821,7 +836,7 @@ bool Gump_manager::do_modal_gump(
 			Mouse::mouse_update) {    // If not, did mouse change?
 			Mouse::mouse->blit_dirty();
 		}
-	} while (!gump->is_done() && !escaped);
+	} while (!gump->is_done()&& !escaped && quitting_time == QUIT_TIME_NO);
 	Mouse::mouse->hide();
 	remove_gump(gump);
 	Mouse::mouse->set_shape(saveshape);
