@@ -316,12 +316,12 @@ void CheatScreen::SharedPrompt(const char* input, const Cheat_Prompt& mode) {
 
 	case CP_ChooseNPC:
 		font->paint_text_fixedwidth(
-				ibuf, "Which NPC? (-1 to cancel.)", offsetx, promptmes, 8);
+				ibuf, "Which NPC? (ESC to cancel.)", offsetx, promptmes, 8);
 		break;
 
 	case CP_EnterValue:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Value. (-1 to cancel.)", offsetx, promptmes, 8);
+				ibuf, "Enter Value. (ESC to cancel.)", offsetx, promptmes, 8);
 		break;
 
 	case CP_CustomValue:
@@ -338,54 +338,54 @@ void CheatScreen::SharedPrompt(const char* input, const Cheat_Prompt& mode) {
 
 	case CP_Minute:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Minute. (-1 to cancel.)", offsetx, promptmes, 8);
+				ibuf, "Enter Minute. (ESC to cancel.)", offsetx, promptmes, 8);
 		break;
 
 	case CP_Hour:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Hour. (-1 to cancel.)", offsetx, promptmes, 8);
+				ibuf, "Enter Hour. (ESC to cancel.)", offsetx, promptmes, 8);
 		break;
 
 	case CP_Day:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Day. (-1 to cancel.)", offsetx, promptmes, 8);
+				ibuf, "Enter Day. (ESC to cancel.)", offsetx, promptmes, 8);
 		break;
 
 	case CP_Shape:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Shape (B=Browse or -1=Cancel)", offsetx, promptmes,
+				ibuf, "Enter Shape (B=Browse or ESC=Cancel)", offsetx, promptmes,
 				8);
 		break;
 
 	case CP_Activity:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Activity 0-31. (-1 to cancel.)", offsetx,
+				ibuf, "Enter Activity 0-31. (ESC to cancel.)", offsetx,
 				promptmes, 8);
 		break;
 
 	case CP_XCoord:
 		snprintf(
-				buf, sizeof(buf), "Enter X Coord. Max %i (-1 to cancel)",
+				buf, sizeof(buf), "Enter X Coord. Max %i (ESC to cancel)",
 				c_num_tiles);
 		font->paint_text_fixedwidth(ibuf, buf, offsetx, promptmes, 8);
 		break;
 
 	case CP_YCoord:
 		snprintf(
-				buf, sizeof(buf), "Enter Y Coord. Max %i (-1 to cancel)",
+				buf, sizeof(buf), "Enter Y Coord. Max %i (ESC to cancel)",
 				c_num_tiles);
 		font->paint_text_fixedwidth(ibuf, buf, offsetx, promptmes, 8);
 		break;
 
 	case CP_Lift:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Lift. (-1 to cancel)", offsetx, promptmes, 8);
+				ibuf, "Enter Lift. (ESC to cancel)", offsetx, promptmes, 8);
 		break;
 
 	case CP_GFlagNum: {
 		char buf[50];
 		snprintf(
-				buf, sizeof(buf), "Enter Global Flag 0-%d. (-1 to cancel)",
+				buf, sizeof(buf), "Enter Global Flag 0-%d. (ESC to cancel)",
 				c_last_gflag);
 		font->paint_text_fixedwidth(ibuf, buf, offsetx, promptmes, 8);
 		break;
@@ -393,37 +393,37 @@ void CheatScreen::SharedPrompt(const char* input, const Cheat_Prompt& mode) {
 
 	case CP_NFlagNum:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter NPC Flag 0-63. (-1 to cancel)", offsetx, promptmes,
+				ibuf, "Enter NPC Flag 0-63. (ESC to cancel)", offsetx, promptmes,
 				8);
 		break;
 
 	case CP_TempNum:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Temperature 0-63. (-1 to cancel)", offsetx,
+				ibuf, "Enter Temperature 0-63. (ESC to cancel)", offsetx,
 				promptmes, 8);
 		break;
 
 	case CP_NLatitude:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Latitude. Max 113 (-1 to cancel)", offsetx,
+				ibuf, "Enter Latitude. Max 113 (ESC to cancel)", offsetx,
 				promptmes, 8);
 		break;
 
 	case CP_SLatitude:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Latitude. Max 193 (-1 to cancel)", offsetx,
+				ibuf, "Enter Latitude. Max 193 (ESC to cancel)", offsetx,
 				promptmes, 8);
 		break;
 
 	case CP_WLongitude:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Longitude. Max 93 (-1 to cancel)", offsetx,
+				ibuf, "Enter Longitude. Max 93 (ESC to cancel)", offsetx,
 				promptmes, 8);
 		break;
 
 	case CP_ELongitude:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Longitude. Max 213 (-1 to cancel)", offsetx,
+				ibuf, "Enter Longitude. Max 213 (ESC to cancel)", offsetx,
 				promptmes, 8);
 		break;
 
@@ -444,14 +444,14 @@ void CheatScreen::SharedPrompt(const char* input, const Cheat_Prompt& mode) {
 
 	case CP_HexXCoord:
 		snprintf(
-				buf, sizeof(buf), "Enter X Coord. Max %04x (-1 to cancel)",
+				buf, sizeof(buf), "Enter X Coord. Max %04x (ESC to cancel)",
 				c_num_tiles);
 		font->paint_text_fixedwidth(ibuf, buf, offsetx, promptmes, 8);
 		break;
 
 	case CP_HexYCoord:
 		snprintf(
-				buf, sizeof(buf), "Enter Y Coord. Max %04x (-1 to cancel)",
+				buf, sizeof(buf), "Enter Y Coord. Max %04x (ESC to cancel)",
 				c_num_tiles);
 		font->paint_text_fixedwidth(ibuf, buf, offsetx, promptmes, 8);
 		break;
@@ -481,7 +481,7 @@ static int SDLScanCodeToInt(SDL_Keycode sym) {
 	case SDLK_KP_9:
 		return '9';
 	default:
-		return -1;
+		return SDLK_ESCAPE;
 	}
 }
 
@@ -837,7 +837,7 @@ void CheatScreen::NormalMenu() {
 			ibuf, "[T]eleport", offsetx + 160, maxy - offsety2 - 81, 8);
 
 	// eXit
-	font->paint_text_fixedwidth(ibuf, "[X]it", offsetx + 160, offsety5, 8);
+	font->paint_text_fixedwidth(ibuf, "[ESC] Exit", offsetx + 160, offsety5, 8);
 }
 
 void CheatScreen::NormalActivate(
@@ -900,10 +900,8 @@ void CheatScreen::NormalActivate(
 
 		// NPC Tool
 	case 'n':
-		if (npc < -1 || (npc >= 356 && npc <= 359)) {
+		if (npc < 0 || (npc >= 356 && npc <= 359)) {
 			mode = CP_InvalidNPC;
-		} else if (npc == -1) {
-			mode = CP_Canceled;
 		} else if (!input[0]) {
 			NPCLoop(-1);
 		} else {
@@ -913,11 +911,11 @@ void CheatScreen::NormalActivate(
 
 		// Global Flag Editor
 	case 'f':
-		if (npc < -1) {
+		if (npc < 0) {
 			mode = CP_InvalidValue;
 		} else if (npc > c_last_gflag) {
 			mode = CP_InvalidValue;
-		} else if (npc == -1 || !input[0]) {
+		} else if (!input[0]) {
 			mode = CP_Canceled;
 		} else {
 			mode = GlobalFlagLoop(npc);
@@ -991,7 +989,6 @@ bool CheatScreen::NormalCheck(
 
 		// X and Escape leave
 	case SDLK_ESCAPE:
-	case 'x':
 		input[0] = command;
 		return false;
 
@@ -1120,9 +1117,7 @@ CheatScreen::Cheat_Prompt CheatScreen::TimeSetLoop() {
 		if (activate) {
 			const int val = std::atoi(input);
 
-			if (val == -1) {
-				return CP_Canceled;
-			} else if (val < -1) {
+			if (val < 0) {
 				return CP_InvalidTime;
 			} else if (mode == CP_Day) {
 				day  = val;
@@ -1241,7 +1236,7 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 			font->paint_text_fixedwidth(
 					ibuf, "[ ] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
 		}
-		font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, offsety2, 8);
+		font->paint_text_fixedwidth(ibuf, "[ESC] Exit", offsetx, offsety2, 8);
 
 		// Finally the Prompt...
 		SharedPrompt(input, mode);
@@ -1264,10 +1259,8 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 				}
 			} else if (command == '^') {    // Change Flag
 				i = std::atoi(input);
-				if (i < -1 || i > c_last_gflag) {
+				if (i < 0 || i > c_last_gflag) {
 					mode = CP_InvalidValue;
-				} else if (i == -1) {
-					mode = CP_Canceled;
 				} else if (input[0]) {
 					num = i;
 				}
@@ -1317,7 +1310,6 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 
 				// X and Escape leave
 			case SDLK_ESCAPE:
-			case 'x':
 				input[0] = command;
 				looping  = false;
 				break;
@@ -1530,7 +1522,7 @@ void CheatScreen::NPCMenu(Actor* actor, int& num) {
 	}
 
 	// eXit
-	font->paint_text_fixedwidth(ibuf, "[X]it", offsetx2, offsety2, 8);
+	font->paint_text_fixedwidth(ibuf, "[ESC] Exit", offsetx2, offsety2, 8);
 
 	// Right Column
 
@@ -1602,10 +1594,8 @@ void CheatScreen::NPCActivate(
 			num = 360;
 		}
 	} else if (command == '^') {    // Change NPC
-		if (i < -1 || (i >= 356 && i <= 359)) {
+		if (i < 0 || (i >= 356 && i <= 359)) {
 			mode = CP_InvalidNPC;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else if (input[0]) {
 			num = i;
 		}
@@ -1657,13 +1647,11 @@ void CheatScreen::NPCActivate(
 				}
 			}
 
-			if (i == -1) {
-				mode = CP_Canceled;
-			} else if (i < 0) {
+			if (i < 0) {
 				mode = CP_InvalidShape;
 			} else if (i >= nshapes) {
 				mode = CP_InvalidShape;
-			} else if (input[0] && (input[0] != '-' || input[1])) {
+			} else if (input[0]) {
 				if (actor->get_npc_num() != 0) {
 					actor->set_shape(i);
 				} else {
@@ -1774,7 +1762,6 @@ bool CheatScreen::NPCCheck(
 
 		// X and Escape leave
 	case SDLK_ESCAPE:
-	case 'x':
 		input[0] = command;
 		return false;
 
@@ -1898,7 +1885,7 @@ void CheatScreen::FlagMenu(Actor* actor) {
 
 	// Exit
 	font->paint_text_fixedwidth(
-			ibuf, "[X]it", offsetx, maxy - offsety1 - 36, 8);
+			ibuf, "[ESC] Exit", offsetx, maxy - offsety1 - 36, 8);
 
 	// Center Column
 
@@ -2055,7 +2042,7 @@ void CheatScreen::FlagMenu(Actor* actor) {
 	font->paint_text_fixedwidth(
 			ibuf, buf, offsetx1 + 208, maxy - offsety1 - 36, 8);
 
-	// Patra (AV SI ONLY)
+	// Petra (AV SI ONLY)
 	if (!actor->get_npc_num()) {
 		snprintf(
 				buf, sizeof(buf), "[5] Petra..%c",
@@ -2269,7 +2256,7 @@ void CheatScreen::FlagActivate(
 
 		// Value
 	case 'v':    // ID
-		if (i < -1) {
+		if (i < 0) {
 			mode = CP_InvalidValue;
 		} else if (i > 63) {
 			mode = CP_InvalidValue;
@@ -2337,11 +2324,9 @@ void CheatScreen::FlagActivate(
 
 		// Advanced Numeric Flag Editor
 	case '^':
-		if (i < -1) {
+		if (i < 0 || i > 63) {
 			mode = CP_InvalidValue;
-		} else if (i > 63) {
-			mode = CP_InvalidValue;
-		} else if (i == -1 || !input[0]) {
+		} else if (!input[0]) {
 			mode = CP_Canceled;
 		} else {
 			mode = AdvancedFlagLoop(i, actor);
@@ -2478,7 +2463,6 @@ bool CheatScreen::FlagCheck(
 
 		// X and Escape leave
 	case SDLK_ESCAPE:
-	case 'x':
 		input[0] = command;
 		return false;
 
@@ -2559,12 +2543,13 @@ void CheatScreen::BusinessDisplay(Actor* actor) {
 	const int offsety1 = 0;
 	const int offsetx2 = offsetx;
 	const int offsety2 = 16;
+	const int offsety3 = 28;
 #endif
 
 	// Now the info
 	const std::string namestr = actor->get_npc_name();
 	snprintf(
-			buf, sizeof(buf), "NPC %i - %s - Schedules:", actor->get_npc_num(),
+			buf, sizeof(buf), "NPC %i - %s", actor->get_npc_num(),
 			namestr.c_str());
 	font->paint_text_fixedwidth(ibuf, buf, offsetx, 0, 8);
 
@@ -2659,11 +2644,11 @@ void CheatScreen::BusinessMenu(Actor* actor) {
 				maxy - 40, 8);
 
 		font->paint_text_fixedwidth(
-				ibuf, "[S]et Current Activity [X]it [R]evert", offsetx,
+				ibuf, "[S]et Current Activity [ESC] [R]evert", offsetx,
 				maxy - 30, 8);
 	} else {
 		font->paint_text_fixedwidth(
-				ibuf, "[S]et Current Activity [X]it", offsetx, maxy - 30, 8);
+				ibuf, "[S]et Current Activity [ESC]", offsetx, maxy - 30, 8);
 	}
 }
 
@@ -2677,10 +2662,8 @@ void CheatScreen::BusinessActivate(
 	command       = 0;
 	switch (old) {
 	case 'a':    // Set Activity
-		if (i < -1 || i > 31) {
+		if (i < 0 || i > 31) {
 			mode = CP_InvalidValue;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else if (!input[0]) {
 			mode    = CP_Activity;
 			command = 'a';
@@ -2690,10 +2673,8 @@ void CheatScreen::BusinessActivate(
 		break;
 
 	case 'i':    // X Coord
-		if (i < -1 || i > c_num_tiles) {
+		if (i < 0 || i > c_num_tiles) {
 			mode = CP_InvalidValue;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else if (!input[0]) {
 			mode    = CP_XCoord;
 			command = 'i';
@@ -2705,10 +2686,8 @@ void CheatScreen::BusinessActivate(
 		break;
 
 	case 'j':    // Y Coord
-		if (i < -1 || i > c_num_tiles) {
+		if (i < 0 || i > c_num_tiles) {
 			mode = CP_InvalidValue;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else if (!input[0]) {
 			mode    = CP_YCoord;
 			command = 'j';
@@ -2722,10 +2701,8 @@ void CheatScreen::BusinessActivate(
 		break;
 
 	case 's':    // Set Current
-		if (i < -1 || i > 31) {
+		if (i < 0 || i > 31) {
 			mode = CP_InvalidValue;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else if (!input[0]) {
 			mode    = CP_Activity;
 			command = 's';
@@ -2812,7 +2789,6 @@ bool CheatScreen::BusinessCheck(
 
 		// X and Escape leave
 	case SDLK_ESCAPE:
-	case 'x':
 		input[0] = command;
 		return false;
 
@@ -2942,7 +2918,7 @@ void CheatScreen::StatMenu(Actor* actor) {
 
 	// Exit
 	font->paint_text_fixedwidth(
-			ibuf, "[X]it", offsetx, maxy - offsety1 - 36, 8);
+			ibuf, "[ESC] Exit", offsetx, maxy - offsety1 - 36, 8);
 }
 
 void CheatScreen::StatActivate(
@@ -3031,7 +3007,6 @@ bool CheatScreen::StatCheck(
 
 		// X and Escape leave
 	case SDLK_ESCAPE:
-	case 'x':
 		input[0] = command;
 		return false;
 
@@ -3159,7 +3134,7 @@ void CheatScreen::PalEffectMenu(Actor* actor, int command) {
 			ibuf, "[C]lear", offsetx, maxy - offsety1 - 72, 8);
 
 	// Exit
-	font->paint_text_fixedwidth(ibuf, "[E]xit", offsetx, offsety2, 8);
+	font->paint_text_fixedwidth(ibuf, "[ESC] Exit", offsetx, offsety2, 8);
 }
 
 void CheatScreen::PalEffectActivate(
@@ -3173,7 +3148,7 @@ void CheatScreen::PalEffectActivate(
 	}
 
 	switch (command) {
-	case 'x':    // Dexterity
+	case 'x':    // XForm
 		actor->set_palette_transform(
 				ShapeID::PT_xForm
 				| i % Shape_manager::get_instance()->get_xforms_cnt());
@@ -3218,7 +3193,7 @@ void CheatScreen::PalEffectActivate(
 		}
 	} break;
 
-	case 's':    // Strength
+	case 's':    // Shift
 		actor->set_palette_transform(ShapeID::PT_Shift | (i & 0xff));
 		break;
 
@@ -3281,7 +3256,6 @@ bool CheatScreen::PalEffectCheck(
 		// Escape leaves
 		// X and Escape leave
 	case SDLK_ESCAPE:
-	case 'e':
 		input[0] = command;
 		return false;
 
@@ -3388,7 +3362,7 @@ CheatScreen::Cheat_Prompt CheatScreen::AdvancedFlagLoop(int num, Actor* actor) {
 					ibuf, "[ ] Scroll Flags", offsetx, maxy - offsety1 - 63, 8);
 		}
 
-		font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, offsety2, 8);
+		font->paint_text_fixedwidth(ibuf, "[ESC] Exit", offsetx, offsety2, 8);
 
 		// Finally the Prompt...
 		SharedPrompt(input, mode);
@@ -3411,10 +3385,8 @@ CheatScreen::Cheat_Prompt CheatScreen::AdvancedFlagLoop(int num, Actor* actor) {
 				}
 			} else if (command == '^') {    // Change Flag
 				i = std::atoi(input);
-				if (i < -1 || i > 63) {
+				if (i < 0 || i > 63) {
 					mode = CP_InvalidValue;
-				} else if (i == -1) {
-					mode = CP_Canceled;
 				} else if (input[0]) {
 					num = i;
 				}
@@ -3472,7 +3444,6 @@ CheatScreen::Cheat_Prompt CheatScreen::AdvancedFlagLoop(int num, Actor* actor) {
 
 				// X and Escape leave
 			case SDLK_ESCAPE:
-			case 'x':
 				input[0] = command;
 				looping  = false;
 				break;
@@ -3628,7 +3599,7 @@ void CheatScreen::TeleportMenu() {
 	font->paint_text_fixedwidth(ibuf, "[M]ap Number", offsetx2, offsety2, 8);
 
 	// eXit
-	font->paint_text_fixedwidth(ibuf, "[X]it", offsetx, offsety3, 8);
+	font->paint_text_fixedwidth(ibuf, "[ESC] Exit", offsetx, offsety3, 8);
 }
 
 void CheatScreen::TeleportActivate(
@@ -3658,10 +3629,8 @@ void CheatScreen::TeleportActivate(
 		break;
 
 	case 'a':    // latitude
-		if (i < -1 || (prev == 'n' && i > 113) || (prev == 's' && i > 193)) {
+		if (i < 0 || (prev == 'n' && i > 113) || (prev == 's' && i > 193)) {
 			mode = CP_InvalidValue;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else if (!input[0]) {
 			if (prev == 'n') {
 				mode = CP_NLatitude;
@@ -3698,10 +3667,8 @@ void CheatScreen::TeleportActivate(
 		break;
 
 	case 'c':    // longitude
-		if (i < -1 || (prev == 'w' && i > 93) || (prev == 'e' && i > 213)) {
+		if (i < 0 || (prev == 'w' && i > 93) || (prev == 'e' && i > 213)) {
 			mode = CP_InvalidValue;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else if (!input[0]) {
 			if (prev == 'w') {
 				mode = CP_WLongitude;
@@ -3723,10 +3690,8 @@ void CheatScreen::TeleportActivate(
 
 	case 'h':    // hex X coord
 		i = strtol(input, nullptr, 16);
-		if (i < -1 || i > c_num_tiles) {
+		if (i < 0 || i > c_num_tiles) {
 			mode = CP_InvalidValue;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else if (!input[0]) {
 			mode    = CP_HexXCoord;
 			command = 'h';
@@ -3739,10 +3704,8 @@ void CheatScreen::TeleportActivate(
 
 	case 'i':    // hex Y coord
 		i = strtol(input, nullptr, 16);
-		if (i < -1 || i > c_num_tiles) {
+		if (i < 0 || i > c_num_tiles) {
 			mode = CP_InvalidValue;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else if (!input[0]) {
 			mode    = CP_HexYCoord;
 			command = 'i';
@@ -3755,10 +3718,8 @@ void CheatScreen::TeleportActivate(
 		break;
 
 	case 'd':    // dec X coord
-		if (i < -1 || i > c_num_tiles) {
+		if (i < 0 || i > c_num_tiles) {
 			mode = CP_InvalidValue;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else if (!input[0]) {
 			mode    = CP_XCoord;
 			command = 'd';
@@ -3770,10 +3731,8 @@ void CheatScreen::TeleportActivate(
 		break;
 
 	case 'e':    // dec Y coord
-		if (i < -1 || i > c_num_tiles) {
+		if (i < 0 || i > c_num_tiles) {
 			mode = CP_InvalidValue;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else if (!input[0]) {
 			mode    = CP_YCoord;
 			command = 'e';
@@ -3786,10 +3745,8 @@ void CheatScreen::TeleportActivate(
 		break;
 
 	case 'n':    // NPC
-		if (i < -1 || (i >= 356 && i <= 359)) {
+		if (i < 0 || (i >= 356 && i <= 359)) {
 			mode = CP_InvalidNPC;
-		} else if (i == -1) {
-			mode = CP_Canceled;
 		} else {
 			Actor* actor = gwin->get_npc(i);
 			Game_window::get_instance()->teleport_party(
@@ -3798,9 +3755,7 @@ void CheatScreen::TeleportActivate(
 		break;
 
 	case 'm':    // map
-		if (i == -1) {
-			mode = CP_Canceled;
-		} else if ((i < 0 || i > 255) || i > highest) {
+		if ((i < 0 || i > 255) || i > highest) {
 			mode = CP_InvalidValue;
 		} else {
 			gwin->teleport_party(gwin->get_main_actor()->get_tile(), true, i);
@@ -3843,7 +3798,6 @@ bool CheatScreen::TeleportCheck(
 
 		// X and Escape leave
 	case SDLK_ESCAPE:
-	case 'x':
 		input[0] = command;
 		return false;
 
