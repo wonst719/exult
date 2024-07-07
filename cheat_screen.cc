@@ -2536,14 +2536,15 @@ void CheatScreen::BusinessDisplay(Actor* actor) {
 #if defined(__IPHONEOS__) || defined(ANDROID)
 	const int offsetx  = 10;
 	const int offsety1 = 20;
-	const int offsetx2 = 161;
+	const int offsetx2 = 171;
 	const int offsety2 = 8;
+	const int offsety3 = 0;
 #else
 	const int offsetx  = 0;
 	const int offsety1 = 0;
 	const int offsetx2 = offsetx;
-	const int offsety2 = 16;
-	const int offsety3 = 28;
+	const int offsety2 = 28;
+	const int offsety3 = 16;
 #endif
 
 	// Now the info
@@ -2554,23 +2555,21 @@ void CheatScreen::BusinessDisplay(Actor* actor) {
 	font->paint_text_fixedwidth(ibuf, buf, offsetx, 0, 8);
 
 	snprintf(buf, sizeof(buf), "Loc (%04i, %04i, %02i)", t.tx, t.ty, t.tz);
-	font->paint_text_fixedwidth(ibuf, buf, 0, 8, 8);
+	font->paint_text_fixedwidth(ibuf, buf, offsetx, 8, 8);
 
 #if defined(__IPHONEOS__) || defined(ANDROID)
-	const char activity_msg[] = "-Act: %2i %s";
+	const char activity_msg[] = "%2i %s";
 #else
 	const char activity_msg[] = "Current Activity:  %2i - %s";
 #endif
 	snprintf(
 			buf, sizeof(buf), activity_msg, actor->get_schedule_type(),
 			schedules[actor->get_schedule_type()]);
-	font->paint_text_fixedwidth(ibuf, buf, offsetx2, offsety2, 8);
+	font->paint_text_fixedwidth(ibuf, buf, offsetx2, offsety3, 8);
 
 	// Avatar can't have schedules
 	if (actor->get_npc_num() > 0) {
-#if !defined(__IPHONEOS__) && !defined(ANDROID)
-		font->paint_text_fixedwidth(ibuf, "Schedules:", offsetx, 16, 8);
-#endif
+		font->paint_text_fixedwidth(ibuf, "Schedules:", offsetx2, offsety2, 8);
 
 		Schedule_change* scheds;
 		int              num;
