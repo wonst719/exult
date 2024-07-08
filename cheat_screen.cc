@@ -353,8 +353,8 @@ void CheatScreen::SharedPrompt(const char* input, const Cheat_Prompt& mode) {
 
 	case CP_Shape:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter Shape (B=Browse or ESC=Cancel)", offsetx, promptmes,
-				8);
+				ibuf, "Enter Shape (B=Browse or ESC=Cancel)", offsetx,
+				promptmes, 8);
 		break;
 
 	case CP_Activity:
@@ -393,8 +393,8 @@ void CheatScreen::SharedPrompt(const char* input, const Cheat_Prompt& mode) {
 
 	case CP_NFlagNum:
 		font->paint_text_fixedwidth(
-				ibuf, "Enter NPC Flag 0-63. (ESC to cancel)", offsetx, promptmes,
-				8);
+				ibuf, "Enter NPC Flag 0-63. (ESC to cancel)", offsetx,
+				promptmes, 8);
 		break;
 
 	case CP_TempNum:
@@ -507,11 +507,20 @@ bool CheatScreen::SharedInput(
 			}
 			const SDL_Keysym& key = event.key.keysym;
 
-			// Escape will cancel current mode
-			if (key.sym == SDLK_ESCAPE && mode != CP_Command) {
-				command = 0;
-				mode    = CP_Command;
-				return false;
+			if (key.sym == SDLK_ESCAPE) {
+				std::memset(input, 0, len);
+				// If current mode is needing to press a key return to command
+				if (mode >= CP_HitKey && mode <= CP_WrongShapeFile) {
+					command = 0;
+					mode    = CP_Command;
+					return false;
+				}
+				// Escape will cancel current mode
+				else if (mode != CP_Command) {
+					command = key.sym;
+					mode    = CP_Canceled;
+					return false;
+				}
 			}
 
 			if ((key.sym == SDLK_s) && (key.mod & KMOD_ALT)
@@ -1147,6 +1156,9 @@ CheatScreen::Cheat_Prompt CheatScreen::TimeSetLoop() {
 		}
 
 		SharedInput(input, 5, command, mode, activate);
+		if (mode == CP_Canceled) {
+			return CP_Canceled;
+		}
 	}
 
 	return CP_ClockSet;
@@ -1560,7 +1572,7 @@ void CheatScreen::NPCMenu(Actor* actor, int& num) {
 		num_arrows++;
 	}
 	if (num < gwin->get_num_npcs()) {
-		PaintArrow(offsetx3 + 9 + num_arrows*8, offsety4, '>');
+		PaintArrow(offsetx3 + 9 + num_arrows * 8, offsety4, '>');
 		num_arrows++;
 	}
 
