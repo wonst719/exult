@@ -656,7 +656,7 @@ bool Gump_manager::handle_modal_gump_event(Modal_gump* gump, SDL_Event& event) {
 			// Alt-x for quit
 			if ((event.key.keysym.sym == SDLK_x)
 				&& (event.key.keysym.mod & KMOD_ALT
-						|| event.key.keysym.mod & KMOD_GUI)) {
+					|| event.key.keysym.mod & KMOD_GUI)) {
 				if (okay_to_quit()) {
 					return false;
 				}
@@ -831,12 +831,13 @@ bool Gump_manager::do_modal_gump(
 				paint->paint();
 			}
 		}
+		gwin->rotatecolours();
 		Mouse::mouse->show();         // Re-display mouse.
 		if (!gwin->show() &&          // Blit to screen if necessary.
 			Mouse::mouse_update) {    // If not, did mouse change?
 			Mouse::mouse->blit_dirty();
 		}
-	} while (!gump->is_done()&& !escaped && quitting_time == QUIT_TIME_NO);
+	} while (!gump->is_done() && !escaped && quitting_time == QUIT_TIME_NO);
 	Mouse::mouse->hide();
 	remove_gump(gump);
 	Mouse::mouse->set_shape(saveshape);

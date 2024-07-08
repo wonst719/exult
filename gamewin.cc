@@ -1029,6 +1029,33 @@ void Game_window::send_location() {
 	Send_location(this);
 }
 
+bool Game_window::rotatecolours() {
+	Uint32        ticks       = SDL_GetTicks();
+	static Uint32 last_rotate = 0;
+	// Rotate less often if scaling and
+	//   not paletized.
+	const int rot_speed = 100 << (win->fast_palette_rotate() ? 0 : 1);
+
+	if (ticks > last_rotate + rot_speed) {
+		// (Blits in simulated 8-bit mode.)
+		win->rotate_colors(0xfc, 3, 0);
+		win->rotate_colors(0xf8, 4, 0);
+		win->rotate_colors(0xf4, 4, 0);
+		win->rotate_colors(0xf0, 4, 0);
+		win->rotate_colors(0xe8, 8, 0);
+		win->rotate_colors(0xe0, 8, 1);
+		while (ticks > last_rotate + rot_speed) {
+			last_rotate += rot_speed;
+		}
+		// Non palettized needs explicit blit.
+		if (!win->is_palettized()) {
+			set_painted();
+		}
+		return true;
+	}
+	return false;
+}
+
 /*
  *  Set the scroll position to a given tile.
  */
@@ -1695,7 +1722,7 @@ void Game_window::start_actor_alt(
 		Game_object* block = main_actor->is_moving()
 									 ? nullptr
 									 : main_actor->find_blocking(
-											   start.get_neighbor(dir), dir);
+											 start.get_neighbor(dir), dir);
 		// We already know the blocking object isn't the avatar, so don't
 		// double check it here.
 		if (!block || !block->move_aside(main_actor, dir)) {

@@ -660,6 +660,8 @@ public:
 		}
 	}
 
+	bool rotatecolours();
+
 	// Set view (upper-left).
 	void set_scrolls(int newscrolltx, int newscrollty);
 	void center_view(const Tile_coord& t);    // Center view around t.

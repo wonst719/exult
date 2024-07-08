@@ -251,8 +251,8 @@ static int                  joy_aim_x = 0, joy_aim_y = 0;
 Mouse::Avatar_Speed_Factors joy_speed_factor = Mouse::medium_speed_factor;
 
 #if defined _WIN32
-void do_cleanup_output() {
-	cleanup_output("std");
+void        do_cleanup_output() {
+    cleanup_output("std");
 }
 #endif
 
@@ -1339,27 +1339,8 @@ static void Handle_events() {
 			last_x = last_y = -1;
 		}
 		Mouse::mouse->show();    // Re-display mouse.
-		// Rotate less often if scaling and
-		//   not paletized.
-		const int rot_speed
-				= 100 << (gwin->get_win()->fast_palette_rotate() ? 0 : 1);
+		gwin->rotatecolours();
 
-		if (ticks > last_rotate + rot_speed) {
-			// (Blits in simulated 8-bit mode.)
-			gwin->get_win()->rotate_colors(0xfc, 3, 0);
-			gwin->get_win()->rotate_colors(0xf8, 4, 0);
-			gwin->get_win()->rotate_colors(0xf4, 4, 0);
-			gwin->get_win()->rotate_colors(0xf0, 4, 0);
-			gwin->get_win()->rotate_colors(0xe8, 8, 0);
-			gwin->get_win()->rotate_colors(0xe0, 8, 1);
-			while (ticks > last_rotate + rot_speed) {
-				last_rotate += rot_speed;
-			}
-			// Non palettized needs explicit blit.
-			if (!gwin->get_win()->is_palettized()) {
-				gwin->set_painted();
-			}
-		}
 		if (!gwin->show() &&          // Blit to screen if necessary.
 			Mouse::mouse_update) {    // If not, did mouse change?
 			Mouse::mouse->blit_dirty();
