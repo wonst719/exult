@@ -36,6 +36,7 @@
 #include "font.h"
 #include "game.h"
 #include "gamewin.h"
+#include "gump_utils.h"
 #include "items.h"
 #include "keys.h"
 #include "shapeid.h"
@@ -106,8 +107,9 @@ void ShapeBrowser::browse_shapes() {
 	if (!shapes) {
 		shapes = new Vga_file(fname);
 	}
-	bool      looping = true;
-	bool      redraw  = true;
+	bool      looping             = true;
+	bool      redraw              = true;
+	bool      do_palette_rotation = true;
 	SDL_Event event;
 	// int active;
 
@@ -211,8 +213,8 @@ void ShapeBrowser::browse_shapes() {
 			pal.apply();
 			redraw = false;
 		}
-		SDL_WaitEvent(&event);
-		if (event.type == SDL_KEYDOWN) {
+		Delay();
+		if (SDL_PollEvent(&event) && event.type == SDL_KEYDOWN) {
 			redraw           = true;
 			const bool shift = event.key.keysym.mod & KMOD_SHIFT;
 			// int ctrl = event.key.keysym.mod & KMOD_CTRL;
@@ -233,6 +235,10 @@ void ShapeBrowser::browse_shapes() {
 				handle_key(shift, current_palette, num_palettes);
 				current_xform = -1;
 				break;
+			case SDLK_r:
+				do_palette_rotation = !do_palette_rotation;
+				break;
+
 			case SDLK_x:
 				handle_key(shift, current_xform, num_xforms);
 				break;
@@ -283,6 +289,9 @@ void ShapeBrowser::browse_shapes() {
 
 				break;
 			}
+		}
+		if (do_palette_rotation && gwin->rotatecolours()) {
+			gwin->show();
 		}
 	} while (looping);
 }

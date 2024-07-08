@@ -526,6 +526,7 @@ void KeyBinder::ShowBrowserKeys() const {
 	auto* scroll = new Scroll_gump();
 	scroll->add_text("Esc - Exits the shape browser");
 	scroll->add_text("down - Increase shape by 1");
+	scroll->add_text("R - toggle palette rotation");
 	scroll->add_text("S - Increase shape by 1");
 	scroll->add_text("up - Decrease shape by 1");
 	scroll->add_text("Shift-S - Decrease shape by 1");
