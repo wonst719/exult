@@ -88,3 +88,8 @@ README*		text
 *.pbxproj	text
 *.xcscheme	text diff=xml
 *.vcxproj.filters	text diff=xml
+
+Makefile.am eol=lf
+Makefile.in eol=lf
+configure.ac eol=lf
+flx.in eol=lf
