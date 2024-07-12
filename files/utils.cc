@@ -102,8 +102,10 @@ static bool is_path_separator(char cc) {
 static string remove_trailing_slash(const string& value) {
 	string new_path = value;
 	if (is_path_separator(new_path.back())) {
+#ifdef EXTRA_DEBUG
 		std::cerr << "Warning, trailing slash in path: \"" << new_path << "\""
 				  << std::endl;
+#endif
 		new_path.resize(new_path.size() - 1);
 	}
 
@@ -190,11 +192,10 @@ string get_system_path(const string& path) {
 	switch_slashes(new_path);
 #ifdef _WIN32
 	if (new_path.back() == '/' || new_path.back() == '\\') {
-		// std::cerr << "Trailing slash in path: \"" << new_path << "\"" <<
-		// std::endl << "...compensating, but go complain to Colourless anyway"
-		// << std::endl;
+#	ifdef EXTRA_DEBUG
 		std::cerr << "Warning, trailing slash in path: \"" << new_path << "\""
 				  << std::endl;
+#	endif
 		new_path += '.';
 	}
 #	ifdef NO_WIN32_PATH_SPACES
