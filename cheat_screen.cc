@@ -574,7 +574,7 @@ bool CheatScreen::SharedInput() {
 		Mouse::mouse_update = false;
 		while (do_swipe || SDL_PollEvent(&event)) {
 			int         gx, gy;
-			SDL_KeyCode simulate_key = SDLK_UNKNOWN;
+			SDL_Keycode simulate_key = SDLK_UNKNOWN;
 
 			//
 			if (do_swipe) {
@@ -1007,9 +1007,9 @@ void CheatScreen::SharedMenu() {
 	AddMenuItem(offsetx + 160, offsety5 + 9, SDLK_ESCAPE, " Exit");
 }
 
-SDL_KeyCode CheatScreen::CheckHotspots(int mx, int my, int radius) {
+SDL_Keycode CheatScreen::CheckHotspots(int mx, int my, int radius) {
 	// Find the nearest hotspot
-	SDL_KeyCode nearest     = SDLK_UNKNOWN;
+	SDL_Keycode nearest     = SDLK_UNKNOWN;
 	int         nearestdist = INT_MAX;
 
 	for (auto& hs : hotspots) {
@@ -2971,13 +2971,13 @@ void CheatScreen::BusinessMenu(Actor* actor) {
 			nextx += 8
 					 + AddMenuItem(
 							 nextx, maxy - offsety - y,
-							 SDL_KeyCode(SDLK_a + row), " Set");
+							 SDLK_a + row, " Set");
 			nextx += 8
 					 + AddMenuItem(
 							 nextx, maxy - offsety - y,
-							 SDL_KeyCode(SDLK_i + row), " Location");
+							 SDLK_i + row, " Location");
 			AddMenuItem(
-					nextx, maxy - offsety - y, SDL_KeyCode(SDLK_1 + row),
+					nextx, maxy - offsety - y, SDLK_1 + row,
 					" Clear");
 		}
 		nextx = offsetx;
@@ -4149,7 +4149,7 @@ bool CheatScreen::TeleportCheck() {
 }
 
 int CheatScreen::AddMenuItem(
-		int offsetx, int offsety, SDL_KeyCode keycode, const char* label) {
+		int offsetx, int offsety, SDL_Keycode keycode, const char* label) {
 	int keywidth = 8;
 	switch (keycode) {
 	case SDLK_UP:
@@ -4325,7 +4325,7 @@ void CheatScreen::WaitButtonsUp() {
 				} break;
 
 				default: {
-					// It should be an SDL_KeyCode
+					// It should be an SDL_Keycode
 					const char* keyname = SDL_GetKeyName(SDL_Keycode(button));
 					button_name         = buf;
 

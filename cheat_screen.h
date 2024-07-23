@@ -105,9 +105,9 @@ private:
 	};
 
 	struct Hotspot : TileRect {
-		SDL_KeyCode keycode;
+		SDL_Keycode keycode;
 
-		Hotspot(SDL_KeyCode keycode, int x, int y, int w, int h)
+		Hotspot(SDL_Keycode keycode, int x, int y, int w, int h)
 				: TileRect(x, y, w, h), keycode(keycode) {}
 	};
 
@@ -189,7 +189,7 @@ private:
 	void        SharedPrompt();
 	bool        SharedInput();
 	void        SharedMenu();
-	SDL_KeyCode CheckHotspots(int mx, int my, int radius = 4);
+	SDL_Keycode CheckHotspots(int mx, int my, int radius = 4);
 	void        PaintHotspots();
 	void        NormalLoop();
 	void        NormalDisplay();
@@ -245,7 +245,7 @@ private:
 	//! @param label Label of the Menu item
 	//! @return Width in pixels of the menu item
 	int AddMenuItem(
-			int offsetx, int offsety, SDL_KeyCode keycode, const char* label);
+			int offsetx, int offsety, SDL_Keycode keycode, const char* label);
 
 	//! @brief Add a menuitem for left and right cursor keys
 	//! @param offsetx X coord for the menu item
