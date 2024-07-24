@@ -1097,7 +1097,7 @@ void CheatScreen::NormalDisplay() {
 	const Tile_coord t      = gwin->get_main_actor()->get_tile();
 
 	font->paint_text_fixedwidth(
-			ibuf, "Advanced Option Cheat Screen", 0, offsety1, 8);
+			ibuf, "Advanced Option Cheat Screen", offsetx, offsety1, 8);
 
 	if (Game::get_game_type() == BLACK_GATE) {
 		snprintf(buf, sizeof(buf), "Running \"Ultima 7: The Black Gate\"");
@@ -1416,21 +1416,21 @@ bool CheatScreen::NormalCheck() {
 void CheatScreen::ActivityDisplay() {
 	char buf[512];
 #if defined(__IPHONEOS__) || defined(ANDROID) || defined(TEST_MOBILE)
-	const int offsety1 = 99;
+	const int offsety1 = 7;
 #else
-	const int offsety1 = 0;
+	const int offsety1 = 9;
 #endif
 
 	for (int i = 0; i < 11; i++) {
 		snprintf(buf, sizeof(buf), "%2i %s", i, schedules[i]);
-		font->paint_text_fixedwidth(ibuf, buf, 0, i * 9 + offsety1, 8);
+		font->paint_text_fixedwidth(ibuf, buf, 0, i * offsety1, 8);
 
 		snprintf(buf, sizeof(buf), "%2i %s", i + 11, schedules[i + 11]);
-		font->paint_text_fixedwidth(ibuf, buf, 112, i * 9 + offsety1, 8);
+		font->paint_text_fixedwidth(ibuf, buf, 112, i * offsety1, 8);
 
 		if (i != 10) {
 			snprintf(buf, sizeof(buf), "%2i %s", i + 22, schedules[i + 22]);
-			font->paint_text_fixedwidth(ibuf, buf, 224, i * 9 + offsety1, 8);
+			font->paint_text_fixedwidth(ibuf, buf, 224, i * offsety1, 8);
 		}
 	}
 }
