@@ -1902,6 +1902,10 @@ void CheatScreen::NPCMenu(Actor* actor, int& num) {
 		// Stats
 		AddMenuItem(offsetx + 160, maxy - offsety1 - 99, SDLK_s, "tats");
 
+		// Training Points
+		AddMenuItem(offsetx + 160, maxy - offsety1 - 90, SDLK_2, " Training Points");
+
+				
 		// Teleport
 		AddMenuItem(
 				offsetx + 160, maxy - offsety1 - 81, SDLK_t, "eleport to NPC");
