@@ -2600,7 +2600,7 @@ void Actor::set_property(int prop, int val) {
 	}
 	case training:
 		// Don't let this go negative.
-		if (val > 0) {
+		if (val >= 0) {
 			if (val > max_training) {
 				val = max_training;
 			}
