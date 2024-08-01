@@ -422,7 +422,7 @@ int MenuList::handle_events(Game_window* gwin, Mouse* mouse) {
 						&& (event.key.keysym.mod & KMOD_CTRL)) {
 						make_screenshot(true);
 					}
-					SDL_FALLTHROUGH;
+					// FALLTHROUGH
 				default: {
 					// let key be processed by selected menu-item
 					if (selected) {
