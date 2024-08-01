@@ -1962,11 +1962,6 @@ void Game_window::teleport_party(
 				main_actor, t.tx, t.ty, t.tz, oldpos.tx, oldpos.ty);
 	}
 	//	teleported = 1;
-	// generate mousemotion event
-	int x;
-	int y;
-	SDL_GetMouseState(&x, &y);
-	SDL_WarpMouseInWindow(win->get_screen_window(), x, y);
 }
 
 /*

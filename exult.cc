@@ -249,7 +249,7 @@ static bool                 show_items_clicked = false;
 static int                  left_down_x = 0, left_down_y = 0;
 static int                  joy_aim_x = 0, joy_aim_y = 0;
 Mouse::Avatar_Speed_Factors joy_speed_factor = Mouse::medium_speed_factor;
-
+static Uint32               last_speed_cursor = 0; // When we last updated the mouse cursor
 #if defined _WIN32
 void        do_cleanup_output() {
     cleanup_output("std");
@@ -1203,7 +1203,6 @@ static void Select_for_combo(
 
 static void Handle_events() {
 	uint32 last_repaint = 0;    // For insuring animation repaints.
-	uint32 last_rotate  = 0;
 	uint32 last_rest    = 0;
 #ifdef DEBUG
 	uint32 last_fps = 0;
@@ -1337,6 +1336,12 @@ static void Handle_events() {
 			}
 			// Reset it for lerping.
 			last_x = last_y = -1;
+		}
+		// update mousecursor appearance if needed
+		if (last_speed_cursor + 100 < SDL_GetTicks() && !dragging) {
+			last_speed_cursor = SDL_GetTicks();
+			Mouse::mouse->set_speed_cursor();
+			Mouse::mouse_update = true;
 		}
 		Mouse::mouse->show();    // Re-display mouse.
 		gwin->rotatecolours();
@@ -1729,6 +1734,7 @@ static void Handle_event(SDL_Event& event) {
 
 		Mouse::mouse->move(mx, my);
 		if (!dragging) {
+			last_speed_cursor = SDL_GetTicks();
 			Mouse::mouse->set_speed_cursor();
 		}
 		Mouse::mouse_update = true;    // Need to blit mouse.
