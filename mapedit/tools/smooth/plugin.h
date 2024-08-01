@@ -5,7 +5,7 @@
  *
  */
 
-char*       plug_error();
+char*       plug_error(void);
 void*       plug_load_func(libhandle_t a_hdl, char* func_name);
 libhandle_t plug_load(char* plug_name);
 int         plug_unload(libhandle_t a_hdl);

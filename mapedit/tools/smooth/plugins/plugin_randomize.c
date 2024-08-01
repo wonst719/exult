@@ -37,7 +37,7 @@ void init_plugin(glob_statics* g_stat) {
 	}
 }
 
-void deinit_plugin() {
+void deinit_plugin(void) {
 	// optional
 	// not required but it can be useful to inform the plugin is unloading
 	if (my_g_stat.debug) {

@@ -2428,7 +2428,7 @@ void change_gamma(bool down) {
 	// Message
 	Image_window8::get_gamma(r, g, b);
 	snprintf(
-			text, sizeof(text), "Gamma Set to R: %01.2f G: %01.2f B: %01.2f", r,
+			text, sizeof(text), "Gamma Set to R: %04.2f G: %04.2f B: %04.2f", r,
 			g, b);
 	gwin->get_effects()->center_text(text);
 
@@ -2436,11 +2436,11 @@ void change_gamma(bool down) {
 	snprintf(text, sizeof(text), "%d.%04d", igam / 10000, igam % 10000);
 	config->set("config/video/gamma/red", text, true);
 
-	igam = std::lround(b * 10000);
+	igam = std::lround(g * 10000);
 	snprintf(text, sizeof(text), "%d.%04d", igam / 10000, igam % 10000);
 	config->set("config/video/gamma/green", text, true);
 
-	igam = std::lround(g * 10000);
+	igam = std::lround(b * 10000);
 	snprintf(text, sizeof(text), "%d.%04d", igam / 10000, igam % 10000);
 	config->set("config/video/gamma/blue", text, true);
 }

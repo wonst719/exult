@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-node* create_node() {
+node* create_node(void) {
 	// return NULL in case of failure - prints error message
 	// otherwise return address of newly created node
 
@@ -46,7 +46,7 @@ int delete_node(node* n) {
 			// that's the handle list. We must use plug_unload
 			// note: plug_unload return non-zero when successful!
 			// must call deinit first
-			void* (*deinit)();
+			void* (*deinit)(void);
 			*(void**)&deinit = plug_load_func(n->handle, "deinit_plugin");
 			(*deinit)();
 			val = plug_unload(n->handle);

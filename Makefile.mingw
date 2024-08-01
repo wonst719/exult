@@ -299,7 +299,6 @@ WARNINGS := \
 	-Wctor-dtor-privacy \
 	-Wdeprecated-copy-dtor \
 	-Wdisabled-optimization \
-	-Wdouble-promotion \
 	-Wextra-semi \
 	-Wformat-nonliteral \
 	-Wformat-security \
@@ -348,7 +347,6 @@ WARNINGS := \
 	-Wctor-dtor-privacy \
 	-Wdeprecated-copy-dtor \
 	-Wdisabled-optimization \
-	-Wdouble-promotion \
 	-Wduplicated-branches \
 	-Wduplicated-cond \
 	-Wextra-semi \

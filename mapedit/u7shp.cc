@@ -161,7 +161,7 @@ struct u7shape {
 
 MAIN()    // NOLINT
 
-static void query() {
+static void query(void) {
 	constexpr static const GimpParamDef load_args[] = {
 			{ GIMP_PDB_INT32,     const_cast<gchar*>("run_mode"),
 			 const_cast<gchar*>("Interactive, non-interactive")},

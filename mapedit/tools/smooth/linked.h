@@ -10,7 +10,7 @@
 
 #include "globals.h"
 
-node* create_node();
+node* create_node(void);
 int   delete_node(node* n);
 int   delete_list(node* list_head);
 int   add_tail_list(node* list_head, node* new_node);

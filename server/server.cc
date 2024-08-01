@@ -145,10 +145,10 @@ void Server_init() {
 		if (bind(listen_socket, ai->ai_addr, ai->ai_addrlen) == -1
 			|| listen(listen_socket, 1) == -1)
 #		else
-		struct sockaddr_un addr;
+		sockaddr_un addr;
 		addr.sun_family = AF_UNIX;
 		strcpy(addr.sun_path, servename.c_str());
-		if (bind(listen_socket, reinterpret_cast<struct sockaddr*>(&addr),
+		if (bind(listen_socket, reinterpret_cast<sockaddr*>(&addr),
 				 sizeof(addr.sun_family) + strlen(addr.sun_path) + 1)
 					== -1
 			|| listen(listen_socket, 1) == -1)
@@ -544,8 +544,8 @@ void Server_delay(Message_handler handle_message) {
 			return;
 		}
 
-		fd_set         rfds;
-		struct timeval timer;
+		fd_set  rfds;
+		timeval timer;
 		timer.tv_sec  = 0;
 		timer.tv_usec = DELAY_SINGLE_MS * 1000;    // Try 1/1000 second.
 		FD_ZERO(&rfds);

@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char* plug_error() {
+char* plug_error(void) {
 	// Colourless: Unix specific part. Add your #def here
 #ifdef _WIN32
 	HRESULT hRes = GetLastError();

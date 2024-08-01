@@ -50,7 +50,7 @@ void init_plugin(glob_statics* g_stat) {
 	}
 }
 
-void deinit_plugin() {
+void deinit_plugin(void) {
 	// required since it is called specifically at unload time
 	if (my_g_stat.debug) {
 		printf("Unloading %s\n", PLUGIN_NAME);

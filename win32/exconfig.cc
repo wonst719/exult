@@ -156,7 +156,7 @@ int Path::Addit(const char* p) {
 	Directory* d        = dirs;
 	Directory* prev     = nullptr;
 	Directory* prevprev = nullptr;
-	int        i;
+	size_t     i;
 
 	// Check for . and ..
 

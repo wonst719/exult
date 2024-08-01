@@ -198,7 +198,7 @@ Uint8 palette_rw(colour_hex col) {
 	}
 }
 
-int process_image() {
+int process_image(void) {
 	// returns < 0 if pb
 	// that's where the meat of the program is
 	// algo:
