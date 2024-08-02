@@ -24,7 +24,7 @@
 #include "dir.h"
 #include "iwin8.h"
 #include "rect.h"
-#include "vgafile.h"
+#include "shapes/vgafile.h"
 
 class Game_window;
 
