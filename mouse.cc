@@ -162,6 +162,27 @@ void Mouse::show() {
 int Mouse::fast_offset_x = 0;
 int Mouse::fast_offset_y = 0;
 
+
+// Apply the fastmouse offset to a position
+// This is used by Image_window::screen_to_game
+
+void Mouse::apply_fast_offset(int& gx, int& gy) {
+	if (gwin->get_fastmouse()) {
+		gx += fast_offset_x;
+		gy += fast_offset_y;
+	}
+}
+
+// Unapply the fastmouse offset to a position
+// This is used by Image_window::game_to_screen
+
+ void Mouse::unapply_fast_offset(int& gx, int& gy) {
+	if (gwin->get_fastmouse()) {
+		gx -= fast_offset_x;
+		gy -= fast_offset_y;
+	}
+}
+
 void Mouse::move(int& x, int& y) {
 	// COUT("Start mouse offset " << fast_offset_x << "," << fast_offset_y);
 	// COUT("Start mouse coord " << x << "," << y);

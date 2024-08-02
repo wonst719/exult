@@ -22,10 +22,11 @@
 #define MOUSE_H
 
 #include "dir.h"
-#include "gamewin.h"
 #include "iwin8.h"
 #include "rect.h"
 #include "vgafile.h"
+
+class Game_window;
 
 /*
  *  Handle custom mouse pointers.
@@ -131,21 +132,11 @@ public:
 
 	// Apply the fastmouse offset to a position
 	// This is used by Image_window::screen_to_game
-	void apply_fast_offset(int& gx, int& gy) {
-		if (gwin->get_fastmouse()) {
-			gx += fast_offset_x;
-			gy += fast_offset_y;
-		}
-	}
+	void apply_fast_offset(int& gx, int& gy);
 
 	// Unapply the fastmouse offset to a position
 	// This is used by Image_window::game_to_screen
-	void unapply_fast_offset(int& gx, int& gy) {
-		if (gwin->get_fastmouse()) {
-			gx -= fast_offset_x;
-			gy -= fast_offset_y;
-		}
-	}
+	void unapply_fast_offset(int& gx, int& gy);
 
 	// Move mouse to a new location when handling mouse motion events.
 	// Updates the input coords to reflects the actual position the mouse will
