@@ -34,6 +34,9 @@
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
 
+#include "imagewin/imagebuf.h"
+#include "shapes/font.h"
+#include "shapeid.h"
 class Gump;
 class Game_object;
 class Game_window;
