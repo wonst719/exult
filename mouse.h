@@ -129,7 +129,9 @@ public:
 		iwin->show(dirty.x - 1, dirty.y - 1, dirty.w + 2, dirty.h + 2);
 	}
 
-	void set_location(int x, int y);    // Set to given location.
+protected:
+	void set_location(int x, int y);    // Set to given location. This generally shouldn't be used. move should be used instead
+public:
 	// Flash desired shape for 1/2 sec.
 	void flash_shape(Mouse_shapes flash);
 

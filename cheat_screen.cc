@@ -691,7 +691,7 @@ bool CheatScreen::SharedInput() {
 							event.motion.x, event.motion.y,
 							gwin->get_fastmouse(), gx, gy);
 
-					Mouse::mouse->set_location(gx, gy);
+					Mouse::mouse->move(gx, gy);
 					Mouse::mouse_update = true;
 
 				} break;

@@ -1799,7 +1799,7 @@ static void Handle_event(SDL_Event& event) {
 			int y;
 			SDL_GetMouseState(&x, &y);
 			gwin->get_win()->screen_to_game(x, y, gwin->get_fastmouse(), x, y);
-			Mouse::mouse->set_location(x, y);
+			Mouse::mouse->move(x, y);
 			gwin->set_painted();
 		}
 
