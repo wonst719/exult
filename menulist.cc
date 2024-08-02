@@ -316,6 +316,21 @@ int MenuList::handle_events(Game_window* gwin, Mouse* mouse) {
 		entries[i]->dirty = true;
 	}
 
+	struct ChangeMouse {
+		Mouse* old;
+
+		ChangeMouse(Mouse* mouse)
+		{
+			old = Mouse::mouse;
+			Mouse::mouse = mouse;
+		}
+
+		~ChangeMouse() {
+			Mouse::mouse = old;
+		}
+
+	} changemouse(mouse);
+
 	gwin->show(true);
 	mouse->show();
 
