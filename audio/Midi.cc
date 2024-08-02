@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "exult.h"
 #include "fnames.h"
 #include "game.h"
+#include "gamewin.h"
 #include "utils.h"
 
 #include <unistd.h>
