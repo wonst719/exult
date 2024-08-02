@@ -36,6 +36,7 @@ Boston, MA  02111-1307, USA.
 #include "common_types.h"
 #include "istring.h"
 #include "manip.h"
+#include "mouse.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -59,7 +60,7 @@ using std::cout;
 using std::endl;
 using std::exit;
 
-#define SCALE_BIT(factor) (1 << ((factor) - 1))
+#define SCALE_BIT(factor) (1 << ((factor)-1))
 
 const Image_window::ScalerType  Image_window::NoScaler(-1);
 const Image_window::ScalerConst Image_window::point("Point");
@@ -1053,6 +1054,53 @@ int Image_window::get_display_width() {
 
 int Image_window::get_display_height() {
 	return display_surface->h;
+}
+
+void Image_window::screen_to_game(int sx, int sy, bool fast, int& gx, int& gy) {
+	if (fast) {
+		gx = sx + get_start_x();
+		gy = sy + get_start_y();
+		if (Mouse::mouse) {
+			Mouse::mouse->apply_fast_offset(gx, gy);
+		}
+	} else {
+		gx = (sx * inter_width) / (scale * get_display_width()) + get_start_x();
+		gy = (sy * inter_height) / (scale * get_display_height())
+			 + get_start_y();
+	}
+}
+
+void Image_window::screen_to_game_hdpi(
+		int sx, int sy, bool fast, int& gx, int& gy) {
+	int lgx;
+	int lgy;
+	screen_to_game(sx, sy, fast, lgx, lgy);
+	if (!fullscreen) {
+		// reset nativescale to 1.0 for windowed gaming or toggling
+		// fullscreen/windowed mode uses the wrong nativescale
+		nativescale = 1.0f;
+	}
+	if (nativescale != 1.0f) {
+		gx = lgx * nativescale;
+		gy = lgy * nativescale;
+	} else {
+		gx = lgx;
+		gy = lgy;
+	}
+}
+
+void Image_window::game_to_screen(int gx, int gy, bool fast, int& sx, int& sy) {
+	if (fast) {
+		if (Mouse::mouse) {
+			Mouse::mouse->unapply_fast_offset(gx, gy);
+		}
+		sx = gx - get_start_x();
+		sy = gy - get_start_y();
+	} else {
+		sx = ((gx - get_start_x()) * scale * get_display_width()) / inter_width;
+		sy = ((gy - get_start_y()) * scale * get_display_height())
+			 / inter_height;
+	}
 }
 
 bool Image_window::get_draw_dims(

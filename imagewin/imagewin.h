@@ -337,47 +337,11 @@ public:
 	int get_display_width();
 	int get_display_height();
 
-	void screen_to_game(int sx, int sy, bool fast, int& gx, int& gy) {
-		if (fast) {
-			gx = sx + get_start_x();
-			gy = sy + get_start_y();
-		} else {
-			gx = (sx * inter_width) / (scale * get_display_width())
-				 + get_start_x();
-			gy = (sy * inter_height) / (scale * get_display_height())
-				 + get_start_y();
-		}
-	}
+	void screen_to_game(int sx, int sy, bool fast, int& gx, int& gy);
 
-	void screen_to_game_hdpi(int sx, int sy, bool fast, int& gx, int& gy) {
-		int lgx;
-		int lgy;
-		screen_to_game(sx, sy, fast, lgx, lgy);
-		if (!fullscreen) {
-			// reset nativescale to 1.0 for windowed gaming or toggling
-			// fullscreen/windowed mode uses the wrong nativescale
-			nativescale = 1.0f;
-		}
-		if (nativescale != 1.0f) {
-			gx = lgx * nativescale;
-			gy = lgy * nativescale;
-		} else {
-			gx = lgx;
-			gy = lgy;
-		}
-	}
+	void screen_to_game_hdpi(int sx, int sy, bool fast, int& gx, int& gy);
 
-	void game_to_screen(int gx, int gy, bool fast, int& sx, int& sy) {
-		if (fast) {
-			sx = gx - get_start_x();
-			sy = gy - get_start_y();
-		} else {
-			sx = ((gx - get_start_x()) * scale * get_display_width())
-				 / inter_width;
-			sy = ((gy - get_start_y()) * scale * get_display_height())
-				 / inter_height;
-		}
-	}
+	void game_to_screen(int gx, int gy, bool fast, int& sx, int& sy);
 
 	int get_scaler() {    // Returns 1 or 2.
 		return scaler;

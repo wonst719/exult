@@ -159,21 +159,27 @@ void Mouse::show() {
  *  Move cursor
  */
 
-void Mouse::move(int x, int y) {
-	bool warp = false;
-	if (x >= gwin->get_win()->get_end_x()) {
-		x    = gwin->get_win()->get_end_x() - 1;
-		warp = true;
-	}
-	if (y >= gwin->get_win()->get_end_y()) {
-		y    = gwin->get_win()->get_end_y() - 1;
-		warp = true;
-	}
-	if (warp && gwin->get_fastmouse()) {
-		int wx;
-		int wy;
-		gwin->get_win()->game_to_screen(x, y, gwin->get_fastmouse(), wx, wy);
-		SDL_WarpMouseInWindow(gwin->get_win()->get_screen_window(), wx, wy);
+int Mouse::fast_offset_x = 0;
+int Mouse::fast_offset_y = 0;
+
+void Mouse::move(int& x, int& y) {
+	// COUT("Start mouse offset " << fast_offset_x << "," << fast_offset_y);
+	// COUT("Start mouse coord " << x << "," << y);
+
+	// Special handling for fast mouse to keep the pointer within the game
+	// screen
+	if (gwin->get_fastmouse()) {
+		// Clip the mouse to be within the bounds of the actual game screen
+		int wx = std::max(0, std::min(x, gwin->get_win()->get_end_x() - 1));
+		int wy = std::max(0, std::min(y, gwin->get_win()->get_end_y() - 1));
+
+		// Adjust offset if mouse position changes
+		fast_offset_x += wx - x;
+		fast_offset_y += wy - y;
+
+		// Update the mouse position for the rest ofthe function
+		x = wx;
+		y = wy;
 	}
 #ifdef DEBUG
 	if (onscreen) {

@@ -49,6 +49,12 @@ protected:
 	static short short_combat_arrows[8];    // Short red arrows
 	static short med_combat_arrows[8];      // Medium red arrows
 	void set_shape0(int framenum);          // Set shape without checking first.
+
+	// Offset when fast mouse is enabled. Static so the values persists when a
+	// new mouse object is created when switching menus
+	static int fast_offset_x;
+	static int fast_offset_y;
+
 	void Init();
 
 public:
@@ -123,14 +129,40 @@ public:
 		return static_cast<Mouse_shapes>(cur_framenum);
 	}
 
-	void move(int x, int y);    // Move to new location (mouse motion).
+	// Apply the fastmouse offset to a position
+	// This is used by Image_window::screen_to_game
+	void apply_fast_offset(int& gx, int& gy) {
+		if (gwin->get_fastmouse()) {
+			gx += fast_offset_x;
+			gy += fast_offset_y;
+		}
+	}
+
+	// Unapply the fastmouse offset to a position
+	// This is used by Image_window::game_to_screen
+	void unapply_fast_offset(int& gx, int& gy) {
+		if (gwin->get_fastmouse()) {
+			gx -= fast_offset_x;
+			gy -= fast_offset_y;
+		}
+	}
+
+	// Move mouse to a new location when handling mouse motion events.
+	// Updates the input coords to reflects the actual position the mouse will
+	// be displayed at, if it gets changed for some reason like fast mouse
+	// bound clipping
+	// You Must call Image_window::screen_to_game() first to translate screen
+	// coords to the game coords expected by this function
+	void move(int& gx, int& gy);
 
 	void blit_dirty() {    // Blit dirty area.
 		iwin->show(dirty.x - 1, dirty.y - 1, dirty.w + 2, dirty.h + 2);
 	}
 
 protected:
-	void set_location(int x, int y);    // Set to given location. This generally shouldn't be used. move should be used instead
+	void set_location(
+			int x, int y);    // Set to given location. This generally shouldn't
+							  // be used. move should be used instead
 public:
 	// Flash desired shape for 1/2 sec.
 	void flash_shape(Mouse_shapes flash);
