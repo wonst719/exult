@@ -669,7 +669,7 @@ bool Image_window::create_scale_surfaces(int w, int h, int bpp) {
 		cout << "Couldn't create renderer: " << SDL_GetError() << std::endl;
 	}
 
-	if (fullscreen && highdpi) {
+	if (fullscreen) {
 		int dw;
 		int dh;
 		// with HighDPi this returns the higher resolutions
