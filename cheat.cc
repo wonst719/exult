@@ -975,10 +975,8 @@ void Cheat::cursor_teleport() const {
 		return;
 	}
 
-	int x;
-	int y;
-	SDL_GetMouseState(&x, &y);
-	gwin->get_win()->screen_to_game_hdpi(x, y, gwin->get_fastmouse(), x, y);
+	int        x = Mouse::mouse->get_mousex();
+	int        y = Mouse::mouse->get_mousey();
 	Tile_coord t(
 			gwin->get_scrolltx() + x / c_tilesize,
 			gwin->get_scrollty() + y / c_tilesize, 0);
@@ -1042,11 +1040,8 @@ void Cheat::delete_object() {
 		return;
 	}
 
-	int x;
-	int y;
-	SDL_GetMouseState(&x, &y);
-	gwin->get_win()->screen_to_game_hdpi(x, y, gwin->get_fastmouse(), x, y);
-
+	int          x = Mouse::mouse->get_mousex();
+	int          y = Mouse::mouse->get_mousey();
 	Game_object* obj;
 	Gump*        gump = gwin->get_gump_man()->find_gump(x, y);
 	if (gump) {

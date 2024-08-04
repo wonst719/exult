@@ -339,8 +339,6 @@ public:
 
 	void screen_to_game(int sx, int sy, bool fast, int& gx, int& gy);
 
-	void screen_to_game_hdpi(int sx, int sy, bool fast, int& gx, int& gy);
-
 	void game_to_screen(int gx, int gy, bool fast, int& sx, int& sy);
 
 	int get_scaler() {    // Returns 1 or 2.

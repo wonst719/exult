@@ -1261,12 +1261,9 @@ static void Handle_events() {
 		// always check every loop
 		if ((!gwin->is_moving() || gwin->get_step_tile_delta() == 1)
 			&& gwin->main_actor_can_act_charmed()) {
-			int       x;
-			int       y;    // Check for 'stuck' Avatar.
-			const int ms = SDL_GetMouseState(&x, &y);
-			// mouse movement needs to be adjusted for HighDPI
-			gwin->get_win()->screen_to_game_hdpi(
-					x, y, gwin->get_fastmouse(), x, y);
+			int       x  = Mouse::mouse->get_mousex();
+			int       y  = Mouse::mouse->get_mousey();
+			const int ms = SDL_GetMouseState(nullptr,nullptr);
 			if ((SDL_BUTTON(3) & ms) && !right_on_gump) {
 				gwin->start_actor(x, y, Mouse::mouse->avatar_speed);
 			} else if (ticks > last_rest) {
@@ -2269,14 +2266,10 @@ void Wizard_eye(long msecs    // Length of time in milliseconds.
 		// Show animation every 1/20 sec.
 		if (ticks > last_repaint + 50 || gwin->was_painted()) {
 			// Right mouse button down?
-			int       x;
-			int       y;
-			const int ms = SDL_GetMouseState(&x, &y);
-			int       mx;
-			int       my;
-			// mouse movement of the eye needs to adjust for HighDPI
-			gwin->get_win()->screen_to_game_hdpi(
-					x, y, gwin->get_fastmouse(), mx, my);
+
+			const int ms = SDL_GetMouseState(nullptr,nullptr);
+			int       mx  = Mouse::mouse->get_mousex();
+			int       my  = Mouse::mouse->get_mousey();
 			if (SDL_BUTTON(3) & ms) {
 				Shift_wizards_eye(mx, my);
 			}

@@ -42,6 +42,12 @@ Boston, MA  02111-1307, USA.
 #include <iostream>
 #include <string>
 
+// Simulate HighDPI mode without OS or Display Support for it
+// uncomment the define and set to a value greater than 1.0 to multiply the
+// fullscreen render surface resolution This should only be used for testing and
+// development and will likely degrade performance and quality 
+//#define SIMULATE_HIDPI 2.0f
+
 #ifdef __GNUC__
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -633,8 +639,10 @@ void Image_window::create_surface(unsigned int w, unsigned int h) {
  */
 
 bool Image_window::create_scale_surfaces(int w, int h, int bpp) {
-	int    hwdepth = bpp;
-	uint32 flags   = SDL_SWSURFACE | SDL_WINDOW_ALLOW_HIGHDPI;
+	int  hwdepth = bpp;
+	bool highdpi;
+	config->value("config/video/highdpi", highdpi, false);
+	uint32 flags = SDL_SWSURFACE | highdpi ? SDL_WINDOW_ALLOW_HIGHDPI : 0;
 	if (fullscreen) {
 		flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 	}
@@ -661,11 +669,18 @@ bool Image_window::create_scale_surfaces(int w, int h, int bpp) {
 		cout << "Couldn't create renderer: " << SDL_GetError() << std::endl;
 	}
 
-	if (fullscreen) {
+	if (fullscreen && highdpi) {
 		int dw;
 		int dh;
 		// with HighDPi this returns the higher resolutions
 		SDL_GetRendererOutputSize(screen_renderer, &dw, &dh);
+#ifdef SIMULATE_HIDPI
+		constexpr float simulated = SIMULATE_HIDPI + 0.f;
+		if (simulated && dw == w && dh == h) {
+			dw = w * simulated;
+			dh = h * simulated;
+		}
+#endif
 		w                            = dw;
 		h                            = dh;
 		const Resolution res         = {w, h};
@@ -1067,25 +1082,6 @@ void Image_window::screen_to_game(int sx, int sy, bool fast, int& gx, int& gy) {
 		gx = (sx * inter_width) / (scale * get_display_width()) + get_start_x();
 		gy = (sy * inter_height) / (scale * get_display_height())
 			 + get_start_y();
-	}
-}
-
-void Image_window::screen_to_game_hdpi(
-		int sx, int sy, bool fast, int& gx, int& gy) {
-	int lgx;
-	int lgy;
-	screen_to_game(sx, sy, fast, lgx, lgy);
-	if (!fullscreen) {
-		// reset nativescale to 1.0 for windowed gaming or toggling
-		// fullscreen/windowed mode uses the wrong nativescale
-		nativescale = 1.0f;
-	}
-	if (nativescale != 1.0f) {
-		gx = lgx * nativescale;
-		gy = lgy * nativescale;
-	} else {
-		gx = lgx;
-		gy = lgy;
 	}
 }
 
