@@ -642,7 +642,7 @@ bool Image_window::create_scale_surfaces(int w, int h, int bpp) {
 	int  hwdepth = bpp;
 	bool highdpi;
 	config->value("config/video/highdpi", highdpi, false);
-	uint32 flags = SDL_SWSURFACE | (highdpi ? SDL_WINDOW_ALLOW_HIGHDPI) : 0;
+	uint32 flags = SDL_SWSURFACE | (highdpi ? SDL_WINDOW_ALLOW_HIGHDPI : 0);
 	if (fullscreen) {
 		flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 	}
