@@ -62,16 +62,22 @@ private:
 	int clipx, clipy, clipw, cliph;    // Clip rectangle.
 
 	// Clip.  Rets. false if nothing to draw.
-	bool clip_internal(int& srcx, int& srcw, int& destx, int clips, int clipl) {
-		if (destx < clips) {
-			if ((srcw += (destx - clips)) <= 0) {
+	bool clip_internal(int& src, int& size, int& dest, int clips, int clipl) {
+		// size less than or equal to zero, get rid of it
+		// There is no other sensible way for this function to deal with that
+		if (size <= 0) {
+			return false;
+		}
+
+		if (dest < clips) {
+			if ((size += (dest - clips)) <= 0) {
 				return false;
 			}
-			srcx -= (destx - clips);
-			destx = clips;
+			src -= (dest - clips);
+			dest = clips;
 		}
-		if (destx + srcw > (clips + clipl)) {
-			if ((srcw = ((clips + clipl) - destx)) <= 0) {
+		if (dest + size > (clips + clipl)) {
+			if ((size = ((clips + clipl) - dest)) <= 0) {
 				return false;
 			}
 		}
@@ -79,18 +85,19 @@ private:
 	}
 
 protected:
-	bool clip_x(int& srcx, int& srcw, int& destx, int desty) {
+	bool clip_x(int& srcx, int& width, int& destx, int desty) {
 		return desty < clipy || desty >= clipy + cliph
 					   ? false
-					   : clip_internal(srcx, srcw, destx, clipx, clipw);
+					   : clip_internal(srcx, width, destx, clipx, clipw);
 	}
 
+	// Clip rectangle.
 	bool clip(
-			int& srcx, int& srcy, int& srcw, int& srch, int& destx,
+			int& srcx, int& srcy, int& width, int& height, int& destx,
 			int& desty) {
 		// Start with x-dim.
-		return clip_internal(srcx, srcw, destx, clipx, clipw)
-			   && clip_internal(srcy, srch, desty, clipy, cliph);
+		return clip_internal(srcx, width, destx, clipx, clipw)
+			   && clip_internal(srcy, height, desty, clipy, cliph);
 	}
 
 	Image_buffer(unsigned int w, unsigned int h, int dpth);
