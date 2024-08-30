@@ -160,7 +160,7 @@
 				<ol>
 					<li>While it is not explicitly needed it is useful to have a working copy of either
 						BG or SI properly installed onto your computer.</li>
-					<li>Next, you need to have the latest <Exult/> snapshotinstalled properly
+					<li>Next, you need to have the latest <Exult/> snapshot installed properly
 						onto your computer and working correctly. If you are currently playing either BG or SI
 						on your machine this is probably done right. To make sure you have the correct version,
 						ensure that it says X.XX GIT (X.XX stands for some version number) during <Exult/>'s
@@ -237,7 +237,7 @@
 					</configtag>
 				</configdesc>
 				<para>
-					<em>IMPORTANT:</em> <Studio/> requires the "patch" folder to be writeable. If you don't have writeaccess
+					<em>IMPORTANT:</em> <Studio/> requires the "patch" folder to be writeable. If you don't have write access
 					you need to place it somewhere you are allowed to write to and change the path accordingly in exult.cfg.
 				</para>
 				<para>
@@ -612,7 +612,7 @@
 						Create a barge such as a magic carpet or a horse drawn carriage.
 						See <ref target="barge_edit"/> for more information.</li>
 					<li><strong>Set Game Information</strong><br/>
-						Edit the game information shwon in the Exult menu.</li>
+						Edit the game information shown in the Exult menu.</li>
 				</ul>
 				<para>
 					When in map-edit mode, you can select shapes in Exult by left-clicking, or multiple shapes by
@@ -810,7 +810,7 @@
 					<extref target="http://www.thefeudallands.ca/srcdocs/files/intrinsics-uc.html"/> and
 					Pertex has written some documentation at
 					<extref target="http://web.archive.org/web/20071217233843/http://www.sophen.de/exult/"/>
-					(unfortunately Pertex original documentation has vanished but at least the wayback machine
+					(unfortunately Pertex' original documentation has vanished but at least the wayback machine
 					can be of great help)
 					that might be able help you.
 				</para>
@@ -967,7 +967,7 @@
 					help the avatar in fights, but will also attack the Avatar if he is caught stealing or
 					killing "good" NPCs. It will also attack evil Monsters or NPCs regardless of the Avatar.
 					And finally <strong>Chaotic</strong> creatures or monsters will attack anyone, regardless
-					of their alignement<br/>
+					of their alignment<br/>
 					Next you can set the number of creatures you want to appear using the count option. You
 					can set anywhere from 1 to 31 monsters.<br/>
 					Finally you can assign a Usecode number or name to the spawned monster (leave this blank if
@@ -1205,7 +1205,7 @@
 					<li><strong>Ident</strong><br/>
 						This is a number used in usecode in SI to differentiate between different NPC possibilities.
 						It can be used to decide which set of conversation options some party members have, as well
-						as making some "monster¨" NPCs have a more persistent identity despite not having a set NPC
+						as making some "monster" NPCs have a more persistent identity despite not having a set NPC
 						number</li>
 					<li><strong>Shape #</strong><br/>
 						Either drag and drop a shape from shapes.vga into the line (or the black box to the

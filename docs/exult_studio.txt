@@ -189,7 +189,7 @@ You can also reconnect by selecting "File-Connect" in Exult Studio's menu.
 
 The above instructions may still be too technical for everybody. You have to make sure all these steps are taken care of before you're going to get very far with your world building.
 1. While it is not explicitly needed it is useful to have a working copy of either BG or SI properly installed onto your computer.
-2. Next, you need to have the latest Exult snapshotinstalled properly onto your computer and working correctly. If you are currently playing either BG or SI on your machine this is probably done right. To make sure you have the correct version, ensure that it says X.XX GIT (X.XX stands for some version number) during Exult's start-up screen (for example see https://exult.info/images/screenshots/mainmenu.png).
+2. Next, you need to have the latest Exult snapshot installed properly onto your computer and working correctly. If you are currently playing either BG or SI on your machine this is probably done right. To make sure you have the correct version, ensure that it says X.XX GIT (X.XX stands for some version number) during Exult's start-up screen (for example see https://exult.info/images/screenshots/mainmenu.png).
 3. You need to make sure the newest version of Exult Studio is installed properly onto your computer as well. Exult Studio should be installed in the same folder as the Exult snapshot.
 4. The patch folder needs to be in folder which you are allowed to write, so Exult Studio can save any changes to existing games. See 2.4. What you can do at the moment on how to change exult.cfg accordingly.
 5. In order for Exult Studio to work properly, you need to have Exult running in windowed mode. If you can see your desktop while playing, then you're doing it right.
@@ -225,7 +225,7 @@ The above instructions may still be too technical for everybody. You have to mak
     ./blackgate/patch
     </patch>
   </blackgate>
-IMPORTANT:Exult Studio requires the "patch" folder to be writeable. If you don't have writeaccess you need to place it somewhere you are allowed to write to and change the path accordingly in exult.cfg.
+IMPORTANT:Exult Studio requires the "patch" folder to be writeable. If you don't have write access you need to place it somewhere you are allowed to write to and change the path accordingly in exult.cfg.
 Exult will also read files from 'patch' if it exists on starting a new game. The patch folder is expected to be within the main game folder, parallel to the static folder.
 In any mode, you can add the currently selected shape by shift-clicking.
 
@@ -480,7 +480,7 @@ Note that the default location for saving and creation of new files is the PATCH
 * Create Barge...
  Create a barge such as a magic carpet or a horse drawn carriage. See 9.1. for more information.
 * Set Game Information
- Edit the game information shwon in the Exult menu.
+ Edit the game information shown in the Exult menu.
 
 When in map-edit mode, you can select shapes in Exult by left-clicking, or multiple shapes by ctrl+left-clicking.
 
@@ -587,7 +587,7 @@ For an example of how Usecode may look like download our SF Island mod for BG at
 Usecode.uc is the usecode script that will help you understand our usecode language.
  When you run ucc (see 9.4.) with that file (e.g. "ucc -o usecode usecode.uc") you will get the file called usecode. This file 'usecode' should be the same as the one in the zip file.
 Someone does have to write extensive documentation for this but I (Dominus) am not really up for that task.
- Wizardry Dragon and Marzo made a good list of intrinsics http://www.thefeudallands.ca/srcdocs/files/intrinsics-uc.html and Pertex has written some documentation at http://web.archive.org/web/20071217233843/http://www.sophen.de/exult/ (unfortunately Pertex original documentation has vanished but at least the wayback machine can be of great help) that might be able help you.
+ Wizardry Dragon and Marzo made a good list of intrinsics http://www.thefeudallands.ca/srcdocs/files/intrinsics-uc.html and Pertex has written some documentation at http://web.archive.org/web/20071217233843/http://www.sophen.de/exult/ (unfortunately Pertex' original documentation has vanished but at least the wayback machine can be of great help) that might be able help you.
 
 
 
@@ -661,7 +661,7 @@ Auto-reset - Eggs with this flag attached will continue to activate every time t
 6.5. Placing a monster spawning egg
 
 The first thing you want to consider before placing monster spawn is some of the basic egg attributes. What probability do you want? What distance? Will it be a nocturnal creature? Next you have to set the monster specific egg attributes. The first question is probably what type of monster you want to place. You can now switch to the main Exult Studio window, select shapes.vga and choose a shape. Drag and drop this on the "Exult Egg" window. Frame # isn't overly important when placing a monster, but for placing an object it can be very important. Enter these attributes into their respective form. You next have to set the monster's schedule. The various schedules that are important for a monster spawn are discussed next.
- You also have to set the spawned monster's alignment. Any creature set to a Neutral alignment will ignore the Avatar and friends, following their schedule until attacked. Any creature set to Evil will immediately attack the Avatar if you get too close. A Good creature will help the avatar in fights, but will also attack the Avatar if he is caught stealing or killing "good" NPCs. It will also attack evil Monsters or NPCs regardless of the Avatar. And finally Chaotic creatures or monsters will attack anyone, regardless of their alignement
+ You also have to set the spawned monster's alignment. Any creature set to a Neutral alignment will ignore the Avatar and friends, following their schedule until attacked. Any creature set to Evil will immediately attack the Avatar if you get too close. A Good creature will help the avatar in fights, but will also attack the Avatar if he is caught stealing or killing "good" NPCs. It will also attack evil Monsters or NPCs regardless of the Avatar. And finally Chaotic creatures or monsters will attack anyone, regardless of their alignment
  Next you can set the number of creatures you want to appear using the count option. You can set anywhere from 1 to 31 monsters.
  Finally you can assign a Usecode number or name to the spawned monster (leave this blank if you don't want to set one).
  When you're finished setting the egg the way you want, simply press "Apply" and place the egg on the world map.
@@ -792,7 +792,7 @@ If you want to create a new NPC you have to select Create NPC in the edit menu. 
 * NPC #
  This cannot be changed.
 * Ident
- This is a number used in usecode in SI to differentiate between different NPC possibilities. It can be used to decide which set of conversation options some party members have, as well as making some "monster¨" NPCs have a more persistent identity despite not having a set NPC number
+ This is a number used in usecode in SI to differentiate between different NPC possibilities. It can be used to decide which set of conversation options some party members have, as well as making some "monster" NPCs have a more persistent identity despite not having a set NPC number
 * Shape #
  Either drag and drop a shape from shapes.vga into the line (or the black box to the right of it) or enter a shape number.
 * Frame #
