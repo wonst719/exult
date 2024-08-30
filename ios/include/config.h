@@ -19,7 +19,7 @@
 #define PACKAGE_STRING "Exult 1.9.0git"
 
 /* Define to the home page for this package. */
-#define PACKAGE_URL "http://exult.info/"
+#define PACKAGE_URL "https://exult.info/"
 
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT ""
