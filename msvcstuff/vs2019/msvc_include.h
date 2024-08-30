@@ -2,7 +2,7 @@
 #pragma warning(disable : 4996)
 #define NOMINMAX
 
-#define VERSION       "1.9.0git"
+#define VERSION       "1.10.0"
 #define EXULT_DATADIR "data/"
 
 #ifdef _DEBUG
