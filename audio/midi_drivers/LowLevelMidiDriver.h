@@ -70,6 +70,22 @@ public:
 	void   setSequenceRepeat(int seq_num, bool newrepeat) override;
 	uint32 getSequenceCallbackData(int seq_num) override;
 
+	uint32 getPlaybackLength(int seq_num) override {
+		if (seq_num < 0 || seq_num >= LLMD_NUM_SEQ) {
+			return UINT32_MAX;
+		}
+		// Length is in 120 Hz ticks need toconvert to ms
+		return (length[seq_num] * 25) / 3;
+	}
+
+	uint32 getPlaybackPosition(int seq_num) override {
+		if (seq_num < 0 || seq_num >= LLMD_NUM_SEQ) {
+			return UINT32_MAX;
+		}
+		// Position is in 120 Hz ticks need to convert to ms
+		return (position[seq_num] * 25) / 3;
+	}
+
 	void produceSamples(sint16* samples, uint32 bytes) override;
 
 	void loadTimbreLibrary(IDataSource*, TimbreLibraryType type) override;
@@ -208,9 +224,11 @@ private:
 	void sendComMessage(const ComMessage& message);
 	void waitTillNoComMessages();
 
-	// State
-	bool   playing[LLMD_NUM_SEQ];          // Only set by thread
-	sint32 callback_data[LLMD_NUM_SEQ];    // Only set by thread
+	// State Readable by main game thread
+	bool                 playing[LLMD_NUM_SEQ];          // Only set by thread
+	sint32               callback_data[LLMD_NUM_SEQ];    // Only set by thread
+	uint32               length[LLMD_NUM_SEQ];           // Not used by thread
+	std::atomic_uint32_t position[LLMD_NUM_SEQ];
 
 	// Shared Data
 	std::atomic_uchar global_volume = 100;

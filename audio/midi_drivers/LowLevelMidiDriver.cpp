@@ -304,7 +304,7 @@ void LowLevelMidiDriver::startSequence(
 	message.data.play.repeat = repeat;
 	message.data.play.volume = vol;
 	message.data.play.branch = branch;
-
+	length[seq_num]          = eventlist->getLength();
 	sendComMessage(message);
 }
 
@@ -778,6 +778,9 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 				playing[seq] = false;
 			}
 		}
+		if (sequences[seq]) {
+			position[seq] = sequences[seq]->getLastTick();
+		}
 	}
 
 	// Did we get issued a music command?
@@ -907,6 +910,8 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 						message.data.play.branch);
 
 				playing[message.sequence] = true;
+				position[message.sequence]
+						= sequences[message.sequence]->getLastTick();
 
 				/*
 				uint16 mask = sequences[message.sequence]->getChanMask();
@@ -1567,7 +1572,7 @@ void LowLevelMidiDriver::extractTimbreLibrary(XMidiEventList* eventlist) {
 
 				// Allocate memory
 				if (!mt32_timbre_banks[2]) {
-					mt32_timbre_banks[2] = new MT32Timbre*[128]{};
+					mt32_timbre_banks[2] = new MT32Timbre* [128] {};
 				}
 				if (!mt32_timbre_banks[2][start]) {
 					mt32_timbre_banks[2][start] = new MT32Timbre;
@@ -1966,14 +1971,14 @@ void LowLevelMidiDriver::loadXMidiTimbreLibrary(IDataSource* ds) {
 
 		// Allocate memory
 		if (!mt32_timbre_banks[bank]) {
-			mt32_timbre_banks[bank] = new MT32Timbre*[128]{};
+			mt32_timbre_banks[bank] = new MT32Timbre* [128] {};
 		}
 		if (!mt32_timbre_banks[bank][patch]) {
 			mt32_timbre_banks[bank][patch] = new MT32Timbre;
 		}
 
 		if (!mt32_patch_banks[bank]) {
-			mt32_patch_banks[bank] = new MT32Patch*[128]{};
+			mt32_patch_banks[bank] = new MT32Patch* [128] {};
 		}
 		if (!mt32_patch_banks[bank][patch]) {
 			mt32_patch_banks[bank][patch] = new MT32Patch;

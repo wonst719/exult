@@ -219,3 +219,19 @@ void XMidiEventList::decrementCounter() {
 		delete this;
 	}
 }
+
+uint32 XMidiEventList::getLength() {
+	if (length) {
+		return length;
+	}
+
+	for (auto ev = events; ev; ev = ev->next) {
+		length = std::max<uint32>(length, ev->time);
+
+		if ((ev->status >> 4) == MIDI_STATUS_NOTE_ON) {
+			length = std::max<uint32>(
+					length, ev->time + ev->ex.note_on.duration);
+		}
+	}
+	return length;
+}

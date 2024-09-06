@@ -69,6 +69,10 @@ public:
 
 	bool is_track_playing(int num);
 	int  get_current_track() const;
+	// Get track length in MS or UIN32_MAX on error
+	uint32 get_track_length();
+	// Get track position in MS or UIN32_MAX on error
+	uint32 get_track_position();
 
 	bool is_repeating() {
 		return repeating;

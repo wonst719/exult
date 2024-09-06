@@ -666,6 +666,8 @@ XMidiEventList* XMidiFile::GetEventList(uint32 track) {
 
 // Sets current to the new event and updates list
 void XMidiFile::CreateNewEvent(int time) {
+	// Update length if needed
+	length = std::max(length, time);
 	if (!list) {
 		list = current = new XMidiEvent{};
 		if (time > 0) {
@@ -895,7 +897,8 @@ void XMidiFile::AdjustTimings(uint32 ppqn) {
 
 	// Virtual playing
 	XMidiNoteStack notes;
-
+	// Clear length because it will be wrong here and we  will recalculate it
+	length = 0;
 	for (XMidiEvent* event = list; event; event = event->next) {
 		// Note 64 bit int is required because multiplication by tempo can
 		// require 52 bits in some circumstances
@@ -910,6 +913,8 @@ void XMidiFile::AdjustTimings(uint32 ppqn) {
 
 		time_prev   = event->time;
 		event->time = (hs * 6) / 5 + (6 * hs_rem) / (5 * ppqn);
+		// Update length
+		length = std::max(length, event->time);
 
 		// Note on and note off handling
 		if (event->status <= 0x9F) {
@@ -1357,6 +1362,7 @@ int XMidiFile::ExtractTracksFromXmi(IDataSource* source) {
 		branches           = nullptr;
 		x_patch_bank_first = nullptr;
 		x_patch_bank_cur   = nullptr;
+		length             = 0;
 		memset(&fs, 0, sizeof(fs));
 
 		const int begin = source->getPos();
@@ -1379,6 +1385,8 @@ int XMidiFile::ExtractTracksFromXmi(IDataSource* source) {
 		events[num]->branches     = branches;
 		events[num]->chan_mask    = chan_mask;
 		events[num]->x_patch_bank = x_patch_bank_first;
+		events[num]->setLength(length);
+		length = 0;
 
 		// Increment Counter
 		num++;
@@ -1402,6 +1410,7 @@ int XMidiFile::ExtractTracksFromMid(
 	first_state fs;
 	memset(&fs, 0, sizeof(fs));
 
+	length             = 0;
 	list               = nullptr;
 	branches           = nullptr;
 	x_patch_bank_first = nullptr;
@@ -1429,10 +1438,12 @@ int XMidiFile::ExtractTracksFromMid(
 			events[num]->branches     = branches;
 			events[num]->chan_mask    = chan_mask;
 			events[num]->x_patch_bank = x_patch_bank_first;
-			branches                  = nullptr;
-			list                      = nullptr;
-			x_patch_bank_first        = nullptr;
-			x_patch_bank_cur          = nullptr;
+			events[num]->setLength(length);
+			branches           = nullptr;
+			list               = nullptr;
+			x_patch_bank_first = nullptr;
+			x_patch_bank_cur   = nullptr;
+			length             = 0;
 			memset(&fs, 0, sizeof(fs));
 			chan_mask = 0;
 		}
@@ -1449,6 +1460,7 @@ int XMidiFile::ExtractTracksFromMid(
 		events[0]->branches     = branches;
 		events[0]->chan_mask    = chan_mask;
 		events[0]->x_patch_bank = x_patch_bank_first;
+		events[0]->setLength(length);
 		return num == num_tracks ? 1 : 0;
 	}
 

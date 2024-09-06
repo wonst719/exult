@@ -53,6 +53,7 @@ private:
 	XMidiEvent* current;
 	XMidiEvent* x_patch_bank_cur;
 	XMidiEvent* x_patch_bank_first;
+	int         length;
 
 	static const char mt32asgm[128];
 	static const char mt32asgs[256];

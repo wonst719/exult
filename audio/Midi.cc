@@ -523,6 +523,36 @@ int MyMidiPlayer::get_current_track() const {
 	return -1;
 }
 
+uint32 MyMidiPlayer::get_track_length() {
+	if (current_track == -1) {
+		return UINT32_MAX;
+	}
+	Pentagram::AudioMixer* mixer = Pentagram::AudioMixer::get_instance();
+
+	if (ogg_enabled && mixer->isPlaying(ogg_instance_id)) {
+		return mixer->GetPlaybackLength(ogg_instance_id);
+	}
+	if (midi_driver && midi_driver->isSequencePlaying(0)) {
+		return midi_driver->getPlaybackLength(0);
+	}
+	return UINT32_MAX;
+}
+
+uint32 MyMidiPlayer::get_track_position() {
+	if (current_track == -1) {
+		return UINT32_MAX;
+	}
+	Pentagram::AudioMixer* mixer = Pentagram::AudioMixer::get_instance();
+
+	if (ogg_enabled && mixer->isPlaying(ogg_instance_id)) {
+		return mixer->GetPlaybackPosition(ogg_instance_id);
+	}
+	if (midi_driver && midi_driver->isSequencePlaying(0)) {
+		return midi_driver->getPlaybackPosition(0);
+	}
+	return UINT32_MAX;
+}
+
 void MyMidiPlayer::set_music_conversion(int conv) {
 	// Same, do nothing
 	if (music_conversion == conv) {

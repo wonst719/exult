@@ -124,6 +124,18 @@ public:
 	//! \param repeat The new value for the repeaat flag
 	virtual void setSequenceRepeat(int seq_num, bool repeat) = 0;
 
+	// Get Sequence length in ms, returns UINT32_MAX if unsupported or error
+	virtual uint32 getPlaybackLength(int seq_num) {
+		ignore_unused_variable_warning(seq_num);
+		return UINT32_MAX;
+	}
+
+	// Get Sequence position in ms, returns UINT32_MAX if unsupported or error
+	virtual uint32 getPlaybackPosition(int seq_num) {
+		ignore_unused_variable_warning(seq_num);
+		return UINT32_MAX;
+	}
+
 	//! Get the callback data for a specified sequence
 	//! \param seq_num The Sequence to get callback data from
 	virtual uint32 getSequenceCallbackData(int seq_num) {

@@ -122,7 +122,8 @@ struct XMidiEvent {
 	}
 
 	void DumpText(std::ostream& out) {
-		out << time << " Ch " << (static_cast<int>(status) & 0xf) << " ";
+		out << time * 25 / 3 << " Ch " << (static_cast<int>(status) & 0xf)
+			<< " ";
 
 		switch (status >> 4) {
 		case MIDI_STATUS_NOTE_OFF:
@@ -132,7 +133,7 @@ struct XMidiEvent {
 			out << "Note On " << static_cast<int>(data[0]) << " "
 				<< static_cast<int>(data[1]);
 			if (ex.note_on.duration) {
-				out << " d " << ex.note_on.duration;
+				out << " Off at " << (time + ex.note_on.duration) * 25 / 3;
 			}
 			break;
 

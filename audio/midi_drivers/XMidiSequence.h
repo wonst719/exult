@@ -119,6 +119,14 @@ public:
 	//! \return the number of notes on
 	int countNotesOn(int chan);
 
+	uint32 getLength() {
+		return length;
+	}
+
+	uint32 getLastTick() {
+		return last_tick;
+	}
+
 private:
 	XMidiSequenceHandler* handler;    //!< The handler the events are sent to
 	uint16                sequence_id;    //!< The sequence id of this sequence
@@ -129,8 +137,9 @@ private:
 								 //!< time to stop
 	uint32 last_tick;            //!< The tick of the previously played notes
 	uint32 start;                //!< XMidi Clock (in 1/6000 seconds)
-	int    loop_num;             //!< The level of the loop we are currently in
-	int    vol_multi;            //!< Volume multiplier (0-255)
+	uint32 length;
+	int    loop_num;     //!< The level of the loop we are currently in
+	int    vol_multi;    //!< Volume multiplier (0-255)
 	bool   vol_changed;
 	bool   paused;    //!< Is the sequence paused
 	int    speed;     //!< Percentage of speed to playback at

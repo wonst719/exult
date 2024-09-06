@@ -27,21 +27,22 @@ class ODataSource;
 #include "XMidiEvent.h"
 
 class XMidiEventList {
-	int counter;
+	int    counter = 0;
+	uint32 length  = 0;
 
 	// Helper funcs for Write
 	int    putVLQ(ODataSource* dest, uint32 value);
 	uint32 convertListToMTrk(ODataSource* dest);
 
 public:
-	uint16      chan_mask;
-	XMidiEvent* events;
+	uint16      chan_mask = 0;
+	XMidiEvent* events    = nullptr;
 
 	//! XMidiFile Seq Branch Index controllers. For Ult126 = loop start
-	XMidiEvent* branches;
+	XMidiEvent* branches = nullptr;
 
 	//! Patch and Bank change events
-	XMidiEvent* x_patch_bank;
+	XMidiEvent* x_patch_bank = nullptr;
 
 	//! Write the list to a DataSource
 	int write(ODataSource* dest);
@@ -53,6 +54,12 @@ public:
 
 	//! Decrement the counter and delete the event list, if possible
 	void decrementCounter();
+
+	uint32 getLength();
+
+	void setLength(uint32 length) {
+		this->length = length;
+	}
 
 	//! Find the Sequence Branch Event for the index
 	//! \param index The index to search for
