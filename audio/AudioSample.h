@@ -83,7 +83,7 @@ namespace Pentagram {
 		virtual uint32 decompressFrame(void* DecompData, void* samples) const
 				= 0;
 
-		void rewind(void* DecompData) const {
+		virtual void rewind(void* DecompData) const {
 			freeDecompressor(DecompData);
 			initDecompressor(DecompData);
 		}

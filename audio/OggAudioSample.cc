@@ -163,6 +163,14 @@ namespace Pentagram {
 		decomp->~OggDecompData();
 	}
 
+	void OggAudioSample::rewind(void* DecompData) const {
+		auto* decomp = static_cast<OggDecompData*>(DecompData);
+		if (ov_raw_seek(&decomp->ov, 0) != 0) {
+			// If raw seek fails just call themuch more expensive method in the base class
+			AudioSample::rewind(DecompData);
+		}
+	}
+
 	uint32 OggAudioSample::decompressFrame(
 			void* DecompData, void* samples) const {
 		auto* decomp = static_cast<OggDecompData*>(DecompData);
