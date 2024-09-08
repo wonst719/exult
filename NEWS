@@ -1,6 +1,7 @@
-XX/XX/24	v1.10
+09/09/24	v1.10
 
 		The Android port is now fully working
+		The Windows installer now offers to install several mods
 		New Volume Mixer to set individual volumes for music, sfx and speech
 		Cheat Screen overhauled so the options can now be activated by clicking or touching
 		Much improved combat:

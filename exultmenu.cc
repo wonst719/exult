@@ -396,7 +396,7 @@ BaseGameInfo* ExultMenu::run() {
 // OS Specific messages
 #ifdef __IPHONEOS__
 		const char game_missing_msg[]
-				= "Please add the games in iTunes File Sharing";
+				= "Please add the games in File Sharing.";
 		const char close_screen_msg[] = "Touch screen for help!";
 #else
 		const char game_missing_msg[] = "Please edit the configuration file.";
@@ -404,9 +404,9 @@ BaseGameInfo* ExultMenu::run() {
 #endif
 		// Create our message and programatically center it.
 		const char* const message[8] = {
-				"WARNING",
+				"Welcome to Exult",
 				"",
-				"Could not find the static data for either",
+				"To play you need the static data for either",
 				R"("The Black Gate" or "Serpent Isle".)",
 				game_missing_msg,
 				"",
