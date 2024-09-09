@@ -1,6 +1,14 @@
 Exult Release Checklist
 ------------------------
 
+* make sure all (visible) copyright dates are up to date
+  - version dialog in ActionAbout (keyactions.cc)
+  - Info.plist.in
+  - win32/exultico.rc, win32/exultstudioico.rc
+  - macosx/exult_studio_info.plist.in
+
+* branch off the release in git (e.g v1.10.x)
+
 * make sure all version numbers are up to date
   - configure.ac
   - Makefile.common
@@ -26,12 +34,6 @@ Exult Release Checklist
 
 * update NEWS; make sure version and date are correct
 
-* make sure all (visible) copyright dates are up to date
-  - version dialog in ActionAbout (keyactions.cc)
-  - Info.plist.in
-  - win32/exultico.rc, win32/exultstudioico.rc
-  - macosx/exult_studio_info.plist.in
-
 * documentation: make sure the readme/faq packaged are up to date
   - version numbers
 
@@ -46,4 +48,24 @@ Exult Release Checklist
 * make sure "make dist" produces a tarball from which you can
   succesfully build, install and run Exult
 
-* tag git
+* tag git and upload last version of our mods to this release on Github
+  (the Windows installer grabs these from the latest release and might otherwise fail)
+
+* upload binaries to our SourceForge files
+  https://sourceforge.net/projects/exult/files/exult-all-versions/
+  (contrary to a Github release we will have statistics of our release on SF)
+
+* update the website
+  - content/news.dat with the announcement
+  - content/download.dat change version numbers of new release and snapshots
+  - content/download.dat change release filenames and file sizes accordingly
+
+
+
+After Release
+--------------
+* change the version numbers in master to the new snapshot version number (see above) and
+  - .github/workflows/snapshots.yml
+        (jobs:snapshots:name:Check if artifacts downloaded:run:echo "GITHUB_REF=")
+
+* sync NEWS between master and release branch
