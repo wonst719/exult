@@ -29,7 +29,7 @@ AppPublisherURL=https://exult.info/
 AppSupportURL=https://exult.info/
 AppUpdatesURL=https://exult.info/
 ; Setup exe version number:
-VersionInfoVersion=1.9.0
+VersionInfoVersion=1.11.0
 DisableDirPage=no
 DefaultDirName={code:GetGimpDir|{pf}\GIMP 2}
 DisableProgramGroupPage=yes
