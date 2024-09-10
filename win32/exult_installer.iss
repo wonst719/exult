@@ -46,6 +46,13 @@ Name: "downloads\3rdpartymods\ultima6"; Description: "Ultima VI Remake for The B
 Name: "downloads\3rdpartymods\glimmerscape"; Description: "Glimmerscape by Donfrow for Serpent Isle"; Types: full custom; ExtraDiskSpaceRequired: 13187091
 
 [Files]
+; donotcopy files should be first
+; Always the 32-bit version of exconfig
+Source: exconfig-i686.dll; Flags: dontcopy
+; Mod zip files
+Source: mods\sifixes.zip; Flags: dontcopy
+Source: mods\bgkeyring.zip; Flags: dontcopy
+Source: mods\islefaq.zip; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 ; 32-bit files
 Source: Exult-i686\Exult.exe; DestDir: {app}; Flags: ignoreversion; Components: Exult; Check: not Is64BitInstallMode
@@ -72,8 +79,8 @@ Source: Exult-i686\images\docs*.png; DestDir: {app}\images; Flags: ignoreversion
 Source: Exult-i686\Data\exult.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult
 Source: Exult-i686\Data\exult_bg.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult
 Source: Exult-i686\Data\exult_si.flx; DestDir: {app}\data; Flags: ignoreversion; Components: Exult
-; Always the 32-bit version
-Source: exconfig-i686.dll; Flags: dontcopy
+
+
 
 [Icons]
 Name: {group}\Exult; Filename: {app}\Exult.exe; WorkingDir: {app}; Flags: createonlyiffileexists; Components: Icons
@@ -350,12 +357,6 @@ begin
       DownloadPage.Clear;
       if PrevItemAChecked <> WizardIsComponentSelected('downloads\audio') then
         DownloadPage.Add('https://downloads.sourceforge.net/project/exult/exult-data/exult_audio.zip', 'exult_audio.zip','72e10efa8664a645470ceb99f6b749ce99c3d5fd1c8387c63640499cfcdbbc68');
-      if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\keyring')) AND (iBGVerified = 1) then
-        DownloadPage.Add('https://github.com/exult/exult/releases/latest/download/Keyring.zip', 'Keyring.zip', '');
-      if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\sfisland')) AND (iBGVerified = 1) then
-        DownloadPage.Add('https://github.com/exult/exult/releases/latest/download/SFisland.zip', 'Sfisland.zip', '');
-      if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\sifixes')) AND (iSIVerified = 1) then
-        DownloadPage.Add('https://github.com/exult/exult/releases/latest/download/Sifixes.zip', 'Sifixes.zip', '');
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\3rdpartymods\ultima6')) AND (iBGVerified = 1) then
         DownloadPage.Add('https://exult.info/snapshots/Ultima6.zip', 'Ultima6.zip', '');
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\3rdpartymods\glimmerscape')) AND (iSIVerified = 1) then
@@ -439,11 +440,14 @@ begin
       if PrevItemAChecked <> WizardIsComponentSelected('downloads\audio') then
         ExtractMe('{tmp}\exult_audio.zip','{app}\data\');
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\keyring')) AND (iBGVerified = 1) then
-        ExtractMe('{tmp}\Keyring.zip',sBGmods);
+        ExtractTemporaryFile('bgkeyring.zip');
+        ExtractMe('{tmp}\bgkeyring.zip',sBGmods);
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\sfisland')) AND (iBGVerified = 1) then
-        ExtractMe('{tmp}\SFisland.zip',sBGmods);
+        ExtractTemporaryFile('islefaq.zip');
+        ExtractMe('{tmp}\islefaq.zip',sBGmods);
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\sifixes')) AND (iSIVerified = 1) then
-        ExtractMe('{tmp}\Sifixes.zip',sSImods);
+        ExtractTemporaryFile('sifixes.zip');
+        ExtractMe('{tmp}\sifixes.zip',sSImods);
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\3rdpartymods\ultima6')) AND (iBGVerified = 1) then
         ExtractMe('{tmp}\Ultima6.zip',sBGmods);
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\3rdpartymods\glimmerscape')) AND (iSIVerified = 1) then

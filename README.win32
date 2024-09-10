@@ -62,7 +62,7 @@ start menu.
     "MSYS2 MSYS" shell.
 
 When the shell starts, issue the following commands:
-    pacman -S --noconfirm --needed base-devel git \
+    pacman -S --noconfirm --needed base-devel git zip \
             mingw-w64-${MSYSTEM_CARCH}-toolchain \
             mingw-w64-${MSYSTEM_CARCH}-binutils \
             mingw-w64-${MSYSTEM_CARCH}-ntldd

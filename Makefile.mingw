@@ -490,6 +490,8 @@ ES_SHAPES_OBJS:=\
 	shapes/shapeinf/warminf.o \
 	shapes/shapeinf/weaponinf.o
 
+MODS = bgkeyring islefaq sifixes
+
 define copy_dlls_for_exe
 	for ff in $$($(MSYSTEM_PREFIX)/bin/ntldd -R $(1) | tr '\\' '/' | grep -io '[A-Za-z]:/.*$(MSYSTEM_PREFIX)/.\+\.dll' | sort -u); do cp $$ff $(2)/$$(basename $$ff); done
 endef
@@ -576,8 +578,29 @@ debug: $(EXEC)
 	cp data/exult_bg.flx $(U7PATH)/data
 	cp data/exult_si.flx $(U7PATH)/data
 
+mods: 
+	for mod in $(MODS); do \
+	pushd content/$${mod}; \
+	echo $${mod};\
+	make -j 2 -f Makefile.mingw $${mod}dir=build install; \
+	cd build; \
+	rm ../../../$${mod}.zip; \
+	zip -r  ../../../$${mod}.zip .; \
+	popd; \
+	done
+
+modsclean:
+	for mod in $(MODS); do \
+	pushd content/$${mod}; \
+	make -j 2 -f Makefile.mingw $${mod}dir=build clean; \
+	popd; \
+	rm -r -f content/$${mod}/build; \
+	rm $${mod}.zip;  \
+	done
+
+
 dist:   U7PATH:=$(DISTPATH)/Exult-$(MSYSTEM_CARCH)
-dist:   $(EXEC) exconfig.dll install Exult\ Source\ Code.url
+dist:   $(EXEC) exconfig.dll install Exult\ Source\ Code.url mods
 	mkdir -p $(DISTPATH)
 	cp AUTHORS $(U7PATH)/AUTHORS.txt
 	cp ChangeLog $(U7PATH)/ChangeLog.txt
@@ -597,6 +620,10 @@ dist:   $(EXEC) exconfig.dll install Exult\ Source\ Code.url
 	u2d $(U7PATH)/*.txt
 	strip exconfig.dll -o $(DISTPATH)/exconfig-$(MSYSTEM_CARCH).dll
 	cp win32/exult_installer.iss $(DISTPATH)
+	mkdir -p $(DISTPATH)/mods
+	for mod in $(MODS); do \
+	cp $${mod}.zip $(DISTPATH)/mods; \
+	done
 	cp Exult\ Source\ Code.url $(U7PATH)
 
 git_revision :=$(shell git rev-parse HEAD)
@@ -722,7 +749,7 @@ plugindist: plugin plugininstall
 	u2d $(GIMPPATH)/*.txt
 	cp win32/exult_shpplugin_installer.iss $(DISTPATH)
 
-allclean: clean toolsclean studioclean
+allclean: clean toolsclean studioclean modsclean
 	rm -f exconfig.dll exconfig_rc.o win32/exconfig.o
 	rm -f Exult\ Source\ Code.url
 
