@@ -34,7 +34,7 @@ jobs:
         with:
           msystem: MSYS
           install: |
-            base-devel git p7zip
+            base-devel git p7zip zip
             mingw-w64-x86_64-toolchain mingw-w64-x86_64-binutils mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2
             mingw-w64-x86_64-fluidsynth mingw-w64-x86_64-libtimidity mingw-w64-x86_64-libogg mingw-w64-x86_64-libvorbis
             mingw-w64-x86_64-munt-mt32emu mingw-w64-x86_64-libpng mingw-w64-x86_64-zlib mingw-w64-x86_64-SDL2_image
