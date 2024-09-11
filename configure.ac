@@ -573,6 +573,20 @@ else
 	AM_CONDITIONAL(BUILD_MT32EMU, false)
 fi
 
+# dylibbundler and create-dmg on macOS
+if test x$ARCH = xmacosx; then
+	AC_CHECK_PROG(has_dylibbundler, dylibbundler, yes)
+	if test x$has_dylibbundler != xyes; then
+		echo "Warning: Bundling a shared Exult app on macOS requires dylibbundler:"
+		echo "         https://github.com/auriamg/macdylibbundler"
+	fi
+	AC_CHECK_PROG(has_create_dmg, create-dmg, yes)
+	if test x$has_create_dmg != xyes; then
+		echo "Warning: Creating disk images on macOS requires create-dmg:"
+		echo "         https://github.com/create-dmg/create-dmg"
+	fi
+fi
+
 # zipped savegame support
 AC_ARG_ENABLE(zip-support, AS_HELP_STRING([--enable-zip-support], [Enable zipped savegame support @<:@default yes@:>@]),,enable_zip_support=yes)
 if test x$enable_zip_support = xyes ; then
@@ -711,6 +725,13 @@ if test x$enable_exult_studio = xyes; then
 		echo "Exult Studio requires the PNG (aka the Portable Network Graphics), but it is not installed."
 		echo "Please try again, either with the PNG installed, or with '--disable-exult-studio'."
 		exit 1
+	fi
+	if test x$ARCH = xmacosx; then
+		AC_CHECK_PROG(has_gtk_mac_bundler, gtk-mac-bundler, yes)
+		if test x$has_gtk_mac_bundler != xyes; then
+			echo "Warning: Bundling Exult Studio on macOS requires GTK Mac Bundler"
+			echo "         https://gitlab.gnome.org/GNOME/gtk-mac-bundler"
+		fi
 	fi
 	AM_CONDITIONAL(BUILD_STUDIO, true)
 	AM_CONDITIONAL(BUILD_SHAPES, true)

@@ -59,21 +59,37 @@ osxdmg: bundle
 	cp $(srcdir)/docs/faq.html ./Exult-snapshot/FAQ.html
 	cp $(srcdir)/docs/images/docs*.* ./Exult-snapshot/images
 	cp $(srcdir)/docs/images/*.gif ./Exult-snapshot/images
-	cp $(srcdir)/macosx/diskback.png ./Exult-snapshot/images/diskback.png
-	cp $(srcdir)/macosx/DS_Store ./Exult-snapshot/.DS_Store
-	ln -s /Applications "./Exult-snapshot/Drag'n'drop here"
-	echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Exult-snapshot/Git $(REVISION).url"
-	SetFile -a V ./Exult-snapshot/.DS_Store
+	ln -s -f /Applications "./Exult-snapshot/Drag'n'drop here"
+	echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Exult-snapshot/Git revision.url"
 	SetFile -a V ./Exult-snapshot/images
 	SetFile -t ttro -c ttxt ./Exult-snapshot/Authors
 	SetFile -t ttro -c ttxt ./Exult-snapshot/License
 	SetFile -t ttro -c ttxt ./Exult-snapshot/News
 	SetFile -t ttro -c ttxt ./Exult-snapshot/ReadMe.MacOSX
+	SetFile -a E ./Exult-snapshot/ReadMe.html
+	SetFile -a E "./Exult-snapshot/Git revision.url"
 	cp -R $(bundle_name) ./Exult-snapshot/
-	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
-					-srcfolder Exult-snapshot \
-					-volname "Exult 1.10.0" \
-					Exult-1.10.0.dmg
+	create-dmg \
+	  --volname "Exult 1.10.0" \
+	  --volicon "./macosx/exult.icns" \
+	  --background "./macosx/diskback.png" \
+	  --window-pos 200 120 \
+	  --window-size 685 545 \
+	  --text-size 14 \
+	  --icon-size 100 \
+	  --icon "Exult.app" 310 90 \
+	  --icon "Drag'n'drop here" 554 90 \
+	  --icon "Git revision.url" 80 90 \
+	  --icon "ReadMe.html" 80 395 \
+	  --icon "FAQ.html" 177 395 \
+	  --icon "News" 274 395 \
+	  --icon "License" 371 395 \
+	  --icon "Authors" 468 395 \
+	  --icon "ReadMe.MacOSX" 564 395 \
+	  --hdiutil-quiet \
+	  --no-internet-enable \
+	  "Exult-1.10.0.dmg" \
+	  "./Exult-snapshot/"
 	rm -rf Exult-snapshot
 
 studiodmg: studiobundle
@@ -82,22 +98,37 @@ studiodmg: studiobundle
 	cp $(srcdir)/AUTHORS ./Studio-snapshot/Authors
 	cp $(srcdir)/COPYING ./Studio-snapshot/License
 	cp $(srcdir)/README.MacOSX ./Studio-snapshot/ReadMe.MacOSX
-	cp $(srcdir)/docs/exult_studio.html ./Studio-snapshot/Exult_Studio.html
+	cp $(srcdir)/docs/exult_studio.html ./Studio-snapshot/Manual.html
 	cp $(srcdir)/docs/images/studio*.* ./Studio-snapshot/images
 	cp $(srcdir)/docs/images/*.gif ./Studio-snapshot/images
-	cp $(srcdir)/macosx/diskback.png ./Studio-snapshot/images/diskback.png
-	cp $(srcdir)/macosx/exult_studio_DS_Store ./Studio-snapshot/.DS_Store
-	ln -s /Applications "./Studio-snapshot/Drag'n'drop here"
-	echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Studio-snapshot/Git $(REVISION).url"
-	SetFile -a V ./Studio-snapshot/.DS_Store
+	ln -s -f /Applications "./Studio-snapshot/Drag'n'drop here"
+	echo "[InternetShortcut]\nURL=https://github.com/exult/exult/commit/$(REVISION)" > "./Studio-snapshot/Git revision.url"
 	SetFile -a V ./Studio-snapshot/images
 	SetFile -t ttro -c ttxt ./Studio-snapshot/Authors
 	SetFile -t ttro -c ttxt ./Studio-snapshot/License
+	SetFile -t ttro -c ttxt ./Studio-snapshot/ReadMe.MacOSX
+	SetFile -a E ./Studio-snapshot/Manual.html
+	SetFile -a E "./Studio-snapshot/Git revision.url"
 	cp -R $(studio_name) ./Studio-snapshot/
-	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
-					-srcfolder Studio-snapshot \
-					-volname "Exult Studio 1.10.0" \
-					ExultStudio-1.10.0.dmg
+	create-dmg \
+	  --volname "Exult Studio 1.10.0" \
+	  --volicon "./macosx/exult_studio.icns" \
+	  --background "./macosx/diskback.png" \
+	  --window-pos 200 120 \
+	  --window-size 685 545 \
+	  --text-size 14 \
+	  --icon-size 100 \
+	  --icon "Exult_Studio.app" 295 90 \
+	  --icon "Drag'n'drop here" 554 90 \
+	  --icon "Git revision.url" 80 90 \
+	  --icon "Manual.html" 164 395 \
+	  --icon "License" 260 395 \
+	  --icon "Authors" 356 395 \
+	  --icon "ReadMe.MacOSX" 452 395 \
+	  --hdiutil-quiet \
+	  --no-internet-enable \
+	  "ExultStudio-1.10.0.dmg" \
+	  "./Studio-snapshot/"
 	rm -rf Studio-snapshot
 
 clean-local:
