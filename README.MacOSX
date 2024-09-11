@@ -45,6 +45,7 @@ With MacPorts install:
   libpng
   fluidsynth
   dylibbundler
+  create-dmg
 
 Installing these packages with MacPorts will actually install many other
 packages these depend on.
@@ -70,23 +71,8 @@ a nice Exult.app (double clickable from the Finder and all), enter this
 command:
   make bundle
 
-To use this bundle on another machine run
+To use this bundle on another machine you need to run:
   make bundle_shared
-
-
-How to compile a static version of Exult on macOS
--------------------------------------------------
-
-You need to follow the above instructions on how to compile Exult. Then you have to
-re-run configure and make
-  ./configure --enable-static-libraries --with-macosx-static-lib-path=path/to/static/libs
-  make
-
-You need to enter the path to your prefix' static libs in the configure option 
-"--with-macosx-static-lib-path=path/to/static/libs".
-For MacPorts this would be "--with-macosx-static-lib-path=/opt/local/lib".
-
-Take note however that compiling a static version of Exult Studio does not work.
 
 
 How to compile Exult Studio on macOS
@@ -135,6 +121,16 @@ If you use MacPorts this would be "/opt/local", so the commands look like this:
   make studiobundle
 
 This will generate the Exult_Studio.app in your Exult source.
+
+
+How to build a disk image
+-------------------------
+
+For building a disk image for Exult, run:
+  make osxdmg
+
+For building a disk image for Exult Studio, run:
+  make studiodmg
 
 
 How to build the Gimp plugin

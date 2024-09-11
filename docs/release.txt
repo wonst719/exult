@@ -29,8 +29,8 @@ Exult Release Checklist
   - win32/exult_installer.iss, win32/exult_studio_installer.iss, win32/exult_tools_installer.iss
         (AppVerName)
   
-* make sure the osxdmg and clean-local target doesn't refer to a Git snapshot
-  - macosx/macosx.am (-volname "...", dmg filename)
+* make sure the osxdmg, studiodmg and clean-local target doesn't refer to a Git snapshot
+  - macosx/macosx.am (--volname "...", dmg filename)
 
 * update NEWS; make sure version and date are correct
 
