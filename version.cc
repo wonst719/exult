@@ -206,7 +206,7 @@ void getVersionInfo(std::ostream& out) {
 	out << "x86";
 #	define WANT_CPUID
 #elif defined(__riscv)
-	out << "RISC-V"
+	out << "RISC-V";
 #else
 	out << "unknown architechture update version.cc ";
 
