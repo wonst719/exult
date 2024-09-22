@@ -30,45 +30,45 @@ SRC:=.
 
 # Choose Architecture and Compiler based on $(MSYSTEM), use 64 bits GCC by default.
 ifeq ($(MSYSTEM),MINGW64)
+	ARCHTYPE:=-march=x86-64
 	ARCHFLAGS:=-m64
 	CC:=gcc
 	CXX:=g++
 else ifeq ($(MSYSTEM),MINGW32)
+	ARCHTYPE:=-march=i686
 	ARCHFLAGS:=-m32
 	CC:=gcc
 	CXX:=g++
 else ifeq ($(MSYSTEM),CLANG64)
+	ARCHTYPE:=-march=x86-64
 	ARCHFLAGS:=-m64
 	CC:=clang
 	CXX:=clang++
 else ifeq ($(MSYSTEM),CLANG32)
+	ARCHTYPE:=-march=i686
 	ARCHFLAGS:=-m32
 	CC:=clang
 	CXX:=clang++
 else ifeq ($(MSYSTEM),UCRT64)
+	ARCHTYPE:=-march=x86-64
 	ARCHFLAGS:=-m64
 	CC:=gcc
 	CXX:=g++
 else ifeq ($(MSYSTEM),CLANGARM64)
+// march=native should not be used when building official releases
+// so if we start making official ARM build this needs to be changed
+	ARCHTYPE:=-march=native
 	ARCHFLAGS:=-m64
 	CC:=clang
 	CXX:=clang++
 else
+	ARCHTYPE:=-march=x86-64
 	ARCHFLAGS:=-m64
 	CC:=gcc
 	CXX:=g++
 endif
 
-# Lets target X86 CPUs around 16 years old or newer for snapshots.
-ifdef SNAPSHOT
-ifeq ($(MSYSTEM),CLANGARM64)
-	ARCHTYPE:=-march=native
-else
-	ARCHTYPE:=-march=x86-64-v2
-endif
-else
-	ARCHTYPE:=-march=native
-endif
+
 
 ifdef USE_CONSOLE
 	SUBSYSTEM:=-mconsole
