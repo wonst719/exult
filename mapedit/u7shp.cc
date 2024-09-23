@@ -195,7 +195,7 @@ static void query(void) {
 			= sizeof(save_args) / sizeof(save_args[0]);
 
 	gimp_install_procedure(
-			"file_shp_load", "loads files in Ultima 7 SHP format",
+			"file_shp_load", "loads files in Ultima VII SHP format",
 			"FIXME: write help for shp_load", "Tristan Tarrant",
 			"Tristan Tarrant", "2000", "<Load>/SHP", nullptr, GIMP_PLUGIN,
 			nload_args, nload_return_vals, load_args, load_return_vals);
@@ -203,7 +203,7 @@ static void query(void) {
 	gimp_register_magic_load_handler("file_shp_load", "shp", "", "");
 
 	gimp_install_procedure(
-			"file_shp_save", "Save files in Ultima 7 SHP format",
+			"file_shp_save", "Save files in Ultima VII SHP format",
 			"FIXME: write help for shp_save", "Tristan Tarrant",
 			"Tristan Tarrant", "2000", "<Save>/SHP", "INDEXEDA", GIMP_PLUGIN,
 			nsave_args, 0, save_args, nullptr);

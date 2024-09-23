@@ -1100,10 +1100,10 @@ void CheatScreen::NormalDisplay() {
 			ibuf, "Advanced Option Cheat Screen", offsetx, offsety1, 8);
 
 	if (Game::get_game_type() == BLACK_GATE) {
-		snprintf(buf, sizeof(buf), "Running \"Ultima 7: The Black Gate\"");
+		snprintf(buf, sizeof(buf), "Running \"Ultima VII: The Black Gate\"");
 	} else if (Game::get_game_type() == SERPENT_ISLE) {
 		snprintf(
-				buf, sizeof(buf), "Running \"Ultima 7: Part 2: Serpent Isle\"");
+				buf, sizeof(buf), "Running \"Ultima VII Part 2: Serpent Isle\"");
 	} else {
 		snprintf(
 				buf, sizeof(buf), "Running Unknown Game Type %i",

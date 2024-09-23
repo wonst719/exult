@@ -1,5 +1,5 @@
 NAME
-       ucxt - Ultima 7/8 usecode disassembler.
+       ucxt - Ultima VII/VIII usecode disassembler.
 
 SYNOPSIS
        ucxt [OPTIONS] -a
@@ -9,7 +9,7 @@ SYNOPSIS
               disassembles a single function to stdout
 
 DESCRIPTION
-       Games  supported by Exult (Ultima 7, for example) consist in large part
+       Games  supported by Exult (Ultima VII, for example) consist in large part
        of usecode. Exult basically implements a virtual  machine  the  machine
        language of which is usecode.
 

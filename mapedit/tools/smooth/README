@@ -5,8 +5,8 @@ This program is licenced under the GPL
 
 
 smooth is a program used to help in the creation of maps for Exult
-games. Exult is an engine to run Ultima 7 on modern hardware but can
-run self-made games as well.
+games. Exult is an engine to run Ultima VII on modern hardware but
+can run self-made games as well.
 
 The creation of a map is a fairly complex thing to do, since the map
 is 24576x24576 pixels. Fortunately, the map is made of reused chunks

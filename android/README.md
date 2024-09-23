@@ -1,7 +1,7 @@
 # Exult instructions for Android
 
 ## To Play
-First you need to get Ultima 7 or Serpent Isle. Either you own it already, or you buy it somewhere.
+First you need to get Ultima VII: The Black Gate or Ultima VII Part 2: Serpent Isle. Either you own it already, or you buy it somewhere.
 
 Second, you need the Android Exult app itself.  It is not yet available in any app stores, but you can download builds from [here](https://exult.info/download.php) (recommended) or build from source as described below.
 

@@ -317,7 +317,7 @@ Game_window::Game_window(
 	win = new Image_window8(
 			width, height, gwidth, gheight, scale, fullscreen, scaler, fillmode,
 			fillsclr);
-	win->set_title("Exult Ultima7 Engine");
+	win->set_title("Exult Ultima VII Engine");
 	pal = new Palette();
 	Game_singletons::init(this);    // Everything but 'usecode' exists.
 	Shape_frame::set_to_render(win->get_ib8());
