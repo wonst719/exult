@@ -9,10 +9,10 @@ This document will not detail how to do that.
 
 To play
 ---------
-First you need to get Ultima 7 or Serpent Isle. Either you own it already, or
-you buy it somewhere.  Then you must install it. Note that the Ultima Collection
-already contains an installed copy of Ultima 7 (In the Ultima7 directory) and of
-Serpent Isle (In the Serpent directory).
+First you need to get Ultima VII: The Black Gate or Ultima VII Part 2: Serpent Isle. 
+Either you own it already, or you buy it somewhere.  Then you must install it. 
+Note that the Ultima Collection already contains an installed copy of Ultima VII 
+(In the Ultima7 directory) and of Serpent Isle (in the Serpent directory).
 
 From the Ultima7 or Serpent folder on your PC, copy the STATIC sub folder to the
 'blackgate' or 'serpentisle' sub folder (as appropriate) of the folder you
@@ -250,8 +250,8 @@ Installation instructions can be found on the same pages.
 configure --host=i386-linux --target=i386-mingw32 --enable-win32
 make
 
-3) copy exult.exe to your U7 directory, and run it from windows
-If you are currently playing a game of Ultima 7, be sure
+3) copy exult.exe to your Ultima VII directory, and run it from windows
+If you are currently playing a game of Ultima VII, be sure
 to make a backup of the gamedat directory.
 
 4) Have fun :-)

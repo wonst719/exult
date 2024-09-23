@@ -17,7 +17,7 @@
  */
 
 /*
-	ucxt: Ultima 7 usecode dump/disassembly/convert-to-something-more-readable
+	ucxt: Ultima VII usecode dump/disassembly/convert-to-something-more-readable
    utility Based heavily on ucdump created and maintained by: Maxim S. Shatskih
    aka Moscow Dragon (maxim__s@mtu-net.ru)
 
@@ -361,7 +361,7 @@ void open_usecode_file(UCData& uc, const Configuration& config) {
 }
 
 void usage() {
-	cout << "Ultima 7/8 usecode disassembler v0.6.3" << endl
+	cout << "Ultima VII/VIII usecode disassembler v0.6.3" << endl
 #ifdef HAVE_CONFIG_H
 		 << "    compiled with " << PACKAGE << " " << VERSION << endl
 #endif

@@ -23,7 +23,7 @@
 ;.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.;
 
 [Setup]
-AppName=Ultima 7 Shape plug-in for GIMP
+AppName=Ultima VII Shape plug-in for GIMP
 AppVerName=Shape plug-in Git
 AppPublisherURL=https://exult.info/
 AppSupportURL=https://exult.info/
