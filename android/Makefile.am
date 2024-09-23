@@ -115,5 +115,6 @@ $(APK_ASSETS): $(APK_ASSETS_DIR)/%: $(abs_top_srcdir)/data/%
 # the top level so that we have access to the Java sources too.
 # The NDK build also utilizes this codebase rather than downloading a
 # separate copy.
+#  ++++ FIXME: SDL2 > 2.28.5 requires SDK > 30 which results in the mods installation not working
 $(SDL_SOURCE_DIR):
-	$(GIT) -c advice.detachedHead=false clone --branch release-2.30.5 --depth 1 https://github.com/libsdl-org/SDL.git $@
+	$(GIT) -c advice.detachedHead=false clone --branch release-2.28.5 --depth 1 https://github.com/libsdl-org/SDL.git $@
