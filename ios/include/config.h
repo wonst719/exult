@@ -10,13 +10,13 @@
 #define PACKAGE_TARNAME "exult"
 
 /* Package Version */
-#define VERSION "1.10.0"
+#define VERSION "1.10.1"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.10.0"
+#define PACKAGE_VERSION "1.10.1"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Exult 1.10.0"
+#define PACKAGE_STRING "Exult 1.10.1"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL "https://exult.info/"

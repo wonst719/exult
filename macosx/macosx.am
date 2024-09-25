@@ -70,7 +70,7 @@ osxdmg: bundle
 	SetFile -a E "./Exult-snapshot/Git revision.url"
 	cp -R $(bundle_name) ./Exult-snapshot/
 	create-dmg \
-	  --volname "Exult 1.10.0" \
+	  --volname "Exult 1.10.1" \
 	  --volicon "./macosx/exult.icns" \
 	  --background "./macosx/diskback.png" \
 	  --window-pos 200 120 \
@@ -88,7 +88,7 @@ osxdmg: bundle
 	  --icon "ReadMe.MacOSX" 564 395 \
 	  --hdiutil-quiet \
 	  --no-internet-enable \
-	  "Exult-1.10.0.dmg" \
+	  "Exult-1.10.1.dmg" \
 	  "./Exult-snapshot/"
 	rm -rf Exult-snapshot
 
@@ -111,7 +111,7 @@ studiodmg: studiobundle
 	SetFile -a E "./Studio-snapshot/Git revision.url"
 	cp -R $(studio_name) ./Studio-snapshot/
 	create-dmg \
-	  --volname "Exult Studio 1.10.0" \
+	  --volname "Exult Studio 1.10.1" \
 	  --volicon "./macosx/exult_studio.icns" \
 	  --background "./macosx/diskback.png" \
 	  --window-pos 200 120 \
@@ -127,7 +127,7 @@ studiodmg: studiobundle
 	  --icon "ReadMe.MacOSX" 452 395 \
 	  --hdiutil-quiet \
 	  --no-internet-enable \
-	  "ExultStudio-1.10.0.dmg" \
+	  "ExultStudio-1.10.1.dmg" \
 	  "./Studio-snapshot/"
 	rm -rf Studio-snapshot
 
