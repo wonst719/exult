@@ -1,3 +1,11 @@
+25/09/24	v1.10.1
+
+		Fixed crash on Windows by increasing compatibility with old CPUs
+		Fixed Android launcher not installing mods
+		Fixed new releases being unable to download and install our mods on Windows
+		Added new icons for our main platform (thanks Florian Piesche)
+
+
 09/09/24	v1.10
 
 		The Android port is now fully working
