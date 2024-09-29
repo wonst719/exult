@@ -34,7 +34,7 @@ using std::endl;
 using std::size_t;
 using std::vector;
 
-Tile_coord* Find_path(
+std::vector<Tile_coord> Find_path(
 		const Tile_coord&        start,     // Where to start from.
 		const Tile_coord&        goal,      // Where to end up.
 		const Pathfinder_client* client,    // Provides costs.
@@ -122,16 +122,16 @@ public:
 	}
 
 	// Create path back to start.
-	Tile_coord* create_path(int& pathlen) {
+	std::vector<Tile_coord> create_path(int& pathlen) {
 		int cnt = 1;    // This.
 		// Count back to start.
 		Search_node* each = this;
 		while ((each = each->parent) != nullptr) {
 			cnt++;
 		}
-		pathlen      = cnt - 1;    // Don't want starting tile.
-		auto* result = new Tile_coord[pathlen];
-		each         = this;
+		pathlen = cnt - 1;    // Don't want starting tile.
+		std::vector<Tile_coord> result(pathlen);
+		each = this;
 		for (int i = pathlen - 1; i >= 0; i--) {
 			result[i] = each->tile;
 			each      = each->parent;
@@ -378,7 +378,7 @@ static int tracing = 0;
  *  Output: ->(allocated) array of Tile_coords to follow, or 0 if failed.
  */
 
-Tile_coord* Find_path(
+std::vector<Tile_coord> Find_path(
 		const Tile_coord&        start,     // Where to start from.
 		const Tile_coord&        goal,      // Where to end up.
 		const Pathfinder_client* client,    // Provides costs.
@@ -438,5 +438,5 @@ Tile_coord* Find_path(
 		}
 	}
 	pathlen = 0;    // Failed if here.
-	return nullptr;
+	return {};
 }
