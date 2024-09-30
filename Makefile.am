@@ -336,7 +336,7 @@ gitinfo.h: $(srcdir)/.git/index $(srcdir)/.git/HEAD $(srcdir)/.git/config Makefi
 		echo "#define GIT_REMOTE_URL \"`git ls-remote --get-url`\"" >> gitinfo-new.h; \
 		echo >> gitinfo-new.h; \
 		echo Built gitinfo.h; \
-		if diff -q gitinfo-new.h gitinfo.h >/dev/null; then \
+		if test -f gitinfo.h && diff -q gitinfo-new.h gitinfo.h >/dev/null; then \
 			rm gitinfo-new.h; \
 		else \
 			mv gitinfo-new.h gitinfo.h; \
