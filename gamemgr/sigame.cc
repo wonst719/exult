@@ -1057,12 +1057,13 @@ bool ExCineVoc::play_it(Image_window* win, uint32 t) {
 
 // ExSubEvent
 struct ExSubEvent {
-	uint32    time;    // Time to start, In MS
-	const int first_sub;
-	const int num_subs;
-	std::shared_ptr<Font>     sub_font;
+	uint32                time;    // Time to start, In MS
+	const int             first_sub;
+	const int             num_subs;
+	std::shared_ptr<Font> sub_font;
 
-	ExSubEvent(uint32 t, const int first, const int cnt, std::shared_ptr<Font> fnt)
+	ExSubEvent(
+			uint32 t, const int first, const int cnt, std::shared_ptr<Font> fnt)
 			: time(t), first_sub(first), num_subs(cnt), sub_font(fnt) {}
 
 	void show_sub(Image_buffer8* ibuf, int centerx, int centery) {
@@ -1429,8 +1430,8 @@ void SI_Game::show_credits() {
 }
 
 bool SI_Game::new_game(Vga_file& shapes) {
-	const int menuy = topy + 110;
-	std::shared_ptr<Font>     font  = fontManager.get_font("MENU_FONT");
+	const int             menuy = topy + 110;
+	std::shared_ptr<Font> font  = fontManager.get_font("MENU_FONT");
 
 	Vga_file faces_vga;
 	faces_vga.load(FACES_VGA, PATCH_FACES);
@@ -1643,6 +1644,9 @@ bool SI_Game::new_game(Vga_file& shapes) {
 		set_avsex(skindata->is_female);
 		pal->fade_out(c_fade_out_time);
 		gwin->clear_screen(true);
+		// Immediately restore the palette after clearing the screen incase
+		// init_gamedat errors and displays a yesno_gump
+		pal->fade_in(0);
 		ok = gwin->init_gamedat(true);
 	} else {
 		sman->paint_shape(topx, topy, shapes.get_shape(0x2, 0));

@@ -177,8 +177,8 @@ void Game::show_congratulations(Palette* pal0) {
 	gwin->clear_screen(true);
 	win->fill8(0);
 
-	std::shared_ptr<Font>     end_font = fontManager.get_font("EXULT_END_FONT");
-	const int starty
+	std::shared_ptr<Font> end_font = fontManager.get_font("EXULT_END_FONT");
+	const int             starty
 			= (gwin->get_height() - end_font->get_text_height() * 8) / 2;
 
 	// calculate the time it took to complete the game
@@ -417,7 +417,8 @@ bool Game::show_menu(bool skip) {
 		return gwin->init_gamedat(first);
 	}
 	IExultDataSource mouse_data(MAINSHP_FLX, PATCH_MAINSHP, 19);
-	menu_mouse = new Mouse(gwin, mouse_data);
+	menu_mouse   = new Mouse(gwin, mouse_data);
+	Mouse::mouse = menu_mouse;
 
 	top_menu();
 	MenuList* menu = nullptr;
@@ -533,6 +534,7 @@ bool Game::show_menu(bool skip) {
 	}
 	delete menu;
 	Audio::get_ptr()->stop_music();
+	Mouse::mouse = nullptr;
 	delete menu_mouse;
 	return play;
 }

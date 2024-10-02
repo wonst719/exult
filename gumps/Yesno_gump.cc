@@ -174,6 +174,10 @@ bool Yesno_gump::key_down(int chr) {
 bool Yesno_gump::ask(
 		const char* txt,    // What to ask.
 		Paintable* paint, const char* font) {
+	// make sure gumps are loaded
+	auto sm = Shape_manager::get_instance();
+	if (!sm->are_gumps_loaded())
+		sm->load_gumps_minimal();
 	Yesno_gump dlg(txt, font);
 	bool       answer;
 	if (!gumpman->do_modal_gump(&dlg, Mouse::hand,paint)) {

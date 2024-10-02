@@ -104,6 +104,10 @@ public:
 	void reload_shapes(int shape_kind);    // Reload a shape file.
 	void reload_shape_info();
 
+	bool are_gumps_loaded() {
+		return !shape_cache[SF_GUMPS_VGA].empty();
+	}
+
 	Vga_file& get_file(ShapeFile f) {
 		return files[static_cast<int>(f)];
 	}

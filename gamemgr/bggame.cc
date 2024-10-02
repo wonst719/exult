@@ -639,20 +639,20 @@ void BG_Game::scene_butterfly() {
 	}
 }
 
-#define FLASH_SHAPE1(x, y, shape, frame, delay)                              \
-	do {                                                                     \
-		sman->paint_shape((x), (y), shapes.get_shape((shape), (frame)));     \
-		win->show();                                                         \
-		WAITDELAYCYCLE1((delay));                                            \
-		win->put(backup.get(), (x) - s->get_xleft(), (y) - s->get_yabove()); \
+#define FLASH_SHAPE1(x, y, shape, frame, delay)                          \
+	do {                                                                 \
+		sman->paint_shape((x), (y), shapes.get_shape((shape), (frame))); \
+		win->show();                                                     \
+		WAITDELAYCYCLE1((delay));                                        \
+		win->put(backup.get(), (x)-s->get_xleft(), (y)-s->get_yabove()); \
 	} while (0)
 
-#define FLASH_SHAPE2(x, y, shape, frame, delay)                              \
-	do {                                                                     \
-		sman->paint_shape((x), (y), shapes.get_shape((shape), (frame)));     \
-		win->show();                                                         \
-		WAITDELAYCYCLE4((delay));                                            \
-		win->put(backup.get(), (x) - s->get_xleft(), (y) - s->get_yabove()); \
+#define FLASH_SHAPE2(x, y, shape, frame, delay)                          \
+	do {                                                                 \
+		sman->paint_shape((x), (y), shapes.get_shape((shape), (frame))); \
+		win->show();                                                     \
+		WAITDELAYCYCLE4((delay));                                        \
+		win->put(backup.get(), (x)-s->get_xleft(), (y)-s->get_yabove()); \
 	} while (0)
 
 class LipSynchReader {
@@ -661,7 +661,7 @@ class LipSynchReader {
 public:
 	LipSynchReader()
 			: data(std::make_unique<IExultDataSource>(
-					  MAINSHP_FLX, PATCH_MAINSHP, 0x0F)) {}
+					MAINSHP_FLX, PATCH_MAINSHP, 0x0F)) {}
 
 	LipSynchReader(const char* pp, int len)
 			: data(std::make_unique<IBufferDataView>(pp, len)) {}
@@ -685,8 +685,8 @@ public:
 		// Lookup table for translating lipsynch data. The table is indexed by
 		// the current frame-1, then by read lipsynch data-1.
 		constexpr static const int eye_frame_LUT[6][9] = {
-				//   1, 2, 3, 4, 5, 6, 7, 8, 9		// Last eye frame (or the
-				//   one before, if it was 10)
+  //   1, 2, 3, 4, 5, 6, 7, 8, 9		// Last eye frame (or the
+  //   one before, if it was 10)
 				{1, 2, 3, 1, 2, 3, 1, 2,3                                        }, // 1: Change eyebrows to angry
 				{4, 5, 6, 4, 5, 6, 4, 5, 6}, // 2: Change eyebrows to neutral
 				{7, 8, 9, 7, 8, 9, 7, 8, 9}, // 3: Change eyebrows to raised
@@ -718,10 +718,10 @@ class SDL_SurfaceOwner {
 public:
 	SDL_SurfaceOwner(Image_buffer* src, SDL_Surface* draw)
 			: surf(SDL_CreateRGBSurfaceFrom(
-					  src->get_bits(), src->get_height(), src->get_width(),
-					  draw->format->BitsPerPixel, src->get_line_width(),
-					  draw->format->Rmask, draw->format->Gmask,
-					  draw->format->Bmask, draw->format->Amask)) {}
+					src->get_bits(), src->get_height(), src->get_width(),
+					draw->format->BitsPerPixel, src->get_line_width(),
+					draw->format->Rmask, draw->format->Gmask,
+					draw->format->Bmask, draw->format->Amask)) {}
 
 	~SDL_SurfaceOwner() noexcept {
 		SDL_FreeSurface(surf);
@@ -984,7 +984,8 @@ void BG_Game::scene_guardian() {
 
 			// prepare Guardian speech
 			{
-				std::shared_ptr<Font> font = fontManager.get_font("GUARDIAN_FONT");
+				std::shared_ptr<Font> font
+						= fontManager.get_font("GUARDIAN_FONT");
 				const U7multiobject textobj(MAINSHP_FLX, PATCH_MAINSHP, 0x0D);
 				size_t              txt_len;
 				auto                txt = textobj.retrieve(txt_len);
@@ -2163,8 +2164,8 @@ void BG_Game::show_credits() {
 }
 
 bool BG_Game::new_game(Vga_file& shapes) {
-	const int menuy = topy + 110;
-	std::shared_ptr<Font>     font  = fontManager.get_font("MENU_FONT");
+	const int             menuy = topy + 110;
+	std::shared_ptr<Font> font  = fontManager.get_font("MENU_FONT");
 
 	Vga_file faces_vga;
 	// Need to know if SI is installed
@@ -2419,6 +2420,9 @@ bool BG_Game::new_game(Vga_file& shapes) {
 		set_avsex(skindata->is_female);
 		pal->fade_out(c_fade_out_time);
 		gwin->clear_screen(true);
+		// Immediately restore the palette after clearing the screen incase
+		// init_gamedat errors and displays a yesno_gump
+		pal->fade_in(0);
 		ok = gwin->init_gamedat(true);
 	} else {
 		pal->load(INTROPAL_DAT, PATCH_INTROPAL, 6);
