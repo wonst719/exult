@@ -464,6 +464,8 @@ bool Game::show_menu(bool skip) {
 			pal->fade_out(c_fade_out_time);
 			Audio::get_ptr()->stop_music();
 			delete menu_mouse;
+			menu_mouse   = nullptr;
+			Mouse::mouse = nullptr;
 			delete menu;
 			throw quit_exception();
 #endif
@@ -536,6 +538,7 @@ bool Game::show_menu(bool skip) {
 	Audio::get_ptr()->stop_music();
 	Mouse::mouse = nullptr;
 	delete menu_mouse;
+	menu_mouse = nullptr;
 	return play;
 }
 
