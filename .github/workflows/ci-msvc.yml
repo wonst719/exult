@@ -69,12 +69,14 @@ env:
 
   BUILD_PROJECTS: Exult
 
+
 permissions:
   contents: read
 
 jobs:
   ci-msvc:
-    runs-on: windows-2019
+
+    runs-on: windows-2022
     if: ${{ github.repository_owner == 'exult' || github.repository_owner == 'wench' }}
 
     steps:
@@ -83,13 +85,17 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
-    - name: Restore NuGet packages
+    - name: Integrate vcpkg 
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+      run: vcpkg integrate install
+
+    - name: Install VCPKG packages
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /v:${{ runner.debug =='1' && 'detailed' || 'normal' }} /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{env.BUILD_PLATFORM}} ${{env.SOLUTION_FILE_PATH}}\Exult.vcxproj /t:VcpkgInstallManifestDependencies
 
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{env.BUILD_PLATFORM}} ${{env.SOLUTION_FILE_PATH}} /t:${{env.BUILD_PROJECTS}}
+      run: msbuild /v:${{ runner.debug =='1' && 'detailed' || 'normal' }} /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{env.BUILD_PLATFORM}} ${{env.SOLUTION_FILE_PATH}} /t:${{env.BUILD_PROJECTS}}
   notify:
     name: Exult-CI (IRC & Discord notification)
     runs-on: ubuntu-latest
