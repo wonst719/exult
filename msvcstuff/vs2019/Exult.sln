@@ -14,18 +14,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exconfig", "exconfig\exconf
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug Mt32Emu|x64 = Debug Mt32Emu|x64
-		Debug Mt32Emu|x86 = Debug Mt32Emu|x86
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A5813648-2268-48AF-8D04-36CF6F0A73AF}.Debug Mt32Emu|x64.ActiveCfg = Debug Mt32Emu|x64
-		{A5813648-2268-48AF-8D04-36CF6F0A73AF}.Debug Mt32Emu|x64.Build.0 = Debug Mt32Emu|x64
-		{A5813648-2268-48AF-8D04-36CF6F0A73AF}.Debug Mt32Emu|x86.ActiveCfg = Debug Mt32Emu|Win32
-		{A5813648-2268-48AF-8D04-36CF6F0A73AF}.Debug Mt32Emu|x86.Build.0 = Debug Mt32Emu|Win32
 		{A5813648-2268-48AF-8D04-36CF6F0A73AF}.Debug|x64.ActiveCfg = Debug|x64
 		{A5813648-2268-48AF-8D04-36CF6F0A73AF}.Debug|x64.Build.0 = Debug|x64
 		{A5813648-2268-48AF-8D04-36CF6F0A73AF}.Debug|x86.ActiveCfg = Debug|Win32
@@ -34,10 +28,6 @@ Global
 		{A5813648-2268-48AF-8D04-36CF6F0A73AF}.Release|x64.Build.0 = Release|x64
 		{A5813648-2268-48AF-8D04-36CF6F0A73AF}.Release|x86.ActiveCfg = Release|Win32
 		{A5813648-2268-48AF-8D04-36CF6F0A73AF}.Release|x86.Build.0 = Release|Win32
-		{7D388E0F-AA32-459F-83FD-037299591DD6}.Debug Mt32Emu|x64.ActiveCfg = Debug|x64
-		{7D388E0F-AA32-459F-83FD-037299591DD6}.Debug Mt32Emu|x64.Build.0 = Debug|x64
-		{7D388E0F-AA32-459F-83FD-037299591DD6}.Debug Mt32Emu|x86.ActiveCfg = Debug|Win32
-		{7D388E0F-AA32-459F-83FD-037299591DD6}.Debug Mt32Emu|x86.Build.0 = Debug|Win32
 		{7D388E0F-AA32-459F-83FD-037299591DD6}.Debug|x64.ActiveCfg = Debug|x64
 		{7D388E0F-AA32-459F-83FD-037299591DD6}.Debug|x64.Build.0 = Debug|x64
 		{7D388E0F-AA32-459F-83FD-037299591DD6}.Debug|x86.ActiveCfg = Debug|Win32
@@ -46,9 +36,6 @@ Global
 		{7D388E0F-AA32-459F-83FD-037299591DD6}.Release|x64.Build.0 = Release|x64
 		{7D388E0F-AA32-459F-83FD-037299591DD6}.Release|x86.ActiveCfg = Release|Win32
 		{7D388E0F-AA32-459F-83FD-037299591DD6}.Release|x86.Build.0 = Release|Win32
-		{567827FF-4807-417D-BFEC-1778E0FCC24B}.Debug Mt32Emu|x64.ActiveCfg = Debug|Win32
-		{567827FF-4807-417D-BFEC-1778E0FCC24B}.Debug Mt32Emu|x86.ActiveCfg = Debug|Win32
-		{567827FF-4807-417D-BFEC-1778E0FCC24B}.Debug Mt32Emu|x86.Build.0 = Debug|Win32
 		{567827FF-4807-417D-BFEC-1778E0FCC24B}.Debug|x64.ActiveCfg = Debug|x64
 		{567827FF-4807-417D-BFEC-1778E0FCC24B}.Debug|x86.ActiveCfg = Debug|Win32
 		{567827FF-4807-417D-BFEC-1778E0FCC24B}.Debug|x86.Build.0 = Debug|Win32

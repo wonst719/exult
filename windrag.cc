@@ -39,7 +39,7 @@ Windnd::Windnd(
 	m_cRef = 1;
 }
 
-STDMETHODIMP DECLSPEC_NOTHROW
+DECLSPEC_NOTHROW STDMETHODIMP
 		Windnd::QueryInterface(REFIID iid, void** ppvObject) {
 	*ppvObject = nullptr;
 	if (IID_IUnknown == iid || IID_IDropTarget == iid) {
@@ -52,11 +52,11 @@ STDMETHODIMP DECLSPEC_NOTHROW
 	return NOERROR;
 }
 
-STDMETHODIMP_(ULONG) DECLSPEC_NOTHROW Windnd::AddRef() {
+DECLSPEC_NOTHROW STDMETHODIMP_(ULONG) Windnd::AddRef() {
 	return ++m_cRef;
 }
 
-STDMETHODIMP_(ULONG) DECLSPEC_NOTHROW Windnd::Release() {
+DECLSPEC_NOTHROW STDMETHODIMP_(ULONG) Windnd::Release() {
 	if (0 != --m_cRef) {
 		return m_cRef;
 	}
@@ -64,7 +64,7 @@ STDMETHODIMP_(ULONG) DECLSPEC_NOTHROW Windnd::Release() {
 	return 0;
 }
 
-STDMETHODIMP DECLSPEC_NOTHROW Windnd::DragEnter(
+DECLSPEC_NOTHROW STDMETHODIMP Windnd::DragEnter(
 		IDataObject* pDataObject, DWORD grfKeyState, POINTL pt,
 		DWORD* pdwEffect) {
 	ignore_unused_variable_warning(grfKeyState, pt);
@@ -115,7 +115,7 @@ STDMETHODIMP DECLSPEC_NOTHROW Windnd::DragEnter(
 	return S_OK;
 }
 
-STDMETHODIMP DECLSPEC_NOTHROW
+DECLSPEC_NOTHROW STDMETHODIMP
 		Windnd::DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) {
 	ignore_unused_variable_warning(grfKeyState);
 	*pdwEffect = DROPEFFECT_COPY;
@@ -155,7 +155,7 @@ STDMETHODIMP DECLSPEC_NOTHROW
 	return S_OK;
 }
 
-STDMETHODIMP DECLSPEC_NOTHROW Windnd::DragLeave() {
+DECLSPEC_NOTHROW STDMETHODIMP Windnd::DragLeave() {
 	if (move_shape_handler) {
 		move_shape_handler(-1, -1, 0, 0, prevx, prevy, true);
 	}
@@ -176,7 +176,7 @@ STDMETHODIMP DECLSPEC_NOTHROW Windnd::DragLeave() {
 	return S_OK;
 }
 
-STDMETHODIMP DECLSPEC_NOTHROW Windnd::Drop(
+DECLSPEC_NOTHROW STDMETHODIMP Windnd::Drop(
 		IDataObject* pDataObject, DWORD grfKeyState, POINTL pt,
 		DWORD* pdwEffect) {
 	ignore_unused_variable_warning(grfKeyState);

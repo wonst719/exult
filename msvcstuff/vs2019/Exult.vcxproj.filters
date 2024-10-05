@@ -76,7 +76,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="..\..\audio\Makefile.am">
       <Filter>audio</Filter>
     </None>
@@ -128,6 +127,8 @@
     <None Include="..\..\server\Makefile.am">
       <Filter>server</Filter>
     </None>
+    <None Include="vcpkg.json" />
+    <None Include="vcpkg-configuration.json" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\files\crc.cc">
@@ -1463,6 +1464,15 @@
     </ClInclude>
     <ClInclude Include="..\..\korean\ucs2kstable.h">
       <Filter>korean</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL_keycode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL_syswm.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

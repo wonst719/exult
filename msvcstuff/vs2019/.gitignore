@@ -4,3 +4,4 @@ Debug*
 /any
 Release*
 Nuget
+vcpkg_installed
