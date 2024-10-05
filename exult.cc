@@ -782,9 +782,10 @@ static void Init() {
 	// Exult Studio drag'n'drop with SDL2 < 2.0.15 requires Exult
 	// to use X11. Hence, we force the issue.
 	SDL_putenv("SDL_VIDEODRIVER=x11");
+#elif defined(MACOSX)
+	SDL_SetHint(SDL_HINT_QUIT_ON_LAST_WINDOW_CLOSE, "0");
 #endif
 	SDL_SetHint(SDL_HINT_ORIENTATIONS, "Landscape");
-	SDL_SetHint(SDL_HINT_QUIT_ON_LAST_WINDOW_CLOSE, "0");
 #if 0
 	const Uint32 joyinit = SDL_INIT_JOYSTICK;
 #else
