@@ -784,6 +784,7 @@ static void Init() {
 	SDL_putenv("SDL_VIDEODRIVER=x11");
 #endif
 	SDL_SetHint(SDL_HINT_ORIENTATIONS, "Landscape");
+	SDL_SetHint(SDL_HINT_QUIT_ON_LAST_WINDOW_CLOSE, "0");
 #if 0
 	const Uint32 joyinit = SDL_INIT_JOYSTICK;
 #else
