@@ -1,0 +1,13 @@
+{
+  "name": "exult",
+  "version-semver": "1.11.0-git",
+  "$Comment": "Not specifying versions of the dependencies, just use latest of all of them",
+  "dependencies": [
+    "libpng",
+    "sdl2",
+    "zlib",
+    "libogg",
+    "libvorbis",
+    "libmt32emu"
+  ]
+}

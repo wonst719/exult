@@ -73,7 +73,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="..\..\audio\Makefile.am">
       <Filter>audio</Filter>
     </None>
@@ -125,6 +124,8 @@
     <None Include="..\..\server\Makefile.am">
       <Filter>server</Filter>
     </None>
+    <None Include="vcpkg.json" />
+    <None Include="vcpkg-configuration.json" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\files\crc.cc">
@@ -1445,6 +1446,15 @@
     </ClInclude>
     <ClInclude Include="..\..\gumps\Slider_widget.h">
       <Filter>gumps</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL_keycode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL_syswm.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
