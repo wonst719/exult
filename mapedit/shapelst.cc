@@ -256,7 +256,10 @@ static int Get_x_offset(Shape* shape, int framenum) {
 
 void Shape_chooser::setup_info(bool savepos    // Try to keep current position.
 ) {
-	const unsigned oldind = (selected >= 0 ? selected : rows.empty()?0:rows[row0].index0);
+	const unsigned oldind
+			= (selected >= 0  ? selected
+			   : rows.empty() ? 0
+							  : rows[row0].index0);
 	info.resize(0);
 	rows.resize(0);
 	row0 = row0_voffset = 0;
@@ -2497,7 +2500,7 @@ void Shape_chooser::update_statusbar() {
 											  : (otmsg == -1 || otmsg >= get_num_misc_names()
 														 ? ""
 														 : get_misc_name(
-																   otmsg));
+																 otmsg));
 							if (!otmsgstr) {
 								otmsgstr = "";
 							}

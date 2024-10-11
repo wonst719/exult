@@ -52,6 +52,7 @@
 #	include <direct.h>    // For mkdir and chdir
 #	include <shlobj.h>
 #	include <windows.h>
+#	include <io.h>
 #endif
 
 #if defined(MACOSX) || defined(__IPHONEOS__)
@@ -598,8 +599,8 @@ struct unsynch_from_stdio {
 	}
 };
 
-bool stdout_redirected =false;
-bool stderr_redirected =false;
+bool stdout_redirected = false;
+bool stderr_redirected = false;
 
 // Pulled from exult_studio.cc.
 void redirect_output(const char* prefix) {
@@ -678,27 +679,32 @@ void redirect_output(const char* prefix) {
 	// Paths to the output files.
 	const string folderPath = Get_home() + "/" + prefix;
 	const string stdoutPath = folderPath + "out.txt";
-	stdout_redirected = redirect_stdout(stdoutPath.c_str());
+	stdout_redirected       = redirect_stdout(stdoutPath.c_str());
 	const string stderrPath = folderPath + "err.txt";
-	stderr_redirected = redirect_stderr(stderrPath.c_str());
+	stderr_redirected       = redirect_stderr(stderrPath.c_str());
 }
-#include <io.h>
 
 void cleanup_output(const char* prefix) {
 	const string folderPath           = Get_home() + "/" + prefix;
 	auto         clear_empty_redirect = [&](FILE* stream, const char* suffix) {
-		// Get the Win32 HANDLE Of the stream
-		HANDLE handle = reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(stream)));
+        // Get the Win32 HANDLE Of the stream
+        HANDLE handle
+                = reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(stream)));
         fflush(stream);
-		// Only try to delete the stream if it is an actual file
-		if (handle != INVALID_HANDLE_VALUE && GetFileType(handle) == FILE_TYPE_DISK && ftell(stream) == 0) {
-			fclose(stream);
-			const string stream_path = folderPath + suffix;
-			remove(stream_path.c_str());
-		}
+        // Only try to delete the stream if it is an actual file
+        if (handle != INVALID_HANDLE_VALUE
+            && GetFileType(handle) == FILE_TYPE_DISK && ftell(stream) == 0) {
+            fclose(stream);
+            const string stream_path = folderPath + suffix;
+            remove(stream_path.c_str());
+        }
 	};
-	if (stdout_redirected) clear_empty_redirect(stdout, "out.txt");
-	if (stderr_redirected) clear_empty_redirect(stderr, "err.txt");
+	if (stdout_redirected) {
+		clear_empty_redirect(stdout, "out.txt");
+	}
+	if (stderr_redirected) {
+		clear_empty_redirect(stderr, "err.txt");
+	}
 	if (GetConsoleWindow() != nullptr) {
 		FreeConsole();
 	}
