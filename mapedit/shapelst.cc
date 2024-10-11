@@ -256,7 +256,7 @@ static int Get_x_offset(Shape* shape, int framenum) {
 
 void Shape_chooser::setup_info(bool savepos    // Try to keep current position.
 ) {
-	const unsigned oldind = (selected >= 0 ? selected : rows[row0].index0);
+	const unsigned oldind = (selected >= 0 ? selected : rows.empty()?0:rows[row0].index0);
 	info.resize(0);
 	rows.resize(0);
 	row0 = row0_voffset = 0;
@@ -288,7 +288,7 @@ void Shape_chooser::setup_info(bool savepos    // Try to keep current position.
 void Shape_chooser::setup_shapes_info() {
 	int selshape = -1;
 	int selframe = -1;
-	if (selected >= 0) {    // Save selection info.
+	if (selected >= 0 && !info.empty()) {    // Save selection info.
 		selshape = info[selected].shapenum;
 		selframe = info[selected].framenum;
 	}
