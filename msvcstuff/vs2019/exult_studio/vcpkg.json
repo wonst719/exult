@@ -1,15 +1,21 @@
 {
-  "name": "exult",
+  "name": "exult-studio",
   "version-semver": "1.11.0-git",
   "$Comment": "Not specifying versions of the dependencies, just use latest of all of them",
   "dependencies": [
     "libpng",
-    "sdl2",
     "zlib",
-    "libogg",
-    "libvorbis",
-    "libmt32emu",
-    "fluidsynth",
+    "libxml2",
+    "glib",
+    "pango",
+    "harfbuzz",
+    "cairo",
+    "atk",
+    "gtk3",
+    "freetype",
+    "icu",
+    "gdk-pixbuf",
+    "getopt-win32",
     "dirent"
   ]
 }

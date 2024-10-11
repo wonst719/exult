@@ -62,6 +62,7 @@
 #define USE_FMOPL_MIDI   1
 #define USE_WINDOWS_MIDI 1
 #define USE_MT32EMU_MIDI 1
+#define USE_FLUIDSYNTH_MIDI 1
 #define HAVE_STDIO_H     1
 #define HAVE_ZIP_SUPPORT 1
 #define HAVE_PNG_H       1
@@ -93,3 +94,10 @@ namespace std {
 */
 
 #endif    //  _MSC_VER <= 1938
+inline int strcasecmp(const char* s1, const char* s2)
+{
+	return _strcmpi(s1, s2);
+}
+inline int strncasecmp(const char* s1, const char* s2, size_t n) {
+	return _strnicmp(s1, s2, n);
+}

@@ -199,29 +199,32 @@ Run Exult.exe and enjoy the game :-)
 
 To build in Windows using Visual Studio
 ---------------------------------------
-NOTE: This has only been tested to work with Visual Studio 2019 and  2022
+NOTE: This has only been tested to work with Visual Studio 2019 and 2022
 Visual Studio 2017  does NOT work. It will load the projects but v141 build
-tools do not support all the C++ features needed by the exult source code. You
+tools do not support all the C++/17 features needed by the exult source code. You
 can not sucessfully build all source files with VS 2017 v141 build tools.
-At this stage only projects for expack and exult which are required to build
-Exult are included. An excomfig project is also included for development and 
-debugging the installer. It is not needed to build exult.
-VCPKG is used for package management and you must have it installed. 
-The build process will automatically download and build needed dependencies.
 
-1) Install visual studio community edition 2019 or newer. if newer make sure MSVC v142 VS 2019 C++ x86 build tools
+Projects are included for Exult, expack, exconfig and Exult_studio, 
+no projects are supplied for other tools. VCPKG is used for package management
+and you must have it installed and integrated into visual studio. The build 
+process will automatically download and build needed dependencies. This will be
+slow the first time you try to be Exult abd very slow the first time you build
+exult_studio.
+
+1) Install visual studio community edition 2019 or newer. if newer make sure MSVC v142 VS 2019 C++ build tools
 are selected for install. If you do not install the v142 build tools you may
 need to change the build tools being used by the projects to v143 or whatever version your VS has installed. 
-You should select the optional vcpkg component
 
-2) Install vcpkg (https://vcpkg.io/) and integrate it into visual studio if you didn't install it in step 1.
+2) Install vcpkg (https://vcpkg.io/) and then integrate it into visual studio by 
+running vcpkg integrate install from the visual studio Developer command prompt or Powershell.
 
 3) open the solution included in the exult source msvcstuff\vs2019\Exult.sln.
 
-4) Build the exult project using whichever Configuration you want. x86 and x64 builds are supported. All confugrations 
-use dll runtimes. 
-Exult.exe will be placed in the root of the source tree with the vcpkg dependency dlls.
-The build process will generate expack.exe and the flx files needed by exult will be generated in the data directory.
+4) Build the project using whichever Configuration you want. x86 and x64 builds are supported. All configrations 
+use dynamic runtimes. 
+EXEs will be placed in the root of the source tree with the vcpkg dependency dlls. The build process has not been tested with static 
+runtimes or dependencies. 
+The build process for Exult will build expack and the data .flx files needed by exult. 
 
 
 To cross-build from Linux

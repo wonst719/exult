@@ -737,6 +737,9 @@
     <ClCompile Include="..\..\gumps\Modal_gump.cc">
       <Filter>gumps</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\audio\midi_drivers\FluidSynthMidiDriver.cpp">
+      <Filter>audio\midi_drivers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\actions.h">
@@ -1447,14 +1450,8 @@
     <ClInclude Include="..\..\gumps\Slider_widget.h">
       <Filter>gumps</Filter>
     </ClInclude>
-    <ClInclude Include="SDL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDL_keycode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDL_syswm.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\audio\midi_drivers\FluidSynthMidiDriver.h">
+      <Filter>audio\midi_drivers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
