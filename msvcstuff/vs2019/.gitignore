@@ -1,7 +1,8 @@
 /packages
-Debug*
-*.user
+Debug
+**.user
+**.log
 /any
-Release*
+Release
 Nuget
 vcpkg_installed
