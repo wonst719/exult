@@ -740,6 +740,9 @@
     <ClCompile Include="..\..\gumps\Modal_gump.cc">
       <Filter>gumps</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\audio\midi_drivers\FluidSynthMidiDriver.cpp">
+      <Filter>audio\midi_drivers</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\korean\korean.cc">
       <Filter>korean</Filter>
     </ClCompile>
@@ -1459,6 +1462,8 @@
     <ClInclude Include="..\..\gumps\Slider_widget.h">
       <Filter>gumps</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\audio\midi_drivers\FluidSynthMidiDriver.h">
+      <Filter>audio\midi_drivers</Filter>
     <ClInclude Include="..\..\korean\korean.h">
       <Filter>korean</Filter>
     </ClInclude>
@@ -1466,12 +1471,6 @@
       <Filter>korean</Filter>
     </ClInclude>
     <ClInclude Include="SDL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDL_keycode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDL_syswm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
