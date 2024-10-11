@@ -204,7 +204,7 @@ Visual Studio 2017  does NOT work. It will load the projects but v141 build
 tools do not support all the C++/17 features needed by the exult source code. You
 can not sucessfully build all source files with VS 2017 v141 build tools.
 
-Projects are included for Exult, expack, exconfig and Exult_studio, 
+Projects are included for Exult, expack, exconfig, data flexes and Exult_studio, 
 no projects are supplied for other tools. VCPKG is used for package management
 and you must have it installed and integrated into visual studio. The build 
 process will automatically download and build needed dependencies. This will be
