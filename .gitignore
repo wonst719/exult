@@ -20,6 +20,7 @@ exult.spec
 Exult.suo
 exult*.tar.gz
 conf/confregress
+content/*/build/*
 content/bg/usecode
 content/bgkeyring/data/faces.vga
 content/bgkeyring/data/faces_vga.h
