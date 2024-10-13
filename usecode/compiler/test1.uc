@@ -599,3 +599,23 @@ default_case:
 	endconv;
 exit:
 }
+
+#strictbraces "true"
+
+void test_strictbraces_edge_cases(var input) {
+	if (input == 1) {
+	} else if (input == 2) {
+	} else {
+		if (input == 1) {
+		} else {
+			breakable {
+				;
+			}
+			nobreak {
+				if (input == 1) {
+					;
+				}
+			}
+		}
+	}
+}

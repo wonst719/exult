@@ -730,6 +730,7 @@ statement_block:
 			$2->add($3);
 		}
 		$$ = $2;
+		nested_if.pop_back();
 		cur_fun->pop_scope();
 		}
 	| label_statement statement
@@ -1400,7 +1401,7 @@ scoped_statement:
 	| { cur_fun->push_scope(); nested_if.push_back(false); } simple_statement
 		{
 		if (Uc_location::get_strict_mode()) {
-			yyerror("Statements must be surrounded by braces in strict mode");
+			yyerror("A Statements must be surrounded by braces in strict mode");
 		}
 		cur_fun->pop_scope();
 		nested_if.pop_back();
@@ -1410,7 +1411,7 @@ scoped_statement:
 		{
 		nested_if.pop_back();
 		if (Uc_location::get_strict_mode() && (nested_if.empty() || !nested_if.back())) {
-			yyerror("Statements must be surrounded by braces in strict mode");
+			yyerror("B Statements must be surrounded by braces in strict mode");
 		}
 		cur_fun->pop_scope();
 		$$ = $2;
@@ -1513,21 +1514,21 @@ try_statement:
 	;
 
 opt_nobreak:
-	NOBREAK statement
+	NOBREAK statement_block
 		{ $$ = $2; }
 	| %empty %prec LOOP
 		{ $$ = nullptr; }
 	;
 
 opt_nobreak_do:
-	NOBREAK statement
+	NOBREAK statement_block
 		{ $$ = $2; }
 	| ';' %prec LOOP
 		{ $$ = nullptr; }
 	;
 
 opt_nobreak_conv:
-	NOBREAK statement
+	NOBREAK statement_block
 		{ $$ = $2; }
 	| %empty %prec LOOP
 		{ $$ = nullptr; }
