@@ -21,7 +21,9 @@
 // No, I am not proud of this, but it works.
 
 #ifndef INCL_GTK_REDEFINES
-#define INCL_GTK_REDEFINES 1
+#define INCL_GTK_REDEFINES
+
+// IWYU pragma: always_keep
 
 #include <cstring>
 #include <type_traits>
