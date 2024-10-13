@@ -1803,7 +1803,7 @@ int attacker->attack_object(object target, int weapon)
 
 UI_fire_projectile(object obj, int dir, int proj, int attpts, int weapon, int
         ammo)
-obj->fire_projectile(int dir, int proj, int weapon, int ammo)
+obj->fire_projectile(int dir, int proj, int attpts, int weapon, int ammo)
 
     Causes the given object to fire a high-speed missile in the supplied
     direction.
