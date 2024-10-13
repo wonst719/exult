@@ -578,11 +578,10 @@ debug: $(EXEC)
 	cp data/exult_bg.flx $(U7PATH)/data
 	cp data/exult_si.flx $(U7PATH)/data
 
-mods:
+mods: tools
 	for mod in $(MODS); do \
 	pushd content/$${mod}; \
-	echo $${mod};\
-	make -j 2 -f Makefile.mingw $${mod}dir=build install; \
+	$(MAKE) -f Makefile.mingw $${mod}dir=build install; \
 	cd build; \
 	rm -f ../../../$${mod}.zip; \
 	zip -r  ../../../$${mod}.zip .; \
@@ -592,7 +591,7 @@ mods:
 modsclean:
 	for mod in $(MODS); do \
 	pushd content/$${mod}; \
-	make -j 2 -f Makefile.mingw $${mod}dir=build clean; \
+	$(MAKE) -f Makefile.mingw $${mod}dir=build clean; \
 	popd; \
 	rm -r -f content/$${mod}/build; \
 	rm -f $${mod}.zip;  \
