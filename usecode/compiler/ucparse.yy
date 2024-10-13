@@ -87,6 +87,7 @@ static Uc_struct_symbol* struct_type
 static bool                    has_ret        = false;
 static int                     repeat_nesting = 0;
 static std::vector<UsecodeOps> const_opcode;
+static std::vector<bool>       nested_if;
 static int converse = 0;    // If we are in a converse block.
 
 struct Fun_id_info {
@@ -385,14 +386,14 @@ struct Loop_Vars {
 %type <stmt> statement assignment_statement if_statement while_statement
 %type <stmt> statement_block return_statement function_call_statement
 %type <stmt> special_method_call_statement trycatch_statement trystart_statement
-%type <stmt> try_statement simple_statement noncase_statement
+%type <stmt> try_statement simple_statement noncase_statement simple_or_if_statement
 %type <stmt> array_loop_statement var_decl var_decl_list stmt_declaration
 %type <stmt> class_decl class_decl_list struct_decl_list struct_decl
 %type <stmt> break_statement converse_statement opt_nobreak opt_nobreak_do
 %type <stmt> converse_case switch_case script_statement switch_statement
 %type <stmt> goto_statement answer_statement delete_statement opt_nobreak_conv
 %type <stmt> continue_statement response_case fallthrough_statement
-%type <stmt> scoped_statement scoped_or_if_statement converse_case_attend
+%type <stmt> scoped_statement converse_case_attend
 %type <stmt> array_enum_statement opt_trailing_label
 %type <block> statement_list noncase_statement_list
 %type <label> label_statement
@@ -746,7 +747,10 @@ statement_block:
 
 statement_block_start:
 	'{'
-		{ cur_fun->push_scope(); }
+		{
+		cur_fun->push_scope();
+		nested_if.push_back(false);
+		}
 	;
 
 statement_list:
@@ -769,6 +773,11 @@ noncase_statement_list:
 		}
 	| %empty
 		{ $$ = new Uc_block_statement(); }
+	;
+
+simple_or_if_statement:
+	simple_statement
+	| if_statement
 	;
 
 simple_statement:
@@ -819,15 +828,13 @@ simple_statement:
 	;
 
 statement:
-	simple_statement
-	| if_statement
+	simple_or_if_statement
 	| statement_block
 	| converse_case_attend
 	;
 
 noncase_statement:
-	simple_statement
-	| if_statement
+	simple_or_if_statement
 	| statement_block
 	;
 
@@ -1387,11 +1394,22 @@ scoped_statement:
 			$2->add($3);
 		}
 		cur_fun->pop_scope();
+		nested_if.pop_back();
 		$$ = $2;
 		}
-	| {cur_fun->push_scope();} simple_statement
+	| { cur_fun->push_scope(); nested_if.push_back(false); } simple_statement
 		{
 		if (Uc_location::get_strict_mode()) {
+			yyerror("Statements must be surrounded by braces in strict mode");
+		}
+		cur_fun->pop_scope();
+		nested_if.pop_back();
+		$$ = $2;
+		}
+	| { cur_fun->push_scope(); nested_if.push_back(false); } if_statement
+		{
+		nested_if.pop_back();
+		if (Uc_location::get_strict_mode() && (nested_if.empty() || !nested_if.back())) {
 			yyerror("Statements must be surrounded by braces in strict mode");
 		}
 		cur_fun->pop_scope();
@@ -1399,13 +1417,8 @@ scoped_statement:
 		}
 	;
 
-scoped_or_if_statement:
-	scoped_statement
-	| if_statement
-	;
-
 if_statement:
-	IF '(' expression ')' scoped_or_if_statement %prec IF
+	IF '(' expression ')' scoped_statement %prec IF
 		{
 		int val;
 		if ($3->eval_const(val)) {
@@ -1425,7 +1438,8 @@ if_statement:
 			$$ = new Uc_if_statement($3, $5, nullptr);
 		}
 		}
-	| IF '(' expression ')' scoped_or_if_statement ELSE scoped_or_if_statement
+	| IF '(' expression ')' scoped_statement
+		ELSE { nested_if.push_back(true); } scoped_statement
 		{
 		int val;
 		if ($3->eval_const(val)) {
@@ -1435,18 +1449,19 @@ if_statement:
 					$3->warning("'else' clause may never execute");
 				}
 				$$ = new Uc_if_statement(
-						new Uc_int_expression(val != 0), $5, $7);
+						new Uc_int_expression(val != 0), $5, $8);
 			} else {
 				// Need this because of those pesky GOTOs...
 				if (dynamic_cast<Uc_bool_expression*>($3) == nullptr) {
 					$3->warning("'if' clause may never execute");
 				}
-				$$ = new Uc_if_statement(nullptr, $5, $7);
+				$$ = new Uc_if_statement(nullptr, $5, $8);
 			}
 			delete $3;
 		} else {
-			$$ = new Uc_if_statement($3, $5, $7);
+			$$ = new Uc_if_statement($3, $5, $8);
 		}
+		nested_if.pop_back();
 		}
 	;
 
@@ -1879,11 +1894,12 @@ converse_case_attend:
 	;
 
 response_case_list:
-	response_case_list ELSE response_case
+	response_case_list ELSE { nested_if.push_back(true); } response_case
 		{
-		if ($3) {
-			$$->push_back($3);
+		if ($4) {
+			$$->push_back($4);
 		}
+		nested_if.pop_back();
 		}
 	| response_case %prec IF
 		{
