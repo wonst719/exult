@@ -179,6 +179,7 @@ struct Loop_Vars {
 %token ALIAS "'alias'"
 %token STRUCT "'struct'"
 %token UCC_CHAR "'char'"
+%token UCC_BYTE "'byte'"
 %token UCC_INT "'int'"
 %token UCC_LONG "'long'"
 %token UCC_CONST "'const'"
@@ -946,6 +947,8 @@ const_int_type:
 		{ $$ = UC_PUSHI; }
 	| UCC_CHAR
 		{ $$ = UC_PUSHB; }
+	| UCC_BYTE
+		{ $$ = UC_PUSHB; }
 	| UCC_LONG
 		{ $$ = UC_PUSHI32; }
 	| UCC_LONG UCC_INT
@@ -999,6 +1002,16 @@ const_int:
 			Uc_function::add_global_int_const_symbol($1, $3, op);
 		}
 		enum_val = $3;    // In case we're in an enum.
+		}
+	| IDENTIFIER '=' int_cast const_int_expr
+		{
+		auto op = static_cast<UsecodeOps>($3);
+		if (cur_fun) {
+			cur_fun->add_int_const_symbol($1, $4, op);
+		} else {    // Global.
+			Uc_function::add_global_int_const_symbol($1, $4, op);
+		}
+		enum_val = $4;    // In case we're in an enum.
 		}
 	;
 

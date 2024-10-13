@@ -361,7 +361,7 @@ alias	return ALIAS;
 struct	return STRUCT;
 int		return UCC_INT;
 char	return UCC_CHAR;
-byte	return UCC_CHAR;
+byte	return UCC_BYTE;
 long	return UCC_LONG;
 const		return UCC_CONST;
 string		return STRING;
