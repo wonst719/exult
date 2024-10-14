@@ -45,8 +45,19 @@ int FluidSynthMidiDriver::setStr(const char* name, const char* val) {
 	return fluid_settings_setstr(_settings, name, val);
 }
 
-int FluidSynthMidiDriver::getStr(const char* name, char** pval) {
-	return fluid_settings_dupstr(_settings, name, pval);
+int FluidSynthMidiDriver::getStr(const char* name, char* val, size_t size) {
+	val[0] = 0;
+#ifdef USING_FLUIDSYNTH
+	return fluid_settings_copystr(_settings, name, val, size);
+#else
+	char* str;
+	if (fluid_settings_getstr(_settings, name, &str) && str && *str)
+	{
+		std::strncpy(val, str, size);
+		return FLUID_OK;
+	}
+#	endif
+	return -1;
 }
 
 int FluidSynthMidiDriver::open() {
@@ -105,15 +116,17 @@ int FluidSynthMidiDriver::open() {
 				soundfont = std::move(f);
 			}
 		}
-		soundfonts.push_back(soundfont);
+		if (U7exists(soundfont.c_str())) {
+			soundfonts.push_back(soundfont);
+		}
 	}
 
 	_settings = new_fluid_settings();
 
 	if (soundfonts.empty()) {
-		char* default_soundfont;
-		if (getStr("synth.default-soundfont", &default_soundfont) == FLUID_OK
-			&& default_soundfont && default_soundfont[0] != 0) {
+		char default_soundfont[512];
+		if (getStr("synth.default-soundfont", default_soundfont, sizeof(default_soundfont)) == FLUID_OK
+			&& default_soundfont[0] != 0) {
 			// try whether the FluidSynth default soundfont is in our paths
 			if (!U7exists(default_soundfont)) {
 				for (auto& d : options) {
@@ -141,7 +154,7 @@ int FluidSynthMidiDriver::open() {
 					"enabling FluidSynth with FluidSynth default SoundFont"
 				 << std::endl;
 		} else {
-			perr << "Setting 'fluidsynth_soundfont' missing in 'exult.cfg' and "
+			perr << "Setting 'fluidsynth_soundfont' missing in 'exult.cfg' or file unreadable and "
 					"Fluidsynth without a default SoundFont: not enabling "
 					"Fluidsynth"
 				 << std::endl;
@@ -163,15 +176,16 @@ int FluidSynthMidiDriver::open() {
 	// fluid_synth_set_interp_method(_synth, -1, FLUID_INTERP_LINEAR);
 	// fluid_synth_set_reverb_on(_synth, 0);
 	// fluid_synth_set_chorus_on(_synth, 0);
+	perr << "Compiled with " << FLUID_VERSION << ", using library: " << fluid_version_str() << std::endl;
 
 	int numloaded = 0;
 	for (auto& soundfont : soundfonts) {
 		const int soundFont = fluid_synth_sfload(_synth, soundfont.c_str(), 1);
 		if (soundFont == -1) {
-			perr << "Failed loading custom sound font '" << soundfont << "'"
+			perr << "Failed loading sound font '" << soundfont << "'"
 				 << std::endl;
 		} else {
-			perr << "Loaded custom sound font '" << soundfont << "'"
+			perr << "Loaded sound font '" << soundfont << "'"
 				 << std::endl;
 			_soundFont.push(soundFont);
 			numloaded++;

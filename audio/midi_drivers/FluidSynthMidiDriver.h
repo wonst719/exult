@@ -22,7 +22,23 @@
 #	include "LowLevelMidiDriver.h"
 #	include "common_types.h"
 
-#	include <fluidsynth.h>
+// try fluidsynth.h
+#	if __has_include(<fluidsynth.h>)
+#		include <fluidsynth.h>
+#		define USING_FLUIDSYNTH 1
+#		define FLUID_VERSION    "FluidSynth " FLUIDSYNTH_VERSION
+// Or try fluidlite.h
+#	elif __has_include(<fluidlite.h>)
+#		include <fluidlite.h>
+#		define USING_FLUIDLITE 1
+#		define FLUID_VERSION   "FluidLite " FLUIDLITE_VERSION
+#		ifndef FLUID_OK
+#			define FLUID_OK 0
+#		endif
+
+#	else
+#		error Must have fluidsynth or fluidlite to compile with USE_FLUIDSYNTH_MIDI
+#	endif
 
 #	include <stack>
 
@@ -50,7 +66,7 @@ protected:
 	int setInt(const char* name, int val);
 	int setNum(const char* name, double val);
 	int setStr(const char* name, const char* val);
-	int getStr(const char* name, char** pval);
+	int getStr(const char* name, char* val, size_t size);
 
 	// LowLevelMidiDriver implementation
 	int  open() override;
