@@ -500,6 +500,43 @@ Uc_function_symbol* Uc_function_symbol::create(
 				"Function 0x%x already used for '%s' with %zu params.", ucnum,
 				sym->get_name(), sym->get_num_parms());
 		Uc_location::yyerror(buf);
+	} else {
+		auto get_param_type = [](const Uc_var_symbol* var) {
+			std::string type;
+			if (var->get_sym_type() == Uc_symbol::Class) {
+				type = "class<";
+				type += var->get_cls()->get_name();
+				type += ">";
+			} else if (const auto* str = var->get_struct(); str != nullptr) {
+				type = "struct<";
+				type += str->get_name();
+				type += ">";
+			} else {
+				type = "var";
+			}
+			return type;
+		};
+		const auto& parms      = sym->get_parms();
+		for (size_t i = 0; i < p.size(); i++) {
+			if (p[i]->get_sym_type() != parms[i]->get_sym_type()
+				|| (p[i]->get_sym_type() == Uc_symbol::Class
+					&& p[i]->get_cls() != parms[i]->get_cls())
+				|| p[i]->get_struct() != parms[i]->get_struct()) {
+				char buf[512];
+				snprintf(
+						buf, sizeof(buf),
+						"Mismatch between function '%s' and previous "
+						"declaration: parameter %zu is of different type: "
+						"type of '%s' is '%s' != type of '%s' is '%s'",
+						nm, i, p[i]->get_name(), get_param_type(p[i]).c_str(),
+						parms[i]->get_name(), get_param_type(parms[i]).c_str());
+				Uc_location::yyerror(buf);
+			}
+		}
+		if (!is_extern) {
+			// Override symbol parameter names with those from the definition.
+			sym->parms = p;
+		}
 	}
 	return sym;
 }
