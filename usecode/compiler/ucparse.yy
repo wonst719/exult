@@ -204,9 +204,9 @@ struct Loop_Vars {
 %token TICKS "'ticks'"
 %token STATIC_ "'static'"
 %token ORIGINAL "'original'"
-%token SHAPENUM "shape'#'"
-%token OBJECTNUM "object'#'"
-%token IDNUM "id'#'"
+%token SHAPENUM "'shape#'"
+%token OBJECTNUM "'object#'"
+%token IDNUM "'id#'"
 %token CLASS "'class'"
 %token RUNSCRIPT "'runscript'"
 %token SWITCH "'switch'"
@@ -568,6 +568,7 @@ opt_trailing_label:
 		{
 		$$ = nullptr;
 		}
+	;
 
 function_body:
 	'{' statement_list opt_trailing_label '}'
@@ -1275,6 +1276,7 @@ string_literal:
 		$$ = ret;
 		}
 	| STRING_LITERAL
+	;
 
 string_prefix:
 	string_literal STRING_PREFIX
@@ -1290,6 +1292,7 @@ string_prefix:
 		$$ = ret;
 		}
 	| STRING_PREFIX
+	;
 
 string_decl_list:
 	string_decl_list ',' string_decl
@@ -1997,6 +2000,7 @@ script_expr:
 		Uc_symbol* sym = Uc_function::get_intrinsic($4 ? 2 : 1);
 		$$             = new Uc_call_expression(sym, parms, cur_fun);
 		}
+	;
 
 script_statement:			/* Yes, this could be an intrinsic. */
 	script_expr
@@ -2210,6 +2214,7 @@ repeat_count:
 		}
 		$$ = new Uc_int_expression(255);
 		}
+	;
 
 dam_type:
 	NORMAL_DAMAGE
