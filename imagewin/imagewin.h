@@ -447,33 +447,6 @@ public:
 	}
 
 	/*
-	 *   16-bit color methods.
-	 */
-	// Fill with given pixel.
-	void fill16(unsigned short pix) {
-		ibuf->fill16(pix);
-	}
-
-	// Fill rect. wth pixel.
-	void fill16(unsigned short pix, int srcw, int srch, int destx, int desty) {
-		ibuf->fill16(pix, srcw, srch, destx, desty);
-	}
-
-	// Copy rectangle into here.
-	void copy16(
-			unsigned short* src_pixels, int srcw, int srch, int destx,
-			int desty) {
-		ibuf->copy16(src_pixels, srcw, srch, destx, desty);
-	}
-
-	// Copy rect. with transp. color.
-	void copy_transparent16(
-			const unsigned char* src_pixels, int srcw, int srch, int destx,
-			int desty) {
-		ibuf->copy_transparent16(src_pixels, srcw, srch, destx, desty);
-	}
-
-	/*
 	 *   8-bit color methods:
 	 */
 	// Fill with given (8-bit) value.
@@ -533,6 +506,11 @@ public:
 			const unsigned char* src_pixels, int srcw, int srch, int destx,
 			int desty) {
 		ibuf->copy_transparent8(src_pixels, srcw, srch, destx, desty);
+	}
+
+	// Put a single pixel.
+	void put_pixel8(unsigned char pix, int x, int y) {
+		ibuf->put_pixel8(pix, x, y);
 	}
 
 	/*

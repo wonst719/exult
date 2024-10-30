@@ -98,11 +98,11 @@ public:
 			int desty) override;
 
 	// Get/put a single pixel.
-	unsigned char get_pixel8(int x, int y) {
+	unsigned char get_pixel8(int x, int y) override {
 		return bits[y * line_width + x];
 	}
 
-	void put_pixel8(unsigned char pix, int x, int y) {
+	void put_pixel8(unsigned char pix, int x, int y) override {
 		if (x >= clipx && x < clipx + clipw && y >= clipy
 			&& y < clipy + cliph) {
 			bits[y * line_width + x] = pix;

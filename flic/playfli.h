@@ -37,6 +37,17 @@ public:
 	};
 
 private:
+	enum FlicChunks {
+		FLI_COLOR256 = 4,
+		FLI_SS2      = 7,
+		FLI_COLOR    = 11,
+		FLI_LC       = 12,
+		FLI_BLACK    = 13,
+		FLI_BRUN     = 15,
+		FLI_COPY     = 16,
+		FLI_PSTAMP   = 18,    // Unsupported
+	};
+
 	IExultDataSource              fli_data;
 	std::unique_ptr<Image_buffer> fli_buf;
 	std::unique_ptr<Palette>      palette;
@@ -48,8 +59,8 @@ private:
 	int                           fli_depth;
 	int                           fli_flags;
 	int                           fli_speed;
-	int                           streamstart;
-	int                           streampos;
+	size_t                        streamstart;
+	size_t                        streampos;
 	int                           frame;
 	char                          fli_name[9]{};
 
@@ -66,11 +77,11 @@ public:
 	playfli& operator=(const playfli&)     = delete;
 	playfli& operator=(playfli&&) noexcept = default;
 	~playfli() noexcept                    = default;
-	void info(fliinfo* fi = nullptr);
+	void info(fliinfo* fi = nullptr) const;
 	int  play(
 			 Image_window* win, int first_frame = 0, int last_frame = -1,
 			 unsigned long ticks = 0, int brightness = 100);
-	void put_buffer(Image_window* win);
+	void put_buffer(Image_window* win) const;
 
 	inline Palette* get_palette() {
 		return palette.get();
@@ -80,7 +91,7 @@ private:
 	void initfli();
 	int  nextpal;
 	int  thispal;
-	int  changepal;
+	bool changepal;
 };
 
 #endif

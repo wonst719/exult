@@ -74,7 +74,7 @@ public:
 	// Set desired palette.
 	void set(int pal_num, int new_brightness = -1, bool repaint = true);
 	void set(
-			unsigned char palnew[768], int new_brightness = -1,
+			const unsigned char palnew[768], int new_brightness = -1,
 			bool repaint = true, bool border255 = false);
 
 	int get_brightness() const {    // Percentage:  100 = normal.
@@ -136,7 +136,7 @@ public:
 		return pal1[3 * nr + 2];
 	}
 
-	void set_palette(unsigned char palnew[768]);
+	void set_palette(const unsigned char palnew[768]);
 
 	static void set_border(int r, int g, int b) {
 		border[0] = r;

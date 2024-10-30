@@ -147,8 +147,8 @@ void Palette::set(
  */
 
 void Palette::set(
-		unsigned char palnew[768],
-		int           new_brightness,    // New percentage, or -1.
+		const unsigned char palnew[768],
+		int                 new_brightness,    // New percentage, or -1.
 		bool repaint, bool border255) {
 	this->border255 = border255;
 	memcpy(pal1, palnew, 768);
@@ -496,7 +496,7 @@ void Palette::set_color(int nr, int r, int g, int b) {
 	pal1[nr * 3 + 2] = b;
 }
 
-void Palette::set_palette(unsigned char palnew[768]) {
+void Palette::set_palette(const unsigned char palnew[768]) {
 	memcpy(pal1, palnew, 768);
 	memset(pal2, 0, 768);
 }

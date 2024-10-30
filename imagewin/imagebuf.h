@@ -32,6 +32,8 @@ Boston, MA  02111-1307, USA.
 
 #include <memory>
 
+class IDataSource;
+
 // Table for translating palette vals.:
 /*
  *  This class represents a single transparent color by providing a
@@ -175,34 +177,6 @@ public:
 	}
 
 	/*
-	 *  16-bit color methods.  Default is to ignore them.
-	 */
-	// Fill with given pixel.
-	virtual void fill16(unsigned short pix) {
-		ignore_unused_variable_warning(pix);
-	}
-
-	// Fill rect. wth pixel.
-	virtual void fill16(
-			unsigned short pix, int srcw, int srch, int destx, int desty) {
-		ignore_unused_variable_warning(pix, srcw, srch, destx, desty);
-	}
-
-	// Copy rectangle into here.
-	virtual void copy16(
-			const unsigned short* src_pixels, int srcw, int srch, int destx,
-			int desty) {
-		ignore_unused_variable_warning(src_pixels, srcw, srch, destx, desty);
-	}
-
-	// Copy rect. with transp. color.
-	virtual void copy_transparent16(
-			const unsigned char* src_pixels, int srcw, int srch, int destx,
-			int desty) {
-		ignore_unused_variable_warning(src_pixels, srcw, srch, destx, desty);
-	}
-
-	/*
 	 *  8-bit color methods:
 	 */
 	// Fill with given (8-bit) value.
@@ -250,6 +224,12 @@ public:
 			const unsigned char* src_pixels, int srcw, int srch, int destx,
 			int desty)
 			= 0;
+
+	// Get/put a single pixel.
+	virtual unsigned char get_pixel8(int x, int y) = 0;
+
+	virtual void put_pixel8(unsigned char pix, int x, int y) = 0;
+
 	/*
 	 *  Depth-independent methods:
 	 */
