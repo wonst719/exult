@@ -477,7 +477,7 @@ void SI_Game::play_intro() {
 		gwin->clear_screen(true);
 
 		// Guard walks in
-		playfli fli2(INTRO_DAT, PATCH_INTRO, 2);
+		playfli fli2 = select_fli(2, EXULT_SI_FLX_EXT_INTRO_SANCTUM1_FLC);
 		fli2.info();
 
 		count = *selected_intro_counts++;
@@ -640,7 +640,7 @@ void SI_Game::play_intro() {
 		gwin->clear_screen(true);
 
 		// Scroll opens
-		playfli fli3(INTRO_DAT, PATCH_INTRO, 3);
+		playfli fli3 = select_fli(3, EXULT_SI_FLX_EXT_INTRO_SANCTUM2_FLC);
 		fli3.info();
 
 		next = 0;
