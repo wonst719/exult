@@ -439,15 +439,18 @@ begin
       // again check if component was selected and game paths are verified
       if PrevItemAChecked <> WizardIsComponentSelected('downloads\audio') then
         ExtractMe('{tmp}\exult_audio.zip','{app}\data\');
-      if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\keyring')) AND (iBGVerified = 1) then
+      if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\keyring')) AND (iBGVerified = 1) then begin
         ExtractTemporaryFile('bgkeyring.zip');
         ExtractMe('{tmp}\bgkeyring.zip',sBGmods);
-      if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\sfisland')) AND (iBGVerified = 1) then
+      end;
+      if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\sfisland')) AND (iBGVerified = 1) then begin
         ExtractTemporaryFile('islefaq.zip');
         ExtractMe('{tmp}\islefaq.zip',sBGmods);
-      if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\sifixes')) AND (iSIVerified = 1) then
+      end;
+      if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\sifixes')) AND (iSIVerified = 1) then begin
         ExtractTemporaryFile('sifixes.zip');
         ExtractMe('{tmp}\sifixes.zip',sSImods);
+      end;
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\3rdpartymods\ultima6')) AND (iBGVerified = 1) then
         ExtractMe('{tmp}\Ultima6.zip',sBGmods);
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\3rdpartymods\glimmerscape')) AND (iSIVerified = 1) then
