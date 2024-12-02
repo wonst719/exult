@@ -32,7 +32,7 @@ The Android APK is built as an optional component of a regular native Exult buil
 
 In addition to the regular desktop Exult dependencies, you will need the android SDK and NDK. The easiest way to get these is to install Android Studio. You will also need to edit your path so that the build can find the `gradle` and `sdkmanager` commands.  Android Studio can be installed for free from [Google](https://developer.android.com/studio).
 
-Now you also need Gradle, follow the instructions at https://linuxize.com/post/how-to-install-gradle-on-ubuntu-20-04/ and install Gradle version 7.6.1 (or newer but currently it needs to be at least version >= 7.5.
+Now you also need Gradle, follow the instructions at https://linuxize.com/post/how-to-install-gradle-on-ubuntu-20-04/ and install Gradle version 8.7 (or newer).
 
 With those dependencies in place, you can build Exult, but pass the `--enable-android-apk` flag to the `configure` script. However you need to make sure to build Exult outside of its source to prevent any problems when you cross compile the various Android arches. You can also disable most build options as the Android build is done via CMake. 
 The following is a quick summary of the commands to build (assuming you are in the exult source):
@@ -67,3 +67,11 @@ $ /path/to/Android/Sdk/build-tools/version/apksigner sign --ks path/to/my/androi
 
 ```
 The final release APK will be located in `app-release-signed.apk`.
+
+## Issues
+
+There are currently several issues (mostly related to SDK and NDKs):
+- SDL2 releases newer than 2.28.5 require NDK 22.x, which for some reason prevents Exult to discover installed mods - see https://github.com/exult/exult/issues/558
+- Using the current NDK 27.x causes the build of our dependency SDL2 to fail
+- When compiled against SDK 35 the launcher's menu buttons are not reacting to touch input anymore - see https://github.com/exult/exult/issues/596
+- Currently mods installation is hardcoded to accept only the mods from the Exult team - see https://github.com/exult/exult/issues/371
