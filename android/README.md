@@ -72,6 +72,5 @@ The final release APK will be located in `app-release-signed.apk`.
 
 There are currently several issues (mostly related to SDK and NDKs):
 - SDL2 releases newer than 2.28.5 require NDK 22.x, which for some reason prevents Exult to discover installed mods - see https://github.com/exult/exult/issues/558
-- Using the current NDK 27.x causes the build of our dependency SDL2 to fail
 - When compiled against SDK 35 the launcher's menu buttons are not reacting to touch input anymore - see https://github.com/exult/exult/issues/596
 - Currently mods installation is hardcoded to accept only the mods from the Exult team - see https://github.com/exult/exult/issues/371
