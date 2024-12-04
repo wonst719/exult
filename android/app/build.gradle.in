@@ -25,20 +25,15 @@ android {
                 arguments "-DANDROID_STL=c++_shared", "-DEXULT_SOURCE_DIR=" + project.getProperty('EXULT_SOURCE_DIR'), "-DSDL_SOURCE_DIR=" + project.getProperty('SDL_SOURCE_DIR'), "-DEXULT_VERSION=@PACKAGE_VERSION@"
             }
         }
+        ndk {
+            @ANDROID_ARCHITECTURE@
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
             zipAlignEnabled true
-            ndk {
-                @ANDROID_ARCHITECTURE@
-            }
-        }
-        debug {
-            ndk {
-                @ANDROID_ARCHITECTURE@
-            }
         }
     }
     externalNativeBuild {
