@@ -377,8 +377,8 @@ if test x$enable_android_apk != xno; then
 	AC_ARG_WITH(android_arch,
 		AS_HELP_STRING([--with-android-arch=ARCH], [Android build single arch @<:@default x86, x86_64, armeabi-v7a, arm64-v8a@:>@]),
 		[with_android_arch="$withval"],)
-	ANDROID_ARCHITECTURE="abiFilters "\"$with_android_arch"\""
-	if test "x$ANDROID_ARCHITECTURE" != "x"; then
+	if test "x$with_android_arch" != x; then
+		ANDROID_ARCHITECTURE="abiFilters "\"$with_android_arch"\""
 		AC_SUBST(ANDROID_ARCHITECTURE, $ANDROID_ARCHITECTURE)
 	fi
 else
@@ -1296,7 +1296,7 @@ echo Exult Studio support....... : $enable_exult_studio_support
 echo Create data files.......... : $enable_data
 if test x$enable_android_apk != xno; then
 	echo Build Android APK.......... : $enable_android_apk
-	if test "x$ANDROID_ARCHITECTURE" != "x"; then
+	if test "x$with_android_arch" != x; then
 		echo Android Architecture\(s\).....: $with_android_arch
 	else
 		echo Android Architecture\(s\).....: x86, x86_64, armeabi-v7a, arm64-v8a
