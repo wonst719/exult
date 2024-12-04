@@ -31,6 +31,14 @@ android {
         release {
             minifyEnabled false
             zipAlignEnabled true
+            ndk {
+                @ANDROID_ARCHITECTURE@
+            }
+        }
+        debug {
+            ndk {
+                @ANDROID_ARCHITECTURE@
+            }
         }
     }
     externalNativeBuild {
