@@ -60,6 +60,10 @@
 #	include <sys/param.h>    // for MAXPATHLEN
 #endif
 
+#ifdef ANDROID
+#	include <SDL_system.h>
+#endif
+
 using std::ios;
 using std::string;
 
@@ -368,6 +372,15 @@ DIR* U7opendir(const char* fname    // May be converted to upper-case.
 
 	do {
 		DIR* dir = opendir(name.c_str());    // Try to open
+#ifdef ANDROID
+		// TODO: If SDL ever adds directories to rwops use it instead
+
+		if (!dir) {
+			string internalpath
+					= SDL_AndroidGetInternalStoragePath() + ("/" + name);
+			dir = opendir(internalpath.c_str());
+		}
+#endif
 		if (dir) {
 			return dir;    // found it!
 		}
