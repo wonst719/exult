@@ -840,19 +840,17 @@ void Notebook_gump::read() {
 void Notebook_gump::read_auto_text_file(const char* filename) {
 	if (gwin->get_allow_autonotes()) {
 		initialized_auto_text = true;
-		std::unique_ptr<std::istream> pNotesfile;
-		if (is_system_path_defined("<PATCH>") && U7exists(PATCH_AUTONOTES)) {
-			cout << "Loading patch autonotes" << endl;
-			pNotesfile = U7open_in(PATCH_AUTONOTES, true);
-		} else {
+		IFileDataSource notesfile = [&]() -> IFileDataSource {
+			if (is_system_path_defined("<PATCH>") && U7exists(PATCH_AUTONOTES)) {
+				cout << "Loading patch autonotes" << endl;
+				return IFileDataSource(PATCH_AUTONOTES, true);
+			}
 			cout << "Loading autonotes from file " << filename << endl;
-			pNotesfile = U7open_in(filename, true);
+			return IFileDataSource(filename, true);
+		}();
+		if (notesfile.good()) {
+			Read_text_msg_file(&notesfile, auto_text);
 		}
-		if (!pNotesfile) {
-			return;
-		}
-		auto& notesfile = *pNotesfile;
-		Read_text_msg_file(notesfile, auto_text);
 	}
 }
 
@@ -862,12 +860,10 @@ void Notebook_gump::read_auto_text() {
 		initialized_auto_text = true;
 		if (is_system_path_defined("<PATCH>") && U7exists(PATCH_AUTONOTES)) {
 			cout << "Loading patch autonotes" << endl;
-			auto pNotesfile = U7open_in(PATCH_AUTONOTES, true);
-			if (!pNotesfile) {
-				return;
+			IFileDataSource notesfile(PATCH_AUTONOTES, true);
+			if (notesfile.good()) {
+				Read_text_msg_file(&notesfile, auto_text);
 			}
-			auto& notesfile = *pNotesfile;
-			Read_text_msg_file(notesfile, auto_text);
 		} else {
 			const str_int_pair& resource
 					= game->get_resource("config/autonotes");

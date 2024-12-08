@@ -55,18 +55,18 @@ TextScroller::TextScroller(
 		const char* archive, int index, std::shared_ptr<Font> fnt, Shape* shp) {
 	font   = fnt;
 	shapes = shp;
-	unique_ptr<U7object> txtobj;
-	// Hack to patch MAINSHP_FLX.
-	if (!strncmp(archive, MAINSHP_FLX, sizeof(MAINSHP_FLX) - 1)) {
-		txtobj = make_unique<U7multiobject>(archive, PATCH_MAINSHP, index);
-	} else {
-		txtobj = make_unique<U7object>(archive, index);
-	}
+	auto txtobj = [&]() {
+		// Hack to patch MAINSHP_FLX.
+		if (!strncmp(archive, MAINSHP_FLX, sizeof(MAINSHP_FLX) - 1)) {
+			return U7multiobject(archive, PATCH_MAINSHP, index);
+		}
+		return U7multiobject(archive, index);
+	}();
 	size_t     len;
 	const char CR = '\r';
 	const char LF = '\n';
 
-	const unique_ptr<unsigned char[]> txt = txtobj->retrieve(len);
+	const unique_ptr<unsigned char[]> txt = txtobj.retrieve(len);
 	if (!txt || len <= 0) {
 		text = new vector<string>();
 		return;
@@ -84,7 +84,7 @@ TextScroller::TextScroller(
 			} else {
 				*ptr = 0;
 			}
-			text->push_back(string(start));
+			text->emplace_back(start);
 			ptr += 1;
 		} else {
 			break;

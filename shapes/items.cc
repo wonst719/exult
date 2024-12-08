@@ -27,11 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	include <config.h>
 #endif
 
-// #include <iomanip>           /* Debugging */
 #include "items.h"
 
-#include "U7obj.h"
-#include "endianio.h"
+#include "databuf.h"
 #include "exult_flx.h"
 #include "fnames.h"
 #include "msgfile.h"
@@ -53,10 +51,12 @@ using std::string;
 using std::stringstream;
 using std::vector;
 
-vector<string> item_names;    // Names of U7 items.
-vector<string> text_msgs;     // Msgs. (0x400 - in text.flx).
-vector<string>
-		misc_names;    // Frames, etc (0x500 - 0x5ff/0x685 (BG/SI) in text.flx).
+// Names of U7 items.
+vector<string> item_names;
+// Msgs. (0x400 - in text.flx).
+vector<string> text_msgs;
+// Frames, etc (0x500 - 0x5ff/0x685 (BG/SI) in text.flx).
+vector<string> misc_names;
 
 static inline int remap_index(bool remap, int index, bool sibeta) {
 	if (!remap) {
@@ -196,7 +196,8 @@ void Set_misc_name(unsigned num, const char* name) {
  */
 
 static void Setup_item_names(
-		istream& items, istream& msgs, bool si, bool expansion, bool sibeta) {
+		IDataSource& items, IDataSource& msgs, bool si, bool expansion,
+		bool sibeta) {
 	vector<string> msglist;
 	int            first_msg;    // First in exultmsg.txt.  Should
 	//   follow those in text.flx.
@@ -205,8 +206,8 @@ static void Setup_item_names(
 	int num_text_msgs  = 0;
 	int num_misc_names = 0;
 
-	items.seekg(0x54);
-	int flxcnt = little_endian::Read4(items);
+	items.seek(0x54);
+	int flxcnt = items.read4();
 	first_msg = num_item_names = flxcnt;
 	if (flxcnt > 0x400) {
 		num_item_names = 0x400;
@@ -229,7 +230,7 @@ static void Setup_item_names(
 	}
 	if (msgs.good()) {
 		// Exult msgs. too?
-		first_msg = Read_text_msg_file(msgs, msglist);
+		first_msg = Read_text_msg_file(&msgs, msglist);
 		if (first_msg >= 0) {
 			first_msg -= 0x400;
 			if (first_msg < num_text_msgs) {
@@ -252,29 +253,28 @@ static void Setup_item_names(
 	}
 	int i;
 	for (i = 0; i < flxcnt; i++) {
-		items.seekg(0x80 + i * 8);
-		const int itemoffs = little_endian::Read4(items);
-		if (!itemoffs) {
+		items.seek(0x80 + (i * 8));
+		const int itemoffs = items.read4();
+		if (itemoffs == 0) {
 			continue;
 		}
-		const int itemlen = little_endian::Read4(items);
-		items.seekg(itemoffs);
-		char* newitem = new char[itemlen];
+		const int itemlen = items.read4();
+		items.seek(itemoffs);
+		string newitem;
 		items.read(newitem, itemlen);
 		if (i < num_item_names) {
-			item_names[i] = newitem;
+			item_names[i] = std::move(newitem);
 		} else if (i - num_item_names < num_text_msgs) {
 			if (sibeta && (i - num_item_names) >= 0xd2) {
-				text_msgs[i - num_item_names + 1] = newitem;
+				text_msgs[i - num_item_names + 1] = std::move(newitem);
 			} else {
-				text_msgs[i - num_item_names] = newitem;
+				text_msgs[i - num_item_names] = std::move(newitem);
 			}
 		} else {
-			misc_names[remap_index(
-					doremap, i - num_item_names - num_text_msgs, sibeta)]
-					= newitem;
+			const size_t new_index = remap_index(
+					doremap, i - num_item_names - num_text_msgs, sibeta);
+			misc_names[new_index] = std::move(newitem);
 		}
-		delete[] newitem;
 	}
 	for (i = first_msg; i < total_msgs; i++) {
 		text_msgs[i] = msglist[i + 0x400];
@@ -291,12 +291,12 @@ static void Setup_item_names(
  */
 
 static void Setup_text(
-		istream& txtfile,    // All text.
-		istream& exultmsg) {
+		IDataSource& txtfile,    // All text.
+		IDataSource& exultmsg) {
 	// Start by reading from exultmsg
 	vector<string> msglist;
 	int            first_msg;
-	first_msg                 = Read_text_msg_file(exultmsg, msglist);
+	first_msg                 = Read_text_msg_file(&exultmsg, msglist);
 	const unsigned total_msgs = static_cast<int>(msglist.size() - 0x400);
 	if (first_msg >= 0) {
 		first_msg -= 0x400;
@@ -306,9 +306,9 @@ static void Setup_text(
 		text_msgs[i] = msglist[i + 0x400];
 	}
 	// Now read in textmsg.txt
-	Read_text_msg_file(txtfile, item_names, SHAPES_SECT);
-	Read_text_msg_file(txtfile, text_msgs, MSGS_SECT);
-	Read_text_msg_file(txtfile, misc_names, MISC_SECT);
+	Read_text_msg_file(&txtfile, item_names, SHAPES_SECT);
+	Read_text_msg_file(&txtfile, text_msgs, MSGS_SECT);
+	Read_text_msg_file(&txtfile, misc_names, MISC_SECT);
 }
 
 /*
@@ -320,48 +320,40 @@ void Setup_text(bool si, bool expansion, bool sibeta) {
 	const bool is_patch = is_system_path_defined("<PATCH>");
 	// Always read from exultmsg.txt
 	// TODO: allow multilingual exultmsg.txt files.
-	std::unique_ptr<istream> exultmsg;
-	if (is_patch && U7exists(PATCH_EXULTMSG)) {
-		exultmsg = U7open_in(PATCH_EXULTMSG, true);
-	} else {
-		auto           exultmsgbuf = std::make_unique<stringstream>();
-		const char*    msgs        = BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX);
-		const U7object txtobj(msgs, EXULT_FLX_EXULTMSG_TXT);
-		size_t         len;
-		auto           txt = txtobj.retrieve(len);
-		if (txt && len > 0) {
-			exultmsgbuf->str(string(reinterpret_cast<char*>(txt.get()), len));
+	auto exultmsg = [&]() {
+		if (is_patch && U7exists(PATCH_EXULTMSG)) {
+			return IExultDataSource(PATCH_EXULTMSG, -1);
 		}
-		exultmsg = std::move(exultmsgbuf);
-	}
+
+		return IExultDataSource(
+				BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX),
+				EXULT_FLX_EXULTMSG_TXT);
+	}();
 
 	// Exult new-style messages?
 	if (is_patch && U7exists(PATCH_TEXTMSGS)) {
-		auto pTxtfile = U7open_in(PATCH_TEXTMSGS, true);
-		if (!pTxtfile) {
+		IFileDataSource txtfile(PATCH_TEXTMSGS, true);
+		if (!txtfile.good()) {
 			return;
 		}
-		auto& txtfile = *pTxtfile;
-		Setup_text(txtfile, *exultmsg);
+		Setup_text(txtfile, exultmsg);
 	} else if (U7exists(TEXTMSGS)) {
-		auto pTxtfile = U7open_in(TEXTMSGS, true);
-		if (!pTxtfile) {
+		IFileDataSource txtfile(TEXTMSGS, true);
+		if (!txtfile.good()) {
 			return;
 		}
-		auto& txtfile = *pTxtfile;
-		Setup_text(txtfile, *exultmsg);
+		Setup_text(txtfile, exultmsg);
 	} else {
-		std::unique_ptr<istream> pTextflx;
-		if (is_patch && U7exists(PATCH_TEXT)) {
-			pTextflx = U7open_in(PATCH_TEXT);
-		} else {
-			pTextflx = U7open_in(TEXT_FLX);
-		}
-		if (!pTextflx) {
+		IFileDataSource textflx = [&]() {
+			if (is_patch && U7exists(PATCH_TEXT)) {
+				return IFileDataSource(PATCH_TEXT);
+			}
+			return IFileDataSource(TEXT_FLX);
+		}();
+		if (!textflx.good()) {
 			return;
 		}
-		auto& textflx = *pTextflx;
-		Setup_item_names(textflx, *exultmsg, si, expansion, sibeta);
+		Setup_item_names(textflx, exultmsg, si, expansion, sibeta);
 	}
 }
 

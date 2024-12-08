@@ -388,15 +388,20 @@ void Shapeinfo_lookup::Read_data_file(
 	} else {
 		try {
 			snprintf(buf, sizeof(buf), "<STATIC>/%s.txt", fname);
-			auto pIn = U7open_in(buf, false);
-			if (!pIn) {
+			IFileDataSource ds(buf, false);
+			if (!ds.good()) {
+				for (int i = 0; i < numsections; i++) {
+					delete parsers[i];
+				}
 				throw file_open_exception(buf);
 			}
-			auto& in       = *pIn;
 			static_version = Read_text_msg_file_sections(
-					in, static_strings, sections, numsections);
+					&ds, static_strings, sections, numsections);
 		} catch (const std::exception&) {
 			if (!Game::is_editing()) {
+				for (int i = 0; i < numsections; i++) {
+					delete parsers[i];
+				}
 				throw;
 			}
 			static_strings.resize(numsections);
@@ -405,13 +410,15 @@ void Shapeinfo_lookup::Read_data_file(
 	patch_strings.resize(numsections);
 	snprintf(buf, sizeof(buf), "<PATCH>/%s.txt", fname);
 	if (U7exists(buf)) {
-		auto pIn = U7open_in(buf, false);
-		if (!pIn) {
+		IFileDataSource ds(buf, false);
+		if (!ds.good()) {
+			for (int i = 0; i < numsections; i++) {
+				delete parsers[i];
+			}
 			throw file_open_exception(buf);
 		}
-		auto& in      = *pIn;
 		patch_version = Read_text_msg_file_sections(
-				in, patch_strings, sections, numsections);
+				&ds, patch_strings, sections, numsections);
 	}
 
 	for (size_t i = 0; i < static_strings.size(); i++) {

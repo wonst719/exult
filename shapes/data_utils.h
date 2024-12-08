@@ -106,7 +106,7 @@ void clean_vector(std::vector<T>& vec) {
 
 template <class T, typename U>
 static const T* Search_vector_data_single_wildcard(
-		const std::vector<T>& vec, int src, U T::*dat) {
+		const std::vector<T>& vec, int src, U T::* dat) {
 	if (vec.empty()) {    // Not found.
 		return nullptr;
 	}
@@ -132,8 +132,8 @@ static const T* Search_vector_data_single_wildcard(
 
 template <class T>
 static const T* Search_vector_data_double_wildcards(
-		const std::vector<T>& vec, int frame, int quality, short T::*fr,
-		short T::*qual) {
+		const std::vector<T>& vec, int frame, int quality, short T::* fr,
+		short T::* qual) {
 	if (vec.empty()) {
 		return nullptr;    // No name.
 	}
@@ -391,7 +391,7 @@ public:
 /*
  *  Data reader functors.
  */
-template <typename T, class Info, T Info::*data>
+template <typename T, class Info, T Info::* data>
 class Text_reader_functor {
 public:
 	bool operator()(
@@ -403,7 +403,7 @@ public:
 	}
 };
 
-template <typename T, class Info, T Info::*data1, T Info::*data2>
+template <typename T, class Info, T Info::* data1, T Info::* data2>
 class Text_pair_reader_functor {
 public:
 	bool operator()(
@@ -416,7 +416,7 @@ public:
 	}
 };
 
-template <typename T, class Info, T Info::*data, int bit>
+template <typename T, class Info, T Info::* data, int bit>
 class Bit_text_reader_functor {
 public:
 	bool operator()(
@@ -434,7 +434,7 @@ public:
 	}
 };
 
-template <typename T, class Info, T Info::*data>
+template <typename T, class Info, T Info::* data>
 class Bit_field_text_reader_functor {
 public:
 	bool operator()(
@@ -457,7 +457,7 @@ public:
 	}
 };
 
-template <typename T, class Info, T Info::*data, unsigned pad>
+template <typename T, class Info, T Info::* data, unsigned pad>
 class Binary_reader_functor {
 public:
 	bool operator()(
@@ -473,8 +473,8 @@ public:
 };
 
 template <
-		typename T1, typename T2, class Info, T1 Info::*data1, T2 Info::*data2,
-		unsigned pad>
+		typename T1, typename T2, class Info, T1 Info::* data1,
+		T2 Info::* data2, unsigned pad>
 class Binary_pair_reader_functor {
 public:
 	bool operator()(
@@ -490,7 +490,7 @@ public:
 	}
 };
 
-template <typename T, class Info, T* Info::*data>
+template <typename T, class Info, T* Info::* data>
 class Class_reader_functor {
 public:
 	bool operator()(
@@ -520,7 +520,7 @@ public:
 	}
 };
 
-template <typename T, class Info, std::vector<T> Info::*data>
+template <typename T, class Info, std::vector<T> Info::* data>
 class Vector_reader_functor {
 public:
 	bool operator()(
@@ -570,13 +570,15 @@ static void Read_text_data_file(
 	} else {
 		try {
 			snprintf(buf, sizeof(buf), "<STATIC>/%s.txt", fname);
-			auto pIn = U7open_in(buf, false);
-			if (!pIn) {
+			IFileDataSource ds(buf, false);
+			if (!ds.good()) {
+				for (auto* parser : parsers) {
+					delete parser;
+				}
 				throw file_open_exception(buf);
 			}
-			auto& in       = *pIn;
 			static_version = Read_text_msg_file_sections(
-					in, static_strings, sections.data(), sections.size());
+					&ds, static_strings, sections.data(), sections.size());
 		} catch (std::exception&) {
 			if (!editing) {
 				for (auto* parser : parsers) {
@@ -590,13 +592,15 @@ static void Read_text_data_file(
 	patch_strings.resize(sections.size());
 	snprintf(buf, sizeof(buf), "<PATCH>/%s.txt", fname);
 	if (U7exists(buf)) {
-		auto pIn = U7open_in(buf, false);
-		if (!pIn) {
+		IFileDataSource ds(buf, false);
+		if (!ds.good()) {
+			for (auto* parser : parsers) {
+				delete parser;
+			}
 			throw file_open_exception(buf);
 		}
-		auto& in      = *pIn;
 		patch_version = Read_text_msg_file_sections(
-				in, patch_strings, sections.data(), sections.size());
+				&ds, patch_strings, sections.data(), sections.size());
 	}
 	for (size_t i = 0; i < sections.size(); i++) {
 		parsers[i]->parse(static_strings[i], static_version, false, game);
@@ -740,7 +744,7 @@ inline void WriteIndex(std::ostream& out, int index) {
 /*
  *  Data checker and writer functors.
  */
-template <int flag, typename T, class Info, T Info::*data>
+template <int flag, typename T, class Info, T Info::* data>
 class Text_writer_functor {
 	Flag_check_functor<flag, Info> check;
 
@@ -757,7 +761,7 @@ public:
 	}
 };
 
-template <int flag, typename T, class Info, T Info::*data1, T Info::*data2>
+template <int flag, typename T, class Info, T Info::* data1, T Info::* data2>
 class Text_pair_writer_functor {
 	Flag_check_functor<flag, Info> check;
 
@@ -775,7 +779,7 @@ public:
 	}
 };
 
-template <int flag, typename T, class Info, T Info::*data, int bit>
+template <int flag, typename T, class Info, T Info::* data, int bit>
 class Bit_text_writer_functor {
 	Flag_check_functor<flag, Info> check;
 
@@ -793,7 +797,7 @@ public:
 	}
 };
 
-template <int flag, typename T, class Info, T Info::*data>
+template <int flag, typename T, class Info, T Info::* data>
 class Bit_field_text_writer_functor {
 	Flag_check_functor<flag, Info> check;
 
@@ -819,7 +823,7 @@ public:
 	}
 };
 
-template <int flag, typename T, class Info, T Info::*data, int pad>
+template <int flag, typename T, class Info, T Info::* data, int pad>
 class Binary_writer_functor {
 	Flag_check_functor<flag, Info> check;
 
@@ -839,8 +843,8 @@ public:
 };
 
 template <
-		int flag, typename T1, typename T2, class Info, T1 Info::*data1,
-		T2 Info::*data2, int pad>
+		int flag, typename T1, typename T2, class Info, T1 Info::* data1,
+		T2 Info::* data2, int pad>
 class Binary_pair_writer_functor {
 	Flag_check_functor<flag, Info> check;
 
@@ -858,7 +862,7 @@ public:
 	}
 };
 
-template <typename T, class Info, T* Info::*data>
+template <typename T, class Info, T* Info::* data>
 class Class_writer_functor {
 public:
 	void operator()(std::ostream& out, int index, Exult_Game game, Info& info) {
@@ -894,7 +898,7 @@ public:
 	}
 };
 
-template <typename T, class Info, std::vector<T> Info::*data>
+template <typename T, class Info, std::vector<T> Info::* data>
 class Vector_writer_functor {
 	bool need_write(T& inf) const {
 		return inf.need_write() || (inf.is_invalid() && inf.have_static());

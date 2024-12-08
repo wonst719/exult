@@ -27,6 +27,7 @@
 #endif
 
 #include "Flex.h"
+#include "databuf.h"
 #include "exceptions.h"
 #include "msgfile.h"
 
@@ -138,29 +139,26 @@ int main(int argc, char** argv) {
 		Usage();    // (Exits.)
 	}
 	char*          flexname = argv[2];
-	vector<string> strings;                       // Text stored here.
-	switch (argv[1][1]) {                         // Which function?
-	case 'c':                                     // Create Flex.
-		if (argc >= 4) {                          // Text filename given?
-			std::unique_ptr<std::istream> pIn;    // Open as text.
-			try {
-				pIn = U7open_in(argv[3], true);
-			} catch (exult_exception& e) {
-				cerr << e.what() << endl;
-				exit(1);
-			}
-			if (!pIn) {
+	vector<string> strings;    // Text stored here.
+	switch (argv[1][1]) {      // Which function?
+	case 'c':                  // Create Flex.
+		if (argc >= 4) {       // Text filename given?
+			// Open as text.
+			IFileDataSource fin(argv[3], true);
+			if (!fin.good()) {
 				cerr << "Failed to open " << argv[3] << endl;
 				exit(1);
 			}
-			auto& in = *pIn;
-			if (Read_text_msg_file(in, strings) == -1) {
+			if (Read_text_msg_file(&fin, strings) == -1) {
 				exit(1);
 			}
-		} else    // Default to stdin.
-			if (Read_text_msg_file(cin, strings) == -1) {
+		} else {
+			// Default to stdin.
+			IStreamDataSource fin(&cin);
+			if (Read_text_msg_file(&fin, strings) == -1) {
 				exit(1);
 			}
+		}
 		try {
 			Write_flex(flexname, "Flex created by Exult", strings);
 		} catch (exult_exception& e) {

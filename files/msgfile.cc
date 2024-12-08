@@ -22,6 +22,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "msgfile.h"
+
 #include "databuf.h"
 #include "ios_state.hpp"
 
@@ -164,17 +166,6 @@ bool Search_text_msg_section(IDataSource* in, const char* section) {
 	return false;
 }
 
-int Read_text_msg_file(
-		istream&        in,
-		vector<string>& strings,    // Strings returned here, each
-		//   allocated on heap.
-		const char* section    // Section name, or nullptr.  If given
-							   //   the section must be next infile.
-) {
-	IStreamDataSource ds(&in);
-	return Read_text_msg_file(&ds, strings, section);
-}
-
 int Read_text_msg_file_sections(
 		IDataSource*            in,
 		vector<vector<string>>& strings,       // Strings returned here
@@ -201,15 +192,6 @@ int Read_text_msg_file_sections(
 	}
 
 	return version;
-}
-
-int Read_text_msg_file_sections(
-		istream&                in,
-		vector<vector<string>>& strings,       // Strings returned here
-		const char*             sections[],    // Section names
-		int                     numsections) {
-	IStreamDataSource ds(&in);
-	return Read_text_msg_file_sections(&ds, strings, sections, numsections);
 }
 
 /*
