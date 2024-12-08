@@ -31,27 +31,27 @@
 #endif
 
 #if defined(__cpp_lib_endian) && __cpp_lib_endian >= 201907L
-namespace { namespace detail {
+namespace internal { namespace detail {
 	using std::endian;
-}}    // namespace ::detail
+}}    // namespace internal::detail
 #elif defined(__GNUG__)
 // Both libstdc++ and libc++ essentially do this.
-namespace { namespace detail {
+namespace internal { namespace detail {
 	enum class endian {
 		big    = __ORDER_BIG_ENDIAN__,
 		little = __ORDER_LITTLE_ENDIAN__,
 		native = __BYTE_ORDER__,
 	};
-}}    // namespace ::detail
+}}    // namespace internal::detail
 #elif defined(_MSC_VER)
 // MS-STL does essentially this.
-namespace { namespace detail {
+namespace internal { namespace detail {
 	enum class endian {
 		little = 1234,
 		big    = 4321,
 		native = little
 	};
-}}    // namespace ::detail
+}}    // namespace internal::detail
 #endif
 
 #ifdef __clang__
@@ -108,407 +108,398 @@ namespace { namespace detail {
 #	endif
 #endif
 
-namespace {    // anonymous
+namespace internal { namespace detail {
+	// is_detected and related (ported from Library Fundamentals v2).
+	namespace inner {
+		template <
+				typename Default, typename AlwaysVoid,
+				template <typename...> class Op, typename... Args>
+		struct detector {
+			using value_t = std::false_type;
+			using type    = Default;
+		};
 
-	namespace detail {
-		// is_detected and related (ported from Library Fundamentals v2).
-		namespace inner {
-			template <
-					typename Default, typename AlwaysVoid,
-					template <typename...> class Op, typename... Args>
-			struct detector {
-				using value_t = std::false_type;
-				using type    = Default;
-			};
+		template <
+				typename Default, template <typename...> class Op,
+				typename... Args>
+		struct detector<Default, std::void_t<Op<Args...>>, Op, Args...> {
+			using value_t = std::true_type;
+			using type    = Op<Args...>;
+		};
 
-			template <
-					typename Default, template <typename...> class Op,
-					typename... Args>
-			struct detector<Default, std::void_t<Op<Args...>>, Op, Args...> {
-				using value_t = std::true_type;
-				using type    = Op<Args...>;
-			};
+		struct nonesuch final {
+			nonesuch(const nonesuch&)                    = delete;
+			nonesuch(nonesuch&&)                         = delete;
+			nonesuch()                                   = delete;
+			~nonesuch()                                  = delete;
+			auto operator=(const nonesuch&) -> nonesuch& = delete;
+			auto operator=(nonesuch&&) -> nonesuch&      = delete;
+		};
+	}    // namespace inner
 
-			struct nonesuch final {
-				nonesuch(const nonesuch&)                    = delete;
-				nonesuch(nonesuch&&)                         = delete;
-				nonesuch()                                   = delete;
-				~nonesuch()                                  = delete;
-				auto operator=(const nonesuch&) -> nonesuch& = delete;
-				auto operator=(nonesuch&&) -> nonesuch&      = delete;
-			};
-		}    // namespace inner
+	template <template <typename...> class Op, typename... Args>
+	using is_detected = typename inner::detector<
+			inner::nonesuch, void, Op, Args...>::value_t;
 
-		template <template <typename...> class Op, typename... Args>
-		using is_detected = typename inner::detector<
-				inner::nonesuch, void, Op, Args...>::value_t;
+	template <template <typename...> class Op, typename... Args>
+	constexpr bool is_detected_v = is_detected<Op, Args...>::value;
 
-		template <template <typename...> class Op, typename... Args>
-		constexpr bool is_detected_v = is_detected<Op, Args...>::value;
+	template <template <typename...> class Op, typename... Args>
+	constexpr bool exists = is_detected_v<Op, Args...>;
 
-		template <template <typename...> class Op, typename... Args>
-		constexpr bool exists = is_detected_v<Op, Args...>;
-
-		namespace functions {
-			template <typename T>
-			using read = decltype(std::declval<T>().read(
-					std::declval<char*>(), std::declval<std::streamsize>()));
-
-			template <typename T>
-			using write = decltype(std::declval<T>().write(
-					std::declval<const char*>(),
-					std::declval<std::streamsize>()));
-		}    // namespace functions
-
-		// Robust SFINAE idiom by Jonathan Boccara
-		// https://www.fluentcpp.com/2019/08/23/how-to-make-sfinae-pretty-and-robust/
+	namespace functions {
 		template <typename T>
-		using has_read_function_t
-				= std::enable_if_t<exists<functions::read, T>, bool>;
+		using read = decltype(std::declval<T>().read(
+				std::declval<char*>(), std::declval<std::streamsize>()));
 
 		template <typename T>
-		using has_write_function_t
-				= std::enable_if_t<exists<functions::write, T>, bool>;
+		using write = decltype(std::declval<T>().write(
+				std::declval<const char*>(), std::declval<std::streamsize>()));
+	}    // namespace functions
 
-		template <typename T>
-		using is_an_integer_t = std::enable_if_t<
-				std::is_integral_v<T> && !std::is_same_v<T, bool>, bool>;
+	// Robust SFINAE idiom by Jonathan Boccara
+	// https://www.fluentcpp.com/2019/08/23/how-to-make-sfinae-pretty-and-robust/
+	template <typename T>
+	using has_read_function_t
+			= std::enable_if_t<exists<functions::read, T>, bool>;
 
-		template <typename T>
-		struct is_byte_type_impl : std::integral_constant<bool, false> {};
+	template <typename T>
+	using has_write_function_t
+			= std::enable_if_t<exists<functions::write, T>, bool>;
 
-		template <>
-		struct is_byte_type_impl<char> : std::integral_constant<bool, true> {};
+	template <typename T>
+	using is_an_integer_t = std::enable_if_t<
+			std::is_integral_v<T> && !std::is_same_v<T, bool>, bool>;
 
-		template <>
-		struct is_byte_type_impl<unsigned char>
-				: std::integral_constant<bool, true> {};
+	template <typename T>
+	struct is_byte_type_impl : std::integral_constant<bool, false> {};
 
-		template <>
-		struct is_byte_type_impl<std::byte>
-				: std::integral_constant<bool, true> {};
+	template <>
+	struct is_byte_type_impl<char> : std::integral_constant<bool, true> {};
 
-		template <typename T>
-		using is_byte_type_t = std::enable_if_t<
-				is_byte_type_impl<std::remove_cv_t<T>>::value, bool>;
+	template <>
+	struct is_byte_type_impl<unsigned char>
+			: std::integral_constant<bool, true> {};
 
-		// Porting is_constant_evaluated from c++20
+	template <>
+	struct is_byte_type_impl<std::byte> : std::integral_constant<bool, true> {};
+
+	template <typename T>
+	using is_byte_type_t = std::enable_if_t<
+			is_byte_type_impl<std::remove_cv_t<T>>::value, bool>;
+
+	// Porting is_constant_evaluated from c++20
 #if defined(__cpp_lib_is_constant_evaluated) \
 		&& __cpp_lib_is_constant_evaluated >= 201811L
-		[[nodiscard]] ENDIANIO_CONST_CONSTEXPR bool is_constant_evaluated() noexcept {
-			return std::is_constant_evaluated();
-		}
+	[[nodiscard]] ENDIANIO_CONST_CONSTEXPR bool is_constant_evaluated() noexcept {
+		return std::is_constant_evaluated();
+	}
 #elif __has_builtin(__builtin_is_constant_evaluated) \
 		|| (defined(_MSC_VER) && _MSC_VER >= 1925)
-		[[nodiscard]] ENDIANIO_CONST_CONSTEXPR bool is_constant_evaluated() noexcept {
-			return __builtin_is_constant_evaluated();
-		}
+	[[nodiscard]] ENDIANIO_CONST_CONSTEXPR bool is_constant_evaluated() noexcept {
+		return __builtin_is_constant_evaluated();
+	}
 #else
-		[[nodiscard]] ENDIANIO_CONST_CONSTEXPR bool is_constant_evaluated() noexcept {
-			return false;
-		}
+	[[nodiscard]] ENDIANIO_CONST_CONSTEXPR bool is_constant_evaluated() noexcept {
+		return false;
+	}
 #endif
 
-		template <class... Ts>
-		struct overloaded : public Ts... {
-			using Ts::operator()...;
+	template <class... Ts>
+	struct overloaded : public Ts... {
+		using Ts::operator()...;
 
-			constexpr explicit overloaded(Ts... callables) : Ts(callables)... {}
-		};
-		template <class... Ts>
-		overloaded(Ts...) -> overloaded<Ts...>;
+		constexpr explicit overloaded(Ts... callables) : Ts(callables)... {}
+	};
+	template <class... Ts>
+	overloaded(Ts...) -> overloaded<Ts...>;
 
 #if defined(__cpp_lib_byteswap) && __cpp_lib_byteswap >= 202110L
-		template <
-				typename Int,
-				std::enable_if_t<std::is_integral_v<Int>, bool> = true>
-		ENDIANIO_CONST_CONSTEXPR Int byteswap(Int value) noexcept {
-			return std::byteswap(value);
-		}
+	template <
+			typename Int,
+			std::enable_if_t<std::is_integral_v<Int>, bool> = true>
+	ENDIANIO_CONST_CONSTEXPR Int byteswap(Int value) noexcept {
+		return std::byteswap(value);
+	}
 #else
-		template <
-				typename UInt,
-				std::enable_if_t<std::is_unsigned_v<UInt>, bool> = true>
-		ENDIANIO_CONST_CONSTEXPR UInt byteswap_impl(UInt value) noexcept {
-			if constexpr (sizeof(UInt) == 1) {
-				return value;
-			}
+	template <
+			typename UInt,
+			std::enable_if_t<std::is_unsigned_v<UInt>, bool> = true>
+	ENDIANIO_CONST_CONSTEXPR UInt byteswap_impl(UInt value) noexcept {
+		if constexpr (sizeof(UInt) == 1) {
+			return value;
+		}
 #	if defined(__GNUG__) || defined(_MSC_VER)
-			if (!is_constant_evaluated()) {
-				constexpr const auto builtin_byteswap = overloaded(
+		if (!is_constant_evaluated()) {
+			constexpr const auto builtin_byteswap = overloaded(
 #		ifdef __GNUG__
-						[](const uint16_t val) {
-							return __builtin_bswap16(val);
-						},
-						[](const uint32_t val) {
-							return __builtin_bswap32(val);
-						},
-						[](const uint64_t val) {
-							return __builtin_bswap64(val);
-						}
+					[](const uint16_t val) {
+						return __builtin_bswap16(val);
+					},
+					[](const uint32_t val) {
+						return __builtin_bswap32(val);
+					},
+					[](const uint64_t val) {
+						return __builtin_bswap64(val);
+					}
 #		elif defined(_MSC_VER)
-						[](const uint16_t val) {
-							return _byteswap_ushort(val);
-						},
-						[](const uint32_t val) {
-							return _byteswap_ulong(val);
-						},
-						[](const uint64_t val) {
-							return _byteswap_uint64(val);
-						}
+					[](const uint16_t val) {
+						return _byteswap_ushort(val);
+					},
+					[](const uint32_t val) {
+						return _byteswap_ulong(val);
+					},
+					[](const uint64_t val) {
+						return _byteswap_uint64(val);
+					}
 #		endif
-				);
-				if constexpr (
-						sizeof(UInt) == 2 || sizeof(UInt) == 4
-						|| sizeof(UInt) == 8) {
-					return builtin_byteswap(value);
-				}
-				if constexpr (sizeof(UInt) == 16) {
-#		if __has_builtin(__builtin_bswap128)
-					return __builtin_bswap128(value);
-#		else
-					return (builtin_byteswap(static_cast<uint64_t>(value >> 64))
-							| (static_cast<UInt>(builtin_byteswap(
-									   static_cast<uint64_t>(value)))
-							   << 64));
-#		endif
-				}
+			);
+			if constexpr (
+					sizeof(UInt) == 2 || sizeof(UInt) == 4
+					|| sizeof(UInt) == 8) {
+				return builtin_byteswap(value);
 			}
+			if constexpr (sizeof(UInt) == 16) {
+#		if __has_builtin(__builtin_bswap128)
+				return __builtin_bswap128(value);
+#		else
+				return (builtin_byteswap(static_cast<uint64_t>(value >> 64))
+						| (static_cast<UInt>(builtin_byteswap(
+								   static_cast<uint64_t>(value)))
+						   << 64));
+#		endif
+			}
+		}
 #	endif
 
-			// Fallback implementation from libstdc++.
-			size_t diff  = CHAR_BIT * (sizeof(UInt) - 1);
-			UInt   mask1 = std::numeric_limits<unsigned char>::max();
-			UInt   mask2 = mask1 << diff;
-			UInt   val   = value;
-			for (size_t i = 0; i < sizeof(UInt) / 2; ++i) {
-				UInt byte1 = val & mask1;
-				UInt byte2 = val & mask2;
-				val = (val ^ byte1 ^ byte2 ^ (byte1 << diff) ^ (byte2 >> diff));
-				mask1 <<= CHAR_BIT;
-				mask2 >>= CHAR_BIT;
-				diff -= size_t{2} * CHAR_BIT;
+		// Fallback implementation from libstdc++.
+		size_t diff  = CHAR_BIT * (sizeof(UInt) - 1);
+		UInt   mask1 = std::numeric_limits<unsigned char>::max();
+		UInt   mask2 = mask1 << diff;
+		UInt   val   = value;
+		for (size_t i = 0; i < sizeof(UInt) / 2; ++i) {
+			UInt byte1 = val & mask1;
+			UInt byte2 = val & mask2;
+			val = (val ^ byte1 ^ byte2 ^ (byte1 << diff) ^ (byte2 >> diff));
+			mask1 <<= CHAR_BIT;
+			mask2 >>= CHAR_BIT;
+			diff -= size_t{2} * CHAR_BIT;
+		}
+		return val;
+	}
+
+	template <
+			typename Int,
+			std::enable_if_t<std::is_integral_v<Int>, bool> = true>
+	ENDIANIO_CONST_CONSTEXPR Int byteswap(Int value) noexcept {
+		using UInt = std::make_unsigned_t<std::remove_cv_t<Int>>;
+		if constexpr (std::is_same_v<UInt, std::remove_cv_t<Int>>) {
+			return byteswap_impl(value);
+		}
+		return static_cast<Int>(byteswap_impl(static_cast<UInt>(value)));
+	}
+
+#endif
+
+	struct EndianBaseImpl {
+		template <
+				endian FromEndian, typename Int, typename Byte,
+				is_an_integer_t<Int> = true, is_byte_type_t<Byte> = true>
+		ENDIANIO_CONSTEXPR static Int Read(Byte*&& source) {
+			Int val;
+			std::memcpy(&val, std::move(source), sizeof(Int));
+			if constexpr (FromEndian != endian::native) {
+				val = byteswap(val);
 			}
 			return val;
 		}
 
 		template <
-				typename Int,
-				std::enable_if_t<std::is_integral_v<Int>, bool> = true>
-		ENDIANIO_CONST_CONSTEXPR Int byteswap(Int value) noexcept {
-			using UInt = std::make_unsigned_t<std::remove_cv_t<Int>>;
-			if constexpr (std::is_same_v<UInt, std::remove_cv_t<Int>>) {
-				return byteswap_impl(value);
+				endian FromEndian, typename Int, typename Byte,
+				is_an_integer_t<Int> = true, is_byte_type_t<Byte> = true>
+		ENDIANIO_CONSTEXPR static Int Read(Byte*& source) {
+			Int val;
+			std::memcpy(&val, source, sizeof(Int));
+			std::advance(source, sizeof(Int));
+			if constexpr (FromEndian != endian::native) {
+				val = byteswap(val);
 			}
-			return static_cast<Int>(byteswap_impl(static_cast<UInt>(value)));
+			return val;
 		}
 
-#endif
+		template <
+				endian FromEndian, typename Int, typename Stream,
+				has_read_function_t<Stream> = true>
+		ENDIANIO_INLINE static auto Read(Stream& in) {
+			using UC = typename Stream::char_type;
+			alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
+			in.read(buffer.data(), sizeof(Int));
+			return Read<FromEndian, Int>(buffer.data());
+		}
 
-		struct EndianBaseImpl {
-			template <
-					endian FromEndian, typename Int, typename Byte,
-					is_an_integer_t<Int> = true, is_byte_type_t<Byte> = true>
-			ENDIANIO_CONSTEXPR static Int Read(Byte*&& source) {
-				Int val;
-				std::memcpy(&val, std::move(source), sizeof(Int));
-				if constexpr (FromEndian != endian::native) {
-					val = byteswap(val);
-				}
-				return val;
+		template <
+				endian FromEndian, typename Int, typename Stream,
+				has_read_function_t<Stream> = true>
+		ENDIANIO_INLINE static auto Read(Stream* in) {
+			using UC = typename Stream::char_type;
+			alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
+			in->read(buffer.data(), sizeof(Int));
+			return Read<FromEndian, Int>(buffer.data());
+		}
+
+		template <
+				endian ToEndian, typename Int, typename Byte,
+				is_an_integer_t<Int> = true, is_byte_type_t<Byte> = true>
+		ENDIANIO_CONSTEXPR static void Write(Byte*&& dest, Int val) {
+			if constexpr (ToEndian != endian::native) {
+				val = byteswap(val);
 			}
+			std::memcpy(std::move(dest), &val, sizeof(Int));
+		}
 
-			template <
-					endian FromEndian, typename Int, typename Byte,
-					is_an_integer_t<Int> = true, is_byte_type_t<Byte> = true>
-			ENDIANIO_CONSTEXPR static Int Read(Byte*& source) {
-				Int val;
-				std::memcpy(&val, source, sizeof(Int));
-				std::advance(source, sizeof(Int));
-				if constexpr (FromEndian != endian::native) {
-					val = byteswap(val);
-				}
-				return val;
+		template <
+				endian ToEndian, typename Int, typename Byte,
+				is_an_integer_t<Int> = true, is_byte_type_t<Byte> = true>
+		ENDIANIO_CONSTEXPR static void Write(Byte*& dest, Int val) {
+			if constexpr (ToEndian != endian::native) {
+				val = byteswap(val);
 			}
+			std::memcpy(dest, &val, sizeof(Int));
+			std::advance(dest, sizeof(Int));
+		}
 
-			template <
-					endian FromEndian, typename Int, typename Stream,
-					has_read_function_t<Stream> = true>
-			ENDIANIO_INLINE static auto Read(Stream& in) {
-				using UC = typename Stream::char_type;
-				alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
-				in.read(buffer.data(), sizeof(Int));
-				return Read<FromEndian, Int>(buffer.data());
-			}
+		template <
+				endian ToEndian, typename Int, typename Stream,
+				has_write_function_t<Stream> = true>
+		ENDIANIO_INLINE static auto Write(Stream& out, Int val) {
+			using UC = typename Stream::char_type;
+			alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
+			Write<ToEndian>(buffer.data(), val);
+			out.write(buffer.data(), sizeof(Int));
+		}
 
-			template <
-					endian FromEndian, typename Int, typename Stream,
-					has_read_function_t<Stream> = true>
-			ENDIANIO_INLINE static auto Read(Stream* in) {
-				using UC = typename Stream::char_type;
-				alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
-				in->read(buffer.data(), sizeof(Int));
-				return Read<FromEndian, Int>(buffer.data());
-			}
+		template <
+				endian ToEndian, typename Int, typename Stream,
+				has_write_function_t<Stream> = true>
+		ENDIANIO_INLINE static auto Write(Stream* out, Int val) {
+			using UC = typename Stream::char_type;
+			alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
+			Write<ToEndian>(buffer.data(), val);
+			out->write(buffer.data(), sizeof(Int));
+		}
+	};
 
-			template <
-					endian ToEndian, typename Int, typename Byte,
-					is_an_integer_t<Int> = true, is_byte_type_t<Byte> = true>
-			ENDIANIO_CONSTEXPR static void Write(Byte*&& dest, Int val) {
-				if constexpr (ToEndian != endian::native) {
-					val = byteswap(val);
-				}
-				std::memcpy(std::move(dest), &val, sizeof(Int));
-			}
+	template <endian type>
+	struct endian_base {
+		template <typename Src>
+		ENDIANIO_CONSTEXPR static auto Read2(Src&& in) {
+			return EndianBaseImpl::Read<type, uint16_t>(std::forward<Src>(in));
+		}
 
-			template <
-					endian ToEndian, typename Int, typename Byte,
-					is_an_integer_t<Int> = true, is_byte_type_t<Byte> = true>
-			ENDIANIO_CONSTEXPR static void Write(Byte*& dest, Int val) {
-				if constexpr (ToEndian != endian::native) {
-					val = byteswap(val);
-				}
-				std::memcpy(dest, &val, sizeof(Int));
-				std::advance(dest, sizeof(Int));
-			}
+		template <typename Src>
+		ENDIANIO_CONSTEXPR static auto Read2s(Src&& in) {
+			return EndianBaseImpl::Read<type, int16_t>(std::forward<Src>(in));
+		}
 
-			template <
-					endian ToEndian, typename Int, typename Stream,
-					has_write_function_t<Stream> = true>
-			ENDIANIO_INLINE static auto Write(Stream& out, Int val) {
-				using UC = typename Stream::char_type;
-				alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
-				Write<ToEndian>(buffer.data(), val);
-				out.write(buffer.data(), sizeof(Int));
-			}
+		template <typename Src>
+		ENDIANIO_CONSTEXPR static auto Read4(Src&& in) {
+			return EndianBaseImpl::Read<type, uint32_t>(std::forward<Src>(in));
+		}
 
-			template <
-					endian ToEndian, typename Int, typename Stream,
-					has_write_function_t<Stream> = true>
-			ENDIANIO_INLINE static auto Write(Stream* out, Int val) {
-				using UC = typename Stream::char_type;
-				alignas(alignof(Int)) std::array<UC, sizeof(Int)> buffer;
-				Write<ToEndian>(buffer.data(), val);
-				out->write(buffer.data(), sizeof(Int));
-			}
-		};
+		template <typename Src>
+		ENDIANIO_CONSTEXPR static auto Read4s(Src&& in) {
+			return EndianBaseImpl::Read<type, int32_t>(std::forward<Src>(in));
+		}
 
-		template <endian type>
-		struct endian_base {
-			template <typename Src>
-			ENDIANIO_CONSTEXPR static auto Read2(Src&& in) {
-				return EndianBaseImpl::Read<type, uint16_t>(
-						std::forward<Src>(in));
-			}
+		template <typename Src>
+		ENDIANIO_CONSTEXPR static auto Read8(Src&& in) {
+			return EndianBaseImpl::Read<type, uint64_t>(std::forward<Src>(in));
+		}
 
-			template <typename Src>
-			ENDIANIO_CONSTEXPR static auto Read2s(Src&& in) {
-				return EndianBaseImpl::Read<type, int16_t>(
-						std::forward<Src>(in));
-			}
+		template <typename Src>
+		ENDIANIO_CONSTEXPR static auto Read8s(Src&& in) {
+			return EndianBaseImpl::Read<type, int64_t>(std::forward<Src>(in));
+		}
 
-			template <typename Src>
-			ENDIANIO_CONSTEXPR static auto Read4(Src&& in) {
-				return EndianBaseImpl::Read<type, uint32_t>(
-						std::forward<Src>(in));
-			}
+		template <typename Src>
+		ENDIANIO_CONSTEXPR static auto ReadPtr(Src&& in) {
+			return EndianBaseImpl::Read<type, uintptr_t>(std::forward<Src>(in));
+		}
 
-			template <typename Src>
-			ENDIANIO_CONSTEXPR static auto Read4s(Src&& in) {
-				return EndianBaseImpl::Read<type, int32_t>(
-						std::forward<Src>(in));
-			}
+		template <typename Int, typename Src, is_an_integer_t<Int> = true>
+		ENDIANIO_CONSTEXPR static auto ReadN(Src&& in) {
+			return EndianBaseImpl::Read<type, Int>(std::forward<Src>(in));
+		}
 
-			template <typename Src>
-			ENDIANIO_CONSTEXPR static auto Read8(Src&& in) {
-				return EndianBaseImpl::Read<type, uint64_t>(
-						std::forward<Src>(in));
-			}
+		template <typename Dst>
+		ENDIANIO_CONSTEXPR static void Write2(Dst&& out, uint16_t val) {
+			EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
+		}
 
-			template <typename Src>
-			ENDIANIO_CONSTEXPR static auto Read8s(Src&& in) {
-				return EndianBaseImpl::Read<type, int64_t>(
-						std::forward<Src>(in));
-			}
+		template <typename Dst>
+		ENDIANIO_CONSTEXPR static void Write2s(Dst&& out, int16_t val) {
+			EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
+		}
 
-			template <typename Src>
-			ENDIANIO_CONSTEXPR static auto ReadPtr(Src&& in) {
-				return EndianBaseImpl::Read<type, uintptr_t>(
-						std::forward<Src>(in));
-			}
+		template <typename Dst>
+		ENDIANIO_CONSTEXPR static void Write4(Dst&& out, uint32_t val) {
+			EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
+		}
 
-			template <typename Int, typename Src, is_an_integer_t<Int> = true>
-			ENDIANIO_CONSTEXPR static auto ReadN(Src&& in) {
-				return EndianBaseImpl::Read<type, Int>(std::forward<Src>(in));
-			}
+		template <typename Dst>
+		ENDIANIO_CONSTEXPR static void Write4s(Dst&& out, int32_t val) {
+			EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
+		}
 
-			template <typename Dst>
-			ENDIANIO_CONSTEXPR static void Write2(Dst&& out, uint16_t val) {
-				EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
-			}
+		template <typename Dst>
+		ENDIANIO_CONSTEXPR static void Write8(Dst&& out, uint64_t val) {
+			EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
+		}
 
-			template <typename Dst>
-			ENDIANIO_CONSTEXPR static void Write2s(Dst&& out, int16_t val) {
-				EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
-			}
+		template <typename Dst>
+		ENDIANIO_CONSTEXPR static void Write8s(Dst&& out, int64_t val) {
+			EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
+		}
 
-			template <typename Dst>
-			ENDIANIO_CONSTEXPR static void Write4(Dst&& out, uint32_t val) {
-				EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
-			}
+		template <typename Dst>
+		ENDIANIO_CONSTEXPR static void WritePtr(Dst&& out, uintptr_t val) {
+			EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
+		}
 
-			template <typename Dst>
-			ENDIANIO_CONSTEXPR static void Write4s(Dst&& out, int32_t val) {
-				EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
-			}
+		template <typename Int, typename Dst, is_an_integer_t<Int> = true>
+		ENDIANIO_CONSTEXPR static auto WriteN(Dst&& out, Int val) {
+			return EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
+		}
+	};
+}}    // namespace internal::detail
 
-			template <typename Dst>
-			ENDIANIO_CONSTEXPR static void Write8(Dst&& out, uint64_t val) {
-				EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
-			}
-
-			template <typename Dst>
-			ENDIANIO_CONSTEXPR static void Write8s(Dst&& out, int64_t val) {
-				EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
-			}
-
-			template <typename Dst>
-			ENDIANIO_CONSTEXPR static void WritePtr(Dst&& out, uintptr_t val) {
-				EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
-			}
-
-			template <typename Int, typename Dst, is_an_integer_t<Int> = true>
-			ENDIANIO_CONSTEXPR static auto WriteN(Dst&& out, Int val) {
-				return EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
-			}
-		};
-}}    // namespace ::detail
-
-using big_endian    = detail::endian_base<detail::endian::big>;
-using little_endian = detail::endian_base<detail::endian::little>;
-using native_endian = detail::endian_base<detail::endian::native>;
+using big_endian = internal::detail::endian_base<internal::detail::endian::big>;
+using little_endian
+		= internal::detail::endian_base<internal::detail::endian::little>;
+using native_endian
+		= internal::detail::endian_base<internal::detail::endian::native>;
 
 template <typename Src>
 ENDIANIO_CONSTEXPR static auto Read1(Src&& in) {
-	return detail::EndianBaseImpl::Read<detail::endian::native, uint8_t>(
-			std::forward<Src>(in));
+	return internal::detail::EndianBaseImpl::Read<
+			internal::detail::endian::native, uint8_t>(std::forward<Src>(in));
 }
 
 template <typename Src>
 ENDIANIO_CONSTEXPR static auto Read1s(Src&& in) {
-	return detail::EndianBaseImpl::Read<detail::endian::native, int8_t>(
-			std::forward<Src>(in));
+	return internal::detail::EndianBaseImpl::Read<
+			internal::detail::endian::native, int8_t>(std::forward<Src>(in));
 }
 
 template <typename Dst>
 ENDIANIO_CONSTEXPR static void Write1(Dst&& out, uint8_t val) {
-	detail::EndianBaseImpl::Write<detail::endian::native>(
+	internal::detail::EndianBaseImpl::Write<internal::detail::endian::native>(
 			std::forward<Dst>(out), val);
 }
 
 template <typename Dst>
 ENDIANIO_CONSTEXPR static void Write1s(Dst&& out, int8_t val) {
-	detail::EndianBaseImpl::Write<detail::endian::native>(
+	internal::detail::EndianBaseImpl::Write<internal::detail::endian::native>(
 			std::forward<Dst>(out), val);
 }
 

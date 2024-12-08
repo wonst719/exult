@@ -27,10 +27,14 @@
 #include "databuf.h"
 #include "ios_state.hpp"
 
+#include <algorithm>
+#include <charconv>
 #include <cstdlib>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 using std::cerr;
@@ -41,6 +45,17 @@ using std::ostream;
 using std::string;
 using std::stringstream;
 using std::vector;
+
+Text_msg_file_reader::Text_msg_file_reader() : global_first(0) {}
+
+Text_msg_file_reader::Text_msg_file_reader(IDataSource& in) : global_first(0) {
+	in.read(contents, in.getAvail());
+	if (!parse_contents()) {
+		cerr << "Error parsing text message file" << endl;
+		global_section.clear();
+		items.clear();
+	}
+}
 
 /*
  *  Read in text, where each line is of the form "nnn:sssss", where nnn is
@@ -54,50 +69,107 @@ using std::vector;
  *          %%section shapes
  *              ....
  *          %%endsection
- *  Output: # of first message (i.e., lowest-numbered msg), or -1 if
- *      error.
+ *  Output: true if successful, false if not.
  */
 
-int Read_text_msg_file(
-		IDataSource* in, vector<string>& strings, const char* section) {
-	strings.resize(0);    // Initialize.
-	strings.reserve(1000);
-	int linenum = 0;
-#define NONEFOUND 0xffffffff
-	unsigned long       first      = NONEFOUND;    // Index of first one found.
-	long                next_index = 0;            // For auto-indexing of lines
-	static const string sectionStart("%%section");
-	static const string sectionEnd("%%endsection");
-	while (!in->eof()) {
+bool Text_msg_file_reader::parse_contents() {
+	constexpr static const auto NONEFOUND = std::numeric_limits<uint32>::max();
+	constexpr static const std::string_view sectionStart("%%section");
+	constexpr static const std::string_view sectionEnd("%%endsection");
+
+	Section_data* current_section = &global_section;
+	uint32*       current_first   = &global_first;
+	*current_first                = NONEFOUND;
+
+	current_section->reserve(1000);
+
+	int    linenum    = 0;
+	uint32 next_index = 0;    // For auto-indexing of lines
+
+	enum class State : uint8 {
+		None,
+		InSection
+	};
+	std::string_view data(contents);
+	State            state = State::None;
+	while (!data.empty()) {
 		++linenum;
-		std::string line;
-		in->readline(line);
+		const auto lineEnd = data.find_first_of("\r\n");
+		auto       line    = data.substr(0, lineEnd);
+		// Skip data up to the start of the next line.
+		if (lineEnd == std::string_view::npos) {
+			data.remove_prefix(data.size());
+		} else {
+			data.remove_prefix(line.size());
+		}
+		const auto nextLine = data.find_first_not_of("\r\n");
+		if (nextLine != std::string_view::npos) {
+			data.remove_prefix(nextLine);
+		} else {
+			data.remove_prefix(data.size());
+		}
+		// Ignore leading whitespace.
+		auto nonWs = line.find_first_not_of(" \t\b");
+		line.remove_prefix(nonWs);
 		if (line.empty()) {
 			continue;    // Empty line.
 		}
 
-		if (section) {
-			if (line.compare(0, sectionStart.length(), sectionStart)) {
-				continue;
+		if (line.compare(0, sectionStart.length(), sectionStart) == 0) {
+			if (state == State::InSection) {
+				cerr << "Line " << linenum
+					 << " has a section starting inside another section"
+					 << endl;
 			}
-			const string sectionName(line.substr(
-					line.find_first_not_of(" \t\b", sectionStart.length())));
-			if (sectionName == section) {
-				// Found the section.
-				section = nullptr;
-				continue;
+			const auto namePos
+					= line.find_first_not_of(" \t\b", sectionStart.length());
+			line.remove_prefix(namePos);
+			auto sectionName(line);
+			if (sectionName.empty()) {
+				cerr << "Line " << linenum << " has an empty section name"
+					 << endl;
+				return false;
 			}
-			cerr << "Line #" << linenum
-				 << " has the wrong section name: " << sectionName
-				 << " != " << section << endl;
-			return -1;
-		}
-		if (!line.compare(0, sectionEnd.length(), sectionEnd)) {
-			break;
+			{
+				auto [iter, inserted] = items.try_emplace(sectionName);
+				if (!inserted) {
+					cerr << "Line " << linenum
+						 << " has a duplicate section name: " << sectionName
+						 << endl;
+					return false;
+				}
+				current_section = &iter->second;
+				current_section->reserve(1000);
+			}
+			{
+				auto [iter, inserted]
+						= firsts.try_emplace(sectionName, NONEFOUND);
+				if (!inserted) {
+					cerr << "Line " << linenum
+						 << " has a duplicate section name: " << sectionName
+						 << endl;
+					return false;
+				}
+				current_first = &iter->second;
+			}
+			state = State::InSection;
+			continue;
 		}
 
-		unsigned long index;
-		string        lineVal;
+		if (line.compare(0, sectionEnd.length(), sectionEnd) == 0) {
+			if (state != State::InSection) {
+				cerr << "Line " << linenum
+					 << " has an endsection without a section" << endl;
+			}
+			// Reset to sane defaults.
+			state           = State::None;
+			current_section = &global_section;
+			current_first   = &global_first;
+			continue;
+		}
+
+		uint32           index;
+		std::string_view lineVal;
 		if (line[0] == ':') {
 			// Auto-index lines missing an index.
 			index   = next_index++;
@@ -105,92 +177,62 @@ int Read_text_msg_file(
 		} else if (line[0] == '#') {
 			continue;
 		} else {
-			char*       endptr = &line[0];
-			const char* ptr    = endptr;
 			// Get line# in decimal, hex, or oct.
-			index = strtol(ptr, &endptr, 0);
-			if (endptr == ptr) {    // No #?
-				cerr << "Line " << linenum << " doesn't start with a number"
-					 << endl;
-				return -1;
-			}
-			if (*endptr != ':') {
+			auto colon = line.find(':');
+			if (colon == std::string_view::npos) {
 				cerr << "Missing ':' in line " << linenum << ".  Ignoring line"
 					 << endl;
 				continue;
 			}
-			lineVal = line.substr(endptr - ptr + 1);
+			int base = 10;
+			if (line.size() > 2 && line[0] == '0'
+				&& (line[1] == 'x' || line[1] == 'X')) {
+				base = 16;
+				colon -= 2;
+				line.remove_prefix(2);
+			} else if (line[0] == '0') {
+				base = 8;
+			}
+			const auto* start = line.data();
+			const auto* end   = std::next(start, colon);
+			auto [p, ec]      = std::from_chars(start, end, index, base);
+			if (ec != std::errc() || p != end) {
+				cerr << "Line " << linenum << " doesn't start with a number"
+					 << endl;
+				return false;
+			}
+			lineVal = line.substr(colon + 1);
 		}
-		if (index >= strings.size()) {
-			strings.resize(index + 1);
+		if (index >= current_section->size()) {
+			current_section->resize(index + 1);
 		}
-		strings[index] = std::move(lineVal);
-		if (index < first) {
-			first = index;
-		}
+		(*current_section)[index] = lineVal;
+		*current_first            = std::min(index, *current_first);
 	}
-	return first == NONEFOUND ? -1 : static_cast<int>(first);
+	return true;
 }
 
-/*
- *  Searches for the start of section in a text msg file.
- *  Returns true if section is found. The data source will
- *  be just before the section start.
- */
-
-bool Search_text_msg_section(IDataSource* in, const char* section) {
-	static const string sectionStart("%%section");
-	while (!in->eof()) {
-		std::string  line;
-		const size_t pos = in->getPos();
-		in->readline(line);
-		if (line.empty()) {
-			continue;    // Empty line.
-		}
-
-		if (line.compare(0, sectionStart.length(), sectionStart)) {
-			continue;
-		}
-		const string sectionName(line.substr(
-				line.find_first_not_of(" \t\b", sectionStart.length())));
-		if (sectionName == section) {
-			// Found the section.
-			// Seek to just before it.
-			in->seek(pos);
-			return true;
-		}
+[[nodiscard]] std::optional<int> Text_msg_file_reader::get_version() const {
+	constexpr static const std::string_view versionstr("version");
+	int                                     firstMsg;
+	const auto* data = get_section(versionstr, firstMsg);
+	if (data == nullptr) {
+		cerr << "No version number in text message file" << endl;
+		return std::nullopt;
 	}
-	in->clear_error();
-	in->seek(0);
-	// Section was not found.
-	return false;
-}
-
-int Read_text_msg_file_sections(
-		IDataSource*            in,
-		vector<vector<string>>& strings,       // Strings returned here
-		const char*             sections[],    // Section names
-		int                     numsections) {
-	strings.resize(numsections);
-	int version = 1;
-
-	vector<string> versioninfo;
-	// Read version.
-	const char* versionstr = "version";
-	if (Search_text_msg_section(in, versionstr)
-		&& Read_text_msg_file(in, versioninfo, versionstr) != -1) {
-		version = static_cast<int>(strtol(versioninfo[0].c_str(), nullptr, 0));
+	if (data->size() != 1) {
+		cerr << "Invalid version number in text message file" << endl;
+		return std::nullopt;
 	}
 
-	for (int i = 0; i < numsections; i++) {
-		in->clear_error();
-		in->seek(0);
-		if (!Search_text_msg_section(in, sections[i])) {
-			continue;
-		}
-		Read_text_msg_file(in, strings[i], sections[i]);
+	int         version;
+	auto        versionStr = (*data)[0];
+	const auto* start      = versionStr.data();
+	const auto* end        = std::next(start, versionStr.size());
+	if (std::from_chars(start, end, version).ec != std::errc()) {
+		cerr << "Invalid version number in text message file" << endl;
+		return std::nullopt;
 	}
-
 	return version;
 }
 

@@ -21,15 +21,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifndef INCL_DATA_UTILS
-#define INCL_DATA_UTILS 1
+#define INCL_DATA_UTILS
 
 #include "U7obj.h"
 #include "databuf.h"
 #include "exceptions.h"
 #include "exult_constants.h"
 #include "fnames.h"
+#include "headers/polymorphic_value.h"
 #include "ignore_unused_variable_warning.h"
 #include "msgfile.h"
+#include "span.h"
 
 #include <algorithm>
 #include <iterator>
@@ -105,7 +107,7 @@ void clean_vector(std::vector<T>& vec) {
 }
 
 template <class T, typename U>
-static const T* Search_vector_data_single_wildcard(
+inline const T* Search_vector_data_single_wildcard(
 		const std::vector<T>& vec, int src, U T::* dat) {
 	if (vec.empty()) {    // Not found.
 		return nullptr;
@@ -131,7 +133,7 @@ static const T* Search_vector_data_single_wildcard(
 }
 
 template <class T>
-static const T* Search_vector_data_double_wildcards(
+inline const T* Search_vector_data_double_wildcards(
 		const std::vector<T>& vec, int frame, int quality, short T::* fr,
 		short T::* qual) {
 	if (vec.empty()) {
@@ -542,71 +544,14 @@ public:
  *  Reads text data file and parses it according to passed
  *  parser functions.
  */
-template <class Parser>
-static void Read_text_data_file(
-		const char*           fname,    // Name of file to read, sans extension
-		std::vector<Parser*>& parsers,         // What to use to parse data.
-		std::vector<const char*>& sections,    // The names of the sections
-		bool editing, Exult_Game game, int resource) {
-	std::vector<std::vector<std::string>> static_strings;
-	std::vector<std::vector<std::string>> patch_strings;
-
-	int  static_version = 1;
-	int  patch_version  = 1;
-	char buf[50];
-	if (game == BLACK_GATE || game == SERPENT_ISLE) {
-		/*  ++++ Not because of ES.
-		snprintf(buf, sizeof(buf), "config/%s", fname);
-		str_int_pair resource = game->get_resource(buf);
-		U7object txtobj(resource.str, resource.num);
-		*/
-		const bool  bg = game == BLACK_GATE;
-		const char* flexfile
-				= bg ? BUNDLE_CHECK(BUNDLE_EXULT_BG_FLX, EXULT_BG_FLX)
-					 : BUNDLE_CHECK(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX);
-		IExultDataSource ds(flexfile, resource);
-		static_version = Read_text_msg_file_sections(
-				&ds, static_strings, sections.data(), sections.size());
-	} else {
-		try {
-			snprintf(buf, sizeof(buf), "<STATIC>/%s.txt", fname);
-			IFileDataSource ds(buf, false);
-			if (!ds.good()) {
-				for (auto* parser : parsers) {
-					delete parser;
-				}
-				throw file_open_exception(buf);
-			}
-			static_version = Read_text_msg_file_sections(
-					&ds, static_strings, sections.data(), sections.size());
-		} catch (std::exception&) {
-			if (!editing) {
-				for (auto* parser : parsers) {
-					delete parser;
-				}
-				throw;
-			}
-			static_strings.resize(sections.size());
-		}
-	}
-	patch_strings.resize(sections.size());
-	snprintf(buf, sizeof(buf), "<PATCH>/%s.txt", fname);
-	if (U7exists(buf)) {
-		IFileDataSource ds(buf, false);
-		if (!ds.good()) {
-			for (auto* parser : parsers) {
-				delete parser;
-			}
-			throw file_open_exception(buf);
-		}
-		patch_version = Read_text_msg_file_sections(
-				&ds, patch_strings, sections.data(), sections.size());
-	}
-	for (size_t i = 0; i < sections.size(); i++) {
-		parsers[i]->parse(static_strings[i], static_version, false, game);
-		parsers[i]->parse(patch_strings[i], patch_version, true, game);
-	}
-}
+void Read_text_data_file(
+		// Name of file to read, sans extension
+		const char* fname,
+		// What to use to parse data.
+		const tcb::span<polymorphic_value<Base_reader>>& parsers,
+		// The names of the sections
+		const tcb::span<std::string_view>& sections, bool editing,
+		Exult_Game game, int resource);
 
 /*
  *  Generic base data-agnostic writer class.
@@ -931,34 +876,10 @@ public:
 /*
  *  Writes text data file according to passed writer functions.
  */
-template <class Writer>
-static void Write_text_data_file(
-		const char*           fname,    // Name of file to read, sans extension
-		std::vector<Writer*>& writers,    // What to use to write data.
-		int version, Exult_Game game) {
-	size_t cnt = 0;
-	for (auto* writer : writers) {
-		cnt += writer->check();
-	}
-	if (!cnt) {
-		// Nothing to do.
-		return;
-	}
-	char buf[50];
-	snprintf(buf, sizeof(buf), "<PATCH>/%s.txt", fname);
-	auto pOut = U7open_out(buf, true);    // (It's a text file.)
-	if (!pOut) {
-		return;
-	}
-	auto& out = *pOut;
-	out << "#\tExult " << VERSION << " text message file."
-		<< "\tWritten by ExultStudio." << std::endl;
-	out << "%%section version" << std::endl
-		<< ":" << version << std::endl
-		<< "%%endsection" << std::endl;
-	for (auto* writer : writers) {
-		writer->write_text(out, game);
-	}
-}
+void Write_text_data_file(
+		const char* fname,    // Name of file to read, sans extension
+		const tcb::span<polymorphic_value<Base_writer>>&
+				writers,    // What to use to write data.
+		int version, Exult_Game game);
 
 #endif

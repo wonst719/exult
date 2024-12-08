@@ -35,6 +35,7 @@
 #include "ucmachine.h"
 #include "utils.h"
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -51,6 +52,7 @@ using std::stringstream;
 using std::vector;
 
 using namespace std;
+using namespace std::string_view_literals;
 
 struct Shapeinfo_data {
 	vector<pair<string, int>> paperdoll_source_table;
@@ -282,9 +284,8 @@ public:
 		ignore_unused_variable_warning(index);
 		Skin_data entry;
 		entry.skin_id = ReadInt(src, 0);
-		if (entry.skin_id > Avatar_data::last_skin) {
-			Avatar_data::last_skin = entry.skin_id;
-		}
+		Avatar_data::last_skin
+				= std::max(entry.skin_id, Avatar_data::last_skin);
 		entry.is_female = ReadInt(src) != 0;
 		if ((entry.shape_num = ReadVar(src)) < 0) {
 			return;
@@ -368,83 +369,66 @@ void Paperdoll_source_parser::parse_entry(
  *  Parses a shape data file.
  */
 void Shapeinfo_lookup::Read_data_file(
-		const char* fname,         // Name of file to read, sans extension
-		const char* sections[],    // The names of the sections
-		Shapeinfo_entry_parser* parsers[],    // Parsers to use for each section
-		int                     numsections    // Number of sections
-) {
-	vector<Readstrings> static_strings;
-	vector<Readstrings> patch_strings;
-	static_strings.resize(numsections);
-	int  static_version = 1;
-	int  patch_version  = 1;
-	char buf[50];
-	if (GAME_BG || GAME_SI) {
-		snprintf(buf, sizeof(buf), "config/%s", fname);
-		const str_int_pair& resource = game->get_resource(buf);
-		IExultDataSource    ds(resource.str, resource.num);
-		static_version = Read_text_msg_file_sections(
-				&ds, static_strings, sections, numsections);
-	} else {
-		try {
-			snprintf(buf, sizeof(buf), "<STATIC>/%s.txt", fname);
-			IFileDataSource ds(buf, false);
-			if (!ds.good()) {
-				for (int i = 0; i < numsections; i++) {
-					delete parsers[i];
-				}
-				throw file_open_exception(buf);
-			}
-			static_version = Read_text_msg_file_sections(
-					&ds, static_strings, sections, numsections);
-		} catch (const std::exception&) {
-			if (!Game::is_editing()) {
-				for (int i = 0; i < numsections; i++) {
-					delete parsers[i];
-				}
-				throw;
-			}
-			static_strings.resize(numsections);
+		// Name of file to read, sans extension
+		const char* fname,
+		// The names of the sections
+		const tcb::span<std::string_view>& sections,
+		// Parsers to use for each section
+		const tcb::span<polymorphic_value<Shapeinfo_entry_parser>>& parsers) {
+	auto value_or = [](std::optional<int> opt) {
+		return opt ? *opt : 1;
+	};
+	Text_msg_file_reader static_reader = [&]() {
+		if (GAME_BG || GAME_SI) {
+			std::string         file     = "config/" + std::string(fname);
+			const str_int_pair& resource = game->get_resource(file.c_str());
+			IExultDataSource    ds(resource.str, resource.num);
+			return Text_msg_file_reader(ds);
 		}
-	}
-	patch_strings.resize(numsections);
-	snprintf(buf, sizeof(buf), "<PATCH>/%s.txt", fname);
-	if (U7exists(buf)) {
-		IFileDataSource ds(buf, false);
+		std::string     file = "<STATIC>/" + std::string(fname) + ".txt";
+		IFileDataSource ds(file, false);
 		if (!ds.good()) {
-			for (int i = 0; i < numsections; i++) {
-				delete parsers[i];
+			if (!Game::is_editing()) {
+				throw file_open_exception(file);
 			}
-			throw file_open_exception(buf);
+			return Text_msg_file_reader();
 		}
-		patch_version = Read_text_msg_file_sections(
-				&ds, patch_strings, sections, numsections);
-	}
+		return Text_msg_file_reader(ds);
+	}();
+	Text_msg_file_reader patch_reader = [&]() {
+		std::string file = "<PATCH>/" + std::string(fname) + ".txt";
+		if (!U7exists(file)) {
+			return Text_msg_file_reader();
+		}
+		IFileDataSource ds(file, false);
+		if (!ds.good()) {
+			throw file_open_exception(file);
+		}
+		return Text_msg_file_reader(ds);
+	}();
 
-	for (size_t i = 0; i < static_strings.size(); i++) {
-		Readstrings& section = static_strings[i];
-		for (size_t j = 0; j < section.size(); j++) {
-			if (!section[j].empty()) {
-				stringstream src(section[j]);
+	int static_version = value_or(static_reader.get_version());
+	int patch_version  = value_or(patch_reader.get_version());
+	std::vector<std::string> strings;
+
+	for (size_t i = 0; i < sections.size(); i++) {
+		uint32 firstMsg = static_reader.get_section_strings(sections[i], strings);
+		for (size_t j = firstMsg; j < strings.size(); j++) {
+			if (!strings[j].empty()) {
+				stringstream src(strings[j]);
 				parsers[i]->parse_entry(j, src, false, static_version);
 			}
 		}
-		section.clear();
 	}
-	static_strings.clear();
-	for (size_t i = 0; i < patch_strings.size(); i++) {
-		Readstrings& section = patch_strings[i];
-		for (size_t j = 0; j < section.size(); j++) {
-			if (!section[j].empty()) {
-				stringstream src(section[j]);
+
+	for (size_t i = 0; i < sections.size(); i++) {
+		uint32 firstMsg = patch_reader.get_section_strings(sections[i], strings);
+		for (size_t j = firstMsg; j < strings.size(); j++) {
+			if (!strings[j].empty()) {
+				stringstream src(strings[j]);
 				parsers[i]->parse_entry(j, src, true, patch_version);
 			}
 		}
-		section.clear();
-	}
-	patch_strings.clear();
-	for (int i = 0; i < numsections; i++) {
-		delete parsers[i];
 	}
 }
 
@@ -455,19 +439,24 @@ void Shapeinfo_lookup::setup_shape_files() {
 	if (data != nullptr) {
 		return;
 	}
-	data             = make_unique<Shapeinfo_data>();
-	const int   size = 4;
-	const char* sections[size]
-			= {"paperdoll_source", "gump_imports", "blue_shapes",
-			   "multiracial_imports"};
-	Shapeinfo_entry_parser* parsers[size]
-			= {new Paperdoll_source_parser(data->paperdoll_source_table),
-			   new Shape_imports_parser(
-					   data->imported_gump_shapes, data->gumpvars),
-			   new Shaperef_parser(data->blue_shapes, data->gumpvars),
-			   new Shape_imports_parser(
-					   data->imported_skin_shapes, data->skinvars)};
-	Read_data_file("shape_files", sections, parsers, size);
+	data = make_unique<Shapeinfo_data>();
+	std::array sections{
+			"paperdoll_source"sv, "gump_imports"sv, "blue_shapes"sv,
+			"multiracial_imports"sv};
+	std::array parsers{
+			make_polymorphic_value<
+					Shapeinfo_entry_parser, Paperdoll_source_parser>(
+					data->paperdoll_source_table),
+			make_polymorphic_value<
+					Shapeinfo_entry_parser, Shape_imports_parser>(
+					data->imported_gump_shapes, data->gumpvars),
+			make_polymorphic_value<Shapeinfo_entry_parser, Shaperef_parser>(
+					data->blue_shapes, data->gumpvars),
+			make_polymorphic_value<
+					Shapeinfo_entry_parser, Shape_imports_parser>(
+					data->imported_skin_shapes, data->skinvars)};
+	static_assert(sections.size() == parsers.size());
+	Read_data_file("shape_files", sections, parsers);
 	// For safety.
 	if (data->paperdoll_source_table.empty()) {
 		data->paperdoll_source_table.emplace_back(PAPERDOL, -1);
@@ -484,20 +473,26 @@ void Shapeinfo_lookup::setup_avatar_data() {
 	if (avdata != nullptr) {
 		return;
 	}
-	avdata           = make_unique<Avatar_data>();
-	const int   size = 6;
-	const char* sections[size]
-			= {"defaultshape",      "baseracesex",
-			   "multiracial_table", "unselectable_races_table",
-			   "petra_face_table",  "usecode_info"};
-	Shapeinfo_entry_parser* parsers[size]
-			= {new Def_av_shape_parser(avdata->def_av_info),
-			   new Base_av_race_parser(avdata->base_av_info),
-			   new Multiracial_parser(avdata->skins_table, data->skinvars),
-			   new Bool_parser(avdata->unselectable_skins),
-			   new Int_pair_parser(avdata->petra_table),
-			   new Avatar_usecode_parser(avdata->usecode_funs)};
-	Read_data_file("avatar_data", sections, parsers, size);
+	avdata = make_unique<Avatar_data>();
+	std::array sections{"defaultshape"sv,      "baseracesex"sv,
+						"multiracial_table"sv, "unselectable_races_table"sv,
+						"petra_face_table"sv,  "usecode_info"sv};
+	std::array parsers{
+			make_polymorphic_value<Shapeinfo_entry_parser, Def_av_shape_parser>(
+					avdata->def_av_info),
+			make_polymorphic_value<Shapeinfo_entry_parser, Base_av_race_parser>(
+					avdata->base_av_info),
+			make_polymorphic_value<Shapeinfo_entry_parser, Multiracial_parser>(
+					avdata->skins_table, data->skinvars),
+			make_polymorphic_value<Shapeinfo_entry_parser, Bool_parser>(
+					avdata->unselectable_skins),
+			make_polymorphic_value<Shapeinfo_entry_parser, Int_pair_parser>(
+					avdata->petra_table),
+			make_polymorphic_value<
+					Shapeinfo_entry_parser, Avatar_usecode_parser>(
+					avdata->usecode_funs)};
+	static_assert(sections.size() == parsers.size());
+	Read_data_file("avatar_data", sections, parsers);
 }
 
 vector<pair<string, int>>* Shapeinfo_lookup::GetPaperdollSources() {

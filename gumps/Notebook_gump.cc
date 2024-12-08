@@ -839,9 +839,10 @@ void Notebook_gump::read() {
 // read in from external file
 void Notebook_gump::read_auto_text_file(const char* filename) {
 	if (gwin->get_allow_autonotes()) {
-		initialized_auto_text = true;
+		initialized_auto_text     = true;
 		IFileDataSource notesfile = [&]() -> IFileDataSource {
-			if (is_system_path_defined("<PATCH>") && U7exists(PATCH_AUTONOTES)) {
+			if (is_system_path_defined("<PATCH>")
+				&& U7exists(PATCH_AUTONOTES)) {
 				cout << "Loading patch autonotes" << endl;
 				return IFileDataSource(PATCH_AUTONOTES, true);
 			}
@@ -849,7 +850,8 @@ void Notebook_gump::read_auto_text_file(const char* filename) {
 			return IFileDataSource(filename, true);
 		}();
 		if (notesfile.good()) {
-			Read_text_msg_file(&notesfile, auto_text);
+			Text_msg_file_reader reader(notesfile);
+			reader.get_global_section_strings(auto_text);
 		}
 	}
 }
@@ -862,15 +864,17 @@ void Notebook_gump::read_auto_text() {
 			cout << "Loading patch autonotes" << endl;
 			IFileDataSource notesfile(PATCH_AUTONOTES, true);
 			if (notesfile.good()) {
-				Read_text_msg_file(&notesfile, auto_text);
+				Text_msg_file_reader reader(notesfile);
+				reader.get_global_section_strings(auto_text);
 			}
 		} else {
 			const str_int_pair& resource
 					= game->get_resource("config/autonotes");
-			IExultDataSource buf(resource.str, resource.num);
-			if (buf.good()) {
+			IExultDataSource notesfile(resource.str, resource.num);
+			if (notesfile.good()) {
 				cout << "Loading default autonotes" << endl;
-				Read_text_msg_file(&buf, auto_text);
+				Text_msg_file_reader reader(notesfile);
+				reader.get_global_section_strings(auto_text);
 			}
 		}
 	}

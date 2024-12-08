@@ -39,6 +39,7 @@
 #include "frflags.h"
 #include "frnameinf.h"
 #include "frusefun.h"
+#include "headers/polymorphic_value.h"
 #include "ignore_unused_variable_warning.h"
 #include "lightinf.h"
 #include "monstinf.h"
@@ -186,260 +187,327 @@ public:
 	}
 };
 
+/*
+ *  Reads text data file and parses it according to passed
+ *  parser functions.
+ */
+void Read_text_data_file(
+		// Name of file to read, sans extension
+		const char* fname,
+		// What to use to parse data.
+		const tcb::span<polymorphic_value<Base_reader>>& parsers,
+		// The names of the sections
+		const tcb::span<std::string_view>& sections, bool editing,
+		Exult_Game game, int resource) {
+	auto value_or = [](std::optional<int> opt) {
+		return opt ? *opt : 1;
+	};
+	Text_msg_file_reader static_reader = [&]() {
+		if (game == BLACK_GATE || game == SERPENT_ISLE) {
+			/*  ++++ Not because of ES.
+			snprintf(buf, sizeof(buf), "config/%s", fname);
+			str_int_pair resource = game->get_resource(buf);
+			U7object txtobj(resource.str, resource.num);
+			*/
+			const bool  bg = game == BLACK_GATE;
+			const char* flexfile
+					= bg ? BUNDLE_CHECK(BUNDLE_EXULT_BG_FLX, EXULT_BG_FLX)
+						 : BUNDLE_CHECK(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX);
+			IExultDataSource ds(flexfile, resource);
+			return Text_msg_file_reader(ds);
+		}
+		std::string     file = "<STATIC>/" + std::string(fname) + ".txt";
+		IFileDataSource ds(file, false);
+		if (!ds.good()) {
+			throw file_open_exception(file);
+		}
+		return Text_msg_file_reader(ds);
+	}();
+	Text_msg_file_reader patch_reader = [&]() {
+		std::string file = "<PATCH>/" + std::string(fname) + ".txt";
+		if (!U7exists(file)) {
+			return Text_msg_file_reader();
+		}
+		IFileDataSource ds(file, false);
+		if (!ds.good()) {
+			if (!editing) {
+				throw file_open_exception(file);
+			}
+			return Text_msg_file_reader();
+		}
+		return Text_msg_file_reader(ds);
+	}();
+
+	int static_version = value_or(static_reader.get_version());
+	int patch_version  = value_or(patch_reader.get_version());
+	std::vector<std::string> strings;
+
+	for (size_t i = 0; i < sections.size(); i++) {
+		static_reader.get_section_strings(sections[i], strings);
+		parsers[i]->parse(strings, static_version, false, game);
+		patch_reader.get_section_strings(sections[i], strings);
+		parsers[i]->parse(strings, patch_version, true, game);
+	}
+}
+
 void Shapes_vga_file::Read_Shapeinf_text_data_file(
 		bool editing, Exult_Game game_type) {
-	std::vector sections{
-			"explosions",
-			"shape_sfx",
-			"animation",
-			"usecode_events",
-			"mountain_tops",
-			"monster_food",
-			"actor_flags",
-			"effective_hps",
-			"lightweight_object",
-			"light_data",
-			"warmth_data",
-			"quantity_frames",
-			"locked_containers",
-			"content_rules",
-			"volatile_explosive",
-			"framenames",
-			"altready",
-			"barge_type",
-			"frame_powers",
-			"is_jawbone",
-			"is_mirror",
-			"on_fire",
-			"extradimensional_storage",
-			"field_type",
-			"frame_usecode"};
-	std::vector<Base_reader*> readers{
-			// For explosions.
-			new Functor_multidata_reader<
-					Shape_info, Class_reader_functor<
-										Explosion_info, Shape_info,
-										&Shape_info::explosion>>(info),
-			// For sound effects.
-			new Functor_multidata_reader<
-					Shape_info,
-					Class_reader_functor<
-							SFX_info, Shape_info, &Shape_info::sfxinf>>(info),
-			// For animations.
-			new Functor_multidata_reader<
-					Shape_info,
-					Class_reader_functor<
-							Animation_info, Shape_info, &Shape_info::aniinf>>(
-					info),
-			// For usecode events.
-			new Functor_multidata_reader<
-					Shape_info,
-					Bit_text_reader_functor<
-							unsigned short, Shape_info,
-							&Shape_info::shape_flags,
-							Shape_info::usecode_events>,
-					Patch_flags_functor<usecode_events_flag, Shape_info>>(info),
-			// For mountain tops.
-			new Functor_multidata_reader<
-					Shape_info,
-					Text_reader_functor<
-							unsigned char, Shape_info,
-							&Shape_info::mountain_top>,
-					Patch_flags_functor<mountain_top_flag, Shape_info>>(info),
-			// For monster food.
-			new Functor_multidata_reader<
-					Shape_info,
-					Text_reader_functor<
-							short, Shape_info, &Shape_info::monster_food>,
-					Patch_flags_functor<monster_food_flag, Shape_info>>(info),
-			// For actor flags.
-			new Functor_multidata_reader<
-					Shape_info,
-					Bit_field_text_reader_functor<
-							unsigned char, Shape_info,
-							&Shape_info::actor_flags>,
-					Actor_flags_functor>(info),
-			// For effective HPs.
-			new Functor_multidata_reader<
-					Shape_info,
-					Vector_reader_functor<
-							Effective_hp_info, Shape_info, &Shape_info::hpinf>>(
-					info),
-			// For lightweight objects.
-			new Functor_multidata_reader<
-					Shape_info,
-					Bit_text_reader_functor<
-							unsigned short, Shape_info,
-							&Shape_info::shape_flags, Shape_info::lightweight>,
-					Patch_flags_functor<lightweight_flag, Shape_info>>(info),
-			// For light data.
-			new Functor_multidata_reader<
-					Shape_info,
-					Vector_reader_functor<
-							Light_info, Shape_info, &Shape_info::lightinf>>(
-					info),
-			// For warmth data.
-			new Functor_multidata_reader<
-					Shape_info,
-					Vector_reader_functor<
-							Warmth_info, Shape_info, &Shape_info::warminf>>(
-					info),
-			// For quantity frames.
-			new Functor_multidata_reader<
-					Shape_info,
-					Bit_text_reader_functor<
-							unsigned short, Shape_info,
-							&Shape_info::shape_flags,
-							Shape_info::quantity_frames>,
-					Patch_flags_functor<quantity_frames_flag, Shape_info>>(
-					info),
-			// For locked objects.
-			new Functor_multidata_reader<
-					Shape_info,
-					Bit_text_reader_functor<
-							unsigned short, Shape_info,
-							&Shape_info::shape_flags, Shape_info::locked>,
-					Patch_flags_functor<locked_flag, Shape_info>>(info),
-			// For content rules.
-			new Functor_multidata_reader<
-					Shape_info,
-					Vector_reader_functor<
-							Content_rules, Shape_info, &Shape_info::cntrules>>(
-					info),
-			// For highly explosive objects.
-			new Functor_multidata_reader<
-					Shape_info,
-					Bit_text_reader_functor<
-							unsigned short, Shape_info,
-							&Shape_info::shape_flags, Shape_info::is_volatile>,
-					Patch_flags_functor<is_volatile_flag, Shape_info>>(info),
-			// For frame names.
-			new Functor_multidata_reader<
-					Shape_info,
-					Vector_reader_functor<
-							Frame_name_info, Shape_info, &Shape_info::nameinf>>(
-					info),
-			// For alternate ready spots.
-			new Functor_multidata_reader<
-					Shape_info,
-					Text_pair_reader_functor<
-							unsigned char, Shape_info, &Shape_info::alt_ready1,
-							&Shape_info::alt_ready2>,
-					Patch_flags_functor<altready_type_flag, Shape_info>>(info),
-			// For barge parts.
-			new Functor_multidata_reader<
-					Shape_info,
-					Text_reader_functor<
-							unsigned char, Shape_info, &Shape_info::barge_type>,
-					Patch_flags_functor<barge_type_flag, Shape_info>>(info),
-			// For frame flags.
-			new Functor_multidata_reader<
-					Shape_info, Vector_reader_functor<
-										Frame_flags_info, Shape_info,
-										&Shape_info::frflagsinf>>(info),
-			// For the jawbone.
-			new Functor_multidata_reader<
-					Shape_info,
-					Bit_text_reader_functor<
-							unsigned short, Shape_info,
-							&Shape_info::shape_flags, Shape_info::jawbone>,
-					Patch_flags_functor<jawbone_flag, Shape_info>>(info),
-			// Mirrors.
-			new Functor_multidata_reader<
-					Shape_info,
-					Bit_text_reader_functor<
-							unsigned short, Shape_info,
-							&Shape_info::shape_flags, Shape_info::mirror>,
-					Patch_flags_functor<mirror_flag, Shape_info>>(info),
-			// Objects on fire.
-			new Functor_multidata_reader<
-					Shape_info,
-					Bit_text_reader_functor<
-							unsigned short, Shape_info,
-							&Shape_info::shape_flags, Shape_info::on_fire>,
-					Patch_flags_functor<on_fire_flag, Shape_info>>(info),
-			// Containers with unlimited storage.
-			new Functor_multidata_reader<
-					Shape_info,
-					Bit_text_reader_functor<
-							unsigned short, Shape_info,
-							&Shape_info::shape_flags,
-							Shape_info::extradimensional_storage>,
-					Patch_flags_functor<
-							extradimensional_storage_flag, Shape_info>>(info),
-			// For field types.
-			new Functor_multidata_reader<
-					Shape_info,
-					Text_reader_functor<
-							signed char, Shape_info, &Shape_info::field_type>,
-					Patch_flags_functor<field_type_flag, Shape_info>>(info),
-			// For frame usecode.
-			new Functor_multidata_reader<
-					Shape_info, Vector_reader_functor<
-										Frame_usecode_info, Shape_info,
-										&Shape_info::frucinf>>(info),
+	std::array sections{
+			"explosions"sv,
+			"shape_sfx"sv,
+			"animation"sv,
+			"usecode_events"sv,
+			"mountain_tops"sv,
+			"monster_food"sv,
+			"actor_flags"sv,
+			"effective_hps"sv,
+			"lightweight_object"sv,
+			"light_data"sv,
+			"warmth_data"sv,
+			"quantity_frames"sv,
+			"locked_containers"sv,
+			"content_rules"sv,
+			"volatile_explosive"sv,
+			"framenames"sv,
+			"altready"sv,
+			"barge_type"sv,
+			"frame_powers"sv,
+			"is_jawbone"sv,
+			"is_mirror"sv,
+			"on_fire"sv,
+			"extradimensional_storage"sv,
+			"field_type"sv,
+			"frame_usecode"sv};
+	// For explosions.
+	using Explosion_reader = Functor_multidata_reader<
+			Shape_info,
+			Class_reader_functor<
+					Explosion_info, Shape_info, &Shape_info::explosion>>;
+	// For sound effects.
+	using SFX_reader = Functor_multidata_reader<
+			Shape_info,
+			Class_reader_functor<SFX_info, Shape_info, &Shape_info::sfxinf>>;
+	// For animations.
+	using Animation_reader = Functor_multidata_reader<
+			Shape_info,
+			Class_reader_functor<
+					Animation_info, Shape_info, &Shape_info::aniinf>>;
+	// For usecode events.
+	using Usecode_events_reader = Functor_multidata_reader<
+			Shape_info,
+			Bit_text_reader_functor<
+					unsigned short, Shape_info, &Shape_info::shape_flags,
+					Shape_info::usecode_events>,
+			Patch_flags_functor<usecode_events_flag, Shape_info>>;
+	// For mountain tops.
+	using Mountain_top_reader = Functor_multidata_reader<
+			Shape_info,
+			Text_reader_functor<
+					unsigned char, Shape_info, &Shape_info::mountain_top>,
+			Patch_flags_functor<mountain_top_flag, Shape_info>>;
+	// For monster food.
+	using Monster_food_reader = Functor_multidata_reader<
+			Shape_info,
+			Text_reader_functor<short, Shape_info, &Shape_info::monster_food>,
+			Patch_flags_functor<monster_food_flag, Shape_info>>;
+	// For actor flags.
+	using Actor_flags_reader = Functor_multidata_reader<
+			Shape_info,
+			Bit_field_text_reader_functor<
+					unsigned char, Shape_info, &Shape_info::actor_flags>,
+			Actor_flags_functor>;
+	// For effective HPs.
+	using Effective_hp_reader = Functor_multidata_reader<
+			Shape_info,
+			Vector_reader_functor<
+					Effective_hp_info, Shape_info, &Shape_info::hpinf>>;
+	// For lightweight objects.
+	using Lightweight_reader = Functor_multidata_reader<
+			Shape_info,
+			Bit_text_reader_functor<
+					unsigned short, Shape_info, &Shape_info::shape_flags,
+					Shape_info::lightweight>,
+			Patch_flags_functor<lightweight_flag, Shape_info>>;
+	// For light data.
+	using Light_data_reader = Functor_multidata_reader<
+			Shape_info, Vector_reader_functor<
+								Light_info, Shape_info, &Shape_info::lightinf>>;
+	// For warmth data.
+	using Warmth_data_reader = Functor_multidata_reader<
+			Shape_info, Vector_reader_functor<
+								Warmth_info, Shape_info, &Shape_info::warminf>>;
+	// For quantity frames.
+	using Quantity_frames_reader = Functor_multidata_reader<
+			Shape_info,
+			Bit_text_reader_functor<
+					unsigned short, Shape_info, &Shape_info::shape_flags,
+					Shape_info::quantity_frames>,
+			Patch_flags_functor<quantity_frames_flag, Shape_info>>;
+	// For locked objects.
+	using Locked_containers_reader = Functor_multidata_reader<
+			Shape_info,
+			Bit_text_reader_functor<
+					unsigned short, Shape_info, &Shape_info::shape_flags,
+					Shape_info::locked>,
+			Patch_flags_functor<locked_flag, Shape_info>>;
+	// For content rules.
+	using Content_rules_reader = Functor_multidata_reader<
+			Shape_info,
+			Vector_reader_functor<
+					Content_rules, Shape_info, &Shape_info::cntrules>>;
+	// For highly explosive objects.
+	using Explosive_reader = Functor_multidata_reader<
+			Shape_info,
+			Bit_text_reader_functor<
+					unsigned short, Shape_info, &Shape_info::shape_flags,
+					Shape_info::is_volatile>,
+			Patch_flags_functor<is_volatile_flag, Shape_info>>;
+	// For frame names.
+	using Frame_names_reader = Functor_multidata_reader<
+			Shape_info,
+			Vector_reader_functor<
+					Frame_name_info, Shape_info, &Shape_info::nameinf>>;
+	// For alternate ready spots.
+	using Altready_reader = Functor_multidata_reader<
+			Shape_info,
+			Text_pair_reader_functor<
+					unsigned char, Shape_info, &Shape_info::alt_ready1,
+					&Shape_info::alt_ready2>,
+			Patch_flags_functor<altready_type_flag, Shape_info>>;
+	// For barge parts.
+	using Barge_type_reader = Functor_multidata_reader<
+			Shape_info,
+			Text_reader_functor<
+					unsigned char, Shape_info, &Shape_info::barge_type>,
+			Patch_flags_functor<barge_type_flag, Shape_info>>;
+	// For frame flags.
+	using Frame_flags_reader = Functor_multidata_reader<
+			Shape_info,
+			Vector_reader_functor<
+					Frame_flags_info, Shape_info, &Shape_info::frflagsinf>>;
+	// For the jawbone.
+	using Jawbone_reader = Functor_multidata_reader<
+			Shape_info,
+			Bit_text_reader_functor<
+					unsigned short, Shape_info, &Shape_info::shape_flags,
+					Shape_info::jawbone>,
+			Patch_flags_functor<jawbone_flag, Shape_info>>;
+	// Mirrors.
+	using Mirror_reader = Functor_multidata_reader<
+			Shape_info,
+			Bit_text_reader_functor<
+					unsigned short, Shape_info, &Shape_info::shape_flags,
+					Shape_info::mirror>,
+			Patch_flags_functor<mirror_flag, Shape_info>>;
+	// Objects on fire.
+	using On_fire_reader = Functor_multidata_reader<
+			Shape_info,
+			Bit_text_reader_functor<
+					unsigned short, Shape_info, &Shape_info::shape_flags,
+					Shape_info::on_fire>,
+			Patch_flags_functor<on_fire_flag, Shape_info>>;
+	// Containers with unlimited storage.
+	using Extradimensional_storage_reader = Functor_multidata_reader<
+			Shape_info,
+			Bit_text_reader_functor<
+					unsigned short, Shape_info, &Shape_info::shape_flags,
+					Shape_info::extradimensional_storage>,
+			Patch_flags_functor<extradimensional_storage_flag, Shape_info>>;
+	// For field types.
+	using Field_type_reader = Functor_multidata_reader<
+			Shape_info,
+			Text_reader_functor<
+					signed char, Shape_info, &Shape_info::field_type>,
+			Patch_flags_functor<field_type_flag, Shape_info>>;
+	// For frame usecode.
+	using Frame_usecode_reader = Functor_multidata_reader<
+			Shape_info,
+			Vector_reader_functor<
+					Frame_usecode_info, Shape_info, &Shape_info::frucinf>>;
+
+	std::array readers = {
+			make_polymorphic_value<Base_reader, Explosion_reader>(info),
+			make_polymorphic_value<Base_reader, SFX_reader>(info),
+			make_polymorphic_value<Base_reader, Animation_reader>(info),
+			make_polymorphic_value<Base_reader, Usecode_events_reader>(info),
+			make_polymorphic_value<Base_reader, Mountain_top_reader>(info),
+			make_polymorphic_value<Base_reader, Monster_food_reader>(info),
+			make_polymorphic_value<Base_reader, Actor_flags_reader>(info),
+			make_polymorphic_value<Base_reader, Effective_hp_reader>(info),
+			make_polymorphic_value<Base_reader, Lightweight_reader>(info),
+			make_polymorphic_value<Base_reader, Light_data_reader>(info),
+			make_polymorphic_value<Base_reader, Warmth_data_reader>(info),
+			make_polymorphic_value<Base_reader, Quantity_frames_reader>(info),
+			make_polymorphic_value<Base_reader, Locked_containers_reader>(info),
+			make_polymorphic_value<Base_reader, Content_rules_reader>(info),
+			make_polymorphic_value<Base_reader, Explosive_reader>(info),
+			make_polymorphic_value<Base_reader, Frame_names_reader>(info),
+			make_polymorphic_value<Base_reader, Altready_reader>(info),
+			make_polymorphic_value<Base_reader, Barge_type_reader>(info),
+			make_polymorphic_value<Base_reader, Frame_flags_reader>(info),
+			make_polymorphic_value<Base_reader, Jawbone_reader>(info),
+			make_polymorphic_value<Base_reader, Mirror_reader>(info),
+			make_polymorphic_value<Base_reader, On_fire_reader>(info),
+			make_polymorphic_value<
+					Base_reader, Extradimensional_storage_reader>(info),
+			make_polymorphic_value<Base_reader, Field_type_reader>(info),
+			make_polymorphic_value<Base_reader, Frame_usecode_reader>(info),
 	};
-	assert(sections.size() == readers.size());
+	static_assert(sections.size() == readers.size());
 	const int flxres = game_type == BLACK_GATE ? EXULT_BG_FLX_SHAPE_INFO_TXT
 											   : EXULT_SI_FLX_SHAPE_INFO_TXT;
 
 	Read_text_data_file(
 			"shape_info", readers, sections, editing, game_type, flxres);
-	for (auto* reader : readers) {
-		delete reader;
-	}
 }
 
 void Shapes_vga_file::Read_Bodies_text_data_file(
 		bool editing, Exult_Game game_type) {
-	std::vector               sections{"bodyshapes", "bodylist"};
-	std::vector<Base_reader*> readers{
-			new Functor_multidata_reader<
-					Shape_info,
-					Bit_text_reader_functor<
-							unsigned short, Shape_info,
-							&Shape_info::shape_flags, Shape_info::is_body>,
-					Patch_flags_functor<is_body_flag, Shape_info>,
-					Body_ID_reader>(info),
-			new Functor_multidata_reader<
-					Shape_info,
-					Class_reader_functor<
-							Body_info, Shape_info, &Shape_info::body>>(info)};
-	assert(sections.size() == readers.size());
+	std::array sections{"bodyshapes"sv, "bodylist"sv};
+	using Body_shape_reader = Functor_multidata_reader<
+			Shape_info,
+			Bit_text_reader_functor<
+					unsigned short, Shape_info, &Shape_info::shape_flags,
+					Shape_info::is_body>,
+			Patch_flags_functor<is_body_flag, Shape_info>, Body_ID_reader>;
+	using Body_list_reader = Functor_multidata_reader<
+			Shape_info,
+			Class_reader_functor<Body_info, Shape_info, &Shape_info::body>>;
+	std::array readers{
+			make_polymorphic_value<Base_reader, Body_shape_reader>(info),
+			make_polymorphic_value<Base_reader, Body_list_reader>(info)};
+	static_assert(sections.size() == readers.size());
 	const int flxres = game_type == BLACK_GATE ? EXULT_BG_FLX_BODIES_TXT
 											   : EXULT_SI_FLX_BODIES_TXT;
 
 	Read_text_data_file(
 			"bodies", readers, sections, editing, game_type, flxres);
-	for (auto* reader : readers) {
-		delete reader;
-	}
 }
 
 void Shapes_vga_file::Read_Paperdoll_text_data_file(
 		bool editing, Exult_Game game_type) {
-	std::vector               sections{"characters", "items"};
-	std::vector<Base_reader*> readers{
-			new Functor_multidata_reader<
-					Shape_info,
-					Class_reader_functor<
-							Paperdoll_npc, Shape_info,
-							&Shape_info::npcpaperdoll>,
-					Paperdoll_npc_functor, Paperdoll_npc_ID_reader>(info),
-			new Functor_multidata_reader<
-					Shape_info, Vector_reader_functor<
-										Paperdoll_item, Shape_info,
-										&Shape_info::objpaperdoll>>(info),
+	std::array sections{"characters"sv, "items"sv};
+	using NpcPaperdoll_reader_functor = Functor_multidata_reader<
+			Shape_info,
+			Class_reader_functor<
+					Paperdoll_npc, Shape_info, &Shape_info::npcpaperdoll>,
+			Paperdoll_npc_functor, Paperdoll_npc_ID_reader>;
+	using ObjPaperdoll_reader_functor = Functor_multidata_reader<
+			Shape_info,
+			Vector_reader_functor<
+					Paperdoll_item, Shape_info, &Shape_info::objpaperdoll>>;
+	std::array readers{
+			make_polymorphic_value<Base_reader, NpcPaperdoll_reader_functor>(
+					info),
+			make_polymorphic_value<Base_reader, ObjPaperdoll_reader_functor>(
+					info),
 	};
-	assert(sections.size() == readers.size());
+	static_assert(sections.size() == readers.size());
 	const int flxres = game_type == BLACK_GATE ? EXULT_BG_FLX_PAPERDOL_INFO_TXT
 											   : EXULT_SI_FLX_PAPERDOL_INFO_TXT;
 
 	Read_text_data_file(
 			"paperdol_info", readers, sections, editing, game_type, flxres);
-	for (auto* reader : readers) {
-		delete reader;
-	}
 }
 
 /*

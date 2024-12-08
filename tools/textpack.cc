@@ -149,13 +149,17 @@ int main(int argc, char** argv) {
 				cerr << "Failed to open " << argv[3] << endl;
 				exit(1);
 			}
-			if (Read_text_msg_file(&fin, strings) == -1) {
+			Text_msg_file_reader reader(fin);
+			reader.get_global_section_strings(strings);
+			if (strings.empty()) {
 				exit(1);
 			}
 		} else {
 			// Default to stdin.
-			IStreamDataSource fin(&cin);
-			if (Read_text_msg_file(&fin, strings) == -1) {
+			IStreamDataSource    fin(&cin);
+			Text_msg_file_reader reader(fin);
+			reader.get_global_section_strings(strings);
+			if (strings.empty()) {
 				exit(1);
 			}
 		}

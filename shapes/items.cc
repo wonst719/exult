@@ -230,7 +230,8 @@ static void Setup_item_names(
 	}
 	if (msgs.good()) {
 		// Exult msgs. too?
-		first_msg = Read_text_msg_file(&msgs, msglist);
+		Text_msg_file_reader reader(msgs);
+		first_msg = reader.get_global_section_strings(msglist);
 		if (first_msg >= 0) {
 			first_msg -= 0x400;
 			if (first_msg < num_text_msgs) {
@@ -296,7 +297,10 @@ static void Setup_text(
 	// Start by reading from exultmsg
 	vector<string> msglist;
 	int            first_msg;
-	first_msg                 = Read_text_msg_file(&exultmsg, msglist);
+	{
+		Text_msg_file_reader reader(exultmsg);
+		first_msg = reader.get_global_section_strings(msglist);
+	}
 	const unsigned total_msgs = static_cast<int>(msglist.size() - 0x400);
 	if (first_msg >= 0) {
 		first_msg -= 0x400;
@@ -306,9 +310,10 @@ static void Setup_text(
 		text_msgs[i] = msglist[i + 0x400];
 	}
 	// Now read in textmsg.txt
-	Read_text_msg_file(&txtfile, item_names, SHAPES_SECT);
-	Read_text_msg_file(&txtfile, text_msgs, MSGS_SECT);
-	Read_text_msg_file(&txtfile, misc_names, MISC_SECT);
+	Text_msg_file_reader reader(txtfile);
+	reader.get_section_strings(SHAPES_SECT, item_names);
+	reader.get_section_strings(MSGS_SECT, text_msgs);
+	reader.get_section_strings(MISC_SECT, misc_names);
 }
 
 /*
