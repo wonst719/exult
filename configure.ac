@@ -291,12 +291,27 @@ if test x$enable_android_apk != xno; then
 	# Checking against a known-good baseline gradle version
 	AC_MSG_CHECKING([gradle version])
 	gradle_version=`$GRADLE --version | grep Gradle | awk '{print $2;}' | tr -d '\r\n'`
-	AX_COMPARE_VERSION([$gradle_version], [ge], [7.5], [dnl
-		dnl $gradle_version >= 7.5
-		AC_MSG_RESULT([found $gradle_version >= 7.5])
+	AX_COMPARE_VERSION([$gradle_version], [ge], [8.9], [dnl
+		dnl $gradle_version >= 8.9
+		AC_MSG_RESULT([found $gradle_version >= 8.9])
 	], [
-		dnl $gradle_version < 7.5
-		AC_MSG_ERROR([found $gradle_version < 7.5])
+		dnl $gradle_version < 8.9
+		AC_MSG_ERROR([found $gradle_version < 8.9])
+	])
+
+	# Check for javac and java
+	AX_PROG_JAVAC
+	AX_PROG_JAVA
+
+	# Check for required Java version
+	AC_MSG_CHECKING([java version])
+	java_version=`$JAVAC -version | grep javac | awk '{print $2;}' | tr -d '\r\n'`
+	AX_COMPARE_VERSION([$java_version], [ge], [17], [dnl
+		dnl $gradle_version >= 17
+		AC_MSG_RESULT([found $java_version >= 17])
+	], [
+		dnl $java_version < 17
+		AC_MSG_ERROR([found $java_version < 17])
 	])
 
 	# Use sdkmanager to check Android package versions.
@@ -304,8 +319,8 @@ if test x$enable_android_apk != xno; then
 
 	# Check for required Android SDK version.
 	AC_ARG_WITH(android_sdk,
-		AS_HELP_STRING([--with-android-sdk=sdk_version], [Android SDK version @<:@default 33@:>@]),
-		[with_android_sdk="$withval"],[with_android_sdk=33])
+		AS_HELP_STRING([--with-android-sdk=sdk_version], [Android SDK version @<:@default 34@:>@]),
+		[with_android_sdk="$withval"],[with_android_sdk=34])
 	ANDROID_SDK_VERSION="$with_android_sdk"
 	AC_MSG_CHECKING([for Android SDK $ANDROID_SDK_VERSION])
 	if $SDKMANAGER --list|grep -q "platforms;android-$ANDROID_SDK_VERSION"; then
@@ -330,8 +345,8 @@ if test x$enable_android_apk != xno; then
 
 	# Check for required Android NDK version.
 	AC_ARG_WITH(android_ndk,
-		AS_HELP_STRING([--with-android-ndk=ndk_version], [Android NDK version @<:@default 22.1.7171670@:>@]),
-		[with_android_sdk="$withval"],[with_android_ndk=22.1.7171670])
+		AS_HELP_STRING([--with-android-ndk=ndk_version], [Android NDK version @<:@default 27.2.12479018@:>@]),
+		[with_android_sdk="$withval"],[with_android_ndk=27.2.12479018])
 	ANDROID_NDK_VERSION="$with_android_ndk"
 	AC_MSG_CHECKING([for Android NDK $ANDROID_NDK_VERSION])
 	if $SDKMANAGER --list|grep -q "ndk;$ANDROID_NDK_VERSION"; then
@@ -1318,6 +1333,7 @@ if test x$enable_android_apk != xno; then
 	echo Android NDK................ : $ANDROID_NDK_VERSION
 	echo Android SDK CMake.......... : $ANDROID_CMAKE_VERSION
 	echo Gradle..................... : $gradle_version
+	echo Java....................... : $java_version
 	echo
 else
 	echo SDL........................ : `$PKG_CONFIG --modversion sdl2`
