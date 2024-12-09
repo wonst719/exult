@@ -412,7 +412,8 @@ void Shapeinfo_lookup::Read_data_file(
 	std::vector<std::string> strings;
 
 	for (size_t i = 0; i < sections.size(); i++) {
-		uint32 firstMsg = static_reader.get_section_strings(sections[i], strings);
+		uint32 firstMsg
+				= static_reader.get_section_strings(sections[i], strings);
 		for (size_t j = firstMsg; j < strings.size(); j++) {
 			if (!strings[j].empty()) {
 				stringstream src(strings[j]);
@@ -422,7 +423,8 @@ void Shapeinfo_lookup::Read_data_file(
 	}
 
 	for (size_t i = 0; i < sections.size(); i++) {
-		uint32 firstMsg = patch_reader.get_section_strings(sections[i], strings);
+		uint32 firstMsg
+				= patch_reader.get_section_strings(sections[i], strings);
 		for (size_t j = firstMsg; j < strings.size(); j++) {
 			if (!strings[j].empty()) {
 				stringstream src(strings[j]);

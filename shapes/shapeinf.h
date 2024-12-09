@@ -49,23 +49,23 @@ class Warmth_info;
 class Content_rules;
 class Shapes_vga_file;
 
-template <typename T, class Info, T Info::*data>
+template <typename T, class Info, T Info::* data>
 class Text_reader_functor;
-template <typename T, class Info, T Info::*data1, T Info::*data2>
+template <typename T, class Info, T Info::* data1, T Info::* data2>
 class Text_pair_reader_functor;
-template <typename T, class Info, T Info::*data, int bit>
+template <typename T, class Info, T Info::* data, int bit>
 class Bit_text_reader_functor;
-template <typename T, class Info, T Info::*data>
+template <typename T, class Info, T Info::* data>
 class Bit_field_text_reader_functor;
-template <typename T, class Info, T Info::*data, unsigned pad>
+template <typename T, class Info, T Info::* data, unsigned pad>
 class Binary_reader_functor;
 template <
-		typename T1, typename T2, class Info, T1 Info::*data1, T2 Info::*data2,
-		unsigned pad>
+		typename T1, typename T2, class Info, T1 Info::* data1,
+		T2 Info::* data2, unsigned pad>
 class Binary_pair_reader_functor;
-template <typename T, class Info, T* Info::*data>
+template <typename T, class Info, T* Info::* data>
 class Class_reader_functor;
-template <typename T, class Info, std::vector<T> Info::*data>
+template <typename T, class Info, std::vector<T> Info::* data>
 class Vector_reader_functor;
 template <class Info>
 class Null_functor;
@@ -79,23 +79,23 @@ class Paperdoll_npc_functor;
 
 template <int flag, class Info>
 class Flag_check_functor;
-template <int flag, typename T, class Info, T Info::*data>
+template <int flag, typename T, class Info, T Info::* data>
 class Text_writer_functor;
-template <int flag, typename T, class Info, T Info::*data1, T Info::*data2>
+template <int flag, typename T, class Info, T Info::* data1, T Info::* data2>
 class Text_pair_writer_functor;
-template <int flag, typename T, class Info, T Info::*data, int bit>
+template <int flag, typename T, class Info, T Info::* data, int bit>
 class Bit_text_writer_functor;
-template <int flag, typename T, class Info, T Info::*data>
+template <int flag, typename T, class Info, T Info::* data>
 class Bit_field_text_writer_functor;
-template <int flag, typename T, class Info, T Info::*data, int pad>
+template <int flag, typename T, class Info, T Info::* data, int pad>
 class Binary_writer_functor;
 template <
-		int flag, typename T1, typename T2, class Info, T1 Info::*data1,
-		T2 Info::*data2, int pad>
+		int flag, typename T1, typename T2, class Info, T1 Info::* data1,
+		T2 Info::* data2, int pad>
 class Binary_pair_writer_functor;
-template <typename T, class Info, T* Info::*data>
+template <typename T, class Info, T* Info::* data>
 class Class_writer_functor;
-template <typename T, class Info, std::vector<T> Info::*data>
+template <typename T, class Info, std::vector<T> Info::* data>
 class Vector_writer_functor;
 
 class Readytype_writer_functor;
@@ -261,23 +261,23 @@ public:
 	};
 	friend class Shapes_vga_file;    // Class that reads in data.
 
-	template <typename T, class Info, T Info::*data>
+	template <typename T, class Info, T Info::* data>
 	friend class Text_reader_functor;
-	template <typename T, class Info, T Info::*data1, T Info::*data2>
+	template <typename T, class Info, T Info::* data1, T Info::* data2>
 	friend class Text_pair_reader_functor;
-	template <typename T, class Info, T Info::*data, int bit>
+	template <typename T, class Info, T Info::* data, int bit>
 	friend class Bit_text_reader_functor;
-	template <typename T, class Info, T Info::*data>
+	template <typename T, class Info, T Info::* data>
 	friend class Bit_field_text_reader_functor;
-	template <typename T, class Info, T Info::*data, unsigned pad>
+	template <typename T, class Info, T Info::* data, unsigned pad>
 	friend class Binary_reader_functor;
 	template <
-			typename T1, typename T2, class Info, T1 Info::*data1,
-			T2 Info::*data2, unsigned pad>
+			typename T1, typename T2, class Info, T1 Info::* data1,
+			T2 Info::* data2, unsigned pad>
 	friend class Binary_pair_reader_functor;
-	template <typename T, class Info, T* Info::*data>
+	template <typename T, class Info, T* Info::* data>
 	friend class Class_reader_functor;
-	template <typename T, class Info, std::vector<T> Info::*data>
+	template <typename T, class Info, std::vector<T> Info::* data>
 	friend class Vector_reader_functor;
 	template <class Info>
 	friend class Null_functor;
@@ -291,23 +291,24 @@ public:
 
 	template <int flag, class Info>
 	friend class Flag_check_functor;
-	template <int flag, typename T, class Info, T Info::*data>
+	template <int flag, typename T, class Info, T Info::* data>
 	friend class Text_writer_functor;
-	template <int flag, typename T, class Info, T Info::*data1, T Info::*data2>
+	template <
+			int flag, typename T, class Info, T Info::* data1, T Info::* data2>
 	friend class Text_pair_writer_functor;
-	template <int flag, typename T, class Info, T Info::*data, int bit>
+	template <int flag, typename T, class Info, T Info::* data, int bit>
 	friend class Bit_text_writer_functor;
-	template <int flag, typename T, class Info, T Info::*data>
+	template <int flag, typename T, class Info, T Info::* data>
 	friend class Bit_field_text_writer_functor;
-	template <int flag, typename T, class Info, T Info::*data, int pad>
+	template <int flag, typename T, class Info, T Info::* data, int pad>
 	friend class Binary_writer_functor;
 	template <
-			int flag, typename T1, typename T2, class Info, T1 Info::*data1,
-			T2 Info::*data2, int pad>
+			int flag, typename T1, typename T2, class Info, T1 Info::* data1,
+			T2 Info::* data2, int pad>
 	friend class Binary_pair_writer_functor;
-	template <typename T, class Info, T* Info::*data>
+	template <typename T, class Info, T* Info::* data>
 	friend class Class_writer_functor;
-	template <typename T, class Info, std::vector<T> Info::*data>
+	template <typename T, class Info, std::vector<T> Info::* data>
 	friend class Vector_writer_functor;
 
 	friend class Readytype_writer_functor;
