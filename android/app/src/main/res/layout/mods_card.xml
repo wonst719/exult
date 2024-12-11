@@ -63,6 +63,32 @@
             android:id="@+id/game"
             android:value="forgeofvirtue" />
       </CheckBox>
+
+      <CheckBox
+          android:id="@+id/ultimaviCheckBox"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Ultima VI Remake 1.2 (requires FoV)">
+	<tag
+            android:id="@+id/name"
+            android:value="ultima6v1.2" />
+	<tag
+            android:id="@+id/game"
+            android:value="forgeofvirtue" />
+      </CheckBox>
+
+      <CheckBox
+          android:id="@+id/glimmerscapeCheckBox"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Glimmerscape by Donfrow (requires SS)">
+	<tag
+            android:id="@+id/name"
+            android:value="glimmerscape" />
+	<tag
+            android:id="@+id/game"
+            android:value="silverseed" />
+      </CheckBox>
     </LinearLayout>
 
     <WebView
