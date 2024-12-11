@@ -30,6 +30,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.activity.EdgeToEdge;
 
 public class ExultLauncherActivity extends AppCompatActivity {
   private SharedPreferences m_sharedPreferences;
@@ -70,6 +71,9 @@ public class ExultLauncherActivity extends AppCompatActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    // stretch Exult to all edges
+    EdgeToEdge.enable(this);
+
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 

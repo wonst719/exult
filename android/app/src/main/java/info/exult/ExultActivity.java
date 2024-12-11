@@ -31,6 +31,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import org.libsdl.app.SDLActivity;
+import androidx.core.view.WindowCompat;
+import android.view.WindowManager;
 
 /**
  * This class implements the Activity that will launch the Exult game engine on Android.
@@ -175,6 +177,10 @@ public class ExultActivity extends SDLActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    // stretch Exult to all edges and don't make room for the camera cutout
+    WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+    getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
     m_instance = this;
 
