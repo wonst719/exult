@@ -27,6 +27,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class ExultLauncherActivity extends AppCompatActivity {
   private SharedPreferences m_sharedPreferences;
@@ -64,10 +67,18 @@ public class ExultLauncherActivity extends AppCompatActivity {
     startActivity(launchExultIntent);
   }
 
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    // hiding system bars
+    WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+    windowInsetsController.setSystemBarsBehavior(
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+    windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
     m_sharedPreferences = getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
 
