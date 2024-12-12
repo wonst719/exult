@@ -55,17 +55,13 @@ public class LauncherFragment extends Fragment implements View.OnClickListener {
 
   @Override
   public void onClick(View view) {
-    switch (view.getId()) {
-      case R.id.autoLaunchCheckBox:
-        CheckBox checkBox = (CheckBox) view;
-        boolean checked = checkBox.isChecked();
-        getExultLauncherActivity().setAutoLaunch(checked);
-        break;
-      case R.id.launchExultButton:
-        getExultLauncherActivity().launchExult();
-        break;
-      default:
-        break;
+    int id = view.getId();
+    if (id == R.id.autoLaunchCheckBox) {
+      CheckBox checkBox = (CheckBox) view;
+      boolean checked = checkBox.isChecked();
+      getExultLauncherActivity().setAutoLaunch(checked);
+    } else if (id == R.id.launchExultButton) {
+      getExultLauncherActivity().launchExult();
     }
   }
 }
