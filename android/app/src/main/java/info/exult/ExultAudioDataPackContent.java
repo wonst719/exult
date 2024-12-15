@@ -19,6 +19,7 @@
 package info.exult;
 
 import android.content.Context;
+import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -28,13 +29,17 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 
 class ExultAudioDataPackContent extends ExultContent {
   private HashMap<String, Boolean> m_filenameToFoundFlag = new HashMap<String, Boolean>();
+  private HashMap<String, Boolean> m_MT32filenameToFoundFlag = new HashMap<String, Boolean>();
+  private String m_audioName;
   private int m_filenamesFound = 0;
   private Path m_installPath;
   private Path m_dataRootInArchive;
+  private Boolean foundFlag = false;
 
   public ExultAudioDataPackContent(String name, Context context) {
     super("audioDataPack", name, context);
 
+    m_audioName = name.toLowerCase();
     // List of filenames to expect in the all-in-one audio pack.
     m_filenameToFoundFlag.put("jmsfx.flx", false);
     m_filenameToFoundFlag.put("jmsisfx.flx", false);
@@ -42,6 +47,8 @@ class ExultAudioDataPackContent extends ExultContent {
     m_filenameToFoundFlag.put("sqsfxsi.flx", false);
     m_filenameToFoundFlag.put("00bg.ogg", false); // implies all bg music files are present
     m_filenameToFoundFlag.put("si01.ogg", false); // implies all si music files are present
+    m_MT32filenameToFoundFlag.put("MT32_CONTROL.ROM", false);
+    m_MT32filenameToFoundFlag.put("MT32_PCM.ROM", false);
 
     m_installPath = context.getFilesDir().toPath().resolve("data");
   }
@@ -55,6 +62,7 @@ class ExultAudioDataPackContent extends ExultContent {
       return false;
     }
 
+    Log.d("ExultAudioPackContent", "identify " + archiveEntry.getName());
     // Skip over directories.
     if (archiveEntry.isDirectory()) {
       return false;
@@ -63,16 +71,21 @@ class ExultAudioDataPackContent extends ExultContent {
     // Check to see if it matches one of the filenames we are matching.
     Path fullPath = getFullArchivePath(location, archiveEntry);
     String lowerCaseFileName = fullPath.getFileName().toString().toLowerCase();
-    Boolean foundFlag = m_filenameToFoundFlag.get(lowerCaseFileName);
-
-    // If it's not a file we're looking for, or if it has already been find, move along.
+    // MT32 ROM filenames need to be uppercase
+    String keepCaseFileName = fullPath.getFileName().toString();
+    if (m_audioName.equals("allinone")) {
+      foundFlag = m_filenameToFoundFlag.get(lowerCaseFileName);
+    } else if (m_audioName.equals("mt32roms")) {
+      foundFlag = m_MT32filenameToFoundFlag.get(keepCaseFileName);
+    }
+    // If it's not a file we're looking for, or if it has already been found, move along.
     if (null == foundFlag || true == foundFlag) {
       return false;
     }
 
     // If we haven't identified a data root yet, infer it from the file path.
     if (null == m_dataRootInArchive) {
-      if (lowerCaseFileName.endsWith(".flx")) {
+      if (lowerCaseFileName.endsWith(".flx") || lowerCaseFileName.endsWith(".rom")) {
         // ".flx" files live at the data root.
         m_dataRootInArchive = fullPath.getParent();
         if (null == m_dataRootInArchive) {
@@ -95,8 +108,8 @@ class ExultAudioDataPackContent extends ExultContent {
       }
     } else {
       // If we already know the data root, make sure this file is in it.
-      if (lowerCaseFileName.endsWith(".flx")) {
-        // ".flx" files live at the data root.
+      if (lowerCaseFileName.endsWith(".flx") || lowerCaseFileName.endsWith(".rom")) {
+        // ".flx", ".rom" files live at the data root.
         Path parent = fullPath.getParent();
         boolean nullParent = null == parent;
         boolean emptyRoot = m_dataRootInArchive.toString().isEmpty();
@@ -120,14 +133,19 @@ class ExultAudioDataPackContent extends ExultContent {
     ++m_filenamesFound;
 
     // Keep searching if we haven't found all our filenames yet.
-    return m_filenameToFoundFlag.size() == m_filenamesFound;
+    if (m_audioName.equals("allinone")) {
+      return m_filenameToFoundFlag.size() == m_filenamesFound;
+    } else if (m_audioName.equals("mt32roms")) {
+      return m_MT32filenameToFoundFlag.size() == m_filenamesFound;
+    }
+    return false;
   }
 
   @Override
   protected Path getInstallDestination(Path location, ArchiveEntry archiveEntry) {
-    // Only want to install flx/ogg files; skip over everything else
+    // Only want to install flx/ogg/rom files; skip over everything else
     String lowerCaseFileName = archiveEntry.getName().toLowerCase();
-    if (!lowerCaseFileName.endsWith(".flx") && !lowerCaseFileName.endsWith(".ogg")) {
+    if (!lowerCaseFileName.endsWith(".flx") && !lowerCaseFileName.endsWith(".ogg") && !lowerCaseFileName.endsWith(".rom")) {
       return null;
     }
 
