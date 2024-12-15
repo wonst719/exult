@@ -17,64 +17,81 @@
       tools:ignore="DuplicateIds">
 
     <LinearLayout
-	android:id="@+id/contentLayout"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:orientation="vertical"
-	xmlns:tools="http://schemas.android.com/tools"
-	tools:ignore="DuplicateIds"
-	android:padding="40dp">
-
-      <CheckBox
-          android:id="@+id/blackGateCheckBox"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="The Black Gate">
-	<tag
-            android:id="@+id/name"
-            android:value="blackgate" />
-	<tag
-            android:id="@+id/crc32"
-            android:value="0x0" />
-      </CheckBox>
+      android:id="@+id/contentLayout"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:ignore="DuplicateIds"
+      android:padding="40dp">
 
       <CheckBox
           android:id="@+id/forgeOfVirtueCheckBox"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:textStyle="bold"
           android:text="The Black Gate + Forge of Virtue">
-	<tag
+      <tag
             android:id="@+id/name"
             android:value="forgeofvirtue" />
-	<tag
+      <tag
             android:id="@+id/crc32"
             android:value="0x33EC5F67" />
-      </CheckBox>
-
-      <CheckBox
-          android:id="@+id/serpentIsleCheckBox"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="The Serpent Isle">
-	<tag
-            android:id="@+id/name"
-            android:value="serpentisle" />
-	<tag
-            android:id="@+id/crc32"
-            android:value="0" />
       </CheckBox>
 
       <CheckBox
           android:id="@+id/silverSeedCheckBox"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:textStyle="bold"
           android:text="The Serpent Isle + Silver Seed">
-	<tag
+      <tag
             android:id="@+id/name"
             android:value="silverseed" />
-	<tag
+      <tag
             android:id="@+id/crc32"
             android:value="0xB274BD4D" />
+      </CheckBox>
+
+      <CheckBox
+          android:id="@+id/blackGateCheckBox"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textStyle="italic"
+          android:text="The Black Gate">
+      <tag
+            android:id="@+id/name"
+            android:value="blackgate" />
+      <tag
+            android:id="@+id/crc32"
+            android:value="0x09C21719" />
+      </CheckBox>
+
+      <CheckBox
+          android:id="@+id/serpentIsleCheckBox"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textStyle="italic"
+          android:text="The Serpent Isle">
+      <tag
+            android:id="@+id/name"
+            android:value="serpentisle" />
+      <tag
+            android:id="@+id/crc32"
+            android:value="0x625131C7" />
+      </CheckBox>
+      <CheckBox
+          android:id="@+id/serpentIsleBetaCheckBox"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textStyle="italic"
+          android:text="The Serpent Isle Beta">
+      <tag
+            android:id="@+id/name"
+            android:value="serpentbeta" />
+      <tag
+            android:id="@+id/crc32"
+            android:value="0x6FB64A94" />
       </CheckBox>
     </LinearLayout>
 
