@@ -88,7 +88,7 @@ jobs:
           name: Snapshot ${{ env.GITHUB_REF }}
           tag_name: snapshot-${{ env.GITHUB_REF }}
           body_path: body.txt
-          prerelease: false
+          prerelease: true
           fail_on_unmatched_files: true
           files: |
             Exult.exe
