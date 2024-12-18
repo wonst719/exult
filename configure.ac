@@ -388,6 +388,12 @@ if test x$enable_android_apk != xno; then
 		enable_tools=no
 	fi
 
+	# When building a debug apk, enable Exult's debug_level "messages"
+	# which can be overriden with "--with-debug="
+	if test x$enable_android_apk = xdebug; then
+		AC_SUBST(EXULT_ANDROID_DEBUG, messages)
+	fi
+
 	# Build a single Android architecture
 	AC_ARG_WITH(android_arch,
 		AS_HELP_STRING([--with-android-arch=ARCH], [Android build single arch @<:@default x86, x86_64, armeabi-v7a, arm64-v8a@:>@]),
@@ -983,6 +989,10 @@ AC_MSG_CHECKING([desired optimization level])
 if test x$opt_level = x; then
 	AC_MSG_RESULT(from CXXFLAGS)
 else
+	# For Android builds we pass the level through
+	if test x$enable_android_apk != xno; then
+		AC_SUBST(EXULT_ANDROID_OPT, $opt_level)
+	fi
 	# TODO: Maybe making a function to do these.
 	# Lets clean up CFLAGS of -O[0-3gs]?
 	for ccflag in $CFLAGS; do
@@ -1062,6 +1072,10 @@ AC_MSG_CHECKING([whether to enable debugging mode])
 if test x$dbg_level = x; then
 	AC_MSG_RESULT(from CXXFLAGS)
 else
+	# For Android builds we pass the level through
+	if test x$enable_android_apk != xno; then
+		AC_SUBST(EXULT_ANDROID_DEBUG, $dbg_level)
+	fi
 	# TODO: Maybe making a function to do these.
 	# Lets clean up CFLAGS of -g[0-3]?
 	for ccflag in $CFLAGS; do

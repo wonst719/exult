@@ -49,6 +49,7 @@ $ cd ./../data && make
 $ cd ./../android && make
 ```
 The final debug APK will be located in `./android/app/build/outputs/apk/debug/app-debug.apk`.
+On debug builds you can also pass through the debug level and optimization level with `--with-debug=` and `--with-optimization=`, while it defaults to `--with-debug=messages`.
 
 Building a release build is similar, but requires signing the binary:
 
