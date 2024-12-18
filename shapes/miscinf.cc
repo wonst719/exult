@@ -355,7 +355,7 @@ void Paperdoll_source_parser::parse_entry(
 	} else if (line == "si") {
 		table.emplace_back("<SERPENT_STATIC>/paperdol.vga", -1);
 	} else if (GAME_SI && line == "flx") {
-		// ++++ FIMXME: Implement in the future for SI paperdoll patches.
+		// ++++ FIXME: Implement in the future for SI paperdoll patches.
 		CERR("Paperdoll source file '" << line << "' is not implemented yet.");
 	} else if (GAME_BG && line == "flx") {
 		const str_int_pair& resource = game->get_resource("files/paperdolvga");
