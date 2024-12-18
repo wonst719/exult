@@ -631,31 +631,35 @@ USECODE_INTRINSIC(get_npc_name) {
 	ignore_unused_variable_warning(num_parms);
 	// Get NPC name(s).  Works on arrays, too.
 	static const char* unknown = "??name??";
-	Actor*             npc;
-	const int          cnt = parms[0].get_array_size();
-	if (cnt) {
-		// Do array.
-		Usecode_value arr(cnt, nullptr);
-		for (int i = 0; i < cnt; i++) {
-			Game_object* obj = get_item(parms[0].get_elem(i));
-			npc              = as_actor(obj);
-			const std::string namestr
-					= npc ? npc->get_npc_name() : obj->get_name();
-			Usecode_value v(namestr);
-			arr.put_elem(i, v);
+
+	auto get_name = [&](const Usecode_value& val) -> std::string {
+		Game_object* obj = get_item(val);
+		if (obj != nullptr) {
+			Actor *npc = as_actor(obj);
+			return npc != nullptr ? npc->get_npc_name() : obj->get_name();
 		}
-		return arr;
+		return unknown;
+	};
+
+	const int     cnt = parms[0].get_array_size();
+	Usecode_value ret;
+	if (cnt != 0) {
+		// Do array.
+		ret = Usecode_value(0, nullptr);
+		int size = 0;
+		for (int i = 0; i < cnt; i++) {
+			const std::string name = get_name(parms[0].get_elem(i));
+			if (name != unknown) {
+				Usecode_value v(name);
+				ret.resize(size + 1);
+				ret.put_elem(size, v);
+				size++;
+			}
+		}
+		return ret;
 	}
-	Game_object* obj = get_item(parms[0]);
-	std::string  namestr;
-	if (obj) {
-		npc     = as_actor(obj);
-		namestr = npc ? npc->get_npc_name() : obj->get_name();
-	} else {
-		namestr = unknown;
-	}
-	Usecode_value u(namestr);
-	return u;
+	ret = get_name(parms[0]);
+	return ret;
 }
 
 USECODE_INTRINSIC(set_npc_name) {

@@ -493,7 +493,7 @@ inline void Usecode_internal::pushs(const char* s) {
  *  Output: ->game object.
  */
 
-Game_object* Usecode_internal::get_item(Usecode_value& itemref) {
+Game_object* Usecode_internal::get_item(const Usecode_value& itemref) {
 	// If array, take 1st element.
 	const Usecode_value& elemval = itemref.get_elem0();
 

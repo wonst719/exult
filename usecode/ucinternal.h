@@ -115,7 +115,7 @@ class Usecode_internal : public Usecode_machine {
 	}
 
 	// Get ->obj. from 'itemref'.
-	Game_object* get_item(Usecode_value& itemref);
+	Game_object* get_item(const Usecode_value& itemref);
 	// "Safe" cast to Actor and Npc_actor.
 	Actor* as_actor(Game_object* obj);
 	// Get position.
