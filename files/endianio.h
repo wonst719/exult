@@ -534,7 +534,7 @@ namespace endian_internal { namespace detail {
 }}    // namespace endian_internal::detail
 
 ENDIANIO_CONSTEXPR uint32_t bitcount(uint32_t val) noexcept {
-	if (!detail::is_constant_evaluated()) {
+	if (!endian_internal::detail::is_constant_evaluated()) {
 #	if defined(_MSC_VER) && HAS_NEON_INTRINSICS
 		const __n64 _Temp = neon_cnt(__uint64ToN64_v(val));
 		return neon_addv8(_Temp).n8_i8[0];
@@ -542,7 +542,7 @@ ENDIANIO_CONSTEXPR uint32_t bitcount(uint32_t val) noexcept {
 		return __popcnt(val);
 #	endif
 	}
-	return detail::bitcount_fallback(val);
+	return endian_internal::detail::bitcount_fallback(val);
 }
 #endif
 
