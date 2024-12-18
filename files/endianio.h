@@ -31,27 +31,27 @@
 #endif
 
 #if defined(__cpp_lib_endian) && __cpp_lib_endian >= 201907L
-namespace internal { namespace detail {
+namespace endian_internal { namespace detail {
 	using std::endian;
-}}    // namespace internal::detail
+}}    // namespace endian_internal::detail
 #elif defined(__GNUG__)
 // Both libstdc++ and libc++ essentially do this.
-namespace internal { namespace detail {
+namespace endian_internal { namespace detail {
 	enum class endian {
 		big    = __ORDER_BIG_ENDIAN__,
 		little = __ORDER_LITTLE_ENDIAN__,
 		native = __BYTE_ORDER__,
 	};
-}}    // namespace internal::detail
+}}    // namespace endian_internal::detail
 #elif defined(_MSC_VER)
 // MS-STL does essentially this.
-namespace internal { namespace detail {
+namespace endian_internal { namespace detail {
 	enum class endian {
 		little = 1234,
 		big    = 4321,
 		native = little
 	};
-}}    // namespace internal::detail
+}}    // namespace endian_internal::detail
 #endif
 
 #ifdef __clang__
@@ -108,7 +108,7 @@ namespace internal { namespace detail {
 #	endif
 #endif
 
-namespace internal { namespace detail {
+namespace endian_internal { namespace detail {
 	// is_detected and related (ported from Library Fundamentals v2).
 	namespace inner {
 		template <
@@ -471,35 +471,40 @@ namespace internal { namespace detail {
 			return EndianBaseImpl::Write<type>(std::forward<Dst>(out), val);
 		}
 	};
-}}    // namespace internal::detail
+}}    // namespace endian_internal::detail
 
-using big_endian = internal::detail::endian_base<internal::detail::endian::big>;
-using little_endian
-		= internal::detail::endian_base<internal::detail::endian::little>;
-using native_endian
-		= internal::detail::endian_base<internal::detail::endian::native>;
+using big_endian = endian_internal::detail::endian_base<
+		endian_internal::detail::endian::big>;
+using little_endian = endian_internal::detail::endian_base<
+		endian_internal::detail::endian::little>;
+using native_endian = endian_internal::detail::endian_base<
+		endian_internal::detail::endian::native>;
 
 template <typename Src>
 ENDIANIO_CONSTEXPR static auto Read1(Src&& in) {
-	return internal::detail::EndianBaseImpl::Read<
-			internal::detail::endian::native, uint8_t>(std::forward<Src>(in));
+	return endian_internal::detail::EndianBaseImpl::Read<
+			endian_internal::detail::endian::native, uint8_t>(
+			std::forward<Src>(in));
 }
 
 template <typename Src>
 ENDIANIO_CONSTEXPR static auto Read1s(Src&& in) {
-	return internal::detail::EndianBaseImpl::Read<
-			internal::detail::endian::native, int8_t>(std::forward<Src>(in));
+	return endian_internal::detail::EndianBaseImpl::Read<
+			endian_internal::detail::endian::native, int8_t>(
+			std::forward<Src>(in));
 }
 
 template <typename Dst>
 ENDIANIO_CONSTEXPR static void Write1(Dst&& out, uint8_t val) {
-	internal::detail::EndianBaseImpl::Write<internal::detail::endian::native>(
+	endian_internal::detail::EndianBaseImpl::Write<
+			endian_internal::detail::endian::native>(
 			std::forward<Dst>(out), val);
 }
 
 template <typename Dst>
 ENDIANIO_CONSTEXPR static void Write1s(Dst&& out, int8_t val) {
-	internal::detail::EndianBaseImpl::Write<internal::detail::endian::native>(
+	endian_internal::detail::EndianBaseImpl::Write<
+			endian_internal::detail::endian::native>(
 			std::forward<Dst>(out), val);
 }
 
@@ -512,7 +517,7 @@ ENDIANIO_CONSTEXPR uint32_t bitcount(uint32_t val) {
 	return static_cast<uint32_t>(__builtin_popcount(val));
 }
 #else
-namespace { namespace detail {
+namespace endian_internal { namespace detail {
 	ENDIANIO_CONSTEXPR uint32_t bitcount_fallback(uint32_t val) {
 		val = val
 			  - ((val >> 1) & static_cast<uint32_t>(0x5555'5555'5555'5555ull));
@@ -526,7 +531,7 @@ namespace { namespace detail {
 		// Extract highest byte
 		return val >> (std::numeric_limits<uint32_t>::digits - 8);
 	}
-}}    // namespace ::detail
+}}    // namespace endian_internal::detail
 
 ENDIANIO_CONSTEXPR uint32_t bitcount(uint32_t val) noexcept {
 	if (!detail::is_constant_evaluated()) {
