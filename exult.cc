@@ -1479,7 +1479,7 @@ static void Handle_event(SDL_Event& event) {
 		break;
 	}
 	case SDL_FINGERDOWN: {
-		if ((!Mouse::use_touch_input) && (event.tfinger.fingerId != 0)) {
+		if ((!Mouse::use_touch_input) && (event.tfinger.touchId > 0)) {
 			Mouse::use_touch_input = true;
 			gwin->set_painted();
 		}
