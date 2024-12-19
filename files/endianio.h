@@ -275,13 +275,14 @@ namespace endian_internal { namespace detail {
 		UInt   mask1 = std::numeric_limits<unsigned char>::max();
 		UInt   mask2 = mask1 << diff;
 		UInt   val   = value;
+		diff += size_t{2} * CHAR_BIT;
 		for (size_t i = 0; i < sizeof(UInt) / 2; ++i) {
+			diff -= size_t{2} * CHAR_BIT;
 			UInt byte1 = val & mask1;
 			UInt byte2 = val & mask2;
 			val = (val ^ byte1 ^ byte2 ^ (byte1 << diff) ^ (byte2 >> diff));
 			mask1 <<= CHAR_BIT;
 			mask2 >>= CHAR_BIT;
-			diff -= size_t{2} * CHAR_BIT;
 		}
 		return val;
 	}
