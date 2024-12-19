@@ -208,8 +208,6 @@ namespace endian_internal { namespace detail {
 	template <class... Ts>
 	struct overloaded : public Ts... {
 		using Ts::operator()...;
-
-		constexpr explicit overloaded(Ts... callables) : Ts(callables)... {}
 	};
 	template <class... Ts>
 	overloaded(Ts...) -> overloaded<Ts...>;
@@ -231,7 +229,7 @@ namespace endian_internal { namespace detail {
 		}
 #	if defined(__GNUG__) || defined(_MSC_VER)
 		if (!is_constant_evaluated()) {
-			constexpr const auto builtin_byteswap = overloaded(
+			constexpr const auto builtin_byteswap = overloaded{
 #		ifdef __GNUG__
 					[](const uint16_t val) {
 						return __builtin_bswap16(val);
@@ -253,7 +251,7 @@ namespace endian_internal { namespace detail {
 						return _byteswap_uint64(val);
 					}
 #		endif
-			);
+			};
 			if constexpr (
 					sizeof(UInt) == 2 || sizeof(UInt) == 4
 					|| sizeof(UInt) == 8) {
