@@ -1095,7 +1095,7 @@ void BG_Game::scene_guardian() {
 				if (subtitles) {
 					text_index = 0;
 				} else {
-					text_index = text_num_frames;    // Disable subtitles
+					text_index = text_num_frames + 1;    // Disable subtitles
 				}
 				// start speech
 				// Loop till speech has stopped or there is nolipsync data
