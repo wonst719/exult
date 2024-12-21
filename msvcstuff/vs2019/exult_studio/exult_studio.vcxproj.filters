@@ -43,6 +43,9 @@
     <Filter Include="Usecode">
       <UniqueIdentifier>{ae029b6e-3150-4a4d-bcf8-8fc831cb71a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="korean">
+      <UniqueIdentifier>{dee677d6-3310-40e0-bd7c-0fd2e860a30b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\server\objserial.cc">
@@ -260,6 +263,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\conf\XMLEntity.cc">
       <Filter>Conf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\korean\korean.cc">
+      <Filter>korean</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\korean\ucs2kstable.cc">
+      <Filter>korean</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -488,6 +497,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\conf\XMLEntity.h">
       <Filter>Conf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\korean\korean.h">
+      <Filter>korean</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\korean\ucs2kstable.h">
+      <Filter>korean</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

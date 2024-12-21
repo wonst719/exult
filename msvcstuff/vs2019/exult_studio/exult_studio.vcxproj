@@ -29,13 +29,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -71,20 +71,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)..\..\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)..\..\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)..\..\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)..\..\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
@@ -196,6 +196,8 @@
     <ClCompile Include="..\..\..\gamemgr\modmgr.cc" />
     <ClCompile Include="..\..\..\imagewin\ibuf8.cc" />
     <ClCompile Include="..\..\..\imagewin\imagebuf.cc" />
+    <ClCompile Include="..\..\..\korean\korean.cc" />
+    <ClCompile Include="..\..\..\korean\ucs2kstable.cc" />
     <ClCompile Include="..\..\..\mapedit\bargeedit.cc" />
     <ClCompile Include="..\..\..\mapedit\chunklst.cc" />
     <ClCompile Include="..\..\..\mapedit\combo.cc" />
@@ -290,6 +292,8 @@
     <ClInclude Include="..\..\..\gamemgr\sigame.h" />
     <ClInclude Include="..\..\..\imagewin\ibuf8.h" />
     <ClInclude Include="..\..\..\imagewin\imagebuf.h" />
+    <ClInclude Include="..\..\..\korean\korean.h" />
+    <ClInclude Include="..\..\..\korean\ucs2kstable.h" />
     <ClInclude Include="..\..\..\mapedit\chunklst.h" />
     <ClInclude Include="..\..\..\mapedit\combo.h" />
     <ClInclude Include="..\..\..\mapedit\execbox.h" />
