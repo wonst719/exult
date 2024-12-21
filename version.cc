@@ -16,12 +16,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <algorithm>
+#include <string_view>
 #ifdef HAVE_CONFIG_H
 #	include <config.h>
 #endif
 
+#include "endianio.h"
 #include "version.h"
 
+#include <array>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
@@ -39,8 +43,6 @@
 #		define WIN32_LEAN_AND_MEAN
 #	endif
 #	include <windows.h>
-
-#	include <cstring>
 #endif
 
 #if (defined(__linux__) || defined(__linux) || defined(linux))
@@ -49,55 +51,55 @@
 #endif
 
 #ifdef _WIN32
-// Do casts from pointers without too much undefined behavior.
-template <typename To, typename From>
-To safe_pointer_cast(From pointer) {
-	// NOLINTNEXTLINE(bugprone-sizeof-expression)
-	constexpr const size_t SizeFrom = sizeof(From);
-	// NOLINTNEXTLINE(bugprone-sizeof-expression)
-	constexpr const size_t SizeTo = sizeof(To);
-	static_assert(
-			std::is_pointer<From>::value && std::is_pointer<To>::value
-					&& SizeFrom == SizeTo,
-			"Pointer sizes do not match");
-	To output;
-	std::memcpy(
-			static_cast<void*>(&output), static_cast<void*>(&pointer),
-			SizeFrom);
-	return output;
-}
-
+namespace {
+	// Do casts from pointers without too much undefined behavior.
+	template <typename To, typename From>
+	To safe_pointer_cast(From pointer) {
+		// NOLINTNEXTLINE(bugprone-sizeof-expression)
+		constexpr const size_t SizeFrom = sizeof(From);
+		// NOLINTNEXTLINE(bugprone-sizeof-expression)
+		constexpr const size_t SizeTo = sizeof(To);
+		static_assert(
+				std::is_pointer<From>::value && std::is_pointer<To>::value
+						&& SizeFrom == SizeTo,
+				"Pointer sizes do not match");
+		To output;
+		std::memcpy(
+				static_cast<void*>(&output), static_cast<void*>(&pointer),
+				SizeFrom);
+		return output;
+	}
+}    // namespace
 #endif
 #ifdef GIT_REVISION
-static const char git_rev[] = GIT_REVISION;
+static constexpr const std::string_view git_rev{GIT_REVISION};
 #else
-static const char git_rev[] = "";
+constexpr static const std::string_view git_rev{};
 #endif
 #ifdef GIT_TAG
-static const char git_tag[] = GIT_TAG;
+static constexpr const std::string_view git_tag{GIT_TAG};
 #else
-static const char git_tag[] = "";
+static constexpr const std::string_view git_tag{};
 #endif
 #ifdef GIT_REMOTE_BRANCH
-static const char git_branch[] = GIT_REMOTE_BRANCH;
+static constexpr const std::string_view git_branch{GIT_REMOTE_BRANCH};
 #else
-static const char git_branch[] = "";
+static constexpr const std::string_view git_branch{};
 #endif
 #ifdef GIT_REMOTE_URL
-static const char git_url[] = GIT_REMOTE_URL;
+static constexpr const std::string_view git_url{GIT_REMOTE_URL};
 #else
-static const char git_url[] = "";
+static constexpr const std::string_view git_url{};
 #endif
 
 std::string_view VersionGetGitRevision(bool shortrev) {
-	if (git_rev[0]) {
+	if constexpr (!git_rev.empty()) {
 		if (shortrev) {
-			return std::string_view(git_rev, 7);
-		} else {
-			return std::string_view(git_rev);
+			return git_rev.substr(0, 7);
 		}
+		return git_rev;
 	}
-	return std::string_view();
+	return {};
 }
 
 std::string VersionGetGitInfo(bool limitedwidth) {
@@ -107,17 +109,17 @@ std::string VersionGetGitInfo(bool limitedwidth) {
 	std::string result;
 	result.reserve(256);
 
-	if (git_branch[0]) {
+	if constexpr (!git_branch.empty()) {
 		result += "Git Branch: ";
 		result += git_branch;
 		result += "\n";
 	}
-	if (git_rev[0]) {
+	if constexpr (!git_rev.empty()) {
 		result += "Git Revision: ";
 		result += VersionGetGitRevision(limitedwidth);
 		result += "\n";
 	}
-	if (git_tag[0]) {
+	if constexpr (!git_tag.empty()) {
 		result += "Git Tag: ";
 		result += git_tag;
 		result += "\n";
@@ -127,13 +129,13 @@ std::string VersionGetGitInfo(bool limitedwidth) {
 	std::string src_url = "https://github.com/exult/exult";
 
 	// if the remote url was supplied in the build make sure it is git hub https
-	if (!std::strncmp(git_url, "https://github.com/", 19)) {
+	if constexpr (git_url.substr(0, 19) == "https://github.com/") {
 		src_url = git_url;
 		// if it ends in '.git remove it
 #ifdef __cpp_lib_starts_ends_with    // c++20
 		if (src_url.ends_with(".git"))
 #else    // older
-		if (!src_url.compare(src_url.size() - 4, 4, ".git"))
+		if (src_url.compare(src_url.size() - 4, 4, ".git") == 0)
 #endif
 		{
 			src_url.resize(src_url.size() - 4);
@@ -144,14 +146,14 @@ std::string VersionGetGitInfo(bool limitedwidth) {
 		}
 
 		// As we have github remote we can create url to exact revision/tag
-		if (git_tag[0]) {
+		if constexpr (!git_tag.empty()) {
 			src_url.reserve(src_url.size() + std::size(git_tag) + 7);
 			if (limitedwidth) {
 				src_url += "\n";
 			}
 			src_url += "/tree/";
 			src_url += git_tag;
-		} else if (git_rev[0]) {
+		} else if constexpr (!git_rev.empty()) {
 			src_url.reserve(src_url.size() + std::size(git_rev) + 6);
 			if (limitedwidth) {
 				src_url += "\n";
@@ -174,16 +176,16 @@ void getVersionInfo(std::ostream& out) {
 	 * 1. Exult version
 	 */
 
-	out << "Exult version " << VERSION << std::endl;
+	out << "Exult version " << VERSION << '\n';
 	/*
 	 * 4. Git revision information
 	 */
-	out << VersionGetGitInfo(false) << std::endl;
+	out << VersionGetGitInfo(false) << '\n';
 
 	/*
-	 * 3. Build Architechture
+	 * 3. Build Architecture
 	 */
-	out << "Build Architechture: ";
+	out << "Build Architecture: ";
 
 	// AMD64 x86_64
 #if defined(__amd64__) || defined(__amd64) || defined(__amd64__) \
@@ -208,11 +210,11 @@ void getVersionInfo(std::ostream& out) {
 #elif defined(__riscv)
 	out << "RISC-V";
 #else
-	out << "unknown architechture update version.cc ";
+	out << "unknown architecture update version.cc ";
 
 #endif
 
-	out << std::endl;
+	out << '\n';
 
 #ifdef WANT_CPUID
 	OutputCPUID(&out);
@@ -230,7 +232,7 @@ void getVersionInfo(std::ostream& out) {
 #	ifdef __TIME__
 	out << __TIME__;
 #	endif
-	out << std::endl;
+	out << '\n';
 #endif
 
 	/*
@@ -323,7 +325,7 @@ void getVersionInfo(std::ostream& out) {
 	if (firstoption) {
 		out << "(none)";
 	}
-	out << std::endl;
+	out << '\n';
 
 	/*
 	 * 6. Compiler used to create this binary
@@ -345,14 +347,14 @@ void getVersionInfo(std::ostream& out) {
 #	define COMPILER "unknown compiler"
 #endif
 
-	out << COMPILER << std::endl;
+	out << COMPILER << '\n';
 #undef COMPILER
 
 	/*
 	 * 7. Platform
 	 */
 
-	out << std::endl << "Platform: ";
+	out << '\n' << "Platform: ";
 
 #if (defined(ANDROID))
 	out << "Android";
@@ -418,7 +420,7 @@ void getVersionInfo(std::ostream& out) {
 						// cut off for Windows 10 and 11 is build 22000 (11
 						// builds with a build number lower than 22000 are not
 						// public releases so I don't care)
-						if (LOWORD(info.dwBuildNumber & 0xFFFF) < 22000) {
+						if (LOWORD(info.dwBuildNumber) < 22000) {
 							out << "10";
 						} else {
 							out << "11";
@@ -455,10 +457,9 @@ void getVersionInfo(std::ostream& out) {
 					if (info.dwMajorVersion == 6 && info.dwMinorVersion == 3) {
 						out << "Windows Server 2012 R2";
 					} else if (info.dwMajorVersion == 10) {
-						if (LOWORD(info.dwBuildNumber & 0xFFFF) < 17000) {
+						if (LOWORD(info.dwBuildNumber) < 17000) {
 							out << "Server 2016";
-						} else if (
-								LOWORD(info.dwBuildNumber & 0xFFFF) < 19000) {
+						} else if (LOWORD(info.dwBuildNumber) < 19000) {
 							out << "Server 2019";
 						} else {
 							out << "Server 2022";
@@ -477,14 +478,18 @@ void getVersionInfo(std::ostream& out) {
 
 			if (info.dwMajorVersion == 4 && info.dwMinorVersion == 0) {
 				out << 95;
-				if (info.szCSDVersion[1] != ' ') {
+				const char value = info.szCSDVersion[1];
+				if (value == 'C' || value == 'B') {
+					out << "OSR2 ";
+				} else if (value != ' ') {
 					out << info.szCSDVersion;
 				}
 			} else if (info.dwMajorVersion == 4 && info.dwMinorVersion == 10) {
 				out << 98;
-				if (info.szCSDVersion[1] == 'A') {
+				const char value = info.szCSDVersion[1];
+				if (value == 'A') {
 					out << " SE";
-				} else if (info.szCSDVersion[1] != ' ') {
+				} else if (value != ' ') {
 					out << info.szCSDVersion;
 				}
 			} else if (info.dwMajorVersion == 4 && info.dwMinorVersion == 90) {
@@ -492,7 +497,7 @@ void getVersionInfo(std::ostream& out) {
 			}
 		}
 		out << " Version " << info.dwMajorVersion << "." << info.dwMinorVersion
-			<< " Build " << LOWORD(info.dwBuildNumber & 0xFFFF) << " ";
+			<< " Build " << LOWORD(info.dwBuildNumber) << " ";
 
 		// This function only exists in XP or newer but I see no reason to break
 		// compatibility with older windows version here so using it dynamically
@@ -556,35 +561,36 @@ void getVersionInfo(std::ostream& out) {
 	out << "Unknown";
 #endif
 
-	out << std::endl;
+	out << '\n' << std::flush;
 }
 
-const int CPUID_EAX = 0;
-const int CPUID_EBX = 1;
-const int CPUID_ECX = 2;
-const int CPUID_EDX = 3;
-using std::uint32_t;
+namespace {
 #ifdef WANT_CPUID
+	constexpr const int CPUID_EAX = 0;
+	constexpr const int CPUID_EBX = 1;
+	constexpr const int CPUID_ECX = 2;
+	constexpr const int CPUID_EDX = 3;
+	using std::uint32_t;
 // CPUID support for x86 cpus, wont work for 386 or 486 cpus but I don't think
 // we'd support those anyway
 #	if __has_include(<cpuid.h>)
-// gcc and cland should have this
+// gcc and clang should have this
 #		include <cpuid.h>
 
-bool CPUID(uint32_t leaf, uint32_t subleaf, uint32_t regs[4]) {
-	return __get_cpuid_count(
-				   leaf, subleaf, &regs[CPUID_EAX], &regs[CPUID_EBX],
-				   &regs[CPUID_ECX], &regs[CPUID_EDX])
-		   != 0;
-}
+	bool CPUID(uint32_t leaf, uint32_t subleaf, std::array<uint32_t, 4>& regs) {
+		return __get_cpuid_count(
+					   leaf, subleaf, &regs[CPUID_EAX], &regs[CPUID_EBX],
+					   &regs[CPUID_ECX], &regs[CPUID_EDX])
+			   != 0;
+	}
 #	elif __has_include(<intrin.h>)
 // MSVC should have this
 #		include <intrin.h>
 
-bool CPUID(uint32_t leaf, uint32_t subleaf, uint32_t regs[4]) {
-	__cpuidex(safe_pointer_cast<int*>(regs), leaf, subleaf);
-	return true;
-}
+	bool CPUID(uint32_t leaf, uint32_t subleaf, std::array<uint32_t, 4>& regs) {
+		__cpuidex(safe_pointer_cast<int*>(regs.data()), leaf, subleaf);
+		return true;
+	}
 #	else
 #		define NO_CPUID
 #	endif
@@ -594,404 +600,487 @@ bool CPUID(uint32_t leaf, uint32_t subleaf, uint32_t regs[4]) {
 #endif
 
 #ifdef NO_CPUID
-bool CPUID(uint32_t leaf, uint32_t subleaf, uint32_t regs[4]) {
-	return false;
-}
+	bool CPUID(uint32_t leaf, uint32_t subleaf, std::array<uint32_t, 4>& regs) {
+		return false;
+	}
 #endif
 
-uint32_t CPUID_0(char vendor[13]) {
-	uint32_t regs[4] = {0};
-	if (!CPUID(0, 0, regs)) {
-		vendor[0] = 0;
-		return 0;
-	}
-
-	memcpy(&vendor[0], &regs[CPUID_EBX], 4);
-	memcpy(&vendor[4], &regs[CPUID_EDX], 4);
-	memcpy(&vendor[8], &regs[CPUID_ECX], 4);
-	vendor[12] = 0;
-	return regs[CPUID_EAX];
-}
-
-uint32_t CPUID_ExBrand(char brand[49]) {
-	brand[0]         = 0;
-	uint32_t regs[4] = {0};
-	if (!CPUID(0x80000000, 0, regs)) {
-		return 0;
-	}
-	uint32_t max_ex = regs[CPUID_EAX];
-
-	for (int i = 0; (i + 0x80000002) <= max_ex && i < 3; i++) {
-		if (!CPUID(0x80000002 + i, 0, regs)) {
-			break;
+	uint32_t CPUID_0(char vendor[13]) {
+		std::array<uint32_t, 4> regs = {0};
+		if (!CPUID(0, 0, regs)) {
+			vendor[0] = 0;
+			return 0;
 		}
 
-		memcpy(&brand[i * 16 + 0], &regs[CPUID_EAX], 4);
-		memcpy(&brand[i * 16 + 4], &regs[CPUID_EBX], 4);
-		memcpy(&brand[i * 16 + 8], &regs[CPUID_ECX], 4);
-		memcpy(&brand[i * 16 + 12], &regs[CPUID_EDX], 4);
-		brand[i * 16 + 16] = 0;
+		char* vendor_ptr = vendor;
+		little_endian::Write4(vendor_ptr, regs[CPUID_EBX]);
+		little_endian::Write4(vendor_ptr, regs[CPUID_EDX]);
+		little_endian::Write4(vendor_ptr, regs[CPUID_ECX]);
+		*vendor_ptr = 0;
+		return regs[CPUID_EAX];
 	}
-	return max_ex;
-}
 
-static bool cpuidunsupportedfeatures = false;
+	uint32_t CPUID_ExBrand(char (&brand)[49]) {
+		std::fill(std::begin(brand), std::end(brand), 0);
+		char* brand_ptr = brand;
+
+		std::array<uint32_t, 4> regs = {0};
+		if (!CPUID(0x80000000u, 0, regs)) {
+			return 0;
+		}
+
+		uint32_t max_ex = regs[CPUID_EAX];
+		for (uint32_t i = 0; (i + 0x80000002u) <= max_ex && i < 3; i++) {
+			if (!CPUID(0x80000002u + i, 0, regs)) {
+				break;
+			}
+
+			little_endian::Write4(brand_ptr, regs[CPUID_EAX]);
+			little_endian::Write4(brand_ptr, regs[CPUID_EBX]);
+			little_endian::Write4(brand_ptr, regs[CPUID_ECX]);
+			little_endian::Write4(brand_ptr, regs[CPUID_EDX]);
+		}
+		*brand_ptr = 0;
+		return max_ex;
+	}
+}    // namespace
 
 bool OutputCPUID(std::ostream* out) {
-	cpuidunsupportedfeatures = false;
-	using std::endl;
+	bool     cpuidunsupportedfeatures = false;
 	char     vendor[13];
 	uint32_t maxcpuid = CPUID_0(vendor);
 	if (maxcpuid == 0) {
-		return false;
+		return cpuidunsupportedfeatures;
 	}
 	char     brand[49];
 	uint32_t max_ex = CPUID_ExBrand(brand);
-	if (out) {
-		*out << "CPUID: " << vendor << ", " << brand << endl;
+	if (out != nullptr) {
+		*out << "CPUID: " << vendor << ", " << brand << '\n';
 	}
 
-	uint32_t regs[4] = {0};
+	std::array<uint32_t, 4> regs = {0};
 	if (!CPUID(1, 0, regs)) {
-		std::memset(regs, 0, sizeof(regs));
+		std::fill(regs.begin(), regs.end(), 0);
 	}
 
 	// Just outputting raw fields here instead of getting real values
-	if (out) {
-		*out << "stepping: " << ((regs[CPUID_EAX] >> 0) & 0xf) << endl;
+	if (out != nullptr) {
+		*out << "stepping: " << ((regs[CPUID_EAX] >> 0) & 0xf) << '\n';
 	}
-	if (out) {
-		*out << "type: " << ((regs[CPUID_EAX] >> 12) & 0x3) << endl;
+	if (out != nullptr) {
+		*out << "type: " << ((regs[CPUID_EAX] >> 12) & 0x3) << '\n';
 	}
-	if (out) {
-		*out << "family: " << ((regs[CPUID_EAX] >> 8) & 0xf) << endl;
+	if (out != nullptr) {
+		*out << "family: " << ((regs[CPUID_EAX] >> 8) & 0xf) << '\n';
 	}
-	if (out) {
-		*out << "ext family: " << ((regs[CPUID_EAX] >> 20) & 0xff) << endl;
+	if (out != nullptr) {
+		*out << "ext family: " << ((regs[CPUID_EAX] >> 20) & 0xff) << '\n';
 	}
-	if (out) {
-		*out << "model: " << ((regs[CPUID_EAX] >> 4) & 0xf) << endl;
+	if (out != nullptr) {
+		*out << "model: " << ((regs[CPUID_EAX] >> 4) & 0xf) << '\n';
 	}
-	if (out) {
-		*out << "ext model: " << ((regs[CPUID_EAX] >> 16) & 0xf) << endl;
-	}
-
-	uint32_t regs_ex[4] = {0};
-	if (max_ex < 0x80000001 || !CPUID(0x80000001, 0, regs_ex)) {
-		std::memset(regs_ex, 0, sizeof(regs_ex));
+	if (out != nullptr) {
+		*out << "ext model: " << ((regs[CPUID_EAX] >> 16) & 0xf) << '\n';
 	}
 
-	uint32_t regs_efb[4] = {0};
+	std::array<uint32_t, 4> regs_ex = {0};
+	if (max_ex < 0x80000001u || !CPUID(0x80000001u, 0, regs_ex)) {
+		std::fill(regs_ex.begin(), regs_ex.end(), 0);
+	}
+
+	std::array<uint32_t, 4> regs_efb = {0};
 	if (maxcpuid < 7 || !CPUID(7, 0, regs_efb)) {
-		std::memset(regs_efb, 0, sizeof(regs_efb));
+		std::fill(regs_efb.begin(), regs_efb.end(), 0);
 	}
 
-	bool need_sse    = false;
-	bool need_sse2   = false;
-	bool need_sse3   = false;    // x86-64-v2
-	bool need_ssse3  = false;    // x86-64-v2
-	bool need_sse4_1 = false;    // x86-64-v2
-	bool need_sse4_2 = false;    // x86-64-v2
-	bool need_sse4a  = false;
-#ifdef __SSE__
-	need_sse = true;
-#endif
-#ifdef __SSE_MATH__
-	need_sse = true;
-#endif
-#ifdef __SSE2__
-	need_sse2 = true;
-#endif
-#ifdef __SSE2_MATH__
-	need_sse2 = true;
-#endif
-#ifdef __SSE3__
-	need_sse3 = true;
-#endif
-#ifdef __SSSE3__
-	need_ssse3 = true;
-#endif
-#ifdef __SSE4_1__
-	need_sse4_1 = true;
-#endif
-#ifdef __SSE4_2__
-	need_sse4_2 = true;
-#endif
-
-#ifdef __SSE4A__
-	need_sse4a = true;
-#endif
-
-	bool need_avx      = false;    // x86-64-v3
-	bool need_avx2     = false;    // x86-64-v3
-	bool need_avx512f  = false;    // x86-64-v4
-	bool need_avx512bw = false;    // x86-64-v4
-	bool need_avx512vl = false;    // x86-64-v4
-	bool need_avx512cd = false;    // x86-64-v4
-	bool need_avx512dq = false;    // x86-64-v4
-#ifdef __AVX__
-	need_avx = true;
-#endif
-#ifdef __AVX2__
-	need_avx2 = true;
-#endif
-#ifdef __AVX512F__
-	need_avx512f = true;
-#endif
-#ifdef __AVX512BW__
-	need_avx512bw = true;
-#endif
-#ifdef __AVX512VL__
-	need_avx512vl = true;
-#endif
-#ifdef __AVX512CD__
-	need_avx512cd = true;
-#endif
-#ifdef __AVX512DQ__
-	need_avx512dq = true;
-#endif
-
-	bool need_movbe = false;    // likely means x86-64-v3 build
-#ifdef __MOVBE__
-	need_movbe = true;
-#endif
-	bool need_popcnt = false;    // likely means x86-64-v2 build
-#ifdef __POPCNT__
-	need_popcnt = true;
-#endif
-	bool need_fma = false;    // likely means x86-64-v3 build
-#ifdef __FMA__
-	need_fma = true;
-#endif
-	bool need_lahfsahf = false;    // likely means x86-64-v2 build
-#ifdef __LAHF_SAHF__
-	need_lahfsahf = sizeof(void*) == 8;    // 32 bit x86 always supports this so
-										   // only check for it in 64 bit builds
-#endif
-	bool need_bmi1 = false;    // likely means x86-64-v3 build
-#ifdef __BMI1__
-	need_bmi1 = true;
-#endif
-	bool need_bmi2 = false;    // likely means x86-64-v3 build
-#ifdef __BMI2__
-	need_bmi2 = true;
-#endif
-	bool need_lzcnt = false;
-#ifdef __LZCNT__
-	need_lzcnt = true;
-#endif
-
+	constexpr const bool need_sse = []() {
 	// MSVC x86 floating point mode
 #ifdef _M_IX86_FP
-#	if _M_IX86_FP == 1
-	need_sse = true;
-#	elif _M_IX86_FP == 2
-	need_sse  = true;
-	need_sse2 = true;
+#	if _M_IX86_FP == 1 || _M_IX86_FP == 2
+		return true;
 #	endif
 #endif
+#if defined(__SSE__) || defined(__SSE_MATH__)
+		return true;
+#else
+		return false;
+#endif
+	}();
+	constexpr const bool need_sse2 = []() {
+	// MSVC x86 floating point mode
+#ifdef _M_IX86_FP
+#	if _M_IX86_FP == 2
+		return true;
+#	endif
+#endif
+#if defined(__SSE2__) || defined(__SSE2_MATH__)
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// x86-64-v2
+	constexpr const bool need_sse3 = []() {
+#ifdef __SSE3__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// x86-64-v2
+	constexpr const bool need_ssse3 = []() {
+#ifdef __SSSE3__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// x86-64-v2
+	constexpr const bool need_sse4_1 = []() {
+#ifdef __SSE4_1__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// x86-64-v2
+	constexpr const bool need_sse4_2 = []() {
+#ifdef __SSE4_2__
+		return true;
+#else
+		return false;
+#endif
+	}();
+
+	constexpr const bool need_sse4a = []() {
+#ifdef __SSE4A__
+		return true;
+#else
+		return false;
+#endif
+	}();
+
+	// x86-64-v3
+	constexpr const bool need_avx = []() {
+#ifdef __AVX__
+		return true;
+#else
+		return false;
+
+#endif
+	}();
+	// x86-64-v3
+	constexpr const bool need_avx2 = []() {
+#ifdef __AVX2__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// x86-64-v4
+	constexpr const bool need_avx512f = []() {
+#ifdef __AVX512F__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// x86-64-v4
+	constexpr const bool need_avx512bw = []() {
+#ifdef __AVX512BW__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// x86-64-v4
+	constexpr const bool need_avx512vl = []() {
+#ifdef __AVX512VL__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// x86-64-v4
+	constexpr const bool need_avx512cd = []() {
+#ifdef __AVX512CD__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// x86-64-v4
+	constexpr const bool need_avx512dq = []() {
+#ifdef __AVX512DQ__
+		return true;
+#else
+		return false;
+#endif
+	}();
+
+	// likely means x86-64-v3 build
+	constexpr const bool need_movbe = []() {
+#ifdef __MOVBE__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// likely means x86-64-v2 build
+	constexpr const bool need_popcnt = []() {
+#ifdef __POPCNT__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// likely means x86-64-v3 build
+	constexpr const bool need_fma = []() {
+#ifdef __FMA__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// likely means x86-64-v2 build
+	constexpr const bool need_lahfsahf = []() {
+#ifdef __LAHF_SAHF__
+		// 32 bit x86 always supports this so only check for it in 64 bit builds
+		return sizeof(void*) == 8;
+#else
+		return false;
+#endif
+	}();
+	// likely means x86-64-v3 build
+	constexpr const bool need_bmi1 = []() {
+#ifdef __BMI1__
+		return true;
+#else
+		return false;
+#endif
+	}();
+	// likely means x86-64-v3 build
+	constexpr const bool need_bmi2 = []() {
+#ifdef __BMI2__
+		return true;
+#else
+		return false;
+#endif
+	}();
+
+	constexpr const bool need_lzcnt = []() {
+#ifdef __LZCNT__
+		return true;
+#else
+		return false;
+#endif
+	}();
 
 	// Check for required features
-	if (need_sse) {
-		if (regs[CPUID_EDX] & (1 << 25)) {
-			if (out) {
-				*out << "SSE: supported" << endl;
+	if constexpr (need_sse) {
+		if ((regs[CPUID_EDX] & (1 << 25)) != 0u) {
+			if (out != nullptr) {
+				*out << "SSE: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
-				*out << "WARNING SSE REQUIRED BUT NOT SUPPORTED BY THIS CPU"
-					 << endl;
-			}
-		}
-	}
-	if (need_sse2) {
-		if (regs[CPUID_EDX] & (1 << 26)) {
-			if (out) {
-				*out << "SSE2: supported" << endl;
-			}
-		} else {
-			cpuidunsupportedfeatures = true;
-			if (out) {
-				*out << "WARNING SSE2 REQUIRED BUT NOT SUPPORTED BY THIS CPU"
-					 << endl;
-			}
-		}
-	}
-	if (need_sse3) {
-		if (regs[CPUID_ECX] & 1) {
-			if (out) {
-				*out << "SSE3: supported" << endl;
-			}
-		} else {
-			cpuidunsupportedfeatures = true;
-			if (out) {
-				*out << "WARNING SSE3 REQUIRED BUT NOT SUPPORTED BY THIS "
-						"CPU"
-					 << endl;
-			}
-		}
-	}
-	if (need_ssse3) {
-		if (regs[CPUID_ECX] & (1 << 9)) {
-			if (out) {
-				*out << "SSSE3: supported" << endl;
-			}
-		} else {
-			cpuidunsupportedfeatures = true;
-			if (out) {
-				*out << "WARNING SSSE3 REQUIRED BUT NOT SUPPORTED BY "
+			if (out != nullptr) {
+				*out << "WARNING SSE REQUIRED BUT NOT SUPPORTED BY "
 						"THIS CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_sse4_1) {
-		if (regs[CPUID_ECX] & (1 << 19)) {
-			if (out) {
-				*out << "SSE4.1: supported" << endl;
+	if constexpr (need_sse2) {
+		if ((regs[CPUID_EDX] & (1 << 26)) != 0u) {
+			if (out != nullptr) {
+				*out << "SSE2: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
+				*out << "WARNING SSE2 REQUIRED BUT NOT SUPPORTED "
+						"BY THIS CPU"
+					 << '\n';
+			}
+		}
+	}
+	if constexpr (need_sse3) {
+		if ((regs[CPUID_ECX] & 1) != 0u) {
+			if (out != nullptr) {
+				*out << "SSE3: supported" << '\n';
+			}
+		} else {
+			cpuidunsupportedfeatures = true;
+			if (out != nullptr) {
+				*out << "WARNING SSE3 REQUIRED BUT NOT SUPPORTED "
+						"BY THIS "
+						"CPU"
+					 << '\n';
+			}
+		}
+	}
+	if constexpr (need_ssse3) {
+		if ((regs[CPUID_ECX] & (1 << 9)) != 0u) {
+			if (out != nullptr) {
+				*out << "SSSE3: supported" << '\n';
+			}
+		} else {
+			cpuidunsupportedfeatures = true;
+			if (out != nullptr) {
+				*out << "WARNING SSSE3 REQUIRED BUT NOT SUPPORTED "
+						"BY "
+						"THIS CPU"
+					 << '\n';
+			}
+		}
+	}
+	if constexpr (need_sse4_1) {
+		if ((regs[CPUID_ECX] & (1 << 19)) != 0u) {
+			if (out != nullptr) {
+				*out << "SSE4.1: supported" << '\n';
+			}
+		} else {
+			cpuidunsupportedfeatures = true;
+			if (out != nullptr) {
 				*out << "WARNING SSE4.1 REQUIRED BUT NOT SUPPORTED "
 						"BY THIS CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_sse4_2) {
-		if (regs[CPUID_ECX] & (1 < 20)) {
-			if (out) {
-				*out << "SSE4.2: supported" << endl;
+	if constexpr (need_sse4_2) {
+		if ((regs[CPUID_ECX] & (1 << 20)) != 0u) {
+			if (out != nullptr) {
+				*out << "SSE4.2: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNING SSE4.2 REQUIRED BUT NOT "
 						"SUPPORTED BY THIS CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_sse4a) {
-		if (regs[CPUID_ECX] & (1 < 6)) {
-			if (out) {
-				*out << "SSE4A: supported" << endl;
+	if constexpr (need_sse4a) {
+		if ((regs[CPUID_ECX] & (1 << 6)) != 0u) {
+			if (out != nullptr) {
+				*out << "SSE4A: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNING SSE4A REQUIRED BUT NOT "
 						"SUPPORTED BY THIS CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_movbe) {
-		if (regs[CPUID_ECX] & (1 << 22)) {
-			if (out) {
-				*out << "MOVBE: supported" << endl;
+	if constexpr (need_movbe) {
+		if ((regs[CPUID_ECX] & (1 << 22)) != 0u) {
+			if (out != nullptr) {
+				*out << "MOVBE: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNING MOVBE REQUIRED BUT "
 						"NOT SUPPORTED BY THIS CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_popcnt) {
-		if (regs[CPUID_ECX] & (1 << 23)) {
-			if (out) {
-				*out << "POPCNT: supported" << endl;
+	if constexpr (need_popcnt) {
+		if ((regs[CPUID_ECX] & (1 << 23)) != 0u) {
+			if (out != nullptr) {
+				*out << "POPCNT: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNING POPCNT REQUIRED "
 						"BUT NOT SUPPORTED BY THIS "
 						"CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_fma) {
-		if (regs[CPUID_ECX] & (1 << 12)) {
-			if (out) {
-				*out << "FMA: supported" << endl;
+	if constexpr (need_fma) {
+		if ((regs[CPUID_ECX] & (1 << 12)) != 0u) {
+			if (out != nullptr) {
+				*out << "FMA: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNING FMA REQUIRED "
 						"BUT NOT SUPPORTED BY "
 						"THIS CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_lahfsahf) {
-		if (regs_ex[CPUID_ECX] & 1) {
-			if (out) {
-				*out << "LAHF_SAHF: supported" << endl;
+	if constexpr (need_lahfsahf) {
+		if ((regs_ex[CPUID_ECX] & 1) != 0u) {
+			if (out != nullptr) {
+				*out << "LAHF_SAHF: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNING LAHF_SAHF "
 						"REQUIRED BUT NOT "
 						"SUPPORTED BY THIS "
 						"CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_lzcnt) {
-		if (regs_ex[CPUID_ECX] & (1 << 5)) {
-			if (out) {
-				*out << "LZCNT: supported" << endl;
+	if constexpr (need_lzcnt) {
+		if ((regs_ex[CPUID_ECX] & (1 << 5)) != 0u) {
+			if (out != nullptr) {
+				*out << "LZCNT: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNING LZCNT "
 						"REQUIRED BUT NOT "
 						"SUPPORTED BY THIS "
 						"CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_bmi1) {
-		if (regs_efb[CPUID_EBX] & (1 << 3)) {
-			if (out) {
+	if constexpr (need_bmi1) {
+		if ((regs_efb[CPUID_EBX] & (1 << 3)) != 0u) {
+			if (out != nullptr) {
 				*out << "BMI1: "
 						"supported"
-					 << endl;
+					 << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNING BMI1 "
 						"REQUIRED BUT "
 						"NOT SUPPORTED "
 						"BY THIS CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_bmi2) {
-		if (regs_efb[CPUID_EBX] & (1 << 8)) {
-			if (out) {
+	if constexpr (need_bmi2) {
+		if ((regs_efb[CPUID_EBX] & (1 << 8)) != 0u) {
+			if (out != nullptr) {
 				*out << "BMI2: "
 						"supported"
-					 << endl;
+					 << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNING "
 						"BMI2 "
 						"REQUIRED "
@@ -999,21 +1088,21 @@ bool OutputCPUID(std::ostream* out) {
 						"SUPPORTED "
 						"BY THIS "
 						"CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_avx) {
-		if (regs[CPUID_ECX] & (1 << 28)) {
-			if (out) {
+	if constexpr (need_avx) {
+		if ((regs[CPUID_ECX] & (1 << 28)) != 0u) {
+			if (out != nullptr) {
 				*out << "AVX: "
 						"suppor"
 						"ted"
-					 << endl;
+					 << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNIN"
 						"G AVX "
 						"REQUIR"
@@ -1025,21 +1114,21 @@ bool OutputCPUID(std::ostream* out) {
 						"BY "
 						"THIS "
 						"CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_avx2) {
-		if (regs_efb[CPUID_EBX] & (1 << 5)) {
-			if (out) {
+	if constexpr (need_avx2) {
+		if ((regs_efb[CPUID_EBX] & (1 << 5)) != 0u) {
+			if (out != nullptr) {
 				*out << "AVX2: "
 						"suppor"
 						"ted"
-					 << endl;
+					 << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNIN"
 						"G "
 						"AVX2 "
@@ -1052,13 +1141,13 @@ bool OutputCPUID(std::ostream* out) {
 						"BY "
 						"THIS "
 						"CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_avx512f) {
-		if (regs_efb[CPUID_EBX] & (1 << 16)) {
-			if (out) {
+	if constexpr (need_avx512f) {
+		if ((regs_efb[CPUID_EBX] & (1 << 16)) != 0u) {
+			if (out != nullptr) {
 				*out << "AV"
 						"X5"
 						"12"
@@ -1068,11 +1157,11 @@ bool OutputCPUID(std::ostream* out) {
 						"po"
 						"rt"
 						"ed"
-					 << endl;
+					 << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WA"
 						"RN"
 						"IN"
@@ -1100,64 +1189,68 @@ bool OutputCPUID(std::ostream* out) {
 						"IS"
 						" C"
 						"PU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_avx512dq) {
-		if (regs_efb[CPUID_EBX] & (1 << 17)) {
-			if (out) {
-				*out << "AVX512DQ: supported" << endl;
+	if constexpr (need_avx512dq) {
+		if ((regs_efb[CPUID_EBX] & (1 << 17)) != 0u) {
+			if (out != nullptr) {
+				*out << "AVX512DQ: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
-				*out << "WARNING AVX512DQ REQUIRED BUT NOT SUPPORTED BY THIS "
+			if (out != nullptr) {
+				*out << "WARNING AVX512DQ REQUIRED BUT NOT "
+						"SUPPORTED BY THIS "
 						"CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_avx512bw) {
-		if (regs_efb[CPUID_EBX] & (1 << 30)) {
-			if (out) {
-				*out << "AVX512BW: supported" << endl;
+	if constexpr (need_avx512bw) {
+		if ((regs_efb[CPUID_EBX] & (1 << 30)) != 0u) {
+			if (out != nullptr) {
+				*out << "AVX512BW: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
-				*out << "WARNING AVX512BW REQUIRED BUT NOT SUPPORTED BY THIS "
+			if (out != nullptr) {
+				*out << "WARNING AVX512BW REQUIRED BUT NOT "
+						"SUPPORTED BY THIS "
 						"CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_avx512vl) {
-		if (regs_efb[CPUID_EBX] & (1 << 31)) {
-			if (out) {
-				*out << "AVX512VL: supported" << endl;
+	if constexpr (need_avx512vl) {
+		if ((regs_efb[CPUID_EBX] & (1U << 31)) != 0u) {
+			if (out != nullptr) {
+				*out << "AVX512VL: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
-				*out << "WARNING AVX512VL REQUIRED BUT NOT SUPPORTED BY THIS "
+			if (out != nullptr) {
+				*out << "WARNING AVX512VL REQUIRED BUT NOT "
+						"SUPPORTED BY THIS "
 						"CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
-	if (need_avx512cd) {
-		if (regs_efb[CPUID_EBX] & (1 << 28)) {
-			if (out) {
-				*out << "AVX512CD: supported" << endl;
+	if constexpr (need_avx512cd) {
+		if ((regs_efb[CPUID_EBX] & (1 << 28)) != 0u) {
+			if (out != nullptr) {
+				*out << "AVX512CD: supported" << '\n';
 			}
 		} else {
 			cpuidunsupportedfeatures = true;
-			if (out) {
-				*out << "WARNING AVX512CD REQUIRED BUT NOT SUPPORTED BY "
+			if (out != nullptr) {
+				*out << "WARNING AVX512CD REQUIRED BUT NOT "
+						"SUPPORTED BY "
 						"THIS "
 						"CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
@@ -1165,152 +1258,165 @@ bool OutputCPUID(std::ostream* out) {
 	// x86-64
 	// feature
 	// levels
-	if (sizeof(void*) == 8) {
-		bool v2      = true;
-		bool need_v2 = need_popcnt && need_sse3 && need_ssse3 && need_sse4_1
-					   && need_sse4_2 && need_lahfsahf;
-		// CMPXCHG16B
-		if (!(regs[CPUID_ECX] & (1 << 28))) {
-			v2 = false;
-		}
-		// LAHF-SAHF
-		else if (!(regs_ex[CPUID_ECX] & 1)) {
-			v2 = false;
-		}    // POPCNT
-		else if (!(regs[CPUID_ECX] & (1 << 23))) {
-			v2 = false;
-		}
-		// SSE3
-		else if (!(regs[CPUID_ECX] & 1)) {
-			v2 = false;
-		}
-		// SSE4_1
-		else if (!(regs[CPUID_ECX] & (1 << 19))) {
-			v2 = false;
-		}
-		// SSE4_2
-		else if (!(regs[CPUID_ECX] & (1 << 22))) {
-			v2 = false;
-		}
-		// SSSE3
-		else if (!(regs[CPUID_ECX] & (1 << 9))) {
-			v2 = false;
-		}
+	if constexpr (sizeof(void*) == 8) {
+		constexpr const bool need_v2 = need_popcnt && need_sse3 && need_ssse3
+									   && need_sse4_1 && need_sse4_2
+									   && need_lahfsahf;
+		const bool v2 = [&]() {
+			// CMPXCHG16B
+			if ((regs[CPUID_ECX] & (1 << 28)) == 0u) {
+				return false;
+			}
+			// LAHF-SAHF
+			if ((regs_ex[CPUID_ECX] & 1) == 0u) {
+				return false;
+			}    // POPCNT
+			if ((regs[CPUID_ECX] & (1 << 23)) == 0u) {
+				return false;
+			}
+			// SSE3
+			if ((regs[CPUID_ECX] & 1) == 0u) {
+				return false;
+			}
+			// SSE4_1
+			if ((regs[CPUID_ECX] & (1 << 19)) == 0u) {
+				return false;
+			}
+			// SSE4_2
+			if ((regs[CPUID_ECX] & (1 << 22)) == 0u) {
+				return false;
+			}
+			// SSSE3
+			if ((regs[CPUID_ECX] & (1 << 9)) == 0u) {
+				return false;
+			}
+			return true;
+		}();
 
-		bool v3      = v2;
-		bool need_v3 = need_avx && need_avx2 && need_movbe && need_fma
-					   && need_bmi2 && need_bmi1 && need_lzcnt;
-		// AVX
-		if (!(regs[CPUID_ECX] & (1 << 28))) {
-			v3 = false;
-		}
-		// AVX2
-		else if (!(regs_efb[CPUID_EBX] & (1 << 5))) {
-			v3 = false;
-		}
-		// BMI1
-		else if (!(regs_efb[CPUID_EBX] & (1 << 3))) {
-			v3 = false;
-		}
-		// BMI2
-		else if (!(regs_efb[CPUID_EBX] & (1 << 8))) {
-			v3 = false;
-		}
-		// F16C
-		else if (!(regs[CPUID_ECX] & (1 << 29))) {
-			v3 = false;
-		}
-		// FMA
-		else if (!(regs[CPUID_ECX] & (1 << 12))) {
-			v3 = false;
-		}
-		// LZCNT
-		else if (!(regs_ex[CPUID_ECX] & (1 << 5))) {
-			v3 = false;
-		}
-		// MOVBE
-		else if (!(regs[CPUID_ECX] & (1 << 22))) {
-			v3 = false;
-		}
-		// OSXSAVE
-		else if (!(regs[CPUID_ECX] & (1 << 27))) {
-			v3 = false;
-		}
+		constexpr const bool need_v3 = need_avx && need_avx2 && need_movbe
+									   && need_fma && need_bmi2 && need_bmi1
+									   && need_lzcnt;
+		const bool v3 = [&]() {
+			// AVX
+			if (!(regs[CPUID_ECX] & (1 << 28))) {
+				return false;
+			}
+			// AVX2
+			if (!(regs_efb[CPUID_EBX] & (1 << 5))) {
+				return false;
+			}
+			// BMI1
+			if (!(regs_efb[CPUID_EBX] & (1 << 3))) {
+				return false;
+			}
+			// BMI2
+			if (!(regs_efb[CPUID_EBX] & (1 << 8))) {
+				return false;
+			}
+			// F16C
+			if (!(regs[CPUID_ECX] & (1 << 29))) {
+				return false;
+			}
+			// FMA
+			if (!(regs[CPUID_ECX] & (1 << 12))) {
+				return false;
+			}
+			// LZCNT
+			if (!(regs_ex[CPUID_ECX] & (1 << 5))) {
+				return false;
+			}
+			// MOVBE
+			if (!(regs[CPUID_ECX] & (1 << 22))) {
+				return false;
+			}
+			// OSXSAVE
+			if (!(regs[CPUID_ECX] & (1 << 27))) {
+				return false;
+			}
+			return v2;
+		}();
 
-		bool v4      = v3;
-		bool need_v4 = need_avx512cd && need_avx512vl && need_avx512f
-					   && need_avx512dq && need_avx512bw;
-		// avx512-cd
-		if (!(regs_efb[CPUID_EBX] & (1 << 28))) {
-			v4 = false;
-			// avx512-vl
-		} else if (!(regs_efb[CPUID_EBX] & (1 << 31))) {
-			v4 = false;
-			// avx512-bw
-		} else if (!(regs_efb[CPUID_EBX] & (1 << 30))) {
-			v4 = false;
-			// avx512-f
-		} else if (!(regs_efb[CPUID_EBX] & (1 << 16))) {
-			v4 = false;
-			// avx512-dq
-		} else if (!(regs_efb[CPUID_EBX] & (1 << 17))) {
-			v4 = false;
-		}
+		constexpr const bool need_v4 = need_avx512cd && need_avx512vl
+									   && need_avx512f && need_avx512dq
+									   && need_avx512bw;
+		const bool v4 = [&]() {
+			// avx512-cd
+			if (!(regs_efb[CPUID_EBX] & (1 << 28))) {
+				return false;
+				// avx512-vl
+			}
+			if (!(regs_efb[CPUID_EBX] & (1U << 31))) {
+				return false;
+				// avx512-bw
+			}
+			if (!(regs_efb[CPUID_EBX] & (1 << 30))) {
+				return false;
+				// avx512-f
+			}
+			if (!(regs_efb[CPUID_EBX] & (1 << 16))) {
+				return false;
+				// avx512-dq
+			}
+			if (!(regs_efb[CPUID_EBX] & (1 << 17))) {
+				return false;
+			}
+			return v3;
+		}();
 
 		if (v4) {
-			if (out) {
-				*out << "X86-64-v4 supported" << endl;
+			if (out != nullptr) {
+				*out << "X86-64-v4 supported" << '\n';
 			}
 		} else if (v3) {
-			if (out) {
-				*out << "X86-64-v3 supported" << endl;
+			if (out != nullptr) {
+				*out << "X86-64-v3 supported" << '\n';
 			}
 		} else if (v2) {
-			if (out) {
-				*out << "X86-64-v2 supported" << endl;
+			if (out != nullptr) {
+				*out << "X86-64-v2 supported" << '\n';
 			}
 		} else {
-			if (out) {
-				*out << "Baseline X86-64 supported" << endl;
+			if (out != nullptr) {
+				*out << "Baseline X86-64 supported" << '\n';
 			}
 		}
 
 		if (need_v4 && !v4) {
 			cpuidunsupportedfeatures = true;
-			if (out) {
-				*out << "WARNING X86-64-v4 FEATURES ARE REQUIRED BY "
+			if (out != nullptr) {
+				*out << "WARNING X86-64-v4 FEATURES ARE REQUIRED "
+						"BY "
 						"THIS BUILD "
 						"BUT "
 						"ARE NOT SUPPORTED BY THIS CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 		if (need_v3 && !v3) {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNING X86-64-v3 FEATURES ARE REQUIRED "
 						"BY THIS BUILD "
 						"BUT "
 						"ARE NOT SUPPORTED BY THIS CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 		if (need_v2 && !v2) {
 			cpuidunsupportedfeatures = true;
-			if (out) {
+			if (out != nullptr) {
 				*out << "WARNING X86-64-v2 FEATURES ARE "
 						"REQUIRED BY THIS BUILD "
 						"BUT "
 						"ARE NOT SUPPORTED BY THIS CPU"
-					 << endl;
+					 << '\n';
 			}
 		}
 	}
 
-	return true;
+	return cpuidunsupportedfeatures;
 }
 
-bool CPUIDHasUnsuportedFeatures() {
-	OutputCPUID(nullptr);
-	return cpuidunsupportedfeatures;
+bool CPUIDHasUnsupportedFeatures() {
+	return OutputCPUID(nullptr);
 }
