@@ -229,7 +229,7 @@ Audio::Audio() {
 
 	config->value("config/audio/speech/enabled", s, "yes");
 	speech_enabled = (s != "no");
-	config->value("config/audio/speech/with_subs", s, "no");
+	config->value("config/audio/speech/with_subs", s, "yes");
 	speech_with_subs = (s != "no");
 	config->value("config/audio/midi/enabled", s, "---");
 	music_enabled = (s != "no");
