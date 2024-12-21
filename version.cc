@@ -564,13 +564,14 @@ void getVersionInfo(std::ostream& out) {
 	out << '\n' << std::flush;
 }
 
+constexpr const int CPUID_EAX = 0;
+constexpr const int CPUID_EBX = 1;
+constexpr const int CPUID_ECX = 2;
+constexpr const int CPUID_EDX = 3;
+using std::uint32_t;
+
 namespace {
 #ifdef WANT_CPUID
-	constexpr const int CPUID_EAX = 0;
-	constexpr const int CPUID_EBX = 1;
-	constexpr const int CPUID_ECX = 2;
-	constexpr const int CPUID_EDX = 3;
-	using std::uint32_t;
 // CPUID support for x86 cpus, wont work for 386 or 486 cpus but I don't think
 // we'd support those anyway
 #	if __has_include(<cpuid.h>)
