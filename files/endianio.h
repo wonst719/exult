@@ -37,7 +37,7 @@ namespace endian_internal { namespace detail {
 #elif defined(__GNUG__)
 // Both libstdc++ and libc++ essentially do this.
 namespace endian_internal { namespace detail {
-	enum class endian : uint8_t {
+	enum class endian : uint16_t {
 		big    = __ORDER_BIG_ENDIAN__,
 		little = __ORDER_LITTLE_ENDIAN__,
 		native = __BYTE_ORDER__,
@@ -46,7 +46,7 @@ namespace endian_internal { namespace detail {
 #elif defined(_MSC_VER)
 // MS-STL does essentially this.
 namespace endian_internal { namespace detail {
-	enum class endian : uint8_t {
+	enum class endian : uint16_t {
 		little = 1234,
 		big    = 4321,
 		native = little
