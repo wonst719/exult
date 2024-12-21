@@ -83,6 +83,7 @@
 #endif    // __GNUC__
 #include <SDL.h>
 static const Uint32 EXSDL_TOUCH_MOUSEID = SDL_TOUCH_MOUSEID;
+static const SDL_TouchID EXSDL_MOUSE_TOUCHID = SDL_MOUSE_TOUCHID;
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
@@ -1479,7 +1480,8 @@ static void Handle_event(SDL_Event& event) {
 		break;
 	}
 	case SDL_FINGERDOWN: {
-		if ((!Mouse::use_touch_input) && (event.tfinger.touchId != SDL_MOUSE_TOUCHID)) {
+		if ((!Mouse::use_touch_input) &&
+			(event.tfinger.touchId != EXSDL_MOUSE_TOUCHID)) {
 			Mouse::use_touch_input = true;
 			gwin->set_painted();
 		}
