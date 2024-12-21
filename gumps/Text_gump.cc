@@ -34,7 +34,7 @@ using std::strchr;
  */
 
 void Text_gump::add_text(const char* str) {
-	const int slen = strlen(str);    // Length of new text.
+	int slen = strlen(str);    // Length of new text.
 
 	bool serpentine = font == 8;
 
