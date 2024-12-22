@@ -73,9 +73,8 @@ public:
 			// Shapeinfo_lookup::get_skinvar
 			const int id = get_skinvar(key);
 			return id < 0 ? -1 : id;
-		} else {
-			return ReadInt(in);
 		}
+		return ReadInt(in);
 	}
 };
 
@@ -114,7 +113,7 @@ public:
 			std::istream& in, int version, bool patch, Exult_Game game,
 			Shape_info& info) {
 		unsigned char ready = info.ready_type;
-		info.spell_flag     = ready & 1;
+		info.spell_flag     = (ready & 1) != 0;
 		ready >>= 3;
 		const unsigned char spot = game == BLACK_GATE
 										   ? Ready_spot_from_BG(ready)
@@ -131,6 +130,8 @@ public:
 			break;
 		case both_hands:
 			info.alt_ready1 = back_2h;
+			break;
+		default:
 			break;
 		}
 		setflags(in, version, patch, game, info);
@@ -537,7 +538,7 @@ bool Shapes_vga_file::read_info(
 	if (info_read) {
 		return false;
 	}
-	info_read                  = true;
+	info_read = true;
 
 	// ShapeDims
 
@@ -633,8 +634,8 @@ bool Shapes_vga_file::read_info(
 		for (size_t i = 0; i < occ.getSize(); i++) {
 			unsigned char bits  = occbits[i];
 			const int     shnum = i * 8;    // Check each bit.
-			for (int b = 0; bits; b++, bits = bits >> 1) {
-				if (bits & 1) {
+			for (int b = 0; bits != 0u; b++, bits = bits >> 1) {
+				if ((bits & 1) != 0) {
 					info[shnum + b].occludes_flag = true;
 				}
 			}
