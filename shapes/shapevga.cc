@@ -55,30 +55,6 @@ using std::ifstream;
 using std::ios;
 using namespace std;
 
-// For convienience
-#define patch_exists(p) (have_patch_path && U7exists(p))
-#define patch_name(p)   (patch_exists(p) ? (p) : nullptr)
-
-/*
- *  Open, but don't quit if editing.  We first try the patch name if it's
- *  given.
- */
-
-static std::unique_ptr<std::istream> U7open2(
-		const char* pname,    // Patch name, or null.
-		const char* fname,    // File name.
-		bool        editing) {
-	ignore_unused_variable_warning(editing);
-	if (pname) {
-		return U7open_in(pname);
-	}
-	try {
-		return U7open_in(fname);
-	} catch (const file_exception& /*f*/) {
-	}
-	return nullptr;
-}
-
 // Special case ID reader functors.
 
 extern int get_skinvar(const std::string& key);
@@ -567,32 +543,26 @@ bool Shapes_vga_file::read_info(
 	// ShapeDims
 
 	// Starts at 0x96'th shape.
-	auto pShpdims = U7open2(patch_name(PATCH_SHPDIMS), SHPDIMS, editing);
-	if (pShpdims) {
-		auto& shpdims = *pShpdims;
+	if (IExultDataSource shpdims(SHPDIMS, PATCH_SHPDIMS, -1); shpdims.good()) {
 		for (size_t i = c_first_obj_shape; i < shapes.size() && !shpdims.eof();
 			 i++) {
-			info[i].shpdims[0] = shpdims.get();
-			info[i].shpdims[1] = shpdims.get();
+			info[i].shpdims[0] = shpdims.read1();
+			info[i].shpdims[1] = shpdims.read1();
 		}
 	}
 
 	// WGTVOL
-	auto pWgtvol = U7open2(patch_name(PATCH_WGTVOL), WGTVOL, editing);
-	if (pWgtvol) {
-		auto& wgtvol = *pWgtvol;
+	if (IExultDataSource wgtvol(WGTVOL, PATCH_WGTVOL, -1); wgtvol.good()) {
 		for (size_t i = 0; i < shapes.size() && !wgtvol.eof(); i++) {
-			info[i].weight = wgtvol.get();
-			info[i].volume = wgtvol.get();
+			info[i].weight = wgtvol.read1();
+			info[i].volume = wgtvol.read1();
 		}
 	}
 
 	// TFA
-	auto pTfa = U7open2(patch_name(PATCH_TFA), TFA, editing);
-	if (pTfa) {
-		auto& tfa = *pTfa;
+	if (IExultDataSource tfa(TFA, PATCH_TFA, -1); tfa.good()) {
 		for (size_t i = 0; i < shapes.size() && !tfa.eof(); i++) {
-			tfa.read(reinterpret_cast<char*>(&info[i].tfa[0]), 3);
+			tfa.read(info[i].tfa, sizeof(info[i].tfa));
 			info[i].set_tfa_data();
 		}
 	}
@@ -600,20 +570,19 @@ bool Shapes_vga_file::read_info(
 	if (game == BLACK_GATE || game == SERPENT_ISLE) {
 		// Animation data at the end of BG and SI TFA.DAT
 		// We *should* blow up if TFA not there.
-		auto pStfa = U7open_in(TFA);
-		if (!pStfa) {
+		IExultDataSource stfa(TFA, -1);
+		if (!stfa.good()) {
 			throw file_open_exception(TFA);
 		}
-		auto& stfa = *pStfa;
-		stfa.seekg(3 * 1024);
+		stfa.seek(static_cast<size_t>(3 * 1024));
 		unsigned char buf[512];
-		stfa.read(reinterpret_cast<char*>(buf), 512);
+		stfa.read(buf, sizeof(buf));
 		unsigned char* ptr = buf;
-		for (int i = 0; i < 512; i++, ptr++) {
-			int val   = *ptr;
-			int shape = 2 * i;
-			while (val) {
-				if (val & 0xf) {
+		for (size_t i = 0; i < sizeof(buf); i++, ptr++) {
+			int    val   = *ptr;
+			size_t shape = 2 * i;
+			while (val != 0) {
+				if ((val & 0xf) != 0) {
 					delete info[shape].aniinf;
 					info[shape].aniinf = Animation_info::create_from_tfa(
 							val & 0xf, get_num_frames(shape));
@@ -625,47 +594,44 @@ bool Shapes_vga_file::read_info(
 	}
 
 	// Load data about drawing the weapon in an actor's hand
-	auto pWihh = U7open2(patch_name(PATCH_WIHH), WIHH, editing);
-	if (pWihh) {
-		auto&          wihh = *pWihh;
-		const size_t   cnt  = shapes.size();
+	if (IExultDataSource wihh(WIHH, PATCH_WIHH, -1); wihh.good()) {
+		const size_t   cnt = shapes.size();
 		unsigned short offsets[c_max_shapes];
 		for (size_t i = 0; i < cnt; i++) {
-			offsets[i] = little_endian::Read2(wihh);
+			offsets[i] = wihh.read2();
 		}
 		for (size_t i = 0; i < cnt; i++) {
 			// A zero offset means there is no record
 			if (offsets[i] == 0) {
 				info[i].weapon_offsets = nullptr;
 			} else {
-				wihh.seekg(offsets[i]);
+				wihh.seek(offsets[i]);
 				// There are two bytes per frame: 64 total
 				info[i].weapon_offsets = new unsigned char[64];
-				for (int j = 0; j < 32; j++) {
-					unsigned char x = Read1(wihh);
-					unsigned char y = Read1(wihh);
+				for (size_t j = 0; j < 32; j++) {
+					unsigned char x   = wihh.read1();
+					unsigned char y   = wihh.read1();
+					size_t        off = 2 * j;
 					// Set x/y to 255 if weapon is not to be drawn
 					// In the file x/y are either 64 or 255:
 					// I am assuming that they mean the same
 					if (x > 63 || y > 63) {
 						x = y = 255;
 					}
-					info[i].weapon_offsets[j * 2]     = x;
-					info[i].weapon_offsets[j * 2 + 1] = y;
+					info[i].weapon_offsets[off]     = x;
+					info[i].weapon_offsets[off + 1] = y;
 				}
 			}
 		}
 	}
 
 	// Read flags from occlude.dat.
-	auto pOcc = U7open2(patch_name(PATCH_OCCLUDE), OCCLUDE, editing);
-	if (pOcc) {
-		auto&         occ = *pOcc;
+	if (IExultDataSource occ(OCCLUDE, PATCH_OCCLUDE, -1); occ.good()) {
 		unsigned char occbits[c_occsize];    // c_max_shapes bit flags.
 		// Ensure sensible defaults.
-		memset(&occbits[0], 0, sizeof(occbits));
-		occ.read(reinterpret_cast<char*>(occbits), sizeof(occbits));
-		for (int i = 0; i < occ.gcount(); i++) {
+		std::fill(std::begin(occbits), std::end(occbits), 0);
+		occ.read(occbits, occ.getSize());
+		for (size_t i = 0; i < occ.getSize(); i++) {
 			unsigned char bits  = occbits[i];
 			const int     shnum = i * 8;    // Check each bit.
 			for (int b = 0; bits; b++, bits = bits >> 1) {
@@ -677,9 +643,7 @@ bool Shapes_vga_file::read_info(
 	}
 
 	// Get 'equip.dat'.
-	auto pMfile = U7open2(patch_name(PATCH_EQUIP), EQUIP, editing);
-	if (pMfile) {
-		auto& mfile = *pMfile;
+	if (IExultDataSource mfile(EQUIP, PATCH_EQUIP, -1); mfile.good()) {
 		// Get # entries (with Exult extension).
 		const int num_recs = Read_count(mfile);
 		Monster_info::reserve_equip(num_recs);
@@ -687,10 +651,10 @@ bool Shapes_vga_file::read_info(
 			Equip_record equip;
 			// 10 elements/record.
 			for (int elem = 0; elem < 10; elem++) {
-				const int      shnum = little_endian::Read2(mfile);
-				const unsigned prob  = Read1(mfile);
-				const unsigned quant = Read1(mfile);
-				little_endian::Read2(mfile);
+				const int      shnum = mfile.read2();
+				const unsigned prob  = mfile.read1();
+				const unsigned quant = mfile.read1();
+				mfile.skip(2);
 				equip.set(elem, shnum, prob, quant);
 			}
 			Monster_info::add_equip(equip);

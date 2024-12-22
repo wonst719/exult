@@ -212,6 +212,17 @@ inline int Read_count(std::istream& in) {
 }
 
 /*
+ *  Get # entries of binary data file (with Exult extension).
+ */
+inline int Read_count(IDataSource& in) {
+	int cnt = in.read1();    // How the originals did it.
+	if (cnt == 255) {
+		cnt = in.read2();    // Exult extension.
+	}
+	return cnt;
+}
+
+/*
  *  Write # entries of binary data file (with Exult extension).
  */
 inline void Write_count(std::ostream& out, int cnt) {
