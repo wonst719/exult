@@ -543,7 +543,7 @@ bool Shapes_vga_file::read_info(
 	// ShapeDims
 
 	// Starts at 0x96'th shape.
-	if (IExultDataSource shpdims(SHPDIMS, PATCH_SHPDIMS, -1); shpdims.good()) {
+	if (IExultDataSource shpdims(SHPDIMS, PATCH_SHPDIMS, 0); shpdims.good()) {
 		for (size_t i = c_first_obj_shape; i < shapes.size() && !shpdims.eof();
 			 i++) {
 			info[i].shpdims[0] = shpdims.read1();
@@ -552,7 +552,7 @@ bool Shapes_vga_file::read_info(
 	}
 
 	// WGTVOL
-	if (IExultDataSource wgtvol(WGTVOL, PATCH_WGTVOL, -1); wgtvol.good()) {
+	if (IExultDataSource wgtvol(WGTVOL, PATCH_WGTVOL, 0); wgtvol.good()) {
 		for (size_t i = 0; i < shapes.size() && !wgtvol.eof(); i++) {
 			info[i].weight = wgtvol.read1();
 			info[i].volume = wgtvol.read1();
@@ -560,7 +560,7 @@ bool Shapes_vga_file::read_info(
 	}
 
 	// TFA
-	if (IExultDataSource tfa(TFA, PATCH_TFA, -1); tfa.good()) {
+	if (IExultDataSource tfa(TFA, PATCH_TFA, 0); tfa.good()) {
 		for (size_t i = 0; i < shapes.size() && !tfa.eof(); i++) {
 			tfa.read(info[i].tfa, sizeof(info[i].tfa));
 			info[i].set_tfa_data();
@@ -570,7 +570,7 @@ bool Shapes_vga_file::read_info(
 	if (game == BLACK_GATE || game == SERPENT_ISLE) {
 		// Animation data at the end of BG and SI TFA.DAT
 		// We *should* blow up if TFA not there.
-		IExultDataSource stfa(TFA, -1);
+		IExultDataSource stfa(TFA, 0);
 		if (!stfa.good()) {
 			throw file_open_exception(TFA);
 		}
@@ -594,7 +594,7 @@ bool Shapes_vga_file::read_info(
 	}
 
 	// Load data about drawing the weapon in an actor's hand
-	if (IExultDataSource wihh(WIHH, PATCH_WIHH, -1); wihh.good()) {
+	if (IExultDataSource wihh(WIHH, PATCH_WIHH, 0); wihh.good()) {
 		const size_t   cnt = shapes.size();
 		unsigned short offsets[c_max_shapes];
 		for (size_t i = 0; i < cnt; i++) {
@@ -626,7 +626,7 @@ bool Shapes_vga_file::read_info(
 	}
 
 	// Read flags from occlude.dat.
-	if (IExultDataSource occ(OCCLUDE, PATCH_OCCLUDE, -1); occ.good()) {
+	if (IExultDataSource occ(OCCLUDE, PATCH_OCCLUDE, 0); occ.good()) {
 		unsigned char occbits[c_occsize];    // c_max_shapes bit flags.
 		// Ensure sensible defaults.
 		std::fill(std::begin(occbits), std::end(occbits), 0);
@@ -643,7 +643,7 @@ bool Shapes_vga_file::read_info(
 	}
 
 	// Get 'equip.dat'.
-	if (IExultDataSource mfile(EQUIP, PATCH_EQUIP, -1); mfile.good()) {
+	if (IExultDataSource mfile(EQUIP, PATCH_EQUIP, 0); mfile.good()) {
 		// Get # entries (with Exult extension).
 		const int num_recs = Read_count(mfile);
 		Monster_info::reserve_equip(num_recs);
