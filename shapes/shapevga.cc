@@ -538,7 +538,6 @@ bool Shapes_vga_file::read_info(
 		return false;
 	}
 	info_read                  = true;
-	const bool have_patch_path = is_system_path_defined("<PATCH>");
 
 	// ShapeDims
 
