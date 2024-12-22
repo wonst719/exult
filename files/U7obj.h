@@ -23,6 +23,8 @@
 #ifndef U7OBJ_H
 #define U7OBJ_H
 
+#include "span.h"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -108,7 +110,8 @@ private:
 	std::unique_ptr<unsigned char[]> buffer;
 	size_t                           length;
 	U7object                         object;
-	void set_object(const std::vector<U7object>& objects);
+
+	void set_object(tcb::span<U7object> objects);
 
 public:
 	U7multiobject(const File_spec& file0, int objnum);

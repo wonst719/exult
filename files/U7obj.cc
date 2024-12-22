@@ -62,7 +62,7 @@ unique_ptr<unsigned char[]> U7object::retrieve(size_t& len) const {
  *  U7object information.
  *  @param objects  Vector containing U7objects we will test.
  */
-void U7multiobject::set_object(const std::vector<U7object>& objects) {
+void U7multiobject::set_object(tcb::span<U7object> objects) {
 	for (const auto& obj : objects) {
 		size_t len;
 		auto   buf = object.retrieve(len);
@@ -101,7 +101,7 @@ U7multiobject::U7multiobject(const File_spec& file0, int objnum)
 U7multiobject::U7multiobject(
 		const File_spec& file0, const File_spec& file1, int objnum)
 		: buffer(nullptr), length(0), object(file0, objnum) {
-	std::vector<U7object> objects{
+	std::array objects{
 			U7object(file1, objnum), U7object(file0, objnum)};
 	set_object(objects);
 }
@@ -117,7 +117,7 @@ U7multiobject::U7multiobject(
 		const File_spec& file0, const File_spec& file1, const File_spec& file2,
 		int objnum)
 		: buffer(nullptr), length(0), object(file0, objnum) {
-	std::vector<U7object> objects{
+	std::array objects{
 			U7object(file2, objnum), U7object(file1, objnum),
 			U7object(file0, objnum)};
 	set_object(objects);
@@ -135,7 +135,7 @@ U7multiobject::U7multiobject(
 		const File_spec& file0, const File_spec& file1, const File_spec& file2,
 		const File_spec& file3, int objnum)
 		: buffer(nullptr), length(0), object(file0, objnum) {
-	std::vector<U7object> objects{
+	std::array objects{
 			U7object(file3, objnum), U7object(file2, objnum),
 			U7object(file1, objnum), U7object(file0, objnum)};
 	set_object(objects);
