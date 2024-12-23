@@ -39,7 +39,6 @@
 #include "frflags.h"
 #include "frnameinf.h"
 #include "frusefun.h"
-#include "headers/polymorphic_value.h"
 #include "ignore_unused_variable_warning.h"
 #include "lightinf.h"
 #include "monstinf.h"
@@ -172,7 +171,7 @@ void Read_text_data_file(
 		// Name of file to read, sans extension
 		const char* fname,
 		// What to use to parse data.
-		const tcb::span<polymorphic_value<Base_reader>>& parsers,
+		const tcb::span<std::unique_ptr<Base_reader>>& parsers,
 		// The names of the sections
 		const tcb::span<std::string_view>& sections, bool editing,
 		Exult_Game game, int resource) {
@@ -402,34 +401,32 @@ void Shapes_vga_file::Read_Shapeinf_text_data_file(
 			Vector_reader_functor<
 					Frame_usecode_info, Shape_info, &Shape_info::frucinf>>;
 
-	std::array readers = {
-			make_polymorphic_value<Base_reader, Explosion_reader>(info),
-			make_polymorphic_value<Base_reader, SFX_reader>(info),
-			make_polymorphic_value<Base_reader, Animation_reader>(info),
-			make_polymorphic_value<Base_reader, Usecode_events_reader>(info),
-			make_polymorphic_value<Base_reader, Mountain_top_reader>(info),
-			make_polymorphic_value<Base_reader, Monster_food_reader>(info),
-			make_polymorphic_value<Base_reader, Actor_flags_reader>(info),
-			make_polymorphic_value<Base_reader, Effective_hp_reader>(info),
-			make_polymorphic_value<Base_reader, Lightweight_reader>(info),
-			make_polymorphic_value<Base_reader, Light_data_reader>(info),
-			make_polymorphic_value<Base_reader, Warmth_data_reader>(info),
-			make_polymorphic_value<Base_reader, Quantity_frames_reader>(info),
-			make_polymorphic_value<Base_reader, Locked_containers_reader>(info),
-			make_polymorphic_value<Base_reader, Content_rules_reader>(info),
-			make_polymorphic_value<Base_reader, Explosive_reader>(info),
-			make_polymorphic_value<Base_reader, Frame_names_reader>(info),
-			make_polymorphic_value<Base_reader, Altready_reader>(info),
-			make_polymorphic_value<Base_reader, Barge_type_reader>(info),
-			make_polymorphic_value<Base_reader, Frame_flags_reader>(info),
-			make_polymorphic_value<Base_reader, Jawbone_reader>(info),
-			make_polymorphic_value<Base_reader, Mirror_reader>(info),
-			make_polymorphic_value<Base_reader, On_fire_reader>(info),
-			make_polymorphic_value<
-					Base_reader, Extradimensional_storage_reader>(info),
-			make_polymorphic_value<Base_reader, Field_type_reader>(info),
-			make_polymorphic_value<Base_reader, Frame_usecode_reader>(info),
-	};
+	std::array readers = make_unique_array<Base_reader>(
+			std::make_unique<Explosion_reader>(info),
+			std::make_unique<SFX_reader>(info),
+			std::make_unique<Animation_reader>(info),
+			std::make_unique<Usecode_events_reader>(info),
+			std::make_unique<Mountain_top_reader>(info),
+			std::make_unique<Monster_food_reader>(info),
+			std::make_unique<Actor_flags_reader>(info),
+			std::make_unique<Effective_hp_reader>(info),
+			std::make_unique<Lightweight_reader>(info),
+			std::make_unique<Light_data_reader>(info),
+			std::make_unique<Warmth_data_reader>(info),
+			std::make_unique<Quantity_frames_reader>(info),
+			std::make_unique<Locked_containers_reader>(info),
+			std::make_unique<Content_rules_reader>(info),
+			std::make_unique<Explosive_reader>(info),
+			std::make_unique<Frame_names_reader>(info),
+			std::make_unique<Altready_reader>(info),
+			std::make_unique<Barge_type_reader>(info),
+			std::make_unique<Frame_flags_reader>(info),
+			std::make_unique<Jawbone_reader>(info),
+			std::make_unique<Mirror_reader>(info),
+			std::make_unique<On_fire_reader>(info),
+			std::make_unique<Extradimensional_storage_reader>(info),
+			std::make_unique<Field_type_reader>(info),
+			std::make_unique<Frame_usecode_reader>(info));
 	static_assert(sections.size() == readers.size());
 	const int flxres = game_type == BLACK_GATE ? EXULT_BG_FLX_SHAPE_INFO_TXT
 											   : EXULT_SI_FLX_SHAPE_INFO_TXT;
@@ -450,9 +447,9 @@ void Shapes_vga_file::Read_Bodies_text_data_file(
 	using Body_list_reader = Functor_multidata_reader<
 			Shape_info,
 			Class_reader_functor<Body_info, Shape_info, &Shape_info::body>>;
-	std::array readers{
-			make_polymorphic_value<Base_reader, Body_shape_reader>(info),
-			make_polymorphic_value<Base_reader, Body_list_reader>(info)};
+	std::array readers = make_unique_array<Base_reader>(
+			std::make_unique<Body_shape_reader>(info),
+			std::make_unique<Body_list_reader>(info));
 	static_assert(sections.size() == readers.size());
 	const int flxres = game_type == BLACK_GATE ? EXULT_BG_FLX_BODIES_TXT
 											   : EXULT_SI_FLX_BODIES_TXT;
@@ -473,12 +470,9 @@ void Shapes_vga_file::Read_Paperdoll_text_data_file(
 			Shape_info,
 			Vector_reader_functor<
 					Paperdoll_item, Shape_info, &Shape_info::objpaperdoll>>;
-	std::array readers{
-			make_polymorphic_value<Base_reader, NpcPaperdoll_reader_functor>(
-					info),
-			make_polymorphic_value<Base_reader, ObjPaperdoll_reader_functor>(
-					info),
-	};
+	std::array readers = make_unique_array<Base_reader>(
+			std::make_unique<NpcPaperdoll_reader_functor>(info),
+			std::make_unique<ObjPaperdoll_reader_functor>(info));
 	static_assert(sections.size() == readers.size());
 	const int flxres = game_type == BLACK_GATE ? EXULT_BG_FLX_PAPERDOL_INFO_TXT
 											   : EXULT_SI_FLX_PAPERDOL_INFO_TXT;

@@ -21,7 +21,6 @@
 #ifndef MISCINF_H
 #define MISCINF_H
 
-#include "headers/polymorphic_value.h"
 #include "span.h"
 
 #include <memory>
@@ -126,7 +125,7 @@ public:
 private:
 	static void Read_data_file(
 			const char* fname, const tcb::span<std::string_view>& sections,
-			const tcb::span<polymorphic_value<Shapeinfo_entry_parser>>&
+			const tcb::span<std::unique_ptr<Shapeinfo_entry_parser>>&
 					parsers);
 	static void                            setup_shape_files();
 	static void                            setup_avatar_data();

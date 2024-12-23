@@ -25,6 +25,7 @@
 #include "miscinf.h"
 
 #include "actors.h"
+#include "data_utils.h"
 #include "databuf.h"
 #include "exult_constants.h"
 #include "game.h"
@@ -39,6 +40,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -374,7 +376,7 @@ void Shapeinfo_lookup::Read_data_file(
 		// The names of the sections
 		const tcb::span<std::string_view>& sections,
 		// Parsers to use for each section
-		const tcb::span<polymorphic_value<Shapeinfo_entry_parser>>& parsers) {
+		const tcb::span<std::unique_ptr<Shapeinfo_entry_parser>>& parsers) {
 	auto value_or = [](std::optional<int> opt) {
 		return opt ? *opt : 1;
 	};
@@ -445,18 +447,15 @@ void Shapeinfo_lookup::setup_shape_files() {
 	std::array sections{
 			"paperdoll_source"sv, "gump_imports"sv, "blue_shapes"sv,
 			"multiracial_imports"sv};
-	std::array parsers{
-			make_polymorphic_value<
-					Shapeinfo_entry_parser, Paperdoll_source_parser>(
+	std::array parsers = make_unique_array<Shapeinfo_entry_parser>(
+			std::make_unique<Paperdoll_source_parser>(
 					data->paperdoll_source_table),
-			make_polymorphic_value<
-					Shapeinfo_entry_parser, Shape_imports_parser>(
+			std::make_unique<Shape_imports_parser>(
 					data->imported_gump_shapes, data->gumpvars),
-			make_polymorphic_value<Shapeinfo_entry_parser, Shaperef_parser>(
+			std::make_unique<Shaperef_parser>(
 					data->blue_shapes, data->gumpvars),
-			make_polymorphic_value<
-					Shapeinfo_entry_parser, Shape_imports_parser>(
-					data->imported_skin_shapes, data->skinvars)};
+			std::make_unique<Shape_imports_parser>(
+					data->imported_skin_shapes, data->skinvars));
 	static_assert(sections.size() == parsers.size());
 	Read_data_file("shape_files", sections, parsers);
 	// For safety.
@@ -479,20 +478,14 @@ void Shapeinfo_lookup::setup_avatar_data() {
 	std::array sections{"defaultshape"sv,      "baseracesex"sv,
 						"multiracial_table"sv, "unselectable_races_table"sv,
 						"petra_face_table"sv,  "usecode_info"sv};
-	std::array parsers{
-			make_polymorphic_value<Shapeinfo_entry_parser, Def_av_shape_parser>(
-					avdata->def_av_info),
-			make_polymorphic_value<Shapeinfo_entry_parser, Base_av_race_parser>(
-					avdata->base_av_info),
-			make_polymorphic_value<Shapeinfo_entry_parser, Multiracial_parser>(
+	std::array parsers = make_unique_array<Shapeinfo_entry_parser>(
+			std::make_unique<Def_av_shape_parser>(avdata->def_av_info),
+			std::make_unique<Base_av_race_parser>(avdata->base_av_info),
+			std::make_unique<Multiracial_parser>(
 					avdata->skins_table, data->skinvars),
-			make_polymorphic_value<Shapeinfo_entry_parser, Bool_parser>(
-					avdata->unselectable_skins),
-			make_polymorphic_value<Shapeinfo_entry_parser, Int_pair_parser>(
-					avdata->petra_table),
-			make_polymorphic_value<
-					Shapeinfo_entry_parser, Avatar_usecode_parser>(
-					avdata->usecode_funs)};
+			std::make_unique<Bool_parser>(avdata->unselectable_skins),
+			std::make_unique<Int_pair_parser>(avdata->petra_table),
+			std::make_unique<Avatar_usecode_parser>(avdata->usecode_funs));
 	static_assert(sections.size() == parsers.size());
 	Read_data_file("avatar_data", sections, parsers);
 }

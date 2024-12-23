@@ -25,10 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "U7obj.h"
 #include "databuf.h"
-#include "exceptions.h"
 #include "exult_constants.h"
 #include "fnames.h"
-#include "headers/polymorphic_value.h"
 #include "ignore_unused_variable_warning.h"
 #include "msgfile.h"
 #include "span.h"
@@ -38,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <map>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 /*
@@ -235,6 +234,14 @@ inline void Write_count(std::ostream& out, int cnt) {
 	}
 }
 
+template <
+		typename Base, typename... Args,
+		std::enable_if_t<(std::is_base_of_v<Base, Args> && ...), bool> = false>
+std::array<std::unique_ptr<Base>, sizeof...(Args)> make_unique_array(
+		std::unique_ptr<Args>&&... args) {
+	return {std::unique_ptr<Base>(std::move(args))...};
+}
+
 /*
  *  Generic base data-agnostic reader class.
  */
@@ -263,7 +270,11 @@ protected:
 public:
 	Base_reader(bool h) : haveversion(h) {}
 
-	virtual ~Base_reader() = default;
+	Base_reader(const Base_reader&)            = delete;
+	Base_reader& operator=(const Base_reader&) = delete;
+	Base_reader(Base_reader&&)                 = delete;
+	Base_reader& operator=(Base_reader&&)      = delete;
+	virtual ~Base_reader()                     = default;
 
 	// Text data file.
 	void parse(
@@ -559,7 +570,7 @@ void Read_text_data_file(
 		// Name of file to read, sans extension
 		const char* fname,
 		// What to use to parse data.
-		const tcb::span<polymorphic_value<Base_reader>>& parsers,
+		const tcb::span<std::unique_ptr<Base_reader>>& parsers,
 		// The names of the sections
 		const tcb::span<std::string_view>& sections, bool editing,
 		Exult_Game game, int resource);
@@ -584,7 +595,11 @@ protected:
 public:
 	Base_writer(const char* s, int v = -1) : name(s), version(v), cnt(-1) {}
 
-	virtual ~Base_writer() = default;
+	Base_writer(const Base_writer&)            = delete;
+	Base_writer& operator=(const Base_writer&) = delete;
+	Base_writer(Base_writer&&)                 = delete;
+	Base_writer& operator=(Base_writer&&)      = delete;
+	virtual ~Base_writer()                     = default;
 
 	int check() {
 		// Return cached value, if any.
@@ -889,7 +904,7 @@ public:
  */
 void Write_text_data_file(
 		const char* fname,    // Name of file to read, sans extension
-		const tcb::span<polymorphic_value<Base_writer>>&
+		const tcb::span<std::unique_ptr<Base_writer>>&
 				writers,    // What to use to write data.
 		int version, Exult_Game game);
 

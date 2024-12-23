@@ -87,7 +87,7 @@ public:
  */
 void Write_text_data_file(
 		const char* fname,    // Name of file to read, sans extension
-		const tcb::span<polymorphic_value<Base_writer>>&
+		const tcb::span<std::unique_ptr<Base_writer>>&
 				writers,    // What to use to write data.
 		int version, Exult_Game game) {
 	size_t cnt = 0;
@@ -246,83 +246,72 @@ void Shapes_vga_file::Write_Shapeinf_text_data_file(Exult_Game game) {
 			Vector_writer_functor<
 					Frame_usecode_info, Shape_info, &Shape_info::frucinf>>;
 
-	std::array writers{
+	std::array writers = make_unique_array<Base_writer>(
 			// For explosions.
-			make_polymorphic_value<Base_writer, Explosion_writer>(
-					"explosions", info, num_shapes),
+			std::make_unique<Explosion_writer>("explosions", info, num_shapes),
 			// For sound effects.
-			make_polymorphic_value<Base_writer, SFX_writer>(
-					"shape_sfx", info, num_shapes),
+			std::make_unique<SFX_writer>("shape_sfx", info, num_shapes),
 			// For animations.
-			make_polymorphic_value<Base_writer, Animation_writer>(
-					"animation", info, num_shapes),
+			std::make_unique<Animation_writer>("animation", info, num_shapes),
 			// For usecode events.
-			make_polymorphic_value<Base_writer, Usecode_events_writer>(
+			std::make_unique<Usecode_events_writer>(
 					"usecode_events", info, num_shapes),
 			// For mountain tops.
-			make_polymorphic_value<Base_writer, Mountain_top_writer>(
+			std::make_unique<Mountain_top_writer>(
 					"mountain_tops", info, num_shapes),
 			// For monster food.
-			make_polymorphic_value<Base_writer, Monster_food_writer>(
+			std::make_unique<Monster_food_writer>(
 					"monster_food", info, num_shapes),
 			// For actor flags.
-			make_polymorphic_value<Base_writer, Actor_flags_writer>(
+			std::make_unique<Actor_flags_writer>(
 					"actor_flags", info, num_shapes),
 			// For effective HPs.
-			make_polymorphic_value<Base_writer, Effective_hp_writer>(
+			std::make_unique<Effective_hp_writer>(
 					"effective_hps", info, num_shapes),
 			// For lightweight objects.
-			make_polymorphic_value<Base_writer, Lightweight_writer>(
+			std::make_unique<Lightweight_writer>(
 					"lightweight_object", info, num_shapes),
 			// For light data.
-			make_polymorphic_value<Base_writer, Light_data_writer>(
-					"light_data", info, num_shapes),
+			std::make_unique<Light_data_writer>("light_data", info, num_shapes),
 			// For warmth data.
-			make_polymorphic_value<Base_writer, Warmth_data_writer>(
+			std::make_unique<Warmth_data_writer>(
 					"warmth_data", info, num_shapes),
 			// For quantity frames.
-			make_polymorphic_value<Base_writer, Quantity_frames_writer>(
+			std::make_unique<Quantity_frames_writer>(
 					"quantity_frames", info, num_shapes),
 			// For locked objects.
-			make_polymorphic_value<Base_writer, Locked_containers_writer>(
+			std::make_unique<Locked_containers_writer>(
 					"locked_containers", info, num_shapes),
 			// For content rules.
-			make_polymorphic_value<Base_writer, Content_rules_writer>(
+			std::make_unique<Content_rules_writer>(
 					"content_rules", info, num_shapes),
 			// For highly explosive objects.
-			make_polymorphic_value<Base_writer, Explosive_writer>(
+			std::make_unique<Explosive_writer>(
 					"volatile_explosive", info, num_shapes),
 			// For frame names.
-			make_polymorphic_value<Base_writer, Frame_names_writer>(
+			std::make_unique<Frame_names_writer>(
 					"framenames", info, num_shapes),
 			// For alternate ready spots.
-			make_polymorphic_value<Base_writer, Altready_writer>(
-					"altready", info, num_shapes),
+			std::make_unique<Altready_writer>("altready", info, num_shapes),
 			// For barge parts.
-			make_polymorphic_value<Base_writer, Barge_type_writer>(
-					"barge_type", info, num_shapes),
+			std::make_unique<Barge_type_writer>("barge_type", info, num_shapes),
 			// For frame flags.
-			make_polymorphic_value<Base_writer, Frame_flags_writer>(
+			std::make_unique<Frame_flags_writer>(
 					"frame_powers", info, num_shapes),
 			// For the jawbone.
-			make_polymorphic_value<Base_writer, Jawbone_writer>(
-					"is_jawbone", info, num_shapes),
+			std::make_unique<Jawbone_writer>("is_jawbone", info, num_shapes),
 			// Mirrors.
-			make_polymorphic_value<Base_writer, Mirror_writer>(
-					"is_mirror", info, num_shapes),
+			std::make_unique<Mirror_writer>("is_mirror", info, num_shapes),
 			// Objects on fire.
-			make_polymorphic_value<Base_writer, On_fire_writer>(
-					"on_fire", info, num_shapes),
+			std::make_unique<On_fire_writer>("on_fire", info, num_shapes),
 			// Containers with unlimited storage.
-			make_polymorphic_value<
-					Base_writer, Extradimensional_storage_writer>(
+			std::make_unique<Extradimensional_storage_writer>(
 					"extradimensional_storage", info, num_shapes),
 			// For field types.
-			make_polymorphic_value<Base_writer, Field_type_writer>(
-					"field_type", info, num_shapes),
+			std::make_unique<Field_type_writer>("field_type", info, num_shapes),
 			// For frame usecode.
-			make_polymorphic_value<Base_writer, Frame_usecode_writer>(
-					"frame_usecode", info, num_shapes)};
+			std::make_unique<Frame_usecode_writer>(
+					"frame_usecode", info, num_shapes));
 	Write_text_data_file("shape_info", writers, 7, game);
 }
 
@@ -335,11 +324,9 @@ void Shapes_vga_file::Write_Bodies_text_data_file(Exult_Game game) {
 	using Body_list_writer = Functor_multidata_writer<
 			Shape_info,
 			Class_writer_functor<Body_info, Shape_info, &Shape_info::body>>;
-	std::array writers{
-			make_polymorphic_value<Base_writer, Body_shape_writer>(
-					"bodyshapes", info, num_shapes),
-			make_polymorphic_value<Base_writer, Body_list_writer>(
-					"bodylist", info, num_shapes)};
+	std::array writers = make_unique_array<Base_writer>(
+			std::make_unique<Body_shape_writer>("bodyshapes", info, num_shapes),
+			std::make_unique<Body_list_writer>("bodylist", info, num_shapes));
 	Write_text_data_file("bodies", writers, 2, game);
 }
 
@@ -353,11 +340,10 @@ void Shapes_vga_file::Write_Paperdoll_text_data_file(Exult_Game game) {
 			Shape_info,
 			Vector_writer_functor<
 					Paperdoll_item, Shape_info, &Shape_info::objpaperdoll>>;
-	std::array writers{
-			make_polymorphic_value<Base_writer, NpcPaperdoll_writer>(
+	std::array writers = make_unique_array<Base_writer>(
+			std::make_unique<NpcPaperdoll_writer>(
 					"characters", info, num_shapes),
-			make_polymorphic_value<Base_writer, Paperdoll_writer>(
-					"items", info, num_shapes)};
+			std::make_unique<Paperdoll_writer>("items", info, num_shapes));
 	Write_text_data_file("paperdol_info", writers, 3, game);
 }
 
