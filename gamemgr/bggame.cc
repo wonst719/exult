@@ -639,20 +639,20 @@ void BG_Game::scene_butterfly() {
 	}
 }
 
-#define FLASH_SHAPE1(x, y, shape, frame, delay)                          \
-	do {                                                                 \
-		sman->paint_shape((x), (y), shapes.get_shape((shape), (frame))); \
-		win->show();                                                     \
-		WAITDELAYCYCLE1((delay));                                        \
-		win->put(backup.get(), (x)-s->get_xleft(), (y)-s->get_yabove()); \
+#define FLASH_SHAPE1(x, y, shape, frame, delay)                              \
+	do {                                                                     \
+		sman->paint_shape((x), (y), shapes.get_shape((shape), (frame)));     \
+		win->show();                                                         \
+		WAITDELAYCYCLE1((delay));                                            \
+		win->put(backup.get(), (x) - s->get_xleft(), (y) - s->get_yabove()); \
 	} while (0)
 
-#define FLASH_SHAPE2(x, y, shape, frame, delay)                          \
-	do {                                                                 \
-		sman->paint_shape((x), (y), shapes.get_shape((shape), (frame))); \
-		win->show();                                                     \
-		WAITDELAYCYCLE4((delay));                                        \
-		win->put(backup.get(), (x)-s->get_xleft(), (y)-s->get_yabove()); \
+#define FLASH_SHAPE2(x, y, shape, frame, delay)                              \
+	do {                                                                     \
+		sman->paint_shape((x), (y), shapes.get_shape((shape), (frame)));     \
+		win->show();                                                         \
+		WAITDELAYCYCLE4((delay));                                            \
+		win->put(backup.get(), (x) - s->get_xleft(), (y) - s->get_yabove()); \
 	} while (0)
 
 class LipSynchReader {
@@ -661,7 +661,7 @@ class LipSynchReader {
 public:
 	LipSynchReader()
 			: data(std::make_unique<IExultDataSource>(
-					MAINSHP_FLX, PATCH_MAINSHP, 0x0F)) {}
+					  MAINSHP_FLX, PATCH_MAINSHP, 0x0F)) {}
 
 	LipSynchReader(const char* pp, int len)
 			: data(std::make_unique<IBufferDataView>(pp, len)) {}
@@ -685,8 +685,8 @@ public:
 		// Lookup table for translating lipsynch data. The table is indexed by
 		// the current frame-1, then by read lipsynch data-1.
 		constexpr static const int eye_frame_LUT[6][9] = {
-  //   1, 2, 3, 4, 5, 6, 7, 8, 9		// Last eye frame (or the
-  //   one before, if it was 10)
+				//   1, 2, 3, 4, 5, 6, 7, 8, 9		// Last eye frame (or the
+				//   one before, if it was 10)
 				{1, 2, 3, 1, 2, 3, 1, 2,3                                        }, // 1: Change eyebrows to angry
 				{4, 5, 6, 4, 5, 6, 4, 5, 6}, // 2: Change eyebrows to neutral
 				{7, 8, 9, 7, 8, 9, 7, 8, 9}, // 3: Change eyebrows to raised
@@ -718,10 +718,10 @@ class SDL_SurfaceOwner {
 public:
 	SDL_SurfaceOwner(Image_buffer* src, SDL_Surface* draw)
 			: surf(SDL_CreateRGBSurfaceFrom(
-					src->get_bits(), src->get_height(), src->get_width(),
-					draw->format->BitsPerPixel, src->get_line_width(),
-					draw->format->Rmask, draw->format->Gmask,
-					draw->format->Bmask, draw->format->Amask)) {}
+					  src->get_bits(), src->get_height(), src->get_width(),
+					  draw->format->BitsPerPixel, src->get_line_width(),
+					  draw->format->Rmask, draw->format->Gmask,
+					  draw->format->Bmask, draw->format->Amask)) {}
 
 	~SDL_SurfaceOwner() noexcept {
 		SDL_FreeSurface(surf);
@@ -2173,13 +2173,14 @@ bool BG_Game::new_game(Vga_file& shapes) {
 			= (gamemanager->is_si_installed() || gamemanager->is_ss_installed())
 			  && U7exists("<SERPENT_STATIC>/shapes.vga");
 
-	// List of files to load.
-	std::vector<std::pair<std::string, int>> source;
-	source.emplace_back(FACES_VGA, -1);
 	// Multiracial faces.
 	const str_int_pair& resource = get_resource("files/mrfacesvga");
-	source.emplace_back(resource.str, resource.num);
-	source.emplace_back(PATCH_FACES, -1);
+	// List of files to load.
+	std::vector<std::pair<std::string, int>> source{
+			{   FACES_VGA,           -1},
+			{resource.str, resource.num},
+			{ PATCH_FACES,           -1},
+	};
 	faces_vga.load(source);
 
 	const int max_name_len = 16;
@@ -2208,25 +2209,28 @@ bool BG_Game::new_game(Vga_file& shapes) {
 					get_resource("files/gameflx").str,
 					EXULT_BG_FLX_U7MENUPAL_PAL),
 			File_spec(PATCH_INTROPAL, 6), 0);
-	auto* oldpal = new Palette();
-	oldpal->load(INTROPAL_DAT, PATCH_INTROPAL, 6);
 
 	// Create palette translation table. Maybe make them static?
-	auto* transto = new unsigned char[256];
-	oldpal->create_palette_map(pal, transto);
-	delete oldpal;
+	std::array<unsigned char, 256> transto;
+	{
+		Palette oldpal;
+		oldpal.load(INTROPAL_DAT, PATCH_INTROPAL, 6);
+		oldpal.create_palette_map(pal, transto.data());
+	}
 	pal->apply(true);
 	do {
 		Delay();
 		if (redraw) {
 			gwin->clear_screen();
 			sman->paint_shape(
-					topx, topy, shapes.get_shape(0x2, 0), false, transto);
+					topx, topy, shapes.get_shape(0x2, 0), false,
+					transto.data());
 			sman->paint_shape(
 					topx + 10, menuy + 10, shapes.get_shape(0xC, selected == 0),
-					false, transto);
+					false, transto.data());
 			Shape_frame* sex_shape = shapes.get_shape(0xA, selected == 1);
-			sman->paint_shape(topx + 10, menuy + 25, sex_shape, false, transto);
+			sman->paint_shape(
+					topx + 10, menuy + 25, sex_shape, false, transto.data());
 			int sex_width = sex_shape->get_width() + 10;
 			if (sex_width > 35) {
 				sex_width += 25;
@@ -2236,7 +2240,8 @@ bool BG_Game::new_game(Vga_file& shapes) {
 
 			sman->paint_shape(
 					topx + sex_width, menuy + 25,
-					shapes.get_shape(0xB, skindata->is_female), false, transto);
+					shapes.get_shape(0xB, skindata->is_female), false,
+					transto.data());
 
 			Shape_frame* portrait = faces_vga.get_shape(
 					skindata->face_shape, skindata->face_frame);
@@ -2244,16 +2249,18 @@ bool BG_Game::new_game(Vga_file& shapes) {
 
 			sman->paint_shape(
 					topx + 10, topy + 180, shapes.get_shape(0x8, selected == 2),
-					false, transto);
+					false, transto.data());
 			sman->paint_shape(
 					centerx + 10, topy + 180,
-					shapes.get_shape(0x7, selected == 3), false, transto);
+					shapes.get_shape(0x7, selected == 3), false,
+					transto.data());
 			if (selected == 0) {
 				snprintf(disp_name, max_name_len + 2, "%s_", npc_name);
 			} else {
 				snprintf(disp_name, max_name_len + 2, "%s", npc_name);
 			}
-			font->draw_text(ibuf, topx + 60, menuy + 10, disp_name, transto);
+			font->draw_text(
+					ibuf, topx + 60, menuy + 10, disp_name, transto.data());
 			gwin->get_win()->show();
 			redraw = false;
 		}
@@ -2407,7 +2414,6 @@ bool BG_Game::new_game(Vga_file& shapes) {
 		}
 	} while (editing);
 
-	delete[] transto;
 	gwin->clear_screen();
 
 	if (ok) {
