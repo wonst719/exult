@@ -65,7 +65,7 @@ unique_ptr<unsigned char[]> U7object::retrieve(size_t& len) const {
 void U7multiobject::set_object(tcb::span<U7object> objects) {
 	for (const auto& obj : objects) {
 		size_t len;
-		auto   buf = object.retrieve(len);
+		auto   buf = obj.retrieve(len);
 		// Only len > 0 means a valid object.
 		if (buf && len > 0) {
 			buffer = std::move(buf);    // Gets deleted with class.
