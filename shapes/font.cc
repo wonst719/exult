@@ -156,7 +156,7 @@ int Font::paint_text_box(
 			// Pass space.
 			const char* wrd = Pass_space(text);
 			int w = get_text_width(text, static_cast<uint32>(wrd - text));
-			if (w <= 0) {
+			if (w < space_width) {
 				w = space_width;
 			}
 			const int nsp = w / space_width;
