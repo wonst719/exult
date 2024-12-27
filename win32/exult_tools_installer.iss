@@ -26,7 +26,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 ; 32-bit files
 Source: Tools-i686\ucxt.exe; DestDir: {app}; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: Tools-i686\*.dll; DestDir: {app}\; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: Tools-i686\*.dll; DestDir: {app}\tools\; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: Tools-i686\tools\cmanip.exe; DestDir: {app}\tools\; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: Tools-i686\tools\expack.exe; DestDir: {app}\tools\; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: Tools-i686\tools\ipack.exe; DestDir: {app}\tools\; Flags: ignoreversion; Check: not Is64BitInstallMode
@@ -43,7 +43,7 @@ Source: Tools-i686\tools\wuc.exe; DestDir: {app}\tools\; Flags: ignoreversion; C
 Source: Tools-i686\tools\*.dll; DestDir: {app}\tools\; Flags: ignoreversion; Check: not Is64BitInstallMode
 ; 64-bit files
 Source: Tools-x86_64\ucxt.exe; DestDir: {app}; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: Tools-x86_64\*.dll; DestDir: {app}\; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: Tools-x86_64\*.dll; DestDir: {app}\tools\; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: Tools-x86_64\tools\cmanip.exe; DestDir: {app}\tools\; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: Tools-x86_64\tools\expack.exe; DestDir: {app}\tools\; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: Tools-x86_64\tools\ipack.exe; DestDir: {app}\tools\; Flags: ignoreversion; Check: Is64BitInstallMode
@@ -59,9 +59,9 @@ Source: Tools-x86_64\tools\ucc.exe; DestDir: {app}\tools\; Flags: ignoreversion;
 Source: Tools-x86_64\tools\wuc.exe; DestDir: {app}\tools\; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: Tools-x86_64\tools\*.dll; DestDir: {app}\tools\; Flags: ignoreversion; Check: Is64BitInstallMode
 ; Architecture-neutral files
-Source: Tools-i686\AUTHORS.txt; DestDir: {app}; Flags: onlyifdoesntexist
-Source: Tools-i686\COPYING.txt; DestDir: {app}; Flags: onlyifdoesntexist
-Source: Tools-i686\Exult Source Code.url; DestDir: {app}; Flags: ignoreversion;
+Source: Tools-i686\AUTHORS.txt; DestDir: {app}\tools\; Flags: onlyifdoesntexist
+Source: Tools-i686\COPYING.txt; DestDir: {app}\tools\; Flags: onlyifdoesntexist
+Source: Tools-i686\Exult Source Code.url; DestDir: {app}\tools\; Flags: ignoreversion;
 Source: Tools-i686\tools\README-SDL.txt; DestDir: {app}\tools\; Flags: ignoreversion
 Source: Tools-i686\data\bginclude.uc; DestDir: {app}\data\; Flags: ignoreversion
 Source: Tools-i686\data\events.data; DestDir: {app}\data\; Flags: ignoreversion
