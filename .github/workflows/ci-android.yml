@@ -128,7 +128,7 @@ jobs:
           else
             sudo apt-fast update
           fi
-          sudo apt-fast install -y autoconf-archive
+          sudo apt-fast install -y autoconf-archive ninja-build
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Run autoreconf
