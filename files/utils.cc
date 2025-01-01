@@ -751,11 +751,16 @@ string Get_home() {
 		}
 	}
 #	endif    // PORTABLE_WIN32_EXULT
-#else
+#else 
+#	ifdef ANDROID
+	const char *home = SDL_AndroidGetInternalStoragePath();
+	home_directory = home;
+#	else
 	const char* home = nullptr;
 	if ((home = getenv("HOME")) != nullptr) {
 		home_directory = home;
 	}
+#	endif
 #endif
 	return home_directory;
 }
@@ -823,6 +828,16 @@ void setup_data_dir(const std::string& data_path, const char* runpath) {
 		add_system_path("<DATA>", path);
 		return;
 	}
+#endif
+#ifdef ANDROID
+	// We always have the APK with the bundled flx files
+	add_system_path("<BUNDLE>", "data");
+	// for optional data use the InternalStoragePath data folder
+	const char *androidpath = SDL_AndroidGetInternalStoragePath();
+	string path(androidpath);
+	path += "/data";
+	add_system_path("<DATA>", path);
+	return;
 #endif
 
 	// First, try the cfg value:

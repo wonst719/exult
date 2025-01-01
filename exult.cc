@@ -123,8 +123,6 @@ using namespace Pentagram;
 #	include "ios_utils.h"
 #elif defined(ANDROID)
 #	include "TouchUI_Android.h"
-
-#	include <SDL_system.h>
 #endif
 
 using std::atexit;
@@ -295,12 +293,6 @@ int main(int argc, char* argv[]) {
 				}
 				return std::make_unique<SdlRwopsOstream>(s, mode);
 			});
-
-#ifdef ANDROID
-	// Doing this ifdef here rather than in utils.cc so that it doesn't have to
-	// take a dependency on SDL.
-	U7set_home(SDL_AndroidGetInternalStoragePath());
-#endif
 
 	// Declare everything from the commandline that we're interested in.
 	parameters.declare("-h", &needhelp, true);
