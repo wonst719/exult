@@ -58,11 +58,16 @@ int FluidSynthMidiDriver::open() {
 	const std::string        sfsetting = "fluidsynth_soundfont";
 	std::vector<std::string> soundfonts;
 	std::string              soundfont;
+#ifdef ANDROID
+	// on Android only try <DATA>
+	std::string options[] = {"<DATA>"};
+#else
+	std::string options[] = {"", "<BUNDLE>", "<DATA>"};
+#endif
 	for (size_t i = 0; i < 10; i++) {
 		const std::string settingkey = sfsetting + static_cast<char>(i + '0');
 		soundfont                    = getConfigSetting(settingkey, "");
 		if (!soundfont.empty()) {
-			std::string options[] = {"", "<BUNDLE>", "<DATA>"};
 			for (auto& d : options) {
 				std::string f;
 				if (!d.empty()) {
@@ -84,7 +89,6 @@ int FluidSynthMidiDriver::open() {
 	}
 	soundfont = getConfigSetting(sfsetting, "");
 	if (!soundfont.empty()) {
-		std::string options[] = {"", "<BUNDLE>", "<DATA>"};
 		for (auto& d : options) {
 			std::string f;
 			if (!d.empty()) {
@@ -110,7 +114,28 @@ int FluidSynthMidiDriver::open() {
 		char* default_soundfont;
 		if (getStr("synth.default-soundfont", &default_soundfont) == FLUID_OK
 			&& default_soundfont && default_soundfont[0] != 0) {
-			soundfonts.emplace_back(default_soundfont);
+			// try whether the FluidSynth default soundfont is in our paths
+			if (!U7exists(default_soundfont)) {
+				for (auto& d : options) {
+					std::string f;
+					if (!d.empty()) {
+						if (!is_system_path_defined(d)) {
+							continue;
+						}
+						f = get_system_path(d);
+						f += '/';
+						f += default_soundfont;
+					} else {
+						f = soundfont;
+					}
+					if (U7exists(f.c_str())) {
+						soundfont = std::move(f);
+					}
+					soundfonts.emplace_back(soundfont);
+				}
+			} else {
+				soundfonts.emplace_back(default_soundfont);
+			}
 			free(default_soundfont);
 			perr << "Setting 'fluidsynth_soundfont' missing in 'exult.cfg': "
 					"enabling FluidSynth with FluidSynth default SoundFont"
