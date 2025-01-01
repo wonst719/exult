@@ -44,6 +44,16 @@
             android:id="@+id/name"
             android:value="mt32Roms" />
       </CheckBox>
+      <CheckBox
+          android:id="@+id/audioSoundfontCheckBox"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Zipped FluidSynth Soundfont"
+	  android:onClick="onAudioPackCheckboxClicked">
+	<tag
+            android:id="@+id/name"
+            android:value="soundfont" />
+      </CheckBox>
     </LinearLayout>
     <WebView
         android:layout_width="wrap_content"

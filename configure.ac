@@ -568,7 +568,7 @@ else
 fi
 
 # fluidsynth midi driver
-AC_CHECK_HEADER(fluidsynth.h, HAVEFLUIDSYNTH=yes, HAVEFLUIDSYNTH=no)
+PKG_CHECK_MODULES(FluidSynth, fluidsynth, HAVEFLUIDSYNTH=yes, HAVEFLUIDSYNTH=no)
 AC_ARG_ENABLE(fluidsynth, AS_HELP_STRING([--disable-fluidsynth], [Disable fluidsynth midi support]),,enable_fluidsynth=yes)
 AC_MSG_CHECKING([if we want to use fluidsynth midi])
 if test x$HAVEFLUIDSYNTH = xyes; then
@@ -580,7 +580,7 @@ if test x$HAVEFLUIDSYNTH = xyes; then
 		AC_MSG_RESULT(no)
 	fi
 else
-		AC_MSG_RESULT([no; fluidsynth.h not found])
+		AC_MSG_RESULT([no; Package FluidSynth not found])
 fi
 
 # mt32emu midi driver

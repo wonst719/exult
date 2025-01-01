@@ -30,6 +30,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 class ExultAudioDataPackContent extends ExultContent {
   private HashMap<String, Boolean> m_filenameToFoundFlag = new HashMap<String, Boolean>();
   private HashMap<String, Boolean> m_MT32filenameToFoundFlag = new HashMap<String, Boolean>();
+  private HashMap<String, Boolean> m_SF2filenameToFoundFlag = new HashMap<String, Boolean>();
   private String m_audioName;
   private int m_filenamesFound = 0;
   private Path m_installPath;
@@ -49,6 +50,7 @@ class ExultAudioDataPackContent extends ExultContent {
     m_filenameToFoundFlag.put("si01.ogg", false); // implies all si music files are present
     m_MT32filenameToFoundFlag.put("MT32_CONTROL.ROM", false);
     m_MT32filenameToFoundFlag.put("MT32_PCM.ROM", false);
+    m_SF2filenameToFoundFlag.put("default.sf2", false);
 
     m_installPath = context.getFilesDir().toPath().resolve("data");
   }
@@ -71,12 +73,14 @@ class ExultAudioDataPackContent extends ExultContent {
     // Check to see if it matches one of the filenames we are matching.
     Path fullPath = getFullArchivePath(location, archiveEntry);
     String lowerCaseFileName = fullPath.getFileName().toString().toLowerCase();
-    // MT32 ROM filenames need to be uppercase
+    // MT32 ROM and Soundfont need to be the exact case given
     String keepCaseFileName = fullPath.getFileName().toString();
     if (m_audioName.equals("allinone")) {
       foundFlag = m_filenameToFoundFlag.get(lowerCaseFileName);
     } else if (m_audioName.equals("mt32roms")) {
       foundFlag = m_MT32filenameToFoundFlag.get(keepCaseFileName);
+    } else if (m_audioName.equals("soundfont")) {
+      foundFlag = m_SF2filenameToFoundFlag.get(keepCaseFileName);
     }
     // If it's not a file we're looking for, or if it has already been found, move along.
     if (null == foundFlag || true == foundFlag) {
@@ -85,7 +89,7 @@ class ExultAudioDataPackContent extends ExultContent {
 
     // If we haven't identified a data root yet, infer it from the file path.
     if (null == m_dataRootInArchive) {
-      if (lowerCaseFileName.endsWith(".flx") || lowerCaseFileName.endsWith(".rom")) {
+      if (lowerCaseFileName.endsWith(".flx") || lowerCaseFileName.endsWith(".rom") || lowerCaseFileName.endsWith(".sf2")) {
         // ".flx" files live at the data root.
         m_dataRootInArchive = fullPath.getParent();
         if (null == m_dataRootInArchive) {
@@ -108,7 +112,7 @@ class ExultAudioDataPackContent extends ExultContent {
       }
     } else {
       // If we already know the data root, make sure this file is in it.
-      if (lowerCaseFileName.endsWith(".flx") || lowerCaseFileName.endsWith(".rom")) {
+      if (lowerCaseFileName.endsWith(".flx") || lowerCaseFileName.endsWith(".rom") || lowerCaseFileName.endsWith(".sf2")) {
         // ".flx", ".rom" files live at the data root.
         Path parent = fullPath.getParent();
         boolean nullParent = null == parent;
@@ -137,15 +141,17 @@ class ExultAudioDataPackContent extends ExultContent {
       return m_filenameToFoundFlag.size() == m_filenamesFound;
     } else if (m_audioName.equals("mt32roms")) {
       return m_MT32filenameToFoundFlag.size() == m_filenamesFound;
+    } else if (m_audioName.equals("soundfont")) {
+      return m_SF2filenameToFoundFlag.size() == m_filenamesFound;
     }
     return false;
   }
 
   @Override
   protected Path getInstallDestination(Path location, ArchiveEntry archiveEntry) {
-    // Only want to install flx/ogg/rom files; skip over everything else
+    // Only want to install flx/ogg/rom/sf2 files; skip over everything else
     String lowerCaseFileName = archiveEntry.getName().toLowerCase();
-    if (!lowerCaseFileName.endsWith(".flx") && !lowerCaseFileName.endsWith(".ogg") && !lowerCaseFileName.endsWith(".rom")) {
+    if (!lowerCaseFileName.endsWith(".flx") && !lowerCaseFileName.endsWith(".ogg") && !lowerCaseFileName.endsWith(".rom") && !lowerCaseFileName.endsWith(".sf2")) {
       return null;
     }
 
