@@ -20,6 +20,7 @@
 
 #include <streambuf>
 #include <string>
+#include <thread>
 
 /**
  * Implementation of @c std::streambuf which routes all content to the android
@@ -49,12 +50,18 @@ private:
 	/// Buffer to accumulate characters in until we reach the end of a line.
 	std::string m_lineBuf;
 
-	/// JNI Environment for routing logs to UI
+	/// JNI Environment for routing logs to UI. This can only be used on
+	/// jnithread
 	JNIEnv* m_jniEnv;
 
-	/// The Activity to use for routing logs to UI
+	/// The Activity to use for routing logs to UI. This can only be used on
+	/// jnithread
 	jobject m_exultActivityObject;
 
-	/// The Method to use for routing logs to UI
+	/// The Method to use for routing logs to UI. This can only be used on
+	/// jnithread
 	jmethodID m_writeToConsoleMethod;
+
+	/// The id of the thread used to access jni
+	std::thread::id jnithread;
 };
