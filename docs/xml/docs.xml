@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE readme SYSTEM "docs.dtd">
-<readme title="Exult" changed="03 July 2024 (GMT)">
+<readme title="Exult" changed="06 January 2025 (GMT)">
 	<section title="Introduction">
 		<sub name="exult_version">
 			<header>Exult Version</header>
@@ -1688,8 +1688,8 @@
 					On older macOS versions you have to use iTunes as you would on Windows.
 				</para>
 				<para>
-					<strong>Only</strong> use Finder or iTunes file sharing and not the iOS app Files. Otherwise you
-					will probably end up with an incomplete game. The many small files of the games slow down the Files app
+					<strong>Only</strong> use Finder or iTunes file sharing and not the Files app on iOS as you are likely
+					to end up with an incomplete game. The many small files of the games massiively slow down the Files app
 					and as soon as you switch to another app, the transfer is likely to stop.
 				</para>
 				<para>
@@ -1752,6 +1752,159 @@
 					One important addition to the iOS port is that <Exult/> autosaves when it is no longer
 					the focused app. Apple enforces apps to terminate very quickly once they lose focus and
 					to prevent the loss of your current progress, we implemented this automatic saving.
+				</para>
+			</body>
+		</sub>
+	</section>
+	<section title="Android Guide">
+		<sub name="android_port">
+			<header>The port to Android</header>
+			<body>
+				<para>
+					Way back in 2011 Ken Cecka posted a preliminary native port of <Exult/> to Android on our
+					<extref target="https://exult.info/forum/viewtopic.php?p=348367">old forum</extref>. After
+					a long hiatus he picked it up again in 2021 which resulted in a working Android port just in
+					time for our v1.8 release in 2022.
+				</para>
+				<para>
+					Note that as with the iOS port, <Exult/> runs very nicely on tablets but the item management of
+					the games makes playing on the smaller Android screens a bit of a challenge.
+				</para>
+			</body>
+		</sub>
+		<sub name="android_install">
+			<header>Installing Exult on your Android</header>
+			<body>
+				<para>
+					For now <Exult/> is not on the PlayStore but there is another, easy way to get it on your device:
+				</para>
+				<ol>
+					<li>Download the APK from our <extref target="https://exult.info/download.php">download page</extref>.</li>
+					<li>On your Android, open the file manager and in your download folder, tap on the APK and it install.</li>
+				</ol>
+			</body>
+		</sub>
+		<sub name="android_games">
+			<header>Installing the games on your iPhone/iPad</header>
+			<body>
+				<para>
+					Once you have the <Exult/> app on your device, you will need to get the games to your
+					device, either by copying the files from your connected desktop computer or by uploading
+					the files somewhere and then downloading these.
+				</para>
+				<para>
+					If you have bought the Games from <extref target="https://gog.com">GOG</extref> it's quite easy to do:
+				</para>
+				<ol>
+					<li>Browse to <extref target="https://gog.com">GOG.com</extref> and log in to your account</li>
+					<li>Tap the <strong>Your Account</strong> menu and select <strong>Games</strong></li>
+					 <li>Tap the game you want to install (e.g. <strong>Ultima VII - The Black Gate + The Forge of Virtue</strong>)</li>
+					<li>Under <strong>System</strong> select <strong>Mac</strong></li>
+					<li>Scroll down to the section titled <strong>DOWNLOAD OFFLINE BACKUP GAME INSTALLERS</strong> and expand it</li>
+					<li>Tap the game name to download it. This should place a .pkg file in your Downloads folder</li>
+				</ol>
+				<para>
+					Alternately, if you have purchased the game from another site or own a hard copy on CD (or the original floppy
+					disks), you should be able to place the contents in a zip file (or other common archive format) and copy it to 
+					your device. The important part is to zip the folder <strong>STATIC</strong> and its content. For example:<br/>
+					<kbd>game</kbd><br/>
+					<kbd>blackgate</kbd><br/>
+					<kbd>|+--- static</kbd><br/>
+					<kbd>|     +---- *.*</kbd><br/>
+					Don't write <kbd>+--</kbd> - it's only there to visualize the structure. With <kbd>*.*</kbd>
+					all the files of the static folder are meant.
+				</para>
+				<para>
+					After you have downloaded .pkg file (or otherwise loaded another archive), start the <Exult/> launcher, select the
+					Games tab, and then tap one of the checkboxes on the left, corresponding to the game you are installing. This
+					will open a file browser which you can use to select the archive you downloaded, and the installer will take
+					care of extracting the required data files and installing them in the correct places.
+				</para>
+				<para>
+					Once you have successfully installed the game data, you are free to delete the .pkg (or other archive); it will
+					no longer be needed or used by <Exult/> after installation.
+				</para>
+			</body>
+		</sub>
+		<sub name="android_mods">
+			<header>Installing mods on Android</header>
+			<body>
+				<para>
+					Currently we only offer a way to install five mods on Android: the BG Keyring, SI Fixes,
+					SourceForge Island, Ultima VI Remake and Glimmerscape.
+				</para>
+				<para>
+					To install these mods, download the zip file of the mod you want to install from our
+					<extref target="https://exult.info/download.php">download page</extref>.<br/>
+					In the <Exult/>launcher, select the Mods tab and tap to the left on the corrsponding chaeckmark.
+					This will open a file browser which you can use to select the archive you downloaded, and the
+					installer will take care of extracting the required data files and installing them in the correct places.
+				</para>
+			</body>
+		</sub>
+		<sub name="android_data">
+			<header>Installing sfx, digital music, MT32 ROMs and soundfonts</header>
+			<body>
+				<para>
+					To install the optional sfx and digital music, please download the 'Zipped all-in-one audio pack
+					for manual installation' zip file from our
+					<extref target="https://exult.info/download.php">download page</extref>.<br/>
+					In the <Exult/>launcher, select the Audio tab, tap on <strong>Zipped all-in-one audio pack</strong> checkmark.
+					This will open a file browser which you can use to select the archive you downloaded, and the installer will 
+					take care of extracting the required data files and installing them in the correct places.
+				</para>
+				<para>
+					For the MT32 emulation of the music you need the MT32 ROMs and both ROMs need their filenames to be 
+					uppercase. Once you have the zipped ROMs on your android device, tap the <strong>Zipped MT32 ROMs</strong>
+					checkbox on the left, select the zip in the file browser, and the files will be installed.<br/>
+					Keep in mind that the MT32 ROM files are copyrighted and thus we are not offering a download. You need to dump
+					the ROMs yourself to legally use these.
+				</para>
+				<para>
+					For MIDI music playback on android, we are using FluidSynth. This needs a soundfont in SF2 format which has
+					to be named "default.sf2" (all in lower case) and in a zip file. Once you have the zipped soundfont on your Android
+					device, tap the <strong>Zipped FluidSynth Soundfont</strong> checkbox on the left, select the zip in the file
+					browser, and the files will be installed.<br/>
+				</para>
+			</body>
+		</sub>
+		<sub name="android_controls">
+			<header>Android controls</header>
+			<body>
+				<para>
+					When playing you have a dpad overlaying the game screen which by default is on the right of the
+					screen (but can be set to the left side).<br/>
+					Tapping with your finger is equal to a left click in the game.<br/>
+					The green (and eventually red (combat)) movement cursor and the hand pointer are invisible on
+					Android as they are more distracting than helping when you control and click with your finger.
+				</para>
+				<para>
+					When you do a long touch on a location and then release the finger, the Avatar will pathfind to this spot.
+				</para>
+				<para>
+					There is also a helper menu when you click near objects in the games, which can be helpful on
+					the smaller iPhone screens but can be disabled in <ref1 target="game_input_gump"/>.
+				</para>
+			</body>
+		</sub>
+		<sub name="android_autosave">
+			<header>Android automatic saves</header>
+			<body>
+				<para>
+					As with the iOS port <Exult/> autosaves when it is no longer the focused app on Android.
+				</para>
+			</body>
+		</sub>
+		<sub name="android_file_storage">
+			<header>Android File Storage</header>
+			<body>
+				<para>
+					For now <Exult/> uses the Internal File Storage of Android, which brings with it an important
+					limitation:<br/>
+					When you uninstall <Exult/>, all your savegames and settings will be deleted as well. Be aware of this
+					and backup your savegames before uninstalling. There are several ways to do this, depending on your
+					device and desktop Operating System.<br/>
+					We hope to make this better in the future.
 				</para>
 			</body>
 		</sub>
@@ -2951,7 +3104,8 @@
 						understanding some data files.</li>
 					<li>Thanks also go to the person who wrote u7items.txt and the
 						contributor of the 'avatar.ttf' font.</li>
-					<li>Aurelien Marchand (Artaxerxes) for his extensive guide for the Zaurus.</li>
+					<li>Aurelien Marchand (Artaxerxes) for his extensive guide for the Zaurus (which is no longer
+						displayed here as Zaurus devices have long been out of fasion).</li>
 				</ul>
 			</body>
 		</sub>
@@ -2966,7 +3120,15 @@
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
-		<sub name="030742024">
+		<sub name="06012025">
+			<header>- 06 January 2025</header>
+			<body>
+				<ul>
+					<li><section_ref target="Android Guide"/> added.</li>
+				</ul>
+			</body>
+		</sub>
+		<sub name="03072024">
 			<header>- 03 July 2024</header>
 			<body>
 				<ul>
