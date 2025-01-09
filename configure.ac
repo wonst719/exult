@@ -390,10 +390,9 @@ if test x$enable_android_apk != xno; then
 
 	# When building a debug apk, enable Exult's debug_level "messages"
 	# which can be overriden with "--with-debug="
-	# MT32emu crashes on Android when debugis enabled, so temporarily disable it.
-	#if test x$enable_android_apk = xdebug; then
-	#	AC_SUBST(EXULT_ANDROID_DEBUG, messages)
-	#fi
+	if test x$enable_android_apk = xdebug; then
+		AC_SUBST(EXULT_ANDROID_DEBUG, messages)
+	fi
 
 	# Build a single Android architecture
 	AC_ARG_WITH(android_arch,
