@@ -52,6 +52,7 @@ APK_SOURCE_TREE = \
 	$(abs_builddir)/app/src/main/java/info/exult \
 	$(abs_builddir)/app/src/main/res/layout \
 	$(abs_builddir)/app/src/main/res/values \
+	$(abs_builddir)/app/src/main/res/xml \
 	$(abs_builddir)/app/src/main/res/drawable/ankh.png \
 	$(abs_builddir)/app/src/main/res/drawable/back.gif \
 	$(abs_builddir)/app/src/main/res/drawable/exult_logo_nice.png \

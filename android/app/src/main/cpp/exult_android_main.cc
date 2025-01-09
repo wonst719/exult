@@ -19,10 +19,46 @@
 #include "android_log_streambuf.h"
 
 #include <SDL2/SDL_main.h>
+#include <SDL2/SDL_system.h>
 #include <android/log.h>
 #include <jni.h>
 
 #include <iostream>
+
+/// Partial class of GameDisplayOptions_gump to give access to static method
+/// SetAndroidAutoLaunchFPtrs
+class GameDisplayOptions_gump {
+public:
+	static void SetAndroidAutoLaunchFPtrs(
+			void (*setter)(bool), bool (*getter)());
+};
+
+static bool getAutoLaunch() {
+	auto jniEnv = static_cast<JNIEnv*>(SDL_AndroidGetJNIEnv());
+
+	auto launcherclass = jniEnv->FindClass("info/exult/ExultLauncherActivity");
+	auto exultLauncherActivityObject = jniEnv->CallStaticObjectMethod(
+			launcherclass, jniEnv->GetStaticMethodID(
+								   launcherclass, "instance",
+								   "()Linfo/exult/ExultLauncherActivity;"));
+	return jniEnv->CallBooleanMethod(
+				   exultLauncherActivityObject,
+				   jniEnv->GetMethodID(launcherclass, "getAutoLaunch", "()Z"))
+		   != JNI_FALSE;
+}
+
+static void setAutoLaunch(bool autoLaunch) {
+	auto jniEnv        = static_cast<JNIEnv*>(SDL_AndroidGetJNIEnv());
+	auto launcherclass = jniEnv->FindClass("info/exult/ExultLauncherActivity");
+	auto exultLauncherActivityObject = jniEnv->CallStaticObjectMethod(
+			launcherclass, jniEnv->GetStaticMethodID(
+								   launcherclass, "instance",
+								   "()Linfo/exult/ExultLauncherActivity;"));
+	jboolean arg = autoLaunch;
+	jniEnv->CallVoidMethod(
+			exultLauncherActivityObject,
+			jniEnv->GetMethodID(launcherclass, "setAutoLaunch", "(Z)V"), arg);
+}
 
 extern "C" JNIEXPORT int JNICALL ExultAndroid_main(int argc, char* argv[]) {
 	AndroidLog_streambuf exult_cout(ANDROID_LOG_DEBUG, "exult-android-wrapper");
@@ -30,13 +66,15 @@ extern "C" JNIEXPORT int JNICALL ExultAndroid_main(int argc, char* argv[]) {
 	auto*                ndk_cout = std::cout.rdbuf(&exult_cout);
 	auto*                ndk_cerr = std::cerr.rdbuf(&exult_cerr);
 
+	GameDisplayOptions_gump::SetAndroidAutoLaunchFPtrs(
+			setAutoLaunch, getAutoLaunch);
+
 	[[maybe_unused]] auto result = SDL_main(argc, argv);
 
 	std::cout.rdbuf(ndk_cout);
 	std::cerr.rdbuf(ndk_cerr);
 
 	// note: `exit(0)` rather than `return 0` to ensure proper cleanup of
-	// resources
-	//	 between runs.
+	// resources between runs.
 	exit(0);
 }

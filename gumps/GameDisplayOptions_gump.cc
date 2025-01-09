@@ -51,7 +51,7 @@
 using std::string;
 
 static const int rowy[]
-		= {5, 17, 29, 41, 53, 65, 77, 89, 101, 113, 125, 137, 146};
+		= {5, 17, 29, 41, 53, 65, 77, 89, 101, 113, 125, 137, 146, 155};
 static const int colx[] = {35, 50, 120, 170, 192, 209};
 
 static const char* oktext     = "OK";
@@ -61,6 +61,17 @@ static const char* helptext   = "HELP";
 using GameDisplayOptions_button = CallbackTextButton<GameDisplayOptions_gump>;
 using GameDisplayTextToggle = CallbackToggleTextButton<GameDisplayOptions_gump>;
 using GameDisplayEnabledToggle = CallbackEnabledButton<GameDisplayOptions_gump>;
+
+// Android stuff
+
+bool (*GameDisplayOptions_gump::Android_getAutoLaunch)()     = nullptr;
+void (*GameDisplayOptions_gump::Android_setAutoLaunch)(bool) = nullptr;
+
+void GameDisplayOptions_gump::SetAndroidAutoLaunchFPtrs(
+		void (*setter)(bool), bool (*getter)()) {
+	Android_getAutoLaunch = getter;
+	Android_setAutoLaunch = setter;
+}
 
 void GameDisplayOptions_gump::close() {
 	save_settings();
@@ -145,6 +156,14 @@ void GameDisplayOptions_gump::build_buttons() {
 				this, &GameDisplayOptions_gump::toggle_paperdolls, yesNo,
 				paperdolls, colx[5], rowy[++y_index], small_size);
 	}
+	// Android
+	if (Android_getAutoLaunch) {
+		buttons[id_android_autolaunch]
+				= std::make_unique<GameDisplayTextToggle>(
+						this, &GameDisplayOptions_gump::toggle_android_launcher,
+						yesNo, android_autolaunch, colx[5], rowy[++y_index],
+						small_size);
+	}
 }
 
 void GameDisplayOptions_gump::load_settings() {
@@ -169,10 +188,12 @@ void GameDisplayOptions_gump::load_settings() {
 	paperdolls       = sman->are_paperdolls_enabled();
 	text_bg          = gwin->get_text_bg() + 1;
 	smooth_scrolling = gwin->is_lerping_enabled() / 25;
+
+	android_autolaunch = Android_getAutoLaunch ? Android_getAutoLaunch() : 0;
 }
 
 GameDisplayOptions_gump::GameDisplayOptions_gump() : Modal_gump(nullptr, -1) {
-	SetProceduralBackground(TileRect(29, 2, 226, 156), -1);
+	SetProceduralBackground(TileRect(29, 2, 226, 165), -1);
 
 	for (auto& btn : buttons) {
 		btn.reset();
@@ -184,15 +205,15 @@ GameDisplayOptions_gump::GameDisplayOptions_gump() : Modal_gump(nullptr, -1) {
 	// Ok
 	buttons[id_ok] = std::make_unique<GameDisplayOptions_button>(
 			this, &GameDisplayOptions_gump::close, oktext, colx[0] - 2,
-			rowy[12], 50);
+			rowy[id_count - 1], 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<GameDisplayOptions_button>(
 			this, &GameDisplayOptions_gump::cancel, canceltext, colx[5] - 6,
-			rowy[12], 50);
+			rowy[id_count - 1], 50);
 	// Help
 	buttons[id_help] = std::make_unique<GameDisplayOptions_button>(
 			this, &GameDisplayOptions_gump::help, helptext, colx[2] - 3,
-			rowy[12], 50);
+			rowy[id_count - 1], 50);
 }
 
 void GameDisplayOptions_gump::save_settings() {
@@ -248,6 +269,10 @@ void GameDisplayOptions_gump::save_settings() {
 				false);
 	}
 	config->write_back();
+
+	if (Android_setAutoLaunch) {
+		Android_setAutoLaunch(android_autolaunch != 0);
+	}
 }
 
 void GameDisplayOptions_gump::paint() {
@@ -258,9 +283,9 @@ void GameDisplayOptions_gump::paint() {
 		}
 	}
 
-	std::shared_ptr<Font>          font    = fontManager.get_font("SMALL_BLACK_FONT");
-	Image_window8* iwin    = gwin->get_win();
-	int            y_index = 0;
+	std::shared_ptr<Font> font    = fontManager.get_font("SMALL_BLACK_FONT");
+	Image_window8*        iwin    = gwin->get_win();
+	int                   y_index = 0;
 	font->paint_text(
 			iwin->get_ib8(), "Status Bars:", x + colx[0],
 			y + rowy[y_index] + 1);
@@ -295,6 +320,16 @@ void GameDisplayOptions_gump::paint() {
 	if (buttons[id_paperdolls]) {
 		font->paint_text(
 				iwin->get_ib8(), "Paperdolls:", x + colx[0],
+				y + rowy[++y_index] + 1);
+	}
+	if (buttons[id_paperdolls]) {
+		font->paint_text(
+				iwin->get_ib8(), "Paperdolls:", x + colx[0],
+				y + rowy[++y_index] + 1);
+	}
+	if (buttons[id_android_autolaunch]) {
+		font->paint_text(
+				iwin->get_ib8(), "Android autolaunch:", x + colx[0],
 				y + rowy[++y_index] + 1);
 	}
 	gwin->set_painted();

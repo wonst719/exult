@@ -56,6 +56,8 @@ private:
 		id_usecode_intro,
 		id_extended_intro,
 		id_paperdolls,
+		id_android_autolaunch,
+
 		id_count
 	};
 
@@ -118,6 +120,19 @@ public:
 	void toggle_paperdolls(int state) {
 		paperdolls = state;
 	}
+
+private:
+	int android_autolaunch;
+	static bool (*Android_getAutoLaunch)();
+	static void (*Android_setAutoLaunch)(bool);
+
+public:
+	void toggle_android_launcher(int state) {
+		android_autolaunch = state;
+	}
+
+	static void SetAndroidAutoLaunchFPtrs(
+			void (*setter)(bool), bool (*getter)());
 };
 
 #endif

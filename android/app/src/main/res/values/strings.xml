@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Exult</string>
+    <string name="shortcut_launcher_shortlabel">Force Start Launcher</string>
+    <string name="shortcut_launcher_longlabel">Force Start Launcher</string>
+    <string name="shortcut_launcher_disabledmessage">Force Start Launcher Disabled</string>
 </resources>

@@ -32,22 +32,28 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.activity.EdgeToEdge;
 
+import java.util.Objects;
+
 public class ExultLauncherActivity extends AppCompatActivity {
   private SharedPreferences m_sharedPreferences;
-
+  private static ExultLauncherActivity m_instance;
   // This feels pretty hacky, but haven't figured out a better way to detect when the Activity
   // is returning from a launch versus being opened and eligible to auto-launch.
   private boolean m_launched = false;
 
   @Override
   public void onResume() {
-    super.onResume();
-    if (getAutoLaunch()) {
-      if (!m_launched) {
-        launchExult();
-      } else {
-        m_launched = false;
-      }
+	  // get the action from the intent if we can.
+	  Intent intent = getIntent();
+    String action = (intent != null) ? intent.getAction() : "";
+	  super.onResume();
+	  // Only allow auto launch if intent was MAIN action 
+	  if (Objects.equals(action, Intent.ACTION_MAIN) && getAutoLaunch()) {
+		  if (!m_launched) {
+			  launchExult();
+		  } else {
+			  m_launched = false;
+		  }
     }
   }
 
@@ -68,37 +74,45 @@ public class ExultLauncherActivity extends AppCompatActivity {
     startActivity(launchExultIntent);
   }
 
+  public static ExultLauncherActivity instance() {
+	  return m_instance;
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    // stretch Exult to all edges
-    EdgeToEdge.enable(this);
+	  m_instance = this;
 
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+	  // stretch Exult to all edges
+	  EdgeToEdge.enable(this);
 
-    // hiding system bars
-    WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-    windowInsetsController.setSystemBarsBehavior(
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-    windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
+	  super.onCreate(savedInstanceState);
+	  setContentView(R.layout.activity_main);
 
-    m_sharedPreferences = getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
+	  // hiding system bars
+	  WindowInsetsControllerCompat windowInsetsController
+			  = WindowCompat.getInsetsController(
+					  getWindow(), getWindow().getDecorView());
+	  windowInsetsController.setSystemBarsBehavior(
+			  WindowInsetsControllerCompat
+					  .BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+	  windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
-    ViewPager2 viewPager = findViewById(R.id.view_pager);
-    TabLayout tabLayout = findViewById(R.id.tabs);
+	  m_sharedPreferences = getSharedPreferences(
+			  getClass().getSimpleName(), Context.MODE_PRIVATE);
 
-    viewPager.setAdapter(new ViewPagerAdapter(this));
-    new TabLayoutMediator(
-            tabLayout,
-            viewPager,
-            new TabLayoutMediator.TabConfigurationStrategy() {
-              @Override
-              public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                tab.setText(ViewPagerAdapter.getItemText(position));
-              }
-            })
-        .attach();
+	  ViewPager2 viewPager = findViewById(R.id.view_pager);
+	  TabLayout  tabLayout = findViewById(R.id.tabs);
+
+	  viewPager.setAdapter(new ViewPagerAdapter(this));
+	  new TabLayoutMediator(
+			  tabLayout, viewPager,
+			  new TabLayoutMediator.TabConfigurationStrategy() {
+				  @Override
+				  public void onConfigureTab(
+						  @NonNull TabLayout.Tab tab, int position) {
+					  tab.setText(ViewPagerAdapter.getItemText(position));
+				  }
+			  })
+			  .attach();
   }
 }
