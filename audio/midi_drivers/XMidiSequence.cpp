@@ -45,10 +45,11 @@ XMidiSequence::XMidiSequence(
 		XMidiSequenceHandler* Handler, uint16 seq_id, XMidiEventList* events,
 		bool Repeat, int volume, int branch)
 		: handler(Handler), sequence_id(seq_id), evntlist(events),
-		  event(nullptr), repeat(Repeat), last_tick(0), loop_num(-1),
-		  vol_multi(volume), paused(false), speed(100) {
-	std::memset(loop_event, 0, XMIDI_MAX_FOR_LOOP_COUNT * sizeof(int));
-	std::memset(loop_count, 0, XMIDI_MAX_FOR_LOOP_COUNT * sizeof(int));
+		  event(nullptr), repeat(Repeat), last_tick(0), start(0xFFFFFFFF),
+		  loop_num(-1), vol_multi(volume), vol_changed(true), paused(false),
+		  speed(100) {
+	std::memset(loop_event, 0, sizeof(loop_event));
+	std::memset(loop_count, 0, sizeof(loop_count));
 	event = evntlist->events;
 
 	for (int i = 0; i < 16; i++) {
@@ -75,7 +76,6 @@ XMidiSequence::XMidiSequence(
 	}
 
 	// initClock();
-	start = 0xFFFFFFFF;
 }
 
 XMidiSequence::~XMidiSequence() {
