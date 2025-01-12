@@ -148,6 +148,8 @@ int MT32EmuMidiDriver::open() {
 		mt32src = new SampleRateConverter(
 				*mt32, sample_rate, SamplerateConversionQuality_GOOD);
 	}
+	//  Must use immediate to prevent problems switching tracks
+	mt32->setMIDIDelayMode(MT32Emu::MIDIDelayMode_IMMEDIATE);
 
 	ROMImage::freeROMImage(controlROMImage);
 	ROMImage::freeROMImage(pcmROMImage);
