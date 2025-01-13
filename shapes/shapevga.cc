@@ -595,8 +595,10 @@ bool Shapes_vga_file::read_info(
 			offsets[i] = wihh.read2();
 		}
 		for (size_t i = 0; i < cnt; i++) {
-			// A zero offset means there is no record
-			if (offsets[i] == 0) {
+			// A zero offset means there is no record also ignore invalid
+			// offsets past the end of the file or point into the offset table
+			if (offsets[i] == 0 || offsets[i] > (wihh.getSize() - 2)
+				|| offsets[i] < 2048) {
 				info[i].weapon_offsets = nullptr;
 			} else {
 				wihh.seek(offsets[i]);
