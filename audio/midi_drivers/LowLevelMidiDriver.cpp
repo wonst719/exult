@@ -282,7 +282,7 @@ void LowLevelMidiDriver::startSequence(
 			return playing[3];
 		}();
 
-		// If sequence is still playing timbres are still loading
+		// If sequence is still playing then timbres are still loading
 		// so we need to wait and try it again
 		if (isplaying) {
 			yield();
@@ -563,8 +563,14 @@ int LowLevelMidiDriver::threadMain() {
 		xmidi_clock = std::chrono::duration_cast<decltype(xmidi_clock)>(
 				std::chrono::steady_clock::now() - clock_start);
 
-		if (playSequences()) {
+		auto psres = playSequences();
+
+		if (psres == PlaySeqResult::terminate) {
 			break;
+		} else if (psres == PlaySeqResult::delayreq) {
+			// explictly sleep for the needed delay
+			std::this_thread::sleep_for(start_track_delay_until - xmidi_clock);
+			continue;
 		}
 
 		sint32 time_till_next = INT32_MAX;
@@ -724,8 +730,10 @@ void LowLevelMidiDriver::produceSamples(sint16* samples, uint32 bytes) {
 				(total_seconds * 6000)
 				+ (samples_this_second * 6000) / sample_rate);
 
+		auto psres = playSequences();
+
 		// We care about the return code now
-		if (playSequences()) {
+		if (psres == PlaySeqResult::terminate) {
 			const std::lock_guard<std::mutex> lock(*mutex);
 			// Pop all messages
 			while (!messages.empty()) {
@@ -733,14 +741,18 @@ void LowLevelMidiDriver::produceSamples(sint16* samples, uint32 bytes) {
 			}
 			initialized = false;
 			break;
+		} else if (psres == PlaySeqResult::delayreq) {
+			// Don't need to explicitly handle delayreq here
 		}
 
 		// Produce the samples
-		lowLevelProduceSamples(samples, samples_to_produce);
+		if (samples_to_produce > 0) {
+			lowLevelProduceSamples(samples, samples_to_produce);
 
-		// Increment the counters
-		samples += samples_to_produce * stereo_mult;
-		num_samples -= samples_to_produce;
+			// Increment the counters
+			samples += samples_to_produce * stereo_mult;
+			num_samples -= samples_to_produce;
+		}
 	}
 }
 
@@ -748,9 +760,8 @@ void LowLevelMidiDriver::produceSamples(sint16* samples, uint32 bytes) {
 // Shared Stuff
 //
 
-bool LowLevelMidiDriver::playSequences() {
+LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 	int i;
-
 	// Play all notes, from all sequences
 	for (i = 0; i < LLMD_NUM_SEQ; i++) {
 		const int seq = i;
@@ -790,6 +801,7 @@ bool LowLevelMidiDriver::playSequences() {
 			playing[message.sequence]       = false;
 			callback_data[message.sequence] = -1;
 			unlockAndUnprotectChannel(message.sequence);
+			start_track_delay_until = xmidi_clock + after_stop_delay;
 		} break;
 
 		case LLMD_MSG_THREAD_EXIT: {
@@ -801,7 +813,7 @@ bool LowLevelMidiDriver::playSequences() {
 				unlockAndUnprotectChannel(i);
 			}
 		}
-			return true;
+			return PlaySeqResult::terminate;
 
 		case LLMD_MSG_SET_VOLUME: {
 			// Out of range
@@ -873,12 +885,20 @@ bool LowLevelMidiDriver::playSequences() {
 			}
 			// Kill the previous stream
 			delete sequences[message.sequence];
-			sequences[message.sequence]     = nullptr;
+			sequences[message.sequence] = nullptr;
+			if (playing[message.sequence]) {
+				start_track_delay_until = xmidi_clock + after_stop_delay;
+			}
 			playing[message.sequence]       = false;
 			callback_data[message.sequence] = -1;
 			unlockAndUnprotectChannel(message.sequence);
 
 			giveinfo();
+
+			// If there is a delay we must wait till we can play the equence
+			if (start_track_delay_until > xmidi_clock) {
+				return PlaySeqResult::delayreq;
+			}
 
 			if (message.data.play.list) {
 				sequences[message.sequence] = new XMidiSequence(
@@ -985,7 +1005,7 @@ bool LowLevelMidiDriver::playSequences() {
 		messages.pop();
 	}
 
-	return false;
+	return PlaySeqResult::normal;
 }
 
 void LowLevelMidiDriver::sequenceSendEvent(uint16 sequence_id, uint32 message) {
