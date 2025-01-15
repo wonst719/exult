@@ -758,6 +758,7 @@ int XMidiFile::GetVLQ2(IDataSource* source, uint32& quant) {
 // is a massive optimization. Speed up should be quite impressive
 //
 void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
+	return;
 	for (int channel = 0; channel < 16; channel++) {
 		XMidiEvent* patch  = fs.patch[channel];
 		XMidiEvent* vol    = fs.vol[channel];
@@ -877,6 +878,21 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 			list = bank;
 		}
 	}
+}
+
+void XMidiFile::SpreadinitialEvents() {
+	int  offset      = 0;
+	bool hit_note_on = false;
+	for (XMidiEvent* event = list; event; event = event->next) {
+		event->time += offset;
+		// increment offset if we havent hit a note on
+		hit_note_on |= (event->status >> 4) == MIDI_STATUS_NOTE_ON;
+		if (!hit_note_on) {
+			offset++;
+		}
+	}
+
+	length += offset;
 }
 
 //
@@ -1369,7 +1385,7 @@ int XMidiFile::ExtractTracksFromXmi(IDataSource* source) {
 
 		// Convert it
 		const int chan_mask = ConvertFiletoList(source, true, fs);
-
+		SpreadinitialEvents();
 		// Apply the first state
 		//		ApplyFirstState(fs, chan_mask);
 
@@ -1434,6 +1450,7 @@ int XMidiFile::ExtractTracksFromMid(
 		if (!type1) {
 			ApplyFirstState(fs, chan_mask);
 			AdjustTimings(ppqn);
+			SpreadinitialEvents();
 			events[num]->events       = list;
 			events[num]->branches     = branches;
 			events[num]->chan_mask    = chan_mask;
@@ -1456,6 +1473,7 @@ int XMidiFile::ExtractTracksFromMid(
 	if (type1) {
 		ApplyFirstState(fs, chan_mask);
 		AdjustTimings(ppqn);
+		SpreadinitialEvents();
 		events[0]->events       = list;
 		events[0]->branches     = branches;
 		events[0]->chan_mask    = chan_mask;

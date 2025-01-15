@@ -107,6 +107,8 @@ private:
 
 	void AdjustTimings(uint32 ppqn);    // This is used by Midi's ONLY!
 	void ApplyFirstState(first_state& fs, int chan_mask);
+	// Space out the initial events before the first note on so there is at least one tick between them
+	void SpreadinitialEvents();
 
 	int ConvertNote(
 			const int time, const unsigned char status, IDataSource* source,
