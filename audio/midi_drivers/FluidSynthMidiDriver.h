@@ -22,10 +22,20 @@
 #	include "LowLevelMidiDriver.h"
 #	include "common_types.h"
 
+// If  configure hasn't specified which one to use attempt to autodetect
+// try fluidlite.h first
+#if !defined(USING_FLUIDSYNTH) && !defined(USING_FLUIDLITE)
+#if __has_include(<fluidlite.h>)
+#	define USING_FLUIDLITE 1
+#elif __has_include(<fluidsynth.h>)
+#	define USING_FLUIDSYNTH 1
+#endif
+#endif
+
 #	ifdef USING_FLUIDSYNTH
 #		include <fluidsynth.h>
 #		define FLUID_VERSION    "FluidSynth " FLUIDSYNTH_VERSION
-#	else ifdef USING_FLUIDLITE
+#	elif defined(USING_FLUIDLITE)
 #		include <fluidlite.h>
 #		define FLUID_VERSION   "FluidLite " FLUIDLITE_VERSION
 #		ifndef FLUID_OK
