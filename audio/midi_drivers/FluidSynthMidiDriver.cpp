@@ -77,7 +77,7 @@ int FluidSynthMidiDriver::open() {
 #endif
 	for (size_t i = 0; i < 10; i++) {
 		const std::string settingkey = sfsetting + static_cast<char>(i + '0');
-		soundfont                    = getConfigSetting(settingkey, "");
+		soundfont                    = getConfigSetting(settingkey, "default.sf2");
 		if (!soundfont.empty()) {
 			for (auto& d : options) {
 				std::string f;
@@ -98,7 +98,7 @@ int FluidSynthMidiDriver::open() {
 			soundfonts.push_back(soundfont);
 		}
 	}
-	soundfont = getConfigSetting(sfsetting, "");
+	soundfont = getConfigSetting(sfsetting, "default.sf2");
 	if (!soundfont.empty()) {
 		for (auto& d : options) {
 			std::string f;

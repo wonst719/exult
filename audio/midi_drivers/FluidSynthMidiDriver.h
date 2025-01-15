@@ -22,22 +22,15 @@
 #	include "LowLevelMidiDriver.h"
 #	include "common_types.h"
 
-// try fluidsynth.h
-#	if __has_include(<fluidsynth.h>)
+#	ifdef USING_FLUIDSYNTH
 #		include <fluidsynth.h>
-#		define USING_FLUIDSYNTH 1
 #		define FLUID_VERSION    "FluidSynth " FLUIDSYNTH_VERSION
-// Or try fluidlite.h
-#	elif __has_include(<fluidlite.h>)
+#	else ifdef USING_FLUIDLITE
 #		include <fluidlite.h>
-#		define USING_FLUIDLITE 1
 #		define FLUID_VERSION   "FluidLite " FLUIDLITE_VERSION
 #		ifndef FLUID_OK
 #			define FLUID_OK 0
 #		endif
-
-#	else
-#		error Must have fluidsynth or fluidlite to compile with USE_FLUIDSYNTH_MIDI
 #	endif
 
 #	include <stack>
