@@ -737,7 +737,7 @@ void LowLevelMidiDriver::produceSamples(sint16* samples, uint32 bytes) {
 		// to the desired time and subtract the number of samples we have
 		// already produced this second to get the amount for this iteration
 		// Ideally this value is sample_rate/120 but if the sample rate is not a
-		// multipler of 120 like 44100 this value will vary each iteraction as
+		// multiple of 120 like 44100 this value will vary each iteration as
 		// the error gets spread out over each second of playback. One sample of
 		// variation in midi timing should not be noticable for us
 		samples_to_produce
@@ -1109,6 +1109,21 @@ void LowLevelMidiDriver::sequenceSendSysEx(
 	ignore_unused_variable_warning(sequence_id);
 	// Ignore Metadata
 	if (status == 0xFF) {
+		return;
+	}
+	// ignore anything not for mt32
+	if (length < 4 || msg[0] != 0x41 || msg[1] != 0x10 || msg[2] != 0x16
+		|| msg[3] != 0x12) {
+		CERR("Sequence " << sequence_id << "wants to send non mt32 sysex data"
+						 << std::hex);
+
+		for (int i = 0; i < length; i++) {
+			CERR(" " << static_cast<int>(msg[i]));
+		}
+		CERR(std::dec);
+		for (int i = 0; i < length; i++) {
+			CERR(" " << static_cast<char>(msg[i]));
+		}
 		return;
 	}
 
