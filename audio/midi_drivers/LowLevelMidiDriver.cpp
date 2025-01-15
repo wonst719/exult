@@ -658,6 +658,7 @@ int LowLevelMidiDriver::initSoftwareSynth() {
 	total_seconds       = 0;
 	samples_this_second = 0;
 
+#if !NEW_PRODUCESAMPLES_TIMING
 	// This value doesn't 'really' matter all that much
 	// Smaller values are more accurate (more iterations)
 
@@ -681,7 +682,7 @@ int LowLevelMidiDriver::initSoftwareSynth() {
 			samples_per_iteration >>= 1;
 		}
 	}
-
+#endif
 	return 0;
 }
 
@@ -713,19 +714,50 @@ void LowLevelMidiDriver::produceSamples(sint16* samples, uint32 bytes) {
 
 	// Now, do the note playing iterations
 	while (num_samples > 0) {
-		uint32 samples_to_produce = samples_per_iteration;
+		uint32 samples_to_produce;
+#if NEW_PRODUCESAMPLES_TIMING
+		// advance clock by 50 ticks 1/120 of a second
+		auto desired = xmidi_clock.count() + 50;
+
+		// round up to multiple of 50
+		desired += 49;
+		desired -= desired % 50;
+
+		// calculate number of samples needed to advance synthesis to reach
+		// desired time
+
+		// remove seconds from desired leaving only ticks advanced this second
+		// so we don't overflow uint32 when multiplying ticks by sample_rate. If
+		// seconds are not removed at 48k sample rate an overflow will occur
+		// after 14 seconds of total plackback when doing `desired *
+		// sample_rate` below
+		desired -= 6000 * total_seconds;
+
+		// calculate number of samples we need to produce this second to advance
+		// to the desired time and subtract the number of samples we have
+		// already produced this second to get the amount for this iteration
+		// Ideally this value is sample_rate/120 but if the sample rate is not a
+		// multipler of 120 like 44100 this value will vary each iteraction as
+		// the error gets spread out over each second of playback. One sample of
+		// variation in midi timing should not be noticable for us
+		samples_to_produce
+				= (desired * sample_rate + 3000) / 6000 - samples_this_second;
+#else
+		samples_to_produce = samples_per_iteration;
+#endif
+		// clamp sample count  for this iteration to max available
 		if (samples_to_produce > num_samples) {
 			samples_to_produce = num_samples;
 		}
-
-		// Increment the timing counter(s)
+		// Increment samples_this_second
 		samples_this_second += samples_to_produce;
-		while (samples_this_second > sample_rate) {
-			total_seconds++;
-			samples_this_second -= sample_rate;
+		// clamp samples_this_second and increment the seconds counter as needed
+		if (samples_this_second > sample_rate) {
+			total_seconds += samples_this_second / sample_rate;
+			samples_this_second %= sample_rate;
 		}
 
-		// Calc Xmidi Clock
+		// Calc Xmidi Clock based on actual samples being used
 		xmidi_clock = decltype(xmidi_clock)(
 				(total_seconds * 6000)
 				+ (samples_this_second * 6000) / sample_rate);
@@ -1572,7 +1604,7 @@ void LowLevelMidiDriver::extractTimbreLibrary(XMidiEventList* eventlist) {
 
 				// Allocate memory
 				if (!mt32_timbre_banks[2]) {
-					mt32_timbre_banks[2] = new MT32Timbre* [128] {};
+					mt32_timbre_banks[2] = new MT32Timbre*[128]{};
 				}
 				if (!mt32_timbre_banks[2][start]) {
 					mt32_timbre_banks[2][start] = new MT32Timbre;
@@ -1971,14 +2003,14 @@ void LowLevelMidiDriver::loadXMidiTimbreLibrary(IDataSource* ds) {
 
 		// Allocate memory
 		if (!mt32_timbre_banks[bank]) {
-			mt32_timbre_banks[bank] = new MT32Timbre* [128] {};
+			mt32_timbre_banks[bank] = new MT32Timbre*[128]{};
 		}
 		if (!mt32_timbre_banks[bank][patch]) {
 			mt32_timbre_banks[bank][patch] = new MT32Timbre;
 		}
 
 		if (!mt32_patch_banks[bank]) {
-			mt32_patch_banks[bank] = new MT32Patch* [128] {};
+			mt32_patch_banks[bank] = new MT32Patch*[128]{};
 		}
 		if (!mt32_patch_banks[bank][patch]) {
 			mt32_patch_banks[bank][patch] = new MT32Patch;

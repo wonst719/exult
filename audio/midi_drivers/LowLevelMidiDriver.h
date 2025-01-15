@@ -41,6 +41,8 @@ class XMidiSequence;
 //! \note Only 2 simultaneous playing sequences required for Ultima 8
 #define LLMD_NUM_SEQ 4
 
+#define NEW_PRODUCESAMPLES_TIMING 1
+
 //! An Abstract implementation of MidiDriver for Simple Low Level support of
 //! Midi playback
 //!
@@ -233,8 +235,12 @@ private:
 	// Shared Data
 	std::atomic_uchar global_volume = 100;
 
-	// Xmidi clock 1/6000th second granuality
-	std::chrono::duration<uint32, std::ratio<1, 6000>> xmidi_clock;
+	// Xmidi clock 1/6000th second granuality. Will overflow after 198 hours,
+	// good luck to anyone who plays Exult for 8 straight days continuously An
+	// overflow here may stop playback of any tracks currently playing when the
+	// oveflow occurs, but new tracks should play normally
+	std::chrono::duration<uint32, std::ratio<1, 6000>> xmidi_clock
+			= decltype(xmidi_clock)(0);
 	// Any current delay we must observe before starting a new track
 	decltype(xmidi_clock) start_track_delay_until = decltype(xmidi_clock)(0);
 	// The delay to use between stopping and starting tracks. 1500 ticks is
@@ -253,7 +259,9 @@ private:
 	uint32 total_seconds;          // xmidi_clock = total_seconds*6000
 	uint32 samples_this_second;    //		+
 								   // samples_this_second*6000/sample_rate;
+#if !NEW_PRODUCESAMPLES_TIMING
 	uint32 samples_per_iteration;
+#endif
 
 	// Thread Based Only Data
 	std::unique_ptr<std::thread> thread;
