@@ -44,7 +44,7 @@
 		8AF1198C2D1F75FC008B25BE /* fluid_sys.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = fluid_sys.c; path = fluidlite/src/fluid_sys.c; sourceTree = "<group>"; };
 		8AF1198D2D1F75FC008B25BE /* fluid_tuning.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = fluid_tuning.c; path = fluidlite/src/fluid_tuning.c; sourceTree = "<group>"; };
 		8AF1198E2D1F75FC008B25BE /* fluid_voice.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = fluid_voice.c; path = fluidlite/src/fluid_voice.c; sourceTree = "<group>"; };
-		E700E0351A6E41C5006C8BE4 /* liblibfluidlite.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibfluidlite.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E700E0351A6E41C5006C8BE4 /* libfluidlite.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfluidlite.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -59,7 +59,7 @@
 		E700E0361A6E41C5006C8BE4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E700E0351A6E41C5006C8BE4 /* liblibfluidlite.a */,
+				E700E0351A6E41C5006C8BE4 /* libfluidlite.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -104,7 +104,7 @@
 			);
 			name = libfluidlite;
 			productName = libfluidlite;
-			productReference = E700E0351A6E41C5006C8BE4 /* liblibfluidlite.a */;
+			productReference = E700E0351A6E41C5006C8BE4 /* libfluidlite.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */

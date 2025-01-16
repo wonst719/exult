@@ -53,7 +53,7 @@
 		8AC797C81C8D0E4F001AF014 /* zip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AC797C61C8D0E4F001AF014 /* zip.cc */; };
 		8AD4A9311A92B9DB0004762D /* InputOptions_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AD4A92F1A92B9DB0004762D /* InputOptions_gump.cc */; };
 		8ADFFDF625DE791000FC4D3A /* verify.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8ADFFDF425DE791000FC4D3A /* verify.cc */; };
-		8AF119BE2D1F81BA008B25BE /* liblibfluidlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AF119AD2D1F816B008B25BE /* liblibfluidlite.a */; };
+		8AF119BE2D1F81BA008B25BE /* libfluidlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AF119AD2D1F816B008B25BE /* libfluidlite.a */; };
 		8AF2AFDF2016708100696E08 /* joypad-glass-southwest.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD62016707F00696E08 /* joypad-glass-southwest.png */; };
 		8AF2AFE02016708100696E08 /* joypad-glass-north.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD72016708000696E08 /* joypad-glass-north.png */; };
 		8AF2AFE12016708100696E08 /* joypad-glass.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD82016708000696E08 /* joypad-glass.png */; };
@@ -894,7 +894,7 @@
 				8A599C2224605925006E3252 /* libmt32emu.a in Frameworks */,
 				E738C8551A6FFF71003A950D /* libogg.a in Frameworks */,
 				E738C8561A6FFF75003A950D /* libvorbis.a in Frameworks */,
-				8AF119BE2D1F81BA008B25BE /* liblibfluidlite.a in Frameworks */,
+				8AF119BE2D1F81BA008B25BE /* libfluidlite.a in Frameworks */,
 				8A1C58211FE7D91B00738E40 /* libz.tbd in Frameworks */,
 				8A8340D51F8979D3000696C7 /* AudioToolbox.framework in Frameworks */,
 				8A8340D11F897827000696C7 /* AVFoundation.framework in Frameworks */,
@@ -1042,7 +1042,7 @@
 		8AF119A92D1F816B008B25BE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8AF119AD2D1F816B008B25BE /* liblibfluidlite.a */,
+				8AF119AD2D1F816B008B25BE /* libfluidlite.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1901,10 +1901,10 @@
 			remoteRef = 8A9A02B829F3E170000AF341 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8AF119AD2D1F816B008B25BE /* liblibfluidlite.a */ = {
+		8AF119AD2D1F816B008B25BE /* libfluidlite.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = liblibfluidlite.a;
+			path = libfluidlite.a;
 			remoteRef = 8AF119AC2D1F816B008B25BE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
