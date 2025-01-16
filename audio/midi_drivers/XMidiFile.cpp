@@ -758,7 +758,7 @@ int XMidiFile::GetVLQ2(IDataSource* source, uint32& quant) {
 // is a massive optimization. Speed up should be quite impressive
 //
 void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
-	return;
+
 	for (int channel = 0; channel < 16; channel++) {
 		XMidiEvent* patch  = fs.patch[channel];
 		XMidiEvent* vol    = fs.vol[channel];
