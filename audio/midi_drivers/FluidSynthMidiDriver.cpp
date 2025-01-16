@@ -149,7 +149,6 @@ int FluidSynthMidiDriver::open() {
 			} else {
 				soundfonts.emplace_back(default_soundfont);
 			}
-			free(default_soundfont);
 			perr << "Setting 'fluidsynth_soundfont' missing in 'exult.cfg': "
 					"enabling FluidSynth with FluidSynth default SoundFont"
 				 << std::endl;
