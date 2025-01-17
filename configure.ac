@@ -572,7 +572,7 @@ fi
 # fluidsynth midi driver
 PKG_CHECK_MODULES(FluidSynth, fluidsynth, HAVEFLUIDSYNTH=yes, HAVEFLUIDSYNTH=no)
 PKG_CHECK_MODULES(FluidLite, fluidlite, HAVEFLUIDLITE=yes, HAVEFLUIDLITE=no)
-AC_ARG_WITH([fluidsynth], AS_HELP_STRING([--with-fluidsynth=no|yes|lite], [Enable fluidsynth midi support]),[enable_fluidsynth="$withval"],[enable_fluidsynth=""])
+AC_ARG_WITH([fluidsynth], AS_HELP_STRING([--with-fluidsynth=no|yes|lite], [Enable fluidsynth midi support]),[enable_fluidsynth="$withval"],[enable_fluidsynth="yes"])
 AC_MSG_CHECKING([if we want to use fluidsynth midi])
 if test x$HAVEFLUIDSYNTH = xyes || test x$HAVEFLUIDLITE = xyes; then
 	if test x$enable_fluidsynth = xyes || test x$enable_fluidsynth = xlite; then
