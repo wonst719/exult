@@ -418,7 +418,7 @@ int FMOplMidiDriver::midi_calc_volume(int channel, int vel) {
 // Send a single packed midi command to the Opl (to be played now)
 //
 void FMOplMidiDriver::send(uint32 b) {
-	const unsigned char channel = unsigned char(b & 0x0F);
+	const auto channel = uint8(b & 0x0F);
 
 	// Discard everything on channel 9 for now
 	if (channel == 9 && !xmidibanks[127]) {
@@ -521,7 +521,7 @@ void FMOplMidiDriver::send(uint32 b) {
 
 	case MidiStatus::Controller: { /* control change */
 		auto ctrl = MidiController((b >> 8) & 0x7F);
-		auto vel  = unsigned char((b >> 16) & 0x7F);
+		auto vel  = uint8((b >> 16) & 0x7F);
 
 		/* FIXME: Except for Volume, the Modulation and Sustain
 		   code is just a random guess. */
