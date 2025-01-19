@@ -89,7 +89,8 @@ public:
 		XMidiEvent* prev = nullptr;
 		XMidiEvent* note = notes;
 		while (note) {
-			if ((note->status & 0xF) == (event->status & 0xF)
+			if (note->getChannel()
+						== (event->getChannel())
 				&& note->data[0] == event->data[0]) {
 				if (prev) {
 					prev->ex.note_on.next_note = note->ex.note_on.next_note;
@@ -149,7 +150,8 @@ public:
 		// XMidiEvent *prev = 0;
 		XMidiEvent* note = notes;
 		while (note) {
-			if ((note->status & 0xF) == (event->status & 0xF)
+			if ((note->getChannel())
+						== (event->getChannel())
 				&& note->data[0] == event->data[0]) {
 				note->ex.note_on.actualvel = event->data[1];
 				return;

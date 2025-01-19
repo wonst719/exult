@@ -55,8 +55,8 @@ XMidiSequence::XMidiSequence(
 	for (int i = 0; i < 16; i++) {
 		shadows[i].reset();
 		handler->sequenceSendEvent(
-				sequence_id, i | (MIDI_STATUS_CONTROLLER << 4)
-									 | (XMIDI_CONTROLLER_BANK_CHANGE << 8));
+				sequence_id, i | int(MidiStatus::Controller)
+									 | (int(MidiController::XBankChange) << 8));
 	}
 
 	// Jump to branch
@@ -214,8 +214,8 @@ int XMidiSequence::playEvent() {
 	}
 
 	// XMidi For Loop
-	if ((event->status >> 4) == MIDI_STATUS_CONTROLLER
-		&& event->data[0] == XMIDI_CONTROLLER_FOR_LOOP) {
+	if (event->getStatusType() == MidiStatus::Controller
+		&& MidiController(event->data[0]) == MidiController::XForLoop) {
 		if (loop_num < XMIDI_MAX_FOR_LOOP_COUNT - 1) {
 			loop_num++;
 		} else {
@@ -227,8 +227,8 @@ int XMidiSequence::playEvent() {
 
 	}    // XMidi Next/Break
 	else if (
-			(event->status >> 4) == MIDI_STATUS_CONTROLLER
-			&& event->data[0] == XMIDI_CONTROLLER_NEXT_BREAK) {
+			event->getStatusType() == MidiStatus::Controller
+			&& MidiController(event->data[0]) == MidiController::XNextBreak) {
 		if (loop_num != -1) {
 			if (event->data[1] < 64) {
 				loop_num--;
@@ -247,15 +247,16 @@ int XMidiSequence::playEvent() {
 		event = nullptr;
 	}    // XMidi Callback Trigger
 	else if (
-			(event->status >> 4) == MIDI_STATUS_CONTROLLER
-			&& event->data[0] == XMIDI_CONTROLLER_CALLBACK_TRIG) {
+			event->getStatusType() == MidiStatus::Controller
+			&& MidiController(event->data[0])
+					   == MidiController::XCallbackTrigger) {
 		handler->handleCallbackTrigger(sequence_id, event->data[1]);
 	}    // Not SysEx
-	else if (event->status < 0xF0) {
+	else if (event->status < int(MidiStatus::Sysex)) {
 		sendEvent();
 	}
-	// SysEx gets sent immediately
-	else if (event->status != 0xFF) {
+	// Ignore sysex events on anything but track 0
+	else if (event->getChannel() == 0) {
 		handler->sequenceSendSysEx(
 				sequence_id, event->status, event->ex.sysex_data.buffer,
 				event->ex.sysex_data.len);
@@ -356,8 +357,8 @@ sint32 XMidiSequence::timeTillNext() {
 }
 
 void XMidiSequence::updateShadowForEvent(XMidiEvent* new_event) {
-	const unsigned int chan = new_event->status & 0xF;
-	const unsigned int type = new_event->status >> 4;
+	const unsigned int chan = new_event->getChannel();
+	const MidiStatus type = new_event->getStatusType();
 	const uint32       data = new_event->data[0] | (new_event->data[1] << 8);
 
 	// Shouldn't be required. XMidi should automatically detect all anyway
@@ -365,7 +366,7 @@ void XMidiSequence::updateShadowForEvent(XMidiEvent* new_event) {
 
 	// Update the shadows here
 
-	if (type == MIDI_STATUS_CONTROLLER) {
+	if (type == MidiStatus::Controller) {
 		// Channel volume
 		if (new_event->data[0] == 7) {
 			shadows[chan].volumes[0] = new_event->data[1];
@@ -412,19 +413,21 @@ void XMidiSequence::updateShadowForEvent(XMidiEvent* new_event) {
 			shadows[chan].chorus = new_event->data[1];
 		}
 		// XMidi bank
-		else if (new_event->data[0] == XMIDI_CONTROLLER_BANK_CHANGE) {
+		else if (
+				MidiController(new_event->data[0])
+== MidiController::XBankChange) {
 			shadows[chan].xbank = new_event->data[1];
 		}
-	} else if (type == MIDI_STATUS_PROG_CHANGE) {
+	} else if (type == MidiStatus::Program) {
 		shadows[chan].program = data;
-	} else if (type == MIDI_STATUS_PITCH_WHEEL) {
+	} else if (type == MidiStatus::PitchWheel) {
 		shadows[chan].pitchWheel = data;
 	}
 }
 
 void XMidiSequence::sendEvent() {
-	// unsigned int chan = event->status & 0xF;
-	const unsigned int type = event->status >> 4;
+	 //unsigned int chan = event->getChannel();
+	const MidiStatus type = event->getStatusType();
 	uint32             data = event->data[0] | (event->data[1] << 8);
 
 	// Shouldn't be required. XMidi should automatically detect all anyway
@@ -433,7 +436,7 @@ void XMidiSequence::sendEvent() {
 	// Update the shadows here
 	updateShadowForEvent(event);
 
-	if (type == MIDI_STATUS_CONTROLLER) {
+	if (type == MidiStatus::Controller) {
 		// Channel volume
 		if (event->data[0] == 7) {
 			int actualvolume
@@ -441,13 +444,13 @@ void XMidiSequence::sendEvent() {
 					  / 25500;
 			data = event->data[0] | (actualvolume << 8);
 		}
-	} else if (type == MIDI_STATUS_AFTERTOUCH) {
+	} else if (type == MidiStatus::Aftertouch) {
 		notes_on.SetAftertouch(event);
 	}
 
-	if ((type != MIDI_STATUS_NOTE_ON || event->data[1])
-		&& type != MIDI_STATUS_NOTE_OFF) {
-		if (type == MIDI_STATUS_NOTE_ON) {
+	if ((type != MidiStatus::NoteOn || event->data[1])
+		&& type != MidiStatus::NoteOff) {
+		if (type == MidiStatus::NoteOn) {
 			if (!event->data[1]) {
 				return;
 			}
@@ -471,13 +474,13 @@ void XMidiSequence::sendEvent() {
 }
 
 void XMidiSequence::sendController(
-		int ctrl, int i, int (&controller)[2]) const {
+		MidiController ctrl, int i, int (&controller)[2]) const {
 	handler->sequenceSendEvent(
-			sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | ((ctrl) << 8)
+			sequence_id, i | int(MidiStatus::Controller)  | (int(ctrl) << 8)
 								 | (controller[0] << 16));
 	handler->sequenceSendEvent(
-			sequence_id, i | (MIDI_STATUS_CONTROLLER << 4)
-								 | (((ctrl) + 32) << 8)
+			sequence_id, i | int(MidiStatus::Controller) 
+								 | ((int(ctrl) + int(MidiController::FineOffset)) << 8)
 								 | (controller[1] << 16));
 }
 
@@ -485,63 +488,63 @@ void XMidiSequence::applyShadow(int i) {
 	// Pitch Wheel
 	handler->sequenceSendEvent(
 			sequence_id,
-			i | (MIDI_STATUS_PITCH_WHEEL << 4) | (shadows[i].pitchWheel << 8));
+			i | int(MidiStatus::PitchWheel) | (shadows[i].pitchWheel << 8));
 
 	// Modulation Wheel
-	sendController(1, i, shadows[i].modWheel);
+	sendController(MidiController::ModWheel, i, shadows[i].modWheel);
 
 	// Footpedal
-	sendController(4, i, shadows[i].footpedal);
+	sendController(MidiController::FootPedal, i, shadows[i].footpedal);
 
 	// Volume
 	int actualvolume
 			= (shadows[i].volumes[0] * vol_multi * handler->getGlobalVolume())
 			  / 25500;
 	handler->sequenceSendEvent(
-			sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (7 << 8)
+			sequence_id, i | int(MidiStatus::Controller)  | (7 << 8)
 								 | (actualvolume << 16));
 	handler->sequenceSendEvent(
-			sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (39 << 8)
+			sequence_id, i | int(MidiStatus::Controller)  | (39 << 8)
 								 | (shadows[i].volumes[1] << 16));
 
 	// Pan
-	sendController(9, i, shadows[i].pan);
+	sendController(MidiController::Pan, i, shadows[i].pan);
 
 	// Balance
-	sendController(10, i, shadows[i].balance);
+	sendController(MidiController::Balance, i, shadows[i].balance);
 
 	// expression
-	sendController(11, i, shadows[i].expression);
+	sendController(MidiController::Expression, i, shadows[i].expression);
 
 	// Sustain
 	handler->sequenceSendEvent(
-			sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (64 << 8)
+			sequence_id, i | int(MidiStatus::Controller)  | (64 << 8)
 								 | (shadows[i].sustain << 16));
 
 	// Effects (Reverb)
 	handler->sequenceSendEvent(
-			sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (91 << 8)
+			sequence_id, i | int(MidiStatus::Controller)  | (91 << 8)
 								 | (shadows[i].effects << 16));
 
 	// Chorus
 	handler->sequenceSendEvent(
-			sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (93 << 8)
+			sequence_id, i | int(MidiStatus::Controller)  | (93 << 8)
 								 | (shadows[i].chorus << 16));
 
 	// XMidi Bank
 	handler->sequenceSendEvent(
-			sequence_id, i | (MIDI_STATUS_CONTROLLER << 4)
-								 | (XMIDI_CONTROLLER_BANK_CHANGE << 8)
+			sequence_id, i | int(MidiStatus::Controller)
+								 | (int(MidiController::XBankChange) << 8)
 								 | (shadows[i].xbank << 16));
 
 	// Bank Select
+sendController(MidiController::Bank, i, shadows[i].bank);
 	if (shadows[i].program != -1) {
 		handler->sequenceSendEvent(
 				sequence_id,
-				i | (MIDI_STATUS_PROG_CHANGE << 4) | (shadows[i].program << 8));
+				i | int(MidiStatus::Program) | (shadows[i].program << 8));
 	}
-	sendController(0, i, shadows[i].bank);
-}
+	}
 
 void XMidiSequence::UpdateVolume() {
 	if (!vol_changed) {
@@ -550,7 +553,7 @@ void XMidiSequence::UpdateVolume() {
 	for (int i = 0; i < 16; i++) {
 		if (evntlist->chan_mask & (1 << i)) {
 			uint32 message = i;
-			message |= MIDI_STATUS_CONTROLLER << 4;
+			message |= int(MidiStatus::Controller);
 			message |= 7 << 8;
 			int actualvolume = (shadows[i].volumes[0] * vol_multi
 								* handler->getGlobalVolume())
@@ -566,7 +569,7 @@ void XMidiSequence::loseChannel(int i) {
 	// If the channel matches, send a note off for any note
 	XMidiEvent* note = notes_on.GetNotes();
 	while (note) {
-		if ((note->status & 0xF) == i) {
+		if (note->getChannel() == i) {
 			handler->sequenceSendEvent(
 					sequence_id, note->status + (note->data[0] << 8));
 		}
@@ -580,7 +583,7 @@ void XMidiSequence::gainChannel(int i) {
 	// If the channel matches, send a note on for any note
 	XMidiEvent* note = notes_on.GetNotes();
 	while (note) {
-		if ((note->status & 0xF) == i) {
+		if (note->getChannel() == i) {
 			handler->sequenceSendEvent(
 					sequence_id, note->status | (note->data[0] << 8)
 										 | (note->ex.note_on.actualvel << 16));
@@ -615,7 +618,7 @@ int XMidiSequence::countNotesOn(int chan) {
 	int         ret  = 0;
 	XMidiEvent* note = notes_on.GetNotes();
 	while (note) {
-		if ((note->status & 0xF) == chan) {
+		if ((note->getChannel()) == chan) {
 			ret++;
 		}
 		note = note->ex.note_on.next_note;

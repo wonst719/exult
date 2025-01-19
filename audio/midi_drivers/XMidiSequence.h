@@ -179,7 +179,7 @@ private:
 	//! \param ctrl control code
 	//! \param i the channel being modified
 	//! \param controller the controller array being modified
-	void sendController(int ctrl, int i, int (&controller)[2]) const;
+	void sendController(MidiController ctrl, int i, int (&controller)[2]) const;
 
 	//! Send the current event to the XMidiSequenceHandler
 	void sendEvent();

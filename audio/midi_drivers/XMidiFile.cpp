@@ -758,7 +758,6 @@ int XMidiFile::GetVLQ2(IDataSource* source, uint32& quant) {
 // is a massive optimization. Speed up should be quite impressive
 //
 void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
-
 	for (int channel = 0; channel < 16; channel++) {
 		XMidiEvent* patch  = fs.patch[channel];
 		XMidiEvent* vol    = fs.vol[channel];
@@ -777,7 +776,7 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 		temp           = patch;
 		patch          = new XMidiEvent{};
 		patch->time    = temp->time;
-		patch->status  = channel | (MIDI_STATUS_PROG_CHANGE << 4);
+		patch->status  = channel | (int(MidiStatus::Program));
 		patch->data[0] = temp->data[0];
 
 		// Copy Volume
@@ -789,7 +788,7 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 
 		temp         = vol;
 		vol          = new XMidiEvent{};
-		vol->status  = channel | (MIDI_STATUS_CONTROLLER << 4);
+		vol->status  = channel | (int(MidiStatus::Controller));
 		vol->data[0] = 7;
 
 		if (!temp) {
@@ -812,7 +811,7 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 		temp = bank;
 
 		bank         = new XMidiEvent{};
-		bank->status = channel | (MIDI_STATUS_CONTROLLER << 4);
+		bank->status = channel | (int(MidiStatus::Controller));
 
 		if (!temp) {
 			bank->data[1] = 0;
@@ -829,7 +828,7 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 
 		temp         = pan;
 		pan          = new XMidiEvent{};
-		pan->status  = channel | (MIDI_STATUS_CONTROLLER << 4);
+		pan->status  = channel | (int(MidiStatus::Controller));
 		pan->data[0] = 10;
 
 		if (!temp) {
@@ -840,14 +839,14 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 
 		if (do_reverb) {
 			reverb          = new XMidiEvent{};
-			reverb->status  = channel | (MIDI_STATUS_CONTROLLER << 4);
+			reverb->status  = channel | (int(MidiStatus::Controller) );
 			reverb->data[0] = 91;
 			reverb->data[1] = reverb_value;
 		}
 
 		if (do_chorus) {
 			chorus          = new XMidiEvent{};
-			chorus->status  = channel | (MIDI_STATUS_CONTROLLER << 4);
+			chorus->status  = channel | (int(MidiStatus::Controller));
 			chorus->data[0] = 93;
 			chorus->data[1] = chorus_value;
 		}
@@ -886,8 +885,9 @@ void XMidiFile::SpreadinitialEvents() {
 	for (XMidiEvent* event = list; event; event = event->next) {
 		event->time += offset;
 		// increment offset if we havent hit a note on
-		hit_note_on |= (event->status >> 4) == MIDI_STATUS_NOTE_ON;
-		if (!hit_note_on) {
+		if (!hit_note_on && event->getStatusType() == MidiStatus::NoteOn) {
+			hit_note_on = true;
+
 			offset++;
 		}
 	}
@@ -935,7 +935,8 @@ void XMidiFile::AdjustTimings(uint32 ppqn) {
 		// Note on and note off handling
 		if (event->status <= 0x9F) {
 			// Add if it's a note on and remove if it's a note off
-			if ((event->status >> 4) == MIDI_STATUS_NOTE_ON && event->data[1]) {
+			if (event->getStatusType() == MidiStatus::NoteOn
+&& event->data[1]) {
 				notes.Push(event);
 			} else {
 				XMidiEvent* prev = notes.FindAndPop(event);
@@ -1022,7 +1023,7 @@ int XMidiFile::ConvertEvent(
 				 && bank127[status & 0xF])
 				|| convert_type == XMIDIFILE_CONVERT_MT32_TO_GS) {
 			CreateNewEvent(time);
-			current->status  = 0xB0 | (status & 0xF);
+			current->status  = int(MidiStatus::Controller) | (status & int(MidiStatus::ChannelMask));
 			current->data[0] = 0;
 			current->data[1] = mt32asgs[data * 2 + 1];
 
@@ -1034,7 +1035,8 @@ int XMidiFile::ConvertEvent(
 			}
 		} else if (convert_type == XMIDIFILE_CONVERT_MT32_TO_GS127) {
 			CreateNewEvent(time);
-			current->status  = 0xB0 | (status & 0xF);
+			current->status = int(MidiStatus::Controller)
+							  | (status & int(MidiStatus::ChannelMask));
 			current->data[0] = 0;
 			current->data[1] = 127;
 
@@ -1085,12 +1087,16 @@ int XMidiFile::ConvertEvent(
 			}
 		}
 		// Sequence Branch Index
-		else if (current->data[0] == XMIDI_CONTROLLER_SEQ_BRANCH_INDEX) {
+		else if (
+				MidiController(current->data[0])
+				== MidiController::XSequenceBranchIndex) {
 			current->ex.branch_index.next_branch = branches;
 			branches                             = current;
 		}
 		// XMidi Bank Change
-		else if (current->data[0] == XMIDI_CONTROLLER_BANK_CHANGE) {
+		else if (
+				MidiController(current->data[0])
+				== MidiController::XBankChange) {
 			// Add it to the patch and bank change list
 			if (x_patch_bank_first == nullptr) {
 				x_patch_bank_first = current;
@@ -1109,7 +1115,8 @@ int XMidiFile::ConvertEvent(
 	current->data[1] = source->read1();
 
 	// Volume modify the volume controller, only if converting
-	if (convert_type && (current->status >> 4) == MIDI_STATUS_CONTROLLER
+	if (convert_type
+		&& MidiStatus(current->getStatusType()) == MidiStatus::Controller
 		&& current->data[0] == 7) {
 		current->data[1] = VolumeCurve[current->data[1]];
 	}
@@ -1132,7 +1139,7 @@ int XMidiFile::ConvertNote(
 	current->data[1] = source->read1();
 
 	// Volume modify the note on's, only if converting
-	if (convert_type && (current->status >> 4) == MIDI_STATUS_NOTE_ON
+	if (convert_type && current->getStatusType() == MidiStatus::NoteOn
 		&& current->data[1]) {
 		current->data[1] = VolumeCurve[current->data[1]];
 	}
@@ -1216,7 +1223,7 @@ int XMidiFile::CreateMT32SystemMessage(
 		const void* data, IDataSource* source) {
 	CreateNewEvent(time);
 	// SysEx status
-	current->status = 0xF0;
+	current->status = int(MidiStatus::Sysex);
 
 	// Allocate the buffer
 	current->ex.sysex_data.len  = sysex_data_start + len + 2;
@@ -1298,30 +1305,30 @@ int XMidiFile::ConvertFiletoList(
 			status = source->read1();
 		}
 
-		switch (status >> 4) {
-		case MIDI_STATUS_NOTE_ON:
+		switch (status & MidiStatus::TypeMask) {
+		case MidiStatus::NoteOn:
 			retval |= 1 << (status & 0xF);
 			ConvertNote(time, status, source, play_size);
 			break;
 
-		case MIDI_STATUS_NOTE_OFF:
+		case MidiStatus::NoteOff:
 			ConvertNote(time, status, source, 2);
 			break;
 
 		// 2 byte data
-		case MIDI_STATUS_AFTERTOUCH:
-		case MIDI_STATUS_CONTROLLER:
-		case MIDI_STATUS_PITCH_WHEEL:
+		case MidiStatus::Aftertouch:
+		case MidiStatus::Controller:
+		case MidiStatus::PitchWheel:
 			ConvertEvent(time, status, source, 2, fs);
 			break;
 
 		// 1 byte data
-		case MIDI_STATUS_PROG_CHANGE:
-		case MIDI_STATUS_PRESSURE:
+		case MidiStatus::Program:
+		case MidiStatus::ChannelTouch:
 			ConvertEvent(time, status, source, 1, fs);
 			break;
 
-		case MIDI_STATUS_SYSEX:
+		case MidiStatus::Sysex:
 			if (status == 0xFF) {
 				const int pos  = source->getPos();
 				uint32    data = source->read1();

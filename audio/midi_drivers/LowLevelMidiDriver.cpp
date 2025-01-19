@@ -930,7 +930,7 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 
 			giveinfo();
 
-			// If there is a delay we must wait till we can play the equence
+			// If there is a delay we must wait till we can play the sequence
 			if (start_track_delay_until > xmidi_clock) {
 				return PlaySeqResult::delayreq;
 			}
@@ -974,12 +974,15 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 
 					for (XMidiEvent* e   = message.data.play.list->x_patch_bank;
 						 e != nullptr; e = e->next_patch_bank) {
-						if ((e->status >> 4) == MIDI_STATUS_CONTROLLER) {
-							if (e->data[0] == XMIDI_CONTROLLER_BANK_CHANGE) {
-								bank_sel[e->status & 0xF] = e->data[1];
+						if (e->getStatusType()
+== MidiStatus::Controller) {
+							if (MidiController(e->data[0])
+== MidiController::XBankChange) {
+								bank_sel[e->getChannel()] = e->data[1];
 							}
 						} else if (
-								(e->status >> 4) == MIDI_STATUS_PROG_CHANGE) {
+								e->getStatusType()
+== MidiStatus::Program) {
 							if (mt32_patch_banks[0]) {
 								const int bank  = bank_sel[e->status & 0xF];
 								const int patch = e->data[0];
@@ -992,8 +995,8 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 								}
 							}
 						} else if (
-								e->status
-								== ((MIDI_STATUS_NOTE_ON << 4) | 0x9)) {
+								e->getStatusType() == MidiStatus::NoteOn
+								&& e->getChannel() == 9) {
 							const int temp = e->data[0];
 							if (mt32_rhythm_bank[temp]) {
 								loadRhythmTemp(temp);
@@ -1046,25 +1049,27 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 }
 
 void LowLevelMidiDriver::sequenceSendEvent(uint16 sequence_id, uint32 message) {
-	const int log_chan = message & 0xF;
-	message &= 0xFFFFFFF0;    // Strip the channel number
+	const int log_chan = int(message & MidiStatus::ChannelMask);
+	message &= ~uint32(MidiStatus::ChannelMask);    // Strip the channel number
+auto type = message & MidiStatus::TypeMask;
 
 	// Controller handling
-	if ((message & 0x00F0) == (MIDI_STATUS_CONTROLLER << 4)) {
+	if (type == MidiStatus::Controller) {
+		auto ctrl = MidiController((message >> 8)&0xff);
 		// Screw around with volume
 		if ((message & 0xFF00) == (7 << 8)) {
 			int vol = (message >> 16) & 0xFF;
 			message &= 0x00FFFF;
 			message |= vol << 16;
-		} else if ((message & 0xFF00) == (XMIDI_CONTROLLER_CHAN_LOCK << 8)) {
+		} else if (ctrl == MidiController::XChanLock) {
 			lockChannel(sequence_id, log_chan, ((message >> 16) & 0xFF) >= 64);
 			return;
 		} else if (
-				(message & 0xFF00) == (XMIDI_CONTROLLER_CHAN_LOCK_PROT << 8)) {
+				ctrl == MidiController::XChanLockProtect) {
 			protectChannel(
 					sequence_id, log_chan, ((message >> 16) & 0xFF) >= 64);
 			return;
-		} else if ((message & 0xFF00) == (XMIDI_CONTROLLER_BANK_CHANGE << 8)) {
+		} else if (ctrl == MidiController::XBankChange) {
 			// pout << "Bank change in seq: " << sequence_id << " Channel: "
 			// << log_chan << " Bank: " << ((message>>16)&0xFF) <<
 			// std::endl;
@@ -1072,7 +1077,7 @@ void LowLevelMidiDriver::sequenceSendEvent(uint16 sequence_id, uint32 message) {
 			// Note, we will pass this onto the midi driver, because they
 			// (i.e. FMOpl) might want them)
 		}
-	} else if ((message & 0x00F0) == (MIDI_STATUS_PROG_CHANGE << 4)) {
+	} else if (type == MidiStatus::Program) {
 		if (mt32_patch_banks[0]) {
 			const int bank  = mt32_bank_sel[sequence_id][log_chan];
 			const int patch = (message & 0xFF00) >> 8;
@@ -1083,8 +1088,7 @@ void LowLevelMidiDriver::sequenceSendEvent(uint16 sequence_id, uint32 message) {
 				setPatchBank(bank, patch);
 			}
 		}
-	} else if (
-			(message & 0x00F0) == (MIDI_STATUS_NOTE_ON << 4)
+	} else if (type == MidiStatus::NoteOn
 			&& log_chan == 0x9) {
 		const int temp = (message >> 8) & 0xFF;
 		if (temp < 127 && mt32_rhythm_bank[temp]) {
