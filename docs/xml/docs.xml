@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE readme SYSTEM "docs.dtd">
-<readme title="Exult" changed="06 January 2025 (GMT)">
+<readme title="Exult" changed="19 January 2025 (GMT)">
 	<section title="Introduction">
 		<sub name="exult_version">
 			<header>Exult Version</header>
@@ -273,7 +273,7 @@
 						Makes 144 2048x2048 pixels screenshots of the game map which you will need to piece
 						together. The screenshots are numbered according to the
 						<extref doc="studio" target="ifix_iregs">ifix/ireg map</extref>.<br/>
-						By default the screenshots are PNG files. In the unlikely case that Exult was compiled
+						By default the screenshots are PNG files. In the unlikely case that <Exult/> was compiled
 						without libpng support, buildmap will output PCX files.<br/>
 						<Exult/> is required to be run in windowed mode and you get the best map if you
 						started a new game before you build the map.<br/>
@@ -339,7 +339,7 @@
 				<para>
 					<Exult/> Setup can only be opened on the <Exult/> menu by selecting the 'Setup' option.<br/>
 					And you can access the Game menu either by pressing the disk icon in the Avatar's
-					inventory screen or by pressing <key>Esc</key>.<br/>
+					inventory screen or by pressing <key>ESC</key>.<br/>
 					The following options are available for the <Exult/> Setup menu and the Game menu:
 				</para>
 				<para>
@@ -618,10 +618,11 @@
 			<body>
 				<para>
 					There are three general ways that music is played in <Exult/>. One is using MIDI, which
-					plays the music through any MIDI device, or software synthesizers like TiMidity and
-					FluidSynth. Another way is Digital Music encoded into OGG (similar to MP3) which was
-					recorded directly from a Roland MT-32. The third option is FMOpl which emulates
-					Opl2/Adlib.<br/>
+					plays the music through any MIDI device, software synthesizers (TiMidity,FluidSynth) or
+					even MIDI device emulators like Munt MT-32 Emulator (or <Exult/>'s built-in MT32Emu).
+					Another way is Digital Music encoded into OGG (similar to MP3) which was recorded 
+					directly from a Roland MT-32.
+					The third option is FMOpl which emulates Opl2/Adlib.<br/>
 					The MIDI files are converted on-the-fly from the original Ultima VII MT-32 files to
 					General MIDI format so that they will be playable on modern General MIDI and
 					General MIDI/GS supporting sound cards.
@@ -668,31 +669,40 @@
 						will not work. On linux systems it needs to be in ~/.exult.</li>
 					<li><strong>FluidSynth</strong><br/>
 						is another software synthesizer, which uses SoundFont 2 technology without need for a
-						SoundFont-compatible sound card. It is available for many Operating Systems and opposed
+						SoundFont-compatible sound card. It is available for many Operating Systems and in contrast
 						to TiMidity still actively developed.<br/>
-						Since Fluidsynth pulls in many dependencies it is not compiled into <Exult/> at the moment.<br/>
-						If you compiled <Exult/> ourself and you enabled Fluidsynth you just need to edit
-						exult.cfg and point &lt;config&gt;&lt;audio&gt;&lt;midi&gt;&lt;fluidsynth_soundfont&gt;
+						To use FluidSynth you just need to edit exult.cfg and point
+						&lt;config&gt;&lt;audio&gt;&lt;midi&gt;&lt;fluidsynth_soundfont&gt;
 						to the SoundFont you want to use.<br/>
-						<Exult/> supports FluidSynth's soundfont stack. Soundfonts are specified in the
+						<Exult/> supports FluidSynth's SoundFont stack. SoundFonts are specified in the
 						&lt;config&gt;&lt;audio&gt;&lt;midi&gt;&lt;fluidsynth_soundfontN&gt; exult.cfg entries
 						(N = 0 to 9) which are loaded in numerical order (0 first), plus the old
-						&lt;fluidsynth_soundfont&gt; entry, which loads after all others.</li>
+						&lt;fluidsynth_soundfont&gt; entry, which loads after all others.<br/>
+						<extref target="https://www.fluidsynth.org/api/LoadingSoundfonts.html">FluidSynth Documentation:</extref>
+						<kbd>The loaded SoundFonts are treated as a stack, where each new loaded SoundFont is 
+						placed at the top of the stack. When selecting presets by bank and program numbers,
+						SoundFonts are searched beginning at the top of the stack. In the case where there are 
+						presets in different SoundFonts with identical bank and program numbers, the preset from
+						the most recently loaded SoundFont is used.</kbd></li>
 					<li><strong>MT32Emu</strong><br/>
 						Roland MT32 emulation requires either the ROM set 'MT32_CONTROL.ROM' and 'MT32_PCM.ROM' or
 						the ROM set 'CM32L_CONTROL.ROM' and 'CM32L_PCM.ROM' in the <Exult/> data folder.
-						If both sets are present the CM32L ROM set will be used.</li>
+						If both sets are present the CM32L ROM-set will be used.<br/>
+						On case sensitive Operating Systems these files have to be saved in uppercase.</li>
 					<li><strong>Windows</strong><br/>
 						Using the Windows MIDI driver.</li>
 					<li><strong>CoreAudio</strong><br/>
-						uses XMIDI on macOS. You can use a different soundfont than macOS' default by pointing
-						&lt;config&gt;&lt;audio&gt;&lt;midi&gt;&lt;coreaudio_soundfont&gt; to it in exult.cfg.</li>
+						uses XMIDI on macOS and iOS. You can use a different SoundFont than macOS' default by pointing
+						&lt;config&gt;&lt;audio&gt;&lt;midi&gt;&lt;coreaudio_soundfont&gt; to it in exult.cfg.<br/>
+						On iOS there is no default SoundFont thus you have to provide one yourself.</li>
 					<li><strong>CoreMIDI</strong><br/>
 						on macOS this MIDI driver allows using a real MIDI device like a Roland MT32 or software
-						MIDI devices like  Munt MT-32 Emulator. If you have more than one MIDI device you can choose the
+						MIDI devices like Munt MT-32 Emulator. If you have more than one MIDI device you can choose the
 						the device by setting the device ID in exult.cfg
 						&lt;config&gt;&lt;audio&gt;&lt;midi&gt;&lt;coremidi_device&gt;
-						- see <ref target="coremidi_device"/>.</li>
+						- see <ref target="coremidi_device"/>.<br/>
+						On iOS you can use a real device through an USB-to-MIDI adapter that is connected to the
+						Lightning or USB-C port of the iOS device.</li>
 					<li><strong>Alsa</strong><br/>
 						uses ALSA on Linux systems. If your ALSA port is not on 65:0 you need to change
 						&lt;config&gt;&lt;audio&gt;&lt;midi&gt;&lt;alsa_port&gt; in the exult.cfg.</li>
@@ -742,7 +752,7 @@
 			<body>
 				<para>
 					Due to the way the class was constructed input can be in either .mid, .rmi or
-					the Miles Sound System .xmi format. There are no limitations to they types of
+					the Miles Sound System .xmi format. There are no limitations to the types of
 					.mid and .rmi supported. They can be Type 0, 1 and the rarely seen type 2. The
 					loading routine is also fairly lenient of erroneous XMIDI files that do not
 					have correct XMIDI headers.
@@ -893,8 +903,8 @@
 					Sound Effects, into an all-in-one pack which saves you downloading several
 					smaller zip files. You can download a zip file for manual installation or
 					an installer for either Windows or macOS. Chose the one you want
-					to use on our download page at
-					<extref target="https://exult.info/download.php"/>.<br/>
+					to use on our
+					<extref target="https://exult.info/download.php">download page</extref>.<br/>
 					The Windows installer for <Exult/> gives you the option to download and
 					install the zip automatically, so we recommend you use this method.<br/>
 					On macOS, we recommend you download and run the installer.<br/>
@@ -967,8 +977,7 @@
 				<para>
 					We currently have two soundpacks for each game. Joseph Morris recorded the original
 					SoundBlaster SFX and Simon Quinn recorded the Roland MT32 SFX. You can find them on
-					our download page at
-					<extref target="https://exult.info/download.php"/>.<br/>
+					our <extref target="https://exult.info/download.php">download page</extref>.<br/>
 					'Sound pack for Blackgate' and 'Sound pack for Serpent Isle' are the SoundBlaster
 					sound effects.<br/>
 					'Sound pack for Black Gate (Roland MT-32)' and 'Sound pack for Serpent Isle (Roland MT-32)'
@@ -1013,7 +1022,7 @@
 			<header>Toggle Audio</header>
 			<body>
 				<para>
-					Press <key>Esc</key> to enter the in-game menu and toggle Audio or change the settings in
+					Press <key>ESC</key> to enter the in-game menu and toggle Audio or change the settings in
 					exult.cfg - see <ref target="exult_config"/>.
 				</para>
 			</body>
@@ -1050,7 +1059,7 @@
 					original Ultima VII used). <Exult/> can use different scaling engines to
 					double the size to 640x400 or even triple the the size to 960x600 while
 					increasing  the quality of the graphics and maintaining the same viewing
-					area. This allows Exult to show the game as an enhanced version of how it
+					area. This allows <Exult/> to show the game as an enhanced version of how it
 					originally appeared, and not show locations that were originally off-screen.<br/>
 					When you first start <Exult/> we apply the scaler 2xSaI which doubles the size
 					of each pixel, resulting in a 640x400 window.
@@ -1223,7 +1232,7 @@
 				<para>
 					You can change your key bindings by providing your own defaultkeys file.<br/>
 					Download <extref target="https://raw.githubusercontent.com/exult/exult/master/data/bg/defaultkeys.txt">defaultkeys.txt for BG</extref>
-					or <extref target="https://raw.githubusercontent.com/exult/exult/master/data/si/defaultkeys.txt">defaultkeys.txt for BG</extref>,
+					or <extref target="https://raw.githubusercontent.com/exult/exult/master/data/si/defaultkeys.txt">defaultkeys.txt for SI</extref>,
 					change the bindings and save the file (e.g. as my_keys.txt). Now you have to change
 					exult.cfg to use that file. See the keys settings at <ref target="exult_config"/>
 					and change (default) to my_keys.txt.<br/>
@@ -1237,7 +1246,7 @@
 				</para>
 				<keytable title="Default keyboard commands">
 					<keydesc name="KP+/-">Change brightness</keydesc>
-					<keydesc name="Esc">Show Game menu box and closes all open boxes</keydesc>
+					<keydesc name="ESC">Show Game menu box and closes all open boxes</keydesc>
 					<keydesc name="right">run east</keydesc>
 					<keydesc name="left">run west</keydesc>
 					<keydesc name="up">run north</keydesc>
@@ -1305,7 +1314,7 @@
 					In conversations you have the ability not just click on the answer
 					with the mouse but also to use the numeric keys. The response options
 					aren't numbered visually but logically with the dots. Also pressing
-					<key>Esc</key> selects 'bye' if it's an option.
+					<key>ESC</key> selects 'bye' if it's an option.
 				</para>
 			</body>
 		</sub>
@@ -1784,8 +1793,25 @@
 				</ol>
 			</body>
 		</sub>
+		<sub name="android_launcher">
+			<header>The Exult Launcher on Android</header>
+			<body>
+				<para>
+					To make it easier to install games, mods and patches on Android, Ken has developed a launcher that starts
+					before <Exult/>. Once you have installed everything you can start <Exult/> from the first tab of the launcher.<br/>
+					It also offers you an option to <kbd>Automatically launch <Exult/> when opening the app</kbd>. If you later
+					find that you need to access the launcher again you can just longer touch the icon and select
+					<kbd>Force Start Launcher</kbd>. Alternatively, as a more permanent solution, you can toggle this in <Exult/>'s
+					<kbd>Game Display</kbd> options in the setting <kbd>Android autolaunch</kbd>.
+				</para>
+				<ol>
+					<li>Download the APK from our <extref target="https://exult.info/download.php">download page</extref>.</li>
+					<li>On your Android, open the file manager and in your download folder, tap on the APK and it install.</li>
+				</ol>
+			</body>
+		</sub>
 		<sub name="android_games">
-			<header>Installing the games on your iPhone/iPad</header>
+			<header>Installing the games on your Android</header>
 			<body>
 				<para>
 					Once you have the <Exult/> app on your device, you will need to get the games to your
@@ -1793,7 +1819,7 @@
 					the files somewhere and then downloading these.
 				</para>
 				<para>
-					If you have bought the Games from <extref target="https://gog.com">GOG</extref> it's quite easy to do:
+					If you have bought the Games from <extref target="https://gog.com">GOG.com</extref> it's quite easy to do:
 				</para>
 				<ol>
 					<li>Browse to <extref target="https://gog.com">GOG.com</extref> and log in to your account</li>
@@ -1843,7 +1869,7 @@
 			</body>
 		</sub>
 		<sub name="android_data">
-			<header>Installing sfx, digital music, MT32 ROMs and soundfonts</header>
+			<header>Installing sfx, digital music, MT32 ROMs and SoundFonts</header>
 			<body>
 				<para>
 					To install the optional sfx and digital music, please download the 'Zipped all-in-one audio pack
@@ -1861,9 +1887,9 @@
 					the ROMs yourself to legally use these.
 				</para>
 				<para>
-					For MIDI music playback on android, we are using FluidSynth. This needs a soundfont in SF2 format which has
-					to be named "default.sf2" (all in lower case) and in a zip file. Once you have the zipped soundfont on your Android
-					device, tap the <strong>Zipped FluidSynth Soundfont</strong> checkbox on the left, select the zip in the file
+					For MIDI music playback on android, we are using FluidSynth. This needs a SoundFont in SF2 format which has
+					to be named "default.sf2" (all in lower case) and in a zip file. Once you have the zipped SoundFont on your Android
+					device, tap the <strong>Zipped FluidSynth SoundFont</strong> checkbox on the left, select the zip in the file
 					browser, and the files will be installed.<br/>
 				</para>
 			</body>
@@ -2203,7 +2229,7 @@
 								</configtag>
 								<configtag name="driver">
 								default
-								<comment>**choose your music driver between default, MT32Emu, Fluidsynth, FMOPL, </comment>
+								<comment>**choose your music driver between default, MT32Emu, FluidSynth, FMOPL, </comment>
 								<comment>TiMidity, Windows, alsa, CoreAudio, </comment>
 								<comment>CoreMidi, UnixSeqDevice. </comment>
 								<comment>See <ref target="music"/> for details.</comment>
@@ -2275,11 +2301,11 @@
 								<configtag name="fluidsynth_soundfont" manual="true">
 								path
 								<comment>**path to the sound font that will be used to render the MIDI music </comment>
-								<comment>when Fluidsynth is chosen as driver.</comment>
+								<comment>when FluidSynth is chosen as driver.</comment>
 								</configtag>
 								<configtag name="fluidsynth_soundfontN" manual="true">
 								path
-								<comment>**support for FluidSynth soundfont stack, add multiple soundfonts </comment>
+								<comment>**support for FluidSynth SoundFont stack, add multiple SoundFonts </comment>
 								<comment>(N = 0 to 9). See <ref target="midi_music"/>.</comment>
 								</configtag>
 								<configtag name="volume_curve" manual="true">
@@ -2797,7 +2823,7 @@
 					Since January 2013 <extref target="https://www.gog.com">GOG</extref> also offers a macOS download for each of the
 					Ultima VII parts. These are install packages for macOS that will install the
 					two parts into your Applications folder as applications that use a modified version of DOSBox to play the game.
-					If you want to make Exult automatically find the games, you will need to copy the game files from these
+					If you want to make <Exult/> automatically find the games, you will need to copy the game files from these
 					applications to a different folder on your hard drive. To do this follow the next few steps.<br/>
 					These instructions are the same whether you used the manual download from GOG or GOG Galaxy to install the games.
 				</para>
@@ -3120,6 +3146,15 @@
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
+		<sub name="19012025">
+			<header>- 19 January 2025</header>
+			<body>
+				<ul>
+					<li><section_ref target="Audio"/> added more information on MIDI drivers.</li>
+					<li><ref1 target="android_launcher"/> added to explain ways to toggle autolaunch.</li>
+				</ul>
+			</body>
+		</sub>
 		<sub name="06012025">
 			<header>- 06 January 2025</header>
 			<body>
