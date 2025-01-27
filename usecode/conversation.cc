@@ -38,6 +38,8 @@ using std::string;
 // TODO: show_face & show_avatar_choices seem to share code?
 // TODO: show_avatar_choices shouldn't first convert to char**, probably
 
+bool Conversation::noface = false;
+
 /*
  *  Store information about an NPC's face and text on the screen during
  *  a conversation:
@@ -560,7 +562,9 @@ void Conversation::paint_faces(bool text    // Show text too.
 		}
 		Shape_frame* face
 				= finfo->face_num >= 0 ? finfo->shape.get_shape() : nullptr;
-		if (face) {
+		int shape_num = finfo->shape.get_shapenum();
+
+		if (face && (shape_num != 277 && !noface)) {
 			const int face_xleft  = face->get_xleft();
 			const int face_yabove = face->get_yabove();
 			const int fx          = finfo->face_rect.x + face_xleft;

@@ -93,6 +93,8 @@ public:
 		return answer_stack.empty();
 	}
 
+	static bool noface;
+
 private:
 	void set_face_rect(
 			Npc_face_info* info, Npc_face_info* prev, int screenw, int screenh);
