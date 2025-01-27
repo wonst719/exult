@@ -2240,7 +2240,8 @@ void Sleep_schedule::now_what() {
 		int best_dist = 100;
 		for (auto* newbed : beds) {
 			const int newdist = npc->distance(newbed);
-			if (newdist < best_dist && !is_bed_occupied(newbed, npc)) {
+			if (newdist < best_dist && !is_bed_occupied(newbed, npc)
+				&& Fast_pathfinder_client::is_straight_path(npc, newbed)) {
 				best_dist = newdist;
 				bed_obj   = newbed->shared_from_this();
 			}
