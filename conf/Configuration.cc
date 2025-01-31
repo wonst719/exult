@@ -251,9 +251,12 @@ bool Configuration::read_abs_config_file(
 		sbuf += line + "\n";
 		getline(ifile, line);
 	}
-
+	// empty file just do nothing
+	if (sbuf.empty()) {
+		CTRACE("Configuration::read_config_file - no data read");
+		return false;
+	}
 	CTRACE("Configuration::read_config_file - file read");
-
 	read_config_string(sbuf);
 
 	is_file = true;
