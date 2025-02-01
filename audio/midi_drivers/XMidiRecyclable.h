@@ -30,8 +30,8 @@ struct XMidiEvent;
 /// instead of needing to call new and delete hundreds of times on tiny objects
 /// Freed objects are added to the free list and when a new object is needed
 /// an object is popped from the freelist if there is one otherwise a new one is
-/// allocted with new
-/// \tparam T The type of the recycleable class. This class must directly inherit from XMidiRecyclable
+/// allocated with new
+/// \tparam T The type of the recyclable class. This class must directly inherit from XMidiRecyclable
 template <class T>
 class XMidiRecyclable {
 public:
@@ -135,7 +135,7 @@ private:
 					std::exchange<T*>(instance.Head->next, nullptr));
 		}
 
-		// Destructor should clean up the allocted memory on program exit when
+		// Destructor should clean up the allocated memory on program exit when
 		// the runtime calls the destructors of all the globals and class
 		// statics. If some compiler doesn't emit the calls to the destructors
 		// the runtime might report memory leaks but that is not my problem
@@ -147,7 +147,6 @@ private:
 		}
 	};
 
-	// static FreeList FreeList();    // Head of the free list
 public:
 	T* next = nullptr;    // Linked list next pointer
 };

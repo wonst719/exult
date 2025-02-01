@@ -32,9 +32,8 @@ using std::string;
 
 // #include "gamma.h"
 
-// XMidiEvent FreeList
+// XMidiRecyclable<XMidiEventList> FreeList
 template <>
-
 XMidiRecyclable<XMidiEventList>::FreeList
 		XMidiRecyclable<XMidiEventList>::FreeList::instance{};
 

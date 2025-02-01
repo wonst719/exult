@@ -24,8 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiFile.h"
 #include "XMidiSequenceHandler.h"
 
-
-// XMidiEvent FreeList
+// XMidiRecyclable<XMidiSequence> FreeList
 template <>
 XMidiRecyclable<XMidiSequence>::FreeList
 		XMidiRecyclable<XMidiSequence>::FreeList::instance{};
@@ -136,7 +135,7 @@ int XMidiSequence::playEvent() {
 
 	// Play all waiting events;
 	//
-	// convert the event time 120th/sec xmidi clock 6000th of sec
+	// convert the event time 120th/sec to xmidi clock 6000th of sec
 	// by multiplying by 5000 and dividing by speed percentage
 	sint32 aim = ((event->time - last_tick) * 5000) / speed;
 #ifdef NON_CRIT_ADJUSTMENT
