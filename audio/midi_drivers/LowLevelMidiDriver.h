@@ -1,6 +1,6 @@
 /*
 Copyright (C) 2003-2005  The Pentagram Team
-Copyright (C) 2007-2022  The Exult team
+Copyright (C) 2007-2025  The Exult team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -51,7 +51,7 @@ class XMidiSequence;
 //!  however it is strongly recommended that it is implemented. If it's not
 //!  implemented, the main Pentagram thread MAY use too much CPU time and cause
 //!  timing problems. Similar, implemeting yield() is a good idea too.
-class LowLevelMidiDriver : public MidiDriver, private XMidiSequenceHandler {
+class LowLevelMidiDriver : public MidiDriver, public XMidiSequenceHandler {
 public:
 	~LowLevelMidiDriver() override;
 
@@ -218,20 +218,41 @@ private:
 	bool uploading_timbres;    // Set in 'uploading' timbres mode
 
 	// Communications
-	std::queue<ComMessage>                   messages;
-	std::unique_ptr<std::mutex>              mutex;
-	std::unique_ptr<std::mutex>              cbmutex;
-	std::unique_ptr<std::condition_variable> cond;
-	sint32                                   peekComMessageType();
+	std::queue<ComMessage>                       messages;
+	std::unique_ptr<std::recursive_mutex>        mutex;
+	std::unique_ptr<std::condition_variable_any> cond;
+	sint32                                       peekComMessageType();
 	void sendComMessage(const ComMessage& message);
 	void waitTillNoComMessages();
 
 	// State Readable by main game thread
-	bool                 playing[LLMD_NUM_SEQ];          // Only set by thread
-	sint32               callback_data[LLMD_NUM_SEQ];    // Only set by thread
+	std::atomic_bool     playing[LLMD_NUM_SEQ];          // Only set by thread
+	std::atomic_int32_t  callback_data[LLMD_NUM_SEQ];    // Only set by thread
 	uint32               length[LLMD_NUM_SEQ];           // Not used by thread
 	std::atomic_uint32_t position[LLMD_NUM_SEQ];
 
+	// anyone can use our lock if needed
+public:
+	std::unique_lock<std::recursive_mutex> LockMutex(bool trylock = false) {
+		// create mutex if it doesn't yet exist.
+		// Shouldn't happen
+		// No one should be calling this before initialization of a midi driver
+		// Could in theory lead to a race condition but that would require
+		// someone to call this from 2 different threads This cannot lead to a
+		// race condition with the midi playback thread as the mutex will
+		// already exist
+
+		if (!mutex) {
+			mutex = std::make_unique<std::recursive_mutex>();
+		}
+		if (trylock) {
+			return std::unique_lock(*mutex, std::try_to_lock);
+		}
+
+		return std::unique_lock(*mutex);
+	}
+
+private:
 	// Shared Data
 	std::atomic_uchar global_volume = 100;
 

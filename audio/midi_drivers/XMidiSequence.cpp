@@ -24,6 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiFile.h"
 #include "XMidiSequenceHandler.h"
 
+
+// XMidiEvent FreeList
+template <>
+XMidiRecyclable<XMidiSequence>::FreeList
+		XMidiRecyclable<XMidiSequence>::FreeList::instance{};
+
 // Define this to stop the Midisequencer from attempting to
 // catch up time if it has missed over 1200 ticks or 1/5th of a second
 // This is useful for when debugging, since the Sequencer will not attempt
@@ -34,12 +40,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Play non time critical events at most this many ticks after last event. 60
 // seems like a good value to my ears
 #define NON_CRIT_ADJUSTMENT 60
-
-const uint16 XMidiSequence::ChannelShadow::centre_value = 0x2000;
-const uint8  XMidiSequence::ChannelShadow::fine_value   = centre_value & 127;
-const uint8  XMidiSequence::ChannelShadow::coarse_value = centre_value >> 7;
-const uint16 XMidiSequence::ChannelShadow::combined_value
-		= (coarse_value << 8) | fine_value;
 
 XMidiSequence::XMidiSequence(
 		XMidiSequenceHandler* Handler, uint16 seq_id, XMidiEventList* events,
@@ -79,65 +79,30 @@ XMidiSequence::XMidiSequence(
 }
 
 XMidiSequence::~XMidiSequence() {
-	// Handle note off's here
-	while (XMidiEvent* note = notes_on.Pop()) {
-		handler->sequenceSendEvent(
-				sequence_id, note->status + (note->data[0] << 8));
-	}
-
-	for (int i = 0; i < 16; i++) {
-		shadows[i].reset();
-		applyShadow(i);
-	}
-
 	// 'Release' it
 	evntlist->decrementCounter();
 }
 
-void XMidiSequence::ChannelShadow::reset() {
-	pitchWheel = combined_value;
+void XMidiSequence::finish() {
+	for (int i = 0; i < 16; i++) {
+		// Manually turn off sustain
+		handler->sequenceSendEvent(
+				sequence_id, i | int(MidiStatus::Controller)
+									 | (int(MidiController::Sustain) << 8));
+		// send all notes off
+		handler->sequenceSendEvent(
+				sequence_id, i | int(MidiStatus::Controller)
+									 | (int(MidiController::AllNotesOff) << 8));
+		// rese3t controllers
+		handler->sequenceSendEvent(
+				sequence_id,
+				i | int(MidiStatus::Controller)
+						| (int(MidiController::ResetControllers) << 8));
+	}
 
-	program = -1;
-
-	// Bank Select
-	bank[0] = 0;
-	bank[1] = 0;
-
-	// Modulation Wheel
-	modWheel[0] = coarse_value;
-	modWheel[1] = fine_value;
-
-	// Foot pedal
-	footpedal[0] = 0;
-	footpedal[1] = 0;
-
-	// Volume
-	volumes[0] = coarse_value;
-	volumes[1] = fine_value;
-
-	// Pan
-	pan[0] = coarse_value;
-	pan[1] = fine_value;
-
-	// Balance
-	balance[0] = coarse_value;
-	balance[1] = fine_value;
-
-	// Expression
-	expression[0] = 127;
-	expression[1] = 0;
-
-	// sustain
-	sustain = 0;
-
-	// Effects (Reverb)
-	effects = 0;
-
-	// Chorus
-	chorus = 0;
-
-	// Xmidi Bank
-	xbank = 0;
+	for (int i = 0; i < 16; i++) {
+		shadows[i].reset();
+	}
 }
 
 int XMidiSequence::playEvent() {
@@ -170,18 +135,25 @@ int XMidiSequence::playEvent() {
 	}
 
 	// Play all waiting events;
+	//
+	// convert the event time 120th/sec xmidi clock 6000th of sec
+	// by multiplying by 5000 and dividing by speed percentage
 	sint32 aim = ((event->time - last_tick) * 5000) / speed;
 #ifdef NON_CRIT_ADJUSTMENT
 	int nc_ticks = event->time - last_tick;
 
 	if (!event->is_time_critical() && nc_ticks > NON_CRIT_ADJUSTMENT) {
 		if (event->next) {
+			// time this event at NON_CRIT_ADJUSTMENT or halfway between last
+			// and next which is smaller we do not want any simultaneous events
+			// if we can avoid them
 			nc_ticks = std::min(
 					NON_CRIT_ADJUSTMENT,
-					event->next->time - static_cast<int>(last_tick));
+					(event->next->time - static_cast<int>(last_tick)) / 2);
 		} else {
 			nc_ticks = NON_CRIT_ADJUSTMENT;
 		}
+
 		aim = nc_ticks * 5000 / speed;
 	}
 #endif    // NON_CRIT_ADJUSTMENT
@@ -258,7 +230,7 @@ int XMidiSequence::playEvent() {
 	// Ignore sysex events on anything but track 0
 	else if (event->getChannel() == 0) {
 		handler->sequenceSendSysEx(
-				sequence_id, event->status, event->ex.sysex_data.buffer,
+				sequence_id, event->status, event->ex.sysex_data.buffer(),
 				event->ex.sysex_data.len);
 	}
 
@@ -338,8 +310,11 @@ sint32 XMidiSequence::timeTillNext() {
 			&& (event->time - last_tick) > NON_CRIT_ADJUSTMENT) {
 			int ticks = NON_CRIT_ADJUSTMENT;
 			if (event->next) {
+				// time this event at NON_CRIT_ADJUSTMENT or halfway between
+				// last and next which is smaller
 				ticks = std::min(
-						ticks, event->next->time - static_cast<int>(last_tick));
+						ticks,
+						(event->next->time - static_cast<int>(last_tick)) / 2);
 			} else {
 				ticks = NON_CRIT_ADJUSTMENT;
 			}
@@ -357,9 +332,12 @@ sint32 XMidiSequence::timeTillNext() {
 }
 
 void XMidiSequence::updateShadowForEvent(XMidiEvent* new_event) {
-	const unsigned int chan = new_event->getChannel();
+	shadows[new_event->getChannel()].updateForEvent(new_event);
+}
+
+void XMidiSequence::ChannelShadow::updateForEvent(XMidiEvent* new_event) {
 	const MidiStatus type = new_event->getStatusType();
-	const uint32       data = new_event->data[0] | (new_event->data[1] << 8);
+	const uint32     data = new_event->data[0] | (new_event->data[1] << 8);
 
 	// Shouldn't be required. XMidi should automatically detect all anyway
 	// evntlist->chan_mask |= 1 << chan;
@@ -367,68 +345,71 @@ void XMidiSequence::updateShadowForEvent(XMidiEvent* new_event) {
 	// Update the shadows here
 
 	if (type == MidiStatus::Controller) {
-		// Channel volume
-		if (new_event->data[0] == 7) {
-			shadows[chan].volumes[0] = new_event->data[1];
-		} else if (new_event->data[0] == 39) {
-			shadows[chan].volumes[1] = new_event->data[1];
-		}
+		MidiController ctrl = MidiController(new_event->data[0]);
+
 		// Bank
-		else if (new_event->data[0] == 0 || new_event->data[0] == 32) {
-			shadows[chan].bank[new_event->data[0] / 32] = new_event->data[1];
-		}
-		// modWheel
-		else if (new_event->data[0] == 1 || new_event->data[0] == 33) {
-			shadows[chan].modWheel[new_event->data[0] / 32]
-					= new_event->data[1];
-		}
-		// footpedal
-		else if (new_event->data[0] == 4 || new_event->data[0] == 36) {
-			shadows[chan].footpedal[new_event->data[0] / 32]
-					= new_event->data[1];
-		}
-		// pan
-		else if (new_event->data[0] == 9 || new_event->data[0] == 41) {
-			shadows[chan].pan[new_event->data[0] / 32] = new_event->data[1];
-		}
-		// balance
-		else if (new_event->data[0] == 10 || new_event->data[0] == 42) {
-			shadows[chan].balance[new_event->data[0] / 32] = new_event->data[1];
-		}
-		// expression
-		else if (new_event->data[0] == 11 || new_event->data[0] == 43) {
-			shadows[chan].expression[new_event->data[0] / 32]
-					= new_event->data[1];
-		}
-		// sustain
-		else if (new_event->data[0] == 64) {
-			shadows[chan].effects = new_event->data[1];
-		}
-		// effect
-		else if (new_event->data[0] == 91) {
-			shadows[chan].effects = new_event->data[1];
-		}
-		// chorus
-		else if (new_event->data[0] == 93) {
-			shadows[chan].chorus = new_event->data[1];
-		}
-		// XMidi bank
-		else if (
-				MidiController(new_event->data[0])
-== MidiController::XBankChange) {
-			shadows[chan].xbank = new_event->data[1];
+		switch (ctrl) {
+		case MidiController::Volume:
+		case MidiController::VolumeFine:
+			volume.update(ctrl, new_event->data[1]);
+			break;
+
+		case MidiController::Bank:
+			bank.update(ctrl, new_event->data[1]);
+			break;
+
+			// modWheel
+		case MidiController::ModWheel:
+		case MidiController::ModWheelFine:
+			modWheel.update(ctrl, new_event->data[1]);
+			break;
+
+		case MidiController::FootPedal:
+		case MidiController::FootPedalFine:
+			footpedal.update(ctrl, new_event->data[1]);
+			break;
+
+		case MidiController::Pan:
+		case MidiController::PanFine:
+			pan.update(ctrl, new_event->data[1]);
+			break;
+
+		case MidiController::Balance:
+		case MidiController::BalanceFine:
+			balance.update(ctrl, new_event->data[1]);
+			break;
+
+		case MidiController::Expression:
+		case MidiController::ExpressionFine:
+			expression.update(ctrl, new_event->data[1]);
+			break;
+		case MidiController::Sustain:
+			sustain = new_event->data[1];
+			break;
+		case MidiController::Effect:
+			effects = new_event->data[1];
+			break;
+		case MidiController::Chorus:
+			chorus = new_event->data[1];
+			break;
+		case MidiController::XBankChange:
+			xbank = new_event->data[1];
+			break;
+			// don't care about others so do nothing
+		default:
+			break;
 		}
 	} else if (type == MidiStatus::Program) {
-		shadows[chan].program = data;
+		program = data;
 	} else if (type == MidiStatus::PitchWheel) {
-		shadows[chan].pitchWheel = data;
+		pitchWheel = data;
 	}
 }
 
 void XMidiSequence::sendEvent() {
-	 //unsigned int chan = event->getChannel();
+	// unsigned int chan = event->getChannel();
 	const MidiStatus type = event->getStatusType();
-	uint32             data = event->data[0] | (event->data[1] << 8);
+	uint32           data = event->data[0] | (event->data[1] << 8);
 
 	// Shouldn't be required. XMidi should automatically detect all anyway
 	// evntlist->chan_mask |= 1 << chan;
@@ -476,75 +457,117 @@ void XMidiSequence::sendEvent() {
 void XMidiSequence::sendController(
 		MidiController ctrl, int i, int (&controller)[2]) const {
 	handler->sequenceSendEvent(
-			sequence_id, i | int(MidiStatus::Controller)  | (int(ctrl) << 8)
+			sequence_id, i | int(MidiStatus::Controller) | (int(ctrl) << 8)
 								 | (controller[0] << 16));
 	handler->sequenceSendEvent(
-			sequence_id, i | int(MidiStatus::Controller) 
-								 | ((int(ctrl) + int(MidiController::FineOffset)) << 8)
-								 | (controller[1] << 16));
+			sequence_id,
+			i | int(MidiStatus::Controller)
+					| ((int(ctrl) + int(MidiController::FineOffset)) << 8)
+					| (controller[1] << 16));
 }
 
 void XMidiSequence::applyShadow(int i) {
-	// Pitch Wheel
+	// Only send most values if they are different to default
+	auto def = ChannelShadow();
+
+	// clear with ff to force sending of all as no value can be > 127 in legal
+	// midi, This is not needed and is only here if needed for testing
+	// std::memset(static_cast<void*>( & def), 0xff, sizeof(def));
+
+	// Send Reset all controllers first to reset everything to default.
 	handler->sequenceSendEvent(
 			sequence_id,
-			i | int(MidiStatus::PitchWheel) | (shadows[i].pitchWheel << 8));
+			i | int(MidiStatus::Controller)
+					| (int(MidiController::ResetControllers) << 8));
+
+	return;
+
+	// Pitch Wheel
+	if (shadows[i].pitchWheel != def.pitchWheel) {
+		handler->sequenceSendEvent(
+				sequence_id,
+				i | int(MidiStatus::PitchWheel) | (shadows[i].pitchWheel << 8));
+	}
 
 	// Modulation Wheel
-	sendController(MidiController::ModWheel, i, shadows[i].modWheel);
+	if (shadows[i].modWheel != def.modWheel) {
+		sendController(MidiController::ModWheel, i, shadows[i].modWheel);
+	}
 
 	// Footpedal
-	sendController(MidiController::FootPedal, i, shadows[i].footpedal);
+	if (shadows[i].footpedal != def.footpedal) {
+		sendController(MidiController::FootPedal, i, shadows[i].footpedal);
+	}
 
-	// Volume
-	int actualvolume
-			= (shadows[i].volumes[0] * vol_multi * handler->getGlobalVolume())
-			  / 25500;
+	// Volume - we always send this
+	int actualvolume = (shadows[i].volume.coarse * vol_multi
+						* handler->getGlobalVolume())
+					   / 25500;
 	handler->sequenceSendEvent(
-			sequence_id, i | int(MidiStatus::Controller)  | (7 << 8)
+			sequence_id, i | int(MidiStatus::Controller)
+								 | (int(MidiController::Volume) << 8)
 								 | (actualvolume << 16));
 	handler->sequenceSendEvent(
-			sequence_id, i | int(MidiStatus::Controller)  | (39 << 8)
-								 | (shadows[i].volumes[1] << 16));
+			sequence_id, i | int(MidiStatus::Controller)
+								 | (int(MidiController::VolumeFine) << 8)
+								 | (shadows[i].volume.fine << 16));
 
 	// Pan
-	sendController(MidiController::Pan, i, shadows[i].pan);
+	if (shadows[i].pan != def.pan) {
+		sendController(MidiController::Pan, i, shadows[i].pan);
+	}
 
 	// Balance
-	sendController(MidiController::Balance, i, shadows[i].balance);
+	if (shadows[i].balance != def.balance) {
+		sendController(MidiController::Balance, i, shadows[i].balance);
+	}
 
 	// expression
-	sendController(MidiController::Expression, i, shadows[i].expression);
+	if (shadows[i].expression != def.expression) {
+		sendController(MidiController::Expression, i, shadows[i].expression);
+	}
 
-	// Sustain
+	// Sustain - Always send
 	handler->sequenceSendEvent(
-			sequence_id, i | int(MidiStatus::Controller)  | (64 << 8)
+			sequence_id, i | int(MidiStatus::Controller)
+								 | (int(MidiController::Sustain) << 8)
 								 | (shadows[i].sustain << 16));
 
 	// Effects (Reverb)
-	handler->sequenceSendEvent(
-			sequence_id, i | int(MidiStatus::Controller)  | (91 << 8)
-								 | (shadows[i].effects << 16));
+	if (shadows[i].effects != def.effects) {
+		handler->sequenceSendEvent(
+				sequence_id, i | int(MidiStatus::Controller)
+									 | (int(MidiController::Effect) << 8)
+									 | (shadows[i].effects << 16));
+	}
 
 	// Chorus
-	handler->sequenceSendEvent(
-			sequence_id, i | int(MidiStatus::Controller)  | (93 << 8)
-								 | (shadows[i].chorus << 16));
+	if (shadows[i].chorus != def.chorus) {
+		handler->sequenceSendEvent(
+				sequence_id, i | int(MidiStatus::Controller)
+									 | (int(MidiController::Chorus) << 8)
+									 | (shadows[i].chorus << 16));
+	}
 
 	// XMidi Bank
-	handler->sequenceSendEvent(
-			sequence_id, i | int(MidiStatus::Controller)
-								 | (int(MidiController::XBankChange) << 8)
-								 | (shadows[i].xbank << 16));
+	if (shadows[i].xbank != def.xbank) {
+		handler->sequenceSendEvent(
+				sequence_id, i | int(MidiStatus::Controller)
+									 | (int(MidiController::XBankChange) << 8)
+									 | (shadows[i].xbank << 16));
+	}
 
 	// Bank Select
-sendController(MidiController::Bank, i, shadows[i].bank);
+	if (shadows[i].bank != def.bank) {
+		sendController(MidiController::Bank, i, shadows[i].bank);
+	}
+
 	if (shadows[i].program != -1) {
 		handler->sequenceSendEvent(
 				sequence_id,
 				i | int(MidiStatus::Program) | (shadows[i].program << 8));
 	}
-	}
+}
 
 void XMidiSequence::UpdateVolume() {
 	if (!vol_changed) {
@@ -555,7 +578,7 @@ void XMidiSequence::UpdateVolume() {
 			uint32 message = i;
 			message |= int(MidiStatus::Controller);
 			message |= 7 << 8;
-			int actualvolume = (shadows[i].volumes[0] * vol_multi
+			int actualvolume = (shadows[i].volume.coarse * vol_multi
 								* handler->getGlobalVolume())
 							   / 25500;
 			message |= actualvolume << 16;

@@ -1,6 +1,6 @@
 /*
 Copyright (C) 2003-2005  The Pentagram Team
-Copyright (C) 2010-2022  The Exult team
+Copyright (C) 2010-2025  The Exult team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -173,17 +173,16 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo) {
 		std::fill(std::begin(chan), std::end(chan), -1);
 	}
 	for (int i = 0; i < LLMD_NUM_SEQ; i++) {
-		playing[i]       = false;
-		callback_data[i] = -1;
+		playing[i] = false;
+		callback_data[i].store(-1);
 	}
 
 	if (thread) {
 		destroyThreadedSynth();
 		thread.reset();
 	}
-	mutex             = std::make_unique<std::mutex>();
-	cbmutex           = std::make_unique<std::mutex>();
-	cond              = std::make_unique<std::condition_variable>();
+	mutex             = std::make_unique<std::recursive_mutex>();
+	cond              = std::make_unique<std::condition_variable_any>();
 	sample_rate       = samp_rate;
 	stereo            = is_stereo;
 	uploading_timbres = false;
@@ -224,7 +223,6 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo) {
 			thread.reset();
 		}
 		mutex.reset();
-		cbmutex.reset();
 		cond.reset();
 	} else {
 		initialized = true;
@@ -249,7 +247,6 @@ void LowLevelMidiDriver::destroyMidiDriver() {
 	initialized = false;
 
 	mutex.reset();
-	cbmutex.reset();
 	cond.reset();
 
 	thread.reset();
@@ -277,11 +274,10 @@ void LowLevelMidiDriver::startSequence(
 	while (uploading_timbres) {
 		waitTillNoComMessages();
 
-		const bool isplaying = [this]() {
-			const std::lock_guard<std::mutex> lock(*mutex);
-			return playing[3];
-		}();
-
+		/// load atomic using default memory order (no relaxation of any
+		/// requirements)
+		const bool isplaying = playing[3].load();
+		;
 		// If sequence is still playing then timbres are still loading
 		// so we need to wait and try it again
 		if (isplaying) {
@@ -373,8 +369,9 @@ bool LowLevelMidiDriver::isSequencePlaying(int seq_num) {
 
 	waitTillNoComMessages();
 
-	const std::lock_guard<std::mutex> lock(*mutex);
-	return playing[seq_num];
+	// load atomic using default memory order (no relaxation of any
+	// requirements)
+	return playing[seq_num].load();
 }
 
 void LowLevelMidiDriver::setSequenceRepeat(int seq_num, bool newrepeat) {
@@ -423,8 +420,7 @@ uint32 LowLevelMidiDriver::getSequenceCallbackData(int seq_num) {
 		return 0;
 	}
 
-	const std::lock_guard<std::mutex> lock(*cbmutex);
-	return callback_data[seq_num];
+	return callback_data[seq_num].load();
 }
 
 //
@@ -432,7 +428,7 @@ uint32 LowLevelMidiDriver::getSequenceCallbackData(int seq_num) {
 //
 
 sint32 LowLevelMidiDriver::peekComMessageType() {
-	const std::lock_guard<std::mutex> lock(*mutex);
+	auto lock = LockMutex();
 	if (!messages.empty()) {
 		return messages.front().type;
 	}
@@ -440,7 +436,7 @@ sint32 LowLevelMidiDriver::peekComMessageType() {
 }
 
 void LowLevelMidiDriver::sendComMessage(const ComMessage& message) {
-	const std::lock_guard<std::mutex> lock(*mutex);
+	auto lock = LockMutex();
 	messages.push(message);
 	cond->notify_one();
 }
@@ -474,8 +470,8 @@ int LowLevelMidiDriver::initThreadedSynth() {
 		yield();
 	}
 
-	int                               code = 0;
-	const std::lock_guard<std::mutex> lock(*mutex);
+	int  code = 0;
+	auto lock = LockMutex();
 	while (!messages.empty()) {
 		if (messages.front().type == LLMD_MSG_THREAD_INIT_FAILED) {
 			code = messages.front().data.init_failed.code;
@@ -516,7 +512,7 @@ void LowLevelMidiDriver::destroyThreadedSynth() {
 	} else {
 		thread->detach();
 	}
-	const std::lock_guard<std::mutex> lock(*mutex);
+	auto lock = LockMutex();
 	// Get rid of all the messages
 	while (!messages.empty()) {
 		messages.pop();
@@ -535,7 +531,7 @@ int LowLevelMidiDriver::threadMain() {
 	// Open the device
 	const int code = open();
 	{
-		const std::lock_guard<std::mutex> lock(*mutex);
+		auto lock = LockMutex();
 		// Pop all the messages
 		while (!messages.empty()) {
 			messages.pop();
@@ -593,8 +589,7 @@ int LowLevelMidiDriver::threadMain() {
 			bool wait = false;
 			{
 				// No Blocking allowed here!
-				const std::unique_lock<std::mutex> lock(
-						*mutex, std::try_to_lock);
+				auto lock = LockMutex(true);
 				if (lock.owns_lock() && messages.empty()) {
 					wait = true;
 				}
@@ -608,7 +603,7 @@ int LowLevelMidiDriver::threadMain() {
 			}
 		} else {
 			// We do not want blocking here
-			std::unique_lock<std::mutex> lock(*mutex, std::try_to_lock);
+			auto lock = LockMutex(true);
 			if (lock.owns_lock()) {
 				if (messages.empty()) {
 					// printf("Waiting %i ms\n", time_till_next - 2);
@@ -632,7 +627,7 @@ int LowLevelMidiDriver::threadMain() {
 	// Close the device
 	close();
 
-	const std::lock_guard<std::mutex> lock(*mutex);
+	auto lock = LockMutex();
 	// Pop all messages
 	while (!messages.empty()) {
 		messages.pop();
@@ -766,7 +761,7 @@ void LowLevelMidiDriver::produceSamples(sint16* samples, uint32 bytes) {
 
 		// We care about the return code now
 		if (psres == PlaySeqResult::terminate) {
-			const std::lock_guard<std::mutex> lock(*mutex);
+			auto lock = LockMutex();
 			// Pop all messages
 			while (!messages.empty()) {
 				messages.pop();
@@ -804,10 +799,11 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 			if (pending_events > 0) {
 				break;
 			} else if (pending_events == -1) {
-				delete sequences[seq];
+				sequences[seq]->FreeThis();
 				sequences[seq] = nullptr;
-				const std::lock_guard<std::mutex> lock(*mutex);
-				playing[seq] = false;
+				// store atomic using default memory order (no relaxation of any
+				// requirements)
+				playing[seq].store(false);
 			}
 		}
 		if (sequences[seq]) {
@@ -816,7 +812,7 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 	}
 
 	// Did we get issued a music command?
-	const std::lock_guard<std::mutex> lock(*mutex);
+	auto lock = LockMutex();
 	while (!messages.empty()) {
 		ComMessage message = messages.front();
 
@@ -831,20 +827,37 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 			if (message.sequence < 0 || message.sequence >= LLMD_NUM_SEQ) {
 				break;
 			}
-			delete sequences[message.sequence];
-			sequences[message.sequence]     = nullptr;
-			playing[message.sequence]       = false;
-			callback_data[message.sequence] = -1;
+			if (sequences[message.sequence]) {
+				callback_data[message.sequence] = -1;
+				sequences[message.sequence]->finish();
+				sequences[message.sequence]->FreeThis();
+				sequences[message.sequence] = nullptr;
+				playing[message.sequence]   = false;
+			}
+			// store atomics using default memory order (no relaxation of any
+			// requirements)
+			playing[message.sequence].store(false);
+			callback_data[message.sequence].store(-1);
 			unlockAndUnprotectChannel(message.sequence);
 			start_track_delay_until = xmidi_clock + after_stop_delay;
 		} break;
 
 		case LLMD_MSG_THREAD_EXIT: {
 			for (i = 0; i < LLMD_NUM_SEQ; i++) {
-				delete sequences[i];
-				sequences[i]     = nullptr;
-				playing[i]       = false;
-				callback_data[i] = -1;
+				if (sequences[i]) {
+					// Only call finish if midi device is external
+					// so it stops playing notes
+					// it is not necessary for internal Sample producer
+					// synths as they do not independantly produce sound
+					// and are about to be destructed anyway
+					if (!isSampleProducer()) {
+						sequences[i]->finish();
+					}
+					sequences[i]->FreeThis();
+					sequences[i] = nullptr;
+				}
+				playing[i] = false;
+				callback_data[i].store(-1);
 				unlockAndUnprotectChannel(i);
 			}
 		}
@@ -919,13 +932,16 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 				break;
 			}
 			// Kill the previous stream
-			delete sequences[message.sequence];
-			sequences[message.sequence] = nullptr;
-			if (playing[message.sequence]) {
+			if (sequences[message.sequence]) {
+				sequences[message.sequence]->finish();
+				sequences[message.sequence]->FreeThis();
+				sequences[message.sequence] = nullptr;
+			}
+			if (playing[message.sequence].load()) {
 				start_track_delay_until = xmidi_clock + after_stop_delay;
 			}
-			playing[message.sequence]       = false;
-			callback_data[message.sequence] = -1;
+			playing[message.sequence].store(false);
+			callback_data[message.sequence].store(-1);
 			unlockAndUnprotectChannel(message.sequence);
 
 			giveinfo();
@@ -936,12 +952,12 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 			}
 
 			if (message.data.play.list) {
-				sequences[message.sequence] = new XMidiSequence(
+				sequences[message.sequence] = XMidiSequence::Create(
 						this, message.sequence, message.data.play.list,
 						message.data.play.repeat, message.data.play.volume,
 						message.data.play.branch);
 
-				playing[message.sequence] = true;
+				playing[message.sequence].store(true);
 				position[message.sequence]
 						= sequences[message.sequence]->getLastTick();
 
@@ -974,15 +990,12 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 
 					for (XMidiEvent* e   = message.data.play.list->x_patch_bank;
 						 e != nullptr; e = e->next_patch_bank) {
-						if (e->getStatusType()
-== MidiStatus::Controller) {
+						if (e->getStatusType() == MidiStatus::Controller) {
 							if (MidiController(e->data[0])
-== MidiController::XBankChange) {
+								== MidiController::XBankChange) {
 								bank_sel[e->getChannel()] = e->data[1];
 							}
-						} else if (
-								e->getStatusType()
-== MidiStatus::Program) {
+						} else if (e->getStatusType() == MidiStatus::Program) {
 							if (mt32_patch_banks[0]) {
 								const int bank  = bank_sel[e->status & 0xF];
 								const int patch = e->data[0];
@@ -1051,11 +1064,11 @@ LowLevelMidiDriver::PlaySeqResult LowLevelMidiDriver::playSequences() {
 void LowLevelMidiDriver::sequenceSendEvent(uint16 sequence_id, uint32 message) {
 	const int log_chan = int(message & MidiStatus::ChannelMask);
 	message &= ~uint32(MidiStatus::ChannelMask);    // Strip the channel number
-auto type = message & MidiStatus::TypeMask;
+	auto type = message & MidiStatus::TypeMask;
 
 	// Controller handling
 	if (type == MidiStatus::Controller) {
-		auto ctrl = MidiController((message >> 8)&0xff);
+		auto ctrl = MidiController((message >> 8) & 0xff);
 		// Screw around with volume
 		if ((message & 0xFF00) == (7 << 8)) {
 			int vol = (message >> 16) & 0xFF;
@@ -1064,8 +1077,7 @@ auto type = message & MidiStatus::TypeMask;
 		} else if (ctrl == MidiController::XChanLock) {
 			lockChannel(sequence_id, log_chan, ((message >> 16) & 0xFF) >= 64);
 			return;
-		} else if (
-				ctrl == MidiController::XChanLockProtect) {
+		} else if (ctrl == MidiController::XChanLockProtect) {
 			protectChannel(
 					sequence_id, log_chan, ((message >> 16) & 0xFF) >= 64);
 			return;
@@ -1088,8 +1100,7 @@ auto type = message & MidiStatus::TypeMask;
 				setPatchBank(bank, patch);
 			}
 		}
-	} else if (type == MidiStatus::NoteOn
-			&& log_chan == 0x9) {
+	} else if (type == MidiStatus::NoteOn && log_chan == 0x9) {
 		const int temp = (message >> 8) & 0xFF;
 		if (temp < 127 && mt32_rhythm_bank[temp]) {
 			loadRhythmTemp(temp);
@@ -1218,8 +1229,7 @@ uint32 LowLevelMidiDriver::getTickCount(uint16 sequence_id) {
 }
 
 void LowLevelMidiDriver::handleCallbackTrigger(uint16 sequence_id, uint8 data) {
-	const std::lock_guard<std::mutex> lock(*cbmutex);
-	callback_data[sequence_id] = data;
+	callback_data[sequence_id].store(data);
 }
 
 int LowLevelMidiDriver::protectChannel(
@@ -1399,7 +1409,7 @@ void LowLevelMidiDriver::loadTimbreLibrary(
 
 	{
 		// Lock!
-		const std::lock_guard<std::mutex> lock(*mutex);
+		auto lock = LockMutex();
 
 		// Kill all existing timbres and stuff
 
@@ -1550,10 +1560,9 @@ void LowLevelMidiDriver::loadTimbreLibrary(
 		bool is_playing = true;
 
 		do {
-			{
-				const std::lock_guard<std::mutex> lock(*mutex);
-				is_playing = playing[3];
-			}
+			// load atomic using default memory order (no relaxation of any
+			// requirements)
+			is_playing = playing[3].load();
 
 			if (is_playing) {
 				yield();
@@ -1598,7 +1607,7 @@ void LowLevelMidiDriver::extractTimbreLibrary(XMidiEventList* eventlist) {
 		}
 
 		const uint16 length = (*event)->ex.sysex_data.len;
-		uint8*       msg    = (*event)->ex.sysex_data.buffer;
+		uint8*       msg    = (*event)->ex.sysex_data.buffer();
 
 		if (msg && length > 7 && msg[0] == 0x41 && msg[1] == 0x10
 			&& msg[2] == 0x16 && msg[3] == 0x12) {

@@ -1,6 +1,6 @@
 /*
 Copyright (C) 2003-2005  The Pentagram Team
-Copyright (C) 2007-2022  The Exult Team
+Copyright (C) 2007-2025  The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,9 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiEvent.h"
 #include "XMidiEventList.h"
 #include "XMidiNoteStack.h"
+#include "XMidiRecyclable.h"
 #include "XMidiSequenceHandler.h"
 
-class XMidiSequence {
+class XMidiSequence : public XMidiRecyclable<XMidiSequence> {
 public:
 	//! Create the XXMidiSequence object
 	//! \param handler XMidiSequenceHandler object that the events are to be sent to
@@ -95,6 +96,8 @@ public:
 		return evntlist->chan_mask;
 	}
 
+	void finish();
+
 	//! Pause the sequence
 	void pause();
 
@@ -150,36 +153,79 @@ private:
 	//! The amount of times we have left that we can loop per level
 	int loop_count[XMIDI_MAX_FOR_LOOP_COUNT];
 
-	struct ChannelShadow {
-		static const uint16 centre_value;
-		static const uint8  fine_value;
-		static const uint8  coarse_value;
-		static const uint16 combined_value;
+	struct CoarseFine {
+		uint8 coarse, fine;
 
-		int pitchWheel;
-		int program;
+		uint16 combined() const {
+			return (coarse << 8) | fine;
+		}
+
+		/// Update the values based on the controller
+		/// \param controller less than 32 is coarse
+		CoarseFine& update(MidiController controller, uint8 newvalue) {
+			if (controller < MidiController::FineOffset) {
+				coarse = newvalue;
+			} else {
+				fine = newvalue;
+			}
+
+			return *this;
+		}
+
+		bool operator==(const CoarseFine& other) const {
+			return coarse == other.coarse && fine == other.fine;
+		}
+
+		bool operator!=(const CoarseFine& other) const {
+			return coarse != other.coarse || fine != other.fine;
+		}
+	};
+
+	struct ChannelShadow {
+		static const uint16               centre_default = 0x2000;
+		constexpr static const CoarseFine cf_centre_default
+				= {centre_default >> 7, centre_default & 127};
+
+		int pitchWheel = cf_centre_default.combined();
+		int program    = -1;
 
 		// Controllers
-		int bank[2];          // 0
-		int modWheel[2];      // 1
-		int footpedal[2];     // 4
-		int volumes[2];       // 7
-		int pan[2];           // 9
-		int balance[2];       // 10
-		int expression[2];    // 11
-		int sustain;          // 64
-		int effects;          // 91
-		int chorus;           // 93
+		CoarseFine bank      = {0, 0};               // 0
+		CoarseFine modWheel  = cf_centre_default;    // 1
+		CoarseFine footpedal = {0, 0};               // 4
+		CoarseFine volume    = {80, 0};    // MT32EMU seems to default this to
+										   // 80, so I'm going to do the same
+		CoarseFine pan        = cf_centre_default;    // 9
+		CoarseFine balance    = cf_centre_default;    // 10
+		CoarseFine expression = {127, 0};             // 11
+		int        sustain    = 0;                    // 64
+		int        effects    = 0;                    // 91
+		int        chorus     = 0;                    // 93
 
-		int  xbank;
-		void reset();
-	} shadows[16];
+		int xbank;
+
+		void reset() {
+			*this = ChannelShadow();
+		}
+
+		//! Update the shadow for an event
+		void updateForEvent(XMidiEvent* event);
+	};
+
+	ChannelShadow shadows[16];
 
 	//! Send the current event to the controller
 	//! \param ctrl control code
 	//! \param i the channel being modified
 	//! \param controller the controller array being modified
-	void sendController(MidiController ctrl, int i, int (&controller)[2]) const;
+	void sendController(
+			MidiController ctrl, int channel, int (&controller)[2]) const;
+
+	void sendController(
+			MidiController ctrl, int channel, CoarseFine& cf) const {
+		int vals[2] = {cf.coarse, cf.fine};
+		sendController(ctrl, channel, vals);
+	}
 
 	//! Send the current event to the XMidiSequenceHandler
 	void sendEvent();

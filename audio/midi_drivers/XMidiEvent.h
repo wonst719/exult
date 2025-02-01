@@ -1,7 +1,7 @@
 
 /*
 Copyright (C)=  2003,  The Pentagram Team
-Copyright (C)=  2010,-2022  The Exult Team
+Copyright (C)=  2010-2025  The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,23 +24,24 @@ USA.
 
 // Midi Status Bytes
 enum class MidiStatus {
-	NoteOff     = 0x80,
-	NoteOn      = 0x90,
-	Aftertouch  = 0xa0,
-	Controller  = 0xb0,
-	Program     = 0xc0,
-	ChannelTouch    = 0xd0,
-	PitchWheel  = 0xe0,
-	Sysex       = 0xf0,
-	ChannelMask = 0xf,
-	TypeMask = 0xf0,
+	NoteOff      = 0x80,
+	NoteOn       = 0x90,
+	Aftertouch   = 0xa0,
+	Controller   = 0xb0,
+	Program      = 0xc0,
+	ChannelTouch = 0xd0,
+	PitchWheel   = 0xe0,
+	Sysex        = 0xf0,
+	ChannelMask  = 0xf,
+	TypeMask     = 0xf0,
 };
 
 //
-// Midi status is 2 4 bit values so it is really useful if we have operator & to do masking
+// Midi status is 2 4 bit values so it is really useful if we have operator & to
+// do masking
 //
 
-template<typename Tint>
+template <typename Tint>
 MidiStatus operator&(Tint left, MidiStatus right) {
 	return MidiStatus(left & (int(right)));
 }
@@ -68,7 +69,7 @@ MidiStatus operator&(MidiStatus left, Tint right) {
 // Locks are automatically released when the sequences finishes playing
 //
 
-enum class MidiController  {
+enum class MidiController {
 	FineOffset           = 32,
 	Volume               = 7,
 	VolumeFine           = Volume + FineOffset,
@@ -87,7 +88,7 @@ enum class MidiController  {
 	Sustain              = 64,
 	Effect               = 91,
 	Chorus               = 93,
-	XChanLock            = 0x6e,	// XMIDI Channel Lock
+	XChanLock            = 0x6e,    // XMIDI Channel Lock
 	XChanLockProtect     = 0x6f,    // XMIDI Channel Lock Protect
 	XVoiceProtect        = 0x70,    // XMIDI Voice Protect
 	XTimbreProtect       = 0x71,    // XMIDI Timbre Protect
@@ -102,33 +103,85 @@ enum class MidiController  {
 	AllNotesOff = 0x7B,    // Immediately stop all notes excluding sustained
 };
 
+#include "XMidiRecyclable.h"
 #include "common_types.h"
+#include "span.h"
 
 #include <ostream>
 // Maximum number of for loops we'll allow (used by LowLevelMidiDriver)
 // The specs say=  4,, so that is what we;ll use
 #define XMIDI_MAX_FOR_LOOP_COUNT 4
 
-struct XMidiEvent {
-	int           time;
-	unsigned char status;
+struct XMidiEvent : public XMidiRecyclable<XMidiEvent> {
+	int           time   = 0;
+	unsigned char status = 0;
 
 	MidiStatus getStatusType() {
 		return status & MidiStatus::TypeMask;
 	}
 
-	int getChannel()
-	{
+	int getChannel() {
 		return status & int(MidiStatus::ChannelMask);
-
 	}
 
-	unsigned char data[2];
+	// XMidiEvent()
+	//{
+	//  Zero out the ex union
+	// std::memset(&ex, 0, sizeof(ex));
+	//}
+
+	unsigned char data[2] = {0, 0};
 
 	union {
 		struct {
-			uint32         len;       // Length of SysEx Data
-			unsigned char* buffer;    // SysEx Data
+			uint32 len;    // Length of SysEx Data
+
+			// SysEx Data , uses fixed sized buffer if len fits in fixed or uses
+			// dynamic if more needed
+			union {
+				uint8* dynamic;
+				uint8  fixed[32];    // Fixed size array for SysEx Data
+			} buffer_u;
+
+			uint8* buffer() {
+				if (len == 0) {
+					return nullptr;
+				} else if (len <= std::size(buffer_u.fixed)) {
+					return buffer_u.fixed;
+				} else {
+					return buffer_u.dynamic;
+				}
+			}
+
+			tcb::span<uint8> as_span() {
+				return tcb::span(buffer(), len);
+			}
+
+			void free_buffer() {
+				set_len(0);
+			}
+
+			uint8* set_len(uint32 newlen) {
+				// if no change do nothing
+				if (newlen == len) {
+					return buffer();
+				}
+
+				bool olddynamic = len > std::size(buffer_u.fixed);
+				bool newdynamic = newlen > std::size(buffer_u.fixed);
+				// free existing dynamic buffer if it is too small or not needed
+				if (olddynamic && (newlen > len || !newdynamic)) {
+					delete[] buffer_u.dynamic;
+				}
+
+				// allocate a new dynamic buffer if needed
+				if (newdynamic && newlen > len) {
+					buffer_u.dynamic = new unsigned char[newlen];
+					CERR("allocating dynamic sysex buffer of size " << newlen);
+				}
+				len = newlen;
+				return buffer();
+			}
 		} sysex_data;
 
 		struct {
@@ -142,11 +195,9 @@ struct XMidiEvent {
 			XMidiEvent* next_branch;    // Next branch index contoller
 		} branch_index;
 
-	} ex;
+	} ex = {};
 
-	XMidiEvent* next;
-
-	XMidiEvent* next_patch_bank;    // next patch or bank change event
+	XMidiEvent* next_patch_bank = nullptr;    // next patch or bank change event
 
 	void FreeThis() {
 		// Free all our children first. Using a loop instead of recursive
@@ -156,12 +207,14 @@ struct XMidiEvent {
 			e->next = nullptr;
 			e->FreeThis();
 		}
+		// clear our next pointer
+		next = nullptr;
 
 		// We only do this with sysex
-		if (getStatusType() == MidiStatus::Sysex && ex.sysex_data.buffer) {
-			delete[] ex.sysex_data.buffer;
+		if (getStatusType() == MidiStatus::Sysex) {
+			ex.sysex_data.free_buffer();
 		}
-		delete this;
+		XMidiRecyclable::FreeThis();
 	}
 
 	void DumpText(std::ostream& out) {
@@ -287,23 +340,26 @@ struct XMidiEvent {
 			}
 		} break;
 
-		case MidiStatus::Sysex:
-			out << "sysex " << ex.sysex_data.len << " bytes " << std::hex;
+		case MidiStatus::Sysex: {
+			auto systex_buffer = ex.sysex_data.as_span();
+			out << "sysex " << systex_buffer.size_bytes() << " bytes "
+				<< std::hex;
 
-			for (uint32 i = 0; i < ex.sysex_data.len; i++) {
-				out << " " << int(ex.sysex_data.buffer[i]) << " ";
+			// Hex dump
+			for (auto c : systex_buffer) {
+				out << " " << int(c) << " ";
 			}
+			// printable characters
 			out << std::dec;
-			for (uint32 i = 0; i < ex.sysex_data.len; i++) {
-				out << " " << ex.sysex_data.buffer[i];
+			for (auto c : systex_buffer) {
+				out << char(std::isprint(c) ? c : ' ');
 			}
-
-			break;
+		} break;
 
 			// default should never happen
 		default:
-			out << "Status_" << int(getStatusType()) << " " << int(data[0]) << " "
-				<< int(data[1]);
+			out << "Status_" << int(getStatusType()) << " " << int(data[0])
+				<< " " << int(data[1]);
 			break;
 		}
 

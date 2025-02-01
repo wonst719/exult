@@ -1,6 +1,6 @@
 /*
 Copyright (C) 2003  The Pentagram Team
-Copyright (C) 2010-2022  The Exult Team
+Copyright (C) 2010-2025  The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,8 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class ODataSource;
 
 #include "XMidiEvent.h"
+#include "XMidiRecyclable.h"
 
-class XMidiEventList {
+class XMidiEventList : public XMidiRecyclable<XMidiEventList> {
 	int    counter = 0;
 	uint32 length  = 0;
 
@@ -43,6 +44,8 @@ public:
 
 	//! Patch and Bank change events
 	XMidiEvent* x_patch_bank = nullptr;
+
+	XMidiEventList() {}
 
 	//! Write the list to a DataSource
 	int write(ODataSource* dest);

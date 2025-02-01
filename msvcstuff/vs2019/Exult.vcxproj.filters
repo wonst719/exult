@@ -1444,6 +1444,9 @@
     <ClInclude Include="..\..\audio\midi_drivers\FluidSynthMidiDriver.h">
       <Filter>audio\midi_drivers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\audio\midi_drivers\XMidiRecyclable.h">
+      <Filter>audio\midi_drivers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\.git\index" />

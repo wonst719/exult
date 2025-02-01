@@ -1,6 +1,6 @@
 /*
 Copyright (C) 2003-2005  The Pentagram Team
-Copyright (C) 2009-2022  The Exult Team
+Copyright (C) 2009-2025  The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -107,8 +107,9 @@ private:
 
 	void AdjustTimings(uint32 ppqn);    // This is used by Midi's ONLY!
 	void ApplyFirstState(first_state& fs, int chan_mask);
-	// Space out the initial events before the first note on so there is at least one tick between them
-	void SpreadinitialEvents();
+	// Space out events where it makes sense to reduce simultaneous events
+	// MT32 doesn't like too many simultaneous controller change events
+	void SpreadEvents();
 
 	int ConvertNote(
 			const int time, const unsigned char status, IDataSource* source,

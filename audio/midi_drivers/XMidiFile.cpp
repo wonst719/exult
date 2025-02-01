@@ -1,6 +1,6 @@
 /*
 Copyright (C) 2003-2005  The Pentagram Team
-Copyright (C) 2006-2022  The Exult Team
+Copyright (C) 2006-2025  The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
+#include <utility>
 
 using std::atof;
 using std::atoi;
@@ -630,6 +631,20 @@ static RhythmSetupData U7PercussionData[] = {
 
 GammaTable<unsigned char> XMidiFile::VolumeCurve(128);
 
+//
+// XMidiRecyclable static variables for XMidiEvent
+// Placed here because XMidiEvent doesn't have it's own source file
+//
+
+// XMidiEvent FreeList
+template <>
+XMidiRecyclable<XMidiEvent>::FreeList
+		XMidiRecyclable<XMidiEvent>::FreeList::instance{};
+
+// we always use the mutex from the XMidiEvent specialization
+template <>
+std::unique_ptr<std::recursive_mutex> XMidiRecyclable<XMidiEvent>::Mutex{};
+
 // Constructor
 XMidiFile::XMidiFile(IDataSource* source, int pconvert)
 		: num_tracks(0), events(nullptr), convert_type(pconvert),
@@ -669,7 +684,7 @@ void XMidiFile::CreateNewEvent(int time) {
 	// Update length if needed
 	length = std::max(length, time);
 	if (!list) {
-		list = current = new XMidiEvent{};
+		list = current = XMidiEvent::Create();
 		if (time > 0) {
 			current->time = time;
 		}
@@ -677,7 +692,7 @@ void XMidiFile::CreateNewEvent(int time) {
 	}
 
 	if (time < 0 || list->time > time) {
-		auto* event = new XMidiEvent{};
+		auto* event = XMidiEvent::Create();
 		event->next = list;
 		list = current = event;
 		return;
@@ -689,7 +704,7 @@ void XMidiFile::CreateNewEvent(int time) {
 
 	while (current->next) {
 		if (current->next->time > time) {
-			auto* event = new XMidiEvent{};
+			auto* event = XMidiEvent::Create();
 
 			event->next   = current->next;
 			current->next = event;
@@ -701,7 +716,7 @@ void XMidiFile::CreateNewEvent(int time) {
 		current = current->next;
 	}
 
-	current->next = new XMidiEvent{};
+	current->next = XMidiEvent::Create();
 	current       = current->next;
 	current->time = time;
 }
@@ -774,7 +789,7 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 
 		// Copy Patch Change Event
 		temp           = patch;
-		patch          = new XMidiEvent{};
+		patch          = XMidiEvent::Create();
 		patch->time    = temp->time;
 		patch->status  = channel | (int(MidiStatus::Program));
 		patch->data[0] = temp->data[0];
@@ -787,7 +802,7 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 		}
 
 		temp         = vol;
-		vol          = new XMidiEvent{};
+		vol          = XMidiEvent::Create();
 		vol->status  = channel | (int(MidiStatus::Controller));
 		vol->data[0] = 7;
 
@@ -810,7 +825,7 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 
 		temp = bank;
 
-		bank         = new XMidiEvent{};
+		bank         = XMidiEvent::Create();
 		bank->status = channel | (int(MidiStatus::Controller));
 
 		if (!temp) {
@@ -827,7 +842,7 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 		}
 
 		temp         = pan;
-		pan          = new XMidiEvent{};
+		pan          = XMidiEvent::Create();
 		pan->status  = channel | (int(MidiStatus::Controller));
 		pan->data[0] = 10;
 
@@ -838,14 +853,14 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 		}
 
 		if (do_reverb) {
-			reverb          = new XMidiEvent{};
-			reverb->status  = channel | (int(MidiStatus::Controller) );
+			reverb          = XMidiEvent::Create();
+			reverb->status  = channel | (int(MidiStatus::Controller));
 			reverb->data[0] = 91;
 			reverb->data[1] = reverb_value;
 		}
 
 		if (do_chorus) {
-			chorus          = new XMidiEvent{};
+			chorus          = XMidiEvent::Create();
 			chorus->status  = channel | (int(MidiStatus::Controller));
 			chorus->data[0] = 93;
 			chorus->data[1] = chorus_value;
@@ -879,20 +894,68 @@ void XMidiFile::ApplyFirstState(first_state& fs, int chan_mask) {
 	}
 }
 
-void XMidiFile::SpreadinitialEvents() {
+void XMidiFile::SpreadEvents() {
 	int  offset      = 0;
 	bool hit_note_on = false;
+
+	// This is the event that end the current span used in phase2
+	// The initial value for this is the note on event in phase 1
+	XMidiEvent* span_end = list;
+
+	// Phase 1 Add a gap between all events before first note on and offset all
+	// subsequent events
 	for (XMidiEvent* event = list; event; event = event->next) {
 		event->time += offset;
 		// increment offset if we havent hit a note on
 		if (!hit_note_on && event->getStatusType() == MidiStatus::NoteOn) {
+			span_end    = event;
 			hit_note_on = true;
 
+		} else if (!hit_note_on) {
 			offset++;
 		}
 	}
-
+	// Update length
 	length += offset;
+
+	// Phase 2 Make sure there are gaps between all non time critical events but
+	// no not alter time critical events
+	for (XMidiEvent* span_start = span_end; span_start; span_start = span_end) {
+		int gapcount = 1;
+		int endtime  = length;
+		// clear span end
+		span_end = nullptr;
+
+		// Search for span end and count events
+		for (XMidiEvent* event = span_start->next; event; event = event->next) {
+			if (!event->is_time_critical()) {
+				gapcount++;
+			} else {
+				span_end = event;
+				endtime  = event->time;
+
+				break;
+			}
+		}
+
+		if (gapcount > 1) {
+			// gap for betweeen events;
+			int gap = (endtime - span_start->time) / gapcount;
+
+			if (gap > 0) {
+				gapcount = 1;
+				// Adjust times
+				for (XMidiEvent* event = span_start->next; event;
+					 event             = event->next) {
+					if (!event->is_time_critical()) {
+						event->time = span_start->time + gapcount++ * gap;
+					} else {
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 
 //
@@ -936,7 +999,7 @@ void XMidiFile::AdjustTimings(uint32 ppqn) {
 		if (event->status <= 0x9F) {
 			// Add if it's a note on and remove if it's a note off
 			if (event->getStatusType() == MidiStatus::NoteOn
-&& event->data[1]) {
+				&& event->data[1]) {
 				notes.Push(event);
 			} else {
 				XMidiEvent* prev = notes.FindAndPop(event);
@@ -946,13 +1009,13 @@ void XMidiFile::AdjustTimings(uint32 ppqn) {
 			}
 
 		} else if (event->status == 0xFF && event->data[0] == 0x51) {
-			tempo = (event->ex.sysex_data.buffer[0] << 16)
-					+ (event->ex.sysex_data.buffer[1] << 8)
-					+ event->ex.sysex_data.buffer[2];
+			auto sysex_buffer = event->ex.sysex_data.buffer();
+			tempo             = (sysex_buffer[0] << 16) + (sysex_buffer[1] << 8)
+					+ sysex_buffer[2];
 
-			event->ex.sysex_data.buffer[0] = 0x07;
-			event->ex.sysex_data.buffer[1] = 0xA1;
-			event->ex.sysex_data.buffer[2] = 0x20;
+			sysex_buffer[0] = 0x07;
+			sysex_buffer[1] = 0xA1;
+			sysex_buffer[2] = 0x20;
 		}
 	}
 
@@ -1023,7 +1086,8 @@ int XMidiFile::ConvertEvent(
 				 && bank127[status & 0xF])
 				|| convert_type == XMIDIFILE_CONVERT_MT32_TO_GS) {
 			CreateNewEvent(time);
-			current->status  = int(MidiStatus::Controller) | (status & int(MidiStatus::ChannelMask));
+			current->status = int(MidiStatus::Controller)
+							  | (status & int(MidiStatus::ChannelMask));
 			current->data[0] = 0;
 			current->data[1] = mt32asgs[data * 2 + 1];
 
@@ -1115,8 +1179,7 @@ int XMidiFile::ConvertEvent(
 	current->data[1] = source->read1();
 
 	// Volume modify the volume controller, only if converting
-	if (convert_type
-		&& MidiStatus(current->getStatusType()) == MidiStatus::Controller
+	if (convert_type && current->getStatusType() == MidiStatus::Controller
 		&& current->data[0] == 7) {
 		current->data[1] = VolumeCurve[current->data[1]];
 	}
@@ -1198,20 +1261,15 @@ int XMidiFile::ConvertSystemMessage(
 		current->data[0] = source->read1();
 		i++;
 	}
-
-	i += GetVLQ(source, current->ex.sysex_data.len);
+	uint32 len;
+	i += GetVLQ(source, len);
+	auto sysex_buffer = current->ex.sysex_data.set_len(len);
 
 	if (!current->ex.sysex_data.len) {
-		current->ex.sysex_data.buffer = nullptr;
 		return i;
 	}
 
-	current->ex.sysex_data.buffer
-			= new unsigned char[current->ex.sysex_data.len];
-
-	source->read(
-			reinterpret_cast<char*>(current->ex.sysex_data.buffer),
-			current->ex.sysex_data.len);
+	source->read(reinterpret_cast<char*>(sysex_buffer), len);
 
 	return i + current->ex.sysex_data.len;
 }
@@ -1225,10 +1283,9 @@ int XMidiFile::CreateMT32SystemMessage(
 	// SysEx status
 	current->status = int(MidiStatus::Sysex);
 
-	// Allocate the buffer
-	current->ex.sysex_data.len  = sysex_data_start + len + 2;
-	unsigned char* sysex_buffer = current->ex.sysex_data.buffer
-			= new unsigned char[current->ex.sysex_data.len];
+	// Set the buffer len, will allocate a needed
+	auto sysex_buffer
+			= current->ex.sysex_data.set_len(sysex_data_start + len + 2);
 
 	// MT32 Sysex Header
 	sysex_buffer[0] = 0x41;    // Roland SysEx ID
@@ -1392,7 +1449,7 @@ int XMidiFile::ExtractTracksFromXmi(IDataSource* source) {
 
 		// Convert it
 		const int chan_mask = ConvertFiletoList(source, true, fs);
-		SpreadinitialEvents();
+		SpreadEvents();
 		// Apply the first state
 		//		ApplyFirstState(fs, chan_mask);
 
@@ -1457,7 +1514,7 @@ int XMidiFile::ExtractTracksFromMid(
 		if (!type1) {
 			ApplyFirstState(fs, chan_mask);
 			AdjustTimings(ppqn);
-			SpreadinitialEvents();
+			SpreadEvents();
 			events[num]->events       = list;
 			events[num]->branches     = branches;
 			events[num]->chan_mask    = chan_mask;
@@ -1480,7 +1537,7 @@ int XMidiFile::ExtractTracksFromMid(
 	if (type1) {
 		ApplyFirstState(fs, chan_mask);
 		AdjustTimings(ppqn);
-		SpreadinitialEvents();
+		SpreadEvents();
 		events[0]->events       = list;
 		events[0]->branches     = branches;
 		events[0]->chan_mask    = chan_mask;
@@ -1796,8 +1853,8 @@ int XMidiFile::ExtractTracksFromU7V(IDataSource* source) {
 
 	i = 0;
 	while (U7PercussionNotes[i]) {
-		// Work out how many we can send at a time
-		for (j = i + 1; U7PercussionNotes[j]; j++) {
+		// Work out how many we can send at a time max 6
+		for (j = i + 1; U7PercussionNotes[j] && j < i + 6; j++) {
 			// If the next isn't actually the next, then we can't upload it
 			if (U7PercussionNotes[j - 1] + 1 != U7PercussionNotes[j]) {
 				break;
@@ -1942,7 +1999,7 @@ void XMidiFile::CreateEventList() {
 	auto* newevents = new XMidiEventList*[num_tracks];    // new XMidiEvent
 														  // *[info.tracks];
 	for (int i = 0; i < num_tracks; i++) {
-		newevents[i] = new XMidiEventList{};
+		newevents[i] = XMidiEventList::Create();
 	}
 	events = newevents;
 }

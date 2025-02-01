@@ -44,6 +44,7 @@ libmididrv_la_SOURCES =	\
 	XMidiFile.cpp		\
 	XMidiFile.h		\
 	XMidiNoteStack.h	\
+	XMidiRecyclable.h \
 	XMidiSequence.cpp	\
 	XMidiSequence.h		\
 	XMidiSequenceHandler.h	\

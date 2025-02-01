@@ -503,6 +503,7 @@ echo.  &gt;&gt;..\..\gitinfo.h</Command>
     <ClInclude Include="..\..\audio\midi_drivers\XMidiEventList.h" />
     <ClInclude Include="..\..\audio\midi_drivers\XMidiFile.h" />
     <ClInclude Include="..\..\audio\midi_drivers\XMidiNoteStack.h" />
+    <ClInclude Include="..\..\audio\midi_drivers\XMidiRecyclable.h" />
     <ClInclude Include="..\..\audio\midi_drivers\XMidiSequence.h" />
     <ClInclude Include="..\..\audio\midi_drivers\XMidiSequenceHandler.h" />
     <ClInclude Include="..\..\audio\OggAudioSample.h" />

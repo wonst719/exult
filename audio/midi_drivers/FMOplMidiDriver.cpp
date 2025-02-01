@@ -563,6 +563,29 @@ void FMOplMidiDriver::send(uint32 b) {
 				}
 			}
 			break;
+		case MidiController::ResetControllers: /* Reset all controllers*/
+			// we'll just call ourself with all the controllers'
+			// default values
+			send(channel | (int(MidiStatus::PitchWheel)) | 0x400000);
+			send(channel | (int(MidiStatus::Controller))
+				 | (int(MidiController::Bank) << 8) | 0);
+			send(channel | (int(MidiStatus::Controller))
+				 | (int(MidiController::ModWheel) << 8) | 0x40);
+			send(channel | (int(MidiStatus::Controller))
+				 | (int(MidiController::Volume) << 8) | 127);
+			send(channel | (int(MidiStatus::Controller))
+				 | (int(MidiController::Expression) << 8) | 127);
+			send(channel | (int(MidiStatus::Controller))
+				 | (int(MidiController::Pan) << 8) | 64);
+			send(channel | (int(MidiStatus::Controller))
+				 | (int(MidiController::Sustain) << 8) | 0);
+			send(channel | (int(MidiStatus::Controller))
+				 | (int(MidiController::Effect) << 8) | 0);
+			send(channel | (int(MidiStatus::Controller))
+				 | (int(MidiController::Chorus) << 8) | 0);
+			send(channel | (int(MidiStatus::Controller))
+				 | (int(MidiController::XBankChange) << 8) | 0);
+			break;
 		case MidiController::Effect: /* Extended depth effect */
 			// debug(1,
 			//			"MIDI sub-command 0xB0 (Control Change) case %02X

@@ -1,6 +1,6 @@
 /*
 Copyright (C) 2003  The Pentagram Team
-Copyright (C) 2007-2022  The Exult Team
+Copyright (C) 2007-2025  The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,6 +31,12 @@ using std::size_t;
 using std::string;
 
 // #include "gamma.h"
+
+// XMidiEvent FreeList
+template <>
+
+XMidiRecyclable<XMidiEventList>::FreeList
+		XMidiRecyclable<XMidiEventList>::FreeList::instance{};
 
 //
 // XMidiEventList stuff
@@ -174,9 +180,10 @@ uint32 XMidiEventList::convertListToMTrk(ODataSource* dest) {
 			i += putVLQ(dest, event->ex.sysex_data.len);
 
 			if (event->ex.sysex_data.len) {
+				auto sysex_buffer = event->ex.sysex_data.buffer();
 				for (j = 0; j < event->ex.sysex_data.len; j++) {
 					if (dest) {
-						dest->write1(event->ex.sysex_data.buffer[j]);
+						dest->write1(sysex_buffer[j]);
 					}
 					i++;
 				}
@@ -214,9 +221,11 @@ uint32 XMidiEventList::convertListToMTrk(ODataSource* dest) {
 
 void XMidiEventList::decrementCounter() {
 	if (--counter < 0) {
+		// Lock the mutex here
+		auto lock = lockMutex();
 		events->FreeThis();
 		events = nullptr;
-		delete this;
+		FreeThis();
 	}
 }
 
