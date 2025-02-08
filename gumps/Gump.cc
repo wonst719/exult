@@ -106,8 +106,8 @@ void Gump::set_pos() {
 	y         = 0;
 	auto rect = get_rect();
 
-	x = (gwin->get_width() - rect.w) / 2 + rect.x;
-	y = (gwin->get_height() - rect.h) / 2 + rect.y;
+	x = (gwin->get_width() - rect.w) / 2 - rect.x;
+	y = (gwin->get_height() - rect.h) / 2 - rect.y;
 }
 
 void Gump::set_pos(int newx, int newy) {    // Set new spot on screen.
