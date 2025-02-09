@@ -51,7 +51,11 @@ public:
 		return true;
 	}
 
-	virtual bool run() override;
+	void close() override {
+		done = true;
+	}
+
+	bool run() override;
 
 	bool is_draggable() const override {
 		return !no_dragging;
@@ -85,7 +89,7 @@ private:
 	int lastgood_x, lastgood_y;
 
 
-	public:
+public:
 	// Colours used to draw the background.
 	struct ProceduralColours {
 		uint8 border     = 0;      // black
@@ -114,7 +118,7 @@ protected:
 
 	TileRect procedural_background;
 
-	ShapeID checkmark_background;		// Change as desired
+	ShapeID checkmark_background;	// Change as desired
 	ProceduralColours procedural_colours;
 
 	//! Set ths gump to have a procedurally drawn background
