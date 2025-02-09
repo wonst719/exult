@@ -51,7 +51,7 @@ public:
 		return true;
 	}
 
-	virtual bool run();
+	virtual bool run() override;
 
 	bool is_draggable() const override {
 		return !no_dragging;

@@ -111,6 +111,10 @@ public:
 	}
 
 	virtual void close() {}
+
+	virtual bool run() {
+		return false;
+	}
 };
 
 /*
@@ -203,7 +207,7 @@ public:
 			int sy = -1, bool dont_check = false, bool combine = false);
 	virtual void remove(Game_object* obj);
 	// Paint it and its contents.
-	void paint_elems();
+	virtual void paint_elems();
 	void paint() override;
 	// Close (and delete).
 	void close() override;
