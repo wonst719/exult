@@ -31,14 +31,12 @@ jobs:
       - name: Check if artifacts downloaded
         shell: bash
         run: |
-
           if [ -f Exult.exe ]; then
             echo HAVE_WINDOWS_SNAPSHOT=true >> $GITHUB_ENV
           else
             echo HAVE_WINDOWS_SNAPSHOT=false >> $GITHUB_ENV
             echo Couldn\'t find Exult.exe for Windows snapshot. No release will be made
           fi
-            
           if [ -f exult-snapshot-signed.apk ]; then
             echo HAVE_ANDROID_SNAPSHOT=true >> $GITHUB_ENV
           else
