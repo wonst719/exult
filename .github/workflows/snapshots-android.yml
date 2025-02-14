@@ -96,16 +96,14 @@ jobs:
           rm ./app/build/outputs/apk/release/app-release-unsigned.apk
       - name: Sign APK
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
-        uses: Wandalen/wretry.action@v3.8.0
+        uses: noriban/sign-android-release@v5.1
         id: sign_app
         with:
-          action: noriban/sign-android-release@v5.1
-          with: |
-            releaseDirectory: ./../build/android/app/build/outputs/apk/release
-            signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-            alias: ${{ secrets.ANDROID_KEY_ALIAS }}
-            keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-            keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          releaseDirectory: ./../build/android/app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
       - name: Save release artifact
         if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: cp ${{steps.sign_app.outputs.signedReleaseFile}} ./android-snapshot/exult-snapshot-signed.apk
