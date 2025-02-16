@@ -33,9 +33,11 @@ the App Store (https://apps.apple.com/de/app/xcode/id497799835?l=en&mt=12).
 
 In order to compile Exult, you need to install several Unix packages.
 If you are an expert, you may want to install them manually; for all others,
-we recommend installing them via the package manager MacPorts (http://www.macports.org/).
+we recommend installing them via the package manager MacPorts
+(http://www.macports.org/).
 Alternative package managers are Fink (https://www.finkproject.org) or 
-Homebrew (https://brew.sh/).
+Homebrew (https://brew.sh/) (however, neitherFink nor Homebrew install the 
+necessary libraries to compile the Gimp plug-in).
 
 With MacPorts install:
   autoconf-archive
@@ -85,8 +87,8 @@ If you want to compile Exult Studio, you have to install these packages:
 This will cause many other packages required by gtk3 to
 be installed. 
 
-After that, you have to re-run configure and make (remember to do the export commands 
-to find the headers):
+After that, you have to re-run configure and make (remember to do the export 
+commands to find the headers):
   ./configure --enable-exult-studio --enable-exult-studio-support
   make
 
@@ -133,8 +135,30 @@ For building a disk image for Exult Studio, run:
   make studiodmg
 
 
-How to build the Gimp plugin
-----------------------------
+How to build the Gimp 3.0 plugin
+--------------------------------
+
+Unfortunately there is no easy way to build the plugin for Gimp 3.0 at the 
+moment as MacPorts only provides Gimp 3.0 RC1 and its install is broken.
+
+Once the package in MacPorts is fixed, follow these instructions.
+
+With MacPorts install:
+  gimp3 +quartz
+
+Then re-run configure and make
+  ./configure --enable-tools --enable-gimp-plugin
+  make
+  make install
+
+The Gimp plugin "u7shp" will be installed into 
+~/Library/Application Support/GIMP/3.0/plug-ins/u7shp.
+Note that this is again not  static a  build of the plugin and relies on your 
+MacPorts installation.
+So if you uninstall MacPorts the Plugin will cease to work.
+
+How to build the Gimp 2.x plugin
+--------------------------------
 
 With MacPorts install:
   gimp2 +quartz
@@ -143,7 +167,9 @@ Then re-run configure and make
   ./configure --enable-tools --enable-gimp-plugin
   make
 
-You will then find the Gimp plugin "u7shp" in the mapedit folder of our source. For the Gimp
-to use it you need to copy it into ~/Library/Application Support/GIMP/2.10/plug-ins.
-Note that this is again not a static build of the plugin and relies on your MacPorts installation.
+You will then find the Gimp plugin "u7shp" in the mapedit folder of our source. 
+For the Gimp to use it you need to copy it into 
+~/Library/Application Support/GIMP/2.10/plug-ins.
+Note that this is again not  static a  build of the plugin and relies on your 
+MacPorts installation.
 So if you uninstall MacPorts the Plugin will cease to work.
