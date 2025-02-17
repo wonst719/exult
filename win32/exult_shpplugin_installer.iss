@@ -53,8 +53,6 @@ PrivilegesRequired=none
 ; The official Gimp 3 is built with CLang, but the Shape plugin is built with GCC, this we need the DLLs libgcc_s_seh and libstdc++
 ; 32-bit files
 Source: "GimpPlugin-i686\u7shp.exe"; DestDir: "{userappdata}\gimp\3.0\plug-ins\u7shp"; Flags: ignoreversion; Check: not Is64BitGIMP
-Source: "GimpPlugin-i686\libgcc_s_dw2-1.dll"; DestDir: "{userappdata}\gimp\3.0\plug-ins\u7shp"; Flags: ignoreversion; Check: not Is64BitGIMP
-Source: "GimpPlugin-i686\libstdc++-6.dll"; DestDir: "{userappdata}\gimp\3.0\plug-ins\u7shp"; Flags: ignoreversion; Check: not Is64BitGIMP
 ; 64-bit files
 Source: "GimpPlugin-x86_64\u7shp.exe"; DestDir: "{userappdata}\gimp\3.0\plug-ins\u7shp"; Flags: ignoreversion; Check: Is64BitGIMP
 Source: "GimpPlugin-x86_64\libgcc_s_seh-1.dll"; DestDir: "{userappdata}\gimp\3.0\plug-ins\u7shp"; Flags: ignoreversion; Check: Is64BitGIMP
