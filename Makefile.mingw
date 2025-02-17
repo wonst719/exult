@@ -756,7 +756,7 @@ plugininstall: plugin
 	# need to do this step.
 	#$(call copy_dlls_for_exe, u7shp$(EXEEXT), $(GIMPPATH))
 	# But we do need the GCC runtime & C++ libraries for CLang built Gimp 3, for a GCC built plugin.
-	for ff in $$($(MSYSTEM_PREFIX)/bin/ntldd u7shp$(EXEEXT) | grep -oE 'libgcc_s_seh-1\.dll|libstdc\+\+-6\.dll' | sort -u); do cp $(MSYSTEM_PREFIX)/bin/$$ff $(GIMPPATH)/$$ff; done
+	for ff in $$($(MSYSTEM_PREFIX)/bin/ntldd u7shp$(EXEEXT) | grep -oE 'libgcc_s_seh-1\.dll|libgcc_s_dw2-1\.dll|libstdc\+\+-6\.dll' | sort -u); do cp -v $(MSYSTEM_PREFIX)/bin/$$ff $(GIMPPATH)/$$ff; done
 
 plugindist: GIMPPATH:=$(DISTPATH)/GimpPlugin-$(MSYSTEM_CARCH)
 plugindist: plugin plugininstall
