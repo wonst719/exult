@@ -75,8 +75,8 @@ mapedit/exult_studio
 mapedit/u7shp
 tools/cmanip
 tools/expack
-tools/gnome_shp_thumbnailer
-tools/gnome_u7shapes.thumbnailer
+tools/exult_shp_thumbnailer
+tools/exult_u7shapes.thumbnailer
 tools/ipack
 tools/mklink
 tools/rip

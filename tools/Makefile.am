@@ -19,13 +19,13 @@ IPACK = ipack
 else
 IPACK =
 endif
-GTHUMB=
+EXULT_THUMB=
 endif
 
-if BUILD_GTHUMB
-GTHUMB=gnome_shp_thumbnailer
+if BUILD_EXULT_THUMB
+EXULT_THUMB=exult_shp_thumbnailer
 else
-GTHUMB=
+EXULT_THUMB=
 endif
 
 if BUILD_TOOLS
@@ -36,7 +36,7 @@ EXTRATOOLS =
 NOINSTTOOLS =
 endif
 
-bin_PROGRAMS = $(EXPACK_BIN) $(EXTRATOOLS) $(IPACK) $(GTHUMB)
+bin_PROGRAMS = $(EXPACK_BIN) $(EXTRATOOLS) $(IPACK) $(EXULT_THUMB)
 noinst_PROGRAMS = $(NOINSTTOOLS)
 
 expack_SOURCES = \
@@ -55,34 +55,34 @@ ipack_LDADD = \
 	$(top_builddir)/imagewin/libimagewin.la \
 	$(PNG_LIBS) $(ZLIB_LIBS) $(SYSLIBS)
 
-gnome_shp_thumbnailer_SOURCES = \
-	gnome_shp_thumbnailer.cc
+exult_shp_thumbnailer_SOURCES = \
+	exult_shp_thumbnailer.cc
 
-gnome_shp_thumbnailer_LDADD = \
+exult_shp_thumbnailer_LDADD = \
 	$(top_builddir)/shapes/libshapes.la \
 	$(top_builddir)/imagewin/libimagewin.la \
 	$(top_builddir)/files/libu7file.la \
 	$(PNG_LIBS) $(ZLIB_LIBS) $(SYSLIBS) $(GDK_PIXBUF_LIBS)
 
-if BUILD_GTHUMB
-# The actual executable "gnome_shp_thumbnailer" is in <Exult>/bin
+if BUILD_EXULT_THUMB
+# The actual executable "exult_shp_thumbnailer" is in <Exult>/bin
 #  It needs two files visible from XDG_DATA_HOME or one of XDG_DATA_DIRS :
 #   <XDG_DATA_HOME or one of XDG_DATA_DIRS>/mime/packages/x-shapefile.xml
 #     Defines the MIME type "image/x-shapefile"
-#   <XDG_DATA_HOME or one of XDG_DATA_DIRS>/thumbnailers/gnome_u7shapes.thumbnailer
-#     Thumbnails the U7 Shapes with "gnome_shp_thumbnailers"
+#   <XDG_DATA_HOME or one of XDG_DATA_DIRS>/thumbnailers/exult_u7shapes.thumbnailer
+#     Thumbnails the U7 Shapes with "exult_shp_thumbnailer"
 # The installation XDG_DATA_HOME or XDG_DATA_DIRS are chosen using
-#  --enable-gnome-shp-thumbnailer=Target
+#  --enable-shp-thumbnailer=Target
 #   with Target "yes" or "system" ( default ) => /usr/share ( requires root )
 #   with Target "local"                       => /usr/local/share ( requires root )
 #   with Target "user"                        => ~/.local/share
 #   with Target "ingame"                      => <Exult>/share ( requires setting this folder in XDG_DATA_DIRS )
 #
-thumbnailerdir=$(DESTDIR)$(GTHUMB_PREFIX)/thumbnailers
-thumbnailer_in_files=$(top_srcdir)/tools/gnome_u7shapes.thumbnailer.in
+thumbnailerdir=$(DESTDIR)$(EXULT_THUMB_PREFIX)/thumbnailers
+thumbnailer_in_files=$(top_srcdir)/tools/exult_u7shapes.thumbnailer.in
 thumbnailer_DATA=$(thumbnailer_in_files:.thumbnailer.in=.thumbnailer)
-gnome_shp_thumbnailer_DATA=x-shapefile.xml
-gnome_shp_thumbnailerdir=$(DESTDIR)$(GTHUMB_PREFIX)/mime/packages
+exult_shp_thumbnailer_DATA=x-shapefile.xml
+exult_shp_thumbnailerdir=$(DESTDIR)$(EXULT_THUMB_PREFIX)/mime/packages
 
 # Rule to make the service file with bindir expanded
 $(thumbnailer_DATA): $(thumbnailer_in_files)
@@ -125,12 +125,12 @@ cmanip_LDADD = \
 	$(top_builddir)/files/libu7file.la \
 	$(SYSLIBS)
 
-if BUILD_GTHUMB
+if BUILD_EXULT_THUMB
 install-data-hook:
-	update-mime-database $(DESTDIR)$(GTHUMB_PREFIX)/mime || :
+	update-mime-database $(DESTDIR)$(EXULT_THUMB_PREFIX)/mime || :
 
 uninstall-hook:
-	update-mime-database $(DESTDIR)$(GTHUMP_PREFIX)/mime || :
+	update-mime-database $(DESTDIR)$(EXULT_THUMB_PREFIX)/mime || :
 else
 install-data-hook:
 uninstall-hook:
@@ -144,7 +144,7 @@ EXTRA_DIST = \
 	u7siflag.txt \
 	ucformat.txt \
 	expack.1 \
-	gnome_u7shapes.thumbnailer.in \
+	exult_u7shapes.thumbnailer.in \
 	ipack.1 \
 	ipack.txt \
 	shp2pcx.1 \
@@ -156,4 +156,4 @@ EXTRA_DIST = \
 	x-shapefile.xml \
 	expack.txt
 
-CLEANFILES = *~ gnome_u7shapes.thumbnailer
+CLEANFILES = *~ exult_u7shapes.thumbnailer

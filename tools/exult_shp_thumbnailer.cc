@@ -1,5 +1,6 @@
 /**
- ** gnome_shp_thumbnailer.cc - Create thumbnails for shp files in Nautilus.
+ ** exult_shp_thumbnailer.cc :
+ ** Create thumbnails for shp files in Gnome Nautilus or KDE Dolphin.
  **
  ** Written: 2/14/2010 - Marzo, with lots of code borrowed from ipack and from
  ** the Gimp plugin.
@@ -265,7 +266,7 @@ namespace {
 
 int main(int argc, char* argv[]) {
 	if (argc < 5) {
-		cerr << "Usage: gnome-shp-thumbnailer -s size inputfile outputfile"
+		cerr << "Usage: exult-shp-thumbnailer -s size inputfile outputfile"
 			 << endl;
 		return 1;
 	}

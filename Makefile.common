@@ -629,7 +629,7 @@ u7voice2syx$(EXEEXT) : tools/u7voice2syx.o $(FILE_OBJS)
 wuc$(EXEEXT) : tools/wuc.o tools/uctools.h usecode/bgintrinsics.h usecode/siintrinsics.h usecode/sibetaintrinsics.h
 	$(CXX) $(LDFLAGS) -o $(@) tools/wuc.o
 
-GTHUMB_OBJS:=\
+EXULT_THUMB_OBJS:=\
 	files/Flat.o \
 	files/Flex.o \
 	files/IFF.o \
@@ -642,10 +642,10 @@ GTHUMB_OBJS:=\
 	imagewin/imagebuf.o \
 	shapes/pngio.o \
 	shapes/vgafile.o \
-	tools/gnome_shp_thumbnailer.o
+	tools/exult_shp_thumbnailer.o
 
-gnome_shp_thumbnailer$(EXEEXT) : $(GTHUMB_OBJS)
-	$(CXX) $(LDFLAGS) -o $(@) $(GTHUMB_OBJS) $(GTK_LIBS) -lpng -lz
+exult_shp_thumbnailer$(EXEEXT) : $(EXULT_THUMB_OBJS)
+	$(CXX) $(LDFLAGS) -o $(@) $(EXULT_THUMB_OBJS) $(GTK_LIBS) -lpng -lz
 
 UCC_OBJS:=\
 	ucparse.o \
@@ -692,7 +692,7 @@ TOOL_OBJS:=tools/expack.o $(FILE_OBJS) tools/cmanip.o tools/ipack.o $(IPACK_OBJS
 	tools/splitshp.o $(SMOOTH_OBJS) mapedit/tools/smooth/plugins/plugin_smooth.o \
 	mapedit/tools/smooth/plugins/plugin_randomize.o mapedit/tools/smooth/plugins/plugin_stream.o \
 	tools/textpack.o tools/u7voice2syx.o tools/wuc.o $(UCXT_OBJS) $(UCC_OBJS) \
-	$(CONFREGRESS_OBJS) usecode/ucxt/head2data.o tools/gnome_shp_thumbnailer.o
+	$(CONFREGRESS_OBJS) usecode/ucxt/head2data.o tools/exult_shp_thumbnailer.o
 
 head2data.o : usecode/ucxt/head2data.cc usecode/bgintrinsics.h usecode/siintrinsics.h usecode/sibetaintrinsics.h
 
@@ -733,7 +733,7 @@ clean:
 	rm -f $(OBJS) $(OBJS:%.o=%.d) tools/expack.o $(EXEC) expack$(EXEEXT) tools/ipack.o ipack$(EXEEXT) data/exult.flx data/exult_flx.h data/exult_bg.flx data/exult_bg_flx.h data/exult_si.flx data/exult_si_flx.h data/bg/bg_paperdol.vga data/bg/bg_mr_faces.vga data/bg/bg_paperdol_vga.h data/bg/bg_mr_faces_vga.h gitinfo.h
 
 tools:  expack$(EXEEXT) cmanip$(EXEEXT) ipack$(EXEEXT) mklink$(EXEEXT) mockup$(EXEEXT) rip$(EXEEXT) shp2pcx$(EXEEXT) smooth$(EXEEXT) splitshp$(EXEEXT) textpack$(EXEEXT) wuc$(EXEEXT) u7voice2syx$(EXEEXT) ucc$(EXEEXT) ucxt$(EXEEXT)  \
-	$(SRC)/head2data$(EXEEXT) head2data.test libsmooth_randomize$(LIBEXT) libsmooth_smooth$(LIBEXT) libsmooth_stream$(LIBEXT) gnome_shp_thumbnailer$(EXEEXT)
+	$(SRC)/head2data$(EXEEXT) head2data.test libsmooth_randomize$(LIBEXT) libsmooth_smooth$(LIBEXT) libsmooth_stream$(LIBEXT) exult_shp_thumbnailer$(EXEEXT)
 
 toolsclean:
 	rm -f $(TOOL_OBJS:%.o=%.d)
@@ -752,7 +752,7 @@ toolsclean:
 	rm -f tools/textpack.o textpack$(EXEEXT)
 	rm -f tools/u7voice2syx.o u7voice2syx$(EXEEXT)
 	rm -f tools/wuc.o wuc$(EXEEXT)
-	rm -f tools/gnome_shp_thumbnailer.o gnome_shp_thumbnailer$(EXEEXT)
+	rm -f tools/exult_shp_thumbnailer.o exult_shp_thumbnailer$(EXEEXT)
 	rm -f $(UCXT_OBJS) ucxt$(EXEEXT)
 	rm -f $(UCC_OBJS) ucc$(EXEEXT) ucparse.cc ucparse.h uclex.cc
 	rm -f $(CONFREGRESS_OBJS) confregress$(EXEEXT)

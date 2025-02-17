@@ -142,7 +142,7 @@ jobs:
           export PKG_CONFIG_PATH=/opt/local/share/pkgconfig:/opt/local/lib/pkgconfig:/opt/ooce/lib/amd64/pkgconfig:$PKG_CONFIG_PATH
           autoreconf -v -i
           ./configure --with-debug=extreme --enable-exult-studio --enable-exult-studio-support --enable-compiler --enable-gimp-plugin \
-            --enable-zip-support --enable-shared --enable-midi-sfx --enable-gnome-shp-thumbnailer --enable-data --enable-mods \
+            --enable-zip-support --enable-shared --enable-midi-sfx --enable-shp-thumbnailer --enable-data --enable-mods \
             --with-usecode-debugger=yes --enable-usecode-container --enable-nonreadied-objects \
             CXX=clang++ CC=clang
           make -j 2

@@ -882,37 +882,37 @@ else
 	AC_MSG_RESULT(no)
 fi
 
-# gnome-shp-thumbnailer
-AC_ARG_ENABLE(gnome-shp-thumbnailer, AS_HELP_STRING([--enable-gnome-shp-thumbnailer@<:@=yes|system|local|user|ingame|no@:>@],
-		[Build Gnome SHP Thumbnailer, yes or system and local for system (local) install (requires root), user for user install, ingame for Exult ingame install (requires XDG_DATA_DIRS) @<:@default no@:>@]),,enable_gnome_shp_thumbnailer=no)
-AC_MSG_CHECKING([whether to build the Gnome SHP Thumbnailer])
-if test x$enable_gnome_shp_thumbnailer != xno; then
+# shp-thumbnailer
+AC_ARG_ENABLE(shp-thumbnailer, AS_HELP_STRING([--enable-shp-thumbnailer@<:@=yes|system|local|user|ingame|no@:>@],
+		[Build Exult SHP Thumbnailer, yes or system and local for system (local) install (requires root), user for user install, ingame for Exult ingame install (requires XDG_DATA_DIRS) @<:@default no@:>@]),,enable_shp_thumbnailer=no)
+AC_MSG_CHECKING([whether to build the Exult SHP Thumbnailer])
+if test x$enable_shp_thumbnailer != xno; then
 	AC_MSG_RESULT(yes)
 	# needs Gdk-Pixbuf
 	PKG_CHECK_MODULES(GDK_PIXBUF, gdk-pixbuf-2.0, have_gdk_pixbuf=yes, have_gdk_pixbuf=no)
 	if test x$have_gdk_pixbuf = xno; then
-		echo "The Gnome shp thumbnailer requires Gdk-Pixbuf."
-		echo "Please try again, either with Gdk-Pixbuf-2.0, or with '--disable-gnome-shp-thumbnailer'."
+		echo "The Exult shp thumbnailer requires Gdk-Pixbuf."
+		echo "Please try again, either with Gdk-Pixbuf-2.0, or with '--disable-shp-thumbnailer'."
 		exit 1
 	fi
 	if test x$have_png = xno; then
-		echo "The Gnome shp thumbnailer requires the PNG (aka the Portable Network Graphics)."
-		echo "Please try again, either with the PNG installed, or with '--disable-gnome-shp-thumbnailer'."
+		echo "The Exult shp thumbnailer requires the PNG (aka the Portable Network Graphics)."
+		echo "Please try again, either with the PNG installed, or with '--disable-shp-thumbnailer'."
 		exit 1
 	fi
-	AM_CONDITIONAL(BUILD_GTHUMB, true)
-	if   test x$enable_gnome_shp_thumbnailer == xlocal; then
-		GTHUMB_PREFIX="/usr/local/share"
-	elif test x$enable_gnome_shp_thumbnailer == xuser; then
-		GTHUMB_PREFIX="${HOME_SHRDIR}"
-	elif test x$enable_gnome_shp_thumbnailer == xingame; then
-		GTHUMB_PREFIX="${datadir}"
+	AM_CONDITIONAL(BUILD_EXULT_THUMB, true)
+	if   test x$enable_shp_thumbnailer == xlocal; then
+		EXULT_THUMB_PREFIX="/usr/local/share"
+	elif test x$enable_shp_thumbnailer == xuser; then
+		EXULT_THUMB_PREFIX="${HOME_SHRDIR}"
+	elif test x$enable_shp_thumbnailer == xingame; then
+		EXULT_THUMB_PREFIX="${datadir}"
 	else
-		GTHUMB_PREFIX="/usr/share"
+		EXULT_THUMB_PREFIX="/usr/share"
 	fi
-	AC_SUBST(GTHUMB_PREFIX)
+	AC_SUBST(EXULT_THUMB_PREFIX)
 else
-	AM_CONDITIONAL(BUILD_GTHUMB, false)
+	AM_CONDITIONAL(BUILD_EXULT_THUMB, false)
 	AC_MSG_RESULT(no)
 fi
 
@@ -1440,7 +1440,7 @@ else
 		echo GLIB....................... : `$PKG_CONFIG --modversion glib-2.0`
 		echo GTK+....................... : `$PKG_CONFIG --modversion gtk+-3.0`
 	fi
-	if test x$enable_gnome_shp_thumbnailer = xyes; then
+	if test x$enable_shp_thumbnailer = xyes; then
 		echo GDK-Pixbuf................. : `$PKG_CONFIG --modversion gdk-pixbuf-2.0`
 	fi
 	if test -n "$GIMPTOOL"; then
@@ -1473,8 +1473,8 @@ echo Build tools................ : $enable_tools
 echo Build usecode compiler..... : $enable_compiler
 echo Build Exult mods........... : $enable_mods
 echo Create zipped Savegames.... : $enable_zip_support
-echo Build GIMP plugin.......... : $enable_gimp_plugin
-echo Build Gnome SHP Thumbnailer : $enable_gnome_shp_thumbnailer
+echo Build GIMP SHP plugin...... : $enable_gimp_plugin
+echo Build Exult SHP Thumbnailer : $enable_shp_thumbnailer
 echo
 echo Debug :
 echo Build Usecode debugger..... : $enable_usecode_debugger

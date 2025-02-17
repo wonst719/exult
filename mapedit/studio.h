@@ -36,7 +36,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef USE_STRICT_GTK
 #	define GTK_DISABLE_SINGLE_INCLUDES
 #	define GSEAL_ENABLE
-#	define GNOME_DISABLE_DEPRECATED
 #	define GTK_DISABLE_DEPRECATED
 #	define GDK_DISABLE_DEPRECATED
 #else
