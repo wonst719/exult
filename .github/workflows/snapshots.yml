@@ -2,7 +2,7 @@ name: snapshots
 
 on:
   schedule:
-    - cron: "0 00 * * *" # Daily at 00:00 UTC
+    - cron: "15 01 * * *" # Daily at 01:15 UTC - Changed from 0:00 as Windows build were failing when snapshots were scheduled to build at 0:00
   workflow_dispatch:
 
 permissions:
