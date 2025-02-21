@@ -21,7 +21,7 @@
 [![Coverity Scan Results][cov-results-badge]][cov-results-url]
 
 [![snapshots][snapshots-badge]][snapshots-url]
-[![Latest Windows snapshot][win-snapshots-badge]][win-snapshots-url]
+[![Latest snapshot][snapshot-release-badge]][snapshots-release-url]
 
 ## What is Exult?
 
@@ -50,7 +50,7 @@ For more information, either consult the README file on the repository, or view 
 [cov-analysis-badge]:   https://img.shields.io/github/actions/workflow/status/exult/exult/coverity-scan.yml?label=Coverity%20Scan%20Analysis&logoColor=white&logo=data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjU2IDI1MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjYuOTUgMTA5LjA4bC0zLjUyLTkuNDUgMzcuOTYgNzAuODloLjg1bDQ3LjMzLTExOC4xM2MuODMtMi41NiA4LjI2LTIxLjc0IDguNTEtMzAuMi42My0yMS44NC0xNC4xLTIzLjgxLTI5Ljc3LTE5LjM5QzM2Ljg3IDE5LjQ2LS4yNCA2Ny44My4wMSAxMjQuNzhjLjIgNTIuOTcgMzIuNjQgOTguMjQgNzguNjUgMTE3LjM4TDI2Ljk1IDEwOS4wOE0xNzQuMzMgNS40OGMtNi4zMiAxMi43LTEzLjEgMjYuMzctMjEuNjggNDguMDhMNzkuMjIgMjQyLjM5YzE1LjA5IDYuMiAzMS42MyA5LjYgNDguOTYgOS41MiA3MC41LS4yNyAxMjcuNDItNTcuNjcgMTI3LjEzLTEyOC4xOC0uMjItNTMuODMtMzMuNzYtOTkuNy04MC45OC0xMTguMjYiIGZpbGw9IiNmZmYiLz48L3N2Zz4=
 [cov-results-badge]:    https://img.shields.io/coverity/scan/10872?label=Coverity%20Scan%20Results&logoColor=white&logo=data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjU2IDI1MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjYuOTUgMTA5LjA4bC0zLjUyLTkuNDUgMzcuOTYgNzAuODloLjg1bDQ3LjMzLTExOC4xM2MuODMtMi41NiA4LjI2LTIxLjc0IDguNTEtMzAuMi42My0yMS44NC0xNC4xLTIzLjgxLTI5Ljc3LTE5LjM5QzM2Ljg3IDE5LjQ2LS4yNCA2Ny44My4wMSAxMjQuNzhjLjIgNTIuOTcgMzIuNjQgOTguMjQgNzguNjUgMTE3LjM4TDI2Ljk1IDEwOS4wOE0xNzQuMzMgNS40OGMtNi4zMiAxMi43LTEzLjEgMjYuMzctMjEuNjggNDguMDhMNzkuMjIgMjQyLjM5YzE1LjA5IDYuMiAzMS42MyA5LjYgNDguOTYgOS41MiA3MC41LS4yNyAxMjcuNDItNTcuNjcgMTI3LjEzLTEyOC4xOC0uMjItNTMuODMtMzMuNzYtOTkuNy04MC45OC0xMTguMjYiIGZpbGw9IiNmZmYiLz48L3N2Zz4=
 [snapshots-badge]:      https://github.com/exult/exult/actions/workflows/snapshots.yml/badge.svg
-[win-snapshots-badge]:  https://img.shields.io/github/release-date-pre/exult/exult?label=Latest%20snapshot
+[snapshot-release-badge]:  https://img.shields.io/github/release-date-pre/exult/exult?display_date=published_at&label=Latest%20snapshot%20for%20Windows%20and%20Android
 
 [irc-url]:              https://web.libera.chat/#exult
 [gpl-url]:              https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
@@ -67,4 +67,4 @@ For more information, either consult the README file on the repository, or view 
 [cov-analysis-url]:     https://github.com/exult/exult/actions/workflows/coverity-scan.yml
 [cov-results-url]:      https://scan.coverity.com/projects/exult-exult
 [snapshots-url]:        https://github.com/exult/exult/actions/workflows/snapshots.yml
-[win-snapshots-url]:    https://github.com/exult/exult/releases?q=prerelease%3Atrue
+[snapshots-release-url]:    https://github.com/exult/exult/releases?q=prerelease%3Atrue
