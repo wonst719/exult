@@ -178,7 +178,8 @@ GUMPS_OBJS:= \
 	gumps/Text_gump.o \
 	gumps/InputOptions_gump.o \
 	gumps/VideoOptions_gump.o \
-	gumps/Yesno_gump.o
+	gumps/Yesno_gump.o \
+	gumps/StringList_widget.o
 
 IMAGEWIN_OBJS:=\
 	imagewin/ibuf8.o \
