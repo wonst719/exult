@@ -54,7 +54,7 @@ void Gump_widget::paint() {
  *  Get screen area used by a gump.
  */
 
-TileRect Gump_widget::get_rect() {
+TileRect Gump_widget::get_rect() const{
 	int sx = 0;
 	int sy = 0;
 

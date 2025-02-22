@@ -83,7 +83,7 @@ public:
 	void move_diamond(int dir);
 	void set_val(int newval, bool recalcdiamond = true);    // Set to new value.
 
-	TileRect get_rect() override;
+	TileRect get_rect() const override;
 
 	// Paint it and its contents.
 	void paint() override;
