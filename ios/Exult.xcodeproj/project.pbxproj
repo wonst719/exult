@@ -403,6 +403,7 @@
 		8A33B5DD2C2051B800075AF4 /* Slider_widget.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Slider_widget.cc; path = ../gumps/Slider_widget.cc; sourceTree = "<group>"; };
 		8A33B5E12C2051B800075AF4 /* StringList_widget.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringList_widget.cc; path = ../gumps/StringList_widget.cc; sourceTree = "<group>"; };
 		8A33B5E32C2051B800075AF4 /* StringList_widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringList_widget.h; path = ../gumps/StringList_widget.h; sourceTree = "<group>"; };
+		8A33B5E42C2051B800075AF4 /* IterableGump_widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IterableGump_widget.h; path = ../gumps/IterableGump_widget.h; sourceTree = "<group>"; };
 		8A45A3AC247C068500F12F4D /* joythumb-glass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joythumb-glass.png"; sourceTree = "<group>"; };
 		8A52528E25718896005AD385 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = SDL/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
 		8A599C1C246058A9006E3252 /* libmt32emu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = libmt32emu.xcodeproj; sourceTree = "<group>"; };
@@ -1439,6 +1440,7 @@
 				8A33B5C92C2051B800075AF4 /* Slider_widget.h */,
 				8A33B5E12C2051B800075AF4 /* StringList_widget.cc */,
 				8A33B5E32C2051B800075AF4 /* StringList_widget.h */,
+				8A33B5E42C2051B800075AF4 /* IterableGump_widget.h */,
 				8AB53D8A1C9CA0A90084C69D /* ShortcutBar_gump.cc */,
 				8AB53D8B1C9CA0A90084C69D /* ShortcutBar_gump.h */,
 				8AD4A92F1A92B9DB0004762D /* InputOptions_gump.cc */,

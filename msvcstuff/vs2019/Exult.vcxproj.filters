@@ -1453,6 +1453,9 @@
     <ClInclude Include="..\..\gumps\StringList_widget.h">
       <Filter>gumps</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\gumps\IterableGump_widget.h">
+      <Filter>gumps</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\.git\index" />

@@ -577,6 +577,7 @@ echo.  &gt;&gt;..\..\gitinfo.h</Command>
     <ClInclude Include="..\..\gumps\Gump_widget.h" />
     <ClInclude Include="..\..\gumps\InputOptions_gump.h" />
     <ClInclude Include="..\..\gumps\ItemMenu_gump.h" />
+    <ClInclude Include="..\..\gumps\IterableGump_widget.h" />
     <ClInclude Include="..\..\gumps\Jawbone_gump.h" />
     <ClInclude Include="..\..\gumps\GameEngineOptions_gump.h" />
     <ClInclude Include="..\..\gumps\misc_buttons.h" />

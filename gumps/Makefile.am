@@ -42,6 +42,7 @@ libgumps_la_SOURCES = \
 	Slider_widget.h	\
 	StringList_widget.cc \
 	StringList_widget.h  \
+	IterableGump_widget.h \
 	Spellbook_gump.cc	\
 	Spellbook_gump.h	\
 	Stats_gump.cc	\
