@@ -188,7 +188,7 @@ static int Get_x_offset(Shape* shape, int framenum) {
 
 void Npc_chooser::setup_info(bool savepos    // Try to keep current position.
 ) {
-	const unsigned oldind = (selected >= 0 ? selected : ((row>=0 && row0< rows.size())?rows[row0].index0:0));
+	const unsigned oldind = (selected >= 0 ? selected : ((row0>=0 && row0< rows.size())?rows[row0].index0:0));
 	info.resize(0);
 	rows.resize(0);
 	row0 = row0_voffset = 0;
