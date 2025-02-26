@@ -3220,7 +3220,7 @@ bool Usecode_internal::in_usecode_for(Game_object* item, Usecode_events event) {
 
 void Usecode_internal::write() {
 	// Assume new games will have keyring.
-	if (Game::get_game_type() != BLACK_GATE && !Game::is_si_beta()) {
+	if (Game::get_game_type() != BLACK_GATE) {
 		keyring->write();    // write keyring data
 	}
 
