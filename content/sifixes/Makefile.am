@@ -123,7 +123,8 @@ nodist_sifixesdata_DATA :=	\
 	data/sprites.vga
 
 sifixesdata_DATA :=	\
-	data/initgame.dat
+	data/initgame.dat	\
+	data/monsters.dat
 
 EXTRA_DIST :=	\
 	Makefile.mingw	\
