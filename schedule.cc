@@ -3569,7 +3569,7 @@ Game_object* Waiter_schedule::create_customer_plate() {
 					eating_tables.begin(), eating_tables.end(),
 					[](Game_object_weak& elem) {
 						const Game_object_shared table = elem.lock();
-						return table != nullptr;
+						return table == nullptr;
 					}),
 			eating_tables.end());
 
