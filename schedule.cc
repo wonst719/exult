@@ -477,7 +477,9 @@ Street_maintenance_schedule::Street_maintenance_schedule(
 void Street_maintenance_schedule::now_what() {
 	if (paction) {    // First time?
 		// Set to follow given path.
+#ifdef DEBUG
 		cout << npc->get_name() << " walking for street maintenance" << endl;
+#endif
 		npc->set_action(paction);
 		npc->start(gwin->get_std_delay());
 		paction = nullptr;
@@ -487,8 +489,10 @@ void Street_maintenance_schedule::now_what() {
 	if (objptr && npc->distance(objptr.get()) <= 2 &&    // We're there.
 		objptr->get_shapenum() == shapenum
 		&& objptr->get_framenum() == framenum) {
+#ifdef DEBUG
 		cout << npc->get_name() << " is about to perform street maintenance"
 			 << endl;
+#endif
 		const int        dir = npc->get_direction(objptr.get());
 		const std::array frames{
 				static_cast<signed char>(
@@ -553,7 +557,9 @@ void Street_maintenance_schedule::now_what() {
 		shapenum = 0;    // Don't want to repeat.
 		return;
 	}
+#ifdef DEBUG
 	cout << npc->get_name() << " is done with street maintenance" << endl;
+#endif
 	// Set back to old schedule.
 	const int  period  = gclock->get_hour() / 3;
 	Actor*     safenpc = npc;
