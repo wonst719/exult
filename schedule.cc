@@ -227,7 +227,7 @@ int Schedule::try_street_maintenance() {
 	if (curtime < street_maintenance_time) {
 		return 0;    // Not time yet.
 	}
-	if (npc->get_npc_num() < 0 || !npc->is_sentient()) {
+	if (!npc->is_sentient()) {
 		return 0;    // Only want normal NPC's.
 	}
 	// At least 30secs. before next one.
@@ -560,8 +560,12 @@ void Street_maintenance_schedule::now_what() {
 	Tile_coord safeloc = oldloc;
 	// This sometimes fails after a restore.
 	safenpc->update_schedule(period, 0, &safeloc);
-	if (safenpc->get_schedule_type() == static_cast<int>(street_maintenance)) {
-		safenpc->update_schedule(period, 0, &safeloc);
+	if (safenpc->get_schedule_type() == street_maintenance) {
+		if (prev_type != street_maintenance) {
+			safenpc->set_schedule_type(prev_type);
+		} else {
+			safenpc->set_schedule_type(loiter);
+		}
 	}
 }
 
