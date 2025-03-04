@@ -40,7 +40,7 @@ home		center_screen
 
 KP+		scaleval_increase
 KP- 	scaleval_decrease
-Del		delete_selected
+Ctrl-Del	delete_selected
 Ctrl-right	move_selected	 1  0  0
 Ctrl-left	move_selected	-1  0  0
 Ctrl-down	move_selected	 0  1  0
