@@ -1065,7 +1065,7 @@ void One_note::add_text_with_line_breaks(const std::string& input) {
 						break;
 					}
 
-					part       = test_part;
+					part       = std::move(test_part);
 					part_width = test_width;
 				}
 
