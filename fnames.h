@@ -172,6 +172,9 @@
 
 #define PATCH_KEYS "<PATCH>/patchkeys.txt"
 
+#define GUMP_AREA_INFO "<STATIC>/gump_area_info.txt"
+#define PATCH_GUMP_AREA_INFO "<PATCH>/gump_area_info.txt"
+
 #define EXULT_SERVER "<GAMEDAT>/exultserver"
 
 #define NUM_FONTS (20)

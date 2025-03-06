@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "rect.h"
 #include "shapeid.h"
 
+
 #include <vector>
 
 class Checkmark_button;
@@ -117,7 +118,9 @@ public:
  *  A gump contains an image of an open container from "gumps.vga".
  */
 class Gump : nonreplicatable, public Gump_Base {
-protected:
+	static std::unique_ptr<class Text_msg_file_reader> gump_area_info;
+
+		protected:
 	Gump() = delete;
 	Container_game_object* container;    // What this gump shows.
 	int                    x, y;         // Location on screen.
@@ -125,10 +128,11 @@ protected:
 	using Gump_elems = std::vector<Gump_widget*>;
 	Gump_elems elems;          // Includes 'checkmark'.
 	bool       handles_kbd;    // Kbd can be handled by gump.
-	void       set_object_area(const TileRect& area, int checkx, int checky);
+	void       set_object_area(
+				  TileRect area, int checkx, int checky, bool set_check=true);
 
 	void set_object_area(const TileRect& area) {
-		object_area = area;
+		set_object_area(area, 0, 0, false);
 	}
 
 	void add_elem(Gump_widget* w) {

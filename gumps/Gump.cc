@@ -31,8 +31,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ignore_unused_variable_warning.h"
 #include "misc_buttons.h"
 #include "objiter.h"
+#include "msgfile.h"
+#include "U7obj.h"
+#include "utils.h"
+#include "data/exult_bg_flx.h"
+#include "data/exult_si_flx.h"
+#include "databuf.h"
 
 #include <algorithm>
+#include <cctype>
+#include <charconv>
+
+std::unique_ptr<Text_msg_file_reader> Gump::gump_area_info;
 
 /*
  *  Create a gump.
@@ -126,9 +136,117 @@ void Gump::set_pos(int newx, int newy) {    // Set new spot on screen.
  *  Sets object area and creates checkmark button
  */
 
-void Gump::set_object_area(const TileRect& area, int checkx, int checky) {
+static bool read_int_and_advance(std::string_view& line, int& val)
+{
+	// Remove whitspace from start
+	while (line.size() && std::isspace(line.front())) {
+		line.remove_prefix(1);
+	}
+
+
+	if (!line.size()) {
+		return false;
+	}
+
+	// find the comma or end
+	size_t comma = line.find(',', 0);
+	if (comma == line.npos) {
+		comma = line.size();
+	}
+	auto sub = line.substr(0, comma );
+	
+	// remove white space at end of subsctring befor comma
+	while (sub.size() && std::isspace(sub.back())) {
+		sub.remove_suffix(1);
+	}
+
+	if (!sub.size()) {
+		return false;
+	}
+
+	auto res
+				= std::from_chars(sub.data(), sub.data() + sub.size(), val, 10);
+		if (res.ptr != sub.data() + sub.size()) {
+		return false;
+		}
+
+	if (comma+1 >= line.size()) {
+		line = std::string_view();
+	} else {
+		line = line.substr(comma+1);
+	}
+
+	return true;
+}
+
+void Gump::set_object_area(
+		TileRect area, int checkx, int checky, bool set_check) {
+	
+	if (!gump_area_info) { 
+		File_spec     flx;
+		if (GAME_BG) {
+			flx = File_spec(
+					BUNDLE_CHECK(BUNDLE_EXULT_BG_FLX, EXULT_BG_FLX),
+					EXULT_BG_FLX_GUMP_AREA_INFO_TXT);
+		}
+		else if (GAME_SI) {
+			flx = File_spec(
+					BUNDLE_CHECK(BUNDLE_EXULT_SI_FLX, EXULT_SI_FLX),
+					EXULT_SI_FLX_GUMP_AREA_INFO_TXT);
+		}
+
+					 
+		IExultDataSource datasource(
+				flx, GUMP_AREA_INFO, PATCH_GUMP_AREA_INFO,0);
+		gump_area_info = std::make_unique<Text_msg_file_reader>(datasource);
+		
+	}
+	
+	// if we sucesfully read it  try to use it
+	if (gump_area_info && get_shapenum() >= 0 && get_shapefile()==SF_GUMPS_VGA)
+	{
+		auto section = gump_area_info->get_global_section();
+		if (size_t(get_shapenum()) < section.size())
+		{
+			auto sv = section[(get_shapenum())];
+			if (sv.size())
+			{
+				// Read 6 ints
+				int  vals[6];
+				bool success = true;
+
+				for (int&v : vals)
+				{
+					if (!(success = read_int_and_advance(sv, v))) {
+						break;
+					}
+
+				}
+
+				// succeeded in parsing line, so update the values
+				if (success)
+				{
+					area.x = vals[0];
+					area.y = vals[1];
+					area.w = vals[2];
+					area.h = vals[3];
+					checkx = vals[4];
+					checky = vals[5];
+
+				}
+				else
+				{
+					std::cerr << "Failed to parse line in "
+									"gump_area_info.txt for gump "
+								<< get_shapenum() << std::endl;
+				}
+			}
+		}
+			
+	}
 	object_area = area;
-	if (std::none_of(elems.begin(), elems.end(), [](auto elem) -> bool {
+	if (set_check && std::none_of(
+				elems.begin(), elems.end(), [](auto elem) -> bool {
 			return dynamic_cast<Checkmark_button*>(elem) != nullptr;
 		})) {
 		checkx += 16;
