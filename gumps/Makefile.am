@@ -88,6 +88,8 @@ libgumps_la_SOURCES = \
 	ItemMenu_gump.h	\
 	InputOptions_gump.cc	\
 	InputOptions_gump.h \
+	DropDown_widget.cc \
+	DropDown_widget.h \
 	Scrollable_widget.cc \
 	Scrollable_widget.h
 endif
