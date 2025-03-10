@@ -78,8 +78,7 @@ public:
 
 	private:
 		friend class ConfigSetting_widget;
-		bool default_is_valid = false;
-		bool empty_is_valid   = false;
+
 
 	public:
 		struct Choice {
@@ -124,7 +123,7 @@ private:
 	std::shared_ptr<Font> font;
 	static int            bgstripe;
 	static const uint8          bgcolours[4];
-	int					line_gap = 2;
+
 
 public:
 	ConfigSetting_widget() = delete;

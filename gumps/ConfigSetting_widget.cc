@@ -31,8 +31,8 @@ const uint8 ConfigSetting_widget::bgcolours[4] = {143,143,143,143};
 ConfigSetting_widget::ConfigSetting_widget(
 		Gump_Base* parent, int px, int py, int butonwidth, int col2,
 		const Definition& s, std::shared_ptr<Font> font, int line_gap)
-		: IterableGump_widget(parent, -1, px, py, -1), setting(s), font(font),
-		  line_gap(line_gap) {
+		: IterableGump_widget(parent, -1, px, py, -1), setting(s), font(font)
+		   {
 
 	if (setting.additional < 0) {
 		setting.additional = 0;

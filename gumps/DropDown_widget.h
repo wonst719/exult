@@ -62,7 +62,7 @@ class DropDown_widget : public IterableGump_widget<
 	std::shared_ptr<Button> button;
 
 public:
-	virtual Gump_widget* Input_first() {
+	Gump_widget* Input_first() override {
 		if (active) {
 			return this;
 		}
@@ -110,7 +110,7 @@ public:
 
 	bool mouse_drag(int mx, int my) override;
 
-	bool text_input(int chr, int unicode, bool shift_pressed) override;
+	bool character_input(int chr, int unicode, bool shift_pressed) override;
 
 	void onbutton(Gump_widget* sender, MouseButton);
 	void onlist(Gump_widget* sender, MouseButton);

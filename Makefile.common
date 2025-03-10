@@ -526,7 +526,7 @@ gumps/Newfile_gump.o : gumps/Newfile_gump.cc $(EXULT_FLX)
 
 gumps/Notebook_gump.o : gumps/Notebook_gump.cc $(EXULT_FLX)
 
-gumps/Scrollable_widget.o : Scrollable_widget.cc $(EXULT_FLX)
+gumps/Scrollable_widget.o : gumps/Scrollable_widget.cc $(EXULT_FLX)
 
 gumps/ShortcutBar_gump.o : gumps/ShortcutBar_gump.cc $(EXULT_FLX)
 

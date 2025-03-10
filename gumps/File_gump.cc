@@ -603,7 +603,7 @@ bool File_gump::mouse_up(
  *  Handle character that was typed.
  */
 
-bool File_gump::text_input(int chr, int unicode, bool shift_pressed) {
+bool File_gump::character_input(int chr, int unicode, bool shift_pressed) {
 	ignore_unused_variable_warning(unicode);
 	if (!focus) {    // Text field?
 		return true;

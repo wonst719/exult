@@ -92,7 +92,7 @@ public:
 		return false;
 	}
 
-	virtual bool text_input(
+	virtual bool character_input(
 			int chr, int unicode,
 			bool shift_pressed) {    // Character typed (unicode)
 		ignore_unused_variable_warning(chr, unicode, shift_pressed);
