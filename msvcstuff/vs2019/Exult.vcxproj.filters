@@ -731,6 +731,12 @@
     <ClCompile Include="..\..\audio\midi_drivers\FluidSynthMidiDriver.cpp">
       <Filter>audio\midi_drivers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\gumps\AdvancedOptions_gump.cc">
+      <Filter>gumps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gumps\ConfigSetting_widget.cc">
+      <Filter>gumps</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\gumps\Scrollable_widget.cc">
       <Filter>gumps</Filter>
     </ClCompile>
@@ -1456,7 +1462,13 @@
     <ClInclude Include="..\..\audio\midi_drivers\XMidiRecyclable.h">
       <Filter>audio\midi_drivers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\gumps\AdvancedOptions_gump.h">
+      <Filter>gumps</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\gumps\StringList_widget.h">
+      <Filter>gumps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gumps\ConfigSetting_widget.h">
       <Filter>gumps</Filter>
     </ClInclude>
     <ClInclude Include="..\..\gumps\Scrollable_widget.h">
