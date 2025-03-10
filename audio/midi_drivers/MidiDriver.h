@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "common_types.h"
 #include "ignore_unused_variable_warning.h"
+#include "ConfigSetting_widget.h"
 
 #include <atomic>
 #include <string>
@@ -36,7 +37,8 @@ protected:
 public:
 	//! Midi driver desription
 	struct MidiDriverDesc {
-		MidiDriverDesc(const char* const n, std::shared_ptr<MidiDriver> (*c)())
+		MidiDriverDesc(
+				const char* const n, std::shared_ptr<MidiDriver> (*c)())
 				: name(n), createInstance(c) {}
 
 		const char* const name;    //!< Name of the driver (for config, dialogs)
@@ -44,7 +46,7 @@ public:
 				*createInstance)();    //!< Pointer to a function
 									   //!< to create
 									   //!< an instance
-	};
+};
 
 	enum TimbreLibraryType {
 		TIMBRE_LIBRARY_U7VOICE_AD = 0,    // U7Voice for Adlib
@@ -65,6 +67,7 @@ public:
 
 	//! Destroy the driver
 	virtual void destroyMidiDriver() = 0;
+
 
 	bool isInitialized() {
 		return initialized;
@@ -198,6 +201,14 @@ public:
 	//! \return The created MidiDriver instance
 	static std::shared_ptr<MidiDriver> createInstance(
 			const std::string& desired_driver, uint32 sample_rate, bool stereo);
+
+	static std::vector<ConfigSetting_widget::Definition> get_midi_driver_settings(
+			const std::string& name);
+
+	virtual std::vector<ConfigSetting_widget::Definition>GetSettings()
+	{
+		return {};
+	}
 
 protected:
 	std::string Name;
