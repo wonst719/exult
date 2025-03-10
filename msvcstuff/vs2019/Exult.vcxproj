@@ -482,6 +482,8 @@ echo.  &gt;&gt;..\..\gitinfo.h</Command>
     <ClCompile Include="..\..\version.cc" />
     <ClCompile Include="..\..\windrag.cc" />
     <ClCompile Include="..\..\gumps\DropDown_widget.cc" />
+    <ClCompile Include="..\..\gumps\AdvancedOptions_gump.cc" />
+    <ClCompile Include="..\..\gumps\ConfigSetting_widget.cc" />
     <ClCompile Include="..\..\gumps\Scrollable_widget.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -723,8 +725,10 @@ echo.  &gt;&gt;..\..\gitinfo.h</Command>
     <ClInclude Include="..\..\verify.h" />
     <ClInclude Include="..\..\version.h" />
     <ClInclude Include="..\..\windrag.h" />
+    <ClInclude Include="..\..\gumps\AdvancedOptions_gump.h" />
     <ClInclude Include="..\..\gumps\DropDown_widget.h" />
     <ClInclude Include="msvc_include.h" />
+    <ClInclude Include="..\..\gumps\ConfigSetting_widget.h" />
     <ClInclude Include="..\..\gumps\Scrollable_widget.h" />
     <ClInclude Include="..\..\gumps\StringList_widget.h" />
   </ItemGroup>
