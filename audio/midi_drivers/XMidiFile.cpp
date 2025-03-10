@@ -1010,12 +1010,14 @@ void XMidiFile::AdjustTimings(uint32 ppqn) {
 
 		} else if (event->status == 0xFF && event->data[0] == 0x51) {
 			auto sysex_buffer = event->ex.sysex_data.buffer();
-			tempo             = (sysex_buffer[0] << 16) + (sysex_buffer[1] << 8)
-					+ sysex_buffer[2];
+			if (sysex_buffer && event->ex.sysex_data.len >= 3) {
+				tempo = (sysex_buffer[0] << 16) + (sysex_buffer[1] << 8)
+						+ sysex_buffer[2];
 
-			sysex_buffer[0] = 0x07;
-			sysex_buffer[1] = 0xA1;
-			sysex_buffer[2] = 0x20;
+				sysex_buffer[0] = 0x07;
+				sysex_buffer[1] = 0xA1;
+				sysex_buffer[2] = 0x20;
+			}
 		}
 	}
 
