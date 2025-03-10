@@ -33,6 +33,27 @@ const MidiDriver::MidiDriverDesc FluidSynthMidiDriver::desc
 
 // MidiDriver method implementations
 
+std::vector<ConfigSetting_widget::Definition> FluidSynthMidiDriver::
+		GetSettings() {
+	ConfigSetting_widget::Definition soundfont{
+			"Soundfont", // label
+			"config/audio/midi/fluidsynth_soundfont", // config_setting
+			11, // max_count
+			true, // unique
+			true,                                        // required
+			ConfigSetting_widget::Definition::dropdown    // setting_type
+	};
+	soundfont.add_filenames_to_choices("<BUNDLE>/*.sf2");
+	soundfont.add_filenames_to_choices("<DATA>/*.sf2");
+	soundfont.default_value = "default.sf2";
+
+
+	soundfont.sort_choices();
+	auto settings = MidiDriver::GetSettings();
+	settings.push_back(soundfont);
+	return settings;
+}
+
 int FluidSynthMidiDriver::setInt(const char* name, int val) {
 	return fluid_settings_setint(_settings, name, val);
 }
@@ -47,12 +68,11 @@ int FluidSynthMidiDriver::setStr(const char* name, const char* val) {
 
 int FluidSynthMidiDriver::getStr(const char* name, char* val, size_t size) {
 	val[0] = 0;
-#ifdef USING_FLUIDSYNTH
+#	ifdef USING_FLUIDSYNTH
 	return fluid_settings_copystr(_settings, name, val, size);
-#else
+#	else
 	char* str;
-	if (fluid_settings_getstr(_settings, name, &str) && str && *str)
-	{
+	if (fluid_settings_getstr(_settings, name, &str) && str && *str) {
 		std::strncpy(val, str, size);
 		return FLUID_OK;
 	}
@@ -69,35 +89,12 @@ int FluidSynthMidiDriver::open() {
 	const std::string        sfsetting = "fluidsynth_soundfont";
 	std::vector<std::string> soundfonts;
 	std::string              soundfont;
-#ifdef ANDROID
+#	ifdef ANDROID
 	// on Android only try <DATA>
 	std::string options[] = {"<DATA>"};
-#else
+#	else
 	std::string options[] = {"", "<BUNDLE>", "<DATA>"};
-#endif
-	for (size_t i = 0; i < 10; i++) {
-		const std::string settingkey = sfsetting + static_cast<char>(i + '0');
-		soundfont                    = getConfigSetting(settingkey, "default.sf2");
-		if (!soundfont.empty()) {
-			for (auto& d : options) {
-				std::string f;
-				if (!d.empty()) {
-					if (!is_system_path_defined(d)) {
-						continue;
-					}
-					f = get_system_path(d);
-					f += '/';
-					f += soundfont;
-				} else {
-					f = soundfont;
-				}
-				if (U7exists(f.c_str())) {
-					soundfont = std::move(f);
-				}
-			}
-			soundfonts.push_back(soundfont);
-		}
-	}
+#	endif
 	soundfont = getConfigSetting(sfsetting, "default.sf2");
 	if (!soundfont.empty()) {
 		for (auto& d : options) {
@@ -120,12 +117,37 @@ int FluidSynthMidiDriver::open() {
 			soundfonts.push_back(soundfont);
 		}
 	}
+	for (size_t i = 0; i < 10; i++) {
+		const std::string settingkey = sfsetting + static_cast<char>(i + '0');
+		soundfont = getConfigSetting(settingkey, "");
+		if (!soundfont.empty()) {
+			for (auto& d : options) {
+				std::string f;
+				if (!d.empty()) {
+					if (!is_system_path_defined(d)) {
+						continue;
+					}
+					f = get_system_path(d);
+					f += '/';
+					f += soundfont;
+				} else {
+					f = soundfont;
+				}
+				if (U7exists(f.c_str())) {
+					soundfont = std::move(f);
+				}
+			}
+			soundfonts.push_back(soundfont);
+		}
+	}
 
 	_settings = new_fluid_settings();
 
 	if (soundfonts.empty()) {
 		char default_soundfont[512];
-		if (getStr("synth.default-soundfont", default_soundfont, sizeof(default_soundfont)) == FLUID_OK
+		if (getStr("synth.default-soundfont", default_soundfont,
+				   sizeof(default_soundfont))
+					== FLUID_OK
 			&& default_soundfont[0] != 0) {
 			// try whether the FluidSynth default soundfont is in our paths
 			if (!U7exists(default_soundfont)) {
@@ -153,7 +175,8 @@ int FluidSynthMidiDriver::open() {
 					"enabling FluidSynth with FluidSynth default SoundFont"
 				 << std::endl;
 		} else {
-			perr << "Setting 'fluidsynth_soundfont' missing in 'exult.cfg' or file unreadable and "
+			perr << "Setting 'fluidsynth_soundfont' missing in 'exult.cfg' or "
+					"file unreadable and "
 					"Fluidsynth without a default SoundFont: not enabling "
 					"Fluidsynth"
 				 << std::endl;
@@ -175,7 +198,8 @@ int FluidSynthMidiDriver::open() {
 	// fluid_synth_set_interp_method(_synth, -1, FLUID_INTERP_LINEAR);
 	// fluid_synth_set_reverb_on(_synth, 0);
 	// fluid_synth_set_chorus_on(_synth, 0);
-	perr << "Compiled with " << FLUID_VERSION << ", using library: " << fluid_version_str() << std::endl;
+	perr << "Compiled with " << FLUID_VERSION
+		 << ", using library: " << fluid_version_str() << std::endl;
 
 	int numloaded = 0;
 	for (auto& soundfont : soundfonts) {
@@ -184,8 +208,7 @@ int FluidSynthMidiDriver::open() {
 			perr << "Failed loading sound font '" << soundfont << "'"
 				 << std::endl;
 		} else {
-			perr << "Loaded sound font '" << soundfont << "'"
-				 << std::endl;
+			perr << "Loaded sound font '" << soundfont << "'" << std::endl;
 			_soundFont.push(soundFont);
 			numloaded++;
 		}
@@ -200,7 +223,7 @@ int FluidSynthMidiDriver::open() {
 }
 
 void FluidSynthMidiDriver::close() {
-	//-- Do not sfunload the SoundFonts, this causes messages :
+	//-- Do not unload the SoundFonts, this causes messages :
 	//--   fluidsynth: warning: No preset found on channel # [bank=# prog=#]
 	//-- And delete_fluid_synth unloads the SoundFonts anyway.
 	while (!_soundFont.empty()) {

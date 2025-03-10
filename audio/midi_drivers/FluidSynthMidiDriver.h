@@ -64,6 +64,9 @@ public:
 		return &desc;
 	}
 
+	std::vector<ConfigSetting_widget::Definition> GetSettings() override;
+
+
 protected:
 	// Because GCC complains about casting from const to non-const...
 	int setInt(const char* name, int val);
