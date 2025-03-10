@@ -179,7 +179,11 @@ GUMPS_OBJS:= \
 	gumps/InputOptions_gump.o \
 	gumps/VideoOptions_gump.o \
 	gumps/Yesno_gump.o \
-	gumps/StringList_widget.o
+	gumps/StringList_widget.o \
+	gumps/AdvancedOptions_gump.o \
+	gumps/ConfigSetting_widget.o \
+	gumps/DropDown_widget.o \
+	gumps/Scrollable_widget.o
 
 IMAGEWIN_OBJS:=\
 	imagewin/ibuf8.o \

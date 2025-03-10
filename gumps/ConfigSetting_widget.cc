@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ConfigSetting_widget.h"
 #include "gamewin.h"
-#include "configuration.h"
+#include "Configuration.h"
 #include "listfiles.h"
 #include "DropDown_widget.h"
 #include "StringList_widget.h"
