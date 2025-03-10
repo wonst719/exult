@@ -31,7 +31,7 @@ DropDown_widget::DropDown_widget(
 		Gump_Base* par, const std::vector<std::string>& selections,
 		int selection, int px, int py, int width)
 		: IterableGump_widget(par, -1, px, py, selection),
-		  selections(selections), combo_box(false), active(false) {
+		  selections(selections), active(false) {
 	children.resize(id_count);
 	children[id_button] = button
 			= std::make_shared<CallbackButtonBase<DropDown_widget, Button>>(
@@ -237,7 +237,7 @@ void DropDown_widget::onlist(Gump_widget*, MouseButton mbutton) {
 	set_frame(newsel);
 	// If newsel is out of bounds, something has gone seriously wrong
 	std::string_view string_value;
-	if (newsel >= 0 && newsel < selections.size()) {
+	if (newsel < selections.size()) {
 		string_value = selections[newsel];
 	}
 

@@ -30,8 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // combo box and does not support text input
 class DropDown_widget : public IterableGump_widget<
 								std::vector<std::shared_ptr<Gump_widget>>> {
-	bool combo_box;    // If this is set, this widget should act as a combo box
-					   // and allow user entered strings
 	std::vector<std::shared_ptr<Gump_widget>> children;
 	std::vector<std::string>                  selections;
 	std::shared_ptr<class StringList_widget>  list;
@@ -102,17 +100,17 @@ public:
 	bool run() override;
 
 	// Input handling
-	virtual bool mouse_down(int mx, int my, MouseButton button);
+	bool mouse_down(int mx, int my, MouseButton button) override;
 
-	virtual bool mouse_up(int mx, int my, MouseButton button);
+	bool mouse_up(int mx, int my, MouseButton button) override;
 
-	virtual bool mousewheel_down(int mx, int my);
+	bool mousewheel_down(int mx, int my) override;
 
-	virtual bool mousewheel_up(int mx, int my);
+	bool mousewheel_up(int mx, int my) override;
 
-	virtual bool mouse_drag(int mx, int my);
+	bool mouse_drag(int mx, int my) override;
 
-	virtual bool text_input(int chr, int unicode, bool shift_pressed);
+	bool text_input(int chr, int unicode, bool shift_pressed) override;
 
 	void onbutton(Gump_widget* sender, MouseButton);
 	void onlist(Gump_widget* sender, MouseButton);

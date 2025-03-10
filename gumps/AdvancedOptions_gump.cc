@@ -21,8 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "DropDown_widget.h"
 #include "gamewin.h"
 #include "Gump_button.h"
-#include <Yesno_gump.h>
-#include <Configuration.h>
+#include "Yesno_gump.h"
+#include "Configuration.h"
 AdvancedOptions_gump::AdvancedOptions_gump(
 		std::vector<ConfigSetting_widget::Definition>* settings,
 		std::string&& title, std::string&& helpurl)
