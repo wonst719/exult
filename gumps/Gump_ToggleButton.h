@@ -60,7 +60,7 @@ private:
 class Gump_ToggleTextButton : public Text_button {
 public:
 	Gump_ToggleTextButton(
-			Gump* par, const std::vector<std::string>& s, int selectionnum,
+			Gump_Base* par, const std::vector<std::string>& s, int selectionnum,
 			int px, int py, int width, int height = 0)
 			: Text_button(par, "", px, py, width, height), selections(s) {
 		set_frame(selectionnum);
@@ -69,7 +69,7 @@ public:
 	}
 
 	Gump_ToggleTextButton(
-			Gump* par, std::vector<std::string>&& s, int selectionnum, int px,
+			Gump_Base* par, std::vector<std::string>&& s, int selectionnum, int px,
 			int py, int width, int height = 0)
 			: Text_button(par, "", px, py, width, height),
 			  selections(std::move(s)) {
@@ -98,20 +98,37 @@ template <typename Parent>
 class CallbackToggleTextButton : public Gump_ToggleTextButton {
 public:
 	using CallbackType = void (Parent::*)(int state);
+	using CallbackType2 = void (Parent::*)(Gump_widget*);
 
 	template <typename... Ts>
 	CallbackToggleTextButton(Parent* par, CallbackType&& callback, Ts&&... args)
 			: Gump_ToggleTextButton(par, std::forward<Ts>(args)...),
-			  parent(par), on_toggle(std::forward<CallbackType>(callback)) {}
+			  parent(par), on_toggle(std::forward<CallbackType>(callback)) {}	template <typename... Ts>
+	CallbackToggleTextButton(Parent* par, CallbackType2&& callback, Ts&&... args)
+			: Gump_ToggleTextButton(par, std::forward<Ts>(args)...),
+			  parent(par), on_toggle2(std::forward<CallbackType2>(callback)) {}
 
 	void toggle(int state) override {
-		(parent->*on_toggle)(state);
+		if(on_toggle)(parent->*on_toggle)(state);
+		if(on_toggle2)(parent->*on_toggle2)(this);
 		parent->paint();
 	}
 
 private:
 	Parent*      parent;
-	CallbackType on_toggle;
+	CallbackType on_toggle=nullptr;
+	CallbackType2 on_toggle2=nullptr;
+	
 };
-
+template <typename Parent>
+class SelfManagedCallbackToggleTextButton : public CallbackToggleTextButton<Parent>
+{
+public:
+	template <typename... Ts>
+	SelfManagedCallbackToggleTextButton(Ts&&... args)
+		: CallbackToggleTextButton<Parent>(std::forward<Ts>(args)...)
+	{
+		Gump_button::set_self_managed(true);
+	}
+};
 #endif
