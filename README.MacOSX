@@ -135,30 +135,29 @@ For building a disk image for Exult Studio, run:
   make studiodmg
 
 
-How to build the Gimp 3.0 plugin
---------------------------------
+How to build the Gimp 3.0 plug-in
+---------------------------------
 
-Unfortunately there is no easy way to build the plugin for Gimp 3.0 at the 
-moment as MacPorts only provides Gimp 3.0 RC1 and its install is broken.
+Currently the only reliable way is to follow the instructions of how to build 
+The Gimp on https://developer.gimp.org/core/setup/build/macos/.
+Unfortunately as this is not relying on any prebuilt packages, it takes a long 
+time to build everything. But the developers of 
+https://gitlab.gnome.org/Infrastructure/gimp-macos-build are looking into making 
+plug-in creation easier.
 
-Once the package in MacPorts is fixed, follow these instructions.
-
-With MacPorts install:
-  gimp3 +quartz
-
-Then re-run configure and make
-  ./configure --enable-tools --enable-gimp-plugin
+Then re-run Exult's configure and make
+  ./configure --enable-tools --enable-gimp-plugin=user
   make
   make install
 
-The Gimp plugin "u7shp" will be installed into 
+The Gimp plug-in "u7shp" will be installed into 
 ~/Library/Application Support/GIMP/3.0/plug-ins/u7shp.
-Note that this is again not  static a  build of the plugin and relies on your 
-MacPorts installation.
-So if you uninstall MacPorts the Plugin will cease to work.
+Note that this is ot a static build of the plug-in and relies on your 
+gimp-macos-build installation.
+So if you uninstall gimp-macos-build the plug-in will cease to work.
 
-How to build the Gimp 2.x plugin
---------------------------------
+How to build the Gimp 2.x plug-in
+---------------------------------
 
 With MacPorts install:
   gimp2 +quartz
@@ -167,9 +166,9 @@ Then re-run configure and make
   ./configure --enable-tools --enable-gimp-plugin
   make
 
-You will then find the Gimp plugin "u7shp" in the mapedit folder of our source. 
+You will then find the Gimp plug-in "u7shp" in the mapedit folder of our source. 
 For the Gimp to use it you need to copy it into 
 ~/Library/Application Support/GIMP/2.10/plug-ins.
-Note that this is again not  static a  build of the plugin and relies on your 
+Note that this is not a static build of the plug-in and relies on your 
 MacPorts installation.
-So if you uninstall MacPorts the Plugin will cease to work.
+So if you uninstall MacPorts the plug-in will cease to work.

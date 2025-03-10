@@ -6,17 +6,19 @@ With it you can edit *.shp files used by Exult and the original Ultima VII. This
 
 Get the installer for The Gimp at http://www.gimp.org/downloads/
 
+
 Install for Gimp 2
 ==================
 
 - Install the Gimp (example: C:\Program Files\GIMP 2)
 - execute Gimp20Plugin.exe and choose C:\Program Files\GIMP 2\lib\gimp\2.0\plug-ins (if you installed the Gimp somewhere else, change accordingly) for extract path. If you extracted the file to some other directory copy u7shp.exe into that directory
 
+
 Install for Gimp 3
 ==================
 
 - Install the Gimp (example: C:\Program Files\GIMP 3)
-- execute Gimp30Plugin.exe which will install the plugin to %APPDATA%\gimp\3.0\plug-ins\u7shp
+- execute Gimp30Plugin.exe which will install the plug-in to %APPDATA%\gimp\3.0\plug-ins\u7shp
 
 
 Usage
@@ -24,6 +26,7 @@ Usage
 - Drag and drop *.shp files into the Gimp. You don't need to select a palette file (press either "Ok" or "Cancel" with Gimp 2.x or just "Ok" nwith Gimp 3.x).
 - edit (see the Gimp manual on how to edit graphics)
 - save
+
 
 Notes
 =====
