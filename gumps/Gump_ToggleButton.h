@@ -43,7 +43,7 @@ public:
 	void unpush(MouseButton button) override;
 	bool activate(MouseButton button) override;
 
-	int getselection() const {
+	int getselection() const override {
 		return get_framenum() / 2;
 	}
 
@@ -82,9 +82,11 @@ public:
 	void unpush(MouseButton button) override;
 	bool activate(MouseButton button) override;
 
-	int getselection() const {
+	int getselection() const override{
 		return get_framenum();
 	}
+
+	void setselection(int newsel) override;
 
 	virtual void toggle(int state) = 0;
 

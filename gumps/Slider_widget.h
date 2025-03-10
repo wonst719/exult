@@ -39,7 +39,7 @@ public:
 
 public:
 	//! Construct a Slider Widget
-	//! /param par Parent of this Widget, If it implemets ICallback, it will be
+	//! /param par Parent of this Widget, If it implements ICallback, it will be
 	//! used as the default callback
 	//! /param width. How wide the sliding region should be.
 	//!  determines how far apart the left and right buttons should be
@@ -73,8 +73,12 @@ private:
 	Gump_button* pushed;
 
 public:
-	int get_val() {    // Get last value set.
+	int getselection() const override {    // Get last value set.
 		return val;
+	}
+
+	void setselection(int newval) override {
+		set_val(newval);
 	}
 
 	// An arrow was clicked on.

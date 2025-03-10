@@ -120,6 +120,18 @@ public:
 		}
 	}
 
+	/// For a widget that has a value or selectable state, get the current value
+	/// or selected state
+	virtual int getselection() const {
+		return 0;
+	}
+
+	/// For a widget that has a value or selectable state, set the current value
+	/// or selected state
+	virtual void setselection(int newsel) {
+		ignore_unused_variable_warning(newsel);
+	}
+
 	//
 	// Sorted Painting
 	//
