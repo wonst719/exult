@@ -1289,6 +1289,10 @@ int XMidiFile::CreateMT32SystemMessage(
 	auto sysex_buffer
 			= current->ex.sysex_data.set_len(sysex_data_start + len + 2);
 
+	// If set_len fails, we are in big trouble
+	if (!sysex_buffer) {
+		return 0;
+	}
 	// MT32 Sysex Header
 	sysex_buffer[0] = 0x41;    // Roland SysEx ID
 	sysex_buffer[1] = 0x10;    // Device ID (assume 0x10, Device 17)
