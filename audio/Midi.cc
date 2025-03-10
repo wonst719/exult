@@ -653,7 +653,8 @@ bool MyMidiPlayer::init_device(bool timbre_load) {
 
 	// Music conversion
 	config->value("config/audio/midi/convert", s, "gm");
-
+	for (char& c : s) 
+		c = std::tolower(c);
 	if (s == "gs") {
 		music_conversion = XMIDIFILE_CONVERT_MT32_TO_GS;
 	} else if (s == "mt32") {
@@ -810,6 +811,8 @@ MyMidiPlayer::~MyMidiPlayer() {
 void MyMidiPlayer::destroyMidiDriver() {
 	if (midi_driver) {
 		midi_driver->destroyMidiDriver();
+		midi_driver = nullptr;
+		initialized = false;
 	}
 }
 
