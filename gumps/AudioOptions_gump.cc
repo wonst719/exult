@@ -47,20 +47,22 @@
 #include "game.h"
 #include "gamewin.h"
 #include "mouse.h"
-
+#include "MidiDriver.h"
+#include "AdvancedOptions_gump.h"
 #include <iostream>
 #include <sstream>
 
 using namespace Pentagram;
 
 static const int rowy[]
-		= {5, 17, 29, 41, 56, 68, 80, 92, 104, 116, 131, 143, 158, 173};
+		= {5, 17, 29, 41, 56, 68, 80, 92, 104, 116, 131, 143, 158, 173, 185};
 static const int colx[] = {35, 50, 134};
 
-static const char* applytext  = "APPLY";
-static const char* canceltext = "CANCEL";
-static const char* helptext   = "HELP";
-static const char* mixertext  = "VOLUME MIXER";
+static const char  applytext[]    = "APPLY";
+static const char  canceltext[]   = "CANCEL";
+static const char  helptext[]     = "HELP";
+static const char  mixertext[]    = "VOLUME MIXER";
+static const char  advancedtext[] = "ADVANCED MIDI";
 
 uint32 AudioOptions_gump::sample_rates[5]  = {11025, 22050, 44100, 48000, 0};
 int    AudioOptions_gump::num_sample_rates = 0;
@@ -73,6 +75,40 @@ void AudioOptions_gump::mixer() {
 	auto* vol_mix = new Mixer_gump();
 	gumpman->do_modal_gump(vol_mix, Mouse::hand);
 	delete vol_mix;
+}
+
+void AudioOptions_gump::advanced() {
+	MyMidiPlayer* midi = Audio::get_ptr()->get_midi();
+	//this shouldnever happemn if we got here
+	if (!midi || !Audio::get_ptr()->is_music_enabled()) {
+		return;
+	}
+	std::string   s    = "default";
+	if (midi_driver != MidiDriver::getDriverCount()) {
+		s = MidiDriver::getDriverName(midi_driver);
+	}
+	AdvancedOptions_gump aog(
+			&advancedsettings, "Advanced settings for\n" + s + " midi driver.",
+			"https://exult.info/docs.php#advanced_midi_gump");
+
+	if (gumpman->do_modal_gump(&aog, Mouse::hand)) {
+		// Reload mididriver
+		auto track_playing      = midi->get_current_track();
+		auto looping            = midi->is_repeating();
+		midi->destroyMidiDriver();
+		midi->can_play_midi();
+
+		if (!gwin->is_background_track(track_playing) || midi->get_ogg_enabled()
+			|| midi->is_mt32() || gwin->is_in_exult_menu()) {
+			if (gwin->is_in_exult_menu()) {
+				Audio::get_ptr()->start_music(
+						EXULT_FLX_MEDITOWN_MID, true, MyMidiPlayer::Force_None,
+						EXULT_FLX);
+			} else {
+				Audio::get_ptr()->start_music(track_playing, looping);
+			}
+		}
+	}
 }
 
 void AudioOptions_gump::close() {
@@ -260,51 +296,25 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 #endif
 }
 
+
 void AudioOptions_gump::rebuild_mididriveroption_buttons() {
 	std::string s = "Default";
 	if (midi_driver != MidiDriver::getDriverCount()) {
 		s = MidiDriver::getDriverName(midi_driver);
 	}
 
-	if (s != "FMOpl" && s != "MT32Emu" && s != "Disabled") {
-#ifdef MACOSX
-		int string_size = 5;
-		if (s == "Default" || s == "CoreAudio") {
-			if (midi_conversion > 3) {
-				midi_conversion = 0;
-			}
-			string_size = 4;
-		}
-#else
-		const int string_size = 5;
-#endif
-		std::vector<std::string> midi_conversiontext
-				= {"Fake MT32", "GM", "GS", "GS127"};
-		if (string_size == 5) {
-			midi_conversiontext.emplace_back("MT32");
-		}
+	advancedsettings = MidiDriver::get_midi_driver_settings(MidiDriver::getDriverName(midi_driver));
 
-		// midi conversion
-		buttons[id_midi_conv] = std::make_unique<AudioTextToggle>(
-				this, &AudioOptions_gump::toggle_midi_conv,
-				std::move(midi_conversiontext), midi_conversion, colx[2] - 7,
-				rowy[8], 66);
+	// put advanced setting button on now empty row 13
+	if (!advancedsettings.empty()) {
+		buttons[id_advanced] = std::make_unique<AudioOptions_button>(
+				this, &AudioOptions_gump::advanced, advancedtext, colx[2] - 33,
+				rowy[8], 92);
 	} else {
-		buttons[id_midi_conv].reset();
+		buttons[id_advanced].reset();
 	}
-
-	if (s != "FMOpl" && s != "Disabled") {
-		std::vector<std::string> midi_reverbchorustext
-				= {"Disabled", "Reverb", "Chorus", "Both"};
-
-		// reverb/chorus combo
-		buttons[id_midi_effects] = std::make_unique<AudioTextToggle>(
-				this, &AudioOptions_gump::toggle_midi_effects,
-				std::move(midi_reverbchorustext), midi_reverb_chorus, colx[2],
-				rowy[9], 59);
-	} else {
-		buttons[id_midi_effects].reset();
-	}
+	// force repaint of screen
+	gwin->set_all_dirty();
 }
 
 void AudioOptions_gump::load_settings() {
@@ -345,7 +355,7 @@ void AudioOptions_gump::load_settings() {
 
 	MyMidiPlayer* midi = Audio::get_ptr()->get_midi();
 	if (midi) {
-		midi_conversion  = midi->get_music_conversion();
+
 		midi_ogg_enabled = midi->get_ogg_enabled();
 
 		s = midi->get_midi_driver();
@@ -364,23 +374,7 @@ void AudioOptions_gump::load_settings() {
 		// String for default value for driver type
 		std::string driver_default = "default";
 
-		config->value("config/audio/midi/convert", s, "gm");
-		if (s == "gs") {
-			midi_conversion = XMIDIFILE_CONVERT_MT32_TO_GS;
-		} else if (s == "none" || s == "mt32") {
-			midi_conversion = XMIDIFILE_CONVERT_NOCONVERSION;
-		} else if (s == "gs127") {
-			midi_conversion = XMIDIFILE_CONVERT_MT32_TO_GS127;
-		} else if (s == "gs127drum") {
-			midi_conversion = XMIDIFILE_CONVERT_MT32_TO_GS;
-		} else if (s == "fakemt32") {
-			midi_conversion = XMIDIFILE_CONVERT_GM_TO_MT32;
-		} else {
-			midi_conversion = XMIDIFILE_CONVERT_MT32_TO_GM;
-			config->set("config/audio/midi/convert", "gm", true);
 
-			driver_default = "s";
-		}
 
 		// OGG Vorbis support
 		config->value("config/audio/midi/use_oggs", s, "no");
@@ -415,11 +409,6 @@ void AudioOptions_gump::load_settings() {
 #endif
 	}
 
-	config->value("config/audio/midi/reverb/enabled", s, "no");
-	midi_reverb_chorus = (s == "yes" ? 1 : 0);
-
-	config->value("config/audio/midi/chorus/enabled", s, "no");
-	midi_reverb_chorus |= (s == "yes" ? 2 : 0);
 
 	const std::string d
 			= "config/disk/game/" + Game::get_gametitle() + "/waves";
@@ -497,18 +486,23 @@ AudioOptions_gump::AudioOptions_gump() : Modal_gump(nullptr, -1) {
 	buttons[id_audio_enabled] = std::make_unique<AudioEnabledToggle>(
 			this, &AudioOptions_gump::toggle_audio_enabled, audio_enabled,
 			colx[2], rowy[1], 59);
-	// Ok
+	// Apply
 	buttons[id_apply] = std::make_unique<AudioOptions_button>(
 			this, &AudioOptions_gump::save_settings, applytext, colx[0] - 2,
 			rowy[13], 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<AudioOptions_button>(
-			this, &AudioOptions_gump::cancel, canceltext, colx[2] + 9, rowy[13],
+			this, &AudioOptions_gump::cancel, canceltext, colx[2] + 9,
+			rowy[13],
 			50);
 	// Help
 	buttons[id_help] = std::make_unique<AudioOptions_button>(
-			this, &AudioOptions_gump::help, helptext, colx[2] - 46, rowy[13],
+			this, &AudioOptions_gump::help, helptext, colx[2] - 46,
+			rowy[13],
 			50);
+
+	// always recentre here
+	set_pos();
 }
 
 void AudioOptions_gump::save_settings() {
@@ -552,12 +546,7 @@ void AudioOptions_gump::save_settings() {
 	config->set(
 			"config/audio/speech/with_subs",
 			(speech_option == speech_on_with_subtitles) ? "yes" : "no", false);
-	config->set(
-			"config/audio/midi/chorus/enabled",
-			(midi_reverb_chorus & 2) ? "yes" : "no", false);
-	config->set(
-			"config/audio/midi/reverb/enabled",
-			(midi_reverb_chorus & 1) ? "yes" : "no", false);
+
 
 	const char* midi_looping_values[] = {"never", "limited", "auto", "endless"};
 	config->set(
@@ -591,28 +580,11 @@ void AudioOptions_gump::save_settings() {
 			s = MidiDriver::getDriverName(midi_driver);
 		}
 		midi->set_midi_driver(s, midi_ogg_enabled != 0);
-		midi->set_music_conversion(midi_conversion);
 #ifdef ENABLE_MIDISFX
 		midi->set_effects_conversion(sfx_conversion);
 #endif
 	} else {
-		switch (midi_conversion) {
-		case XMIDIFILE_CONVERT_MT32_TO_GS:
-			config->set("config/audio/midi/convert", "gs", false);
-			break;
-		case XMIDIFILE_CONVERT_NOCONVERSION:
-			config->set("config/audio/midi/convert", "mt32", false);
-			break;
-		case XMIDIFILE_CONVERT_MT32_TO_GS127:
-			config->set("config/audio/midi/convert", "gs127", false);
-			break;
-		case XMIDIFILE_CONVERT_GM_TO_MT32:
-			config->set("config/audio/midi/convert", "fakemt32", false);
-			break;
-		default:
-			config->set("config/audio/midi/convert", "gm", false);
-			break;
-		}
+
 
 		if (midi_driver == MidiDriver::getDriverCount()) {
 			config->set("config/audio/midi/driver", "default", false);
@@ -648,6 +620,7 @@ void AudioOptions_gump::save_settings() {
 			Audio::get_ptr()->start_music(track_playing, looping);
 		}
 	}
+
 }
 
 void AudioOptions_gump::paint() {
@@ -679,16 +652,7 @@ void AudioOptions_gump::paint() {
 				font->paint_text(
 						iwin->get_ib8(), "midi driver", x + colx[1],
 						y + rowy[7] + 1);
-				if (buttons[id_midi_conv] != nullptr) {
-					font->paint_text(
-							iwin->get_ib8(), "device type", x + colx[1],
-							y + rowy[8] + 1);
-				}
-				if (buttons[id_midi_effects] != nullptr) {
-					font->paint_text(
-							iwin->get_ib8(), "effects", x + colx[1],
-							y + rowy[9] + 1);
-				}
+
 			}
 		}
 		font->paint_text(
