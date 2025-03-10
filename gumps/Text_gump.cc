@@ -140,9 +140,8 @@ int Text_gump::paint_page(const TileRect& box, int start) {
 					}
 
 					// Use existing markers to find earliest upcoming marker
-					const char* earliest
-							= text + textlen;    // default: measure to
-												 // end-of-text
+					char* earliest = text + textlen; // default: measure to
+													 // end-of-text
 
 					// Use same check for both page break markers
 					if ((pageBreakStar > eol + 1 && pageBreakStar < earliest)
@@ -167,7 +166,7 @@ int Text_gump::paint_page(const TileRect& box, int start) {
 									  // measurement only
 							box.w, available, vlead);
 					// Restore the character we replaced.
-					*((char*)earliest) = saved;
+					*earliest = saved;
 
 					if (peekHeight > 0
 						&& peekHeight
