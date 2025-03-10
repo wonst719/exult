@@ -48,7 +48,7 @@ public:
 		return true;
 	}
 
-	int getselection() const {
+	int getselection() const override {
 		return get_framenum();
 	}
 
@@ -57,9 +57,7 @@ public:
 	}
 
 	// Set a new selection. This does not bounds check and will accept any value
-	void setselection(int newsel) {
-		set_frame(newsel);
-	}
+	void setselection(int newsel) override;
 
 	/// Set the selection to the input string
 	/// optionally adding it if it doesn't already exist

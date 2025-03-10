@@ -97,6 +97,11 @@ bool StringList_widget::mouse_down(int mx, int my, MouseButton button) {
 	return true;
 }
 
+void StringList_widget::setselection(int newsel) {
+	set_frame(newsel);
+	gwin->add_dirty(get_rect());
+}
+
 bool StringList_widget::on_widget(int mx, int my) const {
 	return get_rect().has_point(mx, my);
 }
