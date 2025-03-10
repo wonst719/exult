@@ -87,7 +87,9 @@ libgumps_la_SOURCES = \
 	ItemMenu_gump.cc \
 	ItemMenu_gump.h	\
 	InputOptions_gump.cc	\
-	InputOptions_gump.h
+	InputOptions_gump.h \
+	Scrollable_widget.cc \
+	Scrollable_widget.h
 endif
 
 CLEANFILES = *~
