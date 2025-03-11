@@ -53,6 +53,8 @@ public:
 		return &desc;
 	}
 
+	std::vector<ConfigSetting_widget::Definition> GetSettings() override;
+
 protected:
 	int  open() override;
 	void close() override;
