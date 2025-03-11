@@ -36,17 +36,18 @@ const MidiDriver::MidiDriverDesc FluidSynthMidiDriver::desc
 std::vector<ConfigSetting_widget::Definition> FluidSynthMidiDriver::
 		GetSettings() {
 	ConfigSetting_widget::Definition soundfont{
-			"Soundfont", // label
-			"config/audio/midi/fluidsynth_soundfont", // config_setting
-			11, // max_count
-			true, // unique
-			true,                                        // required
+			"Soundfont",                                  // label
+			"config/audio/midi/fluidsynth_soundfont",     // config_setting
+			11,                                           // additional
+			true,                                         // required
+			true,                                         // unique
 			ConfigSetting_widget::Definition::dropdown    // setting_type
 	};
 	soundfont.add_filenames_to_choices("<BUNDLE>/*.sf2");
 	soundfont.add_filenames_to_choices("<DATA>/*.sf2");
+	soundfont.add_filenames_to_choices("<BUNDLE>/*.SF2");
+	soundfont.add_filenames_to_choices("<DATA>/*.SF2");
 	soundfont.default_value = "default.sf2";
-
 
 	soundfont.sort_choices();
 	auto settings = MidiDriver::GetSettings();
@@ -119,7 +120,7 @@ int FluidSynthMidiDriver::open() {
 	}
 	for (size_t i = 0; i < 10; i++) {
 		const std::string settingkey = sfsetting + static_cast<char>(i + '0');
-		soundfont = getConfigSetting(settingkey, "");
+		soundfont                    = getConfigSetting(settingkey, "");
 		if (!soundfont.empty()) {
 			for (auto& d : options) {
 				std::string f;
