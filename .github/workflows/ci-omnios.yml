@@ -125,8 +125,8 @@ jobs:
           tar -zxpf bootstrap-2024Q4-x86_64.tar.gz -C /
           export PATH=/opt/local/bin:/opt/local/sbin:$PATH
           export MANPATH=/opt/local/man:$MANPATH
-          pkgin update
-          pkgin upgrade
+          pkgin -y update
+          pkgin -y upgrade
           pkgin -y install at-spi2-core xorgproto
           pkgin -y install alsa-lib fluidsynth libogg libvorbis
           pkgin -y install autoconf autoconf-archive automake bison flex gettext \
