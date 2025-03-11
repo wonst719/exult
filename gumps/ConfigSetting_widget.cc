@@ -409,7 +409,7 @@ void ConfigSetting_widget::Definition::sort_choices() {
 void ConfigSetting_widget::Definition::add_filenames_to_choices(
 		const std::string& mask,bool strip_directory) {
 	FileList files;
-	U7ListFiles(mask, files);
+	U7ListFiles(mask, files,true);
 
 	choices.reserve(choices.size() + files.size());
 	for (std::string_view filename : files)
