@@ -25,10 +25,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Configuration.h"
 AdvancedOptions_gump::AdvancedOptions_gump(
 		std::vector<ConfigSetting_widget::Definition>* settings,
-		std::string&& title, std::string&& helpurl)
+		std::string&& title, std::string&& helpurl,
+		std::function<void()> applycallback)
 		: Modal_gump(nullptr, -1), settings(settings), title(std::move(title)),
 		  helpurl(std::move(helpurl)),
-		  font(fontManager.get_font("SMALL_BLACK_FONT")) {
+		  font(fontManager.get_font("SMALL_BLACK_FONT")), applycallback(applycallback) {
 	
 	elems.reserve(5);
 	TileRect rect = TileRect(0, 0, 220, 186); 
@@ -277,6 +278,8 @@ void AdvancedOptions_gump::on_apply() {
 		}
 	}
 	config->write_back();
+	if (applycallback)
+		applycallback();
 }
 
 void AdvancedOptions_gump::on_cancel() {

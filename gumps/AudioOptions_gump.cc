@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// Includes Pentagram headers so we must include pent_include.h
+ // Includes Pentagram headers so we must include pent_include.h
 #include "pent_include.h"
 
 #ifdef __GNUC__
@@ -55,21 +55,21 @@
 using namespace Pentagram;
 
 static const int rowy[]
-		= {5, 17, 29, 41, 56, 68, 80, 92, 104, 116, 131, 143, 158, 173, 185};
-static const int colx[] = {35, 50, 134};
+= { 5, 17, 29, 41, 56, 68, 80, 92, 104, 116, 131, 143, 158, 173, 185 };
+static const int colx[] = { 35, 50, 134 };
 
-static const char  applytext[]    = "APPLY";
-static const char  canceltext[]   = "CANCEL";
-static const char  helptext[]     = "HELP";
-static const char  mixertext[]    = "VOLUME MIXER";
+static const char  applytext[] = "APPLY";
+static const char  canceltext[] = "CANCEL";
+static const char  helptext[] = "HELP";
+static const char  mixertext[] = "VOLUME MIXER";
 static const char  advancedtext[] = "ADVANCED MIDI";
 
-uint32 AudioOptions_gump::sample_rates[5]  = {11025, 22050, 44100, 48000, 0};
+uint32 AudioOptions_gump::sample_rates[5] = { 11025, 22050, 44100, 48000, 0 };
 int    AudioOptions_gump::num_sample_rates = 0;
 
 using AudioOptions_button = CallbackTextButton<AudioOptions_gump>;
-using AudioTextToggle     = CallbackToggleTextButton<AudioOptions_gump>;
-using AudioEnabledToggle  = CallbackEnabledButton<AudioOptions_gump>;
+using AudioTextToggle = CallbackToggleTextButton<AudioOptions_gump>;
+using AudioEnabledToggle = CallbackEnabledButton<AudioOptions_gump>;
 
 void AudioOptions_gump::mixer() {
 	auto* vol_mix = new Mixer_gump();
@@ -78,37 +78,44 @@ void AudioOptions_gump::mixer() {
 }
 
 void AudioOptions_gump::advanced() {
-	MyMidiPlayer* midi = Audio::get_ptr()->get_midi();
-	//this shouldnever happemn if we got here
-	if (!midi || !Audio::get_ptr()->is_music_enabled()) {
-		return;
-	}
-	std::string   s    = "default";
+	// this shouldnever happen if we got here
+
+	std::string midi_driver_name = "default";
 	if (midi_driver != MidiDriver::getDriverCount()) {
-		s = MidiDriver::getDriverName(midi_driver);
+		midi_driver_name = MidiDriver::getDriverName(midi_driver);
 	}
 	AdvancedOptions_gump aog(
-			&advancedsettings, "Advanced settings for\n" + s + " midi driver.",
-			"https://exult.info/docs.php#advanced_midi_gump");
-
-	if (gumpman->do_modal_gump(&aog, Mouse::hand)) {
-		// Reload mididriver
-		auto track_playing      = midi->get_current_track();
-		auto looping            = midi->is_repeating();
+			&advancedsettings,
+			"Advanced settings for\n" + midi_driver_name + " midi driver.",
+			"https://exult.info/docs.php#advanced_midi_gump",
+			[midi_driver_name]
+	{
+		MyMidiPlayer* midi = Audio::get_ptr()->get_midi();
+		if (!midi || !Audio::get_ptr()->is_music_enabled()) {
+			return;
+		}
+		// Only reinit midi driver if the diver we changed settings for is the courrenyly used driver
+		if (midi->get_midi_driver() != midi_driver_name) {
+			return;
+		}
+		auto track_playing = midi->get_current_track();
+		auto looping       = midi->is_repeating();
 		midi->destroyMidiDriver();
 		midi->can_play_midi();
+				if (!gwin->is_background_track(track_playing)
+					|| midi->get_ogg_enabled() || midi->is_mt32()
+					|| gwin->is_in_exult_menu()) {
+					if (gwin->is_in_exult_menu()) {
+						Audio::get_ptr()->start_music(
+								EXULT_FLX_MEDITOWN_MID, true,
+								MyMidiPlayer::Force_None, EXULT_FLX);
+					} else {
+						Audio::get_ptr()->start_music(track_playing, looping);
+					}
+				}
+		});
 
-		if (!gwin->is_background_track(track_playing) || midi->get_ogg_enabled()
-			|| midi->is_mt32() || gwin->is_in_exult_menu()) {
-			if (gwin->is_in_exult_menu()) {
-				Audio::get_ptr()->start_music(
-						EXULT_FLX_MEDITOWN_MID, true, MyMidiPlayer::Force_None,
-						EXULT_FLX);
-			} else {
-				Audio::get_ptr()->start_music(track_playing, looping);
-			}
-		}
-	}
+	gumpman->do_modal_gump(&aog, Mouse::hand);
 }
 
 void AudioOptions_gump::close() {

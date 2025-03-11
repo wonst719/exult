@@ -88,7 +88,7 @@ public:
 
 	void set_midi_driver(const std::string& desired_driver, bool use_oggs);
 
-	std::string get_midi_driver() {
+	std::string_view get_midi_driver() {
 		return midi_driver_name;
 	}
 

@@ -2,6 +2,7 @@
 #include "Modal_gump.h"
 #include "ConfigSetting_widget.h"
 #include "Scrollable_widget.h"
+#include <functional>
 
 class AdvancedOptions_gump : public Modal_gump{
 
@@ -17,7 +18,9 @@ class AdvancedOptions_gump : public Modal_gump{
 
 public:
 	AdvancedOptions_gump(
-			std::vector<ConfigSetting_widget::Definition>* settings, std::string&&title,std::string&&helpurl);
+			std::vector<ConfigSetting_widget::Definition>* settings,
+			std::string&& title, std::string&& helpurl,
+			std::function<void()> applycallback);
 			~AdvancedOptions_gump() override;
 
 	bool mouse_down(int mx, int my, MouseButton button) override;
@@ -35,6 +38,7 @@ public:
 	// alternative 
 	void paint_elems() override;
 
+	std::function<void()> applycallback;
 	void on_apply();
 	void on_cancel();
 	void on_help();
