@@ -215,7 +215,7 @@ void CoreMidiDriver::increaseThreadPriority() {
 
 std::vector<ConfigSetting_widget::Definition> CoreMidiDriver::GetSettings() {
 	ConfigSetting_widget::Definition midi_device{
-			"CoreMIDI Device",                          // label
+			"CoreMIDI Device",                            // label
 			"config/audio/midi/coremidi_device",          // config_setting
 			0,                                            // additional
 			false,                                        // required
@@ -224,7 +224,7 @@ std::vector<ConfigSetting_widget::Definition> CoreMidiDriver::GetSettings() {
 	};
 
 	// List all the midi devices and fill midi_device.valid.string
-	ItemCount   dests = MIDIGetNumberOfDestinations();
+	ItemCount dests = MIDIGetNumberOfDestinations();
 	midi_device.choices.reserve(int(dests) + 1);
 
 	// List device ID and names of CoreMidi destinations
@@ -251,7 +251,7 @@ std::vector<ConfigSetting_widget::Definition> CoreMidiDriver::GetSettings() {
 	midi_device.default_value = "0";
 
 	auto settings = MidiDriver::GetSettings();
-	settings.push_back(midi_device);
+	settings.push_back(std::move(midi_device));
 	return settings;
 }
 

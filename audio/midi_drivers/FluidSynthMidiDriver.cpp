@@ -51,7 +51,7 @@ std::vector<ConfigSetting_widget::Definition> FluidSynthMidiDriver::
 
 	soundfont.sort_choices();
 	auto settings = MidiDriver::GetSettings();
-	settings.push_back(soundfont);
+	settings.push_back(std::move(soundfont));
 	return settings;
 }
 

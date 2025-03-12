@@ -409,9 +409,9 @@ std::vector<ConfigSetting_widget::Definition> ALSAMidiDriver::GetSettings() {
 	// close will deallocate infos and handle for us
 	// but only if not open because if open they will be frred later
 	if (!isOpen) close();
-	
-	
-	return {ports};
-	
+
+	auto settings = MidiDriver::GetSettings();
+	settings.push_back(std::move(ports));
+	return settings;
 }
 #endif

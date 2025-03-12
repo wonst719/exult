@@ -262,12 +262,12 @@ std::vector<ConfigSetting_widget::Definition> WindowsMidiDriver::GetSettings() {
 		if (i == -1) {
 			choice.value.swap(choice.alternative);
 		}
-		midi_device.choices.push_back(std::move(choice));
+		midi_device.choices.push_back(choice);
 	}
 	midi_device.default_value = "-1";
 
 	auto settings = MidiDriver::GetSettings();
-	settings.push_back(midi_device);
+	settings.push_back(std::move(midi_device));
 	return settings;
 }
 
