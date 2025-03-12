@@ -45,6 +45,8 @@ public:
 		return &desc;
 	}
 
+	std::vector<ConfigSetting_widget::Definition> GetSettings() override;
+
 	CoreMidiDriver();
 	~CoreMidiDriver() override;
 
