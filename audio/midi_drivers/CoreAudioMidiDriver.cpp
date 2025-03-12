@@ -304,11 +304,9 @@ std::vector<ConfigSetting_widget::Definition> CoreAudioMidiDriver::
 	// found. If there is no soundfont then add in unset
 	// choice. The gump will complain if the users tries to usethis
 	if (soundfont.choices.empty()) {
-		soundfont.choices
-				.push_back({"(Unset)", "", ""})
+		soundfont.choices.push_back({"(Unset)", "", ""});
 
-						soundfont.required
-				= true;
+		soundfont.required = true;
 	}
 
 	soundfont.default_value = soundfont.choices.front().value;
