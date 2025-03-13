@@ -62,7 +62,7 @@ static const char  applytext[] = "APPLY";
 static const char  canceltext[] = "CANCEL";
 static const char  helptext[] = "HELP";
 static const char  mixertext[] = "VOLUME MIXER";
-static const char  advancedtext[] = "ADVANCED MIDI";
+static const char  advancedtext[] = "SETTINGS";
 
 uint32 AudioOptions_gump::sample_rates[5] = { 11025, 22050, 44100, 48000, 0 };
 int    AudioOptions_gump::num_sample_rates = 0;
