@@ -635,7 +635,7 @@ void MyMidiPlayer::set_midi_driver(
 }
 
 std::string_view MyMidiPlayer::get_actual_midi_driver_name() {
-	return midi_driver ? midi_driver->getName() : "";
+	return midi_driver ? midi_driver->getName() : std::string_view();
 }
 
 bool MyMidiPlayer::init_device(bool timbre_load) {

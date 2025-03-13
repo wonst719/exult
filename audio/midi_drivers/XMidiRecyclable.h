@@ -151,7 +151,7 @@ public:
 	T* next = nullptr;    // Linked list next pointer
 };
 
-// needed explicit instantiation declaration to supress warnings from XCode
+// needed explicit instantiation declaration to supress warnings from clang
 template <>
 XMidiRecyclable<XMidiEvent>::FreeList
 		XMidiRecyclable<XMidiEvent>::FreeList::instance;

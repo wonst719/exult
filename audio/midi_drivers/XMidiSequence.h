@@ -261,4 +261,8 @@ private:
 	}
 };
 
+// needed explicit instantiation declaration to supress warnings from clang
+template <>
+XMidiRecyclable<XMidiSequence>::FreeList
+		XMidiRecyclable<XMidiSequence>::FreeList::instance;
 #endif    // XMIDISEQUENCE_H_INCLUDED

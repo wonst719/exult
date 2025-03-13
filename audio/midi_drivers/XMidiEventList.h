@@ -81,4 +81,9 @@ public:
 	}
 };
 
+// needed explicit instantiation declaration to supress warnings from clang
+template <>
+XMidiRecyclable<XMidiEventList>::FreeList
+		XMidiRecyclable<XMidiEventList>::FreeList::instance;
+
 #endif    // XMIDIEVENTLIST_H_INCLUDED

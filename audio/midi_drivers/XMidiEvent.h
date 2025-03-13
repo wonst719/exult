@@ -396,4 +396,9 @@ struct XMidiEvent : public XMidiRecyclable<XMidiEvent> {
 	}
 };
 
+// needed explicit instantiation declaration to supress warnings from clang
+template <>
+XMidiRecyclable<XMidiEvent>::FreeList
+		XMidiRecyclable<XMidiEvent>::FreeList::instance;
+
 #endif    // XMIDIEVENT_H_INCLUDED

@@ -300,7 +300,7 @@ void DropDown_widget::show_popup(bool show) {
 	gwin->set_all_dirty();
 }
 
-;
+
 
 void DropDown_widget::Button::paint() {
 	std::string save = {};
