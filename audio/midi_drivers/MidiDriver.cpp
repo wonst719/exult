@@ -199,11 +199,20 @@ std::vector<ConfigSetting_widget::Definition> MidiDriver::
 				"GS127", "gs127", "gs127"});
 		convert.choices.push_back(ConfigSetting_widget::Definition::Choice{
 				"Fake MT32", "fakemt32", "fakemt32"});
-		// Internal sample producers like fluid synth are not real mt32s so do
-		// not even show the option to select it
-		if (!driver->isSampleProducer()) {
+		// Real MT32 Option is only for devices that support a hardware port
+		if (driver->isRealMT32Supported()) {
 			convert.choices.push_back(ConfigSetting_widget::Definition::Choice{
 					"Real MT32", "none", "mt32"});
+		} else {
+			// make sure the config setting and the default is not mt32
+			if (convert.default_value == "mt32") {
+				convert.default_value = "fakemt32";
+			}
+
+			config->value(convert.config_setting, s, convert.default_value);
+			if (s == "mt32") {
+				config->set(convert.config_setting, "fakemt32", true);
+			}
 		}
 
 		result.push_back(convert);

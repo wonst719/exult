@@ -47,6 +47,10 @@ public:
 
 	std::vector<ConfigSetting_widget::Definition> GetSettings() override;
 
+	bool isRealMT32Supported() const override {
+		return true;
+	}
+
 	CoreMidiDriver();
 	~CoreMidiDriver() override;
 

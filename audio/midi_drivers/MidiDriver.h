@@ -20,9 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef MIDIDRIVER_H_INCLUDED
 #define MIDIDRIVER_H_INCLUDED
 
+#include "ConfigSetting_widget.h"
 #include "common_types.h"
 #include "ignore_unused_variable_warning.h"
-#include "ConfigSetting_widget.h"
 
 #include <atomic>
 #include <string>
@@ -37,8 +37,7 @@ protected:
 public:
 	//! Midi driver desription
 	struct MidiDriverDesc {
-		MidiDriverDesc(
-				const char* const n, std::shared_ptr<MidiDriver> (*c)())
+		MidiDriverDesc(const char* const n, std::shared_ptr<MidiDriver> (*c)())
 				: name(n), createInstance(c) {}
 
 		const char* const name;    //!< Name of the driver (for config, dialogs)
@@ -46,7 +45,7 @@ public:
 				*createInstance)();    //!< Pointer to a function
 									   //!< to create
 									   //!< an instance
-};
+	};
 
 	enum TimbreLibraryType {
 		TIMBRE_LIBRARY_U7VOICE_AD = 0,    // U7Voice for Adlib
@@ -67,7 +66,6 @@ public:
 
 	//! Destroy the driver
 	virtual void destroyMidiDriver() = 0;
-
 
 	bool isInitialized() {
 		return initialized;
@@ -151,6 +149,12 @@ public:
 		return false;
 	}
 
+	/// can this device use the Real Mt32 Convert Option
+	/// Should only be true for Hardwaer Midi Ports
+	virtual bool isRealMT32Supported() const {
+		return false;
+	}
+
 	//! Produce Samples when doing Software Synthesizing
 	//! \param samples The buffer to fill with samples
 	//! \param bytes The number of bytes of music to produce
@@ -205,8 +209,7 @@ public:
 	static std::vector<ConfigSetting_widget::Definition> get_midi_driver_settings(
 			const std::string& name);
 
-	virtual std::vector<ConfigSetting_widget::Definition>GetSettings()
-	{
+	virtual std::vector<ConfigSetting_widget::Definition> GetSettings() {
 		return {};
 	}
 
