@@ -298,6 +298,10 @@ std::vector<ConfigSetting_widget::Definition> CoreAudioMidiDriver::
 	soundfont.add_filenames_to_choices("<DATA>/*.sf2");
 	soundfont.add_filenames_to_choices("<BUNDLE>/*.SF2");
 	soundfont.add_filenames_to_choices("<DATA>/*.SF2");
+	soundfont.add_filenames_to_choices("<BUNDLE>/*.dls");
+	soundfont.add_filenames_to_choices("<DATA>/*.dls");
+	soundfont.add_filenames_to_choices("<BUNDLE>/*.DLS");
+	soundfont.add_filenames_to_choices("<DATA>/*.DLS");
 
 #	ifdef __IPHONEOS__
 	// IOS must set a soundfont and set the default to the first
