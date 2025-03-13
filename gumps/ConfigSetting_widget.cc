@@ -356,19 +356,34 @@ std::string ConfigSetting_widget::Validate() {
 }
 
 int ConfigSetting_widget::Definition::find_choice(
-		std::string_view value) const {
-	for (size_t i = 0; i < choices.size(); i++) {
-		auto& choice = choices[i];
-		if ((!Pentagram::strncasecmp(
-					 choice.value.c_str(), value.data(), value.size())
-			 && value.size() == choice.value.size())
-			|| (!choice.alternative.empty()
-				&& !Pentagram::strncasecmp(
-						choice.alternative.c_str(), value.data(), value.size())
-				&& value.size() == choice.alternative.size())) {
-			return i;
-		}
+		std::string_view value, bool case_insensitive) const {
+	auto found = std::find_if(
+			choices.begin(), choices.end(),
+			[value, case_insensitive](const Choice& choice) {
+				if (case_insensitive) {
+					if ((!Pentagram::strncasecmp(
+								 choice.value.c_str(), value.data(),
+								 value.size())
+						 && value.size() == choice.value.size())
+						|| (!choice.alternative.empty()
+							&& !Pentagram::strncasecmp(
+									choice.alternative.c_str(), value.data(),
+									value.size())
+							&& value.size() == choice.alternative.size())) {
+						return true;
+					}
+				} else {
+					if (choice.value == value || choice.alternative == value) {
+						return true;
+					}
+				}
+				return false;
+			});
+
+	if (found != choices.end()) {
+		return found - choices.begin();
 	}
+
 	return -1;
 }
 
@@ -400,6 +415,9 @@ void ConfigSetting_widget::Definition::add_filenames_to_choices(
 		}
 
 		choice.label = choice.alternative = choice.value = filename;
-		choices.push_back(choice);
+		// Only add it if it doesn't already exist
+		if (find_choice(filename, false) == -1) {
+			choices.push_back(choice);
+		}
 	}
 }

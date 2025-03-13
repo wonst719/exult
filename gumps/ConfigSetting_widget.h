@@ -95,7 +95,7 @@ public:
 		// settings Do not include the default or empty string value in this
 		// unless the user is always allowed to select these Do not set these to empty strings
 		std::vector<Choice> choices;
-		int                 find_choice(std::string_view value) const;
+		int                 find_choice(std::string_view value, bool case_insensitive = true) const;
 		void                sort_choices();
 
 		void add_filenames_to_choices(const std::string& mask,bool strip_directory=true);
