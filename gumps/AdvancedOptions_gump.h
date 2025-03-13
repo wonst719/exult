@@ -7,7 +7,6 @@
 class AdvancedOptions_gump : public Modal_gump{
 
 
-	std::vector<ConfigSetting_widget::Definition>* settings;
 	std::string                                    title;
 	std::string                                    helpurl;
 	std::shared_ptr<Font>                          font;

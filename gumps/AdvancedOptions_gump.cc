@@ -27,7 +27,7 @@ AdvancedOptions_gump::AdvancedOptions_gump(
 		std::vector<ConfigSetting_widget::Definition>* settings,
 		std::string&& title, std::string&& helpurl,
 		std::function<void()> applycallback)
-		: Modal_gump(nullptr, -1), settings(settings), title(std::move(title)),
+		: Modal_gump(nullptr, -1), title(std::move(title)),
 		  helpurl(std::move(helpurl)),
 		  font(fontManager.get_font("SMALL_BLACK_FONT")), applycallback(applycallback) {
 	
