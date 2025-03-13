@@ -479,8 +479,7 @@ void XMidiSequence::applyShadow(int i) {
 			i | int(MidiStatus::Controller)
 					| (int(MidiController::ResetControllers) << 8));
 
-	return;
-
+	
 	// Pitch Wheel
 	if (shadows[i].pitchWheel != def.pitchWheel) {
 		handler->sequenceSendEvent(
