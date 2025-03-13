@@ -179,13 +179,17 @@ std::vector<ConfigSetting_widget::Definition> MidiDriver::
 	if (driver && !driver->isFMSynth() && !driver->isMT32()) {
 		ConfigSetting_widget::Definition convert{
 				"device type",                                // label
-				"config/audio/midi/convert",                  // config_setting
+				"config/audio/midi/convert_" + driver->getName(),     // config_setting
 				0,                                            // additional
 				true,                                         // required
 				false,                                        // unique
 				ConfigSetting_widget::Definition::dropdown    // setting_type
 		};
-		convert.default_value = "gm";
+		// Get the default from the global setting if it exists
+		std::string s;
+		config->value("config/audio/midi/convert", s, "gm");
+		convert.default_value.swap(s);
+
 		convert.choices.push_back(ConfigSetting_widget::Definition::Choice{
 				"General Midi", "gm", "gm"});
 		convert.choices.push_back(
