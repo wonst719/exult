@@ -71,7 +71,7 @@ private:
 
 public:
 	XMidiFile() = delete;    // No default constructor
-	XMidiFile(IDataSource* source, int pconvert);
+	XMidiFile(IDataSource* source, int pconvert, std::string_view drivername);
 	~XMidiFile();
 
 	int number_of_tracks() {
@@ -132,7 +132,7 @@ private:
 			IDataSource* source, const uint32 ppqn, const int num_tracks,
 			const bool type1);
 
-	int ExtractTracks(IDataSource* source);
+	int ExtractTracks(IDataSource* source, std::string_view drivername);
 
 	int  ExtractTracksFromU7V(IDataSource* source);
 	int  ExtractTracksFromXMIDIMT(IDataSource* source);

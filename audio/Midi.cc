@@ -200,7 +200,9 @@ bool MyMidiPlayer::start_music(
 		return false;
 	}
 
-	XMidiFile midfile(mid_data.get(), setup_timbre_for_track(flex));
+	XMidiFile midfile(
+			mid_data.get(), setup_timbre_for_track(flex),
+			midi_driver->getName());
 
 	// Now give the xmidi object to the midi device
 
@@ -280,7 +282,8 @@ bool MyMidiPlayer::start_music(
 		return false;
 	}
 
-	XMidiFile midfile(&mid_data, setup_timbre_for_track(fname));
+	XMidiFile midfile(
+			&mid_data, setup_timbre_for_track(fname), midi_driver->getName());
 
 	// Now give the xmidi object to the midi device
 	XMidiEventList* eventlist = midfile.GetEventList(num);
@@ -631,6 +634,10 @@ void MyMidiPlayer::set_midi_driver(
 	init_device(true);
 }
 
+std::string_view MyMidiPlayer::get_actual_midi_driver_name() {
+	return midi_driver ? midi_driver->getName() : "";
+}
+
 bool MyMidiPlayer::init_device(bool timbre_load) {
 	// already initialized? Do this first
 	if (initialized) {
@@ -735,8 +742,7 @@ bool MyMidiPlayer::init_device(bool timbre_load) {
 				= "config/audio/midi/volume_" + midi_driver->getName();
 		int vol = midi_driver->getGlobalVolume();
 		config->value(volume_key, vol, vol);
-		config->set(volume_key, vol,
-				false);
+		config->set(volume_key, vol, false);
 		midi_driver->setGlobalVolume(vol);
 	}
 	config->value("config/audio/midi/volume_ogg", ogg_volume, ogg_volume);
@@ -749,13 +755,12 @@ bool MyMidiPlayer::init_device(bool timbre_load) {
 	// New style driver specific
 	std::string convert_key{};
 
-
 	if (midi_driver) {
 		convert_key = "config/audio/midi/convert_" + midi_driver->getName();
 	} else {
 		convert_key = "config/audio/midi/convert_" + midi_driver_name;
 	}
-		config->value(convert_key, s, s.c_str());
+	config->value(convert_key, s, s.c_str());
 
 	for (char& c : s) {
 		c = std::tolower(c);
@@ -773,16 +778,16 @@ bool MyMidiPlayer::init_device(bool timbre_load) {
 		music_conversion = XMIDIFILE_CONVERT_GM_TO_MT32;
 	} else if (s == "gs127drum") {
 		music_conversion = XMIDIFILE_CONVERT_MT32_TO_GS;
-		s = "gs";
+		s                = "gs";
 	} else {
 		music_conversion = XMIDIFILE_CONVERT_MT32_TO_GM;
-		s = "gm";
+		s                = "gm";
 	}
-	// Only save back the setting if the driver was created and it's not FMOPL or MT32EMU
-	if (midi_driver && !midi_driver->isFMSynth() && !midi_driver->isMT32())  {
+	// Only save back the setting if the driver was created and it's not FMOPL
+	// or MT32EMU
+	if (midi_driver && !midi_driver->isFMSynth() && !midi_driver->isMT32()) {
 		config->set(convert_key, s, false);
 	}
-
 
 	config->write_back();
 

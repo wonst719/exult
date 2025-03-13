@@ -92,6 +92,8 @@ public:
 		return midi_driver_name;
 	}
 
+	std::string_view get_actual_midi_driver_name();
+
 	bool get_ogg_enabled() const {
 		return ogg_enabled;
 	}

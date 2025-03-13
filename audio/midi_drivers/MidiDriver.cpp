@@ -178,8 +178,9 @@ std::vector<ConfigSetting_widget::Definition> MidiDriver::
 	// Add in the default settings
 	if (driver && !driver->isFMSynth() && !driver->isMT32()) {
 		ConfigSetting_widget::Definition convert{
-				"device type",                                // label
-				"config/audio/midi/convert_" + driver->getName(),     // config_setting
+				"device type",    // label
+				"config/audio/midi/convert_"
+						+ driver->getName(),                  // config_setting
 				0,                                            // additional
 				true,                                         // required
 				false,                                        // unique
@@ -209,16 +210,18 @@ std::vector<ConfigSetting_widget::Definition> MidiDriver::
 
 		// Reverb and Chorus
 		ConfigSetting_widget::Definition reverb{
-				"Reverb Effect",                            // label
-				"config/audio/midi/reverb/enabled",         // config_setting
+				"Reverb Effect",    // label
+				"config/audio/midi/reverb/enabled_"
+						+ driver->getName(),                // config_setting
 				0,                                          // additional
 				true,                                       // required
 				false,                                      // unique
 				ConfigSetting_widget::Definition::button    // setting_type
 		};
 		ConfigSetting_widget::Definition chorus{
-				"Chorus Effect",                            // label
-				"config/audio/midi/chorus/enabled",         // config_setting
+				"Chorus Effect",    // label
+				"config/audio/midi/chorus/enabled_"
+						+ driver->getName(),                // config_setting
 				0,                                          // additional
 				true,                                       // required
 				false,                                      // unique
@@ -226,10 +229,12 @@ std::vector<ConfigSetting_widget::Definition> MidiDriver::
 		};
 		reverb.choices.push_back({"Yes", "yes", "yes"});
 		reverb.choices.push_back({"No", "no", "no"});
-		reverb.default_value = "no";
+		config->value("config/audio/midi/reverb/enabled", s, "no");
+		reverb.default_value.swap(s);
 		chorus.choices.push_back({"Yes", "yes", "yes"});
 		chorus.choices.push_back({"No", "no", "no"});
-		chorus.default_value = "no";
+		config->value("config/audio/midi/chorus/enabled", s, "no");
+		chorus.default_value.swap(s);
 		result.push_back(reverb);
 		result.push_back(chorus);
 	}

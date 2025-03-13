@@ -211,12 +211,16 @@ void SoundTester::test_sound() {
 						std::unique_ptr<IDataSource> mid_data
 								= open_music_flex(flex, song);
 						int convert = XMIDIFILE_CONVERT_NOCONVERSION;
+						std::string_view driver_name{};
+
 						if (player) {
-							convert = player->setup_timbre_for_track(flex);
+							convert     = player->setup_timbre_for_track(flex);
+							driver_name = player->get_actual_midi_driver_name();
 						}
 
 						if (mid_data && mid_data->good()) {
-							XMidiFile midfile(mid_data.get(), convert);
+							XMidiFile midfile(
+									mid_data.get(), convert, driver_name);
 							for (int i = 0; i < midfile.number_of_tracks();
 								 i++) {
 								std::cout << " track " << i << std::endl;

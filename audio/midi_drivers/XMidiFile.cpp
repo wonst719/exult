@@ -646,12 +646,13 @@ template <>
 std::unique_ptr<std::recursive_mutex> XMidiRecyclable<XMidiEvent>::Mutex{};
 
 // Constructor
-XMidiFile::XMidiFile(IDataSource* source, int pconvert)
+XMidiFile::XMidiFile(
+		IDataSource* source, int pconvert, std::string_view drivername)
 		: num_tracks(0), events(nullptr), convert_type(pconvert),
 		  do_reverb(false), do_chorus(false) {
 	std::memset(bank127, 0, sizeof(bank127));
 
-	ExtractTracks(source);
+	ExtractTracks(source, drivername);
 
 	// SysEx data
 	if (pconvert >= XMIDIFILE_HINT_U7VOICE_MT_FILE) {
@@ -1556,60 +1557,110 @@ int XMidiFile::ExtractTracksFromMid(
 	return num;
 }
 
-int XMidiFile::ExtractTracks(IDataSource* source) {
+int XMidiFile::ExtractTracks(IDataSource* source, std::string_view drivername) {
 	const int format_hint = convert_type;
 
 	if (convert_type >= XMIDIFILE_HINT_U7VOICE_MT_FILE) {
 		convert_type = XMIDIFILE_CONVERT_NOCONVERSION;
 	}
-
 	string s;
 
 	config->value("config/audio/midi/reverb/enabled", s, "no");
+	std::string config_key;
+	bool        changed = false;
+	if (!drivername.empty()) {
+		config_key = "config/audio/midi/reverb/enabled_";
+		config_key += drivername;
+		config->value(config_key, s, s.c_str());
+		changed |= !config->key_exists(config_key);
+	}
+
 	if (s == "yes") {
 		do_reverb = true;
+	};
+	if (!config_key.empty()) {
+		config->set(config_key, s, false);
 	}
-	config->set("config/audio/midi/reverb/enabled", s, true);
 
 	config->value("config/audio/midi/reverb/level", s, "---");
+	if (!drivername.empty()) {
+		config_key = "config/audio/midi/reverb/level_";
+		config_key += drivername;
+		config->value(config_key, s, s.c_str());
+		changed |= !config->key_exists(config_key);
+	}
+
 	if (s == "---") {
 		config->value("config/audio/midi/reverb", s, "64");
+		changed = true;
 	}
+	if (!config_key.empty()) {
+		config->set(config_key, s, false);
+	}
+
 	reverb_value = atoi(s.c_str());
 	if (reverb_value > 127) {
+		changed      = true;
 		reverb_value = 127;
 	} else if (reverb_value < 0) {
 		reverb_value = 0;
+		changed      = true;
 	}
-	config->set("config/audio/midi/reverb/level", reverb_value, true);
-
+	if (!config_key.empty()) {
+		config->set(config_key, reverb_value, false);
+	}
 	config->value("config/audio/midi/chorus/enabled", s, "no");
+	if (!drivername.empty()) {
+		config_key = "config/audio/midi/chorus/enabled_";
+		config_key += drivername;
+		config->value(config_key, s, s.c_str());
+		changed |= !config->key_exists(config_key);
+	}
+
 	if (s == "yes") {
 		do_chorus = true;
 	}
-	config->set("config/audio/midi/chorus/enabled", s, true);
+	if (!config_key.empty()) {
+		config->set(config_key, s, false);
+	}
 
 	config->value("config/audio/midi/chorus/level", s, "---");
+	if (!drivername.empty()) {
+		config_key = "config/audio/midi/chorus/level_";
+		config_key += drivername;
+		config->value(config_key, s, s.c_str());
+		changed |= !config->key_exists(config_key);
+	}
 	if (s == "---") {
 		config->value("config/audio/midi/chorus", s, "16");
+		changed = true;
 	}
 	chorus_value = atoi(s.c_str());
 	if (chorus_value > 127) {
 		chorus_value = 127;
+		changed      = true;
 	} else if (chorus_value < 0) {
 		chorus_value = 0;
+		changed      = true;
 	}
-	config->set("config/audio/midi/chorus/level", chorus_value, true);
+	if (!config_key.empty()) {
+		config->set(config_key, chorus_value, false);
+	}
 
 	config->value("config/audio/midi/volume_curve", s, "---");
 	if (s == "---") {
 		config->value("config/audio/midi/gamma", s, "1");
+		changed = true;
 	}
 	VolumeCurve.set_gamma(atof(s.c_str()));
 	const int igam = std::lround(VolumeCurve.get_gamma() * 10000);
 	char      buf[32];
 	snprintf(buf, sizeof(buf), "%d.%04d", igam / 10000, igam % 10000);
-	config->set("config/audio/midi/volume_curve", buf, true);
+	config->set("config/audio/midi/volume_curve", buf, false);
+
+	if (changed) {
+		config->write_back();
+	}
 
 	// Read first 4 bytes of header
 	source->read(buf, 4);
@@ -1779,7 +1830,7 @@ int XMidiFile::ExtractTracks(IDataSource* source) {
 				continue;
 			}
 
-			return ExtractTracks(source);
+			return ExtractTracks(source, drivername);
 		}
 
 		perr << "Failed to find midi data in RIFF Midi" << endl;
