@@ -898,7 +898,7 @@ void MyMidiPlayer::start_sound_effect(int num) {
 
 	// Read the data into the XMIDI class
 	// It's already GM, so dont convert
-	XMidiFile midfile(mid_data.get(), effects_conversion);
+	XMidiFile midfile(mid_data.get(), effects_conversion, midi_driver->getName());
 
 	// Now give the xmidi object to the midi device
 	XMidiEventList* eventlist = midfile.GetEventList(0);

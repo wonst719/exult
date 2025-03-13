@@ -71,7 +71,9 @@ private:
 
 public:
 	XMidiFile() = delete;    // No default constructor
-	XMidiFile(IDataSource* source, int pconvert, std::string_view drivername);
+	XMidiFile(
+			IDataSource* source, int pconvert,
+			std::string_view drivername = {});
 	~XMidiFile();
 
 	int number_of_tracks() {
