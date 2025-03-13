@@ -151,4 +151,11 @@ public:
 	T* next = nullptr;    // Linked list next pointer
 };
 
+// needed explicit instantiation declaration to supress warnings from XCode
+template <>
+XMidiRecyclable<XMidiEvent>::FreeList
+		XMidiRecyclable<XMidiEvent>::FreeList::instance;
+
+template <>
+std::unique_ptr<std::recursive_mutex> XMidiRecyclable<XMidiEvent>::Mutex;
 #endif
