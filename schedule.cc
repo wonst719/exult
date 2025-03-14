@@ -2818,7 +2818,7 @@ void Desk_schedule::now_what() {
 
 	switch (state) {
 	case desk_setup: {
-		static int desks[2] = {283, 407};
+		constexpr static const std::array desks{283, 407};
 		Stand_up(npc);
 		if (tables.empty()) {
 			find_tables(890);
@@ -2843,7 +2843,7 @@ void Desk_schedule::now_what() {
 				add_object(item.get());
 			}
 		}
-		Game_object* found = npc->find_closest(desks, 2);
+		Game_object* found = npc->find_closest(desks);
 		if (found) {
 			constexpr static const std::array chairs{873, 292};
 			desk  = found->weak_from_this();
