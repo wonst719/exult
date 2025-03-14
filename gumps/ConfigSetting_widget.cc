@@ -52,7 +52,6 @@ ConfigSetting_widget::ConfigSetting_widget(
 		setting.choices.push_back(
 				{std::move(label), setting.default_value,
 				 setting.default_value});
-	} else {
 	}
 
 	// Add in the empty choice if not required or have additional settings
@@ -78,12 +77,9 @@ ConfigSetting_widget::ConfigSetting_widget(
 		if (i != -1) {
 			config_key    = setting.config_setting + std::to_string(i);
 			default_value = std::string_view();
-			//	sv_choices[emptychoice] = "(Unset)";
 		} else {
 			config_key    = setting.config_setting;
 			default_value = setting.default_value;
-			// if(emptychoice >= setting.choices.size())
-			//	sv_choices[emptychoice] = "(Default)";
 		}
 
 		int         current_index;

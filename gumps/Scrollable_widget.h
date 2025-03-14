@@ -76,7 +76,6 @@ public:
 
 	void add_child(std::shared_ptr<Gump_widget> &&child) {
 		child->set_parent(pane.get());
-		//child->set_pos(border_size, border_size);
 		pane->children.push_back(std::move(child));
 		arrange_children();
 	}
@@ -152,7 +151,6 @@ public:
 		id_scrolling,
 		id_count,
 		id_button_count = id_scrolling - id_first_button,
-
 	};
 
 public:

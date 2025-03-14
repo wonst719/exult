@@ -561,31 +561,39 @@ void MyMidiPlayer::set_music_conversion(int conv) {
 	if (music_conversion == conv) {
 		return;
 	}
+	// no driver do nothing
+	if (!midi_driver) 
+		return;
+	
 	if (!ogg_enabled || !ogg_is_playing()) {    // if ogg is playing we don't
 												// care about drivers
 		stop_music();
 	}
-	music_conversion = conv;
+
+		std::string convert_key
+				= "config/audio/midi/convert_" + midi_driver->getName();
+
+		music_conversion = conv;
 
 	switch (music_conversion) {
 	case XMIDIFILE_CONVERT_MT32_TO_GS:
-		config->set("config/audio/midi/convert", "gs", true);
+		config->set(convert_key, "gs", true);
 		break;
 	case XMIDIFILE_CONVERT_NOCONVERSION:
-		config->set("config/audio/midi/convert", "mt32", true);
+		config->set(convert_key, "mt32", true);
 		if ((!ogg_enabled || !ogg_is_playing()) && midi_driver
 			&& !midi_driver->isFMSynth() && !midi_driver->isMT32()) {
 			load_timbres();
 		}
 		break;
 	case XMIDIFILE_CONVERT_MT32_TO_GS127:
-		config->set("config/audio/midi/convert", "gs127", true);
+		config->set(convert_key, "gs127", true);
 		break;
 	case XMIDIFILE_CONVERT_GM_TO_MT32:
-		config->set("config/audio/midi/convert", "fakemt32", true);
+		config->set(convert_key, "fakemt32", true);
 		break;
 	default:
-		config->set("config/audio/midi/convert", "gm", true);
+		config->set(convert_key, "gm", true);
 		break;
 	}
 }
@@ -767,15 +775,17 @@ bool MyMidiPlayer::init_device(bool timbre_load) {
 	}
 	if (s == "gs") {
 		music_conversion = XMIDIFILE_CONVERT_MT32_TO_GS;
-	} else if (s == "mt32") {
+		// Only allow MT32 if driver created and it allows it
+	} else if (s == "mt32" && (midi_driver && midi_driver->isRealMT32Supported())) {
 		music_conversion = XMIDIFILE_CONVERT_NOCONVERSION;
 	} else if (s == "none") {
 		music_conversion = XMIDIFILE_CONVERT_NOCONVERSION;
 		config->set("config/audio/midi/convert", "mt32", true);
 	} else if (s == "gs127") {
 		music_conversion = XMIDIFILE_CONVERT_MT32_TO_GS127;
-	} else if (s == "fakemt32") {
+	} else if (s == "fakemt32" || s == "mt32") {
 		music_conversion = XMIDIFILE_CONVERT_GM_TO_MT32;
+		s                = "fakemt32";
 	} else if (s == "gs127drum") {
 		music_conversion = XMIDIFILE_CONVERT_MT32_TO_GS;
 		s                = "gs";

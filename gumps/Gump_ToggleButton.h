@@ -69,8 +69,8 @@ public:
 	}
 
 	Gump_ToggleTextButton(
-			Gump_Base* par, std::vector<std::string>&& s, int selectionnum, int px,
-			int py, int width, int height = 0)
+			Gump_Base* par, std::vector<std::string>&& s, int selectionnum,
+			int px, int py, int width, int height = 0)
 			: Text_button(par, "", px, py, width, height),
 			  selections(std::move(s)) {
 		set_frame(selectionnum);
@@ -82,7 +82,7 @@ public:
 	void unpush(MouseButton button) override;
 	bool activate(MouseButton button) override;
 
-	int getselection() const override{
+	int getselection() const override {
 		return get_framenum();
 	}
 
@@ -97,37 +97,43 @@ private:
 template <typename Parent>
 class CallbackToggleTextButton : public Gump_ToggleTextButton {
 public:
-	using CallbackType = void (Parent::*)(int state);
+	using CallbackType  = void (Parent::*)(int state);
 	using CallbackType2 = void (Parent::*)(Gump_widget*);
 
 	template <typename... Ts>
 	CallbackToggleTextButton(Parent* par, CallbackType&& callback, Ts&&... args)
 			: Gump_ToggleTextButton(par, std::forward<Ts>(args)...),
-			  parent(par), on_toggle(std::forward<CallbackType>(callback)) {}	template <typename... Ts>
-	CallbackToggleTextButton(Parent* par, CallbackType2&& callback, Ts&&... args)
+			  parent(par), on_toggle(std::forward<CallbackType>(callback)) {}
+
+	template <typename... Ts>
+	CallbackToggleTextButton(
+			Parent* par, CallbackType2&& callback, Ts&&... args)
 			: Gump_ToggleTextButton(par, std::forward<Ts>(args)...),
 			  parent(par), on_toggle2(std::forward<CallbackType2>(callback)) {}
 
 	void toggle(int state) override {
-		if(on_toggle)(parent->*on_toggle)(state);
-		if(on_toggle2)(parent->*on_toggle2)(this);
+		if (on_toggle) {
+			(parent->*on_toggle)(state);
+		}
+		if (on_toggle2) {
+			(parent->*on_toggle2)(this);
+		}
 		parent->paint();
 	}
 
 private:
-	Parent*      parent;
-	CallbackType on_toggle=nullptr;
-	CallbackType2 on_toggle2=nullptr;
-	
+	Parent*       parent;
+	CallbackType  on_toggle  = nullptr;
+	CallbackType2 on_toggle2 = nullptr;
 };
+
 template <typename Parent>
-class SelfManagedCallbackToggleTextButton : public CallbackToggleTextButton<Parent>
-{
+class SelfManagedCallbackToggleTextButton
+		: public CallbackToggleTextButton<Parent> {
 public:
 	template <typename... Ts>
 	SelfManagedCallbackToggleTextButton(Ts&&... args)
-		: CallbackToggleTextButton<Parent>(std::forward<Ts>(args)...)
-	{
+			: CallbackToggleTextButton<Parent>(std::forward<Ts>(args)...) {
 		Gump_button::set_self_managed(true);
 	}
 };

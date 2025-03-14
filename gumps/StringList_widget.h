@@ -67,7 +67,6 @@ public:
 		int  newsel = -1;
 		if (found != selections.end()) {
 			newsel = found - selections.begin();
-
 		}
 		// add it 
 		if (add && newsel == -1)
@@ -88,8 +87,5 @@ public:
 
 	TileRect get_rect() const override;
 
-// virtual void toggle(int state);
-
-private:
 };
 #endif

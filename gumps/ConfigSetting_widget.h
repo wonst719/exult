@@ -17,10 +17,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifndef CONFIGSETTING_WIDGET_H
-#	define CONFIGSETTING_WIDGET_H
+#define CONFIGSETTING_WIDGET_H
 
-#include "IterableGump_widget.h"
 #include "Gump_button.h"
+#include "IterableGump_widget.h"
 
 #include <map>
 #include <string>
@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // A widget that represents a single config setting
 // It will create the appropriate widget
-// It will paint labels and zebra striping 
+// It will paint labels and zebra striping
 //
 class ConfigSetting_widget
 		: public IterableGump_widget<
@@ -70,35 +70,36 @@ public:
 		enum SettingType {
 			dropdown = 0,    // Setting should be displayed as a dropdown using
 							 // DropDown_widget
-			list   = 1,      // Setting should be displayed as a StringList_widget
-			button = 2,      // Setting should be displayed as a
-							 // Gump_ToggleTextButton
-
+			list   = 1,    // Setting should be displayed as a StringList_widget
+			button = 2,    // Setting should be displayed as a
+						   // Gump_ToggleTextButton
 		} setting_type;
 
 	private:
 		friend class ConfigSetting_widget;
-
 
 	public:
 		struct Choice {
 			std::string label;
 			std::string value;    // Preferred Setting Value this is the value
 								  // that will be saved to exult.cfg
-			std::string
-					alternative;    // Alternative Setting Value from exult.cfg,
-									// will not be saved to exult.cfg
-									// If there is no alternative, set this to the same as value
+			std::string alternative;    // Alternative Setting Value from
+										// exult.cfg, will not be saved to
+										// exult.cfg If there is no alternative,
+										// set this to the same as value
 		};
 
 		// Valid choices for the setting, this must be filled with all the valid
 		// settings Do not include the default or empty string value in this
-		// unless the user is always allowed to select these Do not set these to empty strings
+		// unless the user is always allowed to select these Do not set these to
+		// empty strings
 		std::vector<Choice> choices;
-		int                 find_choice(std::string_view value, bool case_insensitive = true) const;
-		void                sort_choices();
+		int                 find_choice(
+								std::string_view value, bool case_insensitive = true) const;
+		void sort_choices();
 
-		void add_filenames_to_choices(const std::string& mask,bool strip_directory=true);
+		void add_filenames_to_choices(
+				const std::string& mask, bool strip_directory = true);
 
 		// Default value for this setting.
 		std::string default_value;
@@ -122,8 +123,7 @@ private:
 	std::vector<int>      initial;
 	std::shared_ptr<Font> font;
 	static int            bgstripe;
-	static const uint8          bgcolours[4];
-
+	static const uint8    bgcolours[4];
 
 public:
 	ConfigSetting_widget() = delete;
@@ -135,7 +135,6 @@ public:
 	void shift_buttons_x(int offset);
 
 	void paint() override;
-
 
 	// Inherited via IterableGump_widget
 	iterator begin() override {
@@ -153,16 +152,15 @@ public:
 	void setdefault();
 
 	// Save out to config
-	void save_to_config(bool write_file);
+	void        save_to_config(bool write_file);
 	std::string Validate();
 
 	TileRect get_rect() const override;
 
 	void onselection(Gump_widget* sender);
-	void onselectionmb(Gump_widget* sender, MouseButton)
-	{
+
+	void onselectionmb(Gump_widget* sender, MouseButton) {
 		onselection(sender);
 	}
-
 };
 #endif

@@ -17,94 +17,72 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "AdvancedOptions_gump.h"
-#include "StringList_widget.h"
-#include "DropDown_widget.h"
-#include "gamewin.h"
-#include "Gump_button.h"
-#include "Yesno_gump.h"
+
 #include "Configuration.h"
+#include "DropDown_widget.h"
+#include "Gump_button.h"
+#include "StringList_widget.h"
+#include "Yesno_gump.h"
+#include "gamewin.h"
+
 AdvancedOptions_gump::AdvancedOptions_gump(
 		std::vector<ConfigSetting_widget::Definition>* settings,
 		std::string&& title, std::string&& helpurl,
 		std::function<void()> applycallback)
 		: Modal_gump(nullptr, -1), title(std::move(title)),
 		  helpurl(std::move(helpurl)),
-		  font(fontManager.get_font("SMALL_BLACK_FONT")), applycallback(applycallback) {
-	
+		  font(fontManager.get_font("SMALL_BLACK_FONT")),
+		  applycallback(applycallback) {
 	elems.reserve(5);
-	TileRect rect = TileRect(0, 0, 220, 186); 
+	TileRect rect = TileRect(0, 0, 220, 186);
 	SetProceduralBackground(rect, -1, true);
 
 	int button_w = 100;
-	int scrolly = 20;
-	// Using raw pointers because contents of elems gets deletesd when Gump destructor is called 
+	int scrolly  = 20;
+	// Using raw pointers because contents of elems gets deletesd when Gump
+	// destructor is called
 	int scrollw = rect.w - 16;
-	scroll = new Scrollable_widget(
-			this, 0, scrolly, scrollw, rect.h- scrolly -16, 2,
-			Scrollable_widget::ScrollbarType::Auto, true,procedural_colours.Shadow);
+	scroll      = new Scrollable_widget(
+            this, 0, scrolly, scrollw, rect.h - scrolly - 16, 2,
+            Scrollable_widget::ScrollbarType::Auto, true,
+            procedural_colours.Shadow);
 	elems.push_back(scroll);
-	
-	for (auto& setting : *settings)
-	{
-		/*
-		if (setting.setting_type
-			== ConfigSetting_widget::Definition::dropdown) { 
-			std::vector<std::string> selections;
-			//for (int i = 0; i < 10; i++) {
-				selections.reserve(setting.choices.size());
-				for (auto& a : setting.choices) {
-					selections.push_back(a.label);
-				}
-			//}
-			//elems.push_back(new StringList_widget(
-			//		this, selections, 0, 2, 20, ProceduralColours(), 0, 0,
-			//		font));
-			
-				auto widget = std::make_shared<DropDown_widget>(
-					this, selections, 0,0, 0,150);*/
-			auto widget = std::make_shared<ConfigSetting_widget>(
-				this, 0, 0, button_w, scrollw - button_w, setting, font,2);
-	
-			scroll->add_child(widget);
-			
 
-			
-		
+	for (auto& setting : *settings) {
+		scroll->add_child(std::make_shared<ConfigSetting_widget>(
+				this, 0, 0, button_w, scrollw - button_w, setting, font, 2));
 	}
 	// run the scroll bar so it can up update itself
 	scroll->run();
 	// Got rid of the scroll bar
-	if (!scroll->scroll_enabled())
-	{
+	if (!scroll->scroll_enabled()) {
 		// So reposition the widgets
 
-		for (auto& child : scroll->get_children_iterable())
-		{
+		for (auto& child : scroll->get_children_iterable()) {
 			auto csw = dynamic_cast<ConfigSetting_widget*>(child.get());
 			if (csw) {
 				csw->shift_buttons_x(12);
 			}
-
 		}
 	}
 
 	// Apply
-	int buttony = 173;
+	int buttony    = 173;
 	int button_gap = 20;
-	elems.push_back(apply       = new CallbackTextButton<AdvancedOptions_gump>(
-					this, &AdvancedOptions_gump::on_apply, "APPLY",rect.w / 2 -25 -50 -button_gap,
-			buttony, 50));
+	elems.push_back(
+			apply = new CallbackTextButton<AdvancedOptions_gump>(
+					this, &AdvancedOptions_gump::on_apply, "APPLY",
+					rect.w / 2 - 25 - 50 - button_gap, buttony, 50));
 	// Cancel
-	elems.push_back(cancel = new CallbackTextButton < AdvancedOptions_gump>(
-					this, &AdvancedOptions_gump::on_cancel, "CANCEL", rect.w/2-25,
-					 buttony,
-			50));
+	elems.push_back(
+			cancel = new CallbackTextButton<AdvancedOptions_gump>(
+					this, &AdvancedOptions_gump::on_cancel, "CANCEL",
+					rect.w / 2 - 25, buttony, 50));
 	// Help
-	elems.push_back(help = new CallbackTextButton<AdvancedOptions_gump>(
-					this, &AdvancedOptions_gump::on_help, "HELP", rect.w / 2+25+button_gap,
-					buttony,
-			50));
-	
+	elems.push_back(
+			help = new CallbackTextButton<AdvancedOptions_gump>(
+					this, &AdvancedOptions_gump::on_help, "HELP",
+					rect.w / 2 + 25 + button_gap, buttony, 50));
 
 	// set all buttons in elems to self managed
 	for (auto elem : elems) {
@@ -227,8 +205,8 @@ void AdvancedOptions_gump::paint() {
 	rect.x    = 0;
 	rect.y    = 0;
 	local_to_screen(rect.x, rect.y);
-				// Draw Title
-	font->paint_text_box(ib, title.c_str(), rect.x + 1, rect.y + 1,rect.w,30);
+	// Draw Title
+	font->paint_text_box(ib, title.c_str(), rect.x + 1, rect.y + 1, rect.w, 30);
 
 	Image_buffer::ClipRectSave clip(ib);
 	TileRect                   newclip = clip.Rect().intersect(get_rect());
@@ -239,18 +217,14 @@ void AdvancedOptions_gump::paint() {
 bool AdvancedOptions_gump::run() {
 	int res = Modal_gump::run();
 
-	for (auto elem : elems)
-	{
+	for (auto elem : elems) {
 		res |= elem->run();
 	}
-
 
 	return res;
 }
 
-void AdvancedOptions_gump::paint_elems() {
-
-}
+void AdvancedOptions_gump::paint_elems() {}
 
 void AdvancedOptions_gump::on_apply() {
 	// First step validate
@@ -258,16 +232,14 @@ void AdvancedOptions_gump::on_apply() {
 		auto csw = dynamic_cast<ConfigSetting_widget*>(child.get());
 		if (csw) {
 			std::string validation_message = csw->Validate();
-			if (!validation_message.empty())
-			{
+			if (!validation_message.empty()) {
 				validation_message += " Apply anyway?";
 				if (!Yesno_gump::ask(
-							validation_message.c_str(),
-							nullptr, "TINY_BLACK_FONT")) {
+							validation_message.c_str(), nullptr,
+							"TINY_BLACK_FONT")) {
 					return;
 				}
 			}
-
 		}
 	}
 	// then apply settings if validation passed or user is forcing
@@ -278,8 +250,9 @@ void AdvancedOptions_gump::on_apply() {
 		}
 	}
 	config->write_back();
-	if (applycallback)
+	if (applycallback) {
 		applycallback();
+	}
 }
 
 void AdvancedOptions_gump::on_cancel() {

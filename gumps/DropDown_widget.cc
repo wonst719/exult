@@ -140,8 +140,7 @@ bool DropDown_widget::mouse_down(int mx, int my, MouseButton button) {
 		return false;
 	}
 	// pass it to the button;
-	return false;
-	// children[id_button]->mouse_down(mx, my, button);
+	return children[id_button]->mouse_down(mx, my, button);
 }
 
 bool DropDown_widget::mouse_up(int mx, int my, MouseButton button) {
@@ -150,7 +149,8 @@ bool DropDown_widget::mouse_up(int mx, int my, MouseButton button) {
 			return true;
 		}
 	}
-	return false;
+	// pass it to the button;
+	return children[id_button]->mouse_up(mx, my, button);
 }
 
 bool DropDown_widget::mousewheel_down(int mx, int my) {
@@ -180,7 +180,8 @@ bool DropDown_widget::mouse_drag(int mx, int my) {
 	return false;
 }
 
-bool DropDown_widget::character_input(int chr, int unicode, bool shift_pressed) {
+bool DropDown_widget::character_input(
+		int chr, int unicode, bool shift_pressed) {
 	ignore_unused_variable_warning(unicode, shift_pressed);
 	if (!active) {
 		return false;
@@ -220,8 +221,6 @@ bool DropDown_widget::character_input(int chr, int unicode, bool shift_pressed) 
 		break;
 
 	default:
-		if (std::isprint(chr)) {
-		}
 		break;
 	}
 
@@ -289,7 +288,6 @@ void DropDown_widget::show_popup(bool show) {
 			popup_sx = rect.x;
 			popup_sy = rect.y;
 		}
-
 	}
 	/// Hiding
 	else {
@@ -299,8 +297,6 @@ void DropDown_widget::show_popup(bool show) {
 	}
 	gwin->set_all_dirty();
 }
-
-
 
 void DropDown_widget::Button::paint() {
 	std::string save = {};
@@ -320,13 +316,10 @@ void DropDown_widget::Button::paint() {
 	int arrowy = py + height - 4 + offset;
 	//
 	// Draw down arrow
-	// ib8->draw_line8(0, arrowx, arrowy, arrowx - 4, arrowy - 4);
-	// ib8->draw_line8(0, arrowx, arrowy, arrowx + 4, arrowy - 4);
-	// ib8->draw_line8(0, arrowx-4, arrowy-4, arrowx + 4, arrowy - 4);
+
 	for (int i = 0; i < 4; i++) {
 		ib8->fill_hline8(0, 1 + i * 2, arrowx - i, arrowy - i);
 	}
-	// ib8->put_pixel8(23, arrowx, arrowy);
 
 	// Clip text
 	TileRect newclip = clipsave.Rect().intersect(TileRect(

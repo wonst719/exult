@@ -406,12 +406,12 @@ void XMidiSequence::ChannelShadow::updateForEvent(XMidiEvent* new_event) {
 }
 
 void XMidiSequence::sendEvent() {
-	// unsigned int chan = event->getChannel();
+	unsigned int chan = event->getChannel();
 	const MidiStatus type = event->getStatusType();
 	uint32           data = event->data[0] | (event->data[1] << 8);
 
-	// Shouldn't be required. XMidi should automatically detect all anyway
-	// evntlist->chan_mask |= 1 << chan;
+	// Make sure chanmask is updated just in case
+	evntlist->chan_mask |= 1 << chan;
 
 	// Update the shadows here
 	updateShadowForEvent(event);

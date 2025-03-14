@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
- // Includes Pentagram headers so we must include pent_include.h
+// Includes Pentagram headers so we must include pent_include.h
 #include "pent_include.h"
 
 #ifdef __GNUC__
@@ -29,6 +29,7 @@
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
 
+#include "AdvancedOptions_gump.h"
 #include "Audio.h"
 #include "AudioMixer.h"
 #include "AudioOptions_gump.h"
@@ -47,29 +48,28 @@
 #include "game.h"
 #include "gamewin.h"
 #include "mouse.h"
-#include "MidiDriver.h"
-#include "AdvancedOptions_gump.h"
+
 #include <iostream>
 #include <sstream>
 
 using namespace Pentagram;
 
 static const int rowy[]
-= { 5, 17, 29, 41, 56, 68, 80, 92, 104, 116, 131, 143, 158, 173, 185 };
-static const int colx[] = { 35, 50, 134 };
+		= {5, 17, 29, 41, 56, 68, 80, 92, 104, 116, 131, 143, 158, 173, 185};
+static const int colx[] = {35, 50, 134};
 
-static const char  applytext[] = "APPLY";
-static const char  canceltext[] = "CANCEL";
-static const char  helptext[] = "HELP";
-static const char  mixertext[] = "VOLUME MIXER";
-static const char  advancedtext[] = "SETTINGS";
+static const char applytext[]    = "APPLY";
+static const char canceltext[]   = "CANCEL";
+static const char helptext[]     = "HELP";
+static const char mixertext[]    = "VOLUME MIXER";
+static const char advancedtext[] = "SETTINGS";
 
-uint32 AudioOptions_gump::sample_rates[5] = { 11025, 22050, 44100, 48000, 0 };
+uint32 AudioOptions_gump::sample_rates[5]  = {11025, 22050, 44100, 48000, 0};
 int    AudioOptions_gump::num_sample_rates = 0;
 
 using AudioOptions_button = CallbackTextButton<AudioOptions_gump>;
-using AudioTextToggle = CallbackToggleTextButton<AudioOptions_gump>;
-using AudioEnabledToggle = CallbackEnabledButton<AudioOptions_gump>;
+using AudioTextToggle     = CallbackToggleTextButton<AudioOptions_gump>;
+using AudioEnabledToggle  = CallbackEnabledButton<AudioOptions_gump>;
 
 void AudioOptions_gump::mixer() {
 	auto* vol_mix = new Mixer_gump();
@@ -88,20 +88,20 @@ void AudioOptions_gump::advanced() {
 			&advancedsettings,
 			"Advanced settings for\n" + midi_driver_name + " midi driver.",
 			"https://exult.info/docs.php#advanced_midi_gump",
-			[midi_driver_name]
-	{
-		MyMidiPlayer* midi = Audio::get_ptr()->get_midi();
-		if (!midi || !Audio::get_ptr()->is_music_enabled()) {
-			return;
-		}
-		// Only reinit midi driver if the diver we changed settings for is the courrenyly used driver
-		if (midi->get_midi_driver() != midi_driver_name) {
-			return;
-		}
-		auto track_playing = midi->get_current_track();
-		auto looping       = midi->is_repeating();
-		midi->destroyMidiDriver();
-		midi->can_play_midi();
+			[midi_driver_name] {
+				MyMidiPlayer* midi = Audio::get_ptr()->get_midi();
+				if (!midi || !Audio::get_ptr()->is_music_enabled()) {
+					return;
+				}
+				// Only reinit midi driver if the diver we changed settings for
+				// is the courrenyly used driver
+				if (midi->get_midi_driver() != midi_driver_name) {
+					return;
+				}
+				auto track_playing = midi->get_current_track();
+				auto looping       = midi->is_repeating();
+				midi->destroyMidiDriver();
+				midi->can_play_midi();
 				if (!gwin->is_background_track(track_playing)
 					|| midi->get_ogg_enabled() || midi->is_mt32()
 					|| gwin->is_in_exult_menu()) {
@@ -113,7 +113,7 @@ void AudioOptions_gump::advanced() {
 						Audio::get_ptr()->start_music(track_playing, looping);
 					}
 				}
-		});
+			});
 
 	gumpman->do_modal_gump(&aog, Mouse::hand);
 }
@@ -303,14 +303,14 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 #endif
 }
 
-
 void AudioOptions_gump::rebuild_mididriveroption_buttons() {
 	std::string s = "Default";
 	if (midi_driver != MidiDriver::getDriverCount()) {
 		s = MidiDriver::getDriverName(midi_driver);
 	}
 
-	advancedsettings = MidiDriver::get_midi_driver_settings(MidiDriver::getDriverName(midi_driver));
+	advancedsettings = MidiDriver::get_midi_driver_settings(
+			MidiDriver::getDriverName(midi_driver));
 
 	// put advanced setting button on now empty row 13
 	if (!advancedsettings.empty()) {
@@ -362,7 +362,6 @@ void AudioOptions_gump::load_settings() {
 
 	MyMidiPlayer* midi = Audio::get_ptr()->get_midi();
 	if (midi) {
-
 		midi_ogg_enabled = midi->get_ogg_enabled();
 
 		s = midi->get_midi_driver();
@@ -380,8 +379,6 @@ void AudioOptions_gump::load_settings() {
 	} else {
 		// String for default value for driver type
 		std::string driver_default = "default";
-
-
 
 		// OGG Vorbis support
 		config->value("config/audio/midi/use_oggs", s, "no");
@@ -415,7 +412,6 @@ void AudioOptions_gump::load_settings() {
 		}
 #endif
 	}
-
 
 	const std::string d
 			= "config/disk/game/" + Game::get_gametitle() + "/waves";
@@ -499,13 +495,11 @@ AudioOptions_gump::AudioOptions_gump() : Modal_gump(nullptr, -1) {
 			rowy[13], 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<AudioOptions_button>(
-			this, &AudioOptions_gump::cancel, canceltext, colx[2] + 9,
-			rowy[13],
+			this, &AudioOptions_gump::cancel, canceltext, colx[2] + 9, rowy[13],
 			50);
 	// Help
 	buttons[id_help] = std::make_unique<AudioOptions_button>(
-			this, &AudioOptions_gump::help, helptext, colx[2] - 46,
-			rowy[13],
+			this, &AudioOptions_gump::help, helptext, colx[2] - 46, rowy[13],
 			50);
 
 	// always recentre here
@@ -554,7 +548,6 @@ void AudioOptions_gump::save_settings() {
 			"config/audio/speech/with_subs",
 			(speech_option == speech_on_with_subtitles) ? "yes" : "no", false);
 
-
 	const char* midi_looping_values[] = {"never", "limited", "auto", "endless"};
 	config->set(
 			"config/audio/midi/looping",
@@ -591,8 +584,6 @@ void AudioOptions_gump::save_settings() {
 		midi->set_effects_conversion(sfx_conversion);
 #endif
 	} else {
-
-
 		if (midi_driver == MidiDriver::getDriverCount()) {
 			config->set("config/audio/midi/driver", "default", false);
 		} else {
@@ -627,7 +618,6 @@ void AudioOptions_gump::save_settings() {
 			Audio::get_ptr()->start_music(track_playing, looping);
 		}
 	}
-
 }
 
 void AudioOptions_gump::paint() {
@@ -638,8 +628,8 @@ void AudioOptions_gump::paint() {
 		}
 	}
 
-	std::shared_ptr<Font>          font = fontManager.get_font("SMALL_BLACK_FONT");
-	Image_window8* iwin = gwin->get_win();
+	std::shared_ptr<Font> font = fontManager.get_font("SMALL_BLACK_FONT");
+	Image_window8*        iwin = gwin->get_win();
 
 	font->paint_text(iwin->get_ib8(), "Audio:", x + colx[0], y + rowy[1] + 1);
 	if (audio_enabled) {
@@ -659,7 +649,6 @@ void AudioOptions_gump::paint() {
 				font->paint_text(
 						iwin->get_ib8(), "midi driver", x + colx[1],
 						y + rowy[7] + 1);
-
 			}
 		}
 		font->paint_text(

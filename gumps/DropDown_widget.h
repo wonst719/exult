@@ -51,7 +51,6 @@ class DropDown_widget : public IterableGump_widget<
 	public:
 		Button(DropDown_widget* parent, int width, int height)
 				: Text_button(parent, std::string_view(), 0, 0, width, height) {
-
 		}
 
 		void paint() override;

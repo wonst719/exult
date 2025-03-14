@@ -39,8 +39,6 @@ Scrollable_widget::Scrollable_widget(
 		  slider_shape(EXULT_FLX_SAV_SLIDER_SHP, 0, SF_EXULT_FLX),
 		  sliderw(slider_shape.get_shape()->get_width()),
 		  sliderh(slider_shape.get_shape()->get_height()), scrollbg(scrollbg) {
-	//ShapeID buttonshp(EXULT_FLX_SAV_UPUP_SHP, 0, SF_EXULT_FLX);
-
 	int scrollbutton_x = iw + 2 * border_size;
 	height             = ih + 2 * border_size;
 	children.resize(id_count);
@@ -51,50 +49,44 @@ Scrollable_widget::Scrollable_widget(
 				this, &Scrollable_widget::page_up, EXULT_FLX_SAV_UPUP_SHP,
 				scrollbutton_x, 0, SF_EXULT_FLX);
 		children[id_page_up]->set_pos(
-				scrollbutton_x
-						+ children[id_page_up]->get_shape()->get_xleft(),
-				ypos
-						+ children[id_page_up]->get_shape()->get_yabove());
+				scrollbutton_x + children[id_page_up]->get_shape()->get_xleft(),
+				ypos + children[id_page_up]->get_shape()->get_yabove());
 		ypos += children[id_page_up]->get_shape()->get_height();
 	}
 	children[id_line_up] = std::make_shared<Scrollablebutton>(
 			this, &Scrollable_widget::line_up, EXULT_FLX_SAV_UP_SHP,
 			scrollbutton_x, ypos, SF_EXULT_FLX);
 	children[id_line_up]->set_pos(
-			scrollbutton_x
-					+ children[id_line_up]->get_shape()->get_xleft(),
+			scrollbutton_x + children[id_line_up]->get_shape()->get_xleft(),
 			ypos + children[id_line_up]->get_shape()->get_yabove());
-	int button_w           = children[id_line_up]->get_shape()->get_width();
-	width                  = scrollbutton_x + button_w;
-	int scroll_start_x     = scrollbutton_x + (button_w - sliderw) / 2;
+	int button_w       = children[id_line_up]->get_shape()->get_width();
+	width              = scrollbutton_x + button_w;
+	int scroll_start_x = scrollbutton_x + (button_w - sliderw) / 2;
 	int scroll_start_y = ypos + children[id_line_up]->get_shape()->get_height();
-	ypos = height;
+	ypos               = height;
 	if (!nopagebuttons) {
 		children[id_page_down] = std::make_shared<Scrollablebutton>(
 				this, &Scrollable_widget::page_down, EXULT_FLX_SAV_DOWNDOWN_SHP,
 				scrollbutton_x, height, SF_EXULT_FLX);
-		ypos = ypos- children[id_page_down]->get_shape()->get_height();
+		ypos = ypos - children[id_page_down]->get_shape()->get_height();
 		children[id_page_down]->set_pos(
 				scrollbutton_x
 						+ children[id_page_down]->get_shape()->get_xleft(),
-		ypos + children[id_page_down]->get_shape()->get_yabove());
+				ypos + children[id_page_down]->get_shape()->get_yabove());
 	}
 
 	children[id_line_down] = std::make_shared<Scrollablebutton>(
 			this, &Scrollable_widget::line_down, EXULT_FLX_SAV_DOWN_SHP,
 			scrollbutton_x, ypos, SF_EXULT_FLX);
-	ypos = ypos-children[id_line_down]->get_shape()->get_height();
-			  
+	ypos = ypos - children[id_line_down]->get_shape()->get_height();
+
 	children[id_line_down]->set_pos(
 			scrollbutton_x + children[id_line_up]->get_shape()->get_xleft(),
-			ypos+ children[id_line_up]->get_shape()->get_yabove()
-					);
+			ypos + children[id_line_up]->get_shape()->get_yabove());
 	children[id_scrolling] = pane
 			= std::make_shared<Scrolling_pane>(this, border_size, 0);
 	scrollrect = TileRect(
-			scroll_start_x, scroll_start_y, sliderw,
-			ypos - scroll_start_y);
-	
+			scroll_start_x, scroll_start_y, sliderw, ypos - scroll_start_y);
 }
 
 bool Scrollable_widget::run() {
@@ -131,7 +123,7 @@ bool Scrollable_widget::run() {
 
 	// automatically update our sort order to match the  higest child
 	Sort_Order n{}, h{};
-	pane->findSorted(0, 0, Sort_Order::lowest, n, h,nullptr);
+	pane->findSorted(0, 0, Sort_Order::lowest, n, h, nullptr);
 	repaint |= std::exchange(sort_order, h) != h;
 	return repaint;
 	;
@@ -156,7 +148,7 @@ bool Scrollable_widget::mouse_down(int mx, int my, MouseButton button) {
 		&& my < scrollrect.y + scrollrect.h) {
 		// Now work out the position
 		const int pos = ((scrollrect.h - sliderh) * get_scroll_offset())
-						/ std::max(1,GetScrollMax());
+						/ std::max(1, GetScrollMax());
 		;
 
 		// Pressed above it
@@ -230,8 +222,8 @@ bool Scrollable_widget::mouse_drag(int mx, int my) {
 	if (sy < sliderh / 2) {
 		sy = sliderh / 2;
 	}
-	if (sy > scrollrect.h ) {
-		sy = scrollrect.h ;
+	if (sy > scrollrect.h) {
+		sy = scrollrect.h;
 	}
 
 	//
@@ -269,12 +261,12 @@ bool Scrollable_widget::mousewheel_down(int mx, int my) {
 		line_down();
 		return true;
 	}
-	
+
 	return false;
 }
 
 void Scrollable_widget::paint() {
-		int sx,sy;
+	int sx, sy;
 	// Save clipping rect
 	auto ibuf = gwin->get_win()->get_ibuf();
 
@@ -298,11 +290,11 @@ void Scrollable_widget::paint() {
 
 		// Now work out the position
 		const int pos = ((scrollrect.h - sliderh) * get_scroll_offset())
-						/ std::max(1,GetScrollMax());
+						/ std::max(1, GetScrollMax());
 
 		slider_shape.paint_shape(sx, sy + pos);
 
-	// Update clip to scrollable region
+		// Update clip to scrollable region
 		auto usable = GetUsableArea(true);
 		new_clip    = usable.intersect(new_clip);
 		pane->set_pos(border_size, pane->get_y());
@@ -311,10 +303,7 @@ void Scrollable_widget::paint() {
 
 	// paint scrolling pane
 	Gump_widget::paintSorted(*pane);
-
-
 }
-
 
 void Scrollable_widget::scroll_line(int dir) {
 	set_scroll_offset(get_scroll_offset() + line_height * dir);
@@ -344,7 +333,7 @@ void Scrollable_widget::set_line_height(int newsize, bool snap) {
 }
 
 int Scrollable_widget::Get_ChildHeight() const {
-	int  maxy       = 0;
+	int maxy = 0;
 	for (auto& child : *pane) {
 		if (!child) {
 			continue;
@@ -377,7 +366,7 @@ bool Scrollable_widget::arrange_children() {
 		}
 
 		y = voffset;
-		voffset += rect.h+border_size;
+		voffset += rect.h + border_size;
 
 		changed |= child->get_x() != x || child->get_y() != y;
 		child->set_pos(x, y);

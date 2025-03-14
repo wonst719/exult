@@ -33,8 +33,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 bool Gump_button::push(MouseButton button) {
 	if (button == MouseButton::Left) {
 		set_pushed(button);
-		//paint();
-		//gwin->set_painted();
 		gwin->add_dirty(get_rect());
 		return true;
 	}
@@ -48,10 +46,7 @@ bool Gump_button::push(MouseButton button) {
 void Gump_button::unpush(MouseButton button) {
 	if (button == MouseButton::Left) {
 		set_pushed(false);
-		//paint();
-		//gwin->set_painted();
 		gwin->add_dirty(get_rect());
-
 	}
 }
 
@@ -91,8 +86,8 @@ bool Gump_button::mouse_down(int mx, int my, MouseButton button) {
 	if (!on_widget(mx, my)) {
 		return false;
 	}
-	
-	// eat click if already pushed 
+
+	// eat click if already pushed
 	if (pushed_button == MouseButton::Unknown) {
 		push(button);
 	}
@@ -109,14 +104,13 @@ bool Gump_button::mouse_up(int mx, int my, MouseButton button) {
 	}
 	// end dragging
 	bool was_dragging = dragging != MouseButton::Unknown;
-	dragging = MouseButton::Unknown;
+	dragging          = MouseButton::Unknown;
 
 	unpush(button);
 	if (on_widget(mx, my)) {
 		return activate(button);
 	}
 	return was_dragging;
-
 }
 
 bool Gump_button::mouse_drag(int mx, int my) {
@@ -136,7 +130,7 @@ bool Gump_button::mouse_drag(int mx, int my) {
 	if (on_widget(mx, my)) {
 		push(dragging);
 	} else {
-			unpush(dragging);
+		unpush(dragging);
 	}
 
 	return true;

@@ -31,7 +31,7 @@ public:
 			ShapeFile shfile = SF_GUMPS_VGA)
 			: Gump_widget(parent, shnum, px, py, frnum, shfile) {}
 
-	virtual Gump_widget* Input_first() override {
+	Gump_widget* Input_first() override {
 		Gump_widget* found = Gump_widget::Input_first();
 		if (sort_order == Sort_Order::hidden) {
 			return nullptr;

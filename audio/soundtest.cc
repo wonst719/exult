@@ -203,7 +203,6 @@ void SoundTester::test_sound() {
 						break;
 #ifdef DEBUG
 					case SDLK_d: {
-						MyMidiPlayer* player = Audio::get_ptr()->get_midi();
 						std::string   flex   = player && player->is_adlib()
 													   ? MAINMUS_AD
 													   : MAINMUS;

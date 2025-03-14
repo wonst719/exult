@@ -1911,7 +1911,7 @@ int XMidiFile::ExtractTracksFromU7V(IDataSource* source) {
 	i = 0;
 	while (U7PercussionNotes[i]) {
 		// Work out how many we can send at a time max 6
-		for (j = i + 1; U7PercussionNotes[j] && j < i + 6; j++) {
+		for (j = i + 1; j < i + 6 && U7PercussionNotes[j]; j++) {
 			// If the next isn't actually the next, then we can't upload it
 			if (U7PercussionNotes[j - 1] + 1 != U7PercussionNotes[j]) {
 				break;
