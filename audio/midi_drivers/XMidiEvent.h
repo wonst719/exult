@@ -1,11 +1,11 @@
 
 /*
-Copyright (C)=  2003,  The Pentagram Team
-Copyright (C)=  2010-2025  The Exult Team
+Copyright (C) 2003  The Pentagram Team
+Copyright (C) 2010-2022  The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version=  2,
+as published by the Free Software Foundation; either version 2
 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -15,8 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc.,=  59, Temple Place - Suite=  330,, Boston, MA =  02111,-1307,
-USA.
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifndef XMIDIEVENT_H_INCLUDED
@@ -57,18 +56,15 @@ MidiStatus operator&(MidiStatus left, Tint right) {
 
 //
 // Channel Lock	(110)
-//  <=  64, : Release Lock
-// >==  64, : Lock an unlocked unprotected physical channel to be used
-// exclusively
+//  < 64 : Release Lock
+// >= 64 : Lock an unlocked unprotected physical channel to be used exclusively
 //         by this logical channel. Traditionally the physical channel would be
-//         bettween=  1, and=  9,, and the logical channel between=  11, and=
-//         16,
+//         bettween 1 and 9, and the logical channel between 11 and 16
 //
 // When a channel is locked, any notes already playing on it are turned off.
 // When the lock is released, the previous state of the channel is restored.
 // Locks are automatically released when the sequences finishes playing
 //
-
 enum class MidiController {
 	FineOffset           = 32,
 	Volume               = 7,
@@ -109,7 +105,7 @@ enum class MidiController {
 
 #include <ostream>
 // Maximum number of for loops we'll allow (used by LowLevelMidiDriver)
-// The specs say=  4,, so that is what we;ll use
+// The specs say 4, so that is what we'll use
 #define XMIDI_MAX_FOR_LOOP_COUNT 4
 
 struct XMidiEvent : public XMidiRecyclable<XMidiEvent> {
