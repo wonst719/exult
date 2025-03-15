@@ -210,14 +210,14 @@ namespace Pentagram {
 		if (!sample) {
 			return UINT32_MAX;
 		}
-		return ((sample->getPlaybackLength()) * 1000) / sample->getRate();
+		return ((sample->getPlaybackLength()) * UINT64_C(1000)) / sample->getRate();
 	}
 
 	uint32 AudioChannel::getPlaybackPosition() const {
 		if (!sample) {
 			return UINT32_MAX;
 		}
-		return (overall_position * 1000) / sample->getRate();
+		return (overall_position * UINT64_C(1000)) / sample->getRate();
 	}
 
 	// Decompress a frame
