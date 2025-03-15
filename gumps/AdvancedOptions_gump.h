@@ -29,6 +29,10 @@ public:
 
 	bool mousewheel_up(int mx, int my) override;
 
+	bool character_input(
+			int chr, int unicode,
+			bool shift_pressed) override;
+
 	void paint() override;
 
 	bool run() override;

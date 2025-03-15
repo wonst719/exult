@@ -117,7 +117,7 @@ bool DropDown_widget::run() {
 		}
 	}
 
-	return IterableGump_widget::run() | res;
+	return IterableGump_widget::run() || res;
 }
 
 bool DropDown_widget::mouse_down(int mx, int my, MouseButton button) {
@@ -139,7 +139,7 @@ bool DropDown_widget::mouse_down(int mx, int my, MouseButton button) {
 		// clicked on something else
 		return false;
 	}
-	// pass it to the button;
+	// pass it to the button
 	return children[id_button]->mouse_down(mx, my, button);
 }
 
@@ -193,16 +193,8 @@ bool DropDown_widget::character_input(
 		onlist(list.get(), MouseButton::Unknown);
 		break;
 
-	case SDLK_BACKSPACE:
-		break;
-
-	case SDLK_DELETE:
-		break;
-
-	case SDLK_LEFT:
-		break;
-
-	case SDLK_RIGHT:
+	case SDLK_ESCAPE:
+		show_popup(false);
 		break;
 
 	case SDLK_UP:
@@ -214,7 +206,7 @@ bool DropDown_widget::character_input(
 		// move selection down
 		{
 			int newsel = std::min<int>(
-					selections.size(), std::max(0, list->getselection() - 1));
+					selections.size(), std::max(0, list->getselection() + 1));
 			list->setselection(newsel);
 			set_frame(newsel);
 		}

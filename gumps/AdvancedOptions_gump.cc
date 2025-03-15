@@ -198,6 +198,19 @@ bool AdvancedOptions_gump::mousewheel_up(int mx, int my) {
 	return Modal_gump::mousewheel_up(mx, my);
 }
 
+bool AdvancedOptions_gump::character_input(
+		int chr, int unicode, bool shift_pressed) {
+	// try input first widget only
+	for (auto& child : elems) {
+		auto found = child->Input_first();
+		if (found && found->character_input(chr,unicode,shift_pressed)) {
+			return true;
+		}
+	}
+	// pass to our parentclass
+	return Modal_gump::character_input(chr, unicode, shift_pressed);
+}
+
 void AdvancedOptions_gump::paint() {
 	auto ib = gwin->get_win()->get_ib8();
 	Modal_gump::paint();
