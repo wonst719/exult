@@ -86,6 +86,5 @@ public:
 	) const override;
 
 	TileRect get_rect() const override;
-
 };
 #endif
