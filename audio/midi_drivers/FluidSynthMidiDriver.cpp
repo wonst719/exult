@@ -185,10 +185,6 @@ int FluidSynthMidiDriver::open() {
 		}
 	}
 
-	// The default gain setting is ridiculously low, but we can't set it
-	// too high either or sound will be clipped. This may need tuning...
-
-	setNum("synth.gain", 2.1);
 	setNum("synth.sample-rate", sample_rate);
 
 	_synth = new_fluid_synth(_settings);
