@@ -63,9 +63,9 @@ start menu.
 
 When the shell starts, issue the following commands:
     pacman -S --noconfirm --needed base-devel git zip \
-            mingw-w64-${MSYSTEM_CARCH}-toolchain \
-            mingw-w64-${MSYSTEM_CARCH}-binutils \
-            mingw-w64-${MSYSTEM_CARCH}-ntldd
+            ${MINGW_PACKAGE_PREFIX}-toolchain \
+            ${MINGW_PACKAGE_PREFIX}-binutils \
+            ${MINGW_PACKAGE_PREFIX}-ntldd
 
 This installs the toolchain for building everything. Now, you must install
 the required libraries for building each component. The commands given below
@@ -73,36 +73,36 @@ assume you have not installed any of the others, and can be used independently.
 
 To build Exult, you must install the following:
     pacman -S --noconfirm --needed \
-            mingw-w64-${MSYSTEM_CARCH}-SDL2 \
-            mingw-w64-${MSYSTEM_CARCH}-fluidsynth \
-            mingw-w64-${MSYSTEM_CARCH}-libtimidity \
-            mingw-w64-${MSYSTEM_CARCH}-libogg \
-            mingw-w64-${MSYSTEM_CARCH}-libvorbis \
-            mingw-w64-${MSYSTEM_CARCH}-munt-mt32emu \
-            mingw-w64-${MSYSTEM_CARCH}-libpng \
-            mingw-w64-${MSYSTEM_CARCH}-zlib
+            ${MINGW_PACKAGE_PREFIX}-SDL2 \
+            ${MINGW_PACKAGE_PREFIX}-fluidsynth \
+            ${MINGW_PACKAGE_PREFIX}-libtimidity \
+            ${MINGW_PACKAGE_PREFIX}-libogg \
+            ${MINGW_PACKAGE_PREFIX}-libvorbis \
+            ${MINGW_PACKAGE_PREFIX}-munt-mt32emu \
+            ${MINGW_PACKAGE_PREFIX}-libpng \
+            ${MINGW_PACKAGE_PREFIX}-zlib
 
 To build the Exult tools, you must install the following:
-    pacman -S --noconfirm --needed mingw-w64-${MSYSTEM_CARCH}-SDL2_image
+    pacman -S --noconfirm --needed ${MINGW_PACKAGE_PREFIX}-SDL2_image
 
 To build Exult Studio, you must install the following:
     pacman -S --noconfirm --needed \
-            mingw-w64-${MSYSTEM_CARCH}-gtk3 \
-            mingw-w64-${MSYSTEM_CARCH}-adwaita-icon-theme \
-            mingw-w64-${MSYSTEM_CARCH}-libxml2 \
-            mingw-w64-${MSYSTEM_CARCH}-freetype \
-            mingw-w64-${MSYSTEM_CARCH}-zlib \
-            mingw-w64-${MSYSTEM_CARCH}-icu
+            ${MINGW_PACKAGE_PREFIX}-gtk3 \
+            ${MINGW_PACKAGE_PREFIX}-adwaita-icon-theme \
+            ${MINGW_PACKAGE_PREFIX}-libxml2 \
+            ${MINGW_PACKAGE_PREFIX}-freetype \
+            ${MINGW_PACKAGE_PREFIX}-zlib \
+            ${MINGW_PACKAGE_PREFIX}-icu
 
 To build the Gimp 2 Plug-In, you must install the following:
     pacman -S --noconfirm --needed \
-            mingw-w64-${MSYSTEM_CARCH}-gtk2 \
-            mingw-w64-${MSYSTEM_CARCH}-gimp2
+            ${MINGW_PACKAGE_PREFIX}-gtk2 \
+            ${MINGW_PACKAGE_PREFIX}-gimp2
 
 To build the Gimp 3 Plug-In, you must install the following:
     pacman -S --noconfirm --needed \
-            mingw-w64-${MSYSTEM_CARCH}-gtk3 \
-            mingw-w64-${MSYSTEM_CARCH}-gimp
+            ${MINGW_PACKAGE_PREFIX}-gtk3 \
+            ${MINGW_PACKAGE_PREFIX}-gimp
 
 You now have everything needed to build any of the components you want.
 
