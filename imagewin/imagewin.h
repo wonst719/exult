@@ -180,6 +180,8 @@ protected:
 	bool          fullscreen;      // Rendering fullscreen.
 	int           game_width;
 	int           game_height;
+	int           real_game_width;
+	int           real_game_height;
 	int           inter_width;
 	int           inter_height;
 
@@ -319,7 +321,8 @@ public:
 			FillMode fmode = AspectCorrectCentre, int fillsclr = point)
 			: ibuf(ib), scale(scl), scaler(sclr), uses_palette(true),
 			  fullscreen(fs), game_width(gamew), game_height(gameh),
-			  fill_mode(fmode), fill_scaler(fillsclr), screen_window(nullptr),
+			  real_game_width(gamew), real_game_height(gameh), fill_mode(fmode),
+			  fill_scaler(fillsclr), screen_window(nullptr),
 			  paletted_surface(nullptr), display_surface(nullptr),
 			  inter_surface(nullptr), draw_surface(nullptr) {
 		static_init();
@@ -444,6 +447,29 @@ public:
 	// Rotate palette colors.
 	virtual void rotate_colors(int first, int num, int upd) {
 		ignore_unused_variable_warning(first, num, upd);
+	}
+
+	// Set things up so gamewin can paint.
+	// This method adjusts buffer dimensions so gamewin can draw into the
+	// guard_band on the right and bottom in order to prevent black lines when
+	// scalers read from the guardband Must call EndPaintIntoGuardBand after calling this
+	// Parmeters are the region to be painted. This will be clipped against
+	// buffer dimension and enlarged into the guardband. If Parameters are
+	// nullptr they are treated as if they are zero when clipping the other
+	// coordinates
+	void BeginPaintIntoGuardBand(int* x, int* y, int* w, int* h);
+
+	// Reset dimension back to normal after calling BeginPaintIntoGuardBand
+	void EndPaintIntoGuardBand();
+
+	// Fill the right and bottom guardband by duplicating edge pixels across it
+	// Used during cinematic sequences
+	void FillGuardband();
+
+	// Show but first fill guardband
+	void ShowFillGuardBand() {
+		FillGuardband();
+		show();
 	}
 
 	/*
