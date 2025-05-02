@@ -131,7 +131,7 @@ Image_window::ScalerVector::ScalerVector() {
 	push_back(Interlaced);
 
 	const ScalerInfo Bilinear
-			= {"Bilinear", 0xFFFFFFFF, new Pentagram::BilinearScaler(),
+			= {"Bilinear", 0xFFFFFFFF, new Pentagram::BilinearScaler::Scaler(),
 			   nullptr,    nullptr,    nullptr,
 			   nullptr,    nullptr};
 	push_back(Bilinear);
@@ -895,10 +895,20 @@ void Image_window::show(int x, int y, int w, int h) {
 	x -= get_start_x();
 	y -= get_start_y();
 
+	// we can only include guard band in the buffersize if inter_surface is not
+	// display_surface otherwise scalers will write out of bounds. A separate
+	// inter_surface has a guardband but display_surface does not
+	int gb = (inter_surface != display_surface) ? guard_band : 0;
+	//  Include guardband when comparing to width and height so the whole buffer
+	//  can still be used if it is not a muliple of 4
+	int buffer_w = get_full_width() + gb;
+	int buffer_h = get_full_height() + gb;
 	// Increase the area by 4 pixels
-	increase_area(x, y, w, h, 4, 4, 4, 4, get_full_width(), get_full_height());
+	increase_area(x, y, w, h, 4, 4, 4, 4, buffer_w, buffer_h);
 
-	// Make it 4 pixel aligned too
+	// Make it 4 pixel aligned too, needed for more advanced scalers that work best
+	// with groups of 4 pixels, othwerwise we can get discontinuities around the
+	// mouse cursor when it moves.
 	const int dx = x & 3;
 	const int dy = y & 3;
 	x -= dx;
@@ -906,6 +916,7 @@ void Image_window::show(int x, int y, int w, int h) {
 	y -= dy;
 	h += dy;
 
+	// Round up to multiple of 4
 	if (w & 3) {
 		w += 4 - (w & 3);
 	}
@@ -913,13 +924,15 @@ void Image_window::show(int x, int y, int w, int h) {
 		h += 4 - (h & 3);
 	}
 
-	if (w + x > get_full_width()) {
-		w = get_full_width() - x;
+	// Clip rounded up sizes to the buffer size
+	if (w + x > buffer_w) {
+		w = buffer_w - x;
 	}
-	if (h + y > get_full_height()) {
-		h = get_full_height() - y;
+	if (h + y > buffer_h) {
+		h = buffer_h - y;
 	}
 
+	// Round Down to multiple of 4
 	w &= ~3;
 	h &= ~3;
 
