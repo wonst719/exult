@@ -95,7 +95,7 @@ namespace Pentagram { namespace BilinearScaler {
 
 		// Number of loops that can run.
 		// this is the number of blocks we can safely scale without
-		// checking for buffer overruns
+		// per pixel checking for buffer overruns
 		
 		int numyloops = (sh - 1) / linesperxloop;
 		int numxloops = (sw - 1) / blockwidth;

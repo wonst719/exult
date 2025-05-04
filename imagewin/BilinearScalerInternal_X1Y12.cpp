@@ -80,9 +80,9 @@ namespace Pentagram { namespace BilinearScaler {
 		const uint_fast8_t destblockwidth  = 1;
 		const uint_fast8_t destblockheight = 6;
 
-		// Number of times yloop can run.
+		// Number of loops that can run.
 		// this is the number of blocks we can safely scale without
-		// checking for buffer overruns
+		// per pixel checking for buffer overruns
 		
 		int numyloops = (sh - 1) / blockheight;
 		int numxloops = (sw - 1) / texels_per_xloop;

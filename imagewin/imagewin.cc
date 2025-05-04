@@ -102,8 +102,6 @@ int Image_window::windowed      = 0;
 // so we need to define the default
 float Image_window::nativescale = 1.0f;
 
-const int Image_window::guard_band = 4;
-
 SDL_PixelFormat*
 		  ManipBase::fmt;    // Format of dest. pixels (and src for rgb src).
 SDL_Color ManipBase::colors[256];    // Palette for source window.
@@ -530,8 +528,8 @@ void Image_window::create_surface(unsigned int w, unsigned int h) {
 	get_draw_dims(
 			w, h, scale, fill_mode, game_width, game_height, inter_width,
 			inter_height);
-	real_game_height = game_height;
-	real_game_width = game_width;
+	saved_game_height = game_height;
+	saved_game_width = game_width;
 	if (!try_scaler(w, h)) {
 		// Try fallback to point scaler if it failed, if it doesn't work, we
 		// probably can't run
@@ -874,8 +872,8 @@ void Image_window::resized(
 	scale           = newsc;
 	scaler          = newscaler;
 	fullscreen      = newfs;
-	real_game_width = game_width = newgw;
-	real_game_height = game_height = newgh;
+	game_width = newgw;
+	game_height = newgh;
 	fill_mode                      = fmode;
 	fill_scaler                    = fillsclr;
 	create_surface(neww, newh);    // Create new one.
@@ -889,11 +887,8 @@ void Image_window::show(int x, int y, int w, int h) {
 	if (!ready()) {
 		return;
 	}
-	// Someone forgot to call EndPaintIntoGuardBand so call it here it is safe
-	// to call it multiple times
-	if (draw_surface != display_surface && (game_width != real_game_width || game_height != real_game_height)) {
-		EndPaintIntoGuardBand();
-	}
+	// call EndPaintIntoGuardBand just in case. It is safe to call it when not needed 
+	EndPaintIntoGuardBand();
 
 	int srcx = 0;
 	int srcy = 0;
@@ -902,6 +897,11 @@ void Image_window::show(int x, int y, int w, int h) {
 	}
 	x -= get_start_x();
 	y -= get_start_y();
+
+	// This function always rounds the source rect to be scaled to multiples of 4
+	// Assuming the guard_band is in use and is at least 4, the rectangle will 
+	// never shrink however if there is no guardband the rectangle can shrink 
+	// by upto 3 source pixels
 
 	// we can only include guard band in the buffersize if inter_surface is not
 	// display_surface otherwise scalers will write out of bounds. A separate
@@ -1073,7 +1073,7 @@ void Image_window::toggle_fullscreen() {
 	}
 }
 
-void Image_window::BeginPaintIntoGuardBand(int* x, int* y, int* w, int* h) {
+void Image_window::BeginPaintIntoGuardBand(int* x, int* y, int* w, int* h) {	 
 	int tx = 0, ty = 0, tw = 0, th = 0;
 
 	if (!x) {
@@ -1090,9 +1090,10 @@ void Image_window::BeginPaintIntoGuardBand(int* x, int* y, int* w, int* h) {
 	}
 
 	// adjust ibuf and game dimension things so we can draw into the right and
-	// bottom guardband to avoid blacklines when scalers read the gurdband Only
-	// do this if windowed
-	if (!fullscreen && draw_surface != display_surface) {
+	// bottom guardband to avoid blacklines when scalers read the gurdband 
+	// Only do this is guardband painting should be used and if the adjustments 
+	//  haven't already been done
+	if (ShouldPaintIntoGuardband() && (game_width == saved_game_width || game_height == saved_game_height)) {
 		// Adjust clip rect on the buffer
 		int cx, cy, cw, ch;
 		ibuf->get_clip(cx, cy, cw, ch);
@@ -1115,16 +1116,19 @@ void Image_window::BeginPaintIntoGuardBand(int* x, int* y, int* w, int* h) {
 				ch = ibuf->height + guard_band / 2 - cy;
 			}
 		}
-		if (real_game_width == ibuf->width) {
-			game_width = real_game_width + guard_band / 2;
+		if (saved_game_width == ibuf->width) {
+			game_width = saved_game_width + guard_band / 2;
 		}
 
-		if (real_game_height == ibuf->height) {
-			game_height = real_game_height + guard_band / 2;
+		if (saved_game_height == ibuf->height) {
+			game_height = saved_game_height + guard_band / 2;
 		}
 
 		// we only allow drawing into half the guardband on the right and botom
-		// and bot at all on the top and left
+		// and not at all on the top and left as none of the scalers will try 
+		// reading out of bounds to the left or up
+		// draw surface includes 2 guard bands of extrapixels so to allow 
+		//drawing into half a guardband we need to subtract 1.5 guardbands from the draw surface dimensions
 		ibuf->width  = draw_surface->w - 3 * guard_band / 2;
 		ibuf->height = draw_surface->h - 3 * guard_band / 2;
 		// set the new clipping rectangle after updating the buffer dimensions
@@ -1140,21 +1144,19 @@ void Image_window::BeginPaintIntoGuardBand(int* x, int* y, int* w, int* h) {
 }
 
 void Image_window::EndPaintIntoGuardBand() {
-	// Restore ibuf and game screen dimensions
-	if (draw_surface != display_surface
-		&& (game_width != real_game_width || game_height != real_game_height)) {
+	if (!ShouldPaintIntoGuardband()) {
+		return;
+	}
+	// Restore ibuf and game screen dimensions if needed
+	if (game_width != saved_game_width || game_height != saved_game_height) {
 		ibuf->width  = draw_surface->w - 2 * guard_band;
 		ibuf->height = draw_surface->h - 2 * guard_band;
-		game_width   = real_game_width;
-		game_height  = real_game_height;
+		game_width   = saved_game_width;
+		game_height  = saved_game_height;
 	}
 }
 
 void Image_window::FillGuardband() {
-	if (fullscreen || draw_surface == display_surface
-		|| draw_surface == inter_surface) {
-		return;
-	}
 
 	auto pixels = static_cast<uint8*>(draw_surface->pixels) + guard_band
 				  + guard_band * draw_surface->pitch;
@@ -1172,6 +1174,9 @@ void Image_window::FillGuardband() {
 	end      = ptr + (ibuf->height + guard_band) * draw_surface->pitch;
 
 	while (ptr != end) {
+		// guard_band is a constant and should be 4 
+		// Compilers should be smart enough to optimize the memset away into a
+		// 32bit write so no performance impact using memset here
 		memset(ptr + 1, *ptr, guard_band);
 		ptr += draw_surface->pitch;
 	}
