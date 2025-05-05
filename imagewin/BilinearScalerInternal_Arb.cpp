@@ -190,8 +190,8 @@ namespace Pentagram { namespace BilinearScaler {
 		}
 
 		// Src Loop Y
-		uint_fast32_t block_start_x = start_x;
-		uint_fast32_t block_start_y = pos_y;
+		fixedu1616    block_start_x = start_x;
+		fixedu1616 block_start_y = pos_y;
 
 		while (texel != yloop_end) {
 			// Read first column of 5 lines into abcde
@@ -204,8 +204,6 @@ namespace Pentagram { namespace BilinearScaler {
 
 			next_block = pixel;
 			// Src Loop X, loops while there are 2 or more columns available
-			// auto xdiff = xloop_end - (texel + numxloops * blockwidth);
-			// xloop_end  = texel + (numxloops * blockwidth);
 			assert(xloop_end == (texel + numxloops * blockwidth));
 			while (texel != xloop_end) {
 				pos_y = block_start_y;
@@ -285,7 +283,6 @@ namespace Pentagram { namespace BilinearScaler {
 				block_start_x = pos_x;
 				end_x += 1 << 16;
 			}
-			//	assert(cols == numxloops);
 
 			// Final X (clipping) if  have a source column available
 			if (clip_x) {
@@ -401,8 +398,8 @@ namespace Pentagram { namespace BilinearScaler {
 			ReadTexelsV<Manip>(lines_remaining, texel, tpitch, a, b, c, d, e);
 			texel++;
 
-			uint_fast32_t end_x         = 1 << 16;
-			uint_fast32_t block_start_x = start_x;
+			end_x         = 1 << 16;
+			block_start_x = start_x;
 
 			next_block = pixel;
 
@@ -454,9 +451,8 @@ namespace Pentagram { namespace BilinearScaler {
 
 				blockline_start = next_block ? next_block : pixel;
 				next_block      = nullptr;
-				// assert(IsUnclipped(blockline_start, dst_limit));
 
-				// j a
+				// f a
 				// g b
 				Interpolate2x2BlockByAny<uintX, Manip, uintS>(
 						f, g, a, b, blockline_start, next_block, pos_y, pos_x,

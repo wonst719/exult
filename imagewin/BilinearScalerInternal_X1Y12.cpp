@@ -143,8 +143,6 @@ namespace Pentagram { namespace BilinearScaler {
 		// Src Loop Y
 		while (texel != yloop_end) {
 			// Src Loop X, loops while there are 2 or more columns available
-			// auto xdiff = xloop_end - (texel + numxloops * texels_per_xloop);
-			// xloop_end  = texel + (numxloops * texels_per_xloop);
 			assert(xloop_end == (texel + numxloops * texels_per_xloop));
 			while (texel != xloop_end) {
 				// Read next column of 5
@@ -171,7 +169,6 @@ namespace Pentagram { namespace BilinearScaler {
 				pixel -= pitch * destblockheight;
 				pixel += sizeof(uintX) * destblockwidth;
 			}
-			//	assert(cols == numxloops);
 
 			// Final X (clipping) Doesn't actually do any
 			// clipping just reads and scales the final column if the width is

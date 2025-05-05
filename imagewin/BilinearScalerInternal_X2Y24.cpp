@@ -169,8 +169,6 @@ namespace Pentagram { namespace BilinearScaler {
 			texel++;
 
 			// Src Loop X, loops while there are 2 or more columns available
-			// auto xdiff = xloop_end - (texel + numxloops * blockwidth);
-			// xloop_end  = texel + (numxloops * blockwidth);
 			assert(xloop_end == (texel + numxloops * blockwidth));
 			while (texel != xloop_end) {
 				// Read next column of 5 lines into fghij
@@ -208,7 +206,6 @@ namespace Pentagram { namespace BilinearScaler {
 				pixel -= pitch * destblockheight;
 				pixel += sizeof(uintX) * destblockwidth;
 			}
-			//	assert(cols == numxloops);
 
 			// Final X (clipping) if  have a source column available
 			if (clip_x) {

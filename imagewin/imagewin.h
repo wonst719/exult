@@ -468,7 +468,6 @@ public:
 	// whether or not we should do guardband painting
 	// Criteria is using a scaler other than point and there is a guardband
 	bool ShouldPaintIntoGuardband() {
-
 		// Only if actually scaling
 		if (draw_surface == display_surface) {
 			return false;

@@ -898,10 +898,6 @@ void Image_window::show(int x, int y, int w, int h) {
 	x -= get_start_x();
 	y -= get_start_y();
 
-	// This function always rounds the source rect to be scaled to multiples of 4
-	// Assuming the guard_band is in use and is at least 4, the rectangle will 
-	// never shrink however if there is no guardband the rectangle can shrink 
-	// by upto 3 source pixels
 
 	// we can only include guard band in the buffersize if inter_surface is not
 	// display_surface otherwise scalers will write out of bounds. A separate
@@ -936,13 +932,10 @@ void Image_window::show(int x, int y, int w, int h) {
 	if (w + x > buffer_w) {
 		w = buffer_w - x;
 	}
+
 	if (h + y > buffer_h) {
 		h = buffer_h - y;
 	}
-
-	// Round Down to multiple of 4
-	w &= ~3;
-	h &= ~3;
 
 	// Phase 1 blit from draw_surface to inter_surface
 	if (draw_surface != inter_surface) {
@@ -1157,10 +1150,8 @@ void Image_window::EndPaintIntoGuardBand() {
 }
 
 void Image_window::FillGuardband() {
-
 	auto pixels = static_cast<uint8*>(draw_surface->pixels) + guard_band
 				  + guard_band * draw_surface->pitch;
-
 	// Bottom
 	auto read  = pixels + (ibuf->height - 1) * draw_surface->pitch;
 	auto write = read + draw_surface->pitch;
