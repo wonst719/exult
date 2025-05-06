@@ -94,6 +94,7 @@ osxdmg: bundle
 	SetFile -t ttro -c ttxt ./Exult-snapshot/News
 	SetFile -t ttro -c ttxt ./Exult-snapshot/ReadMe.macOS
 	SetFile -a E ./Exult-snapshot/ReadMe.html
+	SetFile -a E ./Exult-snapshot/FAQ.html
 	SetFile -a E "./Exult-snapshot/Git revision.url"
 	cp -R $(bundle_name) ./Exult-snapshot/
 	create-dmg \
