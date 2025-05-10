@@ -469,6 +469,10 @@ int main(int argc, char* argv[]) {
 		if (e.get_errno() != 0) {
 			perror("Error Description");
 		}
+		if (e.sourcefile()) {
+			cout << "SourceFile: " << e.sourcefile() << endl;
+			cout << "line: " << e.line() << endl;
+		}
 		cerr << "============================" << endl;
 		result = e.get_errno();
 	}
