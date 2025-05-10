@@ -474,6 +474,15 @@ int main(int argc, char* argv[]) {
 			cout << "line: " << e.line() << endl;
 		}
 		cerr << "============================" << endl;
+
+		// Verify Game Files before we exit just incase the unhandled exception
+		// was caused by a bad file
+		verify_files(nullptr);
+
+		// make an emergency save
+		if (gwin && gwin->get_main_actor()) {
+			gwin->MakeEmergencySave();
+		}
 		result = e.get_errno();
 	}
 
