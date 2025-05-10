@@ -510,6 +510,11 @@ int exult_main(const char* runpath) {
 		config->read_config_file(USER_CONFIGURATION_FILE);
 	}
 
+#if defined _WIN32
+	// Install the crash handler after we've loaded config
+	extern void WindowsInstallCrashHandler();
+	WindowsInstallCrashHandler();
+#endif
 	// reset-video command line option
 	if (arg_reset_video) {
 		config->set("config/video/display/width", 1024, false);
