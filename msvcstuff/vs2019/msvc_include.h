@@ -1,7 +1,7 @@
 #pragma once
 #define NOMINMAX
 
-#define VERSION       "1.11.0git"
+#define VERSION       "1.13.0git"
 #define EXULT_DATADIR "data/"
 
 #ifdef _DEBUG
