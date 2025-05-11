@@ -24,11 +24,11 @@ Boston, MA  02111-1307, USA.
 /* This file contans a crash handler written for Windows
 
 If a crash occurs it will output basic details about the crash (what type,
-where it was, contents of regisers, etc), it will verify game files and 
+where it was, contents of regisers, etc), it will verify game files and
 finally attempt to make a crash save if in game
 
 It is assumed that the process  is still stable and the Address space hasn't
-been completely trashed. If the process is no longer stable,  then there isn't 
+been completely trashed. If the process is no longer stable,  then there isn't
 thart can be done
 
 */
@@ -54,8 +54,6 @@ thart can be done
 #include <iostream>
 #include <memory>
 #include <thread>
-
-
 
 static MINIDUMP_TYPE    miniDump_Type = MiniDumpNormal;
 static EXCEPTION_RECORD ExceptionRecord;
@@ -116,7 +114,8 @@ static void HandlerWorkerThreadFunc() {
 		} break;
 
 		default:
-			std::cerr << "Signal: " << ExceptionRecord.ExceptionCode << std::endl
+			std::cerr << "Signal: " << ExceptionRecord.ExceptionCode
+					  << std::endl
 					  << std::flush;
 		}
 	} else {
@@ -304,21 +303,18 @@ static void signalhandler(int sig) {
 }
 
 static void terminatehandler() {
-	// The runtime should call terminate when there is an unhandled c++ exception 
-	// so get the exception if one exists
+	// The runtime should call terminate when there is an unhandled c++
+	// exception so get the exception if one exists
 	auto exp_ptr = std::current_exception();
 	if (exp_ptr) {
 		try {
-			// Rethrow the exception so we can catch it and get the actual exception type
+			// Rethrow the exception so we can catch it and get the actual
+			// exception type
 			std::rethrow_exception(exp_ptr);
-		}
-		catch (std::exception& e)
-		{
+		} catch (std::exception& e) {
 			std::cerr << "unhandled c++ Exception: " << e.what() << std::endl;
-		}
-		catch (...)
-		{
-			std::cerr << "unhandled c++ Exception of unknown type"  << std::endl;
+		} catch (...) {
+			std::cerr << "unhandled c++ Exception of unknown type" << std::endl;
 		}
 	}
 
@@ -334,8 +330,7 @@ void WindowsInstallCrashHandler() {
 		if (config) {
 			// config setting can be "full" or "normal" or "".
 			config->value(
-					"config/debugging/windows/minidumptype", value,
-					"normal");
+					"config/debugging/windows/minidumptype", value, "normal");
 			if (value == "") {
 				value = "normal";
 			}
@@ -352,19 +347,22 @@ void WindowsInstallCrashHandler() {
 						true);
 			}
 		}
-		std::cerr << "Installing Windows crash Handler with " << value << " minidumps" << std::endl;
-		// Adds an Unhandled Exception Handler. This will replace the one installed by the 
-		// runtime. This will catch all Win32 Exceptions that weren't handled by a 
-		// Structured or Vectored Exception handler. In MSVC this includes unhandled c++ exceptions 
+		std::cerr << "Installing Windows crash Handler with " << value
+				  << " minidumps" << std::endl;
+		// Adds an Unhandled Exception Handler. This will replace the one
+		// installed by the runtime. This will catch all Win32 Exceptions that
+		// weren't handled by a Structured or Vectored Exception handler. In
+		// MSVC this includes unhandled c++ exceptions
 		SetUnhandledExceptionFilter(ExceptionHandler);
 
 		// Add signal handler for SIGABRT so we can convert it to a Win32
 		// exception and create the mididump Other signals we don't handle as
-		// they are not expected to occur 
+		// they are not expected to occur
 		// THe C runtime may raise SIGABRT in response to invalid operations
 		std::signal(SIGABRT, signalhandler);
 
-		// Add a terminate handler as the c++ runtime should call this on unhandled C++ exceptions		 
+		// Add a terminate handler as the c++ runtime should call this on
+		// unhandled C++ exceptions
 		std::set_terminate(terminatehandler);
 
 	} else {

@@ -34,8 +34,8 @@
 #include <cstring>
 #include <iostream>
 #include <map>
-#include <vector>
 #include <tuple>
+#include <vector>
 
 struct FileHash {
 	const char* hash;
@@ -123,7 +123,7 @@ int verify_files(BaseGameInfo* game) {
 		const auto length   = ds.getSize();
 		const auto data     = ds.readN(length);
 		const auto hash_str = sha1::toHexString(sha1::calc(data.get(), length));
-		bool hashgood = strcmp(hash.hash, hash_str.data()) == 0;
+		bool       hashgood = strcmp(hash.hash, hash_str.data()) == 0;
 		if (!hashgood && hash.alternative) {
 			hashgood = strcmp(hash.alternative, hash_str.data()) == 0;
 		}
@@ -132,9 +132,10 @@ int verify_files(BaseGameInfo* game) {
 			std::cout << "Hash mismatch for file '" << file << "':" << std::endl
 					  << "\tExpected hash: " << hash.hash << std::endl;
 			if (hash.alternative) {
-				std::cout << "\tOr:            " << hash.alternative << std::endl;
+				std::cout << "\tOr:            " << hash.alternative
+						  << std::endl;
 			}
-				std::cout << "\tActual hash:   " << hash_str.data() << std::endl;
+			std::cout << "\tActual hash:   " << hash_str.data() << std::endl;
 		}
 	}
 	std::cout << "========================================" << std::endl
@@ -158,7 +159,7 @@ int verify_files(BaseGameInfo* game) {
 }
 
 const File2HashMap blackgate_files{
-		{  MAINMUS_AD, "0ec151bd93e07ea36715d3bea56ea996bf9f7720"},
+		{  MAINMUS_AD,"0ec151bd93e07ea36715d3bea56ea996bf9f7720"                      },
 		{        AMMO, "1c9313c1cf105a43933a29c6b7388872a7d8b21d"},
 		{       ARMOR, "32b00f5c8da9ccbeb503e9db08b6d06423282f07"},
 		{     ENDGAME, "5fde1edc8eb90b436146bbdad5c96d046e371f31"},
@@ -191,11 +192,12 @@ const File2HashMap blackgate_files{
 		{       U7MAP, "960b7834f455e918c4088076c2629eb50cfb827b"},
 		{    U7SPEECH, "7af1fbda6e0fbdbc07ed8a851de16aa99fa4bb4e"},
 		{ U7VOICE_FLX, "cc276cc23dd3c900ef3e8af26d6384df3dbee14c"},
-		// 2 hashes for BG Usecode 
+		// 2 hashes for BG Usecode
 		// First is v3.4 timestamped 1992-05-27 16:46:38
 		// Second is v3.0 Timestamped 1992-03-11 23:08:40
-		{     USECODE, {"570aa419ee8ccd76343162b59ec71fcbea72e1a7",
-		                "272653ec0075da961f9393c716da0baf5f3e19f1"}}, 
+		{     USECODE,
+		 {"570aa419ee8ccd76343162b59ec71fcbea72e1a7",
+         "272653ec0075da961f9393c716da0baf5f3e19f1"}             },
 		{     WEAPONS, "cea42a72a7cf46703f1168f9d49c912aa8d157e6"},
 		{      WGTVOL, "554d1788918468507b0bb4e4fa19087cd99d3610"},
 		{        WIHH, "2546cfe8e7d227d170f82b82db51c422ec04f88f"},

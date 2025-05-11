@@ -82,7 +82,7 @@
 #	pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif    // __GNUC__
 #include <SDL.h>
-static const Uint32 EXSDL_TOUCH_MOUSEID = SDL_TOUCH_MOUSEID;
+static const Uint32      EXSDL_TOUCH_MOUSEID = SDL_TOUCH_MOUSEID;
 static const SDL_TouchID EXSDL_MOUSE_TOUCHID = SDL_MOUSE_TOUCHID;
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
@@ -248,10 +248,10 @@ static bool                 show_items_clicked = false;
 static int                  left_down_x = 0, left_down_y = 0;
 static int                  joy_aim_x = 0, joy_aim_y = 0;
 Mouse::Avatar_Speed_Factors joy_speed_factor = Mouse::medium_speed_factor;
-static Uint32               last_speed_cursor = 0; // When we last updated the mouse cursor
+static Uint32 last_speed_cursor = 0;    // When we last updated the mouse cursor
 #if defined _WIN32
-void        do_cleanup_output() {
-    cleanup_output("std");
+void do_cleanup_output() {
+	cleanup_output("std");
 }
 #endif
 
@@ -1276,7 +1276,7 @@ static void Handle_events() {
 			&& gwin->main_actor_can_act_charmed()) {
 			int       x  = Mouse::mouse->get_mousex();
 			int       y  = Mouse::mouse->get_mousey();
-			const int ms = SDL_GetMouseState(nullptr,nullptr);
+			const int ms = SDL_GetMouseState(nullptr, nullptr);
 			if ((SDL_BUTTON(3) & ms) && !right_on_gump) {
 				gwin->start_actor(x, y, Mouse::mouse->avatar_speed);
 			} else if (ticks > last_rest) {
@@ -1490,8 +1490,8 @@ static void Handle_event(SDL_Event& event) {
 		break;
 	}
 	case SDL_FINGERDOWN: {
-		if ((!Mouse::use_touch_input) &&
-			(event.tfinger.touchId != EXSDL_MOUSE_TOUCHID)) {
+		if ((!Mouse::use_touch_input)
+			&& (event.tfinger.touchId != EXSDL_MOUSE_TOUCHID)) {
 			Mouse::use_touch_input = true;
 			gwin->set_painted();
 		}
@@ -2281,9 +2281,9 @@ void Wizard_eye(long msecs    // Length of time in milliseconds.
 		if (ticks > last_repaint + 50 || gwin->was_painted()) {
 			// Right mouse button down?
 
-			const int ms = SDL_GetMouseState(nullptr,nullptr);
-			int       mx  = Mouse::mouse->get_mousex();
-			int       my  = Mouse::mouse->get_mousey();
+			const int ms = SDL_GetMouseState(nullptr, nullptr);
+			int       mx = Mouse::mouse->get_mousex();
+			int       my = Mouse::mouse->get_mousey();
 			if (SDL_BUTTON(3) & ms) {
 				Shift_wizards_eye(mx, my);
 			}

@@ -1726,7 +1726,7 @@ void Game_window::start_actor_alt(
 		Game_object* block = main_actor->is_moving()
 									 ? nullptr
 									 : main_actor->find_blocking(
-											 start.get_neighbor(dir), dir);
+											   start.get_neighbor(dir), dir);
 		// We already know the blocking object isn't the avatar, so don't
 		// double check it here.
 		if (!block || !block->move_aside(main_actor, dir)) {

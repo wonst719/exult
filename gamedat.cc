@@ -1117,7 +1117,7 @@ bool Game_window::save_gamedat_zip(
 	const std::string filestr = get_system_path(fname);
 	zipFile           zipfile = zipOpen(filestr.c_str(), 1);
 
-	// We need to explicitly save these as they are no longer included in 
+	// We need to explicitly save these as they are no longer included in
 	// savefiles and they should always be stored first and as level 1
 	// Screenshot may not exist so only include it if it exists
 	if (U7exists(GSCRNSHOT)) {
