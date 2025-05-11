@@ -1195,7 +1195,8 @@ bool Game_window::save_gamedat_zip(
 void Game_window::MakeEmergencySave(const char* savename) {
 	// Using mostly std::filesystem here insteaf of U7 functions to avoid
 	// repeated looking up paths
-
+	// As this ups the minimum macOS to 10.15, we don't use it in the 1.12 release
+#ifndef MACOSX
 	// Set default savegame name
 	if (!savename) {
 		savename = "Crash Save";
@@ -1270,4 +1271,5 @@ void Game_window::MakeEmergencySave(const char* savename) {
 		// Put <GAMEDAT> back to how it was
 		add_system_path("<GAMEDAT>", gamedatpath);
 	}
+#endif
 }
