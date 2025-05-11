@@ -248,8 +248,8 @@ void Portrait_button::update_widget() {
 		|| curse != actor->get_flag(Obj_flags::cursed)
 		|| freezing != actor->get_flag(Obj_flags::freeze)
 		|| hungry
-				   != actor->get_property(static_cast<int>(Actor::food_level))
-							  <= 9
+				   != (actor->get_property(static_cast<int>(Actor::food_level))
+					   <= 9)
 		|| asleep != actor->get_flag(Obj_flags::asleep)) {
 		TileRect r = get_rect();
 		gwin->add_dirty(r);
