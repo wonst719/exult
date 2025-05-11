@@ -98,7 +98,7 @@ osxdmg: bundle
 	SetFile -a E "./Exult-snapshot/Git revision.url"
 	cp -R $(bundle_name) ./Exult-snapshot/
 	create-dmg \
-	  --volname "Exult Git Snapshot" \
+	  --volname "Exult 1.12.0" \
 	  --volicon "$(srcdir)/macosx/exult.icns" \
 	  --background "$(srcdir)/macosx/diskback.png" \
 	  --window-pos 200 120 \
@@ -140,7 +140,7 @@ studiodmg: studiobundle
 	SetFile -a E "./Studio-snapshot/Git revision.url"
 	cp -R $(studio_name) ./Studio-snapshot/
 	create-dmg \
-	  --volname "Exult Studio Git Snapshot" \
+	  --volname "Exult Studio 1.12.0" \
 	  --volicon "$(srcdir)/macosx/exult_studio.icns" \
 	  --background "$(srcdir)/macosx/diskback.png" \
 	  --window-pos 200 120 \

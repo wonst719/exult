@@ -24,12 +24,12 @@
 
 [Setup]
 AppName=Ultima VII Shape plug-in for GIMP
-AppVerName=Shape plug-in Git
+AppVerName=Shape plug-in 1.12.0
 AppPublisherURL=https://exult.info/
 AppSupportURL=https://exult.info/
 AppUpdatesURL=https://exult.info/
 ; Setup exe version number:
-VersionInfoVersion=1.11.0
+VersionInfoVersion=1.12.0
 DisableDirPage=yes
 DefaultDirName="{userappdata}\gimp\3.0\plug-ins\u7shp"
 DisableProgramGroupPage=yes
