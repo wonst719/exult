@@ -8,6 +8,7 @@
 		Fixed using too close objects.
 		Polymorphed NPCs will revert back to their original bodies when they died.
 		List field fights in SI are now properly handled.
+		Mini status icons in face stats.
 		Emergency savegame and crashlog creation on Windows.
 		New higer resolution icons for Exult and Exult Studio.
 		Better graphics for the uncut SI intro.
