@@ -4,14 +4,8 @@
 		<prefix name="default">
 			${env:PREFIX}
 		</prefix>
-		<prefix name="source">
-			${env:SOURCE}
-		</prefix>
-		<prefix name="build_dir">
-			${env:BUILD_DIR}
-		</prefix>
 		<destination overwrite="yes">
-			${prefix:build_dir}
+			${env:BUILD_DIR}
 		</destination>
 		<gtk>
 			gtk+-3.0
@@ -19,10 +13,10 @@
 		<run-install-name-tool/>
 	</meta>
 	<plist>
-		${prefix:build_dir}/macosx/exult_studio_info.plist
+		${env:BUILD_DIR}/macosx/exult_studio_info.plist
 	</plist>
-	<main-binary>
-		${prefix:build_dir}/mapedit/exult_studio
+	<main-binary dest="${bundle}/Contents/MacOS">
+		${env:BUILD_DIR}/mapedit/exult_studio
 	</main-binary>
 	<binary>
 		${prefix}/lib/gdk-pixbuf-2.0/${pkg:gdk-pixbuf-2.0:gdk_pixbuf_binary_version}/loaders/*.so
@@ -30,41 +24,35 @@
 	<data dest="${bundle}/Contents/Resources">
 		${project}/exult_studio.icns
 	</data>
-	<data dest="${bundle}/Contents/Resources/data/exult.flx">
-		${prefix:source}/data/exult.flx
-	</data>
-	<data dest="${bundle}/Contents/Resources/data/exult_bg.flx">
-		${prefix:source}/data/exult_bg.flx
-	</data>
-	<data dest="${bundle}/Contents/Resources/data/exult_si.flx">
-		${prefix:source}/data/exult_si.flx
+	<data dest="${bundle}/Contents/Resources/data/">
+		${env:BUILD_DIR}/data/exult*.flx
 	</data>
 	<data dest="${bundle}/Contents/Resources/data/exult_studio.glade">
-		${prefix:source}/mapedit/exult_studio.glade
+		${env:SOURCE}/mapedit/exult_studio.glade
 	</data>
-	<data>
-		${prefix:source}/data/estudio
+	<data dest="${bundle}/Contents/Resources/data/estudio">
+		${env:SOURCE}/data/estudio
 	</data>
 	<data dest="${bundle}/Contents/Resources/Documents/Exult_Studio.txt">
-		${prefix:source}/docs/exult_studio.txt
+		${env:SOURCE}/docs/exult_studio.txt
 	</data>
 	<data dest="${bundle}/Contents/Resources/Documents/AUTHORS.txt">
-		${prefix:source}/AUTHORS
+		${env:SOURCE}/AUTHORS
 	</data>
 	<data dest="${bundle}/Contents/Resources/Documents/COPYING.txt">
-		${prefix:source}/COPYING
+		${env:SOURCE}/COPYING
 	</data>
 	<data dest="${bundle}/Contents/Resources/Documents/README.txt">
-		${prefix:source}/README
+		${env:SOURCE}/README
 	</data>
 	<data dest="${bundle}/Contents/Resources/Documents/README.macOS.txt">
-		${prefix:source}/README.macOS
+		${env:SOURCE}/README.macOS
 	</data>
 	<data>
 		${prefix}/share/icons
 	</data>
 	<data>
-		${prefix}/share/glib-2.0/schemas/gschemas.compiled
+		${prefix}/share/glib-2.0/schemas
 	</data>
 	<translations  name="gtk30">
 		${prefix}/share/locale/en
