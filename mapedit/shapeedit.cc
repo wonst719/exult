@@ -4262,6 +4262,11 @@ void ExultStudio::open_shape_window(
 	g_signal_connect(
 			G_OBJECT(hptree), "cursor-changed",
 			G_CALLBACK(on_shinfo_effhps_list_cursor_changed), nullptr);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(hptree, nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+	}
 	GtkTreeModel* model = gtk_tree_view_get_model(hptree);
 	if (!model) {
 		GtkTreeStore* store = gtk_tree_store_new(
@@ -4296,6 +4301,11 @@ void ExultStudio::open_shape_window(
 	g_signal_connect(
 			G_OBJECT(brightnesstree), "cursor-changed",
 			G_CALLBACK(on_shinfo_brightness_list_cursor_changed), nullptr);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(brightnesstree, nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+	}
 	model = gtk_tree_view_get_model(brightnesstree);
 	if (!model) {
 		GtkTreeStore* store = gtk_tree_store_new(
@@ -4327,6 +4337,11 @@ void ExultStudio::open_shape_window(
 	g_signal_connect(
 			G_OBJECT(warmtree), "cursor-changed",
 			G_CALLBACK(on_shinfo_warmth_list_cursor_changed), nullptr);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(warmtree, nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+	}
 	model = gtk_tree_view_get_model(warmtree);
 	if (!model) {
 		GtkTreeStore* store = gtk_tree_store_new(
@@ -4356,6 +4371,11 @@ void ExultStudio::open_shape_window(
 	g_signal_connect(
 			G_OBJECT(dolltree), "cursor-changed",
 			G_CALLBACK(on_shinfo_objpaperdoll_list_cursor_changed), nullptr);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(dolltree, nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+	}
 	model = gtk_tree_view_get_model(dolltree);
 	if (!model) {
 		GtkTreeStore* store = gtk_tree_store_new(
@@ -4400,6 +4420,11 @@ void ExultStudio::open_shape_window(
 	g_signal_connect(
 			G_OBJECT(cnttree), "cursor-changed",
 			G_CALLBACK(on_shinfo_cntrules_list_cursor_changed), nullptr);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(cnttree, nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+	}
 	model = gtk_tree_view_get_model(cnttree);
 	if (!model) {
 		GtkTreeStore* store = gtk_tree_store_new(
@@ -4429,6 +4454,11 @@ void ExultStudio::open_shape_window(
 	g_signal_connect(
 			G_OBJECT(flagtree), "cursor-changed",
 			G_CALLBACK(on_shinfo_frameflags_list_cursor_changed), nullptr);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(flagtree, nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+	}
 	model = gtk_tree_view_get_model(flagtree);
 	if (!model) {
 		GtkTreeStore* store = gtk_tree_store_new(
@@ -4464,6 +4494,11 @@ void ExultStudio::open_shape_window(
 	g_signal_connect(
 			G_OBJECT(ucfuntree), "cursor-changed",
 			G_CALLBACK(on_shinfo_frameusecode_list_cursor_changed), nullptr);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(ucfuntree, nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+	}
 	model = gtk_tree_view_get_model(ucfuntree);
 	if (!model) {
 		GtkTreeStore* store = gtk_tree_store_new(
@@ -4497,6 +4532,11 @@ void ExultStudio::open_shape_window(
 	g_signal_connect(
 			G_OBJECT(nametree), "cursor-changed",
 			G_CALLBACK(on_shinfo_framenames_list_cursor_changed), nullptr);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(nametree, nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+	}
 	model = gtk_tree_view_get_model(nametree);
 	if (!model) {
 		GtkTreeStore* store = gtk_tree_store_new(
