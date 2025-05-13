@@ -71,8 +71,8 @@
 #	twelve times for midnight).
 #	Volume is used to control individual sfx volume levels. If no value 
 #	is given, 100% volume will be assumed.
-*	framenum sets which frame plays the sfx, -1 is the default and plays
-*	for all frames.
+#	framenum sets which frame plays the sfx, -1 is the default and plays
+#	for all frames.
 #
 #	Surf (49)
 :612/49/0/0/0/0/20
