@@ -32,7 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "fnames.h"
 #include "items.h"
 #include "locator.h"
-#include "logo.xpm"
 #include "modmgr.h"
 #include "objserial.h"
 #include "shapefile.h"
@@ -800,6 +799,12 @@ ExultStudio::ExultStudio(int argc, char** argv)
 	} else {
 		strcpy(path, ".");
 	}
+#if !defined(_WIN32) && !defined(MACOSX)
+	string iconstr = datastr + "/../icons/";
+	gtk_icon_theme_append_search_path(
+			gtk_icon_theme_get_for_screen(gdk_screen_get_default()),
+			iconstr.c_str());
+#endif
 	strcat(path, "/exult_studio.glade");
 	// Load the Glade interface
 	GError* error = nullptr;
@@ -2393,14 +2398,10 @@ int ExultStudio::prompt(
 	static GtkWidget* dlg = nullptr;
 	if (!dlg) {    // First time?
 		dlg                    = get_widget("prompt3_dialog");
-		GdkPixbuf* logo_pixbuf = gdk_pixbuf_new_from_xpm_data(
-				static_cast<const gchar**>(logo_xpm));
-		GtkWidget* draw = gtk_image_new_from_pixbuf(logo_pixbuf);
-		g_object_unref(logo_pixbuf);
+		GtkWidget* draw =
+			gtk_image_new_from_icon_name("exult_warning",
+					GTK_ICON_SIZE_DIALOG);
 		GtkWidget* hbox = get_widget("prompt3_hbox");
-		gtk_widget_set_size_request(
-				draw, gdk_pixbuf_get_width(logo_pixbuf),
-				gdk_pixbuf_get_height(logo_pixbuf));
 		gtk_widget_set_visible(draw, true);
 		gtk_box_pack_start(GTK_BOX(hbox), draw, false, false, 12);
 		// Make logo show to left.

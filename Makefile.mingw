@@ -742,6 +742,9 @@ studioinstall: exult_studio$(EXEEXT)
 	cp $(MSYSTEM_PREFIX)/share/glib-2.0/schemas/gschemas.compiled $(U7PATH)/share/glib-2.0/schemas
 	mkdir -p $(U7PATH)/share/icons
 	cp -R $(MSYSTEM_PREFIX)/share/icons/Adwaita $(MSYSTEM_PREFIX)/share/icons/hicolor $(U7PATH)/share/icons
+	cp -R desktop/exult_warning.svg $(U7PATH)/share/icons/hicolor/scalable/apps
+	cp -R desktop/exult_warning.png $(U7PATH)/share/icons/hicolor/512x512/apps
+	gtk-update-icon-cache -f $(U7PATH)/share/icons/hicolor
 	mkdir -p $(U7PATH)/share/gtk-3.0
 	echo "[Settings]" > $(U7PATH)/share/gtk-3.0/settings.ini
 
