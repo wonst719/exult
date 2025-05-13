@@ -320,7 +320,12 @@ void Usecode_browser::setup_list() {
 		return;
 	}
 	symtbl.read(in);
-	gtk_tree_store_clear(model);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(tree), nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+		gtk_tree_store_clear(model);
+	}
 	const bool show_funs    = studio->get_toggle("view_uc_functions");
 	const bool show_classes = studio->get_toggle("view_uc_classes");
 	const bool show_shapes  = studio->get_toggle("view_uc_shapes");

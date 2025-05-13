@@ -618,7 +618,12 @@ void ExultStudio::setup_groups() {
 	g_signal_handler_block(model, addsig);
 	g_signal_handler_block(model, delsig);
 	g_signal_handler_block(model, chgsig);
-	gtk_tree_store_clear(model);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(tview, nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+		gtk_tree_store_clear(model);
+	}
 	set_visible("groups_frame", true);
 	// Show builtins for shapes.vga.
 	set_visible("builtin_groups", curfile == vgafile);

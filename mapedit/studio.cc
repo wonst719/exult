@@ -1346,7 +1346,13 @@ C_EXPORT void on_gameselect_gamelist_cursor_changed(
 
 	GtkTreeModel* oldmod = gtk_tree_view_get_model(GTK_TREE_VIEW(mod_tree));
 	GtkTreeStore* model  = GTK_TREE_STORE(oldmod);
-	gtk_tree_store_clear(model);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(
+				GTK_TREE_VIEW(mod_tree), nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+		gtk_tree_store_clear(model);
+	}
 
 	std::vector<ModInfo>& mods = gamemanager->get_game(gamenum)->get_mod_list();
 	GtkTreeIter           iter;
@@ -1444,7 +1450,12 @@ void ExultStudio::open_game_dialog(bool createmod) {
 			gtk_tree_view_column_set_clickable(
 					GTK_TREE_VIEW_COLUMN(column), true);
 		}
-		gtk_tree_store_clear(model);
+		{
+			GtkTreePath* nullpath = gtk_tree_path_new();
+			gtk_tree_view_set_cursor(tree, nullpath, nullptr, false);
+			gtk_tree_path_free(nullpath);
+			gtk_tree_store_clear(model);
+		}
 	}
 
 	if (!createmod) {
@@ -1465,6 +1476,7 @@ void ExultStudio::open_game_dialog(bool createmod) {
  *  Note:   If mod name is "", no mod is loaded
  */
 void ExultStudio::set_game_path(const string& gamename, const string& modname) {
+	set_browser("", nullptr);    // No browser.
 	// Finish up external edits.
 	Shape_chooser::clear_editing_files();
 
@@ -1758,7 +1770,13 @@ void ExultStudio::setup_file_list() {
 				GTK_TREE_VIEW(file_list), col_offset - 1);
 		gtk_tree_view_column_set_clickable(GTK_TREE_VIEW_COLUMN(column), true);
 	}
-	gtk_tree_store_clear(model);
+	{
+		GtkTreePath* nullpath = gtk_tree_path_new();
+		gtk_tree_view_set_cursor(
+				GTK_TREE_VIEW(file_list), nullpath, nullptr, false);
+		gtk_tree_path_free(nullpath);
+		gtk_tree_store_clear(model);
+	}
 	add_to_tree(
 			model, "Shape Files", "*.vga,*.shp", ShapeArchive, 1, "combos.flx",
 			ComboArchive);
