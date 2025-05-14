@@ -386,8 +386,8 @@ void Write_text_file() {
 		return;
 	}
 	auto& out = *pOut;
-	out << "Exult " << VERSION << " text message file."
-		<< "  Written by ExultStudio." << endl;
+	out << "#\tExult " << VERSION << " text message file."
+		<< "\tWritten by ExultStudio." << std::endl;
 	Write_msg_file_section(out, SHAPES_SECT, item_names);
 	Write_msg_file_section(out, MSGS_SECT, text_msgs);
 	Write_msg_file_section(out, MISC_SECT, misc_names);
