@@ -517,7 +517,9 @@ static void resizeline(float& axis1, float delta1, float& axis2) {
 }
 
 bool CheatScreen::SharedInput() {
-	SDL_Event   event;
+	SDL_Event     event;
+	SDL_Renderer* renderer
+			= SDL_GetRenderer(gwin->get_win()->get_screen_window());
 	SDL_Window* window = gwin->get_win()->get_screen_window();
 	// Do repaint after 100 ms to allow for time dependant effects. 10 FPS seems
 	// more that adequate for Cheat Screen If anyone needs to do smooth animaion
@@ -668,6 +670,7 @@ bool CheatScreen::SharedInput() {
 					// return;
 
 				case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+					SDL_ConvertEventToRenderCoordinates(renderer, &event);
 					gwin->get_win()->screen_to_game(
 							event.button.x, event.button.y,
 							gwin->get_fastmouse(), gx, gy);
