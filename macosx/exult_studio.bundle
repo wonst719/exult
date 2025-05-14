@@ -54,7 +54,7 @@
 	<data dest="${bundle}/Contents/Resources/share/icons/hicolor/scalable/apps">
 		${env:SOURCE}/desktop/exult_warning.svg
 	</data>
-	<data dest="${bundle}/Contents/Resources/share/icons/hicolor/apps/256x256">
+	<data dest="${bundle}/Contents/Resources/share/icons/hicolor/apps/512x512">
 		${env:SOURCE}/desktop/exult_warning.png
 	</data>
 	<data>
