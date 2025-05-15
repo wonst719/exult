@@ -99,7 +99,7 @@ const std::map<uint32, Image_window::Resolution>& Image_window::Resolutions
 bool        Image_window::any_res_allowed;
 const bool& Image_window::AnyResAllowed = Image_window::any_res_allowed;
 
-int Image_window::force_bpp     = 32;
+int Image_window::force_bpp     = 0;
 int Image_window::desktop_depth = 0;
 int Image_window::windowed      = 0;
 // When HighDPI is enabled we will end up with a different native scale factor,
