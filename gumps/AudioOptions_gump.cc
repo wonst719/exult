@@ -170,8 +170,9 @@ void AudioOptions_gump::rebuild_buttons() {
 	}
 
 	std::vector<std::string> sampleRates = {"11025", "22050", "44100", "48000"};
-	if (std::find(sampleRates.cbegin(), sampleRates.cend(), sample_rate_str)
-		== sampleRates.cend()) {
+	if (!sample_rate_str.empty()
+		&& std::find(sampleRates.cbegin(), sampleRates.cend(), sample_rate_str)
+				   == sampleRates.cend()) {
 		sampleRates.push_back(sample_rate_str);
 	}
 
