@@ -43,7 +43,7 @@ jobs:
             echo HAVE_ANDROID_SNAPSHOT=false >> $GITHUB_ENV
             echo Couldn\'t find exult-snapshot-signed.apk for Android snapshot. No release will be made
           fi
-          echo "GITHUB_REF=v1.11.0.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
+          echo "GITHUB_REF=v1.13.0.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
       - name: Install SSH key
         if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
         uses: shimataro/ssh-key-action@v2
