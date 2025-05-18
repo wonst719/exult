@@ -139,7 +139,7 @@ jobs:
         with:
           repository: libsdl-org/SDL
           path: SDL3
-          ref: release-3.2.10
+          ref: release-3.2.14
       - name: Install SDL 3
         run: |
           cd SDL3
@@ -152,7 +152,7 @@ jobs:
         with:
           repository: libsdl-org/SDL_image
           path: SDL3_image
-          ref: release-3.2.0
+          ref: release-3.2.4
       - name: Install SDL_image 3
         run: |
           cd SDL3_image
