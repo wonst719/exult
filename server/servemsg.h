@@ -9,7 +9,7 @@
 #define INCL_SERVEMSG 1
 
 /*
-Copyright (C) 2000-2022 The Exult Team
+Copyright (C) 2000-2025 The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -93,6 +93,7 @@ namespace Exult_server {
 		drag_combo         = 44,    // Begin drag of a Combo.
 		drag_npc           = 45,    // Begin drag of a NPC.
 		drag_chunk         = 46,    // Begin drag of a Chunk.
+		edit_pick          = 47,    // Selecting Shapes for editing.
 		usecode_debugging  = 128
 	};
 

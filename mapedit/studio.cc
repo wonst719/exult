@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2000-2022 The Exult Team
+Copyright (C) 2000-2025 The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -104,8 +104,8 @@ GameManager*   gamemanager       = nullptr;
 
 // Mode menu items:
 constexpr static const std::array mode_names{
-		"move1", "paint1", "paint_with_chunks1", "pick_for_combo1",
-		"select_chunks1"};
+		"move1",           "paint1",         "paint_with_chunks1",
+		"pick_for_combo1", "select_chunks1", "pick_for_edit1"};
 
 enum ExultFileTypes {
 	ShapeArchive = 1,
@@ -382,6 +382,14 @@ C_EXPORT void on_select_chunks1_activate(
 	ignore_unused_variable_warning(user_data);
 	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem))) {
 		ExultStudio::get_instance()->set_edit_mode(4);
+	}
+}
+
+C_EXPORT void on_pick_for_edit1_activate(
+		GtkMenuItem* menuitem, gpointer user_data) {
+	ignore_unused_variable_warning(user_data);
+	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem))) {
+		ExultStudio::get_instance()->set_edit_mode(5);
 	}
 }
 

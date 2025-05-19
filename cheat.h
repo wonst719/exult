@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2000-2022  The Exult Team
+ *  Copyright (C) 2000-2025  The Exult Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,7 +49,8 @@ public:
 		paint         = 1,    // Left-mouse dragging paints shapes.
 		paint_chunks  = 2,    // Left-dragging paints whole chunks.
 		combo_pick    = 3,    // Left-click adds item to combo.
-		select_chunks = 4     // Select whole chunks.
+		select_chunks = 4,    // Select whole chunks.
+		edit_pick     = 5     // Left-click adds item to selection.
 	};
 
 private:

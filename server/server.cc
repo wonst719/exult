@@ -5,7 +5,7 @@
  **/
 
 /*
-Copyright (C) 2001-2022 The Exult Team
+Copyright (C) 2001-2025 The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -372,7 +372,7 @@ static void Handle_client_message(
 	}
 	case Exult_server::set_edit_mode: {
 		const int md = little_endian::Read2(ptr);
-		if (md >= 0 && md <= 4) {
+		if (md >= 0 && md <= 5) {
 			cheat.set_edit_mode(static_cast<Cheat::Map_editor_mode>(md));
 		}
 		break;
