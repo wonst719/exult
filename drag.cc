@@ -1,7 +1,7 @@
 /*
  *  drag.cc - Dragging objects in Game_window.
  *
- *  Copyright (C) 2000-2022  The Exult Team
+ *  Copyright (C) 2000-2025  The Exult Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -154,7 +154,7 @@ bool Dragging_info::start(
 			if (!cheat.in_hack_mover()
 				&& !Fast_pathfinder_client::is_grabable(
 						gwin->get_main_actor(), obj.get())) {
-				Mouse::mouse->flash_shape(Mouse::blocked);
+				Mouse::mouse->flash_shape(Mouse::redx);
 				obj  = nullptr;
 				okay = false;
 				return false;
@@ -458,9 +458,15 @@ bool Dragging_info::drop_on_map(
 				(lift = found->get_lift() + found->get_info().get_3d_height())
 				<= max_lift) {
 			dropped = gwin->drop_at_lift(to_drop, posx, posy, lift);
+		} else if (
+				// Object is too tall to drop on.
+				(lift = found->get_info().get_3d_height()) > max_lift) {
+			Mouse::mouse->flash_shape(Mouse::redx);
+			Audio::get_ptr()->play_sound_effect(Audio::game_sfx(76));
+			return false;
 		} else {
 			// Too high.
-			Mouse::mouse->flash_shape(Mouse::redx);
+			Mouse::mouse->flash_shape(Mouse::blocked);
 			Audio::get_ptr()->play_sound_effect(Audio::game_sfx(76));
 			return false;
 		}
@@ -472,7 +478,7 @@ bool Dragging_info::drop_on_map(
 	}
 
 	if (dropped <= 0) {
-		Mouse::mouse->flash_shape(Mouse::blocked);
+		Mouse::mouse->flash_shape(Mouse::redx);
 		Audio::get_ptr()->play_sound_effect(Audio::game_sfx(76));
 		return false;
 	}
