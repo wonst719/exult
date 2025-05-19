@@ -758,6 +758,9 @@ static void Init() {
 #	if defined(SDL_PLATFORM_IOS)
 	SDL_SetHint(SDL_HINT_IOS_HIDE_HOME_INDICATOR, "2");
 #	endif
+#	if defined(ANDROID)
+	SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, "8192");
+#	endif
 #endif
 	// SDL3 lost the pointer when switching Windowed <-> Fullscreen in Wayland
 	//   This was fixed

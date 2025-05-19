@@ -98,10 +98,22 @@ AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_)
 	// Set update rate to 30 Hz, or there abouts. This should be more than
 	// adequate for everyone. Note: setting this to 1 Hz (/1) causes Exult to
 	// hang on MacOS.
-	int       samples                  = 1;    // No need to pass it to SDL3
+	// The update rate ( 30 Hz except Android 5 Hz ) was passed to SDL2.
+	//     Instead SDL3 builds its own update rate at 50 Hz with the rules :
+	//       up to 22050 Hz :  512 samples per update,
+	//       up to 48000 Hz : 1024 samples per update, 23 ms cycle - 43 Hz
+	//       up to 96000 Hz : 2048 samples per update,
+	//            otherwise : 4096 samples per update.
+	// This can be overloaded with the SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES
+	//      to receive a larger sample count, however SDL3 hangs if
+	//      the value is strictly larger than 12288 - 12 * 1024.
+	//  8192 samples per update = 186 ms cycle or 5.4 Hz,
+	// 10240 samples per update = 232 ms cycle or 4.3 Hz,
+	// 12288 samples per update = 278 ms cycle or 3.6 Hz.
+	int       samples                  = 1;
 	const int SAMPLE_BUFFER_PER_SECOND = 30;
 	while (samples <= desired.freq / SAMPLE_BUFFER_PER_SECOND) {
-		samples <<= 1;    // No need to pass it to SDL3
+		samples <<= 1;
 	}
 
 	// Open SDL Audio (even though we may not need it)
@@ -122,8 +134,7 @@ AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_)
 			sample_rate = obtained.freq;
 			stereo      = obtained.channels == 2;
 
-			internal_buffer.resize(
-					samples * 2);    // No need to pass it to SDL3
+			internal_buffer.resize(samples * 2);
 			for (int i = 0; i < num_channels_; i++) {
 				channels.emplace_back(sample_rate, stereo);
 			}
@@ -444,12 +455,18 @@ void AudioMixer::sdlAudioCallback(
 	if (len == 0) {
 		return;
 	}
+	// By default, mixer->internal_buffer.size() is 2048, len / 2 is 1024.
+	//    Sending the expected newlen samples,
+	//    -> the callback is called for len bytes every time,
+	//    Sending the internal_buffer.size(),
+	//    -> the callback is called at the same rate, alternatively,
+	//       once for len 0, once for len / 2 1024.
 	mixer->MixAudio(
 			mixer->internal_buffer.data(),
-			mixer->internal_buffer.size() * 2);    // len);
+			newlen * 2);    // mixer->internal_buffer.size() * 2); // len);
 	SDL_PutAudioStreamData(
 			stream, mixer->internal_buffer.data(),
-			mixer->internal_buffer.size() * 2);    // len);
+			newlen * 2);    // mixer->internal_buffer.size() * 2); // len);
 }
 
 void AudioMixer::MixAudio(sint16* stream, uint32 bytes) {
