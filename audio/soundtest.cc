@@ -63,7 +63,7 @@ void SoundTester::test_sound() {
 
 	const int centerx    = gwin->get_width() / 2;
 	const int centery    = gwin->get_height() / 2;
-	const int left       = centerx - 65;
+	const int left       = centerx - 68;
 	const int first_line = centery - 53;
 	const int height     = 6;
 	const int width      = 6;
@@ -94,40 +94,40 @@ void SoundTester::test_sound() {
 
 			line += height * 2;
 			font->paint_text_fixedwidth(
-					ibuf, "   Up - Previous Type", left, line, width);
+					ibuf, "   Up/I - Previous Type", left, line, width);
 
 			line += height;
 			font->paint_text_fixedwidth(
-					ibuf, " Down - Next Type", left, line, width);
+					ibuf, " Down/K - Next Type", left, line, width);
 
 			line += height;
 			font->paint_text_fixedwidth(
-					ibuf, " Left - Previous Number", left, line, width);
+					ibuf, " Left/J - Previous Number", left, line, width);
 
 			line += height;
 			font->paint_text_fixedwidth(
-					ibuf, "Right - Next Number", left, line, width);
+					ibuf, "Right/L - Next Number", left, line, width);
 
 			line += height;
 			font->paint_text_fixedwidth(
-					ibuf, "Enter - Play it", left, line, width);
+					ibuf, "  Enter - Play it", left, line, width);
 
 			line += height;
 			font->paint_text_fixedwidth(
-					ibuf, "  ESC - Leave", left, line, width);
+					ibuf, "    ESC - Leave", left, line, width);
 
 			line += height;
 			font->paint_text_fixedwidth(
-					ibuf, "    R - Repeat Music", left, line, width);
+					ibuf, "      R - Repeat Music", left, line, width);
 
 			line += height;
 			font->paint_text_fixedwidth(
-					ibuf, "    S - Stop Music", left, line, width);
+					ibuf, "      S - Stop Music", left, line, width);
 
 #ifdef DEBUG
 			line += height;
 			font->paint_text_fixedwidth(
-					ibuf, "    D - Dump Music Track ", left, line, width);
+					ibuf, "      D - Dump Music Track ", left, line, width);
 #endif
 
 			snprintf(
@@ -195,6 +195,7 @@ void SoundTester::test_sound() {
 
 					case SDLK_RETURN:
 					case SDLK_KP_ENTER:
+					case SDLK_SPACE:
 						if (active == 0) {
 							audio->stop_music();
 							audio->start_music(song, repeat);
@@ -249,12 +250,15 @@ void SoundTester::test_sound() {
 							audio->stop_music();
 						}
 						break;
+					case SDLK_I:
 					case SDLK_UP:
 						active = (active + 2) % 3;
 						break;
+					case SDLK_K:
 					case SDLK_DOWN:
 						active = (active + 1) % 3;
 						break;
+					case SDLK_J:
 					case SDLK_LEFT:
 						if (active == 0) {
 							song--;
@@ -275,6 +279,7 @@ void SoundTester::test_sound() {
 						}
 						break;
 					case SDLK_RIGHT:
+					case SDLK_L:
 						if (active == 0) {
 							song++;
 							if (song > 255) {

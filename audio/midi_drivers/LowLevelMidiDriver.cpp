@@ -774,7 +774,23 @@ void LowLevelMidiDriver::produceSamples(sint16* samples, uint32 bytes) {
 
 		// Produce the samples
 		if (samples_to_produce > 0) {
-			lowLevelProduceSamples(samples, samples_to_produce);
+			// Only do sample production if there has been a midi event recently
+			// or there are sequences
+			static bool shown_message = false;
+			if ((time_last_send + no_produce_threshold) 
+					>= std::chrono::steady_clock::now()
+				|| std::count(
+						   sequences, sequences + std::size(sequences), nullptr)
+						   != std::size(sequences)) {
+				lowLevelProduceSamples(samples, samples_to_produce);
+				shown_message = false;
+			} else if (!shown_message)
+			{
+				COUT("no midi activity in " << no_produce_threshold.count()
+											<< "ms skipping sample production");
+				shown_message = true;
+				// Don't need to zero the buffer
+			}
 
 			// Increment the counters
 			samples += samples_to_produce * stereo_mult;
@@ -1115,7 +1131,7 @@ void LowLevelMidiDriver::sequenceSendEvent(uint16 sequence_id, uint32 message) {
 	} else if (phys_chan < 0) {
 		phys_chan = log_chan;
 	}
-
+	time_last_send = std::chrono::steady_clock::now();
 	send(message | phys_chan);
 }
 
@@ -1215,6 +1231,7 @@ void LowLevelMidiDriver::sequenceSendSysEx(
 		std::this_thread::sleep_for(
 				next_sysex - now);    // Wait till we think the buffer is empty
 	}
+	time_last_send = std::chrono::steady_clock::now();
 	send_sysex(status, msg, length);
 	next_sysex = std::chrono::duration_cast<decltype(next_sysex)>(
 			std::chrono::steady_clock::now().time_since_epoch()

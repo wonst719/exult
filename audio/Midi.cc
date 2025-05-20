@@ -1044,6 +1044,9 @@ bool MyMidiPlayer::ogg_play_track(
 		return false;
 	}
 
+	// Load entire oggfile into memory
+	ds = ds->makeSource(ds->getSize());
+
 	if (!Pentagram::OggAudioSample::isThis(ds.get())) {
 		std::cerr << "Failed to play OGG Music Track " << ogg_name
 				  << ". Reason: "
