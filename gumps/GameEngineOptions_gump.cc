@@ -98,7 +98,7 @@ static int       y_index    = 0;
 
 void GameEngineOptions_gump::build_buttons() {
 	const std::vector<std::string> yesNo = {"No", "Yes"};
-
+	y_index                              = 0;
 
 	buttons[id_allow_autonotes] = std::make_unique<GameEngineTextToggle>(
 			this, &GameEngineOptions_gump::toggle_allow_autonotes, yesNo,
