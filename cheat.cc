@@ -33,6 +33,7 @@
 #include "effects.h"
 #include "exult.h"
 #include "game.h"
+#include "istring.h"
 #include "gameclk.h"
 #include "gamemap.h"
 #include "gamewin.h"
@@ -118,6 +119,19 @@ void Cheat::init() {
 	std::string cheating;
 	config->value("config/gameplay/cheat", cheating, "no");
 	enabled = cheating == "yes";
+
+	std::string feeding;
+	config->value("config/gameplay/feeding", feeding, "manual");
+	if (!Pentagram::strcasecmp(feeding.c_str(),"disabled")) {
+		food_use = FoodUse::Disabled;
+	}
+	else if (!Pentagram::strcasecmp(feeding.c_str(),"automatic")) {
+		food_use = FoodUse ::Automatic;
+	}
+	else
+	{
+		food_use = FoodUse::Manual;
+	}
 }
 
 void Cheat::finish_init() {
@@ -1235,5 +1249,19 @@ void Cheat::toggle_number_npcs() {
 		eman->center_text("NPC Numbers Enabled");
 	} else {
 		eman->center_text("NPC Numbers Disabled");
+	}
+}
+
+void Cheat::SetFoodUse(FoodUse newuse, bool writeout) {
+	food_use = newuse;
+
+	if (newuse == FoodUse::Manual) {
+		config->set("config/gameplay/feeding", "manual", writeout);
+	}
+	if (newuse == FoodUse::Automatic) {
+		config->set("config/gameplay/feeding", "automatic", writeout);
+	}
+	if (newuse == FoodUse::Disabled) {
+		config->set("config/gameplay/feeding", "disabled", writeout);
 	}
 }
