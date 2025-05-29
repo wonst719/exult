@@ -864,6 +864,91 @@ function exportSHP()
   end
 end
 
+-- Function to convert active sprite's palette to U7 style (transparent index 255)
+local function convertPaletteToU7()
+  debug("Conversion to U7 palette command initiated.")
+  local sprite = app.sprite
+  if not sprite then
+    showError("No active sprite to convert.")
+    return
+  end
+
+  if sprite.colorMode ~= ColorMode.INDEXED then
+    showError("Sprite is not in Indexed color mode. Cannot convert palette.")
+    return
+  end
+
+  app.transaction( "Convert to U7 Palette", function()
+    debug("Changing pixel format to RGB...")
+    app.command.ChangePixelFormat {
+      ui = false,
+      format = "rgb"
+    }
+    debug("Pixel format changed to RGB.")
+
+    -- Using a slightly altered default U7 palette.
+    -- The color cycle and opaque colors (idx 224 - 255) are set to full transparency
+    -- to prevent matching these colors in the RGB->Indexed mode step.
+    local u7PalettePath = app.fs.joinPath(pluginDir, "u7.pal") 
+    debug("Attempting to load U7 palette from: " .. u7PalettePath)
+
+    if not app.fs.isFile(u7PalettePath) then
+      showError("u7.pal not found in the extension folder: " .. u7PalettePath .. "\nPlease ensure u7.pal is in the " .. pluginName .. " extension directory.")
+      return
+    end
+
+    local u7Palette = Palette{ fromFile = u7PalettePath }
+    if not u7Palette then
+      showError("Failed to load u7.pal from: " .. u7PalettePath)
+      return
+    end
+    debug("u7.pal loaded successfully.")
+
+    sprite:setPalette(u7Palette)
+    debug("Sprite's active palette has been set to the loaded u7.pal.")
+
+    debug("Changing pixel format back to Indexed (should use current sprite palette)")
+    app.command.ChangePixelFormat {
+      ui = false,
+      format = "indexed",
+      dithering = "",
+      rgmap = "default"
+    }
+    debug("Pixel format changed back to Indexed using u7.pal.")
+
+    debug("Replacing color indices 0->255 and 87->0...")
+    if sprite.spec.colorMode == ColorMode.INDEXED then
+      for _, cel in ipairs(sprite.cels) do
+        if cel then
+          local image = cel.image
+          local newImage = Image(image.spec) 
+          newImage:drawImage(image, 0, 0) 
+          for y = 0, newImage.height - 1 do
+            for x = 0, newImage.width - 1 do
+              local currentPixel = newImage:getPixel(x, y)
+              if currentPixel == 0 then
+                newImage:putPixel(x, y, 255)
+              elseif currentPixel == 87 then 
+                newImage:putPixel(x, y, 0)
+              end
+            end
+          end
+          cel.image = newImage
+        end
+      end
+      debug("Color index 0 replaced with 255, and index 87 replaced with 0, across all cels.")
+      debug("Setting sprite palette's transparentColor to 255.")
+      sprite.transparentColor = 255
+    else
+      debug("Sprite is not in Indexed mode after conversion, skipping color replacement.")
+    end
+
+    app.refresh()
+    app.alert("Sprite palette converted to U7 style (using u7.pal, transparent index 255).")
+  end)
+end
+
+
 function init(plugin)
   debug("Initializing plugin...")
 
@@ -874,16 +959,28 @@ function init(plugin)
   -- Register commands
   plugin:newCommand{
     id="ImportSHP",
-    title="Import SHP...",
+    title="Import U7 SHP...",
     group="file_import",
     onclick=function() importSHP() end
   }
 
   plugin:newCommand{
     id="ExportSHP",
-    title="Export SHP...",
+    title="Export to U7 SHP...",
     group="file_export",
     onclick=exportSHP
+  }
+
+  plugin:newCommand{
+    id = pluginName .. "ConvertU7Palette",
+    title = "Convert to U7 palette...",
+    group = "sprite_color",
+    onclick = function()
+      convertPaletteToU7()
+    end,
+    onenabled = function()
+      return app.sprite and app.sprite.colorMode == ColorMode.INDEXED
+    end
   }
 end
 
