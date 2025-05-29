@@ -2234,7 +2234,7 @@ bool BG_Game::new_game(Vga_file& shapes) {
 	gwin->clear_screen(true);
 	pal->apply(true);
 	SDL_Window* window = gwin->get_win()->get_screen_window();
-#if !defined(SDL_PLATFORM_IOS) || !defined(ANDROID)
+#if !defined(SDL_PLATFORM_IOS) && !defined(ANDROID)
 	if (!SDL_TextInputActive(window)) {
 		SDL_StartTextInput(window);
 	}
