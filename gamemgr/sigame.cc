@@ -1452,12 +1452,6 @@ bool SI_Game::new_game(Vga_file& shapes) {
 	Skin_data*           skindata = Shapeinfo_lookup::GetSkinInfoSafe(
             defskin->default_skin, defskin->default_female, true);
 	SDL_Window* window = gwin->get_win()->get_screen_window();
-#if defined(SDL_PLATFORM_IOS) || defined(ANDROID)
-	SDL_SetHint(SDL_HINT_RETURN_KEY_HIDES_IME, "SDL_RETURN_KEY_HIDES_IME");
-#endif
-	if (!SDL_TextInputActive(window)) {
-		SDL_StartTextInput(window);
-	}
 	do {
 		Delay();
 		if (redraw) {
