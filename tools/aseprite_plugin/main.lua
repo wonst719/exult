@@ -645,17 +645,23 @@ function exportSHP()
   else
     dlg:label{
       id="noOffsets",
-      text="No layers have offset data. You'll be prompted to set offsets for each layer."
+      text="No layers have offset data. You can set them individually or use defaults."
+    }
+    dlg:check{
+      id="useDefaultOffsets",
+      text="Use 0,0 as offset for all layers",
+      selected=false
     }
   end
 
   -- Add option to edit existing offsets
-  dlg:check{
-    id="editExisting",
-    text="Edit existing offsets",
-    selected=false
-  }
-
+  if layersWithOffsets > 0 then
+    dlg:check{
+      id="editExisting",
+      text="Edit existing offsets",
+      selected=false
+    }
+  end
   -- Store dialog result in outer scope
   local dialogResult = false
   local exportSettings = {}
@@ -667,6 +673,11 @@ function exportSHP()
       dialogResult = true
       exportSettings.outFile = dlg.data.outFile
       exportSettings.editExisting = dlg.data.editExisting
+      if layersWithOffsets == 0 then
+        exportSettings.useDefaultOffsets = dlg.data.useDefaultOffsets
+      else
+        exportSettings.useDefaultOffsets = false
+      end
       dlg:close()
     end
   }
@@ -737,87 +748,103 @@ function exportSHP()
     end
   end
 
-  -- Second pass: Prompt for missing offsets
-  for i, layerData in ipairs(layerOffsets) do
-    if layerData.needsPrompt then
-      -- Make this layer visible and others invisible for visual reference
-      for j, otherLayer in ipairs(sprite.layers) do
-        otherLayer.isVisible = (j == i)
-      end
-
-      -- Create prompt dialog for this specific layer
-      local layerDlg = Dialog("Layer Offset")
-
-      -- Get cleaner name (without offset info)
-      local cleanName = sprite.layers[i].name:gsub(" %[.*%]$", "")
-
-      layerDlg:label{
-        id="info",
-        text="Set offset for " .. cleanName .. " (" .. i .. " of " .. #sprite.layers .. ")"
+  -- Second pass: Prompt for missing offsets OR use defaults if selected
+  if layersWithOffsets == 0 and exportSettings.useDefaultOffsets then
+    debug("Using default offsets for all layers as requested.")
+    for i, layer in ipairs(sprite.layers) do
+      layerOffsets[i] = {
+        x = defaultOffsetX,
+        y = defaultOffsetY
       }
-
-      -- If we have existing data, use it as default
-      local cel = sprite.layers[i]:cel(1)
-      local existingData = cel and getCelOffsetData(cel)
-      local initialX = defaultOffsetX
-      local initialY = defaultOffsetY
-
-      if existingData then
-        initialX = existingData.offsetX
-        initialY = existingData.offsetY
-      end
-
-      layerDlg:number{
-        id="offsetX",
-        label="Offset X:",
-        text=tostring(initialX),
-        decimals=0
-      }
-
-      layerDlg:number{
-        id="offsetY",
-        label="Offset Y:",
-        text=tostring(initialY),
-        decimals=0
-      }
-
-      local layerResult = false
-
-      layerDlg:button{
-        id="ok",
-        text="OK",
-        onclick=function()
-          layerResult = true
-          layerOffsets[i] = {
-            x = layerDlg.data.offsetX,
-            y = layerDlg.data.offsetY
-          }
-          layerDlg:close()
-        end
-      }
-
-      -- Show dialog and wait for result
-      layerDlg:show{wait=true}
-
-      -- If user cancelled, use defaults or existing data
-      if not layerResult then
-        if existingData then
-          layerOffsets[i] = {
-            x = existingData.offsetX,
-            y = existingData.offsetY
-          }
-        else
-          layerOffsets[i] = {
-            x = defaultOffsetX,
-            y = defaultOffsetY
-          }
-        end
-      end
-
-      -- Store the value in the cel for future use
+      -- Store the default value in the cel for future use and consistency
       local cel = sprite.layers[i]:cel(1)
       if cel then
         setCelOffsetData(cel, layerOffsets[i].x, layerOffsets[i].y)
+      end
+      debug("Applied default offset to layer " .. i .. ": " .. defaultOffsetX .. "," .. defaultOffsetY)
+    end
+  else -- Original logic: prompt if needed
+    for i, layerData in ipairs(layerOffsets) do
+      if layerData.needsPrompt then
+        -- Make this layer visible and others invisible for visual reference
+        for j, otherLayer in ipairs(sprite.layers) do
+          otherLayer.isVisible = (j == i)
+        end
+
+        -- Create prompt dialog for this specific layer
+        local layerDlg = Dialog("Layer Offset")
+
+        -- Get cleaner name (without offset info)
+        local cleanName = sprite.layers[i].name:gsub(" %[.*%]$", "")
+
+        layerDlg:label{
+          id="info",
+          text="Set offset for " .. cleanName .. " (" .. i .. " of " .. #sprite.layers .. ")"
+        }
+
+        -- If we have existing data, use it as default
+        local cel = sprite.layers[i]:cel(1)
+        local existingData = cel and getCelOffsetData(cel)
+        local initialX = defaultOffsetX
+        local initialY = defaultOffsetY
+
+        if existingData then
+          initialX = existingData.offsetX
+          initialY = existingData.offsetY
+        end
+
+        layerDlg:number{
+          id="offsetX",
+          label="Offset X:",
+          text=tostring(initialX),
+          decimals=0
+        }
+
+        layerDlg:number{
+          id="offsetY",
+          label="Offset Y:",
+          text=tostring(initialY),
+          decimals=0
+        }
+
+        local layerResult = false
+
+        layerDlg:button{
+          id="ok",
+          text="OK",
+          onclick=function()
+            layerResult = true
+            layerOffsets[i] = {
+              x = layerDlg.data.offsetX,
+              y = layerDlg.data.offsetY
+            }
+            layerDlg:close()
+          end
+        }
+
+        -- Show dialog and wait for result
+        layerDlg:show{wait=true}
+
+        -- If user cancelled, use defaults or existing data
+        if not layerResult then
+          if existingData then
+            layerOffsets[i] = {
+              x = existingData.offsetX,
+              y = existingData.offsetY
+            }
+          else
+            layerOffsets[i] = {
+              x = defaultOffsetX,
+              y = defaultOffsetY
+            }
+          end
+        end
+
+        -- Store the value in the cel for future use
+        local cel = sprite.layers[i]:cel(1)
+        if cel then
+          setCelOffsetData(cel, layerOffsets[i].x, layerOffsets[i].y)
+        end
       end
     end
   end
