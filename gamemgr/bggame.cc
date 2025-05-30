@@ -42,6 +42,7 @@
 #include "mappatch.h"
 #include "miscinf.h"
 #include "modmgr.h"
+#include "mouse.h"
 #include "palette.h"
 #include "shapeid.h"
 #include "touchui.h"
@@ -2182,6 +2183,9 @@ bool BG_Game::new_game(Vga_file& shapes) {
 	const int             menuy = topy + 110;
 	std::shared_ptr<Font> font  = fontManager.get_font("MENU_FONT");
 
+	IExultDataSource mouse_data(MAINSHP_FLX, PATCH_MAINSHP, 19);
+	Mouse            newgame_mouse(gwin, mouse_data);
+
 	Vga_file faces_vga;
 	// Need to know if SI is installed
 	const bool si_installed
@@ -2233,6 +2237,10 @@ bool BG_Game::new_game(Vga_file& shapes) {
 	}
 	gwin->clear_screen(true);
 	pal->apply(true);
+	if (!Mouse::use_touch_input) {    // If not primarily touch input
+		newgame_mouse.show(transto.data());    // Attempt to make the mouse
+											   // visible initially
+	}
 	SDL_Window* window = gwin->get_win()->get_screen_window();
 #if !defined(SDL_PLATFORM_IOS) && !defined(ANDROID)
 	if (!SDL_TextInputActive(window)) {
@@ -2242,6 +2250,7 @@ bool BG_Game::new_game(Vga_file& shapes) {
 	do {
 		Delay();
 		if (redraw) {
+			newgame_mouse.hide();
 			gwin->clear_screen();
 			sman->paint_shape(
 					topx, topy, shapes.get_shape(0x2, 0), false,
@@ -2282,8 +2291,11 @@ bool BG_Game::new_game(Vga_file& shapes) {
 			}
 			font->draw_text(
 					ibuf, topx + 60, menuy + 10, disp_name, transto.data());
+			newgame_mouse.show(transto.data());
 			gwin->get_win()->ShowFillGuardBand();
 			redraw = false;
+		} else if (newgame_mouse.is_onscreen()) {
+			gwin->get_win()->ShowFillGuardBand();
 		}
 		SDL_Renderer* renderer
 				= SDL_GetRenderer(gwin->get_win()->get_screen_window());
@@ -2292,6 +2304,19 @@ bool BG_Game::new_game(Vga_file& shapes) {
 			Uint16 keysym_unicode = 0;
 			bool   isTextInput    = false;
 			SDL_ConvertEventToRenderCoordinates(renderer, &event);
+
+			if (event.type == SDL_EVENT_MOUSE_MOTION) {
+				int mx;
+				int my;
+				gwin->get_win()->screen_to_game(
+						event.motion.x, event.motion.y, gwin->get_fastmouse(),
+						mx, my);
+				newgame_mouse.hide();
+				newgame_mouse.move(mx, my);
+				Mouse::mouse_update = true;
+				newgame_mouse.show(transto.data());
+			}
+
 			if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN
 				|| event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
 				const SDL_Rect rectName   = {topx + 10, menuy + 10, 130, 16};

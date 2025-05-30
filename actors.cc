@@ -1052,13 +1052,12 @@ void Actor::use_food() {
 						   gwin->activate_item(616);    // Drinks
 
 			ucmachine->restore_intercept(oldtarg, oldtile);
-			Mouse::mouse->set_speed_cursor();
+			Mouse::mouse()->set_speed_cursor();
 			if (!hadfood) {
 				gwin->get_main_actor()->say(msg_out_of_food);
 				COUT(get_text_msg(msg_out_of_food));
 				break;
 			}
-			
 		}
 	}
 	if (food > 9) {

@@ -1032,8 +1032,8 @@ void Cheat::cursor_teleport() const {
 		return;
 	}
 
-	int        x = Mouse::mouse->get_mousex();
-	int        y = Mouse::mouse->get_mousey();
+	int        x = Mouse::mouse()->get_mousex();
+	int        y = Mouse::mouse()->get_mousey();
 	Tile_coord t(
 			gwin->get_scrolltx() + x / c_tilesize,
 			gwin->get_scrollty() + y / c_tilesize, 0);
@@ -1097,8 +1097,8 @@ void Cheat::delete_object() {
 		return;
 	}
 
-	int          x = Mouse::mouse->get_mousex();
-	int          y = Mouse::mouse->get_mousey();
+	int          x = Mouse::mouse()->get_mousex();
+	int          y = Mouse::mouse()->get_mousey();
 	Game_object* obj;
 	Gump*        gump = gwin->get_gump_man()->find_gump(x, y);
 	if (gump) {
