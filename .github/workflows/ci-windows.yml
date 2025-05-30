@@ -139,6 +139,9 @@ jobs:
             popd
           done
           cd disttest
+          mv exconfig-x86_64.dll exconfig-i686.dll
+          mkdir Exult-i686
+          cp -r Exult-x86_64/* Exult-i686
           "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_installer.iss
           "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_studio_installer.iss
           "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" exult_tools_installer.iss
