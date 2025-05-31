@@ -83,7 +83,7 @@ public:
 	 *  @return Buffer created with new[] containing the object data or
 	 *  null on any failure.
 	 */
-	std::unique_ptr<unsigned char[]> retrieve(uint32 objnum, std::size_t& len) {
+	std::unique_ptr<unsigned char[]> retrieve(uint32 objnum, std::size_t& len, bool nulllterminate = false) {
 		if (!data || objnum >= number_of_objects()) {
 			len = 0;
 			return nullptr;
@@ -95,7 +95,7 @@ public:
 			return nullptr;
 		}
 		len = ref.size;
-		return data->readN(len);
+		return data->readN(len,nulllterminate);
 	}
 
 	virtual const char* get_archive_type() = 0;

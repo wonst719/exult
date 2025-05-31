@@ -863,7 +863,7 @@ void KeyBinder::LoadDefaults() {
 
 	const U7object txtobj(resource.str, resource.num);
 	size_t         len;
-	auto           txt = txtobj.retrieve(len);
+	auto           txt = txtobj.retrieve(len,true);
 	if (txt && len > 0) {
 		ParseText(reinterpret_cast<char*>(txt.get()), len);
 	}

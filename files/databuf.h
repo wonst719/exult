@@ -53,11 +53,15 @@ public:
 	virtual void   read(void*, size_t)        = 0;
 	virtual void   read(std::string&, size_t) = 0;
 
-	std::unique_ptr<unsigned char[]> readN(size_t N) {
-		auto ptr = std::make_unique<unsigned char[]>(N);
+	std::unique_ptr<unsigned char[]> readN(size_t N, bool nullterminate = false) {
+		auto ptr = std::make_unique<unsigned char[]>(N + (nullterminate?1:0));
 		read(ptr.get(), N);
+		if (nullterminate) {
+			ptr[N] = 0;
+		}
 		return ptr;
 	}
+
 
 	virtual std::unique_ptr<IDataSource> makeSource(size_t) = 0;
 

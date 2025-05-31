@@ -91,7 +91,7 @@ public:
 	// TODO: This may need to be overriden by U7multiobject, in case the
 	// patching files have more objects than the base.
 	size_t                           number_of_objects();
-	std::unique_ptr<unsigned char[]> retrieve(std::size_t& len) const;
+	std::unique_ptr<unsigned char[]> retrieve(std::size_t& len,bool nullterminate=false) const;
 };
 
 /**

@@ -48,10 +48,11 @@ size_t U7object::number_of_objects() {
  *  @return Buffer created with new[] containing the contents of
  *  the object or null on any failure.
  */
-unique_ptr<unsigned char[]> U7object::retrieve(size_t& len) const {
+unique_ptr<unsigned char[]> U7object::retrieve(size_t& len, bool nullterminate) const {
 	U7file* uf = U7FileManager::get_ptr()->get_file_object(identifier, true);
 	len        = 0;
-	return (uf != nullptr) ? uf->retrieve(objnumber, len) : nullptr;
+	return (uf != nullptr) ? uf->retrieve(objnumber, len, nullterminate)
+						   : nullptr;
 }
 
 /**
