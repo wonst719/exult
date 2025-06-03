@@ -368,8 +368,7 @@ ModManager::ModManager(
 	found = U7exists(initgam_path);
 
 	string static_identity;
-	char   fname[50];
-	string id = get_game_identity(fname, cfgname);
+	string id = get_game_identity(initgam_path.c_str(), cfgname);
 	if (found) {
 		static_identity = get_game_identity(initgam_path.c_str(), cfgname);
 		if (static_identity != "ULTIMA7" && static_identity != "FORGE"
