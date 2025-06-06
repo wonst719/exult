@@ -178,7 +178,7 @@ inline int hqx_init(
 	auto RGBtoYUV = [](unsigned int r, unsigned int g, unsigned int b) {
 		const int Y = (r + g + b) >> 2;
 		const int u = 128 + ((r - b) >> 2);
-		const int v = 128 + ((-r + 2 * g - b) >> 3);
+		const int v = 128 + ((2 * g - r - b) >> 3);
 		return (Y << 16) + (u << 8) + v;
 	};
 
