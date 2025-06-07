@@ -36,16 +36,14 @@ bool Gump_ToggleButton::activate(MouseButton button) {
 
 	set_frame((get_framenum() + delta) % (2 * numselections));
 	toggle(get_framenum() / 2);
-	paint();
-	gwin->set_painted();
+	gwin->add_dirty(get_rect());
 	return true;
 }
 
 bool Gump_ToggleButton::push(MouseButton button) {
 	if (button == MouseButton::Left || button == MouseButton::Right) {
 		set_pushed(button);
-		paint();
-		gwin->set_painted();
+		gwin->add_dirty(get_rect());
 		return true;
 	}
 	return false;
@@ -54,8 +52,7 @@ bool Gump_ToggleButton::push(MouseButton button) {
 void Gump_ToggleButton::unpush(MouseButton button) {
 	if (button == MouseButton::Left || button == MouseButton::Right) {
 		set_pushed(false);
-		paint();
-		gwin->set_painted();
+		gwin->add_dirty(get_rect());
 	}
 }
 
@@ -74,8 +71,7 @@ bool Gump_ToggleTextButton::activate(MouseButton button) {
 	text = selections[get_framenum()];
 	init();
 	toggle(get_framenum());
-	paint();
-	gwin->set_painted();
+	gwin->add_dirty(get_rect());
 	return true;
 }
 
@@ -87,8 +83,7 @@ void Gump_ToggleTextButton::setselection(int selectionnum) {
 bool Gump_ToggleTextButton::push(MouseButton button) {
 	if (button == MouseButton::Left || button == MouseButton::Right) {
 		set_pushed(button);
-		paint();
-		gwin->set_painted();
+		gwin->add_dirty(get_rect());
 		return true;
 	}
 	return false;
@@ -97,7 +92,6 @@ bool Gump_ToggleTextButton::push(MouseButton button) {
 void Gump_ToggleTextButton::unpush(MouseButton button) {
 	if (button == MouseButton::Left || button == MouseButton::Right) {
 		set_pushed(false);
-		paint();
-		gwin->set_painted();
+		gwin->add_dirty(get_rect());
 	}
 }
