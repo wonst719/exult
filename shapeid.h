@@ -59,6 +59,12 @@ enum Pixel_colors {
 	HIT_PIXEL,
 	PARALYZE_PIXEL,
 	BLACK_PIXEL,
+	MAGICCYCLE_PIXEL, // Cyan-white palette cycle
+	FIRECYCLE_PIXEL,  // Yellow-Red palete Cycle
+	GREENCYCLE_PIXEL, // Green palette cycle
+	MAGENTACYCLE_PIXEL, // Magenta Palette cycle
+	YELLOWCYCLE_PIXEL,// White Yellow Palette cycle
+	RYBCYCLE_PIXEL,// Red Yellow Black Palette Cycle
 	NPIXCOLORS
 };
 
