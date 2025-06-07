@@ -132,6 +132,52 @@ private:
 	bool handle_modal_gump_event(Modal_gump* gump, SDL_Event& event);
 
 	BackgroundPaintable* background = nullptr;
+
+public:
+	struct GumpListIterator {
+	private:
+		Gump_list* node;
+
+	public:
+		GumpListIterator(Gump_list* node) : node(node) {}
+
+		GumpListIterator() = default;
+
+		Gump* operator*() {
+			return node->gump;
+		}
+
+		Gump* operator->() {
+			return node->gump;
+		}
+
+		GumpListIterator& operator++(int) {
+			node = node->next;
+			return *this;
+		}
+
+		GumpListIterator operator++() {
+			GumpListIterator ret = *this;
+			node                 = node->next;
+			return ret;
+		}
+
+		bool operator==(const GumpListIterator& other) {
+			return node == other.node;
+		}
+
+		bool operator!=(const GumpListIterator& other) {
+			return node != other.node;
+		}
+	};
+
+	GumpListIterator begin() {
+		return GumpListIterator(open_gumps);
+	}
+
+	GumpListIterator end() {
+		return GumpListIterator();
+	}
 };
 
 #endif    // GUMP_MANAGER_INCLUDED
