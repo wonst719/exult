@@ -715,7 +715,9 @@ void Pace_schedule::pace(
 			Game_object* obj = npc->find_blocking(blocked, dir);
 			if (obj) {
 				if (obj->as_actor()) {
-					if (npc->can_speak()) {
+					if (npc->can_speak()
+						&& npc->get_schedule_type() != Schedule::horiz_pace
+						&& npc->get_schedule_type() != Schedule::vert_pace) {
 						npc->say(first_move_aside, last_move_aside);
 						// Ask NPC to move aside.
 						if (obj->move_aside(npc, dir)) {
