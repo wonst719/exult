@@ -486,6 +486,7 @@ class Sleep_schedule : public Schedule {
 	int              state;
 	int              spread0, spread1;    // Range of bedspread frames.
 	bool             for_nap_time;
+	int              calculate_bed_offset(Actor* npc);
 
 public:
 	Sleep_schedule(Actor* n);

@@ -2225,6 +2225,22 @@ bool Sleep_schedule::is_bed_occupied(Game_object* bed, Actor* npc) {
 }
 
 /*
+ *  Calculate bed positioning offset for NPCs to prevent small characters
+ *  from being hidden under bedsheets.
+ */
+
+int Sleep_schedule::calculate_bed_offset(Actor* npc) {
+	// monsters or Skullcrusher Gwani don't need an offset
+	if (!npc->is_sentient() || (GAME_SI && npc->get_shapenum() == 214)) {
+		return 0;
+	}
+
+	// For small NPCs (children), apply negative offset to keep them visible
+	const int height = npc->get_info().get_3d_height();
+	return (height < 4) ? (height - 4) : 0;
+}
+
+/*
  *  Schedule change for 'sleep':
  */
 
@@ -2365,8 +2381,7 @@ void Sleep_schedule::now_what() {
 		const bool bedspread = (bedframe >= spread0 && !(bedframe % 2));
 		// Put NPC on top of bed, making sure that children are
 		// not completely covered by sheets.
-		int delta = npc->get_info().get_3d_height();
-		delta     = (delta < 4) ? (delta - 4) : 0;
+		int delta = calculate_bed_offset(npc);
 		npc->move(
 				bedloc.tx + delta, bedloc.ty + delta,
 				bedloc.tz + (bedspread ? 0 : info.get_3d_height()));
