@@ -91,6 +91,49 @@ inline void Chunk_terrain::paint_tile(
 		rendered_flats->copy8(
 				shape->get_data(), c_tilesize, c_tilesize, tilex * c_tilesize,
 				tiley * c_tilesize);
+	} else if (shape && shape->is_rle()) {
+		// Still want to draw a flat tile under rle shapes to fix black gaps in
+		// ice caves The original didn't clear it's frame buffer and gaps
+		// wouldn't normally be visible not going to replicate the original's
+		// behaviour but this seems like a good alternatuve for the ice caves
+		//
+		//  check tiles directly next to this one for a suitable alternative
+		shape = nullptr;
+
+		// Look at the tiles around this one for a suitable flat
+		for (int y = -1; !shape && y <= 1; y++) {
+			for (int x = -1; !shape && x <= 1; x++) {
+				if (tilex + x >= 0 && tilex + x < c_tiles_per_chunk
+					&& tiley + y > 0 && tiley + y < c_tiles_per_chunk) {
+					auto sid = get_flat(tilex + x, tiley + y);
+					// Skip palette cycling void tile
+					if (sid.get_shapenum() == 12 && sid.get_framenum() == 0) {
+						continue;
+					}
+					shape = get_shape(tilex + x, tiley + y);
+				}
+				if (shape && shape->is_rle()) {
+					shape = nullptr;
+				}
+			}
+		}
+
+		// couldn't find a nearby flat so search the entire chunk
+		for (int y = 0; !shape && y < c_tiles_per_chunk; y++) {
+			for (int x = 0; !shape && x < c_tiles_per_chunk; x++) {
+				shape = get_shape(x, y);
+				if (shape && shape->is_rle()) {
+					shape = nullptr;
+				}
+			}
+		}
+
+		// Got a flat so draw it
+		if (shape) {
+			rendered_flats->copy8(
+					shape->get_data(), c_tilesize, c_tilesize,
+					tilex * c_tilesize, tiley * c_tilesize);
+		}
 	}
 }
 
