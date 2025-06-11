@@ -81,7 +81,7 @@ jobs:
       - name: Create release
         if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
         id: create_release
-        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631
+        uses: softprops/action-gh-release@v2
         with:
           token: ${{ github.token }}
           name: Snapshot ${{ env.GITHUB_REF }}
