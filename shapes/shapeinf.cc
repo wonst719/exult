@@ -41,12 +41,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "frnameinf.h"
 #include "frusefun.h"
 #include "ignore_unused_variable_warning.h"
+#include "imagebuf.h"
 #include "lightinf.h"
 #include "monstinf.h"
 #include "npcdollinf.h"
 #include "objdollinf.h"
 #include "ready.h"
 #include "sfxinf.h"
+#include "shapeid.h"
 #include "warminf.h"
 #include "weaponinf.h"
 
@@ -537,5 +539,67 @@ int Shape_info::get_rotated_frame(
 	} else {
 		// Reflect.  Bit 32==horizontal.
 		return curframe ^ ((quads % 2) << 5);
+	}
+}
+
+void Shape_info::paint_bbox(
+		int x, int y, int framenum, Image_buffer* ibuf, int stroke) const {
+	int xs = get_3d_xtiles(framenum);
+	int ys = get_3d_ytiles(framenum);
+	int zs = get_3d_height();
+
+	/*
+
+  7----5
+  |\   |\
+  | \  | \
+  4----3  \
+   \  \ \  \
+	\  6-\--2
+	 \ |  \ |
+	  \|   \|
+	   1----0
+	*/
+	int verts[][3] = {
+			{  0,   0,  0}, // 0
+			{-xs,   0,  0}, //  1
+			{  0, -ys,  0}, //  2
+			{  0,   0, zs}, //  3
+			{-xs,   0, zs}, //  4
+			{  0, -ys, zs}, // 5
+			{-xs, -ys,  0}, // 6
+			{-xs, -ys, zs}, //  7
+	};
+
+	int lines[][2] = {
+			// Bottom rect
+			{0, 1},
+			{1, 6},
+			{6, 2},
+			{2, 0},
+			// Uprights
+			{0, 3},
+			{1, 4},
+			{6, 7},
+			{2, 5},
+			// Top Rect
+			{3, 4},
+			{4, 7},
+			{7, 5},
+			{5, 3},
+	};
+
+	for (auto& line : lines) {
+		int vx[2];
+		int vy[2];
+
+		for (int i = 0; i < 2; i++) {
+			vx[i] = verts[line[i]][0] * c_tilesize - 1
+					- verts[line[i]][2] * c_tilesize / 2;
+			vy[i] = verts[line[i]][1] * c_tilesize - 1
+					- verts[line[i]][2] * c_tilesize / 2;
+		}
+		ibuf->draw_line8(
+				stroke, x + vx[0], y + vy[0], x + vx[1], y + vy[1], nullptr);
 	}
 }

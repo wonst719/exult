@@ -48,6 +48,7 @@ class Light_info;
 class Warmth_info;
 class Content_rules;
 class Shapes_vga_file;
+class Image_buffer;
 
 template <typename T, class Info, T Info::* data>
 class Text_reader_functor;
@@ -970,6 +971,9 @@ public:
 
 	void set_weapon_offset(int frame, unsigned char x, unsigned char y);
 	int  get_rotated_frame(int curframe, int quads) const;
+
+	void paint_bbox(
+			int x, int y, int framenum, Image_buffer* ibuf, int stroke) const;
 };
 
 #endif

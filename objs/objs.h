@@ -321,6 +321,7 @@ public:
 	// Render.
 	virtual void paint();
 	void         paint_outline(Pixel_colors pix);
+	void         paint_bbox(int pix);
 	// Make this class abstract.
 	virtual void paint_terrain() = 0;
 
