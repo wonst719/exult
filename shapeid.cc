@@ -140,18 +140,6 @@ void Shape_manager::load() {
 	special_pixels[PARALYZE_PIXEL] = pal.find_color(49, 27, 49);
 	// Black for ShortcutBar_gump
 	special_pixels[BLACK_PIXEL] = pal.find_color(0, 0, 0);
-	// Cyan-white palette cycle
-	special_pixels[MAGICCYCLE_PIXEL] = 226;
-	// Yellow-Red palete Cycle
-	special_pixels[FIRECYCLE_PIXEL] = 236;
-	// GreeN palette cycle
-	special_pixels[GREENCYCLE_PIXEL] =242;
-	// Magenta Palette cycle
-	special_pixels[MAGENTACYCLE_PIXEL] = 246;
-	// White Yellow Palette cycle
-	special_pixels[YELLOWCYCLE_PIXEL]=249;
-	// Red Yellow Black Palette Cycle
-	special_pixels[RYBCYCLE_PIXEL] = 252;
 
 	files[SF_GUMPS_VGA].load(GUMPS_VGA, PATCH_GUMPS, true);
 

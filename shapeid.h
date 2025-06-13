@@ -52,20 +52,20 @@ enum ShapeFile {
 
 // Special pixels.
 enum Pixel_colors {
-	POISON_PIXEL = 0,
+	BLACK_PIXEL = 0,
+	POISON_PIXEL,
 	PROTECT_PIXEL,
 	CURSED_PIXEL,
 	CHARMED_PIXEL,
 	HIT_PIXEL,
 	PARALYZE_PIXEL,
-	BLACK_PIXEL,
-	MAGICCYCLE_PIXEL, // Cyan-white palette cycle
-	FIRECYCLE_PIXEL,  // Yellow-Red palete Cycle
-	GREENCYCLE_PIXEL, // Green palette cycle
-	MAGENTACYCLE_PIXEL, // Magenta Palette cycle
-	YELLOWCYCLE_PIXEL,// White Yellow Palette cycle
-	RYBCYCLE_PIXEL,// Red Yellow Black Palette Cycle
-	NPIXCOLORS
+	NPIXCOLORS,
+	MAGICCYCLE_PIXEL   = -226,    // Cyan-white palette cycle
+	FIRECYCLE_PIXEL    = -236,    // Yellow-Red palete Cycle
+	GREENCYCLE_PIXEL   = -242,    // Green palette cycle
+	MAGENTACYCLE_PIXEL = -246,    // Magenta Palette cycle
+	YELLOWCYCLE_PIXEL  = -249,    // White Yellow Palette cycle
+	RYBCYCLE_PIXEL     = -252,    // Red Yellow Black Palette Cycle
 };
 
 /*
@@ -109,6 +109,15 @@ public:
 	bool load_gumps_minimal();    // Read in files needed to display gumps.
 	void reload_shapes(int shape_kind);    // Reload a shape file.
 	void reload_shape_info();
+
+	static unsigned char get_special_pixel(int pixel) {
+		if (pixel > -256 && pixel < 0) {
+			return -pixel;
+		} else if (pixel < NPIXCOLORS) {
+			return get_instance()->special_pixels[pixel];
+		}
+		return 255;
+	}
 
 	bool are_gumps_loaded() {
 		return !shape_cache[SF_GUMPS_VGA].empty();
@@ -169,15 +178,11 @@ public:
 
 	// Paint outline around a shape.
 	inline void paint_outline(
-			int xoff, int yoff, Shape_frame* shape, Pixel_colors pix) {
+			int xoff, int yoff, Shape_frame* shape, int special_pixel) {
 		if (shape) {
 			shape->paint_rle_outline(
-					xoff, yoff, special_pixels[static_cast<int>(pix)]);
+					xoff, yoff, get_special_pixel(special_pixel));
 		}
-	}
-
-	unsigned char get_special_pixel(Pixel_colors pix) {
-		return special_pixels[static_cast<int>(pix)];
 	}
 
 	// Paint text using "fonts.vga".

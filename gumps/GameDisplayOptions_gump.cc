@@ -112,7 +112,7 @@ void GameDisplayOptions_gump::build_buttons() {
 	// keep in order of Pixel_colors
 	// "No" needs to be last.
 	sc_outline_txt = std::vector<std::string>{
-			"Green", "White", "Yellow", "Blue", "Red", "Purple", "Black", "No"};
+			"Black", "Green", "White", "Yellow", "Blue", "Red", "Purple", "No"};
 	buttons[id_sc_outline] = std::make_unique<GameDisplayTextToggle>(
 			this, &GameDisplayOptions_gump::toggle_sc_outline, sc_outline_txt,
 			sc_outline, colx[5], rowy[++y_index], small_size);
