@@ -161,6 +161,10 @@ public:
 	Container_game_object* as_container() override {
 		return this;
 	}
+
+	const Container_game_object* as_container() const override {
+		return this;
+	}
 };
 
 #endif

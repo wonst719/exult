@@ -51,6 +51,10 @@ public:
 		return this;
 	}
 
+	const Spellbook_object* as_spellbook() const override {
+		return this;
+	}
+
 	bool has_spell(int spell) {    // Has a spell.
 		const int circle = spell / 8;
 		const int num    = spell % 8;    // # within circle.

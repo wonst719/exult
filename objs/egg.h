@@ -239,6 +239,10 @@ public:
 	Egg_object* as_egg() override {
 		return this;
 	}
+
+	const Egg_object* as_egg() const override {
+		return this;
+	}
 };
 
 /*

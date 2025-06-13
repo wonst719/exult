@@ -115,6 +115,10 @@ public:
 		return this;
 	}
 
+	const Barge_object* as_barge() const override {
+		return this;
+	}
+
 	// For Time_sensitive:
 	void handle_event(unsigned long curtime, uintptr udata) override;
 	// Move to new abs. location.

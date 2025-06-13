@@ -45,6 +45,10 @@ public:
 		return this;
 	}
 
+	const Virtue_stone_object* as_virtstone() const override {
+		return this;
+	}
+
 	void set_target_pos(const Tile_coord& t) {    // Set/get position.
 		pos = t;
 	}

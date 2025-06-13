@@ -380,7 +380,15 @@ public:
 		return nullptr;
 	}
 
+	virtual const Actor* as_actor() const {
+		return nullptr;
+	}
+
 	virtual Npc_actor* as_npc() {
+		return nullptr;
+	}
+
+	virtual const Npc_actor* as_npc() const {
 		return nullptr;
 	}
 
@@ -388,7 +396,15 @@ public:
 		return nullptr;
 	}
 
+	virtual const Barge_object* as_barge() const {
+		return nullptr;
+	}
+
 	virtual Terrain_game_object* as_terrain() {
+		return nullptr;
+	}
+
+	virtual const Terrain_game_object* as_terrain() const {
 		return nullptr;
 	}
 
@@ -396,7 +412,15 @@ public:
 		return nullptr;
 	}
 
+	virtual const Container_game_object* as_container() const {
+		return nullptr;
+	}
+
 	virtual Egg_object* as_egg() {
+		return nullptr;
+	}
+
+	virtual const Egg_object* as_egg() const {
 		return nullptr;
 	}
 
@@ -404,11 +428,23 @@ public:
 		return nullptr;
 	}
 
+	virtual const Spellbook_object* as_spellbook() const {
+		return nullptr;
+	}
+
 	virtual Virtue_stone_object* as_virtstone() {
 		return nullptr;
 	}
 
+	virtual const Virtue_stone_object* as_virtstone() const {
+		return nullptr;
+	}
+
 	virtual Dead_body* as_body() {
+		return nullptr;
+	}
+
+	virtual const Dead_body* as_body() const {
 		return nullptr;
 	}
 
@@ -587,6 +623,10 @@ public:
 	~Terrain_game_object() override = default;
 
 	Terrain_game_object* as_terrain() override {
+		return this;
+	}
+
+	const Terrain_game_object* as_terrain() const override {
 		return this;
 	}
 

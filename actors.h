@@ -707,6 +707,10 @@ public:
 		return this;
 	}
 
+	const Actor* as_actor() const override {    // An actor?
+		return this;
+	}
+
 	virtual bool is_slime() const {
 		return false;
 	}
@@ -946,6 +950,10 @@ public:
 	Npc_actor* as_npc() override {
 		return this;
 	}
+
+	const Npc_actor* as_npc() const override {
+		return this;
+	}
 };
 
 using Npc_actor_shared = std::shared_ptr<Npc_actor>;
@@ -963,6 +971,10 @@ public:
 			  npc_num(n) {}
 
 	Dead_body* as_body() override {
+		return this;
+	}
+
+	const Dead_body* as_body() const override {
 		return this;
 	}
 
