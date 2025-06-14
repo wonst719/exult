@@ -2248,6 +2248,7 @@ int Sleep_schedule::calculate_bed_offset(Actor* npc) {
 
 void Sleep_schedule::now_what() {
 	Game_object_shared bed_obj = bed.lock();
+	Game_object_shared bed_top = this->bed_top.lock();
 	if (bed_obj && state <= 1 && is_bed_occupied(bed_obj.get(), npc)) {
 		bed_obj = nullptr;
 		bed     = Game_object_weak(bed_obj);
@@ -2341,8 +2342,8 @@ void Sleep_schedule::now_what() {
 			// Restrict to sheets on the same floor as the selected bed.
 			if (frnum >= spread0 && frnum <= spread1
 				&& floor == (tpos.tz / 5)) {
-				bed_obj = top->shared_from_this();
-				bed     = Game_object_weak(bed_obj);
+				bed_top = top->shared_from_this();
+				this->bed_top     = Game_object_weak(bed_top);
 				break;
 			}
 		}
@@ -2363,7 +2364,10 @@ void Sleep_schedule::now_what() {
 	}
 	case 1: {           // Go to bed.
 		npc->stop();    // Just to be sure.
-		if (npc->distance(bed_obj.get()) > 3) {
+		if (!bed_top) {
+			bed_top = bed_obj;
+		}
+			if (npc->distance(bed_obj.get()) > 3) {
 			state = 0;
 			npc->start(200);    // Try again.
 		}
@@ -2375,12 +2379,12 @@ void Sleep_schedule::now_what() {
 		const Tile_coord  bedloc = bed_obj->get_tile();
 		floorloc                 = npc->get_tile();
 		Usecode_script::terminate(bed_obj.get());
-		int bedframe = bed_obj->get_framenum();    // Unmake bed.
-		if (bedframe >= spread0 && bedframe < spread1 && (bedframe % 2)) {
-			bedframe++;
-			bed_obj->change_frame(bedframe);
+		int bedtopframe = bed_top->get_framenum();    // Unmake bed.
+		if (bedtopframe >= spread0 && bedtopframe < spread1 && (bedtopframe % 2)) {
+			bedtopframe++;
+			bed_top->change_frame(bedtopframe);
 		}
-		const bool bedspread = (bedframe >= spread0 && !(bedframe % 2));
+		const bool bedspread = (bedtopframe >= spread0 && !(bedtopframe % 2));
 		// Put NPC on top of bed, making sure that children are
 		// not completely covered by sheets.
 		int delta = calculate_bed_offset(npc);

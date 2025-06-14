@@ -483,6 +483,7 @@ public:
 class Sleep_schedule : public Schedule {
 	Tile_coord       floorloc;    // Where NPC was standing before.
 	Game_object_weak bed;         // Bed being slept on, or 0.
+	Game_object_weak bed_top;     // Covers of bed if it has any
 	int              state;
 	int              spread0, spread1;    // Range of bedspread frames.
 	bool             for_nap_time;
