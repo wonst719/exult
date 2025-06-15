@@ -557,6 +557,7 @@ void KeyBinder::ShowBrowserKeys() const {
 	scroll->add_text("Shift-P - Decrease palette by 1");
 	scroll->add_text("X - Increase xform by 1");
 	scroll->add_text("Shift-X - Decrease xform by 1");
+	scroll->add_text("B - Toggle 3d Bounding Boxes");
 	char returned_key[200];
 	if (last_created_key.empty()) {
 		strcpy(returned_key, "Error: No key assigned");

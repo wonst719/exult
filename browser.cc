@@ -113,6 +113,7 @@ void ShapeBrowser::browse_shapes() {
 	bool      looping             = true;
 	bool      redraw              = true;
 	bool      do_palette_rotation = true;
+	bool      bounding_box        = false;
 	SDL_Event event;
 	// int active;
 
@@ -172,38 +173,58 @@ void ShapeBrowser::browse_shapes() {
 					// font->draw_text(ibuf, 32, 32, buf);
 					font->paint_text_fixedwidth(ibuf, buf, 2, 22, 8);
 
-					const Shape_info& info = ShapeID::get_info(current_shape);
+					// Coords for shape to be drawn (centre of the screen)
+					const int x = gwin->get_width() / 2;
+					const int y = gwin->get_height() / 2;
 
-					snprintf(
-							buf, sizeof(buf), "class: %2i  ready_type: 0x%02x",
-							info.get_shape_class(), info.get_ready_type());
-					font->paint_text_fixedwidth(ibuf, buf, 2, 12, 8);
-
-					// TODO: do we want to display something other than
-					// this for shapes >= 1024?
-					if (current_shape < get_num_item_names()
-						&& get_item_name(current_shape)) {
-						// font->draw_text(ibuf, 32, 16,
-						// get_item_name(current_shape));
-						font->paint_text_fixedwidth(
-								ibuf, get_item_name(current_shape), 2, 2, 8);
+					// draw outline if not drawing bbox
+					if (current_file != 0 || !bounding_box) {
+						gwin->get_win()->fill8(
+								255, frame->get_width() + 4,
+								frame->get_height() + 4,
+								x - frame->get_xleft() - 2,
+								y - frame->get_yabove() - 2);
+						gwin->get_win()->fill8(
+								0, frame->get_width() + 2,
+								frame->get_height() + 2,
+								x - frame->get_xleft() - 1,
+								y - frame->get_yabove() - 1);
 					}
 
-					// draw outline
-					gwin->get_win()->fill8(
-							255, frame->get_width() + 4,
-							frame->get_height() + 4,
-							gwin->get_width() / 2 - frame->get_xleft() - 2,
-							gwin->get_height() / 2 - frame->get_yabove() - 2);
-					gwin->get_win()->fill8(
-							0, frame->get_width() + 2, frame->get_height() + 2,
-							gwin->get_width() / 2 - frame->get_xleft() - 1,
-							gwin->get_height() / 2 - frame->get_yabove() - 1);
-
 					// draw shape
-					sman->paint_shape(
-							gwin->get_width() / 2, gwin->get_height() / 2,
-							frame, true);
+					sman->paint_shape(x, y, frame, true);
+
+					// Stuff that should only be drawn for object shapes in
+					// shapes.vga
+					if (current_file == 0) {
+						const Shape_info& info
+								= ShapeID::get_info(current_shape);
+
+						snprintf(
+								buf, sizeof(buf),
+								"class: %2i  ready_type: 0x%02x 3d: %ix%ix%i",
+								info.get_shape_class(), info.get_ready_type(),
+								info.get_3d_xtiles(current_frame),
+								info.get_3d_ytiles(current_frame),
+								info.get_3d_height());
+						font->paint_text_fixedwidth(ibuf, buf, 2, 12, 8);
+
+						// TODO: do we want to display something other than
+						// this for shapes >= 1024?
+						if (current_shape < get_num_item_names()
+							&& get_item_name(current_shape)) {
+							// font->draw_text(ibuf, 32, 16,
+							// get_item_name(current_shape));
+							font->paint_text_fixedwidth(
+									ibuf, get_item_name(current_shape), 2, 2,
+									8);
+						}
+						if (bounding_box) {
+							info.paint_bbox(
+									x, y, current_frame,
+									gwin->get_win()->get_ibuf(), 255);
+						}
+					}
 
 				} else {
 					font->draw_text(
@@ -239,6 +260,11 @@ void ShapeBrowser::browse_shapes() {
 				break;
 			case SDLK_R:
 				do_palette_rotation = !do_palette_rotation;
+				break;
+
+			case SDLK_B:
+				bounding_box = !bounding_box;
+				redraw       = true;
 				break;
 
 			case SDLK_X:
