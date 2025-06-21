@@ -92,7 +92,7 @@ public:
 	int paint_text_box(
 			Image_buffer8* win, const char* text, int x, int y, int w, int h,
 			int vert_lead = 0, bool pbreak = false, bool center = false,
-			Cursor_info* cursor = nullptr);
+			Cursor_info* cursor = nullptr, unsigned char* trans = nullptr);
 	int paint_text(
 			Image_buffer8* win, const char* text, int xoff, int yoff,
 			unsigned char* trans = nullptr);
@@ -105,16 +105,17 @@ public:
 
 	int paint_text(
 			Image_buffer8* win, const char* text, int textlen, int xoff,
-			int yoff);
+			int yoff, unsigned char* trans = nullptr);
 	int paint_text_box_fixedwidth(
 			Image_buffer8* win, const char* text, int x, int y, int w, int h,
-			int char_width, int vert_lead = 0, int pbreak = 0);
+			int char_width, int vert_lead = 0, int pbreak = 0,
+			unsigned char* trans = nullptr);
 	int paint_text_fixedwidth(
-			Image_buffer8* win, const char* text, int xoff, int yoff,
-			int width);
+			Image_buffer8* win, const char* text, int xoff, int yoff, int width,
+			unsigned char* trans = nullptr);
 	int paint_text_fixedwidth(
 			Image_buffer8* win, const char* text, int textlen, int xoff,
-			int yoff, int width);
+			int yoff, int width, unsigned char* trans = nullptr);
 	// Get text width.
 	int get_text_width(const char* text);
 	int get_text_width(const char* text, int textlen);
@@ -133,11 +134,15 @@ public:
 	}
 
 	int draw_text_box(
-			Image_buffer8* win, int x, int y, int w, int h, const char* s) {
-		return paint_text_box(win, s, x, y, w, h, 0, false);
+			Image_buffer8* win, int x, int y, int w, int h, const char* s,
+			unsigned char* trans = nullptr) {
+		return paint_text_box(
+				win, s, x, y, w, h, 0, false, false, nullptr, trans);
 	}
 
-	int center_text(Image_buffer8* iwin, int x, int y, const char* s);
+	int center_text(
+			Image_buffer8* iwin, int x, int y, const char* s,
+			unsigned char* trans = nullptr);
 };
 
 /*

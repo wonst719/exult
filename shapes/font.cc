@@ -89,11 +89,11 @@ int Font::paint_text_box(
 		Image_buffer8* win,                // Buffer to paint in.
 		const char* text, int x, int y,    // Top-left corner of box.
 		int w, int h,                      // Dimensions.
-		int          vert_lead,            // Extra spacing between lines.
-		bool         pbreak,               // End at punctuation.
-		bool         center,               // Center each line.
-		Cursor_info* cursor                // We set x, y if not nullptr.
-) {
+		int            vert_lead,          // Extra spacing between lines.
+		bool           pbreak,             // End at punctuation.
+		bool           center,             // Center each line.
+		Cursor_info*   cursor,             // We set x, y if not nullptr.
+		unsigned char* trans) {
 	const char* start = text;    // Remember the start.
 	win->set_clip(x, y, w, h);
 	const int   endx           = x + w;    // Figure where to stop.
@@ -240,9 +240,9 @@ int Font::paint_text_box(
 			len = last_punct_offset;
 		}
 		if (center) {
-			center_text(win, x + w / 2, cury, str);
+			center_text(win, x + w / 2, cury, str, trans);
 		} else {
-			paint_text(win, str, len, x, cury);
+			paint_text(win, str, len, x, cury, trans);
 		}
 		cury += height;
 		if (i == last_punct_line) {
@@ -302,8 +302,8 @@ int Font::paint_text(
 		Image_buffer8* win,        // Buffer to paint in.
 		const char*    text,       // What to draw.
 		int            textlen,    // Length of text.
-		int xoff, int yoff         // Upper-left corner of where to start.
-) {
+		int xoff, int yoff,        // Upper-left corner of where to start.
+		unsigned char* trans) {
 	ignore_unused_variable_warning(win);
 	int x = xoff;
 	yoff += get_text_baseline();
@@ -314,7 +314,11 @@ int Font::paint_text(
 			if (!shape) {
 				continue;
 			}
-			shape->paint_rle(x, yoff);
+			if (trans) {
+				shape->paint_rle_remapped(x, yoff, trans);
+			} else {
+				shape->paint_rle(x, yoff);
+			}
 			x += shape->get_width() + hor_lead;
 		}
 	}
@@ -344,10 +348,10 @@ int Font::paint_text_box_fixedwidth(
 		Image_buffer8* win,                // Buffer to paint in.
 		const char* text, int x, int y,    // Top-left corner of box.
 		int w, int h,                      // Dimensions.
-		int char_width,                    // Width of each character
-		int vert_lead,                     // Extra spacing between lines.
-		int pbreak                         // End at punctuation.
-) {
+		int            char_width,         // Width of each character
+		int            vert_lead,          // Extra spacing between lines.
+		int            pbreak,             // End at punctuation.
+		unsigned char* trans) {
 	const char* start = text;    // Remember the start.
 	win->set_clip(x, y, w, h);
 	const int   endx           = x + w;    // Figure where to stop.
@@ -447,7 +451,7 @@ int Font::paint_text_box_fixedwidth(
 		if (i == last_punct_line) {
 			len = last_punct_offset;
 		}
-		paint_text_fixedwidth(win, str, len, x, cury, char_width);
+		paint_text_fixedwidth(win, str, len, x, cury, char_width, trans);
 		cury += height;
 		if (i == last_punct_line) {
 			break;
@@ -470,11 +474,11 @@ int Font::paint_text_box_fixedwidth(
  */
 
 int Font::paint_text_fixedwidth(
-		Image_buffer8* win,     // Buffer to paint in.
-		const char*    text,    // What to draw, 0-delimited.
-		int xoff, int yoff,     // Upper-left corner of where to start.
-		int width               // Width of each character
-) {
+		Image_buffer8* win,      // Buffer to paint in.
+		const char*    text,     // What to draw, 0-delimited.
+		int xoff, int yoff,      // Upper-left corner of where to start.
+		int            width,    // Width of each character
+		unsigned char* trans) {
 	ignore_unused_variable_warning(win);
 	int x = xoff;
 	int w;
@@ -487,7 +491,11 @@ int Font::paint_text_fixedwidth(
 			continue;
 		}
 		x += w = (width - shape->get_width()) / 2;
-		shape->paint_rle(x, yoff);
+		if (trans) {
+			shape->paint_rle_remapped(x, yoff, trans);
+		} else {
+			shape->paint_rle(x, yoff);
+		}
 		x += width - w;
 	}
 	return x - xoff;
@@ -505,8 +513,8 @@ int Font::paint_text_fixedwidth(
 		const char*    text,       // What to draw.
 		int            textlen,    // Length of text.
 		int xoff, int yoff,        // Upper-left corner of where to start.
-		int width                  // Width of each character
-) {
+		int            width,      // Width of each character
+		unsigned char* trans) {
 	ignore_unused_variable_warning(win);
 	int w;
 	int x = xoff;
@@ -518,7 +526,11 @@ int Font::paint_text_fixedwidth(
 			continue;
 		}
 		x += w = (width - shape->get_width()) / 2;
-		shape->paint_rle(x, yoff);
+		if (trans) {
+			shape->paint_rle_remapped(x, yoff, trans);
+		} else {
+			shape->paint_rle(x, yoff);
+		}
 		x += width - w;
 	}
 	return x - xoff;
@@ -778,8 +790,9 @@ int Font::load(
 	return load_internal(data, hlead, vlead);
 }
 
-int Font::center_text(Image_buffer8* win, int x, int y, const char* s) {
-	return draw_text(win, x - get_text_width(s) / 2, y, s);
+int Font::center_text(
+		Image_buffer8* win, int x, int y, const char* s, unsigned char* trans) {
+	return draw_text(win, x - get_text_width(s) / 2, y, s, trans);
 }
 
 void Font::calc_highlow() {
