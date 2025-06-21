@@ -3983,6 +3983,15 @@ void ExultStudio::open_shape_window(
 	brightness_frame_single = nullptr;
 	delete warmth_frame_single;
 	warmth_frame_single = nullptr;
+
+	// set legal range for tile spinbuttons
+	gtk_spin_button_set_range(
+			GTK_SPIN_BUTTON(get_widget("shinfo_xtiles")), 0, 7);
+	gtk_spin_button_set_range(
+			GTK_SPIN_BUTTON(get_widget("shinfo_ytiles")), 0, 7);
+	gtk_spin_button_set_range(
+			GTK_SPIN_BUTTON(get_widget("shinfo_ztiles")), 0, 7);
+
 	if (palbuf) {
 		weapon_family_single = new Shape_single(
 				get_widget("shinfo_weapon_ammo_shape"), nullptr,
