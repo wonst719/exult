@@ -179,12 +179,13 @@ void Background_noise::handle_event(unsigned long curtime, uintptr udata) {
 	}
 
 	MyMidiPlayer* player = Audio::get_ptr()->get_midi();
-	// The sfx tracks only play for Digital Music, MT32emu, MT32/FakeMT32
-	// FMOpl is not sounding acceptable even though the original used it.
+	// The background sfx tracks only play for Digital Music, MT32emu,
+	// MT32/FakeMT32 FMOpl is not sounding acceptable even though the original
+	// used it.
 	const bool play_bg_tracks
 			= player && (player->get_ogg_enabled() || player->is_mt32());
 
-	if (player && play_bg_tracks) {
+	if (player) {
 		delay = 1000;    // Quickly get back to this function check
 		const int curr_track = player->get_current_track();
 		if ((curr_track == -1 || laststate != currentstate)
@@ -231,12 +232,13 @@ void Background_noise::handle_event(unsigned long curtime, uintptr udata) {
 		}
 	}
 
-	// Tests to see if Outside/Nighttime sfx tracks are playing,
+	// Tests to see if background sfx tracks are playing,
 	// possible when the game has been restored
 	// and the Audio option was changed from OGG/MT32 to something else
 	if (player && !play_bg_tracks
-		&& (player->get_current_track() == 6
-			|| player->get_current_track() == 7)) {
+		&& ((player->get_current_track() >= 4
+			 && player->get_current_track() <= 7)
+			|| player->get_current_track() == 52)) {
 		player->stop_music();
 	}
 	Main_actor* ava = gwin->get_main_actor();
