@@ -483,8 +483,8 @@ void Shape_info::set_3d(
 	zt &= 7;
 	tfa[2]  = (tfa[2] & ~63) | xt | (yt << 3);
 	tfa[0]  = (tfa[0] & ~(7 << 5)) | (zt << 5);
-	dims[0] = xt + 1;
-	dims[1] = yt + 1;
+	dims[0] = (xt + 1)&7;
+	dims[1] = (yt + 1)&7;
 	dims[2] = zt;
 }
 
