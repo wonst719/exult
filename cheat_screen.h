@@ -189,6 +189,7 @@ private:
 	Palette               pal;
 	Xform_palette         highlighttable;
 	Xform_palette         hovertable;
+	Xform_palette         fontcolor;
 
 	// Turn off clang-format so it doesn't wrap the long comments
 	// clang-format off
