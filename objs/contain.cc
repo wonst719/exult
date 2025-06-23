@@ -88,7 +88,7 @@ void Container_game_object::remove(Game_object* obj) {
 	volume_used -= obj->get_volume();
 	obj->set_owner(nullptr);
 	obj->set_invalid();    // No longer part of world.
-	objects.remove(obj);
+	objects.remove(obj->shared_from_this());
 	if (g_shortcutBar) {
 		g_shortcutBar->check_for_updates(shapenum);
 	}

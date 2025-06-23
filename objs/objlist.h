@@ -116,11 +116,11 @@ public:
 		first = nobj->next;
 	}
 
-	void remove(T* dobj) {
+	void remove(TShared dobj) {
 		if (iter_count) {
 			report_problem();
 		}
-		if (dobj == first.get()) {
+		if (dobj == first) {
 			first = dobj->next != first ? dobj->next : nullptr;
 		}
 		dobj->next->prev = dobj->prev;

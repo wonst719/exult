@@ -927,7 +927,7 @@ void Map_chunk::remove(Game_object* remove) {
 		}
 	}
 	remove->set_invalid();     // No longer part of world.
-	objects.remove(remove);    // Remove from list.
+	objects.remove(remove->shared_from_this());    // Remove from list.
 }
 
 /*
