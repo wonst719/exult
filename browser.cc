@@ -206,16 +206,18 @@ void ShapeBrowser::browse_shapes() {
 		}
 	};
 
-	if (!shapes && current_file > 0) {
+	if (current_file == 0) {
+		fname = "shapes.vga";
+	} else {
 		snprintf(buf, sizeof(buf), "files/shapes/%d", current_file);
 		fname = game->get_resource(buf).str;
+	}
 
+	if (!shapes && current_file > 0) {
 		std::vector<std::pair<std::string, int>> sources
 				= get_patch_sources(fname);
 		shapes = new Vga_file();
 		shapes->load(sources);
-	} else if (current_file == 0) {
-		fname = "shapes.vga";
 	}
 
 	do {
