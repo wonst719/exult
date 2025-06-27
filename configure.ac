@@ -923,26 +923,6 @@ else
 	AC_MSG_RESULT(no)
 fi
 
-# Usecode container
-AC_ARG_ENABLE(usecode-container, AS_HELP_STRING([--enable-usecode-container], [Enable display of usecode container for debugging purposes @<:@default no@:>@]),,enable_usecode_container=no)
-AC_MSG_CHECKING([whether to display the usecode container in Gumps])
-if test x$enable_usecode_container = xyes; then
-	AC_MSG_RESULT(yes)
-	AC_DEFINE(SHOW_USECODE_CONTAINER, 1, [Display Usecode container])
-else
-	AC_MSG_RESULT(no)
-fi
-
-# Show non-readied objects
-AC_ARG_ENABLE(nonreadied-objects, AS_HELP_STRING([--enable-nonreadied-objects], [Enable display of non-readied objects for debugging purposes @<:@default no@:>@]),,enable_nonreadied_objects=no)
-AC_MSG_CHECKING([whether to display non-readied objects in Gumps])
-if test x$enable_nonreadied_objects = xyes; then
-	AC_MSG_RESULT(yes)
-	AC_DEFINE(SHOW_NONREADIED_OBJECTS, 1, [Display non-readied objects])
-else
-	AC_MSG_RESULT(no)
-fi
-
 # shp-thumbnailer
 AC_ARG_ENABLE(shp-thumbnailer, AS_HELP_STRING([--enable-shp-thumbnailer@<:@=yes|system|local|user|ingame|no@:>@],
 		[Build Exult SHP Thumbnailer, yes or system and local for system (local) install (requires root), user for user install, ingame for Exult ingame install (requires XDG_DATA_DIRS) @<:@default no@:>@]),,enable_shp_thumbnailer=no)
@@ -1554,8 +1534,6 @@ echo Build Aseprite SHP plugin...: $enable_aseprite_plugin
 echo
 echo Debug :
 echo Build Usecode debugger..... : $enable_usecode_debugger
-echo Debug Usecode Container.... : $enable_usecode_container
-echo Debug non Readied Objects.. : $enable_nonreadied_objects
 echo
 echo Compilation :
 echo Enable compiler sanitizers. : $enable_sanitizers

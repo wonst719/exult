@@ -43,9 +43,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using std::size_t;
 
-// #define SHOW_USECODE_CONTAINER
-// #define SHOW_NONREADIED_OBJECTS
-
 /*
  *
  *  SERPENT ISLE PAPERDOLL GUMP
@@ -503,20 +500,19 @@ void Paperdoll_gump::paint() {
 	paint_object(box, info, quiver, ahand.x, ahand.y, 2, -1);
 	paint_object(box, info, rhand, rhandp.x, rhandp.y);
 
-	// if debugging show usecode container
-#ifdef SHOW_USECODE_CONTAINER
-	paint_object(box, info, ucont, 20, 20);
-#endif
-
-#ifdef SHOW_NONREADIED_OBJECTS
-	Game_object*    itm;
-	Object_iterator iter(actor->get_objects());
-	while ((itm = iter.get_next()) != nullptr) {
-		if (actor->find_readied(itm) == -1) {
-			itm->paint();
+	// if in edit mode, paint the usecode container and nonreadied objects.
+	if (cheat.in_map_editor()) {
+		// Usecode container.
+		paint_object(box, info, ucont, 20, 20);
+		// Non-readied objects.
+		Game_object*    itm;
+		Object_iterator iter(actor->get_objects());
+		while ((itm = iter.get_next()) != nullptr) {
+			if (actor->find_readied(itm) == -1) {
+				itm->paint();
+			}
 		}
 	}
-#endif
 
 	// Paint buttons.
 	if (heart_button) {
@@ -773,12 +769,11 @@ Game_object* Paperdoll_gump::find_object(
 
 	Game_object* obj;
 
-	// if debugging show usecode container
-#ifdef SHOW_USECODE_CONTAINER
-	if ((obj = check_object(mx, my, info, ucont, 20, 20)) != nullptr) {
+	// if editing show usecode container
+	if (cheat.in_map_editor()
+		&& (obj = check_object(mx, my, info, ucont, 20, 20)) != nullptr) {
 		return obj;
 	}
-#endif
 
 	// Must be done in this order (reverse of rendering)
 	if ((obj = check_object(mx, my, info, rhand, rhandp.x, rhandp.y))) {
