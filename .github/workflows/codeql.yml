@@ -123,6 +123,7 @@ jobs:
           cmake -B build -S .
           cmake --build build
           sudo cmake --install build
+          rm -r -f SDL3
       - name: Checkout SDL_image 3
         uses: actions/checkout@v4
         with:
@@ -136,6 +137,7 @@ jobs:
           cmake -B build -S .
           cmake --build build
           sudo cmake --install build
+          rm -r -f SDL3_image
       - name: Run autoreconf
         run: |
           autoreconf -v -i
