@@ -108,6 +108,7 @@ jobs:
           cmake -B build -S .
           cmake --build build
           sudo cmake --install build
+          cd ..
           rm -r -f SDL3
       - name: Checkout SDL_image 3
         uses: actions/checkout@v4
@@ -122,6 +123,7 @@ jobs:
           cmake -B build -S .
           cmake --build build
           sudo cmake --install build
+          cd ..
           rm -r -f SDL3_image
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
