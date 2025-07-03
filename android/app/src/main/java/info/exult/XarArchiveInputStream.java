@@ -35,7 +35,7 @@ class XarArchiveInputStream extends ArchiveInputStream {
 	private Iterator<XarEntry>  m_nextXarEntry;
 	private InputStream         m_xarEntryInputStream;
 
-	XarArchiveInputStream(InputStream inputStream) {
+	XarArchiveInputStream(InputStream inputStream) throws IOException {
 		XarSource      xarSource  = new InputStreamXarSource(inputStream);
 		List<XarEntry> xarEntries = null;
 		try {
@@ -43,7 +43,13 @@ class XarArchiveInputStream extends ArchiveInputStream {
 		} catch (Exception e) {
 			Log.d("XarArchiveInputStream",
 				  "exception getting XAR entries: " + e.toString());
-			// TODO: throw something?
+			// Throw an IOException with the original exception as the cause
+			throw new IOException("Failed to read XAR entries from input stream", e);
+		}
+
+		// Null check in case getEntries() returns null without throwing
+		if (xarEntries == null) {
+			throw new IOException("XAR source returned null entries list");
 		}
 
 		// Awful hack to get access to entry offsets so we can sort the and
@@ -58,29 +64,30 @@ class XarArchiveInputStream extends ArchiveInputStream {
 		} catch (Exception e) {
 			Log.d("ExultLauncherActivity",
 				  "exception accessing XarEntry offset field: " + e.toString());
+			// This is not fatal - we can still work without sorting, just less efficiently
 		}
 		final Field xarEntryOffsetField = xarEntryOffsetField_;
-		xarEntries.sort(new Comparator<XarEntry>() {
-			@Override
-			public int compare(XarEntry xarEntry1, XarEntry xarEntry2) {
-				long offset1 = 0;
-				long offset2 = 0;
-				try {
-					offset1 = (long)xarEntryOffsetField.get(xarEntry1);
-					offset2 = (long)xarEntryOffsetField.get(xarEntry2);
-				} catch (Exception e) {
-					Log.d("ExultLauncherActivity",
-						  "exception reading offset: " + e.toString());
+		
+		// Only sort if we successfully got the offset field
+		if (xarEntryOffsetField != null) {
+			xarEntries.sort(new Comparator<XarEntry>() {
+				@Override
+				public int compare(XarEntry xarEntry1, XarEntry xarEntry2) {
+					long offset1 = 0;
+					long offset2 = 0;
+					try {
+						offset1 = (long)xarEntryOffsetField.get(xarEntry1);
+						offset2 = (long)xarEntryOffsetField.get(xarEntry2);
+					} catch (Exception e) {
+						Log.d("ExultLauncherActivity",
+							  "exception reading offset: " + e.toString());
+						// If we can't read offsets, treat as equal
+						return 0;
+					}
+					return Long.compare(offset1, offset2);
 				}
-				if (offset1 < offset2) {
-					return -1;
-				}
-				if (offset1 > offset2) {
-					return 1;
-				}
-				return 0;
-			}
-		});
+			});
+		}
 
 		m_nextXarEntry = xarEntries.iterator();
 	}

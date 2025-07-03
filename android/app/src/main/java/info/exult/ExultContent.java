@@ -267,7 +267,7 @@ public abstract class ExultContent {
 
 			Path               location;
 			ArchiveInputStream archive;
-		};
+		}
 
 		Deque<LocationAndArchive> archiveStack
 				= new ArrayDeque<LocationAndArchive>();

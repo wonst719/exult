@@ -48,10 +48,14 @@ class ArchiveStreamFactoryWithXar extends ArchiveStreamFactory {
 	@Override
 	public ArchiveInputStream createArchiveInputStream(
 			String archiverName, InputStream in) throws ArchiveException {
-		if (archiverName.equals(XAR)) {
-			return new XarArchiveInputStream(in);
-		} else {
-			return super.createArchiveInputStream(archiverName, in);
+		try {
+			if (archiverName.equals(XAR)) {
+				return new XarArchiveInputStream(in);
+			} else {
+				return super.createArchiveInputStream(archiverName, in);
+			}
+		} catch (IOException e) {
+			throw new ArchiveException("Failed to create XAR archive input stream", e);
 		}
 	}
 

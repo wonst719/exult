@@ -75,8 +75,21 @@ class InputStreamXarSource extends XarSource {
 			toSkip -= skipped;
 		}
 		m_offset = offset + length;
-		// TODO: check return value
-		m_inputStream.read(rangeBuffer, 0, (int)length);
+		
+		// Read the full length, handling partial reads
+		int totalBytesRead = 0;
+		int targetLength = (int)length;
+		while (totalBytesRead < targetLength) {
+			int bytesRead = m_inputStream.read(rangeBuffer, totalBytesRead, 
+											  targetLength - totalBytesRead);
+			if (bytesRead == -1) {
+				throw new IOException("Unexpected end of stream. Expected " + 
+									targetLength + " bytes, but only read " + 
+									totalBytesRead + " bytes.");
+			}
+			totalBytesRead += bytesRead;
+		}
+		
 		ByteArrayInputStream byteArrayInputStream
 				= new ByteArrayInputStream(rangeBuffer);
 		Source source = Okio.source(byteArrayInputStream);
