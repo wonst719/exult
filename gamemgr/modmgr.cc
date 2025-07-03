@@ -502,7 +502,7 @@ ModManager::ModManager(
 		if (needtitle) {
 			new_title = CFG_SS_TITLE;
 		}
-	} else {
+	} else if (static_identity == "DEVEL GAME") {
 		type      = EXULT_DEVEL_GAME;
 		language  = ENGLISH;
 		expansion = false;
