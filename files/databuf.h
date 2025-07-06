@@ -69,7 +69,6 @@ public:
 	virtual void   skip(std::streamoff) = 0;
 	virtual size_t getSize() const      = 0;
 	virtual size_t getPos() const       = 0;
-
 	size_t getAvail() const {
 		const size_t msize = getSize();
 		const size_t mpos  = getPos();
@@ -227,36 +226,67 @@ public:
 			= delete;
 
 	uint32 peek() final {
+		if (getAvail() < 1) {
+			return -1;
+		}
 		return *buf_ptr;
 	}
 
 	uint32 read1() final {
+		if (getAvail() < 1) {
+			buf_ptr++;
+			return -1;
+		}
 		return Read1(buf_ptr);
 	}
 
 	uint16 read2() final {
+		if (getAvail() < 2) {
+			buf_ptr += 2;
+			return -1;
+		}
 		return little_endian::Read2(buf_ptr);
 	}
 
 	uint16 read2high() final {
+		if (getAvail() < 2) {
+			buf_ptr += 2;
+			return -1;
+		}
 		return big_endian::Read2(buf_ptr);
 	}
 
 	uint32 read4() final {
+		if (getAvail() < 4) {
+			buf_ptr += 4;
+			return -1;
+		}
 		return little_endian::Read4(buf_ptr);
 	}
 
 	uint32 read4high() final {
+		if (getAvail() < 4) {
+			buf_ptr += 4;
+			return -1;
+		}
 		return big_endian::Read4(buf_ptr);
 	}
 
 	void read(void* b, size_t len) final {
-		std::memcpy(b, buf_ptr, len);
+		size_t available = getAvail();
+		if (available > 0) {
+			std::memcpy(b, buf_ptr, std::min<size_t>(available, len));
+		}
 		buf_ptr += len;
 	}
 
 	void read(std::string& s, size_t len) final {
-		s = std::string(reinterpret_cast<const char*>(buf_ptr), len);
+		size_t available = getAvail();
+		if (available > 0) {
+			s = std::string(
+					reinterpret_cast<const char*>(buf_ptr),
+					std::min<size_t>(available, len));
+		}
 		buf_ptr += len;
 	}
 
@@ -287,7 +317,8 @@ public:
 	}
 
 	bool good() const final {
-		return (buf != nullptr) && (size != 0U);
+		// including !eof() here so behaviour matches IStreamDataSource
+		return (buf != nullptr) && (size != 0U) && !eof();
 	}
 
 	void copy_to(ODataSource& dest) final;
