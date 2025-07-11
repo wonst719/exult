@@ -76,9 +76,11 @@ public:
 	}
 
 	virtual bool eof() const = 0;
+	virtual bool fail() const= 0;
+	virtual bool bad() const = 0;
 
 	virtual bool good() const {
-		return true;
+		return !bad() && !fail() && !eof();
 	}
 
 	virtual void clear_error() {}
@@ -106,9 +108,12 @@ public:
 class IStreamDataSource : public IDataSource {
 protected:
 	std::istream* in;
+	size_t        size;
 
 public:
-	explicit IStreamDataSource(std::istream* data_stream) : in(data_stream) {}
+	explicit IStreamDataSource(std::istream* data_stream)
+			: in(data_stream),
+			  size(data_stream ? get_file_size(*data_stream) : 0) {}
 
 	uint32 peek() final {
 		return in->peek();
@@ -154,13 +159,19 @@ public:
 	}
 
 	size_t getSize() const final {
-		return get_file_size(*in);
+		return size ? size : get_file_size(*in);
 	}
 
 	size_t getPos() const final {
 		return in->tellg();
 	}
 
+	virtual bool fail() const final {
+		return in->fail();
+	}
+	virtual bool bad() const final {
+		return in->bad();
+	}
 	bool eof() const final {
 		in->get();
 		const bool ret = in->eof();
@@ -197,7 +208,8 @@ public:
 			auto& fin = *pFin;
 			fin.seekg(0);
 		}
-		in = pFin.get();
+		in   = pFin.get();
+		size = get_file_size(*in);
 	}
 };
 
@@ -209,11 +221,12 @@ protected:
 	const unsigned char* buf;
 	const unsigned char* buf_ptr;
 	std::size_t          size;
+	bool                 failed;
 
 public:
 	IBufferDataView(const void* data, size_t len)
 			: buf(static_cast<const unsigned char*>(data)), buf_ptr(buf),
-			  size(len) {
+			  size(len), failed(false) {
 		// data can be nullptr if len is also 0
 		assert(data != nullptr || len == 0);
 	}
@@ -227,6 +240,7 @@ public:
 
 	uint32 peek() final {
 		if (getAvail() < 1) {
+			failed = true;
 			return -1;
 		}
 		return *buf_ptr;
@@ -234,6 +248,7 @@ public:
 
 	uint32 read1() final {
 		if (getAvail() < 1) {
+			failed = true;
 			buf_ptr++;
 			return -1;
 		}
@@ -242,6 +257,7 @@ public:
 
 	uint16 read2() final {
 		if (getAvail() < 2) {
+			failed = true;
 			buf_ptr += 2;
 			return -1;
 		}
@@ -250,6 +266,7 @@ public:
 
 	uint16 read2high() final {
 		if (getAvail() < 2) {
+			failed = true;
 			buf_ptr += 2;
 			return -1;
 		}
@@ -258,6 +275,7 @@ public:
 
 	uint32 read4() final {
 		if (getAvail() < 4) {
+			failed = true;
 			buf_ptr += 4;
 			return -1;
 		}
@@ -266,6 +284,7 @@ public:
 
 	uint32 read4high() final {
 		if (getAvail() < 4) {
+			failed = true;
 			buf_ptr += 4;
 			return -1;
 		}
@@ -275,6 +294,9 @@ public:
 	void read(void* b, size_t len) final {
 		size_t available = getAvail();
 		if (available > 0) {
+			if (available != len) {
+				failed = true;
+			}
 			std::memcpy(b, buf_ptr, std::min<size_t>(available, len));
 		}
 		buf_ptr += len;
@@ -283,6 +305,9 @@ public:
 	void read(std::string& s, size_t len) final {
 		size_t available = getAvail();
 		if (available > 0) {
+			if (available != len) {
+				failed = true;
+			}
 			s = std::string(
 					reinterpret_cast<const char*>(buf_ptr),
 					std::min<size_t>(available, len));
@@ -312,13 +337,24 @@ public:
 		return buf_ptr;
 	}
 
+	void clear_error() final {
+		failed = false;
+	}
+
+	bool bad() const final {
+		return !buf || !size;
+	}
+
+	bool fail() const final {
+		return failed || bad();
+	}
+
 	bool eof() const final {
 		return buf_ptr >= buf + size;
 	}
 
 	bool good() const final {
-		// including !eof() here so behaviour matches IStreamDataSource
-		return (buf != nullptr) && (size != 0U) && !eof();
+		return !fail() && !eof();
 	}
 
 	void copy_to(ODataSource& dest) final;
