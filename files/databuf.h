@@ -294,7 +294,7 @@ public:
 	void read(void* b, size_t len) final {
 		size_t available = getAvail();
 		if (available > 0) {
-			if (available != len) {
+			if (available < len) {
 				failed = true;
 			}
 			std::memcpy(b, buf_ptr, std::min<size_t>(available, len));
@@ -305,7 +305,7 @@ public:
 	void read(std::string& s, size_t len) final {
 		size_t available = getAvail();
 		if (available > 0) {
-			if (available != len) {
+			if (available < len) {
 				failed = true;
 			}
 			s = std::string(
