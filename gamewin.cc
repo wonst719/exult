@@ -1243,7 +1243,12 @@ inline void Get_shape_location(
 void Game_window::get_shape_location(const Game_object* obj, int& x, int& y) {
 	Get_shape_location(obj->get_tile(), scrolltx, scrollty, x, y);
 	// Smooth scroll the avatar as well, if possible
+	const Actor* actor = obj->as_actor();
 	if (obj == get_camera_actor()) {
+		x += avposx_ld;
+		y += avposy_ld;
+	} else if (actor && actor->is_in_party() && lerping_enabled) {
+		// Apply the same lerping offset to party members
 		x += avposx_ld;
 		y += avposy_ld;
 	}
