@@ -1292,9 +1292,9 @@ inline void Compare_ranges(
 		}
 		// from1 == from2
 		else if (to1 < to2) {
-			cmp = -1;
-		} else if (to1 > to2) {
 			cmp = 1;
+		} else if (to1 > to2) {
+			cmp = -1;
 		} else {
 			cmp = 0;
 		}
