@@ -209,7 +209,7 @@ public:
 			fin.seekg(0);
 		}
 		in   = pFin.get();
-		size = get_file_size(*in);
+		if (in) size = get_file_size(*in);
 	}
 };
 
