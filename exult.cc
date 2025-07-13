@@ -1409,7 +1409,7 @@ static void Handle_events() {
 		// Lerping stuff...
 		const int lerp    = gwin->is_lerping_enabled();
 		bool      didlerp = false;
-		if (lerp) {
+		if (lerp && !gwin->get_moving_barge()) {
 			// Always repaint,
 			Actor* act    = gwin->get_camera_actor();
 			int    mswait = (act->get_frame_time() * lerp) / 100;
