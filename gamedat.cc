@@ -721,8 +721,8 @@ bool Game_window::get_saveinfo_zip(
 		return false;
 	}
 
-	const std::string filestr   = get_system_path(fname);
-	unzFile           unzipfile = unzOpen(filestr.c_str());
+	IFileDataSource ds(fname);
+	unzFile         unzipfile = unzOpen(&ds);
 	if (!unzipfile) {
 		return false;
 	}
@@ -861,8 +861,8 @@ bool Game_window::restore_gamedat_zip(
 	}
 	// Display red plasma during load...
 	setup_load_palette();
-	const std::string filestr   = get_system_path(fname);
-	unzFile           unzipfile = unzOpen(filestr.c_str());
+	IFileDataSource ds(fname);
+	unzFile         unzipfile = unzOpen(&ds);
 	if (!unzipfile) {
 		return false;
 	}

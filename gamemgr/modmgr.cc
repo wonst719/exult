@@ -271,23 +271,16 @@ ModInfo::ModInfo(
 #endif
 }
 
-/*
- *  Return string from IDENTITY in a savegame.
- *	Also needed by ES.
- *
- *  Output: identity if found.
- *      "" if error (or may throw exception).
- *      "*" if older savegame.
- */
-string get_game_identity(const char* savename, const string& title) {
+string get_game_identity(
+		const char* savename,IDataSource* ds, const string& title) {
 	char* game_identity = nullptr;
-	if (!U7exists(savename)) {
+	if (!ds) {
 		return title;
 	}
-	if (!Flex::is_flex(savename))
+	if (!Flex::is_flex(ds))
 #ifdef HAVE_ZIP_SUPPORT
 	{
-		unzFile unzipfile = unzOpen(get_system_path(savename).c_str());
+		unzFile unzipfile = unzOpen(ds);
 		if (unzipfile) {
 			// Find IDENTITY, ignoring case.
 			if (unzLocateFile(unzipfile, "identity", 2) != UNZ_OK) {
@@ -312,22 +305,22 @@ string get_game_identity(const char* savename, const string& title) {
 					game_identity[file_info.uncompressed_size] = 0;
 				}
 			}
+		unzClose(unzipfile);
 		}
 	}
 #else
 		return title.c_str();
 #endif
 	else {
-		IFileDataSource in(savename);
 
-		in.seek(0x54);    // Get to where file count sits.
-		const size_t numfiles = in.read4();
-		in.seek(0x80);    // Get to file info.
+		ds->seek(0x54);    // Get to where file count sits.
+		const size_t numfiles = ds->read4();
+		ds->seek(0x80);    // Get to file info.
 		// Read pos., length of each file.
 		auto finfo = std::make_unique<uint32[]>(2 * numfiles);
 		for (size_t i = 0; i < numfiles; i++) {
-			finfo[2 * i]     = in.read4();    // The position, then the length.
-			finfo[2 * i + 1] = in.read4();
+			finfo[2 * i]     = ds->read4();    // The position, then the length.
+			finfo[2 * i + 1] = ds->read4();
 		}
 		for (size_t i = 0; i < numfiles; i++) {    // Now read each file.
 			// Get file length.
@@ -336,12 +329,13 @@ string get_game_identity(const char* savename, const string& title) {
 				continue;
 			}
 			len -= 13;
-			in.seek(finfo[2 * i]);    // Get to it.
-			char fname[50];           // Set up name.
-			in.read(fname, 13);
+			ds->seek(finfo[2 * i]);    // Get to it.
+			char fname[14] = {0};      // Set up name.
+			ds->read(fname, 13);
 			if (!strcmp("identity", fname)) {
-				game_identity = new char[len];
-				in.read(game_identity, len);
+				game_identity = new char[len+1];
+				ds->read(game_identity, len);
+				game_identity[len] = 0;
 				break;
 			}
 		}
@@ -358,6 +352,26 @@ string get_game_identity(const char* savename, const string& title) {
 	delete[] game_identity;
 	return id;
 }
+
+/*
+ *  Return string from IDENTITY in a savegame.
+ *	Also needed by ES.
+ *
+ *  Output: identity if found.
+ *      "" if error (or may throw exception).
+ *      "*" if older savegame.
+ */
+string get_game_identity(const char* savename, const string& title) {
+	if (!U7exists(savename)) {
+		return title;
+	}
+
+	IFileDataSource ds(savename);
+
+	return get_game_identity(savename,&ds, title);
+}
+
+
 
 // ModManager: class that manages a game's modlist and paths
 ModManager::ModManager(
