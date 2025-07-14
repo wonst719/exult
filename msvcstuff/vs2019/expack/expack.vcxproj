@@ -234,6 +234,7 @@
     <ClCompile Include="..\..\..\files\Flat.cc" />
     <ClCompile Include="..\..\..\files\Flex.cc" />
     <ClCompile Include="..\..\..\files\IFF.cc" />
+    <ClCompile Include="..\..\..\files\listfiles.cc" />
     <ClCompile Include="..\..\..\files\Table.cc" />
     <ClCompile Include="..\..\..\files\U7file.cc" />
     <ClCompile Include="..\..\..\files\U7fileman.cc" />

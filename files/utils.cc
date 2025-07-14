@@ -28,7 +28,7 @@
 #include "exceptions.h"
 #include "fnames.h"
 #include "ignore_unused_variable_warning.h"
-
+#include "listfiles.h"
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -499,12 +499,18 @@ bool U7exists(const char* fname    // May be converted to upper-case.
 
 int U7mkdir(
 		const char* dirname,    // May be converted to upper-case.
-		int         mode) {
+		int         mode,
+		bool        parents) {
 	string name = get_system_path(dirname);
 	// remove any trailing slashes
 	const string::size_type pos = name.find_last_not_of('/');
 	if (pos != string::npos) {
 		name.resize(pos + 1);
+	}
+	if (parents)
+	{
+		std::string parent(get_directory_from_path(name));
+		if (!parent.empty() )U7mkdir(parent.c_str(), mode, true);
 	}
 #if defined(_WIN32) && defined(UNICODE)
 	const char* n     = name.c_str();
@@ -519,6 +525,42 @@ int U7mkdir(
 #else
 	return mkdir(name.c_str(), mode);    // Create dir. if not already there.
 #endif
+}
+
+int U7rmdir(const char* dirname, bool recursive) {
+	string name = get_system_path(dirname);
+
+	if (recursive)
+	{
+		// Get contents if recrusive
+		FileList files;
+		U7ListFiles(name + "/*", files, true);
+
+		for (auto filename : files)
+		{
+			// Get filename
+			std::string_view fn    = get_filename_from_path(filename);
+
+			// skip . and .. directory entries
+			if (fn == "." || fn == "..") {
+				continue;
+			}
+
+
+			// is it a directory? if so rmdir it recursively
+			auto* dir = U7opendir(filename.c_str());
+			if (dir) {
+				closedir(dir);
+				if (U7rmdir(filename.c_str(), true)) {
+					return -1;
+				}
+			} else {
+				std::remove(filename.c_str());
+			}
+		}
+	}
+
+	return rmdir(name.c_str());
 }
 
 #ifdef _WIN32
@@ -1134,4 +1176,35 @@ int Find_next_map(
 		}
 	}
 	return -1;
+}
+
+std::string_view get_filename_from_path(std::string_view path)
+{
+	// find last slash or backslash
+	auto             slash = path.find_last_of("\\/");
+	if (slash != std::string_view::npos) {
+		// return the substring after the slash
+		return path.substr(slash + 1);
+	}
+	// no slash so no directory so just return the input unchanged
+	return path;
+}
+
+std::string_view get_directory_from_path(std::string_view path) {
+	// find last slash or backslash
+	auto slash = path.find_last_of("\\/");
+	if (slash != std::string_view::npos) {
+		// return the substring before the slash
+		path = path.substr(0, slash);
+#ifdef _WIN32
+		// Do not return drive letters as the top level directory
+		if (path.size() == 2 && path[1] == ':') {
+			path = "";
+		}
+#endif
+
+		return path;
+	}
+	// no slash so no directory so return empty string
+	return "";
 }

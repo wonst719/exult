@@ -585,6 +585,7 @@ IPACK_OBJS:=\
 	files/U7fileman.o \
 	files/U7obj.o \
 	files/utils.o \
+	files/listfiles.o \
 	imagewin/ibuf8.o \
 	imagewin/imagebuf.o \
 	shapes/pngio.o \
@@ -647,6 +648,7 @@ EXULT_THUMB_OBJS:=\
 	files/U7fileman.o \
 	files/U7obj.o \
 	files/utils.o \
+	files/listfiles.o \
 	imagewin/ibuf8.o \
 	imagewin/imagebuf.o \
 	shapes/pngio.o \
@@ -691,7 +693,7 @@ UCXT_OBJS:=\
 ucxt$(EXEEXT) : $(UCXT_OBJS)
 	$(CXX) $(LDFLAGS) -o $(@) $(UCXT_OBJS) $(ZIP_LIBS)
 
-CONFREGRESS_OBJS:=$(CONF_OBJS) conf/xmain.o files/utils.o
+CONFREGRESS_OBJS:=$(CONF_OBJS) conf/xmain.o files/utils.o files/listfiles.o 
 
 confregress$(EXEEXT)  : $(CONFREGRESS_OBJS)
 	$(CXX) $(LDFLAGS) -o $(@) $(CONFREGRESS_OBJS)

@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gamewin.h"
 #include "istring.h"
 #include "listfiles.h"
+#include "utils.h"
 
 #include <algorithm>
 int         ConfigSetting_widget::bgstripe     = 0;
@@ -404,10 +405,7 @@ void ConfigSetting_widget::Definition::add_filenames_to_choices(
 
 		// get filename without path
 		if (strip_directory) {
-			auto slash = filename.find_last_of("\\/");
-			if (slash != std::string_view::npos) {
-				filename = filename.substr(slash + 1);
-			}
+			filename = get_filename_from_path(filename);
 		}
 
 		choice.label = choice.alternative = choice.value = filename;

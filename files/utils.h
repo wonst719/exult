@@ -33,6 +33,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #ifndef ATTR_PRINTF
 #	ifdef __GNUC__
@@ -161,7 +162,9 @@ inline bool U7exists(const std::string& fname) {
 	return U7exists(fname.c_str());
 }
 
-int U7mkdir(const char* dirname, int mode);
+int U7mkdir(const char* dirname, int mode=0755, bool parents=false);
+
+int U7rmdir(const char* dirname, bool recursive);
 
 #ifdef _WIN32
 void redirect_output(const char* prefix = "std");
@@ -198,5 +201,8 @@ int    fgepow2(uint32 n);
 char* newstrdup(const char* s);
 char* Get_mapped_name(const char* from, int num, char* to);
 int   Find_next_map(int start, int maxtry);
+
+std::string_view get_filename_from_path(std::string_view path);
+std::string_view get_directory_from_path(std::string_view path);
 
 #endif /* _UTILS_H_ */
