@@ -6,7 +6,7 @@ AppPublisherURL=https://exult.info/
 AppSupportURL=https://exult.info/
 AppUpdatesURL=https://exult.info/
 ; Setup exe version number:
-VersionInfoVersion=1.13.0
+VersionInfoVersion=1.13.1
 DisableDirPage=no
 DefaultDirName={autopf}\Exult
 DisableProgramGroupPage=no
