@@ -347,7 +347,7 @@ void WindowsInstallCrashHandler() {
 						true);
 			}
 		}
-		std::cerr << "Installing Windows crash Handler with " << value
+		std::cout << "Installing Windows crash Handler with " << value
 				  << " minidumps" << std::endl;
 		// Adds an Unhandled Exception Handler. This will replace the one
 		// installed by the runtime. This will catch all Win32 Exceptions that
@@ -366,7 +366,7 @@ void WindowsInstallCrashHandler() {
 		std::set_terminate(terminatehandler);
 
 	} else {
-		std::cerr << "Debugger Attached, Not Installing Windows crash Handler"
+		std::cout << "Debugger Attached, Not Installing Windows crash Handler"
 				  << std::endl;
 	}
 	// DoCrash();

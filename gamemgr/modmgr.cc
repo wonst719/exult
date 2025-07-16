@@ -451,7 +451,7 @@ ModManager::ModManager(
 	}
 
 	const string mainshp     = static_dir + "/mainshp.flx";
-	const uint32 crc         = crc32(mainshp.c_str());
+	const uint32 crc         = crc32(mainshp.c_str(), true);
 	auto         unknown_crc = [crc](const char* game) {
         cerr << "Warning: Unknown CRC for mainshp.flx: 0x" << std::hex << crc
              << std::dec << std::endl;
@@ -641,7 +641,7 @@ void ModManager::gather_mods() {
 		return;
 	}
 
-	U7ListFiles(pathname + "/*.cfg", filenames);
+	U7ListFiles(pathname + "/*.cfg", filenames, true);
 	const int num_mods = filenames.size();
 
 	if (num_mods > 0) {

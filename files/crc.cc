@@ -121,11 +121,13 @@ static inline uint32 crc32_internal(IDataSource&& in) {
 // 	return crc32_internal(IBufferDataView(s, len));
 // }
 
-uint32 crc32(const char* filename) {
+uint32 crc32(const char* filename, bool quiet) {
 	IFileDataSource crcfile(filename);
 	if (!crcfile.good()) {
-		std::cerr << "Could not open file '" << get_system_path(filename)
+		if (!quiet) {
+			std::cerr << "Could not open file '" << get_system_path(filename)
 				  << std::endl;
+		}
 		return 0;
 	}
 
