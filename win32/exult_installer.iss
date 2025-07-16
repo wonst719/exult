@@ -114,6 +114,8 @@ var
   PrevItemAChecked: Boolean;
   iBGVerified: Integer;
   iSIVerified: Integer;
+  iExultSupportsInstall: Integer;
+  sNewLine: String;
 
 // Get Paths from Exult.cfg
 procedure GetExultGamePaths(sExultDir, sBGPath, sSIPath: AnsiString; iMaxPath: Integer);
@@ -198,6 +200,44 @@ begin
   Result := True;
 end;
 
+
+function ExultExeSupportsInstall():Boolean;
+var 
+Version: Int64;
+major:word;
+minor:word;
+revision:word;
+build:word;
+
+begin
+// If exult is being installed it supports mod and data install
+if WizardIsComponentSelected('Exult') then begin
+  iExultSupportsInstall := 1;
+end
+else if iExultSupportsInstall = 0 then begin
+  iExultSupportsInstall := -1;
+  // Exult.exe with file Versions of 1.13.1.0 or newer support install
+  if GetPackedVersion(ExpandConstant('{app}\Exult.exe'), Version) then begin  
+    UnpackVersionComponents(version,major,minor,revision,build);
+    if ComparePackedVersion(Version,PackVersionComponents(1,13,1,0)) >= 0 then iExultSupportsInstall := 1;
+  end;
+
+  
+ end;
+ Result:= iExultSupportsInstall = 1;
+end;
+
+function isWine(): Boolean;
+begin
+Result := RegKeyExists(HKEY_LOCAL_MACHINE, 'Software\Wine');
+end;
+
+function ModDataInstallSupported():Boolean;
+begin
+Result := ExultExeSupportsInstall() or not IsWine();
+end;
+
+
 //
 // unzip function for our downloads
 //
@@ -211,19 +251,21 @@ var
   ZipFile: Variant;
   TargetFolder: Variant;
 begin
-  Shell := CreateOleObject('Shell.Application');
+  if not IsWine() then begin
+    Shell := CreateOleObject('Shell.Application');
 
-  ZipFile := Shell.NameSpace(ZipPath);
-  if VarIsClear(ZipFile) then
-    RaiseException(
-      Format('ZIP file "%s" does not exist or cannot be opened', [ZipPath]));
+    ZipFile := Shell.NameSpace(ZipPath);
+    if VarIsClear(ZipFile) then
+      RaiseException(
+        Format('ZIP file "%s" does not exist or cannot be opened', [ZipPath]));
 
-  TargetFolder := Shell.NameSpace(TargetPath);
-  if VarIsClear(TargetFolder) then
-    RaiseException(Format('Target path "%s" does not exist', [TargetPath]));
+    TargetFolder := Shell.NameSpace(TargetPath);
+    if VarIsClear(TargetFolder) then
+      RaiseException(Format('Target path "%s" does not exist', [TargetPath]));
 
-  TargetFolder.CopyHere(
-    ZipFile.Items, SHCONTCH_NOPROGRESSBOX or SHCONTCH_RESPONDYESTOALL);
+    TargetFolder.CopyHere(
+      ZipFile.Items, SHCONTCH_NOPROGRESSBOX or SHCONTCH_RESPONDYESTOALL);
+  end;
 end;
 
 procedure ExtractMe(src, target : AnsiString);
@@ -237,11 +279,95 @@ procedure DeleteModData(modDataDir,GameModPath :string);
 begin
   DelTree(GameModPath+'\'+modDataDir,True,True,True);
 end;
+
+procedure InstallMod(src, modname, modDataDir,GameModPath :string);
+var
+  Success: Boolean;
+  ResultCode: Integer;
+  Output: TExecOutput;
+  stdout:String;
+  stderr:String;
+  I: integer;
+begin
+    Log('InstallMod: '+modname);
+    Log('Zipfile: ' +ExpandConstant(src));
+  if ExultExeSupportsInstall() then begin
+    try
+      // Get the system configuration
+      Success := ExecAndCaptureOutput(ExpandConstant('{app}\Exult.exe'), '--installmod "'+ExpandConstant(src)+'"', '', SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode, Output);
+    except
+      Success := False;
+      Log(GetExceptionMessage);
+    end;
+
+    if Success then begin
+       //for I := Low(Output.StdOut) to High(Output.StdOut) do
+        //stdout := stdout + Output.StdOut[I]+sNewLine;
+       for I := Low(Output.StdErr) to High(Output.StdErr) do
+        stderr := stderr + Output.StdErr[I]+sNewLine;
+    
+    
+      Log('exult --installmod result code:' + IntToStr(ResultCode));
+      //Log(stdout);
+      Log(stderr);
+
+      if (ResultCode < 0) then begin
+        MsgBox('Error Installing mod '+modname+sNewLine+sNewLine+ stderr,mbError, MB_OK)
+      end;
+      
+    end;
+    
+  end else begin
+    DeleteModData(modDataDir,GameModPath);
+    ExtractMe(src,GameModPath);
+  end;
+end;
+
+procedure InstallData(src, name, dataDir :string);
+var
+  Success: Boolean;
+  ResultCode: Integer;
+  Output: TExecOutput;
+  stdout:String;
+  stderr:String;
+  I: integer;
+begin
+  Log('InstallData: '+name);
+  Log('Zipfile: ' +ExpandConstant(src));
+  if ExultExeSupportsInstall() then begin
+    try
+      // Get the system configuration
+      Success := ExecAndCaptureOutput(ExpandConstant('{app}\Exult.exe'), '--installdata "'+ExpandConstant(src)+'"', '', SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode, Output);
+    except
+      Success := False;
+      Log(GetExceptionMessage);
+    end;
+
+    if Success then begin
+       //for I := Low(Output.StdOut) to High(Output.StdOut) do
+       // stdout := stdout + Output.StdOut[I]+sNewLine;        
+       for I := Low(Output.StdErr) to High(Output.StdErr) do
+        stderr := stderr + Output.StdErr[I]+sNewLine;
+      Log('exult --installdata result code:' + IntToStr(ResultCode));
+      //Log(stdout);
+      Log(stderr);
+
+      if (ResultCode < 0) then begin
+      MsgBox('Error Installing '+name+sNewLine+sNewLine+ stderr,mbError, MB_OK)
+      end;
+    end;
+    
+  end else begin
+      ExtractMe(src,dataDir);
+  end;
+end;
 //
 // Create the Directory browsing page
 //
 procedure InitializeWizard;
 begin
+  iExultSupportsInstall := 0
+  sNewLine := Chr(10);
   DataDirPage := CreateCustomPage(wpSelectTasks,
     'Select Game Folders', 'Select the folders where Ultima VII and Ultima VII Part 2 are installed.');
 
@@ -358,7 +484,8 @@ begin
         Result := True;
 
 // Download page: Only download if the component was selected AND game paths are verified
-  end else if CurPageID = wpReady then begin
+// and we can install the downloads
+  end else if (CurPageID = wpReady) and ModDataInstallSupported() then begin
       DownloadPage.Clear;
       if PrevItemAChecked <> WizardIsComponentSelected('downloads\audio') then
         DownloadPage.Add('https://downloads.sourceforge.net/project/exult/exult-data/exult_audio.zip', 'exult_audio.zip','72e10efa8664a645470ceb99f6b749ce99c3d5fd1c8387c63640499cfcdbbc68');
@@ -440,37 +567,34 @@ begin
       ForceDirectories(sSImods);
 
     // Installing the downloads
-    if not RegKeyExists(HKEY_LOCAL_MACHINE, 'Software\Wine') then begin
+    if ModDataInstallSupported() then begin
       // again check if component was selected and game paths are verified
       if PrevItemAChecked <> WizardIsComponentSelected('downloads\audio') then
-        ExtractMe('{tmp}\exult_audio.zip','{app}\data\');
+        InstallData('{tmp}\exult_audio.zip','Exult Audio','{app}\data\');
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\keyring')) AND (iBGVerified = 1) then begin
         ExtractTemporaryFile('bgkeyring.zip');
-        DeleteModData('Keyring\data',sBGmods);
-        ExtractMe('{tmp}\bgkeyring.zip',sBGmods);
+        InstallMod('{tmp}\bgkeyring.zip','Keyring mod for The Black Gate','Keyring\data',sBGmods);
       end;
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\sfisland')) AND (iBGVerified = 1) then begin      
         ExtractTemporaryFile('islefaq.zip');
-        DeleteModData('islefaq\patch',sBGmods);
-        ExtractMe('{tmp}\islefaq.zip',sBGmods);
+        InstallMod('{tmp}\islefaq.zip','SourceForge Island mod for The Black Gate','islefaq\patch',sBGmods);
       end;
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\mods\sifixes')) AND (iSIVerified = 1) then begin
         ExtractTemporaryFile('sifixes.zip');
-        DeleteModData('sifixes\data',sSImods);
-        ExtractMe('{tmp}\sifixes.zip',sSImods);
+        InstallMod('{tmp}\sifixes.zip','SIFixes mod for Serpent Isle','sifixes\data',sSImods);
       end;
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\3rdpartymods\ultima6')) AND (iBGVerified = 1) then begin
-        DeleteModData('Ultima6v1.2\patch',sBGmods);
-        ExtractMe('{tmp}\Ultima6.zip',sBGmods);
+        InstallMod('{tmp}\Ultima6.zip','Ultima VI Remake for The Black Gate','Ultima6v1.2\patch',sBGmods);
       end;
       if (PrevItemAChecked <> WizardIsComponentSelected('downloads\3rdpartymods\glimmerscape')) AND (iSIVerified = 1) then begin      
-        DeleteModData('glimmerscape\data',sSImods);
-        ExtractMe('{tmp}\Glimmerscape_SI_mod_by_Donfrow.zip',sSImods);
+        InstallMod('{tmp}\Glimmerscape_SI_mod_by_Donfrow.zip','Glimmerscape by Donfrow for Serpent Isle','glimmerscape\data',sSImods);
+
       end;
 
     // Wine doesn't support the Windows built-in unzip method hence will crash at installing the downloads
+    // and the installed version of exult doesn't support --installmod or --instaldata
     end else if RegKeyExists(HKEY_LOCAL_MACHINE, 'Software\Wine') then begin
-      MsgBox('Warning: You seem to be using Wine. Unfortunately the installer cannnot install the extra downloads on Wine!', mbInformation, MB_OK);
+      MsgBox('Warning: You seem to be using Wine but didn''t Select to Install Exult. Unfortunately the installer cannnot install the extra mods on Wine without installing a newer version of Exult that is currently installed!', mbInformation, MB_OK);
     end;
   end;
 end;
