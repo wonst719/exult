@@ -30,6 +30,7 @@
 #include <vector>
 
 extern Configuration* config;
+class GameManager;
 
 class BaseGameInfo {
 protected:
@@ -174,6 +175,8 @@ public:
 		return compatible;
 	}
 
+	static bool is_mod_compatible(const std::string& modversion);
+
 	bool get_config_file(Configuration*& cfg, std::string& root) override {
 		cfg  = new Configuration(configfile, "modinfo");
 		root = "mod_info/";
@@ -267,6 +270,11 @@ public:
 		root = "config/disk/game/" + cfgname + "/";
 		return false;
 	}
+
+	static int InstallModZip(
+			std::string& zipfilename, ModManager* game_override,
+			GameManager* gamemanager);
+
 	const std::string& getIdentity() {
 		return static_identity;
 	}

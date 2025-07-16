@@ -71,6 +71,9 @@
 #include "utils.h"
 #include "verify.h"
 #include "version.h"
+#ifdef HAVE_ZIP_SUPPORT
+#	include "files/zip/unzip.h"
+#endif
 
 #include <cctype>
 #include <cmath>
@@ -207,6 +210,9 @@ static bool   arg_write_xml    = false;    // Write out game's config. as XML.
 static bool   arg_reset_video  = false;    // Resets the video setings.
 static bool   arg_verify_files = false;    // Verify a game's files.
 
+static string arg_installmod = {};
+static string arg_installdata = {};
+
 static bool                 dragging = false;    // Object or gump being moved.
 static bool                 dragged  = false;    // Flag for when obj. moved.
 static bool                 right_on_gump = false;    // Right clicked on gump?
@@ -285,6 +291,8 @@ int main(int argc, char* argv[]) {
 	parameters.declare("--write-xml", &arg_write_xml, true);
 	parameters.declare("--reset-video", &arg_reset_video, true);
 	parameters.declare("--verify-files", &arg_verify_files, true);
+	parameters.declare("--installdata", &arg_installdata);
+	parameters.declare("--installmod", &arg_installmod );
 #if defined _WIN32
 	bool portable = false;
 	parameters.declare("-p", &portable, true);
@@ -394,6 +402,17 @@ int main(int argc, char* argv[]) {
 			 << endl;
 		exit(1);
 	}
+#ifndef HAVE_ZIP_SUPPORT
+	} else if (!arg_installmod.empty() ) {
+		cerr << "Error: --installmod unsupported in this build of Exult. Zip file support not compiled in." << endl;
+		exit(-1);
+	}
+	} else if (!arg_installdata.empty() ) {
+		cerr << "Error: --installdata unsupported in this build of Exult. Zip file support not compiled in." << endl;
+		exit(-1);
+	}
+#endif
+	
 
 	if (arg_mapnum >= 0 && arg_buildmap < 0) {
 		cerr << "Error: '--mapnum' requires '--buildmap'!" << endl;
@@ -407,6 +426,16 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	} else if (arg_verify_files && arg_modname != "default") {
 		cerr << "Error: You cannot combine --mod with --verify-files!" << endl;
+		exit(1);
+	}
+	else if (arg_verify_files && (!arg_installmod.empty() || !arg_installdata.empty())) {
+		cerr << "Error: You cannot combine  --verify-files with --installmod or --installdata!" << endl;
+		exit(1);
+	} else if (!arg_installmod.empty() && !arg_installdata.empty()) {
+		cerr << "Error: You cannot combine  --installmod with --installdata!" << endl;
+		exit(1);
+	} else if (!arg_installmod.empty() && arg_modname != "default") {
+		cerr << "Error: You cannot combine  --installmod with --mod!" << endl;
 		exit(1);
 	}
 
@@ -803,7 +832,7 @@ static void Init() {
 	// Load games and mods; also stores system paths:
 	gamemanager = new GameManager();
 
-	if (arg_buildmap < 0 && !arg_verify_files) {
+	if (arg_buildmap < 0 && !arg_verify_files && arg_installdata.empty() && arg_installmod.empty()) {
 		string gr;
 		string gg;
 		string gb;
@@ -913,6 +942,61 @@ static void Init() {
 			// tries to return to the main menu:
 			arg_gamename = "default";
 		}
+#ifdef HAVE_ZIP_SUPPORT
+		if (!arg_installmod.empty()) {
+			if (newgame) {
+				newgame->setup_game_paths();
+			}
+			std::cout << "\nInstallmod: want to install mods in zip "
+					  << arg_installmod << std::endl;
+			int code = ModManager::InstallModZip(
+					arg_installmod, dynamic_cast<ModManager*>(newgame),gamemanager);
+
+			if (code < 0) {
+				std::cerr << "InstallMod: Failed to install one or more mods in zip file "
+						  << arg_installmod << std::endl
+						  << "Error code:" << code
+						  << std::endl;
+			} else {
+				std::cerr << "InstallMod: Sucesssfully installed all mods in zip \""
+							<< arg_installmod << "\""
+							<< std::endl;
+			}
+			
+
+			exit(code);
+		}
+		if (!arg_installdata.empty()) {
+			std::cout << "\nInstallData: want to extract zip \""
+					  << arg_installdata << "\" to <DATA>" << std::endl;
+
+			IFileDataSource ds(arg_installdata);
+			if (!ds.good()) {
+				std::cerr << "InstallData: Failed to open file \"" << arg_installdata
+						  << "\" for reading" << std::endl;
+				exit(-2);
+			}
+
+			unzFile unzipfile = unzOpen(&ds);
+			if (!unzipfile) {
+				std::cerr << "InstallData: Failed to open \"" << arg_installdata
+						  << "\" as a zip file" << std::endl;
+				exit(- 3);
+			}
+
+			int error = unzExtractAllToPath(unzipfile, "<DATA>");
+			if (error < 0) {
+				std::cerr << "InstallData: Failed to extract zip file \"" << arg_installdata
+						  << "\" to <DATA>. Error code:" << error << std::endl;			
+			} else {
+				std::cerr << "InstallData: Sucesssfully installed \""
+						  << arg_installdata
+						  << "\" into <DATA>" << std::endl;						
+			}
+
+			exit(error);
+		}
+#endif
 		if (!newgame) {
 			ExultMenu exult_menu(gwin);
 			newgame = exult_menu.run();
@@ -926,7 +1010,8 @@ static void Init() {
 		if (arg_verify_files) {
 			newgame->setup_game_paths();
 			exit(verify_files(newgame));
-		}
+		} 
+		
 #ifdef DEBUG
 		{
 			int ix;
