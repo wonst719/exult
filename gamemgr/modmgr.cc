@@ -422,11 +422,9 @@ ModManager::ModManager(
 	}
 	const string initgam_path(static_dir + "/initgame.dat");
 	found = U7exists(initgam_path);
-
-	string static_identity;
-	string id = get_game_identity(initgam_path.c_str(), cfgname);
+	
+	std::string id = static_identity = get_game_identity(initgam_path.c_str(), cfgname);
 	if (found) {
-		static_identity = get_game_identity(initgam_path.c_str(), cfgname);
 		if (static_identity != "ULTIMA7" && static_identity != "FORGE"
 			&& static_identity != "SERPENT ISLE"
 			&& static_identity != "SILVER SEED") {

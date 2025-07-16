@@ -208,6 +208,7 @@ public:
 class ModManager : public BaseGameInfo {
 protected:
 	std::vector<ModInfo> modlist;
+	std::string          static_identity;
 
 public:
 	ModManager(
@@ -265,6 +266,9 @@ public:
 		cfg  = config;
 		root = "config/disk/game/" + cfgname + "/";
 		return false;
+	}
+	const std::string& getIdentity() {
+		return static_identity;
 	}
 };
 
