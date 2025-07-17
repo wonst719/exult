@@ -1283,7 +1283,6 @@ int ZEXPORT unzExtractAllToPath(unzFile unzipfile, const char* destpath) {
 	outpath.reserve(max_filename);
 	if (error == UNZ_OK) {
 		do {
-
 			error = unzGetCurrentFileInfo(
 					unzipfile, &fileinfo, filepath,
 					nullptr, 0, nullptr, 0);
@@ -1360,7 +1359,6 @@ int ZEXPORT unzExtractAllToPath(unzFile unzipfile, const char* destpath) {
 					return UNZ_UNKNOWNFILEERROR;
 				}
 			}
-
 		} while ((error = unzGoToNextFile(unzipfile)) == UNZ_OK);
 		if (error == UNZ_END_OF_LIST_OF_FILE) {
 			error = UNZ_OK;

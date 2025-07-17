@@ -315,7 +315,6 @@ string get_game_identity(
 		return title.c_str();
 #endif
 	else {
-
 		ds->seek(0x54);    // Get to where file count sits.
 		const size_t numfiles = ds->read4();
 		ds->seek(0x80);    // Get to file info.
@@ -714,7 +713,6 @@ int ModManager::InstallModZip(
 		if (filepath.size() > 1 && filepath[filepath.size() - 1] == '/') {
 			dirs.insert(filepath.substr(0, filepath.size() - 1));
 		}
-
 	} while (unzGoToNextFile(unzipfile) == UNZ_OK);
 
 	if (cfgs.empty()) {
@@ -1079,7 +1077,6 @@ int ModManager::InstallModZip(
 						return -17;
 					}
 				}
-
 			} while ((error = unzGoToNextFile(unzipfile)) == UNZ_OK);
 			if (error != UNZ_END_OF_LIST_OF_FILE) {
 				std::cerr << "InstallMod: error extracting files "
