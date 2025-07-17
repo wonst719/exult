@@ -45,7 +45,7 @@
 #define USE_FLUIDSYNTH_MIDI 1
 
 /* Using FluidSynth */
-#define USING_FLUIDSYNTH 1
+#define USING_FLUIDLITE 1
 
 /* Enable mt32emu */
 #define USE_MT32EMU_MIDI
