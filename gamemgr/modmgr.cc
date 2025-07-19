@@ -189,14 +189,36 @@ ModInfo::ModInfo(
 		force_skip_splash = false;
 	}
 
-	config_path = "mod_info/clean_menu";
-	string clean_menu_str;
-	has_clean_menu = modconfig.key_exists(config_path);
-	if (has_clean_menu) {
-		modconfig.value(config_path, clean_menu_str);
-		clean_menu = (clean_menu_str == "yes" || clean_menu_str == "true");
+	config_path = "mod_info/menu_endgame";
+	string menu_endgame_str;
+	has_menu_endgame = modconfig.key_exists(config_path);
+	if (has_menu_endgame) {
+		modconfig.value(config_path, menu_endgame_str);
+		menu_endgame
+				= (menu_endgame_str == "yes" || menu_endgame_str == "true");
 	} else {
-		clean_menu = false;
+		menu_endgame = false;
+	}
+
+	config_path = "mod_info/menu_credits";
+	string menu_credits_str;
+	has_menu_credits = modconfig.key_exists(config_path);
+	if (has_menu_credits) {
+		modconfig.value(config_path, menu_credits_str);
+		menu_credits
+				= (menu_credits_str == "yes" || menu_credits_str == "true");
+	} else {
+		menu_credits = false;
+	}
+
+	config_path = "mod_info/menu_quotes";
+	string menu_quotes_str;
+	has_menu_quotes = modconfig.key_exists(config_path);
+	if (has_menu_quotes) {
+		modconfig.value(config_path, menu_quotes_str);
+		menu_quotes = (menu_quotes_str == "yes" || menu_quotes_str == "true");
+	} else {
+		menu_quotes = false;
 	}
 
 	config_path = "mod_info/force_digital_music";
@@ -226,7 +248,11 @@ ModInfo::ModInfo(
 		 << " Force Skip Splash to: " << (force_skip_splash ? "yes" : "no")
 		 << endl;
 	cout << "setting " << cfgname
-		 << " Clean Menu to: " << (clean_menu ? "yes" : "no") << endl;
+		 << " Endgame Menu to: " << (menu_endgame ? "yes" : "no") << endl;
+	cout << "setting " << cfgname
+		 << " Credits Menu to: " << (menu_credits ? "yes" : "no") << endl;
+	cout << "setting " << cfgname
+		 << " Quotes Menu to: " << (menu_quotes ? "yes" : "no") << endl;
 	cout << "forcing " << cfgname
 		 << " Digital Music to: " << (force_digital_music ? "yes" : "no")
 		 << endl;
@@ -422,8 +448,9 @@ ModManager::ModManager(
 	}
 	const string initgam_path(static_dir + "/initgame.dat");
 	found = U7exists(initgam_path);
-	
-	std::string id = static_identity = get_game_identity(initgam_path.c_str(), cfgname);
+
+	std::string id = static_identity
+			= get_game_identity(initgam_path.c_str(), cfgname);
 	if (found) {
 		if (static_identity != "ULTIMA7" && static_identity != "FORGE"
 			&& static_identity != "SERPENT ISLE"
@@ -847,7 +874,8 @@ int ModManager::InstallModZip(
 
 				IBufferDataView ds(buffer.get(), fileinfo.uncompressed_size);
 
-				identity = get_game_identity(initgame_path.c_str(), &ds, identity);
+				identity = get_game_identity(
+						initgame_path.c_str(), &ds, identity);
 			}
 		}
 

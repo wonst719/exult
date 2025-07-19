@@ -161,8 +161,12 @@ protected:
 	bool        compatible;
 	bool        force_skip_splash;
 	bool        has_force_skip_splash;
-	bool        clean_menu;
-	bool        has_clean_menu;
+	bool        menu_endgame;
+	bool        has_menu_endgame;
+	bool        menu_credits;
+	bool        has_menu_credits;
+	bool        menu_quotes;
+	bool        has_menu_quotes;
 	bool        force_digital_music;
 	bool        has_force_digital_music;
 
@@ -191,12 +195,28 @@ public:
 		return has_force_skip_splash;
 	}
 
-	bool get_clean_menu() const {
-		return clean_menu;
+	bool get_menu_endgame() const {
+		return menu_endgame;
 	}
 
-	bool has_clean_menu_set() const {
-		return has_clean_menu;
+	bool has_menu_endgame_set() const {
+		return has_menu_endgame;
+	}
+
+	bool get_menu_credits() const {
+		return menu_credits;
+	}
+
+	bool has_menu_credits_set() const {
+		return has_menu_credits;
+	}
+
+	bool get_menu_quotes() const {
+		return menu_quotes;
+	}
+
+	bool has_menu_quotes_set() const {
+		return has_menu_quotes;
 	}
 
 	bool get_force_digital_music() const {

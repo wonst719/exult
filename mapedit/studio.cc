@@ -1302,12 +1302,14 @@ C_EXPORT void on_gameselect_ok_clicked(
 		const string  cfgfile = pathname + ".cfg";
 		Configuration modcfg(cfgfile, "modinfo");
 		modcfg.set("mod_info/display_string", modmenustr, false);
-		modcfg.set("mod_info/required_version", VERSION, false);		
+		modcfg.set("mod_info/required_version", VERSION, false);
 		modcfg.set("mod_info/game_identity", game->getIdentity(), false);
 		modcfg.set("mod_info/patch", "__MOD_PATH__/patch", false);
 		modcfg.set("mod_info/source", "__MOD_PATH__/patch", false);
 		modcfg.set("mod_info/skip_splash", "no", false);
-		modcfg.set("mod_info/clean_menu", "no", false);
+		modcfg.set("mod_info/menu_endgame", "yes", false);
+		modcfg.set("mod_info/menu_credits", "yes", false);
+		modcfg.set("mod_info/menu_quotes", "yes", false);
 		modcfg.set("mod_info/force_digital_music", "no", true);
 
 		// Add mod to base game's list:

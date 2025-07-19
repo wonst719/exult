@@ -423,7 +423,9 @@ bool Game::show_menu(bool skip) {
 	MenuList* menu = nullptr;
 	// Check for mod override
 	bool force_skip_splash = false;
-	bool clean_menu        = false;
+	bool menu_credits      = true;
+	bool menu_quotes       = true;
+	bool menu_endgame      = true;
 	if (gamemanager) {
 		ModManager* current_game_mgr
 				= gamemanager->find_game(Game::get_gametitle());
@@ -431,11 +433,19 @@ bool Game::show_menu(bool skip) {
 			BaseGameInfo* current_mod
 					= current_game_mgr->get_mod(Game::get_modtitle(), false);
 			ModInfo* mod_info = dynamic_cast<ModInfo*>(current_mod);
-			if (mod_info && mod_info->has_force_skip_splash_set()) {
-				force_skip_splash = mod_info->get_force_skip_splash();
-			}
-			if (mod_info && mod_info->has_clean_menu_set()) {
-				clean_menu = mod_info->get_clean_menu();
+			if (mod_info) {
+				if (mod_info->has_force_skip_splash_set()) {
+					force_skip_splash = mod_info->get_force_skip_splash();
+				}
+				if (mod_info->has_menu_credits_set()) {
+					menu_credits = mod_info->get_menu_credits();
+				}
+				if (mod_info->has_menu_quotes_set()) {
+					menu_quotes = mod_info->get_menu_quotes();
+				}
+				if (mod_info->has_menu_endgame_set()) {
+					menu_endgame = mod_info->get_menu_endgame();
+				}
 			}
 		}
 	}
@@ -463,9 +473,10 @@ bool Game::show_menu(bool skip) {
 					skip_option = true;
 				}
 
-				// Skip 0x04 (View Introduction), 0x06 (Credits), 0x11 (Quotes),
-				// 0x12 (End Game) if mods enable clean_menu
-				if (clean_menu && (i == 0 || i == 3 || i == 4 || i == 5)) {
+				// Skip 0x06 (Credits), 0x11 (Quotes), 0x12 (End Game)
+				// if mods disable these in their cfg
+				if ((!menu_credits && i == 3) || (!menu_quotes && i == 4)
+					|| (!menu_endgame && i == 5)) {
 					skip_option = true;
 				}
 
