@@ -32,6 +32,7 @@
 #include "actors.h" /* For Dead_body, which should be moved. */
 #include "animate.h"
 #include "barge.h"
+#include "cheat.h"
 #include "chunks.h"
 #include "databuf.h"
 #include "effects.h"
@@ -78,6 +79,7 @@ std::unique_ptr<std::istream> Game_map::chunks;
 bool                          Game_map::v2_chunks               = false;
 bool                          Game_map::read_all_terrain        = false;
 bool                          Game_map::chunk_terrains_modified = false;
+bool                          Game_map::map_modified            = false;
 
 const int   V2_CHUNK_HDR_SIZE = 4 + 4 + 2;    // 0xffff, "exlt", vers.
 static char v2hdr[]
@@ -132,7 +134,7 @@ Chunk_terrain* Game_map::read_terrain(
  */
 
 Game_map::Game_map(int n)
-		: num(n), didinit(false), map_modified(false), caching_out(0),
+		: num(n), didinit(false), caching_out(0),
 		  map_patches(std::make_unique<Map_patch_collection>()) {}
 
 /*
@@ -1381,6 +1383,40 @@ bool Game_map::insert_terrain(
 ) {
 	const int ntiles = c_tiles_per_chunk * c_tiles_per_chunk;
 	const int nbytes = v2_chunks ? 3 : 2;
+	if (dup && tnum == -2) {
+		const int selected = cheat.get_edit_chunknum();
+		if (selected < 0
+			|| selected >= static_cast<int>(chunk_terrains->size())) {
+			return false;    // Invalid #.
+		}
+		get_all_terrain();                // Need all of 'u7chunks' read in.
+		unsigned char buf[ntiles * 3];    // Set up buffer with shape #'s.
+		// Want to duplicate the selected terrain.
+		Chunk_terrain* ter  = (*chunk_terrains)[selected];
+		unsigned char* data = &buf[0];
+		for (int ty = 0; ty < c_tiles_per_chunk; ty++) {
+			for (int tx = 0; tx < c_tiles_per_chunk; tx++) {
+				const ShapeID id    = ter->get_flat(tx, ty);
+				const int     shnum = id.get_shapenum();
+				const int     frnum = id.get_framenum();
+				if (v2_chunks) {
+					Write1(data, shnum & 0xff);
+					Write1(data, (shnum >> 8) & 0xff);
+					Write1(data, frnum);
+				} else {
+					Write1(data, id.get_shapenum() & 0xff);
+					Write1(data, ((id.get_shapenum() >> 8) & 3)
+										 | (id.get_framenum() << 2));
+				}
+			}
+		}
+		auto* new_terrain = new Chunk_terrain(&buf[0], v2_chunks);
+		new_terrain->set_modified();
+		chunk_terrains->push_back(new_terrain);
+		chunk_terrains_modified = true;
+		map_modified            = true;
+		return true;
+	}
 	if (tnum < -1 || tnum >= static_cast<int>(chunk_terrains->size())) {
 		return false;    // Invalid #.
 	}

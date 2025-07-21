@@ -999,8 +999,9 @@ void Chunk_chooser::insert(bool dup) {
 		return;    // Shouldn't happen.
 	}
 	unsigned char  data[Exult_server::maxlength];
-	unsigned char* ptr  = &data[0];
-	const int      tnum = selected >= 0 ? info[selected].num : -1;
+	unsigned char* ptr = &data[0];
+	// Send special value -2 to indicate "append duplicate to end"
+	const int tnum = -2;
 	little_endian::Write2(ptr, tnum);
 	Write1(ptr, dup ? 1 : 0);
 	ExultStudio* studio = ExultStudio::get_instance();
@@ -1033,8 +1034,9 @@ void Chunk_chooser::insert_response(const unsigned char* data, int datalen) {
 	} else {
 		// Insert in our list.
 		auto* data = new unsigned char[chunksz];
-		if (dup && tnum >= 0 && tnum < num_chunks && chunklist[tnum]) {
-			memcpy(data, chunklist[tnum], chunksz);
+		if (dup && selected >= 0 && selected < num_chunks
+			&& chunklist[info[selected].num]) {
+			memcpy(data, chunklist[info[selected].num], chunksz);
 		} else {
 			memset(data, 0, chunksz);
 		}
@@ -1044,7 +1046,9 @@ void Chunk_chooser::insert_response(const unsigned char* data, int datalen) {
 		// if (tnum >= 0 && tnum < num_chunks - 1) {
 		//	chunklist.insert(chunklist.begin() + tnum + 1, data);
 		// } else    // If -1, append to end.
-		chunklist.push_back(data);
+		if (tnum >= -2 && tnum < num_chunks - 1) {
+			chunklist.push_back(data);
+		}
 
 		update_num_chunks(num_chunks + 1);
 		render();

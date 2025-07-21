@@ -64,7 +64,7 @@ class Game_map {
 	static bool read_all_terrain;    // True if we've read them all.
 	static bool chunk_terrains_modified;
 	bool        didinit;
-	bool        map_modified;    // True if any map changes from
+	static bool map_modified;    // True if any map changes from
 	//   map-editing.
 	// Chunk_terrain index for each chunk:
 	short terrain_map[c_num_chunks][c_num_chunks];
@@ -117,7 +117,7 @@ public:
 		map_modified = true;
 	}
 
-	bool was_map_modified() const {
+	static bool was_map_modified() {
 		return map_modified;
 	}
 
