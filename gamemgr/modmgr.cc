@@ -468,11 +468,25 @@ ModManager::ModManager(
 				 << endl;
 		}
 	} else if (U7exists(game_path)) {    // New game still under development.
-		static_identity = "DEVEL GAME";
-		if (!silent) {
-			cout << "found game with identity '" << static_identity << "'"
-				 << endl;
+		if (cfgname != CFG_BG_NAME && cfgname != CFG_FOV_NAME
+				&& cfgname != CFG_SIB_NAME && cfgname != CFG_SI_NAME
+				&& cfgname != CFG_SS_NAME ) {
+			static_identity = "DEVEL GAME";
+			if (!silent) {
+				cout << "found game with identity '" << static_identity << "'"
+					 << endl;
+			}
+		} else {
+			if (!silent) {
+				cout << "but it wasn't there." << endl;
+			}
+			return;
 		}
+	} else {
+		if (!silent) {
+			cout << "but it wasn't there." << endl;
+		}
+		return;
 	}
 
 	const string mainshp     = static_dir + "/mainshp.flx";
