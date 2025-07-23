@@ -1653,6 +1653,135 @@ void ExultStudio::set_game_path(const string& gamename, const string& modname) {
 	connect_to_server();         // Connect to server with 'gamedat'.
 }
 
+/*
+ *  Update chunk groups for a new chunk.
+ */
+void ExultStudio::update_chunk_groups(int tnum) {
+	if (!files) {
+		return;
+	}
+
+	// Iterate through all files
+	const int cnt = files->size();
+	for (int i = 0; i < cnt; i++) {
+		Shape_file_info*  info  = (*files)[i];
+		Shape_group_file* gfile = info->get_groups();
+		if (!gfile) {
+			continue;
+		}
+
+		// Iterate through all groups in this file
+		const int grp_cnt = gfile->size();
+		for (int j = 0; j < grp_cnt; j++) {
+			Shape_group* grp      = gfile->get(j);
+			bool         modified = false;
+
+			// Iterate through all entries in the group
+			for (int k = 0; k < grp->size(); k++) {
+				int& entry = (*grp)[k];
+				if (entry > tnum) {
+					entry++;    // Shift up by one
+					modified = true;
+				}
+			}
+
+			if (modified) {
+				// Re-add the group to mark it as modified
+				gfile->set_modified();
+			}
+		}
+	}
+}
+
+void ExultStudio::update_chunk_groups_for_deletion(int tnum) {
+	if (!files) {
+		return;
+	}
+
+	// Iterate through all files
+	const int cnt = files->size();
+	for (int i = 0; i < cnt; i++) {
+		Shape_file_info*  info  = (*files)[i];
+		Shape_group_file* gfile = info->get_groups();
+		if (!gfile) {
+			continue;
+		}
+
+		// Iterate through all groups in this file
+		const int grp_cnt = gfile->size();
+		for (int j = 0; j < grp_cnt; j++) {
+			Shape_group* grp      = gfile->get(j);
+			bool         modified = false;
+
+			// Process all entries in the group
+			int k = 0;
+			while (k < grp->size()) {
+				int entry = (*grp)[k];
+				if (entry == tnum) {
+					// Remove the entry using del() method in Shape_group
+					grp->del(k);
+					modified = true;
+					// Don't increment k since we removed an element
+				} else if (entry > tnum) {
+					// Adjust entry value
+					(*grp)[k] = entry - 1;
+					modified  = true;
+					k++;
+				} else {
+					k++;
+				}
+			}
+
+			if (modified) {
+				// Re-add the group to mark it as modified
+				gfile->set_modified();
+			}
+		}
+	}
+}
+
+void ExultStudio::update_chunk_groups_for_swap(int tnum) {
+	if (!files) {
+		return;
+	}
+
+	// Iterate through all files
+	const int cnt = files->size();
+	for (int i = 0; i < cnt; i++) {
+		Shape_file_info*  info  = (*files)[i];
+		Shape_group_file* gfile = info->get_groups();
+		if (!gfile) {
+			continue;
+		}
+
+		// Iterate through all groups in this file
+		const int grp_cnt = gfile->size();
+		for (int j = 0; j < grp_cnt; j++) {
+			Shape_group* grp      = gfile->get(j);
+			bool         modified = false;
+
+			// Process all entries in the group
+			for (int k = 0; k < grp->size(); k++) {
+				int entry = (*grp)[k];
+				if (entry == tnum) {
+					// This entry should be tnum+1
+					(*grp)[k] = tnum + 1;
+					modified  = true;
+				} else if (entry == tnum + 1) {
+					// This entry should be tnum
+					(*grp)[k] = tnum;
+					modified  = true;
+				}
+			}
+
+			if (modified) {
+				// Re-add the group to mark it as modified
+				gfile->set_modified();
+			}
+		}
+	}
+}
+
 /*  Note:  Args after extcnt are in (name, file_type) pairs.    */
 void add_to_tree(
 		GtkTreeStore* model, const char* folderName, const char* files,

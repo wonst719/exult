@@ -5,7 +5,7 @@
  **/
 
 /*
-Copyright (C) 2001-2022 The Exult Team
+Copyright (C) 2001-2025 The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -1040,12 +1040,15 @@ void Chunk_chooser::insert_response(const unsigned char* data, int datalen) {
 		} else {
 			memset(chunk_data, 0, chunksz);
 		}
-		// FIXME - for now only append to the end which prevents ordering errors
-		// in chunk groups.
-		// Ideally this should update existing chunk groups as well.
-		// if (tnum >= 0 && tnum < num_chunks - 1) {
-		//	chunklist.insert(chunklist.begin() + tnum + 1, data);
-		// } else    // If -1, append to end.
+		// Update chunk groups
+		ExultStudio* studio = ExultStudio::get_instance();
+		if (tnum >= 0) {
+			// Normal insert in the middle
+			studio->update_chunk_groups(tnum);
+		} else if (tnum == -2) {
+			studio->update_chunk_groups(num_chunks - 1);
+		}
+
 		if (tnum >= -2 && tnum < num_chunks - 1) {
 			chunklist.push_back(chunk_data);
 		} else {
@@ -1068,7 +1071,8 @@ void Chunk_chooser::delete_response(const unsigned char* data, int datalen) {
 	if (!*ptr) {
 		EStudio::Alert("Terrain delete failed.");
 	} else {
-		// Remove from our list.
+		ExultStudio* studio = ExultStudio::get_instance();
+		studio->update_chunk_groups_for_deletion(tnum);
 		delete chunklist[tnum];
 		chunklist.erase(chunklist.begin() + tnum);
 		update_num_chunks(num_chunks - 1);
@@ -1112,6 +1116,11 @@ void Chunk_chooser::swap_response(const unsigned char* data, int datalen) {
 		unsigned char* tmp  = get_chunk(tnum);
 		chunklist[tnum]     = get_chunk(tnum + 1);
 		chunklist[tnum + 1] = tmp;
+
+		// Update chunk groups when swapping chunks
+		ExultStudio* studio = ExultStudio::get_instance();
+		studio->update_chunk_groups_for_swap(tnum);
+
 		if (selected >= 0) {    // Update selected.
 			if (info[selected].num == tnum) {
 				// Moving downwards.

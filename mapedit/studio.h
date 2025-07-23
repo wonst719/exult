@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2000-2022 The Exult Team
+Copyright (C) 2000-2025 The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -321,6 +321,9 @@ public:
 	void save_groups();
 	bool groups_modified();
 	void update_group_windows(Shape_group* grp);
+	void update_chunk_groups(int tnum);
+	void update_chunk_groups_for_deletion(int tnum);
+	void update_chunk_groups_for_swap(int tnum);
 	// Objects:
 	void open_obj_window(unsigned char* data, int datalen);
 	void close_obj_window();

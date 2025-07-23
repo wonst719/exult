@@ -8,7 +8,7 @@
 #define INCL_SHAPEGROUP 1
 
 /*
-Copyright (C) 2002-2022 The Exult Team
+Copyright (C) 2002-2025 The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -40,6 +40,8 @@ class Shape_group : std::vector<int> {    // Not public on purpose.
 	int               builtin;            // -1 if not builtin, 0-14 if
 										  //  a Shape_info::Shape_class, 100-103
 										  //  if Special_builtin.
+	bool modified;
+
 public:
 	friend class Shape_group_file;
 	Shape_group(const char* nm, Shape_group_file* f, int built = -1);
@@ -73,6 +75,10 @@ public:
 	void swap(int i);    // Swap entries i and i+1.
 	void add(int id);    // Add ID, checking for duplicate 1st.
 	void write(ODataSource& out);
+
+	void set_modified() {
+		modified = true;
+	}
 
 	enum Special_builtin {
 		first_group = 20,
@@ -142,6 +148,10 @@ public:
 
 	void insert(Shape_group* grp, int i) {
 		groups.insert(groups.begin() + i, grp);
+		modified = true;
+	}
+
+	void set_modified() {
 		modified = true;
 	}
 
