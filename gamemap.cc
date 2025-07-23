@@ -1416,6 +1416,18 @@ bool Game_map::insert_terrain(
 		chunk_terrains_modified = true;
 		map_modified            = true;
 		return true;
+	} else if (!dup && tnum == -2) {
+		// Special case for creating an empty chunk and appending it
+		get_all_terrain();
+		unsigned char buf[ntiles * 3];
+		memset(buf, 0, sizeof(buf));    // Create an empty chunk
+
+		auto* new_terrain = new Chunk_terrain(&buf[0], v2_chunks);
+		new_terrain->set_modified();
+		chunk_terrains->push_back(new_terrain);
+		chunk_terrains_modified = true;
+		map_modified            = true;
+		return true;
 	}
 	if (tnum < -1 || tnum >= static_cast<int>(chunk_terrains->size())) {
 		return false;    // Invalid #.
