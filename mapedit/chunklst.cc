@@ -1033,12 +1033,12 @@ void Chunk_chooser::insert_response(const unsigned char* data, int datalen) {
 		EStudio::Alert("Terrain insert failed.");
 	} else {
 		// Insert in our list.
-		auto* data = new unsigned char[chunksz];
+		auto* chunk_data = new unsigned char[chunksz];
 		if (dup && selected >= 0 && selected < num_chunks
 			&& chunklist[info[selected].num]) {
-			memcpy(data, chunklist[info[selected].num], chunksz);
+			memcpy(chunk_data, chunklist[info[selected].num], chunksz);
 		} else {
-			memset(data, 0, chunksz);
+			memset(chunk_data, 0, chunksz);
 		}
 		// FIXME - for now only append to the end which prevents ordering errors
 		// in chunk groups.
@@ -1047,7 +1047,9 @@ void Chunk_chooser::insert_response(const unsigned char* data, int datalen) {
 		//	chunklist.insert(chunklist.begin() + tnum + 1, data);
 		// } else    // If -1, append to end.
 		if (tnum >= -2 && tnum < num_chunks - 1) {
-			chunklist.push_back(data);
+			chunklist.push_back(chunk_data);
+		} else {
+			delete[] chunk_data;
 		}
 
 		update_num_chunks(num_chunks + 1);
