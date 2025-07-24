@@ -56,7 +56,7 @@ Shape_group::Shape_group(
 		Shape_group_file* f,
 		int               built    // Builtin type.
 		)
-		: name(nm), file(f), builtin(built) {
+		: name(nm), file(f), builtin(built), modified(false) {
 	if (builtin == -1) {
 		return;
 	}
