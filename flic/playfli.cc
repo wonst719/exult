@@ -360,7 +360,12 @@ int playfli::play(
 			SDL_Delay(ticks - SDL_GetTicks());
 		}
 
-		ticks += fli_speed * 10;
+		if (fli_magic == 0xaf11) {
+			ticks += fli_speed
+					 * 10;         // FLC format: convert from 1/70th second
+		} else {                   // fli_magic == 0xaf12
+			ticks += fli_speed;    // FLI format: already in milliseconds
+		}
 
 		win->FillGuardband();
 		if (!dont_show && !skip_frame) {
