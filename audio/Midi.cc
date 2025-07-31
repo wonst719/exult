@@ -1043,13 +1043,18 @@ bool MyMidiPlayer::ogg_play_track(
 		return false;
 	}
 
-	// Load entire oggfile into memory
-	ds = ds->makeSource(ds->getSize());
+	// Load entire oggfile into memory but only if it's not already in memory
+	// Using IBufferDataSource::makeSource like this replacing the original
+	// datasource is unsafe
+	ds->seek(0);
+	if (!dynamic_cast<IBufferDataSource*>(ds.get())) {
+		ds = ds->makeSource(ds->getSize());
+	}
 
 	if (!Pentagram::OggAudioSample::isThis(ds.get())) {
 		std::cerr << "Failed to play OGG Music Track " << ogg_name
 				  << ". Reason: "
-				  << "Unknown" << std::endl;
+				  << "Not readable as an an Ogg" << std::endl;
 		oggfailed = ogg_name;
 		return false;
 	}
