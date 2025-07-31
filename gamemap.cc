@@ -473,7 +473,7 @@ void Game_map::write_chunk_terrains() {
 			throw file_write_exception(U7CHUNKS);
 		}
 		auto& ochunks    = *pOchunks;
-		v2_chunks        = New_shapes();
+		v2_chunks        |= New_shapes();
 		const int nbytes = v2_chunks ? 3 : 2;
 		if (v2_chunks) {
 			ochunks.write(v2hdr, sizeof(v2hdr));
