@@ -32,7 +32,10 @@ class Font;
 
 struct FlicCommand {
 	int index;
-	int delay = 0;
+	int delay;
+	int fade_in;
+	int fade_out;
+	int end_delay;
 };
 
 struct AudioCommand {

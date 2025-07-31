@@ -96,7 +96,7 @@ namespace {
 		}
 		return result;
 	}
-}
+}    // namespace
 
 ScenePlayer::ScenePlayer(
 		Game_window* gw, const string& scene_name, bool use_subtitles,
@@ -190,9 +190,13 @@ bool ScenePlayer::parse_scene_section(
 		const string& type_str = parts[0];
 
 		if (type_str == "flic") {
-			int index = safe_stoi(parts, 1);
-			int delay = parts.size() > 2 ? safe_stoi(parts, 2) : 0;
-			commands.emplace_back(FlicCommand{index, delay});
+			int index     = safe_stoi(parts, 1);
+			int delay     = parts.size() > 2 ? safe_stoi(parts, 2) : 0;
+			int fade_in   = parts.size() > 3 ? safe_stoi(parts, 3) : 0;
+			int fade_out  = parts.size() > 4 ? safe_stoi(parts, 4) : 0;
+			int end_delay = parts.size() > 5 ? safe_stoi(parts, 5) : 0;
+			commands.emplace_back(
+					FlicCommand{index, delay, fade_in, fade_out, end_delay});
 		} else if (type_str == "subtitle") {
 			if (parts.size() < 6) {
 				continue;
@@ -403,6 +407,10 @@ void ScenePlayer::play_flic_with_audio(
 		}
 	}
 
+	if (!flic_cmd) {
+		return;
+	}
+
 	Audio* audio = Audio::get_ptr();
 	if (!audio) {
 		return;
@@ -433,7 +441,7 @@ void ScenePlayer::play_flic_with_audio(
 	}
 
 	// Map to track audio stop times
-	std::map<int, uint32> audio_stop_times;    // <command_index, stop_time_ms>
+	std::map<int, uint32> audio_stop_times;
 
 	// Process commands to find those with stop times
 	for (size_t i = 0; i < commands.size(); ++i) {
@@ -490,6 +498,41 @@ void ScenePlayer::play_flic_with_audio(
 		uint32 section_start_time
 				= SDL_GetTicks();    // Track section's start time
 		uint32 next_frame_time = section_start_time;
+		bool   user_skipped    = false;
+		if (flic_cmd && flic_cmd->fade_in > 0) {
+			const int fade_steps = 20;
+			const int step_delay = flic_cmd->fade_in / fade_steps;
+
+			// Repeat the first frame with increasing brightness
+			for (int step = 0; step <= fade_steps; step++) {
+				int fade_brightness = (step * 100) / fade_steps;
+
+				fli.play(
+						gwin->get_win(), 0, 0, SDL_GetTicks(), fade_brightness);
+
+				gwin->get_win()->ShowFillGuardBand();
+
+				SDL_Delay(step_delay);
+
+				SkipAction action = check_break();
+				switch (action) {
+				case SkipAction::EXIT_SCENE:
+					user_skipped = true;
+					throw UserSkipException();
+
+				case SkipAction::NEXT_SECTION:
+					user_skipped = true;
+					goto skip_flic_playback;
+
+				case SkipAction::NONE:
+					break;
+				}
+			}
+
+			// Reset timing after fade-in completes
+			section_start_time = SDL_GetTicks();
+			next_frame_time    = section_start_time;
+		}
 
 		for (unsigned int i = 0; i < static_cast<unsigned>(finfo.frames); i++) {
 			// Calculate elapsed time within this section
@@ -545,8 +588,11 @@ void ScenePlayer::play_flic_with_audio(
 					++it;
 				}
 			}
-			// Play the current frame
-			next_frame_time = fli.play(gwin->get_win(), i, i, next_frame_time);
+
+			int brightness = 100;
+
+			next_frame_time = fli.play(
+					gwin->get_win(), i, i, next_frame_time, brightness);
 
 			// Draw active subtitles directly on the frame
 			std::string combined_text;
@@ -585,15 +631,69 @@ void ScenePlayer::play_flic_with_audio(
 
 			switch (check_break()) {
 			case SkipAction::EXIT_SCENE:
-				throw UserSkipException();    // Will be caught by play_scene to
-											  // exit
+				user_skipped = true;
+				throw UserSkipException();
 			case SkipAction::NEXT_SECTION:
-				return;    // Exit this function to advance to the next section
+				user_skipped = true;
+				return;
 			case SkipAction::NONE:
 				break;
 			}
 		}
 
+		if (flic_cmd && flic_cmd->fade_out > 0 && !user_skipped) {
+			const int fade_steps = 20;
+			const int step_delay = flic_cmd->fade_out / fade_steps;
+
+			for (int step = fade_steps; step >= 0; step--) {
+				int brightness = (step * 100) / fade_steps;
+
+				fli.play(
+						gwin->get_win(), finfo.frames - 1, finfo.frames - 1,
+						SDL_GetTicks(), brightness);
+
+				gwin->get_win()->ShowFillGuardBand();
+
+				SDL_Delay(step_delay);
+
+				if (check_break() != SkipAction::NONE) {
+					SkipAction action = check_break();
+					if (action == SkipAction::EXIT_SCENE) {
+						throw UserSkipException();    // Exit entire scene
+					}
+					break;
+				}
+			}
+
+			if (flic_cmd->end_delay > 0) {
+				uint32 delay_start = SDL_GetTicks();
+				while (SDL_GetTicks() - delay_start
+					   < static_cast<uint32>(flic_cmd->end_delay)) {
+					SkipAction action = check_break();
+					if (action == SkipAction::EXIT_SCENE) {
+						throw UserSkipException();    // Exit entire scene
+					} else if (action == SkipAction::NEXT_SECTION) {
+						break;    // Just break delay
+					}
+					SDL_Delay(50);
+				}
+			}
+		}
+		if (flic_cmd && flic_cmd->end_delay > 0 && !user_skipped
+			&& !(flic_cmd->fade_out > 0)) {
+			uint32 delay_start = SDL_GetTicks();
+			while (SDL_GetTicks() - delay_start
+				   < static_cast<uint32>(flic_cmd->end_delay)) {
+				SkipAction action = check_break();
+				if (action == SkipAction::EXIT_SCENE) {
+					throw UserSkipException();    // Exit entire scene
+				} else if (action == SkipAction::NEXT_SECTION) {
+					break;    // Just break delay
+				}
+				SDL_Delay(50);
+			}
+		}
+	skip_flic_playback:
 		gwin->clear_screen(true);
 
 		// Stop audio that should stop with end of flic
@@ -623,12 +723,15 @@ void ScenePlayer::play_flic_with_audio(
 }
 
 void ScenePlayer::show_delay_text(const TextSection& section) {
+	if (section.entries.empty()) {
+		return;
+	}
 	try {
 		std::shared_ptr<Font> font = get_font_by_type(section.font_type);
 		if (!font) {
-			std::cerr
-					<< "Play_Scene Warning: Could not load font for delay text"
-					<< std::endl;
+			std::cerr << "Play_Scene Warning: Could not load font for "
+						 "delay text"
+					  << std::endl;
 			return;
 		}
 
@@ -680,6 +783,9 @@ void ScenePlayer::show_text_section(
 	std::map<uint32, std::vector<std::pair<SceneCommand, size_t>>>
 			timed_commands;
 
+	if (section.entries.empty()) {
+		return;
+	}
 	// Sort audio commands by start time
 	for (size_t i = 0; i < section.audio_commands.size(); i++) {
 		const auto& cmd_variant = section.audio_commands[i];
@@ -747,8 +853,7 @@ void ScenePlayer::show_text_section(
 			case SkipAction::EXIT_SCENE:
 				throw UserSkipException();
 			case SkipAction::NEXT_SECTION:
-				goto end_text_section;    // Use goto to break out of the nested
-										  // loops
+				goto end_text_section;
 			case SkipAction::NONE:
 				break;
 			}
@@ -1050,7 +1155,8 @@ bool ScenePlayer::load_subtitle_from_file(
 				std::string(reinterpret_cast<char*>(txt.get()), len));
 		std::string line;
 
-		// Read line-by-line instead of loading the whole file content again.
+		// Read line-by-line instead of loading the whole file content
+		// again.
 		while (std::getline(iss, line)) {
 			if (line.rfind(target_prefix, 0) == 0) {
 				string text_content = line.substr(target_prefix.length());
@@ -1078,7 +1184,8 @@ void ScenePlayer::display_subtitle(const SubtitleCommand& cmd) {
 	try {
 		std::shared_ptr<Font> font = get_font_by_type(cmd.font_type);
 		if (!font) {
-			std::cerr << "Play_Scene Warning: Could not load font for subtitle"
+			std::cerr << "Play_Scene Warning: Could not load font for "
+						 "subtitle"
 					  << std::endl;
 			return;
 		}
@@ -1090,7 +1197,8 @@ void ScenePlayer::display_subtitle(const SubtitleCommand& cmd) {
 		// Define alignment once
 		int alignment = cmd.alignment & 0xFF;
 
-		// Determine text color (0 = default 172, otherwise use specified color)
+		// Determine text color (0 = default 172, otherwise use specified
+		// color)
 		uint8 text_color = (cmd.color == 0) ? 172 : cmd.color;
 
 		unsigned char color_translation[256];
@@ -1174,6 +1282,9 @@ void ScenePlayer::display_subtitle(const SubtitleCommand& cmd) {
 }
 
 void ScenePlayer::show_scrolling_text(const TextSection& section) {
+	if (section.entries.empty()) {
+		return;
+	}
 	std::ostringstream text_stream;
 	for (size_t i = 0; i < section.entries.size(); i++) {
 		const auto& entry = section.entries[i];

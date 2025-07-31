@@ -36,10 +36,13 @@ Example Script:
 %%endsection
 
 %%section scene
-#		:flic/index_number/delay
-#		The delay between FLIC frames is read from the FLIC file. Use 0 to keep
+#		:flic/index_number/frames_delay/fade_in/fade_out/end_delay
+#		frames_delay between FLIC frames is read from the FLIC file. Use 0 to keep
 #		that delay or use any value in milliseconds to override that. The higher
 #		the delay, the slower the animation.
+#		fade_in/fade_out uses the first or last frame to fade for the entered time
+#		in milliseconds.
+#		end_delay adds a black screen at the end of the FLIC for the entered time in milliseconds.
 #
 #		:sfx/sfx_number/start_time/stop_time/continue
 #
