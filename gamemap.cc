@@ -1799,12 +1799,14 @@ bool Game_map::write_minimap() {
 	const int                nmaps = maps.size();
 	Shape                    shape;
 	for (int i = 0; i < nmaps; ++i) {
-		snprintf(msg, sizeof(msg), "Creating minimap %d", i);
-		eman->center_text(msg);
-		gwin->paint();
-		gwin->show();
-		maps[i]->create_minimap(&shape, chunk_pixels.get());
-		eman->remove_text_effects();
+		if (maps[i]) {
+			snprintf(msg, sizeof(msg), "Creating minimap %d", i);
+			eman->center_text(msg);
+			gwin->paint();
+			gwin->show();
+			maps[i]->create_minimap(&shape, chunk_pixels.get());
+			eman->remove_text_effects();
+		}
 	}
 	OFileDataSource mfile(PATCH_MINIMAPS);    // May throw exception.
 	Flex_writer     writer(mfile, "Written by Exult", 1);

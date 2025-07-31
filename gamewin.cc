@@ -518,7 +518,9 @@ Game_window::~Game_window() {
 	delete dragging;
 	delete pal;
 	for (auto* map : maps) {
-		delete map;
+		if (map) {
+			delete map;
+		}
 	}
 	delete usecode;
 	delete clock;
@@ -933,7 +935,9 @@ void Game_window::clear_world(bool restoremapedit) {
 		}
 	}
 	for (auto* map : maps) {
-		map->clear();
+		if (map) {
+			map->clear();
+		}
 	}
 	try {
 		set_map(0);    // Back to main map.
@@ -1388,7 +1392,9 @@ void Game_window::write(bool nopaint) {
 		show(true);
 	}
 	for (auto* map : maps) {
-		map->write_ireg();    // Write ireg files.
+		if (map) {
+			map->write_ireg(); // Write ireg files.
+		}
 	}
 	write_npcs();              // Write out npc.dat.
 	usecode->write();          // Usecode.dat (party, global flags).
