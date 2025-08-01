@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8A7079012E0C6159009CDF56 /* fluid_sys_cpp11.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A7079002E0C6159009CDF56 /* fluid_sys_cpp11.cpp */; };
 		8A754B532DA3DFA200474024 /* fluid_rvoice_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A754B522DA3DFA200474024 /* fluid_rvoice_dsp.cpp */; };
+		8A7F92112E3D739100BC70F8 /* fluid_iir_filter_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A7F92102E3D739100BC70F8 /* fluid_iir_filter_impl.cpp */; };
 		8A9A01EA29F3391F000AF341 /* fluid_hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A01DE29F3391E000AF341 /* fluid_hash.c */; };
 		8A9A01EB29F3391F000AF341 /* fluid_sys.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A01DF29F3391E000AF341 /* fluid_sys.c */; };
 		8A9A01EC29F3391F000AF341 /* fluid_settings.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A01E129F3391E000AF341 /* fluid_settings.c */; };
@@ -66,6 +67,7 @@
 /* Begin PBXFileReference section */
 		8A7079002E0C6159009CDF56 /* fluid_sys_cpp11.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_sys_cpp11.cpp; path = fluidsynth/src/utils/fluid_sys_cpp11.cpp; sourceTree = "<group>"; };
 		8A754B522DA3DFA200474024 /* fluid_rvoice_dsp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_rvoice_dsp.cpp; path = fluidsynth/src/rvoice/fluid_rvoice_dsp.cpp; sourceTree = SOURCE_ROOT; };
+		8A7F92102E3D739100BC70F8 /* fluid_iir_filter_impl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_iir_filter_impl.cpp; path = fluidsynth/src/rvoice/fluid_iir_filter_impl.cpp; sourceTree = "<group>"; };
 		8A9A012E29F32EEF000AF341 /* libfluidsynth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfluidsynth.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A9A01DE29F3391E000AF341 /* fluid_hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fluid_hash.c; path = fluidsynth/src/utils/fluid_hash.c; sourceTree = "<group>"; };
 		8A9A01DF29F3391E000AF341 /* fluid_sys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fluid_sys.c; path = fluidsynth/src/utils/fluid_sys.c; sourceTree = "<group>"; };
@@ -155,6 +157,7 @@
 				8A9A021729F339AF000AF341 /* fluid_voice.c */,
 				8A9A020C29F3397F000AF341 /* fluid_adsr_env.c */,
 				8A9A020429F3397F000AF341 /* fluid_chorus.c */,
+				8A7F92102E3D739100BC70F8 /* fluid_iir_filter_impl.cpp */,
 				8A9A020629F3397F000AF341 /* fluid_iir_filter.c */,
 				8A9A020A29F3397F000AF341 /* fluid_lfo.c */,
 				8A9A01FD29F3397F000AF341 /* fluid_rev.c */,
@@ -282,6 +285,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		8A9A02A829F3DFF7000AF341 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -302,6 +306,7 @@
 		};
 		8A9A040C29F55DBC000AF341 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -350,6 +355,7 @@
 				8A9A024429F339F7000AF341 /* fluid_filerenderer.c in Sources */,
 				8A9A025329F33B18000AF341 /* fluid_rtkit.c in Sources */,
 				8A9A01FA29F3394C000AF341 /* fluid_sffile.c in Sources */,
+				8A7F92112E3D739100BC70F8 /* fluid_iir_filter_impl.cpp in Sources */,
 				8A9A024F29F33A36000AF341 /* fluid_coremidi.c in Sources */,
 				8A9A024329F339F7000AF341 /* fluid_ladspa.c in Sources */,
 				8A7079012E0C6159009CDF56 /* fluid_sys_cpp11.cpp in Sources */,
