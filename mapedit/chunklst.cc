@@ -215,7 +215,7 @@ void Chunk_chooser::update_num_chunks(int new_num_chunks) {
 	num_chunks         = new_num_chunks;
 	GtkAdjustment* adj = gtk_range_get_adjustment(GTK_RANGE(vscroll));
 	gtk_adjustment_set_upper(
-			adj, (((128 + border) * num_chunks) + per_row - 1) / per_row);
+			adj, ((128 + border) * ((num_chunks + per_row - 1) / per_row)));
 	g_signal_emit_by_name(G_OBJECT(adj), "changed");
 }
 
@@ -341,13 +341,13 @@ void Chunk_chooser::setup_info(bool savepos    // Try to keep current position.
 	per_row               = std::max((w - border) / (128 + border), 1);
 	GtkAdjustment* adj    = gtk_range_get_adjustment(GTK_RANGE(vscroll));
 	gtk_adjustment_set_upper(
-			adj, (((128 + border) * num_chunks) + per_row - 1) / per_row);
+			adj, ((128 + border) * ((num_chunks + per_row - 1) / per_row)));
 	gtk_adjustment_set_step_increment(adj, ZoomDown(16));
 	gtk_adjustment_set_page_increment(adj, h - border);
 	gtk_adjustment_set_page_size(adj, h - border);
 	if (savepos && selected >= 0) {
 		gtk_adjustment_set_value(
-				adj, ((128 + border) * info[selected].num) / per_row);
+				adj, ((128 + border) * (info[selected].num / per_row)));
 	} else if (savepos) {
 		gtk_adjustment_set_value(
 				adj, (gtk_adjustment_get_value(adj) * per_row_old / per_row));
