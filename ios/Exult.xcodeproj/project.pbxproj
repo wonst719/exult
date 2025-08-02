@@ -13,6 +13,8 @@
 		8A057F9227A8362E00948459 /* CoreAudioMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A057F8427A835AF00948459 /* CoreAudioMidiDriver.cpp */; };
 		8A1C58211FE7D91B00738E40 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A1C581B1FE7D91B00738E40 /* libz.tbd */; };
 		8A1FC4272571C747007B86DD /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A8340BF1F8977FB000696C7 /* CoreMotion.framework */; };
+		8A2501E92E3D7D6500CCE820 /* libfluidlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A38EB582E29B5CA00450868 /* libfluidlite.a */; };
+		8A2515122E3DA29D00CCE820 /* SDL3.framework in Embedd SDL3 Framework */ = {isa = PBXBuildFile; fileRef = 8A25150F2E3DA1D600CCE820 /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8A2C52511DE6E1810016E16A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A7F1F8E1DE5BDD40066F6FC /* CoreFoundation.framework */; };
 		8A2C52591DE6E8E50016E16A /* crc.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD671A6E3161006C8BE4 /* crc.cc */; };
 		8A2C525A1DE6E8E90016E16A /* Flat.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD6A1A6E3161006C8BE4 /* Flat.cc */; };
@@ -33,7 +35,6 @@
 		8A33B5E92C2051B800075AF4 /* DropDown_widget.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A33B5E82C2051B800075AF4 /* DropDown_widget.cc */; };
 		8A33B5EC2C2051B800075AF4 /* ConfigSetting_widget.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A33B5EB2C2051B800075AF4 /* ConfigSetting_widget.cc */; };
 		8A33B5EF2C2051B800075AF4 /* AdvancedOptions_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A33B5EE2C2051B800075AF4 /* AdvancedOptions_gump.cc */; };
-		8A38EB4F2E29B4D200450868 /* liblibfluidlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A38EB4E2E29B4D200450868 /* liblibfluidlite.a */; };
 		8A38EB772E2AA11300450868 /* playscene.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A38EB762E2AA11300450868 /* playscene.cc */; };
 		8A45A3B8247C068500F12F4D /* joythumb-glass.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A45A3AC247C068500F12F4D /* joythumb-glass.png */; };
 		8A599C2224605925006E3252 /* libmt32emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A599C21246058A9006E3252 /* libmt32emu.a */; };
@@ -43,7 +44,6 @@
 		8A8340D01F897827000696C7 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A8340CC1F897826000696C7 /* AVKit.framework */; };
 		8A8340D11F897827000696C7 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A8340CD1F897826000696C7 /* AVFoundation.framework */; };
 		8A8340D51F8979D3000696C7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD77A0840E26BDB800F39101 /* AudioToolbox.framework */; };
-		8A86A74D2A9F2C8600AA55DA /* SDL3.framework in Embed SDL3 Framework */ = {isa = PBXBuildFile; fileRef = 8A52529F25718897005AD385 /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8A8728EA1DD8BAA3005AC3FC /* sha1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A8728E81DD8BAA3005AC3FC /* sha1.cpp */; };
 		8A93BD6A1F8901E3001850AA /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A93BC931F869000001850AA /* Media.xcassets */; };
 		8A98326D27AD7A0C0028D9C9 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A98326C27AD7A0C0028D9C9 /* QuartzCore.framework */; };
@@ -60,7 +60,7 @@
 		8AC797C81C8D0E4F001AF014 /* zip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AC797C61C8D0E4F001AF014 /* zip.cc */; };
 		8AD4A9311A92B9DB0004762D /* InputOptions_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AD4A92F1A92B9DB0004762D /* InputOptions_gump.cc */; };
 		8ADFFDF625DE791000FC4D3A /* verify.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8ADFFDF425DE791000FC4D3A /* verify.cc */; };
-		8AE0D3C92A9BF2330036A3D9 /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A52529F25718897005AD385 /* SDL3.framework */; };
+		8AE8B9B92E3E1C9F0094DF3C /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A25150F2E3DA1D600CCE820 /* SDL3.framework */; };
 		8AF2AFDF2016708100696E08 /* joypad-glass-southwest.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD62016707F00696E08 /* joypad-glass-southwest.png */; };
 		8AF2AFE02016708100696E08 /* joypad-glass-north.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD72016708000696E08 /* joypad-glass-north.png */; };
 		8AF2AFE12016708100696E08 /* joypad-glass.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD82016708000696E08 /* joypad-glass.png */; };
@@ -278,6 +278,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		8A25150E2E3DA1D600CCE820 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8A2515082E3DA1D500CCE820 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF66C0761BA81005FE872;
+			remoteInfo = SDL3;
+		};
 		8A38EB572E29B5CA00450868 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8A38EB492E29B49400450868 /* libfluidlite.xcodeproj */;
@@ -291,13 +298,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8A7F1F711DE5B72A0066F6FC;
 			remoteInfo = expack;
-		};
-		8A52529E25718897005AD385 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A52528E25718896005AD385 /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BECDF66C0761BA81005FE872;
-			remoteInfo = Framework;
 		};
 		8A599C20246058A9006E3252 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -323,16 +323,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		8A86A7452A9F2C4200AA55DA /* Embed SDL3 Framework */ = {
+		8A2502012E3D8BC000CCE820 /* Embedd SDL3 Framework */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				8A86A74D2A9F2C8600AA55DA /* SDL3.framework in Embed SDL3 Framework */,
+				8A2515122E3DA29D00CCE820 /* SDL3.framework in Embedd SDL3 Framework */,
 			);
-			name = "Embed SDL3 Framework";
-			runOnlyForDeploymentPostprocessing = 0;
+			name = "Embedd SDL3 Framework";
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -346,6 +346,7 @@
 		8A057F9127A835AF00948459 /* CoreAudioMidiDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreAudioMidiDriver.h; sourceTree = "<group>"; };
 		8A0C19E11D6D9F1800B9105A /* sibetaintrinsics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sibetaintrinsics.h; sourceTree = "<group>"; };
 		8A1C581B1FE7D91B00738E40 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		8A2515082E3DA1D500CCE820 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = SDL/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
 		8A33B5C92C2051B800075AF4 /* Slider_widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Slider_widget.h; path = ../gumps/Slider_widget.h; sourceTree = "<group>"; };
 		8A33B5DA2C2051B800075AF4 /* Mixer_gump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Mixer_gump.cc; path = ../gumps/Mixer_gump.cc; sourceTree = "<group>"; };
 		8A33B5DB2C2051B800075AF4 /* Mixer_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mixer_gump.h; path = ../gumps/Mixer_gump.h; sourceTree = "<group>"; };
@@ -363,12 +364,9 @@
 		8A33B5EE2C2051B800075AF4 /* AdvancedOptions_gump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AdvancedOptions_gump.cc; path = ../gumps/AdvancedOptions_gump.cc; sourceTree = "<group>"; };
 		8A33B5F02C2051B800075AF4 /* AdvancedOptions_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AdvancedOptions_gump.h; path = ../gumps/AdvancedOptions_gump.h; sourceTree = "<group>"; };
 		8A38EB492E29B49400450868 /* libfluidlite.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = libfluidlite.xcodeproj; sourceTree = "<group>"; };
-		8A38EB4C2E29B4C200450868 /* liblibfluidlite.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = liblibfluidlite.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A38EB4E2E29B4D200450868 /* liblibfluidlite.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = liblibfluidlite.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A38EB752E2AA11300450868 /* playscene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = playscene.h; path = ../playscene.h; sourceTree = SOURCE_ROOT; };
 		8A38EB762E2AA11300450868 /* playscene.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = playscene.cc; path = ../playscene.cc; sourceTree = SOURCE_ROOT; };
 		8A45A3AC247C068500F12F4D /* joythumb-glass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joythumb-glass.png"; sourceTree = "<group>"; };
-		8A52528E25718896005AD385 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = SDL/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
 		8A599C1C246058A9006E3252 /* libmt32emu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = libmt32emu.xcodeproj; sourceTree = "<group>"; };
 		8A6013662057CF0C00FCA555 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		8A7F1F721DE5B72A0066F6FC /* expack */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = expack; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -857,11 +855,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8AE0D3C92A9BF2330036A3D9 /* SDL3.framework in Frameworks */,
+				8AE8B9B92E3E1C9F0094DF3C /* SDL3.framework in Frameworks */,
+				8A2501E92E3D7D6500CCE820 /* libfluidlite.a in Frameworks */,
 				8A599C2224605925006E3252 /* libmt32emu.a in Frameworks */,
 				E738C8551A6FFF71003A950D /* libogg.a in Frameworks */,
 				E738C8561A6FFF75003A950D /* libvorbis.a in Frameworks */,
-				8A38EB4F2E29B4D200450868 /* liblibfluidlite.a in Frameworks */,
 				8A1C58211FE7D91B00738E40 /* libz.tbd in Frameworks */,
 				8A8340D51F8979D3000696C7 /* AudioToolbox.framework in Frameworks */,
 				8A8340D11F897827000696C7 /* AVFoundation.framework in Frameworks */,
@@ -951,8 +949,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8A38EB4E2E29B4D200450868 /* liblibfluidlite.a */,
-				8A38EB4C2E29B4C200450868 /* liblibfluidlite.a */,
+				8A2515082E3DA1D500CCE820 /* SDL.xcodeproj */,
 				8A1C581B1FE7D91B00738E40 /* libz.tbd */,
 				FD77A0840E26BDB800F39101 /* AudioToolbox.framework */,
 				8A8340CD1F897826000696C7 /* AVFoundation.framework */,
@@ -972,18 +969,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		8A38EB542E29B5CA00450868 /* Products */ = {
+		8A2515092E3DA1D500CCE820 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8A38EB582E29B5CA00450868 /* libfluidlite.a */,
+				8A25150F2E3DA1D600CCE820 /* SDL3.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8A52528F25718896005AD385 /* Products */ = {
+		8A38EB542E29B5CA00450868 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8A52529F25718897005AD385 /* SDL3.framework */,
+				8A38EB582E29B5CA00450868 /* libfluidlite.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1683,7 +1680,6 @@
 		E738C85E1A7000E8003A950D /* Libs */ = {
 			isa = PBXGroup;
 			children = (
-				8A52528E25718896005AD385 /* SDL.xcodeproj */,
 				8A599C1C246058A9006E3252 /* libmt32emu.xcodeproj */,
 				E738C8491A6FFF58003A950D /* libogg.xcodeproj */,
 				E738C84F1A6FFF65003A950D /* libvorbis.xcodeproj */,
@@ -1702,8 +1698,9 @@
 				8ADCFD632BF3AFA2004702F9 /* ShellScript */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
-				8A86A7452A9F2C4200AA55DA /* Embed SDL3 Framework */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				8A2502012E3D8BC000CCE820 /* Embedd SDL3 Framework */,
+				8A2515132E3E0BA200CCE820 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1743,6 +1740,7 @@
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = 5PRK96AWD5;
+						LastSwiftMigration = 1640;
 					};
 					8A7F1F711DE5B72A0066F6FC = {
 						CreatedOnToolsVersion = 8.1;
@@ -1757,6 +1755,7 @@
 			knownRegions = (
 				en,
 				Base,
+				English,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -1778,8 +1777,8 @@
 					ProjectRef = E738C84F1A6FFF65003A950D /* libvorbis.xcodeproj */;
 				},
 				{
-					ProductGroup = 8A52528F25718896005AD385 /* Products */;
-					ProjectRef = 8A52528E25718896005AD385 /* SDL.xcodeproj */;
+					ProductGroup = 8A2515092E3DA1D500CCE820 /* Products */;
+					ProjectRef = 8A2515082E3DA1D500CCE820 /* SDL.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -1791,19 +1790,19 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		8A25150F2E3DA1D600CCE820 /* SDL3.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL3.framework;
+			remoteRef = 8A25150E2E3DA1D600CCE820 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		8A38EB582E29B5CA00450868 /* libfluidlite.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			name = libfluidlite.a;
 			path = liblibfluidlite.a;
 			remoteRef = 8A38EB572E29B5CA00450868 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8A52529F25718897005AD385 /* SDL3.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = SDL3.framework;
-			remoteRef = 8A52529E25718897005AD385 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		8A599C21246058A9006E3252 /* libmt32emu.a */ = {
@@ -1865,6 +1864,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		8A2515132E3E0BA200CCE820 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "dsymutil \"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDL3.framework/SDL3\" -o \"${BUILT_PRODUCTS_DIR}/SDL3.framework.dSYM\"\nrm -rf \"$INSTALL_ROOT/Library\"\n";
+		};
 		8A2C52661DE6EF650016E16A /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -2153,11 +2170,16 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = 5PRK96AWD5;
 				ENABLE_BITCODE = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2196,8 +2218,11 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MARKETING_VERSION = 1.13.1;
 				PRODUCT_BUNDLE_IDENTIFIER = info.exult;
 				PRODUCT_NAME = Exult;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
 				VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS = OpenGLES;
@@ -2210,12 +2235,17 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				DEVELOPMENT_TEAM = 5PRK96AWD5;
 				ENABLE_BITCODE = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
@@ -2251,8 +2281,10 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MARKETING_VERSION = 1.13.1;
 				PRODUCT_BUNDLE_IDENTIFIER = info.exult;
 				PRODUCT_NAME = Exult;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
 				VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS = OpenGLES;
