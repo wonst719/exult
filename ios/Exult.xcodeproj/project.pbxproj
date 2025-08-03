@@ -14,7 +14,6 @@
 		8A1C58211FE7D91B00738E40 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A1C581B1FE7D91B00738E40 /* libz.tbd */; };
 		8A1FC4272571C747007B86DD /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A8340BF1F8977FB000696C7 /* CoreMotion.framework */; };
 		8A2501E92E3D7D6500CCE820 /* libfluidlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A38EB582E29B5CA00450868 /* libfluidlite.a */; };
-		8A2515122E3DA29D00CCE820 /* SDL3.framework in Embedd SDL3 Framework */ = {isa = PBXBuildFile; fileRef = 8A25150F2E3DA1D600CCE820 /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8A2C52511DE6E1810016E16A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A7F1F8E1DE5BDD40066F6FC /* CoreFoundation.framework */; };
 		8A2C52591DE6E8E50016E16A /* crc.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD671A6E3161006C8BE4 /* crc.cc */; };
 		8A2C525A1DE6E8E90016E16A /* Flat.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD6A1A6E3161006C8BE4 /* Flat.cc */; };
@@ -60,7 +59,8 @@
 		8AC797C81C8D0E4F001AF014 /* zip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AC797C61C8D0E4F001AF014 /* zip.cc */; };
 		8AD4A9311A92B9DB0004762D /* InputOptions_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AD4A92F1A92B9DB0004762D /* InputOptions_gump.cc */; };
 		8ADFFDF625DE791000FC4D3A /* verify.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8ADFFDF425DE791000FC4D3A /* verify.cc */; };
-		8AE8B9B92E3E1C9F0094DF3C /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A25150F2E3DA1D600CCE820 /* SDL3.framework */; };
+		8AE8B9BE2E400B740094DF3C /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AE8B9BC2E400B4F0094DF3C /* SDL3.framework */; };
+		8AE8B9BF2E400B740094DF3C /* SDL3.framework in Embedd SDL3 Framework */ = {isa = PBXBuildFile; fileRef = 8AE8B9BC2E400B4F0094DF3C /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8AF2AFDF2016708100696E08 /* joypad-glass-southwest.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD62016707F00696E08 /* joypad-glass-southwest.png */; };
 		8AF2AFE02016708100696E08 /* joypad-glass-north.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD72016708000696E08 /* joypad-glass-north.png */; };
 		8AF2AFE12016708100696E08 /* joypad-glass.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF2AFD82016708000696E08 /* joypad-glass.png */; };
@@ -278,13 +278,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		8A25150E2E3DA1D600CCE820 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A2515082E3DA1D500CCE820 /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BECDF66C0761BA81005FE872;
-			remoteInfo = SDL3;
-		};
 		8A38EB572E29B5CA00450868 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8A38EB492E29B49400450868 /* libfluidlite.xcodeproj */;
@@ -325,14 +318,14 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		8A2502012E3D8BC000CCE820 /* Embedd SDL3 Framework */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				8A2515122E3DA29D00CCE820 /* SDL3.framework in Embedd SDL3 Framework */,
+				8AE8B9BF2E400B740094DF3C /* SDL3.framework in Embedd SDL3 Framework */,
 			);
 			name = "Embedd SDL3 Framework";
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -403,6 +396,7 @@
 		8AD4A9301A92B9DB0004762D /* InputOptions_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputOptions_gump.h; path = ../gumps/InputOptions_gump.h; sourceTree = "<group>"; };
 		8ADFFDF425DE791000FC4D3A /* verify.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = verify.cc; path = ../verify.cc; sourceTree = "<group>"; };
 		8ADFFDF525DE791000FC4D3A /* verify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = verify.h; path = ../verify.h; sourceTree = "<group>"; };
+		8AE8B9BC2E400B4F0094DF3C /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL3.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AF2AFD62016707F00696E08 /* joypad-glass-southwest.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joypad-glass-southwest.png"; sourceTree = "<group>"; };
 		8AF2AFD72016708000696E08 /* joypad-glass-north.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joypad-glass-north.png"; sourceTree = "<group>"; };
 		8AF2AFD82016708000696E08 /* joypad-glass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joypad-glass.png"; sourceTree = "<group>"; };
@@ -855,7 +849,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8AE8B9B92E3E1C9F0094DF3C /* SDL3.framework in Frameworks */,
 				8A2501E92E3D7D6500CCE820 /* libfluidlite.a in Frameworks */,
 				8A599C2224605925006E3252 /* libmt32emu.a in Frameworks */,
 				E738C8551A6FFF71003A950D /* libogg.a in Frameworks */,
@@ -874,6 +867,7 @@
 				28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				8A98326D27AD7A0C0028D9C9 /* QuartzCore.framework in Frameworks */,
+				8AE8B9BE2E400B740094DF3C /* SDL3.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -949,7 +943,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8A2515082E3DA1D500CCE820 /* SDL.xcodeproj */,
+				8AE8B9BC2E400B4F0094DF3C /* SDL3.framework */,
 				8A1C581B1FE7D91B00738E40 /* libz.tbd */,
 				FD77A0840E26BDB800F39101 /* AudioToolbox.framework */,
 				8A8340CD1F897826000696C7 /* AVFoundation.framework */,
@@ -967,14 +961,6 @@
 				8A98326C27AD7A0C0028D9C9 /* QuartzCore.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		8A2515092E3DA1D500CCE820 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				8A25150F2E3DA1D600CCE820 /* SDL3.framework */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		8A38EB542E29B5CA00450868 /* Products */ = {
@@ -1684,6 +1670,7 @@
 				E738C8491A6FFF58003A950D /* libogg.xcodeproj */,
 				E738C84F1A6FFF65003A950D /* libvorbis.xcodeproj */,
 				8A38EB492E29B49400450868 /* libfluidlite.xcodeproj */,
+				8A2515082E3DA1D500CCE820 /* SDL.xcodeproj */,
 			);
 			name = Libs;
 			sourceTree = "<group>";
@@ -1776,10 +1763,6 @@
 					ProductGroup = E738C8501A6FFF65003A950D /* Products */;
 					ProjectRef = E738C84F1A6FFF65003A950D /* libvorbis.xcodeproj */;
 				},
-				{
-					ProductGroup = 8A2515092E3DA1D500CCE820 /* Products */;
-					ProjectRef = 8A2515082E3DA1D500CCE820 /* SDL.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -1790,13 +1773,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		8A25150F2E3DA1D600CCE820 /* SDL3.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = SDL3.framework;
-			remoteRef = 8A25150E2E3DA1D600CCE820 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		8A38EB582E29B5CA00450868 /* libfluidlite.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1880,7 +1856,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "dsymutil \"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDL3.framework/SDL3\" -o \"${BUILT_PRODUCTS_DIR}/SDL3.framework.dSYM\"\nrm -rf \"$INSTALL_ROOT/Library\"\n";
+			shellScript = "if [ -d \"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDL3.framework\" ]; then\necho \"Generating dSYM for SDL3.framework\"\ndsymutil \"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDL3.framework/SDL3\" -o \"${BUILT_PRODUCTS_DIR}/SDL3.framework.dSYM\"\nfi\nif [ -d \"$INSTALL_ROOT/Library\" ]; then\necho \"Removing SDL3.framework from INSTALL_ROOT for archiving\"\nrm -rf \"$INSTALL_ROOT/Library\"\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 		8A2C52661DE6EF650016E16A /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1899,7 +1876,7 @@
 		8ADCFD632BF3AFA2004702F9 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -1913,6 +1890,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if git rev-parse HEAD >/dev/null 2>&1;then  \\\n    echo //this file is generated by the exult build process >gitinfo.h; \\\n    echo \"#define GIT_REVISION \\\"`git rev-parse HEAD`\\\"\" >> gitinfo.h; \\\n    echo >> gitinfo.h; \\\n    git tag -l --points-at HEAD --format=\"#define GIT_TAG \\\"%(refname:short)\\\"\" >>gitinfo.h; \\\n    echo >>gitinfo.h; \\\n    git branch --list \"`git branch --show-current`\" --format=\"%(if)%(upstream)%(then)#define GIT_REMOTE_BRANCH \\\"%(upstream:strip=-1)\\\"%(end)\" >> gitinfo.h; \\\n    echo >>gitinfo.h; \\\n    echo \"#define GIT_REMOTE_URL \\\"`git ls-remote --get-url`\\\"\" >> gitinfo.h; \\\n    echo >>gitinfo.h; \\\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
