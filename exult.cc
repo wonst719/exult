@@ -210,7 +210,7 @@ static bool   arg_write_xml    = false;    // Write out game's config. as XML.
 static bool   arg_reset_video  = false;    // Resets the video setings.
 static bool   arg_verify_files = false;    // Verify a game's files.
 
-static string arg_installmod = {};
+static string arg_installmod  = {};
 static string arg_installdata = {};
 
 static bool                 dragging = false;    // Object or gump being moved.
@@ -267,7 +267,27 @@ int main(int argc, char* argv[]) {
 				}
 				return std::make_unique<SdlRwopsOstream>(s, mode);
 			});
+#ifdef SDL_PLATFORM_IOS
+	const char* launchFlag = iOS_GetLaunchGameFlag();
 
+	if (launchFlag) {
+		// Convert to appropriate flags
+		if (strcmp(launchFlag, "--bg") == 0) {
+			run_bg = true;
+		} else if (strcmp(launchFlag, "--si") == 0) {
+			run_si = true;
+		} else if (strcmp(launchFlag, "--fov") == 0) {
+			run_fov = true;
+		} else if (strcmp(launchFlag, "--ss") == 0) {
+			run_ss = true;
+		} else if (strcmp(launchFlag, "--sib") == 0) {
+			run_sib = true;
+		}
+
+		// Clear the launch flag
+		iOS_ClearLaunchGameFlag();
+	}
+#endif
 	// Declare everything from the commandline that we're interested in.
 	parameters.declare("-h", &needhelp, true);
 	parameters.declare("--help", &needhelp, true);
@@ -292,7 +312,7 @@ int main(int argc, char* argv[]) {
 	parameters.declare("--reset-video", &arg_reset_video, true);
 	parameters.declare("--verify-files", &arg_verify_files, true);
 	parameters.declare("--installdata", &arg_installdata);
-	parameters.declare("--installmod", &arg_installmod );
+	parameters.declare("--installmod", &arg_installmod);
 #if defined _WIN32
 	bool portable = false;
 	parameters.declare("-p", &portable, true);
@@ -647,6 +667,7 @@ int exult_main(const char* runpath) {
 	cheat.init();
 
 #ifdef SDL_PLATFORM_IOS
+	iOS_SetupQuickActions();
 	touchui = new TouchUI_iOS();
 #elif defined(ANDROID)
 	touchui = new TouchUI_Android();
@@ -832,7 +853,8 @@ static void Init() {
 	// Load games and mods; also stores system paths:
 	gamemanager = new GameManager();
 
-	if (arg_buildmap < 0 && !arg_verify_files && arg_installdata.empty() && arg_installmod.empty()) {
+	if (arg_buildmap < 0 && !arg_verify_files && arg_installdata.empty()
+		&& arg_installmod.empty()) {
 		string gr;
 		string gg;
 		string gb;
@@ -950,19 +972,19 @@ static void Init() {
 			std::cout << "\nInstallmod: want to install mods in zip "
 					  << arg_installmod << std::endl;
 			int code = ModManager::InstallModZip(
-					arg_installmod, dynamic_cast<ModManager*>(newgame),gamemanager);
+					arg_installmod, dynamic_cast<ModManager*>(newgame),
+					gamemanager);
 
 			if (code < 0) {
-				std::cerr << "InstallMod: Failed to install one or more mods in zip file "
+				std::cerr << "InstallMod: Failed to install one or more mods "
+							 "in zip file "
 						  << arg_installmod << std::endl
-						  << "Error code:" << code
-						  << std::endl;
+						  << "Error code:" << code << std::endl;
 			} else {
-				std::cerr << "InstallMod: Sucesssfully installed all mods in zip \""
-							<< arg_installmod << "\""
-							<< std::endl;
+				std::cerr << "InstallMod: Sucesssfully installed all mods in "
+							 "zip \""
+						  << arg_installmod << "\"" << std::endl;
 			}
-			
 
 			exit(code);
 		}
@@ -972,8 +994,8 @@ static void Init() {
 
 			IFileDataSource ds(arg_installdata);
 			if (!ds.good()) {
-				std::cerr << "InstallData: Failed to open file \"" << arg_installdata
-						  << "\" for reading" << std::endl;
+				std::cerr << "InstallData: Failed to open file \""
+						  << arg_installdata << "\" for reading" << std::endl;
 				exit(-2);
 			}
 
@@ -981,17 +1003,17 @@ static void Init() {
 			if (!unzipfile) {
 				std::cerr << "InstallData: Failed to open \"" << arg_installdata
 						  << "\" as a zip file" << std::endl;
-				exit(- 3);
+				exit(-3);
 			}
 
 			int error = unzExtractAllToPath(unzipfile, "<DATA>");
 			if (error < 0) {
-				std::cerr << "InstallData: Failed to extract zip file \"" << arg_installdata
-						  << "\" to <DATA>. Error code:" << error << std::endl;			
+				std::cerr << "InstallData: Failed to extract zip file \""
+						  << arg_installdata
+						  << "\" to <DATA>. Error code:" << error << std::endl;
 			} else {
 				std::cerr << "InstallData: Sucesssfully installed \""
-						  << arg_installdata
-						  << "\" into <DATA>" << std::endl;						
+						  << arg_installdata << "\" into <DATA>" << std::endl;
 			}
 
 			exit(error);
@@ -1010,8 +1032,8 @@ static void Init() {
 		if (arg_verify_files) {
 			newgame->setup_game_paths();
 			exit(verify_files(newgame));
-		} 
-		
+		}
+
 #ifdef DEBUG
 		{
 			int ix;

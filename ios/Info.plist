@@ -51,5 +51,10 @@
 	<string>Exult does not require this permission, do not grant it.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Exult does not require this permission, do not grant it.</string>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+	</array>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 </dict>
 </plist>

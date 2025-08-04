@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Chaoji Li
- * Copyright (C) 2020-2022 The Exult Team
+ * Copyright (C) 2020-2025 The Exult Team
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,8 +30,9 @@
 #include <cassert>
 
 namespace {
-	char gDocsDir[512];
-}
+	char      gDocsDir[512];
+	NSString* gLaunchGameFlag = nil;    // Store launch flag globally
+}    // namespace
 
 // NOLINTNEXTLINE(google-objc-function-naming)
 // extern "C" int SDL_SendKeyboardKey(
@@ -67,6 +68,207 @@ namespace {
 
 @end
 
+// Forward declare the interface we'll need
+@interface ExultQuickActionManager : NSObject
++ (instancetype)sharedManager;
+- (void)setupQuickActions;
+- (BOOL)handleShortcutItem:(UIApplicationShortcutItem*)shortcutItem;
+- (BOOL)isGameInstalled:(NSString*)gameType;
+@end
+
+@implementation ExultQuickActionManager
+
++ (instancetype)sharedManager {
+	static ExultQuickActionManager* instance = nil;
+	static dispatch_once_t          onceToken;
+	dispatch_once(&onceToken, ^{
+	  instance = [[ExultQuickActionManager alloc] init];
+	});
+	return instance;
+}
+
+- (void)setupQuickActions {
+	NSString* documentsPath
+			= IOSGetDocumentsDir()
+					  ? [NSString stringWithUTF8String:IOSGetDocumentsDir()]
+					  : nil;
+	if (!documentsPath) {
+		return;
+	}
+
+	NSMutableArray* shortcuts = [NSMutableArray array];
+
+	if ([self isGameInstalled:@"bg"]) {
+		UIApplicationShortcutItem* bgShortcut = [[UIApplicationShortcutItem
+				alloc]
+					 initWithType:@"launch_bg"
+				   localizedTitle:@"Black Gate"
+				localizedSubtitle:@"Launch Ultima VII"
+							 icon:[UIApplicationShortcutIcon
+										  iconWithType:
+												  UIApplicationShortcutIconTypePlay]
+						 userInfo:nil];
+		[shortcuts addObject:bgShortcut];
+	}
+
+	if ([self isGameInstalled:@"si"]) {
+		UIApplicationShortcutItem* siShortcut = [[UIApplicationShortcutItem
+				alloc]
+					 initWithType:@"launch_si"
+				   localizedTitle:@"Serpent Isle"
+				localizedSubtitle:@"Launch Ultima VII Part 2"
+							 icon:[UIApplicationShortcutIcon
+										  iconWithType:
+												  UIApplicationShortcutIconTypePlay]
+						 userInfo:nil];
+		[shortcuts addObject:siShortcut];
+	}
+
+	if ([self isGameInstalled:@"fov"]) {
+		UIApplicationShortcutItem* fovShortcut = [[UIApplicationShortcutItem
+				alloc]
+					 initWithType:@"launch_fov"
+				   localizedTitle:@"Forge of Virtue"
+				localizedSubtitle:@"Launch with expansion"
+							 icon:[UIApplicationShortcutIcon
+										  iconWithType:
+												  UIApplicationShortcutIconTypePlay]
+						 userInfo:nil];
+		[shortcuts addObject:fovShortcut];
+	}
+
+	if ([self isGameInstalled:@"ss"]) {
+		UIApplicationShortcutItem* ssShortcut = [[UIApplicationShortcutItem
+				alloc]
+					 initWithType:@"launch_ss"
+				   localizedTitle:@"Silver Seed"
+				localizedSubtitle:@"Launch SI with expansion"
+							 icon:[UIApplicationShortcutIcon
+										  iconWithType:
+												  UIApplicationShortcutIconTypePlay]
+						 userInfo:nil];
+		[shortcuts addObject:ssShortcut];
+	}
+
+	if ([self isGameInstalled:@"sib"]) {
+		UIApplicationShortcutItem* sibShortcut = [[UIApplicationShortcutItem
+				alloc]
+					 initWithType:@"launch_sib"
+				   localizedTitle:@"Serpent Isle Beta"
+				localizedSubtitle:@"Launch SI Beta"
+							 icon:[UIApplicationShortcutIcon
+										  iconWithType:
+												  UIApplicationShortcutIconTypePlay]
+						 userInfo:nil];
+		[shortcuts addObject:sibShortcut];
+	}
+
+	[UIApplication sharedApplication].shortcutItems = shortcuts;
+}
+
+- (BOOL)handleShortcutItem:(UIApplicationShortcutItem*)shortcutItem {
+	NSString* type     = shortcutItem.type;
+	NSString* gameFlag = nil;
+
+	if ([type isEqualToString:@"launch_bg"]) {
+		gameFlag = @"--bg";
+	} else if ([type isEqualToString:@"launch_si"]) {
+		gameFlag = @"--si";
+	} else if ([type isEqualToString:@"launch_fov"]) {
+		gameFlag = @"--fov";
+	} else if ([type isEqualToString:@"launch_ss"]) {
+		gameFlag = @"--ss";
+	} else if ([type isEqualToString:@"launch_sib"]) {
+		gameFlag = @"--sib";
+	}
+
+	if (gameFlag) {
+		NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+		[defaults setObject:gameFlag forKey:@"ExultLaunchGameFlag"];
+		[defaults synchronize];
+
+		gLaunchGameFlag = [gameFlag copy];
+		return YES;
+	}
+
+	return NO;
+}
+
+- (BOOL)isGameInstalled:(NSString*)gameType {
+	NSString* documentsPath
+			= IOSGetDocumentsDir()
+					  ? [NSString stringWithUTF8String:IOSGetDocumentsDir()]
+					  : nil;
+	if (!documentsPath) {
+		return NO;
+	}
+
+	NSString* gamePath = [documentsPath stringByAppendingPathComponent:@"game"];
+
+	// Helper block to check for both static and STATIC
+	BOOL (^checkStaticFile)(NSString*) = ^BOOL(NSString* basePath) {
+	  NSString* staticLower =
+			  [basePath stringByAppendingPathComponent:@"static"];
+	  NSString* staticUpper =
+			  [basePath stringByAppendingPathComponent:@"STATIC"];
+
+	  BOOL lowerExists =
+			  [[NSFileManager defaultManager] fileExistsAtPath:staticLower];
+	  BOOL upperExists =
+			  [[NSFileManager defaultManager] fileExistsAtPath:staticUpper];
+
+	  return lowerExists || upperExists;
+	};
+
+	if ([gameType isEqualToString:@"bg"]) {
+		NSString* bgPath =
+				[gamePath stringByAppendingPathComponent:@"blackgate"];
+		return checkStaticFile(bgPath);
+	} else if ([gameType isEqualToString:@"si"]) {
+		NSString* siPath =
+				[gamePath stringByAppendingPathComponent:@"serpentisle"];
+		return checkStaticFile(siPath);
+	} else if ([gameType isEqualToString:@"fov"]) {
+		NSString* bgPath =
+				[gamePath stringByAppendingPathComponent:@"blackgate"];
+		NSString* fovPath =
+				[gamePath stringByAppendingPathComponent:@"forgeofvirtue"];
+		return checkStaticFile(bgPath) && checkStaticFile(fovPath);
+	} else if ([gameType isEqualToString:@"ss"]) {
+		NSString* siPath =
+				[gamePath stringByAppendingPathComponent:@"serpentisle"];
+		NSString* ssPath =
+				[gamePath stringByAppendingPathComponent:@"silverseed"];
+		return checkStaticFile(siPath) && checkStaticFile(ssPath);
+	} else if ([gameType isEqualToString:@"sib"]) {
+		NSString* sibPath =
+				[gamePath stringByAppendingPathComponent:@"serpentbeta"];
+		return checkStaticFile(sibPath);
+	}
+
+	return NO;
+}
+
+- (void)handleApplicationDidFinishLaunching:(NSNotification*)notification {
+	// Check if this was a Quick Action launch
+	NSDictionary* launchOptions = notification.userInfo;
+	if (launchOptions) {
+		UIApplicationShortcutItem* shortcutItem = [launchOptions
+				objectForKey:UIApplicationLaunchOptionsShortcutItemKey];
+		if (shortcutItem) {
+			[self handleShortcutItem:shortcutItem];
+		}
+	}
+}
+
+- (void)dealloc {
+#if !__has_feature(objc_arc)
+	[super dealloc];
+#endif
+}
+
+@end
+
 @implementation UIManager
 @synthesize touchUI;
 @synthesize dpad;
@@ -84,7 +286,7 @@ namespace {
             self.recurringKeycode, SDL_KMOD_NONE, false);
 	event.key.down     = true;
 	event.key.repeat   = false;
-	event.key.windowID = 0; // keyboard->focus ? keyboard->focus->id : 0;
+	event.key.windowID = 0;    // keyboard->focus ? keyboard->focus->id : 0;
 	SDL_PushEvent(&event);
 	[self performSelector:@selector(sendRecurringKeycode)
 			   withObject:nil
@@ -97,11 +299,10 @@ namespace {
 	SDL_zero(event);
 	event.type         = SDL_EVENT_KEY_DOWN;
 	event.key.scancode = keycode;
-	event.key.key      = SDL_GetKeyFromScancode(
-            keycode, SDL_KMOD_NONE, false);
+	event.key.key      = SDL_GetKeyFromScancode(keycode, SDL_KMOD_NONE, false);
 	event.key.down     = true;
 	event.key.repeat   = false;
-	event.key.windowID = 0; // keyboard->focus ? keyboard->focus->id : 0;
+	event.key.windowID = 0;    // keyboard->focus ? keyboard->focus->id : 0;
 	SDL_PushEvent(&event);
 	self.recurringKeycode = keycode;
 	[NSObject cancelPreviousPerformRequestsWithTarget:self
@@ -123,11 +324,10 @@ namespace {
 	SDL_zero(event);
 	event.type         = SDL_EVENT_KEY_UP;
 	event.key.scancode = keycode;
-	event.key.key      = SDL_GetKeyFromScancode(
-            keycode, SDL_KMOD_NONE, false);
+	event.key.key      = SDL_GetKeyFromScancode(keycode, SDL_KMOD_NONE, false);
 	event.key.down     = false;
 	event.key.repeat   = false;
-	event.key.windowID = 0; // keyboard->focus ? keyboard->focus->id : 0;
+	event.key.windowID = 0;    // keyboard->focus ? keyboard->focus->id : 0;
 	SDL_PushEvent(&event);
 }
 
@@ -139,11 +339,10 @@ namespace {
 	SDL_zero(event);
 	event.type         = SDL_EVENT_KEY_DOWN;
 	event.key.scancode = keycode;
-	event.key.key      = SDL_GetKeyFromScancode(
-            keycode, SDL_KMOD_NONE, false);
+	event.key.key      = SDL_GetKeyFromScancode(keycode, SDL_KMOD_NONE, false);
 	event.key.down     = true;
 	event.key.repeat   = false;
-	event.key.windowID = 0; // keyboard->focus ? keyboard->focus->id : 0;
+	event.key.windowID = 0;    // keyboard->focus ? keyboard->focus->id : 0;
 	SDL_PushEvent(&event);
 }
 
@@ -155,11 +354,10 @@ namespace {
 	SDL_zero(event);
 	event.type         = SDL_EVENT_KEY_UP;
 	event.key.scancode = keycode;
-	event.key.key      = SDL_GetKeyFromScancode(
-            keycode, SDL_KMOD_NONE, false);
+	event.key.key      = SDL_GetKeyFromScancode(keycode, SDL_KMOD_NONE, false);
 	event.key.down     = false;
 	event.key.repeat   = false;
-	event.key.windowID = 0; // keyboard->focus ? keyboard->focus->id : 0;
+	event.key.windowID = 0;    // keyboard->focus ? keyboard->focus->id : 0;
 	SDL_PushEvent(&event);
 }
 
@@ -355,3 +553,46 @@ const char* IOSGetDocumentsDir() {
 	}
 	return gDocsDir;
 }
+
+extern "C" {
+void iOS_SetupQuickActions() {
+	[[ExultQuickActionManager sharedManager] setupQuickActions];
+}
+
+const char* iOS_GetLaunchGameFlag() {
+	if (gLaunchGameFlag) {
+		return [gLaunchGameFlag UTF8String];
+	}
+
+	NSUserDefaults* defaults   = [NSUserDefaults standardUserDefaults];
+	NSString*       storedFlag = [defaults objectForKey:@"ExultLaunchGameFlag"];
+	if (storedFlag) {
+		gLaunchGameFlag = [storedFlag copy];
+		[defaults removeObjectForKey:@"ExultLaunchGameFlag"];
+		[defaults synchronize];
+		return [gLaunchGameFlag UTF8String];
+	}
+
+	return nullptr;
+}
+
+void iOS_ClearLaunchGameFlag() {
+	gLaunchGameFlag          = nil;
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	[defaults removeObjectForKey:@"ExultLaunchGameFlag"];
+	[defaults synchronize];
+}
+}
+
+@implementation NSObject (ExultQuickActionNotifications)
+
++ (void)load {
+	// Register for app lifecycle notifications to handle Quick Actions
+	[[NSNotificationCenter defaultCenter]
+			addObserver:[ExultQuickActionManager sharedManager]
+			   selector:@selector(handleApplicationDidFinishLaunching:)
+				   name:UIApplicationDidFinishLaunchingNotification
+				 object:nil];
+}
+
+@end

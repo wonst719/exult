@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Chaoji Li
- * Copyright (C) 2015-2022 The Exult Team
+ * Copyright (C) 2015-2025 The Exult Team
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -35,5 +35,11 @@ public:
 };
 
 const char* IOSGetDocumentsDir();
+
+extern "C" {
+void        iOS_SetupQuickActions();
+const char* iOS_GetLaunchGameFlag();
+void        iOS_ClearLaunchGameFlag();
+}
 
 #endif
