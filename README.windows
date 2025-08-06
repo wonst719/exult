@@ -4,7 +4,8 @@ Exult instructions for Windows
 Supported versions of Windows
 ------------------------------
 Exult only officialy supports Windows Vista and newer. Windows XP is not supported.
-It may be possible to use a modified build process to generate XP compatible executables but the default build process does not.
+It may be possible to use a modified build process to generate XP compatible executables
+but the default build process does not.
 This document will not detail how to do that.
 
 To play
@@ -63,7 +64,7 @@ case you'll need to build the missing dependencies from source yourself using
 mingw32 and install them. As of 21 April 2025 the following pacages are missing
 for mingw32 
 * mt32emu: needed by Exult,
-* SDL2_image: needed by some tools
+* SDL3_image: needed by some tools
 * icu needed by Exult Studio
 
     **Warning**
@@ -82,7 +83,7 @@ assume you have not installed any of the others, and can be used independently.
 
 To build Exult, you must install the following:
     pacman -S --noconfirm --needed \
-            ${MINGW_PACKAGE_PREFIX}-SDL2 \
+            ${MINGW_PACKAGE_PREFIX}-sdl3 \
             ${MINGW_PACKAGE_PREFIX}-fluidsynth \
             ${MINGW_PACKAGE_PREFIX}-libtimidity \
             ${MINGW_PACKAGE_PREFIX}-libogg \
@@ -92,7 +93,7 @@ To build Exult, you must install the following:
             ${MINGW_PACKAGE_PREFIX}-zlib
 
 To build the Exult tools, you must install the following:
-    pacman -S --noconfirm --needed ${MINGW_PACKAGE_PREFIX}-SDL2_image
+    pacman -S --noconfirm --needed ${MINGW_PACKAGE_PREFIX}-sdl3-image
 
 To build Exult Studio, you must install the following:
     pacman -S --noconfirm --needed \
@@ -165,53 +166,10 @@ Once compile has finished and been installed exit MSYS2
 Run Exult.exe and enjoy the game :-)
 
     **Windows XP Compatibility**
-    There is a host of issues that prevent executables built with the above
-    instructions from working on Windows XP. The easiest to get around is
-    SDL2 image, which is needed by mockup and smooth tools. If you don't use
-    these tools, you don't need to do anything.
-
-    If you *do* use them, you can get them working by replacing the SDL2
-    image DLLs from MSYS2 by the official ones:
-        https://www.libsdl.org/projects/SDL_image/
-
-    There are more problems to handle to get Exult and Exult Studio running on
-    Windows XP. The first issue is that latest GLIB has dropped support for it;
-    the most recent version that retains Windows XP support is 2.54.3. In the
-    following, replace '/path/to/exult/source' by the actual path to Exult's
-    source code, then issue the following commands:
-        pacman -S --noconfirm --needed python zlib-devel \
-                libffi-devel gettext-devel
-        http://ftp.acc.umu.se/pub/gnome/sources/glib/2.54/glib-2.54.3.tar.xz
-        tar -xf glib-2.54.3.tar.xz
-        cd glib-2.54.3
-        patch -p1 < /path/to/exult/source/win32/glib-xp.patch
-        CPPFLAGS="-march=i686 -D_WIN32_WINNT=0x0501" ./configure
-                --prefix=$(MSYSTEM_PREFIX) --with-python=$(which python)
-        make
-
-    Once it finishes building, grab the following DLLs for Exult:
-        glib/.libs/libglib-2.0-0.dll
-        gmodule/.libs/libgmodule-2.0-0.dll
-
-    Exult Studio needs the following DLLs:
-        gio/.libs/libgio-2.0-0.dll
-        glib/.libs/libglib-2.0-0.dll
-        gmodule/.libs/libgmodule-2.0-0.dll
-        gobject/.libs/libgobject-2.0-0.dll
-
-    For Exult Studio, we will need to do a few more things. First, we need a
-    version of libHarfBuzz without DWRITE support. Here is how to build it:
-        wget https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-2.1.3.tar.bz2
-        tar -xf harfbuzz-2.1.3.tar.bz2
-        cd harfbuzz-2.1.3/
-        ./configure --prefix=$(MSYSTEM_PREFIX)
-        make
-
-    Once that finishes, grab the following DLL for Exult Studio:
-        src/.libs/libharfbuzz-0.dll
-
-    And that's all: Exult, Tools, and Exult Studio will now work on Windows XP.
-
+   With the switch to SDL3 and changes to our code compatibility with Windows XP
+   is even less likely to regain. Please see our prior instructions at
+   https://github.com/exult/exult/blob/v1.12.0/README.windows#L167 if you want
+   to try.
 
 To build in Windows using Visual Studio
 ---------------------------------------
