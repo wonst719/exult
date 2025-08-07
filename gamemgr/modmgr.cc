@@ -458,19 +458,18 @@ ModManager::ModManager(
 			static_identity = "DEVEL GAME";
 		}
 		if (!silent) {
-			cout << "found game with identity '" << static_identity << "'"
-				 << endl;
-		}
-	} else if (id == CFG_DEMO_NAME && U7exists(game_path)) {
-		static_identity = "DEVEL GAME";
-		if (!silent) {
-			cout << "found Demo game with identity '" << static_identity << "'"
-				 << endl;
+			if (id == CFG_DEMO_NAME) {
+				cout << "found DEMO game with identity '" << static_identity
+					 << "'" << endl;
+			} else {
+				cout << "found game with identity '" << static_identity << "'"
+					 << endl;
+			}
 		}
 	} else if (U7exists(game_path)) {    // New game still under development.
 		if (cfgname != CFG_BG_NAME && cfgname != CFG_FOV_NAME
-				&& cfgname != CFG_SIB_NAME && cfgname != CFG_SI_NAME
-				&& cfgname != CFG_SS_NAME ) {
+			&& cfgname != CFG_SIB_NAME && cfgname != CFG_SI_NAME
+			&& cfgname != CFG_SS_NAME) {
 			static_identity = "DEVEL GAME";
 			if (!silent) {
 				cout << "found game with identity '" << static_identity << "'"
