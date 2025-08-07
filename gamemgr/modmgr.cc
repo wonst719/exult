@@ -1277,8 +1277,7 @@ GameManager::GameManager(bool silent) {
 		// This checks static identity and sets game type.
 		const ModManager game
 				= ModManager(gameentry, game_title, need_title, silent);
-		if (!game.being_edited() && !game.is_there()
-			&& game.get_game_type() != EXULT_DEVEL_GAME) {
+		if (!game.being_edited() && !game.is_there()) {
 			continue;
 		}
 		if (game.get_game_type() == BLACK_GATE) {
