@@ -427,7 +427,7 @@ void ScenePlayer::play_flic_with_audio(
 	for (size_t i = 0; i < commands.size(); ++i) {
 		const auto& cmd_variant = commands[i];
 		std::visit(
-				[&](auto&& cmd) {
+				[&](auto&& cmd) noexcept {
 					using T = std::decay_t<decltype(cmd)>;
 					if constexpr (std::is_same_v<T, AudioCommand>) {
 						timed_commands[cmd.start_time_ms].push_back(
@@ -447,7 +447,7 @@ void ScenePlayer::play_flic_with_audio(
 	for (size_t i = 0; i < commands.size(); ++i) {
 		const auto& cmd_variant = commands[i];
 		std::visit(
-				[&](auto&& cmd) {
+				[&](auto&& cmd) noexcept {
 					using T = std::decay_t<decltype(cmd)>;
 					if constexpr (std::is_same_v<T, AudioCommand>) {
 						if (cmd.stop_time_ms > 0) {
@@ -474,7 +474,7 @@ void ScenePlayer::play_flic_with_audio(
 		if (timed_commands.count(0)) {
 			for (const auto& cmd_pair : timed_commands[0]) {
 				std::visit(
-						[&](auto&& cmd) {
+						[&](auto&& cmd) noexcept {
 							using T = std::decay_t<decltype(cmd)>;
 							if constexpr (std::is_same_v<T, AudioCommand>) {
 								start_audio_by_type(
@@ -544,7 +544,7 @@ void ScenePlayer::play_flic_with_audio(
 				if (it->first <= elapsed_ms) {
 					for (const auto& cmd_pair : it->second) {
 						std::visit(
-								[&](auto&& cmd) {
+								[&](auto&& cmd) noexcept {
 									using T = std::decay_t<decltype(cmd)>;
 									if constexpr (std::is_same_v<
 														  T, SubtitleCommand>) {
@@ -575,7 +575,7 @@ void ScenePlayer::play_flic_with_audio(
 					// Time to stop this audio
 					const auto& cmd_variant = commands[it->first];
 					std::visit(
-							[&](auto&& cmd) {
+							[&](auto&& cmd) noexcept {
 								using T = std::decay_t<decltype(cmd)>;
 								if constexpr (std::is_same_v<T, AudioCommand>) {
 									stop_audio_by_type(
@@ -700,7 +700,7 @@ void ScenePlayer::play_flic_with_audio(
 		for (size_t i = 0; i < commands.size(); i++) {
 			const auto& cmd_variant = commands[i];
 			std::visit(
-					[&](auto&& cmd) {
+					[&](auto&& cmd) noexcept {
 						using T = std::decay_t<decltype(cmd)>;
 						if constexpr (std::is_same_v<T, AudioCommand>) {
 							if (cmd.stop_condition == 0) {
@@ -791,7 +791,7 @@ void ScenePlayer::show_text_section(
 		const auto& cmd_variant = section.audio_commands[i];
 
 		std::visit(
-				[&](auto&& cmd) {
+				[&](auto&& cmd) noexcept {
 					using T = std::decay_t<decltype(cmd)>;
 					if constexpr (std::is_same_v<T, AudioCommand>) {
 						// For text sections, we use page index as frame,
@@ -811,7 +811,7 @@ void ScenePlayer::show_text_section(
 	for (size_t i = 0; i < section.audio_commands.size(); ++i) {
 		const auto& cmd_variant = section.audio_commands[i];
 		std::visit(
-				[&](auto&& cmd) {
+				[&](auto&& cmd) noexcept {
 					using T = std::decay_t<decltype(cmd)>;
 					if constexpr (std::is_same_v<T, AudioCommand>) {
 						if (cmd.stop_time_ms > 0) {
@@ -831,7 +831,7 @@ void ScenePlayer::show_text_section(
 		if (timed_commands.count(0)) {
 			for (const auto& cmd_pair : timed_commands[0]) {
 				std::visit(
-						[&](auto&& cmd) {
+						[&](auto&& cmd) noexcept {
 							using T = std::decay_t<decltype(cmd)>;
 							if constexpr (std::is_same_v<T, AudioCommand>) {
 								start_audio_by_type(
@@ -872,7 +872,7 @@ void ScenePlayer::show_text_section(
 				if (it->first <= elapsed_ms) {
 					for (const auto& cmd_pair : it->second) {
 						std::visit(
-								[&](auto&& cmd) {
+								[&](auto&& cmd) noexcept {
 									using T = std::decay_t<decltype(cmd)>;
 									if constexpr (std::is_same_v<
 														  T, AudioCommand>) {
@@ -896,7 +896,7 @@ void ScenePlayer::show_text_section(
 					// Time to stop this audio
 					const auto& cmd_variant = section.audio_commands[it->first];
 					std::visit(
-							[&](auto&& cmd) {
+							[&](auto&& cmd) noexcept {
 								using T = std::decay_t<decltype(cmd)>;
 								if constexpr (std::is_same_v<T, AudioCommand>) {
 									stop_audio_by_type(
@@ -917,7 +917,7 @@ void ScenePlayer::show_text_section(
 				if (elapsed_ms >= it->second) {
 					const auto& cmd_variant = section.audio_commands[it->first];
 					std::visit(
-							[&](auto&& cmd) {
+							[&](auto&& cmd) noexcept {
 								using T = std::decay_t<decltype(cmd)>;
 								if constexpr (std::is_same_v<T, AudioCommand>) {
 									stop_audio_by_type(
@@ -952,7 +952,7 @@ end_text_section:;
 	for (size_t i = 0; i < section.audio_commands.size(); i++) {
 		const auto& cmd_variant = section.audio_commands[i];
 		std::visit(
-				[&](auto&& cmd) {
+				[&](auto&& cmd) noexcept {
 					using T = std::decay_t<decltype(cmd)>;
 					if constexpr (std::is_same_v<T, AudioCommand>) {
 						if (cmd.stop_condition == 0) {
