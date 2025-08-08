@@ -432,7 +432,7 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 #endif
-	
+
 
 	if (arg_mapnum >= 0 && arg_buildmap < 0) {
 		cerr << "Error: '--mapnum' requires '--buildmap'!" << endl;
@@ -1171,7 +1171,7 @@ static void Init() {
 				if (mod_info && mod_info->has_force_skip_splash_set()) {
 					force_skip_splash = mod_info->get_force_skip_splash();
 				}
-				if (mod_info->has_force_digital_music_set()) {
+				if (mod_info && mod_info->has_force_digital_music_set()) {
 					force_digital_music = mod_info->get_force_digital_music();
 				}
 			}
