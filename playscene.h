@@ -111,7 +111,7 @@ private:
 	bool                        parse_scene_section(
 								   const std::string& content, std::vector<SceneCommand>& commands);
 	bool parse_text_section(const std::string& content, TextSection& section);
-	bool load_text_from_flx(int index, std::string& text_content);
+	bool load_text_from_flx(int index, std::string& out_text);
 	SkipAction check_break();
 	void       play_flic_with_audio(
 				  const std::vector<SceneCommand>& commands,
