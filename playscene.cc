@@ -241,8 +241,8 @@ bool ScenePlayer::parse_scene_section(
 
 			commands.emplace_back(
 					AudioCommand{
-					audio_type, index, start_time_ms, stop_time_ms,
-					stop_condition});
+							audio_type, index, start_time_ms, stop_time_ms,
+							stop_condition});
 		}
 	}
 	return true;
@@ -1159,7 +1159,7 @@ bool ScenePlayer::load_subtitle_from_file(
 		while (std::getline(iss, line)) {
 			if (line.rfind(target_prefix, 0) == 0) {
 				string text_content = line.substr(target_prefix.length());
-				// First process formatting codes like \C, \L, \R
+				// First process formatting codes like \\C, \\L, \\R
 				ParsedTextLine parsed = parse_text_formatting(text_content);
 				// Then process \n as actual newlines
 				out_text      = process_escape_sequences(parsed.text);
@@ -1350,7 +1350,7 @@ std::shared_ptr<Font> ScenePlayer::get_font_by_type(int font_type) {
 	if (font_type == 1) {
 		return fontManager.get_font("HOT_FONT");
 	}
-		return fontManager.get_font("CREDITS_FONT");
+	return fontManager.get_font("CREDITS_FONT");
 }
 
 void ScenePlayer::load_palette_by_color(int color) {
