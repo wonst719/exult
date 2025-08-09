@@ -212,7 +212,10 @@ ifeq (n,$(findstring n,$(firstword -$(MAKEFLAGS))))
 	# Nab the NDK from https://github.com/android/ndk and define the variable
 	# WITH_ANDROID_HEADERS to point to the following NDK directory:
 	#   toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include
-	# Then create a symlink to $(MSYSTEM_PREFIX)/include/SDL2 inside this dir.
+	# Then inside this dir, create symlinks to:
+	# - $(MSYSTEM_PREFIX)/include/SDL3
+	# - $(MSYSTEM_PREFIX)/include/ogg
+	# - $(MSYSTEM_PREFIX)/include/vorbis
 	ifdef WITH_ANDROID_HEADERS
 		ANDROID_CFLAGS:=-target x86_64-linux-android28 \
 			-DANDROID -fdata-sections -ffunction-sections -funwind-tables \
