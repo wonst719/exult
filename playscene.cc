@@ -19,13 +19,8 @@
 #include "playscene.h"
 
 #include "Audio.h"
-#include "Configuration.h"
-#include "OggAudioSample.h"
-#include "VocAudioSample.h"
-#include "WavAudioSample.h"
 #include "data/exult_flx.h"
 #include "exceptions.h"
-#include "files/U7file.h"
 #include "files/utils.h"
 #include "flic/playfli.h"
 #include "font.h"
@@ -37,10 +32,8 @@
 
 #include <algorithm>
 #include <cctype>
-#include <fstream>
 #include <sstream>
 
-using std::make_unique;
 using std::string;
 using std::unique_ptr;
 using std::vector;
