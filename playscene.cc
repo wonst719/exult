@@ -239,7 +239,8 @@ bool ScenePlayer::parse_scene_section(
 			uint32 stop_time_ms   = safe_stoi(parts, 3, 0);
 			int    stop_condition = safe_stoi(parts, 4, 0);
 
-			commands.emplace_back(AudioCommand{
+			commands.emplace_back(
+					AudioCommand{
 					audio_type, index, start_time_ms, stop_time_ms,
 					stop_condition});
 		}
@@ -491,10 +492,10 @@ void ScenePlayer::play_flic_with_audio(
 		playfli::fliinfo finfo;
 		fli.info(&finfo);
 
-		uint32 section_start_time
-				= SDL_GetTicks();    // Track section's start time
-		uint32 next_frame_time = section_start_time;
-		bool   user_skipped    = false;
+		// Track section's start time
+		uint32 section_start_time = SDL_GetTicks();
+		uint32 next_frame_time    = section_start_time;
+		bool   user_skipped       = false;
 		if (flic_cmd && flic_cmd->fade_in > 0) {
 			const int fade_steps = 20;
 			const int step_delay = flic_cmd->fade_in / fade_steps;
@@ -668,7 +669,8 @@ void ScenePlayer::play_flic_with_audio(
 					SkipAction action = check_break();
 					if (action == SkipAction::EXIT_SCENE) {
 						throw UserSkipException();    // Exit entire scene
-					} else if (action == SkipAction::NEXT_SECTION) {
+					}
+					if (action == SkipAction::NEXT_SECTION) {
 						break;    // Just break delay
 					}
 					SDL_Delay(50);
@@ -683,7 +685,8 @@ void ScenePlayer::play_flic_with_audio(
 				SkipAction action = check_break();
 				if (action == SkipAction::EXIT_SCENE) {
 					throw UserSkipException();    // Exit entire scene
-				} else if (action == SkipAction::NEXT_SECTION) {
+				}
+				if (action == SkipAction::NEXT_SECTION) {
 					break;    // Just break delay
 				}
 				SDL_Delay(50);
@@ -746,13 +749,13 @@ void ScenePlayer::show_delay_text(const TextSection& section) {
 		}
 
 		int total_height = parsed_lines.size() * font->get_text_height();
-		int start_y      = gwin->get_height() / 2 - total_height / 2;
+		int start_y      = (gwin->get_height() / 2) - (total_height / 2);
 
 		for (size_t i = 0; i < parsed_lines.size(); i++) {
 			const auto& parsed = parsed_lines[i];
 			int         x      = calculate_text_x_position(
                     parsed.alignment, parsed.text, font, screen_center);
-			int y = start_y + i * font->get_text_height();
+			int y = start_y + (i * font->get_text_height());
 
 			font->draw_text(win->get_ib8(), x, y, parsed.text.c_str());
 		}
@@ -1327,16 +1330,17 @@ ScenePlayer::ParsedTextLine ScenePlayer::parse_text_formatting(
 int ScenePlayer::calculate_text_x_position(
 		int alignment, const std::string& text, std::shared_ptr<Font> font,
 		int screen_center) {
-	if (alignment == 1) {
+	switch (alignment) {
+	case 1:
 		// Center
-		return screen_center - font->get_text_width(text.c_str()) / 2;
-	} else if (alignment == 2) {
+		return screen_center - (font->get_text_width(text.c_str()) / 2);
+	case 2:
 		// Left aligned to right center
 		return screen_center + 10;
-	} else if (alignment == 3) {
+	case 3:
 		// Right aligned to left center
 		return screen_center - font->get_text_width(text.c_str()) - 10;
-	} else {
+	default:
 		// Default left alignment
 		return 10;
 	}
@@ -1345,9 +1349,8 @@ int ScenePlayer::calculate_text_x_position(
 std::shared_ptr<Font> ScenePlayer::get_font_by_type(int font_type) {
 	if (font_type == 1) {
 		return fontManager.get_font("HOT_FONT");
-	} else {
-		return fontManager.get_font("CREDITS_FONT");
 	}
+		return fontManager.get_font("CREDITS_FONT");
 }
 
 void ScenePlayer::load_palette_by_color(int color) {
