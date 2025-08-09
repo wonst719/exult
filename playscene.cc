@@ -92,6 +92,28 @@ namespace {
 		}
 		return result;
 	}
+
+	template <typename Callable>
+	struct scope_exit {
+		scope_exit(Callable&& f) : func(std::forward<Callable>(f)) {}
+
+		~scope_exit() {
+			if (!dismissed) {
+				func();
+			}
+		}
+
+		void dismiss() {
+			dismissed = true;
+		}
+
+	private:
+		Callable func;
+		bool     dismissed = false;
+	};
+
+	template <typename Callable>
+	scope_exit(Callable&&) -> scope_exit<Callable>;
 }    // namespace
 
 ScenePlayer::ScenePlayer(
@@ -457,6 +479,26 @@ void ScenePlayer::play_flic_with_audio(
 				cmd_variant);
 	}
 
+	scope_exit guard([&]() {
+		gwin->clear_screen(true);
+
+		// Stop audio that should stop with end of flic
+		for (size_t i = 0; i < commands.size(); i++) {
+			const auto& cmd_variant = commands[i];
+			std::visit(
+					[&](auto&& cmd) noexcept {
+						using T = std::decay_t<decltype(cmd)>;
+						if constexpr (std::is_same_v<T, AudioCommand>) {
+							if (cmd.stop_condition == 0) {
+								stop_audio_by_type(cmd, command_audio_ids[i]);
+							}
+						}
+					},
+					cmd_variant);
+		}
+		gwin->clear_screen(true);
+	});
+
 	try {
 		gwin->clear_screen(true);
 
@@ -496,7 +538,7 @@ void ScenePlayer::play_flic_with_audio(
 		uint32 section_start_time = SDL_GetTicks();
 		uint32 next_frame_time    = section_start_time;
 		bool   user_skipped       = false;
-		if (flic_cmd && flic_cmd->fade_in > 0) {
+		if (flic_cmd != nullptr && flic_cmd->fade_in > 0) {
 			const int fade_steps = 20;
 			const int step_delay = flic_cmd->fade_in / fade_steps;
 
@@ -519,7 +561,7 @@ void ScenePlayer::play_flic_with_audio(
 
 				case SkipAction::NEXT_SECTION:
 					user_skipped = true;
-					goto skip_flic_playback;
+					return;
 
 				case SkipAction::NONE:
 					break;
@@ -632,6 +674,7 @@ void ScenePlayer::play_flic_with_audio(
 				throw UserSkipException();
 			case SkipAction::NEXT_SECTION:
 				user_skipped = true;
+				guard.dismiss();
 				return;
 			case SkipAction::NONE:
 				break;
@@ -692,24 +735,8 @@ void ScenePlayer::play_flic_with_audio(
 				SDL_Delay(50);
 			}
 		}
-	skip_flic_playback:
-		gwin->clear_screen(true);
-
-		// Stop audio that should stop with end of flic
-		for (size_t i = 0; i < commands.size(); i++) {
-			const auto& cmd_variant = commands[i];
-			std::visit(
-					[&](auto&& cmd) noexcept {
-						using T = std::decay_t<decltype(cmd)>;
-						if constexpr (std::is_same_v<T, AudioCommand>) {
-							if (cmd.stop_condition == 0) {
-								stop_audio_by_type(cmd, command_audio_ids[i]);
-							}
-						}
-					},
-					cmd_variant);
-		}
 	} catch (const UserSkipException&) {
+		guard.dismiss();
 		audio->stop_music();
 		for (int id : audio_ids) {
 			audio->stop_sound_effect(id);
@@ -717,8 +744,6 @@ void ScenePlayer::play_flic_with_audio(
 		gwin->clear_screen(true);
 		throw;
 	}
-
-	gwin->clear_screen(true);
 }
 
 void ScenePlayer::show_delay_text(const TextSection& section) {
@@ -825,9 +850,26 @@ void ScenePlayer::show_text_section(
 
 	load_palette_by_color(section.color);
 
+	scope_exit guard([&]() {
+		// Stop audio that should stop at the end of the text section
+		for (size_t i = 0; i < section.audio_commands.size(); i++) {
+			const auto& cmd_variant = section.audio_commands[i];
+			std::visit(
+					[&](auto&& cmd) noexcept {
+						using T = std::decay_t<decltype(cmd)>;
+						if constexpr (std::is_same_v<T, AudioCommand>) {
+							if (cmd.stop_condition == 0) {
+								stop_audio_by_type(cmd, command_audio_ids[i]);
+							}
+						}
+					},
+					cmd_variant);
+		}
+	});
+
 	if (section.is_scrolling) {
 		// Start any audio that should play immediately (time 0)
-		if (timed_commands.count(0)) {
+		if (timed_commands.count(0) != 0u) {
 			for (const auto& cmd_pair : timed_commands[0]) {
 				std::visit(
 						[&](auto&& cmd) noexcept {
@@ -850,9 +892,10 @@ void ScenePlayer::show_text_section(
 		while (current_page_index < section.entries.size()) {
 			switch (check_break()) {
 			case SkipAction::EXIT_SCENE:
+				guard.dismiss();
 				throw UserSkipException();
 			case SkipAction::NEXT_SECTION:
-				goto end_text_section;
+				return;
 			case SkipAction::NONE:
 				break;
 			}
@@ -933,9 +976,10 @@ void ScenePlayer::show_text_section(
 				   < static_cast<uint32_t>(section.delay_ms)) {
 				switch (check_break()) {
 				case SkipAction::EXIT_SCENE:
+					guard.dismiss();
 					throw UserSkipException();
 				case SkipAction::NEXT_SECTION:
-					goto end_text_section;
+					return;
 				case SkipAction::NONE:
 					break;
 				}
@@ -944,22 +988,6 @@ void ScenePlayer::show_text_section(
 
 			current_page_index++;
 		}
-	}
-end_text_section:;
-
-	// Stop audio that should stop at the end of the text section
-	for (size_t i = 0; i < section.audio_commands.size(); i++) {
-		const auto& cmd_variant = section.audio_commands[i];
-		std::visit(
-				[&](auto&& cmd) noexcept {
-					using T = std::decay_t<decltype(cmd)>;
-					if constexpr (std::is_same_v<T, AudioCommand>) {
-						if (cmd.stop_condition == 0) {
-							stop_audio_by_type(cmd, command_audio_ids[i]);
-						}
-					}
-				},
-				cmd_variant);
 	}
 }
 
