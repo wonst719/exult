@@ -403,12 +403,12 @@ void ScenePlayer::play_flic_with_audio(
 		}
 	}
 
-	if (!flic_cmd) {
+	if (flic_cmd == nullptr) {
 		return;
 	}
 
 	Audio* audio = Audio::get_ptr();
-	if (!audio) {
+	if (audio == nullptr) {
 		return;
 	}
 
@@ -467,7 +467,7 @@ void ScenePlayer::play_flic_with_audio(
 		}
 
 		// Start audio tracks that should play immediately (time 0)
-		if (timed_commands.count(0)) {
+		if (timed_commands.count(0) != 0u) {
 			for (const auto& cmd_pair : timed_commands[0]) {
 				std::visit(
 						[&](auto&& cmd) noexcept {
@@ -637,7 +637,7 @@ void ScenePlayer::play_flic_with_audio(
 			}
 		}
 
-		if (flic_cmd && flic_cmd->fade_out > 0 && !user_skipped) {
+		if (flic_cmd != nullptr && flic_cmd->fade_out > 0 && !user_skipped) {
 			const int fade_steps = 20;
 			const int step_delay = flic_cmd->fade_out / fade_steps;
 
@@ -675,7 +675,7 @@ void ScenePlayer::play_flic_with_audio(
 				}
 			}
 		}
-		if (flic_cmd && flic_cmd->end_delay > 0 && !user_skipped
+		if (flic_cmd != nullptr && flic_cmd->end_delay > 0 && !user_skipped
 			&& !(flic_cmd->fade_out > 0)) {
 			uint32 delay_start = SDL_GetTicks();
 			while (SDL_GetTicks() - delay_start
@@ -761,7 +761,7 @@ void ScenePlayer::show_delay_text(const TextSection& section) {
 	} catch (const UserSkipException&) {
 		// Stop all audio and re-throw to exit the scene player.
 		Audio* audio = Audio::get_ptr();
-		if (audio) {
+		if (audio != nullptr) {
 			audio->stop_music();
 			for (int id : active_audio_ids) {
 				audio->stop_sound_effect(id);
@@ -1035,7 +1035,7 @@ void ScenePlayer::start_audio_by_type(
 		std::map<int, std::vector<int>>& command_audio_ids,
 		size_t                           command_index) {
 	Audio* audio = Audio::get_ptr();
-	if (!audio) {
+	if (audio == nullptr) {
 		return;
 	}
 
@@ -1081,7 +1081,7 @@ void ScenePlayer::start_audio_by_type(
 void ScenePlayer::stop_audio_by_type(
 		const AudioCommand& cmd, const std::vector<int>& command_ids) {
 	Audio* audio = Audio::get_ptr();
-	if (!audio) {
+	if (audio == nullptr) {
 		return;
 	}
 
@@ -1096,7 +1096,7 @@ void ScenePlayer::stop_audio_by_type(
 
 void ScenePlayer::finish_scene() {
 	Audio* audio = Audio::get_ptr();
-	if (!audio) {
+	if (audio == nullptr) {
 		return;
 	}
 
@@ -1353,7 +1353,7 @@ std::shared_ptr<Font> ScenePlayer::get_font_by_type(int font_type) {
 void ScenePlayer::load_palette_by_color(int color) {
 	const str_int_pair& palette_resource
 			= game->get_resource(("palettes/" + std::to_string(color)).c_str());
-	if (palette_resource.str) {
+	if (palette_resource.str != nullptr) {
 		try {
 			gwin->get_pal()->load(palette_resource.str, palette_resource.num);
 			gwin->get_pal()->apply();
@@ -1392,12 +1392,13 @@ bool scene_available(const string& scene_name) {
 }
 
 void play_scene(const string& scene_name) {
-	Game_window* gwin  = Game_window::get_instance();
-	Audio*       audio = Audio::get_ptr();
-	const bool   speech_is_on
-			= audio && audio->is_audio_enabled() && audio->is_speech_enabled();
+	Game_window* gwin         = Game_window::get_instance();
+	Audio*       audio        = Audio::get_ptr();
+	const bool   speech_is_on = audio != nullptr && audio->is_audio_enabled()
+							  && audio->is_speech_enabled();
 	const bool subtitles_are_on
-			= !speech_is_on || (audio && audio->is_speech_with_subs());
+			= !speech_is_on
+			  || (audio != nullptr && audio->is_speech_with_subs());
 	ScenePlayer player(gwin, scene_name, subtitles_are_on, speech_is_on);
 	player.play_scene();
 }
