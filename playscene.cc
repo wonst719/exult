@@ -46,6 +46,9 @@ namespace {
 			try {
 				return std::stoi(parts[index]);
 			} catch (const std::invalid_argument&) {
+				std::cerr << "Invalid integer at index " << index
+						  << ", using default value: " << default_value
+						  << std::endl;
 			}
 		}
 		return default_value;
