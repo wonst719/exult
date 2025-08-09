@@ -145,8 +145,8 @@ private:
 
 	ParsedTextLine parse_text_formatting(const std::string& line);
 	int            calculate_text_x_position(
-					   int alignment, const std::string& text, std::shared_ptr<Font> font,
-					   int screen_center);
+					   int alignment, const std::string& text,
+					   const std::shared_ptr<Font>& font, int screen_center);
 	std::shared_ptr<Font> get_font_by_type(int font_type);
 	void                  load_palette_by_color(int color);
 	void                  show_single_text_page(

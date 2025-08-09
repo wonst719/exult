@@ -267,7 +267,7 @@ bool ScenePlayer::parse_text_section(
 			continue;
 		}
 
-		string type_str = parts[0];
+		const string& type_str = parts[0];
 
 		if (type_str == "text") {
 			if (parts.size() < 5) {
@@ -1328,8 +1328,8 @@ ScenePlayer::ParsedTextLine ScenePlayer::parse_text_formatting(
 }
 
 int ScenePlayer::calculate_text_x_position(
-		int alignment, const std::string& text, std::shared_ptr<Font> font,
-		int screen_center) {
+		int alignment, const std::string& text,
+		const std::shared_ptr<Font>& font, int screen_center) {
 	switch (alignment) {
 	case 1:
 		// Center
