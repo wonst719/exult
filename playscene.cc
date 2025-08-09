@@ -95,12 +95,12 @@ namespace {
 }    // namespace
 
 ScenePlayer::ScenePlayer(
-		Game_window* gw, const string& scene_name, bool use_subtitles,
+		Game_window* gw, const string& scene_name_, bool use_subtitles,
 		bool use_speech)
-		: gwin(gw), scene_name(scene_name), subtitles(use_subtitles),
+		: gwin(gw), scene_name(scene_name_), subtitles(use_subtitles),
 		  speech_enabled(use_speech) {
-	flx_path  = "<PATCH>/" + scene_name + ".flx";
-	info_path = "<PATCH>/" + scene_name + "_info.txt";
+	flx_path  = "<PATCH>/" + scene_name_ + ".flx";
+	info_path = "<PATCH>/" + scene_name_ + "_info.txt";
 
 	// Initialize fonts
 	const char* fname = BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX);
@@ -415,7 +415,7 @@ void ScenePlayer::play_flic_with_audio(
 	// Map to track which audio IDs belong to which commands
 	std::map<int, std::vector<int>> command_audio_ids;
 
-	std::vector<std::pair<SubtitleCommand, int>> active_subtitles;
+	std::vector<std::pair<SubtitleCommand, int>> current_subtitles;
 
 	// Map timestamps to a list of commands
 	std::map<uint32, std::vector<std::pair<SceneCommand, size_t>>>
@@ -480,7 +480,7 @@ void ScenePlayer::play_flic_with_audio(
 														 T, SubtitleCommand>) {
 								uint32 end_time
 										= cmd.start_time_ms + cmd.duration_ms;
-								active_subtitles.push_back({cmd, end_time});
+								current_subtitles.push_back({cmd, end_time});
 							}
 						},
 						cmd_pair.first);
@@ -546,7 +546,7 @@ void ScenePlayer::play_flic_with_audio(
 														  T, SubtitleCommand>) {
 										uint32 end_time
 												= elapsed_ms + cmd.duration_ms;
-										active_subtitles.push_back(
+										current_subtitles.push_back(
 												{cmd, end_time});
 									} else if constexpr (
 											std::is_same_v<T, AudioCommand>) {
@@ -592,7 +592,7 @@ void ScenePlayer::play_flic_with_audio(
 
 			// Draw active subtitles directly on the frame
 			std::string combined_text;
-			for (auto& subtitle : active_subtitles) {
+			for (auto& subtitle : current_subtitles) {
 				if (elapsed_ms >= subtitle.first.start_time_ms
 					&& elapsed_ms < static_cast<uint32>(subtitle.second)) {
 					if (!combined_text.empty()) {
@@ -604,9 +604,9 @@ void ScenePlayer::play_flic_with_audio(
 
 			// Draw the combined subtitle text if any
 			if (!combined_text.empty()) {
-				SubtitleCommand temp_cmd = active_subtitles.empty()
+				SubtitleCommand temp_cmd = current_subtitles.empty()
 												   ? SubtitleCommand{}
-												   : active_subtitles[0].first;
+												   : current_subtitles[0].first;
 				temp_cmd.text            = combined_text;
 
 				// Draw directly on the window buffer
@@ -614,10 +614,10 @@ void ScenePlayer::play_flic_with_audio(
 			}
 
 			// Clean up expired subtitles
-			for (auto it = active_subtitles.begin();
-				 it != active_subtitles.end();) {
+			for (auto it = current_subtitles.begin();
+				 it != current_subtitles.end();) {
 				if (elapsed_ms >= static_cast<uint32>(it->second)) {
-					it = active_subtitles.erase(it);
+					it = current_subtitles.erase(it);
 				} else {
 					++it;
 				}
