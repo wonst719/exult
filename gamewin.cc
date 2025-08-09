@@ -1148,8 +1148,8 @@ void Game_window::set_camera_actor(Actor* a) {
 bool Game_window::scroll_if_needed(Tile_coord t) {
 	bool scrolled = false;
 	// 1 lift = 1/2 tile.
-	const int tx = t.tx - t.tz / 2;
-	const int ty = t.ty - t.tz / 2;
+	const int tx = DECR_TILE(t.tx,t.tz / 2);
+	const int ty = DECR_TILE(t.ty,t.tz / 2);
 	if (Tile_coord::gte(DECR_TILE(scroll_bounds.x), tx)) {
 		view_left();
 		scrolled = true;
