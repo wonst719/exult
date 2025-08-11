@@ -79,7 +79,6 @@ std::unique_ptr<std::istream> Game_map::chunks;
 bool                          Game_map::v2_chunks               = false;
 bool                          Game_map::read_all_terrain        = false;
 bool                          Game_map::chunk_terrains_modified = false;
-bool                          Game_map::map_modified            = false;
 
 const int   V2_CHUNK_HDR_SIZE = 4 + 4 + 2;    // 0xffff, "exlt", vers.
 static char v2hdr[]
@@ -134,7 +133,7 @@ Chunk_terrain* Game_map::read_terrain(
  */
 
 Game_map::Game_map(int n)
-		: num(n), didinit(false), caching_out(0),
+		: num(n), didinit(false), map_modified(false), caching_out(0),
 		  map_patches(std::make_unique<Map_patch_collection>()) {}
 
 /*
@@ -472,8 +471,8 @@ void Game_map::write_chunk_terrains() {
 		if (!pOchunks) {
 			throw file_write_exception(U7CHUNKS);
 		}
-		auto& ochunks    = *pOchunks;
-		v2_chunks        |= New_shapes();
+		auto& ochunks = *pOchunks;
+		v2_chunks |= New_shapes();
 		const int nbytes = v2_chunks ? 3 : 2;
 		if (v2_chunks) {
 			ochunks.write(v2hdr, sizeof(v2hdr));
@@ -1381,8 +1380,10 @@ bool Game_map::insert_terrain(
 		int  tnum,    // Insert after this one (may be -1).
 		bool dup      // If true, duplicate #tnum.
 ) {
-	const int ntiles = c_tiles_per_chunk * c_tiles_per_chunk;
-	const int nbytes = v2_chunks ? 3 : 2;
+	const int                ntiles = c_tiles_per_chunk * c_tiles_per_chunk;
+	const int                nbytes = v2_chunks ? 3 : 2;
+	Game_window*             gwin   = Game_window::get_instance();
+	const vector<Game_map*>& maps   = gwin->get_maps();
 	if (dup && tnum == -2) {
 		const int selected = cheat.get_edit_chunknum();
 		if (selected < 0
@@ -1414,7 +1415,11 @@ bool Game_map::insert_terrain(
 		new_terrain->set_modified();
 		chunk_terrains->push_back(new_terrain);
 		chunk_terrains_modified = true;
-		map_modified            = true;
+		for (auto* map : maps) {
+			if (map) {
+				map->set_map_modified();
+			}
+		}
 		return true;
 	} else if (!dup && tnum == -2) {
 		// Special case for creating an empty chunk and appending it
@@ -1426,7 +1431,11 @@ bool Game_map::insert_terrain(
 		new_terrain->set_modified();
 		chunk_terrains->push_back(new_terrain);
 		chunk_terrains_modified = true;
-		map_modified            = true;
+		for (auto* map : maps) {
+			if (map) {
+				map->set_map_modified();
+			}
+		}
 		return true;
 	}
 	if (tnum < -1 || tnum >= static_cast<int>(chunk_terrains->size())) {
@@ -1470,8 +1479,6 @@ bool Game_map::insert_terrain(
 		return true;    // Inserted at end of list.
 	}
 	// Update terrain map.
-	Game_window*             gwin = Game_window::get_instance();
-	const vector<Game_map*>& maps = gwin->get_maps();
 	for (auto* map : maps) {
 		if (!map) {
 			continue;
