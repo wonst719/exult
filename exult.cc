@@ -423,16 +423,18 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 #ifndef HAVE_ZIP_SUPPORT
-	} else if (!arg_installmod.empty() ) {
-		cerr << "Error: --installmod unsupported in this build of Exult. Zip file support not compiled in." << endl;
+	else if (!arg_installmod.empty()) {
+		cerr << "Error: --installmod unsupported in this build of Exult. Zip "
+				"file support not compiled in."
+			 << endl;
 		exit(-1);
-	}
-	} else if (!arg_installdata.empty() ) {
-		cerr << "Error: --installdata unsupported in this build of Exult. Zip file support not compiled in." << endl;
+	} else if (!arg_installdata.empty()) {
+		cerr << "Error: --installdata unsupported in this build of Exult. Zip "
+				"file support not compiled in."
+			 << endl;
 		exit(-1);
 	}
 #endif
-
 
 	if (arg_mapnum >= 0 && arg_buildmap < 0) {
 		cerr << "Error: '--mapnum' requires '--buildmap'!" << endl;
@@ -447,12 +449,16 @@ int main(int argc, char* argv[]) {
 	} else if (arg_verify_files && arg_modname != "default") {
 		cerr << "Error: You cannot combine --mod with --verify-files!" << endl;
 		exit(1);
-	}
-	else if (arg_verify_files && (!arg_installmod.empty() || !arg_installdata.empty())) {
-		cerr << "Error: You cannot combine  --verify-files with --installmod or --installdata!" << endl;
+	} else if (
+			arg_verify_files
+			&& (!arg_installmod.empty() || !arg_installdata.empty())) {
+		cerr << "Error: You cannot combine  --verify-files with --installmod "
+				"or --installdata!"
+			 << endl;
 		exit(1);
 	} else if (!arg_installmod.empty() && !arg_installdata.empty()) {
-		cerr << "Error: You cannot combine  --installmod with --installdata!" << endl;
+		cerr << "Error: You cannot combine  --installmod with --installdata!"
+			 << endl;
 		exit(1);
 	} else if (!arg_installmod.empty() && arg_modname != "default") {
 		cerr << "Error: You cannot combine  --installmod with --mod!" << endl;
