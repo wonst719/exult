@@ -299,6 +299,13 @@
 			remoteGlobalIDString = 4F58F7AA67A348AC99788A8C;
 			remoteInfo = mt32emu;
 		};
+		8AE567782E51059900DC14BD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8A2515082E3DA1D500CCE820 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF66C0761BA81005FE872;
+			remoteInfo = SDL3;
+		};
 		E738C84D1A6FFF58003A950D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E738C8491A6FFF58003A950D /* libogg.xcodeproj */;
@@ -987,6 +994,14 @@
 			);
 			name = sha1;
 			path = ../files/sha1;
+			sourceTree = "<group>";
+		};
+		8AE5676F2E51059900DC14BD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8AE567792E51059900DC14BD /* SDL3.framework */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		E700DAF31A6E2CE7006C8BE4 /* audio */ = {
@@ -1763,6 +1778,10 @@
 					ProductGroup = E738C8501A6FFF65003A950D /* Products */;
 					ProjectRef = E738C84F1A6FFF65003A950D /* libvorbis.xcodeproj */;
 				},
+				{
+					ProductGroup = 8AE5676F2E51059900DC14BD /* Products */;
+					ProjectRef = 8A2515082E3DA1D500CCE820 /* SDL.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -1786,6 +1805,13 @@
 			fileType = archive.ar;
 			path = libmt32emu.a;
 			remoteRef = 8A599C20246058A9006E3252 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8AE567792E51059900DC14BD /* SDL3.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL3.framework;
+			remoteRef = 8AE567782E51059900DC14BD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		E738C84E1A6FFF58003A950D /* libogg.a */ = {
