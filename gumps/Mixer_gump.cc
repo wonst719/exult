@@ -96,7 +96,7 @@ void Mixer_gump::cancel() {
 }
 
 void Mixer_gump::help() {
-	SDL_OpenURL("https://exult.info/docs.php#volume_mixer_gump");
+	SDL_OpenURL("https://exult.info/docs.html#volume_mixer_gump");
 }
 
 void Mixer_gump::load_settings() {

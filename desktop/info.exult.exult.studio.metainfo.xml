@@ -12,7 +12,7 @@
   <launchable type="desktop-id">info.exult.exult.studio.desktop</launchable>
   <url type="homepage">https://exult.info/</url>
   <url type="bugtracker">https://github.com/exult/exult/issues</url>
-  <url type="help">https://exult.info/studio.php</url>
+  <url type="help">https://exult.info/studio.html</url>
   <url type="vcs-browser">https://github.com/exult/exult</url>
   <description>
     <p>Exult is a project to recreate Ultima VII for modern operating systems, using the game's original plot, data, and graphics files.</p>

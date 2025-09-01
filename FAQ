@@ -1,7 +1,7 @@
 Exult F.A.Q. (frequently asked questions)
 last changed: 25 April 2024 (GMT)
 
-The latest version of this document can be found at https://exult.info/faq.php
+The latest version of this document can be found at https://exult.info/faq.html
 
 
 1. Introduction
@@ -164,7 +164,7 @@ Note however that Exult is open source. If you want a multiplayer Ultima VII no 
 
 The latest official version is found on https://exult.info/
  The source code of Exult is hosted on GitHub's Git server which you can browse and download at https://github.com/exult.
- Daily snapshots of the source code, Windows and macOS binaries can be found at https://exult.info/download.php.
+ Daily snapshots of the source code, Windows and macOS binaries can be found at https://exult.info/download.html.
  Paulo started a PPA for Ubuntu at https://launchpad.net/~exult-team/+archive/exult-daily.
 
 To use the PPA for Ubuntu follow these steps in terminal:
@@ -714,7 +714,7 @@ This FAQ is maintained by Dominus Dragon of the UDIC AKA Dominik Reichardt. Feel
 7.1. Important Links
 
 * Exult homepage at https://exult.info/
-* Code snapshot at https://exult.info/download.php
+* Code snapshot at https://exult.info/download.html
 * Our forum at https://github.com/exult/exult/discussions
 * Bug reports to https://github.com/exult/exult/issues
 

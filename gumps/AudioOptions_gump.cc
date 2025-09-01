@@ -91,7 +91,7 @@ void AudioOptions_gump::advanced() {
 	AdvancedOptions_gump aog(
 			&advancedsettings,
 			"Advanced settings for\n" + midi_driver_name + " midi driver.",
-			"https://exult.info/docs.php#advanced_midi_gump",
+			"https://exult.info/docs.html#advanced_midi_gump",
 			[midi_driver_name] {
 				MyMidiPlayer* midi = Audio::get_ptr()->get_midi();
 				if (!midi || !Audio::get_ptr()->is_music_enabled()) {
@@ -132,7 +132,7 @@ void AudioOptions_gump::cancel() {
 }
 
 void AudioOptions_gump::help() {
-	SDL_OpenURL("https://exult.info/docs.php#audio_gump");
+	SDL_OpenURL("https://exult.info/docs.html#audio_gump");
 }
 
 void AudioOptions_gump::toggle_sfx_pack(int state) {

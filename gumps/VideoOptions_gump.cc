@@ -105,7 +105,7 @@ void VideoOptions_gump::cancel() {
 }
 
 void VideoOptions_gump::help() {
-	SDL_OpenURL("https://exult.info/docs.php#video_gump");
+	SDL_OpenURL("https://exult.info/docs.html#video_gump");
 }
 
 void VideoOptions_gump::rebuild_buttons() {

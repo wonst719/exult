@@ -89,7 +89,7 @@ void GameEngineOptions_gump::cancel() {
 }
 
 void GameEngineOptions_gump::help() {
-	SDL_OpenURL("https://exult.info/docs.php#game_engine_gump");
+	SDL_OpenURL("https://exult.info/docs.html#game_engine_gump");
 }
 
 static const int small_size = 44;

@@ -105,12 +105,12 @@
 						you are using the <strong>latest snapshot</strong> of <Exult/>.<br/>
 						<Studio/> <strong>only</strong> works with the latest snapshot, not the latest release.</li>
 					<li>For U*ix platforms you need to build <Studio/> from the source available from our
-						source snapshot at <extref target="https://exult.info/download.php"/>.</li>
+						source snapshot at <extref target="https://exult.info/download.html"/>.</li>
 					<li>For Windows platforms (XP,Vista,7,8,10) you need to download <Studio/> from our
-						<extref target="https://exult.info/download.php">download page</extref>
+						<extref target="https://exult.info/download.html">download page</extref>
 						and install it in the same folder where you installed <Exult/>.</li>
 					<li>For macOS we also provide a snapshot on our
-						<extref target="https://exult.info/download.php">download page</extref>. Download the disk image
+						<extref target="https://exult.info/download.html">download page</extref>. Download the disk image
 						and move the app to the Applications.</li>
 				</ul>
 			</body>
@@ -792,8 +792,8 @@
 					that easy.
 				</para>
 				<para>
-					For an example of how Usecode may look like download our SF Island mod for BG at
-					<extref target="https://exult.info/snapshots/SFisland.zip"/>.<br/>
+					For an example of how Usecode may look like download our SF Island mod for BG from our
+					<extref target="https://exult.info/download.html">download page</extref>.<br/>
 					In that zip you'll find a readme.txt which tells you how to run it.<br/>
 					You will also see two files called usecode.uc and usecode.
 				</para>
@@ -1601,7 +1601,7 @@
 					tools that might help in editing/making a game.<br/>
 					These can be built from the <Exult/> source or you can download
 					the Windows binary snapshot. The source and binary snapshot can be found at
-					<extref target="https://exult.info/download.php"/>.<br/>
+					<extref target="https://exult.info/download.html"/>.<br/>
 					The tools are:
 				</para>
 				<ul>

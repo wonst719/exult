@@ -33,7 +33,7 @@ Exult is written in C++ and runs on, at least, Linux, macOS and Windows using th
 
 Exult aims to let those people who own Ultima VII (copyright 1993) play the game on modern hardware, in as close to (or perhaps even surpassing) its original splendor as is possible. You need to own "Ultima VII: The Black Gate" and/or "Ultima VII Part 2: Serpent Isle" and optionally the add-ons (not required to run) in order to use Exult, and we encourage you to buy a legal copy.
 
-For more information, either consult the README file on the repository, or view its HTML version [here](https://exult.info/docs.php).
+For more information, either consult the README file on the repository, or view its HTML version [here](https://exult.info/docs.html).
 
 [irc-badge]:            https://img.shields.io/badge/web.libera.chat-%23exult-blue?logo=LiveChat&logoColor=white
 [gpl-badge]:            https://img.shields.io/github/license/exult/exult?label=License&logo=GNU&logoColor=white

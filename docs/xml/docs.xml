@@ -102,7 +102,7 @@
 						At <section_ref target="Installing the original Ultima VII games for use with Exult"/>
 						we have a guide on how to install the original games or use the version offered by GOG.com.</li>
 					<li>Download <Exult/> from our
-						<extref target="https://exult.info/download.php">download page</extref>
+						<extref target="https://exult.info/download.html">download page</extref>
 						and install it. The Windows version comes with an installer that asks for the
 						location of both BG and SI. If you entered the correct location or you are using the default
 						games locations on Linux systems and macOS the next two steps are not necessary.</li>
@@ -928,7 +928,7 @@
 					smaller zip files. You can download a zip file for manual installation or
 					an installer for either Windows or macOS. Chose the one you want
 					to use on our
-					<extref target="https://exult.info/download.php">download page</extref>.<br/>
+					<extref target="https://exult.info/download.html">download page</extref>.<br/>
 					The Windows installer for <Exult/> gives you the option to download and
 					install the zip automatically, so we recommend you use this method.<br/>
 					On macOS, we recommend you download and run the installer.<br/>
@@ -957,8 +957,8 @@
 					bother with the following instructions.
 				</para>
 				<para>
-					The Digital Music pack can be downloaded from
-					<extref target="https://exult.info/download.php"/>, the files are called
+					The Digital Music pack can be downloaded from our
+					<extref target="https://exult.info/download.html">download page</extref>, the files are called
 					<strong>Ogg encoded Music files for Exult Part 1</strong>
 					(U7MusicOGG_1of2.zip) and
 					<strong>Ogg encoded Music files for Exult Part 2</strong>
@@ -1001,7 +1001,7 @@
 				<para>
 					We currently have two soundpacks for each game. Joseph Morris recorded the original
 					SoundBlaster SFX and Simon Quinn recorded the Roland MT32 SFX. You can find them on
-					our <extref target="https://exult.info/download.php">download page</extref>.<br/>
+					our <extref target="https://exult.info/download.html">download page</extref>.<br/>
 					'Sound pack for Blackgate' and 'Sound pack for Serpent Isle' are the SoundBlaster
 					sound effects.<br/>
 					'Sound pack for Black Gate (Roland MT-32)' and 'Sound pack for Serpent Isle (Roland MT-32)'
@@ -1683,7 +1683,7 @@
 				</para>
 				<ul>
 					<li>Write an email to Dominus Dragon
-						(see <extref target="https://exult.info/about.php">About Us</extref>) to sign up for
+						(see <extref target="https://exult.info/about.html">About Us</extref>) to sign up for
 						the beta testing (through Apple's iTunes Connect/TestFlight).</li>
 					<li>If your iOS device is on iOS version 12 and higher and you are running a Mac, you can download
 						Xcode from the AppStore, clone the git repository, run the Xcode project file and easily install
@@ -1760,7 +1760,7 @@
 				<para>
 					To install the optional sfx and digital music, please download the 'Zipped all-in-one audio pack
 					for manual installation' zip file from our
-					<extref target="https://exult.info/download.php">download page</extref>.
+					<extref target="https://exult.info/download.html">download page</extref>.
 					Unzip everything to a folder called 'data' and drag and drop this also in iTunes/Finder file sharing.
 					Do NOT put it in the 'game' folder.
 				</para>
@@ -1802,9 +1802,8 @@
 			<body>
 				<para>
 					Way back in 2011 Ken Cecka posted a preliminary native port of <Exult/> to Android on our
-					<extref target="https://exult.info/forum/viewtopic.php?p=348367">old forum</extref>. After
-					a long hiatus he picked it up again in 2021 which resulted in a working Android port just in
-					time for our v1.8 release in 2022.
+					old forum. After a long hiatus he picked it up again in 2021 which resulted in a working
+					Android port just in time for our v1.8 release in 2022.
 				</para>
 				<para>
 					Note that as with the iOS port, <Exult/> runs very nicely on tablets but the item management of
@@ -1819,7 +1818,7 @@
 					For now <Exult/> is not on the PlayStore but there is another, easy way to get it on your device:
 				</para>
 				<ol>
-					<li>Download the APK from our <extref target="https://exult.info/download.php">download page</extref>.</li>
+					<li>Download the APK from our <extref target="https://exult.info/download.html">download page</extref>.</li>
 					<li>On your Android, open the file manager and in your download folder, tap on the APK and it install.</li>
 				</ol>
 			</body>
@@ -1836,7 +1835,7 @@
 					<kbd>Game Display</kbd> options in the setting <kbd>Android autolaunch</kbd>.
 				</para>
 				<ol>
-					<li>Download the APK from our <extref target="https://exult.info/download.php">download page</extref>.</li>
+					<li>Download the APK from our <extref target="https://exult.info/download.html">download page</extref>.</li>
 					<li>On your Android, open the file manager and in your download folder, tap on the APK and it install.</li>
 				</ol>
 			</body>
@@ -1892,8 +1891,8 @@
 				</para>
 				<para>
 					To install these mods, download the zip file of the mod you want to install from our
-					<extref target="https://exult.info/download.php">download page</extref>.<br/>
-					In the <Exult/>launcher, select the Mods tab and tap to the left on the corrsponding chaeckmark.
+					<extref target="https://exult.info/download.html">download page</extref>.<br/>
+					In the <Exult/>launcher, select the Mods tab and tap to the left on the corresponding checkmark.
 					This will open a file browser which you can use to select the archive you downloaded, and the
 					installer will take care of extracting the required data files and installing them in the correct places.
 				</para>
@@ -1905,7 +1904,7 @@
 				<para>
 					To install the optional sfx and digital music, please download the 'Zipped all-in-one audio pack
 					for manual installation' zip file from our
-					<extref target="https://exult.info/download.php">download page</extref>.<br/>
+					<extref target="https://exult.info/download.html">download page</extref>.<br/>
 					In the <Exult/>launcher, select the Audio tab, tap on <strong>Zipped all-in-one audio pack</strong> checkmark.
 					This will open a file browser which you can use to select the archive you downloaded, and the installer will
 					take care of extracting the required data files and installing them in the correct places.

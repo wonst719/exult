@@ -141,7 +141,7 @@
 					The source code of <Exult/> is hosted on GitHub's Git server which you can
 					browse and download at <extref target="https://github.com/exult"/>.<br/>
 					Daily snapshots of the source code, Windows and macOS binaries can be found at
-					<extref target="https://exult.info/download.php"/>.<br/>
+					<extref target="https://exult.info/download.html"/>.<br/>
 					Paulo started a PPA for Ubuntu at
 					<extref target="https://launchpad.net/~exult-team/+archive/exult-daily"/>.<br/>
 				</para>
@@ -615,7 +615,7 @@
 					<key>k</key> key that checks if you have the right key for a lock in your
 					inventory. The list of keys can be found in the Documentation.</li>
 				<li>A new worked over Game Options menu. This menu is explained in detail in the
-					<extref target="docs.php">Documentation</extref> and many of the following
+					<extref target="docs.html">Documentation</extref> and many of the following
 					improvements  and Video/Audio options can be accessed via this menu. Open
 					this Game Options Menu by pressing <key>Esc</key> in the game.</li>
 				<li>SI style paperdoll (inventory screen) in BG. Very impressive. For this you
@@ -700,7 +700,7 @@
 					are several things to do (though I wonder why you'd want to do that):
 				</para>
 				<ul>
-					<li>make custom key bindings files (see <extref target="docs.php">Documentation</extref>)
+					<li>make custom key bindings files (see <extref target="docs.html">Documentation</extref>)
 						in which you disable all the keys that were not in the original for Black Gate and
 						Serpents Isle.<br/>
 						To enable the old save game menu you have to assign <key>s</key> to old_file_gump
@@ -749,7 +749,7 @@
 					A list of all known mods can be found on our
 					<extref target="https://github.com/exult/exult/discussions/260">Github</extref>
 					with most being available on our
-					<extref target="https://exult.info/download.php">download page</extref>.
+					<extref target="https://exult.info/download.html">download page</extref>.
 				</para>
 				<para>
 					All the patches and mods require that you install the latest snapshot. They are not likely to
@@ -777,12 +777,12 @@
 			<header>How do I submit a proper bug report?</header>
 			<body>
 				<ol>
-					<li>Read the <extref target="https://exult.info/docs.php">Documentation</extref>
+					<li>Read the <extref target="https://exult.info/docs.html">Documentation</extref>
 						and this FAQ to see if that is not already covered and you have all set up correctly.</li>
 					<li>Before you report a bug to the
 						<extref target="https://github.com/exult/exult/issues">bug tracker</extref>
 						please try the latest
-						<extref target="https://exult.info/download.php">snapshot</extref>.
+						<extref target="https://exult.info/download.html">snapshot</extref>.
 						If the bug still occurs make sure that no one else has already reported the bug
 						(in the bug tracker).</li>
 					<li>You can only submit a bug report in our tracker if you are a
@@ -1288,7 +1288,7 @@
 			<body>
 				<ul>
 					<li><Exult/> homepage at <extref target="https://exult.info/"/></li>
-					<li>Code snapshot at <extref target="https://exult.info/download.php"/></li>
+					<li>Code snapshot at <extref target="https://exult.info/download.html"/></li>
 					<li>Our forum at <extref target="https://github.com/exult/exult/discussions"/></li>
 					<li>Bug reports to <extref target="https://github.com/exult/exult/issues"/></li>
 				</ul>

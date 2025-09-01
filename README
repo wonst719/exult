@@ -1,7 +1,7 @@
 Exult Documentation
 last changed: 16 April 2025 (GMT)
 
-The latest version of this document can be found at https://exult.info/docs.php
+The latest version of this document can be found at https://exult.info/docs.html
 
 
 1. Introduction
@@ -630,7 +630,7 @@ Below you can read the instructions on how to use and install the individual pac
 4.9. Installation of the digital music packs
 
 If you downloaded and installed the above All-in-One Audio Data pack you don't need to bother with the following instructions.
-The Digital Music pack can be downloaded from https://exult.info/download.php, the files are called Ogg encoded Music files for Exult Part 1 (U7MusicOGG_1of2.zip) and Ogg encoded Music files for Exult Part 2 (U7MusicOGG_2of2.zip). The readme.txt found in the ZIP files contains installation instructions that are no longer 100% valid and should not be followed.
+The Digital Music pack can be downloaded from our download page, the files are called Ogg encoded Music files for Exult Part 1 (U7MusicOGG_1of2.zip) and Ogg encoded Music files for Exult Part 2 (U7MusicOGG_2of2.zip). The readme.txt found in the ZIP files contains installation instructions that are no longer 100% valid and should not be followed.
  Create a music folder in exult/data (i.e. exult/data/music/) and extract the two ZIP files U7MusicOGG_1of2.zip and U7MusicOGG_2of2.zip into this folder.
  If you are not sure where the data folder is, search for the file exult_bg.flx on your hard drive as this file is always in the data folder.
  Now start up Exult and start either a game of BG or SI. Hit 'ESC' to enter the game menu. Here select Audio Options and in the 'Music options' enable the digital music option.
@@ -1176,7 +1176,7 @@ Once you have successfully installed the game data, you are free to delete the .
 
 Currently we only offer a way to install five mods on Android: the BG Keyring, SI Fixes, SourceForge Island, Ultima VI Remake and Glimmerscape.
 To install these mods, download the zip file of the mod you want to install from our download page.
- In the Exultlauncher, select the Mods tab and tap to the left on the corrsponding chaeckmark. This will open a file browser which you can use to select the archive you downloaded, and the installer will take care of extracting the required data files and installing them in the correct places.
+ In the Exultlauncher, select the Mods tab and tap to the left on the corresponding checkmark. This will open a file browser which you can use to select the archive you downloaded, and the installer will take care of extracting the required data files and installing them in the correct places.
 
 
 10.6. Installing sfx, digital music, MT32 ROMs and SoundFonts
@@ -1773,9 +1773,10 @@ Note: the settings in exult.cfg are the same on all operating systems (except wh
       </fill_scaler>
     </windows>
     <force_bpp>
-    32
-				**force output bpp. The option no longer exists in SDL 3.
-				The only supported resolution for the display is 32 bpp.
+    0
+				**force output bpp. Valid values are 	0 (for any), 8, 16 or 32.
+				If set to 8 most scalers will not work and will display as the
+				fallback point scaler.
     </force_bpp>
     <disable_fades>
     no
