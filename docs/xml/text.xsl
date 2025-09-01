@@ -55,7 +55,7 @@
 		<xsl:value-of
 			select="@changed" />
 		<xsl:text>&#xA;&#xA;</xsl:text>
-		<xsl:text>The latest version of this document can be found at https://exult.info/faq.php&#xA;</xsl:text>
+		<xsl:text>The latest version of this document can be found at https://exult.info/faq.html&#xA;</xsl:text>
 		<xsl:text>&#xA;&#xA;</xsl:text>
 		<!-- BEGIN TOC -->
 		<xsl:call-template
@@ -73,7 +73,7 @@
 		<xsl:value-of
 			select="@changed" />
 		<xsl:text>&#xA;&#xA;</xsl:text>
-		<xsl:text>The latest version of this document can be found at https://exult.info/docs.php&#xA;</xsl:text>
+		<xsl:text>The latest version of this document can be found at https://exult.info/docs.html&#xA;</xsl:text>
 		<xsl:text>&#xA;&#xA;</xsl:text>
 		<!-- BEGIN TOC -->
 		<xsl:call-template
@@ -91,7 +91,7 @@
 		<xsl:value-of
 			select="@changed" />
 		<xsl:text>&#xA;&#xA;</xsl:text>
-		<xsl:text>The latest version of this document can be found at https://exult.info/studio.php&#xA;</xsl:text>
+		<xsl:text>The latest version of this document can be found at https://exult.info/studio.html&#xA;</xsl:text>
 		<xsl:text>&#xA;&#xA;</xsl:text>
 		<!-- BEGIN TOC -->
 		<xsl:call-template

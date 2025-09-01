@@ -1,30 +1,26 @@
 top_srcdir := ../..
 DOCS_DIR := $(top_srcdir)/docs
+WEB_TMP := ./web_tmp
 
 HTML_OBJS := $(patsubst %.xml,%.html,$(wildcard *.xml))
 TEXT_OBJS := $(patsubst %.xml,%.txt,$(wildcard *.xml))
-PHP_OBJS := $(patsubst %.xml,%.dat,$(wildcard *.xml))
 
 DOCS_HTMLS := $(DOCS_DIR)/ReadMe.html $(DOCS_DIR)/faq.html $(DOCS_DIR)/exult_studio.html
 DOCS_TEXTS := $(DOCS_DIR)/exult_studio.txt
 TOP_TEXTS := $(top_srcdir)/FAQ $(top_srcdir)/README
+WEB_TMP_HTMLS := $(WEB_TMP)/docs.html $(WEB_TMP)/faq.html $(WEB_TMP)/studio.html
 
 ifdef WEB_DIR
 	WEB_TEXTS := $(patsubst %.xml,$(WEB_DIR)/%.txt,$(wildcard *.xml))
-	WEB_DATS := $(patsubst %.xml,$(WEB_DIR)/content/%.dat,$(wildcard *.xml))
+	WEB_HTMLS := $(WEB_DIR)/docs.html $(WEB_DIR)/faq.html $(WEB_DIR)/studio.html
 else
 	WEB_TEXTS :=
-	WEB_DATS :=
+	WEB_HTMLS :=
 endif
 
 define build_output_files
 	xsltproc -o $(1) $(2) $(3)
 	sed -i'' 's/[[:blank:]]*$$//' $(1)
-endef
-
-define build_php_dats
-	xsltproc -o $(1) $(2) $(3)
-	sed -i'' -e '1s@<test xmlns="http://www.w3.org/1999/xhtml">@@; $$s@</test>@@ ; s/[[:blank:]]*$$//' $(1)
 endef
 
 # Rules for transforming the XML source
@@ -34,22 +30,28 @@ endef
 %.txt: %.xml text.xsl docs.dtd
 	$(call build_output_files, $@, text.xsl, $<)
 
-%.dat: %.xml php.xsl docs.dtd
-	$(call build_php_dats, $@, php.xsl, $<)
+all: html text web-tmp $(top_srcdir)/FAQ $(top_srcdir)/README $(WEB_TMP_HTMLS) $(WEB_TEXTS) $(WEB_HTMLS)
 
-.SUFFIXES: .xml .html .txt .dat
+# Create web_tmp directory if it doesn't exist
+$(WEB_TMP):
+	mkdir -p $(WEB_TMP)
 
-all: html text php $(top_srcdir)/FAQ $(top_srcdir)/README $(WEB_TEXTS) $(WEB_DATS)
+# Rules for generating web HTML files with web_html.xsl in web_tmp
+$(WEB_TMP)/docs.html: docs.xml web_html.xsl docs.dtd | $(WEB_TMP)
+	$(call build_output_files, $@, web_html.xsl, $<)
+
+$(WEB_TMP)/faq.html: faq.xml web_html.xsl docs.dtd | $(WEB_TMP)
+	$(call build_output_files, $@, web_html.xsl, $<)
+
+$(WEB_TMP)/studio.html: exult_studio.xml web_html.xsl docs.dtd | $(WEB_TMP)
+	$(call build_output_files, $@, web_html.xsl, $<)
+
+.SUFFIXES: .xml .html .txt
 
 define update_files_template
 $(1): $(2)
 	cp $(2) $(1)
 endef
-
-ifdef WEB_DIR
-$(foreach file, $(TEXT_OBJS), $(eval $(call update_files_template, $(WEB_DIR)/$(file), $(file))))
-$(foreach file, $(PHP_OBJS), $(eval $(call update_files_template, $(WEB_DIR)/content/$(file), $(file))))
-endif
 
 # Rule for updating files in the docs directory
 $(eval $(call update_files_template, $(DOCS_DIR)/ReadMe.html, docs.html))
@@ -61,12 +63,20 @@ $(eval $(call update_files_template, $(DOCS_DIR)/exult_studio.txt, exult_studio.
 $(eval $(call update_files_template, $(top_srcdir)/FAQ, faq.txt))
 $(eval $(call update_files_template, $(top_srcdir)/README, docs.txt))
 
+ifdef WEB_DIR
+$(foreach file, $(TEXT_OBJS), $(eval $(call update_files_template, $(WEB_DIR)/$(file), $(file))))
+$(eval $(call update_files_template, $(WEB_DIR)/docs.html, $(WEB_TMP)/docs.html))
+$(eval $(call update_files_template, $(WEB_DIR)/faq.html, $(WEB_TMP)/faq.html))
+$(eval $(call update_files_template, $(WEB_DIR)/studio.html, $(WEB_TMP)/studio.html))
+endif
+
 # remove all generated files
 clean:
-	-rm -f *.html *.txt *.dat
+	-rm -f *.html *.txt
+	-rm -rf $(WEB_TMP)
 
 html: $(HTML_OBJS) $(DOCS_HTMLS) $(DOCS_TEXTS)
 text: $(TEXT_OBJS) $(TOP_TEXTS)
-php: $(PHP_OBJS)
+web-tmp: $(WEB_TMP_HTMLS)
 
-.PHONY: all html text php clean update
+.PHONY: all html text web-tmp clean update

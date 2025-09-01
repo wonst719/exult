@@ -40,17 +40,52 @@
 				<table class="borderless full-width">
 					<tr>
 						<td class="centered">
-							<img src="images/exult_logo_nice.svg" width="181" height="127" alt="Exult Logo" />
+							<div class="exult_logo">
+							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text>
+							<br />
+						</td>
+					</tr>
+					<tr>
+						<td class="centered">
+							<b>
+								<a href="index.html">Home</a>
+								|
+								<a href="download.html">Download</a>
+								|
+								<a href="docs.html">Documentation</a>
+								|
+								<a href="faq.html">FAQ</a>
+								|
+								<a href="studio.html">Studio</a>
+								|
+								<a href="screenshots.html">Screen Shots</a>
+							</b>
+						</td>
+					</tr>
+					<tr>
+						<td class="centered">
+							<b>
+								<a href="dev.html">Development</a>
+								|
+								<a href="https://github.com/exult/exult/discussions">Discussion</a>
+								|
+								<a href="about.html">About Us</a>
+								|
+								<a href="letters.html">Letters</a>
+								|
+								<a href="history.html">History</a>
+								|
+								<a href="links.html">Links</a>
+							</b>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text>
+							<br />
 						</td>
 					</tr>
 				</table>
@@ -107,58 +142,10 @@
 		</tr>
 	</xsl:template>
 	<xsl:template name="STYLESHEET">
-		<style><xsl:text>
-	body {
-		font-family: helvetica, sans-serif;
-		font-size: medium;
-		text-align: justify;
-		line-height: 1.4em;
-		background-color: #cccccc;
-		color: #333366;
-		background-image: url("images/back.gif");
-	}
-	:link { color: #666699; }
-	:visited { color: #669966; }
-	:link:active :visited:active { color: #ffcc33; }
-	span.highlight { color: maroon; }
-	tr.highlight { color: #62186f; }
-	.non-selectable-comment {
-		-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-	}
-	table.borderless {
-		border-spacing: 0;
-		border-width: 0;
-	}
-	table.borderless th, table.borderless td { padding: 0; }
-	table.key_table {
-		border-spacing: 2px;
-		border-width: 0;
-	}
-	table.key_table th { padding: 0; }
-	table.key_table td {
-		padding: 0;
-		vertical-align: top;
-		white-space: nowrap;
-	}
-	table.site-width { width: 75%; }
-	table.wide-table { width: 80%; }
-	table.narrow-table { width: 20%; }
-	td.blank-column { width: 0.75em; }
-	*.full-width { width: 100%; }
-	th.left-aligned, td.left-aligned { text-align: left; }
-	th.left-aligned &gt; *, td.left-aligned &gt; * {
-		margin-left: 0;
-		margin-right: auto;
-	}
-	th.centered, td.centered { text-align: center; }
-	th.centered &gt; *, td.centered &gt; * {
-		margin-left: auto;
-		margin-right: auto;
-	}
-		</xsl:text></style>
+		<link href="default.css" rel="stylesheet" type="text/css" />
+		<link rel="icon" href="favicon.png" type="image/png" sizes="96x96" />
+		<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
 	</xsl:template>
 	<!-- FAQ Template -->
 	<xsl:template match="faqs">
