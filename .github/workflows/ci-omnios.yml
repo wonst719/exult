@@ -117,7 +117,8 @@ jobs:
         sync: rsync
         copyback: false
         prepare: |
-          pkg update
+          pkg update -v pkg
+          pkg update -v
           pkg install gcc13
           pkg install llvm-17
           pkg install clang-17
