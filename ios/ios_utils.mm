@@ -129,7 +129,7 @@ namespace {
 				alloc]
 					 initWithType:@"launch_fov"
 				   localizedTitle:@"Forge of Virtue"
-				localizedSubtitle:@"Launch with expansion"
+				localizedSubtitle:@"Launch BG with add-on"
 							 icon:[UIApplicationShortcutIcon
 										  iconWithType:
 												  UIApplicationShortcutIconTypePlay]
@@ -142,7 +142,7 @@ namespace {
 				alloc]
 					 initWithType:@"launch_ss"
 				   localizedTitle:@"Silver Seed"
-				localizedSubtitle:@"Launch SI with expansion"
+				localizedSubtitle:@"Launch SI with add-on"
 							 icon:[UIApplicationShortcutIcon
 										  iconWithType:
 												  UIApplicationShortcutIconTypePlay]
