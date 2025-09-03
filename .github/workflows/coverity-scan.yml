@@ -66,12 +66,14 @@ jobs:
           cmake --build build
           sudo cmake --install build
       - name: Checkout SDL_image 3
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         uses: actions/checkout@v4
         with:
           repository: libsdl-org/SDL_image
           path: SDL3_image
           ref: release-3.2.4
       - name: Install SDL_image 3
+        if: ${{ env.EXULT_REPO_ALIVE == 'true' }}
         run: |
           cd SDL3_image
           mkdir -p build
