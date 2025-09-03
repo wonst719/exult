@@ -29,23 +29,24 @@ jobs:
         with:
           name: "android snapshot"
       - name: Check if artifacts downloaded
+        id: artifacts_check
         shell: bash
         run: |
           if [ -f Exult.exe ]; then
-            echo HAVE_WINDOWS_SNAPSHOT=true >> $GITHUB_ENV
+            echo have_windows_snapshot=true >> $GITHUB_OUTPUT
           else
-            echo HAVE_WINDOWS_SNAPSHOT=false >> $GITHUB_ENV
+            echo have_windows_snapshot=false >> $GITHUB_OUTPUT
             echo Couldn\'t find Exult.exe for Windows snapshot. No release will be made
           fi
           if [ -f exult-snapshot-signed.apk ]; then
-            echo HAVE_ANDROID_SNAPSHOT=true >> $GITHUB_ENV
+            echo have_android_snapshot=true >> $GITHUB_OUTPUT
           else
-            echo HAVE_ANDROID_SNAPSHOT=false >> $GITHUB_ENV
+            echo have_android_snapshot=false >> $GITHUB_OUTPUT
             echo Couldn\'t find exult-snapshot-signed.apk for Android snapshot. No release will be made
           fi
-          echo "GITHUB_REF=v1.13.1.$(date --utc +'%Y%m%d')" >> $GITHUB_ENV
+          echo "github_ref=v1.13.1.$(date --utc +'%Y%m%d')" >> $GITHUB_OUTPUT
       - name: Install SSH key
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
+        if: ${{ (steps.artifacts_check.outputs.have_windows_snapshot == 'true' && steps.artifacts_check.outputs.have_android_snapshot == 'true')}}
         uses: shimataro/ssh-key-action@v2
         with:
           key: "${{ secrets.SSH_PRIVATE_KEY }}"
@@ -53,7 +54,7 @@ jobs:
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
       - name: VirusTotal Scan
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
+        if: ${{ (steps.artifacts_check.outputs.have_windows_snapshot == 'true' && steps.artifacts_check.outputs.have_android_snapshot == 'true')}}
         id: scan_files
         uses: crazy-max/ghaction-virustotal@v4
         with:
@@ -67,9 +68,9 @@ jobs:
             Gimp30Plugin.exe
             exult_shp_win64.aseprite-extension
       - name: Generate VirusTotal Body
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
+        if: ${{ (steps.artifacts_check.outputs.have_windows_snapshot == 'true' && steps.artifacts_check.outputs.have_android_snapshot == 'true')}}
         run: |
-          echo "Snapshot ${{ env.GITHUB_REF }}" > body.txt
+          echo "Snapshot ${{ steps.artifacts_check.outputs.github_ref }}" > body.txt
           echo "" >> body.txt
           echo "🛡 [VirusTotal GitHub Action](https://github.com/crazy-max/ghaction-virustotal) analysis:" >> body.txt
           echo "" >> body.txt
@@ -79,13 +80,13 @@ jobs:
             echo "* [$(basename $filename)]($analysisURL)" >> body.txt
           done <<<"$analysis,"
       - name: Create release
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
+        if: ${{ (steps.artifacts_check.outputs.have_windows_snapshot == 'true' && steps.artifacts_check.outputs.have_android_snapshot == 'true')}}
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ github.token }}
-          name: Snapshot ${{ env.GITHUB_REF }}
-          tag_name: snapshot-${{ env.GITHUB_REF }}
+          name: Snapshot ${{ steps.artifacts_check.outputs.github_ref }}
+          tag_name: snapshot-${{ steps.artifacts_check.outputs.github_ref }}
           body_path: body.txt
           prerelease: true
           fail_on_unmatched_files: true
@@ -102,7 +103,7 @@ jobs:
             exult-snapshot-debug.apk
       - name: Upload snapshots
         shell: bash
-        if: ${{ (env.HAVE_WINDOWS_SNAPSHOT == 'true' && env.HAVE_ANDROID_SNAPSHOT == 'true')}}
+        if: ${{ (steps.artifacts_check.outputs.have_windows_snapshot == 'true' && steps.artifacts_check.outputs.have_android_snapshot == 'true')}}
         run: |
           cd $GITHUB_WORKSPACE
           (for ii in $(seq 1 5); do scp -o BatchMode=yes -o PasswordAuthentication=no -i ~/.ssh/id_ed25519 *.exe *.zip *.apk *.aseprite-extension ${{ secrets.SCP_HOST }}:${{ secrets.PROJECT_HOME }}/htdocs/snapshots/ && exit 0 || true; done; exit 255)
