@@ -22,6 +22,8 @@
 
 #include "conversation.h"
 
+#include "Face_stats.h"
+#include "ShortcutBar_gump.h"
 #include "actors.h"
 #include "data/exult_bg_flx.h"
 #include "exult.h"
@@ -31,8 +33,6 @@
 #include "mouse.h"
 #include "touchui.h"
 #include "useval.h"
-#include "Face_stats.h"
-#include "ShortcutBar_gump.h"
 
 using std::size_t;
 using std::string;
@@ -53,7 +53,7 @@ public:
 	// int frame;
 	bool text_pending;    // Text has been written, but user
 	//   has not yet been prompted.
-	bool    no_show_face; // Whether this specific face should be hidden
+	bool     no_show_face;        // Whether this specific face should be hidden
 	TileRect face_rect;           // Rectangle where face is shown.
 	TileRect text_rect;           // Rectangle NPC statement is shown in.
 	bool     large_face;          // Guardian, snake.
@@ -61,8 +61,8 @@ public:
 	string   cur_text;            // Current text being shown.
 
 	Npc_face_info(ShapeID& sid, int num)
-			: shape(sid), face_num(num), text_pending(false), no_show_face(false),
-			  large_face(false) {}
+			: shape(sid), face_num(num), text_pending(false),
+			  no_show_face(false), large_face(false) {}
 };
 
 Conversation::~Conversation() {
@@ -346,7 +346,8 @@ void Conversation::remove_slot_face(int slot) {
 		if (touchui != nullptr && num_faces == 0) {
 			touchui->showGameControls();
 		}
-		if (!Face_stats::Visible() && !ShortcutBar_gump::Visible() && num_faces == 0) {
+		if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()
+			&& num_faces == 0) {
 			Face_stats::ShowGump();
 			ShortcutBar_gump::ShowGump();
 		}
