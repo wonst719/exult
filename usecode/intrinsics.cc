@@ -22,9 +22,11 @@
 
 #include "Audio.h"
 #include "Book_gump.h"
+#include "Face_stats.h"
 #include "Gump.h"
 #include "Gump_manager.h"
 #include "Scroll_gump.h"
+#include "ShortcutBar_gump.h"
 #include "Sign_gump.h"
 #include "actions.h"
 #include "animate.h"
@@ -1388,6 +1390,11 @@ USECODE_INTRINSIC(display_map) {
 	if (touchui != nullptr) {
 		touchui->hideGameControls();
 	}
+	if (Face_stats::Visible() && ShortcutBar_gump::Visible()) {
+		Face_stats::HideGump();
+		ShortcutBar_gump::HideGump();
+	}
+	gwin->paint();
 	ShapeID   msid(game->get_shape("sprites/map"), 0, SF_SPRITES_VGA);
 	Paint_map map(&msid, loc);
 
@@ -1401,6 +1408,11 @@ USECODE_INTRINSIC(display_map) {
 			touchui->showGameControls();
 		}
 	}
+	if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()) {
+		Face_stats::ShowGump();
+		ShortcutBar_gump::ShowGump();
+	}
+	gwin->paint();
 	return no_ret;
 }
 
@@ -1436,6 +1448,11 @@ USECODE_INTRINSIC(si_display_map) {
 	if (touchui != nullptr) {
 		touchui->hideGameControls();
 	}
+	if (Face_stats::Visible() && ShortcutBar_gump::Visible()) {
+		Face_stats::HideGump();
+		ShortcutBar_gump::HideGump();
+	}
+	gwin->paint();
 	ShapeID        msid(shapenum, 0, SF_SPRITES_VGA);
 	Paint_centered map(&msid);
 	int            xx;
@@ -1448,7 +1465,11 @@ USECODE_INTRINSIC(si_display_map) {
 			touchui->showGameControls();
 		}
 	}
-
+	if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()) {
+		Face_stats::ShowGump();
+		ShortcutBar_gump::ShowGump();
+	}
+	gwin->paint();
 	return no_ret;
 }
 
@@ -1461,6 +1482,11 @@ USECODE_INTRINSIC(display_map_ex) {
 	if (touchui != nullptr) {
 		touchui->hideGameControls();
 	}
+	if (Face_stats::Visible() && ShortcutBar_gump::Visible()) {
+		Face_stats::HideGump();
+		ShortcutBar_gump::HideGump();
+	}
+	gwin->paint();
 	ShapeID   msid(map_shp, 0, SF_SPRITES_VGA);
 	Paint_map map(&msid, loc);
 
@@ -1474,6 +1500,11 @@ USECODE_INTRINSIC(display_map_ex) {
 			touchui->showGameControls();
 		}
 	}
+	if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()) {
+		Face_stats::ShowGump();
+		ShortcutBar_gump::ShowGump();
+	}
+	gwin->paint();
 	return no_ret;
 }
 
@@ -1595,6 +1626,13 @@ USECODE_INTRINSIC(display_area) {
 		const int oldmap = gwin->get_map()->get_num();
 		const int tw     = gwin->get_game_width() / c_tilesize;
 		const int th     = gwin->get_game_height() / c_tilesize;
+		if (touchui != nullptr) {
+			touchui->hideGameControls();
+		}
+		if (Face_stats::Visible() && ShortcutBar_gump::Visible()) {
+			Face_stats::HideGump();
+			ShortcutBar_gump::HideGump();
+		}
 		gwin->clear_screen();    // Fill with black.
 		if ((newmap != -1) && (newmap != oldmap)) {
 			gwin->set_map(newmap);
@@ -1635,6 +1673,13 @@ USECODE_INTRINSIC(display_area) {
 		gwin->center_view(gwin->get_main_actor()->get_tile());
 		if ((newmap != -1) && (newmap != oldmap)) {
 			gwin->set_map(oldmap);
+		}
+		if (touchui != nullptr) {
+			touchui->showGameControls();
+		}
+		if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()) {
+			Face_stats::ShowGump();
+			ShortcutBar_gump::ShowGump();
 		}
 		gwin->paint();    // Repaint normal area.
 	}
