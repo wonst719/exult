@@ -53,6 +53,7 @@ public:
 	// int frame;
 	bool text_pending;    // Text has been written, but user
 	//   has not yet been prompted.
+	bool    no_show_face; // Whether this specific face should be hidden
 	TileRect face_rect;           // Rectangle where face is shown.
 	TileRect text_rect;           // Rectangle NPC statement is shown in.
 	bool     large_face;          // Guardian, snake.
@@ -60,7 +61,7 @@ public:
 	string   cur_text;            // Current text being shown.
 
 	Npc_face_info(ShapeID& sid, int num)
-			: shape(sid), face_num(num), text_pending(false),
+			: shape(sid), face_num(num), text_pending(false), no_show_face(false),
 			  large_face(false) {}
 };
 
@@ -234,6 +235,9 @@ void Conversation::show_face(int shape, int frame, int slot) {
 			remove_slot_face(face_info.size() - 1);
 		}
 		info = new Npc_face_info(face_sid, shape);
+		if (noface) {
+			info->no_show_face = true;
+		}
 		if (slot == -1) {    // Want next one?
 			slot = num_faces;
 		}
@@ -578,7 +582,7 @@ void Conversation::paint_faces(bool text    // Show text too.
 				= finfo->face_num >= 0 ? finfo->shape.get_shape() : nullptr;
 		int shape_num = finfo->shape.get_shapenum();
 
-		if (face && (shape_num != 277 && !noface)) {
+		if (face && !finfo->no_show_face) {
 			const int face_xleft  = face->get_xleft();
 			const int face_yabove = face->get_yabove();
 			const int fx          = finfo->face_rect.x + face_xleft;
