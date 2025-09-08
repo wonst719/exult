@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2001-2022  The Exult Team
+ *  Copyright (C) 2001-2025  The Exult Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -581,7 +581,6 @@ void Conversation::paint_faces(bool text    // Show text too.
 		}
 		Shape_frame* face
 				= finfo->face_num >= 0 ? finfo->shape.get_shape() : nullptr;
-		int shape_num = finfo->shape.get_shapenum();
 
 		if (face && !finfo->no_show_face) {
 			const int face_xleft  = face->get_xleft();
