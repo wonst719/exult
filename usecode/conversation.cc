@@ -134,8 +134,10 @@ void Conversation::init_faces() {
 		if (touchui != nullptr) {
 			touchui->showGameControls();
 		}
-		if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()) {
+		if (!Face_stats::Visible()) {
 			Face_stats::ShowGump();
+		}
+		if (!ShortcutBar_gump::Visible()) {
 			ShortcutBar_gump::ShowGump();
 		}
 	}
@@ -257,8 +259,10 @@ void Conversation::show_face(int shape, int frame, int slot) {
 	if (touchui != nullptr) {
 		touchui->hideGameControls();
 	}
-	if (Face_stats::Visible() && ShortcutBar_gump::Visible()) {
+	if (Face_stats::Visible()) {
 		Face_stats::HideGump();
+	}
+	if (ShortcutBar_gump::Visible()) {
 		ShortcutBar_gump::HideGump();
 	}
 	gwin->get_win()->clear_clip();
@@ -346,10 +350,14 @@ void Conversation::remove_slot_face(int slot) {
 		if (touchui != nullptr && num_faces == 0) {
 			touchui->showGameControls();
 		}
-		if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()
-			&& num_faces == 0) {
-			Face_stats::ShowGump();
-			ShortcutBar_gump::ShowGump();
+
+		if (num_faces == 0) {
+			if (!Face_stats::Visible()) {
+				Face_stats::ShowGump();
+			}
+			if (!ShortcutBar_gump::Visible()) {
+				ShortcutBar_gump::ShowGump();
+			}
 		}
 	}
 }

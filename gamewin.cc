@@ -75,13 +75,13 @@
 #include "paths.h"
 #include "schedule.h"
 #include "spellbook.h"
+#include "touchui.h"
 #include "ucmachine.h"
 #include "ucsched.h" /* Only used to flush objects. */
 #include "usefuns.h"
 #include "utils.h"
 #include "version.h"
 #include "virstone.h"
-#include "touchui.h"
 
 #include <cstdarg>
 #include <cstdio>
@@ -2969,8 +2969,10 @@ void Game_window::setup_game(bool map_editing) {
 		if (touchui != nullptr) {
 			touchui->hideGameControls();
 		}
-		if (Face_stats::Visible() && ShortcutBar_gump::Visible()) {
+		if (Face_stats::Visible()) {
 			Face_stats::HideGump();
+		}
+		if (ShortcutBar_gump::Visible()) {
 			ShortcutBar_gump::HideGump();
 		}
 	}

@@ -1390,8 +1390,10 @@ USECODE_INTRINSIC(display_map) {
 	if (touchui != nullptr) {
 		touchui->hideGameControls();
 	}
-	if (Face_stats::Visible() && ShortcutBar_gump::Visible()) {
+	if (Face_stats::Visible()) {
 		Face_stats::HideGump();
+	}
+	if (ShortcutBar_gump::Visible()) {
 		ShortcutBar_gump::HideGump();
 	}
 	gwin->paint();
@@ -1408,8 +1410,10 @@ USECODE_INTRINSIC(display_map) {
 			touchui->showGameControls();
 		}
 	}
-	if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()) {
+	if (!Face_stats::Visible()) {
 		Face_stats::ShowGump();
+	}
+	if (!ShortcutBar_gump::Visible()) {
 		ShortcutBar_gump::ShowGump();
 	}
 	gwin->paint();
@@ -1448,8 +1452,10 @@ USECODE_INTRINSIC(si_display_map) {
 	if (touchui != nullptr) {
 		touchui->hideGameControls();
 	}
-	if (Face_stats::Visible() && ShortcutBar_gump::Visible()) {
+	if (Face_stats::Visible()) {
 		Face_stats::HideGump();
+	}
+	if (ShortcutBar_gump::Visible()) {
 		ShortcutBar_gump::HideGump();
 	}
 	gwin->paint();
@@ -1465,8 +1471,10 @@ USECODE_INTRINSIC(si_display_map) {
 			touchui->showGameControls();
 		}
 	}
-	if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()) {
+	if (!Face_stats::Visible()) {
 		Face_stats::ShowGump();
+	}
+	if (!ShortcutBar_gump::Visible()) {
 		ShortcutBar_gump::ShowGump();
 	}
 	gwin->paint();
@@ -1482,8 +1490,10 @@ USECODE_INTRINSIC(display_map_ex) {
 	if (touchui != nullptr) {
 		touchui->hideGameControls();
 	}
-	if (Face_stats::Visible() && ShortcutBar_gump::Visible()) {
+	if (Face_stats::Visible()) {
 		Face_stats::HideGump();
+	}
+	if (ShortcutBar_gump::Visible()) {
 		ShortcutBar_gump::HideGump();
 	}
 	gwin->paint();
@@ -1500,8 +1510,10 @@ USECODE_INTRINSIC(display_map_ex) {
 			touchui->showGameControls();
 		}
 	}
-	if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()) {
+	if (!Face_stats::Visible()) {
 		Face_stats::ShowGump();
+	}
+	if (!ShortcutBar_gump::Visible()) {
 		ShortcutBar_gump::ShowGump();
 	}
 	gwin->paint();
@@ -1629,8 +1641,10 @@ USECODE_INTRINSIC(display_area) {
 		if (touchui != nullptr) {
 			touchui->hideGameControls();
 		}
-		if (Face_stats::Visible() && ShortcutBar_gump::Visible()) {
+		if (Face_stats::Visible()) {
 			Face_stats::HideGump();
+		}
+		if (ShortcutBar_gump::Visible()) {
 			ShortcutBar_gump::HideGump();
 		}
 		gwin->clear_screen();    // Fill with black.
@@ -1677,8 +1691,10 @@ USECODE_INTRINSIC(display_area) {
 		if (touchui != nullptr) {
 			touchui->showGameControls();
 		}
-		if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()) {
+		if (!Face_stats::Visible()) {
 			Face_stats::ShowGump();
+		}
+		if (!ShortcutBar_gump::Visible()) {
 			ShortcutBar_gump::ShowGump();
 		}
 		gwin->paint();    // Repaint normal area.

@@ -2799,8 +2799,10 @@ void Wizard_eye(long msecs    // Length of time in milliseconds.
 			touchui->showButtonControls();
 			touchui->hideGameControls();
 		}
-		if (Face_stats::Visible() && ShortcutBar_gump::Visible()) {
+		if (Face_stats::Visible()) {
 			Face_stats::HideGump();
+		}
+		if (ShortcutBar_gump::Visible()) {
 			ShortcutBar_gump::HideGump();
 		}
 
@@ -2900,8 +2902,10 @@ void Wizard_eye(long msecs    // Length of time in milliseconds.
 		if (touchui != nullptr) {
 			touchui->showGameControls();
 		}
-		if (!Face_stats::Visible() && !ShortcutBar_gump::Visible()) {
+		if (!Face_stats::Visible()) {
 			Face_stats::ShowGump();
+		}
+		if (!ShortcutBar_gump::Visible()) {
 			ShortcutBar_gump::ShowGump();
 		}
 	}
