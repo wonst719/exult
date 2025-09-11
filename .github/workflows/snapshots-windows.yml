@@ -4,7 +4,7 @@ on: [workflow_call]
 
 jobs:
   snapshots-windows:
-    runs-on: windows-latest
+    runs-on: windows-2022
     defaults:
       run:
         shell: msys2 {0}
