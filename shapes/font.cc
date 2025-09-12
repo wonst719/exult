@@ -280,7 +280,7 @@ int Font::paint_text(
 					= font_shapes->get_frame(static_cast<unsigned char>(chr));
 			if (!shape || !shape->is_rle()) {
 				std::cerr << " unable to find rle frame for character '"
-						  << char(chr) << "' 0x" << std::ios::hex << chr
+						  << char(chr) << "' 0x" << std::hex << chr
 						  << " in font" << std::endl;
 				continue;
 			}
@@ -317,7 +317,7 @@ int Font::paint_text(
 					static_cast<unsigned char>(chr = *text++));
 			if (!shape || !shape->is_rle()) {
 				std::cerr << " unable to find rle frame for character '"
-						  << char(chr) << "' 0x" << std::ios::hex << chr
+						  << char(chr) << "' 0x" << std::hex << chr
 						  << " in font" << std::endl;
 				continue;
 			}
@@ -496,7 +496,7 @@ int Font::paint_text_fixedwidth(
 				= font_shapes->get_frame(static_cast<unsigned char>(chr));
 		if (!shape || !shape->is_rle()) {
 			std::cerr << " unable to find rle frame for character '"
-					  << char(chr) << "' 0x" << std::ios::hex << chr
+					  << char(chr) << "' 0x" << std::hex << chr
 					  << " in font" << std::endl;
 			continue;
 		}
@@ -535,7 +535,7 @@ int Font::paint_text_fixedwidth(
 				static_cast<unsigned char>(chr = *text++));
 		if (!shape || !shape->is_rle()) {
 			std::cerr << " unable to find rle frame for character '"
-					  << char(chr) << "' 0x" << std::ios::hex << chr
+					  << char(chr) << "' 0x" << std::hex << chr
 					  << " in font" << std::endl;
 			continue;
 		}
