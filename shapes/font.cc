@@ -278,7 +278,10 @@ int Font::paint_text(
 		while ((chr = *text++) != 0) {
 			Shape_frame* shape
 					= font_shapes->get_frame(static_cast<unsigned char>(chr));
-			if (!shape) {
+			if (!shape || !shape->is_rle()) {
+				std::cerr << " unable to find rle frame for character '"
+						  << char(chr) << "' 0x" << std::ios::hex << chr
+						  << " in font" << std::endl;
 				continue;
 			}
 			if (trans) {
@@ -309,9 +312,13 @@ int Font::paint_text(
 	yoff += get_text_baseline();
 	if (font_shapes) {
 		while (textlen--) {
+			int          chr;
 			Shape_frame* shape = font_shapes->get_frame(
-					static_cast<unsigned char>(*text++));
-			if (!shape) {
+					static_cast<unsigned char>(chr = *text++));
+			if (!shape || !shape->is_rle()) {
+				std::cerr << " unable to find rle frame for character '"
+						  << char(chr) << "' 0x" << std::ios::hex << chr
+						  << " in font" << std::endl;
 				continue;
 			}
 			if (trans) {
@@ -487,7 +494,10 @@ int Font::paint_text_fixedwidth(
 	while ((chr = *text++) != 0) {
 		Shape_frame* shape
 				= font_shapes->get_frame(static_cast<unsigned char>(chr));
-		if (!shape) {
+		if (!shape || !shape->is_rle()) {
+			std::cerr << " unable to find rle frame for character '"
+					  << char(chr) << "' 0x" << std::ios::hex << chr
+					  << " in font" << std::endl;
 			continue;
 		}
 		x += w = (width - shape->get_width()) / 2;
@@ -520,9 +530,13 @@ int Font::paint_text_fixedwidth(
 	int x = xoff;
 	yoff += get_text_baseline();
 	while (textlen--) {
-		Shape_frame* shape
-				= font_shapes->get_frame(static_cast<unsigned char>(*text++));
-		if (!shape) {
+		int          chr;
+		Shape_frame* shape = font_shapes->get_frame(
+				static_cast<unsigned char>(chr = *text++));
+		if (!shape || !shape->is_rle()) {
+			std::cerr << " unable to find rle frame for character '"
+					  << char(chr) << "' 0x" << std::ios::hex << chr
+					  << " in font" << std::endl;
 			continue;
 		}
 		x += w = (width - shape->get_width()) / 2;
@@ -547,7 +561,7 @@ int Font::get_text_width(const char* text) {
 		while ((chr = *text++) != 0) {
 			Shape_frame* shape
 					= font_shapes->get_frame(static_cast<unsigned char>(chr));
-			if (shape) {
+			if (shape && shape->is_rle()) {
 				width += shape->get_width() + hor_lead;
 			}
 		}
@@ -568,7 +582,7 @@ int Font::get_text_width(
 		while (textlen--) {
 			Shape_frame* shape = font_shapes->get_frame(
 					static_cast<unsigned char>(*text++));
-			if (shape) {
+			if (shape && shape->is_rle()) {
 				width += shape->get_width() + hor_lead;
 			}
 		}
@@ -721,7 +735,7 @@ int Font::find_xcursor(
 	while (textlen--) {
 		Shape_frame* shape
 				= font_shapes->get_frame(static_cast<unsigned char>(*text++));
-		if (shape) {
+		if (shape && shape->is_rle()) {
 			const int w = shape->get_width() + hor_lead;
 			if (cx >= curx && cx < curx + w) {
 				return static_cast<int>(text - 1 - start);
@@ -801,7 +815,7 @@ void Font::calc_highlow() {
 	for (int i = 0; i < font_shapes->get_num_frames(); i++) {
 		Shape_frame* f = font_shapes->get_frame(i);
 
-		if (!f) {
+		if (!f || !f->is_rle()) {
 			continue;
 		}
 
