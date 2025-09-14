@@ -164,7 +164,7 @@ void ExultMenu::setup() {
 
 	// Load text messages if needed
 	if (!get_num_text_msgs()) {
-		Setup_text(GAME_SI, Game::has_expansion(), GAME_SIB);
+		Game::setup_text();
 	}
 
 	if (!Shape_manager::get_instance()->load_gumps_minimal()) {

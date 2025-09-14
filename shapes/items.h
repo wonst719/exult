@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define INCL_ITEMS 1
 
 #include <iosfwd>
+#include "exult_constants.h"
 
 // The game items' names.
 int         get_num_item_names();
@@ -43,7 +44,7 @@ int         get_num_misc_names();
 const char* get_misc_name(unsigned num);
 void        Set_misc_name(unsigned num, const char* name);
 
-void Setup_text(bool si, bool expansion, bool sibeta);
+void Setup_text(bool si, bool expansion, bool sibeta, Game_Language language);
 void Free_text();
 void Write_text_file();
 
