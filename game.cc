@@ -62,7 +62,7 @@ bool          Game::new_game_flag = false;
 bool          Game::editing_flag  = false;
 Game*         game                = nullptr;
 Exult_Game    Game::game_type     = NONE;
-Game_Language Game::language      = ENGLISH;
+Game_Language Game::language      = Game_Language::ENGLISH;
 bool          Game::expansion     = false;
 bool          Game::sibeta        = false;
 
@@ -95,7 +95,7 @@ Game::Game() {
 
 Game::~Game() {
 	game_type = NONE;
-	language  = ENGLISH;
+	language  = Game_Language::ENGLISH;
 	delete xml;
 	while (!xmlstrings.empty()) {
 		char* str = xmlstrings.back();
@@ -163,6 +163,37 @@ Game* Game::create_game(BaseGameInfo* mygame) {
 	cout << endl;
 
 	return game;
+}
+
+Game_Language Game::get_game_message_language() {
+	std::string value;
+
+	config->value(
+			"config/gameplay/language", value,
+			"(default)");
+	config->value(
+			"config/disk/game/" + Game::get_gametitle() + "/language", value,
+			value);
+	for (char& c : value) {
+		c = std::tolower(c);
+	}
+	if (value == "en") {
+		return Game_Language::ENGLISH;
+	} else if (value == "fr") {
+		return Game_Language::FRENCH;
+	} else if (value == "de") {
+		return Game_Language::GERMAN;
+	} else if (value == "es") {
+		return Game_Language::SPANISH;
+	}
+	return get_game_language();
+}
+
+void Game::setup_text() {
+	Setup_text(
+			get_game_type() == SERPENT_ISLE, has_expansion(),
+			get_game_type() == SERPENT_ISLE && is_si_beta(),
+			get_game_message_language());
 }
 
 void Game::show_congratulations(Palette* pal0) {

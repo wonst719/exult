@@ -966,7 +966,7 @@ static void Init() {
 		audio->Init_sfx();
 		MyMidiPlayer* midi = audio->get_midi();
 
-		Setup_text(GAME_SI, Game::has_expansion(), GAME_SIB);
+		Game::setup_text();
 
 		// Skip splash screen?
 		bool skip_splash;

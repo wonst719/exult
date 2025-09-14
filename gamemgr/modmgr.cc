@@ -410,7 +410,7 @@ ModManager::ModManager(
 		switch (crc) {
 		case 0x36af707f:
 			// French BG
-			language    = FRENCH;
+			language    = Game_Language::FRENCH;
 			path_prefix = to_uppercase(CFG_BG_FR_NAME);
 			if (needtitle) {
 				new_title = CFG_BG_FR_TITLE;
@@ -418,7 +418,7 @@ ModManager::ModManager(
 			break;
 		case 0x157ca514:
 			// German BG
-			language    = GERMAN;
+			language    = Game_Language::GERMAN;
 			path_prefix = to_uppercase(CFG_BG_DE_NAME);
 			if (needtitle) {
 				new_title = CFG_BG_DE_TITLE;
@@ -426,7 +426,7 @@ ModManager::ModManager(
 			break;
 		case 0x6d7b7323:
 			// Spanish BG
-			language    = SPANISH;
+			language    = Game_Language::SPANISH;
 			path_prefix = to_uppercase(CFG_BG_ES_NAME);
 			if (needtitle) {
 				new_title = CFG_BG_ES_TITLE;
@@ -437,7 +437,7 @@ ModManager::ModManager(
 			[[fallthrough]];
 		case 0xafc35523:
 			// English BG
-			language    = ENGLISH;
+			language    = Game_Language::ENGLISH;
 			path_prefix = to_uppercase(CFG_BG_NAME);
 			if (needtitle) {
 				new_title = CFG_BG_TITLE;
@@ -446,7 +446,7 @@ ModManager::ModManager(
 		}
 	} else if (static_identity == "FORGE") {
 		type      = BLACK_GATE;
-		language  = ENGLISH;
+		language  = Game_Language::ENGLISH;
 		expansion = true;
 		sibeta    = false;
 		if (crc != 0x8a74c26b) {
@@ -462,7 +462,7 @@ ModManager::ModManager(
 		switch (crc) {
 		case 0x96f66a7a:
 			// Spanish SI
-			language    = SPANISH;
+			language    = Game_Language::SPANISH;
 			path_prefix = to_uppercase(CFG_SI_ES_NAME);
 			if (needtitle) {
 				new_title = CFG_SI_ES_TITLE;
@@ -471,7 +471,7 @@ ModManager::ModManager(
 			break;
 		case 0xdbdc2676:
 			// SI Beta
-			language    = ENGLISH;
+			language    = Game_Language::ENGLISH;
 			path_prefix = to_uppercase(CFG_SIB_NAME);
 			if (needtitle) {
 				new_title = CFG_SIB_TITLE;
@@ -483,7 +483,7 @@ ModManager::ModManager(
 			[[fallthrough]];
 		case 0xf98f5f3e:
 			// English SI
-			language    = ENGLISH;
+			language    = Game_Language::ENGLISH;
 			path_prefix = to_uppercase(CFG_SI_NAME);
 			if (needtitle) {
 				new_title = CFG_SI_TITLE;
@@ -493,7 +493,7 @@ ModManager::ModManager(
 		}
 	} else if (static_identity == "SILVER SEED") {
 		type      = SERPENT_ISLE;
-		language  = ENGLISH;
+		language  = Game_Language::ENGLISH;
 		expansion = true;
 		sibeta    = false;
 		if (crc != 0x3e18f9a0) {
@@ -505,7 +505,7 @@ ModManager::ModManager(
 		}
 	} else if (static_identity == "DEVEL GAME") {
 		type      = EXULT_DEVEL_GAME;
-		language  = ENGLISH;
+		language  = Game_Language::ENGLISH;
 		expansion = false;
 		sibeta    = false;
 		if (id == CFG_DEMO_NAME) {
