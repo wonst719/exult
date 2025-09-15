@@ -146,8 +146,85 @@
 0x585:telling him of your fate!
 0x586:
 0x587:
-#mixer gump popup error message
-0x588: Failed to play midi test track
-0x589: Failed to play ogg test track
+
 #message for Automatic feding
 0x590: Out of Food
+
+# Gump Strings
+0x591: OK
+0x592: CANCEL
+0x593: HELP
+0x594: Yes
+0x595: No
+0x596: disabled
+0x597: Disabled
+0x598: Do you really want to quit?
+
+#mixer gump 
+0x5A0: Failed to play midi test track
+0x5A1: Failed to play ogg test track
+0x5A2: Music:
+0x5A3: MIDI Music:
+0x5A4: OGG Music:
+0x5A5: SFX:
+0x5A6: Speech:
+
+#Game Display Options Gump
+0x5B0: Left
+0x5B1: Middle
+0x5B2: Right
+
+0x5B3: Vertical
+0x5B4: Transparent
+0x5B5: Black
+0x5B6: Green
+0x5B7: White
+0x5B8: Yellow
+0x5B9: Blue
+0x5BA: Red
+0x5BB: Purple
+0x5BC: Solid Gray
+0x5BD: Dark Purple
+0x5BE: Bright Yellow
+0x5BF: Light Blue
+
+0x5C0: Light Green
+0x5C1: Dark Red
+0x5C2: Orange
+0x5C3: Light Gray
+0x5C4: Pale Blue
+0x5C5: Dark Green
+0x5C6: Bright White
+0x5C7: Dark Gray
+
+0x5C8: Status Bars:
+0x5C9: Use ShortcutBar :
+0x5CA: Use outline color :
+0x5CB: Hide missing items:
+0x5CC: Text Background:
+0x5CD: Smooth scrolling:
+0x5CE: Skip intro:
+0x5CF: Skip scripted first scene:
+0x5D0: Use extended SI intro:
+0x5D1: Paperdolls:
+0x5D2: Android autolaunch:
+0x5D3: Language:
+0x5D4: Default
+0x5D5: English
+0x5D6: French
+0x5D7: German
+0x5D8: Spanish
+
+# GameMenuGump
+0x5E0: Load/Save Game
+0x5E1: Video Options
+0x5E2: Audio Options
+0x5E3: Game Display
+0x5E4: Game Engine
+0x5E5: Game Input
+0x5E6: Quit to Menu
+0x5E7: Quit
+
+
+
+

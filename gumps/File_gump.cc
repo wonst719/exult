@@ -44,6 +44,7 @@
 #include <array>
 #include <cctype>
 #include <cstring>
+#include <items.h>
 
 using std::cout;
 using std::endl;
@@ -436,7 +437,7 @@ void File_gump::save() {
  */
 
 void File_gump::quit() {
-	if (!Yesno_gump::ask("Do you really want to quit?")) {
+	if (!Yesno_gump::ask(GumpStrings::Doyoureallywanttoquit())) {
 		return;
 	}
 	quitting_time = QUIT_TIME_YES;

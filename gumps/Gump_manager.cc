@@ -45,6 +45,7 @@
 #include "npcnear.h"
 #include "spellbook.h"
 #include "touchui.h"
+#include <items.h>
 
 #ifdef __GNUC__
 #	pragma GCC diagnostic push
@@ -495,7 +496,7 @@ bool Gump_manager::okay_to_quit(Paintable* paint) {
 		return false;
 	}
 	inthis = true;
-	if (Yesno_gump::ask("Do you really want to quit?", paint)) {
+	if (Yesno_gump::ask(GumpStrings::Doyoureallywanttoquit(), paint)) {
 		quitting_time = QUIT_TIME_YES;
 	}
 	inthis = false;
