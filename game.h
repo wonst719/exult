@@ -98,7 +98,7 @@ public:
 	}
 
 	static Game_Language get_game_language() {
-		return language;
+		return game_type != NONE ? language : Game_Language::ENGLISH;
 	}
 
 	static Game_Language get_game_message_language();

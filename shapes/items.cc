@@ -206,23 +206,25 @@ static void Setup_item_names(
 	int            flxcnt         = 0;
 	int            i;
 
-	items.seek(0x54);
-	num_item_names = flxcnt = items.read4();
-	if (flxcnt > 0x400) {
-		num_item_names = 0x400;
-		num_text_msgs  = flxcnt - 0x400;
-		if (flxcnt > 0x500) {
-			num_text_msgs  = 0x100;
-			num_misc_names = flxcnt - 0x500;
-			int last_name;    // Discard all starting from this.
-			if (si) {
-				last_name = 0x686;
-			} else {
-				last_name = 0x600;
-			}
-			if (flxcnt > last_name) {
-				num_misc_names = last_name - 0x500;
-				flxcnt         = last_name;
+	if (items.good()) {
+		items.seek(0x54);
+		num_item_names = flxcnt = items.read4();
+		if (flxcnt > 0x400) {
+			num_item_names = 0x400;
+			num_text_msgs  = flxcnt - 0x400;
+			if (flxcnt > 0x500) {
+				num_text_msgs  = 0x100;
+				num_misc_names = flxcnt - 0x500;
+				int last_name;    // Discard all starting from this.
+				if (si) {
+					last_name = 0x686;
+				} else {
+					last_name = 0x600;
+				}
+				if (flxcnt > last_name) {
+					num_misc_names = last_name - 0x500;
+					flxcnt         = last_name;
+				}
 			}
 		}
 	}
@@ -405,9 +407,7 @@ void Setup_text(bool si, bool expansion, bool sibeta, Game_Language language) {
 			}
 			return IFileDataSource(TEXT_FLX);
 		}();
-		if (!textflx.good()) {
-			return;
-		}
+
 		Setup_item_names(textflx, exultmsgs, si, expansion, sibeta);
 	}
 }

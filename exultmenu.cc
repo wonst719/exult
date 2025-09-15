@@ -379,6 +379,9 @@ BaseGameInfo* ExultMenu::show_mods_menu(ModManager* selgame) {
 }
 
 BaseGameInfo* ExultMenu::run() {
+	// Load text messages for translatable text
+	Game::setup_text();
+
 	Palette*       gpal = gwin->get_pal();
 	Shape_manager* sman = Shape_manager::get_instance();
 

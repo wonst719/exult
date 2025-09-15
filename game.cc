@@ -39,6 +39,7 @@
 #include "gamemgr/sigame.h"
 #include "gamewin.h"
 #include "items.h"
+#include "istring.h"
 #include "keys.h"
 #include "menulist.h"
 #include "mouse.h"
@@ -167,26 +168,35 @@ Game* Game::create_game(BaseGameInfo* mygame) {
 
 Game_Language Game::get_game_message_language() {
 	std::string value;
+	Game_Language selected
+			=  get_game_language();
 
-	config->value(
-			"config/gameplay/language", value,
-			"(default)");
-	config->value(
-			"config/disk/game/" + Game::get_gametitle() + "/language", value,
-			value);
-	for (char& c : value) {
-		c = std::tolower(c);
+	for (int i = 0; i < 2; i++) {
+		if (i == 0) {
+			config->value("config/gameplay/language", value, "");
+		} else if(get_game_type() != NONE) {
+			config->value(
+					"config/disk/game/" + Game::get_gametitle() + "/language",
+					value, "");			
+		} else {
+			continue;
+		}
+
+		// make the string lowercase
+		Pentagram::tolower(value);
+		// Only
+		if (value == "en") {
+			selected = Game_Language::ENGLISH;
+		} else if (value == "fr") {
+			selected = Game_Language::FRENCH;
+		} else if (value == "de") {
+			selected = Game_Language::GERMAN;
+		} else if (value == "es") {
+			selected = Game_Language::SPANISH;
+		}
 	}
-	if (value == "en") {
-		return Game_Language::ENGLISH;
-	} else if (value == "fr") {
-		return Game_Language::FRENCH;
-	} else if (value == "de") {
-		return Game_Language::GERMAN;
-	} else if (value == "es") {
-		return Game_Language::SPANISH;
-	}
-	return get_game_language();
+	return selected;
+	;
 }
 
 void Game::setup_text() {
