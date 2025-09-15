@@ -33,6 +33,17 @@ namespace Pentagram {
 	int strcasecmp(const char* s1, const char* s2);
 	int strncasecmp(const char* s1, const char* s2, std::size_t length);
 
+	inline void tolower(char* str) {
+		while (*str) {
+			*str++ = std::tolower(*str);
+		}
+	}
+
+	inline void tolower(std::string& str) {
+		for (char& c : str) {
+			c = std::tolower(c);
+		}
+	}
 }    // namespace Pentagram
 
 #endif
