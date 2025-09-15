@@ -40,6 +40,7 @@ private:
 	bool                     extended_intro;
 	bool                     menu_intro;
 	int                      paperdolls;
+	int                      language;
 
 	enum button_ids {
 		id_first = 0,
@@ -57,6 +58,7 @@ private:
 		id_extended_intro,
 		id_paperdolls,
 		id_android_autolaunch,
+		id_language,
 
 		id_count
 	};
@@ -91,6 +93,9 @@ public:
 
 	void toggle_sc_outline(int state) {
 		sc_outline = state;
+	}
+	void toggle_language(int state) {
+		language = state;
 	}
 
 	void toggle_sb_hide_missing(int state) {

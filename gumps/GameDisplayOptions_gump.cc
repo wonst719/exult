@@ -19,6 +19,7 @@
 #ifdef HAVE_CONFIG_H
 #	include <config.h>
 #endif
+#include "istring.h"
 
 #include <cstring>
 #include <iostream>
@@ -51,15 +52,180 @@
 #include "game.h"
 #include "gamewin.h"
 
+#include <items.h>
+
 using std::string;
 
-static const int rowy[]
-		= {5, 17, 29, 41, 53, 65, 77, 89, 101, 113, 125, 137, 146, 155};
+static const int rowy[] = {5,   17,  29,  41,  53,  65,  77,  89,
+						   101, 113, 125, 137, 146, 155, 164, 173};
 static const int colx[] = {35, 50, 120, 170, 192, 209};
 
-static const char* oktext     = "OK";
-static const char* canceltext = "CANCEL";
-static const char* helptext   = "HELP";
+class Strings : public GumpStrings {
+public:
+	static auto Left() {
+		return get_text_msg(0x1B0);
+	}
+
+	static auto Middle() {
+		return get_text_msg(0x1B1);
+	}
+
+	static auto Right() {
+		return get_text_msg(0x1B2);
+	}
+
+	static auto Vertical() {
+		return get_text_msg(0x1B3);
+	}
+
+	static auto Transparent() {
+		return get_text_msg(0x1B4);
+	}
+
+	static auto Black() {
+		return get_text_msg(0x1B5);
+	}
+
+	static auto Green() {
+		return get_text_msg(0x1B6);
+	}
+
+	static auto White() {
+		return get_text_msg(0x1B7);
+	}
+
+	static auto Yellow() {
+		return get_text_msg(0x1B8);
+	}
+
+	static auto Blue() {
+		return get_text_msg(0x1B9);
+	}
+
+	static auto Red() {
+		return get_text_msg(0x1BA);
+	}
+
+	static auto Purple() {
+		return get_text_msg(0x1BB);
+	}
+
+	static auto SolidGray() {
+		return get_text_msg(0x1BC);
+	}
+
+	static auto DarkPurple() {
+		return get_text_msg(0x1BD);
+	}
+
+	static auto BrightYellow() {
+		return get_text_msg(0x1BE);
+	}
+
+	static auto LightBlue() {
+		return get_text_msg(0x1BF);
+	}
+
+	static auto LightGreen() {
+		return get_text_msg(0x1C0);
+	}
+
+	static auto DarkRed() {
+		return get_text_msg(0x1C1);
+	}
+
+	static auto Orange() {
+		return get_text_msg(0x1C2);
+	}
+
+	static auto LightGray() {
+		return get_text_msg(0x1C3);
+	}
+
+	static auto PaleBlue() {
+		return get_text_msg(0x1C4);
+	}
+
+	static auto DarkGreen() {
+		return get_text_msg(0x1C5);
+	}
+
+	static auto BrightWhite() {
+		return get_text_msg(0x1C6);
+	}
+
+	static auto DarkGray() {
+		return get_text_msg(0x1C7);
+	}
+
+	static auto StatusBars() {
+		return get_text_msg(0x1C8);
+	}
+
+	static auto UseShortcutBar() {
+		return get_text_msg(0x1C9);
+	}
+
+	static auto Useoutlinecolor() {
+		return get_text_msg(0x1CA);
+	}
+
+	static auto Hidemissingitems() {
+		return get_text_msg(0x1CB);
+	}
+
+	static auto TextBackground() {
+		return get_text_msg(0x1CC);
+	}
+
+	static auto Smoothscrolling() {
+		return get_text_msg(0x1CD);
+	}
+
+	static auto Skipintro() {
+		return get_text_msg(0x1CE);
+	}
+
+	static auto Skipscriptedfirstscene() {
+		return get_text_msg(0x1CF);
+	}
+
+	static auto UseextendedSIintro() {
+		return get_text_msg(0x1D0);
+	}
+
+	static auto Paperdolls() {
+		return get_text_msg(0x1D1);
+	}
+
+	static auto Androidautolaunch() {
+		return get_text_msg(0x1D2);
+	}
+
+	static auto Language() {
+		return get_text_msg(0x1D3);
+	}
+
+	static auto Default() {
+		return get_text_msg(0x1D4);
+	}
+
+	static auto English() {
+		return get_text_msg(0x1D5);
+	}
+
+	static auto French() {
+		return get_text_msg(0x1D6);
+	}
+
+	static auto German() {
+		return get_text_msg(0x1D7);
+	}
+
+	static auto Spanish() {
+		return get_text_msg(0x1D8);
+	}
+};
 
 using GameDisplayOptions_button = CallbackTextButton<GameDisplayOptions_gump>;
 using GameDisplayTextToggle = CallbackToggleTextButton<GameDisplayOptions_gump>;
@@ -90,7 +256,7 @@ void GameDisplayOptions_gump::help() {
 }
 
 void GameDisplayOptions_gump::build_buttons() {
-	const std::vector<std::string> yesNo = {"No", "Yes"};
+	const std::vector<std::string> yesNo = {Strings::No(), Strings::Yes()};
 
 	int y_index    = 0;
 	int small_size = 44;
@@ -98,21 +264,25 @@ void GameDisplayOptions_gump::build_buttons() {
 
 	// Status Bar Positions
 	std::vector<std::string> stats
-			= {"Disabled", "Left", "Middle", "Right", "Vertical"};
+			= {Strings::Disabled(), Strings::Left(), Strings::Middle(),
+			   Strings::Right(), Strings::Vertical()};
 	buttons[id_facestats] = std::make_unique<GameDisplayTextToggle>(
 			this, &GameDisplayOptions_gump::toggle_facestats, std::move(stats),
 			facestats, colx[5] - 41, rowy[y_index], large_size);
 
-	std::vector<std::string> sc_enabled_txt = {"No", "Transparent", "Yes"};
+	std::vector<std::string> sc_enabled_txt
+			= {Strings::No(), Strings::Transparent(), Strings::Yes()};
 	buttons[id_sc_enabled] = std::make_unique<GameDisplayTextToggle>(
 			this, &GameDisplayOptions_gump::toggle_sc_enabled,
 			std::move(sc_enabled_txt), sc_enabled, colx[5] - 41,
 			rowy[++y_index], large_size);
 
 	// keep in order of Pixel_colors
-	// "No" needs to be last.
+	// No needs to be last.
 	sc_outline_txt = std::vector<std::string>{
-			"Black", "Green", "White", "Yellow", "Blue", "Red", "Purple", "No"};
+			Strings::Black(),  Strings::Green(), Strings::White(),
+			Strings::Yellow(), Strings::Blue(),  Strings::Red(),
+			Strings::Purple(), Strings::No()};
 	buttons[id_sc_outline] = std::make_unique<GameDisplayTextToggle>(
 			this, &GameDisplayOptions_gump::toggle_sc_outline, sc_outline_txt,
 			sc_outline, colx[5], rowy[++y_index], small_size);
@@ -122,17 +292,22 @@ void GameDisplayOptions_gump::build_buttons() {
 			sb_hide_missing, colx[5], rowy[++y_index], small_size);
 
 	std::vector<std::string> textbgcolor
-			= {"Disabled",   "Solid Gray",  "Dark Purple", "Bright Yellow",
-			   "Light Blue", "Light Green", "Dark Red",    "Purple",
-			   "Orange",     "Light Gray",  "Green",       "Yellow",
-			   "Pale Blue",  "Dark Green",  "Red",         "Bright White",
-			   "Dark Gray",  "White"};
+			= {Strings::Disabled(),   Strings::SolidGray(),
+			   Strings::DarkPurple(), Strings::BrightYellow(),
+			   Strings::LightBlue(),  Strings::LightGreen(),
+			   Strings::DarkRed(),    Strings::Purple(),
+			   Strings::Orange(),     Strings::LightGray(),
+			   Strings::Green(),      Strings::Yellow(),
+			   Strings::PaleBlue(),   Strings::DarkGreen(),
+			   Strings::Red(),        Strings::BrightWhite(),
+			   Strings::DarkGray(),   Strings::White()};
 	buttons[id_text_bg] = std::make_unique<GameDisplayTextToggle>(
 			this, &GameDisplayOptions_gump::toggle_text_bg,
 			std::move(textbgcolor), text_bg, colx[5] - 41, rowy[++y_index],
 			large_size);
 
-	std::vector<std::string> smooth_text = {"No", "25%", "50%", "75%", "100%"};
+	std::vector<std::string> smooth_text
+			= {Strings::No(), "25%", "50%", "75%", "100%"};
 	buttons[id_smooth_scrolling] = std::make_unique<GameDisplayTextToggle>(
 			this, &GameDisplayOptions_gump::toggle_smooth_scrolling,
 			std::move(smooth_text), smooth_scrolling, colx[5], rowy[++y_index],
@@ -167,16 +342,23 @@ void GameDisplayOptions_gump::build_buttons() {
 						yesNo, android_autolaunch, colx[5], rowy[++y_index],
 						small_size);
 	}
+
+	auto languages_txt = std::vector<std::string>{
+			Strings::Default(),  Strings::English(), Strings::French(),
+			Strings::German(), Strings::Spanish()};
+	buttons[id_language] = std::make_unique<GameDisplayTextToggle>(
+			this, &GameDisplayOptions_gump::toggle_language, languages_txt,
+			language, colx[5] - 41, rowy[++y_index], large_size);
 }
 
 void GameDisplayOptions_gump::load_settings() {
-	string yn;
-	config->value("config/gameplay/skip_intro", yn, "no");
-	usecode_intro = (yn == "yes");
-	config->value("config/gameplay/extended_intro", yn, "no");
-	extended_intro = (yn == "yes");
-	config->value("config/gameplay/skip_splash", yn, "no");
-	menu_intro      = (yn == "yes");
+	string value;
+	config->value("config/gameplay/skip_intro", value, "no");
+	usecode_intro = (value == "yes");
+	config->value("config/gameplay/extended_intro", value, "no");
+	extended_intro = (value == "yes");
+	config->value("config/gameplay/skip_splash", value, "no");
+	menu_intro      = (value == "yes");
 	sc_enabled      = gwin->get_shortcutbar_type();
 	sc_outline      = gwin->get_outline_color();
 	sb_hide_missing = gwin->sb_hide_missing_items();
@@ -193,10 +375,23 @@ void GameDisplayOptions_gump::load_settings() {
 	smooth_scrolling = gwin->is_lerping_enabled() / 25;
 
 	android_autolaunch = Android_getAutoLaunch ? Android_getAutoLaunch() : 0;
+	config->value("config/gameplay/language", value, "");
+	Pentagram::tolower(value);
+	if (value == "en") {
+		language = 1;
+	} else if (value == "fr") {
+		language = 2;
+	} else if (value == "de") {
+		language = 3;
+	} else if (value == "es") {
+		language = 4;
+	} else {
+		language = 0;
+	}
 }
 
 GameDisplayOptions_gump::GameDisplayOptions_gump() : Modal_gump(nullptr, -1) {
-	SetProceduralBackground(TileRect(29, 2, 226, 165), -1);
+	SetProceduralBackground(TileRect(29, 2, 226, rowy[id_count]), -1);
 
 	for (auto& btn : buttons) {
 		btn.reset();
@@ -207,15 +402,15 @@ GameDisplayOptions_gump::GameDisplayOptions_gump() : Modal_gump(nullptr, -1) {
 
 	// Ok
 	buttons[id_ok] = std::make_unique<GameDisplayOptions_button>(
-			this, &GameDisplayOptions_gump::close, oktext, colx[0] - 2,
+			this, &GameDisplayOptions_gump::close, Strings::OK(), colx[0] - 2,
 			rowy[id_count - 1], 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<GameDisplayOptions_button>(
-			this, &GameDisplayOptions_gump::cancel, canceltext, colx[5] - 6,
-			rowy[id_count - 1], 50);
+			this, &GameDisplayOptions_gump::cancel, Strings::CANCEL(),
+			colx[5] - 6, rowy[id_count - 1], 50);
 	// Help
 	buttons[id_help] = std::make_unique<GameDisplayOptions_button>(
-			this, &GameDisplayOptions_gump::help, helptext, colx[2] - 3,
+			this, &GameDisplayOptions_gump::help, Strings::HELP(), colx[2] - 3,
 			rowy[id_count - 1], 50);
 }
 
@@ -272,11 +467,18 @@ void GameDisplayOptions_gump::save_settings() {
 				"config/gameplay/bg_paperdolls", paperdolls ? "yes" : "no",
 				false);
 	}
-	config->write_back();
-
 	if (Android_setAutoLaunch) {
 		Android_setAutoLaunch(android_autolaunch != 0);
 	}
+
+	const char* langcodes[] = {"", "en", "fr", "de", "es"};
+	if (language >=0 && size_t(language) < std::size(langcodes)) {
+		config->set("config/gameplay/language", langcodes[language], false);
+		
+		// Setup text incase language changed
+		Game::setup_text();
+	}
+	config->write_back();
 }
 
 void GameDisplayOptions_gump::paint() {
@@ -291,44 +493,49 @@ void GameDisplayOptions_gump::paint() {
 	Image_window8*        iwin    = gwin->get_win();
 	int                   y_index = 0;
 	font->paint_text(
-			iwin->get_ib8(), "Status Bars:", x + colx[0],
+			iwin->get_ib8(), Strings::StatusBars(), x + colx[0],
 			y + rowy[y_index] + 1);
 	font->paint_text(
-			iwin->get_ib8(), "Use ShortcutBar :", x + colx[0],
+			iwin->get_ib8(), Strings::UseShortcutBar(), x + colx[0],
 			y + rowy[++y_index] + 1);
 	font->paint_text(
-			iwin->get_ib8(), "Use outline color :", x + colx[1],
+			iwin->get_ib8(), Strings::Useoutlinecolor(), x + colx[1],
 			y + rowy[++y_index] + 1);
 	font->paint_text(
-			iwin->get_ib8(), "Hide missing items:", x + colx[1],
+			iwin->get_ib8(), Strings::Hidemissingitems(), x + colx[1],
 			y + rowy[++y_index] + 1);
 	font->paint_text(
-			iwin->get_ib8(), "Text Background:", x + colx[0],
+			iwin->get_ib8(), Strings::TextBackground(), x + colx[0],
 			y + rowy[++y_index] + 1);
 	font->paint_text(
-			iwin->get_ib8(), "Smooth scrolling:", x + colx[0],
+			iwin->get_ib8(), Strings::Smoothscrolling(), x + colx[0],
 			y + rowy[++y_index] + 1);
 	font->paint_text(
-			iwin->get_ib8(), "Skip intro:", x + colx[0],
+			iwin->get_ib8(), Strings::Skipintro(), x + colx[0],
 			y + rowy[++y_index] + 1);
 	if (buttons[id_usecode_intro]) {
 		font->paint_text(
-				iwin->get_ib8(), "Skip scripted first scene:", x + colx[0],
+				iwin->get_ib8(), Strings::Skipscriptedfirstscene(), x + colx[0],
 				y + rowy[++y_index] + 1);
 	}
 	if (buttons[id_extended_intro]) {
 		font->paint_text(
-				iwin->get_ib8(), "Use extended SI intro:", x + colx[0],
+				iwin->get_ib8(), Strings::UseextendedSIintro(), x + colx[0],
 				y + rowy[++y_index] + 1);
 	}
 	if (buttons[id_paperdolls]) {
 		font->paint_text(
-				iwin->get_ib8(), "Paperdolls:", x + colx[0],
+				iwin->get_ib8(), Strings::Paperdolls(), x + colx[0],
 				y + rowy[++y_index] + 1);
 	}
 	if (buttons[id_android_autolaunch]) {
 		font->paint_text(
-				iwin->get_ib8(), "Android autolaunch:", x + colx[0],
+				iwin->get_ib8(), Strings::Androidautolaunch(), x + colx[0],
+				y + rowy[++y_index] + 1);
+	}
+	if (buttons[id_language]) {
+		font->paint_text(
+				iwin->get_ib8(), Strings::Language(), x + colx[0],
 				y + rowy[++y_index] + 1);
 	}
 	gwin->set_painted();

@@ -173,9 +173,46 @@ const int brit_earth  = 0x17A;    // to 0x17B
 const int pagan       = 0x17C;    // to 0x17E
 const int congrats_si = 0x17F;    // to 0x187
 
-const int mixergump_midi_test_failed = 0x188;
-const int mixergump_ogg_test_failed  = 0x189;
 const int msg_out_of_food  = 0x190;
+
+// Shared gump strings are here, gump specific strings are found in the Strings class in the specific gump's cc file.
+class GumpStrings {
+public:
+	static auto OK() {
+		return get_text_msg(0x191);
+	}
+
+	static auto CANCEL() {
+		return get_text_msg(0x192);
+	}
+
+	static auto HELP() {
+		return get_text_msg(0x193);
+	}
+
+	static auto Yes() {
+		return get_text_msg(0x194);
+	}
+
+	static auto No() {
+		return get_text_msg(0x195);
+	}
+
+	static auto disabled() {
+		return get_text_msg(0x196);
+	}
+
+	static auto Disabled() {
+		return get_text_msg(0x197);
+	}
+
+	static auto Doyoureallywanttoquit() {
+		return get_text_msg(0x198);
+
+	}
+		
+};
+
 //	Misc. text (frames, etc.) start at 0x500 in text.flx.
 const int misc_name0 = 0x500;
 
