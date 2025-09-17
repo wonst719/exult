@@ -253,13 +253,22 @@ class Frames_actor_action : public Actor_action {
 	int              speed;    // Frame delay in 1/1000 secs.
 	Game_object_weak obj;      // Object to animate
 	bool             use_actor;
+	int              sound_id = -1;     // Sound effect to play (-1 = none)
+	int              volume   = 255;    // Volume (0-255)
+	int              repeat   = 0;      // Repeat count
+	Game_object_weak sound_src;         // Optional custom sound source
+	bool             sound_played = false;
 
 public:
 	Frames_actor_action(
 			const signed char* f, int c, int spd = 200,
-			Game_object* o = nullptr);
+			Game_object* o = nullptr, int sfx = -1, int vol = 255, int rep = 0,
+			Game_object* src = nullptr);
 
-	Frames_actor_action(signed char f, int spd = 200, Game_object* o = nullptr);
+	Frames_actor_action(
+			signed char f, int spd = 200, Game_object* o = nullptr,
+			int sfx = -1, int vol = 255, int rep = 0,
+			Game_object* src = nullptr);
 
 	// Handle time event.
 	int handle_event(Actor* actor) override;
@@ -346,24 +355,35 @@ public:
  */
 
 class Pickup_actor_action : public Actor_action {
-	Game_object_weak obj;       // What to pick up/put down.
-	int              pickup;    // 1 to pick up, 0 to put down.
-	int              speed;     // Time between frames.
-	int              cnt;       // 0, 1, 2.
-	Tile_coord       objpos;    // Where to put it.
-	int              dir;       // Direction to face.
-	bool             temp;      // True to make object temporary on drop.
-	bool             to_del;    // Delete after picking up object.
+	Game_object_weak obj;         // What to pick up/put down.
+	int              pickup;      // 1 to pick up, 0 to put down.
+	int              speed;       // Time between frames.
+	int              cnt;         // 0, 1, 2.
+	Tile_coord       objpos;      // Where to put it.
+	int              dir;         // Direction to face.
+	bool             temp;        // True to make object temporary on drop.
+	bool             to_del;      // Delete after picking up object.
+	int              sound_id;    // ID of sound effect to play
+	int              volume;      // Volume (0-256)
+	int              repeat;      // Repeat count
+	bool             play_sfx;    // Whether to play a sound effect
 public:
 	// To pick up an object:
-	Pickup_actor_action(Game_object* o, int spd, bool del = false);
-	// To put down an object:
 	Pickup_actor_action(
-			Game_object* o, const Tile_coord& opos, int spd, bool t = false);
+			Game_object* o, int spd = 250, bool del = false, int sfx = -1,
+			int vol = 255, int rep = 0);
+	// Put down an object:
+	Pickup_actor_action(
+			Game_object* o, const Tile_coord& opos, int spd = 250,
+			bool t = false, int sfx = -1, int vol = 255, int rep = 0);
 	int handle_event(Actor* actor) override;
 
 	int get_speed() const override {
 		return speed;
+	}
+
+	void stop(Actor* actor) override {
+		ignore_unused_variable_warning(actor);
 	}
 };
 
@@ -450,6 +470,66 @@ public:
 	void stop(Actor* actor) override {
 		ignore_unused_variable_warning(actor);
 	}
+};
+
+/*
+ *  Action that groups multiple actions to execute simultaneously in one frame.
+ */
+
+class Group_actor_action : public Actor_action {
+private:
+	std::vector<Actor_action*> actions;      // Actions to execute together
+	int                        max_delay;    // Use max delay of all actions
+
+public:
+	// Constructor takes a vector of actions (takes ownership)
+	Group_actor_action(std::vector<Actor_action*>&& acts)
+			: actions(std::move(acts)), max_delay(0) {}
+
+	// Constructors for convenience with 2-5 actions
+	Group_actor_action(Actor_action* a1, Actor_action* a2) {
+		actions.push_back(a1);
+		actions.push_back(a2);
+	}
+
+	Group_actor_action(Actor_action* a1, Actor_action* a2, Actor_action* a3) {
+		actions.push_back(a1);
+		actions.push_back(a2);
+		actions.push_back(a3);
+	}
+
+	Group_actor_action(
+			Actor_action* a1, Actor_action* a2, Actor_action* a3,
+			Actor_action* a4) {
+		actions.push_back(a1);
+		actions.push_back(a2);
+		actions.push_back(a3);
+		actions.push_back(a4);
+	}
+
+	Group_actor_action(
+			Actor_action* a1, Actor_action* a2, Actor_action* a3,
+			Actor_action* a4, Actor_action* a5) {
+		actions.push_back(a1);
+		actions.push_back(a2);
+		actions.push_back(a3);
+		actions.push_back(a4);
+		actions.push_back(a5);
+	}
+
+	~Group_actor_action() override {
+		for (auto* act : actions) {
+			delete act;
+		}
+	}
+
+	int handle_event(Actor* actor) override;
+
+	int get_speed() const override {
+		return max_delay;
+	}
+
+	void stop(Actor* actor) override;
 };
 
 #endif /* INCL_ACTIONS */

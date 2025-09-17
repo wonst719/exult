@@ -771,8 +771,13 @@ Frames_actor_action::Frames_actor_action(
 		const signed char* f,      // Frames.  -1 means don't change.
 		int                c,      // Count.
 		int                spd,    // Frame delay in 1/1000 secs.
-		Game_object*       o)
-		: index(0), speed(spd), obj(weak_from_obj(o)) {
+		Game_object*       o,      // Object to animate
+		int                sfx,    // Sound effect ID (-1 = none)
+		int                vol,    // Volume
+		int                rep,    // Repeat count
+		Game_object*       src)          // Custom sound source
+		: index(0), speed(spd), obj(weak_from_obj(o)), sound_id(sfx),
+		  volume(vol), repeat(rep), sound_src(weak_from_obj(src)) {
 	frames.resize(c);
 	std::copy_n(f, c, frames.begin());
 	use_actor = (o == nullptr);
@@ -785,8 +790,13 @@ Frames_actor_action::Frames_actor_action(
 Frames_actor_action::Frames_actor_action(
 		signed char  f,      // Frames.  -1 means don't change.
 		int          spd,    // Frame delay in 1/1000 secs.
-		Game_object* o)
-		: frames{f}, index(0), speed(spd), obj(weak_from_obj(o)) {
+		Game_object* o,      // Object to animate
+		int          sfx,    // Sound effect ID (-1 = none)
+		int          vol,    // Volume
+		int          rep,    // Repeat count
+		Game_object* src)    // Custom sound source
+		: frames{f}, index(0), speed(spd), obj(weak_from_obj(o)), sound_id(sfx),
+		  volume(vol), repeat(rep), sound_src(weak_from_obj(src)) {
 	use_actor = (o == nullptr);
 }
 
@@ -799,6 +809,19 @@ Frames_actor_action::Frames_actor_action(
 int Frames_actor_action::handle_event(Actor* actor) {
 	const Game_object_shared o = obj.lock();
 	if (index == frames.size() || (!o && !use_actor)) {
+		if (sound_id >= 0 && !sound_played) {
+			Audio* audio = Audio::get_ptr();
+
+			// Determine sound source: custom source > animated object > actor
+			Game_object_shared src = sound_src.lock();
+			if (!src) {
+				src = o;    // Use animated object if no custom source
+			}
+
+			Game_object* source = src ? src.get() : actor;
+			audio->play_sound_effect(sound_id, source, volume, repeat);
+			sound_played = true;
+		}
 		return 0;    // Done.
 	}
 	const int frnum = frames[index++];    // Get frame.
@@ -900,15 +923,19 @@ int Object_animate_actor_action::handle_event(Actor* actor) {
 /**
  *  Pick up/put down an object.
  */
-Pickup_actor_action::Pickup_actor_action(Game_object* o, int spd, bool del)
+Pickup_actor_action::Pickup_actor_action(
+		Game_object* o, int spd, bool del, int sfx, int vol, int rep)
 		: obj(weak_from_obj(o)), pickup(1), speed(spd), cnt(0),
-		  objpos(o->get_tile()), dir(0), temp(false), to_del(del) {}
+		  objpos(o->get_tile()), dir(0), temp(false), to_del(del),
+		  sound_id(sfx), volume(vol), repeat(rep), play_sfx(sfx >= 0) {}
 
 // To put down an object:
 Pickup_actor_action::Pickup_actor_action(
-		Game_object* o, const Tile_coord& opos, int spd, bool t)
+		Game_object* o, const Tile_coord& opos, int spd, bool t, int sfx,
+		int vol, int rep)
 		: obj(weak_from_obj(o)), pickup(0), speed(spd), cnt(0), objpos(opos),
-		  dir(0), temp(t), to_del(false) {}
+		  dir(0), temp(t), to_del(false), sound_id(sfx), volume(vol),
+		  repeat(rep), play_sfx(sfx >= 0) {}
 
 /**
  *  Pick up an item (or put it down).
@@ -942,6 +969,12 @@ int Pickup_actor_action::handle_event(Actor* actor) {
 				break;
 			}
 			gwin->add_dirty(obj_ptr.get());
+			// Play sound effect
+			if (play_sfx) {
+				Audio* audio = Audio::get_ptr();
+				audio->play_sound_effect(
+						sound_id, obj_ptr.get(), volume, repeat);
+			}
 			if (to_del) {
 				obj_ptr->remove_this();    // Delete it.
 			} else {
@@ -951,6 +984,12 @@ int Pickup_actor_action::handle_event(Actor* actor) {
 		} else {
 			obj_ptr->remove_this(&keep);
 			obj_ptr->move(objpos);
+			// Play sound effect
+			if (play_sfx) {
+				Audio* audio = Audio::get_ptr();
+				audio->play_sound_effect(
+						sound_id, obj_ptr.get(), volume, repeat);
+			}
 			if (temp) {
 				obj_ptr->set_flag(Obj_flags::is_temporary);
 			}
@@ -1058,4 +1097,37 @@ int Play_sfx_actor_action::handle_event(Actor* actor) {
 		audio->play_sound_effect(sound_id, obj.get(), volume, repeat);
 	}
 	return 0;
+}
+
+/**
+ *  Handle grouped simultaneous actions.
+ */
+
+int Group_actor_action::handle_event(Actor* actor) {
+	max_delay        = 0;
+	bool any_deleted = false;
+
+	// Execute all actions in the same frame tick
+	for (auto* act : actions) {
+		bool deleted = false;
+		int  delay   = act->handle_event_safely(actor, deleted);
+		if (deleted) {
+			any_deleted = true;
+		} else if (delay > max_delay) {
+			max_delay = delay;
+		}
+	}
+
+	// If any action requested deletion, we're gone too
+	if (any_deleted) {
+		return 0;
+	}
+
+	return max_delay;
+}
+
+void Group_actor_action::stop(Actor* actor) {
+	for (auto* act : actions) {
+		act->stop(actor);
+	}
 }
