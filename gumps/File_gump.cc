@@ -39,12 +39,12 @@
 #include "exult.h"
 #include "game.h"
 #include "gamewin.h"
+#include "items.h"
 #include "mouse.h"
 
 #include <array>
 #include <cctype>
 #include <cstring>
-#include <items.h>
 
 using std::cout;
 using std::endl;
@@ -437,7 +437,7 @@ void File_gump::save() {
  */
 
 void File_gump::quit() {
-	if (!Yesno_gump::ask(GumpStrings::Doyoureallywanttoquit())) {
+	if (!Yesno_gump::ask(GumpStrings::Doyoureallywanttoquit_())) {
 		return;
 	}
 	quitting_time = QUIT_TIME_YES;
