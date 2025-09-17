@@ -37,10 +37,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "exult_flx.h"
 #include "gameclk.h"
 #include "gamewin.h"
+#include "items.h"
 #include "mouse.h"
 
 #include <string>
-#include <items.h>
 
 using std::string;
 
@@ -50,38 +50,33 @@ static const int colx   = 31;
 class Strings : public GumpStrings {
 public:
 	static auto LoadSaveGame() {
-		return get_text_msg(0x1E0);
+		return get_text_msg(0x5E0 - msg_file_start);
 	}
 
 	static auto VideoOptions() {
-		return get_text_msg(0x1E1);
+		return get_text_msg(0x5E1 - msg_file_start);
 	}
 
 	static auto AudioOptions() {
-		return get_text_msg(0x1E2);
+		return get_text_msg(0x5E2 - msg_file_start);
 	}
 
 	static auto GameDisplay() {
-		return get_text_msg(0x1E3);
+		return get_text_msg(0x5E3 - msg_file_start);
 	}
 
 	static auto GameEngine() {
-		return get_text_msg(0x1E4);
+		return get_text_msg(0x5E4 - msg_file_start);
 	}
 
 	static auto GameInput() {
-		return get_text_msg(0x1E5);
-	}
-
-	static auto QuittoMenu() {
-		return get_text_msg(0x1E6);
+		return get_text_msg(0x5E5 - msg_file_start);
 	}
 
 	static auto Quit() {
-		return get_text_msg(0x1E7);
+		return get_text_msg(0x5E6 - msg_file_start);
 	}
 };
-
 
 using Gamemenu_button = CallbackTextButton<Gamemenu_gump>;
 
@@ -96,35 +91,28 @@ void Gamemenu_gump::createButtons() {
 	if (!gwin->is_in_exult_menu()) {
 		buttons[id_load_save] = std::make_unique<Gamemenu_button>(
 				this, &Gamemenu_gump::loadsave, Strings::LoadSaveGame(), colx,
-				rowy[y++],
-				108, 11);
+				rowy[y++], 108, 11);
 	}
 	buttons[id_video_options] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::video_options, Strings::VideoOptions(), colx,
-			rowy[y++],
-			108, 11);
+			rowy[y++], 108, 11);
 	buttons[id_audio_options] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::audio_options, Strings::AudioOptions(), colx,
-			rowy[y++],
-			108, 11);
+			rowy[y++], 108, 11);
 	buttons[id_game_engine_options] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::game_engine_options, Strings::GameEngine(),
-			colx,
-			rowy[y++], 108, 11);
+			colx, rowy[y++], 108, 11);
 	buttons[id_game_display_options] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::game_display_options, Strings::GameDisplay(),
-			colx,
-			rowy[y++], 108, 11);
+			colx, rowy[y++], 108, 11);
 	buttons[id_input] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::input_options, Strings::GameInput(), colx,
-			rowy[y++],
-			108, 11);
+			rowy[y++], 108, 11);
 #ifndef SDL_PLATFORM_IOS
 	if (!gwin->is_in_exult_menu()) {
 		buttons[id_quit] = std::make_unique<Gamemenu_button>(
 				this, &Gamemenu_gump::quit_exult, Strings::Quit(), colx,
-				rowy[y++],
-				108, 11);
+				rowy[y++], 108, 11);
 	}
 #endif
 }
@@ -132,7 +120,7 @@ void Gamemenu_gump::createButtons() {
 //++++++ IMPLEMENT RETURN_TO_MENU!
 void Gamemenu_gump::quit(bool return_to_menu) {
 	ignore_unused_variable_warning(return_to_menu);
-	if (!Yesno_gump::ask(Strings::Doyoureallywanttoquit())) {
+	if (!Yesno_gump::ask(Strings::Doyoureallywanttoquit_())) {
 		return;
 	}
 	quitting_time = QUIT_TIME_YES;

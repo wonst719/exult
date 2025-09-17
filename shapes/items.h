@@ -26,8 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef INCL_ITEMS
 #define INCL_ITEMS 1
 
-#include <iosfwd>
 #include "exult_constants.h"
+
+#include <iosfwd>
 
 // The game items' names.
 int         get_num_item_names();
@@ -47,6 +48,10 @@ void        Set_misc_name(unsigned num, const char* name);
 void Setup_text(bool si, bool expansion, bool sibeta, Game_Language language);
 void Free_text();
 void Write_text_file();
+
+// This is the offset messages start at in txt.flx amd exultmsg.txt
+// Subtract by this to get the message number used with get_text_msg()
+const int msg_file_start = 0x400;
 
 /*
  *  Message #'s.  These are (offset-0x400) in text.flx and exultmsg.txt:
@@ -173,44 +178,59 @@ const int brit_earth  = 0x17A;    // to 0x17B
 const int pagan       = 0x17C;    // to 0x17E
 const int congrats_si = 0x17F;    // to 0x187
 
-const int msg_out_of_food  = 0x190;
+const int msg_out_of_food = 0x190;
 
-// Shared gump strings are here, gump specific strings are found in the Strings class in the specific gump's cc file.
+// Shared gump strings are here, gump specific strings are found in the Strings
+// class in the specific gump's cc file.
 class GumpStrings {
 public:
 	static auto OK() {
-		return get_text_msg(0x191);
+		return get_text_msg(0x591 - msg_file_start);
 	}
 
 	static auto CANCEL() {
-		return get_text_msg(0x192);
+		return get_text_msg(0x592 - msg_file_start);
 	}
 
 	static auto HELP() {
-		return get_text_msg(0x193);
+		return get_text_msg(0x593 - msg_file_start);
+	}
+
+	static auto APPLY() {
+		return get_text_msg(0x594 - msg_file_start);
 	}
 
 	static auto Yes() {
-		return get_text_msg(0x194);
+		return get_text_msg(0x595 - msg_file_start);
 	}
 
 	static auto No() {
-		return get_text_msg(0x195);
+		return get_text_msg(0x596 - msg_file_start);
+	}
+
+	static auto Cancel() {
+		return get_text_msg(0x597 - msg_file_start);
 	}
 
 	static auto disabled() {
-		return get_text_msg(0x196);
+		return get_text_msg(0x599 - msg_file_start);
 	}
 
 	static auto Disabled() {
-		return get_text_msg(0x197);
+		return get_text_msg(0x59A - msg_file_start);
 	}
 
-	static auto Doyoureallywanttoquit() {
-		return get_text_msg(0x198);
-
+	static auto Enabled() {
+		return get_text_msg(0x59B - msg_file_start);
 	}
-		
+
+	static auto Default() {
+		return get_text_msg(0x59C - msg_file_start);
+	}
+
+	static auto Doyoureallywanttoquit_() {
+		return get_text_msg(0x59D - msg_file_start);
+	}
 };
 
 //	Misc. text (frames, etc.) start at 0x500 in text.flx.

@@ -51,8 +51,7 @@
 #include "font.h"
 #include "game.h"
 #include "gamewin.h"
-
-#include <items.h>
+#include "items.h"
 
 using std::string;
 
@@ -63,167 +62,163 @@ static const int colx[] = {35, 50, 120, 170, 192, 209};
 class Strings : public GumpStrings {
 public:
 	static auto Left() {
-		return get_text_msg(0x1B0);
+		return get_text_msg(0x5B0 - msg_file_start);
 	}
 
 	static auto Middle() {
-		return get_text_msg(0x1B1);
+		return get_text_msg(0x5B1 - msg_file_start);
 	}
 
 	static auto Right() {
-		return get_text_msg(0x1B2);
+		return get_text_msg(0x5B2 - msg_file_start);
 	}
 
 	static auto Vertical() {
-		return get_text_msg(0x1B3);
+		return get_text_msg(0x5B3 - msg_file_start);
 	}
 
 	static auto Transparent() {
-		return get_text_msg(0x1B4);
+		return get_text_msg(0x5B4 - msg_file_start);
 	}
 
 	static auto Black() {
-		return get_text_msg(0x1B5);
+		return get_text_msg(0x5B5 - msg_file_start);
 	}
 
 	static auto Green() {
-		return get_text_msg(0x1B6);
+		return get_text_msg(0x5B6 - msg_file_start);
 	}
 
 	static auto White() {
-		return get_text_msg(0x1B7);
+		return get_text_msg(0x5B7 - msg_file_start);
 	}
 
 	static auto Yellow() {
-		return get_text_msg(0x1B8);
+		return get_text_msg(0x5B8 - msg_file_start);
 	}
 
 	static auto Blue() {
-		return get_text_msg(0x1B9);
+		return get_text_msg(0x5B9 - msg_file_start);
 	}
 
 	static auto Red() {
-		return get_text_msg(0x1BA);
+		return get_text_msg(0x5BA - msg_file_start);
 	}
 
 	static auto Purple() {
-		return get_text_msg(0x1BB);
+		return get_text_msg(0x5BB - msg_file_start);
 	}
 
 	static auto SolidGray() {
-		return get_text_msg(0x1BC);
+		return get_text_msg(0x5BC - msg_file_start);
 	}
 
 	static auto DarkPurple() {
-		return get_text_msg(0x1BD);
+		return get_text_msg(0x5BD - msg_file_start);
 	}
 
 	static auto BrightYellow() {
-		return get_text_msg(0x1BE);
+		return get_text_msg(0x5BE - msg_file_start);
 	}
 
 	static auto LightBlue() {
-		return get_text_msg(0x1BF);
+		return get_text_msg(0x5BF - msg_file_start);
 	}
 
 	static auto LightGreen() {
-		return get_text_msg(0x1C0);
+		return get_text_msg(0x5C0 - msg_file_start);
 	}
 
 	static auto DarkRed() {
-		return get_text_msg(0x1C1);
+		return get_text_msg(0x5C1 - msg_file_start);
 	}
 
 	static auto Orange() {
-		return get_text_msg(0x1C2);
+		return get_text_msg(0x5C2 - msg_file_start);
 	}
 
 	static auto LightGray() {
-		return get_text_msg(0x1C3);
+		return get_text_msg(0x5C3 - msg_file_start);
 	}
 
 	static auto PaleBlue() {
-		return get_text_msg(0x1C4);
+		return get_text_msg(0x5C4 - msg_file_start);
 	}
 
 	static auto DarkGreen() {
-		return get_text_msg(0x1C5);
+		return get_text_msg(0x5C5 - msg_file_start);
 	}
 
 	static auto BrightWhite() {
-		return get_text_msg(0x1C6);
+		return get_text_msg(0x5C6 - msg_file_start);
 	}
 
 	static auto DarkGray() {
-		return get_text_msg(0x1C7);
+		return get_text_msg(0x5C7 - msg_file_start);
 	}
 
 	static auto StatusBars() {
-		return get_text_msg(0x1C8);
+		return get_text_msg(0x5C8 - msg_file_start);
 	}
 
 	static auto UseShortcutBar() {
-		return get_text_msg(0x1C9);
+		return get_text_msg(0x5C9 - msg_file_start);
 	}
 
 	static auto Useoutlinecolor() {
-		return get_text_msg(0x1CA);
+		return get_text_msg(0x5CA - msg_file_start);
 	}
 
 	static auto Hidemissingitems() {
-		return get_text_msg(0x1CB);
+		return get_text_msg(0x5CB - msg_file_start);
 	}
 
 	static auto TextBackground() {
-		return get_text_msg(0x1CC);
+		return get_text_msg(0x5CC - msg_file_start);
 	}
 
 	static auto Smoothscrolling() {
-		return get_text_msg(0x1CD);
+		return get_text_msg(0x5CD - msg_file_start);
 	}
 
 	static auto Skipintro() {
-		return get_text_msg(0x1CE);
+		return get_text_msg(0x5CE - msg_file_start);
 	}
 
 	static auto Skipscriptedfirstscene() {
-		return get_text_msg(0x1CF);
+		return get_text_msg(0x5CF - msg_file_start);
 	}
 
 	static auto UseextendedSIintro() {
-		return get_text_msg(0x1D0);
+		return get_text_msg(0x5D0 - msg_file_start);
 	}
 
 	static auto Paperdolls() {
-		return get_text_msg(0x1D1);
+		return get_text_msg(0x5D1 - msg_file_start);
 	}
 
 	static auto Androidautolaunch() {
-		return get_text_msg(0x1D2);
+		return get_text_msg(0x5D2 - msg_file_start);
 	}
 
 	static auto Language() {
-		return get_text_msg(0x1D3);
-	}
-
-	static auto Default() {
-		return get_text_msg(0x1D4);
+		return get_text_msg(0x5D3 - msg_file_start);
 	}
 
 	static auto English() {
-		return get_text_msg(0x1D5);
+		return get_text_msg(0x5D4 - msg_file_start);
 	}
 
 	static auto French() {
-		return get_text_msg(0x1D6);
+		return get_text_msg(0x5D5 - msg_file_start);
 	}
 
 	static auto German() {
-		return get_text_msg(0x1D7);
+		return get_text_msg(0x5D6 - msg_file_start);
 	}
 
 	static auto Spanish() {
-		return get_text_msg(0x1D8);
+		return get_text_msg(0x5D7 - msg_file_start);
 	}
 };
 
@@ -344,7 +339,7 @@ void GameDisplayOptions_gump::build_buttons() {
 	}
 
 	auto languages_txt = std::vector<std::string>{
-			Strings::Default(),  Strings::English(), Strings::French(),
+			Strings::Default(), Strings::English(), Strings::French(),
 			Strings::German(), Strings::Spanish()};
 	buttons[id_language] = std::make_unique<GameDisplayTextToggle>(
 			this, &GameDisplayOptions_gump::toggle_language, languages_txt,
@@ -472,9 +467,9 @@ void GameDisplayOptions_gump::save_settings() {
 	}
 
 	const char* langcodes[] = {"", "en", "fr", "de", "es"};
-	if (language >=0 && size_t(language) < std::size(langcodes)) {
+	if (language >= 0 && size_t(language) < std::size(langcodes)) {
 		config->set("config/gameplay/language", langcodes[language], false);
-		
+
 		// Setup text incase language changed
 		Game::setup_text();
 	}

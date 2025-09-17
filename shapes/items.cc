@@ -234,17 +234,17 @@ static void Setup_item_names(
 			// Exult msgs. too?
 			Text_msg_file_reader reader(msgs);
 			int first_msg = reader.get_global_section_strings(msglist);
-			if (first_msg >= 0x400) {
-				first_msg -= 0x400;
+			if (first_msg >= msg_file_start) {
+				first_msg -= msg_file_start;
 				if (first_msg < num_text_msgs) {
 					cerr << "Exult msg. # " << first_msg
 						 << " conflicts with 'text.flx'" << endl;
 					first_msg = num_text_msgs;
 				}
-				const size_t total_msgs = msglist.size() - 0x400;
+				const size_t total_msgs = msglist.size() - msg_file_start;
 				text_msgs.resize(std::max(total_msgs, text_msgs.size()));
 				for (unsigned i = first_msg; i < total_msgs; i++) {
-					text_msgs[i] = msglist[i + 0x400];
+					text_msgs[i] = msglist[i + msg_file_start];
 				}
 			} else {
 				first_msg = num_text_msgs;
@@ -311,12 +311,12 @@ static void Setup_text(
 			}
 
 			//
-			if (first_msg >= 0x400) {
-				first_msg -= 0x400;
-				const size_t total_msgs = msglist.size() - 0x400;
+			if (first_msg >= msg_file_start) {
+				first_msg -= msg_file_start;
+				const size_t total_msgs = msglist.size() - msg_file_start;
 				text_msgs.resize(std::max(total_msgs, text_msgs.size()));
 				for (unsigned i = first_msg; i < total_msgs; i++) {
-					text_msgs[i] = msglist[i + 0x400];
+					text_msgs[i] = msglist[i + msg_file_start];
 				}
 			}
 		}

@@ -56,32 +56,32 @@ static const int colx[] = {35, 84, 95, 117, 206, 215, 253};
 // Translatable Strings
 class Strings : public GumpStrings {
 public:
-	static auto midi_test_failed() {
-		return get_text_msg(0x1A0);
+	static auto Failedtoplaymiditesttrack() {
+		return get_text_msg(0x5A0 - msg_file_start);
 	}
 
-	static auto ogg_test_failed() {
-		return get_text_msg(0x1A1);
+	static auto Failedtoplayoggtesttrack() {
+		return get_text_msg(0x5A1 - msg_file_start);
 	}
 
-	static auto Music() {
-		return get_text_msg(0x1A2);
+	static auto Music_() {
+		return get_text_msg(0x5A2 - msg_file_start);
 	}
 
-	static auto MIDIMusic() {
-		return get_text_msg(0x1A3);
+	static auto MIDIMusic_() {
+		return get_text_msg(0x5A3 - msg_file_start);
 	}
 
-	static auto OGGMusic() {
-		return get_text_msg(0x1A4);
+	static auto OGGMusic_() {
+		return get_text_msg(0x5A4 - msg_file_start);
 	}
 
-	static auto SFX() {
-		return get_text_msg(0x1A5);
+	static auto SFX_() {
+		return get_text_msg(0x5A5 - msg_file_start);
 	}
 
-	static auto Speech() {
-		return get_text_msg(0x1A6);
+	static auto Speech_() {
+		return get_text_msg(0x5A6 - msg_file_start);
 	}
 };
 
@@ -321,7 +321,7 @@ void Mixer_gump::paint() {
 	// if don't have both music sliders
 	if (!midislider || !oggslider) {
 		font->paint_text_right_aligned(
-				ib8, Strings::Music(), x + colx[1], y + rowy[0]);
+				ib8, Strings::Music_(), x + colx[1], y + rowy[0]);
 	}
 	// if have neither
 	if (!midislider && !oggslider) {
@@ -332,7 +332,7 @@ void Mixer_gump::paint() {
 	if (midislider) {
 		if (oggslider) {
 			font->paint_text_right_aligned(
-					iwin->get_ib8(), Strings::MIDIMusic(), x + colx[1],
+					iwin->get_ib8(), Strings::MIDIMusic_(), x + colx[1],
 					y + rowy[0]);
 		}
 
@@ -355,7 +355,7 @@ void Mixer_gump::paint() {
 	if (oggslider) {
 		if (midislider) {
 			font->paint_text_right_aligned(
-					iwin->get_ib8(), Strings::OGGMusic(), x + colx[1],
+					iwin->get_ib8(), Strings::OGGMusic_(), x + colx[1],
 					y + rowy[num_sliders - 3]);
 		}
 
@@ -376,7 +376,7 @@ void Mixer_gump::paint() {
 				y + rowy[num_sliders - 3], font);
 	}
 	font->paint_text_right_aligned(
-			ib8, Strings::SFX(), x + colx[1], y + rowy[num_sliders - 2]);
+			ib8, Strings::SFX_(), x + colx[1], y + rowy[num_sliders - 2]);
 	if (sfxslider) {
 		if (use3dslidertrack) {
 			ib8->draw_beveled_box(
@@ -399,7 +399,7 @@ void Mixer_gump::paint() {
 				y + rowy[num_sliders - 2]);
 	}
 	font->paint_text_right_aligned(
-			ib8, Strings::Speech(), x + colx[1], y + rowy[num_sliders - 1]);
+			ib8, Strings::Speech_(), x + colx[1], y + rowy[num_sliders - 1]);
 	if (speechslider) {
 		if (use3dslidertrack) {
 			ib8->draw_beveled_box(
@@ -620,7 +620,7 @@ void Mixer_gump::OnSliderValueChanged(Slider_widget* sender, int newvalue) {
 							Audio::game_music(test_music_track), false,
 							MyMidiPlayer::Force_Midi)) {
 					SetPopupMessage(
-							Strings::midi_test_failed()
+							Strings::Failedtoplaymiditesttrack()
 							+ (" #" + std::to_string(test_music_track)));
 				}
 			}
@@ -640,7 +640,7 @@ void Mixer_gump::OnSliderValueChanged(Slider_widget* sender, int newvalue) {
 							Audio::game_music(test_music_track), false,
 							MyMidiPlayer::Force_Ogg)) {
 					SetPopupMessage(
-							Strings::ogg_test_failed()
+							Strings::Failedtoplayoggtesttrack()
 							+ (" " + midi->GetOggFailed()));
 				}
 			}

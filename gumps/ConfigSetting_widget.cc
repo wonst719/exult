@@ -24,12 +24,40 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "StringList_widget.h"
 #include "gamewin.h"
 #include "istring.h"
+#include "items.h"
 #include "listfiles.h"
 #include "utils.h"
 
 #include <algorithm>
 int         ConfigSetting_widget::bgstripe     = 0;
 const uint8 ConfigSetting_widget::bgcolours[4] = {143, 143, 143, 143};
+
+class Strings {
+public:
+	static auto Default() {
+		return get_text_msg(0x5f8 - msg_file_start);
+	}
+
+	static auto Unset() {
+		return get_text_msg(0x5F9 - msg_file_start);
+	}
+
+	static auto Allvaluesfor() {
+		return get_text_msg(0x5FA - msg_file_start);
+	}
+
+	static auto settingmustbeunique_() {
+		return get_text_msg(0x5FB - msg_file_start);
+	}
+
+	static auto AtleastOnevaluefor() {
+		return get_text_msg(0x5FC - msg_file_start);
+	}
+
+	static auto settingmustbeset_() {
+		return get_text_msg(0x5FD - msg_file_start);
+	}
+};
 
 ConfigSetting_widget::ConfigSetting_widget(
 		Gump_Base* parent, int px, int py, int butonwidth, int col2,
@@ -48,7 +76,7 @@ ConfigSetting_widget::ConfigSetting_widget(
 		// add the default choice into settings
 		std::string label = setting.default_value;
 		if (label.empty()) {
-			label = "(Default)";
+			label = Strings::Default();
 		}
 		setting.choices.push_back(
 				{std::move(label), setting.default_value,
@@ -59,8 +87,8 @@ ConfigSetting_widget::ConfigSetting_widget(
 	emptychoice = setting.find_choice("");
 	if (emptychoice == -1 && (!setting.required || setting.additional > 0)) {
 		emptychoice = setting.choices.size();
-		setting.choices.push_back(
-				ConfigSetting_widget::Definition::Choice{"(Unset)", "", ""});
+		setting.choices.push_back(ConfigSetting_widget::Definition::Choice{
+				Strings::Unset(), "", ""});
 	}
 
 	// convert choices into string vector
@@ -343,10 +371,11 @@ std::string ConfigSetting_widget::Validate() {
 	}
 
 	if (setting.unique && collision) {
-		return "All values for " + setting.label + " setting must be unique. ";
+		return Strings::Allvaluesfor() + (" " + setting.label + " ")
+			   + Strings::settingmustbeunique_();
 	} else if (setting.required && !have) {
-		return "At least One value for " + setting.label
-			   + " setting must be set. ";
+		return Strings::AtleastOnevaluefor() + (" " + setting.label + " ")
+			   + Strings::settingmustbeset_();
 	}
 
 	return std::string();

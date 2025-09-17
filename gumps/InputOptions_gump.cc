@@ -44,6 +44,7 @@
 #include "exult_flx.h"
 #include "font.h"
 #include "gamewin.h"
+#include "items.h"
 #include "touchui.h"
 
 #include <cstring>
@@ -55,13 +56,64 @@ static const int rowy[]
 		= {5, 17, 29, 41, 53, 65, 77, 89, 101, 113, 125, 137, 146};
 static const int colx[] = {35, 50, 120, 170, 192, 209};
 
-static const char* oktext     = "OK";
-static const char* canceltext = "CANCEL";
-static const char* helptext   = "HELP";
+class Strings : public GumpStrings {
+public:
+	static auto Single() {
+		return get_text_msg(0x640 - msg_file_start);
+	}
 
-static const char* pathfind_texts[3] = {"no", "single", "double"};
+	static auto Double() {
+		return get_text_msg(0x641 - msg_file_start);
+	}
 
-static const char* dpad_texts[3] = {"no", "left", "right"};
+	static auto None() {
+		return get_text_msg(0x644 - msg_file_start);
+	}
+
+	static auto Left() {
+		return get_text_msg(0x645 - msg_file_start);
+	}
+
+	static auto Right() {
+		return get_text_msg(0x646 - msg_file_start);
+	}
+
+	static auto DoubleclickclosesGumps_() {
+		return get_text_msg(0x647 - msg_file_start);
+	}
+
+	static auto RightclickclosesGumps_() {
+		return get_text_msg(0x648 - msg_file_start);
+	}
+
+	static auto PathfindwithRightClick_() {
+		return get_text_msg(0x649 - msg_file_start);
+	}
+
+	static auto Scrollgameviewwithmouse_() {
+		return get_text_msg(0x64A - msg_file_start);
+	}
+
+	static auto UseMiddleMouseButton_() {
+		return get_text_msg(0x64B - msg_file_start);
+	}
+
+	static auto FullscreenFastMouse_() {
+		return get_text_msg(0x64C - msg_file_start);
+	}
+
+	static auto Itemhelpermenu_() {
+		return get_text_msg(0x64D - msg_file_start);
+	}
+
+	static auto DPadscreenlocation_() {
+		return get_text_msg(0x64E - msg_file_start);
+	}
+
+	static auto PathfindwithLongTouch_() {
+		return get_text_msg(0x64F - msg_file_start);
+	}
+};
 
 using InputOptions_button = CallbackTextButton<InputOptions_gump>;
 using InputTextToggle     = CallbackToggleTextButton<InputOptions_gump>;
@@ -81,14 +133,14 @@ void InputOptions_gump::help() {
 }
 
 void InputOptions_gump::build_buttons() {
-	const std::vector<std::string> yesNo = {"No", "Yes"};
+	const std::vector<std::string> yesNo = {Strings::No(), Strings::Yes()};
 
 	int y_index = 0;
 
-	std::vector<string> dpad_text = {"None"};
+	std::vector<string> dpad_text = {Strings::None()};
 	if (touchui != nullptr) {
-		dpad_text.emplace_back("Left");
-		dpad_text.emplace_back("Right");
+		dpad_text.emplace_back(Strings::Left());
+		dpad_text.emplace_back(Strings::Right());
 	}
 	buttons[id_doubleclick] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_doubleclick, yesNo, doubleclick,
@@ -98,11 +150,12 @@ void InputOptions_gump::build_buttons() {
 			this, &InputOptions_gump::toggle_rightclick_close, yesNo,
 			rightclick_close, colx[5], rowy[++y_index], 44);
 
-	std::vector<std::string> pathfind_text = {"No", "Single", "Double"};
-	buttons[id_right_pathfind]             = std::make_unique<InputTextToggle>(
-            this, &InputOptions_gump::toggle_right_pathfind,
-            std::move(pathfind_text), right_pathfind, colx[5], rowy[++y_index],
-            44);
+	std::vector<std::string> pathfind_text
+			= {Strings::No(), Strings::Single(), Strings::Double()};
+	buttons[id_right_pathfind] = std::make_unique<InputTextToggle>(
+			this, &InputOptions_gump::toggle_right_pathfind,
+			std::move(pathfind_text), right_pathfind, colx[5], rowy[++y_index],
+			44);
 
 	buttons[id_scroll_mouse] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_scroll_mouse, yesNo, scroll_mouse,
@@ -152,15 +205,16 @@ InputOptions_gump::InputOptions_gump() : Modal_gump(nullptr, -1) {
 
 	// Ok
 	buttons[id_ok] = std::make_unique<InputOptions_button>(
-			this, &InputOptions_gump::close, oktext, colx[0] - 2, rowy[12], 50);
+			this, &InputOptions_gump::close, Strings::OK(), colx[0] - 2,
+			rowy[12], 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<InputOptions_button>(
-			this, &InputOptions_gump::cancel, canceltext, colx[5] - 6, rowy[12],
-			50);
+			this, &InputOptions_gump::cancel, Strings::CANCEL(), colx[5] - 6,
+			rowy[12], 50);
 	// Help
 	buttons[id_help] = std::make_unique<InputOptions_button>(
-			this, &InputOptions_gump::help, helptext, colx[2] - 3, rowy[12],
-			50);
+			this, &InputOptions_gump::help, Strings::HELP(), colx[2] - 3,
+			rowy[12], 50);
 }
 
 void InputOptions_gump::save_settings() {
@@ -175,6 +229,7 @@ void InputOptions_gump::save_settings() {
 			rightclick_close ? "yes" : "no", false);
 
 	gwin->set_allow_right_pathfind(right_pathfind);
+	const char* pathfind_texts[3] = {"no", "single", "double"};
 	config->set(
 			"config/gameplay/allow_right_pathfind",
 			pathfind_texts[right_pathfind], false);
@@ -193,6 +248,8 @@ void InputOptions_gump::save_settings() {
 	config->set("config/gameplay/fastmouse", fastmouse ? "yes" : "no", false);
 
 	gwin->set_dpad_location(dpad_location);
+
+	const char* dpad_texts[3] = {"no", "left", "right"};
 	config->set("config/touch/dpad_location", dpad_texts[dpad_location], false);
 
 	gwin->set_touch_pathfind(touch_pathfind != 0);
@@ -218,35 +275,35 @@ void InputOptions_gump::paint() {
 	Image_window8*        iwin    = gwin->get_win();
 	int                   y_index = 0;
 	font->paint_text(
-			iwin->get_ib8(), "Doubleclick closes Gumps:", x + colx[0],
+			iwin->get_ib8(), Strings::DoubleclickclosesGumps_(), x + colx[0],
 			y + rowy[y_index] + 1);
 	font->paint_text(
-			iwin->get_ib8(), "Right click closes Gumps:", x + colx[0],
+			iwin->get_ib8(), Strings::RightclickclosesGumps_(), x + colx[0],
 			y + rowy[++y_index] + 1);
 	font->paint_text(
-			iwin->get_ib8(), "Pathfind with Right Click:", x + colx[0],
+			iwin->get_ib8(), Strings::PathfindwithRightClick_(), x + colx[0],
 			y + rowy[++y_index] + 1);
 	font->paint_text(
-			iwin->get_ib8(), "Scroll game view with mouse:", x + colx[0],
+			iwin->get_ib8(), Strings::Scrollgameviewwithmouse_(), x + colx[0],
 			y + rowy[++y_index] + 1);
 	if (buttons[id_mouse3rd]) {
 		font->paint_text(
-				iwin->get_ib8(), "Use Middle Mouse Button:", x + colx[0],
+				iwin->get_ib8(), Strings::UseMiddleMouseButton_(), x + colx[0],
 				y + rowy[++y_index] + 1);
 	}
 	if (buttons[id_fastmouse]) {
 		font->paint_text(
-				iwin->get_ib8(), "Fullscreen Fast Mouse:", x + colx[0],
+				iwin->get_ib8(), Strings::FullscreenFastMouse_(), x + colx[0],
 				y + rowy[++y_index] + 1);
 	}
 	font->paint_text(
-			iwin->get_ib8(), "Item helper menu:", x + colx[0],
+			iwin->get_ib8(), Strings::Itemhelpermenu_(), x + colx[0],
 			y + rowy[++y_index] + 1);
 	font->paint_text(
-			iwin->get_ib8(), "D-Pad screen location:", x + colx[0],
+			iwin->get_ib8(), Strings::DPadscreenlocation_(), x + colx[0],
 			y + rowy[++y_index] + 1);
 	font->paint_text(
-			iwin->get_ib8(), "Pathfind with Long Touch:", x + colx[0],
+			iwin->get_ib8(), Strings::PathfindwithLongTouch_(), x + colx[0],
 			y + rowy[++y_index] + 1);
 
 	gwin->set_painted();

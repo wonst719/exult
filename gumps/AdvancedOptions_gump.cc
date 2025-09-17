@@ -24,6 +24,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "StringList_widget.h"
 #include "Yesno_gump.h"
 #include "gamewin.h"
+#include "items.h"
+
+class Strings : public GumpStrings {
+public:
+	static auto Applyanyway() {
+		return get_text_msg(0x5F0 - msg_file_start);
+	}
+};
 
 AdvancedOptions_gump::AdvancedOptions_gump(
 		std::vector<ConfigSetting_widget::Definition>* settings,
@@ -71,17 +79,17 @@ AdvancedOptions_gump::AdvancedOptions_gump(
 	int button_gap = 20;
 	elems.push_back(
 			apply = new CallbackTextButton<AdvancedOptions_gump>(
-					this, &AdvancedOptions_gump::on_apply, "APPLY",
+					this, &AdvancedOptions_gump::on_apply, Strings::APPLY(),
 					rect.w / 2 - 25 - 50 - button_gap, buttony, 50));
 	// Cancel
 	elems.push_back(
 			cancel = new CallbackTextButton<AdvancedOptions_gump>(
-					this, &AdvancedOptions_gump::on_cancel, "CANCEL",
+					this, &AdvancedOptions_gump::on_cancel, Strings::CANCEL(),
 					rect.w / 2 - 25, buttony, 50));
 	// Help
 	elems.push_back(
 			help = new CallbackTextButton<AdvancedOptions_gump>(
-					this, &AdvancedOptions_gump::on_help, "HELP",
+					this, &AdvancedOptions_gump::on_help, Strings::HELP(),
 					rect.w / 2 + 25 + button_gap, buttony, 50));
 
 	// set all buttons in elems to self managed
@@ -245,7 +253,7 @@ void AdvancedOptions_gump::on_apply() {
 		if (csw) {
 			std::string validation_message = csw->Validate();
 			if (!validation_message.empty()) {
-				validation_message += " Apply anyway?";
+				validation_message += Strings::Applyanyway();
 				if (!Yesno_gump::ask(
 							validation_message.c_str(), nullptr,
 							"TINY_BLACK_FONT")) {
