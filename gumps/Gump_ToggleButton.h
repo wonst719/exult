@@ -64,6 +64,15 @@ public:
 			int px, int py, int width, int height = 0)
 			: Text_button(par, "", px, py, width, height), selections(s) {
 		set_frame(selectionnum);
+
+		// call init for all of the strings to ensure the widget is wide enough for all of them
+		for (auto& s : selections)
+		{
+			text = s;
+			init();
+		}
+
+		// Set the text to the actual default selection
 		text = selections[selectionnum];
 		init();
 	}
@@ -74,6 +83,12 @@ public:
 			: Text_button(par, "", px, py, width, height),
 			  selections(std::move(s)) {
 		set_frame(selectionnum);
+		// call init for all of the strings to ensure the widget is wide enough
+		// for all of them
+		for (auto& s : selections) {
+			text = s;
+			init();
+		}
 		text = selections[selectionnum];
 		init();
 	}
