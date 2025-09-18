@@ -199,7 +199,7 @@ void Set_misc_name(unsigned num, const char* name) {
 static void Setup_item_names(
 		IDataSource& items, std::vector<File_spec>& exultmsgs, bool si,
 		bool expansion, bool sibeta) {
-	vector<string> msglist;
+	vector<std::optional<string>> msglist;
 	int            num_item_names = 0;
 	int            num_text_msgs  = 0;
 	int            num_misc_names = 0;
@@ -244,7 +244,10 @@ static void Setup_item_names(
 				const size_t total_msgs = msglist.size() - msg_file_start;
 				text_msgs.resize(std::max(total_msgs, text_msgs.size()));
 				for (unsigned i = first_msg; i < total_msgs; i++) {
-					text_msgs[i] = msglist[i + msg_file_start];
+					std::optional<string>& msg = msglist[i + msg_file_start];
+					if (msg) {
+						text_msgs[i] = msg.value();
+					}
 				}
 			} else {
 				first_msg = num_text_msgs;
@@ -301,7 +304,7 @@ static void Setup_text(
 		std::vector<File_spec>& exultmsgs) {
 	// Start by reading from exultmsg
 	for (auto exultmsgfs : exultmsgs) {
-		vector<string>   msglist;
+		vector<std::optional<string>> msglist;
 		int              first_msg = 0;
 		IExultDataSource exultmsg(exultmsgfs.name, exultmsgfs.index);
 		if (exultmsg.good()) {
@@ -316,7 +319,10 @@ static void Setup_text(
 				const size_t total_msgs = msglist.size() - msg_file_start;
 				text_msgs.resize(std::max(total_msgs, text_msgs.size()));
 				for (unsigned i = first_msg; i < total_msgs; i++) {
-					text_msgs[i] = msglist[i + msg_file_start];
+					std::optional<string> &msg = msglist[i + msg_file_start];
+					if (msg) {
+						text_msgs[i] = msg.value();
+					}
 				}
 			}
 		}
