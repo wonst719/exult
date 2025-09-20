@@ -478,8 +478,8 @@ public:
 
 class Group_actor_action : public Actor_action {
 private:
-	std::vector<Actor_action*> actions;      // Actions to execute together
-	int                        max_delay;    // Use max delay of all actions
+	std::vector<Actor_action*> actions;          // Actions to execute together
+	int                        max_delay = 0;    // Use max delay of all actions
 
 public:
 	// Constructor takes a vector of actions (takes ownership)
