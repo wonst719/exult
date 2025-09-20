@@ -5185,7 +5185,7 @@ void Forge_schedule::now_what() {
 		// Trough is empty, so let's fill it first
 		Game_object* trough_obj = npc->find_closest(719);
 		trough                  = weak_from_obj(trough_obj);
-		if (trough_obj->get_framenum() == 0) {
+		if (trough_obj && trough_obj->get_framenum() == 0) {
 			state = get_bucket;
 			break;
 		}
@@ -5309,18 +5309,21 @@ void Forge_schedule::now_what() {
 		}
 
 		const Game_object_shared hammer_obj = hammer.lock();
-		if (blank_on_anvil && blank_obj->get_framenum() == 4
+		if (blank_on_anvil && blank_obj->get_framenum() == 4 && hammer_obj.get()
 			&& npc->get_readied(lhand) == hammer_obj.get()) {
 			state = use_hammer;
 			break;
 		}
 
 		const Game_object_shared tongs_obj = tongs.lock();
-		if (blank_on_anvil && blank_obj->get_framenum() == 1
+		if (blank_on_anvil && blank_obj->get_framenum() == 1 && tongs_obj.get()
 			&& npc->get_readied(lhand) == tongs_obj.get()) {
 			state = get_blank;
 			break;
 		}
+		// everything failed, start over
+		state = put_sword_on_firepit;
+		break;
 	}
 	case sword_on_anvil: {
 		if (!anvil_obj || !firepit_obj || !blank_obj) {
@@ -5398,7 +5401,7 @@ void Forge_schedule::now_what() {
 		// If blank is at firepit top, go heat it but check trough first; if at
 		// anvil top, get hammer
 		if (blank_on_firepit) {
-			if (trough_obj->get_framenum() == 0) {
+			if (trough_obj && trough_obj->get_framenum() == 0) {
 				state = get_bucket;
 				break;
 			}
@@ -5585,11 +5588,11 @@ void Forge_schedule::now_what() {
 		}
 		const Game_object_shared bucket_obj = bucket.lock();
 		if (bucket_obj && bucket_obj.get()->get_outermost() == npc) {
-			if (trough_obj->get_framenum() == 3) {
+			if (trough_obj && trough_obj->get_framenum() == 3) {
 				state = place_bucket;
 				break;
 			}
-			if (trough_obj->get_framenum() < 3) {
+			if (trough_obj && trough_obj->get_framenum() < 3) {
 				state = fill_trough;
 				break;
 			}
@@ -5627,7 +5630,7 @@ void Forge_schedule::now_what() {
 		int new_frame     = std::min(current_frame + 1, 3);
 		trough_obj->change_frame(new_frame);
 
-		if (trough_obj->get_framenum() < 3 && well_obj) {
+		if (trough_obj && trough_obj->get_framenum() < 3 && well_obj) {
 			// Need more filling up, go back to well or wait.
 			state = walk_to_well;
 			break;
