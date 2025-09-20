@@ -73,6 +73,18 @@ vector<std::string> Schedule_change::script_names;
 int                 Patrol_schedule::num_path_eggs    = -1;
 bool                Sleep_schedule::sleep_interrupted = false;
 
+namespace {
+	// Setting drop sfx and sfx volume for all schedules
+	inline int drop_sfx_id() {
+		static const int id = Audio::game_sfx(74);
+		return id;
+	}
+
+	inline int sfx_vol() {
+		return 153;    // 60% volume
+	}
+}    // namespace
+
 /*
  *  Create.
  */
@@ -416,12 +428,8 @@ bool Schedule_with_objects::drop_item(
 	if (pos.tx != -1 && pos.tz == spot.tz
 		&& foot.has_world_point(pos.tx, pos.ty)) {
 		// Passes test.
-		// drop sfx with bg/si conversion
-		const int drop_sfx = Audio::game_sfx(74);
-		// sfx volume
-		const int vol_sfx = 150;
 		npc->set_action(new Pickup_actor_action(
-				to_drop, pos, 250, false, drop_sfx, vol_sfx));
+				to_drop, pos, 250, false, drop_sfx_id(), sfx_vol()));
 		--items_in_hand;
 		return true;
 	} else {
@@ -2051,9 +2059,12 @@ void Miner_schedule::now_what() {
 		signed char frames[20];    // Use pick.
 		const int   dir = npc->get_direction(ore_obj.get());
 		int         cnt = npc->get_attack_frames(toolshape, false, dir, frames);
+		const int   attack_sfx = Audio::game_sfx(5);
 		if (cnt) {
 			frames[cnt++] = npc->get_dir_framenum(dir, Actor::standing);
-			npc->set_action(new Frames_actor_action(frames, cnt));
+			npc->set_action(new Frames_actor_action(
+					frames, cnt, 200, nullptr, attack_sfx, sfx_vol(), 0,
+					ore_obj.get()));
 			state = ore_attacked;
 		} else {
 			state = wander;
@@ -3255,6 +3266,8 @@ void Lab_schedule::now_what() {
 				const Game_object_shared p = gmap->create_ireg_object(
 						ShapeID::get_info(340), 340, rand() % nframes, 0, 0, 0);
 				p->move(t);
+				Audio::get_ptr()->play_sound_effect(
+						drop_sfx_id(), t, sfx_vol());
 			}
 		}
 		signed char frames[2];
@@ -3658,6 +3671,7 @@ Game_object* Waiter_schedule::create_customer_plate() {
 					= gmap->create_ireg_object(717, 4 + rand() % 2);
 			plate->set_flag(Obj_flags::is_temporary);
 			plate->move(spot);
+			Audio::get_ptr()->play_sound_effect(drop_sfx_id(), spot, sfx_vol());
 			return plate.get();
 		}
 	}
@@ -3945,6 +3959,7 @@ void Waiter_schedule::now_what() {
 			npc->remove(food);
 			food->set_invalid();
 			food->move(spot);
+			Audio::get_ptr()->play_sound_effect(drop_sfx_id(), spot, sfx_vol());
 			if (rand() % 3) {
 				npc->say(first_waiter_serve, last_waiter_serve);
 			}
@@ -4068,10 +4083,7 @@ void Sew_schedule::now_what() {
 	if (try_proximity_usecode(12)) {
 		return;
 	}
-	// drop sfx with bg/si conversion
-	const int drop_sfx = Audio::game_sfx(74);
-	// sfx volume
-	const int vol_sfx = 150;
+
 	switch (state) {
 	case get_wool: {
 		state = sit_at_wheel;
@@ -4100,7 +4112,7 @@ void Sew_schedule::now_what() {
 					new Frames_actor_action(0x02, 1, bale_obj),
 					new Pickup_actor_action(
 							bale_obj, bale_obj->get_tile(), 250, false,
-							drop_sfx, vol_sfx)));
+							drop_sfx_id(), sfx_vol())));
 		}
 		break;
 	}
@@ -4127,16 +4139,16 @@ void Sew_schedule::now_what() {
 
 		auto** a = new Actor_action*[5];
 		a[0]     = new Group_actor_action(
-                new Play_sfx_actor_action(spin_sfx, spinwheel_obj, vol_sfx),
+                new Play_sfx_actor_action(spin_sfx, spinwheel_obj, sfx_vol()),
                 new Object_animate_actor_action(spinwheel_obj, 1, 250));
 		a[1] = new Group_actor_action(
-				new Play_sfx_actor_action(spin_sfx, spinwheel_obj, vol_sfx),
+				new Play_sfx_actor_action(spin_sfx, spinwheel_obj, sfx_vol()),
 				new Object_animate_actor_action(spinwheel_obj, 1, 250));
 		a[2] = new Group_actor_action(
-				new Play_sfx_actor_action(spin_sfx, spinwheel_obj, vol_sfx),
+				new Play_sfx_actor_action(spin_sfx, spinwheel_obj, sfx_vol()),
 				new Object_animate_actor_action(spinwheel_obj, 1, 250));
 		a[3] = new Group_actor_action(
-				new Play_sfx_actor_action(spin_sfx, spinwheel_obj, vol_sfx),
+				new Play_sfx_actor_action(spin_sfx, spinwheel_obj, sfx_vol()),
 				new Object_animate_actor_action(spinwheel_obj, 1, 250));
 		a[4] = nullptr;
 		npc->set_action(new Sequence_actor_action(a));
@@ -4158,8 +4170,7 @@ void Sew_schedule::now_what() {
 							654, rand() % 10, 0, 0);
 			spindle = Game_object_weak(newobj);
 			newobj->move(t);
-			Audio::get_ptr()->play_sound_effect(
-					drop_sfx, newobj.get(), vol_sfx);
+			Audio::get_ptr()->play_sound_effect(drop_sfx_id(), t, sfx_vol());
 			gwin->add_dirty(newobj.get());
 			npc->set_action(new Pickup_actor_action(newobj.get(), 250));
 		}
@@ -4187,16 +4198,16 @@ void Sew_schedule::now_what() {
 			a[0]               = pact;
 			a[1]               = new Face_pos_actor_action(loom_obj, 250);
 			a[2]               = new Group_actor_action(
-                    new Play_sfx_actor_action(loom_sfx, loom_obj, vol_sfx),
+                    new Play_sfx_actor_action(loom_sfx, loom_obj, sfx_vol()),
                     new Object_animate_actor_action(loom_obj, 1, 270));
 			a[3] = new Group_actor_action(
-					new Play_sfx_actor_action(loom_sfx, loom_obj, vol_sfx),
+					new Play_sfx_actor_action(loom_sfx, loom_obj, sfx_vol()),
 					new Object_animate_actor_action(loom_obj, 1, 270));
 			a[4] = new Group_actor_action(
-					new Play_sfx_actor_action(loom_sfx, loom_obj, vol_sfx),
+					new Play_sfx_actor_action(loom_sfx, loom_obj, sfx_vol()),
 					new Object_animate_actor_action(loom_obj, 1, 270));
 			a[5] = new Group_actor_action(
-					new Play_sfx_actor_action(loom_sfx, loom_obj, vol_sfx),
+					new Play_sfx_actor_action(loom_sfx, loom_obj, sfx_vol()),
 					new Object_animate_actor_action(loom_obj, 1, 270));
 			a[6] = nullptr;
 			npc->set_action(new Sequence_actor_action(a));
@@ -4222,7 +4233,7 @@ void Sew_schedule::now_what() {
 			cloth = Game_object_weak(newobj);
 			newobj->move(t);
 			Audio::get_ptr()->play_sound_effect(
-					Audio::game_sfx(74), newobj.get(), vol_sfx);
+					drop_sfx_id(), newobj.get(), sfx_vol());
 			gwin->add_dirty(newobj.get());
 			npc->set_action(new Sequence_actor_action(
 					new Frames_actor_action(0x20 | Actor::standing, 50),
@@ -4253,8 +4264,8 @@ void Sew_schedule::now_what() {
 			npc->set_action(new Sequence_actor_action(
 					pact, new Face_pos_actor_action(work_table_obj, 250),
 					new Pickup_actor_action(
-							cloth_obj.get(), cpos, 250, false, drop_sfx,
-							vol_sfx)));
+							cloth_obj.get(), cpos, 250, false, drop_sfx_id(),
+							sfx_vol())));
 		}
 		state = set_to_sew;
 		break;
@@ -4311,8 +4322,7 @@ void Sew_schedule::now_what() {
 			cloth_remnants_obj
 					= std::make_shared<Ireg_game_object>(851, rframes, 0, 0);
 			cloth_remnants_obj->move(t);
-			Audio::get_ptr()->play_sound_effect(
-					drop_sfx, cloth_remnants_obj.get(), vol_sfx);
+			Audio::get_ptr()->play_sound_effect(drop_sfx_id(), t, sfx_vol());
 			gwin->add_dirty(cloth_remnants_obj.get());
 		}
 		cloth_remnants = Game_object_weak(cloth_remnants_obj);
@@ -4347,11 +4357,12 @@ void Sew_schedule::now_what() {
 				npc->set_action(new Sequence_actor_action(
 						pact, new Pickup_actor_action(
 									  shears_obj.get(), drop, 250, false,
-									  drop_sfx, vol_sfx)));
+									  drop_sfx_id(), sfx_vol())));
 			} else {
 				delete pact;
 				npc->set_action(new Pickup_actor_action(
-						shears_obj.get(), drop, 250, false, drop_sfx, vol_sfx));
+						shears_obj.get(), drop, 250, false, drop_sfx_id(),
+						sfx_vol()));
 			}
 			break;
 		}
@@ -4406,8 +4417,8 @@ void Sew_schedule::now_what() {
 		if (pact) {
 			npc->set_action(new Sequence_actor_action(
 					pact, new Pickup_actor_action(
-								  cloth_obj.get(), cpos, 250, true, drop_sfx,
-								  vol_sfx)));
+								  cloth_obj.get(), cpos, 250, true,
+								  drop_sfx_id(), sfx_vol())));
 		}
 		// cloth = Game_object_shared();    // Leave it be.
 		break;
@@ -4527,10 +4538,6 @@ void Bake_schedule::now_what() {
 	if (try_proximity_usecode(8)) {
 		return;
 	}
-	// drop sfx with bg/si conversion
-	const int drop_sfx = Audio::game_sfx(74);
-	// sfx volume
-	const int vol_sfx = 150;
 
 	switch (state) {
 	case find_leftovers: {    // Look for misplaced dough already made by this
@@ -4722,7 +4729,7 @@ void Bake_schedule::now_what() {
 			npc->set_action(new Sequence_actor_action(
 					pact, new Pickup_actor_action(
 								  dough_obj.get(), tablepos, 250, false,
-								  drop_sfx, vol_sfx)));
+								  drop_sfx_id(), sfx_vol())));
 		} else {
 			// not good... try again
 			delay = 2500;
@@ -4873,7 +4880,7 @@ void Bake_schedule::now_what() {
 			npc->set_action(new Sequence_actor_action(
 					pact, new Pickup_actor_action(
 								  dough_in_oven_obj.get(), spot_on_table, 250,
-								  false, drop_sfx, vol_sfx)));
+								  false, drop_sfx_id(), sfx_vol())));
 			dough_in_oven = Game_object_weak();
 			state         = get_dough;
 		} else {
@@ -5003,8 +5010,8 @@ void Bake_schedule::now_what() {
 		if (pact) {
 			npc->set_action(new Sequence_actor_action(
 					pact, new Pickup_actor_action(
-								  dough_obj.get(), cpos, 250, false, drop_sfx,
-								  vol_sfx)));
+								  dough_obj.get(), cpos, 250, false,
+								  drop_sfx_id(), sfx_vol())));
 
 			dough_obj->set_quality(51);    // doesn't save okay_to_take
 			dough_in_oven = dough;
@@ -5052,11 +5059,6 @@ void Forge_schedule::now_what() {
 	const Tile_coord npcpos = npc->get_tile();
 	// Often want to get within 1 tile.
 	Actor_pathfinder_client cost(npc, 1);
-
-	// drop sfx with bg/si conversion
-	const int drop_sfx = Audio::game_sfx(74);
-	// sfx volume
-	const int vol_sfx = 150;
 
 	// create bool blank_on_firepit, blank_on_anvil
 	Game_object* anvil_obj             = npc->find_closest(991);
@@ -5124,11 +5126,12 @@ void Forge_schedule::now_what() {
 				npc->set_action(new Sequence_actor_action(
 						pact, new Pickup_actor_action(
 									  blank_obj.get(), bpos, 250, false,
-									  drop_sfx, vol_sfx)));
+									  drop_sfx_id(), sfx_vol())));
 			} else {
 				delete pact;
 				npc->set_action(new Pickup_actor_action(
-						blank_obj.get(), bpos, 250, false, drop_sfx, vol_sfx));
+						blank_obj.get(), bpos, 250, false, drop_sfx_id(),
+						sfx_vol()));
 			}
 		}
 		state = use_bellows;
@@ -5208,21 +5211,23 @@ void Forge_schedule::now_what() {
 			a[0]     = pact;
 			a[1]     = new Face_pos_actor_action(bellows_obj, 250);
 			a[2]     = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
-			a[3] = new Play_sfx_actor_action(bellows_sfx, bellows_obj, vol_sfx);
+			a[3]     = new Play_sfx_actor_action(
+                    bellows_sfx, bellows_obj, sfx_vol());
 			a[4] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[5] = new Group_actor_action(
 					new Frames_actor_action(0x20 | Actor::standing, 0),
 					new Frames_actor_action(0x01, 0, firepit_obj),
 					new Frames_actor_action(0x01, 0, blank_obj.get()));
 			a[6] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
-			a[7] = new Play_sfx_actor_action(bellows_sfx, bellows_obj, vol_sfx);
+			a[7] = new Play_sfx_actor_action(
+					bellows_sfx, bellows_obj, sfx_vol());
 			a[8] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[9] = new Group_actor_action(
 					new Frames_actor_action(0x20 | Actor::standing, 0),
 					new Frames_actor_action(0x02, 0, blank_obj.get()));
 			a[10] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
 			a[11] = new Play_sfx_actor_action(
-					bellows_sfx, bellows_obj, vol_sfx);
+					bellows_sfx, bellows_obj, sfx_vol());
 			a[12] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[13] = new Group_actor_action(
 					new Frames_actor_action(0x20 | Actor::standing, 0),
@@ -5230,7 +5235,7 @@ void Forge_schedule::now_what() {
 					new Frames_actor_action(0x03, 0, blank_obj.get()));
 			a[14] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
 			a[15] = new Play_sfx_actor_action(
-					bellows_sfx, bellows_obj, vol_sfx);
+					bellows_sfx, bellows_obj, sfx_vol());
 			a[16] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[17] = new Group_actor_action(
 					new Frames_actor_action(0x20 | Actor::standing, 0),
@@ -5238,22 +5243,22 @@ void Forge_schedule::now_what() {
 					new Frames_actor_action(0x04, 0, blank_obj.get()));
 			a[18] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
 			a[19] = new Play_sfx_actor_action(
-					bellows_sfx, bellows_obj, vol_sfx);
+					bellows_sfx, bellows_obj, sfx_vol());
 			a[20] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[21] = new Frames_actor_action(0x20 | Actor::standing, 0);
 			a[22] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
 			a[23] = new Play_sfx_actor_action(
-					bellows_sfx, bellows_obj, vol_sfx);
+					bellows_sfx, bellows_obj, sfx_vol());
 			a[24] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[25] = new Frames_actor_action(0x20 | Actor::standing, 0);
 			a[26] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
 			a[27] = new Play_sfx_actor_action(
-					bellows_sfx, bellows_obj, vol_sfx);
+					bellows_sfx, bellows_obj, sfx_vol());
 			a[28] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[29] = new Frames_actor_action(0x20 | Actor::standing, 0);
 			a[30] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
 			a[31] = new Play_sfx_actor_action(
-					bellows_sfx, bellows_obj, vol_sfx);
+					bellows_sfx, bellows_obj, sfx_vol());
 			a[32] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[33] = new Group_actor_action(
 					new Frames_actor_action(0x20 | Actor::standing, 0),
@@ -5339,7 +5344,7 @@ void Forge_schedule::now_what() {
                 foot.x + 2, foot.y,
                 anvil_obj->get_lift() + info.get_3d_height());
 		npc->set_action(new Pickup_actor_action(
-				blank_obj.get(), bpos, 250, false, drop_sfx, vol_sfx));
+				blank_obj.get(), bpos, 250, false, drop_sfx_id(), sfx_vol()));
 		state = place_tongs;
 		break;
 	}
@@ -5387,11 +5392,12 @@ void Forge_schedule::now_what() {
 				npc->set_action(new Sequence_actor_action(
 						pact, new Pickup_actor_action(
 									  tongs_obj.get(), drop, 250, false,
-									  drop_sfx, vol_sfx)));
+									  drop_sfx_id(), sfx_vol())));
 			} else {
 				delete pact;
 				npc->set_action(new Pickup_actor_action(
-						tongs_obj.get(), drop, 250, false, drop_sfx, vol_sfx));
+						tongs_obj.get(), drop, 250, false, drop_sfx_id(),
+						sfx_vol()));
 			}
 			break;
 		}
@@ -5466,14 +5472,14 @@ void Forge_schedule::now_what() {
 
 		auto** a = new Actor_action*[9];
 		a[0]     = new Frames_actor_action(
-                frames, cnt, 250, nullptr, hammer_sfx, vol_sfx, 0, anvil_obj);
+                frames, cnt, 250, nullptr, hammer_sfx, sfx_vol(), 0, anvil_obj);
 		a[1] = new Frames_actor_action(0x03, 0, blank_obj.get());
 		a[2] = new Frames_actor_action(0x02, 0, firepit_obj);
 		a[3] = new Frames_actor_action(
-				frames, cnt, 250, nullptr, hammer_sfx, vol_sfx, 0, anvil_obj);
+				frames, cnt, 250, nullptr, hammer_sfx, sfx_vol(), 0, anvil_obj);
 		a[4] = new Frames_actor_action(0x02, 0, blank_obj.get());
 		a[5] = new Frames_actor_action(
-				frames, cnt, 250, nullptr, hammer_sfx, vol_sfx, 0, anvil_obj);
+				frames, cnt, 250, nullptr, hammer_sfx, sfx_vol(), 0, anvil_obj);
 		a[6] = new Frames_actor_action(0x01, 0, blank_obj.get());
 		a[7] = new Frames_actor_action(0x00, 0, firepit_obj);
 		a[8] = nullptr;
@@ -5512,11 +5518,12 @@ void Forge_schedule::now_what() {
 				npc->set_action(new Sequence_actor_action(
 						pact, new Pickup_actor_action(
 									  hammer_obj.get(), drop, 250, false,
-									  drop_sfx, vol_sfx)));
+									  drop_sfx_id(), sfx_vol())));
 			} else {
 				delete pact;
 				npc->set_action(new Pickup_actor_action(
-						hammer_obj.get(), drop, 250, false, drop_sfx, vol_sfx));
+						hammer_obj.get(), drop, 250, false, drop_sfx_id(),
+						sfx_vol()));
 			}
 			break;
 		}
@@ -5565,8 +5572,8 @@ void Forge_schedule::now_what() {
 			}
 			if (drop_spot.tx != -1) {
 				npc->set_action(new Pickup_actor_action(
-						bucket_obj.get(), drop_spot, 250, false, drop_sfx,
-						vol_sfx));
+						bucket_obj.get(), drop_spot, 250, false, drop_sfx_id(),
+						sfx_vol()));
 			} else {
 				// If no free spot found, just remove it
 				bucket_obj->remove_this();
@@ -5620,12 +5627,12 @@ void Forge_schedule::now_what() {
 			npc->set_action(new Sequence_actor_action(
 					new Frames_actor_action(0x20 | Actor::bow_frame, dir),
 					new Frames_actor_action(
-							0x03, 5, trough_obj, splash_sfx, vol_sfx)));
+							0x03, 5, trough_obj, splash_sfx, sfx_vol())));
 			break;
 		}
 
 		npc->change_frame(npc->get_dir_framenum(dir, Actor::bow_frame));
-		Audio::get_ptr()->play_sound_effect(splash_sfx, trough_obj, vol_sfx);
+		Audio::get_ptr()->play_sound_effect(splash_sfx, trough_obj, sfx_vol());
 		int current_frame = trough_obj->get_framenum();
 		int new_frame     = std::min(current_frame + 1, 3);
 		trough_obj->change_frame(new_frame);
@@ -5660,7 +5667,7 @@ void Forge_schedule::now_what() {
 		auto** a = new Actor_action*[4];
 		a[0]     = new Frames_actor_action(&npc_bow, 1, 250);
 		a[1]     = new Group_actor_action(
-                new Play_sfx_actor_action(steam_sfx, trough_obj, vol_sfx),
+                new Play_sfx_actor_action(steam_sfx, trough_obj, sfx_vol()),
                 new Effect_actor_action(9, trough_obj, -10, -15, 0, 0),
                 new Frames_actor_action(&troughframe, 1, 0, trough_obj),
                 new Frames_actor_action(0x00, 0, blank_obj.get()));
@@ -5726,88 +5733,90 @@ void Forge_schedule::now_what() {
 				a[0] = new Face_pos_actor_action(well2_obj, 250);
 				a[1] = new Frames_actor_action(&npc_reach, 1, 250);
 				a[2] = new Frames_actor_action(
-						0x01, 50, well2_obj, drop_sfx, vol_sfx);
+						0x01, 50, well2_obj, drop_sfx_id(), sfx_vol());
 				a[3] = pact;
 				a[4] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x02, 5, well2_obj, well_sfx, vol_sfx));
+								0x02, 5, well2_obj, well_sfx, sfx_vol()));
 				a[5] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x03, 5, well2_obj, well_sfx, vol_sfx));
-				a[6] = new Play_sfx_actor_action(splash_sfx, well_obj, vol_sfx);
+								0x03, 5, well2_obj, well_sfx, sfx_vol()));
+				a[6] = new Play_sfx_actor_action(
+						splash_sfx, well_obj, sfx_vol());
 				a[7] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x03, 5, well2_obj, well_sfx, vol_sfx));
+								0x03, 5, well2_obj, well_sfx, sfx_vol()));
 				a[8] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x04, 5, well2_obj, well_sfx, vol_sfx));
+								0x04, 5, well2_obj, well_sfx, sfx_vol()));
 				a[9] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x05, 5, well2_obj, well_sfx, vol_sfx));
+								0x05, 5, well2_obj, well_sfx, sfx_vol()));
 				a[10] = pact2;
 				a[11] = new Face_pos_actor_action(well2_obj, 250);
 				a[12] = new Frames_actor_action(&npc_reach, 1, 250);
 				a[13] = new Frames_actor_action(
-						0x00, 50, well2_obj, drop_sfx, vol_sfx);
+						0x00, 50, well2_obj, drop_sfx_id(), sfx_vol());
 				a[14] = nullptr;
 			} else {
 				a    = new Actor_action*[20];
 				a[0] = new Face_pos_actor_action(well2_obj, 250);
 				a[1] = new Frames_actor_action(&npc_reach, 1, 250);
 				a[2] = new Frames_actor_action(
-						0x01, 50, well2_obj, drop_sfx, vol_sfx);
+						0x01, 50, well2_obj, drop_sfx_id(), sfx_vol());
 				a[3] = pact;
 				a[4] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x02, 5, well2_obj, well_sfx, vol_sfx));
+								0x02, 5, well2_obj, well_sfx, sfx_vol()));
 				a[5] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x03, 5, well2_obj, well_sfx, vol_sfx));
+								0x03, 5, well2_obj, well_sfx, sfx_vol()));
 				a[6] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x04, 5, well2_obj, well_sfx, vol_sfx));
+								0x04, 5, well2_obj, well_sfx, sfx_vol()));
 				a[7] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x05, 5, well2_obj, well_sfx, vol_sfx));
+								0x05, 5, well2_obj, well_sfx, sfx_vol()));
 				a[8] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x06, 5, well2_obj, well_sfx, vol_sfx));
-				a[9] = new Play_sfx_actor_action(splash_sfx, well_obj, vol_sfx);
+								0x06, 5, well2_obj, well_sfx, sfx_vol()));
+				a[9] = new Play_sfx_actor_action(
+						splash_sfx, well_obj, sfx_vol());
 				a[10] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x07, 5, well2_obj, well_sfx, vol_sfx));
+								0x07, 5, well2_obj, well_sfx, sfx_vol()));
 				a[11] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x08, 5, well2_obj, well_sfx, vol_sfx));
+								0x08, 5, well2_obj, well_sfx, sfx_vol()));
 				a[12] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x09, 5, well2_obj, well_sfx, vol_sfx));
+								0x09, 5, well2_obj, well_sfx, sfx_vol()));
 				a[13] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x0A, 5, well2_obj, well_sfx, vol_sfx));
+								0x0A, 5, well2_obj, well_sfx, sfx_vol()));
 				a[14] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x0B, 5, well2_obj, well_sfx, vol_sfx));
+								0x0B, 5, well2_obj, well_sfx, sfx_vol()));
 				a[15] = pact2;
 				a[16] = new Face_pos_actor_action(well2_obj, 250);
 				a[17] = new Frames_actor_action(&npc_reach, 1, 250);
 				a[18] = new Frames_actor_action(
-						0x00, 50, well2_obj, drop_sfx, vol_sfx);
+						0x00, 50, well2_obj, drop_sfx_id(), sfx_vol());
 				a[19] = nullptr;
 			}
 			npc->set_action(new Sequence_actor_action(a));
