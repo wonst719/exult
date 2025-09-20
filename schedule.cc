@@ -111,6 +111,9 @@ Game_object* Schedule::set_procure_item_action(
 		Actor* actor, Game_object* obj, int dist, int shnum, int frnum) {
 	Game_window* gwin  = Game_window::get_instance();
 	const int    delay = gwin->get_std_delay();
+	if (obj && obj->get_shapenum() != shnum) {
+		obj = nullptr;
+	}
 	if (obj) {
 		// On inventory? Use it.
 		if (obj->get_outermost() == actor) {
@@ -129,12 +132,19 @@ Game_object* Schedule::set_procure_item_action(
 	// First, look in inventory.
 	Game_object_vector vec;
 	actor->get_objects(vec, shnum, c_any_qual, frnum);
+	if (vec.empty() && frnum >= 0) {
+		actor->get_objects(vec, shnum, c_any_qual, c_any_framenum);
+	}
 	if (!vec.empty()) {
 		return vec[0];    // If there, just use it.
 	}
 
 	// Now find one around and get the nearest one.
+	vec.clear();
 	actor->find_nearby(vec, shnum, dist, 0, c_any_qual, frnum);
+	if (vec.empty() && frnum >= 0) {
+		actor->find_nearby(vec, shnum, dist, 0, c_any_qual, c_any_framenum);
+	}
 	Game_object* found = find_nearest(actor, vec);
 
 	// If there, go pick it up.
@@ -143,9 +153,19 @@ Game_object* Schedule::set_procure_item_action(
 	}
 
 	if (!found) {
-		// Not there, so create it.
+		// Make sure the framenum is valid, as using c_any_framenum
+		// might have caused an invalid one.
+		int create_fr = frnum;
+		if (create_fr < 0) {
+			create_fr = 0;
+		} else {
+			const int nframes = ShapeID(shnum, 0).get_num_frames();
+			if (nframes > 0 && create_fr >= nframes) {
+				create_fr = 0;
+			}
+		}
 		const Game_object_shared newobj
-				= std::make_shared<Ireg_game_object>(shnum, frnum, 0, 0);
+				= std::make_shared<Ireg_game_object>(shnum, create_fr, 0, 0);
 		found = newobj.get();
 		actor->add(found, true);
 	}
@@ -396,7 +416,12 @@ bool Schedule_with_objects::drop_item(
 	if (pos.tx != -1 && pos.tz == spot.tz
 		&& foot.has_world_point(pos.tx, pos.ty)) {
 		// Passes test.
-		npc->set_action(new Pickup_actor_action(to_drop, pos, 250, false));
+		// drop sfx with bg/si conversion
+		const int drop_sfx = Audio::game_sfx(74);
+		// sfx volume
+		const int vol_sfx = 150;
+		npc->set_action(new Pickup_actor_action(
+				to_drop, pos, 250, false, drop_sfx, vol_sfx));
 		--items_in_hand;
 		return true;
 	} else {
@@ -4878,6 +4903,8 @@ void Forge_schedule::now_what() {
 
 	// drop sfx with bg/si conversion
 	const int drop_sfx = Audio::game_sfx(74);
+	// sfx volume
+	const int vol_sfx = 150;
 
 	// create bool blank_on_firepit, blank_on_anvil
 	Game_object* anvil_obj             = npc->find_closest(991);
@@ -4916,10 +4943,11 @@ void Forge_schedule::now_what() {
 	switch (state) {
 	case put_sword_on_firepit: {
 		// Get a blank if we don't have one
-		const Game_object_shared prev     = blank.lock();
-		Game_object*             acquired = set_procure_item_action(
-                npc, prev ? prev.get() : nullptr, 24, 668, 0);
-		blank = weak_from_obj(acquired);
+		if (!blank_obj || !blank_obj.get()
+			|| blank_obj.get()->get_outermost() != npc) {
+			state = get_blank;
+			break;
+		}
 
 		if (!firepit_obj) {
 			// uh-oh... try again in a few seconds
@@ -4944,14 +4972,51 @@ void Forge_schedule::now_what() {
 				npc->set_action(new Sequence_actor_action(
 						pact, new Pickup_actor_action(
 									  blank_obj.get(), bpos, 250, false,
-									  drop_sfx, 190)));
+									  drop_sfx, vol_sfx)));
 			} else {
 				delete pact;
 				npc->set_action(new Pickup_actor_action(
-						blank_obj.get(), bpos, 250, false, drop_sfx, 190));
+						blank_obj.get(), bpos, 250, false, drop_sfx, vol_sfx));
 			}
 		}
 		state = use_bellows;
+		break;
+	}
+	case walk_to_firepit: {
+		if (!firepit_obj) {
+			// uh-oh... try again in a few seconds
+			npc->start(250, 2500);
+			state = put_sword_on_firepit;
+			return;
+		}
+		const Tile_coord tpos = firepit_obj->get_tile() + Tile_coord(3, 0, 0);
+		Actor_action*    pact
+				= Path_walking_actor_action::create_path(npcpos, tpos, cost);
+		if (pact) {
+			npc->set_action(pact);
+		}
+		state = get_blank;
+		break;
+	}
+	case get_blank: {
+		// Get a blank if we don't have one
+		const Game_object_shared prev     = blank.lock();
+		Game_object*             acquired = set_procure_item_action(
+                npc, prev ? prev.get() : nullptr, 24, 668, c_any_framenum);
+		blank = weak_from_obj(acquired);
+
+		if (blank_obj.get()) {
+			if (blank_obj->get_framenum() == 4) {
+				state = walk_to_anvil;
+				break;
+			}
+			if (blank_obj->get_framenum() == 1) {
+				state = walk_to_trough;
+				break;
+			}
+		}
+
+		state = put_sword_on_firepit;
 		break;
 	}
 	case use_bellows: {
@@ -4991,46 +5056,52 @@ void Forge_schedule::now_what() {
 			a[0]     = pact;
 			a[1]     = new Face_pos_actor_action(bellows_obj, 250);
 			a[2]     = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
-			a[3]     = new Play_sfx_actor_action(bellows_sfx, bellows_obj, 190);
-			a[4]     = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
-			a[5]     = new Group_actor_action(
-                    new Frames_actor_action(0x20 | Actor::standing, 0),
-                    new Frames_actor_action(0x01, 0, firepit_obj),
-                    new Frames_actor_action(0x01, 0, blank_obj.get()));
+			a[3] = new Play_sfx_actor_action(bellows_sfx, bellows_obj, vol_sfx);
+			a[4] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
+			a[5] = new Group_actor_action(
+					new Frames_actor_action(0x20 | Actor::standing, 0),
+					new Frames_actor_action(0x01, 0, firepit_obj),
+					new Frames_actor_action(0x01, 0, blank_obj.get()));
 			a[6] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
-			a[7] = new Play_sfx_actor_action(bellows_sfx, bellows_obj, 190);
+			a[7] = new Play_sfx_actor_action(bellows_sfx, bellows_obj, vol_sfx);
 			a[8] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[9] = new Group_actor_action(
 					new Frames_actor_action(0x20 | Actor::standing, 0),
 					new Frames_actor_action(0x02, 0, blank_obj.get()));
 			a[10] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
-			a[11] = new Play_sfx_actor_action(bellows_sfx, bellows_obj, 190);
+			a[11] = new Play_sfx_actor_action(
+					bellows_sfx, bellows_obj, vol_sfx);
 			a[12] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[13] = new Group_actor_action(
 					new Frames_actor_action(0x20 | Actor::standing, 0),
 					new Frames_actor_action(0x02, 0, firepit_obj),
 					new Frames_actor_action(0x03, 0, blank_obj.get()));
 			a[14] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
-			a[15] = new Play_sfx_actor_action(bellows_sfx, bellows_obj, 190);
+			a[15] = new Play_sfx_actor_action(
+					bellows_sfx, bellows_obj, vol_sfx);
 			a[16] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[17] = new Group_actor_action(
 					new Frames_actor_action(0x20 | Actor::standing, 0),
 					new Frames_actor_action(0x03, 0, firepit_obj),
 					new Frames_actor_action(0x04, 0, blank_obj.get()));
 			a[18] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
-			a[19] = new Play_sfx_actor_action(bellows_sfx, bellows_obj, 190);
+			a[19] = new Play_sfx_actor_action(
+					bellows_sfx, bellows_obj, vol_sfx);
 			a[20] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[21] = new Frames_actor_action(0x20 | Actor::standing, 0);
 			a[22] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
-			a[23] = new Play_sfx_actor_action(bellows_sfx, bellows_obj, 190);
+			a[23] = new Play_sfx_actor_action(
+					bellows_sfx, bellows_obj, vol_sfx);
 			a[24] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[25] = new Frames_actor_action(0x20 | Actor::standing, 0);
 			a[26] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
-			a[27] = new Play_sfx_actor_action(bellows_sfx, bellows_obj, 190);
+			a[27] = new Play_sfx_actor_action(
+					bellows_sfx, bellows_obj, vol_sfx);
 			a[28] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[29] = new Frames_actor_action(0x20 | Actor::standing, 0);
 			a[30] = new Frames_actor_action(0x20 | Actor::bow_frame, 0);
-			a[31] = new Play_sfx_actor_action(bellows_sfx, bellows_obj, 190);
+			a[31] = new Play_sfx_actor_action(
+					bellows_sfx, bellows_obj, vol_sfx);
 			a[32] = new Object_animate_actor_action(bellows_obj, 3, 1, 300);
 			a[33] = new Group_actor_action(
 					new Frames_actor_action(0x20 | Actor::standing, 0),
@@ -5053,17 +5124,51 @@ void Forge_schedule::now_what() {
 		const Game_object_shared tongs_obj = tongs.lock();
 
 		if (blank_on_firepit) {
-			state = sword_on_anvil;
+			state = walk_to_firepit;
 			break;
 		}
 		if (blank_on_anvil) {
-			state = use_trough;
+			state = walk_to_anvil;
 			break;
 		}
 
 		// Blank is neither on anvil nor firepit, so start over
 		state = put_sword_on_firepit;
 		break;
+	}
+	case walk_to_anvil: {
+		if (!anvil_obj || !blank_obj) {
+			// uh-oh... try again in a few second
+			npc->start(250, 2500);
+			state = put_sword_on_firepit;
+			return;
+		}
+
+		const Tile_coord tpos = anvil_obj->get_tile() + Tile_coord(0, 1, 0);
+		Actor_action*    pact
+				= Path_walking_actor_action::create_path(npcpos, tpos, cost);
+		npc->set_action(pact);
+
+		// If object is in inventory but not yet on anvil, place it there
+		if (!blank_on_anvil && blank_obj && blank_obj.get()
+			&& blank_obj.get()->get_outermost() == npc) {
+			state = sword_on_anvil;
+			break;
+		}
+
+		const Game_object_shared hammer_obj = hammer.lock();
+		if (blank_on_anvil && blank_obj->get_framenum() == 4
+			&& npc->get_readied(lhand) == hammer_obj.get()) {
+			state = use_hammer;
+			break;
+		}
+
+		const Game_object_shared tongs_obj = tongs.lock();
+		if (blank_on_anvil && blank_obj->get_framenum() == 1
+			&& npc->get_readied(lhand) == tongs_obj.get()) {
+			state = get_blank;
+			break;
+		}
 	}
 	case sword_on_anvil: {
 		if (!anvil_obj || !firepit_obj || !blank_obj) {
@@ -5073,35 +5178,13 @@ void Forge_schedule::now_what() {
 			return;
 		}
 
-		const Tile_coord tpos = firepit_obj->get_tile();
-		Actor_action*    pact
-				= Path_walking_actor_action::create_path(npcpos, tpos, cost);
-		const Tile_coord tpos2 = anvil_obj->get_tile() + Tile_coord(0, 1, 0);
-		Actor_action*    pact2
-				= Path_walking_actor_action::create_path(tpos, tpos2, cost);
-
 		const TileRect    foot = anvil_obj->get_footprint();
 		const Shape_info& info = anvil_obj->get_info();
 		const Tile_coord  bpos(
                 foot.x + 2, foot.y,
                 anvil_obj->get_lift() + info.get_3d_height());
-		if (pact && pact2) {
-			auto** a = new Actor_action*[5];
-			a[0]     = pact;
-			a[1]     = new Pickup_actor_action(blank_obj.get(), 250);
-			a[2]     = pact2;
-			a[3]     = new Pickup_actor_action(
-                    blank_obj.get(), bpos, 250, false, drop_sfx, 190);
-			a[4] = nullptr;
-			npc->set_action(new Sequence_actor_action(a));
-		} else {
-			delete pact;
-			delete pact2;
-			npc->set_action(new Sequence_actor_action(
-					new Pickup_actor_action(blank_obj.get(), 250),
-					new Pickup_actor_action(
-							blank_obj.get(), bpos, 250, false, drop_sfx, 190)));
-		}
+		npc->set_action(new Pickup_actor_action(
+				blank_obj.get(), bpos, 250, false, drop_sfx, vol_sfx));
 		state = place_tongs;
 		break;
 	}
@@ -5142,18 +5225,18 @@ void Forge_schedule::now_what() {
 			const TileRect    foot = table_obj->get_footprint();
 			const Shape_info& info = table_obj->get_info();
 			Tile_coord        drop(
-                    foot.x + foot.w / 2, foot.y + foot.h / 2,
+                    foot.x + foot.w / 2, foot.y + foot.h / 4 * 3,
                     table_obj->get_lift() + info.get_3d_height());
 
 			if (pact) {
 				npc->set_action(new Sequence_actor_action(
 						pact, new Pickup_actor_action(
 									  tongs_obj.get(), drop, 250, false,
-									  drop_sfx, 190)));
+									  drop_sfx, vol_sfx)));
 			} else {
 				delete pact;
 				npc->set_action(new Pickup_actor_action(
-						tongs_obj.get(), drop, 250, false, drop_sfx, 190));
+						tongs_obj.get(), drop, 250, false, drop_sfx, vol_sfx));
 			}
 			break;
 		}
@@ -5183,7 +5266,7 @@ void Forge_schedule::now_what() {
 		// If tongs are still readied in left hand, place them on a table first
 		Game_object*             left      = npc->get_readied(lhand);
 		const Game_object_shared tongs_obj = tongs.lock();
-		if (left == tongs_obj.get()) {
+		if (tongs_obj && left == tongs_obj.get()) {
 			state = place_tongs;
 			break;
 		}
@@ -5195,7 +5278,7 @@ void Forge_schedule::now_what() {
 		hammer                              = weak_from_obj(acquired);
 		const Game_object_shared hammer_obj = hammer.lock();
 
-		state = use_hammer;
+		state = walk_to_anvil;
 		break;
 	}
 	case use_hammer: {
@@ -5208,7 +5291,9 @@ void Forge_schedule::now_what() {
 
 		// Before hammering, make sure we stand next to the anvil
 		if (npc->distance(anvil_obj) > 2) {
-			const Tile_coord tpos = anvil_obj->get_tile() + Tile_coord(0, 1, 0);
+			const TileRect   foot = anvil_obj->get_footprint();
+			const Tile_coord tpos(foot.x + foot.w / 2, foot.y + foot.h + 1, 0);
+
 			if (Actor_action* pact
 				= Path_walking_actor_action::create_path(npcpos, tpos, cost)) {
 				npc->set_action(pact);
@@ -5226,14 +5311,14 @@ void Forge_schedule::now_what() {
 
 		auto** a = new Actor_action*[9];
 		a[0]     = new Frames_actor_action(
-                frames, cnt, 250, nullptr, hammer_sfx, 190, 0, anvil_obj);
+                frames, cnt, 250, nullptr, hammer_sfx, vol_sfx, 0, anvil_obj);
 		a[1] = new Frames_actor_action(0x03, 0, blank_obj.get());
 		a[2] = new Frames_actor_action(0x02, 0, firepit_obj);
 		a[3] = new Frames_actor_action(
-				frames, cnt, 250, nullptr, hammer_sfx, 190, 0, anvil_obj);
+				frames, cnt, 250, nullptr, hammer_sfx, vol_sfx, 0, anvil_obj);
 		a[4] = new Frames_actor_action(0x02, 0, blank_obj.get());
 		a[5] = new Frames_actor_action(
-				frames, cnt, 250, nullptr, hammer_sfx, 190, 0, anvil_obj);
+				frames, cnt, 250, nullptr, hammer_sfx, vol_sfx, 0, anvil_obj);
 		a[6] = new Frames_actor_action(0x01, 0, blank_obj.get());
 		a[7] = new Frames_actor_action(0x00, 0, firepit_obj);
 		a[8] = nullptr;
@@ -5265,18 +5350,18 @@ void Forge_schedule::now_what() {
 			const TileRect    foot = table_obj->get_footprint();
 			const Shape_info& info = table_obj->get_info();
 			Tile_coord        drop(
-                    foot.x + foot.w / 2, foot.y + foot.h / 2,
+                    foot.x + foot.w / 2, foot.y + foot.h / 3,
                     table_obj->get_lift() + info.get_3d_height());
 
 			if (pact) {
 				npc->set_action(new Sequence_actor_action(
 						pact, new Pickup_actor_action(
 									  hammer_obj.get(), drop, 250, false,
-									  drop_sfx, 190)));
+									  drop_sfx, vol_sfx)));
 			} else {
 				delete pact;
 				npc->set_action(new Pickup_actor_action(
-						hammer_obj.get(), drop, 250, false, drop_sfx, 190));
+						hammer_obj.get(), drop, 250, false, drop_sfx, vol_sfx));
 			}
 			break;
 		}
@@ -5287,7 +5372,7 @@ void Forge_schedule::now_what() {
 		// If tongs are still readied in left hand, place them on a table first
 		Game_object*             left      = npc->get_readied(lhand);
 		const Game_object_shared tongs_obj = tongs.lock();
-		if (left == tongs_obj.get()) {
+		if (tongs_obj && left == tongs_obj.get()) {
 			state = place_tongs;
 			break;
 		}
@@ -5302,71 +5387,31 @@ void Forge_schedule::now_what() {
 		Game_object* well_obj = npc->find_closest(470);
 		well                  = weak_from_obj(well_obj);
 		if (well_obj) {
-			state = use_well;
+			state = walk_to_well;
 			break;
 		}
-		state = fill_trough;
+		state = walk_to_trough;
 		break;
 	}
-	case fill_trough: {
-		Game_object* trough_obj = npc->find_closest(719);
-		trough                  = weak_from_obj(trough_obj);
-		if (!trough_obj) {
-			// uh-oh... try again in a few seconds
-			npc->start(250, 2500);
-			state = put_sword_on_firepit;
-			return;
-		}
-
-		Game_object* well_obj = npc->find_closest(470);
-		well                  = weak_from_obj(well_obj);
-
-		const int dir = npc->get_direction(trough_obj);
-		npc->change_frame(npc->get_dir_framenum(dir, Actor::bow_frame));
-		Audio::get_ptr()->play_sound_effect(
-				Audio::game_sfx(40), trough_obj, 190);
-
-		// There is no well to use, so we fill it up in one go,
-		// otherwise take three trips to the well to fill up.
-		if (!well_obj) {
-			trough_obj->change_frame(3);
-		} else {
-			int current_frame = trough_obj->get_framenum();
-			int new_frame     = std::min(current_frame + 1, 3);
-			trough_obj->change_frame(new_frame);
-		}
-
-		if (trough_obj->get_framenum() < 3) {
-			// Need more filling up, go back to well or wait.
-			if (well_obj) {
-				const Tile_coord tpos
-						= well_obj->get_tile() + Tile_coord(0, 1, 0);
-				Actor_action* pact = Path_walking_actor_action::create_path(
-						npcpos, tpos, cost);
-				npc->set_action(pact);
-				state = use_well;
-				break;
-			} else {
-				// No well, just wait a bit and try again
-				npc->start(250, 2000);
-			}
-			break;
-		}
-
+	case place_bucket: {
 		const Game_object_shared bucket_obj = bucket.lock();
-		if (bucket_obj && trough_obj->get_framenum() == 3) {
+		Game_object*             trough_obj = npc->find_closest(719);
+		trough                              = weak_from_obj(trough_obj);
+		Game_object* well_obj               = npc->find_closest(470);
+		well                                = weak_from_obj(well_obj);
+
+		const Tile_coord drop_spot
+				= Map_chunk::find_spot(trough_obj->get_tile(), 3, 810, 0);
+		if (bucket_obj && bucket_obj.get()
+			&& bucket_obj.get()->get_outermost() == npc) {
 			// Change bucket to full when there is no well nearby
 			if (!well_obj && bucket_obj->get_framenum() != 1) {
 				bucket_obj->change_frame(1);
 			}
-			// Find a free spot on the ground near the blacksmith
-			const Tile_coord drop_spot
-					= Map_chunk::find_spot(npcpos, 3, 810, 0);
-
 			if (drop_spot.tx != -1) {
 				npc->set_action(new Pickup_actor_action(
 						bucket_obj.get(), drop_spot, 250, false, drop_sfx,
-						190));
+						vol_sfx));
 			} else {
 				// If no free spot found, just remove it
 				bucket_obj->remove_this();
@@ -5374,6 +5419,67 @@ void Forge_schedule::now_what() {
 			}
 		}
 		state = use_bellows;
+		break;
+	}
+	case walk_to_trough: {
+		Game_object* trough_obj = npc->find_closest(719);
+		trough                  = weak_from_obj(trough_obj);
+		if (trough_obj) {
+			const Tile_coord tpos
+					= trough_obj->get_tile() + Tile_coord(0, 2, 0);
+			Actor_action* pact = Path_walking_actor_action::create_path(
+					npcpos, tpos, cost);
+			npc->set_action(pact);
+		}
+		const Game_object_shared bucket_obj = bucket.lock();
+		if (bucket_obj && bucket_obj.get()->get_outermost() == npc) {
+			if (trough_obj->get_framenum() == 3) {
+				state = place_bucket;
+				break;
+			}
+			if (trough_obj->get_framenum() < 3) {
+				state = fill_trough;
+				break;
+			}
+		}
+		state = use_trough;
+		break;
+	}
+	case fill_trough: {
+		state                   = place_bucket;
+		Game_object* trough_obj = npc->find_closest(719);
+		trough                  = weak_from_obj(trough_obj);
+		Game_object* well_obj   = npc->find_closest(470);
+		well                    = weak_from_obj(well_obj);
+		if (!trough_obj) {
+			// uh-oh... try again in a few seconds
+			npc->start(250, 2500);
+			state = put_sword_on_firepit;
+			return;
+		}
+		const int dir        = npc->get_direction(trough_obj);
+		const int splash_sfx = Audio::game_sfx(40);
+
+		// There is no well to use, so we fill it up in one go
+		if (!well_obj) {
+			npc->set_action(new Sequence_actor_action(
+					new Frames_actor_action(0x20 | Actor::bow_frame, dir),
+					new Frames_actor_action(
+							0x03, 5, trough_obj, splash_sfx, vol_sfx)));
+			break;
+		}
+
+		npc->change_frame(npc->get_dir_framenum(dir, Actor::bow_frame));
+		Audio::get_ptr()->play_sound_effect(splash_sfx, trough_obj, vol_sfx);
+		int current_frame = trough_obj->get_framenum();
+		int new_frame     = std::min(current_frame + 1, 3);
+		trough_obj->change_frame(new_frame);
+
+		if (trough_obj->get_framenum() < 3 && well_obj) {
+			// Need more filling up, go back to well or wait.
+			state = walk_to_well;
+			break;
+		}
 		break;
 	}
 	case use_trough: {
@@ -5386,50 +5492,45 @@ void Forge_schedule::now_what() {
 			return;
 		}
 
-		const Tile_coord tpos = anvil_obj->get_tile() + Tile_coord(0, 1, 0);
-		Actor_action*    pact
-				= Path_walking_actor_action::create_path(npcpos, tpos, cost);
-		const Tile_coord tpos2 = trough_obj->get_tile() + Tile_coord(0, 2, 0);
-		Actor_action*    pact2
-				= Path_walking_actor_action::create_path(tpos, tpos2, cost);
-
-		if (pact && pact2) {
-			signed char troughframe = trough_obj->get_framenum() - 1;
-			if (troughframe < 0) {
-				troughframe = 0;
-			}
-
-			signed char npc_bow   = npc->get_dir_framenum(1, Actor::bow_frame);
-			signed char npc_stand = npc->get_dir_framenum(1, Actor::standing);
-			const int   steam_sfx = Audio::game_sfx(46);
-
-			auto** a = new Actor_action*[7];
-			a[0]     = pact;
-			a[1]     = new Pickup_actor_action(blank_obj.get(), 250);
-			a[2]     = pact2;
-			a[3]     = new Frames_actor_action(&npc_bow, 1, 250);
-			a[4]     = new Group_actor_action(
-                    new Play_sfx_actor_action(steam_sfx, trough_obj, 190),
-                    new Effect_actor_action(9, trough_obj, -10, -15, 0, 0),
-                    new Frames_actor_action(&troughframe, 1, 0, trough_obj),
-                    new Frames_actor_action(0x00, 0, blank_obj.get()));
-			a[5] = new Frames_actor_action(&npc_stand, 1, 250);
-			a[6] = nullptr;
-
-			npc->set_action(new Sequence_actor_action(a));
-		} else {
-			// Don't leak the paths
-			delete pact;
-			delete pact2;
-			// no path found, just pick up sword blank
-			npc->set_action(new Sequence_actor_action(
-					new Pickup_actor_action(blank_obj.get(), 250),
-					new Frames_actor_action(0, 0, blank_obj.get())));
+		signed char troughframe = trough_obj->get_framenum() - 1;
+		if (troughframe < 0) {
+			troughframe = 0;
 		}
+
+		const int   dir       = npc->get_direction(trough_obj);
+		signed char npc_bow   = npc->get_dir_framenum(dir, Actor::bow_frame);
+		signed char npc_stand = npc->get_dir_framenum(dir, Actor::standing);
+		const int   steam_sfx = Audio::game_sfx(46);
+
+		auto** a = new Actor_action*[4];
+		a[0]     = new Frames_actor_action(&npc_bow, 1, 250);
+		a[1]     = new Group_actor_action(
+                new Play_sfx_actor_action(steam_sfx, trough_obj, vol_sfx),
+                new Effect_actor_action(9, trough_obj, -10, -15, 0, 0),
+                new Frames_actor_action(&troughframe, 1, 0, trough_obj),
+                new Frames_actor_action(0x00, 0, blank_obj.get()));
+		a[2] = new Frames_actor_action(&npc_stand, 1, 250);
+		a[3] = nullptr;
+
+		npc->set_action(new Sequence_actor_action(a));
 		state = done;
 		break;
 	}
+	case walk_to_well: {
+		Game_object* well_obj = npc->find_closest(470);
+		well                  = weak_from_obj(well_obj);
+		if (well_obj) {
+			const Tile_coord tpos = well_obj->get_tile() + Tile_coord(-1, 1, 0);
+			Actor_action*    pact = Path_walking_actor_action::create_path(
+                    npcpos, tpos, cost);
+			npc->set_action(pact);
+		}
+
+		state = use_well;
+		break;
+	}
 	case use_well: {
+		state                  = walk_to_trough;
 		Game_object* well_obj  = npc->find_closest(470);
 		Game_object* well2_obj = npc->find_closest(740);
 		well                   = weak_from_obj(well_obj);
@@ -5442,14 +5543,11 @@ void Forge_schedule::now_what() {
 			return;
 		}
 
-		const Tile_coord tpos = well_obj->get_tile() + Tile_coord(-1, 1, 0);
+		const Tile_coord tpos = well_obj->get_tile() + Tile_coord(-6, 0, 0);
 		Actor_action*    pact
 				= Path_walking_actor_action::create_path(npcpos, tpos, cost);
-		const Tile_coord tpos2 = well_obj->get_tile() + Tile_coord(-6, 0, 0);
-		Actor_action*    pact2
-				= Path_walking_actor_action::create_path(tpos, tpos2, cost);
-		Actor_action* pact3
-				= Path_walking_actor_action::create_path(tpos2, tpos, cost);
+		Actor_action* pact2
+				= Path_walking_actor_action::create_path(tpos, npcpos, cost);
 
 		signed char npc_reach = npc->get_dir_framenum(1, Actor::reach1_frame);
 		signed char frames[12];
@@ -5465,124 +5563,105 @@ void Forge_schedule::now_what() {
 		const int well_sfx   = Audio::game_sfx(30);
 		const int splash_sfx = Audio::game_sfx(40);
 
-		if (pact && pact2 && pact3) {
+		if (pact && pact2) {
 			Actor_action** a = nullptr;
 			// Vanilla BG had way less well frames
 			if (GAME_BG && !GAME_FOV) {
-				a    = new Actor_action*[16];
-				a[0] = pact;
-				a[1] = new Face_pos_actor_action(well2_obj, 250);
-				a[2] = new Frames_actor_action(&npc_reach, 1, 250);
-				a[3] = new Frames_actor_action(
-						0x01, 50, well2_obj, drop_sfx, 190);
-				a[4] = pact2;
+				a    = new Actor_action*[15];
+				a[0] = new Face_pos_actor_action(well2_obj, 250);
+				a[1] = new Frames_actor_action(&npc_reach, 1, 250);
+				a[2] = new Frames_actor_action(
+						0x01, 50, well2_obj, drop_sfx, vol_sfx);
+				a[3] = pact;
+				a[4] = new Group_actor_action(
+						new Frames_actor_action(frames, cnt),
+						new Frames_actor_action(
+								0x02, 5, well2_obj, well_sfx, vol_sfx));
 				a[5] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x02, 5, well2_obj, well_sfx, 190));
-				a[6] = new Group_actor_action(
-						new Frames_actor_action(frames, cnt),
+								0x03, 5, well2_obj, well_sfx, vol_sfx));
+				a[6] = new Play_sfx_actor_action(splash_sfx, well_obj, vol_sfx);
+				a[7] = new Group_actor_action(
+						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x03, 5, well2_obj, well_sfx, 190));
-				a[7] = new Play_sfx_actor_action(splash_sfx, well_obj, 190);
+								0x03, 5, well2_obj, well_sfx, vol_sfx));
 				a[8] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x03, 5, well2_obj, well_sfx, 190));
+								0x04, 5, well2_obj, well_sfx, vol_sfx));
 				a[9] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x04, 5, well2_obj, well_sfx, 190));
-				a[10] = new Group_actor_action(
-						new Frames_actor_action(frames2, cnt2),
-						new Frames_actor_action(
-								0x05, 5, well2_obj, well_sfx, 190));
-				a[11] = pact3;
-				a[12] = new Face_pos_actor_action(well2_obj, 250);
-				a[13] = new Frames_actor_action(&npc_reach, 1, 250);
-				a[14] = new Frames_actor_action(
-						0x00, 50, well2_obj, drop_sfx, 190);
-				a[15] = nullptr;
+								0x05, 5, well2_obj, well_sfx, vol_sfx));
+				a[10] = pact2;
+				a[11] = new Face_pos_actor_action(well2_obj, 250);
+				a[12] = new Frames_actor_action(&npc_reach, 1, 250);
+				a[13] = new Frames_actor_action(
+						0x00, 50, well2_obj, drop_sfx, vol_sfx);
+				a[14] = nullptr;
 			} else {
-				a    = new Actor_action*[21];
-				a[0] = pact;
-				a[1] = new Face_pos_actor_action(well2_obj, 250);
-				a[2] = new Frames_actor_action(&npc_reach, 1, 250);
-				a[3] = new Frames_actor_action(
-						0x01, 50, well2_obj, drop_sfx, 190);
-				a[4] = pact2;
+				a    = new Actor_action*[20];
+				a[0] = new Face_pos_actor_action(well2_obj, 250);
+				a[1] = new Frames_actor_action(&npc_reach, 1, 250);
+				a[2] = new Frames_actor_action(
+						0x01, 50, well2_obj, drop_sfx, vol_sfx);
+				a[3] = pact;
+				a[4] = new Group_actor_action(
+						new Frames_actor_action(frames, cnt),
+						new Frames_actor_action(
+								0x02, 5, well2_obj, well_sfx, vol_sfx));
 				a[5] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x02, 5, well2_obj, well_sfx, 190));
+								0x03, 5, well2_obj, well_sfx, vol_sfx));
 				a[6] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x03, 5, well2_obj, well_sfx, 190));
+								0x04, 5, well2_obj, well_sfx, vol_sfx));
 				a[7] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x04, 5, well2_obj, well_sfx, 190));
+								0x05, 5, well2_obj, well_sfx, vol_sfx));
 				a[8] = new Group_actor_action(
 						new Frames_actor_action(frames, cnt),
 						new Frames_actor_action(
-								0x05, 5, well2_obj, well_sfx, 190));
-				a[9] = new Group_actor_action(
-						new Frames_actor_action(frames, cnt),
+								0x06, 5, well2_obj, well_sfx, vol_sfx));
+				a[9] = new Play_sfx_actor_action(splash_sfx, well_obj, vol_sfx);
+				a[10] = new Group_actor_action(
+						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x06, 5, well2_obj, well_sfx, 190));
-				a[10] = new Play_sfx_actor_action(splash_sfx, well_obj, 190);
+								0x07, 5, well2_obj, well_sfx, vol_sfx));
 				a[11] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x07, 5, well2_obj, well_sfx, 190));
+								0x08, 5, well2_obj, well_sfx, vol_sfx));
 				a[12] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x08, 5, well2_obj, well_sfx, 190));
+								0x09, 5, well2_obj, well_sfx, vol_sfx));
 				a[13] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x09, 5, well2_obj, well_sfx, 190));
+								0x0A, 5, well2_obj, well_sfx, vol_sfx));
 				a[14] = new Group_actor_action(
 						new Frames_actor_action(frames2, cnt2),
 						new Frames_actor_action(
-								0x0A, 5, well2_obj, splash_sfx, 190));
-				a[15] = new Group_actor_action(
-						new Frames_actor_action(frames2, cnt2),
-						new Frames_actor_action(
-								0x0B, 5, well2_obj, well_sfx, 190));
-				a[16] = pact3;
-				a[17] = new Face_pos_actor_action(well2_obj, 250);
-				a[18] = new Frames_actor_action(&npc_reach, 1, 250);
-				a[19] = new Frames_actor_action(
-						0x00, 50, well2_obj, drop_sfx, 190);
-				a[20] = nullptr;
+								0x0B, 5, well2_obj, well_sfx, vol_sfx));
+				a[15] = pact2;
+				a[16] = new Face_pos_actor_action(well2_obj, 250);
+				a[17] = new Frames_actor_action(&npc_reach, 1, 250);
+				a[18] = new Frames_actor_action(
+						0x00, 50, well2_obj, drop_sfx, vol_sfx);
+				a[19] = nullptr;
 			}
 			npc->set_action(new Sequence_actor_action(a));
-			state = wait_for_well_anim;
 			break;
 		} else {
 			// Don't leak the paths
 			delete pact;
 			delete pact2;
-			delete pact3;
 		}
-		break;
-	}
-	case wait_for_well_anim: {
-		if (!npc->get_action()) {
-			Game_object* trough_obj = npc->find_closest(719);
-			trough                  = weak_from_obj(trough_obj);
-			const Tile_coord tpos
-					= trough_obj->get_tile() + Tile_coord(0, 2, 0);
-			Actor_action* pact = Path_walking_actor_action::create_path(
-					npcpos, tpos, cost);
-			npc->set_action(pact);
-			state = fill_trough;
-			break;
-		}
-		npc->start(gwin->get_std_delay(), 250);
 		break;
 	}
 	case done: {
