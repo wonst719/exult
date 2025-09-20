@@ -174,11 +174,10 @@ void GameEngineOptions_gump::help() {
 
 static const int small_size = 44;
 static const int large_size = 85;
-static int       y_index    = 0;
 
 void GameEngineOptions_gump::build_buttons() {
-	const std::vector<std::string> yesNo = {Strings::No(), Strings::Yes()};
-	y_index                              = 0;
+	const std::vector<std::string> yesNo   = {Strings::No(), Strings::Yes()};
+	int                            y_index = 0;
 
 	buttons[id_allow_autonotes] = std::make_unique<GameEngineTextToggle>(
 			this, &GameEngineOptions_gump::toggle_allow_autonotes, yesNo,
@@ -222,11 +221,12 @@ void GameEngineOptions_gump::build_buttons() {
 	buttons[id_cheats] = std::make_unique<GameEngineTextToggle>(
 			this, &GameEngineOptions_gump::toggle_cheats, yesNo, cheats,
 			colx[5], rowy[++y_index], small_size);
+	y_index_cheats_start = y_index;
 	update_cheat_buttons();
 }
 
 void GameEngineOptions_gump::update_cheat_buttons() {
-	int y_index = ::y_index;
+	int y_index = y_index_cheats_start;
 
 	if (!cheats) {
 		buttons[id_feeding].reset();

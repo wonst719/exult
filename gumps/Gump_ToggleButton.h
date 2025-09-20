@@ -62,13 +62,14 @@ public:
 	Gump_ToggleTextButton(
 			Gump_Base* par, const std::vector<std::string>& s, int selectionnum,
 			int px, int py, int width, int height = 0)
-			: Text_button(par, "", px, py, width, height), selections(s) {
+			: Text_button(par, "", px, py, width, height),
+			  selections(s) {
 		set_frame(selectionnum);
 
-		// call init for all of the strings to ensure the widget is wide enough for all of them
-		for (auto& s : selections)
-		{
-			text = s;
+		// call init for all of the strings to ensure the widget is wide enough
+		// for all of them
+		for (auto& selection : selections) {
+			text = selection;
 			init();
 		}
 
@@ -85,8 +86,8 @@ public:
 		set_frame(selectionnum);
 		// call init for all of the strings to ensure the widget is wide enough
 		// for all of them
-		for (auto& s : selections) {
-			text = s;
+		for (auto& selection : selections) {
+			text = selection;
 			init();
 		}
 		text = selections[selectionnum];
