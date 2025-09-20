@@ -662,8 +662,10 @@ class Sew_schedule : public Schedule {
 	Game_object_weak spindle;    // Spindle of thread.
 	Game_object_weak loom;
 	Game_object_weak cloth;
+	Game_object_weak cloth_remnants;
+	Game_object_weak shears;
+
 	Game_object_weak work_table, wares_table;
-	int              sew_clothes_cnt;
 
 	enum {
 		get_wool,
@@ -675,8 +677,11 @@ class Sew_schedule : public Schedule {
 		to_work_table,
 		set_to_sew,
 		sew_clothes,
+		drop_remnants,
+		place_shears,
 		get_clothes,
 		display_clothes,
+		remove_remnants,
 		done
 	} state;
 

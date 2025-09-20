@@ -4052,8 +4052,7 @@ void Waiter_schedule::ending(int new_type    // New schedule.
  *  Sew/weave schedule.
  */
 
-Sew_schedule::Sew_schedule(Actor* n)
-		: Schedule(n), sew_clothes_cnt(0), state(get_wool) {}
+Sew_schedule::Sew_schedule(Actor* n) : Schedule(n), state(get_wool) {}
 
 /*
  *  Sew/weave.
@@ -4069,8 +4068,13 @@ void Sew_schedule::now_what() {
 	if (try_proximity_usecode(12)) {
 		return;
 	}
+	// drop sfx with bg/si conversion
+	const int drop_sfx = Audio::game_sfx(74);
+	// sfx volume
+	const int vol_sfx = 150;
 	switch (state) {
 	case get_wool: {
+		state = sit_at_wheel;
 		Game_object_shared keep;
 		// Clean up any remainders.
 		if ((keep = spindle.lock())) {
@@ -4086,7 +4090,6 @@ void Sew_schedule::now_what() {
 		Game_object* bale_obj = npc->find_closest(653);
 		bale                  = weak_from_obj(bale_obj);
 		if (!bale_obj) {    // Just skip this step.
-			state = sit_at_wheel;
 			break;
 		}
 		Actor_action* pact = Path_walking_actor_action::create_path(
@@ -4094,10 +4097,11 @@ void Sew_schedule::now_what() {
 		if (pact) {
 			npc->set_action(new Sequence_actor_action(
 					pact, new Pickup_actor_action(bale_obj, 250),
+					new Frames_actor_action(0x02, 1, bale_obj),
 					new Pickup_actor_action(
-							bale_obj, bale_obj->get_tile(), 250)));
+							bale_obj, bale_obj->get_tile(), 250, false,
+							drop_sfx, vol_sfx)));
 		}
-		state = sit_at_wheel;
 		break;
 	}
 	case sit_at_wheel: {
@@ -4111,7 +4115,7 @@ void Sew_schedule::now_what() {
 		state = spin_wool;
 		break;
 	}
-	case spin_wool: {    // Cycle spinning wheel 8 times.
+	case spin_wool: {    // Cycle spinning wheel 4 times.
 		Game_object* spinwheel_obj = npc->find_closest(651);
 		spinwheel                  = weak_from_obj(spinwheel_obj);
 		if (!spinwheel_obj) {
@@ -4119,7 +4123,24 @@ void Sew_schedule::now_what() {
 			npc->start(250, 2500);
 			return;
 		}
-		npc->set_action(new Object_animate_actor_action(spinwheel_obj, 8, 200));
+		const int spin_sfx = Audio::game_sfx(97);
+
+		auto** a = new Actor_action*[5];
+		a[0]     = new Group_actor_action(
+                new Play_sfx_actor_action(spin_sfx, spinwheel_obj, vol_sfx),
+                new Object_animate_actor_action(spinwheel_obj, 1, 250));
+		a[1] = new Group_actor_action(
+				new Play_sfx_actor_action(spin_sfx, spinwheel_obj, vol_sfx),
+				new Object_animate_actor_action(spinwheel_obj, 1, 250));
+		a[2] = new Group_actor_action(
+				new Play_sfx_actor_action(spin_sfx, spinwheel_obj, vol_sfx),
+				new Object_animate_actor_action(spinwheel_obj, 1, 250));
+		a[3] = new Group_actor_action(
+				new Play_sfx_actor_action(spin_sfx, spinwheel_obj, vol_sfx),
+				new Object_animate_actor_action(spinwheel_obj, 1, 250));
+		a[4] = nullptr;
+		npc->set_action(new Sequence_actor_action(a));
+
 		state = get_thread;
 		break;
 	}
@@ -4133,9 +4154,12 @@ void Sew_schedule::now_what() {
 				= Map_chunk::find_spot(spinwheel_obj->get_tile(), 1, 654, 0);
 		if (t.tx != -1) {    // Space to create thread?
 			const Game_object_shared newobj
-					= std::make_shared<Ireg_game_object>(654, 0, 0, 0);
+					= std::make_shared<Ireg_game_object>(
+							654, rand() % 10, 0, 0);
 			spindle = Game_object_weak(newobj);
 			newobj->move(t);
+			Audio::get_ptr()->play_sound_effect(
+					drop_sfx, newobj.get(), vol_sfx);
 			gwin->add_dirty(newobj.get());
 			npc->set_action(new Pickup_actor_action(newobj.get(), 250));
 		}
@@ -4154,13 +4178,28 @@ void Sew_schedule::now_what() {
 			state = get_wool;
 			break;
 		}
-		const Tile_coord lpos = loom_obj->get_tile() + Tile_coord(-1, 0, 0);
+		const Tile_coord lpos = loom_obj->get_tile() + Tile_coord(-2, 0, 0);
 		Actor_action*    pact
 				= Path_walking_actor_action::create_path(npcpos, lpos, cost);
 		if (pact) {
-			npc->set_action(new Sequence_actor_action(
-					pact, new Face_pos_actor_action(loom_obj, 250),
-					new Object_animate_actor_action(loom_obj, 4, 200)));
+			auto**    a        = new Actor_action*[7];
+			const int loom_sfx = Audio::game_sfx(102);
+			a[0]               = pact;
+			a[1]               = new Face_pos_actor_action(loom_obj, 250);
+			a[2]               = new Group_actor_action(
+                    new Play_sfx_actor_action(loom_sfx, loom_obj, vol_sfx),
+                    new Object_animate_actor_action(loom_obj, 1, 270));
+			a[3] = new Group_actor_action(
+					new Play_sfx_actor_action(loom_sfx, loom_obj, vol_sfx),
+					new Object_animate_actor_action(loom_obj, 1, 270));
+			a[4] = new Group_actor_action(
+					new Play_sfx_actor_action(loom_sfx, loom_obj, vol_sfx),
+					new Object_animate_actor_action(loom_obj, 1, 270));
+			a[5] = new Group_actor_action(
+					new Play_sfx_actor_action(loom_sfx, loom_obj, vol_sfx),
+					new Object_animate_actor_action(loom_obj, 1, 270));
+			a[6] = nullptr;
+			npc->set_action(new Sequence_actor_action(a));
 		}
 		state = get_cloth;
 		break;
@@ -4171,12 +4210,23 @@ void Sew_schedule::now_what() {
                                                 loom_obj->get_tile(), 1, 851, 0)
 													 : Tile_coord(-1, -1, -1);
 		if (t.tx != -1) {    // Space to create it?
+			int framenum = 0;
+			if (GAME_SI) {
+				framenum
+						= 2 + (rand() % 2);    // SI only uses either red cloth.
+			} else {
+				framenum = rand() % 5;    // BG uses all 5 frames of cloth.
+			}
 			const Game_object_shared newobj
-					= std::make_shared<Ireg_game_object>(851, rand() % 2, 0, 0);
+					= std::make_shared<Ireg_game_object>(851, framenum, 0, 0);
 			cloth = Game_object_weak(newobj);
 			newobj->move(t);
+			Audio::get_ptr()->play_sound_effect(
+					Audio::game_sfx(74), newobj.get(), vol_sfx);
 			gwin->add_dirty(newobj.get());
-			npc->set_action(new Pickup_actor_action(newobj.get(), 250));
+			npc->set_action(new Sequence_actor_action(
+					new Frames_actor_action(0x20 | Actor::standing, 50),
+					new Pickup_actor_action(newobj.get(), 250)));
 		}
 		state = to_work_table;
 		break;
@@ -4186,7 +4236,7 @@ void Sew_schedule::now_what() {
 		work_table                         = weak_from_obj(work_table_obj);
 		const Game_object_shared cloth_obj = cloth.lock();
 		if (!work_table_obj || !cloth_obj) {
-			state = get_wool;
+			state = done;
 			break;
 		}
 		const Tile_coord tpos
@@ -4197,39 +4247,26 @@ void Sew_schedule::now_what() {
 		const TileRect    foot = work_table_obj->get_footprint();
 		const Shape_info& info = work_table_obj->get_info();
 		const Tile_coord  cpos(
-                foot.x + foot.w / 2, foot.y + foot.h / 2,
+                foot.x + foot.w / 2, foot.y + foot.h / 4,
                 work_table_obj->get_lift() + info.get_3d_height());
 		if (pact) {
 			npc->set_action(new Sequence_actor_action(
 					pact, new Face_pos_actor_action(work_table_obj, 250),
-					new Pickup_actor_action(cloth_obj.get(), cpos, 250)));
+					new Pickup_actor_action(
+							cloth_obj.get(), cpos, 250, false, drop_sfx,
+							vol_sfx)));
 		}
 		state = set_to_sew;
 		break;
 	}
 	case set_to_sew: {
-		Game_object* shears = npc->get_readied(lhand);
-		if (shears && shears->get_shapenum() != 698) {
-			// Something's not right.
-			shears->remove_this();
-			shears = nullptr;
-		}
-		if (!shears) {
-			// Shears on table?
-			Game_object_vector vec;
-			Game_object_shared keep;
-			if (npc->find_nearby(vec, 698, 3, 0)) {
-				shears = vec[0];
-				gwin->add_dirty(shears);
-				shears->remove_this(&keep);
-			} else {
-				keep   = std::make_shared<Ireg_game_object>(698, 0, 0, 0);
-				shears = keep.get();
-			}
-			npc->add_readied(shears, lhand);
-		}
-		state           = sew_clothes;
-		sew_clothes_cnt = 0;
+		const Game_object_shared prev     = shears.lock();
+		Game_object*             acquired = set_procure_item_action(
+                npc, prev ? prev.get() : nullptr, 24, 698, 0);
+		shears                              = weak_from_obj(acquired);
+		const Game_object_shared shears_obj = shears.lock();
+
+		state = sew_clothes;
 		break;
 	}
 	case sew_clothes: {
@@ -4238,54 +4275,112 @@ void Sew_schedule::now_what() {
 			state = get_wool;
 			break;
 		}
-		const int   dir = npc->get_direction(cloth_obj.get());
+		Game_object*     work_table_obj = npc->find_closest(971);
+		const Tile_coord tpos
+				= work_table_obj->get_tile() + Tile_coord(1, -2, 0);
+		Actor_action* pact
+				= Path_walking_actor_action::create_path(npcpos, tpos, cost);
 		signed char frames[5];
-		const int   nframes = npc->get_attack_frames(698, false, dir, frames);
-		if (nframes) {
-			npc->set_action(new Frames_actor_action(frames, nframes));
+		const int   nframes = npc->get_attack_frames(698, false, 6, frames);
+		const int   shnum   = GAME_SI ? 403 : (rand() % 2 ? 738 : 249);
+		const int   cframes = ShapeID(shnum, 0).get_num_frames();
+		const int   rand_cframes = rand() % cframes;
+
+		if (pact) {
+			npc->set_action(new Sequence_actor_action(
+					pact, new Frames_actor_action(frames, nframes),
+					new Frames_actor_action(frames, nframes),
+					new Change_actor_action(
+							cloth_obj.get(), shnum, rand_cframes, 50)));
 		}
-		sew_clothes_cnt++;
-		if (sew_clothes_cnt > 1 && sew_clothes_cnt < 5) {
-			const int num_cloth_frames = ShapeID(851, 0).get_num_frames();
-			cloth_obj->change_frame(rand() % num_cloth_frames);
-		} else if (sew_clothes_cnt == 5) {
-			gwin->add_dirty(cloth_obj.get());
-			const Tile_coord   pos = cloth_obj->get_tile();
-			Game_object_shared keep;
-			cloth_obj->remove_this(&keep);
-			// Top or pants.
-			const int shnum = GAME_SI ? 403 : (rand() % 2 ? 738 : 249);
-			cloth_obj->set_shape(shnum);
-			const int nframes = ShapeID(shnum, 0).get_num_frames();
-			cloth_obj->change_frame(rand() % nframes);
-			cloth_obj->move(pos);
-			state = get_clothes;
+
+		state = drop_remnants;
+		break;
+	}
+	case drop_remnants: {
+		Game_object_shared cloth_remnants_obj = cloth_remnants.lock();
+
+		const Tile_coord t = npcpos;
+		if (t.tx != -1) {    // Space to create cloth remnants?
+			int rframes = 0;
+			if (GAME_SI) {
+				rframes = 6 + (rand() % 2);
+			} else {
+				rframes = 5 + (rand() % 5);
+			}
+			cloth_remnants_obj
+					= std::make_shared<Ireg_game_object>(851, rframes, 0, 0);
+			cloth_remnants_obj->move(t);
+			Audio::get_ptr()->play_sound_effect(
+					drop_sfx, cloth_remnants_obj.get(), vol_sfx);
+			gwin->add_dirty(cloth_remnants_obj.get());
+		}
+		cloth_remnants = Game_object_weak(cloth_remnants_obj);
+		state          = place_shears;
+		break;
+	}
+	case place_shears: {
+		state                               = get_clothes;
+		const Game_object_shared shears_obj = shears.lock();
+		if (!shears_obj) {
+			break;
+		}
+		if (npc->get_readied(lhand) == shears_obj.get()) {
+			Game_object* wares_table_obj = npc->find_closest(890);
+			if (!wares_table_obj) {
+				shears_obj->remove_this();
+				npc->empty_hands();
+				npc->add_dirty();
+				break;
+			}
+			const Tile_coord tpos
+					= Map_chunk::find_spot(wares_table_obj->get_tile(), 1, npc);
+			Actor_action* pact = Path_walking_actor_action::create_path(
+					npcpos, tpos, cost);
+			const TileRect    foot = wares_table_obj->get_footprint();
+			const Shape_info& info = wares_table_obj->get_info();
+			Tile_coord        drop(
+                    foot.x + (foot.w / 4) * 3, foot.y + (foot.h / 3) * 2,
+                    wares_table_obj->get_lift() + info.get_3d_height());
+
+			if (pact) {
+				npc->set_action(new Sequence_actor_action(
+						pact, new Pickup_actor_action(
+									  shears_obj.get(), drop, 250, false,
+									  drop_sfx, vol_sfx)));
+			} else {
+				delete pact;
+				npc->set_action(new Pickup_actor_action(
+						shears_obj.get(), drop, 250, false, drop_sfx, vol_sfx));
+			}
+			break;
 		}
 		break;
 	}
 	case get_clothes: {
-		Game_object*             shears    = npc->get_readied(lhand);
 		const Game_object_shared cloth_obj = cloth.lock();
-		if (shears && cloth_obj) {
-			const Tile_coord pos = cloth_obj->get_tile();
-			npc->set_action(new Sequence_actor_action(
-					new Pickup_actor_action(cloth_obj.get(), 250),
-					new Pickup_actor_action(shears, pos, 250)));
-		} else {
-			// ++++ maybe create shears? anyway, leaving this till after
-			// possible/probable schedule system rewrite
-			if (cloth_obj) {
-				npc->set_action(new Pickup_actor_action(cloth_obj.get(), 250));
+		if (cloth_obj) {
+			Game_object*     work_table_obj = npc->find_closest(971);
+			const Tile_coord tpos
+					= work_table_obj->get_tile() + Tile_coord(1, -2, 0);
+			Actor_action* pact = Path_walking_actor_action::create_path(
+					npcpos, tpos, cost);
+			if (pact) {
+				npc->set_action(new Sequence_actor_action(
+						pact, new Pickup_actor_action(cloth_obj.get(), 250)));
 			} else {
-				state = get_wool;
-				break;
+				delete pact;
+				npc->set_action(new Pickup_actor_action(cloth_obj.get(), 250));
 			}
+		} else {
+			state = get_wool;
+			break;
 		}
 		state = display_clothes;
 		break;
 	}
 	case display_clothes: {
-		state                              = done;
+		state                              = remove_remnants;
 		Game_object* wares_table_obj       = npc->find_closest(890);
 		wares_table                        = weak_from_obj(wares_table_obj);
 		const Game_object_shared cloth_obj = cloth.lock();
@@ -4297,25 +4392,54 @@ void Sew_schedule::now_what() {
 			break;
 		}
 		const Tile_coord tpos
-				= wares_table_obj->get_tile() + Tile_coord(1, -2, 0);
+				= wares_table_obj->get_tile() + Tile_coord(0, 1, 0);
 		Actor_action* pact
 				= Path_walking_actor_action::create_path(npcpos, tpos, cost);
 		// Find where to put cloth.
 		const TileRect    foot = wares_table_obj->get_footprint();
 		const Shape_info& info = wares_table_obj->get_info();
-		const Tile_coord  cpos(
-                foot.x + rand() % foot.w, foot.y + rand() % foot.h,
-                wares_table_obj->get_lift() + info.get_3d_height());
+		// Random spot on table but with a 1/4 foot margin.
+		const int rx = foot.x + (foot.w / 4) + (rand() % ((foot.w / 3) * 4));
+		const int ry = foot.y + (foot.h / 4) + (rand() % ((foot.h / 3) * 4));
+		const Tile_coord cpos(
+				rx, ry, wares_table_obj->get_lift() + info.get_3d_height());
 		if (pact) {
 			npc->set_action(new Sequence_actor_action(
-					pact,
-					new Pickup_actor_action(cloth_obj.get(), cpos, 250, true)));
+					pact, new Pickup_actor_action(
+								  cloth_obj.get(), cpos, 250, true, drop_sfx,
+								  vol_sfx)));
 		}
-		cloth = Game_object_shared();    // Leave it be.
+		// cloth = Game_object_shared();    // Leave it be.
+		break;
+	}
+	case remove_remnants: {
+		Game_object_shared cloth_remnants_obj = cloth_remnants.lock();
+		if (cloth_remnants_obj) {
+			const Tile_coord rpos
+					= cloth_remnants_obj->get_tile() + Tile_coord(0, 1, 0);
+			Actor_action* pact = Path_walking_actor_action::create_path(
+					npcpos, rpos, cost);
+			if (pact) {
+				npc->set_action(new Sequence_actor_action(
+						pact, new Pickup_actor_action(
+									  cloth_remnants_obj.get(), 250)));
+			} else {
+				delete pact;
+				npc->set_action(
+						new Pickup_actor_action(cloth_remnants_obj.get(), 250));
+			}
+		}
+		state = done;
 		break;
 	}
 	case done: {    // Just put down clothing.
-		state = get_wool;
+		state                                       = get_wool;
+		const Game_object_shared cloth_remnants_obj = cloth_remnants.lock();
+		if (cloth_remnants_obj) {
+			cloth_remnants_obj->remove_this();
+			npc->empty_hands();
+			npc->add_dirty();
+		}
 		Game_object_vector vec;    // Don't create too many.
 		int                cnt = 0;
 		if (GAME_SI) {
@@ -4358,6 +4482,27 @@ void Sew_schedule::ending(int new_type    // New schedule.
 		}
 		cloth_keep->remove_this();
 	}
+	const Game_object_shared cloth_obj = cloth.lock();
+	if (cloth_obj) {
+		cloth_obj->remove_this();
+	}
+	const Game_object_shared shears_obj = shears.lock();
+	if (shears_obj) {
+		shears_obj->remove_this();
+	}
+	const Game_object_shared cloth_remnants_obj = cloth_remnants.lock();
+	if (cloth_remnants_obj) {
+		cloth_remnants_obj->remove_this();
+	}
+	const Game_object_shared spindle_obj = spindle.lock();
+	if (spindle_obj) {
+		spindle_obj->remove_this();
+	}
+
+	Game_object* bale_obj = npc->find_closest(653);
+	if (bale_obj && bale_obj->get_framenum() != 0) {
+		bale_obj->change_frame(0);
+	}
 }
 
 /*
@@ -4382,6 +4527,10 @@ void Bake_schedule::now_what() {
 	if (try_proximity_usecode(8)) {
 		return;
 	}
+	// drop sfx with bg/si conversion
+	const int drop_sfx = Audio::game_sfx(74);
+	// sfx volume
+	const int vol_sfx = 150;
 
 	switch (state) {
 	case find_leftovers: {    // Look for misplaced dough already made by this
@@ -4571,8 +4720,9 @@ void Bake_schedule::now_what() {
 			npc->add(dough_obj.get(), true);
 			dough_obj->set_quality(50);    // doesn't save okay_to_take
 			npc->set_action(new Sequence_actor_action(
-					pact,
-					new Pickup_actor_action(dough_obj.get(), tablepos, 250)));
+					pact, new Pickup_actor_action(
+								  dough_obj.get(), tablepos, 250, false,
+								  drop_sfx, vol_sfx)));
 		} else {
 			// not good... try again
 			delay = 2500;
@@ -4721,9 +4871,9 @@ void Bake_schedule::now_what() {
 		const Tile_coord t = Map_chunk::find_spot(spot_on_table, 0, 377, 0, 0);
 		if (t.tx != -1 && t.tz == spot_on_table.tz) {
 			npc->set_action(new Sequence_actor_action(
-					pact,
-					new Pickup_actor_action(
-							dough_in_oven_obj.get(), spot_on_table, 250)));
+					pact, new Pickup_actor_action(
+								  dough_in_oven_obj.get(), spot_on_table, 250,
+								  false, drop_sfx, vol_sfx)));
 			dough_in_oven = Game_object_weak();
 			state         = get_dough;
 		} else {
@@ -4852,7 +5002,9 @@ void Bake_schedule::now_what() {
 
 		if (pact) {
 			npc->set_action(new Sequence_actor_action(
-					pact, new Pickup_actor_action(dough_obj.get(), cpos, 250)));
+					pact, new Pickup_actor_action(
+								  dough_obj.get(), cpos, 250, false, drop_sfx,
+								  vol_sfx)));
 
 			dough_obj->set_quality(51);    // doesn't save okay_to_take
 			dough_in_oven = dough;
