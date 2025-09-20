@@ -740,18 +740,23 @@ class Forge_schedule : public Schedule {
 
 	enum {
 		put_sword_on_firepit,
+		walk_to_firepit,
+		get_blank,
 		use_bellows,
 		get_tongs,
 		sword_on_anvil,
+		walk_to_anvil,
 		place_tongs,
 		get_hammer,
 		use_hammer,
 		place_hammer,
 		get_bucket,
+		place_bucket,
+		walk_to_trough,
 		fill_trough,
 		use_trough,
+		walk_to_well,
 		use_well,
-		wait_for_well_anim,
 		done
 	} state;
 
