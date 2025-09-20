@@ -61,6 +61,8 @@ private:
 
 	std::array<std::unique_ptr<Gump_button>, id_count> buttons;
 
+	int y_index_cheats_start = 0;
+
 public:
 	GameEngineOptions_gump();
 
