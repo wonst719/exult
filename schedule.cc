@@ -4295,7 +4295,7 @@ void Sew_schedule::now_what() {
 		const int   nframes = npc->get_attack_frames(698, false, 6, frames);
 		const int   shnum   = GAME_SI ? 403 : (rand() % 2 ? 738 : 249);
 		const int   cframes = ShapeID(shnum, 0).get_num_frames();
-		const int   rand_cframes = rand() % cframes;
+		const int   rand_cframes = (cframes > 0) ? (rand() % cframes) : 0;
 
 		if (pact) {
 			npc->set_action(new Sequence_actor_action(
