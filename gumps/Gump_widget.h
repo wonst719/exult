@@ -177,6 +177,9 @@ public:
 			 s     = int(next)) {
 			next = Sort_Order(s + 1);
 			for (auto& child : container) {
+				if (&*child == before) {
+					break;
+				}
 				if (!child) {
 					continue;
 				}
