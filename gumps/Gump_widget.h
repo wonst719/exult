@@ -176,12 +176,13 @@ public:
 			 s     = int(next)) {
 			next = Sort_Order(s + 1);
 			for (auto& child : container) {
+				if (!child) {
+					continue;
+				}	
 				if (&*child == before) {
 					break;
 				}
-				if (!child) {
-					continue;
-				}
+
 				Gump_widget* found = child->findSorted(
 						sx, sy, Sort_Order(s), next, highest, before);
 				if (found) {
