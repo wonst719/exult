@@ -272,25 +272,25 @@
 
 #GameEngineOptions_gump.cc
 0x620:Normal
-0x620:Hard
-0x621:Easiest (-3)
-0x622:Easier (-2)
-0x623:Easier (-1)
-0x624:Harder (+1)
-0x625:Harder (+2)
-0x626:Hardest (+3)
-0x627:Manual
-0x628:Automatic
-0x629:Take automatic notes:
-0x62A:Gumps pause game:
-0x62B:Alternative drag and drop:
-0x62C:Speed:
-0x62D:Combat Show Hits:
-0x62E:Combat paused with Space:
-0x62F:Combat Charmed Difficulty:
-0x630:Combat Difficulty:
-0x631:Cheats:
-0x632:Feeding:
+0x621:Hard
+0x622:Easiest (-3)
+0x623:Easier (-2)
+0x624:Easier (-1)
+0x625:Harder (+1)
+0x626:Harder (+2)
+0x627:Hardest (+3)
+0x628:Manual
+0x629:Automatic
+0x62A:Take automatic notes:
+0x62B:Gumps pause game:
+0x62C:Alternative drag and drop:
+0x62D:Speed:
+0x62E:Combat Show Hits:
+0x62F:Combat paused with Space:
+0x630:Combat Charmed Difficulty:
+0x631:Combat Difficulty:
+0x632:Cheats:
+0x633:Feeding:
 
 #InputOptions_gump.cc
 0x640:Single

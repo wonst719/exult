@@ -68,79 +68,79 @@ namespace {
 		}
 
 		static auto Hard() {
-			return get_text_msg(0x620 - msg_file_start);
-		}
-
-		static auto Easiest3() {
 			return get_text_msg(0x621 - msg_file_start);
 		}
 
-		static auto Easier2() {
+		static auto Easiest3() {
 			return get_text_msg(0x622 - msg_file_start);
 		}
 
-		static auto Easier1() {
+		static auto Easier2() {
 			return get_text_msg(0x623 - msg_file_start);
 		}
 
-		static auto Harder1() {
+		static auto Easier1() {
 			return get_text_msg(0x624 - msg_file_start);
 		}
 
-		static auto Harder2() {
+		static auto Harder1() {
 			return get_text_msg(0x625 - msg_file_start);
 		}
 
-		static auto Hardest3() {
+		static auto Harder2() {
 			return get_text_msg(0x626 - msg_file_start);
 		}
 
-		static auto Manual() {
+		static auto Hardest3() {
 			return get_text_msg(0x627 - msg_file_start);
 		}
 
-		static auto Automatic() {
+		static auto Manual() {
 			return get_text_msg(0x628 - msg_file_start);
 		}
 
-		static auto Takeautomaticnotes_() {
+		static auto Automatic() {
 			return get_text_msg(0x629 - msg_file_start);
 		}
 
-		static auto Gumpspausegame_() {
+		static auto Takeautomaticnotes_() {
 			return get_text_msg(0x62A - msg_file_start);
 		}
 
-		static auto Alternativedraganddrop_() {
+		static auto Gumpspausegame_() {
 			return get_text_msg(0x62B - msg_file_start);
 		}
 
-		static auto Speed_() {
+		static auto Alternativedraganddrop_() {
 			return get_text_msg(0x62C - msg_file_start);
 		}
 
-		static auto CombatShowHits_() {
+		static auto Speed_() {
 			return get_text_msg(0x62D - msg_file_start);
 		}
 
-		static auto CombatpausedwithSpace_() {
+		static auto CombatShowHits_() {
 			return get_text_msg(0x62E - msg_file_start);
 		}
 
-		static auto CombatCharmedDifficulty_() {
+		static auto CombatpausedwithSpace_() {
 			return get_text_msg(0x62F - msg_file_start);
 		}
 
-		static auto CombatDifficulty_() {
+		static auto CombatCharmedDifficulty_() {
 			return get_text_msg(0x630 - msg_file_start);
 		}
 
-		static auto Cheats_() {
+		static auto CombatDifficulty_() {
 			return get_text_msg(0x631 - msg_file_start);
 		}
 
-		static auto Feeding_() {
+		static auto Cheats_() {
 			return get_text_msg(0x632 - msg_file_start);
+		}
+
+		static auto Feeding_() {
+			return get_text_msg(0x633 - msg_file_start);
 		}
 	};
 
