@@ -114,9 +114,13 @@ void Gump::set_pos() {
 	x         = 0;
 	y         = 0;
 	auto rect = get_rect();
-
+	// mark old position dirty
+	gwin->add_dirty(rect);
 	x = (gwin->get_width() - rect.w) / 2 - rect.x;
 	y = (gwin->get_height() - rect.h) / 2 - rect.y;
+
+	// mark new position dirty
+	gwin->add_dirty(get_rect());
 }
 
 void Gump::set_pos(int newx, int newy) {    // Set new spot on screen.
