@@ -203,8 +203,8 @@
 
 0x5C8:Status Bars:
 0x5C9:Use ShortcutBar :
-0x5CA:Use outline color :
-0x5CB:Hide missing items:
+0x5CA:    Use outline color :
+0x5CB:    Hide missing items:
 0x5CC:Text Background:
 0x5CD:Smooth scrolling:
 0x5CE:Skip intro:
@@ -260,14 +260,14 @@
 0x612:requires Digital Music
 0x613:Disable anyway?
 0x614:Audio:
-0x615:sample rate
-0x616:speaker type
+0x615:    sample rate
+0x616:    speaker type
 0x617:Music:
-0x618:looping
-0x619:digital music
-0x61A:midi driver
+0x618:    looping
+0x619:    digital music
+0x61A:    midi driver
 0x61B:SFX:
-0x61C:pack
+0x61C:    pack
 0x61D:Speech:
 
 #GameEngineOptions_gump.cc
