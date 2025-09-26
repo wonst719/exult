@@ -225,7 +225,6 @@ InputOptions_gump::InputOptions_gump()
 			yForRow(12), 50);
 
 	build_buttons();
-
 }
 
 void InputOptions_gump::save_settings() {

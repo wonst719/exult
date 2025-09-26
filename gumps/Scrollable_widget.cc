@@ -393,8 +393,7 @@ void Scrollable_widget::expand(int deltax, int deltay) {
 	for (int index = id_first_button; index <= id_last_button; index++)
 	{
 		auto widget = children[index];
-		if (widget) {
-		
+		if (widget) {		
 		widget->set_pos(widget->get_x() + deltax, widget->get_y()+(index>=id_page_down?deltay:0));
 		}
 	}	

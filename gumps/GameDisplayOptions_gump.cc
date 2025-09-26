@@ -412,7 +412,6 @@ GameDisplayOptions_gump::GameDisplayOptions_gump() : Modal_gump(nullptr, -1) {
 
 	load_settings();
 	build_buttons();
-
 }
 
 void GameDisplayOptions_gump::save_settings() {
