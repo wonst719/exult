@@ -86,6 +86,9 @@ protected:
 	bool mousewheel_down(int mx, int my) override;
 	bool key_down(int chr) override;    // Character typed.
 
+	void PaintSlider(
+			Image_window8* iwin, Slider_widget* slider, const char* label,
+			bool use3dslidertrack=true);
 	//
 	// Implementation of Slider_widget::ICallback
 	//
