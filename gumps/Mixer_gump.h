@@ -33,8 +33,8 @@ private:
 	enum button_ids {
 		id_first = 0,
 		id_ok    = id_first,
-		id_cancel,
 		id_help,
+		id_cancel,
 		id_count
 	};
 
