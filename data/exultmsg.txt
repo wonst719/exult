@@ -269,6 +269,7 @@
 0x61B:SFX:
 0x61C:    pack
 0x61D:Speech:
+0x61E:    conversion
 
 #GameEngineOptions_gump.cc
 0x620:Normal
