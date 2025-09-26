@@ -236,12 +236,12 @@ std::vector<ConfigSetting_widget::Definition> MidiDriver::
 				false,                                      // unique
 				ConfigSetting_widget::Definition::button    // setting_type
 		};
-		reverb.choices.push_back({"Yes", "yes", "yes"});
-		reverb.choices.push_back({"No", "no", "no"});
+		reverb.choices.push_back({GumpStrings::Yes(), "yes", "yes"});
+		reverb.choices.push_back({GumpStrings::No(), "no", "no"});
 		config->value("config/audio/midi/reverb/enabled", s, "no");
 		reverb.default_value.swap(s);
-		chorus.choices.push_back({"Yes", "yes", "yes"});
-		chorus.choices.push_back({"No", "no", "no"});
+		chorus.choices.push_back({GumpStrings::Yes(), "yes", "yes"});
+		chorus.choices.push_back({GumpStrings::No(), "no", "no"});
 		config->value("config/audio/midi/chorus/enabled", s, "no");
 		chorus.default_value.swap(s);
 		result.push_back(reverb);
