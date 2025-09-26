@@ -33,7 +33,6 @@ class IDataSource;
 //! The Basic High Level Pentagram Midi Driver interface.
 class MidiDriver : public std::enable_shared_from_this<MidiDriver> {
 protected:
-
 	// Translatable Strings from exultmsg.txt used by Midi Drivers
 	class Strings {
 	public:
@@ -80,7 +79,6 @@ protected:
 		static auto CoreMIDIDevice() {
 			return get_text_msg(0x6AA - 0x400);
 		}
-
 	};
 
 	std::atomic_bool initialized = false;

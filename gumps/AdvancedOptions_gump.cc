@@ -62,7 +62,6 @@ AdvancedOptions_gump::AdvancedOptions_gump(
 		max_width = std::max(max_width, csw->get_rect().w);
 
 		scroll->add_child(std::move(csw));
-
 	}
 	// run the scroll bar so it can up update itself
 	scroll->run();

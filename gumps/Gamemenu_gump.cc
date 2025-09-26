@@ -116,7 +116,6 @@ void Gamemenu_gump::createButtons() {
 	// Risize to fit all
 	ResizeWidthToFitWidgets(
 			tcb::span(buttons.data() + id_first, buttons.data() + id_count),margin);
-
 }
 
 //++++++ IMPLEMENT RETURN_TO_MENU!

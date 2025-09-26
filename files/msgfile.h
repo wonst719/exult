@@ -57,8 +57,7 @@ public:
 
 	uint32 get_global_section_strings(std::vector<std::string>& strings) const {
 		strings.clear();
-		for (const auto& s : global_section) {
-			
+		for (const auto& s : global_section) {			
 			strings.emplace_back(s.value_or(std::string()));
 		}
 		return global_first;
@@ -66,7 +65,6 @@ public:
 	uint32 get_global_section_strings(std::vector<std::optional<std::string>>& strings) const {
 		strings.clear();
 		for (const auto& s : global_section) {
-
 			strings.emplace_back(s);
 		}
 		return global_first;
@@ -89,7 +87,6 @@ public:
 		strings.clear();
 		if (has_section(sectionName)) {
 			for (const auto& s : items.at(sectionName)) {
-
 				strings.emplace_back(s.value_or(std::string()));
 			}
 			return firsts.at(sectionName);
@@ -104,7 +101,6 @@ public:
 		strings.clear();
 		if (has_section(sectionName)) {
 			for (const auto& s : items.at(sectionName)) {
-
 				strings.emplace_back(s);
 			}
 			return firsts.at(sectionName);
