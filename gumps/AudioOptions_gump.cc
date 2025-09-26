@@ -183,6 +183,10 @@ public:
 	static auto Speech_() {
 		return get_text_msg(0x61D - msg_file_start);
 	}
+
+	static auto conversion() {
+		return get_text_msg(0x61E - msg_file_start);
+	}
 };
 
 uint32 AudioOptions_gump::sample_rates[5]  = {11025, 22050, 44100, 48000, 0};
@@ -433,7 +437,7 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 		buttons[id_sfx_pack] = std::make_unique<AudioTextToggle>(
 				this, &AudioOptions_gump::toggle_sfx_pack,
 				std::move(sfx_conversiontext), sfx_conversion == 5 ? 1 : 0,
-				colx[2], yForRow(11), 59);
+				get_button_pos_for_label(Strings::conversion()), yForRow(11), 59);
 	}
 #endif
 	do_arrange();
@@ -861,7 +865,7 @@ void AudioOptions_gump::paint() {
 #ifdef ENABLE_MIDISFX
 		else if (sfx_enabled == midi_state) {
 			font->paint_text(
-					iwin->get_ib8(), "conversion", x + label_margin,
+					iwin->get_ib8(), Strings::conversion(), x + label_margin,
 					y + yForRow(11) + 1);
 		}
 #endif
