@@ -344,3 +344,16 @@ void Modal_gump::ProceduralColours::RemapColours(int newramp) {
 	Highlight2 = pal->remap_colour_to_ramp(Highlight2, newramp);
 	Shadow     = pal->remap_colour_to_ramp(Shadow, newramp);
 }
+
+int Modal_gump::get_button_pos_for_label(const char* label) {
+	return font->get_text_width(label) + label_margin * 2;
+}
+
+void Modal_gump::ResizeWidthToFitText(const char* text) {
+	int width = 0, height;
+	font->get_text_box_dims(text, width, height);
+	procedural_background.w
+			= std::max(procedural_background.w, width + label_margin * 2);
+
+	set_pos();
+}

@@ -149,6 +149,107 @@ private:
 public:
 	//! Set a message to display above the gump
 	void SetPopupMessage(const std::string& message, int mstimeout = 5000);
+
+	//! @brief Resize the Gump's width to fit the widgets
+	//! Will recentre the gump on screen
+	//! Only works for Gumps with Procedural background
+	//! @param widgets collection of Widgets to resize the gump too
+	//! @param margin Right margin of gump
+	//! @param right_align If true right align the widgets
+	template <typename WidgetPointer>
+	void ResizeWidthToFitWidgets(
+			tcb::span<WidgetPointer> widgets, int margin = 4) {
+		if (!procedural_background) {
+			return;
+		}
+		int max_x = procedural_background.w + procedural_background.x;
+		for (auto& widget : widgets) {
+			if (widget) {
+				auto rect = widget->get_rect();
+				screen_to_local(rect.x, rect.y);
+				max_x = std::max(max_x, rect.x + rect.w + margin);
+			}
+		}
+
+		procedural_background.w = max_x - procedural_background.x;
+		set_pos();
+	}
+
+	// Align all the widgets in the span margin pixels from the gump's right
+	// edge. Only works for Gumps with Procedural background
+	template <typename WidgetPointer>
+	void RightAlignWidgets(tcb::span<WidgetPointer> widgets, int margin = 4) {
+		if (!procedural_background) {
+			return;
+		}
+		int max_x = procedural_background.w + procedural_background.x;
+		for (auto& widget : widgets) {
+			if (widget) {
+				auto rect = widget->get_rect();
+				widget->set_pos(max_x - rect.w - margin, widget->get_y());
+			}
+		}
+	}
+
+	//! @brief Horizontally arrange widgets across the gump with a minimum gap
+	//! between them. Gump is resized bigger if there isn't enough room
+	//! Only works for Gumps with Procedural background
+	//! @tparam WidgetPointer
+	//! @param widgets collection of Widgets to resize the gump too
+	//! @param min_gap Minimum gap between the widgets/
+	//! @param margin Left and right margin
+	template <typename WidgetPointer>
+	void HorizontalArrangeWidgets(
+			tcb::span<WidgetPointer> widgets, int min_gap = 8) {
+		if (!procedural_background) {
+			return;
+		}
+		int width_widgets = 0;
+		for (auto& widget : widgets) {
+			if (widget) {
+				auto rect = widget->get_rect();
+				width_widgets += rect.w;
+			}
+		}
+		int min_width = width_widgets + (widgets.size()) * min_gap;
+		if (procedural_background.w < min_width) {
+			procedural_background.w = min_width;
+			set_pos();
+		}
+		int gap = (procedural_background.w - width_widgets) / (widgets.size());
+
+		int new_x = procedural_background.x + gap / 2;
+		for (auto& widget : widgets) {
+			if (widget) {
+				auto rect = widget->get_rect();
+				widget->set_pos(new_x, widget->get_y());
+
+				new_x += rect.w + gap;
+			}
+		}
+	}
+
+	// Margin to use when laying out text labels
+	static const int label_margin = 6;
+
+	// Get the X position for an option button that has the given label string
+	// rendered using this->font
+	int get_button_pos_for_label(const char* label);
+
+	// Resize the gump's Width to fit a multiline string
+	// Only works for Gumps with Procedural background
+	void ResizeWidthToFitText(const char* text);
+
+	// Get Y position for a row
+	// Rows up to 12 are 12 pixels high,
+	// rows above 12 are 14 pixels high
+	constexpr static int yForRow(int row) {
+		if (row <= 12) {
+			return 5 + row * 12;
+		} else {
+			return 149 + (row - 12) * 14;
+		}
+	}
 };
 
 #endif
