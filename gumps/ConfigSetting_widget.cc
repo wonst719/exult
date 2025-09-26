@@ -59,8 +59,18 @@ public:
 	}
 };
 
+constexpr static int Count_digits10(unsigned val) {
+	int digits = 1;
+
+	while (val /= 10) {
+		digits++;
+	}
+
+	return digits;
+}
+
 ConfigSetting_widget::ConfigSetting_widget(
-		Gump_Base* parent, int px, int py, int butonwidth, int col2,
+		Gump_Base* parent, int px, int py, int butonwidth,
 		const Definition& s, std::shared_ptr<Font> font, int line_gap)
 		: IterableGump_widget(parent, -1, px, py, -1), setting(s), font(font) {
 	if (setting.additional < 0) {
@@ -100,6 +110,8 @@ ConfigSetting_widget::ConfigSetting_widget(
 	}
 	int offset_y  = 0;
 	missingchoice = -1;
+	int widget_x  = font->get_text_width(setting.label.c_str())
+			  + Count_digits10(setting.additional) * font->get_text_width("0") + Modal_gump::label_margin;
 	for (int i = -1; i < setting.additional; i++) {
 		std::string      config_key;
 		std::string_view default_value;
@@ -137,13 +149,14 @@ ConfigSetting_widget::ConfigSetting_widget(
 
 		initial[i + 1] = current_index;
 
+
 		// create widget
 		switch (setting.setting_type) {
 		case Definition::dropdown: {
 			children[i + 1] = std::make_unique<
 					CallbackButtonBase<ConfigSetting_widget, DropDown_widget>>(
 					this, &ConfigSetting_widget::onselectionmb, sv_choices,
-					current_index, col2, offset_y, butonwidth);
+					current_index, widget_x, offset_y, butonwidth);
 
 			break;
 		}
@@ -152,14 +165,14 @@ ConfigSetting_widget::ConfigSetting_widget(
 			children[i + 1] = std::make_unique<CallbackButtonBase<
 					ConfigSetting_widget, StringList_widget>>(
 					this, &ConfigSetting_widget::onselectionmb, sv_choices,
-					current_index, col2, offset_y, colours, butonwidth, 0);
+					current_index, widget_x, offset_y, colours, butonwidth, 0);
 			break;
 		}
 		case Definition::button: {
 			children[i + 1] = std::make_unique<
 					SelfManagedCallbackToggleTextButton<ConfigSetting_widget>>(
 					this, &ConfigSetting_widget::onselection, sv_choices,
-					current_index, col2, offset_y, butonwidth, 0);
+					current_index, widget_x, offset_y, butonwidth, 0);
 
 			break;
 		}
@@ -184,16 +197,6 @@ void ConfigSetting_widget::shift_buttons_x(int offset) {
 			child->set_pos(child->get_x() + offset, child->get_y());
 		}
 	}
-}
-
-constexpr static int Count_digits10(unsigned val) {
-	int digits = 1;
-
-	while (val /= 10) {
-		digits++;
-	}
-
-	return digits;
 }
 
 static int int_to_str(unsigned val, char* str) {
