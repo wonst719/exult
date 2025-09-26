@@ -34,7 +34,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "VideoOptions_gump.h"
 #include "Yesno_gump.h"
 #include "exult.h"
-#include "exult_flx.h"
 #include "gameclk.h"
 #include "gamewin.h"
 #include "items.h"
@@ -43,9 +42,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <string>
 
 using std::string;
-
-static const int rowy[] = {4, 17, 30, 43, 56, 69, 82};
-static const int colx   = 31;
 
 class Strings : public GumpStrings {
 public:
@@ -81,40 +77,46 @@ public:
 using Gamemenu_button = CallbackTextButton<Gamemenu_gump>;
 
 Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, -1) {
-	SetProceduralBackground(TileRect(29, 2, 112, 91), -1);
+	SetProceduralBackground(TileRect(0, 0, 100, yForRow(7)), -1);
 
 	createButtons();
 }
 
 void Gamemenu_gump::createButtons() {
 	int y = 0;
+	int margin = 4;
 	if (!gwin->is_in_exult_menu()) {
 		buttons[id_load_save] = std::make_unique<Gamemenu_button>(
-				this, &Gamemenu_gump::loadsave, Strings::LoadSaveGame(), colx,
-				rowy[y++], 108, 11);
+				this, &Gamemenu_gump::loadsave, Strings::LoadSaveGame(), margin,
+				yForRow(y++), 108, 11);
 	}
 	buttons[id_video_options] = std::make_unique<Gamemenu_button>(
-			this, &Gamemenu_gump::video_options, Strings::VideoOptions(), colx,
-			rowy[y++], 108, 11);
+			this, &Gamemenu_gump::video_options, Strings::VideoOptions(), margin,
+			yForRow(y++), 108, 11);
 	buttons[id_audio_options] = std::make_unique<Gamemenu_button>(
-			this, &Gamemenu_gump::audio_options, Strings::AudioOptions(), colx,
-			rowy[y++], 108, 11);
+			this, &Gamemenu_gump::audio_options, Strings::AudioOptions(), margin,
+			yForRow(y++), 108, 11);
 	buttons[id_game_engine_options] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::game_engine_options, Strings::GameEngine(),
-			colx, rowy[y++], 108, 11);
+			margin, yForRow(y++), 108, 11);
 	buttons[id_game_display_options] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::game_display_options, Strings::GameDisplay(),
-			colx, rowy[y++], 108, 11);
+			margin, yForRow(y++), 108, 11);
 	buttons[id_input] = std::make_unique<Gamemenu_button>(
-			this, &Gamemenu_gump::input_options, Strings::GameInput(), colx,
-			rowy[y++], 108, 11);
+			this, &Gamemenu_gump::input_options, Strings::GameInput(), 0,
+			yForRow(y++), 108, 11);
 #ifndef SDL_PLATFORM_IOS
 	if (!gwin->is_in_exult_menu()) {
 		buttons[id_quit] = std::make_unique<Gamemenu_button>(
-				this, &Gamemenu_gump::quit_exult, Strings::Quit(), colx,
-				rowy[y++], 108, 11);
+				this, &Gamemenu_gump::quit_exult, Strings::Quit(), 0,
+				yForRow(y++), 108, 11);
 	}
 #endif
+
+	// Risize to fit all
+	ResizeWidthToFitWidgets(
+			tcb::span(buttons.data() + id_first, buttons.data() + id_count),margin);
+
 }
 
 //++++++ IMPLEMENT RETURN_TO_MENU!
