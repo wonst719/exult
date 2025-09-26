@@ -60,8 +60,6 @@
 using namespace Pentagram;
 
 
-//static const int colx[] = {35, 50, 13};
-
 class Strings : public GumpStrings {
 public:
 	static auto VOLUMEMIXER() {
