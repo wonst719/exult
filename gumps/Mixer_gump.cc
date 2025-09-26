@@ -305,6 +305,30 @@ void Mixer_gump::save_settings() {
 	config->write_back();
 }
 
+void Mixer_gump::PaintSlider(
+		Image_window8* iwin, Slider_widget* slider, const char* label,
+		bool use3dslidertrack) {
+	auto rect = slider->get_rect();
+	font->paint_text_right_aligned(iwin->get_ib8(), label, rect.x, rect.y+2);
+
+	if (use3dslidertrack) {
+		iwin->get_ib8()->draw_beveled_box(
+				rect.x + 12, rect.y+2, slider_width, slider_height, 1,
+				slider_track_color, slider_track_color + 2,
+				slider_track_color + 4, slider_track_color - 2,
+				slider_track_color - 4);
+	} else {
+		iwin->get_ib8()->draw_box(
+				rect.x + 12, y + yForRow(0), slider_width, slider_height, 0,
+				slider_track_color, 0xff);
+	}
+
+	slider->paint();
+
+	gumpman->paint_num(
+			slider->getselection(), rect.x + rect.w + 24, rect.y + 2, font);
+}
+
 void Mixer_gump::paint() {
 	Modal_gump::paint();
 	for (auto& btn : buttons) {
@@ -313,19 +337,16 @@ void Mixer_gump::paint() {
 		}
 	}
 
-
 	Image_window8* iwin = gwin->get_win();
-	auto           ib8  = iwin->get_ib8();
 
 	int disabled_text_pos
 			= x + std::max(procedural_background.w - slider_width - 68, 84);
 
-	bool use3dslidertrack = true;
-
 	// if have neither
 	if (!midislider && !oggslider) {
 		font->paint_text_right_aligned(
-				ib8, Strings::Music_(), disabled_text_pos, y + yForRow(0));
+				iwin->get_ib8(), Strings::Music_(), disabled_text_pos,
+				y + yForRow(0));
 
 		font->paint_text(
 				iwin->get_ib8(), Strings::disabled(), disabled_text_pos,
@@ -333,102 +354,30 @@ void Mixer_gump::paint() {
 	}
 	// midi Slider
 	if (midislider) {
-		auto rect = midislider->get_rect();
-		font->paint_text_right_aligned(
-				iwin->get_ib8(),
-				oggslider ? Strings::MIDIMusic_() : Strings::Music_(), rect.x,
-				y + yForRow(0));
-
-		if (use3dslidertrack) {
-			ib8->draw_beveled_box(
-					rect.x + 12, y + yForRow(0), slider_width, slider_height, 1,
-					slider_track_color, slider_track_color + 2,
-					slider_track_color + 4, slider_track_color - 2,
-					slider_track_color - 4);
-		} else {
-			ib8->draw_box(
-					rect.x + 12, y + yForRow(0), slider_width, slider_height, 0,
-					slider_track_color, 0xff);
-		}
-
-		midislider->paint();
-
-		gumpman->paint_num(
-				midislider->getselection(), rect.x + rect.w + 24,
-				y + yForRow(0), font);
+		PaintSlider(
+				iwin, midislider.get(),
+				oggslider ? Strings::MIDIMusic_() : Strings::Music_());
 	}
 	if (oggslider) {
-		auto rect = oggslider->get_rect();
-		font->paint_text_right_aligned(
-				iwin->get_ib8(),
-				midislider ? Strings::OGGMusic_() : Strings::Music_(), rect.x,
-				y + yForRow(num_sliders - 3));
-
-		if (use3dslidertrack) {
-			ib8->draw_beveled_box(
-					rect.x + 12, y + yForRow(num_sliders - 3), slider_width,
-					slider_height, 1, slider_track_color,
-					slider_track_color + 2, slider_track_color + 4,
-					slider_track_color - 2, slider_track_color - 4);
-		} else {
-			ib8->draw_box(
-					rect.x + 12, y + yForRow(num_sliders - 3), slider_width,
-					slider_height, 0, slider_track_color, 0xff);
-		}
-		oggslider->paint();
-		gumpman->paint_num(
-				oggslider->getselection(), rect.x + rect.w + 24,
-				y + yForRow(num_sliders - 3), font);
+		PaintSlider(
+				iwin, oggslider.get(),
+				midislider ? Strings::OGGMusic_() : Strings::Music_());
 	}
 	if (sfxslider) {
-		auto rect = sfxslider->get_rect();
-		font->paint_text_right_aligned(
-				ib8, Strings::SFX_(), rect.x, y + yForRow(num_sliders - 2));
-		if (use3dslidertrack) {
-			ib8->draw_beveled_box(
-					rect.x + 12, y + yForRow(num_sliders - 2), slider_width,
-					slider_height, 1, slider_track_color,
-					slider_track_color + 2, slider_track_color + 4,
-					slider_track_color - 2, slider_track_color - 4);
-		} else {
-			ib8->draw_box(
-					rect.x + 12, y + yForRow(num_sliders - 2), slider_width,
-					slider_height, 0, slider_track_color, 0xff);
-		}
-		sfxslider->paint();
-		gumpman->paint_num(
-				sfxslider->getselection(), rect.x + rect.w + 24,
-				y + yForRow(num_sliders - 2), font);
+		PaintSlider(iwin, sfxslider.get(), Strings::SFX_());
 	} else {
 		font->paint_text_right_aligned(
-				ib8, Strings::SFX_(), disabled_text_pos,
+				iwin->get_ib8(), Strings::SFX_(), disabled_text_pos,
 				y + yForRow(num_sliders - 2));
 		font->paint_text(
 				iwin->get_ib8(), Strings::disabled(), disabled_text_pos,
 				y + yForRow(num_sliders - 2));
 	}
 	if (speechslider) {
-		auto rect = speechslider->get_rect();
-		font->paint_text_right_aligned(
-				ib8, Strings::Speech_(), rect.x, y + yForRow(num_sliders - 1));
-		if (use3dslidertrack) {
-			ib8->draw_beveled_box(
-					rect.x + 12, y + yForRow(num_sliders - 1), slider_width,
-					slider_height, 1, slider_track_color,
-					slider_track_color + 2, slider_track_color + 4,
-					slider_track_color - 2, slider_track_color - 4);
-		} else {
-			ib8->draw_box(
-					rect.x + 12, y + yForRow(num_sliders - 1), slider_width,
-					slider_height, 0, slider_track_color, 0xff);
-		}
-		speechslider->paint();
-		gumpman->paint_num(
-				speechslider->getselection(), rect.x + rect.w + 24,
-				y + yForRow(num_sliders - 1), font);
+		PaintSlider(iwin, speechslider.get(), Strings::Speech_());
 	} else {
 		font->paint_text_right_aligned(
-				ib8, Strings::Speech_(), disabled_text_pos,
+				iwin->get_ib8(), Strings::Speech_(), disabled_text_pos,
 				y + yForRow(num_sliders - 1));
 		font->paint_text(
 				iwin->get_ib8(), Strings::disabled(), disabled_text_pos,
