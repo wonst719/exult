@@ -99,10 +99,7 @@ public:
 		return y;
 	}
 
-	void set_pos(int newx, int newy) override {
-		x = newx;
-		y = newy;
-	}
+	void set_pos(int newx, int newy) override;
 
 	void screen_to_local(int& sx, int& sy) const override {
 		sx -= x;
