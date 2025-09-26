@@ -39,7 +39,6 @@ AdvancedOptions_gump::AdvancedOptions_gump(
 		std::function<void()> applycallback)
 		: Modal_gump(nullptr, -1), title(std::move(title)),
 		  helpurl(std::move(helpurl)),
-		  font(fontManager.get_font("SMALL_BLACK_FONT")),
 		  applycallback(applycallback) {
 	elems.reserve(5);
 	TileRect rect = TileRect(0, 0, 220, 186);
