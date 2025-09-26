@@ -45,9 +45,10 @@ private:
 	enum button_ids {
 		id_first = 0,
 		id_ok    = id_first,
-		id_cancel,
 		id_help,
-		id_facestats,
+		id_cancel,
+		id_first_setting,
+		id_facestats = id_first_setting,
 		id_sc_enabled,
 		id_sc_outline,
 		id_sb_hide_missing,
