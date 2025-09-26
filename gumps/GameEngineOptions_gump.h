@@ -44,9 +44,10 @@ private:
 	enum button_ids {
 		id_first = 0,
 		id_ok    = id_first,
-		id_cancel,
 		id_help,
-		id_allow_autonotes,
+		id_cancel,
+		id_first_setting,
+		id_allow_autonotes = id_first_setting,
 		id_gumps_pause,
 		id_alternate_drop,
 		id_frames,
