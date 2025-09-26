@@ -45,6 +45,12 @@ public class ExultActivity extends SDLActivity {
 
 	private static ExultActivity m_instance;
 	public static String         consoleLog;
+	// D-pad docked margins (dp): further from edges, closer to center and
+	// higher up
+	private static final int DPAD_MARGIN_H_DP
+			= 75;    // horizontal inset from edge
+	private static final int DPAD_MARGIN_V_DP
+			= 90;    // vertical inset from bottom
 
 	/**
 	 * This method clears the console buffer.
@@ -78,10 +84,12 @@ public class ExultActivity extends SDLActivity {
 
 			switch (dpadLocation) {
 			case "left":
+				mDpadSide = "left";
 				dpadLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 				dpadLayoutParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 				break;
 			case "right":
+				mDpadSide = "right";
 				dpadLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 				dpadLayoutParams.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
 				break;
@@ -89,6 +97,14 @@ public class ExultActivity extends SDLActivity {
 				m_dpadImageView.setVisibility(View.GONE);
 				return;
 			}
+			final int marginH = dpToPx(DPAD_MARGIN_H_DP);
+			final int marginV = dpToPx(DPAD_MARGIN_V_DP);
+			dpadLayoutParams.leftMargin
+					= (mDpadSide.equals("left") ? marginH : 0);
+			dpadLayoutParams.rightMargin
+					= (mDpadSide.equals("right") ? marginH : 0);
+			dpadLayoutParams.bottomMargin = marginV;
+			dpadLayoutParams.topMargin    = 0;
 			m_dpadImageView.setLayoutParams(dpadLayoutParams);
 			m_dpadImageView.setVisibility(View.VISIBLE);
 		});
@@ -116,8 +132,9 @@ public class ExultActivity extends SDLActivity {
 				escLayoutParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 				break;
 			default:
-				m_escTextView.setVisibility(View.GONE);
-				return;
+				escLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+				escLayoutParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+				break;
 			}
 			m_escTextView.setLayoutParams(escLayoutParams);
 			m_escTextView.setVisibility(View.VISIBLE);
@@ -131,8 +148,14 @@ public class ExultActivity extends SDLActivity {
 	private TextView m_escTextView;
 
 	private ImageView m_dpadImageView;
-	private float     m_dpadImageViewActionDownX;
-	private float     m_dpadImageViewActionDownY;
+	private int mParentOnScreenX = 0;
+	private int mParentOnScreenY = 0;
+	// Virtual joystick state
+	private boolean mVjoyActive   = false;
+	private float   mVjoyCenterX  = 0f;
+	private float   mVjoyCenterY  = 0f;
+	private int     mVjoyRadiusPx = 0;
+	private String  mDpadSide     = "left";
 
 	public native void setVirtualJoystick(float x, float y);
 
@@ -167,6 +190,11 @@ public class ExultActivity extends SDLActivity {
 		});
 	}
 
+	private int dpToPx(int dp) {
+		final float density = getResources().getDisplayMetrics().density;
+		return (int)(dp * density + 0.5f);
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -186,6 +214,15 @@ public class ExultActivity extends SDLActivity {
 				TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
 		m_escTextView.setGravity(Gravity.CENTER);
 		m_escTextView.setText("ESC");
+
+		// Set fixed size 60x40 dp
+		final int                   btnW = dpToPx(60);
+		final int                   btnH = dpToPx(40);
+		RelativeLayout.LayoutParams escParams
+				= new RelativeLayout.LayoutParams(btnW, btnH);
+		escParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		escParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+		m_escTextView.setLayoutParams(escParams);
 
 		m_escTextView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
@@ -219,49 +256,95 @@ public class ExultActivity extends SDLActivity {
 		});
 
 		m_dpadImageView = new ImageView(this);
-		m_dpadImageView.setImageResource(R.drawable.dpad_center);
-		m_dpadImageView.setPadding(140, 0, 140, 170);
+		m_dpadImageView.setImageResource(R.drawable.joythumb_glass);
+		m_dpadImageView.setPadding(0, 0, 0, 0);
+		final int joyDiameter = dpToPx(160);
+		mVjoyRadiusPx         = dpToPx(80);
+		RelativeLayout.LayoutParams dpadParams
+				= new RelativeLayout.LayoutParams(joyDiameter, joyDiameter);
+		dpadParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		dpadParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+		final int initH         = dpToPx(DPAD_MARGIN_H_DP);
+		final int initV         = dpToPx(DPAD_MARGIN_V_DP);
+		dpadParams.leftMargin   = initH;
+		dpadParams.bottomMargin = initV;
+		m_dpadImageView.setLayoutParams(dpadParams);
+		m_dpadImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
 		m_dpadImageView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				switch (event.getActionMasked()) {
-				case MotionEvent.ACTION_DOWN:
-					m_dpadImageViewActionDownX = event.getRawX();
-					m_dpadImageViewActionDownY = event.getRawY();
+				case MotionEvent.ACTION_DOWN: {
+					int[] parentOnScreen = new int[2];
+					mLayout.getLocationOnScreen(parentOnScreen);
+					mParentOnScreenX = parentOnScreen[0];
+					mParentOnScreenY = parentOnScreen[1];
+
+					mVjoyActive  = true;
+					mVjoyCenterX = event.getRawX();
+					mVjoyCenterY = event.getRawY();
+
+					int left = (int)(mVjoyCenterX - mParentOnScreenX
+									 - joyDiameter / 2f);
+					int top  = (int)(mVjoyCenterY - mParentOnScreenY
+                                    - joyDiameter / 2f);
+					RelativeLayout.LayoutParams lp
+							= (RelativeLayout.LayoutParams)
+									  m_dpadImageView.getLayoutParams();
+					lp.leftMargin = left;
+					lp.topMargin  = top;
+					lp.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+					lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+					lp.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+					lp.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
+					m_dpadImageView.setLayoutParams(lp);
+
+					setVirtualJoystick(0f, 0f);
 					return true;
-				case MotionEvent.ACTION_MOVE:
-					float deltaX = event.getRawX() - m_dpadImageViewActionDownX;
-					float deltaY = event.getRawY() - m_dpadImageViewActionDownY;
+				}
+				case MotionEvent.ACTION_MOVE: {
+					if (!mVjoyActive)
+						return false;
+					final float curX = event.getRawX();
+					final float curY = event.getRawY();
+					float       dx   = curX - mVjoyCenterX;
+					float       dy   = curY - mVjoyCenterY;
+					double      len  = Math.hypot(dx, dy);
+					if (len > mVjoyRadiusPx) {
+						final float scale    = (float)(mVjoyRadiusPx / len);
+						final float clampedX = curX - dx * scale;
+						final float clampedY = curY - dy * scale;
+						mVjoyCenterX         = clampedX;
+						mVjoyCenterY         = clampedY;
 
-					setVirtualJoystick(
-							deltaX / (m_dpadImageView.getWidth() / 2),
-							deltaY / (m_dpadImageView.getHeight() / 2));
+						int left = (int)(mVjoyCenterX - mParentOnScreenX
+										 - joyDiameter / 2f);
+						int top  = (int)(mVjoyCenterY - mParentOnScreenY
+                                        - joyDiameter / 2f);
+						RelativeLayout.LayoutParams lp
+								= (RelativeLayout.LayoutParams)
+										  m_dpadImageView.getLayoutParams();
+						lp.leftMargin = left;
+						lp.topMargin  = top;
+						m_dpadImageView.setLayoutParams(lp);
 
-					double radius
-							= Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-					if (radius < m_dpadImageView.getWidth() / 8) {
-						m_dpadImageView.setImageResource(
-								R.drawable.dpad_center);
-						return true;
+						dx  = curX - mVjoyCenterX;
+						dy  = curY - mVjoyCenterY;
+						len = Math.hypot(dx, dy);
 					}
-					int[] directionDrawables = {
-							R.drawable.dpad_east,  R.drawable.dpad_southeast,
-							R.drawable.dpad_south, R.drawable.dpad_southwest,
-							R.drawable.dpad_west,  R.drawable.dpad_northwest,
-							R.drawable.dpad_north, R.drawable.dpad_northeast};
-					double angle
-							= Math.toDegrees(Math.atan2(deltaY, deltaX)) + 360;
-					int    directionCount = directionDrawables.length;
-					double directionWidth = 360.0 / directionCount;
-					int    direction = (int)Math.round(angle / directionWidth)
-									% directionCount;
-					m_dpadImageView.setImageResource(
-							directionDrawables[direction]);
+					setVirtualJoystick(
+							(mVjoyRadiusPx > 0) ? (dx / mVjoyRadiusPx) : 0f,
+							(mVjoyRadiusPx > 0) ? (dy / mVjoyRadiusPx) : 0f);
 					return true;
+				}
 				case MotionEvent.ACTION_UP:
-					setVirtualJoystick(0, 0);
-					m_dpadImageView.setImageResource(R.drawable.dpad_center);
+				case MotionEvent.ACTION_CANCEL: {
+					mVjoyActive = false;
+					setVirtualJoystick(0f, 0f);
+					resetDpadDock();
 					return true;
+				}
 				default:
 					// Appease CodeFactor with a default case
 					break;
@@ -273,6 +356,31 @@ public class ExultActivity extends SDLActivity {
 		hideButtonControls();
 		mLayout.addView(m_escTextView);
 		mLayout.addView(m_dpadImageView);
+	}
+
+	private void resetDpadDock() {
+		RelativeLayout.LayoutParams lp
+				= (RelativeLayout.LayoutParams)
+						  m_dpadImageView.getLayoutParams();
+		lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		lp.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
+		final int marginH = dpToPx(DPAD_MARGIN_H_DP);
+		final int marginV = dpToPx(DPAD_MARGIN_V_DP);
+		if ("right".equals(mDpadSide)) {
+			lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+			lp.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+			lp.rightMargin = marginH;
+			lp.leftMargin  = 0;
+		} else {
+			lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+			lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+			lp.leftMargin  = marginH;
+			lp.rightMargin = 0;
+		}
+		lp.bottomMargin = marginV;
+		lp.topMargin    = 0;
+		m_dpadImageView.setLayoutParams(lp);
+		m_dpadImageView.setVisibility(View.VISIBLE);
 	}
 
 	/**

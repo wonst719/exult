@@ -481,7 +481,7 @@ namespace {
 	UIViewController* controller = window.rootViewController;
 
 	CGRect rcScreen   = controller.view.bounds;
-	CGSize sizeButton = CGSizeMake(60, 30);
+	CGSize sizeButton = CGSizeMake(60, 40);
 
 	CGRect rcButton = CGRectMake(
 			10, rcScreen.size.height - sizeButton.height, sizeButton.width,
