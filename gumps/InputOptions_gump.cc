@@ -41,7 +41,6 @@
 #include "InputOptions_gump.h"
 #include "Text_button.h"
 #include "exult.h"
-#include "exult_flx.h"
 #include "font.h"
 #include "gamewin.h"
 #include "items.h"
@@ -52,9 +51,6 @@
 
 using std::string;
 
-static const int rowy[]
-		= {5, 17, 29, 41, 53, 65, 77, 89, 101, 113, 125, 137, 146};
-static const int colx[] = {35, 50, 120, 170, 192, 209};
 
 class Strings : public GumpStrings {
 public:
@@ -144,44 +140,55 @@ void InputOptions_gump::build_buttons() {
 	}
 	buttons[id_doubleclick] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_doubleclick, yesNo, doubleclick,
-			colx[5], rowy[y_index], 44);
+			get_button_pos_for_label(Strings::DoubleclickclosesGumps_()), yForRow(y_index), 44);
 
 	buttons[id_rightclick_close] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_rightclick_close, yesNo,
-			rightclick_close, colx[5], rowy[++y_index], 44);
+			rightclick_close,
+			get_button_pos_for_label(Strings::RightclickclosesGumps_()),
+			yForRow(++y_index), 44);
 
 	std::vector<std::string> pathfind_text
 			= {Strings::No(), Strings::Single(), Strings::Double()};
 	buttons[id_right_pathfind] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_right_pathfind,
-			std::move(pathfind_text), right_pathfind, colx[5], rowy[++y_index],
+			std::move(pathfind_text), right_pathfind, get_button_pos_for_label(Strings::PathfindwithRightClick_()), yForRow(++y_index),
 			44);
 
 	buttons[id_scroll_mouse] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_scroll_mouse, yesNo, scroll_mouse,
-			colx[5], rowy[++y_index], 44);
+			get_button_pos_for_label(Strings::Scrollgameviewwithmouse_()), yForRow(++y_index), 44);
 
 #ifndef SDL_PLATFORM_IOS
 	buttons[id_mouse3rd] = std::make_unique<InputTextToggle>(
-			this, &InputOptions_gump::toggle_mouse3rd, yesNo, mouse3rd, colx[5],
-			rowy[++y_index], 44);
+			this, &InputOptions_gump::toggle_mouse3rd, yesNo, mouse3rd, get_button_pos_for_label(Strings::UseMiddleMouseButton_()),
+			yForRow(++y_index), 44);
 
 	buttons[id_fastmouse] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_fastmouse, yesNo, fastmouse,
-			colx[5], rowy[++y_index], 44);
+			get_button_pos_for_label(Strings::FullscreenFastMouse_()), yForRow(++y_index), 44);
 #endif
 
 	buttons[id_item_menu] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_item_menu, yesNo, item_menu,
-			colx[5], rowy[++y_index], 44);
+			get_button_pos_for_label(Strings::Itemhelpermenu_()), yForRow(++y_index), 44);
 
 	buttons[id_dpad_location] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_dpad_location, dpad_text,
-			dpad_location, colx[5], rowy[++y_index], 44);
+			dpad_location, get_button_pos_for_label(Strings::DPadscreenlocation_()), yForRow(++y_index), 44);
 
 	buttons[id_touch_pathfind] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_touch_pathfind, yesNo,
-			touch_pathfind, colx[5], rowy[++y_index], 44);
+			touch_pathfind, get_button_pos_for_label(Strings::PathfindwithLongTouch_()), yForRow(++y_index), 44);
+
+	// Risize to fit all
+	ResizeWidthToFitWidgets(tcb::span(buttons.data() + id_first, id_count));
+
+	HorizontalArrangeWidgets(tcb::span(buttons.data() + id_ok, 3));
+
+	// Right align other setting buttons
+	RightAlignWidgets(tcb::span(
+			buttons.data() + id_first_setting, id_count - id_first_setting));
 }
 
 void InputOptions_gump::load_settings() {
@@ -197,24 +204,28 @@ void InputOptions_gump::load_settings() {
 	touch_pathfind   = gwin->get_touch_pathfind();
 }
 
-InputOptions_gump::InputOptions_gump() : Modal_gump(nullptr, -1) {
-	SetProceduralBackground(TileRect(29, 2, 224, 156), -1);
+
+InputOptions_gump::InputOptions_gump()
+		: Modal_gump(nullptr, -1) {
+	SetProceduralBackground(TileRect(0, 0, 100, yForRow(13)), -1);
 
 	load_settings();
-	build_buttons();
 
 	// Ok
 	buttons[id_ok] = std::make_unique<InputOptions_button>(
-			this, &InputOptions_gump::close, Strings::OK(), colx[0] - 2,
-			rowy[12], 50);
-	// Cancel
-	buttons[id_cancel] = std::make_unique<InputOptions_button>(
-			this, &InputOptions_gump::cancel, Strings::CANCEL(), colx[5] - 6,
-			rowy[12], 50);
+			this, &InputOptions_gump::close, Strings::OK(), 25,
+			yForRow(12), 50);
 	// Help
 	buttons[id_help] = std::make_unique<InputOptions_button>(
-			this, &InputOptions_gump::help, Strings::HELP(), colx[2] - 3,
-			rowy[12], 50);
+			this, &InputOptions_gump::help, Strings::HELP(), 50,
+			yForRow(12), 50);
+	// Cancel
+	buttons[id_cancel] = std::make_unique<InputOptions_button>(
+			this, &InputOptions_gump::cancel, Strings::CANCEL(), 75,
+			yForRow(12), 50);
+
+	build_buttons();
+
 }
 
 void InputOptions_gump::save_settings() {
@@ -274,36 +285,36 @@ void InputOptions_gump::paint() {
 	Image_window8*        iwin    = gwin->get_win();
 	int                   y_index = 0;
 	font->paint_text(
-			iwin->get_ib8(), Strings::DoubleclickclosesGumps_(), x + colx[0],
-			y + rowy[y_index] + 1);
+			iwin->get_ib8(), Strings::DoubleclickclosesGumps_(), x + label_margin,
+			y + yForRow(y_index) + 1);
 	font->paint_text(
-			iwin->get_ib8(), Strings::RightclickclosesGumps_(), x + colx[0],
-			y + rowy[++y_index] + 1);
+			iwin->get_ib8(), Strings::RightclickclosesGumps_(), x + label_margin,
+			y + yForRow(++y_index) + 1);
 	font->paint_text(
-			iwin->get_ib8(), Strings::PathfindwithRightClick_(), x + colx[0],
-			y + rowy[++y_index] + 1);
+			iwin->get_ib8(), Strings::PathfindwithRightClick_(), x + label_margin,
+			y + yForRow(++y_index) + 1);
 	font->paint_text(
-			iwin->get_ib8(), Strings::Scrollgameviewwithmouse_(), x + colx[0],
-			y + rowy[++y_index] + 1);
+			iwin->get_ib8(), Strings::Scrollgameviewwithmouse_(), x + label_margin,
+			y + yForRow(++y_index) + 1);
 	if (buttons[id_mouse3rd]) {
 		font->paint_text(
-				iwin->get_ib8(), Strings::UseMiddleMouseButton_(), x + colx[0],
-				y + rowy[++y_index] + 1);
+				iwin->get_ib8(), Strings::UseMiddleMouseButton_(), x + label_margin,
+				y + yForRow(++y_index) + 1);
 	}
 	if (buttons[id_fastmouse]) {
 		font->paint_text(
-				iwin->get_ib8(), Strings::FullscreenFastMouse_(), x + colx[0],
-				y + rowy[++y_index] + 1);
+				iwin->get_ib8(), Strings::FullscreenFastMouse_(), x + label_margin,
+				y + yForRow(++y_index) + 1);
 	}
 	font->paint_text(
-			iwin->get_ib8(), Strings::Itemhelpermenu_(), x + colx[0],
-			y + rowy[++y_index] + 1);
+			iwin->get_ib8(), Strings::Itemhelpermenu_(), x + label_margin,
+			y + yForRow(++y_index) + 1);
 	font->paint_text(
-			iwin->get_ib8(), Strings::DPadscreenlocation_(), x + colx[0],
-			y + rowy[++y_index] + 1);
+			iwin->get_ib8(), Strings::DPadscreenlocation_(), x + label_margin,
+			y + yForRow(++y_index) + 1);
 	font->paint_text(
-			iwin->get_ib8(), Strings::PathfindwithLongTouch_(), x + colx[0],
-			y + rowy[++y_index] + 1);
+			iwin->get_ib8(), Strings::PathfindwithLongTouch_(), x + label_margin,
+			y + yForRow(++y_index) + 1);
 
 	gwin->set_painted();
 }
