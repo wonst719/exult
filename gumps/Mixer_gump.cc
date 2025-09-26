@@ -303,15 +303,7 @@ void Mixer_gump::paint() {
 			btn->paint();
 		}
 	}
-	std::shared_ptr<Font> font = fontManager.get_font("SMALL_BLACK_FONT");
-	// font is required
-	if (!font) {
-		std::cerr << "Mixer_gump::paint() unable to get SMALL_BLACK_FONT "
-					 "closing gump."
-				  << std::endl;
-		cancel();
-		return;
-	}
+
 
 	Image_window8* iwin = gwin->get_win();
 	auto           ib8  = iwin->get_ib8();

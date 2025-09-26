@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MODAL_GUMP_H
 
 #include "Gump.h"
+#include "span.h"
 
 #include <chrono>
 
@@ -29,18 +30,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 class Modal_gump : public Gump {
 protected:
-	bool         done;      // true when user clicks checkmark.
-	Gump_button* pushed;    // Button currently being pushed.
+	bool                  done;      // true when user clicks checkmark.
+	Gump_button*          pushed;    // Button currently being pushed.
+	std::shared_ptr<Font> font;
 
 public:
 	Modal_gump(
 			Container_game_object* cont, int initx, int inity, int shnum,
-			ShapeFile shfile = SF_GUMPS_VGA);
+			ShapeFile shfile = SF_GUMPS_VGA, std::shared_ptr<Font> font = {});
 
 	// Create centered.
 	Modal_gump(
 			Container_game_object* cont, int shnum,
-			ShapeFile shfile = SF_GUMPS_VGA);
+			ShapeFile shfile = SF_GUMPS_VGA, std::shared_ptr<Font> font = {});
 
 	bool is_done() {
 		return done;

@@ -30,8 +30,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Modal_gump::Modal_gump(
 		Container_game_object* cont, int initx, int inity, int shnum,
-		ShapeFile shfile)
+		ShapeFile shfile, std::shared_ptr<Font> font)
 		: Gump(cont, initx, inity, shnum, shfile), done(false), pushed(nullptr),
+		  font(font ? font : fontManager.get_font("SMALL_BLACK_FONT")),
 		  drag_mx(INT_MIN), drag_my(INT_MIN), no_dragging(false),
 		  procedural_background(0, 0, 0, 0) {
 	GetDragType();
@@ -39,8 +40,11 @@ Modal_gump::Modal_gump(
 
 // Create centered.
 
-Modal_gump::Modal_gump(Container_game_object* cont, int shnum, ShapeFile shfile)
+Modal_gump::Modal_gump(
+		Container_game_object* cont, int shnum, ShapeFile shfile,
+		std::shared_ptr<Font> font)
 		: Gump(cont, shnum, shfile), done(false), pushed(nullptr),
+		  font(font ? font : fontManager.get_font("SMALL_BLACK_FONT")),
 		  drag_mx(INT_MIN), drag_my(INT_MIN), no_dragging(false),
 		  procedural_background(0, 0, 0, 0) {
 	GetDragType();
@@ -277,7 +281,6 @@ void Modal_gump::paint() {
 
 	// if we have a message to display, check the timeout
 	if (!popup_message.empty()) {
-		std::shared_ptr<Font> font = fontManager.get_font("SMALL_BLACK_FONT");
 		int messagew = font->get_text_width(popup_message.c_str());
 		int messageh = font->get_text_height() + 8;
 		int messagex = backrect.x + backrect.w / 2 - messagew / 2;
