@@ -53,6 +53,7 @@ public abstract class ContentInstallerFragment
 	private AlertDialog        m_progressDialog;
 	private CustomModInstaller customModInstaller;
 	private ContentDownloader  contentDownloader;
+	private PatchInstaller     patchInstaller;
 
 	ContentInstallerFragment(int layout, int text) {
 		m_layout = layout;
@@ -103,6 +104,11 @@ public abstract class ContentInstallerFragment
 		ViewGroup contentLayout
 				= (ViewGroup)view.findViewById(R.id.contentLayout);
 		if (contentLayout != null) {
+			int[] attrs = new int[] {android.R.attr.colorPrimary};
+			android.content.res.TypedArray a
+					= getContext().obtainStyledAttributes(attrs);
+			int color = a.getColor(0, Color.parseColor("#3F51B5"));
+			a.recycle();
 			// Only add the custom mod button if this is the Mods fragment
 			if (shouldShowCustomModButton()) {
 				// Add custom mod button
@@ -111,13 +117,6 @@ public abstract class ContentInstallerFragment
 				customModButton.setText("Install Custom Mod");
 				customModButton.setOnClickListener(
 						v -> launchCustomModFilePicker());
-
-				// Apply proper theming to match launchExultButton
-				int[] attrs = new int[] {android.R.attr.colorPrimary};
-				android.content.res.TypedArray a
-						= getContext().obtainStyledAttributes(attrs);
-				int color = a.getColor(0, Color.parseColor("#3F51B5"));
-				a.recycle();
 
 				// Create rounded corner background
 				GradientDrawable shape = new GradientDrawable();
@@ -139,20 +138,54 @@ public abstract class ContentInstallerFragment
 								LinearLayout.LayoutParams.WRAP_CONTENT,
 								(int)(getResources().getDisplayMetrics().density
 									  * 36));
-				params.gravity      = Gravity.CENTER_HORIZONTAL;
-				params.topMargin    = 40;
-				params.bottomMargin = 20;
+				params.gravity = Gravity.CENTER_HORIZONTAL;
+				params.topMargin
+						= (int)(getResources().getDisplayMetrics().density
+								* 12);    // was 40
+				params.bottomMargin
+						= (int)(getResources().getDisplayMetrics().density
+								* 4);    // was 10
 
 				contentLayout.addView(customModButton, params);
 
 				// Use minimum width to match standard buttons
 				customModButton.setMinWidth(
 						(int)(getResources().getDisplayMetrics().density * 88));
-			}
 
+				Button patchButton = new Button(
+						getContext(), null, android.R.attr.buttonStyle);
+				patchButton.setText("Install Patch");
+				patchButton.setOnClickListener(v -> launchPatchFilePicker());
+
+				GradientDrawable shape2 = new GradientDrawable();
+				shape2.setShape(GradientDrawable.RECTANGLE);
+				shape2.setColor(color);
+				shape2.setCornerRadius(
+						getResources().getDisplayMetrics().density * 4);
+				patchButton.setBackground(shape2);
+				patchButton.setTextColor(Color.WHITE);
+				patchButton.setAllCaps(true);
+				patchButton.setElevation(0);
+
+				LinearLayout.LayoutParams params2
+						= new LinearLayout.LayoutParams(
+								LinearLayout.LayoutParams.WRAP_CONTENT,
+								(int)(getResources().getDisplayMetrics().density
+									  * 36));
+				params2.gravity = Gravity.CENTER_HORIZONTAL;
+				params2.topMargin
+						= (int)(getResources().getDisplayMetrics().density
+								* 6);    // was 10
+				params2.bottomMargin
+						= (int)(getResources().getDisplayMetrics().density
+								* 8);    // was 20
+				contentLayout.addView(patchButton, params2);
+				patchButton.setMinWidth(
+						(int)(getResources().getDisplayMetrics().density * 88));
+			}
 			// Reuse the existing activity variable defined above
 			for (int i = 0; i < contentLayout.getChildCount()
-										- (shouldShowCustomModButton() ? 1 : 0);
+										- (shouldShowCustomModButton() ? 2 : 1);
 				 ++i) {
 				// Note: -1 to skip the button we just added
 				View   viewInContentLayout = contentLayout.getChildAt(i);
@@ -210,6 +243,8 @@ public abstract class ContentInstallerFragment
 						}
 					}
 				});
+
+		patchInstaller = new PatchInstaller(getContext(), this);
 
 		contentDownloader = new ContentDownloader(
 				getContext(), getActivity(), m_progressDialog,
@@ -365,6 +400,12 @@ public abstract class ContentInstallerFragment
 			return;
 		}
 
+		if (requestCode == PatchInstaller.getRequestCode()) {
+			Uri uri = resultData.getData();
+			patchInstaller.handleFilePickerResult(uri);
+			return;
+		}
+
 		// For custom mod request code
 		if (requestCode == CustomModInstaller.getRequestCode()) {
 			Uri uri = resultData.getData();
@@ -473,6 +514,10 @@ public abstract class ContentInstallerFragment
 	// New method to handle launching the file picker for custom mods
 	private void launchCustomModFilePicker() {
 		customModInstaller.launchFilePicker();
+	}
+
+	private void launchPatchFilePicker() {
+		patchInstaller.launchFilePicker();
 	}
 
 	/**

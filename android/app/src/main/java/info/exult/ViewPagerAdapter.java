@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2021-2022  The Exult Team
+ *  Copyright (C) 2021-2025  The Exult Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
 			= {new TabData("Launcher", LauncherFragment.class),
 			   new TabData("Games", GamesFragment.class),
 			   new TabData("Audio Data", AudioPacksFragment.class),
-			   new TabData("Mods", ModsFragment.class),
+			   new TabData("Mods & Patches", ModsFragment.class),
 			   new TabData("Console Log", ConsoleLogFragment.class)};
 
 	public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {

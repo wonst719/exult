@@ -24,7 +24,7 @@
             android:orientation="vertical"
             xmlns:tools="http://schemas.android.com/tools"
             tools:ignore="DuplicateIds"
-            android:padding="40dp">
+            android:padding="16dp">
 
             <CheckBox
                 android:id="@+id/keyringCheckBox"
