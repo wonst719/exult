@@ -92,7 +92,6 @@ AdvancedOptions_gump::AdvancedOptions_gump(
 					this, &AdvancedOptions_gump::on_help, Strings::HELP(),
 					rect.w / 2 + 25 + button_gap, buttony, 50));
 	// Cancel
-	const int id_cancel = elems.size();
 	elems.push_back(
 			cancel = new CallbackTextButton<AdvancedOptions_gump>(
 					this, &AdvancedOptions_gump::on_cancel, Strings::CANCEL(),
