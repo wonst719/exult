@@ -104,12 +104,12 @@ void Gamemenu_gump::createButtons() {
 			this, &Gamemenu_gump::game_display_options, Strings::GameDisplay(),
 			margin, yForRow(y++), preferred_button_width, 11);
 	buttons[id_input] = std::make_unique<Gamemenu_button>(
-			this, &Gamemenu_gump::input_options, Strings::GameInput(), 0,
+			this, &Gamemenu_gump::input_options, Strings::GameInput(), margin,
 			yForRow(y++), preferred_button_width, 11);
 #ifndef SDL_PLATFORM_IOS
 	if (!gwin->is_in_exult_menu()) {
 		buttons[id_quit] = std::make_unique<Gamemenu_button>(
-				this, &Gamemenu_gump::quit_exult, Strings::Quit(), 0,
+				this, &Gamemenu_gump::quit_exult, Strings::Quit(), margin,
 				yForRow(y++), preferred_button_width, 11);
 	}
 #endif
