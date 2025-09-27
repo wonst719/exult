@@ -83,8 +83,8 @@ Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, -1) {
 }
 
 void Gamemenu_gump::createButtons() {
-	int y = 0;
-	int margin = 4;
+	int y                      = 0;
+	int margin                 = 4;
 	int preferred_button_width = 108;
 	if (!gwin->is_in_exult_menu()) {
 		buttons[id_load_save] = std::make_unique<Gamemenu_button>(
@@ -92,11 +92,11 @@ void Gamemenu_gump::createButtons() {
 				yForRow(y++), preferred_button_width, 11);
 	}
 	buttons[id_video_options] = std::make_unique<Gamemenu_button>(
-			this, &Gamemenu_gump::video_options, Strings::VideoOptions(), margin,
-			yForRow(y++), preferred_button_width, 11);
+			this, &Gamemenu_gump::video_options, Strings::VideoOptions(),
+			margin, yForRow(y++), preferred_button_width, 11);
 	buttons[id_audio_options] = std::make_unique<Gamemenu_button>(
-			this, &Gamemenu_gump::audio_options, Strings::AudioOptions(), margin,
-			yForRow(y++), preferred_button_width, 11);
+			this, &Gamemenu_gump::audio_options, Strings::AudioOptions(),
+			margin, yForRow(y++), preferred_button_width, 11);
 	buttons[id_game_engine_options] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::game_engine_options, Strings::GameEngine(),
 			margin, yForRow(y++), preferred_button_width, 11);
@@ -114,18 +114,18 @@ void Gamemenu_gump::createButtons() {
 	}
 #endif
 
-	// Risize to fit all
+	// Resize to fit all
 	ResizeWidthToFitWidgets(tcb::span(buttons.data(), buttons.size()), margin);
 
+	// Right align all the buttons
 	RightAlignWidgets(tcb::span(buttons.data(), buttons.size()), margin);
 
-	// Resize to fit the height buttons
+	// Resize to fit the height of the buttons
 	SetProceduralBackground(
 			TileRect(
 					0, yForRow(0) - margin, procedural_background.w,
 					yForRow(y) + margin),
-			-1,
-			true);
+			-1, true);
 }
 
 //++++++ IMPLEMENT RETURN_TO_MENU!
