@@ -77,7 +77,7 @@ public:
 using Gamemenu_button = CallbackTextButton<Gamemenu_gump>;
 
 Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, -1) {
-	SetProceduralBackground(TileRect(0, 0, 100, yForRow(7)), -1);
+	SetProceduralBackground(TileRect(0, 2, 100, yForRow(7)), -1);
 
 	createButtons();
 }
@@ -85,37 +85,47 @@ Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, -1) {
 void Gamemenu_gump::createButtons() {
 	int y = 0;
 	int margin = 4;
+	int preferred_button_width = 108;
 	if (!gwin->is_in_exult_menu()) {
 		buttons[id_load_save] = std::make_unique<Gamemenu_button>(
 				this, &Gamemenu_gump::loadsave, Strings::LoadSaveGame(), margin,
-				yForRow(y++), 108, 11);
+				yForRow(y++), preferred_button_width, 11);
 	}
 	buttons[id_video_options] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::video_options, Strings::VideoOptions(), margin,
-			yForRow(y++), 108, 11);
+			yForRow(y++), preferred_button_width, 11);
 	buttons[id_audio_options] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::audio_options, Strings::AudioOptions(), margin,
-			yForRow(y++), 108, 11);
+			yForRow(y++), preferred_button_width, 11);
 	buttons[id_game_engine_options] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::game_engine_options, Strings::GameEngine(),
-			margin, yForRow(y++), 108, 11);
+			margin, yForRow(y++), preferred_button_width, 11);
 	buttons[id_game_display_options] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::game_display_options, Strings::GameDisplay(),
-			margin, yForRow(y++), 108, 11);
+			margin, yForRow(y++), preferred_button_width, 11);
 	buttons[id_input] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::input_options, Strings::GameInput(), 0,
-			yForRow(y++), 108, 11);
+			yForRow(y++), preferred_button_width, 11);
 #ifndef SDL_PLATFORM_IOS
 	if (!gwin->is_in_exult_menu()) {
 		buttons[id_quit] = std::make_unique<Gamemenu_button>(
 				this, &Gamemenu_gump::quit_exult, Strings::Quit(), 0,
-				yForRow(y++), 108, 11);
+				yForRow(y++), preferred_button_width, 11);
 	}
 #endif
 
 	// Risize to fit all
-	ResizeWidthToFitWidgets(
-			tcb::span(buttons.data() + id_first, buttons.data() + id_count),margin);
+	ResizeWidthToFitWidgets(tcb::span(buttons.data(), buttons.size()), margin);
+
+	RightAlignWidgets(tcb::span(buttons.data(), buttons.size()), margin);
+
+	// Resize to fit the height buttons
+	SetProceduralBackground(
+			TileRect(
+					0, yForRow(0) - margin, procedural_background.w,
+					yForRow(y) + margin),
+			-1,
+			true);
 }
 
 //++++++ IMPLEMENT RETURN_TO_MENU!
