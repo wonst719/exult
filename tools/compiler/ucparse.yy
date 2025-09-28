@@ -39,9 +39,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 using std::string;
+using std::string_view;
 using std::vector;
 
 void                        yyerror(const char*);
@@ -3100,19 +3102,17 @@ static Uc_call_expression* cls_function_call(
 	}
 
 	// UI_UNKNOWN_XX
+	constexpr const string_view uiUnk("UI_UNKNOWN_");
 	if (!sym) {
-		string       name(nm);
-		const string uiUnk("UI_UNKNOWN_");
-		if (name.size() == uiUnk.size() + 2) {
-			string num("0x");
-			num += name.substr(uiUnk.size(), 2);
-			if (name.substr(0, uiUnk.size()) == uiUnk) {
-				try {
-					auto val = std::stoul(num, nullptr, 0);
-					sym      = Uc_function::get_intrinsic(val);
-				} catch (std::exception&) {
-					sym = nullptr;
-				}
+		const string_view name(nm);
+		if (name.compare(0, uiUnk.size(), uiUnk) == 0
+			&& name.size() > uiUnk.size() && name.size() <= uiUnk.size() + 4) {
+			string num(name.substr(uiUnk.size()));
+			try {
+				auto val = std::stoul(num, nullptr, 16);
+				sym      = Uc_function::get_intrinsic(val);
+			} catch (std::exception&) {
+				sym = nullptr;
 			}
 		}
 	}

@@ -320,11 +320,15 @@ int main(int argc, char* argv[]) {
 							case op_call:
 								emit_byte(i);
 								read_token(fi);
-								if ((token2 = strchr(token, '@')) != nullptr) {
+								token2 = strchr(token, '@');
+								if (token2 != nullptr) {
 									*token2++ = 0;
 									if (token[0] != '_') {
-										word = find_intrinsic(
-												func_table, token);
+										if (sscanf(token, "UNKNOWN_%4x", &word)
+											!= 1) {
+											word = find_intrinsic(
+													func_table, token);
+										}
 									} else {
 										read_token(fi);
 										sscanf(token, "(%x)", &word);

@@ -1204,8 +1204,15 @@ string demunge_ocstring(
 
 				assert(params.size() >= t);
 				assert(t != 0);
-				const string s = intrinsics.find(params[t - 1])->second;
-				str << s;
+				auto iter = intrinsics.find(params[t - 1]);
+				if (iter == intrinsics.end()) {
+					const boost::io::ios_flags_saver flags(str);
+					const int width = (params[t - 1] > 0xFFU) ? 4 : 2;
+					str << "UI_UNKNOWN_" << std::hex << std::setw(width)
+						<< std::setfill('0') << params[t - 1];
+					break;
+				}
+				str << iter->second;
 				break;
 			}
 			case 'f': {
@@ -1625,8 +1632,9 @@ void readbin_U7UCFunc(
 						 ++it, i++) {
 						std::string varname = it->second;
 						if (!varname.empty()) {
-							if (std::isdigit(static_cast<unsigned char>(
-										varname[0]))) {
+							if (std::isdigit(
+										static_cast<unsigned char>(
+												varname[0]))) {
 								string temp = UCFunc::VARPREFIX;
 								temp += varname;
 								varname.swap(temp);
