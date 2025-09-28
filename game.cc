@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2000-2022  The Exult Team
+ *  Copyright (C) 2000-2025  The Exult Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,8 +38,8 @@
 #include "gamemgr/modmgr.h"
 #include "gamemgr/sigame.h"
 #include "gamewin.h"
-#include "items.h"
 #include "istring.h"
+#include "items.h"
 #include "keys.h"
 #include "menulist.h"
 #include "mouse.h"
@@ -167,17 +167,16 @@ Game* Game::create_game(BaseGameInfo* mygame) {
 }
 
 Game_Language Game::get_game_message_language() {
-	std::string value;
-	Game_Language selected
-			=  get_game_language();
+	std::string   value;
+	Game_Language selected = get_game_language();
 
 	for (int i = 0; i < 2; i++) {
 		if (i == 0) {
 			config->value("config/gameplay/language", value, "");
-		} else if(get_game_type() != NONE) {
+		} else if (get_game_type() != NONE) {
 			config->value(
 					"config/disk/game/" + Game::get_gametitle() + "/language",
-					value, "");			
+					value, "");
 		} else {
 			continue;
 		}
@@ -571,7 +570,7 @@ bool Game::show_menu(bool skip) {
 		const int choice = menu->handle_events(gwin);
 		switch (choice) {
 		case -1:    // Exit
-#ifdef SDL_PLATFORM_IOS
+#if defined(SDL_PLATFORM_IOS) || defined(ANDROID)
 			break;
 #else
 			pal->fade_out(c_fade_out_time);

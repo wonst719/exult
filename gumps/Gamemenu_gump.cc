@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2001-2024 The Exult Team
+Copyright (C) 2001-2025 The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -106,7 +106,7 @@ void Gamemenu_gump::createButtons() {
 	buttons[id_input] = std::make_unique<Gamemenu_button>(
 			this, &Gamemenu_gump::input_options, Strings::GameInput(), margin,
 			yForRow(y++), preferred_button_width, 11);
-#ifndef SDL_PLATFORM_IOS
+#if !defined(SDL_PLATFORM_IOS) && !defined(ANDROID)
 	if (!gwin->is_in_exult_menu()) {
 		buttons[id_quit] = std::make_unique<Gamemenu_button>(
 				this, &Gamemenu_gump::quit_exult, Strings::Quit(), margin,

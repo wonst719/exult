@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2000-2022  The Exult Team
+ *  Copyright (C) 2000-2025  The Exult Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -316,7 +316,7 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 
 	const std::array menuchoices{
 			Strings::SETUP(), Strings::CREDITS(), Strings::QUOTES(),
-#ifdef SDL_PLATFORM_IOS
+#if defined(SDL_PLATFORM_IOS) || defined(ANDROID)
 			Strings::HELP()
 #else
 			Strings::EXIT()
@@ -504,9 +504,13 @@ BaseGameInfo* ExultMenu::run() {
 		gpal->apply();
 		while (!wait_delay(200)) {
 		}
-#ifdef SDL_PLATFORM_IOS
-		// Never quits because Apple doesn't allow you to.
+#if defined(SDL_PLATFORM_IOS) || defined(ANDROID)
+#	ifdef SDL_PLATFORM_IOS
 		SDL_OpenURL("https://exult.info/docs.html#ios_games");
+#	endif
+#	ifdef ANDROID
+		SDL_OpenURL("https://exult.info/docs.html#android_games");
+#	endif
 		while (1) {
 			wait_delay(1000);
 		}
@@ -604,8 +608,13 @@ BaseGameInfo* ExultMenu::run() {
 			gpal->apply();
 		} break;
 		case -1:    // Exit
-#ifdef SDL_PLATFORM_IOS
-			SDL_OpenURL("https://exult.info/docs.html#iOS%20Guide");
+#if defined(SDL_PLATFORM_IOS) || defined(ANDROID)
+#	ifdef SDL_PLATFORM_IOS
+			SDL_OpenURL("https://exult.info/docs.html#iOS-Guide");
+#	endif
+#	ifdef ANDROID
+			SDL_OpenURL("https://exult.info/docs.html#Android-Guide");
+#	endif
 			break;
 #else
 			gpal->fade_out(c_fade_out_time);
