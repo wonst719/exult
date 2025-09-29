@@ -469,7 +469,9 @@ static int find_method(
  *  Create schedule that uses Usecode methods for the actions.
  */
 
-Scripted_schedule::Scripted_schedule(Actor* n, int type) : Schedule(n) {
+Scripted_schedule::Scripted_schedule(Actor* n, int type)
+		: Schedule(n), inst(nullptr), now_what_id(0), im_dormant_id(0),
+		  ending_id(0), set_weapon_id(0), set_bed_id(0) {
 	const char*           nm  = Schedule_change::get_script_name(type);
 	Usecode_class_symbol* cls = ucmachine->get_class(nm);
 	if (!cls) {
@@ -493,7 +495,9 @@ Scripted_schedule::Scripted_schedule(Actor* n, int type) : Schedule(n) {
  */
 
 Scripted_schedule::~Scripted_schedule() {
-	ucmachine->call_method(inst, -1, nullptr);    // Free 'inst'.
+	if (inst) {
+		ucmachine->call_method(inst, -1, nullptr);    // Free 'inst'.
+	}
 }
 
 /*
@@ -1454,6 +1458,7 @@ void Patrol_schedule::now_what() {
 			// Try finding hammer again
 			state = 1;
 			npc->start(speed, speed);
+			break;
 		}
 		hammer_obj->remove_this(&keep);
 		// For safety, unready weapon first.
@@ -1807,7 +1812,8 @@ void Dance_schedule::now_what() {
 		// Spin in place using one of several frames.
 		constexpr static const std::array base_frames{
 				Actor::standing, Actor::up_frame, Actor::out_frame};
-		const signed char basefr = base_frames[danceroutine];
+		const signed char basefr = base_frames[static_cast<size_t>(
+				danceroutine % base_frames.size())];
 		nframes                  = 6;
 		frames                   = new signed char[nframes];
 		size_t i;
@@ -2399,9 +2405,10 @@ void Sleep_schedule::now_what() {
 	}
 	case 1: {           // Go to bed.
 		npc->stop();    // Just to be sure.
-		if (npc->distance(bed_obj.get()) > 3) {
+		if (!bed_obj || npc->distance(bed_obj.get()) > 3) {
 			state = 0;
 			npc->start(200);    // Try again.
+			break;
 		}
 		const int bedshape = bed_obj->get_shapenum();
 		const int dir = (bedshape == 696 || bedshape == 363) ? west : north;
@@ -5355,17 +5362,20 @@ void Forge_schedule::now_what() {
 
 		if (!tongs_obj) {
 			if (blank_on_firepit) {
-				if (trough_obj->get_framenum() == 0) {
+				if (trough_obj && trough_obj->get_framenum() == 0) {
 					state = get_bucket;
-					break;
+				} else {
+					state = use_bellows;
 				}
-				state = use_bellows;
 				break;
 			}
 			if (blank_on_anvil) {
 				state = get_hammer;
 				break;
 			}
+			// Fallback
+			state = put_sword_on_firepit;
+			break;
 		}
 
 		if (npc->get_readied(lhand) == tongs_obj.get()) {
