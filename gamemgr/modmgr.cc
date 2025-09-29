@@ -302,7 +302,7 @@ bool ModInfo::is_mod_compatible(const std::string& modversion) {
 
 string get_game_identity(
 		const char* savename, IDataSource* ds, const string& title) {
-	char* game_identity = nullptr;
+	std::unique_ptr<char[]> game_identity;
 	if (!ds) {
 		return title;
 	}
@@ -313,28 +313,26 @@ string get_game_identity(
 		if (unzipfile) {
 			// Find IDENTITY, ignoring case.
 			if (unzLocateFile(unzipfile, "identity", 2) != UNZ_OK) {
-				unzClose(unzipfile);
 				return "*";    // Old game.  Return wildcard.
 			} else {
 				unz_file_info file_info;
 				unzGetCurrentFileInfo(
 						unzipfile, &file_info, nullptr, 0, nullptr, 0, nullptr,
 						0);
-				game_identity = new char[file_info.uncompressed_size + 1];
+				game_identity = std::make_unique<char[]>(
+						file_info.uncompressed_size + 1);
 
 				if (unzOpenCurrentFile(unzipfile) != UNZ_OK) {
-					unzClose(unzipfile);
-					delete[] game_identity;
 					throw file_read_exception(savename);
 				}
 				unzReadCurrentFile(
-						unzipfile, game_identity, file_info.uncompressed_size);
+						unzipfile, game_identity.get(),
+						file_info.uncompressed_size);
 				if (unzCloseCurrentFile(unzipfile) == UNZ_OK) {
 					// 0-delimit.
 					game_identity[file_info.uncompressed_size] = 0;
 				}
 			}
-			unzClose(unzipfile);
 		}
 	}
 #else
@@ -361,8 +359,8 @@ string get_game_identity(
 			char fname[14] = {0};      // Set up name.
 			ds->read(fname, 13);
 			if (!strcmp("identity", fname)) {
-				game_identity = new char[len + 1];
-				ds->read(game_identity, len);
+				game_identity = std::make_unique<char[]>(len + 1);
+				ds->read(game_identity.get(), len);
 				game_identity[len] = 0;
 				break;
 			}
@@ -372,12 +370,11 @@ string get_game_identity(
 		return title;
 	}
 	// Truncate identity
-	char* ptr = game_identity;
+	char* ptr = game_identity.get();
 	for (; (*ptr != 0x1a && *ptr != 0x0d); ptr++)
 		;
 	*ptr      = 0;
-	string id = game_identity;
-	delete[] game_identity;
+	string id = game_identity.get();
 	return id;
 }
 
@@ -989,7 +986,7 @@ int ModManager::InstallModZip(
 				c = std::tolower(c);
 			}
 
-			lowercase_map[lower] = filename;
+			lowercase_map[lower] = std::move(filename);
 		}
 
 		// Extract the files for this mod
@@ -1129,7 +1126,6 @@ int ModManager::InstallModZip(
 					  << base_game->get_menu_string() << std::endl;
 		}
 	}
-	unzClose(unzipfile);
 
 	return 0;
 }

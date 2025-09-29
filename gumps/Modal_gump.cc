@@ -32,7 +32,8 @@ Modal_gump::Modal_gump(
 		Container_game_object* cont, int initx, int inity, int shnum,
 		ShapeFile shfile, std::shared_ptr<Font> font)
 		: Gump(cont, initx, inity, shnum, shfile), done(false), pushed(nullptr),
-		  font(font ? font : fontManager.get_font("SMALL_BLACK_FONT")),
+		  font(font ? std::move(font)
+					: fontManager.get_font("SMALL_BLACK_FONT")),
 		  drag_mx(INT_MIN), drag_my(INT_MIN), no_dragging(false),
 		  procedural_background(0, 0, 0, 0) {
 	GetDragType();
@@ -44,7 +45,8 @@ Modal_gump::Modal_gump(
 		Container_game_object* cont, int shnum, ShapeFile shfile,
 		std::shared_ptr<Font> font)
 		: Gump(cont, shnum, shfile), done(false), pushed(nullptr),
-		  font(font ? font : fontManager.get_font("SMALL_BLACK_FONT")),
+		  font(font ? std::move(font)
+					: fontManager.get_font("SMALL_BLACK_FONT")),
 		  drag_mx(INT_MIN), drag_my(INT_MIN), no_dragging(false),
 		  procedural_background(0, 0, 0, 0) {
 	GetDragType();

@@ -570,13 +570,13 @@ void FMOplMidiDriver::send(uint32 b) {
 			send(channel | (int(MidiStatus::Controller))
 				 | (int(MidiController::Bank) << 8) | 0);
 			send(channel | (int(MidiStatus::Controller))
-				 | (int(MidiController::ModWheel) << 8) | 0x40);
+				 | (int(MidiController::ModWheel) << 8) | 0x400000);
 			send(channel | (int(MidiStatus::Controller))
-				 | (int(MidiController::Volume) << 8) | 127);
+				 | (int(MidiController::Volume) << 8) | 0x7F0000);
 			send(channel | (int(MidiStatus::Controller))
-				 | (int(MidiController::Expression) << 8) | 127);
+				 | (int(MidiController::Expression) << 8) | 0x7F0000);
 			send(channel | (int(MidiStatus::Controller))
-				 | (int(MidiController::Pan) << 8) | 64);
+				 | (int(MidiController::Pan) << 8) | 0x400000);
 			send(channel | (int(MidiStatus::Controller))
 				 | (int(MidiController::Sustain) << 8) | 0);
 			send(channel | (int(MidiStatus::Controller))

@@ -83,7 +83,7 @@ private:
 	// Auxiliary variables for digital SFX packages:
 	int nsfxopts, nsfxpacks;
 #ifdef ENABLE_MIDISFX
-	int midi_state;
+	int midi_state = -1;
 #endif
 	bool have_config_pack, have_roland_pack, have_blaster_pack, have_midi_pack,
 			have_custom_pack;

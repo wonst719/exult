@@ -593,8 +593,8 @@ void MyMidiPlayer::set_music_conversion(int conv) {
 		break;
 	case XMIDIFILE_CONVERT_NOCONVERSION:
 		config->set(convert_key, "mt32", true);
-		if ((!ogg_enabled || !ogg_is_playing()) && midi_driver
-			&& !midi_driver->isFMSynth() && !midi_driver->isMT32()) {
+		if ((!ogg_enabled || !ogg_is_playing()) && !midi_driver->isFMSynth()
+			&& !midi_driver->isMT32()) {
 			load_timbres();
 		}
 		break;

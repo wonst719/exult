@@ -48,7 +48,7 @@ namespace Pentagram { namespace BilinearScaler {
 			// clip x
 			if ((sw + sx) > tex_w) {
 				auto nsw = tex_w - sx;
-				dw       = (dh * nsw) / sw;
+				dw       = (dw * nsw) / sw;
 				sw       = nsw;
 			}
 

@@ -98,7 +98,6 @@ private:
 	int                                sfx_volume    = 100;
 	std::unique_ptr<SFX_cache_manager> sfxs;    // SFX and voice cache manager
 	bool                               initialized = false;
-	SDL_AudioSpec                      wanted;
 	std::unique_ptr<Pentagram::AudioMixer> mixer;
 	sint32                                 speech_id = -1;
 	bool                                   audio_enabled;
@@ -245,7 +244,7 @@ public:
 	};
 
 private:
-	LoopingType                               music_looping;
+	LoopingType                     music_looping;
 	std::map<int, std::vector<int>> active_sfx_;
 
 public:

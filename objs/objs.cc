@@ -981,11 +981,13 @@ void Game_object::paint_outline(Pixel_colors pix    // Color to use.
 }
 
 void Game_object::paint_bbox(int pix) {
-	auto info = get_info();
-	int  x, y;
+	const auto& info = get_info();
+	int         x, y;
 	gwin->get_shape_location(this, x, y);
 
-	info.paint_bbox(x, y, get_framenum(), gwin->get_win()->get_ibuf(), 	Shape_manager::get_special_pixel(pix));
+	info.paint_bbox(
+			x, y, get_framenum(), gwin->get_win()->get_ibuf(),
+			Shape_manager::get_special_pixel(pix));
 }
 
 /*

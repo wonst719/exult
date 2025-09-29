@@ -27,6 +27,7 @@ extern int errno;
 using namespace std;
 
 #	include "zip.h"
+#	include <memory>
 
 /* Added by Ryan Nunn to overcome DEF_MEM_LEVEL being undeclared */
 #	if MAX_MEM_LEVEL >= 8
@@ -259,41 +260,38 @@ static uLong ziplocal_TmzDateToDosDate(const tm_zip* ptm, uLong uLongdosDate) {
 /****************************************************************************/
 
 extern zipFile ZEXPORT zipOpen(const char* pathname, int append) {
-	zip_internal  ziinit;
-	zip_internal* zi;
-
-	ziinit.filezip = nullptr;
+	// Allocate memory at the start assuming everything will succeed. Eliminates a copy at the end and make_unique will value initialize the object
+	std::unique_ptr<zip_internal> ziinit = std::make_unique<zip_internal>();
 
 	/* Start changes by Ryan Nunn to fix append mode bug */
 
 	/* If append, use r+b mode, will fail if not exist */
 	if (append != 0) {
-		ziinit.filezip = fopen(pathname, "r+b");
+		ziinit->filezip = fopen(pathname, "r+b");
 	}
 
 	/* If not append, or failed, use wb */
-	if (ziinit.filezip == nullptr) {
-		ziinit.filezip = fopen(pathname, "wb");
+	if (ziinit->filezip == nullptr) {
+		ziinit->filezip = fopen(pathname, "wb");
 	}
 
 	/* Still doesn't exist, means can't create */
-	if (ziinit.filezip == nullptr) {
+	if (ziinit->filezip == nullptr) {
 		return nullptr;
 	}
 
 	/* Make sure we are at the end of the file */
-	fseek(ziinit.filezip, 0, SEEK_END);
+	fseek(ziinit->filezip, 0, SEEK_END);
 
 	/* End changes by Ryan Nunn to fix append mode bug */
 
-	ziinit.begin_pos             = ftell(ziinit.filezip);
-	ziinit.in_opened_file_inzip  = 0;
-	ziinit.ci.stream_initialised = 0;
-	ziinit.number_entry          = 0;
-	init_linkedlist(&(ziinit.central_dir));
+	ziinit->begin_pos             = ftell(ziinit->filezip);
+	ziinit->in_opened_file_inzip  = 0;
+	ziinit->ci.stream_initialised = 0;
+	ziinit->number_entry          = 0;
+	init_linkedlist(&(ziinit->central_dir));
 
-	zi = new zip_internal(ziinit);
-	return zi;
+	return ziinit.release();
 }
 
 extern int ZEXPORT zipOpenNewFileInZip(

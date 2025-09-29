@@ -38,8 +38,7 @@ AdvancedOptions_gump::AdvancedOptions_gump(
 		std::string&& title, std::string&& helpurl,
 		std::function<void()> applycallback)
 		: Modal_gump(nullptr, -1), title(std::move(title)),
-		  helpurl(std::move(helpurl)),
-		  applycallback(applycallback) {
+		  helpurl(std::move(helpurl)), applycallback(std::move(applycallback)) {
 	elems.reserve(5);
 	TileRect rect = TileRect(0, 0, 200, 186);
 	SetProceduralBackground(rect, -1, true);
@@ -50,7 +49,7 @@ AdvancedOptions_gump::AdvancedOptions_gump(
 	// destructor is called
 	int scrollw = rect.w - 16;
 	scroll      = new Scrollable_widget(
-            this, label_margin-2, scrolly, scrollw, rect.h - scrolly - 16, 2,
+            this, label_margin - 2, scrolly, scrollw, rect.h - scrolly - 16, 2,
             Scrollable_widget::ScrollbarType::Auto, true,
             procedural_colours.Shadow);
 	elems.push_back(scroll);
@@ -66,21 +65,21 @@ AdvancedOptions_gump::AdvancedOptions_gump(
 	// run the scroll bar so it can up update itself
 	scroll->run();
 	// If there is no scrollbar the widget width should be scrollw+12
-	max_width        = std::max(max_width, scroll->GetUsableArea().w);
-	scroll->expand(1+max_width - scroll->GetUsableArea().w, 0);
-	// Shift the buttons as needed so they right align on the edge of the Scrllable
+	max_width = std::max(max_width, scroll->GetUsableArea().w);
+	scroll->expand(1 + max_width - scroll->GetUsableArea().w, 0);
+	// Shift the buttons as needed so they right align on the edge of the
+	// Scrllable
 	for (auto& child : scroll->get_children_iterable()) {
-			auto csw = dynamic_cast<ConfigSetting_widget*>(child.get());
-			if (csw) {
-				// Shift the buttons so they all right aligned
-				csw->shift_buttons_x(max_width - csw->get_rect().w);
-			}
+		auto csw = dynamic_cast<ConfigSetting_widget*>(child.get());
+		if (csw) {
+			// Shift the buttons so they all right aligned
+			csw->shift_buttons_x(max_width - csw->get_rect().w);
 		}
-	
+	}
 
 	// Apply
-	int buttony    = 173;
-	int button_gap = 20;
+	int       buttony    = 173;
+	int       button_gap = 20;
 	const int id_ok      = elems.size();
 	elems.push_back(
 			apply = new CallbackTextButton<AdvancedOptions_gump>(
@@ -98,10 +97,9 @@ AdvancedOptions_gump::AdvancedOptions_gump(
 					rect.w / 2 - 25, buttony, 50));
 
 	// resize to fit everything
-	ResizeWidthToFitWidgets(tcb::span(elems.data(),elems.size()),2);
+	ResizeWidthToFitWidgets(tcb::span(elems.data(), elems.size()), 2);
 	ResizeWidthToFitText(this->title.c_str());
-	HorizontalArrangeWidgets(
-			tcb::span(elems.data() + id_ok, 3));
+	HorizontalArrangeWidgets(tcb::span(elems.data() + id_ok, 3));
 
 	// set all buttons in elems to self managed
 	for (auto elem : elems) {
@@ -232,8 +230,8 @@ bool AdvancedOptions_gump::key_down(SDL_Keycode chr, SDL_Keycode unicode) {
 void AdvancedOptions_gump::paint() {
 	auto ib = gwin->get_win()->get_ib8();
 	Modal_gump::paint();
-	int titlex    = label_margin;
-	int titley    = 1;
+	int titlex = label_margin;
+	int titley = 1;
 	local_to_screen(titlex, titley);
 	// Draw Title
 	font->paint_text_box(

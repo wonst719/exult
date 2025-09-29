@@ -118,8 +118,8 @@ public:
 	static auto SAVE() {
 		return get_text_msg(0x66E - msg_file_start);
 	}
-#ifdef DELETE 
-#undef DELETE
+#ifdef DELETE
+#	undef DELETE
 #endif
 	static auto DELETE() {
 		return get_text_msg(0x66F - msg_file_start);
@@ -1037,7 +1037,7 @@ int Newfile_gump::MoveCursor(int count) {
 }
 
 int Newfile_gump::AddCharacter(char c) {
-	if (cursor == -1 || cursor == MAX_SAVEGAME_NAME_LEN - 1) {
+	if (cursor == -1 || cursor >= MAX_SAVEGAME_NAME_LEN - 1) {
 		return 0;
 	}
 
@@ -1046,7 +1046,8 @@ int Newfile_gump::AddCharacter(char c) {
 	strcpy(text, newname);
 	text[cursor + 1] = 0;
 	text[cursor]     = c;
-	strcat(text, newname + cursor);
+	strncpy(text + cursor + 1, newname + cursor,
+			MAX_SAVEGAME_NAME_LEN - cursor - 1);
 
 	// Now check the width of the text
 	if (sman->get_text_width(2, text) >= textw) {

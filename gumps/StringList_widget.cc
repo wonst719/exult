@@ -23,8 +23,8 @@ StringList_widget::StringList_widget(
 		Gump_Base* par, const std::vector<std::string>& s, int selectionnum,
 		int px, int py, Modal_gump::ProceduralColours colours, int w, int h,
 		std::shared_ptr<Font> f)
-		: Gump_widget(par, -1, px, py, selectionnum), font(f), selections(s),
-		  width(w), height(h), colours(colours) {
+		: Gump_widget(par, -1, px, py, selectionnum), font(std::move(f)),
+		  selections(s), width(w), height(h), colours(colours) {
 	if (!font) {
 		font = fontManager.get_font("SMALL_BLACK_FONT");
 	}

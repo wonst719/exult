@@ -200,11 +200,11 @@ static void Setup_item_names(
 		IDataSource& items, std::vector<File_spec>& exultmsgs, bool si,
 		bool expansion, bool sibeta) {
 	vector<std::optional<string>> msglist;
-	int            num_item_names = 0;
-	int            num_text_msgs  = 0;
-	int            num_misc_names = 0;
-	int            flxcnt         = 0;
-	int            i;
+	int                           num_item_names = 0;
+	int                           num_text_msgs  = 0;
+	int                           num_misc_names = 0;
+	int                           flxcnt         = 0;
+	int                           i;
 
 	if (items.good()) {
 		items.seek(0x54);
@@ -303,9 +303,9 @@ static void Setup_text(
 		IDataSource&            txtfile,    // All text.
 		std::vector<File_spec>& exultmsgs) {
 	// Start by reading from exultmsg
-	for (auto exultmsgfs : exultmsgs) {
+	for (const auto& exultmsgfs : exultmsgs) {
 		vector<std::optional<string>> msglist;
-		int              first_msg = 0;
+		int                           first_msg = 0;
 		IExultDataSource exultmsg(exultmsgfs.name, exultmsgfs.index);
 		if (exultmsg.good()) {
 			{
@@ -319,9 +319,9 @@ static void Setup_text(
 				const size_t total_msgs = msglist.size() - msg_file_start;
 				text_msgs.resize(std::max(total_msgs, text_msgs.size()));
 				for (unsigned i = first_msg; i < total_msgs; i++) {
-					std::optional<string> &msg = msglist[i + msg_file_start];
+					std::optional<string>& msg = msglist[i + msg_file_start];
 					if (msg) {
-						text_msgs[i] = msg.value();
+						text_msgs[i] = msg.value_or(std::string());
 					}
 				}
 			}

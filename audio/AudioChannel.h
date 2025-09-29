@@ -45,12 +45,12 @@ namespace Pentagram {
 		uint32 frame1_size   = 0;    // Size of the frame1 buffer in samples
 		uint32 position = 0;    // Position in frame0 buffer in source samples
 		uint32 overall_position = 0;    // Overall position of playback
-		int    lvol, rvol;              // 0-256
-		int    distance;                // 0 - 256
-		int    balance;                 // -256 - 256
-		uint32 pitch_shift;             // 0x10000 = no shift
-		int    priority;                // anything.
-		bool   paused = false;          // true/false
+		int    lvol = 0, rvol = 0;      // 0-256
+		int    distance    = 0;         // 0 - 256
+		int    balance     = 0;         // -256 - 256
+		uint32 pitch_shift = 0;         // 0x10000 = no shift
+		int    priority    = 0;         // anything.
+		bool   paused      = false;     // true/false
 
 		sint32 instance_id = -1;    // Unique id for this channel
 

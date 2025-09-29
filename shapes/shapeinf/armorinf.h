@@ -36,8 +36,8 @@ class Shape_info;
  *  Armor:
  */
 class Armor_info : public Base_info {
-	unsigned char prot;      // Protection value.
-	unsigned char immune;    // Weapon_data::damage_type bits.
+	unsigned char prot   = 0;    // Protection value.
+	unsigned char immune = 0;    // Weapon_data::damage_type bits.
 public:
 	friend class Shape_info;
 	// Read in from file.

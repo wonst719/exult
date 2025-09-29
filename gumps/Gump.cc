@@ -204,13 +204,14 @@ void Gump::set_object_area(
 		auto section = gump_area_info->get_global_section();
 		if (size_t(get_shapenum()) < section.size()) {
 			auto osv = section[(get_shapenum())];
-			if (osv && osv.value().size()) {
+			auto sv  = osv.value_or(std::string_view());
+			if (sv.size()) {
 				// Read 6 ints
 				int  vals[6];
 				bool success = true;
 
 				for (int& v : vals) {
-					if (!(success = read_int_and_advance(osv.value(), v))) {
+					if (!(success = read_int_and_advance(sv, v))) {
 						break;
 					}
 				}

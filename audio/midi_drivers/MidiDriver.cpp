@@ -215,7 +215,7 @@ std::vector<ConfigSetting_widget::Definition> MidiDriver::
 			}
 		}
 
-		result.push_back(convert);
+		result.push_back(std::move(convert));
 
 		// Reverb and Chorus
 		ConfigSetting_widget::Definition reverb{
@@ -244,8 +244,8 @@ std::vector<ConfigSetting_widget::Definition> MidiDriver::
 		chorus.choices.push_back({GumpStrings::No(), "no", "no"});
 		config->value("config/audio/midi/chorus/enabled", s, "no");
 		chorus.default_value.swap(s);
-		result.push_back(reverb);
-		result.push_back(chorus);
+		result.push_back(std::move(reverb));
+		result.push_back(std::move(chorus));
 	}
 
 	return result;

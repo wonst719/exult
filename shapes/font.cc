@@ -279,9 +279,13 @@ int Font::paint_text(
 			Shape_frame* shape
 					= font_shapes->get_frame(static_cast<unsigned char>(chr));
 			if (!shape || !shape->is_rle()) {
+				auto oldflags = std::cerr.flags();
+
 				std::cerr << " unable to find rle frame for character '"
 						  << char(chr) << "' 0x" << std::hex << chr
 						  << " in font" << std::endl;
+				std::cerr.flags(oldflags);
+
 				continue;
 			}
 			if (trans) {
@@ -316,9 +320,13 @@ int Font::paint_text(
 			Shape_frame* shape = font_shapes->get_frame(
 					static_cast<unsigned char>(chr = *text++));
 			if (!shape || !shape->is_rle()) {
+				auto oldflags = std::cerr.flags();
+
 				std::cerr << " unable to find rle frame for character '"
 						  << char(chr) << "' 0x" << std::hex << chr
 						  << " in font" << std::endl;
+				std::cerr.flags(oldflags);
+
 				continue;
 			}
 			if (trans) {
@@ -495,9 +503,13 @@ int Font::paint_text_fixedwidth(
 		Shape_frame* shape
 				= font_shapes->get_frame(static_cast<unsigned char>(chr));
 		if (!shape || !shape->is_rle()) {
+			auto oldflags = std::cerr.flags();
+
 			std::cerr << " unable to find rle frame for character '"
 					  << char(chr) << "' 0x" << std::hex << chr << " in font"
 					  << std::endl;
+			std::cerr.flags(oldflags);
+
 			continue;
 		}
 		x += w = (width - shape->get_width()) / 2;
@@ -534,9 +546,12 @@ int Font::paint_text_fixedwidth(
 		Shape_frame* shape = font_shapes->get_frame(
 				static_cast<unsigned char>(chr = *text++));
 		if (!shape || !shape->is_rle()) {
+			auto oldflags = std::cerr.flags();
 			std::cerr << " unable to find rle frame for character '"
 					  << char(chr) << "' 0x" << std::hex << chr << " in font"
 					  << std::endl;
+
+			std::cerr.flags(oldflags);
 			continue;
 		}
 		x += w = (width - shape->get_width()) / 2;

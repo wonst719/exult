@@ -36,8 +36,8 @@ class Shape_info;
  *  Information about body shape and frame.
  */
 class Body_info : public Base_info {
-	int bshape;    // Body shape.
-	int bframe;    // Body frame.
+	int bshape = 0;    // Body shape.
+	int bframe = 0;    // Body frame.
 public:
 	friend class Shape_info;
 	// Read in from file.

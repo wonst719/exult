@@ -87,7 +87,7 @@ private:
 
 	// the last known good position of the gump that it will be returned to if
 	// the user drags it completely off screen only valid while dragging
-	int lastgood_x, lastgood_y;
+	int lastgood_x = 0, lastgood_y = 0;
 
 public:
 	// Colours used to draw the background.

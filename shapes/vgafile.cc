@@ -414,8 +414,10 @@ unsigned int Shape_frame::read(
 	shapes->seek(shapeoff);
 	const uint32 dlen   = shapes->read4();
 	const uint32 hdrlen = shapes->read4();
-	// it's a rle shape if dlen equals the filesize, or if the filesize is 16bit aligned and dlen equals filesize-1
-	if (dlen == shapelen || (!(shapelen&1) && dlen == shapelen-1)) {
+	// it's a rle shape if dlen equals the filesize, or if the filesize is 16bit
+	// aligned and dlen equals filesize-1
+	if (dlen == shapelen
+		|| (shapelen && !(shapelen & 1) && dlen == shapelen - 1)) {
 		rle = true;    // It's run-length-encoded.
 		// Figure # frames.
 		const int nframes = (hdrlen - 4) / 4;

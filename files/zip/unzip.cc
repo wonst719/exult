@@ -28,7 +28,7 @@ using namespace std;
 
 #	include "../databuf.h"
 #	include "../utils.h"
-#include "exceptions.h"
+#	include "exceptions.h"
 
 #	if !defined(unix) && !defined(CASESENSITIVITYDEFAULT_YES) \
 			&& !defined(CASESENSITIVITYDEFAULT_NO)
@@ -117,7 +117,7 @@ static int unzlocal_getByte(IDataSource* fin, int* pi) {
 	if (fin->getAvail() < 1) {
 		return UNZ_EOF;
 	}
-		if (!fin->good()) {
+	if (!fin->good()) {
 		return UNZ_UNKNOWNFILEERROR;
 	}
 
@@ -313,6 +313,35 @@ static uLong unzlocal_SearchCentralDir(IDataSource* fin) {
 	return uPosFound;
 }
 
+static int ZEXPORT unzCloseInternal(unz_s*& file) {
+	int err = UNZ_OK;
+	if (file == nullptr) {
+		return UNZ_PARAMERROR;
+	}
+
+	if (file->pfile_in_zip_read != nullptr) {
+		err = unzCloseCurrentFile(file);
+	}
+	file->file = nullptr;
+
+	delete file;
+	file = nullptr;
+	return err;
+}
+
+void unzFile::set(unz_s* newdata) {
+	if (data) {
+		unzCloseInternal(data);
+	}
+	data = newdata;
+}
+
+unzFile::~unzFile() {
+	if (data) {
+		unzCloseInternal(data);
+	}
+}
+
 /*
   Open a Zip file. path contain the full pathname (by example,
 	 on a Windows NT computer "c:\\test\\zlib109.zip" or on an Unix computer
@@ -323,10 +352,10 @@ static uLong unzlocal_SearchCentralDir(IDataSource* fin) {
 	   of this unzip package.
 */
 extern unzFile ZEXPORT unzOpen(IDataSource* fin) {
-	unz_s  us;
-	unz_s* s;
-	uLong  central_pos;
-	uLong  uL;
+	unzFile s  = {};
+	unz_s   us ={};
+	uLong   central_pos;
+	uLong   uL;
 
 	uLong number_disk;         /* number of the current dist, used for
 								  spaning ZIP, unsupported, always 0*/
@@ -339,7 +368,7 @@ extern unzFile ZEXPORT unzOpen(IDataSource* fin) {
 	int err = UNZ_OK;
 
 	if (unz_copyright[0] != ' ') {
-		return nullptr;
+		return {};
 	}
 
 	central_pos = unzlocal_SearchCentralDir(fin);
@@ -373,8 +402,8 @@ extern unzFile ZEXPORT unzOpen(IDataSource* fin) {
 	if (err == UNZ_OK) {
 		err = unzlocal_getShort(fin, &number_entry_CD);
 
-		if ((number_entry_CD != us.gi.number_entry) || (number_disk_with_CD != 0)
-			|| (number_disk != 0)) {
+		if ((number_entry_CD != us.gi.number_entry)
+			|| (number_disk_with_CD != 0) || (number_disk != 0)) {
 			err = UNZ_BADZIPFILE;
 		}
 	}
@@ -401,7 +430,7 @@ extern unzFile ZEXPORT unzOpen(IDataSource* fin) {
 	}
 
 	if (err != UNZ_OK) {
-		return nullptr;
+		return {};
 	}
 
 	us.file = fin;
@@ -411,29 +440,13 @@ extern unzFile ZEXPORT unzOpen(IDataSource* fin) {
 	us.pfile_in_zip_read = nullptr;
 	us.num_file          = 0;
 
-	s = new unz_s(us);
-	unzGoToFirstFile(s);
+	s.set(new unz_s(us));
+	err = unzGoToFirstFile(s);
+	if (err != UNZ_OK) {
+		return {};
+	}
+
 	return s;
-}
-
-/*
-  Close a ZipFile opened with unzipOpen.
-  If there is files inside the .Zip opened with unzipOpenCurrentFile (see
-  later), these files MUST be closed with unzipCloseCurrentFile before call
-  unzipClose. return UNZ_OK if there is no problem. */
-extern int ZEXPORT unzClose(unzFile &file) {
-	if (file == nullptr) {
-		return UNZ_PARAMERROR;
-	}
-
-	if (file->pfile_in_zip_read != nullptr) {
-		unzCloseCurrentFile(file);
-	}
-	file->file = nullptr;
-
-	delete file;
-	file = nullptr;
-	return UNZ_OK;
 }
 
 /*
@@ -441,7 +454,7 @@ extern int ZEXPORT unzClose(unzFile &file) {
   No preparation of the structure is needed
   return UNZ_OK if there is no problem. */
 extern int ZEXPORT
-		unzGetGlobalInfo(unzFile file, unz_global_info* pglobal_info) {
+		unzGetGlobalInfo(unz_s* file, unz_global_info* pglobal_info) {
 	if (file == nullptr) {
 		return UNZ_PARAMERROR;
 	}
@@ -468,12 +481,12 @@ static void unzlocal_DosDateToTmuDate(uLong ulDosDate, tm_unz* ptm) {
   Get Info about the current file in the zipfile, with internal only info
 */
 static int unzlocal_GetCurrentFileInfoInternal(
-		unzFile file, unz_file_info* pfile_info,
+		unz_s* file, unz_file_info* pfile_info,
 		unz_file_info_internal* pfile_info_internal, char* szFileName,
 		uLong fileNameBufferSize, void* extraField, uLong extraFieldBufferSize,
 		char* szComment, uLong commentBufferSize) {
-	unz_file_info          file_info;
-	unz_file_info_internal file_info_internal;
+	unz_file_info          file_info={};
+	unz_file_info_internal file_info_internal={};
 	int                    err = UNZ_OK;
 	uLong                  uMagic;
 	long                   lSeek = 0;
@@ -639,7 +652,7 @@ static int unzlocal_GetCurrentFileInfoInternal(
   return UNZ_OK if there is no problem.
 */
 extern int ZEXPORT unzGetCurrentFileInfo(
-		unzFile file, unz_file_info* pfile_info, char* szFileName,
+		unz_s* file, unz_file_info* pfile_info, char* szFileName,
 		uLong fileNameBufferSize, void* extraField, uLong extraFieldBufferSize,
 		char* szComment, uLong commentBufferSize) {
 	return unzlocal_GetCurrentFileInfoInternal(
@@ -648,21 +661,20 @@ extern int ZEXPORT unzGetCurrentFileInfo(
 }
 
 extern int ZEXPORT unzGetCurrentFileInfo(
-		unzFile file, unz_file_info* pfile_info, std::string& fileName,
-		void* extraField, uLong extraFieldBufferSize,
-		char* szComment, uLong commentBufferSize) {
+		unz_s* file, unz_file_info* pfile_info, std::string& fileName,
+		void* extraField, uLong extraFieldBufferSize, char* szComment,
+		uLong commentBufferSize) {
 	fileName.resize(file->cur_file_info.size_filename);
 	return unzlocal_GetCurrentFileInfoInternal(
 			file, pfile_info, nullptr, fileName.data(), fileName.size(),
 			extraField, extraFieldBufferSize, szComment, commentBufferSize);
 }
 
-
 /*
   Set the current file of the zipfile to the first file.
   return UNZ_OK if there is no problem
 */
-extern int ZEXPORT unzGoToFirstFile(unzFile file) {
+extern int ZEXPORT unzGoToFirstFile(unz_s* file) {
 	int err = UNZ_OK;
 	if (file == nullptr) {
 		return UNZ_PARAMERROR;
@@ -681,7 +693,7 @@ extern int ZEXPORT unzGoToFirstFile(unzFile file) {
   return UNZ_OK if there is no problem
   return UNZ_END_OF_LIST_OF_FILE if the actual file was the latest.
 */
-extern int ZEXPORT unzGoToNextFile(unzFile file) {
+extern int ZEXPORT unzGoToNextFile(unz_s* file) {
 	int err;
 
 	if (file == nullptr) {
@@ -715,7 +727,7 @@ extern int ZEXPORT unzGoToNextFile(unzFile file) {
   UNZ_END_OF_LIST_OF_FILE if the file is not found
 */
 extern int ZEXPORT unzLocateFile(
-		unzFile file, const char* szFileName, int iCaseSensitivity) {
+		unz_s* file, const char* szFileName, int iCaseSensitivity) {
 	int err;
 
 	uLong num_fileSaved;
@@ -843,8 +855,9 @@ static int unzlocal_CheckCurrentFileCoherencyHeader(
 
 	if (err == UNZ_OK) {
 		err = unzlocal_getShort(s->file, &size_filename);
-	
-		if ((err == UNZ_OK) && (size_filename != s->cur_file_info.size_filename)) {
+
+		if ((err == UNZ_OK)
+			&& (size_filename != s->cur_file_info.size_filename)) {
 			err = UNZ_BADZIPFILE;
 		}
 
@@ -853,7 +866,7 @@ static int unzlocal_CheckCurrentFileCoherencyHeader(
 
 	if (err == UNZ_OK) {
 		err = unzlocal_getShort(s->file, &size_extra_field);
-	
+
 		*poffset_local_extrafield = s->cur_file_info_internal.offset_curfile
 									+ SIZEZIPLOCALHEADER + size_filename;
 		*psize_local_extrafield = size_extra_field;
@@ -868,7 +881,7 @@ static int unzlocal_CheckCurrentFileCoherencyHeader(
   Open for reading data the current file in the zipfile.
   If there is no error and the file is opened, the return value is UNZ_OK.
 */
-extern int ZEXPORT unzOpenCurrentFile(unzFile file) {
+extern int ZEXPORT unzOpenCurrentFile(unz_s* file) {
 	int                      err = UNZ_OK;
 	bool                     Store;
 	uInt                     iSizeVar;
@@ -884,7 +897,10 @@ extern int ZEXPORT unzOpenCurrentFile(unzFile file) {
 	}
 
 	if (file->pfile_in_zip_read != nullptr) {
-		unzCloseCurrentFile(file);
+		err = unzCloseCurrentFile(file);
+		if (err != UNZ_OK) {
+			return err;
+		}
 	}
 
 	if (unzlocal_CheckCurrentFileCoherencyHeader(
@@ -913,7 +929,7 @@ extern int ZEXPORT unzOpenCurrentFile(unzFile file) {
 
 	if ((file->cur_file_info.compression_method != 0)
 		&& (file->cur_file_info.compression_method != Z_DEFLATED)) {
-		err = UNZ_BADZIPFILE;
+		return UNZ_BADZIPFILE;
 	}
 	Store = file->cur_file_info.compression_method == 0;
 
@@ -969,7 +985,7 @@ extern int ZEXPORT unzOpenCurrentFile(unzFile file) {
   return <0 with error code if there is an error
 	(UNZ_UNKNOWNERROR for IO error, or zLib error for uncompress error)
 */
-extern int ZEXPORT unzReadCurrentFile(unzFile file, voidp buf, unsigned len) {
+extern int ZEXPORT unzReadCurrentFile(unz_s* file, voidp buf, unsigned len) {
 	int                      err   = UNZ_OK;
 	uInt                     iRead = 0;
 	file_in_zip_read_info_s* pfile_in_zip_read_info;
@@ -1100,7 +1116,7 @@ extern int ZEXPORT unzReadCurrentFile(unzFile file, voidp buf, unsigned len) {
 /*
   Give the current position in uncompressed data
 */
-extern z_off_t ZEXPORT unztell(unzFile file) {
+extern z_off_t ZEXPORT unztell(unz_s* file) {
 	file_in_zip_read_info_s* pfile_in_zip_read_info;
 	if (file == nullptr) {
 		return UNZ_PARAMERROR;
@@ -1117,7 +1133,7 @@ extern z_off_t ZEXPORT unztell(unzFile file) {
 /*
   return 1 if the end of file was reached, 0 elsewhere
 */
-extern int ZEXPORT unzeof(unzFile file) {
+extern int ZEXPORT unzeof(unz_s* file) {
 	file_in_zip_read_info_s* pfile_in_zip_read_info;
 	if (file == nullptr) {
 		return UNZ_PARAMERROR;
@@ -1147,8 +1163,7 @@ extern int ZEXPORT unzeof(unzFile file) {
   the return value is the number of bytes copied in buf, or (if <0)
 	the error code
 */
-extern int ZEXPORT
-		unzGetLocalExtrafield(unzFile file, voidp buf, unsigned len) {
+extern int ZEXPORT unzGetLocalExtrafield(unz_s* file, voidp buf, unsigned len) {
 	file_in_zip_read_info_s* pfile_in_zip_read_info;
 	uInt                     read_now;
 	uLong                    size_to_read;
@@ -1199,7 +1214,7 @@ extern int ZEXPORT
   Close the file in zip opened with unzipOpenCurrentFile
   Return UNZ_CRCERROR if all the file was read but the CRC is not good
 */
-extern int ZEXPORT unzCloseCurrentFile(unzFile file) {
+extern int ZEXPORT unzCloseCurrentFile(unz_s* file) {
 	int err = UNZ_OK;
 
 	file_in_zip_read_info_s* pfile_in_zip_read_info;
@@ -1239,7 +1254,7 @@ extern int ZEXPORT unzCloseCurrentFile(unzFile file) {
   return the number of byte copied or an error code <0
 */
 extern int ZEXPORT
-		unzGetGlobalComment(unzFile file, char* szComment, uLong uSizeBuf) {
+		unzGetGlobalComment(unz_s* file, char* szComment, uLong uSizeBuf) {
 	uLong uReadThis;
 	if (file == nullptr) {
 		return UNZ_PARAMERROR;
@@ -1269,11 +1284,11 @@ extern int ZEXPORT
 	return uReadThis;
 }
 
-int ZEXPORT unzExtractAllToPath(unzFile unzipfile, const char* destpath) {
+int ZEXPORT unzExtractAllToPath(unz_s* unzipfile, const char* destpath) {
 	int error               UNZ_OK;
 	unz_file_info           fileinfo;
 	std::unique_ptr<char[]> buffer;
-	size_t                  buffer_size = 0;
+	size_t                  buffer_size  = 0;
 	const int               max_filename = 260;
 
 	error = unzGoToFirstFile(unzipfile);
@@ -1284,8 +1299,7 @@ int ZEXPORT unzExtractAllToPath(unzFile unzipfile, const char* destpath) {
 	if (error == UNZ_OK) {
 		do {
 			error = unzGetCurrentFileInfo(
-					unzipfile, &fileinfo, filepath,
-					nullptr, 0, nullptr, 0);
+					unzipfile, &fileinfo, filepath, nullptr, 0, nullptr, 0);
 			if (error < UNZ_OK) {
 				return error;
 			}
@@ -1311,7 +1325,7 @@ int ZEXPORT unzExtractAllToPath(unzFile unzipfile, const char* destpath) {
 						try {
 							buffer = std::make_unique<char[]>(
 									buffer_size = fileinfo.uncompressed_size);
-						} catch (std::bad_alloc &) {
+						} catch (std::bad_alloc&) {
 							std::cerr << "ExtractZip: Failed to allocate "
 										 "extract buffer "
 										 "of size "
@@ -1344,7 +1358,7 @@ int ZEXPORT unzExtractAllToPath(unzFile unzipfile, const char* destpath) {
 
 				try {
 					outfile = U7open_out(outpath.c_str());
-				} catch (exult_exception &) {
+				} catch (exult_exception&) {
 					std::cerr << "ExtractZip: exception trying open file \""
 							  << get_system_path(outpath) << "\" for writing"
 							  << std::endl;
@@ -1364,7 +1378,7 @@ int ZEXPORT unzExtractAllToPath(unzFile unzipfile, const char* destpath) {
 			error = UNZ_OK;
 		}
 	}
-		return error;
+	return error;
 }
 
 #endif /*HAVE_ZIP_SUPPORT*/

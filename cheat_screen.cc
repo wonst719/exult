@@ -559,9 +559,11 @@ void CheatScreen::SharedPrompt() {
 }
 
 static void resizeline(float& axis1, float delta1, float& axis2) {
-	float slope = axis2 / axis1;
-	axis1 += delta1;
-	axis2 = axis1 * slope;
+	if (axis1) {
+		float slope = axis2 / axis1;
+		axis1 += delta1;
+		axis2 = axis1 * slope;
+	}
 }
 
 bool CheatScreen::SharedInput() {

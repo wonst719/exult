@@ -809,7 +809,7 @@ void KeyBinder::ParseLine(char* line, int lineNumber) {
 		if (a.action->key_type == Action::cheat_keys) {
 			cheathelp.push_back(desc);
 		} else if (a.action->key_type == Action::mapedit_keys) {
-			mapedithelp.push_back(desc);
+			mapedithelp.push_back(std::move(desc));
 		} else {    // Either Action::normal_keys or Action::dont_show with
 					// comment.
 			keyhelp.push_back(desc);
@@ -864,7 +864,7 @@ void KeyBinder::LoadDefaults() {
 
 	const U7object txtobj(resource.str, resource.num);
 	size_t         len;
-	auto           txt = txtobj.retrieve(len,true);
+	auto           txt = txtobj.retrieve(len, true);
 	if (txt && len > 0) {
 		ParseText(reinterpret_cast<char*>(txt.get()), len);
 	}

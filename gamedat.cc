@@ -766,15 +766,12 @@ bool Game_window::get_saveinfo_zip(
 		}
 	}
 
-	unzClose(unzipfile);
-
 	return true;
 }
 
 // Level 2 Compression
-bool Game_window::Restore_level2(void* uzf, const char* dirname, int dirlen) {
-	auto* unzipfile = static_cast<unzFile>(uzf);
-
+bool Game_window::Restore_level2(
+		unzFile& unzipfile, const char* dirname, int dirlen) {
 	char  oname[50];    // Set up name.
 	char* oname2 = oname + sizeof(GAMEDAT) + dirlen - 1;
 	strcpy(oname, dirname);
@@ -981,8 +978,6 @@ bool Game_window::restore_gamedat_zip(
 
 		cycle_load_palette();
 	} while (unzGoToNextFile(unzipfile) == UNZ_OK);
-
-	unzClose(unzipfile);
 
 	cout.flush();
 

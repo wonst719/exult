@@ -52,7 +52,7 @@ using std::vector;
  *  Create the cached data storage for a chunk.
  */
 
-Chunk_cache::Chunk_cache() : egg_objects(4), eggs{} {}
+Chunk_cache::Chunk_cache() : obj_list(nullptr), egg_objects(4), eggs{} {}
 
 /*
  *  This mask gives the low bits (b0) for a given # of ztiles.
@@ -926,7 +926,7 @@ void Map_chunk::remove(Game_object* remove) {
 			first_nonflat = nullptr;
 		}
 	}
-	remove->set_invalid();     // No longer part of world.
+	remove->set_invalid();                         // No longer part of world.
 	objects.remove(remove->shared_from_this());    // Remove from list.
 }
 

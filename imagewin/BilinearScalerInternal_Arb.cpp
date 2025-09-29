@@ -364,7 +364,6 @@ namespace Pentagram { namespace BilinearScaler {
 							pos_x, end_y, end_x, add_y, add_x, block_start_x,
 							pitch);
 					end_y -= 4 << 16;
-					block_start_x = pos_x;
 					end_x += 1 << 16;
 				}
 			}
