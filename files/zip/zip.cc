@@ -28,6 +28,7 @@ using namespace std;
 
 #	include "zip.h"
 #	include <memory>
+#	include <iostream>
 
 /* Added by Ryan Nunn to overcome DEF_MEM_LEVEL being undeclared */
 #	if MAX_MEM_LEVEL >= 8
@@ -260,8 +261,17 @@ static uLong ziplocal_TmzDateToDosDate(const tm_zip* ptm, uLong uLongdosDate) {
 /****************************************************************************/
 
 extern zipFile ZEXPORT zipOpen(const char* pathname, int append) {
-	// Allocate memory at the start assuming everything will succeed. Eliminates a copy at the end and make_unique will value initialize the object
-	std::unique_ptr<zip_internal> ziinit = std::make_unique<zip_internal>();
+	// Allocate memory at the start assuming everything will succeed. Eliminates
+	// a copy at the end and make_unique will value initialize the object
+	std::unique_ptr<zip_internal> ziinit;
+
+	try {
+		ziinit = std::make_unique<zip_internal>();
+	} catch (std::bad_alloc&) {
+		std::cerr << "zipOpen: make_unique<zip_internal> failed"
+				  << std::endl;
+		return {};
+	}
 
 	/* Start changes by Ryan Nunn to fix append mode bug */
 
