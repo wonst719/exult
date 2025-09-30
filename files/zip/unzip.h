@@ -117,13 +117,7 @@ extern int ZEXPORT unzStringFileNameCompare(
 
 extern unzFile ZEXPORT unzOpen(IDataSource* datasource);
 
-/*
-  Close a ZipFile opened with unzipOpen.
-  If there is files inside the .Zip opened with unzOpenCurrentFile (see later),
-	these files MUST be closed with unzipCloseCurrentFile before call
-  unzipClose. This will clear the unzFile reference
-  return UNZ_OK if there is no problem. */
-extern int ZEXPORT unzClose(unz_s*& file);
+
 
 /*
   Write info about the ZipFile in the *pglobal_info structure.

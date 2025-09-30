@@ -103,7 +103,8 @@ struct unz_s {
 
 	unz_file_info cur_file_info; /* public info about the current file in zip*/
 	unz_file_info_internal   cur_file_info_internal; /* private info about it*/
-	file_in_zip_read_info_s* pfile_in_zip_read; /* structure about the current
+	std::unique_ptr<file_in_zip_read_info_s>
+			pfile_in_zip_read; /* structure about the current
 										file if we are decompressing it */
 };
 
@@ -437,10 +438,9 @@ extern unzFile ZEXPORT unzOpen(IDataSource* fin) {
 	us.byte_before_the_zipfile
 			= central_pos - (us.offset_central_dir + us.size_central_dir);
 	us.central_pos       = central_pos;
-	us.pfile_in_zip_read = nullptr;
 	us.num_file          = 0;
 
-	s.set(new unz_s(us));
+	s.set(new unz_s(std::move(us)));
 	err = unzGoToFirstFile(s);
 	if (err != UNZ_OK) {
 		return {};
@@ -885,7 +885,7 @@ extern int ZEXPORT unzOpenCurrentFile(unz_s* file) {
 	int                      err = UNZ_OK;
 	bool                     Store;
 	uInt                     iSizeVar;
-	file_in_zip_read_info_s* pfile_in_zip_read_info;
+	std::unique_ptr<file_in_zip_read_info_s> pfile_in_zip_read_info;
 	uLong offset_local_extrafield; /* offset of the local extra field */
 	uInt  size_local_extrafield;   /* size of the local extra field */
 
@@ -910,8 +910,11 @@ extern int ZEXPORT unzOpenCurrentFile(unz_s* file) {
 		return UNZ_BADZIPFILE;
 	}
 
-	pfile_in_zip_read_info = new file_in_zip_read_info_s();
-	if (pfile_in_zip_read_info == nullptr) {
+	try {
+		pfile_in_zip_read_info = std::make_unique<file_in_zip_read_info_s>();
+	} catch (std::bad_alloc &) {
+		std::cerr << "unzOpenCurrentFile: make_unique<file_in_zip_read_info_s> failed"
+				  << std::endl;
 		return UNZ_INTERNALERROR;
 	}
 
@@ -921,7 +924,6 @@ extern int ZEXPORT unzOpenCurrentFile(unz_s* file) {
 	pfile_in_zip_read_info->pos_local_extrafield    = 0;
 
 	if (pfile_in_zip_read_info->read_buffer == nullptr) {
-		delete pfile_in_zip_read_info;
 		return UNZ_INTERNALERROR;
 	}
 
@@ -971,7 +973,7 @@ extern int ZEXPORT unzOpenCurrentFile(unz_s* file) {
 
 	pfile_in_zip_read_info->stream.avail_in = 0;
 
-	file->pfile_in_zip_read = pfile_in_zip_read_info;
+	file->pfile_in_zip_read = std::move(pfile_in_zip_read_info);
 	return UNZ_OK;
 }
 
@@ -988,13 +990,12 @@ extern int ZEXPORT unzOpenCurrentFile(unz_s* file) {
 extern int ZEXPORT unzReadCurrentFile(unz_s* file, voidp buf, unsigned len) {
 	int                      err   = UNZ_OK;
 	uInt                     iRead = 0;
-	file_in_zip_read_info_s* pfile_in_zip_read_info;
 	if (file == nullptr) {
 		return UNZ_PARAMERROR;
 	}
-	pfile_in_zip_read_info = file->pfile_in_zip_read;
+	auto& pfile_in_zip_read_info = file->pfile_in_zip_read;
 
-	if (pfile_in_zip_read_info == nullptr) {
+	if (!pfile_in_zip_read_info) {
 		return UNZ_PARAMERROR;
 	}
 
@@ -1117,13 +1118,12 @@ extern int ZEXPORT unzReadCurrentFile(unz_s* file, voidp buf, unsigned len) {
   Give the current position in uncompressed data
 */
 extern z_off_t ZEXPORT unztell(unz_s* file) {
-	file_in_zip_read_info_s* pfile_in_zip_read_info;
 	if (file == nullptr) {
 		return UNZ_PARAMERROR;
 	}
-	pfile_in_zip_read_info = file->pfile_in_zip_read;
+	auto &pfile_in_zip_read_info = file->pfile_in_zip_read;
 
-	if (pfile_in_zip_read_info == nullptr) {
+	if (!pfile_in_zip_read_info) {
 		return UNZ_PARAMERROR;
 	}
 
@@ -1134,13 +1134,12 @@ extern z_off_t ZEXPORT unztell(unz_s* file) {
   return 1 if the end of file was reached, 0 elsewhere
 */
 extern int ZEXPORT unzeof(unz_s* file) {
-	file_in_zip_read_info_s* pfile_in_zip_read_info;
 	if (file == nullptr) {
 		return UNZ_PARAMERROR;
 	}
-	pfile_in_zip_read_info = file->pfile_in_zip_read;
+	auto &pfile_in_zip_read_info = file->pfile_in_zip_read;
 
-	if (pfile_in_zip_read_info == nullptr) {
+	if (!pfile_in_zip_read_info) {
 		return UNZ_PARAMERROR;
 	}
 
@@ -1164,16 +1163,15 @@ extern int ZEXPORT unzeof(unz_s* file) {
 	the error code
 */
 extern int ZEXPORT unzGetLocalExtrafield(unz_s* file, voidp buf, unsigned len) {
-	file_in_zip_read_info_s* pfile_in_zip_read_info;
 	uInt                     read_now;
 	uLong                    size_to_read;
 
 	if (file == nullptr) {
 		return UNZ_PARAMERROR;
 	}
-	pfile_in_zip_read_info = file->pfile_in_zip_read;
+	auto& pfile_in_zip_read_info = file->pfile_in_zip_read;
 
-	if (pfile_in_zip_read_info == nullptr) {
+	if (!pfile_in_zip_read_info) {
 		return UNZ_PARAMERROR;
 	}
 
@@ -1217,13 +1215,12 @@ extern int ZEXPORT unzGetLocalExtrafield(unz_s* file, voidp buf, unsigned len) {
 extern int ZEXPORT unzCloseCurrentFile(unz_s* file) {
 	int err = UNZ_OK;
 
-	file_in_zip_read_info_s* pfile_in_zip_read_info;
 	if (file == nullptr) {
 		return UNZ_PARAMERROR;
 	}
-	pfile_in_zip_read_info = file->pfile_in_zip_read;
+	auto& pfile_in_zip_read_info = file->pfile_in_zip_read;
 
-	if (pfile_in_zip_read_info == nullptr) {
+	if (!pfile_in_zip_read_info) {
 		return UNZ_PARAMERROR;
 	}
 
@@ -1241,9 +1238,8 @@ extern int ZEXPORT unzCloseCurrentFile(unz_s* file) {
 	}
 
 	pfile_in_zip_read_info->stream_initialised = 0;
-	delete pfile_in_zip_read_info;
 
-	file->pfile_in_zip_read = nullptr;
+	file->pfile_in_zip_read.reset();
 
 	return err;
 }
