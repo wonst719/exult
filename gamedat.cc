@@ -729,9 +729,11 @@ bool Game_window::get_saveinfo_zip(
 
 	// Name comes from comment
 	char namebuf[0x50];
-	if (unzGetGlobalComment(unzipfile, namebuf, 0x50) <= 0) {
-		strncpy(namebuf, "UNNAMED", 0x50);
+	if (unzGetGlobalComment(unzipfile, namebuf, std::size(namebuf)-1) <= 0) {
+		strcpy(namebuf, "UNNAMED");
 	}
+	// Null terminate just to be sure
+	namebuf[std::size(namebuf)-1] = 0;
 	name = new char[strlen(namebuf) + 1];
 	strcpy(name, namebuf);
 
@@ -772,11 +774,26 @@ bool Game_window::get_saveinfo_zip(
 // Level 2 Compression
 bool Game_window::Restore_level2(
 		unzFile& unzipfile, const char* dirname, int dirlen) {
-	char  oname[50];    // Set up name.
-	char* oname2 = oname + sizeof(GAMEDAT) + dirlen - 1;
-	strcpy(oname, dirname);
-	oname2[0] = '/';
-	oname2++;
+	std::vector<char> filebuf; 
+	std::unique_ptr<char[]> dynamicname;
+	char  fixedname[50];    // Set up name.
+	const size_t oname2offset = sizeof(GAMEDAT) + dirlen - 1;
+	char* oname2;
+	if (oname2offset + 13 > std::size(fixedname))
+	{
+		dynamicname = std::make_unique<char[]>(oname2offset + 13);
+		oname2      = dynamicname.get();
+	}
+	else
+	{
+		oname2 = fixedname;
+	}
+
+	strncpy(oname2, dirname, oname2offset);
+	char* oname = oname2;
+	oname2 += oname2offset;
+
+
 
 	if (unzOpenCurrentFile(unzipfile) != UNZ_OK) {
 		std::cerr << "Couldn't open current file" << std::endl;
@@ -807,14 +824,15 @@ bool Game_window::Restore_level2(
 
 		if (size) {
 			// Watch for names ending in '.'.
-			const int namelen = strlen(oname);
-			if (oname[namelen - 1] == '.') {
-				oname[namelen - 1] = 0;
+			const int namelen = strlen(oname2);
+			if (oname2[namelen - 1] == '.') {
+				oname2[namelen - 1] = 0;
 			}
 
 			// Now read the file.
-			std::vector<char> buf(size);
-			if (unzReadCurrentFile(unzipfile, buf.data(), buf.size()) != size) {
+			filebuf.resize(size);
+			
+			if (unzReadCurrentFile(unzipfile, filebuf.data(), filebuf.size()) != size) {
 				std::cerr << "Couldn't read for buf" << std::endl;
 				return false;
 			}
@@ -826,7 +844,7 @@ bool Game_window::Restore_level2(
 				return false;
 			}
 			auto& out = *pOut;
-			out.write(buf.data(), buf.size());
+			out.write(filebuf.data(), filebuf.size());
 
 			if (!out.good()) {
 				std::cerr << "out was bad" << std::endl;
@@ -890,10 +908,11 @@ bool Game_window::restore_gamedat_zip(
 	unzGetGlobalInfo(unzipfile, &global);
 
 	// Now read each file.
-	char  oname[50];    // Set up name.
-	char* oname2 = oname + sizeof(GAMEDAT) - 1;
-	strcpy(oname, GAMEDAT);
-	bool level2zip = false;
+	std::string oname = {};    // Set up name.
+	oname = GAMEDAT;
+
+	char* oname2    = oname.data() + std::size(GAMEDAT) - 1;
+	bool  level2zip = false;
 
 	do {
 		unz_file_info file_info;
@@ -903,10 +922,13 @@ bool Game_window::restore_gamedat_zip(
 				unzipfile, &file_info, nullptr, 0, nullptr, 0, nullptr, 0);
 		// Get the needed buffer size.
 		const int filenamelen = file_info.size_filename;
+		// make sure oname is of the right size
+		oname.resize(filenamelen + std::size(GAMEDAT)-1);
+		oname2 = oname.data() + std::size(GAMEDAT) - 1;
+
 		unzGetCurrentFileInfo(
 				unzipfile, nullptr, oname2, filenamelen, nullptr, 0, nullptr,
 				0);
-		oname2[filenamelen] = 0;
 
 		// Get file length.
 		const int len = file_info.uncompressed_size;
@@ -917,15 +939,15 @@ bool Game_window::restore_gamedat_zip(
 		// Level 2 compression handling
 		if (level2zip) {
 			// Files for map # > 0; create dir first.
-			U7mkdir(oname, 0755);
+			U7mkdir(oname.c_str(), 0755);
 			// Put a final marker in the dir name.
-			if (!Restore_level2(unzipfile, oname, filenamelen)) {
+			if (!Restore_level2(unzipfile, oname.c_str(), filenamelen)) {
 				abort("Error reading level2 from zip '%s'.", fname);
 			}
 			continue;
 		} else if (!std::strcmp("GAMEDAT", oname2)) {
 			// Put a final marker in the dir name.
-			if (!Restore_level2(unzipfile, oname, 0)) {
+			if (!Restore_level2(unzipfile, oname.c_str(), 0)) {
 				abort("Error reading level2 from zip '%s'.", fname);
 			}
 			// Flag that this is a level 2 save.
@@ -933,20 +955,24 @@ bool Game_window::restore_gamedat_zip(
 			continue;
 		}
 
+		// Get rid of trailing nulls at the end
+		while (!oname.back()) {
+			oname.pop_back();
+		}
 		// Watch for names ending in '.'.
-		const int namelen = strlen(oname);
-		if (oname[namelen - 1] == '.') {
-			oname[namelen - 1] = 0;
+		if (oname.back() == '.') {
+			oname.pop_back();
 		}
 		// Watch out for multimap games.
-		for (size_t i = 0; i < strlen(oname2); i++) {
-			// Doing it the right way this time.
-			if (oname2[i] == '/') {
-				// May need to create a mapxx directory here
-				oname2[i] = 0;
-				U7mkdir(oname, 0755);
-				oname2[i] = '/';
+		for (char& c : oname) {
+			// May need to create a mapxx directory here
+			if (c == '/') {
+				c = 0;
+				U7mkdir(oname.data(), 0755);
+				c = '/';
+				
 			}
+
 		}
 
 		// Open the file in the zip
@@ -961,14 +987,14 @@ bool Game_window::restore_gamedat_zip(
 		}
 
 		// now write it out.
-		auto pOut = U7open_out(oname);
+		auto pOut = U7open_out(oname.c_str());
 		if (!pOut) {
-			abort("Error opening '%s'.", oname);
+			abort("Error opening '%s'.", oname.c_str());
 		}
 		auto& out = *pOut;
 		out.write(buf.data(), buf.size());
 		if (!out.good()) {
-			abort("Error writing to '%s'.", oname);
+			abort("Error writing to '%s'.", oname.c_str());
 		}
 
 		// Close the file in the zip
