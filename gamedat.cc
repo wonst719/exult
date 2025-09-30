@@ -1151,8 +1151,8 @@ bool Game_window::save_gamedat_zip(
 		// Start the GAMEDAT file.
 		Begin_level2(zipfile, 0);
 
-		for (size_t i = 3; i < savefiles.size(); i++) {
-			Save_level2(zipfile, savefiles[i]);
+		for(const char *savefilename:savefiles) {
+			Save_level2(zipfile, savefilename);
 		}
 
 		// Now the Ireg's.
