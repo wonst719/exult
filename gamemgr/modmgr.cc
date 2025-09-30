@@ -112,7 +112,7 @@ ModInfo::ModInfo(
 	modconfig.value(config_path, mod_title, default_dir.c_str());
 
 	config_path = "mod_info/display_string";
-	default_dir = "Description missing!";
+	default_dir = mod + "\n(no description)";
 	modconfig.value(config_path, menustring, default_dir.c_str());
 
 	config_path = "mod_info/required_version";
@@ -219,6 +219,18 @@ ModInfo::ModInfo(
 		menu_quotes = (menu_quotes_str == "yes" || menu_quotes_str == "true");
 	} else {
 		menu_quotes = false;
+	}
+
+	config_path = "mod_info/show_display_string";
+	string show_display_string_str;
+	has_show_display_string = modconfig.key_exists(config_path);
+	if (has_show_display_string) {
+		modconfig.value(config_path, show_display_string_str);
+		show_display_string
+				= (show_display_string_str == "yes"
+				   || show_display_string_str == "true");
+	} else {
+		show_display_string = false;
 	}
 
 	config_path = "mod_info/force_digital_music";

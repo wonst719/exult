@@ -461,11 +461,12 @@ bool Game::show_menu(bool skip) {
 
 	top_menu();
 	MenuList* menu = nullptr;
-	// Check for mod override
-	bool force_skip_splash = false;
-	bool menu_credits      = true;
-	bool menu_quotes       = true;
-	bool menu_endgame      = true;
+	// Check for mod overrides
+	bool force_skip_splash   = false;
+	bool menu_credits        = true;
+	bool menu_quotes         = true;
+	bool menu_endgame        = true;
+	bool show_display_string = true;
 	if (gamemanager) {
 		ModManager* current_game_mgr
 				= gamemanager->find_game(Game::get_gametitle());
@@ -485,6 +486,9 @@ bool Game::show_menu(bool skip) {
 				}
 				if (mod_info->has_menu_endgame_set()) {
 					menu_endgame = mod_info->get_menu_endgame();
+				}
+				if (mod_info->has_show_display_string_set()) {
+					show_display_string = mod_info->get_show_display_string();
 				}
 			}
 		}
@@ -541,30 +545,31 @@ bool Game::show_menu(bool skip) {
 
 		bool created = false;
 
-		if (!Game::get_modtitle().empty()) {
-			string display_text
-					= Game::get_modtitle();    // Fallback to mod title
-
-			if (gamemanager) {
-				ModManager* current_game_mgr
-						= gamemanager->find_game(Game::get_gametitle());
-				if (current_game_mgr) {
-					BaseGameInfo* current_mod = current_game_mgr->get_mod(
-							Game::get_modtitle(), false);
-					ModInfo* mod_info = dynamic_cast<ModInfo*>(current_mod);
-					if (mod_info) {
-						display_text = mod_info->get_menu_string();
-					}
+		if (gamemanager) {
+			ModManager* current_game_mgr
+					= gamemanager->find_game(Game::get_gametitle());
+			if (current_game_mgr && !Game::get_modtitle().empty()) {
+				BaseGameInfo* current_mod = current_game_mgr->get_mod(
+						Game::get_modtitle(), false);
+				ModInfo* mod_info     = dynamic_cast<ModInfo*>(current_mod);
+				string   display_text = mod_info->get_menu_string();
+				// Replace line breaks with spaces to draw on one line
+				std::replace(
+						display_text.begin(), display_text.end(), '\n', ' ');
+				std::replace(
+						display_text.begin(), display_text.end(), '\r', ' ');
+				if (show_display_string) {
+					std::shared_ptr<Font> font
+							= fontManager.get_font("MENU_FONT");
+					font->draw_text(
+							ibuf,
+							gwin->get_width()
+									- font->get_text_width(display_text.c_str())
+									- 5,
+							gwin->get_height() - font->get_text_height() - 5,
+							display_text.c_str());
 				}
 			}
-
-			std::shared_ptr<Font> font = fontManager.get_font("MENU_FONT");
-			font->draw_text(
-					ibuf,
-					gwin->get_width()
-							- font->get_text_width(display_text.c_str()) - 5,
-					gwin->get_height() - font->get_text_height() - 5,
-					display_text.c_str());
 		}
 
 		const int choice = menu->handle_events(gwin);

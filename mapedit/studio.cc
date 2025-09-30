@@ -1310,6 +1310,7 @@ C_EXPORT void on_gameselect_ok_clicked(
 		modcfg.set("mod_info/menu_endgame", "yes", false);
 		modcfg.set("mod_info/menu_credits", "yes", false);
 		modcfg.set("mod_info/menu_quotes", "yes", false);
+		modcfg.set("mod_info/show_display_string", "yes", false);
 		modcfg.set("mod_info/force_digital_music", "no", true);
 
 		// Add mod to base game's list:

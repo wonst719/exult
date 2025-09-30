@@ -34,15 +34,16 @@ class GameManager;
 
 class BaseGameInfo {
 protected:
-	Exult_Game    type     = NONE;       // Game type
-	Game_Language language = Game_Language::ENGLISH;    // Official translation language
-	std::string   cfgname;               // What the game is called in Exult.cfg
-	std::string   path_prefix;           // System path prefix for the game/mod.
-	std::string   mod_title;             // Internal mod name, the mod's title
-	std::string   menustring;            // Text displayed in mods menu
-	bool          expansion = false;     // For FoV/SS ONLY.
-	bool          sibeta    = false;     // For beta version of SI.
-	bool          found     = false;     // If the game/mod is found.
+	Exult_Game    type = NONE;    // Game type
+	Game_Language language
+			= Game_Language::ENGLISH;    // Official translation language
+	std::string cfgname;                 // What the game is called in Exult.cfg
+	std::string path_prefix;             // System path prefix for the game/mod.
+	std::string mod_title;               // Internal mod name, the mod's title
+	std::string menustring;              // Text displayed in mods menu
+	bool        expansion = false;       // For FoV/SS ONLY.
+	bool        sibeta    = false;       // For beta version of SI.
+	bool        found     = false;       // If the game/mod is found.
 	bool editing = false;    // Game is being edited and may have missing files.
 	std::string codepage = "ASCII";    // Game/mod codepage (mainly for ES).
 public:
@@ -167,6 +168,8 @@ protected:
 	bool        has_menu_credits;
 	bool        menu_quotes;
 	bool        has_menu_quotes;
+	bool        show_display_string;
+	bool        has_show_display_string;
 	bool        force_digital_music;
 	bool        has_force_digital_music;
 
@@ -217,6 +220,14 @@ public:
 
 	bool has_menu_quotes_set() const {
 		return has_menu_quotes;
+	}
+
+	bool get_show_display_string() const {
+		return show_display_string;
+	}
+
+	bool has_show_display_string_set() const {
+		return has_show_display_string;
 	}
 
 	bool get_force_digital_music() const {
