@@ -137,6 +137,10 @@ protected:
 			TileRect backrect, int Checkbg_paletteramp = -1,
 			bool centre_gump_on_screen = true);
 
+	// Get the usable area of a gump with procedurally drawn background
+	// This is the same as backrect passed to SetProceduralBackground
+	TileRect get_usable_area() const;
+
 public:
 	void paint() override;
 
@@ -151,7 +155,7 @@ public:
 	void SetPopupMessage(const std::string& message, int mstimeout = 5000);
 
 	//! @brief Resize the Gump's width to fit the widgets
-	//! Will recentre the gump on screen
+	//! Will recentre the gump on screen.
 	//! Only works for Gumps with Procedural background
 	//! @param widgets collection of Widgets to resize the gump too
 	//! @param margin Right margin of gump
@@ -162,7 +166,8 @@ public:
 		if (!procedural_background) {
 			return;
 		}
-		int max_x = procedural_background.w + procedural_background.x;
+		const int usable_width = procedural_background.w - 4;
+		int       max_x        = 0;
 		for (auto& widget : widgets) {
 			if (widget) {
 				auto rect = widget->get_rect();
@@ -171,7 +176,10 @@ public:
 			}
 		}
 
-		procedural_background.w = max_x - procedural_background.x;
+		if (max_x > usable_width) {
+			procedural_background.w += max_x - usable_width;
+		}
+
 		set_pos();
 	}
 
@@ -182,11 +190,14 @@ public:
 		if (!procedural_background) {
 			return;
 		}
-		int max_x = procedural_background.w + procedural_background.x;
+		const int x_origin     = procedural_background.x + 2;
+		const int usable_width = procedural_background.w - 4;
 		for (auto& widget : widgets) {
 			if (widget) {
 				auto rect = widget->get_rect();
-				widget->set_pos(max_x - rect.w - margin, widget->get_y());
+				widget->set_pos(
+						usable_width - rect.w - margin - x_origin,
+						widget->get_y());
 			}
 		}
 	}
@@ -194,6 +205,7 @@ public:
 	//! @brief Horizontally arrange widgets across the gump with a minimum gap
 	//! between them. Gump is resized bigger if there isn't enough room
 	//! Only works for Gumps with Procedural background
+	//! If called with a single widget it will be centered
 	//! @tparam WidgetPointer
 	//! @param widgets collection of Widgets to resize the gump too
 	//! @param min_gap Minimum gap between the widgets/
@@ -204,7 +216,9 @@ public:
 		if (!procedural_background) {
 			return;
 		}
-		int width_widgets = 0;
+		const int x_origin      = procedural_background.x + 2;
+		const int usable_width  = procedural_background.w - 4;
+		int       width_widgets = 0;
 		for (auto& widget : widgets) {
 			if (widget) {
 				auto rect = widget->get_rect();
@@ -212,13 +226,13 @@ public:
 			}
 		}
 		int min_width = width_widgets + (widgets.size()) * min_gap;
-		if (procedural_background.w < min_width) {
-			procedural_background.w = min_width;
+		if (min_width > usable_width) {
+			procedural_background.w += min_width - usable_width;
 			set_pos();
 		}
-		int gap = (procedural_background.w - width_widgets) / (widgets.size());
+		int gap = (usable_width - width_widgets) / (widgets.size());
 
-		int new_x = procedural_background.x + gap / 2;
+		int new_x = gap / 2 - x_origin;
 		for (auto& widget : widgets) {
 			if (widget) {
 				auto rect = widget->get_rect();

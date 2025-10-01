@@ -325,6 +325,15 @@ TileRect Modal_gump::get_rect() const {
 	}
 }
 
+TileRect Modal_gump::get_usable_area() const {
+	if (!procedural_background) {
+		return TileRect();
+	} 
+	TileRect r = procedural_background;
+	r.enlarge(-2);
+	return r;
+}
+
 //! Set a message to display above the gump
 
 void Modal_gump::SetPopupMessage(const std::string& message, int mstimeout) {

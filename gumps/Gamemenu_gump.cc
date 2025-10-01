@@ -77,8 +77,6 @@ public:
 using Gamemenu_button = CallbackTextButton<Gamemenu_gump>;
 
 Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, -1) {
-	SetProceduralBackground(TileRect(0, 2, 100, yForRow(7)), -1);
-
 	createButtons();
 }
 
@@ -86,6 +84,14 @@ void Gamemenu_gump::createButtons() {
 	int y                      = 0;
 	int margin                 = 4;
 	int preferred_button_width = 108;
+	// clear the buttons array
+	for (auto& button : buttons) {
+		button.reset();
+	}
+
+	// Resize the gump to default
+	SetProceduralBackground(
+			TileRect(0, 0, 100, yForRow(7)), -1);
 	if (!gwin->is_in_exult_menu()) {
 		buttons[id_load_save] = std::make_unique<Gamemenu_button>(
 				this, &Gamemenu_gump::loadsave, Strings::LoadSaveGame(), margin,
@@ -114,18 +120,24 @@ void Gamemenu_gump::createButtons() {
 	}
 #endif
 
-	// Resize to fit all
-	ResizeWidthToFitWidgets(tcb::span(buttons.data(), buttons.size()), margin);
-
-	// Right align all the buttons
-	RightAlignWidgets(tcb::span(buttons.data(), buttons.size()), margin);
-
-	// Resize to fit the height of the buttons
-	SetProceduralBackground(
+	// Resize to fit the combined height of the buttons
+		SetProceduralBackground(
 			TileRect(
-					0, yForRow(0) - margin, procedural_background.w,
+					0, yForRow(0) - margin, 100,
 					yForRow(y) + margin),
 			-1, true);
+
+	// Resize to fit width of buttons
+	ResizeWidthToFitWidgets(tcb::span(buttons.data(), buttons.size()), margin);
+
+	// Centre all the buttons
+	for (auto& button : buttons) {
+		if (button) {
+			HorizontalArrangeWidgets(tcb::span(&button, 1), 0);
+		}
+	}
+	
+
 }
 
 //++++++ IMPLEMENT RETURN_TO_MENU!
