@@ -46,6 +46,7 @@
 #include "npcnear.h"
 #include "spellbook.h"
 #include "touchui.h"
+#include "ucmachine.h"
 
 #ifdef __GNUC__
 #	pragma GCC diagnostic push
@@ -774,7 +775,8 @@ bool Gump_manager::do_modal_gump(
 			touchui->showButtonControls();
 		}
 		if ((non_persistent_count == 0 || gumpman->gumps_dont_pause_game())
-			&& !modal_gump_count && !gwin->is_in_exult_menu()) {
+			&& !modal_gump_count && !gwin->is_in_exult_menu()
+			&& !ucmachine->get_num_faces_on_screen()) {
 			touchui->showGameControls();
 		}
 	}
