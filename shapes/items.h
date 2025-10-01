@@ -49,7 +49,7 @@ void Setup_text(bool si, bool expansion, bool sibeta, Game_Language language);
 void Free_text();
 void Write_text_file();
 
-// This is the offset messages start at in txt.flx amd exultmsg.txt
+// This is the offset messages start at in txt.flx and exultmsg.txt
 // Subtract by this to get the message number used with get_text_msg()
 const int msg_file_start = 0x400;
 

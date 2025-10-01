@@ -112,6 +112,9 @@ static inline int remap_index(bool remap, int index, bool sibeta) {
 
 static inline const char* get_text_internal(
 		const vector<string>& src, unsigned num) {
+	if (num >= src.size()) {
+		return "Missing String";
+	}
 	return src[num].c_str();
 }
 
@@ -189,6 +192,19 @@ void Set_misc_name(unsigned num, const char* name) {
 	add_text_internal(misc_names, num, name);
 }
 
+static void Merge_message_strings(
+		const vector<std::optional<string>>& msglist, int first_msg,
+		int msg_start) {
+	const size_t total_msgs = msglist.size() - msg_start;
+	text_msgs.resize(std::max(total_msgs, text_msgs.size()));
+	for (unsigned i = first_msg; i < total_msgs; i++) {
+		const auto& msg = msglist[i + msg_start];
+		if (msg) {
+			text_msgs[i] = msg.value_or(std::string());
+		}
+	}
+}
+
 /*
  *  Set up names of items.
  *
@@ -241,14 +257,7 @@ static void Setup_item_names(
 						 << " conflicts with 'text.flx'" << endl;
 					first_msg = num_text_msgs;
 				}
-				const size_t total_msgs = msglist.size() - msg_file_start;
-				text_msgs.resize(std::max(total_msgs, text_msgs.size()));
-				for (unsigned i = first_msg; i < total_msgs; i++) {
-					std::optional<string>& msg = msglist[i + msg_file_start];
-					if (msg) {
-						text_msgs[i] = msg.value();
-					}
-				}
+				Merge_message_strings(msglist, first_msg, msg_file_start);
 			} else {
 				first_msg = num_text_msgs;
 			}
@@ -302,27 +311,19 @@ static void Setup_item_names(
 static void Setup_text(
 		IDataSource&            txtfile,    // All text.
 		std::vector<File_spec>& exultmsgs) {
+	vector<std::optional<string>> msglist;
+	int                           first_msg = 0;
 	// Start by reading from exultmsg
 	for (const auto& exultmsgfs : exultmsgs) {
-		vector<std::optional<string>> msglist;
-		int                           first_msg = 0;
 		IExultDataSource exultmsg(exultmsgfs.name, exultmsgfs.index);
 		if (exultmsg.good()) {
 			{
 				Text_msg_file_reader reader(exultmsg);
 				first_msg = reader.get_global_section_strings(msglist);
-			}
+				if (first_msg >= msg_file_start) {
+					first_msg -= msg_file_start;
 
-			//
-			if (first_msg >= msg_file_start) {
-				first_msg -= msg_file_start;
-				const size_t total_msgs = msglist.size() - msg_file_start;
-				text_msgs.resize(std::max(total_msgs, text_msgs.size()));
-				for (unsigned i = first_msg; i < total_msgs; i++) {
-					std::optional<string>& msg = msglist[i + msg_file_start];
-					if (msg) {
-						text_msgs[i] = msg.value_or(std::string());
-					}
+					Merge_message_strings(msglist, first_msg, msg_file_start);
 				}
 			}
 		}
@@ -338,8 +339,10 @@ static void Setup_text(
 	if (txtfile.good()) {
 		Text_msg_file_reader reader(txtfile);
 		reader.get_section_strings(SHAPES_SECT, item_names);
-		reader.get_section_strings(MSGS_SECT, text_msgs);
 		reader.get_section_strings(MISC_SECT, misc_names);
+
+		Merge_message_strings(
+				msglist, reader.get_section_strings(MSGS_SECT, msglist), 0);
 	}
 }
 
