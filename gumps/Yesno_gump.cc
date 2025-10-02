@@ -41,7 +41,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "game.h"
 #include "gamewin.h"
 #include "mouse.h"
-#include "touchui.h"
 
 #include <cstring>
 
@@ -108,9 +107,6 @@ void Yesno_gump::paint() {
 	fontManager.get_font(fontname)->paint_text_box(
 			gwin->get_win()->get_ib8(), text.c_str(), x + object_area.x,
 			y + object_area.y, object_area.w, object_area.h, 2);
-	if (touchui != nullptr) {
-		touchui->showButtonControls();
-	}
 	gwin->set_painted();
 }
 
@@ -189,9 +185,6 @@ bool Yesno_gump::ask(
 	} else {
 		answer = dlg.get_answer();
 	}
-	if (touchui != nullptr && gumpman->gump_mode()) {
-		touchui->hideButtonControls();
-	}
 	return answer;
 }
 
@@ -227,9 +220,6 @@ bool Countdown_gump::ask(const char* txt, int timeout, const char* font) {
 		answer = false;
 	} else {
 		answer = dlg.get_answer();
-	}
-	if (touchui != nullptr && gumpman->gump_mode()) {
-		touchui->hideButtonControls();
 	}
 	return answer;
 }
