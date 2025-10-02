@@ -217,7 +217,7 @@ public:
 			return;
 		}
 		const int x_origin      = procedural_background.x + 2;
-		const int usable_width  = procedural_background.w - 4;
+		int       usable_width  = procedural_background.w - 4;
 		int       width_widgets = 0;
 		for (auto& widget : widgets) {
 			if (widget) {
@@ -228,6 +228,7 @@ public:
 		int min_width = width_widgets + (widgets.size()) * min_gap;
 		if (min_width > usable_width) {
 			procedural_background.w += min_width - usable_width;
+			usable_width = min_width;
 			set_pos();
 		}
 		int gap = (usable_width - width_widgets) / (widgets.size());

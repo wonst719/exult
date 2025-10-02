@@ -450,9 +450,10 @@ void AudioOptions_gump::do_arrange() {
 			tcb::span(buttons.data() + id_apply, 3));
 
 	// Centre mixer button
-	buttons[id_mixer]->set_pos(
-			(procedural_background.w - buttons[id_mixer]->get_rect().w) / 2,
-			buttons[id_mixer]->get_y());
+	if (buttons[id_mixer])
+	{
+		HorizontalArrangeWidgets(tcb::span(buttons.data() + id_mixer, 1),8);
+	}
 
 	// Right align other setting buttons
 	RightAlignWidgets(tcb::span(
@@ -662,6 +663,7 @@ AudioOptions_gump::AudioOptions_gump()
 			yForRow(13) + bottomrow_gap, 50);
 
 	rebuild_buttons();
+	do_arrange();
 
 	// always recentre here
 	set_pos();
