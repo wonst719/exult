@@ -34,6 +34,7 @@
 #include "cheat.h"
 #include "combat_opts.h"
 #include "effects.h"
+#include "exult.h"
 #include "game.h"
 #include "gameclk.h"
 #include "gamemap.h"
@@ -45,6 +46,7 @@
 #include "ready.h"
 #include "shapeinf.h"
 #include "spellbook.h"
+#include "touchui.h"
 #include "ucmachine.h"
 #include "ucsched.h"
 #include "ucscriptop.h"
@@ -2013,6 +2015,9 @@ void Combat::toggle_pause() {
 		gwin->get_tqueue()->pause(SDL_GetTicks());
 		eman->center_text("Combat paused");
 		paused = true;
+		if (touchui != nullptr) {
+			touchui->hideGameControls();
+		}
 	}
 }
 
@@ -2026,4 +2031,7 @@ void Combat::resume() {
 	}
 	gwin->get_tqueue()->resume(SDL_GetTicks());
 	paused = false;
+	if (touchui != nullptr) {
+		touchui->showGameControls();
+	}
 }
