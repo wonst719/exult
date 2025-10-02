@@ -304,7 +304,7 @@ Image_window::ScalerType Image_window::get_scaler_for_name(const char* scaler) {
 }
 
 const char* Image_window::get_displayname_for_scaler(int num) {
-	return num ? get_text_msg(Scalers[num].displayname_msg_index)
+	return Scalers[num].displayname_msg_index ? get_text_msg(Scalers[num].displayname_msg_index)
 			   : get_name_for_scaler(num);
 }
 
