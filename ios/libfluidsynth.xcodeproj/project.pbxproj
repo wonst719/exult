@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		8A7079012E0C6159009CDF56 /* fluid_sys_cpp11.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A7079002E0C6159009CDF56 /* fluid_sys_cpp11.cpp */; };
 		8A754B532DA3DFA200474024 /* fluid_rvoice_dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A754B522DA3DFA200474024 /* fluid_rvoice_dsp.cpp */; };
-		8A7F92112E3D739100BC70F8 /* fluid_iir_filter_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A7F92102E3D739100BC70F8 /* fluid_iir_filter_impl.cpp */; };
 		8A9A01EA29F3391F000AF341 /* fluid_hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A01DE29F3391E000AF341 /* fluid_hash.c */; };
 		8A9A01EB29F3391F000AF341 /* fluid_sys.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A01DF29F3391E000AF341 /* fluid_sys.c */; };
 		8A9A01EC29F3391F000AF341 /* fluid_settings.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A01E129F3391E000AF341 /* fluid_settings.c */; };
@@ -48,26 +47,22 @@
 		8A9A024B29F33A29000AF341 /* fluid_adriver.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A024929F33A29000AF341 /* fluid_adriver.c */; };
 		8A9A024F29F33A36000AF341 /* fluid_coremidi.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A024D29F33A36000AF341 /* fluid_coremidi.c */; };
 		8A9A025329F33B18000AF341 /* fluid_rtkit.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A025229F33B18000AF341 /* fluid_rtkit.c */; };
-		8A9A02A429F3DF52000AF341 /* gen_rvoice_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A02A129F3DF52000AF341 /* gen_rvoice_dsp.c */; };
-		8A9A02A529F3DF52000AF341 /* make_tables.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A02A229F3DF52000AF341 /* make_tables.c */; };
-		8A9A02A629F3DF52000AF341 /* gen_conv.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A02A329F3DF52000AF341 /* gen_conv.c */; };
 		8A9A02BF29F3E265000AF341 /* fluid_conv.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A9A02BE29F3E264000AF341 /* fluid_conv.c */; };
+		8ADA28022E92DF5900C1012D /* fluid_iir_filter_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADA28012E92DF5900C1012D /* fluid_iir_filter_impl.cpp */; };
+		8ADA28332E92E52800C1012D /* fluid_ct2hz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADA282E2E92E52800C1012D /* fluid_ct2hz.cpp */; };
+		8ADA28342E92E52800C1012D /* fluid_cb2amp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADA282B2E92E52800C1012D /* fluid_cb2amp.cpp */; };
+		8ADA28352E92E52800C1012D /* fluid_interp_coeff_linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADA28302E92E52800C1012D /* fluid_interp_coeff_linear.cpp */; };
+		8ADA28362E92E52800C1012D /* fluid_interp_coeff_sinc7.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADA28312E92E52800C1012D /* fluid_interp_coeff_sinc7.cpp */; };
+		8ADA28372E92E52800C1012D /* fluid_interp_coeff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADA282F2E92E52800C1012D /* fluid_interp_coeff.cpp */; };
+		8ADA28382E92E52800C1012D /* fluid_pan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADA28322E92E52800C1012D /* fluid_pan.cpp */; };
+		8ADA28392E92E52800C1012D /* fluid_convex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADA282D2E92E52800C1012D /* fluid_convex.cpp */; };
+		8ADA283A2E92E52800C1012D /* fluid_concave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADA282C2E92E52800C1012D /* fluid_concave.cpp */; };
+		8ADA28422E92E99400C1012D /* fluid_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADA28412E92E99400C1012D /* fluid_file.cpp */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		8A9A02A929F3E154000AF341 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EE0E3C2C57924BCC9F195E4C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8A9A029529F3DEFE000AF341;
-			remoteInfo = make_tables;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		8A7079002E0C6159009CDF56 /* fluid_sys_cpp11.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_sys_cpp11.cpp; path = fluidsynth/src/utils/fluid_sys_cpp11.cpp; sourceTree = "<group>"; };
 		8A754B522DA3DFA200474024 /* fluid_rvoice_dsp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_rvoice_dsp.cpp; path = fluidsynth/src/rvoice/fluid_rvoice_dsp.cpp; sourceTree = SOURCE_ROOT; };
-		8A7F92102E3D739100BC70F8 /* fluid_iir_filter_impl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_iir_filter_impl.cpp; path = fluidsynth/src/rvoice/fluid_iir_filter_impl.cpp; sourceTree = "<group>"; };
 		8A9A012E29F32EEF000AF341 /* libfluidsynth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfluidsynth.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A9A01DE29F3391E000AF341 /* fluid_hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fluid_hash.c; path = fluidsynth/src/utils/fluid_hash.c; sourceTree = "<group>"; };
 		8A9A01DF29F3391E000AF341 /* fluid_sys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fluid_sys.c; path = fluidsynth/src/utils/fluid_sys.c; sourceTree = "<group>"; };
@@ -107,18 +102,24 @@
 		8A9A024929F33A29000AF341 /* fluid_adriver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fluid_adriver.c; path = fluidsynth/src/drivers/fluid_adriver.c; sourceTree = "<group>"; };
 		8A9A024D29F33A36000AF341 /* fluid_coremidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fluid_coremidi.c; path = fluidsynth/src/drivers/fluid_coremidi.c; sourceTree = "<group>"; };
 		8A9A025229F33B18000AF341 /* fluid_rtkit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fluid_rtkit.c; path = fluidsynth/src/bindings/fluid_rtkit.c; sourceTree = "<group>"; };
-		8A9A029629F3DEFE000AF341 /* make_tables */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = make_tables; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A9A02A129F3DF52000AF341 /* gen_rvoice_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gen_rvoice_dsp.c; path = fluidsynth/src/gentables/gen_rvoice_dsp.c; sourceTree = "<group>"; };
-		8A9A02A229F3DF52000AF341 /* make_tables.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = make_tables.c; path = fluidsynth/src/gentables/make_tables.c; sourceTree = "<group>"; };
-		8A9A02A329F3DF52000AF341 /* gen_conv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gen_conv.c; path = fluidsynth/src/gentables/gen_conv.c; sourceTree = "<group>"; };
 		8A9A02BE29F3E264000AF341 /* fluid_conv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fluid_conv.c; path = fluidsynth/src/utils/fluid_conv.c; sourceTree = "<group>"; };
+		8ADA28012E92DF5900C1012D /* fluid_iir_filter_impl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_iir_filter_impl.cpp; path = fluidsynth/src/rvoice/fluid_iir_filter_impl.cpp; sourceTree = "<group>"; };
+		8ADA282B2E92E52800C1012D /* fluid_cb2amp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_cb2amp.cpp; path = fluidsynth/src/gentables/fluid_cb2amp.cpp; sourceTree = "<group>"; };
+		8ADA282C2E92E52800C1012D /* fluid_concave.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_concave.cpp; path = fluidsynth/src/gentables/fluid_concave.cpp; sourceTree = "<group>"; };
+		8ADA282D2E92E52800C1012D /* fluid_convex.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_convex.cpp; path = fluidsynth/src/gentables/fluid_convex.cpp; sourceTree = "<group>"; };
+		8ADA282E2E92E52800C1012D /* fluid_ct2hz.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_ct2hz.cpp; path = fluidsynth/src/gentables/fluid_ct2hz.cpp; sourceTree = "<group>"; };
+		8ADA282F2E92E52800C1012D /* fluid_interp_coeff.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_interp_coeff.cpp; path = fluidsynth/src/gentables/fluid_interp_coeff.cpp; sourceTree = "<group>"; };
+		8ADA28302E92E52800C1012D /* fluid_interp_coeff_linear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_interp_coeff_linear.cpp; path = fluidsynth/src/gentables/fluid_interp_coeff_linear.cpp; sourceTree = "<group>"; };
+		8ADA28312E92E52800C1012D /* fluid_interp_coeff_sinc7.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_interp_coeff_sinc7.cpp; path = fluidsynth/src/gentables/fluid_interp_coeff_sinc7.cpp; sourceTree = "<group>"; };
+		8ADA28322E92E52800C1012D /* fluid_pan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_pan.cpp; path = fluidsynth/src/gentables/fluid_pan.cpp; sourceTree = "<group>"; };
+		8ADA283B2E92E5A000C1012D /* ConstExprArr.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ConstExprArr.hpp; path = fluidsynth/src/gentables/ConstExprArr.hpp; sourceTree = "<group>"; };
+		8ADA28412E92E99400C1012D /* fluid_file.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = fluid_file.cpp; path = fluidsynth/src/utils/fluid_file.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		0597CA0591654880B4A92172 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8A9A029629F3DEFE000AF341 /* make_tables */,
 				8A9A012E29F32EEF000AF341 /* libfluidsynth.a */,
 			);
 			name = Products;
@@ -157,8 +158,8 @@
 				8A9A021729F339AF000AF341 /* fluid_voice.c */,
 				8A9A020C29F3397F000AF341 /* fluid_adsr_env.c */,
 				8A9A020429F3397F000AF341 /* fluid_chorus.c */,
-				8A7F92102E3D739100BC70F8 /* fluid_iir_filter_impl.cpp */,
 				8A9A020629F3397F000AF341 /* fluid_iir_filter.c */,
+				8ADA28012E92DF5900C1012D /* fluid_iir_filter_impl.cpp */,
 				8A9A020A29F3397F000AF341 /* fluid_lfo.c */,
 				8A9A01FD29F3397F000AF341 /* fluid_rev.c */,
 				8A754B522DA3DFA200474024 /* fluid_rvoice_dsp.cpp */,
@@ -175,26 +176,18 @@
 				8A9A01E229F3391E000AF341 /* fluid_list.c */,
 				8A9A01E829F3391F000AF341 /* fluid_ringbuffer.c */,
 				8A9A01E129F3391E000AF341 /* fluid_settings.c */,
+				8ADA28412E92E99400C1012D /* fluid_file.cpp */,
 				8A9A01DF29F3391E000AF341 /* fluid_sys.c */,
 				8A9A025229F33B18000AF341 /* fluid_rtkit.c */,
-			);
-			name = "Source Files";
-			sourceTree = "<group>";
-		};
-		8A9A028629F3DEDA000AF341 /* gentables */ = {
-			isa = PBXGroup;
-			children = (
-				8A9A029F29F3DF20000AF341 /* Source Files */,
-			);
-			name = gentables;
-			sourceTree = "<group>";
-		};
-		8A9A029F29F3DF20000AF341 /* Source Files */ = {
-			isa = PBXGroup;
-			children = (
-				8A9A02A329F3DF52000AF341 /* gen_conv.c */,
-				8A9A02A129F3DF52000AF341 /* gen_rvoice_dsp.c */,
-				8A9A02A229F3DF52000AF341 /* make_tables.c */,
+				8ADA283B2E92E5A000C1012D /* ConstExprArr.hpp */,
+				8ADA282B2E92E52800C1012D /* fluid_cb2amp.cpp */,
+				8ADA282C2E92E52800C1012D /* fluid_concave.cpp */,
+				8ADA282D2E92E52800C1012D /* fluid_convex.cpp */,
+				8ADA282E2E92E52800C1012D /* fluid_ct2hz.cpp */,
+				8ADA282F2E92E52800C1012D /* fluid_interp_coeff.cpp */,
+				8ADA28302E92E52800C1012D /* fluid_interp_coeff_linear.cpp */,
+				8ADA28312E92E52800C1012D /* fluid_interp_coeff_sinc7.cpp */,
+				8ADA28322E92E52800C1012D /* fluid_pan.cpp */,
 			);
 			name = "Source Files";
 			sourceTree = "<group>";
@@ -202,7 +195,6 @@
 		FA1A53E114B24BCAA91A8CAC = {
 			isa = PBXGroup;
 			children = (
-				8A9A028629F3DEDA000AF341 /* gentables */,
 				36447F540BDA48C1A8232D9C /* libfluidsynth */,
 				0597CA0591654880B4A92172 /* Products */,
 			);
@@ -221,28 +213,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				8A9A02AA29F3E154000AF341 /* PBXTargetDependency */,
 			);
 			name = fluidsynth;
 			productName = fluidsynth;
 			productReference = 8A9A012E29F32EEF000AF341 /* libfluidsynth.a */;
 			productType = "com.apple.product-type.library.static";
-		};
-		8A9A029529F3DEFE000AF341 /* make_tables */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8A9A029A29F3DEFF000AF341 /* Build configuration list for PBXNativeTarget "make_tables" */;
-			buildPhases = (
-				8A9A029229F3DEFE000AF341 /* Sources */,
-				8A9A02A829F3DFF7000AF341 /* Run Script */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = make_tables;
-			productName = make_tables;
-			productReference = 8A9A029629F3DEFE000AF341 /* make_tables */;
-			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -252,15 +227,12 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				DefaultBuildSystemTypeForWorkspace = Latest;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					8A9A012D29F32EEF000AF341 = {
 						CreatedOnToolsVersion = 14.3;
 						DevelopmentTeam = 5PRK96AWD5;
 						ProvisioningStyle = Automatic;
-					};
-					8A9A029529F3DEFE000AF341 = {
-						CreatedOnToolsVersion = 14.3;
 					};
 				};
 			};
@@ -276,34 +248,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8A9A029529F3DEFE000AF341 /* make_tables */,
 				8A9A012D29F32EEF000AF341 /* fluidsynth */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		8A9A02A829F3DFF7000AF341 /* Run Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				$PROJECT_DIR/include/fluid_conv_tables.inc.h,
-				$PROJECT_DIR/include/fluid_rvoice_dsp_tables.inc.h,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "$TARGET_BUILD_DIR/make_tables $PROJECT_DIR/include/ || true\n";
-		};
 		8A9A040C29F55DBC000AF341 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -323,7 +273,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $PROJECT_DIR/fluidsynth/include/fluidsynth.cmake $PROJECT_DIR/fluidsynth/include/fluidsynth.h\nsed -i '' -e 's/#cmakedefine01 BUILD_SHARED_LIBS/#define BUILD_SHARED_LIBS 0/g' $PROJECT_DIR/fluidsynth/include/fluidsynth.h\ncp $PROJECT_DIR/fluidsynth/include/fluidsynth/version.h.in $PROJECT_DIR/fluidsynth/include/fluidsynth/version.h\nsed -i '' -e 's/@FLUIDSYNTH_VERSION@/2.4.1/g' -e 's/@FLUIDSYNTH_VERSION_MAJOR@/2/g' -e 's/@FLUIDSYNTH_VERSION_MINOR@/4/g' -e 's/@FLUIDSYNTH_VERSION_MICRO@/1/g' $PROJECT_DIR/fluidsynth/include/fluidsynth/version.h\n";
+			shellScript = "git -c advice.detachedHead=false clone -b v1.18.0 --depth 1 https://github.com/kthohr/gcem $PROJECT_DIR/fluidsynth/gcem || true\ncp $PROJECT_DIR/fluidsynth/include/fluidsynth.cmake $PROJECT_DIR/fluidsynth/include/fluidsynth.h\nsed -i '' -e 's/#cmakedefine01 BUILD_SHARED_LIBS/#define BUILD_SHARED_LIBS 0/g' $PROJECT_DIR/fluidsynth/include/fluidsynth.h\ncp $PROJECT_DIR/fluidsynth/include/fluidsynth/version.h.in $PROJECT_DIR/fluidsynth/include/fluidsynth/version.h\nsed -i '' -e 's/@FLUIDSYNTH_VERSION@/2.5.0/g' -e 's/@FLUIDSYNTH_VERSION_MAJOR@/2/g' -e 's/@FLUIDSYNTH_VERSION_MINOR@/5/g' -e 's/@FLUIDSYNTH_VERSION_MICRO@/0/g' $PROJECT_DIR/fluidsynth/include/fluidsynth/version.h\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -346,6 +296,14 @@
 				8A9A023B29F339D8000AF341 /* fluid_seqbind_notes.cpp in Sources */,
 				8A9A022C29F339AF000AF341 /* fluid_gen.c in Sources */,
 				8A9A022B29F339AF000AF341 /* fluid_tuning.c in Sources */,
+				8ADA28332E92E52800C1012D /* fluid_ct2hz.cpp in Sources */,
+				8ADA28342E92E52800C1012D /* fluid_cb2amp.cpp in Sources */,
+				8ADA28352E92E52800C1012D /* fluid_interp_coeff_linear.cpp in Sources */,
+				8ADA28362E92E52800C1012D /* fluid_interp_coeff_sinc7.cpp in Sources */,
+				8ADA28372E92E52800C1012D /* fluid_interp_coeff.cpp in Sources */,
+				8ADA28382E92E52800C1012D /* fluid_pan.cpp in Sources */,
+				8ADA28392E92E52800C1012D /* fluid_convex.cpp in Sources */,
+				8ADA283A2E92E52800C1012D /* fluid_concave.cpp in Sources */,
 				8A9A024B29F33A29000AF341 /* fluid_adriver.c in Sources */,
 				8A9A021429F3397F000AF341 /* fluid_rvoice.c in Sources */,
 				8A9A023D29F339D8000AF341 /* fluid_midi.c in Sources */,
@@ -355,10 +313,11 @@
 				8A9A024429F339F7000AF341 /* fluid_filerenderer.c in Sources */,
 				8A9A025329F33B18000AF341 /* fluid_rtkit.c in Sources */,
 				8A9A01FA29F3394C000AF341 /* fluid_sffile.c in Sources */,
-				8A7F92112E3D739100BC70F8 /* fluid_iir_filter_impl.cpp in Sources */,
+				8ADA28022E92DF5900C1012D /* fluid_iir_filter_impl.cpp in Sources */,
 				8A9A024F29F33A36000AF341 /* fluid_coremidi.c in Sources */,
 				8A9A024329F339F7000AF341 /* fluid_ladspa.c in Sources */,
 				8A7079012E0C6159009CDF56 /* fluid_sys_cpp11.cpp in Sources */,
+				8ADA28422E92E99400C1012D /* fluid_file.cpp in Sources */,
 				8A9A020F29F3397F000AF341 /* fluid_rev.c in Sources */,
 				8A9A02BF29F3E265000AF341 /* fluid_conv.c in Sources */,
 				8A9A022729F339AF000AF341 /* fluid_event.c in Sources */,
@@ -377,31 +336,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8A9A029229F3DEFE000AF341 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8A9A02A629F3DF52000AF341 /* gen_conv.c in Sources */,
-				8A9A02A529F3DF52000AF341 /* make_tables.c in Sources */,
-				8A9A02A429F3DF52000AF341 /* gen_rvoice_dsp.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		8A9A02AA29F3E154000AF341 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8A9A029529F3DEFE000AF341 /* make_tables */;
-			targetProxy = 8A9A02A929F3E154000AF341 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		2DCDFF75D4274404BC7B15E6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -441,6 +383,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -481,7 +424,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -516,7 +459,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/System/iOSSupport/System/Library/Frameworks",
 				);
-				GCC_C_LANGUAGE_STANDARD = c17;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -536,7 +479,7 @@
 					"\"$(PROJECT_DIR)\"",
 					"\"$(PROJECT_DIR)/fluidsynth/src\"/**",
 					"\"$(PROJECT_DIR)/fluidsynth/include\"",
-					"\"$(PROJECT_DIR)/fluidsynth/utils\"",
+					"\"$(PROJECT_DIR)/fluidsynth/gcem/include\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -559,7 +502,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -594,7 +537,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/System/iOSSupport/System/Library/Frameworks",
 				);
-				GCC_C_LANGUAGE_STANDARD = c17;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
@@ -608,7 +551,7 @@
 					"\"$(PROJECT_DIR)\"",
 					"\"$(PROJECT_DIR)/fluidsynth/src\"/**",
 					"\"$(PROJECT_DIR)/fluidsynth/include\"",
-					"\"$(PROJECT_DIR)/fluidsynth/utils\"",
+					"\"$(PROJECT_DIR)/fluidsynth/gcem/include\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -623,87 +566,6 @@
 					"-Wno-ambiguous-macro",
 					"-Wno-conditional-uninitialized",
 				);
-			};
-			name = Release;
-		};
-		8A9A029B29F3DEFF000AF341 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
-				DEAD_CODE_STRIPPING = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_HARDENED_RUNTIME = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				HEADER_SEARCH_PATHS = (
-					"\"$(PROJECT_DIR)/fluidsynth/src\"",
-					"\"$(PROJECT_DIR)\"",
-				);
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-			};
-			name = Debug;
-		};
-		8A9A029C29F3DEFF000AF341 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Automatic;
-				DEAD_CODE_STRIPPING = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				HEADER_SEARCH_PATHS = (
-					"\"$(PROJECT_DIR)/fluidsynth/src\"",
-					"\"$(PROJECT_DIR)\"",
-				);
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
@@ -724,15 +586,6 @@
 			buildConfigurations = (
 				8A9A013529F32EEF000AF341 /* Debug */,
 				8A9A013629F32EEF000AF341 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8A9A029A29F3DEFF000AF341 /* Build configuration list for PBXNativeTarget "make_tables" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8A9A029B29F3DEFF000AF341 /* Debug */,
-				8A9A029C29F3DEFF000AF341 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

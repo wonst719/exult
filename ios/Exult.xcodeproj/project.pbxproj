@@ -13,7 +13,6 @@
 		8A057F9227A8362E00948459 /* CoreAudioMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A057F8427A835AF00948459 /* CoreAudioMidiDriver.cpp */; };
 		8A1C58211FE7D91B00738E40 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A1C581B1FE7D91B00738E40 /* libz.tbd */; };
 		8A1FC4272571C747007B86DD /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A8340BF1F8977FB000696C7 /* CoreMotion.framework */; };
-		8A2501E92E3D7D6500CCE820 /* libfluidlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A38EB582E29B5CA00450868 /* libfluidlite.a */; };
 		8A2C52511DE6E1810016E16A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A7F1F8E1DE5BDD40066F6FC /* CoreFoundation.framework */; };
 		8A2C52591DE6E8E50016E16A /* crc.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD671A6E3161006C8BE4 /* crc.cc */; };
 		8A2C525A1DE6E8E90016E16A /* Flat.cc in Sources */ = {isa = PBXBuildFile; fileRef = E700DD6A1A6E3161006C8BE4 /* Flat.cc */; };
@@ -36,7 +35,7 @@
 		8A33B5EF2C2051B800075AF4 /* AdvancedOptions_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A33B5EE2C2051B800075AF4 /* AdvancedOptions_gump.cc */; };
 		8A38EB772E2AA11300450868 /* playscene.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A38EB762E2AA11300450868 /* playscene.cc */; };
 		8A45A3B8247C068500F12F4D /* joythumb-glass.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A45A3AC247C068500F12F4D /* joythumb-glass.png */; };
-		8A599C2224605925006E3252 /* libmt32emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A599C21246058A9006E3252 /* libmt32emu.a */; };
+		8A599C2224605925006E3252 /* libmt32emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A599C21246058A9006E3252 /* libmt32emu.a */; platformFilter = ios; };
 		8A6013712057CFAD00FCA555 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A6013662057CF0C00FCA555 /* Metal.framework */; };
 		8A7F1F7E1DE5B7820066F6FC /* expack.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8A7F1F7D1DE5B7820066F6FC /* expack.cc */; };
 		8A8340C91F897806000696C7 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A8340C81F897806000696C7 /* GameController.framework */; };
@@ -58,6 +57,7 @@
 		8AC797C71C8D0E4F001AF014 /* unzip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AC797C51C8D0E4F001AF014 /* unzip.cc */; };
 		8AC797C81C8D0E4F001AF014 /* zip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AC797C61C8D0E4F001AF014 /* zip.cc */; };
 		8AD4A9311A92B9DB0004762D /* InputOptions_gump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8AD4A92F1A92B9DB0004762D /* InputOptions_gump.cc */; };
+		8ADA282A2E92E48A00C1012D /* libfluidsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8ADA28232E92E47D00C1012D /* libfluidsynth.a */; platformFilter = ios; };
 		8ADFFDF625DE791000FC4D3A /* verify.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8ADFFDF425DE791000FC4D3A /* verify.cc */; };
 		8AE8B9BE2E400B740094DF3C /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AE8B9BC2E400B4F0094DF3C /* SDL3.framework */; };
 		8AE8B9BF2E400B740094DF3C /* SDL3.framework in Embedd SDL3 Framework */ = {isa = PBXBuildFile; fileRef = 8AE8B9BC2E400B4F0094DF3C /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -278,13 +278,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		8A38EB572E29B5CA00450868 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A38EB492E29B49400450868 /* libfluidlite.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E700E0351A6E41C5006C8BE4;
-			remoteInfo = libfluidlite;
-		};
 		8A38FFF31DE6F68400B942F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -298,6 +291,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 4F58F7AA67A348AC99788A8C;
 			remoteInfo = mt32emu;
+		};
+		8ADA28222E92E47D00C1012D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8ADA28142E92E06900C1012D /* libfluidsynth.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8A9A012E29F32EEF000AF341;
+			remoteInfo = fluidsynth;
 		};
 		8AE567782E51059900DC14BD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -363,7 +363,6 @@
 		8A33B5ED2C2051B800075AF4 /* ConfigSetting_widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConfigSetting_widget.h; path = ../gumps/ConfigSetting_widget.h; sourceTree = "<group>"; };
 		8A33B5EE2C2051B800075AF4 /* AdvancedOptions_gump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AdvancedOptions_gump.cc; path = ../gumps/AdvancedOptions_gump.cc; sourceTree = "<group>"; };
 		8A33B5F02C2051B800075AF4 /* AdvancedOptions_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AdvancedOptions_gump.h; path = ../gumps/AdvancedOptions_gump.h; sourceTree = "<group>"; };
-		8A38EB492E29B49400450868 /* libfluidlite.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = libfluidlite.xcodeproj; sourceTree = "<group>"; };
 		8A38EB752E2AA11300450868 /* playscene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = playscene.h; path = ../playscene.h; sourceTree = SOURCE_ROOT; };
 		8A38EB762E2AA11300450868 /* playscene.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = playscene.cc; path = ../playscene.cc; sourceTree = SOURCE_ROOT; };
 		8A45A3AC247C068500F12F4D /* joythumb-glass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joythumb-glass.png"; sourceTree = "<group>"; };
@@ -401,6 +400,7 @@
 		8AD2C46F1DF83918006D6005 /* ios_state.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ios_state.hpp; path = ../headers/ios_state.hpp; sourceTree = "<group>"; };
 		8AD4A92F1A92B9DB0004762D /* InputOptions_gump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InputOptions_gump.cc; path = ../gumps/InputOptions_gump.cc; sourceTree = "<group>"; };
 		8AD4A9301A92B9DB0004762D /* InputOptions_gump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputOptions_gump.h; path = ../gumps/InputOptions_gump.h; sourceTree = "<group>"; };
+		8ADA28142E92E06900C1012D /* libfluidsynth.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = libfluidsynth.xcodeproj; sourceTree = "<group>"; };
 		8ADFFDF425DE791000FC4D3A /* verify.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = verify.cc; path = ../verify.cc; sourceTree = "<group>"; };
 		8ADFFDF525DE791000FC4D3A /* verify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = verify.h; path = ../verify.h; sourceTree = "<group>"; };
 		8AE8B9BC2E400B4F0094DF3C /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL3.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -856,7 +856,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A2501E92E3D7D6500CCE820 /* libfluidlite.a in Frameworks */,
+				8ADA282A2E92E48A00C1012D /* libfluidsynth.a in Frameworks */,
 				8A599C2224605925006E3252 /* libmt32emu.a in Frameworks */,
 				E738C8551A6FFF71003A950D /* libogg.a in Frameworks */,
 				E738C8561A6FFF75003A950D /* libvorbis.a in Frameworks */,
@@ -970,14 +970,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		8A38EB542E29B5CA00450868 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				8A38EB582E29B5CA00450868 /* libfluidlite.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		8A599C1D246058A9006E3252 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -994,6 +986,14 @@
 			);
 			name = sha1;
 			path = ../files/sha1;
+			sourceTree = "<group>";
+		};
+		8ADA281F2E92E47D00C1012D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8ADA28232E92E47D00C1012D /* libfluidsynth.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		8AE5676F2E51059900DC14BD /* Products */ = {
@@ -1684,7 +1684,7 @@
 				8A599C1C246058A9006E3252 /* libmt32emu.xcodeproj */,
 				E738C8491A6FFF58003A950D /* libogg.xcodeproj */,
 				E738C84F1A6FFF65003A950D /* libvorbis.xcodeproj */,
-				8A38EB492E29B49400450868 /* libfluidlite.xcodeproj */,
+				8ADA28142E92E06900C1012D /* libfluidsynth.xcodeproj */,
 				8A2515082E3DA1D500CCE820 /* SDL.xcodeproj */,
 			);
 			name = Libs;
@@ -1763,8 +1763,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 8A38EB542E29B5CA00450868 /* Products */;
-					ProjectRef = 8A38EB492E29B49400450868 /* libfluidlite.xcodeproj */;
+					ProductGroup = 8ADA281F2E92E47D00C1012D /* Products */;
+					ProjectRef = 8ADA28142E92E06900C1012D /* libfluidsynth.xcodeproj */;
 				},
 				{
 					ProductGroup = 8A599C1D246058A9006E3252 /* Products */;
@@ -1792,19 +1792,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		8A38EB582E29B5CA00450868 /* libfluidlite.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			name = libfluidlite.a;
-			path = liblibfluidlite.a;
-			remoteRef = 8A38EB572E29B5CA00450868 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		8A599C21246058A9006E3252 /* libmt32emu.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libmt32emu.a;
 			remoteRef = 8A599C20246058A9006E3252 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8ADA28232E92E47D00C1012D /* libfluidsynth.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libfluidsynth.a;
+			remoteRef = 8ADA28222E92E47D00C1012D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		8AE567792E51059900DC14BD /* SDL3.framework */ = {
