@@ -28,9 +28,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ignore_unused_variable_warning.h"
 #include "ucloc.h"
 
-#include <iosfwd>
+#include <algorithm>
 #include <map>
+#include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 class Uc_expression;
@@ -40,6 +42,79 @@ class Uc_function;
 class Uc_var_symbol;
 class Uc_del_expression;
 class Basic_block;
+
+struct Uc_loop_data {
+	Basic_block* start;
+	Basic_block* exit;
+	std::string  name;
+
+	bool operator==(const std::string& nm) const {
+		return name == nm;
+	}
+};
+
+class Uc_loop_data_stack {
+	using Data = std::vector<Uc_loop_data>;
+	Data loop_data{
+			{nullptr, nullptr, ""}
+    };
+
+public:
+	void push(Basic_block* start, Basic_block* exit, std::string name) {
+		loop_data.push_back(Uc_loop_data{start, exit, std::move(name)});
+	}
+
+	void pop() {
+		if (loop_data.empty()) {
+			throw std::runtime_error("Loop data stack underflow!");
+		}
+		loop_data.pop_back();
+	}
+
+	const Uc_loop_data& back() {
+		if (loop_data.empty()) {
+			throw std::runtime_error("Loop data stack underflow!");
+		}
+		return loop_data.back();
+	}
+
+	struct find_result {
+		Data::const_reverse_iterator iter;
+		bool                         found;
+
+		bool has_value() const {
+			return found;
+		}
+
+		explicit operator bool() const {
+			return has_value();
+		}
+
+		bool operator!() const {
+			return !has_value();
+		}
+
+		const Uc_loop_data& unsafe_get() const {
+			return *iter;
+		}
+
+		const Uc_loop_data& get() const {
+			if (!has_value()) {
+				throw std::runtime_error(
+						"Iterator dereferenced without value!");
+			}
+			return unsafe_get();
+		}
+	};
+
+	find_result find(const std::string& needle) const {
+		if (needle.empty()) {
+			return {loop_data.crbegin(), true};
+		}
+		auto iter = std::find(loop_data.crbegin(), loop_data.crend(), needle);
+		return {iter, iter != loop_data.crend()};
+	}
+};
 
 /*
  *  A statement:
@@ -52,11 +127,16 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr)
+			Uc_loop_data_stack&                  break_continue)
 			= 0;
 
 	// Whether statement is a fallthrough statement or ends in one.
 	virtual bool falls_through() const {
+		return false;
+	}
+
+	virtual bool set_loop_name(const std::string& nm) {
+		ignore_unused_variable_warning(nm);
 		return false;
 	}
 };
@@ -79,11 +159,13 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 
 	bool falls_through() const override {
 		return !statements.empty() && statements.back()->falls_through();
 	}
+
+	bool set_loop_name(const std::string& nm) override;
 };
 
 /*
@@ -102,7 +184,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -123,7 +205,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -151,13 +233,15 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
  *  A generic breakable statement:
  */
 class Uc_breakable_statement : public Uc_statement {
+protected:
+	std::string   name;       // Loop name, or empty for unnamed.
 	Uc_statement* stmt;       // What to execute.
 	Uc_statement* nobreak;    // What to execute after normal finish.
 public:
@@ -170,19 +254,22 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
+
+	bool set_loop_name(const std::string& nm) override {
+		name = nm;
+		return true;
+	}
 };
 
 /*
  *  A WHILE statement:
  */
-class Uc_while_statement : public Uc_statement {
-	Uc_expression* expr;       // What to test.
-	Uc_statement*  stmt;       // What to execute.
-	Uc_statement*  nobreak;    // What to execute after normal finish.
+class Uc_while_statement : public Uc_breakable_statement {
+	Uc_expression* expr;    // What to test.
 public:
 	Uc_while_statement(Uc_expression* e, Uc_statement* s, Uc_statement* nb)
-			: expr(e), stmt(s), nobreak(nb) {}
+			: Uc_breakable_statement(s, nb), expr(e) {}
 
 	~Uc_while_statement() override;
 	// Generate code.
@@ -190,19 +277,17 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
  *  A DO...WHILE statement:
  */
-class Uc_dowhile_statement : public Uc_statement {
-	Uc_expression* expr;       // What to test.
-	Uc_statement*  stmt;       // What to execute.
-	Uc_statement*  nobreak;    // What to execute after normal finish.
+class Uc_dowhile_statement : public Uc_breakable_statement {
+	Uc_expression* expr;    // What to test.
 public:
 	Uc_dowhile_statement(Uc_expression* e, Uc_statement* s, Uc_statement* nb)
-			: expr(e), stmt(s), nobreak(nb) {}
+			: Uc_breakable_statement(s, nb), expr(e) {}
 
 	~Uc_dowhile_statement() override;
 	// Generate code.
@@ -210,18 +295,16 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
  *  An infinite loop statement:
  */
-class Uc_infinite_loop_statement : public Uc_statement {
-	Uc_statement* stmt;       // What to execute.
-	Uc_statement* nobreak;    // What to execute after normal finish.
+class Uc_infinite_loop_statement : public Uc_breakable_statement {
 public:
 	Uc_infinite_loop_statement(Uc_statement* s, Uc_statement* nb)
-			: stmt(s), nobreak(nb) {}
+			: Uc_breakable_statement(s, nb) {}
 
 	~Uc_infinite_loop_statement() override;
 	// Generate code.
@@ -229,7 +312,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -242,13 +325,16 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
  *  Base for an array loop statement:
  */
 class Uc_arrayloop_statement_base : public Uc_statement {
+protected:
+	std::string name;    // Loop name, or empty for unnamed.
+private:
 	Uc_var_symbol* var;            // Loop variable.
 	Uc_var_symbol* array;          // Array to loop over.
 	Uc_var_symbol* index{};        // Counter.
@@ -271,6 +357,11 @@ public:
 			Basic_block* for_top, Basic_block* loop_body,
 			Basic_block* past_loop);
 	void finish(Uc_function* fun);    // Create tmps. if necessary.
+
+	bool set_loop_name(const std::string& nm) override {
+		name = nm;
+		return true;
+	}
 };
 
 /*
@@ -298,7 +389,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -320,7 +411,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -337,33 +428,47 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
  *  BREAK statement:
  */
 class Uc_break_statement : public Uc_statement {
+	// Name of loop to break, or empty for innermost.
+	std::string loop_name;
+
 public:
+	Uc_break_statement() = default;
+
+	Uc_break_statement(std::string nm) : loop_name(std::move(nm)) {}
+
 	// Generate code.
 	void gen(
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
  *  CONTINUE statement:
  */
 class Uc_continue_statement : public Uc_statement {
+	// Name of loop to continue, or empty for innermost.
+	std::string loop_name;
+
 public:
+	Uc_continue_statement() = default;
+
+	Uc_continue_statement(std::string nm) : loop_name(std::move(nm)) {}
+
 	// Generate code.
 	void gen(
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -376,10 +481,9 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block*                         start = nullptr,
-			Basic_block*                         exit  = nullptr) override {
+			Uc_loop_data_stack&                  break_continue) override {
 		ignore_unused_variable_warning(
-				fun, blocks, curr, end, labels, start, exit);
+				fun, blocks, curr, end, labels, break_continue);
 	}
 
 	bool falls_through() const override {
@@ -400,7 +504,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 
 	const std::string& get_label() const {
 		return label;
@@ -420,7 +524,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -432,7 +536,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -462,7 +566,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 
 	bool falls_through() const override {
 		return statements != nullptr && statements->falls_through();
@@ -570,7 +674,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 
 	bool falls_through() const override {
 		return false;
@@ -645,12 +749,10 @@ public:
  *  conversation.  It provides for CASE entries for the comparisons, and
  *  also generates push/pop-answers so these can be nested.
  */
-class Uc_converse_statement : public Uc_statement {
-	static int          nest;            // Keeps track of nesting.
-	Uc_expression*      answers;         // Answers to add.
-	Uc_block_statement* preamble;        // Statements before the first case.
-	Uc_statement*       nobreak;         // What to execute after normal finish.
-	std::vector<Uc_statement*> cases;    // What to execute.
+class Uc_converse_statement : public Uc_breakable_statement {
+	static int                 nest;        // Keeps track of nesting.
+	Uc_expression*             answers;     // Answers to add.
+	std::vector<Uc_statement*> cases;       // What to execute.
 	bool                       nestconv;    // Whether or not to force push/pop.
 public:
 	Uc_converse_statement(
@@ -662,7 +764,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -678,7 +780,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -708,7 +810,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -769,7 +871,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -786,7 +888,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -801,7 +903,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -818,7 +920,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -836,7 +938,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 /*
@@ -853,7 +955,7 @@ public:
 			Uc_function* fun, std::vector<Basic_block*>& blocks,
 			Basic_block*& curr, Basic_block* end,
 			std::map<std::string, Basic_block*>& labels,
-			Basic_block* start = nullptr, Basic_block* exit = nullptr) override;
+			Uc_loop_data_stack&                  break_continue) override;
 };
 
 #endif

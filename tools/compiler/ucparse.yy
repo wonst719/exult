@@ -728,6 +728,7 @@ statement_block:
 	| label_statement statement
 		{	// Label followed by statements; "grab" next statement for label.
 		if ($2) {
+			$2->set_loop_name($1->get_label());
 			auto* stmt = new Uc_block_statement();
 			stmt->add($1);
 			stmt->add($2);
@@ -2286,11 +2287,15 @@ opt_script_delay:
 break_statement:
 	BREAK ';'
 		{ $$ = new Uc_break_statement(); }
+	| BREAK IDENTIFIER ';'
+		{ $$ = new Uc_break_statement($2); }
 	;
 
 continue_statement:
 	CONTINUE ';'
 		{ $$ = new Uc_continue_statement(); }
+	| CONTINUE IDENTIFIER ';'
+		{ $$ = new Uc_continue_statement($2); }
 	;
 
 fallthrough_statement:
