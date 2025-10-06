@@ -38,10 +38,13 @@ using std::strcpy;
 using std::strlen;
 
 std::vector<char*> Uc_location::source_names;
-char*              Uc_location::cur_source  = nullptr;
-int                Uc_location::cur_line    = 0;
-int                Uc_location::num_errors  = 0;
-bool               Uc_location::strict_mode = false;
+
+char* Uc_location::cur_source   = nullptr;
+int   Uc_location::cur_line     = 0;
+int   Uc_location::num_errors   = 0;
+bool  Uc_location::strict_mode  = false;
+bool  Uc_location::color_output = false;
+bool  Uc_location::ucxt_mode    = false;
 
 /*
  *  Set current source and line #.
@@ -64,12 +67,42 @@ void Uc_location::set_cur(const char* s, int l) {
 	}
 }
 
+void Uc_location::assemble_message(
+		const char* msg, const char* source_file, int line_num, bool is_error) {
+	// For colorization.
+	constexpr static const std::string_view error_prefix
+			= "\033[1;31merror:\033[0m ";
+	constexpr static const std::string_view warning_prefix
+			= "\033[1;35mwarning:\033[0m ";
+	constexpr static const std::string_view source_prefix = "\033[1m";
+	constexpr static const std::string_view line_prefix   = "\033[1;34m";
+	constexpr static const std::string_view reset_style   = "\033[0m";
+	if (color_output) {
+		cout << source_prefix << source_file << ":" << reset_style
+			 << line_prefix << line_num << ": " << reset_style;
+		if (is_error) {
+			cout << error_prefix;
+		} else {
+			cout << warning_prefix;
+		}
+		cout << msg << reset_style << endl;
+	} else {
+		cout << source_file << ':' << line_num << ": ";
+		if (is_error) {
+			cout << "error: ";
+		} else {
+			cout << "warning: ";
+		}
+		cout << msg << endl;
+	}
+}
+
 /*
  *  Print error for stored position.
  */
 
 void Uc_location::error(const char* s) {
-	cout << source << ':' << line + 1 << ": " << s << endl;
+	assemble_message(s, source, line + 1, true);
 	num_errors++;
 }
 
@@ -78,8 +111,7 @@ void Uc_location::error(const char* s) {
  */
 
 void Uc_location::warning(const char* s) {
-	cout << source << ':' << line + 1 << ": "
-		 << "Warning: " << s << endl;
+	assemble_message(s, source, line + 1, false);
 }
 
 /*
@@ -87,11 +119,10 @@ void Uc_location::warning(const char* s) {
  */
 
 void Uc_location::yyerror(const char* s) {
-	cout << cur_source << ':' << cur_line + 1 << ": " << s << endl;
+	assemble_message(s, cur_source, cur_line + 1, true);
 	num_errors++;
 }
 
 void Uc_location::yywarning(const char* s) {
-	cout << cur_source << ':' << cur_line + 1 << ": "
-		 << "Warning: " << s << endl;
+	assemble_message(s, cur_source, cur_line + 1, false);
 }

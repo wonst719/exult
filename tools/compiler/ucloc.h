@@ -23,25 +23,34 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifndef INCL_UCLOC
-#define INCL_UCLOC 1
+#	define INCL_UCLOC 1
 
-#include <vector>
+#	include <string_view>
+#	include <vector>
 
 /*
  *  Location in source code.
  */
 class Uc_location {
 	static std::vector<char*> source_names;    // All filenames.
-	static char*              cur_source;      // Source filename.
-	static int                cur_line;        // Line #.
-	static int                num_errors;      // Total #.
-	static bool strict_mode;    // If all blocks are required to have braces
-	char*       source;
-	int         line;
+
+	static char* cur_source;      // Source filename.
+	static int   cur_line;        // Line #.
+	static int   num_errors;      // Total #.
+	static bool  strict_mode;     // If all blocks are required to have braces
+	static bool  color_output;    // If output should be colorized.
+	static bool  ucxt_mode;       // If compiling UCXT output.
+
+	char* source;
+	int   line;
+
+	static void assemble_message(
+			const char* msg, const char* source_file, int line_num,
+			bool is_error);
 
 public:
-	Uc_location()    // Use current location.
-			: source(cur_source), line(cur_line) {}
+	// Use current location.
+	Uc_location() : source(cur_source), line(cur_line) {}
 
 	static void set_cur(const char* s, int l);
 
@@ -63,6 +72,18 @@ public:
 
 	const char* get_source() {
 		return source;
+	}
+
+	static void set_color_output(bool tf) {
+		color_output = tf;
+	}
+
+	static bool get_ucxt_mode() {
+		return ucxt_mode;
+	}
+
+	static void set_ucxt_mode(bool tf) {
+		ucxt_mode = tf;
 	}
 
 	void        error(const char* s);      // Print error.

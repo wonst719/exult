@@ -2352,7 +2352,9 @@ label_statement:
 goto_statement:
 	GOTO IDENTIFIER
 		{
-		yywarning("You *really* shouldn't using goto statements...");
+		if (!Uc_location::get_ucxt_mode()) {
+			yywarning("You *really* shouldn't using goto statements...");
+		}
 		$$ = new Uc_goto_statement($2);
 		}
 	;
@@ -2564,7 +2566,7 @@ primary:
 	INT_LITERAL
 		{
 		UsecodeOps op = !const_opcode.empty() ? const_opcode.back() : UC_PUSHI;
-		if (is_sint_32bit($1) && op != UC_PUSHI32) {
+		if (is_sint_32bit($1) && op != UC_PUSHI32 && !Uc_location::get_ucxt_mode()) {
 			char buf[150];
 			if (is_int_32bit($1)) {
 				snprintf(

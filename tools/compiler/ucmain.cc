@@ -38,13 +38,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cstring>
 #include <fstream>
 #include <iosfwd>
-#include <string>
+#include <string_view>
 #include <vector>
 
 using std::ios;
 using std::strcpy;
 using std::strlen;
 using std::strrchr;
+using std::string_view_literals::operator""sv;
 
 // THIS is what the parser produces.
 extern std::vector<Uc_design_unit*> units;
@@ -62,9 +63,10 @@ int main(int argc, char** argv) {
 	char                        outbuf[256];
 	char*                       outname        = nullptr;
 	bool                        want_sym_table = true;
-	static const char*          optstring      = "o:I:sb";
+	static const char*          optstring      = "o:I:sbc:u";
 	Uc_function::Intrinsic_type ty             = Uc_function::unset;
 	opterr = 0;    // Don't let getopt() print errs.
+	Uc_location::set_color_output(isatty(fileno(stderr)));
 	int optchr;
 	while ((optchr = getopt(argc, argv, optstring)) != -1) {
 		switch (optchr) {
@@ -74,11 +76,28 @@ int main(int argc, char** argv) {
 		case 'I':    // Include dir.
 			include_dirs.push_back(optarg);
 			break;
+		case 'c':    // Output colorization mode.
+			if (optarg == "always"sv) {
+				Uc_location::set_color_output(true);
+			} else if (optarg == "never"sv) {
+				Uc_location::set_color_output(false);
+			} else if (optarg == "auto"sv) {
+				Uc_location::set_color_output(isatty(fileno(stderr)));
+			} else {
+				std::cout << "Invalid argument to -c: '" << optarg
+						  << "' expected one of 'always', 'never' or 'auto'"
+						  << std::endl;
+				return 1;
+			}
+			break;
 		case 's':
 			ty = Uc_function::si;
 			break;
 		case 'b':
 			want_sym_table = false;
+			break;
+		case 'u':
+			Uc_location::set_ucxt_mode(true);
 			break;
 		}
 	}
