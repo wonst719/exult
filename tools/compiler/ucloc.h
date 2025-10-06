@@ -23,10 +23,35 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifndef INCL_UCLOC
-#	define INCL_UCLOC 1
+#define INCL_UCLOC
 
-#	include <string_view>
-#	include <vector>
+#include <string>
+#include <vector>
+
+#undef FORMAT_STRING
+#undef PRINTF_FORMAT
+#ifdef __GNUG__
+#	define FORMAT_STRING(p) p
+#	ifdef __clang__
+#		define PRINTF_FORMAT(fmtarg, firstvararg) \
+			__attribute__((__format__(printf, fmtarg, firstvararg)))
+#	else
+#		define PRINTF_FORMAT(fmtarg, firstvararg) \
+			__attribute__((__format__(gnu_printf, fmtarg, firstvararg)))
+#	endif
+#elif defined(_MSC_VER)
+#	if _MSC_VER >= 1400
+#		include <sal.h>
+#		if _MSC_VER > 1400
+#			define FORMAT_STRING(p) _Printf_format_string_ p
+#		else
+#			define FORMAT_STRING(p) __format_string p
+#		endif /* FORMAT_STRING */
+#	else
+#		define FORMAT_STRING(p) p
+#		define PRINTF_FORMAT(fmtarg, firstvararg)
+#	endif /* _MSC_VER */
+#endif
 
 /*
  *  Location in source code.
@@ -49,6 +74,10 @@ class Uc_location {
 			bool is_error);
 
 public:
+	struct preformatted_t {};
+
+	constexpr static preformatted_t preformatted = {};
+
 	// Use current location.
 	Uc_location() : source(cur_source), line(cur_line) {}
 
@@ -86,14 +115,38 @@ public:
 		ucxt_mode = tf;
 	}
 
-	void        error(const char* s);      // Print error.
-	void        warning(const char* s);    // Print warning.
-	static void yyerror(const char* s);    // Print error at cur. location.
-	static void yywarning(const char* s);
+	static void yyerror(preformatted_t tag, const char* s);
+	static void yywarning(preformatted_t tag, const char* s);
+
+	// Variadic versions.
+	// On stack, fixed buffer.
+	PRINTF_FORMAT(2, 3)
+	void error(FORMAT_STRING(const char* format), ...);
+	PRINTF_FORMAT(2, 3)
+	void warning(FORMAT_STRING(const char* format), ...);
+	PRINTF_FORMAT(1, 2)
+	static void yyerror(FORMAT_STRING(const char* format), ...);
+	PRINTF_FORMAT(1, 2)
+	static void yywarning(FORMAT_STRING(const char* format), ...);
+
+	// On heap, user-specified buffer.
+	PRINTF_FORMAT(3, 4)
+	void error(std::string& buffer, FORMAT_STRING(const char* format), ...);
+	PRINTF_FORMAT(3, 4)
+	void warning(std::string& buffer, FORMAT_STRING(const char* format), ...);
+	PRINTF_FORMAT(2, 3)
+	static void yyerror(
+			std::string& buffer, FORMAT_STRING(const char* format), ...);
+	PRINTF_FORMAT(2, 3)
+	static void yywarning(
+			std::string& buffer, FORMAT_STRING(const char* format), ...);
 
 	static int get_num_errors() {
 		return num_errors;
 	}
 };
+
+#undef FORMAT_STRING
+#undef PRINTF_FORMAT
 
 #endif

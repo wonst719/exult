@@ -137,12 +137,9 @@ void Uc_class::add_method(Uc_function* m) {
 				method = m;
 				return;
 			} else {
-				char buf[150];
-				snprintf(
-						buf, sizeof(buf),
+				Uc_location::yyerror(
 						"Duplicate decl. of virtual member function '%s'.",
 						m->get_name());
-				Uc_location::yyerror(buf);
 				return;
 			}
 		}

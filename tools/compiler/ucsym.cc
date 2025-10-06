@@ -119,7 +119,6 @@ int Uc_var_symbol::gen_value(Basic_block* out) {
 
 int Uc_var_symbol::is_object_function(bool print_error) const {
 	if (print_error) {
-		char buf[180];
 		switch (is_obj_fun) {
 		case -2:
 			Uc_location::yywarning(
@@ -127,18 +126,14 @@ int Uc_var_symbol::is_object_function(bool print_error) const {
 					"UI_get_usecode_fun instead");
 			break;
 		case 1:
-			snprintf(
-					buf, sizeof(buf),
+			Uc_location::yyerror(
 					"Var '%s' contains fun. not declared as 'shape#' or "
 					"'object#'",
 					name.c_str());
-			Uc_location::yyerror(buf);
 			break;
 		case 2:
-			snprintf(
-					buf, sizeof(buf), "Var '%s' contains a negative number",
-					name.c_str());
-			Uc_location::yyerror(buf);
+			Uc_location::yyerror(
+					"Var '%s' contains a negative number", name.c_str());
 			break;
 		case 3:
 			Uc_location::yyerror(
@@ -206,9 +201,7 @@ Uc_expression* Uc_static_class_symbol::create_expression() {
 bool Uc_struct_symbol::is_dup(const char* nm) {
 	const int index = search(nm);
 	if (index >= 0) {    // Already declared?
-		char msg[180];
-		snprintf(msg, sizeof(msg), "Symbol '%s' already declared", nm);
-		Uc_location::yyerror(msg);
+		Uc_location::yyerror("Symbol '%s' already declared", nm);
 		return true;
 	}
 	return false;
@@ -229,9 +222,7 @@ void Uc_struct_symbol::merge_struct(Uc_struct_symbol* other) {
 Uc_class_symbol* Uc_class_symbol::create(char* nm, Uc_class* c) {
 	Uc_symbol* sym = Uc_function::search_globals(nm);
 	if (sym) {
-		char buf[256];
-		snprintf(buf, sizeof(buf), "Class name '%s' already exists.", nm);
-		Uc_location::yyerror(buf);
+		Uc_location::yyerror("Class name '%s' already exists.", nm);
 	}
 	auto* csym = new Uc_class_symbol(nm, c);
 	Uc_function::add_global_class_symbol(csym);
@@ -376,22 +367,16 @@ Uc_function_symbol* Uc_function_symbol::create(
 		}
 	} else if (num < 0x400) {
 		if (kind == utility_fun) {
-			char buf[180];
-			snprintf(
-					buf, sizeof(buf),
+			Uc_location::yywarning(
 					"Treating function '%s' as being a 'shape#()' function.",
 					nm);
-			Uc_location::yywarning(buf);
 			kind = shape_fun;
 		}
 	} else if (num < 0x800) {
 		if (kind == utility_fun) {
-			char buf[180];
-			snprintf(
-					buf, sizeof(buf),
+			Uc_location::yywarning(
 					"Treating function '%s' as being an 'object#()' function.",
 					nm);
-			Uc_location::yywarning(buf);
 			kind = object_fun;
 		}
 	}
@@ -434,14 +419,11 @@ Uc_function_symbol* Uc_function_symbol::create(
 				}
 				break;
 			}
-			Uc_location::yyerror(msg.c_str());
+			Uc_location::yyerror(Uc_location::preformatted, msg.c_str());
 		} else if (scope) {
 			if (!sym->is_inherited()) {
-				char buf[256];
-				snprintf(
-						buf, sizeof(buf),
+				Uc_location::yyerror(
 						"Duplicate declaration of function '%s'.", nm);
-				Uc_location::yyerror(buf);
 			}
 		} else if (sym->is_externed() || is_extern) {
 			if (sym->get_num_parms() == p.size()) {
@@ -456,22 +438,15 @@ Uc_function_symbol* Uc_function_symbol::create(
 				num = -1;
 			}
 		} else {
-			char buf[256];
-			snprintf(
-					buf, sizeof(buf), "Duplicate declaration of function '%s'.",
-					nm);
-			Uc_location::yyerror(buf);
+			Uc_location::yyerror("Duplicate declaration of function '%s'.", nm);
 		}
 	}
 
 	if (num < 0 && !new_auto_num) {
-		char buf[256];
-		snprintf(
-				buf, sizeof(buf),
+		Uc_location::yywarning(
 				"Auto-numbering function '%s', but '#autonumber' directive not "
 				"used.",
 				nm);
-		Uc_location::yywarning(buf);
 	}
 
 	const int ucnum = num >= 0 ? num : (last_num + 1);
@@ -494,12 +469,10 @@ Uc_function_symbol* Uc_function_symbol::create(
 	}
 	sym = it->second;
 	if (sym->name != nm || sym->get_num_parms() != p.size()) {
-		char buf[256];
-		snprintf(
-				buf, sizeof(buf),
-				"Function 0x%x already used for '%s' with %zu params.", ucnum,
-				sym->get_name(), sym->get_num_parms());
-		Uc_location::yyerror(buf);
+		Uc_location::yyerror(
+				"Function 0x%x already used for '%s' with %zu params.",
+				static_cast<unsigned int>(ucnum), sym->get_name(),
+				sym->get_num_parms());
 	} else {
 		auto get_param_type = [](const Uc_var_symbol* var) {
 			std::string type;
@@ -522,15 +495,12 @@ Uc_function_symbol* Uc_function_symbol::create(
 				|| (p[i]->get_sym_type() == Uc_symbol::Class
 					&& p[i]->get_cls() != parms[i]->get_cls())
 				|| p[i]->get_struct() != parms[i]->get_struct()) {
-				char buf[512];
-				snprintf(
-						buf, sizeof(buf),
+				Uc_location::yyerror(
 						"Mismatch between function '%s' and previous "
 						"declaration: parameter %zu is of different type: "
 						"type of '%s' is '%s' != type of '%s' is '%s'",
 						nm, i, p[i]->get_name(), get_param_type(p[i]).c_str(),
 						parms[i]->get_name(), get_param_type(parms[i]).c_str());
-				Uc_location::yyerror(buf);
 			}
 		}
 		if (!is_extern) {
@@ -563,22 +533,17 @@ int Uc_function_symbol::gen_call(
 		bool                 retvalue,    // True if a function.
 		Uc_class* scope_vtbl    // For method calls using a different scope.
 ) {
-	char   buf[200];
 	size_t parmcnt = aparms->gen_values(out);    // Want to push parm. values.
 	parmcnt += (method_num >= 0);                // Count 'this'.
 	if (parmcnt != parms.size()) {
-		snprintf(
-				buf, sizeof(buf),
+		Uc_location::yyerror(
 				"# parms. passed (%zu) doesn't match '%s' count (%zu)", parmcnt,
 				get_name(), parms.size());
-		Uc_location::yyerror(buf);
 	}
 	// See if expecting a return value from a function that has none.
 	if (retvalue && !has_ret()) {
-		snprintf(
-				buf, sizeof(buf), "Function '%s' does not have a return value",
-				get_name());
-		Uc_location::yyerror(buf);
+		Uc_location::yyerror(
+				"Function '%s' does not have a return value", get_name());
 	}
 	if (orig) {
 		if (!itemref) {
@@ -598,10 +563,8 @@ int Uc_function_symbol::gen_call(
 			}
 		}
 		if (!itemref) {
-			snprintf(
-					buf, sizeof(buf), "Class method '%s' requires a 'this'.",
-					get_name());
-			Uc_location::yyerror(buf);
+			Uc_location::yyerror(
+					"Class method '%s' requires a 'this'.", get_name());
 		} else {
 			itemref->gen_value(out);
 		}
@@ -638,10 +601,9 @@ int Uc_function_symbol::gen_call(
 		// Function returns a value, but caller does not use it.
 		// Generate the code to pop the result off the stack.
 		static int cnt = 0;
-		char       buf[50];
-		snprintf(buf, sizeof(buf), "_tmpretval_%d", cnt++);
 		// Create a 'tmp' variable.
-		Uc_var_symbol* var = fun->add_symbol(buf, true);
+		std::string    tmp_name = "_tmpretval_" + std::to_string(cnt++);
+		Uc_var_symbol* var      = fun->add_symbol(tmp_name.c_str(), true);
 		if (!var) {
 			return 0;    // Shouldn't happen.  Err. reported.
 		}
@@ -693,7 +655,6 @@ Uc_symbol* Uc_scope::search_up(const char* nm) {
  */
 
 int Uc_scope::add_function_symbol(Uc_function_symbol* fun, Uc_scope* parent) {
-	char        buf[150];
 	const char* nm = fun->get_name();
 	Uc_symbol*  found;    // Already here?
 	if (parent) {
@@ -713,21 +674,17 @@ int Uc_scope::add_function_symbol(Uc_function_symbol* fun, Uc_scope* parent) {
 	if (fun2 == fun) {    // The case for an EXTERN.
 		return 1;
 	} else if (!fun2) {    // Non-function name.
-		snprintf(buf, sizeof(buf), "'%s' already declared", nm);
-		Uc_location::yyerror(buf);
+		Uc_location::yyerror("'%s' already declared", nm);
 	} else if (fun->get_num_parms() != fun2->get_num_parms()) {
 		if (fun2->is_inherited()) {
-			snprintf(
-					buf, sizeof(buf),
+			Uc_location::yyerror(
 					"Decl. of virtual member function '%s' doesn't match decl. "
 					"from base class",
 					nm);
 		} else {
-			snprintf(
-					buf, sizeof(buf),
+			Uc_location::yyerror(
 					"Decl. of '%s' doesn't match previous decl", nm);
 		}
-		Uc_location::yyerror(buf);
 	} else if (fun->usecode_num != fun2->usecode_num) {
 		if (fun2->externed || fun->externed || fun2->is_inherited()) {
 			if (!Uc_function_symbol::new_auto_num
@@ -735,10 +692,7 @@ int Uc_scope::add_function_symbol(Uc_function_symbol* fun, Uc_scope* parent) {
 				--Uc_function_symbol::last_num;
 			}
 		} else {
-			snprintf(
-					buf, sizeof(buf), "Decl. of '%s' has different usecode #.",
-					nm);
-			Uc_location::yyerror(buf);
+			Uc_location::yyerror("Decl. of '%s' has different usecode #.", nm);
 		}
 	}
 	return 0;
@@ -753,9 +707,7 @@ int Uc_scope::add_function_symbol(Uc_function_symbol* fun, Uc_scope* parent) {
 bool Uc_scope::is_dup(const char* nm) {
 	Uc_symbol* sym = search(nm);
 	if (sym) {    // Already in scope?
-		char msg[180];
-		snprintf(msg, sizeof(msg), "Symbol '%s' already declared", nm);
-		Uc_location::yyerror(msg);
+		Uc_location::yyerror("Symbol '%s' already declared", nm);
 		return true;
 	}
 	return false;

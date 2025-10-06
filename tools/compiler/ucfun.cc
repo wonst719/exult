@@ -422,24 +422,16 @@ int Uc_function::find_string_prefix(
 	auto exist = text_map.lower_bound(text);
 	if (exist == text_map.end()
 		|| strncmp(text, exist->first.c_str(), len) != 0) {
-		const size_t buflen = len + 100;
-		char*        buf    = new char[buflen];
-		snprintf(
-				buf, buflen, "Prefix '%s' matches no string in this function",
-				text);
-		loc.error(buf);
-		delete[] buf;
+		std::string  buf(len + 100, '\0');
+		loc.error(buf, "Prefix '%s' matches no string in this function", text);
 		return 0;
 	}
 	auto next = exist;
 	++next;
 	if (next != text_map.end()
 		&& strncmp(text, next->first.c_str(), len) == 0) {
-		const size_t buflen = len + 100;
-		char*        buf    = new char[buflen];
-		snprintf(buf, buflen, "Prefix '%s' matches more than one string", text);
-		loc.error(buf);
-		delete[] buf;
+		std::string  buf(len + 100, '\0');
+		loc.error(buf, "Prefix '%s' matches more than one string", text);
 	}
 	return exist->second;    // Return offset.
 }
@@ -721,8 +713,11 @@ void Uc_function::gen(std::ostream& out) {
 	auto* current = new Basic_block();
 	initial->set_taken(current);
 	fun_blocks.push_back(current);
-	if (statement) {
-		statement->gen(this, fun_blocks, current, endblock, label_blocks);
+	if (statement != nullptr) {
+		Uc_loop_data_stack break_continue;
+		statement->gen(
+				this, fun_blocks, current, endblock, label_blocks,
+				break_continue);
 	}
 	assert(initial->no_parents() && endblock->is_childless());
 	while (!fun_blocks.empty() && fun_blocks.back()->no_parents()) {

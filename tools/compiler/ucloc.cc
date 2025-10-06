@@ -28,8 +28,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ucloc.h"
 
+#include "ignore_unused_variable_warning.h"
+
+#include <cstdarg>
 #include <cstring>
 #include <iostream>
+#include <string_view>
 
 using std::cout;
 using std::endl;
@@ -98,10 +102,35 @@ void Uc_location::assemble_message(
 }
 
 /*
+ *  Print error for current parser location.
+ */
+
+void Uc_location::yyerror(preformatted_t tag, const char* s) {
+	ignore_unused_variable_warning(tag);
+	assemble_message(s, cur_source, cur_line + 1, true);
+	num_errors++;
+}
+
+/*
+ *  Print warning for current parser location.
+ */
+
+void Uc_location::yywarning(preformatted_t tag, const char* s) {
+	ignore_unused_variable_warning(tag);
+	assemble_message(s, cur_source, cur_line + 1, false);
+}
+
+constexpr const size_t BufferSize = 2048;
+
+/*
  *  Print error for stored position.
  */
 
-void Uc_location::error(const char* s) {
+void Uc_location::error(const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	char s[BufferSize + 1]{};
+	vsnprintf(s, BufferSize, format, args);
 	assemble_message(s, source, line + 1, true);
 	num_errors++;
 }
@@ -110,19 +139,81 @@ void Uc_location::error(const char* s) {
  *  Print warning for stored position.
  */
 
-void Uc_location::warning(const char* s) {
+void Uc_location::warning(const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	char s[BufferSize + 1]{};
+	vsnprintf(s, BufferSize, format, args);
 	assemble_message(s, source, line + 1, false);
 }
 
 /*
- *  Print error for current parse location.
+ *  Print error for current parser location.
  */
 
-void Uc_location::yyerror(const char* s) {
+void Uc_location::yyerror(const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	char s[BufferSize + 1]{};
+	vsnprintf(s, BufferSize, format, args);
 	assemble_message(s, cur_source, cur_line + 1, true);
 	num_errors++;
 }
 
-void Uc_location::yywarning(const char* s) {
+/*
+ *  Print warning for current parser location.
+ */
+
+void Uc_location::yywarning(const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	char s[BufferSize + 1]{};
+	vsnprintf(s, BufferSize, format, args);
 	assemble_message(s, cur_source, cur_line + 1, false);
+}
+
+/*
+ *  Print error for stored position.
+ */
+
+void Uc_location::error(std::string& buffer, const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buffer.data(), buffer.length(), format, args);
+	assemble_message(buffer.c_str(), source, line + 1, true);
+	num_errors++;
+}
+
+/*
+ *  Print warning for stored position.
+ */
+
+void Uc_location::warning(std::string& buffer, const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buffer.data(), buffer.length(), format, args);
+	assemble_message(buffer.c_str(), source, line + 1, false);
+}
+
+/*
+ *  Print error for current parser location.
+ */
+
+void Uc_location::yyerror(std::string& buffer, const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buffer.data(), buffer.length(), format, args);
+	assemble_message(buffer.c_str(), cur_source, cur_line + 1, true);
+	num_errors++;
+}
+
+/*
+ *  Print warning for current parser location.
+ */
+
+void Uc_location::yywarning(std::string& buffer, const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buffer.data(), buffer.length(), format, args);
+	assemble_message(buffer.c_str(), cur_source, cur_line + 1, false);
 }

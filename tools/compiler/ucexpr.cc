@@ -92,7 +92,8 @@ void Uc_expression::add_to(Uc_array_expression* arr) {
  *  Output: true if successful, with result returned in 'val'.
  */
 
-bool Uc_expression::eval_const(int& val    // Value returned here.
+bool Uc_expression::eval_const(
+		int& val    // Value returned here.
 ) {
 	val = 0;
 	return false;
@@ -104,9 +105,7 @@ bool Uc_expression::eval_const(int& val    // Value returned here.
 
 void Uc_var_expression::gen_value(Basic_block* out) {
 	if (!var->gen_value(out)) {
-		char buf[150];
-		snprintf(buf, sizeof(buf), "Can't use value of '%s'", var->get_name());
-		error(buf);
+		error("Can't use value of '%s'", var->get_name());
 	}
 }
 
@@ -116,9 +115,7 @@ void Uc_var_expression::gen_value(Basic_block* out) {
 
 void Uc_var_expression::gen_assign(Basic_block* out) {
 	if (!var->gen_assign(out)) {
-		char buf[150];
-		snprintf(buf, sizeof(buf), "Can't assign to '%s'", var->get_name());
-		error(buf);
+		error("Can't assign to '%s'", var->get_name());
 	}
 }
 
@@ -130,16 +127,12 @@ void Uc_var_expression::gen_assign(Basic_block* out) {
 int Uc_fun_name_expression::is_object_function(bool error) const {
 	if (fun->get_function_type() != Uc_function_symbol::utility_fun) {
 		return 0;
-	} else {
-		if (error) {
-			char buf[180];
-			snprintf(
-					buf, sizeof(buf), "'%s' must be 'shape#' or 'object#'",
-					fun->get_name());
-			Uc_location::yyerror(buf);
-		}
-		return 1;
 	}
+	if (error) {
+		Uc_location::yyerror(
+				"'%s' must be 'shape#' or 'object#'", fun->get_name());
+	}
+	return 1;
 }
 
 /*
@@ -328,7 +321,8 @@ void Uc_binary_expression::gen_value(Basic_block* out) {
  *  Output: true if successful, with result returned in 'val'.
  */
 
-bool Uc_binary_expression::eval_const(int& val    // Value returned here.
+bool Uc_binary_expression::eval_const(
+		int& val    // Value returned here.
 ) {
 	int val1;
 	int val2;    // Get each side.
@@ -416,7 +410,8 @@ void Uc_unary_expression::gen_value(Basic_block* out) {
  *  Output: true if successful, with result returned in 'val'.
  */
 
-bool Uc_unary_expression::eval_const(int& val    // Value returned here.
+bool Uc_unary_expression::eval_const(
+		int& val    // Value returned here.
 ) {
 	int val1;    // Get each side.
 	if (!operand->eval_const(val1)) {
@@ -455,14 +450,11 @@ void Uc_int_expression::gen_value(Basic_block* out) {
  */
 
 int Uc_int_expression::is_object_function(bool error) const {
-	char buf[150];
 	if (value < 0) {
 		if (error) {
-			snprintf(
-					buf, sizeof(buf),
+			Uc_location::yyerror(
 					"Invalid fun. ID (%d): can't call negative function",
 					value);
-			Uc_location::yyerror(buf);
 		}
 		return 2;
 	} else if (value < 0x800) {
@@ -474,11 +466,9 @@ int Uc_int_expression::is_object_function(bool error) const {
 		return -1;    // Can't determine.
 	} else if (sym->get_function_type() == Uc_function_symbol::utility_fun) {
 		if (error) {
-			snprintf(
-					buf, sizeof(buf),
+			Uc_location::yyerror(
 					"'%s' (fun. ID %d)  must be 'shape#' or 'object#'",
 					sym->get_name(), value);
-			Uc_location::yyerror(buf);
 		}
 		return 1;
 	}
@@ -491,7 +481,8 @@ int Uc_int_expression::is_object_function(bool error) const {
  *  Output: true if successful, with result returned in 'val'.
  */
 
-bool Uc_int_expression::eval_const(int& val    // Value returned here.
+bool Uc_int_expression::eval_const(
+		int& val    // Value returned here.
 ) {
 	val = value;
 	return true;
@@ -670,7 +661,6 @@ int Uc_call_expression::is_object_function(bool error) const {
 		return -1;    // Can't determine.
 	}
 
-	char buf[150];
 	if (fun == Uc_function::get_get_usecode_fun()) {
 		return 0;    // It is.
 	} else if (fun == Uc_function::get_get_item_shape()) {
@@ -685,10 +675,8 @@ int Uc_call_expression::is_object_function(bool error) const {
 	}
 	// For now, no other intrinsics return a valid fun ID.
 	if (error) {
-		snprintf(
-				buf, sizeof(buf), "Return of intrinsic '%s' is not fun. ID",
-				fun->get_name());
-		Uc_location::yyerror(buf);
+		Uc_location::yyerror(
+				"Return of intrinsic '%s' is not fun. ID", fun->get_name());
 	}
 	return 3;
 }
@@ -709,46 +697,36 @@ void Uc_call_expression::check_params() {
 	const unsigned long ignore_this = fun->get_method_num() >= 0 ? 1 : 0;
 	const unsigned long parmscnt    = callparms.size() + ignore_this;
 	if (parmscnt != protoparms.size()) {
-		char                buf[150];
 		const unsigned long protoparmcnt = protoparms.size() - ignore_this;
-		snprintf(
-				buf, sizeof(buf),
+		Uc_location::yyerror(
 				"# parms. passed (%lu) doesn't match '%s' count (%lu)",
 				parmscnt - ignore_this, sym->get_name(), protoparmcnt);
-		Uc_location::yyerror(buf);
 		return;
 	}
 	for (unsigned long i = ignore_this; i < parmscnt; i++) {
 		Uc_expression* expr = callparms[i - ignore_this];
 		Uc_var_symbol* var  = protoparms[i];
 		auto*          cls  = dynamic_cast<Uc_class_inst_symbol*>(var);
-		char           buf[180];
 		if (expr->is_class()) {
 			if (!cls) {
-				snprintf(
-						buf, sizeof(buf),
+				Uc_location::yyerror(
 						"Error in parm. #%lu: cannot convert class to "
 						"non-class",
 						i + 1);
-				Uc_location::yyerror(buf);
 			} else if (!expr->get_cls()->is_class_compatible(
 							   cls->get_cls()->get_name())) {
-				snprintf(
-						buf, sizeof(buf),
+				Uc_location::yyerror(
 						"Error in parm. #%lu: class '%s' cannot be converted "
 						"into class '%s'",
 						i + 1, expr->get_cls()->get_name(),
 						cls->get_cls()->get_name());
-				Uc_location::yyerror(buf);
 			}
 		} else {
 			if (cls) {
-				snprintf(
-						buf, sizeof(buf),
+				Uc_location::yyerror(
 						"Error in parm. #%lu: cannot convert non-class into "
 						"class",
 						i + 1);
-				Uc_location::yyerror(buf);
 			}
 		}
 	}
@@ -783,20 +761,14 @@ void Uc_call_expression::gen_value(Basic_block* out) {
 	if (!sym->gen_call(
 				out, function, original, itemref, parms, return_value,
 				meth_scope)) {
-		char buf[150];
-		snprintf(
-				buf, sizeof(buf), "'%s' isn't a function or intrinsic",
-				sym->get_name());
+		error("'%s' isn't a function or intrinsic", sym->get_name());
 		sym = nullptr;    // Avoid repeating error if in loop.
-		error(buf);
 	}
 }
 
 void Uc_class_expression::gen_value(Basic_block* out) {
 	if (!var->gen_value(out)) {
-		char buf[150];
-		snprintf(buf, sizeof(buf), "Can't assign to '%s'", var->get_name());
-		error(buf);
+		error("Can't assign to '%s'", var->get_name());
 	}
 }
 
@@ -810,9 +782,7 @@ inline Uc_class* Uc_new_expression::get_cls() const {
 
 void Uc_class_expression::gen_assign(Basic_block* out) {
 	if (!var->gen_assign(out)) {
-		char buf[150];
-		snprintf(buf, sizeof(buf), "Can't assign to '%s'", var->get_name());
-		error(buf);
+		error("Can't assign to '%s'", var->get_name());
 	}
 }
 
@@ -824,20 +794,13 @@ Uc_new_expression::Uc_new_expression(Uc_var_symbol* v, Uc_array_expression* p)
 	Uc_class* cls          = var->get_cls();
 	const int pushed_parms = parms->get_exprs().size();
 	if (cls->get_num_vars() > pushed_parms) {
-		char      buf[180];
 		const int missing = cls->get_num_vars() - pushed_parms;
-		snprintf(
-				buf, sizeof(buf),
+		yywarning(
 				"%d argument%s missing in constructor of class '%s'", missing,
 				(missing > 1) ? "s" : "", cls->get_name());
-		yywarning(buf);
 	} else if (cls->get_num_vars() < pushed_parms) {
-		char buf[180];
-		snprintf(
-				buf, sizeof(buf),
-				"Too many arguments in constructor of class '%s'",
+		yyerror("Too many arguments in constructor of class '%s'",
 				cls->get_name());
-		yyerror(buf);
 	}
 	// Ensure that all data members get initialized.
 	for (int i = pushed_parms; i < cls->get_num_vars(); i++) {

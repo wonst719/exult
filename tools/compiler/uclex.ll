@@ -146,9 +146,7 @@ static void Include(char* yytext    // ->text containing name.
 	}
 
 	if (!yyin) {
-		char msg[180];
-		snprintf(msg, sizeof(msg), "Can't open '%s'", name);
-		Uc_location::yyerror(msg);
+		Uc_location::yyerror("Can't open '%s'", name);
 		exit(1);
 	}
 	// Add file to list of included files.
@@ -279,14 +277,11 @@ char* Handle_string(
 			} else {
 				if (escape.size() != 2 && escape.size() != 3) {
 					// Just in case.
-					char buf[150];
-					snprintf(
-							buf, sizeof(buf),
+					Uc_location::yyerror(
 							"Invalid rune escape sequence '\\{%s}'. "
 							"Valid escapes are: '\\{dot}', '\\{ea}', '\\{ee}', "
 							"'\\{ng}', '\\{st}', '\\{th}'",
 							escape.c_str());
-					Uc_location::yyerror(buf);
 					*to++ = '{';
 					break;
 				}
@@ -295,14 +290,11 @@ char* Handle_string(
 			break;
 		}
 		default: {
-			char buf[150];
-			snprintf(
-					buf, sizeof(buf),
+			Uc_location::yywarning(
 					"Unknown escape sequence '\\%c'. If you are trying "
 					"to insert a literal backslash ('\\') into text, "
 					"write it as '\\\\'.",
 					*from);
-			Uc_location::yywarning(buf);
 			*to++ = '\\';
 			*to++ = *from;
 			break;

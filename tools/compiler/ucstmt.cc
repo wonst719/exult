@@ -614,9 +614,7 @@ void Uc_arrayloop_attend_statement::gen(
 	ignore_unused_variable_warning(fun, end, start, exit);
 	auto it = labels.find(label);
 	if (it == labels.end()) {
-		char buf[255];
-		snprintf(buf, sizeof(buf), "Undeclared label: '%s'", label.c_str());
-		error(buf);
+		error("Undeclared label: '%s'", label.c_str());
 		return;
 	}
 	// The start of a loop is a jump target and needs
@@ -745,9 +743,7 @@ void Uc_goto_statement::gen(
 		curr = new Basic_block();
 		blocks.push_back(curr);
 	} else {
-		char buf[255];
-		snprintf(buf, sizeof(buf), "Undeclared label: '%s'", label.c_str());
-		error(buf);
+		error("Undeclared label: '%s'", label.c_str());
 	}
 }
 
@@ -994,9 +990,7 @@ void Uc_converse_case_attend_statement::gen(
 	ignore_unused_variable_warning(start, exit);
 	auto it = labels.find(label);
 	if (it == labels.end()) {
-		char buf[255];
-		snprintf(buf, sizeof(buf), "Undeclared label: '%s'", label.c_str());
-		error(buf);
+		error("Undeclared label: '%s'", label.c_str());
 		return;
 	}
 	// New basic block for CASE body.
@@ -1254,9 +1248,7 @@ void Uc_converse_attend_statement::gen(
 	// a new basic block.
 	auto it = labels.find(label);
 	if (it == labels.end()) {
-		char buf[255];
-		snprintf(buf, sizeof(buf), "Undeclared label: '%s'", label.c_str());
-		error(buf);
+		error("Undeclared label: '%s'", label.c_str());
 		return;
 	}
 	auto* conv_top = new Basic_block();
@@ -1339,11 +1331,7 @@ Uc_switch_statement::Uc_switch_statement(
 		auto* stmt = static_cast<Uc_switch_case_statement*>(it);
 		if (stmt->is_default()) {
 			if (has_default) {
-				char buf[255];
-				snprintf(
-						buf, sizeof(buf),
-						"switch statement already has a default case.");
-				error(buf);
+				error("switch statement already has a default case.");
 			} else {
 				has_default = true;
 			}
