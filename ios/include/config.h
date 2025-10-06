@@ -86,6 +86,9 @@
 /* Define to 1 if you have C++ filesystem support */
 #define HAVE_CXX_FILESYSTEM 1
 
+/* Define to 1 if native DLS support is enabled */
+#define ENABLE_NATIVE_DLS 1
+
 /* whether or not we are supporting CoreMIDI */
 #define COREMIDI_SUPPORT 1
 
