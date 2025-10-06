@@ -36,7 +36,7 @@ const MidiDriver::MidiDriverDesc FluidSynthMidiDriver::desc
 std::vector<ConfigSetting_widget::Definition> FluidSynthMidiDriver::
 		GetSettings() {
 	ConfigSetting_widget::Definition soundfont{
-			Strings::Soundfont(),                                  // label
+			Strings::Soundfont(),                         // label
 			"config/audio/midi/fluidsynth_soundfont",     // config_setting
 			10,                                           // additional
 			true,                                         // required
@@ -47,6 +47,20 @@ std::vector<ConfigSetting_widget::Definition> FluidSynthMidiDriver::
 	soundfont.add_filenames_to_choices("<DATA>/*.sf2");
 	soundfont.add_filenames_to_choices("<BUNDLE>/*.SF2");
 	soundfont.add_filenames_to_choices("<DATA>/*.SF2");
+#	ifdef USING_FLUIDSYNTH
+	// builtin DLS support requires FluidSynth 2.5.0 or higher
+	{
+		int major = 0, minor = 0, micro = 0;
+		fluid_version(&major, &minor, &micro);
+		const bool has_dls_support = (major > 2) || (major == 2 && minor >= 5);
+		if (has_dls_support) {
+			soundfont.add_filenames_to_choices("<BUNDLE>/*.dls");
+			soundfont.add_filenames_to_choices("<DATA>/*.dls");
+			soundfont.add_filenames_to_choices("<BUNDLE>/*.DLS");
+			soundfont.add_filenames_to_choices("<DATA>/*.DLS");
+		}
+	}
+#	endif
 	soundfont.default_value = "default.sf2";
 
 	soundfont.sort_choices();
