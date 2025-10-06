@@ -196,7 +196,7 @@ public:
 			if (widget) {
 				auto rect = widget->get_rect();
 				widget->set_pos(
-						usable_width - rect.w - margin - x_origin,
+						usable_width - rect.w - margin + x_origin,
 						widget->get_y());
 			}
 		}
@@ -233,7 +233,7 @@ public:
 		}
 		int gap = (usable_width - width_widgets) / (widgets.size());
 
-		int new_x = gap / 2 - x_origin;
+		int new_x = gap / 2 + x_origin;
 		for (auto& widget : widgets) {
 			if (widget) {
 				auto rect = widget->get_rect();

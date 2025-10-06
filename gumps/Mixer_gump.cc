@@ -201,17 +201,8 @@ std::shared_ptr<Slider_widget> Mixer_gump::GetSlider(int sx, int sy) {
 Mixer_gump::Mixer_gump() : Modal_gump(nullptr, -1) {
 	load_settings();
 
-	TileRect gumprect = TileRect(0, 0, 158, yForRow(num_sliders + 1) + 1);
-
-	// If both ogg and midi make it slightly wider to the left
-	if ((initial_music_midi != -1) && (initial_music_ogg != -1)) {
-		gumprect.x -= 12;
-		gumprect.w += 12;
-	}
-	int colourramp = -1;
-	SetProceduralBackground(gumprect, colourramp);
-
-	procedural_colours.RemapColours(colourramp);
+	SetProceduralBackground(
+			TileRect(0, 0, 158, yForRow(num_sliders + 1) + 1));
 
 	slider_track_color = procedural_colours.Background + 1;
 
