@@ -87,16 +87,18 @@ class ExultAudioDataPackContent extends ExultContent {
 		} else if (m_audioName.equals("mt32roms")) {
 			foundFlag = m_MT32filenameToFoundFlag.get(keepCaseFileName);
 		} else if (m_audioName.equals("soundfont")) {
-			// Check for SF2 files by extension instead of specific filename
-			if (lowerCaseFileName.endsWith(".sf2")) {
-				// We found an SF2 file, consider that a match to our
+			// Check for SF2 or DLS files by extension instead of specific
+			// filename
+			if (lowerCaseFileName.endsWith(".sf2")
+				|| lowerCaseFileName.endsWith(".dls")) {
+				// We found an SF2 or DLS file, consider that a match to our
 				// placeholder
 				foundFlag = m_SF2filenameToFoundFlag.containsKey(
 									"sf2_placeholder")
 									? false
 									: null;
-				// If we haven't already found an SF2 file, we'll process this
-				// one
+				// If we haven't already found an SF2 or DLS file, we'll process
+				// this one
 				if (!m_SF2filenameToFoundFlag.get("sf2_placeholder")) {
 					m_filenamesFound = 1;
 				}
@@ -115,8 +117,9 @@ class ExultAudioDataPackContent extends ExultContent {
 		if (null == m_dataRootInArchive) {
 			if (lowerCaseFileName.endsWith(".flx")
 				|| lowerCaseFileName.endsWith(".rom")
-				|| lowerCaseFileName.endsWith(".sf2")) {
-				// ".flx" files live at the data root.
+				|| lowerCaseFileName.endsWith(".sf2")
+				|| lowerCaseFileName.endsWith(".dls")) {
+				// ".flx", ".rom", ".sf2", ".dls" files live at the data root.
 				m_dataRootInArchive = fullPath.getParent();
 				if (null == m_dataRootInArchive) {
 					m_dataRootInArchive = Paths.get("");
@@ -142,8 +145,9 @@ class ExultAudioDataPackContent extends ExultContent {
 			// If we already know the data root, make sure this file is in it.
 			if (lowerCaseFileName.endsWith(".flx")
 				|| lowerCaseFileName.endsWith(".rom")
-				|| lowerCaseFileName.endsWith(".sf2")) {
-				// ".flx", ".rom" files live at the data root.
+				|| lowerCaseFileName.endsWith(".sf2")
+				|| lowerCaseFileName.endsWith(".dls")) {
+				// ".flx", ".rom", ".sf2", ".dls" files live at the data root.
 				Path    parent     = fullPath.getParent();
 				boolean nullParent = null == parent;
 				boolean emptyRoot  = m_dataRootInArchive.toString().isEmpty();
@@ -182,12 +186,14 @@ class ExultAudioDataPackContent extends ExultContent {
 	@Override
 	protected Path getInstallDestination(
 			Path location, ArchiveEntry archiveEntry) {
-		// Only want to install flx/ogg/rom/sf2 files; skip over everything else
+		// Only want to install flx/ogg/rom/sf2/dls files; skip over everything
+		// else
 		String lowerCaseFileName = archiveEntry.getName().toLowerCase();
 		if (!lowerCaseFileName.endsWith(".flx")
 			&& !lowerCaseFileName.endsWith(".ogg")
 			&& !lowerCaseFileName.endsWith(".rom")
-			&& !lowerCaseFileName.endsWith(".sf2")) {
+			&& !lowerCaseFileName.endsWith(".sf2")
+			&& !lowerCaseFileName.endsWith(".dls")) {
 			return null;
 		}
 

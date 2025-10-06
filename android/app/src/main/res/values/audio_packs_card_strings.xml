@@ -28,7 +28,7 @@
     </p>
     <p><b><u>FluidSynth Soundfont</u></b><br/>
       For MIDI music playback on android, we are using FluidSynth which requires requires
-      a soundfont in SF2 format, archived in a Zip file. You can have more than one soundfont
+      a soundfont in SF2 or DLS format, archived in a Zip file. You can have more than one soundfont
       in the Zip, as our Audio settings allow you to choose which soundfont to use. Once you
       have the zipped soundfont on your android device, tap the checkbox on the left, select
       the zip in the file browser, and the file will be installed. Alternatively you can enter
