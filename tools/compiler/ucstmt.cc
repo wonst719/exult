@@ -703,7 +703,7 @@ void Uc_break_statement::gen(
 											  // 'break'/'continue' statements.
 ) {
 	ignore_unused_variable_warning(fun, end, labels);
-	const Uc_loop_data& ld = [&]() {
+	const Uc_loop_data& ld = [&]() -> const Uc_loop_data& {
 		const auto result = break_continue.find(loop_name);
 		if (!result.has_value()) {
 			error("Undeclared loop: '%s'", loop_name.c_str());
@@ -726,7 +726,7 @@ void Uc_continue_statement::gen(
 											  // 'break'/'continue' statements.
 ) {
 	ignore_unused_variable_warning(fun, end, labels);
-	const Uc_loop_data& ld = [&]() {
+	const Uc_loop_data& ld = [&]() -> const Uc_loop_data& {
 		const auto result = break_continue.find(loop_name);
 		if (!result.has_value()) {
 			error("Undeclared loop: '%s'", loop_name.c_str());

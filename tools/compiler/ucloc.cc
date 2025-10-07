@@ -132,6 +132,7 @@ void Uc_location::error(const char* format, ...) {
 	char s[BufferSize + 1]{};
 	vsnprintf(s, BufferSize, format, args);
 	assemble_message(s, source, line + 1, true);
+	va_end(args);
 	num_errors++;
 }
 
@@ -145,6 +146,7 @@ void Uc_location::warning(const char* format, ...) {
 	char s[BufferSize + 1]{};
 	vsnprintf(s, BufferSize, format, args);
 	assemble_message(s, source, line + 1, false);
+	va_end(args);
 }
 
 /*
@@ -157,6 +159,7 @@ void Uc_location::yyerror(const char* format, ...) {
 	char s[BufferSize + 1]{};
 	vsnprintf(s, BufferSize, format, args);
 	assemble_message(s, cur_source, cur_line + 1, true);
+	va_end(args);
 	num_errors++;
 }
 
@@ -170,6 +173,7 @@ void Uc_location::yywarning(const char* format, ...) {
 	char s[BufferSize + 1]{};
 	vsnprintf(s, BufferSize, format, args);
 	assemble_message(s, cur_source, cur_line + 1, false);
+	va_end(args);
 }
 
 /*
@@ -181,6 +185,7 @@ void Uc_location::error(std::string& buffer, const char* format, ...) {
 	va_start(args, format);
 	vsnprintf(buffer.data(), buffer.length(), format, args);
 	assemble_message(buffer.c_str(), source, line + 1, true);
+	va_end(args);
 	num_errors++;
 }
 
@@ -193,6 +198,7 @@ void Uc_location::warning(std::string& buffer, const char* format, ...) {
 	va_start(args, format);
 	vsnprintf(buffer.data(), buffer.length(), format, args);
 	assemble_message(buffer.c_str(), source, line + 1, false);
+	va_end(args);
 }
 
 /*
@@ -204,6 +210,7 @@ void Uc_location::yyerror(std::string& buffer, const char* format, ...) {
 	va_start(args, format);
 	vsnprintf(buffer.data(), buffer.length(), format, args);
 	assemble_message(buffer.c_str(), cur_source, cur_line + 1, true);
+	va_end(args);
 	num_errors++;
 }
 
@@ -216,4 +223,5 @@ void Uc_location::yywarning(std::string& buffer, const char* format, ...) {
 	va_start(args, format);
 	vsnprintf(buffer.data(), buffer.length(), format, args);
 	assemble_message(buffer.c_str(), cur_source, cur_line + 1, false);
+	va_end(args);
 }
