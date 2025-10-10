@@ -57,7 +57,8 @@ Party_manager::Party_manager()
  *  Output: false if no room or already a member.
  */
 
-bool Party_manager::add_to_party(Actor* npc    // (Should not be the Avatar.)
+bool Party_manager::add_to_party(
+		Actor* npc    // (Should not be the Avatar.)
 ) {
 	const size_t maxparty = party.size();
 	if (!npc || party_count == maxparty || npc->is_in_party()) {
@@ -610,4 +611,14 @@ int Party_manager::step(
 		return dir;
 	}
 	return Get_dir_from(npc, pos);
+}
+
+Actor* Party_manager::get_actor(int i) const {
+	if (i == -1) {
+		return gwin->get_main_actor();
+	} else if (i < -1 || size_t(i) >= party_count) {
+		return nullptr;
+	}
+
+	return gwin->get_npc(partyman->party[i]);
 }

@@ -80,6 +80,80 @@ public:
 		return dead_party[i];
 	}
 
+	// A Bidirectional Iterator that iterates the Party as Actors
+	class party_actor_iterator {
+		using value_type = Actor*;
+		int num;
+
+	public:
+		party_actor_iterator(int num) : num(num) {}
+
+		Actor* operator*() {
+			return partyman->get_actor(num);
+		}
+		Actor* operator->() {
+			return partyman->get_actor(num);
+		}
+
+		party_actor_iterator& operator++(int) {
+			++num;
+			return *this;
+		}
+
+		party_actor_iterator operator++() {
+			return party_actor_iterator(num++);
+		}
+
+		party_actor_iterator& operator--(int) {
+			--num;
+			return *this;
+		}
+
+		party_actor_iterator operator--() {
+			return party_actor_iterator(num--);
+		}
+
+		bool operator==(const party_actor_iterator& other) {
+			return num == other.num;
+		}
+
+		bool operator!=(const party_actor_iterator& other) {
+			return num != other.num;
+		}
+
+		bool operator<(const party_actor_iterator& other) {
+			return num < other.num;
+		}
+
+		bool operator<=(const party_actor_iterator& other) {
+			return num < other.num;
+		}
+	};
+
+	party_actor_iterator begin() const {
+		return party_actor_iterator(0);
+	}
+
+	party_actor_iterator end() const {
+		return party_actor_iterator(get_count());
+	}
+
+	// Iterate the party including the MainActor
+	struct {
+		party_actor_iterator begin() const {
+			return party_actor_iterator(-1);
+		}
+
+		party_actor_iterator end() const {
+			return party_actor_iterator(partyman->get_count());
+		}
+
+	} IterateWithMainActor;
+
+	// Get Party Member as Actor*, -1 will return Main Actor. Out of range
+	// returns nullptr
+	Actor* get_actor(int i) const;
+
 	// Add/remove party member.
 	bool add_to_party(Actor* npc);
 	bool remove_from_party(Actor* npc);
