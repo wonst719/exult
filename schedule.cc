@@ -89,6 +89,7 @@ namespace {
 /*
  *  Create.
  */
+
 Schedule::Schedule(Actor* n)
 		: npc(n), blocked(-1, -1, -1), start_pos(n->get_tile()),
 		  street_maintenance_failures(0), street_maintenance_time(0) {
@@ -551,8 +552,10 @@ Schedule_with_objects::~Schedule_with_objects() {
 
 /*
  *  Walk to an item.
+ *
  *  Output: false if failed.
  */
+
 bool Schedule_with_objects::walk_to_random_item(int dist) {
 	Game_object_vector vec;
 	current_item     = Game_object_weak();
@@ -576,6 +579,7 @@ bool Schedule_with_objects::walk_to_random_item(int dist) {
 /*
  *  Drop an item on a table.
  */
+
 bool Schedule_with_objects::drop_item(
 		Game_object* to_drop, Game_object* table) {
 	Tile_coord     spot = npc->get_tile();
@@ -997,6 +1001,7 @@ void Pace_schedule::now_what() {
 /*
  *  Just went dormant.
  */
+
 void Eat_at_inn_schedule::im_dormant() {
 	// Force NPCs to sit down again after cache-out/cache-in.
 	// npc->change_frame(npc->get_dir_framenum(Actor::standing));
@@ -2628,6 +2633,7 @@ void Sleep_schedule::now_what() {
 /*
  *  Just went dormant.
  */
+
 void Sleep_schedule::im_dormant() {
 	// Force NPCs to lay down again after cache-out/cache-in.
 	// npc->change_frame(npc->get_dir_framenum(Actor::standing));
@@ -2950,6 +2956,7 @@ Desk_schedule::Desk_schedule(Actor* n)
 /*
  *  Find tables.
  */
+
 void Desk_schedule::find_tables(int shapenum) {
 	Game_object_vector vec;
 	npc->find_nearby(vec, shapenum, 16, 0);
@@ -2964,8 +2971,10 @@ void Desk_schedule::find_tables(int shapenum) {
 
 /*
  *  Walk to table.
+ *
  *  Output: false if failed.
  */
+
 bool Desk_schedule::walk_to_table() {
 	while (!tables.empty()) {
 		const int ind                       = rand() % tables.size();
@@ -3209,6 +3218,7 @@ void Desk_schedule::now_what() {
 /*
  *  Just went dormant.
  */
+
 void Desk_schedule::im_dormant() {
 	// Force NPCs to sit down again after cache-out/cache-in.
 	// npc->change_frame(npc->get_dir_framenum(Actor::standing));
@@ -3218,6 +3228,7 @@ void Desk_schedule::im_dormant() {
 /*
  *	Done.
  */
+
 void Desk_schedule::ending(int new_type    // New schedule.
 ) {
 	ignore_unused_variable_warning(new_type);
@@ -3227,6 +3238,7 @@ void Desk_schedule::ending(int new_type    // New schedule.
 /*
  *  A class for indexing the perimeter of a rectangle.
  */
+
 class Perimeter {
 	TileRect perim;    // Outside given rect.
 	int      sz;       // # squares.
@@ -3635,8 +3647,11 @@ static int Get_waiter_objects(
 
 /*
  *	Fill in 'plates' list with ones we may have created, ordered by closest
- *  first.  Return true if not empty.
+ *  first.
+ * 
+ * Output: true if not empty.
  */
+
 bool Waiter_schedule::find_unattended_plate() {
 	if (unattended_plates.empty()) {
 		constexpr static const std::array shapes{717};
@@ -3684,8 +3699,10 @@ bool Waiter_schedule::find_customer() {
 
 /*
  *  Walk to prep. table.
+ *
  *  Output: false if failed.
  */
+
 bool Waiter_schedule::walk_to_work_spot(bool counter) {
 	vector<Game_object_weak>& tables = counter ? counters : prep_tables;
 	while (!tables.empty()) {    // Walk to a 'prep' table.
@@ -3715,8 +3732,10 @@ bool Waiter_schedule::walk_to_work_spot(bool counter) {
 
 /*
  *  Walk to customer
+ *
  *  Output: false if failed.
  */
+
 bool Waiter_schedule::walk_to_customer(int min_delay    // Min. delay in msecs.
 ) {
 	if (customer) {
@@ -4102,7 +4121,7 @@ void Waiter_schedule::now_what() {
 		break;
 	case wait_at_counter: {
 		const Game_object_shared prep_table_obj = prep_table.lock();
-		/* Check for customers who have left: */
+		// Check for customers who have left
 		if (rand() % 2 && find_unattended_plate()) {
 			state = walk_to_cleanup_food;
 		} else if (items_in_hand < 3 && rand() % 2 && walk_to_random_item(12)) {
@@ -5245,8 +5264,6 @@ void Bake_schedule::ending(int new_type) {
 
 /*
  *  Blacksmith.
- *
- * Note: the original kept the tongs & hammer, and put them on a nearby table
  */
 
 Forge_schedule::Forge_schedule(Actor* n)
@@ -6090,6 +6107,7 @@ Eat_schedule::Eat_schedule(Actor* n) : Schedule(n), state(find_plate) {}
 /*
  *  Just went dormant.
  */
+
 void Eat_schedule::im_dormant() {
 	// Force NPCs to sit down again after cache-out/cache-in.
 	// npc->change_frame(npc->get_dir_framenum(Actor::standing));
