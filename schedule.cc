@@ -1812,10 +1812,10 @@ void Dance_schedule::now_what() {
 		// Spin in place using one of several frames.
 		constexpr static const std::array base_frames{
 				Actor::standing, Actor::up_frame, Actor::out_frame};
-		const signed char basefr = base_frames[static_cast<size_t>(
-				danceroutine % base_frames.size())];
-		nframes                  = 6;
-		frames                   = new signed char[nframes];
+		const signed char basefr
+				= base_frames[danceroutine % base_frames.size()];
+		nframes = 6;
+		frames  = new signed char[nframes];
 		size_t i;
 		for (i = 0; i < nframes - 2; i++) {
 			frames[i] = npc->get_dir_framenum((dir + 2 * i) % 8, basefr);
