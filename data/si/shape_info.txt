@@ -64,7 +64,7 @@
 #	extra is basically for the grandfather clock. It is a SFX that will
 #	play every game hour a number of times equal to hour % 12 (or
 #	twelve times for midnight).
-#	Volume is used to control individual sfx volume levels. If no value 
+#	Volume is used to control individual sfx volume levels. If no value
 #	is given, 100% volume will be assumed.
 #	framenum sets which frame plays the sfx, -1 is the default and plays
 #	for all frames.
@@ -2003,4 +2003,24 @@
 :705/-1/253/0/1578
 :705/-1/254/0/1578
 :705/-1/255/0/1578
+%%endsection
+
+%%section on_hit_usecode
+#
+#	Usecode function to be called when a weapon hits if it has the 'no damage'
+#	flag set.
+#
+#	Format:
+#		:shapenum/funid
+#
+#	funid: Function id to call, or -1 for none.
+#
+#	Sleep arrows
+#
+:568/2017
+
+#	Serpent arrows (requires modding them to have 'no-damage' flag set)
+#
+:591/2013
+
 %%endsection

@@ -253,7 +253,8 @@ void Shapes_vga_file::Read_Shapeinf_text_data_file(
 			"on_fire"sv,
 			"extradimensional_storage"sv,
 			"field_type"sv,
-			"frame_usecode"sv};
+			"frame_usecode"sv,
+			"on_hit_usecode"sv};
 	// For explosions.
 	using Explosion_reader = Functor_multidata_reader<
 			Shape_info,
@@ -400,6 +401,11 @@ void Shapes_vga_file::Read_Shapeinf_text_data_file(
 			Shape_info,
 			Vector_reader_functor<
 					Frame_usecode_info, Shape_info, &Shape_info::frucinf>>;
+	// For on-hit usecode.
+	using On_hit_usecode_reader = Functor_multidata_reader<
+			Shape_info,
+			Text_reader_functor<int, Shape_info, &Shape_info::on_hit_usecode>,
+			Patch_flags_functor<on_hit_usecode_flag, Shape_info>>;
 
 	std::array readers = make_unique_array<Base_reader>(
 			std::make_unique<Explosion_reader>(info),
@@ -426,7 +432,8 @@ void Shapes_vga_file::Read_Shapeinf_text_data_file(
 			std::make_unique<On_fire_reader>(info),
 			std::make_unique<Extradimensional_storage_reader>(info),
 			std::make_unique<Field_type_reader>(info),
-			std::make_unique<Frame_usecode_reader>(info));
+			std::make_unique<Frame_usecode_reader>(info),
+			std::make_unique<On_hit_usecode_reader>(info));
 	static_assert(sections.size() == readers.size());
 	const int flxres = game_type == BLACK_GATE ? EXULT_BG_FLX_SHAPE_INFO_TXT
 											   : EXULT_SI_FLX_SHAPE_INFO_TXT;

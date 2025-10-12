@@ -245,6 +245,11 @@ void Shapes_vga_file::Write_Shapeinf_text_data_file(Exult_Game game) {
 			Shape_info,
 			Vector_writer_functor<
 					Frame_usecode_info, Shape_info, &Shape_info::frucinf>>;
+	// For on-hit usecode.
+	using On_hit_usecode_writer = Functor_multidata_writer<
+			Shape_info, Text_writer_functor<
+								on_hit_usecode_flag, int, Shape_info,
+								&Shape_info::on_hit_usecode>>;
 
 	std::array writers = make_unique_array<Base_writer>(
 			// For explosions.
@@ -311,7 +316,10 @@ void Shapes_vga_file::Write_Shapeinf_text_data_file(Exult_Game game) {
 			std::make_unique<Field_type_writer>("field_type", info, num_shapes),
 			// For frame usecode.
 			std::make_unique<Frame_usecode_writer>(
-					"frame_usecode", info, num_shapes));
+					"frame_usecode", info, num_shapes),
+			// For on hit usecode.
+			std::make_unique<On_hit_usecode_writer>(
+					"on_hit_usecode", info, num_shapes));
 	Write_text_data_file("shape_info", writers, 7, game);
 }
 

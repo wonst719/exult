@@ -1028,17 +1028,17 @@ void Actor::use_food() {
 	food -= (rand() % 4);    // Average 1.5 level/hour.
 	set_property(static_cast<int>(food_level), food);
 
-	// if dead asleep or paralyzed, immediately exit here, can't auto eat and can't say hunger message
-	if (get_flag(Obj_flags::paralyzed) || get_flag(Obj_flags::asleep) || get_flag(Obj_flags::dead))
-	{
+	// if dead asleep or paralyzed, immediately exit here, can't auto eat and
+	// can't say hunger message
+	if (get_flag(Obj_flags::paralyzed) || get_flag(Obj_flags::asleep)
+		|| get_flag(Obj_flags::dead)) {
 		return;
 	}
 
-	// Automatic feeding 
-		if (cheat.GetFoodUse() == Cheat::FoodUse::Automatic) {
+	// Automatic feeding
+	if (cheat.GetFoodUse() == Cheat::FoodUse::Automatic) {
 		Game_window* gwin = Game_window::get_instance();
-			for (; food <= 9;
-				 food   = get_property(static_cast<int>(food_level))) {
+		for (; food <= 9; food = get_property(static_cast<int>(food_level))) {
 			// intercept the click_on_item call made by the food-usecode
 			Usecode_machine* ucmachine = gwin->get_usecode();
 			Game_object*     oldtarg;
@@ -4145,22 +4145,25 @@ int Actor::figure_hit_points(
 	const int bias = were_party ? Combat::difficulty
 								: (theyre_party ? -Combat::difficulty : 0);
 
-	const Weapon_info* winf;
-	const Ammo_info*   ainf;
+	const Shape_info*  sinf = nullptr;
+	const Weapon_info* winf = nullptr;
+	const Ammo_info*   ainf = nullptr;
 
 	int wpoints = 0;
 	if (weapon_shape >= 0) {
-		winf = ShapeID::get_info(weapon_shape).get_weapon_info();
-	} else {
-		winf = nullptr;
+		sinf = &ShapeID::get_info(weapon_shape);
+		winf = sinf->get_weapon_info();
 	}
 	if (ammo_shape >= 0) {
-		ainf = ShapeID::get_info(ammo_shape).get_ammo_info();
-	} else {
-		ainf = nullptr;
+		sinf = &ShapeID::get_info(ammo_shape);
+		ainf = sinf->get_ammo_info();
 	}
-	if (!winf && weapon_shape < 0) {
-		winf = npc ? npc->get_weapon(wpoints) : nullptr;
+	if (winf == nullptr && weapon_shape < 0) {
+		int          shnum = -1;
+		Game_object* obj;
+		winf = (npc != nullptr) ? npc->get_weapon(wpoints, shnum, obj)
+								: nullptr;
+		sinf = (shnum != -1) ? &ShapeID::get_info(shnum) : nullptr;
 	}
 
 	int  usefun   = -1;
@@ -4168,7 +4171,7 @@ int Actor::figure_hit_points(
 	int  type     = Weapon_data::normal_damage;
 	bool explodes = false;
 
-	if (winf) {
+	if (winf != nullptr) {
 		wpoints  = winf->get_damage();
 		usefun   = winf->get_usecode();
 		type     = winf->get_damage_type();
@@ -4177,7 +4180,7 @@ int Actor::figure_hit_points(
 	} else {
 		wpoints = 1;    // Give at least one, but only if there's no weapon
 	}
-	if (ainf) {
+	if (ainf != nullptr) {
 		wpoints += ainf->get_damage();
 		// Replace damage type.
 		if (ainf->get_damage_type() != Weapon_data::normal_damage) {
@@ -4190,9 +4193,10 @@ int Actor::figure_hit_points(
 	if (explodes && !explosion) {    // Explosions shouldn't explode again.
 									 // Time to explode.
 		const Tile_coord offset(0, 0, get_info().get_3d_height() / 2);
-		eman->add_effect(std::make_unique<Explosion_effect>(
-				get_tile() + offset, nullptr, 0, weapon_shape, ammo_shape,
-				attacker));
+		eman->add_effect(
+				std::make_unique<Explosion_effect>(
+						get_tile() + offset, nullptr, 0, weapon_shape,
+						ammo_shape, attacker));
 		// The explosion will handle the damage.
 		return -1;
 	}
@@ -4200,10 +4204,10 @@ int Actor::figure_hit_points(
 	int        expval   = 0;
 	int        hits     = 0;
 	const bool nodamage = (powers & (Weapon_data::no_damage)) != 0;
-	if (wpoints && instant_death) {
+	if (wpoints != 0 && instant_death) {
 		wpoints = 127;
 	}
-	if (wpoints && !nodamage) {
+	if (wpoints != 0 && !nodamage) {
 		// This may kill the NPC; this comes before powers because no
 		// damage means no powers -- except for the no_damage flag.
 		hits = apply_damage(
@@ -4212,8 +4216,8 @@ int Actor::figure_hit_points(
 	}
 	// Apply weapon powers if needed.
 	// wpoints == 0 ==> some spells that don't hurt (but need to apply powers).
-	const bool powers_only = !wpoints || nodamage;
-	if (powers && (hits || powers_only)) {
+	const bool powers_only = (wpoints == 0) || nodamage;
+	if (powers != 0 && ((hits != 0) || powers_only)) {
 		// Protection prevents powers.
 		if (!get_flag(Obj_flags::protection)) {
 			const int attint
@@ -4225,29 +4229,33 @@ int Actor::figure_hit_points(
 
 			// These rolls are bourne from statistical analisys and are,
 			// as far as I can tell, how the game works.
-			if ((powers & Weapon_data::poison) && roll_to_win(attint, defstr)) {
+			if (((powers & Weapon_data::poison) != 0)
+				&& roll_to_win(attint, defstr)) {
 				set_flag(Obj_flags::poisoned);
 			}
-			if ((powers & Weapon_data::curse) && roll_to_win(attint, defint)) {
+			if (((powers & Weapon_data::curse) != 0)
+				&& roll_to_win(attint, defint)) {
 				set_flag(Obj_flags::cursed);
 			}
-			if ((powers & Weapon_data::charm) && roll_to_win(attint, defint)) {
+			if (((powers & Weapon_data::charm) != 0)
+				&& roll_to_win(attint, defint)) {
 				set_flag(Obj_flags::charmed);
-				if (npc) {
+				if (npc != nullptr) {
 					charmalign = npc->get_effective_alignment();
 				} else {
 					charmalign = chaotic;    // Verified.
 				}
 				set_charmed_combat();
 			}
-			if ((powers & Weapon_data::sleep) && roll_to_win(attint, defint)) {
+			if (((powers & Weapon_data::sleep) != 0)
+				&& roll_to_win(attint, defint)) {
 				set_flag(Obj_flags::asleep);
 			}
-			if ((powers & Weapon_data::paralyze)
+			if (((powers & Weapon_data::paralyze) != 0)
 				&& roll_to_win(attint, defstr)) {
 				set_flag(Obj_flags::paralyzed);
 			}
-			if (powers & Weapon_data::magebane) {
+			if ((powers & Weapon_data::magebane) != 0) {
 				// Magebane weapons (magebane sword, death scythe).
 				// Take away all mana.
 				set_property(static_cast<int>(Actor::mana), 0);
@@ -4274,7 +4282,7 @@ int Actor::figure_hit_points(
 					spells.pop_back();
 					obj->remove_this();
 				}
-				if (num_spells) {
+				if (num_spells != 0) {
 					// Display magebane struck string and set
 					// no_spell_casting flag. This is only done
 					// to prevent monsters from teleporting or
@@ -4291,20 +4299,22 @@ int Actor::figure_hit_points(
 				}
 			}
 		}
-		if (nodamage && ammo_shape == 568) {
-			// This is *only* done for SI sleep arrows, and all other
-			// powers have had their effect by now (as can be verified
-			// by using the called usecode function).
-			if (npc) {    // Just to be sure.
+		// In original SI, this only happens for sleep arrows.
+		// If you mod the game data to set 'no damage' flag on serpent
+		// arrows, they also start calling a specific function.
+		// This happens after all other powers and effects have been
+		// applied.
+		if (nodamage && sinf != nullptr && sinf->has_on_hit_usecode()) {
+			if (npc != nullptr) {    // Just to be sure.
 				set_oppressor(npc->get_npc_num());
 			}
 			// Allowing for BG too, as it doesn't have a function 0x7e1.
 			ucmachine->call_usecode(
-					SleepArrowsUsecode, this, Usecode_machine::weapon);
+					sinf->get_on_hit_usecode(), this, Usecode_machine::weapon);
 		}
 	}
 
-	if (expval > 0 && npc) {    // Give experience.
+	if (expval > 0 && npc != nullptr) {    // Give experience.
 		npc->set_property(
 				static_cast<int>(exp),
 				npc->get_property(static_cast<int>(exp)) + expval);
@@ -4312,7 +4322,7 @@ int Actor::figure_hit_points(
 
 	// Weapon usecode comes last of all.
 	if (usefun > 0) {
-		if (npc) {    // Just to be sure.
+		if (npc != nullptr) {    // Just to be sure.
 			set_oppressor(npc->get_npc_num());
 		}
 		ucmachine->call_usecode(usefun, this, Usecode_machine::weapon);

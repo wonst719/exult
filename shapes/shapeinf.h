@@ -120,7 +120,8 @@ enum Data_flag_bits {
 	tf_jawbone_flag,
 	tf_mirror_flag,
 	tf_on_fire_flag,
-	tf_extradimensional_storage_flag
+	tf_extradimensional_storage_flag,
+	tf_on_hit_usecode_flag,
 };
 
 enum Data_flag_names {
@@ -141,7 +142,8 @@ enum Data_flag_names {
 	jawbone_flag                  = (1U << tf_jawbone_flag),
 	mirror_flag                   = (1U << tf_mirror_flag),
 	on_fire_flag                  = (1U << tf_on_fire_flag),
-	extradimensional_storage_flag = (1U << tf_extradimensional_storage_flag)
+	extradimensional_storage_flag = (1U << tf_extradimensional_storage_flag),
+	on_hit_usecode_flag           = (1U << tf_on_hit_usecode_flag),
 };
 
 /*
@@ -183,6 +185,7 @@ protected:
 	std::vector<Light_info>         lightinf;
 	std::vector<Warmth_info>        warminf;
 	std::vector<Content_rules>      cntrules;
+	int                             on_hit_usecode = -1;
 	short                           gump_shape = -1;    // From container.dat.
 	short          gump_font    = -1;    // From container.dat v2+.
 	short          monster_food = -1;
@@ -234,7 +237,7 @@ public:
 		jawbone,
 		mirror,
 		on_fire,
-		extradimensional_storage
+		extradimensional_storage,
 	};
 
 	enum Mountain_tops {
@@ -604,6 +607,21 @@ public:
 			modified_flags |= gump_shape_flag;
 			gump_shape = static_cast<short>(sh);
 			gump_font  = static_cast<short>(fnt);
+		}
+	}
+
+	bool has_on_hit_usecode() const {
+		return on_hit_usecode != -1;
+	}
+
+	int get_on_hit_usecode() const {
+		return on_hit_usecode;
+	}
+
+	void set_on_hit_usecode(int ui) {
+		if (on_hit_usecode != ui) {
+			modified_flags |= on_hit_usecode_flag;
+			on_hit_usecode = ui;
 		}
 	}
 

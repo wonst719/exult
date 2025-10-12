@@ -28,7 +28,6 @@ const int BargeUsecode              = 0x634;
 const int FailCopyProtectionUsecode = 0x63d;
 const int BaseSpellsUsecode         = 0x640;
 const int SummonSpellUsecode        = BaseSpellsUsecode + 0x45;
-const int SleepArrowsUsecode        = 0x7e1;
 
 const int SSMazePartyWait = 0x62F;
 
