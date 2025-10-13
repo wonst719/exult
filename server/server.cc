@@ -538,7 +538,7 @@ static void Handle_client_message(
 				// Container is locked, showing first gump.
 				Gump_manager* gump_man
 						= Game_window::get_instance()->get_gump_man();
-				gump_man->add_gump(obj, 1;
+				gump_man->add_gump(obj, 1);
 			} else {
 				cerr << "The selected container has no gump!" << endl;
 			}
