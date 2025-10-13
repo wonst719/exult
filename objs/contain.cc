@@ -2,7 +2,7 @@
  *  contain.cc - Container objects.
  *
  *  Copyright (C) 1998-1999  Jeffrey S. Freedman
- *  Copyright (C) 2000-2022  The Exult Team
+ *  Copyright (C) 2000-2025  The Exult Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -441,6 +441,11 @@ bool Container_game_object::show_gump(int event) {
 	} else if ((gump = inf.get_gump_shape()) >= 0) {
 		Gump_manager* gump_man = gumpman;
 		gump_man->add_gump(this, gump);
+		return true;
+	} else if (inf.is_container_locked() && cheat.in_pickpocket()) {
+		// Container is locked, showing first gump.
+		Gump_manager* gump_man = gumpman;
+		gump_man->add_gump(this, 1);
 		return true;
 	}
 	return false;
