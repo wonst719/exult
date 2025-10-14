@@ -78,17 +78,4 @@ void Text_button::paint() {
 			ib8, text.c_str(), draw_area.x + text_x, draw_area.y + text_y);
 }
 
-TileRect Text_button::get_draw_area(
-		std::optional<bool> pushed ) const {
-
-	TileRect ret = Basic_button::get_draw_area(pushed);
-	// Draw area is increased to allow drawing on bottom and right bevel if not
-	// pushed
-	//if (!pushed.value_or(is_pushed())) {
-		//ret.h++;
-	//ret.w++;
-	//}
-	return ret;
-}
-
 
