@@ -497,7 +497,7 @@ C_EXPORT gboolean on_main_window_focus_in_event(
 ExultStudio::ExultStudio(int argc, char** argv)
 		: glade_path(nullptr), css_path(nullptr), css_provider(nullptr),
 		  static_path(nullptr), image_editor(nullptr), default_game(nullptr),
-		  background_color(0), shape_scale(0), shape_bilinear(false),
+		  background_color(0x808080), shape_scale(0), shape_bilinear(false),
 		  shape_info_modified(false), shape_names_modified(false),
 		  npc_modified(false), files(nullptr), curfile(nullptr),
 		  vgafile(nullptr), facefile(nullptr), fontfile(nullptr),
@@ -897,7 +897,7 @@ ExultStudio::ExultStudio(int argc, char** argv)
 			this);
 	// Background color for shape browser.
 	int bcolor;
-	config->value("config/estudio/background_color", bcolor, 0);
+	config->value("config/estudio/background_color", bcolor, 0x808080);
 	set_background_color(bcolor);
 
 	// Load games and mods; also stores system paths:
