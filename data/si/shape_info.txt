@@ -123,9 +123,10 @@
 #:559/75/0/0/0/0/50
 #:562/75/0/0/0/0/50
 
-#	Force Wall
+#		Force Wall (only the force wall frames).
 #
-:728/75/0/0/0/0/80
+:728/75/0/0/0/0/80/0
+:748/75/0/0/0/0/80/10
 
 #	Flaming weapons -- sounds awful, so it is disabled
 #
@@ -483,7 +484,7 @@
 #
 #		Light.
 #
-198:/-1/3
+:198/-1/3
 
 #		Fire. Has clandle-light strength in originals.
 #
