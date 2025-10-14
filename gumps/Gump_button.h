@@ -84,7 +84,7 @@ public:
 		return pushed_button;
 	}
 
-	bool is_pushed() {
+	bool is_pushed() const {
 		return pushed_button != MouseButton::Unknown;
 	}
 
@@ -103,6 +103,77 @@ public:
 	Gump_button* as_button() override {
 		return this;
 	}
+};
+
+
+// A Basic Recolorable Button class to be used by Subclasses to draw a button in the style of Text_button
+// 
+class Basic_button : public Gump_button {
+	public:
+		uint8 OuterBorder;
+	uint8 OuterBorderCorner;
+	uint8 PushedEdgeCorner;
+	uint8 PushedEdgeTop;
+	uint8 PushedEdgeLeft;
+
+	uint8 BevelHighlight;
+	uint8 BevelLowlight;
+	uint8 InnerBorderLowlightPushed;
+	uint8 BevelCornerBoth ;
+	uint8 BevelDoubleHighlight;
+	uint8 InnerBorderTRCorner;
+	uint8 BevelDoubleLowlight;
+
+	uint8 Background;
+	uint8 BGHighlight;
+
+	//! @brief Recolor the button
+	//! @param newBackground Palette index of the background colour to derive all other colours from. Must have 4 palette indices available above this getting darker and 3 palette indices below getting lighter
+	void Recolor(int newBackground = 140, int newOuterBorder = 0)
+	{
+		Background               = newBackground;
+		OuterBorder             = newOuterBorder;
+		OuterBorderCorner      = 0xff;
+
+		PushedEdgeCorner      = newBackground+4;
+		PushedEdgeTop  = newBackground+3;
+		PushedEdgeLeft = newBackground+3;
+
+		BevelHighlight = newBackground-2;
+		BevelLowlight  = newBackground+3;
+		BevelCornerBoth      = newBackground + 1;
+		BevelDoubleHighlight   = newBackground-3;
+		InnerBorderTRCorner = newBackground-2;
+		BevelDoubleLowlight = newBackground+4;
+
+		 BGHighlight = newBackground-1;
+
+	}
+
+	protected:
+	int width;
+	int height;
+
+public:
+	Basic_button(
+			Gump_Base* par, int px, int py, int w, int h,
+			bool self_managed = false)
+			: Gump_button(par, -1, px, py, SF_OTHER, self_managed), width(w),
+			  height(h) {
+		// need to set frame to -1 to disable the shape
+		set_frame(-1);
+		// Set the default color
+		Recolor();
+	}
+
+	void paint() override;
+
+	//! @brief  Get the area subclasses are allowed to draw into. The draw area is only the top surface of the button excluding the bevel
+	//! @return draw area rectangle in local coordinates
+	virtual TileRect get_draw_area(std::optional<bool> pushed = std::nullopt) const;
+
+	TileRect get_rect() const override;
+	bool     on_widget(int mx, int my) const override;
 };
 
 template <class Callable, class Tuple, size_t... Is>

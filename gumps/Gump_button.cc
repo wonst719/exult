@@ -134,3 +134,88 @@ bool Gump_button::mouse_drag(int mx, int my) {
 
 	return true;
 }
+
+void Basic_button::paint() {
+	Image_window8* iwin = gwin->get_win();
+	auto*          ib8  = iwin->get_ib8();
+
+	int offset = 0;
+	int px     = 0;
+	int py     = 0;
+
+	local_to_screen(px, py);
+
+	auto     clipsave = ib8->SaveClip();
+	TileRect newclip  = clipsave.Rect().intersect(
+            TileRect(px, py, width - 1, height - 1));
+	ib8->set_clip(newclip.x, newclip.y, newclip.w, newclip.h);
+
+	// pushed edge
+	if (is_pushed()) {
+		// Top left corner
+		ib8->put_pixel8(PushedEdgeCorner, px + 1, py + 1);
+		// Top edge
+		ib8->fill8(PushedEdgeTop, width - 2, 1, px + 2, py + 1);
+		// Left edge
+		ib8->fill8(PushedEdgeLeft, 1, height - 2, px + 1, py + 2);
+
+		offset = 1;
+	}
+	// else
+	{
+	}
+
+	// Bevel
+
+	ib8->draw_beveled_box(
+			px + offset + 1, py + offset + 1, width - 2, height - 2, 1,
+			Background, BevelHighlight, BevelHighlight, BevelLowlight,
+			BevelDoubleLowlight, BevelCornerBoth);
+
+	// Top Right Highlight 1
+	ib8->put_pixel8(
+			BevelDoubleHighlight, px + width + offset - 3, py + offset + 1);
+	// Top Right Highlight 2
+	ib8->put_pixel8(
+			BevelDoubleHighlight, px + width + offset - 2, py + offset + 2);
+
+	// Top Right Highlight on Background
+	ib8->put_pixel8(BGHighlight, px + width + offset - 3, py + offset + 2);
+
+	//
+	clipsave.Restore();
+
+	// Outer Border (black)
+	 ib8->draw_beveled_box(
+		px, py, width, height, 1, 0xFF, OuterBorder, OuterBorderCorner,
+	 OuterBorder, OuterBorderCorner);
+}
+
+TileRect Basic_button::get_draw_area(std::optional<bool> pushed) const {
+	int offset = pushed.value_or(is_pushed()) ? 1 : 0;
+
+	// allows drawing on the lower bevel but not the outer border
+	return TileRect(
+			2 + offset, 2 + offset, width - 3 - offset, height - 3 - offset);
+}
+
+TileRect Basic_button::get_rect() const {
+	TileRect rect(0, 0, width, height);
+	local_to_screen(rect.x, rect.y);
+	return rect;
+}
+
+bool Basic_button::on_widget(int mx, int my) const {
+	int px = 0;
+	int py = 0;
+
+	local_to_screen(px, py);
+
+	if (mx < px || mx >= px + width) {
+		return false;
+	}
+	if (my < py || my >= py + height) {
+		return false;
+	}
+	return true;
+}

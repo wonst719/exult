@@ -24,13 +24,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <string>
 #include <string_view>
 
-class Text_button : public Gump_button {
+class Text_button : public Basic_button {
 protected:
 	std::string text;
 	int         text_x;
 	int         text_y;
-	int         width;
-	int         height;
 
 	std::shared_ptr<Font> font;
 	void                  init();
@@ -38,11 +36,10 @@ protected:
 public:
 	Text_button(
 			Gump_Base* p, const std::string_view& str, int x, int y, int w = 0,
-			int h = 0);
+			int h = 0, std::shared_ptr<Font> font = {});
 	void paint() override;
-
-	bool     on_widget(int mx, int my) const override;
-	TileRect get_rect() const override;
+	TileRect get_draw_area(
+			std::optional<bool> pushed = std::nullopt) const override;
 };
 
 template <typename Parent, typename... Args>

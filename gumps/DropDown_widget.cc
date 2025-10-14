@@ -301,35 +301,21 @@ void DropDown_widget::show_popup(bool show) {
 }
 
 void DropDown_widget::Button::paint() {
-	std::string save = {};
-	save.swap(text);
 	Text_button::paint();
-
-	save.swap(text);
 
 	auto*      ib8      = gwin->get_win()->get_ib8();
 	const auto clipsave = ib8->SaveClip();
-	int        offset   = is_pushed() ? 1 : 0;
-	int        px       = 0;
-	int        py       = 0;
+	auto       draw_area     = get_draw_area();
+	local_to_screen(draw_area.x, draw_area.y);
 
-	local_to_screen(px, py);
-	int arrowx = px + width - 6 + offset;
-	int arrowy = py + height - 4 + offset;
+	int arrowx = draw_area.x + width - 8;
+	int arrowy = draw_area.y + height - 6;
 	//
 	// Draw down arrow
 
 	for (int i = 0; i < 4; i++) {
 		ib8->fill_hline8(0, 1 + i * 2, arrowx - i, arrowy - i);
 	}
-
-	// Clip text
-	TileRect newclip = clipsave.Rect().intersect(TileRect(
-			px + offset, py + offset, width - 10 - offset, height - offset));
-	ib8->set_clip(newclip.x, newclip.y, newclip.w, newclip.h);
-	// Paint Text
-	font->paint_text(
-			ib8, text.c_str(), px + text_x + offset, py + text_y + offset);
 }
 
 void DropDown_widget::Button::set_text(const std::string_view& str) {
@@ -337,7 +323,7 @@ void DropDown_widget::Button::set_text(const std::string_view& str) {
 	for (int i = str.size(); i > 0; i--) {
 		int text_w = font->get_text_width(str.data(), i);
 		if (text_w <= width - 10) {
-			text_x = std::max(2, (width - 10 - text_w) >> 1);
+			text_x = (width - 10 - text_w) >> 1;
 			text   = str.substr(0, i);
 			break;
 		}
