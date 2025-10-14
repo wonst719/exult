@@ -2161,7 +2161,8 @@ start_call:
 			$$ = new Uc_int_expression(0);
 		} else {
 			// May generate errors.
-			if ($2->is_object_function() == -1) {    // Don't know.
+			if ($2->is_object_function() == -1 && Uc_location::get_shapefun_warn()) {
+				// Don't know.
 				Uc_location::yywarning(
 						"Please ensure that 'call' uses a function declared "
 						"with 'shape#' or 'object#'");
@@ -2319,7 +2320,7 @@ label_statement:
 goto_statement:
 	GOTO IDENTIFIER
 		{
-		if (!Uc_location::get_ucxt_mode()) {
+		if (Uc_location::get_goto_warn()) {
 			Uc_location::yywarning("You *really* shouldn't use goto statements...");
 		}
 		$$ = new Uc_goto_statement($2);
@@ -2524,7 +2525,7 @@ primary:
 	INT_LITERAL
 		{
 		UsecodeOps op = !const_opcode.empty() ? const_opcode.back() : UC_PUSHI;
-		if (is_sint_32bit($1) && op != UC_PUSHI32 && !Uc_location::get_ucxt_mode()) {
+		if (is_sint_32bit($1) && op != UC_PUSHI32 && Uc_location::get_integer_warn()) {
 			if (is_int_32bit($1)) {
 				Uc_location::yywarning(
 						"Literal integer '%d' cannot be represented as 16-bit "

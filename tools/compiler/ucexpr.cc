@@ -666,7 +666,7 @@ int Uc_call_expression::is_object_function(bool error) const {
 	} else if (fun == Uc_function::get_get_item_shape()) {
 		// *Could* be, if not a high shape.
 		// Let's say it is, but issue a warning.
-		if (error) {
+		if (error && Uc_location::get_shapefun_warn()) {
 			Uc_location::yywarning(
 					"Shape # is equal to fun. ID only for shapes < 0x400; use "
 					"UI_get_usecode_fun instead");

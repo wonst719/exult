@@ -118,7 +118,7 @@ int Uc_var_symbol::gen_value(Basic_block* out) {
 }
 
 int Uc_var_symbol::is_object_function(bool print_error) const {
-	if (print_error) {
+	if (print_error && Uc_location::get_shapefun_warn()) {
 		switch (is_obj_fun) {
 		case -2:
 			Uc_location::yywarning(

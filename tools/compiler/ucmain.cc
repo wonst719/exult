@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 	char                        outbuf[256];
 	char*                       outname        = nullptr;
 	bool                        want_sym_table = true;
-	static const char*          optstring      = "o:I:sbc:u";
+	static const char*          optstring      = "o:I:sbc:uW:";
 	Uc_function::Intrinsic_type ty             = Uc_function::unset;
 	opterr = 0;    // Don't let getopt() print errs.
 	Uc_location::set_color_output(isatty(fileno(stderr)));
@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
 				Uc_location::set_color_output(isatty(fileno(stderr)));
 			} else {
 				std::cout << "Invalid argument to -c: '" << optarg
-						  << "' expected one of 'always', 'never' or 'auto'"
+						  << "' expected one of 'always', 'never', or 'auto'"
 						  << std::endl;
 				return 1;
 			}
@@ -96,8 +96,29 @@ int main(int argc, char** argv) {
 		case 'b':
 			want_sym_table = false;
 			break;
+		case 'W':
+			if (optarg == "goto"sv || optarg == "no-goto"sv) {
+				Uc_location::set_goto_warn(optarg == "goto"sv);
+			} else if (
+					optarg == "integer-coercion"sv
+					|| optarg == "no-integer-coercion"sv) {
+				Uc_location::set_integer_warn(optarg == "integer-coercion"sv);
+			} else if (
+					optarg == "shape-to-function"sv
+					|| optarg == "no-shape-to-function"sv) {
+				Uc_location::set_shapefun_warn(optarg == "shape-to-function"sv);
+			} else {
+				std::cout << "Invalid argument to -W: '" << optarg
+						  << "' expected one of 'goto', 'no-goto', "
+							 "'integer-coercion', 'no-integer-coercion', "
+							 "'shape-to-function', or 'no-shape-to-function'"
+						  << std::endl;
+			}
+			break;
 		case 'u':
-			Uc_location::set_ucxt_mode(true);
+			Uc_location::set_goto_warn(false);
+			Uc_location::set_integer_warn(false);
+			Uc_location::set_shapefun_warn(false);
 			break;
 		}
 	}

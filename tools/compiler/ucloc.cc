@@ -43,12 +43,14 @@ using std::strlen;
 
 std::vector<char*> Uc_location::source_names;
 
-char* Uc_location::cur_source   = nullptr;
-int   Uc_location::cur_line     = 0;
-int   Uc_location::num_errors   = 0;
-bool  Uc_location::strict_mode  = false;
-bool  Uc_location::color_output = false;
-bool  Uc_location::ucxt_mode    = false;
+char* Uc_location::cur_source    = nullptr;
+int   Uc_location::cur_line      = 0;
+int   Uc_location::num_errors    = 0;
+bool  Uc_location::strict_mode   = false;
+bool  Uc_location::color_output  = false;
+bool  Uc_location::goto_warn     = true;
+bool  Uc_location::integer_warn  = true;
+bool  Uc_location::shapefun_warn = true;
 
 /*
  *  Set current source and line #.

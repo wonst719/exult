@@ -64,7 +64,9 @@ class Uc_location {
 	static int   num_errors;      // Total #.
 	static bool  strict_mode;     // If all blocks are required to have braces
 	static bool  color_output;    // If output should be colorized.
-	static bool  ucxt_mode;       // If compiling UCXT output.
+	static bool  goto_warn;       // If should warn about goto
+	static bool  integer_warn;    // If should warn about coercing to negatives
+	static bool  shapefun_warn;   // If should warn about shape as function ID
 
 	char* source;
 	int   line;
@@ -107,12 +109,28 @@ public:
 		color_output = tf;
 	}
 
-	static bool get_ucxt_mode() {
-		return ucxt_mode;
+	static bool get_goto_warn() {
+		return goto_warn;
 	}
 
-	static void set_ucxt_mode(bool tf) {
-		ucxt_mode = tf;
+	static void set_goto_warn(bool tf) {
+		goto_warn = tf;
+	}
+
+	static bool get_integer_warn() {
+		return integer_warn;
+	}
+
+	static void set_integer_warn(bool tf) {
+		integer_warn = tf;
+	}
+
+	static bool get_shapefun_warn() {
+		return shapefun_warn;
+	}
+
+	static void set_shapefun_warn(bool tf) {
+		shapefun_warn = tf;
 	}
 
 	static void yyerror(preformatted_t tag, const char* s);
