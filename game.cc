@@ -25,6 +25,7 @@
 #include "Audio.h"
 #include "Configuration.h"
 #include "databuf.h"
+#include "exceptions.h"
 #include "exult.h"
 #include "exult_constants.h"
 #include "exult_flx.h"
@@ -52,6 +53,7 @@
 #include <array>
 #include <cstdlib>
 #include <cstring>
+#include <regex>
 #include <sstream>
 
 using std::cout;
@@ -467,14 +469,13 @@ bool Game::show_menu(bool skip) {
 	bool menu_quotes         = true;
 	bool menu_endgame        = true;
 	bool show_display_string = true;
-	if (gamemanager) {
+	if (gamemanager != nullptr) {
 		ModManager* current_game_mgr
 				= gamemanager->find_game(Game::get_gametitle());
-		if (current_game_mgr && !Game::get_modtitle().empty()) {
-			BaseGameInfo* current_mod
+		if (current_game_mgr != nullptr && !Game::get_modtitle().empty()) {
+			ModInfo* mod_info
 					= current_game_mgr->get_mod(Game::get_modtitle(), false);
-			ModInfo* mod_info = dynamic_cast<ModInfo*>(current_mod);
-			if (mod_info) {
+			if (mod_info != nullptr) {
 				if (mod_info->has_force_skip_splash_set()) {
 					force_skip_splash = mod_info->get_force_skip_splash();
 				}
@@ -496,6 +497,7 @@ bool Game::show_menu(bool skip) {
 
 	constexpr static const std::array menuchoices{0x04, 0x05, 0x08, 0x06,
 												  0x11, 0x12, 0x07};
+	static const std::regex           whiteSpace(R"regex([\r\n\t ]+)regex");
 
 	const Vga_file exult_flx(BUNDLE_CHECK(BUNDLE_EXULT_FLX, EXULT_FLX));
 	char           npc_name[16];
@@ -505,7 +507,7 @@ bool Game::show_menu(bool skip) {
 	bool exitmenu = false;
 
 	do {
-		if (!menu) {
+		if (menu == nullptr) {
 			menu       = new MenuList();
 			int offset = 0;
 			for (size_t i = 0; i < menuchoices.size(); i++) {
@@ -545,29 +547,29 @@ bool Game::show_menu(bool skip) {
 
 		bool created = false;
 
-		if (gamemanager) {
+		if (gamemanager != nullptr) {
 			ModManager* current_game_mgr
 					= gamemanager->find_game(Game::get_gametitle());
-			if (current_game_mgr && !Game::get_modtitle().empty()) {
-				BaseGameInfo* current_mod = current_game_mgr->get_mod(
+			if (current_game_mgr != nullptr && !Game::get_modtitle().empty()) {
+				ModInfo* mod_info = current_game_mgr->get_mod(
 						Game::get_modtitle(), false);
-				ModInfo* mod_info     = dynamic_cast<ModInfo*>(current_mod);
-				string   display_text = mod_info->get_menu_string();
-				// Replace line breaks with spaces to draw on one line
-				std::replace(
-						display_text.begin(), display_text.end(), '\n', ' ');
-				std::replace(
-						display_text.begin(), display_text.end(), '\r', ' ');
+				if (mod_info == nullptr) {
+					// This should be impossible to reach.
+					throw exult_exception(
+							"Error: current mod is somehow NULL?");
+				}
+				// Replace carriage returns, line feeds, and spaces with spaces
+				// to draw on one line, merging consecutive spaces into one.
+				string display_text = std::regex_replace(
+						mod_info->get_menu_string(), whiteSpace, " ");
 				if (show_display_string) {
 					std::shared_ptr<Font> font
 							= fontManager.get_font("MENU_FONT");
+					const int tw = font->get_text_width(display_text.c_str());
+					const int th = font->get_text_height();
 					font->draw_text(
-							ibuf,
-							gwin->get_width()
-									- font->get_text_width(display_text.c_str())
-									- 5,
-							gwin->get_height() - font->get_text_height() - 5,
-							display_text.c_str());
+							ibuf, gwin->get_width() - tw - 5,
+							gwin->get_height() - th - 5, display_text.c_str());
 				}
 			}
 		}

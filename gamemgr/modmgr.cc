@@ -1171,19 +1171,19 @@ void ModManager::add_mod(const string& mod, const string& modconfig) {
 // and checks the mod's compatibility. If the mod exists and is compatible with
 // Exult, returns a reference to the mod; otherwise, returns the mod's parent
 // game. Outputs error messages if the mod is not found or is not compatible.
-BaseGameInfo* ModManager::get_mod(const string& name, bool checkversion) {
+ModInfo* ModManager::get_mod(const string& name, bool checkversion) {
 	ModInfo* newgame = nullptr;
 	if (has_mods()) {
 		newgame = find_mod(name);
 	}
-	if (newgame) {
+	if (newgame != nullptr) {
 		if (checkversion && !newgame->is_mod_compatible()) {
 			cerr << "Mod '" << name
 				 << "' is not compatible with this version of Exult." << endl;
 			return nullptr;
 		}
 	}
-	if (!newgame) {
+	if (newgame == nullptr) {
 		cerr << "Mod '" << name << "' not found." << endl;
 	}
 	return newgame;

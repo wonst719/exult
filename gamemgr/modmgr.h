@@ -265,7 +265,7 @@ public:
 		return &(modlist.at(i));
 	}
 
-	BaseGameInfo* get_mod(const std::string& name, bool checkversion = true);
+	ModInfo* get_mod(const std::string& name, bool checkversion = true);
 
 	auto begin() {
 		return modlist.begin();

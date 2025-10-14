@@ -939,11 +939,11 @@ static void Init() {
 			run_sib      = false;
 		}
 		BaseGameInfo* newgame = nullptr;
-		if (basegame || arg_gamename != "default") {
-			if (!basegame) {
+		if (basegame != nullptr || arg_gamename != "default") {
+			if (basegame == nullptr) {
 				basegame = gamemanager->find_game(arg_gamename);
 			}
-			if (basegame) {
+			if (basegame != nullptr) {
 				if (arg_modname != "default") {
 					// Prints error messages:
 					newgame = basegame->get_mod(arg_modname);
@@ -961,7 +961,7 @@ static void Init() {
 		}
 #ifdef HAVE_ZIP_SUPPORT
 		if (!arg_installmod.empty()) {
-			if (newgame) {
+			if (newgame != nullptr) {
 				newgame->setup_game_paths();
 			}
 			std::cout << "\nInstallmod: want to install mods in zip "
@@ -1156,25 +1156,26 @@ static void Init() {
 		// Check for mod overrides
 		bool force_skip_splash   = false;
 		bool force_digital_music = false;
-		if (gamemanager) {
+		if (gamemanager != nullptr) {
 			ModManager* current_game_mgr
 					= gamemanager->find_game(Game::get_gametitle());
-			if (current_game_mgr && !Game::get_modtitle().empty()) {
-				BaseGameInfo* current_mod = current_game_mgr->get_mod(
+			if (current_game_mgr != nullptr && !Game::get_modtitle().empty()) {
+				ModInfo* mod_info = current_game_mgr->get_mod(
 						Game::get_modtitle(), false);
-				ModInfo* mod_info = dynamic_cast<ModInfo*>(current_mod);
-				if (mod_info && mod_info->has_force_skip_splash_set()) {
-					force_skip_splash = mod_info->get_force_skip_splash();
-				}
-				if (mod_info && mod_info->has_force_digital_music_set()) {
-					force_digital_music = mod_info->get_force_digital_music();
+				if (mod_info != nullptr) {
+					if (mod_info->has_force_skip_splash_set()) {
+						force_skip_splash = mod_info->get_force_skip_splash();
+					}
+					if (mod_info->has_force_digital_music_set()) {
+						force_digital_music = mod_info->get_force_digital_music();
+					}
 				}
 			}
 		}
 
 		// Digital music if forced by mod
 		if (force_digital_music) {
-			if (midi) {
+			if (midi != nullptr) {
 				midi->set_ogg_enabled(true);
 			}
 		}
