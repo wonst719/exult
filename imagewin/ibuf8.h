@@ -116,7 +116,8 @@ public:
 
 	void draw_beveled_box(
 			int x, int y, int w, int h, int depth, uint8 colfill, uint8 coltop,
-			uint8 coltr, uint8 colbottom, uint8 colbl) override;
+			uint8 coltr, uint8 colbottom, uint8 colbl,
+			std::optional<uint8> coltlbr = {}) override;
 };
 
 #endif

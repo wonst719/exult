@@ -845,7 +845,8 @@ void Image_buffer8::paint_rle_remapped(
 
 void Image_buffer8::draw_beveled_box(
 		int x, int y, int w, int h, int depth, uint8 colfill, uint8 coltop,
-		uint8 coltr, uint8 colbottom, uint8 colbl) {
+		uint8 coltr, uint8 colbottom,
+		uint8 colbl,std::optional<uint8> coltlbr) {
 	// Need to shrink by 1 so lines are drawn in the right places
 	w--;
 	h--;
@@ -853,11 +854,12 @@ void Image_buffer8::draw_beveled_box(
 
 	while (depth--) {
 		// corner pixels
-		if (colfill != 0xff) {
+		uint8 tlbr = coltlbr.value_or(colfill);
+		if (tlbr != 0xff) {
 			// top left
-			put_pixel8(colfill, x, y);
+			put_pixel8(tlbr, x, y);
 			// bottom right
-			put_pixel8(colfill, x + w, y + h);
+			put_pixel8(tlbr, x + w, y + h);
 		}
 		// top right
 		if (coltr != 0xff) {

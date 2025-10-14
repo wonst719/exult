@@ -32,6 +32,7 @@ Boston, MA  02111-1307, USA.
 #include "rect.h"
 
 #include <memory>
+#include <optional>
 
 class IDataSource;
 
@@ -118,7 +119,7 @@ public:
 		}
 
 		~ClipRectSave() {
-			buf->set_clip(clip.x, clip.y, clip.w, clip.h);
+			Restore();
 		}
 
 		operator const TileRect&() const {
@@ -127,6 +128,15 @@ public:
 
 		const TileRect& Rect() const {
 			return clip;
+		}
+		void Restore()
+		{
+			if (buf) {
+				buf->set_clip(clip.x, clip.y, clip.w, clip.h);
+			}
+		}
+		void Clear() {
+			buf = nullptr;
 		}
 	};
 
@@ -273,21 +283,28 @@ public:
 
 	virtual void fill_static(int black, int gray, int white) = 0;
 
+	// Turning off clang format so it doesn't mess up the comments
+	// clang-format off
+	 
+	 
 	//! Draw a box with a fake 3d beveled edge
 	//! /param x X coord of top left
 	//! /param y Y coord of top left
 	//! /param w Outer Width of the box to draw
 	//! /param h Outer Height of the Box to draw
 	//! /param depth The depth of the 3d effect, the beveled edge will be this
-	//! many pixels wide /param colfill Colour to fill the box and for the
-	//! topleft and bottomright corner /param coltop Colour for the the top edge
-	//! and the right edge /param coltr Colour for the topright corner /param
-	//! colbottom Colour for the bottom edge and the left edge /param colbl
-	//! Colour for the bottom left corner /remark set colours to 0xff to not
-	//! draw that element
+	//! many pixels wide 
+	//! /param colfill Colour to fill the box 
+	//! /param coltop Colour for the the top edge and the right edge 
+	//! /param coltr Colour for the topright corner 
+	//! /param colbottom Colour for the bottom edge and the left edge 
+	//! /param colbl Colour for the bottom left corner 
+	//! /param coltlbr Optional colour to use for top left and bottom right. If
+	//! not specified colfill is used
+	//! /remark set colours to 0xff to not draw that element
 	virtual void draw_beveled_box(
 			int x, int y, int w, int h, int depth, uint8 colfill, uint8 coltop,
-			uint8 coltr, uint8 colbottom, uint8 colbl)
+			uint8 coltr, uint8 colbottom, uint8 colbl, std::optional <uint8>coltlbr={})
 			= 0;
 
 	//! Draw a box witha given stroke and fill
