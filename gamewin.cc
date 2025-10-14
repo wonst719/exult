@@ -394,6 +394,7 @@ Game_window::Game_window(
 	config->set(
 			"config/gameplay/enhancements", allow_enhancements ? "yes" : "no",
 			false);
+	Shape_info::set_allow_enhancements(allow_enhancements);
 #if defined(SDL_PLATFORM_IOS) || defined(ANDROID)
 	const string default_scroll_with_mouse = "no";
 	const string default_item_menu         = "yes";

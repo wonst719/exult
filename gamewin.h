@@ -26,6 +26,7 @@
 #include "iwin8.h"
 #include "rect.h"
 #include "shapeid.h"
+#include "shapeinf.h"
 #include "tiles.h"
 #include "vgafile.h"
 
@@ -336,6 +337,7 @@ public:
 
 	void set_allow_enhancements(bool s) {
 		allow_enhancements = s;
+		Shape_info::set_allow_enhancements(allow_enhancements);
 	}
 
 	bool is_in_exult_menu() const {    // used for menu options

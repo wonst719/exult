@@ -59,6 +59,8 @@ using std::cerr;
 using std::endl;
 using std::vector;
 
+bool Shape_info::allow_enhancements = false;
+
 Shape_info::Shape_info() = default;
 
 /*
@@ -457,9 +459,7 @@ bool Shape_info::is_shape_accepted(int shape) const {
 }
 
 int Shape_info::get_object_light(int frame) const {
-	std::string enhanced;
-	config->value("config/gameplay/enhancements", enhanced, "no");
-	if (!is_light_source() && enhanced == "no") {
+	if (!is_light_source() && !allow_enhancements) {
 		// No enhancements and not a light source.
 		return 0;
 	}

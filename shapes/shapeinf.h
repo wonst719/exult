@@ -151,6 +151,9 @@ enum Data_flag_names {
  */
 class Shape_info {
 protected:
+	static bool allow_enhancements;
+
+
 	// For some non-class data (see Data_flag_names enum).
 	unsigned int modified_flags  = 0;
 	unsigned int frompatch_flags = 0;
@@ -992,6 +995,15 @@ public:
 
 	void paint_bbox(
 			int x, int y, int framenum, Image_buffer* ibuf, int stroke) const;
+
+	static void set_allow_enhancements(bool newval) {
+		allow_enhancements = newval;
+	}
+
+	static bool get_allow_enhancements()
+	{
+		return allow_enhancements;
+	}
 };
 
 #endif
