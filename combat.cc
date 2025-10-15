@@ -1468,10 +1468,10 @@ bool Combat_schedule::attack_target(
 					target->get_tile() + offset, target, 0, weapon, -1,
 					attacker));
 		} else {
-			const Game_object_weak trg_check = weak_from_obj(trg);
-			target->attacked(
+			const Game_object_shared tgt_obj = target->shared_from_this();
+			auto* result = target->attacked(
 					attacker, weapon, ammo ? ammo->get_shapenum() : -1, false);
-			if (trg && !trg_check.expired()) {
+			if (trg != nullptr && result != nullptr) {
 				back_off(trg, attacker);
 			}
 		}
@@ -1798,10 +1798,12 @@ void Combat_schedule::now_what() {
 			// Party member.
 			npc->walk_to_tile(
 					gwin->get_main_actor()->get_tile(), gwin->get_std_delay());
-			// WARNING:  Destroys ourself.
+			// WARNING: Destroys ourself.
 			npc->set_schedule_type(Schedule::follow_avatar);
-		} else if (!gwin->get_game_rect().intersects(
-						   gwin->get_shape_rect(npc))) {
+			// There is not much else we can safely do in this function.
+			return;
+		}
+		if (!gwin->get_game_rect().intersects(gwin->get_shape_rect(npc))) {
 			// Off screen?  Stop trying.
 			gwin->get_tqueue()->remove(npc);
 			npc->set_dormant();
@@ -1809,10 +1811,15 @@ void Combat_schedule::now_what() {
 				npc->get_alignment() == Actor::good
 				&& prev_schedule != Schedule::combat) {
 			// Return to normal schedule.
+			// WARNING: May destroy ourself.
+			// Save npc pointer as a precaution.
+			auto* safe_npc = npc;
 			npc->update_schedule(gclock->get_hour() / 3);
-			if (npc->get_schedule_type() == Schedule::combat) {
-				npc->set_schedule_type(prev_schedule);
+			if (safe_npc->get_schedule_type() == Schedule::combat) {
+				safe_npc->set_schedule_type(prev_schedule);
 			}
+			// There is not much else we can safely do in this function.
+			return;
 		} else {
 			// Wander randomly.
 			const Tile_coord t    = npc->get_tile();
