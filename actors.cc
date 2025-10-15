@@ -5589,10 +5589,6 @@ void Npc_actor::switched_chunks(
  */
 
 void Npc_actor::move(int newtx, int newty, int newlift, int newmap) {
-	// prevent teleporting if dead
-	if (is_dead()) {
-		return;
-	}
 	// Store old chunk list.
 	Map_chunk* olist = get_chunk();
 	// Move it.
