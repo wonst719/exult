@@ -118,7 +118,6 @@ class Basic_button : public Gump_button {
 
 	uint8 BevelHighlight;
 	uint8 BevelLowlight;
-	uint8 InnerBorderLowlightPushed;
 	uint8 BevelCornerBoth ;
 	uint8 BevelDoubleHighlight;
 	uint8 InnerBorderTRCorner;
