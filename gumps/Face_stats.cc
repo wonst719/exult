@@ -215,6 +215,10 @@ void Portrait_button::double_clicked(int x, int y) {
 		hp->double_clicked(x, y);
 	} else if (mana && mana->on_button(x, y)) {
 		mana->double_clicked(x, y);
+	} else if (Combat::is_paused() && gwin->in_combat()) {
+		int ax = 0, ay = 0;
+		gwin->get_shape_location(actor, ax, ay);
+		gwin->paused_combat_select(ax, ay);
 	} else if (actor->can_act_charmed()) {
 		actor->show_inventory();
 	}
