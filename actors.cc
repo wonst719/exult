@@ -5589,6 +5589,20 @@ void Npc_actor::switched_chunks(
  */
 
 void Npc_actor::move(int newtx, int newty, int newlift, int newmap) {
+	// prevent 'zombie clones' of previously dead NPCs after the banes
+	// in SI but don't break resurrections.
+	if (is_dead()) {
+		Actor* avatar = gwin->get_main_actor();
+		if (avatar) {
+			const Tile_coord avatar_pos = avatar->get_tile();
+			const Tile_coord dest_pos(newtx, newty, newlift);
+			const int        dist = avatar_pos.distance(dest_pos);
+			// Block if teleporting more than a superchunk away
+			if (dist > c_tiles_per_schunk) {
+				return;
+			}
+		}
+	}
 	// Store old chunk list.
 	Map_chunk* olist = get_chunk();
 	// Move it.
