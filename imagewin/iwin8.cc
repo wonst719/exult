@@ -111,14 +111,17 @@ void Image_window8::set_palette(
 		colors2[i].b = colors[i * 3 + 2]
 				= GammaBlue[Get_color8(rgbs[3 * i + 2], maxval, brightness)];
 	}
-	SDL_Palette* paletted_surface_palette
-			= SDL_GetSurfacePalette(paletted_surface);
-	SDL_SetPaletteColors(paletted_surface_palette, colors2, 0, 256);
-
-	if (paletted_surface != draw_surface) {
-		SDL_Palette* draw_surface_palette
-				= SDL_GetSurfacePalette(paletted_surface);
-		SDL_SetPaletteColors(draw_surface_palette, colors2, 0, 256);
+	if (paletted_surface) {
+		if (SDL_Palette* paletted_surface_palette
+			= SDL_GetSurfacePalette(paletted_surface)) {
+			SDL_SetPaletteColors(paletted_surface_palette, colors2, 0, 256);
+		}
+	}
+	if (paletted_surface != draw_surface && draw_surface) {
+		if (SDL_Palette* draw_surface_palette
+			= SDL_GetSurfacePalette(draw_surface)) {
+			SDL_SetPaletteColors(draw_surface_palette, colors2, 0, 256);
+		}
 	}
 }
 
@@ -151,14 +154,17 @@ void Image_window8::rotate_colors(
 			colors2[i].g = colors[i * 3 + 1];
 			colors2[i].b = colors[i * 3 + 2];
 		}
-		SDL_Palette* paletted_surface_palette
-				= SDL_GetSurfacePalette(paletted_surface);
-		SDL_SetPaletteColors(paletted_surface_palette, colors2, 0, 256);
-
-		if (paletted_surface != draw_surface) {
-			SDL_Palette* draw_surface_palette
-					= SDL_GetSurfacePalette(paletted_surface);
-			SDL_SetPaletteColors(draw_surface_palette, colors2, 0, 256);
+		if (paletted_surface) {
+			if (SDL_Palette* paletted_surface_palette
+				= SDL_GetSurfacePalette(paletted_surface)) {
+				SDL_SetPaletteColors(paletted_surface_palette, colors2, 0, 256);
+			}
+		}
+		if (paletted_surface != draw_surface && draw_surface) {
+			if (SDL_Palette* draw_surface_palette
+				= SDL_GetSurfacePalette(draw_surface)) {
+				SDL_SetPaletteColors(draw_surface_palette, colors2, 0, 256);
+			}
 		}
 	}
 }
