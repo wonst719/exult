@@ -1109,21 +1109,29 @@ void Preach_schedule::now_what() {
 	switch (state) {
 	case find_podium: {
 		Game_object_vector vec;
-		if (!npc->find_nearby(vec, 697, 17, 0)) {
+		npc->find_nearby(vec, 697, 17, 0);
+		if (GAME_SI) {
+			npc->find_nearby(vec, 776, 17, 0);
+		}
+
+		Game_object* podium = find_nearest(npc, vec);
+		if (!podium) {
 			npc->set_schedule_type(loiter);
 			return;
 		}
-		Game_object*     podium       = vec[0];
-		Tile_coord       pos          = podium->get_tile();
-		static const int deltas[4][2] = {
-				{-1,  0},
-                { 1,  0},
-                { 0, -2},
-                { 0,  1}
-        };
-		const int frnum = podium->get_framenum() % 4;
-		pos.tx += deltas[frnum][0];
-		pos.ty += deltas[frnum][1];
+
+		Tile_coord pos = podium->get_tile();
+		const int frnum    = podium->get_framenum() % 6;
+		const int shapenum = podium->get_shapenum();
+		if (GAME_SI && shapenum == 776) {
+			// Horizontal podium (776): NPC stands north or south
+			pos.tx += 0;
+			pos.ty += (frnum % 2) ? 1 : -1;
+		} else {
+			// Vertical podium (697): NPC stands east or west
+			pos.tx += (frnum % 2) ? 1 : -1;
+			pos.ty += 0;
+		}
 		Actor_pathfinder_client cost(npc, 0);
 		Actor_action*           pact = Path_walking_actor_action::create_path(
                 npc->get_tile(), pos, cost);
