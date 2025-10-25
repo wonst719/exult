@@ -853,9 +853,6 @@
     <ClInclude Include="..\..\paths.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\playscene.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClInclude Include="..\..\rect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1485,6 +1482,9 @@
     </ClInclude>
     <ClInclude Include="..\..\gumps\IterableGump_widget.h">
       <Filter>gumps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\playscene.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

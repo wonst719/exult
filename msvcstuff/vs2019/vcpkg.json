@@ -9,7 +9,8 @@
     "libogg",
     "libvorbis",
     "libmt32emu",
-    "fluidlite",
+    "fluidsynth",
     "dirent"
-  ]
+  ],
+  "builtin-baseline": "74e6536215718009aae747d86d84b78376bf9e09"
 }
