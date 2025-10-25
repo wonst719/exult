@@ -75,6 +75,8 @@ class Notebook_gump : public Gump {
 	bool on_first_page_line();
 	void up_arrow();
 	void down_arrow();
+	void jump_to_first_entry();
+	void jump_to_last_entry();
 
 public:
 	Notebook_gump();

@@ -682,6 +682,22 @@ bool Notebook_gump::handle_kbd_event(void* vev) {
 	const Notebook_top& pinfo = page_info[curpage];
 	One_note*           note  = notes[pinfo.notenum];
 	switch (chr) {
+	case SDLK_ESCAPE: {
+		// Close the gump
+		if (gwin && gwin->get_gump_man()) {
+			gwin->get_gump_man()->close_gump(this);
+			return true;
+		}
+		return false;
+	}
+	case SDLK_HOME:
+		// Jump to first entry
+		jump_to_first_entry();
+		break;
+	case SDLK_END:
+		// Jump to last entry (first page of the last note)
+		jump_to_last_entry();
+		break;
 	case SDLK_RETURN:
 		note->insert('\n', cursor.offset);
 		++cursor.offset;
@@ -728,10 +744,6 @@ bool Notebook_gump::handle_kbd_event(void* vev) {
 	case SDLK_DOWN:
 		down_arrow();
 		return true;    // Don't set updnx.
-	case SDLK_HOME:
-	case SDLK_END:
-		// ++++++Finish.
-		break;
 	case SDLK_PAGEUP:
 		change_page(-1);
 		break;
@@ -1147,5 +1159,70 @@ void One_note::add_text_with_line_breaks(const std::string& input) {
 	// Add the final line if there's anything left
 	if (!current_line.empty()) {
 		this->text += current_line;
+	}
+}
+
+// Jump to the first entry (beginning of the notebook)
+void Notebook_gump::jump_to_first_entry() {
+	if (page_info.empty()) {
+		page_info.emplace_back(0, 0);
+	}
+	curpage       = 0;
+	curnote       = page_info[0].notenum;
+	cursor.offset = 0;
+	paint();
+}
+
+// Jump to the last entry (first page where the last note begins)
+void Notebook_gump::jump_to_last_entry() {
+	if (notes.empty()) {
+		return;
+	}
+	const int last_idx = static_cast<int>(notes.size()) - 1;
+
+	// Reset to start so paint() builds page_info forward
+	if (page_info.empty()) {
+		page_info.emplace_back(0, 0);
+	}
+	curpage       = 0;
+	curnote       = page_info[0].notenum;
+	cursor.offset = 0;
+
+	// Build page_info forward by painting subsequent pairs until we reach the
+	// end Safety cap to avoid any accidental infinite loop
+	for (int safety = 0; safety < 10000; ++safety) {
+		paint();    // updates page_info and appends info for next pair (nxt)
+
+		const int nxt = ((curpage & ~1) + 2);
+		if (nxt >= static_cast<int>(page_info.size())) {
+			break;    // reached end of mapped pages
+		}
+		curpage       = nxt;
+		curnote       = page_info[curpage].notenum;
+		cursor.offset = page_info[curpage].offset;
+	}
+
+	// Find the first page where the last note begins (offset == 0)
+	int found = -1;
+	for (int p = 0; p < static_cast<int>(page_info.size()); ++p) {
+		if (page_info[p].notenum == last_idx && page_info[p].offset == 0) {
+			found = p;
+			break;
+		}
+	}
+	// Fallback: any page containing the last note
+	if (found < 0) {
+		for (int p = static_cast<int>(page_info.size()) - 1; p >= 0; --p) {
+			if (page_info[p].notenum == last_idx) {
+				found = p;
+				break;
+			}
+		}
+	}
+	if (found >= 0) {
+		curpage       = found;
+		curnote       = last_idx;
+		cursor.offset = 0;
+		paint();
 	}
 }
