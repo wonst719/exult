@@ -1762,16 +1762,6 @@ static void Handle_event(SDL_Event& event) {
 	static uint32 last_b3_click     = 0;
 	static uint32 last_b1down_click = 0;
 	switch (event.type) {
-	// Quick saving to make sure no game progress gets lost
-	// when the app goes into background
-	case SDL_EVENT_WILL_ENTER_BACKGROUND: {
-		try {
-			gwin->write();
-		} catch (exult_exception& /*e*/) {
-			break;
-		}
-		break;
-	}
 	case SDL_EVENT_GAMEPAD_AXIS_MOTION: {
 		// Ignore axis changes on anything but a specific thumb-stick
 		// on the game-controller.

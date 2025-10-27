@@ -2863,6 +2863,12 @@ void Game_window::lose_focus() {
 		Audio::get_ptr()->pause_audio();
 	}
 
+#if defined(SDL_PLATFORM_IOS) || defined(ANDROID)
+	// Quick saving to make sure no game progress gets lost
+	// when the app goes into background.
+	write();
+#endif
+
 	focus = false;
 	tqueue->pause(Game::get_ticks());
 }
