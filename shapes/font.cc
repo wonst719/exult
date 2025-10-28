@@ -95,7 +95,10 @@ int Font::paint_text_box(
 		Cursor_info*   cursor,             // We set x, y if not nullptr.
 		unsigned char* trans) {
 	const char* start = text;    // Remember the start.
-	win->set_clip(x, y, w, h);
+	auto        clipsave       = win->SaveClip();	
+	auto        newclip = clipsave.Rect().intersect(TileRect(x, y, w, h));
+	win->set_clip(newclip.x, newclip.y, newclip.w, newclip.h);
+
 	const int   endx           = x + w;    // Figure where to stop.
 	int         curx           = x;
 	int         cury           = y;
@@ -249,7 +252,6 @@ int Font::paint_text_box(
 			break;
 		}
 	}
-	win->clear_clip();
 	delete[] lines;
 	if (*text) {                                   // Out of room?
 		return -static_cast<int>(text - start);    // Return -offset of end.
