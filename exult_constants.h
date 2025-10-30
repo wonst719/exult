@@ -56,9 +56,6 @@ constexpr const int c_max_shapes = 2048;
 constexpr const int c_occsize
 		= c_max_shapes / 8 + ((c_max_shapes % 8) != 0 ? 1 : 0);
 
-// Maximum number of global flags:
-constexpr const int c_last_gflag = 2047;
-
 constexpr const int MOVE_NODROP      = (1 << 3);
 constexpr const int MOVE_FLY         = (1 << 4);
 constexpr const int MOVE_LEVITATE    = (MOVE_FLY | MOVE_NODROP);

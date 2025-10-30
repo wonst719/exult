@@ -2693,12 +2693,12 @@ int Usecode_internal::run() {
 				} else {
 					offset = little_endian::Read2(frame->ip);
 				}
-				if (offset < 0
-					|| static_cast<unsigned>(offset) >= sizeof(gflags)) {
+				if (auto flagvalue = get_global_flag(offset);
+					!flagvalue.has_value()) {
 					FLAG_ERROR(offset);
 					pushi(0);
 				} else {
-					pushi(gflags[offset]);
+					pushi(static_cast<long>(*flagvalue));
 				}
 				break;
 			case UC_POPF:       // POPF.
@@ -2708,20 +2708,19 @@ int Usecode_internal::run() {
 				} else {
 					offset = little_endian::Read2(frame->ip);
 				}
-				if (offset < 0
-					|| static_cast<unsigned>(offset) >= sizeof(gflags)) {
+				if (bool flagvalue = popi() != 0;
+					!set_global_flag(offset, flagvalue)) {
 					FLAG_ERROR(offset);
 				} else {
-					gflags[offset] = static_cast<unsigned char>(popi());
-					if (gflags[offset]) {
+					if (flagvalue) {
 						Notebook_gump::add_gflag_text(offset);
 #ifdef DEBUG
 						cout << "Setting global flag: " << offset << endl;
 #endif
 					}
 					// ++++KLUDGE for Monk Isle:
-					if (offset == 0x272 && GAME_SI) {
-						gflags[offset] = 0;
+					if (offset == doing_xenka_return && GAME_SI) {
+						set_global_flag_unsafe(offset, false);
 					}
 					// ++++KLUDGE for reactivating Face Stats and shortcut bar
 					// after the first scene
@@ -3241,8 +3240,9 @@ void Usecode_internal::write() {
 	}
 
 	{
+		compact_global_flags();
 		OFileDataSource out(FLAGINIT);
-		out.write(gflags, sizeof(gflags));
+		out.write(gflags.data(), gflags.size());
 	}
 	{
 		OFileDataSource out(USEDAT);
@@ -3315,24 +3315,19 @@ void Usecode_internal::read() {
 	}
 
 	try {
-		auto pIn = U7open_in(FLAGINIT);    // Read global flags.
-		if (!pIn) {
+		// Read global flags.
+		IFileDataSource in(FLAGINIT);
+		if (!in.good()) {
 			throw file_read_exception(FLAGINIT);
 		}
-		auto& in = *pIn;
-		in.seekg(0, ios::end);    // Get filesize.
-		size_t filesize = in.tellg();
-		in.seekg(0, ios::beg);
-		if (filesize > sizeof(gflags)) {
-			filesize = sizeof(gflags);
-		}
-		memset(&gflags[0], 0, sizeof(gflags));
-		in.read(reinterpret_cast<char*>(gflags), filesize);
+		const size_t length = in.getSize();
+		reset_global_flags(length);
+		in.read(gflags.data(), length);
 	} catch (const exult_exception& /*e*/) {
 		if (!Game::is_editing()) {
 			throw;
 		}
-		memset(&gflags[0], 0, sizeof(gflags));
+		reset_global_flags();
 	}
 
 	clear_usevars();    // first clear all statics

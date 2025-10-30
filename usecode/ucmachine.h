@@ -23,10 +23,12 @@
 #define UCMACHINE_H
 
 #include "exceptions.h"
-#include "exult_constants.h"
 #include "singles.h"
 
+#include <algorithm>
 #include <iosfwd>
+#include <optional>
+#include <vector>
 
 class Game_window;
 class Usecode_machine;
@@ -44,10 +46,20 @@ class Tile_coord;
  */
 class Usecode_machine : nonreplicatable, public Game_singletons {
 protected:
-	unsigned char gflags[c_last_gflag + 1];    // Global flags.
-	Keyring*      keyring = nullptr;
-	Conversation* conv    = nullptr;    // Handles conversations
+	// Global flags.
+	std::vector<unsigned char> gflags;
+	// Handles the SI keyring
+	Keyring* keyring = nullptr;
+	// Handles conversations
+	Conversation* conv = nullptr;
+
+	// "Page size" for global flags.
+	constexpr static const size_t gflags_page_size = 2048;
+
 public:
+	constexpr static const size_t max_num_gflags = 32768;
+	constexpr static const size_t last_gflag = max_num_gflags - 1;
+
 	friend class Usecode_script;
 	// Create Usecode_internal.
 	static Usecode_machine* create();
@@ -67,24 +79,78 @@ public:
 		unreadied     = 6,    // Removed an item.
 		died          = 7,    // In SI only, I think.
 		chat          = 9,    // When a NPC wants to talk to you in SI
-		si_path_fail  = 14
+		si_path_fail  = 14,
 	};
 
 	enum Global_flag_names {
-		si_did_first_scene = 0x03,    // After Iolo's talk at the start of SI.
-		did_first_scene    = 0x3b,    // Went through 1st scene with Iolo.
+		si_did_first_scene  = 0x03,    // After Iolo's talk at the start of SI.
+		failed_copy_protect = 0x38,
+		did_first_scene     = 0x3b,    // Went through 1st scene with Iolo.
 		have_trinsic_password = 0x3d,
 		found_stable_key      = 0x3c,
 		left_trinsic          = 0x57,
-		avatar_is_thief       = 0x2eb
+		doing_xenka_return    = 0x272,
+		avatar_is_thief       = 0x2eb,
 	};
 
-	int get_global_flag(int i) {    // Get/set ith flag.
-		return gflags[i];
+	// Get ith flag, without bounds checks.
+	bool get_global_flag_unsafe(int i) {
+		return gflags[i] != 0;
 	}
 
-	void set_global_flag(int i, int val = 1) {
-		gflags[i] = (val == 1);
+	// Set ith flag, without bounds checks.
+	void set_global_flag_unsafe(int i, bool val) {
+		gflags[i] = static_cast<unsigned char>(val);
+	}
+
+	// Get ith flag, with bounds checks. Returns std::nullopt if out of range.
+	std::optional<bool> get_global_flag(int i) {
+		if (i >= 0 && static_cast<size_t>(i) < gflags.size()) {
+			return get_global_flag_unsafe(i);
+		}
+		return std::nullopt;
+	}
+
+	// Set ith flag, with bounds checks. Resizes gflags vector if needed, to a
+	// multiple of the page size. Returns false if i < 0 || i >= max_num_gflags.
+	bool set_global_flag(int i, bool val) {
+		if (i < 0 || static_cast<size_t>(i) >= max_num_gflags) {
+			return false;
+		}
+		if (i >= static_cast<int>(gflags.size())) {
+			set_num_global_flags(i + 1);
+		}
+		set_global_flag_unsafe(i, val);
+		return true;
+	}
+
+	size_t get_num_global_flags() const {
+		return gflags.size();
+	}
+
+	void set_num_global_flags(size_t n) {
+		size_t newsize = ((n + gflags_page_size - 1) / gflags_page_size)
+						 * gflags_page_size;
+		newsize = std::clamp(newsize, gflags_page_size, max_num_gflags);
+		gflags.resize(newsize, 0);
+	}
+
+	void reset_global_flags(size_t n = gflags_page_size) {
+		gflags.clear();
+		set_num_global_flags(n);
+	}
+
+	void compact_global_flags() {
+		auto rit = std::find(gflags.rbegin(), gflags.rend(), 1);
+		if (rit == gflags.rend()) {
+			gflags.resize(gflags_page_size);
+		} else {
+			// rit dereferences to the last nonzero flag.
+			// it dereferences to one after the last nonzero flag.
+			auto   it     = rit.base();
+			size_t offset = std::distance(gflags.begin(), it);
+			set_num_global_flags(offset);
+		}
 	}
 
 	// Start speech, or show text.

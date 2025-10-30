@@ -207,7 +207,7 @@ void Usecode_internal::uc_trace_disasm(
 			// Print global flag reference
 			offset = little_endian::Read2(ip);
 			std::printf("\tflag:[%04X]\t= ", offset);
-			if (gflags[offset]) {
+			if (get_global_flag(offset).value_or(false)) {
 				std::printf("set");
 			} else {
 				std::printf("unset");

@@ -32,7 +32,7 @@
 
 Usecode_machine::Usecode_machine() {
 	// Clear global flags.
-	std::memset(gflags, 0, sizeof(gflags));
+	gflags.resize(gflags_page_size, 0);
 	conv    = new Conversation;
 	keyring = new Keyring;
 }

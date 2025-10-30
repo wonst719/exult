@@ -2927,7 +2927,7 @@ void Game_window::setup_game(bool map_editing) {
 		// Skip intro. scene?
 		config->value("config/gameplay/skip_intro", yn, "no");
 		if (yn == "yes") {
-			usecode->set_global_flag(Usecode_machine::did_first_scene, 1);
+			usecode->set_global_flag(Usecode_machine::did_first_scene, true);
 		}
 
 		// Should Avatar be visible?
@@ -3251,8 +3251,10 @@ bool Game_window::is_hostile_nearby() const {
 }
 
 bool Game_window::failed_copy_protection() {
-	const bool confused    = main_actor->get_flag(Obj_flags::confused);
-	const bool failureFlag = usecode->get_global_flag(56);
+	const bool confused = main_actor->get_flag(Obj_flags::confused);
+	const bool failureFlag
+			= usecode->get_global_flag(Usecode_machine::failed_copy_protect)
+					  .value_or(false);
 	return (GAME_SI && confused) || (GAME_BG && failureFlag);
 }
 

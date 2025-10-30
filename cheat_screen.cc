@@ -33,7 +33,7 @@
 #include "cheat.h"
 #include "chunks.h"
 #include "exult.h"
-#include "files/U7file.h"
+#include "files/U7file.h"    // IWYU pragma: keep
 #include "font.h"
 #include "game.h"
 #include "gameclk.h"
@@ -41,7 +41,6 @@
 #include "gamewin.h"
 #include "gump_utils.h"
 #include "ignore_unused_variable_warning.h"
-#include "imagewin.h"
 #include "miscinf.h"
 #include "party.h"
 #include "schedule.h"
@@ -50,6 +49,7 @@
 #include "version.h"
 #include "vgafile.h"
 
+#include <algorithm>
 #include <cstring>
 
 // #define TEST_MOBILE 1
@@ -479,8 +479,8 @@ void CheatScreen::SharedPrompt() {
 
 	case CP_GFlagNum: {
 		snprintf(
-				buf, sizeof(buf), "Enter Global Flag 0-%d. (ESC to cancel)",
-				c_last_gflag);
+				buf, sizeof(buf), "Enter Global Flag 0-%zu. (ESC to cancel)",
+				Usecode_machine::last_gflag);
 		font->paint_text_fixedwidth(
 				ibuf, buf, offsetx, promptmes, 8, fontcolor.colors);
 		break;
@@ -1320,7 +1320,7 @@ void CheatScreen::NormalActivate() {
 	case SDLK_F:
 		if (npc < 0) {
 			state.SetMode(CP_InvalidValue, false);
-		} else if (npc > c_last_gflag) {
+		} else if (static_cast<size_t>(npc) > Usecode_machine::last_gflag) {
 			state.SetMode(CP_InvalidValue, false);
 		} else if (!state.input[0]) {
 			state.SetMode(CP_Canceled, false);
@@ -1398,7 +1398,7 @@ bool CheatScreen::NormalCheck() {
 	case SDLK_F:
 		state.SetMode(CP_GFlagNum);
 		state.val_min = 0;
-		state.val_max = c_last_gflag;
+		state.val_max = Usecode_machine::last_gflag;
 		break;
 
 		// X and Escape leave
@@ -1619,14 +1619,13 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 		font->paint_text_fixedwidth(
 				ibuf, buf, offsetx, maxy - offsety1 - 99, 8, fontcolor.colors);
 
-		snprintf(
-				buf, sizeof(buf), "Flag is %s",
-				usecode->get_global_flag(num) ? "SET" : "UNSET");
+		bool flagset = usecode->get_global_flag(num).value_or(false);
+		snprintf(buf, sizeof(buf), "Flag is %s", flagset ? "SET" : "UNSET");
 		font->paint_text_fixedwidth(
 				ibuf, buf, offsetx, maxy - offsety1 - 90, 8, fontcolor.colors);
 
 		// Now the Menu Column
-		if (!usecode->get_global_flag(num)) {
+		if (!flagset) {
 			AddMenuItem(offsetx + 160, maxy - offsety1 - 99, SDLK_S, "et Flag");
 		} else {
 			AddMenuItem(
@@ -1637,7 +1636,8 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 		AddMenuItem(offsetx, maxy - offsety1 - 72, SDLK_UP, " Change Flag");
 		AddLeftRightMenuItem(
 				offsetx, maxy - offsety1 - 63, "Scroll Flags", num > 0,
-				num < c_last_gflag, false, true);
+				num < static_cast<int>(Usecode_machine::last_gflag), false,
+				true);
 
 		SharedMenu();
 
@@ -1651,26 +1651,21 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 		if (state.activate) {
 			state.SetMode(CP_Command, false);
 			if (state.command == '<') {    // Decrement
-				num--;
-				if (num < 0) {
-					num = 0;
-				}
+				num = std::max(num - 1, 0);
 			} else if (state.command == '>') {    // Increment
-				num++;
-				if (num > c_last_gflag) {
-					num = c_last_gflag;
-				}
+				num = std::min<size_t>(num + 1, Usecode_machine::last_gflag);
 			} else if (state.command == '^') {    // Change Flag
 				i = std::atoi(state.input);
-				if (i < 0 || i > c_last_gflag) {
+				if (i < 0
+					|| static_cast<size_t>(i) > Usecode_machine::last_gflag) {
 					state.SetMode(CP_InvalidValue, false);
 				} else if (state.input[0]) {
 					num = i;
 				}
 			} else if (state.command == 's') {    // Set
-				usecode->set_global_flag(num, 1);
+				usecode->set_global_flag(num, true);
 			} else if (state.command == 'u') {    // Unset
-				usecode->set_global_flag(num, 0);
+				usecode->set_global_flag(num, false);
 			}
 			std::memset(state.input, 0, sizeof(state.input));
 
@@ -1714,7 +1709,7 @@ CheatScreen::Cheat_Prompt CheatScreen::GlobalFlagLoop(int num) {
 				state.input[0] = 0;
 				state.SetMode(CP_GFlagNum);
 				state.val_min = 0;
-				state.val_max = c_last_gflag;
+				state.val_max = Usecode_machine::last_gflag;
 				break;
 
 				// X and Escape leave
