@@ -64,6 +64,13 @@ bool Modal_gump::run() {
 }
 
 bool Modal_gump::mouse_down(int mx, int my, MouseButton button) {
+	if ((pushed = on_button(mx, my))) { 
+		if (pushed->push(button)) {
+			return true;
+		}
+		pushed = nullptr;
+	}
+
 	if (is_draggable()
 		&& button == MouseButton::Left)    //&&(has_point(mx, my))
 	{
@@ -85,6 +92,17 @@ bool Modal_gump::mouse_down(int mx, int my, MouseButton button) {
 }
 
 bool Modal_gump::mouse_up(int mx, int my, MouseButton button) {
+
+	// handle checkmark button and other old style buttons
+	if (pushed) {
+		pushed->unpush(button);
+		if (pushed->on_button(mx, my)) {
+			pushed->activate(button);
+		}
+		pushed = nullptr;
+		return true;
+		
+	}
 	if (is_draggable() && button == MouseButton::Left && drag_mx != INT_MIN
 		&& drag_my != INT_MIN) {
 		int delta_x = mx - drag_mx;
@@ -107,10 +125,22 @@ bool Modal_gump::mouse_up(int mx, int my, MouseButton button) {
 		drag_my = INT_MIN;
 		return true;
 	}
-	return false;
+	if (pushed) {    // Pushing a button?
+		pushed->unpush(button);
+		if (pushed->on_button(mx, my)) {
+			pushed->activate(button);
+		}
+		pushed = nullptr;
+		return true;
+	}
+	return Gump::mouse_up(mx,my,button);
 }
 
 bool Modal_gump::mouse_drag(int mx, int my) {
+	if (pushed) {
+		pushed->set_pushed(pushed->on_widget(mx, my));
+		return true;
+	}
 	if (is_draggable() && drag_mx != INT_MIN && drag_my != INT_MIN) {
 		int delta_x = mx - drag_mx;
 		int delta_y = my - drag_my;

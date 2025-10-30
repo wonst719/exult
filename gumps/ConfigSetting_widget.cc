@@ -171,7 +171,7 @@ ConfigSetting_widget::ConfigSetting_widget(
 		}
 		case Definition::button: {
 			children[i + 1] = std::make_unique<
-					SelfManagedCallbackToggleTextButton<ConfigSetting_widget>>(
+					SelfManaged<CallbackToggleTextButton<ConfigSetting_widget>>>(
 					this, &ConfigSetting_widget::onselection, sv_choices,
 					current_index, widget_x, offset_y, butonwidth, 0);
 

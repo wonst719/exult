@@ -251,4 +251,18 @@ private:
 template <typename Parent, typename... Args>
 using CallbackButton = CallbackButtonBase<Parent, Gump_button, Args...>;
 
+// A wrapper class to make a button self managed
+// A self managed button expects to handle it's own mouse button events and on_button will return
+// nullptr
+template <typename Base>
+class SelfManaged
+		: public Base {
+public:
+	template <typename... Ts>
+	SelfManaged(Ts&&... args)
+			: Base(std::forward<Ts>(args)...) {
+		this->set_self_managed(true);
+	}
+};
+
 #endif

@@ -143,14 +143,5 @@ private:
 	CallbackType2 on_toggle2 = nullptr;
 };
 
-template <typename Parent>
-class SelfManagedCallbackToggleTextButton
-		: public CallbackToggleTextButton<Parent> {
-public:
-	template <typename... Ts>
-	SelfManagedCallbackToggleTextButton(Ts&&... args)
-			: CallbackToggleTextButton<Parent>(std::forward<Ts>(args)...) {
-		Gump_button::set_self_managed(true);
-	}
-};
+
 #endif
