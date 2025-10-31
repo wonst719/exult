@@ -90,8 +90,7 @@ void Gamemenu_gump::createButtons() {
 	}
 
 	// Resize the gump to default
-	SetProceduralBackground(
-			TileRect(0, 0, 100, yForRow(7)), -1);
+	SetProceduralBackground(TileRect(0, 0, 100, yForRow(7)), -1);
 	if (!gwin->is_in_exult_menu()) {
 		buttons[id_load_save] = std::make_unique<Gamemenu_button>(
 				this, &Gamemenu_gump::loadsave, Strings::LoadSaveGame(), margin,
@@ -121,11 +120,9 @@ void Gamemenu_gump::createButtons() {
 #endif
 
 	// Resize to fit the combined height of the buttons
-		SetProceduralBackground(
-			TileRect(
-					0, yForRow(0) - margin, 100,
-					yForRow(y) + margin),
-			-1, true);
+	SetProceduralBackground(
+			TileRect(0, yForRow(0) - margin, 100, yForRow(y) + margin), -1,
+			true);
 
 	// Resize to fit width of buttons
 	ResizeWidthToFitWidgets(tcb::span(buttons.data(), buttons.size()), margin);
@@ -136,8 +133,6 @@ void Gamemenu_gump::createButtons() {
 			HorizontalArrangeWidgets(tcb::span(&button, 1), 0);
 		}
 	}
-	
-
 }
 
 //++++++ IMPLEMENT RETURN_TO_MENU!
@@ -209,49 +204,20 @@ void Gamemenu_gump::paint() {
 	gwin->set_painted();
 }
 
-bool Gamemenu_gump::mouse_down(int mx, int my, MouseButton button) {
-	if (button != MouseButton::Left) {
-		return Modal_gump::mouse_down(mx, my, button);
-	}
-
-	pushed = Gump::on_button(mx, my);
-	// First try checkmark.
-	// Try buttons at bottom.
-	if (!pushed) {
-		for (auto& btn : buttons) {
-			if (btn && btn->on_button(mx, my)) {
-				pushed = btn.get();
-				break;
-			}
-		}
-	}
-
-	if (pushed) {    // On a button?
-		pushed->push(button);
-		return true;
-	}
-
-	return Modal_gump::mouse_down(mx, my, button);
-}
-
-bool Gamemenu_gump::mouse_up(int mx, int my, MouseButton button) {
-	if (button != MouseButton::Left || !pushed) {
-		return Modal_gump::mouse_up(mx, my, button);
-	}
-
-	pushed->unpush(button);
-	if (pushed->on_button(mx, my)) {
-		pushed->activate(MouseButton::Left);
-	}
-	pushed = nullptr;
-
-	return true;
-}
-
 void Gamemenu_gump::do_exult_menu() {
 	// Need to do a very small init of game data... palette, mouse, gumps
 	Gamemenu_gump gmenu;
 	// Does not return until gump can be deleted:
 	Game_window::get_instance()->get_gump_man()->do_modal_gump(
 			&gmenu, Mouse::hand);
+}
+
+Gump_button* Gamemenu_gump::on_button(int mx, int my) {
+	for (auto& btn : buttons) {
+		auto found = btn ? btn->on_button(mx, my) : nullptr;
+		if (found) {
+			return found;
+		}
+	}
+	return Modal_gump::on_button(mx, my);
 }

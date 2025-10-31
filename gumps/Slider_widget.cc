@@ -306,9 +306,14 @@ bool Slider_widget::mouse_drag(
 		int mx, int my    // Where mouse is.
 ) {
 	ignore_unused_variable_warning(mx, my);
+	if (pushed) {
+		pushed->set_pushed(pushed->on_widget(mx, my));
+		return true;
+	}
 	if (!is_dragging()) {
 		return Gump_widget::mouse_drag(mx, my);
 	}
+
 	// clamp the mouse position to the slidable region
 	int lx = mx, ly = my;
 	screen_to_local(lx, ly);

@@ -138,6 +138,7 @@ bool Modal_gump::mouse_up(int mx, int my, MouseButton button) {
 
 bool Modal_gump::mouse_drag(int mx, int my) {
 	if (pushed) {
+		std::cout << "dragging button " << mx << " " << my << std::endl;
 		pushed->set_pushed(pushed->on_widget(mx, my));
 		return true;
 	}

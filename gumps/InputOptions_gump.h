@@ -67,11 +67,7 @@ public:
 	void paint() override;
 	void close() override;
 
-	// Handle events:
-	bool mouse_down(int mx, int my, MouseButton button) override;
-	bool mouse_up(int mx, int my, MouseButton button) override;
-
-	void build_buttons();
+		void build_buttons();
 
 	void load_settings();
 	void save_settings();
@@ -113,5 +109,7 @@ public:
 	void toggle_touch_pathfind(int state) {
 		touch_pathfind = state;
 	}
+
+	Gump_button* on_button(int mx, int my) override;
 };
 #endif

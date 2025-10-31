@@ -135,6 +135,18 @@ bool Gump_button::mouse_drag(int mx, int my) {
 	return true;
 }
 
+ void Gump_button::set_pushed(MouseButton button) {
+	gwin->add_dirty(get_rect());
+	pushed_button = button;
+	gwin->add_dirty(get_rect());
+}
+
+ void Gump_button::set_pushed(bool set) {
+	gwin->add_dirty(get_rect());
+	pushed_button = set ? MouseButton::Left : MouseButton::Unknown;
+	gwin->add_dirty(get_rect());
+}
+
 void Basic_button::paint() {
 	Image_window8* iwin = gwin->get_win();
 	auto*          ib8  = iwin->get_ib8();
@@ -186,9 +198,9 @@ void Basic_button::paint() {
 	clipsave.Restore();
 
 	// Outer Border (black)
-	 ib8->draw_beveled_box(
-		px, py, width, height, 1, 0xFF, OuterBorder, OuterBorderCorner,
-	 OuterBorder, OuterBorderCorner);
+	ib8->draw_beveled_box(
+			px, py, width, height, 1, 0xFF, OuterBorder, OuterBorderCorner,
+			OuterBorder, OuterBorderCorner);
 }
 
 TileRect Basic_button::get_draw_area(std::optional<bool> pushed) const {
@@ -206,16 +218,5 @@ TileRect Basic_button::get_rect() const {
 }
 
 bool Basic_button::on_widget(int mx, int my) const {
-	int px = 0;
-	int py = 0;
-
-	local_to_screen(px, py);
-
-	if (mx < px || mx >= px + width) {
-		return false;
-	}
-	if (my < py || my >= py + height) {
-		return false;
-	}
-	return true;
+	return get_rect().has_point(mx, my);
 }

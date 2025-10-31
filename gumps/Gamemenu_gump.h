@@ -54,9 +54,6 @@ public:
 		done = true;
 	}
 
-	// Handle events:
-	bool mouse_down(int mx, int my, MouseButton button) override;
-	bool mouse_up(int mx, int my, MouseButton button) override;
 
 	void quit(bool return_to_menu = false);
 
@@ -76,6 +73,7 @@ public:
 	void input_options();
 
 	static void do_exult_menu();
+	Gump_button* on_button(int mx, int my) override;
 };
 
 #endif

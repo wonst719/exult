@@ -193,6 +193,16 @@ void VideoOptions_gump::help() {
 	SDL_OpenURL("https://exult.info/docs.html#video_gump");
 }
 
+Gump_button* VideoOptions_gump::on_button(int mx, int my) {
+	for (const auto& btn : buttons) {
+		Gump_button* found = btn ? btn->on_button(mx, my) : nullptr;
+		if (found) {
+			return found;
+		}
+	}
+	return Modal_gump::on_button(mx, my);
+}
+
 void VideoOptions_gump::rebuild_buttons() {
 	// skip apply, fullscreen, and share settings
 	for (int i = id_resolution; i < id_count; i++) {
@@ -228,8 +238,8 @@ void VideoOptions_gump::rebuild_buttons() {
 
 	buttons[id_game_resolution] = std::make_unique<VideoTextToggle>(
 			this, &VideoOptions_gump::toggle_game_resolution,
-			std::move(game_restext), selected_game_resolution, get_button_pos_for_label(Strings::GameArea_()), yForRow(6),
-			74);
+			std::move(game_restext), selected_game_resolution,
+			get_button_pos_for_label(Strings::GameArea_()), yForRow(6), 74);
 
 	std::vector<std::string> fill_scaler_text = {
 			Image_window::get_displayname_for_scaler(Image_window::point),
@@ -243,7 +253,8 @@ void VideoOptions_gump::rebuild_buttons() {
 	}
 	buttons[id_fill_scaler] = std::make_unique<VideoTextToggle>(
 			this, &VideoOptions_gump::toggle_fill_scaler,
-			std::move(fill_scaler_text), fill_scaler, get_button_pos_for_label(Strings::FillQuality_()), yForRow(7), 74);
+			std::move(fill_scaler_text), fill_scaler,
+			get_button_pos_for_label(Strings::FillQuality_()), yForRow(7), 74);
 
 	int sel_fill_mode;
 	has_ac = false;
@@ -271,7 +282,8 @@ void VideoOptions_gump::rebuild_buttons() {
 
 	buttons[id_fill_mode] = std::make_unique<VideoTextToggle>(
 			this, &VideoOptions_gump::toggle_fill_mode,
-			std::move(fill_mode_text), sel_fill_mode, get_button_pos_for_label(Strings::FillMode_()), yForRow(8), 74);
+			std::move(fill_mode_text), sel_fill_mode,
+			get_button_pos_for_label(Strings::FillMode_()), yForRow(8), 74);
 
 	rebuild_dynamic_buttons();
 }
@@ -328,7 +340,8 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 		}
 		buttons[id_scaling] = std::make_unique<VideoTextToggle>(
 				this, &VideoOptions_gump::toggle_scaling,
-				std::move(scalingtext), scaling, get_button_pos_for_label(Strings::Scaling_()), yForRow(4), 74);
+				std::move(scalingtext), scaling,
+				get_button_pos_for_label(Strings::Scaling_()), yForRow(4), 74);
 	} else if (scaler == Image_window::Hq3x || scaler == Image_window::_3xBR) {
 		scaling = 2;
 	} else if (scaler == Image_window::Hq4x || scaler == Image_window::_4xBR) {
@@ -345,25 +358,29 @@ void VideoOptions_gump::rebuild_dynamic_buttons() {
 				= {Strings::Disabled(), Strings::Enabled()};
 		buttons[id_has_ac] = std::make_unique<VideoTextToggle>(
 				this, &VideoOptions_gump::toggle_aspect_correction,
-				std::move(ac_text), has_ac ? 1 : 0, get_button_pos_for_label(Strings::ARCorrection_()), yForRow(9), 62);
+				std::move(ac_text), has_ac ? 1 : 0,
+				get_button_pos_for_label(Strings::ARCorrection_()), yForRow(9),
+				62);
 	}
 
 	// Risize to fit all
 	ResizeWidthToFitWidgets(tcb::span(buttons.data() + id_first, id_count));
-	
-	// resize if needed to make sure there is enough room for first line of Same Settings label
+
+	// resize if needed to make sure there is enough room for first line of Same
+	// Settings label
 	ResizeWidthToFitText(Strings::Samesettingsforwindow());
 
 	HorizontalArrangeWidgets(tcb::span(buttons.data() + id_apply, 3));
 
 	// Right align other setting buttons
-	RightAlignWidgets(tcb::span(
-			buttons.data() + id_first_setting, id_count - id_first_setting));
+	RightAlignWidgets(
+			tcb::span(
+					buttons.data() + id_first_setting,
+					id_count - id_first_setting));
 
 	set_pos();
 }
 
-																						
 void VideoOptions_gump::load_settings(bool Fullscreen) {
 	fullscreen = Fullscreen;
 	setup_video(fullscreen, MENU_INIT);
@@ -513,7 +530,8 @@ VideoOptions_gump::VideoOptions_gump()
 #if !defined(SDL_PLATFORM_IOS) && !defined(ANDROID)
 	buttons[id_fullscreen] = std::make_unique<VideoTextToggle>(
 			this, &VideoOptions_gump::toggle_fullscreen, enabledtext,
-			fullscreen, get_button_pos_for_label(Strings::FullScreen_()), yForRow(0), 74);
+			fullscreen, get_button_pos_for_label(Strings::FullScreen_()),
+			yForRow(0), 74);
 #endif
 	config->value("config/video/share_video_settings", share_settings, false);
 
@@ -521,18 +539,19 @@ VideoOptions_gump::VideoOptions_gump()
 #if !defined(SDL_PLATFORM_IOS) && !defined(ANDROID)
 	buttons[id_share_settings] = std::make_unique<VideoTextToggle>(
 			this, &VideoOptions_gump::toggle_share_settings, std::move(yesNO),
-			share_settings, get_button_pos_for_label(Strings::andfullscreen_()), yForRow(11), 40);
+			share_settings, get_button_pos_for_label(Strings::andfullscreen_()),
+			yForRow(11), 40);
 #endif
 	o_share_settings = share_settings;
 
 	// Apply
 	buttons[id_apply] = std::make_unique<VideoOptions_button>(
-			this, &VideoOptions_gump::save_settings, Strings::APPLY(),
-			25, yForRow(12), 50);
+			this, &VideoOptions_gump::save_settings, Strings::APPLY(), 25,
+			yForRow(12), 50);
 	// Help
 	buttons[id_help] = std::make_unique<VideoOptions_button>(
-			this, &VideoOptions_gump::help, Strings::HELP(), 53,
-			yForRow(12), 50);
+			this, &VideoOptions_gump::help, Strings::HELP(), 53, yForRow(12),
+			50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<VideoOptions_button>(
 			this, &VideoOptions_gump::cancel, Strings::CANCEL(), 75,
@@ -628,7 +647,7 @@ void VideoOptions_gump::paint() {
 		}
 	}
 
-	Image_window8*        iwin = gwin->get_win();
+	Image_window8* iwin = gwin->get_win();
 #if !defined(SDL_PLATFORM_IOS) && !defined(ANDROID)
 	font->paint_text(
 			iwin->get_ib8(), Strings::FullScreen_(), x + label_margin,
@@ -648,7 +667,8 @@ void VideoOptions_gump::paint() {
 			y + yForRow(1) + 1);
 #endif
 	font->paint_text(
-			iwin->get_ib8(), Strings::Scaler_(), x + label_margin, y + yForRow(3) + 1);
+			iwin->get_ib8(), Strings::Scaler_(), x + label_margin,
+			y + yForRow(3) + 1);
 	if (buttons[id_scaling] != nullptr) {
 		font->paint_text(
 				iwin->get_ib8(), Strings::Scaling_(), x + label_margin,
@@ -677,57 +697,4 @@ void VideoOptions_gump::paint() {
 			y + yForRow(11) + 1);
 #endif
 	gwin->set_painted();
-}
-
-bool VideoOptions_gump::mouse_down(int mx, int my, MouseButton button) {
-	// Only left and right buttons
-	if (button !=
-
-				MouseButton::Left
-		&& button != MouseButton::Right) {
-		return Modal_gump::mouse_down(mx, my, button);
-	}
-
-	// We'll eat the mouse down if we've already got a button down
-	if (pushed) {
-		return true;
-	}
-
-	// First try checkmark
-	pushed = Gump::on_button(mx, my);
-
-	// Try buttons at bottom.
-	if (!pushed) {
-		for (auto& btn : buttons) {
-			if (btn != nullptr && btn->on_button(mx, my)) {
-				pushed = btn.get();
-				break;
-			}
-		}
-	}
-
-	if (pushed && !pushed->push(button)) {    // On a button?
-		pushed = nullptr;
-	}
-
-	return pushed != nullptr || Modal_gump::mouse_down(mx, my, button);
-}
-
-bool VideoOptions_gump::mouse_up(int mx, int my, MouseButton button) {
-	// Not Pushing a button?
-	if (!pushed) {
-		return Modal_gump::mouse_up(mx, my, button);
-	}
-
-	if (pushed->get_pushed() != button) {
-		return button == MouseButton::Left;
-	}
-
-	bool res = false;
-	pushed->unpush(button);
-	if (pushed->on_button(mx, my)) {
-		res = pushed->activate(button);
-	}
-	pushed = nullptr;
-	return res || Modal_gump::mouse_up(mx, my, button);
 }

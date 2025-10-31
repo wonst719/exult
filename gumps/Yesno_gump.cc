@@ -111,46 +111,6 @@ void Yesno_gump::paint() {
 }
 
 /*
- *  Handle mouse-down events.
- */
-
-bool Yesno_gump::mouse_down(
-		int mx, int my, MouseButton button    // Position in window.
-) {
-	if (button != MouseButton::Left) {
-		return Modal_gump::mouse_down(mx, my, button);
-	}
-	pushed = on_button(mx, my);
-	if (pushed) {
-		pushed->push(button);    // Show it.
-		return true;
-	}
-	return Modal_gump::mouse_down(mx, my, button);
-}
-
-/*
- *  Handle mouse-up events.
- */
-
-bool Yesno_gump::mouse_up(
-		int mx, int my, MouseButton button    // Position in window.
-) {
-	if (button != MouseButton::Left) {
-		return Modal_gump::mouse_up(mx, my, button);
-	}
-
-	if (pushed) {    // Pushing a button?
-		pushed->unpush(button);
-		if (pushed->on_button(mx, my)) {
-			pushed->activate(button);
-		}
-		pushed = nullptr;
-		return true;
-	}
-	return Modal_gump::mouse_up(mx, my, button);
-}
-
-/*
  *  Handle ASCII character typed.
  */
 

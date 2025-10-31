@@ -87,9 +87,6 @@ public:
 	void paint() override;
 	void close() override;
 
-	// Handle events:
-	bool mouse_down(int mx, int my, MouseButton button) override;
-	bool mouse_up(int mx, int my, MouseButton button) override;
 
 	void toggle(Gump_button* btn, int state);
 	void rebuild_buttons();
@@ -183,6 +180,9 @@ public:
 	void toggle_share_settings(int state) {
 		share_settings = state;
 	}
+
+	Gump_button* on_button(int mx, int my) override;
+
 };
 
 #endif

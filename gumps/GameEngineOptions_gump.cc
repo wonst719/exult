@@ -172,6 +172,16 @@ void GameEngineOptions_gump::help() {
 	SDL_OpenURL("https://exult.info/docs.html#game_engine_gump");
 }
 
+Gump_button* GameEngineOptions_gump::on_button(int mx, int my) {
+	for (auto& btn : buttons) {
+		auto found = btn ? btn->on_button(mx, my) : nullptr;
+		if (found) {
+			return found;
+		}
+	}
+	return Modal_gump::on_button(mx, my);
+}
+
 static const int small_size = 44;
 static const int large_size = 85;
 
@@ -262,8 +272,10 @@ void GameEngineOptions_gump::update_cheat_buttons() {
 	HorizontalArrangeWidgets(tcb::span(buttons.data() + id_ok, 3));
 
 	// Right align other setting buttons
-	RightAlignWidgets(tcb::span(
-			buttons.data() + id_first_setting, id_count - id_first_setting));
+	RightAlignWidgets(
+			tcb::span(
+					buttons.data() + id_first_setting,
+					id_count - id_first_setting));
 }
 
 void GameEngineOptions_gump::load_settings() {
@@ -410,54 +422,4 @@ void GameEngineOptions_gump::paint() {
 				y + yForRow(++y_index) + 1);
 	}
 	gwin->set_painted();
-}
-
-bool GameEngineOptions_gump::mouse_down(int mx, int my, MouseButton button) {
-	// Only left and right buttons
-	if (button != MouseButton::Left && button != MouseButton::Right) {
-		return Modal_gump::mouse_down(mx, my, button);
-	}
-
-	// We'll eat the mouse down if we've already got a button down
-	if (pushed) {
-		return true;
-	}
-
-	// First try checkmark
-	pushed = Gump::on_button(mx, my);
-
-	// Try buttons at bottom.
-	if (!pushed) {
-		for (auto& btn : buttons) {
-			if (btn && btn->on_button(mx, my)) {
-				pushed = btn.get();
-				break;
-			}
-		}
-	}
-
-	if (pushed && !pushed->push(button)) {    // On a button?
-		pushed = nullptr;
-	}
-
-	return pushed != nullptr || Modal_gump::mouse_down(mx, my, button);
-}
-
-bool GameEngineOptions_gump::mouse_up(int mx, int my, MouseButton button) {
-	// Not Pushing a button?
-	if (!pushed) {
-		return Modal_gump::mouse_up(mx, my, button);
-	}
-
-	if (pushed->get_pushed() != button) {
-		return button == MouseButton::Left;
-	}
-
-	bool res = false;
-	pushed->unpush(button);
-	if (pushed->on_button(mx, my)) {
-		res = pushed->activate(button);
-	}
-	pushed = nullptr;
-	return res || Modal_gump::mouse_up(mx, my, button);
 }

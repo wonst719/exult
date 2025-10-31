@@ -88,13 +88,9 @@ public:
 		return pushed_button != MouseButton::Unknown;
 	}
 
-	void set_pushed(MouseButton button) {
-		pushed_button = button;
-	}
+	void set_pushed(MouseButton button);
 
-	void set_pushed(bool set) {
-		pushed_button = set ? MouseButton::Left : MouseButton::Unknown;
-	}
+	void set_pushed(bool set);
 
 	virtual bool is_checkmark() const {
 		return false;

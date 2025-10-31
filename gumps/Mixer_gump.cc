@@ -201,8 +201,7 @@ std::shared_ptr<Slider_widget> Mixer_gump::GetSlider(int sx, int sy) {
 Mixer_gump::Mixer_gump() : Modal_gump(nullptr, -1) {
 	load_settings();
 
-	SetProceduralBackground(
-			TileRect(0, 0, 158, yForRow(num_sliders + 1) + 1));
+	SetProceduralBackground(TileRect(0, 0, 158, yForRow(num_sliders + 1) + 1));
 
 	slider_track_color = procedural_colours.Background + 1;
 
@@ -300,17 +299,17 @@ void Mixer_gump::PaintSlider(
 		Image_window8* iwin, Slider_widget* slider, const char* label,
 		bool use3dslidertrack) {
 	auto rect = slider->get_rect();
-	font->paint_text_right_aligned(iwin->get_ib8(), label, rect.x, rect.y+2);
+	font->paint_text_right_aligned(iwin->get_ib8(), label, rect.x, rect.y + 2);
 
 	if (use3dslidertrack) {
 		iwin->get_ib8()->draw_beveled_box(
-				rect.x + 12, rect.y+2, slider_width, slider_height, 1,
+				rect.x + 12, rect.y + 2, slider_width, slider_height, 1,
 				slider_track_color, slider_track_color + 2,
 				slider_track_color + 4, slider_track_color - 2,
 				slider_track_color - 4);
 	} else {
 		iwin->get_ib8()->draw_box(
-				rect.x + 12, y + yForRow(0), slider_width, slider_height, 0,
+				rect.x + 12, rect.y + 2, slider_width, slider_height, 0,
 				slider_track_color, 0xff);
 	}
 
@@ -384,29 +383,6 @@ bool Mixer_gump::mouse_down(int mx, int my, MouseButton button) {
 		return false;
 	}
 
-	// We'll eat the mouse down if we've already got a button down
-	if (pushed) {
-		return true;
-	}
-
-	// First try checkmark
-	pushed = Gump::on_button(mx, my);
-
-	// Try buttons at bottom.
-	if (!pushed) {
-		for (auto& btn : buttons) {
-			if (btn && btn->on_button(mx, my)) {
-				pushed = btn.get();
-				break;
-			}
-		}
-	}
-
-	if (pushed && pushed->push(button)) {    // On a button?
-		return true;
-	}
-
-	pushed = nullptr;
 	if (inputslider == nullptr) {
 		inputslider = GetSlider(mx, my);
 	}
@@ -418,28 +394,13 @@ bool Mixer_gump::mouse_down(int mx, int my, MouseButton button) {
 }
 
 bool Mixer_gump::mouse_up(int mx, int my, MouseButton button) {
-	// Not Pushing a button?
-	if (!pushed) {
-		if (inputslider && inputslider->mouse_up(mx, my, button)) {
-			inputslider = nullptr;
-			return true;
-		}
+	// Try input slider first
+	if (inputslider && inputslider->mouse_up(mx, my, button)) {
 		inputslider = nullptr;
-
-		return Modal_gump::mouse_up(mx, my, button);
+		return true;
 	}
 
-	if (pushed->get_pushed() != button) {
-		return button == MouseButton::Left;
-	}
-
-	bool res = false;
-	pushed->unpush(button);
-	if (pushed->on_button(mx, my)) {
-		res = pushed->activate(button);
-	}
-	pushed = nullptr;
-	return res;
+	return Modal_gump::mouse_up(mx, my, button);
 }
 
 bool Mixer_gump::mouse_drag(
@@ -629,4 +590,14 @@ void Mixer_gump::OnSliderValueChanged(Slider_widget* sender, int newvalue) {
 			}
 		}
 	}
+}
+
+Gump_button* Mixer_gump::on_button(int mx, int my) {
+	for (auto& btn : buttons) {
+		auto found = btn ? btn->on_button(mx, my) : nullptr;
+		if (found) {
+			return found;
+		}
+	}
+	return Modal_gump::on_button(mx, my);
 }

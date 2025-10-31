@@ -59,7 +59,6 @@
 
 using namespace Pentagram;
 
-
 class Strings : public GumpStrings {
 public:
 	static auto VOLUMEMIXER() {
@@ -269,6 +268,16 @@ void AudioOptions_gump::toggle_sfx_pack(int state) {
 	}
 }
 
+Gump_button* AudioOptions_gump::on_button(int mx, int my) {
+	for (auto& btn : buttons) {
+		auto found = btn ? btn->on_button(mx, my) : nullptr;
+		if (found) {
+			return found;
+		}
+	}
+	return Modal_gump::on_button(mx, my);
+}
+
 static void strip_path(std::string& file) {
 	if (file.empty()) {
 		return;
@@ -300,16 +309,14 @@ void AudioOptions_gump::rebuild_buttons() {
 	buttons[id_sample_rate] = std::make_unique<AudioTextToggle>(
 			this, &AudioOptions_gump::toggle_sample_rate,
 			std::move(sampleRates), sample_rate,
-			get_button_pos_for_label(Strings::samplerate()), yForRow(2),
-			59);
+			get_button_pos_for_label(Strings::samplerate()), yForRow(2), 59);
 
 	std::vector<std::string> speaker_types
 			= {Strings::Mono(), Strings::Stereo()};
 	buttons[id_speaker_type] = std::make_unique<AudioTextToggle>(
 			this, &AudioOptions_gump::toggle_speaker_type,
 			std::move(speaker_types), speaker_type,
-			get_button_pos_for_label(Strings::speakertype()),
-			yForRow(3), 59);
+			get_button_pos_for_label(Strings::speakertype()), yForRow(3), 59);
 
 	// music on/off
 	buttons[id_music_enabled] = std::make_unique<AudioEnabledToggle>(
@@ -348,8 +355,7 @@ void AudioOptions_gump::rebuild_buttons() {
 	buttons[id_speech_enabled] = std::make_unique<AudioTextToggle>(
 			this, &AudioOptions_gump::toggle_speech_enabled,
 			std::move(speech_options), speech_option,
-			get_button_pos_for_label(Strings::Speech_()), yForRow(12),
-			108);
+			get_button_pos_for_label(Strings::Speech_()), yForRow(12), 108);
 	do_arrange();
 }
 
@@ -374,8 +380,7 @@ void AudioOptions_gump::rebuild_midi_buttons() {
 	buttons[id_music_looping] = std::make_unique<AudioTextToggle>(
 			this, &AudioOptions_gump::change_music_looping,
 			std::move(looping_options), static_cast<int>(midi_looping),
-			get_button_pos_for_label(Strings::looping()),
-			yForRow(5), 59);
+			get_button_pos_for_label(Strings::looping()), yForRow(5), 59);
 	rebuild_midi_driver_buttons();
 }
 
@@ -398,7 +403,8 @@ void AudioOptions_gump::rebuild_midi_driver_buttons() {
 	// midi driver
 	buttons[id_midi_driver] = std::make_unique<AudioTextToggle>(
 			this, &AudioOptions_gump::toggle_midi_driver,
-			std::move(midi_drivertext), midi_driver, get_button_pos_for_label(Strings::mididriver()), yForRow(7), 74);
+			std::move(midi_drivertext), midi_driver,
+			get_button_pos_for_label(Strings::mididriver()), yForRow(7), 74);
 
 	rebuild_mididriveroption_buttons();
 }
@@ -424,8 +430,7 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 		buttons[id_sfx_pack] = std::make_unique<AudioTextToggle>(
 				this, &AudioOptions_gump::toggle_sfx_pack,
 				std::move(sfx_digitalpacks), sfx_package,
-				get_button_pos_for_label(Strings::pack()),
-				yForRow(11), 92);
+				get_button_pos_for_label(Strings::pack()), yForRow(11), 92);
 	}
 #ifdef ENABLE_MIDISFX
 	else if (sfx_enabled == midi_state) {
@@ -435,7 +440,8 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 		buttons[id_sfx_pack] = std::make_unique<AudioTextToggle>(
 				this, &AudioOptions_gump::toggle_sfx_pack,
 				std::move(sfx_conversiontext), sfx_conversion == 5 ? 1 : 0,
-				get_button_pos_for_label(Strings::conversion()), yForRow(11), 59);
+				get_button_pos_for_label(Strings::conversion()), yForRow(11),
+				59);
 	}
 #endif
 	do_arrange();
@@ -443,21 +449,20 @@ void AudioOptions_gump::rebuild_sfx_buttons() {
 
 void AudioOptions_gump::do_arrange() {
 	// Risize to fit all
-	ResizeWidthToFitWidgets(
-			tcb::span(buttons.data() + id_first, id_count));
+	ResizeWidthToFitWidgets(tcb::span(buttons.data() + id_first, id_count));
 
-	HorizontalArrangeWidgets(
-			tcb::span(buttons.data() + id_apply, 3));
+	HorizontalArrangeWidgets(tcb::span(buttons.data() + id_apply, 3));
 
 	// Centre mixer button
-	if (buttons[id_mixer])
-	{
-		HorizontalArrangeWidgets(tcb::span(buttons.data() + id_mixer, 1),8);
+	if (buttons[id_mixer]) {
+		HorizontalArrangeWidgets(tcb::span(buttons.data() + id_mixer, 1), 8);
 	}
 
 	// Right align other setting buttons
-	RightAlignWidgets(tcb::span(
-			buttons.data() + id_first_setting, id_count - id_first_setting));
+	RightAlignWidgets(
+			tcb::span(
+					buttons.data() + id_first_setting,
+					id_count - id_first_setting));
 }
 
 void AudioOptions_gump::rebuild_mididriveroption_buttons() {
@@ -472,8 +477,8 @@ void AudioOptions_gump::rebuild_mididriveroption_buttons() {
 	// put advanced setting button on now empty row 13
 	if (!advancedsettings.empty()) {
 		buttons[id_advanced] = std::make_unique<AudioOptions_button>(
-				this, &AudioOptions_gump::advanced, Strings::SETTINGS(),
-				100, yForRow(8), 50);
+				this, &AudioOptions_gump::advanced, Strings::SETTINGS(), 100,
+				yForRow(8), 50);
 	} else {
 		buttons[id_advanced].reset();
 	}
@@ -604,8 +609,7 @@ void AudioOptions_gump::load_settings() {
 	}
 }
 
-AudioOptions_gump::AudioOptions_gump()
-		: Modal_gump(nullptr, -1) {
+AudioOptions_gump::AudioOptions_gump() : Modal_gump(nullptr, -1) {
 	const int bottomrow_gap = 0;
 	SetProceduralBackground(
 			TileRect(0, 0, 100, yForRow(14) + 2 * bottomrow_gap), -1);
@@ -643,12 +647,12 @@ AudioOptions_gump::AudioOptions_gump()
 
 	// Volume Mixer
 	buttons[id_mixer] = std::make_unique<AudioOptions_button>(
-			this, &AudioOptions_gump::mixer, Strings::VOLUMEMIXER(),
-			50, yForRow(0), 95);
+			this, &AudioOptions_gump::mixer, Strings::VOLUMEMIXER(), 50,
+			yForRow(0), 95);
 	// audio on/off
 	buttons[id_audio_enabled] = std::make_unique<AudioEnabledToggle>(
 			this, &AudioOptions_gump::toggle_audio_enabled, audio_enabled,
-			procedural_background.w-59, yForRow(1), 59);
+			procedural_background.w - 59, yForRow(1), 59);
 	// Apply
 	buttons[id_apply] = std::make_unique<AudioOptions_button>(
 			this, &AudioOptions_gump::save_settings, Strings::APPLY(), 25,
@@ -826,10 +830,11 @@ void AudioOptions_gump::paint() {
 		}
 	}
 
-	Image_window8*        iwin = gwin->get_win();
+	Image_window8* iwin = gwin->get_win();
 
 	font->paint_text(
-			iwin->get_ib8(), Strings::Audio_(), x + label_margin, y + yForRow(1) + 1);
+			iwin->get_ib8(), Strings::Audio_(), x + label_margin,
+			y + yForRow(1) + 1);
 	if (audio_enabled) {
 		font->paint_text(
 				iwin->get_ib8(), Strings::samplerate(), x + label_margin,
@@ -849,8 +854,8 @@ void AudioOptions_gump::paint() {
 					y + yForRow(6) + 1);
 			if (!midi_ogg_enabled) {
 				font->paint_text(
-						iwin->get_ib8(), Strings::mididriver(), x + label_margin,
-						y + yForRow(7) + 1);
+						iwin->get_ib8(), Strings::mididriver(),
+						x + label_margin, y + yForRow(7) + 1);
 			}
 		}
 		font->paint_text(
@@ -874,54 +879,4 @@ void AudioOptions_gump::paint() {
 				y + yForRow(12) + 1);
 	}
 	gwin->set_painted();
-}
-
-bool AudioOptions_gump::mouse_down(int mx, int my, MouseButton button) {
-	// Only left and right buttons
-	if (button != MouseButton::Left && button != MouseButton::Right) {
-		return Modal_gump::mouse_down(mx, my, button);
-	}
-
-	// We'll eat the mouse down if we've already got a button down
-	if (pushed) {
-		return true;
-	}
-
-	// First try checkmark
-	pushed = Gump::on_button(mx, my);
-
-	// Try buttons at bottom.
-	if (!pushed) {
-		for (auto& btn : buttons) {
-			if (btn != nullptr && btn->on_button(mx, my)) {
-				pushed = btn.get();
-				break;
-			}
-		}
-	}
-
-	if (pushed && !pushed->push(button)) {    // On a button?
-		pushed = nullptr;
-	}
-
-	return pushed != nullptr || Modal_gump::mouse_down(mx, my, button);
-}
-
-bool AudioOptions_gump::mouse_up(int mx, int my, MouseButton button) {
-	// Not Pushing a button?
-	if (!pushed) {
-		return Modal_gump::mouse_up(mx, my, button);
-	}
-
-	if (pushed->get_pushed() != button) {
-		return button == MouseButton::Left;
-	}
-
-	bool res = false;
-	pushed->unpush(button);
-	if (pushed->on_button(mx, my)) {
-		res = pushed->activate(button);
-	}
-	pushed = nullptr;
-	return res;
 }

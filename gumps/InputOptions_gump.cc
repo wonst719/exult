@@ -51,7 +51,6 @@
 
 using std::string;
 
-
 class Strings : public GumpStrings {
 public:
 	static auto Single() {
@@ -128,6 +127,16 @@ void InputOptions_gump::help() {
 	SDL_OpenURL("https://exult.info/docs.html#game_input_gump");
 }
 
+Gump_button* InputOptions_gump::on_button(int mx, int my) {
+	for (auto& btn : buttons) {
+		auto found = btn ? btn->on_button(mx, my) : nullptr;
+		if (found) {
+			return found;
+		}
+	}
+	return Modal_gump::on_button(mx, my);
+}
+
 void InputOptions_gump::build_buttons() {
 	const std::vector<std::string> yesNo = {Strings::No(), Strings::Yes()};
 
@@ -140,7 +149,8 @@ void InputOptions_gump::build_buttons() {
 	}
 	buttons[id_doubleclick] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_doubleclick, yesNo, doubleclick,
-			get_button_pos_for_label(Strings::DoubleclickclosesGumps_()), yForRow(y_index), 44);
+			get_button_pos_for_label(Strings::DoubleclickclosesGumps_()),
+			yForRow(y_index), 44);
 
 	buttons[id_rightclick_close] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_rightclick_close, yesNo,
@@ -152,34 +162,43 @@ void InputOptions_gump::build_buttons() {
 			= {Strings::No(), Strings::Single(), Strings::Double()};
 	buttons[id_right_pathfind] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_right_pathfind,
-			std::move(pathfind_text), right_pathfind, get_button_pos_for_label(Strings::PathfindwithRightClick_()), yForRow(++y_index),
-			44);
+			std::move(pathfind_text), right_pathfind,
+			get_button_pos_for_label(Strings::PathfindwithRightClick_()),
+			yForRow(++y_index), 44);
 
 	buttons[id_scroll_mouse] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_scroll_mouse, yesNo, scroll_mouse,
-			get_button_pos_for_label(Strings::Scrollgameviewwithmouse_()), yForRow(++y_index), 44);
+			get_button_pos_for_label(Strings::Scrollgameviewwithmouse_()),
+			yForRow(++y_index), 44);
 
 #ifndef SDL_PLATFORM_IOS
 	buttons[id_mouse3rd] = std::make_unique<InputTextToggle>(
-			this, &InputOptions_gump::toggle_mouse3rd, yesNo, mouse3rd, get_button_pos_for_label(Strings::UseMiddleMouseButton_()),
+			this, &InputOptions_gump::toggle_mouse3rd, yesNo, mouse3rd,
+			get_button_pos_for_label(Strings::UseMiddleMouseButton_()),
 			yForRow(++y_index), 44);
 
 	buttons[id_fastmouse] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_fastmouse, yesNo, fastmouse,
-			get_button_pos_for_label(Strings::FullscreenFastMouse_()), yForRow(++y_index), 44);
+			get_button_pos_for_label(Strings::FullscreenFastMouse_()),
+			yForRow(++y_index), 44);
 #endif
 
 	buttons[id_item_menu] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_item_menu, yesNo, item_menu,
-			get_button_pos_for_label(Strings::Itemhelpermenu_()), yForRow(++y_index), 44);
+			get_button_pos_for_label(Strings::Itemhelpermenu_()),
+			yForRow(++y_index), 44);
 
 	buttons[id_dpad_location] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_dpad_location, dpad_text,
-			dpad_location, get_button_pos_for_label(Strings::DPadscreenlocation_()), yForRow(++y_index), 44);
+			dpad_location,
+			get_button_pos_for_label(Strings::DPadscreenlocation_()),
+			yForRow(++y_index), 44);
 
 	buttons[id_touch_pathfind] = std::make_unique<InputTextToggle>(
 			this, &InputOptions_gump::toggle_touch_pathfind, yesNo,
-			touch_pathfind, get_button_pos_for_label(Strings::PathfindwithLongTouch_()), yForRow(++y_index), 44);
+			touch_pathfind,
+			get_button_pos_for_label(Strings::PathfindwithLongTouch_()),
+			yForRow(++y_index), 44);
 
 	// Risize to fit all
 	ResizeWidthToFitWidgets(tcb::span(buttons.data() + id_first, id_count));
@@ -187,8 +206,10 @@ void InputOptions_gump::build_buttons() {
 	HorizontalArrangeWidgets(tcb::span(buttons.data() + id_ok, 3));
 
 	// Right align other setting buttons
-	RightAlignWidgets(tcb::span(
-			buttons.data() + id_first_setting, id_count - id_first_setting));
+	RightAlignWidgets(
+			tcb::span(
+					buttons.data() + id_first_setting,
+					id_count - id_first_setting));
 }
 
 void InputOptions_gump::load_settings() {
@@ -204,21 +225,19 @@ void InputOptions_gump::load_settings() {
 	touch_pathfind   = gwin->get_touch_pathfind();
 }
 
-
-InputOptions_gump::InputOptions_gump()
-		: Modal_gump(nullptr, -1) {
+InputOptions_gump::InputOptions_gump() : Modal_gump(nullptr, -1) {
 	SetProceduralBackground(TileRect(0, 0, 100, yForRow(13)), -1);
 
 	load_settings();
 
 	// Ok
 	buttons[id_ok] = std::make_unique<InputOptions_button>(
-			this, &InputOptions_gump::close, Strings::OK(), 25,
-			yForRow(12), 50);
+			this, &InputOptions_gump::close, Strings::OK(), 25, yForRow(12),
+			50);
 	// Help
 	buttons[id_help] = std::make_unique<InputOptions_button>(
-			this, &InputOptions_gump::help, Strings::HELP(), 50,
-			yForRow(12), 50);
+			this, &InputOptions_gump::help, Strings::HELP(), 50, yForRow(12),
+			50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<InputOptions_button>(
 			this, &InputOptions_gump::cancel, Strings::CANCEL(), 75,
@@ -281,29 +300,29 @@ void InputOptions_gump::paint() {
 			btn->paint();
 		}
 	}
-	Image_window8*        iwin    = gwin->get_win();
-	int                   y_index = 0;
+	Image_window8* iwin    = gwin->get_win();
+	int            y_index = 0;
 	font->paint_text(
-			iwin->get_ib8(), Strings::DoubleclickclosesGumps_(), x + label_margin,
-			y + yForRow(y_index) + 1);
+			iwin->get_ib8(), Strings::DoubleclickclosesGumps_(),
+			x + label_margin, y + yForRow(y_index) + 1);
 	font->paint_text(
-			iwin->get_ib8(), Strings::RightclickclosesGumps_(), x + label_margin,
-			y + yForRow(++y_index) + 1);
+			iwin->get_ib8(), Strings::RightclickclosesGumps_(),
+			x + label_margin, y + yForRow(++y_index) + 1);
 	font->paint_text(
-			iwin->get_ib8(), Strings::PathfindwithRightClick_(), x + label_margin,
-			y + yForRow(++y_index) + 1);
+			iwin->get_ib8(), Strings::PathfindwithRightClick_(),
+			x + label_margin, y + yForRow(++y_index) + 1);
 	font->paint_text(
-			iwin->get_ib8(), Strings::Scrollgameviewwithmouse_(), x + label_margin,
-			y + yForRow(++y_index) + 1);
+			iwin->get_ib8(), Strings::Scrollgameviewwithmouse_(),
+			x + label_margin, y + yForRow(++y_index) + 1);
 	if (buttons[id_mouse3rd]) {
 		font->paint_text(
-				iwin->get_ib8(), Strings::UseMiddleMouseButton_(), x + label_margin,
-				y + yForRow(++y_index) + 1);
+				iwin->get_ib8(), Strings::UseMiddleMouseButton_(),
+				x + label_margin, y + yForRow(++y_index) + 1);
 	}
 	if (buttons[id_fastmouse]) {
 		font->paint_text(
-				iwin->get_ib8(), Strings::FullscreenFastMouse_(), x + label_margin,
-				y + yForRow(++y_index) + 1);
+				iwin->get_ib8(), Strings::FullscreenFastMouse_(),
+				x + label_margin, y + yForRow(++y_index) + 1);
 	}
 	font->paint_text(
 			iwin->get_ib8(), Strings::Itemhelpermenu_(), x + label_margin,
@@ -312,58 +331,8 @@ void InputOptions_gump::paint() {
 			iwin->get_ib8(), Strings::DPadscreenlocation_(), x + label_margin,
 			y + yForRow(++y_index) + 1);
 	font->paint_text(
-			iwin->get_ib8(), Strings::PathfindwithLongTouch_(), x + label_margin,
-			y + yForRow(++y_index) + 1);
+			iwin->get_ib8(), Strings::PathfindwithLongTouch_(),
+			x + label_margin, y + yForRow(++y_index) + 1);
 
 	gwin->set_painted();
-}
-
-bool InputOptions_gump::mouse_down(int mx, int my, MouseButton button) {
-	// Only left and right buttons
-	if (button != MouseButton::Left && button != MouseButton::Right) {
-		return Modal_gump::mouse_down(mx, my, button);
-	}
-
-	// We'll eat the mouse down if we've already got a button down
-	if (pushed) {
-		return true;
-	}
-
-	// First try checkmark
-	pushed = Gump::on_button(mx, my);
-
-	// Try buttons at bottom.
-	if (!pushed) {
-		for (auto& btn : buttons) {
-			if (btn && btn->on_button(mx, my)) {
-				pushed = btn.get();
-				break;
-			}
-		}
-	}
-
-	// On a button?
-	if (pushed && !pushed->push(button)) {
-		pushed = nullptr;
-	}
-	return pushed != nullptr || Modal_gump::mouse_down(mx, my, button);
-}
-
-bool InputOptions_gump::mouse_up(int mx, int my, MouseButton button) {
-	// Not Pushing a button?
-	if (!pushed) {
-		return Modal_gump::mouse_up(mx, my, button);
-	}
-
-	if (pushed->get_pushed() != button) {
-		return button == MouseButton::Left;
-	}
-
-	bool res = false;
-	pushed->unpush(button);
-	if (pushed->on_button(mx, my)) {
-		res = pushed->activate(button);
-	}
-	pushed = nullptr;
-	return res || Modal_gump::mouse_up(mx, my, button);
 }

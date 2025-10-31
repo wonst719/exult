@@ -73,10 +73,6 @@ public:
 	void paint() override;
 	void close() override;
 
-	// Handle events:
-	bool mouse_down(int mx, int my, MouseButton button) override;
-	bool mouse_up(int mx, int my, MouseButton button) override;
-
 	void build_buttons();
 
 	void load_settings();
@@ -139,6 +135,8 @@ public:
 
 	static void SetAndroidAutoLaunchFPtrs(
 			void (*setter)(bool), bool (*getter)());
+
+	Gump_button* on_button(int mx, int my) override;
 };
 
 #endif
