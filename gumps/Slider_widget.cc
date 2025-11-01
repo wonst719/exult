@@ -109,8 +109,9 @@ Slider_widget::Slider_widget(
 	cout << "SliderWidget:  " << min_val << " to " << max_val << " by " << step
 		 << endl;
 #endif
-	left  = new SliderWidget_button(this, leftbtnx, btny, sidLeft, true);
-	right = new SliderWidget_button(this, rightbtnx, btny, sidRight, false);
+	left  = std::make_unique<SelfManaged<SliderWidget_button>>(this, leftbtnx, btny, sidLeft, true);
+	right = std::make_unique<SelfManaged<SliderWidget_button>>(
+			this, rightbtnx, btny, sidRight, false);
 	// Init. to middle value.
 	if (defval < min_val) {
 		defval = min_val;
@@ -202,17 +203,6 @@ void Slider_widget::paint() {
 	right->paint();
 }
 
-Gump_button* Slider_widget::on_button(int mx, int my) {
-	if (left->on_widget(mx, my)) {
-		return left;
-	}
-	if (right->on_widget(mx, my)) {
-		return right;
-	}
-
-	return nullptr;
-}
-
 /*
  *  Handle mouse-down events.
  */
@@ -224,18 +214,18 @@ bool Slider_widget::mouse_down(
 		return Gump_widget::mouse_down(mx, my, button);
 	}
 
-	Gump_button* btn = on_button(mx, my);
-	if (btn) {
-		pushed = btn;
-	} else {
-		pushed = nullptr;
+	// try buttons first.
+	Gump_widget* first = left->Input_first();
+	if (!first) {
+		first = right->Input_first();
 	}
-	if (pushed) {
-		if (!pushed->push(button)) {
-			pushed = nullptr;
-		}
+	if (first) {
+		return first->mouse_down(mx, my, button);
+	}
+	if (left->mouse_down(mx, my, button) || right->mouse_down(mx, my, button)) {
 		return true;
 	}
+
 	// See if on diamond.
 	Shape_frame* d_shape = diamond.get_shape();
 	int          lx = mx, ly = my;
@@ -270,24 +260,27 @@ bool Slider_widget::mouse_down(
 bool Slider_widget::mouse_up(
 		int mx, int my, MouseButton button    // Position in window.
 ) {
-	if (button != MouseButton::Left) {
+	// try input first buttons
+	Gump_widget* first = left->Input_first();
+	if (!first) {
+		first = right->Input_first();
+	}
+	if (first) {
+		return first->mouse_up(mx, my, button);
+	}
+	if (button != MouseButton::Left || !is_dragging()) {
+		// pass to buttons
+		if (left->mouse_down(mx, my, button)
+			|| right->mouse_down(mx, my, button)) {
+			return true;
+		}
+
 		return Gump_widget::mouse_up(mx, my, button);
 	}
 
-	if (is_dragging()) {    // Done dragging?
-		prev_dragx = INT32_MIN;
-		set_val(val);    // Set diamond in correct pos.
-		gwin->add_dirty(get_rect());
-	}
-	if (!pushed) {
-		return Gump_widget::mouse_up(mx, my, button);
-	}
-	pushed->unpush(button);
-	if (pushed->on_button(mx, my)) {
-		pushed->activate(button);
-	}
-	pushed = nullptr;
-
+	prev_dragx = INT32_MIN;
+	set_val(val);    // Set diamond in correct pos.
+	gwin->add_dirty(get_rect());
 	return true;
 }
 
@@ -306,11 +299,21 @@ bool Slider_widget::mouse_drag(
 		int mx, int my    // Where mouse is.
 ) {
 	ignore_unused_variable_warning(mx, my);
-	if (pushed) {
-		pushed->set_pushed(pushed->on_widget(mx, my));
-		return true;
+
+	// try input first buttons
+	Gump_widget* first = left->Input_first();
+	if (!first) {
+		first = right->Input_first();
 	}
+	if (first) {
+		return first->mouse_drag(mx, my);
+	}
+
 	if (!is_dragging()) {
+		// pass to buttons
+		if (left->mouse_drag(mx, my) || right->mouse_drag(mx, my)) {
+			return true;
+		}
 		return Gump_widget::mouse_drag(mx, my);
 	}
 
@@ -426,4 +429,18 @@ int Slider_widget::lineartolog(int linearvalue, int base) {
 	res        = res * b - 1;
 
 	return static_cast<int>(res);
+}
+
+Gump_widget* Slider_widget::Input_first() {
+	Gump_widget* first = left->Input_first();
+	if (!first) {
+		first = right->Input_first();
+	}
+	if (first) {
+		return first;
+	}
+	if (is_dragging()) {
+		return this;
+	}
+	return Gump_widget::Input_first();
 }

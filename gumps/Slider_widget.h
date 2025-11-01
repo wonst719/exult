@@ -68,9 +68,7 @@ private:
 	int xmin, xmax, xdist;
 
 	ShapeID      diamond;    // Diamond
-	Gump_button *left, *right;
-
-	Gump_button* pushed;
+	std::unique_ptr<Gump_button> left, right;
 
 public:
 	int getselection() const override {    // Get last value set.
@@ -92,8 +90,6 @@ public:
 	// Paint it and its contents.
 	void paint() override;
 
-	Gump_button* on_button(int mx, int my) override;
-
 	// Handle events:
 	bool mouse_down(int mx, int my, MouseButton button) override;
 	bool mouse_up(int mx, int my, MouseButton button) override;
@@ -110,5 +106,7 @@ public:
 	bool is_dragging() {
 		return prev_dragx != INT_MIN;
 	}
+
+	Gump_widget* Input_first() override;
 };
 #endif
