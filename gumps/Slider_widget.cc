@@ -203,6 +203,38 @@ void Slider_widget::paint() {
 	right->paint();
 }
 
+bool Slider_widget::run() {
+	Gump_button* pushed=nullptr;
+	if (left->is_pushed()) {
+		pushed = left.get();
+	} else if (right->is_pushed()) {
+		pushed = right.get();
+	}
+
+	if (pushed) {
+	
+		if (next_auto_push_time == 0) {
+			// First time pushed, set 0.5 second delay for auto repeat
+			next_auto_push_time = SDL_GetTicks() + 500;
+		}
+		else if (SDL_GetTicks() >= next_auto_push_time) {
+			next_auto_push_time
+					+= 50;    // 0.05 second delay for next repeat
+			// Simulate click
+			pushed->activate(MouseButton::Left);
+
+			return true;
+		}
+ 
+	} 
+	else {
+		// No pushed buttons reset the timer
+		next_auto_push_time = 0;
+	}
+
+	return false;
+}
+
 /*
  *  Handle mouse-down events.
  */

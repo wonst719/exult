@@ -601,3 +601,25 @@ Gump_button* Mixer_gump::on_button(int mx, int my) {
 	}
 	return Modal_gump::on_button(mx, my);
 }
+
+bool Mixer_gump::run() {
+	bool res = Modal_gump::run();
+
+	if (midislider) {
+		res |= midislider->run();
+	}
+
+	if (oggslider) {
+		res |= oggslider->run();
+	}
+
+	if (sfxslider) {
+		res |= sfxslider->run();
+	}
+
+	if (speechslider) {
+		res |= speechslider->run();
+	}
+
+	return res;
+}

@@ -97,6 +97,7 @@ protected:
 	void OnSliderValueChanged(Slider_widget* sender, int newvalue) override;
 
 	Gump_button* on_button(int mx, int my) override;
+	bool run() override;
 };
 
 #endif

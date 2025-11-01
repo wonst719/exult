@@ -90,6 +90,10 @@ public:
 	// Paint it and its contents.
 	void paint() override;
 
+	bool run() override;
+
+	uint64 next_auto_push_time = 0;
+
 	// Handle events:
 	bool mouse_down(int mx, int my, MouseButton button) override;
 	bool mouse_up(int mx, int my, MouseButton button) override;
