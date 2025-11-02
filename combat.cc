@@ -136,8 +136,6 @@ void Combat_schedule::start_music_combat(Combat_song song, bool continuous) {
 		break;
 
 	case CSHidden_Danger:
-		// ++++ FIXME: This should play when the Avatar (or party?) successfully
-		// flees in combat.
 		num = Audio::game_music(18);
 		break;
 
@@ -175,20 +173,19 @@ void Combat_schedule::danger_music() {
 
 	// Check if any combat music is currently playing
 	bool is_combat_music_playing
-			= (current_track == Audio::game_music(9) ||     // CSBattle_Over
-			   current_track == Audio::game_music(10) ||    // CSDanger
-			   current_track == Audio::game_music(11) ||    // CSAttacked1
-			   current_track == Audio::game_music(12) ||    // CSAttacked2
-			   current_track == Audio::game_music(15) ||    // CSVictory
-			   current_track == Audio::game_music(16) ||    // CSRun_Away
-			   current_track == Audio::game_music(17) ||    // CSAvatar_died
-			   current_track == Audio::game_music(18)       // CSHidden_Danger
-			);
+			= (current_track == CSBattle_Over || current_track == CSDanger
+			   || current_track == CSAttacked1 || current_track == CSAttacked2
+			   || current_track == CSVictory || current_track == CSRun_Away
+			   || current_track == CSAvatar_died
+			   || current_track == CSHidden_Danger);
 
 	if (nearby_hostile && !is_combat_music_playing) {
 		// Hostiles nearby but not playing danger music
 		start_music_combat(CSDanger, false);
-	} else if (!nearby_hostile && current_track == Audio::game_music(10)) {
+	} else if (
+			!nearby_hostile
+			&& (current_track == CSDanger || current_track == CSAttacked1
+				|| current_track == CSAttacked2)) {
 		// Escaped hostiles - switch to hidden danger
 		start_music_combat(CSHidden_Danger, false);
 	}
@@ -1453,8 +1450,7 @@ bool Combat_schedule::attack_target(
 		if (target == gwin->get_main_actor()
 			|| (target->as_actor() && target->as_actor()->is_in_party())) {
 			MyMidiPlayer* player = Audio::get_ptr()->get_midi();
-			if (player
-				&& player->get_current_track() == Audio::game_music(10)) {
+			if (player && player->get_current_track() == CSDanger) {
 				start_music_combat(CSAttacked1, false);
 			}
 		}
@@ -1469,8 +1465,8 @@ bool Combat_schedule::attack_target(
 					attacker));
 		} else {
 			const Game_object_shared tgt_obj = target->shared_from_this();
-			auto* result = target->attacked(
-					attacker, weapon, ammo ? ammo->get_shapenum() : -1, false);
+			auto*                    result  = target->attacked(
+                    attacker, weapon, ammo ? ammo->get_shapenum() : -1, false);
 			if (trg != nullptr && result != nullptr) {
 				back_off(trg, attacker);
 			}
