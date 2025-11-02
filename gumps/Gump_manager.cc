@@ -787,18 +787,25 @@ bool Gump_manager::do_modal_gump(
 /*
  *  Prompt for a numeric value using a slider.
  *
- *  Output: Value, or 0 if user hit ESC.
+ *  Output: Value,
+ * 
+ *  Set escaped to a pointer to bool to allow the user to escape the prompt.
+ *  If so, the bool will be set to true if the user escaped, false otherwise.
  */
 
 int Gump_manager::prompt_for_number(
 		int minval, int maxval,    // Range.
 		int        step,
 		int        defval,    // Default to start with.
-		Paintable* paint      // Should be the conversation.
+		Paintable* paint,      // Should be the conversation.
+		bool*      escaped    // If non-null, allow user to escape and will be set indicating if user escaped
 ) {
-	auto*      slider = new Slider_gump(minval, maxval, step, defval);
+	auto*      slider = new Slider_gump(minval, maxval, step, defval, escaped != nullptr);
 	const bool ok     = do_modal_gump(slider, Mouse::hand, paint);
-	const int  ret    = !ok ? 0 : slider->get_val();
+	if (escaped) {
+		*escaped = !ok;
+	}
+	const int  ret    = slider->get_val();
 	delete slider;
 	return ret;
 }

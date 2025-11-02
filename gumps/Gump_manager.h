@@ -117,7 +117,7 @@ public:
 	bool okay_to_quit(Paintable* paint = nullptr);
 	int  prompt_for_number(
 			 int minval, int maxval, int step, int def,
-			 Paintable* paint = nullptr);
+			 Paintable* paint = nullptr, bool* escaped = nullptr);
 	bool do_modal_gump(
 			Modal_gump*, Mouse::Mouse_shapes, Paintable* paint = nullptr);
 	void paint_num(int num, int x, int y, std::shared_ptr<Font> font = nullptr);

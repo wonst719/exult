@@ -524,11 +524,12 @@ bool Dragging_info::drop(
 					  : !gwin->get_alternate_drop();
 	const bool temp = obj->get_flag(Obj_flags::is_temporary);
 
+	bool escaped = false;
 	if (quantity > 1 && (!on_gump || on_gump != gump) && drop) {
-		quantity = gumpman->prompt_for_number(0, quantity, 1, quantity);
+		quantity = gumpman->prompt_for_number(0, quantity, 1, quantity,nullptr, &escaped);
 	}
 
-	if (quantity <= 0) {
+	if (quantity <= 0 || escaped) {
 		return false;
 	}
 	if (quantity < obj->get_quantity()) {

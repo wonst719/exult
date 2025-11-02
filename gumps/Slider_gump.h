@@ -30,9 +30,10 @@ class Slider_button;
 class Slider_gump : public Modal_gump, Slider_widget::ICallback {
 protected:
 	std::unique_ptr<Slider_widget> widget;
+	bool                           allow_escape = false;
 
 public:
-	Slider_gump(int mival, int mxval, int step, int defval);
+	Slider_gump(int mival, int mxval, int step, int defval,bool allow_escape);
 
 	int get_val() {    // Get last value set.
 		return widget->getselection();
