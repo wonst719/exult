@@ -53,6 +53,7 @@
 #include "virstone.h"
 #include "weaponinf.h"
 
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -440,58 +441,61 @@ char* Game_map::get_schunk_file_name(
 }
 
 /*
- *  Have shapes been added?
- */
-
-static bool New_shapes() {
-	const int u7nshapes = GAME_SI ? 1036 : 1024;
-	const int nshapes
-			= Shape_manager::get_instance()->get_shapes().get_num_shapes();
-	return nshapes > u7nshapes;
-}
-
-/*
  *  Write out the chunks descriptions.
  */
 
 void Game_map::write_chunk_terrains() {
-	const int ntiles = c_tiles_per_chunk * c_tiles_per_chunk;
-	const int cnt    = chunk_terrains->size();
-	int       i;    // Any terrains modified?
-	for (i = 0; i < cnt; i++) {
-		if ((*chunk_terrains)[i] && (*chunk_terrains)[i]->is_modified()) {
-			break;
+	// Any terrains modified?
+	auto needle = std::find_if(
+			chunk_terrains->begin(), chunk_terrains->end(),
+			[](Chunk_terrain* ter) {
+				return ter != nullptr && ter->is_modified();
+			});
+	if (needle == chunk_terrains->end()) {
+		// No terrains modified.
+		chunk_terrains_modified = false;
+		return;
+	}
+	// Got to update.
+	// Open file for chunks data.
+	// This truncates the file.
+	auto pOchunks = U7open_out(PATCH_U7CHUNKS);
+	if (!pOchunks) {
+		throw file_write_exception(U7CHUNKS);
+	}
+	// IMPORTANT:  Get all in memory.
+	get_all_terrain();
+	auto& ochunks = *pOchunks;
+	if (!v2_chunks) {
+		// See if any need v2.
+		for (Chunk_terrain* ter : *chunk_terrains) {
+			if (ter != nullptr) {
+				if (ter->need_extended_shapes()) {
+					v2_chunks = true;
+					break;
+				}
+			}
 		}
 	}
-	if (i < cnt) {            // Got to update.
-		get_all_terrain();    // IMPORTANT:  Get all in memory.
-		// Open file for chunks data.
-		// This truncates the file.
-		auto pOchunks = U7open_out(PATCH_U7CHUNKS);
-		if (!pOchunks) {
-			throw file_write_exception(U7CHUNKS);
+	const size_t nbytes = v2_chunks ? 3 : 2;
+	if (v2_chunks) {
+		ochunks.write(v2hdr, sizeof(v2hdr));
+	}
+	for (Chunk_terrain* ter : *chunk_terrains) {
+		const auto ntiles
+				= static_cast<size_t>(c_tiles_per_chunk) * c_tiles_per_chunk;
+		unsigned char data[ntiles * 3];
+		if (ter != nullptr) {
+			ter->write_flats(data, v2_chunks);
+			ter->set_modified(false);
+		} else {
+			std::fill_n(data, ntiles * nbytes, 0);
+			cerr << "nullptr terrain.  U7chunks may be bad." << endl;
 		}
-		auto& ochunks = *pOchunks;
-		v2_chunks |= New_shapes();
-		const int nbytes = v2_chunks ? 3 : 2;
-		if (v2_chunks) {
-			ochunks.write(v2hdr, sizeof(v2hdr));
-		}
-		for (i = 0; i < cnt; i++) {
-			Chunk_terrain* ter = (*chunk_terrains)[i];
-			unsigned char  data[ntiles * 3];
-			if (ter) {
-				ter->write_flats(data, v2_chunks);
-				ter->set_modified(false);
-			} else {
-				std::fill_n(data, ntiles * nbytes, 0);
-				cerr << "nullptr terrain.  U7chunks may be bad." << endl;
-			}
-			ochunks.write(reinterpret_cast<char*>(data), ntiles * nbytes);
-		}
-		if (!ochunks.good()) {
-			throw file_write_exception(U7CHUNKS);
-		}
+		ochunks.write(reinterpret_cast<char*>(data), ntiles * nbytes);
+	}
+	if (!ochunks.good()) {
+		throw file_write_exception(U7CHUNKS);
 	}
 	chunk_terrains_modified = false;
 }

@@ -351,3 +351,16 @@ int Chunk_terrain::write_flats(
 	}
 	return chunk_data - start;
 }
+
+bool Chunk_terrain::need_extended_shapes() const {
+	for (int ty = 0; ty < c_tiles_per_chunk; ty++) {
+		for (int tx = 0; tx < c_tiles_per_chunk; tx++) {
+			const ShapeID id       = get_flat(tx, ty);
+			const int     shapenum = id.get_shapenum();
+			if (shapenum > 0x3ff) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
