@@ -568,13 +568,19 @@ TileRect Gump::get_rect() const {
 bool Gump::isOffscreen(bool partially) const {
 	auto rect = get_rect();
 
+	auto iwin = gwin->get_win();
+
+	// convert to full image window coords from game window coords
+	rect.shift(-iwin->get_start_x(), -iwin->get_start_y()); 
+
 	if (partially) {
 		return rect.x < 0 || rect.y < 0
-			   || (rect.x + rect.w) > gwin->get_game_width()
-			   || (rect.y + rect.h) > gwin->get_game_height();
+			   || (rect.x + rect.w) > iwin->get_full_width()
+			   || (rect.y + rect.h) > iwin->get_full_height();
 	} else {
-		return rect.x >= gwin->get_game_width()
-			   || rect.y >= gwin->get_game_height() || (rect.x + rect.w) <= 0
+		return rect.x >= iwin->get_full_width()
+			   || rect.y >= iwin->get_full_height()
+			   || (rect.x + rect.w) <= 0
 			   || (rect.y + rect.h) <= 0;
 	}
 }
