@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Gump_manager.h"
 #include "Paperdoll_gump.h"
 #include "actors.h"
+#include "cheat.h"
 #include "combat_opts.h"
 #include "exult_flx.h"
 #include "game.h"
@@ -317,7 +318,7 @@ void Portrait_button::paint() {
 	if (charm) {
 		paintBadge(CHARMED, badge++);
 	}
-	if (hungry) {
+	if (hungry && cheat.GetFoodUse() != Cheat::FoodUse::Disabled) {
 		paintBadge(HUNGRY, badge++);
 	}
 	if (prot) {
