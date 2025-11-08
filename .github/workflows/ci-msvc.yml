@@ -164,6 +164,12 @@ jobs:
         ./vcpkg integrate install
         'VCPKG_REV='|Out-File -Append -NoNewLine ${{ github.env }}
         git rev-parse HEAD|Out-File -Append ${{ github.env }}
+        mkdir downloads  -ErrorAction Ignore
+        cd downloads
+        curl.exe -L https://gitlab.gnome.org//GNOME/atk/-/archive/2.38.0/atk-2.38.0.tar.gz -o GNOME-atk-2.38.0.tar.gz
+        curl.exe -L https://gitlab.gnome.org/GNOME/gtk/-/archive/3.24.43/gtk-3.24.43.tar.gz -o GNOME-gtk-3.24.43.tar.gz
+        curl.exe -L https://gitlab.gnome.org//GNOME/pango/-/archive/1.56.1/pango-1.56.1.tar.gz -o GNOME-pango-1.56.1.tar.gz
+        curl.exe -L https://gitlab.gnome.org//GNOME/gdk-pixbuf/-/archive/2.42.12/gdk-pixbuf-2.42.12.tar.gz -o GNOME-gdk-pixbuf-2.42.12.tar.gz
 
     - name: Restore VCPKG packages for Studio from Cache 
       uses: actions/cache/restore@v4
