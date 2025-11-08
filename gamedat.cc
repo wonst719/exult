@@ -177,6 +177,7 @@ void Game_window::restore_gamedat(const char* fname    // Name of savegame file.
 	string       id = get_game_identity(fname, Game::get_gametitle());
 	const string static_identity
 			= get_game_identity(INITGAME, Game::get_gametitle());
+	bool user_ignored_identity_mismatch = false;
 	// Note: "*" means an old game.
 	if (id.empty() || (id[0] != '*' && static_identity != id)) {
 		std::string msg("Wrong identity '");
@@ -185,6 +186,7 @@ void Game_window::restore_gamedat(const char* fname    // Name of savegame file.
 		if (!Yesno_gump::ask(msg.c_str())) {
 			return;
 		}
+		user_ignored_identity_mismatch = true;
 	}
 	// Check for a ZIP file first
 #ifdef HAVE_ZIP_SUPPORT
@@ -236,6 +238,13 @@ void Game_window::restore_gamedat(const char* fname    // Name of savegame file.
 	cout.flush();
 
 	load_palette_timer = 0;
+
+	if (user_ignored_identity_mismatch)
+	{
+		// create new identity file if user agreed to open
+		OFileDataSource out(IDENTITY);
+		out.write(static_identity);
+	}
 }
 
 /*
@@ -332,10 +341,11 @@ void Game_window::save_gamedat(
 		savefiles = sisavefiles;
 	}
 
-	size_t count = savefiles.size();    // Count up #files to write.
-	count += 12 * 12 - 1;               // First map outputs IREG's directly to
+	// Count up #files to write.
+	// First map outputs IREG's directly to
 	// gamedat flex, while all others have a flex
 	// of their own contained in gamedat flex.
+	size_t count = savefiles.size() + 12 * 12 + 2;	
 	for (auto* map : maps) {
 		if (map) {
 			count++;
@@ -344,7 +354,22 @@ void Game_window::save_gamedat(
 	// Use samename for title.
 	OFileDataSource out(fname);
 	Flex_writer     flex(out, savename, count);
-	for (const auto* savefile : savefiles) {
+	
+	// We need to explicitly save these as they are no longer included in
+	// savefiles span and must be first
+	// Screenshot and Saveinfo are optional
+	// Identity is required
+	if(U7exists(GSCRNSHOT))
+	{
+		Savefile(flex, GSCRNSHOT);
+	}
+	if(U7exists(GSAVEINFO))
+	{
+		Savefile(flex, GSAVEINFO);
+	}
+	Savefile(flex, IDENTITY);
+
+for (const auto* savefile : savefiles) {
 		Savefile(flex, savefile);
 	}
 	// Now the Ireg's.
@@ -650,12 +675,12 @@ bool Game_window::get_saveinfo(
 	for (size_t i = 0; i < 2; i++) {    // Now read each file.
 		// Get file length.
 		auto& [location, length] = finfo[i];
-		size_t len               = location;
+		size_t len               = length;
 		if (len <= 13) {
 			continue;
 		}
 		len -= 13;
-		in.seek(length);    // Get to it.
+		in.seek(location);    // Get to it.
 		char fname[50];     // Set up name.
 		strcpy(fname, GAMEDAT);
 		in.read(&fname[sizeof(GAMEDAT) - 1], 13);
