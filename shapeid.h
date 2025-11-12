@@ -113,7 +113,7 @@ public:
 	static unsigned char get_special_pixel(int pixel) {
 		if (pixel > -256 && pixel < 0) {
 			return -pixel;
-		} else if (pixel < NPIXCOLORS) {
+		} else if (pixel >=0 && pixel < NPIXCOLORS) {
 			return get_instance()->special_pixels[pixel];
 		}
 		return 255;
