@@ -104,3 +104,9 @@ inline int strcasecmp(const char* s1, const char* s2) {
 inline int strncasecmp(const char* s1, const char* s2, size_t n) {
 	return _strnicmp(s1, s2, n);
 }
+
+
+// if we have getopt from vcpkg indicate it is available 
+#if __has_include(<getopt.h>)
+#	define HAVE_GETOPT_LONG 1
+#endif

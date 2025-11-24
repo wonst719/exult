@@ -105,6 +105,7 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}     
       run: |
         cd $Env:VCPKG_INSTALLATION_ROOT
+        git pull origin 75cdbf55732bc8f36e8286d0254feb8083a6dd2a --ff-only
         .\bootstrap-vcpkg.bat
         ./vcpkg integrate install
         'VCPKG_REV='|Out-File -Append -NoNewLine ${{ github.env }}
@@ -160,6 +161,7 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}     
       run: |
         cd $Env:VCPKG_INSTALLATION_ROOT
+        git pull origin 75cdbf55732bc8f36e8286d0254feb8083a6dd2a --ff-only
         .\bootstrap-vcpkg.bat
         ./vcpkg integrate install
         'VCPKG_REV='|Out-File -Append -NoNewLine ${{ github.env }}

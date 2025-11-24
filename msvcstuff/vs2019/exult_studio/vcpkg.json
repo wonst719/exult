@@ -1,7 +1,7 @@
 {
   "name": "exult-studio",
   "version-semver": "1.11.0-git",
-  "$Comment": "Not specifying versions of the dependencies, just use latest of all of them",
+  "$Comment": "Only specifying package versions if there is a problem with the latest just use latest of all of them",
   "dependencies": [
     "libpng",
     "zlib",
@@ -18,5 +18,5 @@
     "getopt-win32",
     "dirent"
   ],
-  "builtin-baseline": "74e6536215718009aae747d86d84b78376bf9e09"
+  "builtin-baseline": "75cdbf55732bc8f36e8286d0254feb8083a6dd2a"
 }
