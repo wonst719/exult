@@ -76,16 +76,21 @@ env:
 
   BUILD_PROJECTS_ES: exult_studio
 
-  VCPKGINSTALLED_PATH: ${{format('{0}/msvcstuff/vs2019/vcpkg_installed/x64-windows', github.workspace) }}
+  VCPKGCACHE_PATH: msvcstuff\vs2019\vcpkg_installed
   
-  VCPKGINSTALLED_PATH_ES: ${{format('{0}/msvcstuff/vs2019/exult_studio/vcpkg_installed/x64-windows', github.workspace) }}
+  VCPKGCACHE_PATH_ES: msvcstuff\vs2019\exult_studio\vcpkg_installed
 
   TARGET_VCPKG_MANIFEST_INSTALL: VcpkgInstallManifestDependencies
 
   #No automatic binary caching until microsoft fixes it
   VCPKG_BINARY_SOURCES: "clear"
 
-  
+ 
+  VCPKG_DOWNLOADS: ${{format('{0}\msvcstuff\vcpkg\downloads', github.workspace) }}
+  VCPKG_DOWNLOADS_CACHE_PATH: msvcstuff\vcpkg\downloads
+
+  #Set vcpkg to download assets using curl
+  X_VCPKG_ASSET_SOURCES: x-script,curl -L {url} --output {dst} --ssl-no-revoke --retry-all-errors --retry-delay 3 --retry-max-time 60
 permissions:
   contents: read
 
@@ -94,6 +99,7 @@ jobs:
 
     runs-on: windows-2022
     if: ${{ github.repository_owner == 'exult' || github.repository_owner == 'wench' }}
+ 
 
     steps:
     - uses: actions/checkout@v4
@@ -104,38 +110,71 @@ jobs:
     - name: Setup vcpkg for Exult
       working-directory: ${{env.GITHUB_WORKSPACE}}     
       run: |
+        $vcpkg_json = Get-Content msvcstuff\vs2019\vcpkg.json -Raw | ConvertFrom-Json
         cd $Env:VCPKG_INSTALLATION_ROOT
-        git pull origin 75cdbf55732bc8f36e8286d0254feb8083a6dd2a --ff-only
+        git fetch
+        git checkout -f --detach $vcpkg_json.'builtin-baseline'
         .\bootstrap-vcpkg.bat
         ./vcpkg integrate install
-        'VCPKG_REV='|Out-File -Append -NoNewLine ${{ github.env }}
-        git rev-parse HEAD|Out-File -Append ${{ github.env }}
+        ('VCPKG_REV='+$vcpkg_json.'builtin-baseline')|Out-File -Append -NoNewLine ${{ github.env }}
+        Remove-Item "$Env:VCPKG_DOWNLOADS" -force -recurse -ErrorAction Ignore
+        New-Item -ItemType Directory "$Env:VCPKG_DOWNLOADS"  -ErrorAction Ignore
 
     - name: Restore VCPKG packages for Exult from Cache 
       uses: actions/cache/restore@v4
       id: exult-vcpkg-cache-restore
       with:
-        path: ${{env.VCPKGINSTALLED_PATH}}
+        path: |
+          ${{env.VCPKGCACHE_PATH}}
+          ${{env.VCPKG_DOWNLOADS_CACHE_PATH}}
         # Use the git rev hash of vcpkg in the cache key because things are not 
-        # entirely compatible between versions and when the Windows runner image
-        # updates about every 2 weeks the version of vcpkg is updated causing 
-        # bad caching behaviour during the switch over period
-        key: exult-vcpkg-packages-${{env.VCPKG_REV}}-${{github.sha}}
+        # entirely compatible between versions
+        key: exult-vcpkg-packages-${{env.VCPKG_REV}}-${{github.sha}}-${{github.run_attempt}}
         restore-keys: |
           exult-vcpkg-packages-${{env.VCPKG_REV}}
+          exult-vcpkg-packages
+
+      # If cache was restored from a different VCPKG_REV, try to clear the download cache of stale files
+      # do this by Setting the LastAccessTime to Jan 1 2000 before building and then after building before saving
+      # the cache delete any download files that were not acessed by the build and didn't have their access time changed
+    - name: Init Clearing Stale Files In Download Cache
+      if: ${{!contains( steps.studio-vcpkg-cache-restore.outputs.cache-matched-key, env.VCPKG_REV)}}
+      run: |
+          # first remove the tools directory as its too difficult to workout whichh tools are stale.
+          # Vcpkg will recreate it from downloaded files as needed or download the tool again if the download file wasn't cached for some reason
+          # If a tool fails to download after a baseline update I'd just rerun the workflow till it succeeds
+          Remove-Item "$Env:VCPKG_DOWNLOADS\tools" -force -recurse -ErrorAction Ignore       
+          #disable filesystems auto updating last access time while I'm manually setting it for each file
+          fsutil behavior set disablelastaccess 1
+          #object representing a date long ago.
+          $longago = [DateTime]::Parse("2000-01-01") 
+          get-ChildItem $Env:VCPKG_DOWNLOADS -filter *.* -File | ForEach-Object { $_.LastAccessTimeUTC = $longago; $_.Name }
+          # renable filesystem auto updating last access time 
+          fsutil behavior set disablelastaccess 0
 
     - name: Install VCPKG packages for Exult
+      continue-on-error: true
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /v:${{ runner.debug =='1' && 'detailed' || 'normal' }} /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{env.BUILD_PLATFORM}} ${{env.SOLUTION_FILE_PATH}}\Exult.vcxproj /t:${{env.TARGET_VCPKG_MANIFEST_INSTALL}}
+      run: |
+          msbuild /v:${{ runner.debug =='1' && 'detailed' || 'normal' }} /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{env.BUILD_PLATFORM}} ${{env.SOLUTION_FILE_PATH}}\Exult.vcxproj /t:${{env.TARGET_VCPKG_MANIFEST_INSTALL}}
+
+    - name: Actually Clearing Stale Files In Download Cache
+      if: ${{!contains( steps.studio-vcpkg-cache-restore.outputs.cache-matched-key, env.VCPKG_REV)}}
+      run: |
+          #object representing a date long ago.
+          $longago = [DateTime]::Parse("2000-01-01") 
+          #delete all files in download directory where LastAccessTime is equal to $longago
+          get-ChildItem $Env:VCPKG_DOWNLOADS -file |where LastAccessTimeUTC -EQ $longago| Remove-Item -Force -Verbose
 
     - name: Save VCPKG packages for Exult to cache
       id: exult-vcpkg-cache-save
       uses: actions/cache/save@v4
       with:
         path: |
-          ${{env.VCPKGINSTALLED_PATH}}
-        key: exult-vcpkg-packages-${{env.VCPKG_REV}}-${{github.sha}}
-     
+          ${{env.VCPKGCACHE_PATH}}
+          ${{env.VCPKG_DOWNLOADS_CACHE_PATH}}
+        key: exult-vcpkg-packages-${{env.VCPKG_REV}}-${{github.sha}}-${{github.run_attempt}}
+  
     - name: Build Exult
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: msbuild /v:${{ runner.debug =='1' && 'detailed' || 'normal' }} /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{env.BUILD_PLATFORM}} ${{env.SOLUTION_FILE_PATH}} /t:${{env.BUILD_PROJECTS}}
@@ -160,51 +199,87 @@ jobs:
     - name: Setup vcpkg for Studio
       working-directory: ${{env.GITHUB_WORKSPACE}}     
       run: |
+        $vcpkg_json = Get-Content msvcstuff\vs2019\exult_studio\vcpkg.json -Raw | ConvertFrom-Json
         cd $Env:VCPKG_INSTALLATION_ROOT
-        git pull origin 75cdbf55732bc8f36e8286d0254feb8083a6dd2a --ff-only
+        git fetch
+        git checkout -f --detach $vcpkg_json.'builtin-baseline'
         .\bootstrap-vcpkg.bat
         ./vcpkg integrate install
-        'VCPKG_REV='|Out-File -Append -NoNewLine ${{ github.env }}
-        git rev-parse HEAD|Out-File -Append ${{ github.env }}
-        mkdir downloads  -ErrorAction Ignore
-        cd downloads
-        curl.exe -L https://gitlab.gnome.org//GNOME/atk/-/archive/2.38.0/atk-2.38.0.tar.gz -o GNOME-atk-2.38.0.tar.gz
-        curl.exe -L https://gitlab.gnome.org/GNOME/gtk/-/archive/3.24.43/gtk-3.24.43.tar.gz -o GNOME-gtk-3.24.43.tar.gz
-        curl.exe -L https://gitlab.gnome.org//GNOME/pango/-/archive/1.56.1/pango-1.56.1.tar.gz -o GNOME-pango-1.56.1.tar.gz
-        curl.exe -L https://gitlab.gnome.org//GNOME/gdk-pixbuf/-/archive/2.42.12/gdk-pixbuf-2.42.12.tar.gz -o GNOME-gdk-pixbuf-2.42.12.tar.gz
+        ('VCPKG_REV='+$vcpkg_json.'builtin-baseline')|Out-File -Append -NoNewLine ${{ github.env }}
+
+        Remove-Item "$Env:VCPKG_DOWNLOADS" -force -recurse -ErrorAction Ignore
+        New-Item -ItemType Directory "$Env:VCPKG_DOWNLOADS"  -ErrorAction Ignore
 
     - name: Restore VCPKG packages for Studio from Cache 
       uses: actions/cache/restore@v4
       id: studio-vcpkg-cache-restore
       with:
-        path: ${{env.VCPKGINSTALLED_PATH_ES}}
-        key: studio-vcpkg-packages-${{env.VCPKG_REV}}-${{github.sha}}
+        path: |
+          ${{env.VCPKGCACHE_PATH_ES}}
+          ${{env.VCPKG_DOWNLOADS_CACHE_PATH}}
+        key: studio-vcpkg-packages-${{env.VCPKG_REV}}-${{github.sha}}-${{github.run_attempt}}
         restore-keys: |
           studio-vcpkg-packages-${{env.VCPKG_REV}}
+          studio-vcpkg-packages
+
+
+      # If cache was restored from a different VCPKG_REV, try to clear the download cache of stale files
+      # do this by Setting the LastAccessTime to Jan 1 2000 before building and then after building before saving
+      # the cache delete any download files that were not acessed by the build and didn't have their access time changed
+    - name: Init Clearing Stale Files In Download Cache
+      if: ${{!contains( steps.studio-vcpkg-cache-restore.outputs.cache-matched-key , env.VCPKG_REV)}}
+      run: |
+          # first remove the tools directory as its too difficult to workout whichh tools are stale.
+          # Vcpkg will recreate it from downloaded files as needed or download the tool again if the download file wasn't cached for some reason
+          # If a tool fails to download after a baseline update I'd just rerun the workflow till it succeeds
+          Remove-Item "$Env:VCPKG_DOWNLOADS\tools" -force -recurse -ErrorAction Ignore       
+          #disable filesystems auto updating last access time while I'm manually setting it for each file
+          fsutil behavior set disablelastaccess 1
+          #object representing a date long ago.
+          $longago = [DateTime]::Parse("2000-01-01") 
+          get-ChildItem $Env:VCPKG_DOWNLOADS -filter *.* -File | ForEach-Object { $_.LastAccessTimeUTC = $longago; $_.Name }
+          # renable filesystem auto updating last access time 
+          fsutil behavior set disablelastaccess 0
 
     - name: Install VCPKG packages for Studio
+      continue-on-error: true
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /v:${{ runner.debug =='1' && 'detailed' || 'normal' }} /m /p:Configuration=${{env.BUILD_CONFIGURATION_ES}} /p:Platform=${{env.BUILD_PLATFORM_ES}} ${{env.SOLUTION_FILE_PATH}}\exult_studio\exult_studio.vcxproj /t:${{env.TARGET_VCPKG_MANIFEST_INSTALL}}
-
-    - name: Save Studio VCPKG packages to cache
-      id: studio-vcpkg-cache-save
-      uses: actions/cache/save@v4
-      with:
-        path: |
-          ${{env.VCPKGINSTALLED_PATH_ES}}
-        key: studio-vcpkg-packages-${{env.VCPKG_REV}}-${{github.sha}}
+      run: |
+          msbuild /v:${{ runner.debug =='1' && 'detailed' || 'normal' }} /m /p:Configuration=${{env.BUILD_CONFIGURATION_ES}} /p:Platform=${{env.BUILD_PLATFORM_ES}} ${{env.SOLUTION_FILE_PATH}}\exult_studio\exult_studio.vcxproj /t:${{env.TARGET_VCPKG_MANIFEST_INSTALL}}
 
     - name: Restore VCPKG packages for Exult from Cache 
       uses: actions/cache/restore@v4
       id: exult-vcpkg-cache-restore
       with:
-        path: ${{env.VCPKGINSTALLED_PATH}}
-        key: exult-vcpkg-packages-${{env.VCPKG_REV}}-${{github.sha}}
+        path: |
+          ${{env.VCPKGCACHE_PATH}}
+          ${{env.VCPKG_DOWNLOADS_CACHE_PATH}}
+        key: exult-vcpkg-packages-${{env.VCPKG_REV}}-${{github.sha}}-${{github.run_attempt}}
         restore-keys: |
           exult-vcpkg-packages-${{env.VCPKG_REV}}
+          
     - name: Build exult_studio
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /v:${{ runner.debug =='1' && 'detailed' || 'normal' }} /m /p:Configuration=${{env.BUILD_CONFIGURATION_ES}} /p:Platform=${{env.BUILD_PLATFORM_ES}} ${{env.SOLUTION_FILE_PATH}} /t:${{env.BUILD_PROJECTS_ES}}
+      run: |
+       msbuild /v:${{ runner.debug =='1' && 'detailed' || 'normal' }} /m /p:Configuration=${{env.BUILD_CONFIGURATION_ES}} /p:Platform=${{env.BUILD_PLATFORM_ES}} ${{env.SOLUTION_FILE_PATH}} /t:${{env.BUILD_PROJECTS_ES}}      
+
+    - name: Actually Clearing Stale Files In Download Cache
+      if: ${{!contains( steps.studio-vcpkg-cache-restore.outputs.cache-matched-key , env.VCPKG_REV)}}
+      run: |
+          #object representing a date long ago.
+          $longago = [DateTime]::Parse("2000-01-01") 
+          #delete all files in download directory where LastAccessTime is equal to $longago
+          get-ChildItem $Env:VCPKG_DOWNLOADS -file |where LastAccessTimeUTC -EQ $longago| Remove-Item -Force -Verbose
+
+    - name: Save Studio VCPKG packages to cache
+      if: always() 
+      id: studio-vcpkg-cache-save
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          ${{env.VCPKGCACHE_PATH_ES}}
+          ${{env.VCPKG_DOWNLOADS_CACHE_PATH}}
+        key: studio-vcpkg-packages-${{env.VCPKG_REV}}-${{github.sha}}-${{github.run_attempt}}
   notify:
     name: Exult-CI (IRC & Discord notification)
     runs-on: ubuntu-latest

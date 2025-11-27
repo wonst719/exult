@@ -124,7 +124,7 @@
     <VcpkgUseMD>true</VcpkgUseMD>
     <VcpkgTriplet>x64-windows</VcpkgTriplet>
     <VcpkgHostTriplet>x64-windows</VcpkgHostTriplet>
-    <VcpkgAdditionalInstallOptions>--x-abi-tools-use-exact-versions</VcpkgAdditionalInstallOptions>
+    <VcpkgAdditionalInstallOptions>--x-abi-tools-use-exact-versions --keep-going</VcpkgAdditionalInstallOptions>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <VcpkgTriplet>x86-windows</VcpkgTriplet>
