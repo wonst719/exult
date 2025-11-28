@@ -138,7 +138,7 @@ jobs:
       # do this by Setting the LastAccessTime to Jan 1 2000 before building and then after building before saving
       # the cache delete any download files that were not acessed by the build and didn't have their access time changed
     - name: Init Clearing Stale Files In Download Cache
-      if: ${{!contains( steps.studio-vcpkg-cache-restore.outputs.cache-matched-key, env.VCPKG_REV)}}
+      if: ${{!contains( steps.exult-vcpkg-cache-restore.outputs.cache-matched-key, env.VCPKG_REV)}}
       run: |
           # first remove the tools directory as its too difficult to workout whichh tools are stale.
           # Vcpkg will recreate it from downloaded files as needed or download the tool again if the download file wasn't cached for some reason
@@ -159,7 +159,7 @@ jobs:
           msbuild /v:${{ runner.debug =='1' && 'detailed' || 'normal' }} /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{env.BUILD_PLATFORM}} ${{env.SOLUTION_FILE_PATH}}\Exult.vcxproj /t:${{env.TARGET_VCPKG_MANIFEST_INSTALL}}
 
     - name: Actually Clearing Stale Files In Download Cache
-      if: ${{!contains( steps.studio-vcpkg-cache-restore.outputs.cache-matched-key, env.VCPKG_REV)}}
+      if: ${{!contains( steps.exult-vcpkg-cache-restore.outputs.cache-matched-key, env.VCPKG_REV)}}
       run: |
           #object representing a date long ago.
           $longago = [DateTime]::Parse("2000-01-01") 
