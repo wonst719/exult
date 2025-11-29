@@ -310,6 +310,8 @@ public:
 	void setup_groups();
 	void setup_group_controls();
 	void add_group();
+	void duplicate_builtin_group();
+	void duplicate_group();
 	void del_group();
 	void groups_changed(
 			GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* loc,

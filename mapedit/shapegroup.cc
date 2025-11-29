@@ -481,6 +481,12 @@ C_EXPORT void on_groups_add_clicked(
 	ExultStudio::get_instance()->add_group();
 }
 
+C_EXPORT void on_groups_duplicate_clicked(
+		GtkToggleButton* button, gpointer user_data) {
+	ignore_unused_variable_warning(button, user_data);
+	ExultStudio::get_instance()->duplicate_group();
+}
+
 C_EXPORT void on_groups_del_clicked(
 		GtkToggleButton* button, gpointer user_data) {
 	ignore_unused_variable_warning(button, user_data);
@@ -501,6 +507,12 @@ C_EXPORT void on_open_builtin_group_clicked(
 		GtkButton* button, gpointer user_data) {
 	ignore_unused_variable_warning(button, user_data);
 	ExultStudio::get_instance()->open_builtin_group_window();
+}
+
+C_EXPORT void on_duplicate_builtin_group_clicked(
+		GtkButton* button, gpointer user_data) {
+	ignore_unused_variable_warning(button, user_data);
+	ExultStudio::get_instance()->duplicate_builtin_group();
 }
 
 /*
@@ -656,11 +668,13 @@ void ExultStudio::setup_group_controls() {
 	if (list) {
 		//		int row = static_cast<int>(list->data);
 		//		set_sensitive("groups_open", true);
+		set_sensitive("groups_duplicate", true);
 		set_sensitive("groups_del", true);
 		//		set_sensitive("groups_up_arrow", row > 0);
 		//		set_sensitive("groups_down_arrow", row < clist->rows);
 	} else {
 		//		set_sensitive("groups_open", false);
+		set_sensitive("groups_duplicate", false);
 		set_sensitive("groups_del", false);
 		//		set_sensitive("groups_up_arrow", false);
 		//		set_sensitive("groups_down_arrow", false);
@@ -688,6 +702,57 @@ void ExultStudio::add_group() {
 				model, &iter, GRP_FILE_COLUMN, nm, GRP_GROUP_COLUMN, grp, -1);
 	}
 	set_entry("groups_new_name", "");
+}
+
+/*
+ *  Duplicate a new group.
+ */
+
+void ExultStudio::duplicate_group() {
+	if (!curfile) {
+		return;
+	}
+	GtkTreeView*      tview = GTK_TREE_VIEW(get_widget("group_list"));
+	GtkTreeSelection* list  = gtk_tree_view_get_selection(tview);
+	if (!list) {
+		return;
+	}
+	GtkTreeModel* model;
+	GtkTreeIter   iter;
+	if (!gtk_tree_selection_get_selected(list, &model, &iter)) {
+		return;
+	}
+	const int         row    = Get_tree_row(model, &iter);
+	Shape_group_file* groups = curfile->get_groups();
+	Shape_group*      orig   = groups->get(row);
+
+	// Create new name with " copy" suffix
+	string newname = orig->get_name();
+	newname += " copy";
+
+	// Make sure the new name is unique
+	int    copynum  = 2;
+	string testname = newname;
+	while (groups->find(testname.c_str()) >= 0) {
+		testname = newname + " " + std::to_string(copynum);
+		copynum++;
+	}
+
+	// Create the duplicate group
+	auto* duplicate = new Shape_group(testname.c_str(), groups);
+
+	// Copy all shape IDs from original using the public add() method
+	for (int i = 0; i < orig->size(); i++) {
+		duplicate->add((*orig)[i]);
+	}
+
+	// Add to the tree view
+	GtkTreeStore* store = GTK_TREE_STORE(model);
+	GtkTreeIter   newiter;
+	gtk_tree_store_append(store, &newiter, nullptr);
+	gtk_tree_store_set(
+			store, &newiter, GRP_FILE_COLUMN, testname.c_str(),
+			GRP_GROUP_COLUMN, duplicate, -1);
 }
 
 void ExultStudio::del_group() {
@@ -856,6 +921,67 @@ void ExultStudio::open_builtin_group_window() {
 	if (grp) {
 		open_group_window(grp);
 	}
+}
+
+/*
+ *  Duplicate currently selected builtin group.
+ */
+
+void ExultStudio::duplicate_builtin_group() {
+	if (!curfile || !vgafile || !palbuf) {
+		return;
+	}
+	Shape_group_file* groups = curfile->get_groups();
+	GtkComboBox*      btn    = GTK_COMBO_BOX(get_widget("builtin_group"));
+	if (!btn) {
+		return;
+	}
+	const int index = gtk_combo_box_get_active(btn);
+
+	// Get the label for the builtin group
+	GtkTreeIter iter;
+	gtk_combo_box_get_active_iter(btn, &iter);
+	GtkTreeModel* model = gtk_combo_box_get_model(btn);
+	gchar*        label = nullptr;
+	gtk_tree_model_get(model, &iter, 0, &label, -1);
+
+	// Get or create the builtin group
+	Shape_group* builtin = groups->get_builtin(index, label);
+	if (!builtin) {
+		g_free(label);
+		return;
+	}
+
+	// Create new name with " copy" suffix
+	string newname = builtin->get_name();
+	newname += " copy";
+
+	// Make sure the new name is unique
+	int    copynum  = 2;
+	string testname = newname;
+	while (groups->find(testname.c_str()) >= 0) {
+		testname = newname + " " + std::to_string(copynum);
+		copynum++;
+	}
+
+	// Create the duplicate group
+	auto* duplicate = new Shape_group(testname.c_str(), groups);
+
+	// Copy all shape IDs from builtin using the public add() method
+	for (int i = 0; i < builtin->size(); i++) {
+		duplicate->add((*builtin)[i]);
+	}
+
+	// Add to the tree view
+	GtkTreeView*  tview = GTK_TREE_VIEW(get_widget("group_list"));
+	GtkTreeStore* store = GTK_TREE_STORE(gtk_tree_view_get_model(tview));
+	GtkTreeIter   newiter;
+	gtk_tree_store_append(store, &newiter, nullptr);
+	gtk_tree_store_set(
+			store, &newiter, GRP_FILE_COLUMN, testname.c_str(),
+			GRP_GROUP_COLUMN, duplicate, -1);
+
+	g_free(label);
 }
 
 /*
