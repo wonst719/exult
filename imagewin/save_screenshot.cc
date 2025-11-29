@@ -384,7 +384,7 @@ bool SaveIMG_RW(
 		/* no valid target */
 	}
 
-	if (surface && (SDL_LockSurface(surface) == 0)) {
+	if (surface && (SDL_LockSurface(surface))) {
 		found_error |= !save_image(surface, dst, guardband);
 
 		/* Close it up.. */
