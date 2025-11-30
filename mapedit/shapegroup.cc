@@ -1129,6 +1129,13 @@ void ExultStudio::open_group_window() {
 	if (!gtk_tree_selection_get_selected(list, &model, &iter)) {
 		return;
 	}
+	// Do not open NPC groups if not connected to Exult.
+	auto* npc_file = dynamic_cast<Npcs_file_info*>(curfile);
+	if (npc_file && server_socket == -1) {
+		EStudio::Alert("Cannot open NPC groups when not connected to Exult.");
+		return;
+	}
+
 	const int         row    = Get_tree_row(model, &iter);
 	Shape_group_file* groups = curfile->get_groups();
 	Shape_group*      grp    = groups->get(row);
