@@ -493,6 +493,16 @@ C_EXPORT void on_groups_del_clicked(
 	ExultStudio::get_instance()->del_group();
 }
 
+C_EXPORT void on_groups_export_clicked(GtkButton* button, gpointer user_data) {
+	ignore_unused_variable_warning(button, user_data);
+	ExultStudio::get_instance()->export_group();
+}
+
+C_EXPORT void on_groups_import_clicked(GtkButton* button, gpointer user_data) {
+	ignore_unused_variable_warning(button, user_data);
+	ExultStudio::get_instance()->import_groups();
+}
+
 C_EXPORT gboolean on_groups_new_name_key_press(
 		GtkEntry* entry, GdkEventKey* event, gpointer user_data) {
 	ignore_unused_variable_warning(entry, user_data);
@@ -670,12 +680,16 @@ void ExultStudio::setup_group_controls() {
 		//		set_sensitive("groups_open", true);
 		set_sensitive("groups_duplicate", true);
 		set_sensitive("groups_del", true);
+		set_sensitive("groups_export", true);
+		set_sensitive("groups_import", true);
 		//		set_sensitive("groups_up_arrow", row > 0);
 		//		set_sensitive("groups_down_arrow", row < clist->rows);
 	} else {
 		//		set_sensitive("groups_open", false);
 		set_sensitive("groups_duplicate", false);
 		set_sensitive("groups_del", false);
+		set_sensitive("groups_export", false);
+		set_sensitive("groups_import", false);
 		//		set_sensitive("groups_up_arrow", false);
 		//		set_sensitive("groups_down_arrow", false);
 	}
@@ -794,6 +808,229 @@ void ExultStudio::del_group() {
 	for (auto* widg : toclose) {
 		close_group_window(GTK_WIDGET(widg));
 	}
+}
+
+/*
+ *  Export to a grp file.
+ */
+
+void ExultStudio::export_group() {
+	if (!curfile) {
+		return;
+	}
+
+	GtkTreeView*      tview = GTK_TREE_VIEW(get_widget("group_list"));
+	GtkTreeSelection* list  = gtk_tree_view_get_selection(tview);
+	if (!list) {
+		return;
+	}
+	GtkTreeModel* model;
+	GtkTreeIter   iter;
+	if (!gtk_tree_selection_get_selected(list, &model, &iter)) {
+		return;
+	}
+	const int         row    = Get_tree_row(model, &iter);
+	Shape_group_file* groups = curfile->get_groups();
+	Shape_group*      grp    = groups->get(row);
+
+	// Create file chooser dialog for saving
+	GtkWidget* dialog = gtk_file_chooser_dialog_new(
+			"Export Group to File", GTK_WINDOW(get_widget("main_window")),
+			GTK_FILE_CHOOSER_ACTION_SAVE, "_Cancel", GTK_RESPONSE_CANCEL,
+			"_Save", GTK_RESPONSE_ACCEPT, nullptr);
+
+	gtk_file_chooser_set_do_overwrite_confirmation(
+			GTK_FILE_CHOOSER(dialog), true);
+
+	// Add filter for .grp files
+	GtkFileFilter* filter = gtk_file_filter_new();
+	gtk_file_filter_set_name(filter, "Group files (*.grp)");
+	gtk_file_filter_add_pattern(filter, "*.grp");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+
+	// Add filter for all files
+	filter = gtk_file_filter_new();
+	gtk_file_filter_set_name(filter, "All files");
+	gtk_file_filter_add_pattern(filter, "*");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+
+	// Suggest filename based on group name
+	string suggested = grp->get_name();
+	suggested += ".grp";
+	gtk_file_chooser_set_current_name(
+			GTK_FILE_CHOOSER(dialog), suggested.c_str());
+
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+		char* filename
+				= gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+
+		try {
+			OFileDataSource out(filename);
+			Flex_writer     writer(out, "Exult Studio exported group", 1);
+			writer.write_object(grp);
+
+			Alert("Group '%s' exported successfully.", grp->get_name());
+
+		} catch (exult_exception& e) {
+			string msg = "Error exporting group: ";
+			msg += e.what();
+			Alert("%s", msg.c_str());
+		}
+
+		g_free(filename);
+	}
+
+	gtk_widget_destroy(dialog);
+}
+
+/*
+ *  Import from a grp file.
+ */
+
+void ExultStudio::import_groups() {
+	if (!curfile) {
+		return;
+	}
+
+	// Create file chooser dialog
+	GtkWidget* dialog = gtk_file_chooser_dialog_new(
+			"Import Groups File", GTK_WINDOW(get_widget("main_window")),
+			GTK_FILE_CHOOSER_ACTION_OPEN, "_Cancel", GTK_RESPONSE_CANCEL,
+			"_Open", GTK_RESPONSE_ACCEPT, nullptr);
+
+	// Add filter for .grp files
+	GtkFileFilter* filter = gtk_file_filter_new();
+	gtk_file_filter_set_name(filter, "Group files (*.grp)");
+	gtk_file_filter_add_pattern(filter, "*.grp");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+
+	// Add filter for all files
+	filter = gtk_file_filter_new();
+	gtk_file_filter_set_name(filter, "All files");
+	gtk_file_filter_add_pattern(filter, "*");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+		char* filename
+				= gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+
+		try {
+			// Get maximum entry number for current file
+			int   max_entry = -1;
+			auto* ifile     = curfile->get_ifile();
+
+			// Try to get the count for any file type
+			if (auto* vgafile_shapes = dynamic_cast<Shapes_vga_file*>(ifile)) {
+				// VGA files (shapes, faces, gumps, sprites, etc.)
+				max_entry = vgafile_shapes->get_num_shapes() - 1;
+			} else if (auto* vgafile_flex = dynamic_cast<Vga_file*>(ifile)) {
+				// Other Vga_file types (chunks, combos, NPCs use Vga_file base)
+				max_entry = vgafile_flex->get_num_shapes() - 1;
+			}
+
+			// Read the import file
+			FlexFile  import_flex(filename);
+			const int cnt = import_flex.number_of_objects();
+
+			Shape_group_file* groups = curfile->get_groups();
+			GtkTreeView*      tview  = GTK_TREE_VIEW(get_widget("group_list"));
+			GtkTreeStore*     store
+					= GTK_TREE_STORE(gtk_tree_view_get_model(tview));
+
+			int imported_count = 0;
+			int skipped_groups = 0;
+
+			for (int i = 0; i < cnt; i++) {
+				// Get each group from import file
+				std::size_t len;
+				auto        buf   = import_flex.retrieve(i, len);
+				const char* gname = reinterpret_cast<const char*>(buf.get());
+				const unsigned char* ptr = buf.get() + strlen(gname) + 1;
+				const size_t         sz  = little_endian::Read2(ptr);
+
+				if ((len - (ptr - buf.get())) / 2 != sz) {
+					continue;    // Skip malformed entry
+				}
+
+				// Check if any entry numbers exceed the maximum
+				bool has_invalid = false;
+				if (max_entry >= 0) {    // Only validate if we have a max_entry
+					for (size_t j = 0; j < sz; j++) {
+						const int entry_num
+								= little_endian::Read2s(ptr + j * 2);
+						if (entry_num > max_entry || entry_num < 0) {
+							has_invalid = true;
+							break;    // No need to check further
+						}
+					}
+				}
+
+				if (has_invalid) {
+					// Skip this group
+					skipped_groups++;
+					continue;
+				}
+
+				// Create new name with " imported" suffix
+				string newname = gname;
+				newname += " imported";
+
+				// Make sure the new name is unique
+				int    copynum  = 2;
+				string testname = newname;
+				while (groups->find(testname.c_str()) >= 0) {
+					testname = newname + " " + std::to_string(copynum);
+					copynum++;
+				}
+
+				// Create the imported group
+				auto* imported = new Shape_group(testname.c_str(), groups);
+				for (size_t j = 0; j < sz; j++) {
+					imported->add(little_endian::Read2(ptr));
+				}
+
+				// Add to the tree view
+				GtkTreeIter iter;
+				gtk_tree_store_append(store, &iter, nullptr);
+				gtk_tree_store_set(
+						store, &iter, GRP_FILE_COLUMN, testname.c_str(),
+						GRP_GROUP_COLUMN, imported, -1);
+
+				imported_count++;
+			}
+
+			// Build result message
+			string msg;
+			if (imported_count > 0) {
+				msg = "Imported " + std::to_string(imported_count)
+					  + " group(s).";
+			}
+			if (skipped_groups > 0) {
+				if (!msg.empty()) {
+					msg += "\n";
+				}
+				msg += "Skipped " + std::to_string(skipped_groups)
+					   + " group(s) with invalid entry numbers.\n";
+				if (max_entry >= 0) {
+					msg += "Maximum entry number for this file is "
+						   + std::to_string(max_entry) + ".";
+				}
+			}
+			if (imported_count == 0 && skipped_groups == 0) {
+				msg = "No groups found in file.";
+			}
+
+			Alert("%s", msg.c_str());
+		} catch (exult_exception& e) {
+			string msg = "Error importing groups: ";
+			msg += e.what();
+			Alert("%s", msg.c_str());
+		}
+
+		g_free(filename);
+	}
+
+	gtk_widget_destroy(dialog);
 }
 
 /*

@@ -312,6 +312,8 @@ public:
 	void add_group();
 	void duplicate_builtin_group();
 	void duplicate_group();
+	void export_group();
+	void import_groups();
 	void del_group();
 	void groups_changed(
 			GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* loc,

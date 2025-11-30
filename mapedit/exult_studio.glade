@@ -1329,6 +1329,12 @@
     <property name="icon-name">document-edit</property>
     <property name="use-fallback">True</property>
   </object>
+  <object class="GtkImage" id="open_img44">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">document-open</property>
+    <property name="use-fallback">True</property>
+  </object>
   <object class="GtkListStore" id="fieldinfo_type_liststore">
     <columns>
       <!-- column-name fieldinfo_type -->
@@ -1759,6 +1765,12 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="icon-name">edit-copy</property>
+    <property name="use-fallback">True</property>
+  </object>
+  <object class="GtkImage" id="save_img29">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">document-save</property>
     <property name="use-fallback">True</property>
   </object>
   <object class="GtkListStore" id="proj_frames_liststore">
@@ -3071,7 +3083,7 @@
                                             <property name="halign">center</property>
                                             <property name="valign">center</property>
                                             <property name="margin-start">2</property>
-                                            <property name="margin-end">0</property>
+                                            <property name="margin-end">2</property>
                                             <property name="margin-top">0</property>
                                             <property name="margin-bottom">0</property>
                                             <property name="hexpand">False</property>
@@ -3087,7 +3099,7 @@
                                         </child>
                                         <child>
                                           <object class="GtkButton" id="duplicate_builtin_group">
-                                            <property name="label" translatable="yes">D_uplicate</property>
+                                            <property name="label" translatable="yes">C_lone</property>
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="receives-default">False</property>
@@ -3162,29 +3174,85 @@
                                     <property name="vexpand">False</property>
                                     <property name="label-xalign">0</property>
                                     <child>
-                                      <object class="GtkBox" id="hbox26">
+                                      <object class="GtkBox" id="vbox55">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="margin-start">4</property>
-                                        <property name="margin-end">4</property>
-                                        <property name="margin-top">2</property>
-                                        <property name="margin-bottom">2</property>
-                                        <property name="orientation">horizontal</property>
+                                        <property name="margin-start">0</property>
+                                        <property name="margin-end">0</property>
+                                        <property name="margin-top">0</property>
+                                        <property name="margin-bottom">0</property>
+                                        <property name="orientation">vertical</property>
                                         <child>
-                                          <object class="GtkEntry" id="groups_new_name">
+                                          <object class="GtkBox" id="hbox26">
                                             <property name="visible">True</property>
-                                            <property name="can-focus">True</property>
-                                            <property name="halign">fill</property>
-                                            <property name="valign">center</property>
-                                            <property name="margin-start">0</property>
-                                            <property name="margin-end">2</property>
-                                            <property name="margin-top">0</property>
-                                            <property name="margin-bottom">0</property>
-                                            <property name="hexpand">True</property>
-                                            <property name="vexpand">False</property>
-                                            <property name="primary-icon-activatable">False</property>
-                                            <property name="secondary-icon-activatable">False</property>
-                                            <signal name="key-press-event" handler="on_groups_new_name_key_press" swapped="no"/>
+                                            <property name="can-focus">False</property>
+                                            <property name="margin-start">4</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="margin-top">2</property>
+                                            <property name="margin-bottom">2</property>
+                                            <property name="orientation">horizontal</property>
+                                            <child>
+                                              <object class="GtkEntry" id="groups_new_name">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="halign">fill</property>
+                                                <property name="valign">center</property>
+                                                <property name="margin-start">0</property>
+                                                <property name="margin-end">2</property>
+                                                <property name="margin-top">0</property>
+                                                <property name="margin-bottom">0</property>
+                                                <property name="hexpand">True</property>
+                                                <property name="vexpand">False</property>
+                                                <property name="primary-icon-activatable">False</property>
+                                                <property name="secondary-icon-activatable">False</property>
+                                                <signal name="key-press-event" handler="on_groups_new_name_key_press" swapped="no"/>
+                                              </object>
+                                              <packing>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkBox" id="hbox27">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="halign">center</property>
+                                                <property name="valign">fill</property>
+                                                <property name="margin-start">2</property>
+                                                <property name="margin-end">0</property>
+                                                <property name="margin-top">0</property>
+                                                <property name="margin-bottom">0</property>
+                                                <property name="hexpand">False</property>
+                                                <property name="vexpand">False</property>
+                                                <property name="orientation">horizontal</property>
+                                                <property name="homogeneous">True</property>
+                                                <child>
+                                                  <object class="GtkButton" id="groups_add">
+                                                    <property name="label">_New</property>
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">True</property>
+                                                    <property name="receives-default">False</property>
+                                                    <property name="halign">center</property>
+                                                    <property name="valign">center</property>
+                                                    <property name="margin-start">0</property>
+                                                    <property name="margin-end">0</property>
+                                                    <property name="margin-top">0</property>
+                                                    <property name="margin-bottom">0</property>
+                                                    <property name="hexpand">False</property>
+                                                    <property name="vexpand">False</property>
+                                                    <property name="image">new_img25</property>
+                                                    <property name="use-underline">True</property>
+                                                    <property name="always-show-image">True</property>
+                                                    <signal name="clicked" handler="on_groups_add_clicked" swapped="no"/>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="position">0</property>
+                                                  </packing>
+                                                </child>
+                                              </object>
+                                              <packing>
+                                                <property name="position">1</property>
+                                              </packing>
+                                            </child>
                                           </object>
                                           <packing>
                                             <property name="position">0</property>
@@ -3196,47 +3264,71 @@
                                             <property name="can-focus">False</property>
                                             <property name="halign">center</property>
                                             <property name="valign">fill</property>
-                                            <property name="margin-start">2</property>
-                                            <property name="margin-end">0</property>
+                                            <property name="margin-start">4</property>
+                                            <property name="margin-end">4</property>
                                             <property name="margin-top">0</property>
-                                            <property name="margin-bottom">0</property>
+                                            <property name="margin-bottom">2</property>
                                             <property name="hexpand">False</property>
                                             <property name="vexpand">False</property>
                                             <property name="orientation">horizontal</property>
-                                            <property name="homogeneous">True</property>
+                                            <property name="homogeneous">False</property>
+                                            <property name="spacing">4</property>
                                             <child>
-                                              <object class="GtkButton" id="groups_add">
-                                                <property name="label">_New</property>
+                                              <object class="GtkButton" id="groups_export">
+                                                <property name="label" translatable="yes">_Export</property>
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
                                                 <property name="receives-default">False</property>
                                                 <property name="halign">center</property>
                                                 <property name="valign">center</property>
                                                 <property name="margin-start">0</property>
-                                                <property name="margin-end">2</property>
+                                                <property name="margin-end">0</property>
                                                 <property name="margin-top">0</property>
                                                 <property name="margin-bottom">0</property>
                                                 <property name="hexpand">False</property>
                                                 <property name="vexpand">False</property>
-                                                <property name="image">new_img25</property>
+                                                <property name="image">save_img29</property>
                                                 <property name="use-underline">True</property>
                                                 <property name="always-show-image">True</property>
-                                                <signal name="clicked" handler="on_groups_add_clicked" swapped="no"/>
+                                                <signal name="clicked" handler="on_groups_export_clicked" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="position">0</property>
                                               </packing>
-                                            </child>
+                                           </child>
                                             <child>
-                                              <object class="GtkButton" id="groups_duplicate">
-                                                <property name="label" translatable="yes">_Duplicate</property>
+                                              <object class="GtkButton" id="groups_import">
+                                                <property name="label" translatable="yes">_Import</property>
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
                                                 <property name="receives-default">False</property>
                                                 <property name="halign">center</property>
                                                 <property name="valign">center</property>
-                                                <property name="margin-start">2</property>
-                                                <property name="margin-end">2</property>
+                                                <property name="margin-start">0</property>
+                                                <property name="margin-end">0</property>
+                                                <property name="margin-top">0</property>
+                                                <property name="margin-bottom">0</property>
+                                                <property name="hexpand">False</property>
+                                                <property name="vexpand">False</property>
+                                                <property name="image">open_img44</property>
+                                                <property name="use-underline">True</property>
+                                                <property name="always-show-image">True</property>
+                                                <signal name="clicked" handler="on_groups_import_clicked" swapped="no"/>
+                                              </object>
+                                              <packing>
+                                                <property name="position">1</property>
+                                              </packing>
+                                           </child>
+                                            <child>
+                                              <object class="GtkButton" id="groups_duplicate">
+                                                <property name="label" translatable="yes">_Clone</property>
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="receives-default">False</property>
+                                                <property name="halign">center</property>
+                                                <property name="valign">center</property>
+                                                <property name="margin-start">0</property>
+                                                <property name="margin-end">0</property>
                                                 <property name="margin-top">0</property>
                                                 <property name="margin-bottom">0</property>
                                                 <property name="hexpand">False</property>
@@ -3247,7 +3339,7 @@
                                                 <signal name="clicked" handler="on_groups_duplicate_clicked" swapped="no"/>
                                               </object>
                                               <packing>
-                                                <property name="position">1</property>
+                                                <property name="position">2</property>
                                               </packing>
                                             </child>
                                             <child>
@@ -3258,7 +3350,7 @@
                                                 <property name="receives-default">False</property>
                                                 <property name="halign">center</property>
                                                 <property name="valign">center</property>
-                                                <property name="margin-start">2</property>
+                                                <property name="margin-start">0</property>
                                                 <property name="margin-end">0</property>
                                                 <property name="margin-top">0</property>
                                                 <property name="margin-bottom">0</property>
@@ -3270,7 +3362,7 @@
                                                 <signal name="clicked" handler="on_groups_del_clicked" swapped="no"/>
                                               </object>
                                               <packing>
-                                                <property name="position">2</property>
+                                                <property name="position">3</property>
                                               </packing>
                                             </child>
                                           </object>
