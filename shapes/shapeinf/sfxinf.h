@@ -114,8 +114,22 @@ public:
 		return volume;
 	}
 
+	void set_volume(int vol) {
+		if (volume != vol) {
+			set_modified(true);
+			volume = vol;
+		}
+	}
+
 	int get_frame() const {
 		return frame;
+	}
+
+	void set_frame(int fr) {
+		if (frame != fr) {
+			set_modified(true);
+			frame = fr;
+		}
 	}
 
 	int get_extra_sfx() const {

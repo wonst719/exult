@@ -2379,6 +2379,14 @@ C_EXPORT void on_shinfo_sfx_clock_check_toggled(
 	ExultStudio::get_instance()->set_sensitive("shinfo_sfx_clock_sfx", on);
 }
 
+C_EXPORT void on_shinfo_sfx_frame_check_toggled(
+		GtkToggleButton* btn, gpointer user_data) {
+	ignore_unused_variable_warning(user_data);
+	const bool   on     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn));
+	ExultStudio* studio = ExultStudio::get_instance();
+	studio->set_sensitive("shinfo_sfx_frame", on);
+}
+
 /*
  *  Browse for usecode.
  */
@@ -2767,6 +2775,12 @@ void ExultStudio::init_shape_notebook(
 		const bool hourly = sfxinf->play_horly_ticks();
 		set_toggle("shinfo_sfx_clock_check", hourly);
 		set_spin("shinfo_sfx_clock_sfx", sfxinf->get_extra_sfx(), hourly);
+		set_spin("shinfo_sfx_volume", sfxinf->get_volume());
+		const int  frame         = sfxinf->get_frame();
+		const bool frame_enabled = (frame >= 0);
+		set_toggle("shinfo_sfx_frame_check", frame_enabled);
+		set_spin("shinfo_sfx_frame", frame >= 0 ? frame : 0, frame_enabled);
+		set_sensitive("shinfo_sfx_frame", frame_enabled);
 	}
 
 	const Paperdoll_npc* npcinf = info.get_npc_paperdoll();
@@ -3751,6 +3765,12 @@ void ExultStudio::save_shape_notebook(
 								  ? 1
 								  : get_spin("shinfo_sfx_count");
 		sfxinf->set_sfx_range(range);
+		sfxinf->set_volume(get_spin("shinfo_sfx_volume"));
+		if (get_toggle("shinfo_sfx_frame_check")) {
+			sfxinf->set_frame(get_spin("shinfo_sfx_frame"));
+		} else {
+			sfxinf->set_frame(-1);
+		}
 	}
 	if (!get_toggle("shinfo_npcpaperdoll_check")) {
 		info.set_npc_paperdoll_info(false);
