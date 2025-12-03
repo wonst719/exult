@@ -1317,7 +1317,13 @@
     <property name="icon-name">edit-delete</property>
     <property name="use-fallback">True</property>
   </object>
-    <object class="GtkImage" id="duplicate_img27">
+  <object class="GtkImage" id="duplicate_img27">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">edit-copy</property>
+    <property name="use-fallback">True</property>
+  </object>
+  <object class="GtkImage" id="duplicate_img28">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="icon-name">edit-copy</property>
@@ -1327,12 +1333,6 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="icon-name">document-edit</property>
-    <property name="use-fallback">True</property>
-  </object>
-  <object class="GtkImage" id="open_img44">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="icon-name">document-open</property>
     <property name="use-fallback">True</property>
   </object>
   <object class="GtkListStore" id="fieldinfo_type_liststore">
@@ -1755,22 +1755,16 @@
     <property name="icon-name">document-open</property>
     <property name="use-fallback">True</property>
   </object>
+  <object class="GtkImage" id="open_img44">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">document-open</property>
+    <property name="use-fallback">True</property>
+  </object>
   <object class="GtkImage" id="play_img23">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="icon-name">media-playback-start</property>
-    <property name="use-fallback">True</property>
-  </object>
-    <object class="GtkImage" id="duplicate_img28">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="icon-name">edit-copy</property>
-    <property name="use-fallback">True</property>
-  </object>
-  <object class="GtkImage" id="save_img29">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="icon-name">document-save</property>
     <property name="use-fallback">True</property>
   </object>
   <object class="GtkListStore" id="proj_frames_liststore">
@@ -1924,6 +1918,12 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="icon-name">list-remove</property>
+    <property name="use-fallback">True</property>
+  </object>
+  <object class="GtkImage" id="save_img29">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">document-save</property>
     <property name="use-fallback">True</property>
   </object>
   <object class="GtkListStore" id="sfx_type_liststore">
@@ -2519,7 +2519,7 @@
                         <signal name="activate" handler="on_paint_with_chunks1_activate" swapped="no"/>
                       </object>
                     </child>
-                     <child>
+                    <child>
                       <object class="GtkRadioMenuItem" id="pick_for_edit1">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
@@ -3271,8 +3271,8 @@
                                             <property name="hexpand">False</property>
                                             <property name="vexpand">False</property>
                                             <property name="orientation">horizontal</property>
-                                            <property name="homogeneous">False</property>
                                             <property name="spacing">4</property>
+                                            <property name="homogeneous">False</property>
                                             <child>
                                               <object class="GtkButton" id="groups_export">
                                                 <property name="label" translatable="yes">_Export</property>
@@ -3295,7 +3295,7 @@
                                               <packing>
                                                 <property name="position">0</property>
                                               </packing>
-                                           </child>
+                                            </child>
                                             <child>
                                               <object class="GtkButton" id="groups_import">
                                                 <property name="label" translatable="yes">_Import</property>
@@ -3318,7 +3318,7 @@
                                               <packing>
                                                 <property name="position">1</property>
                                               </packing>
-                                           </child>
+                                            </child>
                                             <child>
                                               <object class="GtkButton" id="groups_duplicate">
                                                 <property name="label" translatable="yes">_Clone</property>
@@ -5067,8 +5067,7 @@
                         </child>
                         <child>
                           <object class="GtkCheckButton" id="teleport_coord">
-                            <property name="label" translatable="yes">Use
-Coordinates</property>
+                            <property name="label" translatable="yes">Use&#10;Coordinates</property>
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">False</property>
@@ -13941,8 +13940,8 @@ Coordinates</property>
                                             <property name="valign">center</property>
                                             <property name="hexpand">False</property>
                                             <property name="vexpand">False</property>
-                                            <property name="use-underline">True</property>
                                             <property name="tooltip-text" translatable="yes">Browsing Usecode is not yet available.&#10;Please enter the Usecode directly.</property>
+                                            <property name="use-underline">True</property>
                                             <signal name="clicked" handler="on_shinfo_weapon_uc_browse_clicked" swapped="no"/>
                                           </object>
                                           <packing>
@@ -13958,13 +13957,13 @@ Coordinates</property>
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="receives-default">False</property>
-                                           <property name="halign">start</property>
+                                            <property name="halign">start</property>
                                             <property name="valign">center</property>
                                             <property name="hexpand">False</property>
                                             <property name="vexpand">False</property>
+                                            <property name="tooltip-text" translatable="yes">When "No Damage" flag is enabled you can toggle On Hit Usecode.</property>
                                             <property name="use-underline">True</property>
                                             <property name="draw-indicator">True</property>
-                                            <property name="tooltip-text" translatable="yes">When "No Damage" flag is enabled you can toggle On Hit Usecode.</property>
                                             <signal name="toggled" handler="on_shinfo_weapon_usecode_check_toggled" swapped="no"/>
                                           </object>
                                           <packing>
@@ -13973,7 +13972,7 @@ Coordinates</property>
                                             <property name="width">1</property>
                                             <property name="height">1</property>
                                           </packing>
-                                       </child>
+                                        </child>
                                         <child>
                                           <object class="GtkEntry" id="shinfo_weapon_usecode">
                                             <property name="visible">True</property>
@@ -14004,8 +14003,8 @@ Coordinates</property>
                                             <property name="valign">center</property>
                                             <property name="hexpand">False</property>
                                             <property name="vexpand">False</property>
-                                            <property name="use-underline">True</property>
                                             <property name="tooltip-text" translatable="yes">Browsing Usecode is not yet available.&#10;Please enter the Usecode directly.</property>
+                                            <property name="use-underline">True</property>
                                             <signal name="clicked" handler="on_shinfo_weapon_usecode_browse_clicked" swapped="no"/>
                                           </object>
                                           <packing>
@@ -14929,9 +14928,9 @@ Coordinates</property>
                                             <property name="valign">center</property>
                                             <property name="hexpand">False</property>
                                             <property name="vexpand">False</property>
+                                            <property name="tooltip-text" translatable="yes">When "No Damage" flag is enabled you can toggle On Hit Usecode.</property>
                                             <property name="use-underline">True</property>
                                             <property name="draw-indicator">True</property>
-                                            <property name="tooltip-text" translatable="yes">When "No Damage" flag is enabled you can toggle On Hit Usecode.</property>
                                             <signal name="toggled" handler="on_shinfo_ammo_usecode_check_toggled" swapped="no"/>
                                           </object>
                                           <packing>
@@ -14970,8 +14969,8 @@ Coordinates</property>
                                             <property name="valign">center</property>
                                             <property name="hexpand">False</property>
                                             <property name="vexpand">False</property>
-                                            <property name="use-underline">True</property>
                                             <property name="tooltip-text" translatable="yes">Browsing Usecode is not yet available.&#10;Please enter the Usecode directly.</property>
+                                            <property name="use-underline">True</property>
                                             <signal name="clicked" handler="on_shinfo_ammo_usecode_browse_clicked" swapped="no"/>
                                           </object>
                                           <packing>
@@ -28477,8 +28476,7 @@ Coordinates</property>
                                 <property name="margin-bottom">1</property>
                                 <property name="hexpand">False</property>
                                 <property name="vexpand">False</property>
-                                <property name="label" translatable="yes">Note: The file extension ".cfg"
-will be added automatically</property>
+                                <property name="label" translatable="yes">Note: The file extension ".cfg"&#10;will be added automatically</property>
                               </object>
                               <packing>
                                 <property name="position">0</property>
