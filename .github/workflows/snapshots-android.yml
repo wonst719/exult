@@ -20,7 +20,7 @@ jobs:
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo repo_alive=true >> $GITHUB_OUTPUT
             echo event is workflow_dispatch. Force building snapshot not doing activity check
-          else
+           else
             if [ $DAYS -gt 0 ]; then
               echo repo_alive=false >> $GITHUB_OUTPUT
               echo No activity in 24 hours before midnight UTC not building snapshot. Last activity at $DATEUTC.
@@ -56,6 +56,12 @@ jobs:
       - name: Checkout code
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
         uses: actions/checkout@v4
+      - name: Pre debug build clean
+        if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
+        run: |
+          sdkmanager --uninstall emulator
+          rm -r -f /tmp/* || true
+          rm -r -f /var/cache/* || true
       - name: Run autoreconf
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
         run: |
@@ -80,12 +86,12 @@ jobs:
         run: |
           mkdir -p android-snapshot
           cp ./../build/android/app/build/outputs/apk/debug/app-debug.apk ./android-snapshot/exult-snapshot-debug.apk
-      - name: Clean debug build files
+      - name: Pre release build clean
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
         run: |
-          df -h .
           rm -r -f ./../build/android/app/build
-          df -h .
+          rm -r -f /tmp/* || true
+          rm -r -f /var/cache/* || true
 
       - name: Configure release
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
@@ -103,7 +109,6 @@ jobs:
           cd ./../android && make clean && make -j2
           $ANDROID_SDK_ROOT/build-tools/34.0.0/zipalign -v -p 4 ./app/build/outputs/apk/release/app-release-unsigned.apk ./app/build/outputs/apk/release/app-release-unsigned-aligned.apk
           rm ./app/build/outputs/apk/release/app-release-unsigned.apk
-          df -h .
       - name: Sign APK
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
         uses: noriban/sign-android-release@v5.1
