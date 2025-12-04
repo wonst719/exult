@@ -23569,6 +23569,7 @@
                                         <property name="vexpand">False</property>
                                         <property name="use-underline">True</property>
                                         <property name="draw-indicator">True</property>
+                                        <signal name="toggled" handler="on_shinfo_brightness_frame_type_toggled" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="position">0</property>
