@@ -80,6 +80,13 @@ jobs:
         run: |
           mkdir -p android-snapshot
           cp ./../build/android/app/build/outputs/apk/debug/app-debug.apk ./android-snapshot/exult-snapshot-debug.apk
+      - name: Clean debug build files
+        if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
+        run: |
+          df -h .
+          rm -r -f ./../build/android/app/build
+          df -h .
+
       - name: Configure release
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
         run: |
@@ -96,6 +103,7 @@ jobs:
           cd ./../android && make clean && make -j2
           $ANDROID_SDK_ROOT/build-tools/34.0.0/zipalign -v -p 4 ./app/build/outputs/apk/release/app-release-unsigned.apk ./app/build/outputs/apk/release/app-release-unsigned-aligned.apk
           rm ./app/build/outputs/apk/release/app-release-unsigned.apk
+          df -h .
       - name: Sign APK
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
         uses: noriban/sign-android-release@v5.1
