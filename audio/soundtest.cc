@@ -247,7 +247,13 @@ void SoundTester::test_sound() {
 							&& (event.key.mod & SDL_KMOD_CTRL)) {
 							make_screenshot(true);
 						} else {
-							audio->stop_music();
+							if (active == 0) {
+								audio->stop_music();
+							} else if (active == 1) {
+								audio->stop_sound_effects();
+							} else if (active == 2) {
+								audio->stop_speech();
+							}
 						}
 						break;
 					case SDLK_I:
