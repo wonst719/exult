@@ -200,6 +200,7 @@ void SoundTester::test_sound() {
 							audio->stop_music();
 							audio->start_music(song, repeat);
 						} else if (active == 1) {
+							audio->stop_sound_effects();
 							sfx_id = audio->play_sound_effect(sfx);
 						} else if (active == 2) {
 							audio->stop_speech();
