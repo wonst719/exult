@@ -2931,7 +2931,7 @@ void Game_window::setup_game(bool map_editing) {
 		}
 
 		// Should Avatar be visible?
-		if (usecode->get_global_flag(Usecode_machine::did_first_scene)) {
+		if (usecode->get_global_flag_bool(Usecode_machine::did_first_scene)) {
 			main_actor->clear_flag(Obj_flags::bg_dont_render);
 		} else {
 			main_actor->set_flag(Obj_flags::bg_dont_render);
@@ -2980,9 +2980,10 @@ void Game_window::setup_game(bool map_editing) {
 	}
 	// During the first scene do not show the UI elements,
 	// unless the Avatar is free to move (possibly in mods).
-	if ((GAME_BG && !usecode->get_global_flag(Usecode_machine::did_first_scene))
+	if ((GAME_BG && !usecode->get_global_flag_bool(Usecode_machine::did_first_scene))
 		|| (GAME_SI
-			&& !usecode->get_global_flag(Usecode_machine::si_did_first_scene))
+			&& !usecode->get_global_flag_bool(
+					Usecode_machine::si_did_first_scene))
 		|| (main_actor_dont_move() && !main_actor_can_act()
 			&& !main_actor_can_act_charmed())) {
 		if (touchui != nullptr) {
@@ -3253,8 +3254,8 @@ bool Game_window::is_hostile_nearby() const {
 bool Game_window::failed_copy_protection() {
 	const bool confused = main_actor->get_flag(Obj_flags::confused);
 	const bool failureFlag
-			= usecode->get_global_flag(Usecode_machine::failed_copy_protect)
-					  .value_or(false);
+			= usecode->get_global_flag_bool(
+							 Usecode_machine::failed_copy_protect);
 	return (GAME_SI && confused) || (GAME_BG && failureFlag);
 }
 

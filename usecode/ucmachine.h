@@ -111,6 +111,10 @@ public:
 		return std::nullopt;
 	}
 
+	bool get_global_flag_bool(int i) {
+		return get_global_flag(i).value_or(false);
+	}
+
 	// Set ith flag, with bounds checks. Resizes gflags vector if needed, to a
 	// multiple of the page size. Returns false if i < 0 || i >= max_num_gflags.
 	bool set_global_flag(int i, bool val) {
