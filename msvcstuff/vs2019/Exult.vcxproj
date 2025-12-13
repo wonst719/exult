@@ -154,6 +154,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -190,6 +191,7 @@ exit /b 0
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4244;4805</DisableSpecificWarnings>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+<MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -226,6 +228,9 @@ exit /b 0
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalTemplatesDiagnostics>false</ExternalTemplatesDiagnostics>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -256,6 +261,9 @@ exit /b 0
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalTemplatesDiagnostics>false</ExternalTemplatesDiagnostics>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
