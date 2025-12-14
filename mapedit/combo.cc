@@ -397,8 +397,8 @@ void Combo::draw(
 	}
 	if (selfound) {    // Now put border around selected.
 		Combo_member* m = members[selected];
-		// FOR NOW, use color #1 ++++++++
-		draw->draw_shape_outline(m->shapenum, m->framenum, selx, sely, 1);
+		draw->draw_shape_outline(
+				m->shapenum, m->framenum, selx, sely, Shape_draw::outline_color);
 	}
 }
 

@@ -993,8 +993,10 @@ public:
 	void set_weapon_offset(int frame, unsigned char x, unsigned char y);
 	int  get_rotated_frame(int curframe, int quads) const;
 
+	// Paint bbox for the given frame at the x,y location on screen,
+	// mask specifies which lines to draw, 1 for front, 2 for back, 3 for both
 	void paint_bbox(
-			int x, int y, int framenum, Image_buffer* ibuf, int stroke) const;
+			int x, int y, int framenum, Image_buffer* ibuf, int stroke, int mask = 3) const;
 
 	static void set_allow_enhancements(bool newval) {
 		allow_enhancements = newval;

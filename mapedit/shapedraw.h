@@ -49,6 +49,8 @@ protected:
 	void*          drop_user_data;
 	bool           dragging;    // Dragging from here.
 public:
+	static const int outline_color = 249;	// Palette index of outline color
+
 	Shape_draw(Vga_file* i, const unsigned char* palbuf, GtkWidget* drw);
 	virtual ~Shape_draw();
 
@@ -74,7 +76,7 @@ public:
 		return palette->colors[i];
 	}
 
-	void draw_shape(Shape_frame* shape, int x, int y);
+	virtual void draw_shape(Shape_frame* shape, int x, int y);
 	void draw_shape(int shapenum, int framenum, int x, int y);
 	void draw_shape_outline(
 			int shapenum, int framenum, int x, int y, unsigned char color);
@@ -113,6 +115,8 @@ protected:
 	gulong draw_connect;     // The Draw  Widget g_signal_connect draw ID
 	gulong drop_connect;     // The Draw  Widget g_signal_connect drop ID
 	gulong hide_connect;     // The Hide  Widget g_signal_connect changed ID
+	int    bbox_x, bbox_y, bbox_z;
+
 public:
 	Shape_single(
 			GtkWidget* shp,        // The ShapeID   holding GtkWidget.
@@ -136,6 +140,9 @@ public:
 			int filenum, int shapenum, int framenum, gpointer user_data);
 	static void on_state_changed(
 			GtkWidget* widget, GtkStateFlags flags, gpointer user_data);
+
+	void Set_BBox(int x, int y, int z);
+	void draw_shape(Shape_frame* shape, int x, int y) override;
 };
 
 #endif

@@ -1397,7 +1397,7 @@ C_EXPORT void on_shinfo_cntrules_update_clicked(
 	} else {
 		unsigned int accept;
 		gtk_tree_model_get(model, iter.get(), CNT_ACCEPT_COLUMN, &accept, -1);
-		if (accept != newaccept) {
+		if (bool(accept) != newaccept) {
 			gtk_tree_store_set(
 					store, iter.get(), CNT_ACCEPT_COLUMN, newaccept,
 					CNT_MODIFIED, 1, -1);
@@ -2572,6 +2572,19 @@ void ExultStudio::set_shape_notebook_frame(int frnum    // Frame # to set.
 	}
 	set_spin("shinfo_xtiles", info->get_3d_xtiles(frnum));
 	set_spin("shinfo_ytiles", info->get_3d_ytiles(frnum));
+	set_spin("shinfo_ztiles", info->get_3d_height());
+
+#if 0
+	// Setup bbox in shape_single
+		shape_single->Set_BBox(
+				info->get_3d_xtiles(frnum), info->get_3d_ytiles(frnum),
+				info->get_3d_height());
+#else
+	// Show no bbox initially
+		shape_single->Set_BBox(0,0,0);
+#endif
+	
+
 	unsigned char wx;
 	unsigned char wy;    // Weapon-in-hand offset.
 	info->get_weapon_offset(frnum, wx, wy);
@@ -2669,7 +2682,6 @@ void ExultStudio::init_shape_notebook(
 			"shinfo_shape_class",
 			shclass < classes.size() ? classes[shclass] : 0);
 	set_shape_notebook_frame(frnum);
-	set_spin("shinfo_ztiles", info.get_3d_height());
 	int spot = get_spots(info.get_ready_type());
 	set_optmenu("shinfo_ready_spot", spot);
 	set_toggle("shinfo_is_spell_check", info.is_spell());
@@ -5000,4 +5012,22 @@ void ExultStudio::close_shape_window() {
 	if (shapewin) {
 		gtk_widget_set_visible(shapewin, false);
 	}
+}
+
+/*
+* Tile Footprint changed 
+*/
+C_EXPORT gboolean on_shinfo_shape_tiles_changed(GtkWidget* widget, gpointer data) {
+	ignore_unused_variable_warning(widget,data);
+	ExultStudio* studio = ExultStudio::get_instance();
+
+	Shape_single * shape_single = studio->get_shape_single();
+	if (shape_single) {
+		shape_single->Set_BBox(
+				studio->get_spin("shinfo_xtiles"),
+				studio->get_spin("shinfo_ytiles"),
+				studio->get_spin("shinfo_ztiles"));
+	}
+
+	return true;
 }

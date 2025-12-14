@@ -558,7 +558,8 @@ int Shape_info::get_rotated_frame(
 }
 
 void Shape_info::paint_bbox(
-		int x, int y, int framenum, Image_buffer* ibuf, int stroke) const {
+		int x, int y, int framenum, Image_buffer* ibuf,
+		int stroke, int mask) const {
 	int xs = get_3d_xtiles(framenum);
 	int ys = get_3d_ytiles(framenum);
 	int zs = get_3d_height();
@@ -586,23 +587,27 @@ void Shape_info::paint_bbox(
 			{-xs, -ys, zs}, //  7
 	};
 
-	int lines[][2] = {
+	// line definitions
+	// [0] and [1] are vert indices
+	// [2] is draw mask, 1 is front facing, 2 is back facing, 3 both
+	int lines[][3] = {
 			// Bottom rect
-			{0, 1},
-			{1, 6},
-			{6, 2},
-			{2, 0},
+			{0, 1,3},
+			{1, 6,2},
+			{6, 2,2},
+			{2, 0,3},
 			// Uprights
-			{0, 3},
-			{1, 4},
-			{6, 7},
-			{2, 5},
+			{0, 3,1},
+			{1, 4,3},
+			{6, 7,2},
+			{2, 5,3},
 			// Top Rect
-			{3, 4},
-			{4, 7},
-			{7, 5},
-			{5, 3},
+			{3, 4,1},
+			{4, 7,3},
+			{7, 5,3},
+			{5, 3,1},
 	};
+
 
 	for (auto& line : lines) {
 		int vx[2];
@@ -614,6 +619,7 @@ void Shape_info::paint_bbox(
 			vy[i] = verts[line[i]][1] * c_tilesize - 1
 					- verts[line[i]][2] * c_tilesize / 2;
 		}
+		if (mask & line[2])
 		ibuf->draw_line8(
 				stroke, x + vx[0], y + vy[0], x + vx[1], y + vy[1], nullptr);
 	}

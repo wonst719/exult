@@ -296,8 +296,6 @@ void ShapeBrowser::browse_shapes() {
 								y - frame->get_yabove() - 1);
 					}
 
-					// draw shape
-					sman->paint_shape(x, y, frame, true);
 
 					// Stuff that should only be drawn for object shapes in
 					// shapes.vga
@@ -326,8 +324,20 @@ void ShapeBrowser::browse_shapes() {
 						if (bounding_box) {
 							info.paint_bbox(
 									x, y, current_frame,
-									gwin->get_win()->get_ibuf(), 255);
+									gwin->get_win()->get_ibuf(), 255,2);
 						}
+						// draw shape
+						sman->paint_shape(x, y, frame, true);
+						if (bounding_box) {
+							info.paint_bbox(
+									x, y, current_frame,
+									gwin->get_win()->get_ibuf(), 255,1);
+						}
+
+					} else {
+						// draw shape
+						sman->paint_shape(x, y, frame, true);
+
 					}
 
 				} else {

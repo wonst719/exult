@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ibuf8.h"
 #include "u7drag.h"
 #include "vgafile.h"
-
+#include "shapeinf.h"
 using std::cout;
 using std::endl;
 
@@ -237,8 +237,7 @@ void Shape_draw::configure() {
 	GtkAllocation alloc = {0, 0, 0, 0};
 	gtk_widget_get_allocation(draw, &alloc);
 	if (!iwin) {    // First time?
-		// Foreground = yellow.
-		drawfg = (255 << 16) + (255 << 8);
+		drawfg = palette->colors[outline_color];
 		iwin   = new Image_buffer8(alloc.width, alloc.height);
 	} else if (
 			static_cast<int>(iwin->get_width()) != alloc.width
@@ -406,7 +405,7 @@ Shape_single::Shape_single(
 		: Shape_draw(vg, palbuf, drw), shape(shp), shapename(shpnm),
 		  shapevalid(shvalid), frame(frm), vganum(vgnum), hide(hdd),
 		  shape_connect(0), frame_connect(0), draw_connect(0), drop_connect(0),
-		  hide_connect(0) {
+		  hide_connect(0),bbox_x(0),bbox_y(0),bbox_z(0) {
 	if (shape && (GTK_IS_SPIN_BUTTON(shape) || GTK_IS_ENTRY(shape))) {
 		shape_connect = g_signal_connect(
 				G_OBJECT(shape), "changed",
@@ -518,6 +517,77 @@ void Shape_single::on_state_changed(
 	single->render();
 }
 
+void Shape_single::Set_BBox(int x, int y, int z) {
+	bool changed = bbox_x != x || bbox_y != y || bbox_z != z;
+	bbox_x = x;
+	bbox_y = y;
+	bbox_z = z;
+	// Call on_state_changed to force repaint
+	if (changed) on_state_changed(nullptr, GTK_STATE_FLAG_NORMAL, this);
+}
+
+void Shape_single::draw_shape(Shape_frame* shape, int x, int y) {
+
+	int minx = bbox_x * c_tilesize + bbox_z * c_tilesize / 2 + 1
+			   - shape->get_xleft();
+	int miny = bbox_y * c_tilesize + bbox_z * c_tilesize / 2 + 1
+			   - shape->get_yabove();
+
+	// x and y need to exceed minx and miny
+	// to ensure there is enough space to draw the bbox			 
+
+	if (x < minx || y < miny)
+	{
+		// Not enough space for bbox so resize the draw area and queue a redraw
+
+		GtkAllocation alloc = {0, 0, 0, 0};
+		gtk_widget_get_allocation(draw, &alloc);
+		const gint winw = ZoomDown(alloc.width);
+		const gint winh = ZoomDown(alloc.height);
+
+		// needed size is 2 times the difference bigger than current size
+		minx = winw+(minx-x)*2;
+		miny = winh+(miny-y)*2;
+
+		gtk_widget_set_size_request(
+				draw,
+				winw < minx ? ZoomUp(minx)
+											  : alloc.width,
+				winh < miny ? ZoomUp(miny)
+											   : alloc.height);
+		cairo_reset_clip(drawgc);
+		gtk_widget_queue_draw(draw);
+		return;
+	}
+	
+	// If all bbox are zero, no bbox to draw 
+	if (!bbox_x && !bbox_y && !bbox_z)
+	{
+		// draw shape
+		Shape_draw::draw_shape(shape, x, y);
+
+		return;
+	}
+
+	// Create a Shape_info to draw the actual bbox
+	Shape_info info;
+	info.set_3d(bbox_x, bbox_y, bbox_z);
+
+	// draw back lines first
+	info.paint_bbox(
+			x + shape->get_xleft(), y + shape->get_yabove(), 0, iwin,
+			outline_color,2);
+
+	//  draw shape
+	Shape_draw::draw_shape(shape, x, y);
+
+	// finally draw front lines
+	info.paint_bbox(
+			x + shape->get_xleft(), y + shape->get_yabove(), 0, iwin,
+			outline_color, 1);
+}
+
+
 gboolean Shape_single::on_draw_expose_event(
 		GtkWidget* widget, cairo_t* cairo, gpointer user_data) {
 	ignore_unused_variable_warning(widget);
@@ -539,6 +609,7 @@ gboolean Shape_single::on_draw_expose_event(
 	if ((shnum == 0) && !(single->shapevalid(0))) {
 		shnum = -1;
 	}
+	// make sure there is enough space for bbox if needed
 	single->draw_shape_centered(shnum, frnum);
 	single->show(
 			ZoomDown(area.x), ZoomDown(area.y), ZoomDown(area.width),

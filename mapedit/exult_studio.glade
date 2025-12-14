@@ -11150,6 +11150,8 @@
                                 <property name="secondary-icon-activatable">False</property>
                                 <property name="adjustment">adjustment96</property>
                                 <property name="climb-rate">1</property>
+                                <property name ="value">0</property>
+                                <signal name="changed" handler="on_shinfo_shape_tiles_changed" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="position">0</property>
@@ -11172,6 +11174,8 @@
                                 <property name="secondary-icon-activatable">False</property>
                                 <property name="adjustment">adjustment95</property>
                                 <property name="climb-rate">1</property>
+                                <property name ="value">0</property>
+                                <signal name="changed" handler="on_shinfo_shape_tiles_changed" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="position">1</property>
@@ -11194,6 +11198,8 @@
                                 <property name="secondary-icon-activatable">False</property>
                                 <property name="adjustment">adjustment94</property>
                                 <property name="climb-rate">1</property>
+                                <property name ="value">0</property>
+                                <signal name="changed" handler="on_shinfo_shape_tiles_changed" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="position">2</property>
