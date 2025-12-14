@@ -108,9 +108,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sys: [mingw64, clang64]
+        sys: [UCRT64, clang64]
         include:
-          - { sys: mingw64, env: mingw-w64-x86_64 }
+          #- { sys: mingw64, env: mingw-w64-x86_64 }
+          - { sys: UCRT64, env: mingw-w64-ucrt-x86_64 }
           - { sys: clang64, env: mingw-w64-clang-x86_64 }
     defaults:
       run:
