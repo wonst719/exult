@@ -337,7 +337,6 @@ void ShapeBrowser::browse_shapes() {
 					} else {
 						// draw shape
 						sman->paint_shape(x, y, frame, true);
-
 					}
 
 				} else {

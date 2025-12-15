@@ -527,7 +527,6 @@ void Shape_single::Set_BBox(int x, int y, int z) {
 }
 
 void Shape_single::draw_shape(Shape_frame* shape, int x, int y) {
-
 	int minx = bbox_x * c_tilesize + bbox_z * c_tilesize / 2 + 1
 			   - shape->get_xleft();
 	int miny = bbox_y * c_tilesize + bbox_z * c_tilesize / 2 + 1
