@@ -268,7 +268,6 @@ void Dragging_info::paint() {
 		if (obj->get_flag(Obj_flags::invisible)) {
 			obj->paint_invisible(paintx, painty);
 		} else {
-
 			int bbox = gwin->get_render()->get_bbox_index();
 
 			// paint bbox back
@@ -288,10 +287,7 @@ void Dragging_info::paint() {
 						paintx, painty, obj->get_framenum(),
 						Game_window::get_instance()->get_win()->get_ib8(), bbox,
 						1);
-			}
-
-			
-			
+			}						
 		}
 	} else if (gump) {
 		gump->paint();
