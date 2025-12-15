@@ -31,6 +31,8 @@ class Game_render {
 	unsigned long render_seq = 0;     // For marking rendered objects.
 	int           skip       = 31;    // Set for each render.  We skip
 									  //   painting at or above this.
+	int bbox_palindex = -1;
+
 public:
 	void paint_terrain_only(
 			int start_chunkx, int start_chunky, int stop_chunkx,
@@ -53,6 +55,10 @@ public:
 			int start_chunkx, int start_chunky, int stop_chunkx,
 			int stop_chunky, int index = 0);
 	int get_light_strength(const Game_object* obj, const Game_object* av) const;
+
+	void increment_bbox_index();
+
+	int get_bbox_index() { return bbox_palindex;}
 };
 
 #endif

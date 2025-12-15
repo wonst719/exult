@@ -893,6 +893,10 @@ public:
 	void set_lerping_enabled(int e) {
 		lerping_enabled = e;
 	}
+
+	Game_render* get_render() {
+		return render;
+	}
 };
 
 #endif

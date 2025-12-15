@@ -35,6 +35,7 @@
 #include "effects.h"
 #include "gamemap.h"
 #include "gamewin.h"
+#include "gamerend.h"
 #include "ignore_unused_variable_warning.h"
 #include "mouse.h"
 #include "paths.h"
@@ -198,6 +199,19 @@ bool Dragging_info::start(
 		Game_object_shared keep;
 		obj->remove_this(&keep);    // This SHOULD work (jsf 21-12-01).
 	}
+
+	// include bbox in rect if bbox renderimg is enabled
+	if (obj && gwin->get_render()->get_bbox_index() != -1)
+	{
+		auto info = obj->get_info();
+		int  bbx_w = (info.get_3d_xtiles(obj->get_framenum()) * c_tilesize)
+					+ (info.get_3d_height() * c_tilesize/2)+1;
+		int bbx_h = (info.get_3d_ytiles(obj->get_framenum()) * c_tilesize)
+					+ (info.get_3d_height() * c_tilesize / 2)+1;
+
+		TileRect bbox_rect(rect.x - bbx_w, rect.y - bbx_h, bbx_w+1, bbx_h+1);
+		rect = rect.add(bbox_rect);
+	}
 	// Make a little bigger.
 	// rect.enlarge(c_tilesize + obj ? 0 : c_tilesize/2);
 	rect.enlarge(deltax > deltay ? deltax : deltay);
@@ -254,7 +268,30 @@ void Dragging_info::paint() {
 		if (obj->get_flag(Obj_flags::invisible)) {
 			obj->paint_invisible(paintx, painty);
 		} else {
+
+			int bbox = gwin->get_render()->get_bbox_index();
+
+			// paint bbox back
+			if (bbox != -1)
+			{
+				obj->get_info().paint_bbox(
+					paintx, painty, obj->get_framenum(),
+					Game_window::get_instance()->get_win()->get_ib8(),
+					bbox, 2);
+			}
+
 			obj->paint_shape(paintx, painty);
+			
+			// paint bbox front			
+			if (bbox != -1) {
+				obj->get_info().paint_bbox(
+						paintx, painty, obj->get_framenum(),
+						Game_window::get_instance()->get_win()->get_ib8(), bbox,
+						1);
+			}
+
+			
+			
 		}
 	} else if (gump) {
 		gump->paint();

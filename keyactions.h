@@ -112,4 +112,5 @@ void ActionNotebook(const int* params);
 void ActionSoundTester(const int* params);
 void ActionTest(const int* params);
 
+void ActionToggleBBoxes(const int* params);
 #endif

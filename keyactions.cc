@@ -43,6 +43,7 @@
 #include "game.h"
 #include "gamemap.h"
 #include "gamewin.h"
+#include "gamerend.h"
 #include "gump_utils.h"
 #include "ignore_unused_variable_warning.h"
 #include "keys.h"
@@ -953,4 +954,8 @@ void ActionSoundTester(const int* params) {
 
 void ActionTest(const int* params) {
 	ignore_unused_variable_warning(params);
+}
+
+void ActionToggleBBoxes(const int* /*params*/) {
+	Game_window::get_instance()->get_render()->increment_bbox_index();
 }

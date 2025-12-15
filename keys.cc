@@ -277,6 +277,8 @@ const struct Action {
 		 Action::mapedit_keys,         NONE, false,   true,  true,  false},
 		{			 "REPAINT",            ActionRepaint,           nullptr,            "Repaint screen",    Action::dont_show,
 		 NONE,  true,   true,  true,  false                              },
+		{       "TOGGLE_BBOXES",       ActionToggleBBoxes,           nullptr,             "Toggle bounding boxes",
+		 Action::mapedit_keys,         NONE, false,   true,  true,  false},
 		{					"",				  nullptr,           nullptr,                          "",    Action::dont_show,         NONE, false,  false, false,
 		 false														   }  //  terminator
 };
