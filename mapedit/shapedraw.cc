@@ -29,9 +29,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "shapedraw.h"
 
 #include "ibuf8.h"
+#include "shapeinf.h"
 #include "u7drag.h"
 #include "vgafile.h"
-#include "shapeinf.h"
 using std::cout;
 using std::endl;
 
@@ -401,11 +401,11 @@ static inline int extract_value(GtkWidget* widget) {
 Shape_single::Shape_single(
 		GtkWidget* shp, GtkWidget* shpnm, bool (*shvalid)(int), GtkWidget* frm,
 		int vgnum, Vga_file* vg, const unsigned char* palbuf, GtkWidget* drw,
-		bool hdd)
+		bool hdd, GtkSpinButton** bbox_widgets)
 		: Shape_draw(vg, palbuf, drw), shape(shp), shapename(shpnm),
 		  shapevalid(shvalid), frame(frm), vganum(vgnum), hide(hdd),
 		  shape_connect(0), frame_connect(0), draw_connect(0), drop_connect(0),
-		  hide_connect(0),bbox_x(0),bbox_y(0),bbox_z(0) {
+		  hide_connect(0), bbox() {
 	if (shape && (GTK_IS_SPIN_BUTTON(shape) || GTK_IS_ENTRY(shape))) {
 		shape_connect = g_signal_connect(
 				G_OBJECT(shape), "changed",
@@ -434,6 +434,16 @@ Shape_single::Shape_single(
 				hide_connect = g_signal_connect(
 						G_OBJECT(shape), "state-flags-changed",
 						G_CALLBACK(Shape_single::on_state_changed), this);
+			}
+		}
+	}
+	if (bbox_widgets) {
+		for (int i = 0; i < 3; i++) {
+			bbox[i].widget  = bbox_widgets[i];
+			if (bbox[i].widget) {
+				bbox[i].connect = g_signal_connect(
+						G_OBJECT(bbox[i].widget), "value-changed",
+						G_CALLBACK(Shape_single::on_bbox_changed), this);
 			}
 		}
 	}
@@ -467,6 +477,19 @@ Shape_single::~Shape_single() {
 				G_OBJECT(frame ? frame : shape), hide_connect);
 		hide_connect = 0;
 	}
+
+	for (int i = 0; i < 3; i++) {
+		if (bbox[i].connect
+			&& g_signal_handler_is_connected(
+					G_OBJECT(bbox[i].widget), bbox[i].connect)) {
+			g_signal_handler_disconnect(
+					G_OBJECT(bbox[i].widget), bbox[i].connect);
+		}
+		bbox[i].connect = 0;
+		bbox[i].widget = nullptr;
+		bbox[i].value  = 0;
+	}
+	
 }
 
 void Shape_single::on_shape_changed(GtkWidget* widget, gpointer user_data) {
@@ -517,26 +540,46 @@ void Shape_single::on_state_changed(
 	single->render();
 }
 
+void Shape_single::on_bbox_changed(GtkSpinButton*, gpointer user_data) {
+	auto* single = static_cast<Shape_single*>(user_data);
+
+	// Update all 3 bbox values
+	bool changed = false;
+	for (int i = 0; i < 3; i++) {
+		if (single->bbox[i].widget) {
+			int new_value = int(gtk_spin_button_get_value(single->bbox[i].widget));
+			changed |= single->bbox[i].value != new_value;
+			single->bbox[i].value = new_value;
+		}
+	}
+	if (changed) {
+		// Call on_state_changed to force repaint if changed
+		on_state_changed(nullptr, GTK_STATE_FLAG_NORMAL, single);
+	}
+}
+
 void Shape_single::Set_BBox(int x, int y, int z) {
-	bool changed = bbox_x != x || bbox_y != y || bbox_z != z;
-	bbox_x = x;
-	bbox_y = y;
-	bbox_z = z;
+	bool changed
+			= bbox[0].value != x || bbox[1].value != y || bbox[2].value != z;
+	bbox[0].value = x;
+	bbox[1].value = y;
+	bbox[2].value = z;
 	// Call on_state_changed to force repaint
-	if (changed) on_state_changed(nullptr, GTK_STATE_FLAG_NORMAL, this);
+	if (changed) {
+		on_state_changed(nullptr, GTK_STATE_FLAG_NORMAL, this);
+	}
 }
 
 void Shape_single::draw_shape(Shape_frame* shape, int x, int y) {
-	int minx = bbox_x * c_tilesize + bbox_z * c_tilesize / 2 + 1
+	int minx = bbox[0].value * c_tilesize + bbox[2].value * c_tilesize / 2 + 1
 			   - shape->get_xleft();
-	int miny = bbox_y * c_tilesize + bbox_z * c_tilesize / 2 + 1
+	int miny = bbox[1].value * c_tilesize + bbox[2].value * c_tilesize / 2 + 1
 			   - shape->get_yabove();
 
 	// x and y need to exceed minx and miny
-	// to ensure there is enough space to draw the bbox			 
+	// to ensure there is enough space to draw the bbox
 
-	if (x < minx || y < miny)
-	{
+	if (x < minx || y < miny) {
 		// Not enough space for bbox so resize the draw area and queue a redraw
 
 		GtkAllocation alloc = {0, 0, 0, 0};
@@ -545,23 +588,19 @@ void Shape_single::draw_shape(Shape_frame* shape, int x, int y) {
 		const gint winh = ZoomDown(alloc.height);
 
 		// needed size is 2 times the difference bigger than current size
-		minx = winw+(minx-x)*2;
-		miny = winh+(miny-y)*2;
+		minx = winw + (minx - x) * 2;
+		miny = winh + (miny - y) * 2;
 
 		gtk_widget_set_size_request(
-				draw,
-				winw < minx ? ZoomUp(minx)
-											  : alloc.width,
-				winh < miny ? ZoomUp(miny)
-											   : alloc.height);
+				draw, winw < minx ? ZoomUp(minx) : alloc.width,
+				winh < miny ? ZoomUp(miny) : alloc.height);
 		cairo_reset_clip(drawgc);
 		gtk_widget_queue_draw(draw);
 		return;
 	}
-	
-	// If all bbox are zero, no bbox to draw 
-	if (!bbox_x && !bbox_y && !bbox_z)
-	{
+
+	// If all bbox are zero, no bbox to draw
+	if (!bbox[0].value && !bbox[1].value && !bbox[2].value) {
 		// draw shape
 		Shape_draw::draw_shape(shape, x, y);
 
@@ -570,12 +609,12 @@ void Shape_single::draw_shape(Shape_frame* shape, int x, int y) {
 
 	// Create a Shape_info to draw the actual bbox
 	Shape_info info;
-	info.set_3d(bbox_x, bbox_y, bbox_z);
+	info.set_3d(bbox[0].value, bbox[1].value, bbox[2].value);
 
 	// draw back lines first
 	info.paint_bbox(
 			x + shape->get_xleft(), y + shape->get_yabove(), 0, iwin,
-			outline_color,2);
+			outline_color, 2);
 
 	//  draw shape
 	Shape_draw::draw_shape(shape, x, y);
@@ -585,7 +624,6 @@ void Shape_single::draw_shape(Shape_frame* shape, int x, int y) {
 			x + shape->get_xleft(), y + shape->get_yabove(), 0, iwin,
 			outline_color, 1);
 }
-
 
 gboolean Shape_single::on_draw_expose_event(
 		GtkWidget* widget, cairo_t* cairo, gpointer user_data) {

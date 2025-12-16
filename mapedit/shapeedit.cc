@@ -2546,7 +2546,8 @@ C_EXPORT void on_shinfo_weapon_usecode_browse_clicked(
  *  Set frame-dependent fields in the shape-editing notebook.
  */
 
-void ExultStudio::set_shape_notebook_frame(int frnum    // Frame # to set.
+void ExultStudio::set_shape_notebook_frame(
+		int frnum    // Frame # to set.
 ) {
 	auto* file_info = static_cast<Shape_file_info*>(
 			g_object_get_data(G_OBJECT(shapewin), "file_info"));
@@ -2570,20 +2571,6 @@ void ExultStudio::set_shape_notebook_frame(int frnum    // Frame # to set.
 	if (!info) {
 		return;
 	}
-	set_spin("shinfo_xtiles", info->get_3d_xtiles(frnum));
-	set_spin("shinfo_ytiles", info->get_3d_ytiles(frnum));
-	set_spin("shinfo_ztiles", info->get_3d_height());
-
-#if 0
-	// Setup bbox in shape_single
-		shape_single->Set_BBox(
-				info->get_3d_xtiles(frnum), info->get_3d_ytiles(frnum),
-				info->get_3d_height());
-#else
-	// Show no bbox initially
-		shape_single->Set_BBox(0,0,0);
-#endif
-	
 
 	unsigned char wx;
 	unsigned char wy;    // Weapon-in-hand offset.
@@ -3689,8 +3676,9 @@ void ExultStudio::save_shape_notebook(
 		int         frnum     // Frame #.
 ) {
 	static const int classes[] = {0, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14};
-	info.set_shape_class(static_cast<Shape_info::Shape_class>(
-			classes[get_optmenu("shinfo_shape_class")]));
+	info.set_shape_class(
+			static_cast<Shape_info::Shape_class>(
+					classes[get_optmenu("shinfo_shape_class")]));
 	info.set_3d(
 			get_spin("shinfo_xtiles"), get_spin("shinfo_ytiles"),
 			get_spin("shinfo_ztiles"));
@@ -4001,8 +3989,9 @@ void ExultStudio::save_shape_notebook(
 				const int chance
 						= menu == 0 ? 100
 									: (menu == 1 ? 0
-												 : get_spin("shinfo_animation_"
-															"freezechance"));
+												 : get_spin(
+														   "shinfo_animation_"
+														   "freezechance"));
 				aniinf->set_freeze_first_chance(chance);
 				int rec;
 				if (get_toggle("shinfo_animation_rectype")) {
@@ -4126,13 +4115,41 @@ void ExultStudio::open_shape_window(
 	// Note: ifile and vgafile can't possibly be null if we are here.
 	Vga_file* ifile = file_info->get_ifile();
 	if (palbuf) {
+		GtkSpinButton* bbox_spinbuttons[3]
+				= {GTK_SPIN_BUTTON(get_widget("shinfo_xtiles")),
+				   GTK_SPIN_BUTTON(get_widget("shinfo_ytiles")),
+				   GTK_SPIN_BUTTON(get_widget("shinfo_ztiles"))};
+		GtkSpinButton** bbox_ptrs = bbox_spinbuttons;
+		if (bbox_spinbuttons[0] && info) {
+			gtk_spin_button_set_value(
+					GTK_SPIN_BUTTON(bbox_spinbuttons[0]),
+					info->get_3d_xtiles(frnum));
+
+		} else {
+			bbox_ptrs = nullptr;
+		}
+		if (bbox_spinbuttons[1] && info) {
+			gtk_spin_button_set_value(
+					GTK_SPIN_BUTTON(bbox_spinbuttons[1]),
+					info->get_3d_ytiles(frnum));
+		} else {
+			bbox_ptrs = nullptr;
+		}
+		if (bbox_spinbuttons[2] && info) {
+			gtk_spin_button_set_value(
+					GTK_SPIN_BUTTON(bbox_spinbuttons[2]),
+					info->get_3d_height());
+		} else {
+			bbox_ptrs = nullptr;
+		}
+
 		shape_single = new Shape_single(
 				get_widget("shinfo_shape"), nullptr,
 				[](int shnum) -> bool {
 					return shnum >= 0;
 				},
 				get_widget("shinfo_frame"), -1, ifile, palbuf.get(),
-				get_widget("shinfo_draw"));
+				get_widget("shinfo_draw"), false, bbox_ptrs);
 		g_object_set_data(
 				G_OBJECT(get_widget("shinfo_draw")), "shape_single",
 				shape_single);
@@ -5012,22 +5029,4 @@ void ExultStudio::close_shape_window() {
 	if (shapewin) {
 		gtk_widget_set_visible(shapewin, false);
 	}
-}
-
-/*
-* Tile Footprint changed 
-*/
-C_EXPORT gboolean on_shinfo_shape_tiles_changed(GtkWidget* widget, gpointer data) {
-	ignore_unused_variable_warning(widget,data);
-	ExultStudio* studio = ExultStudio::get_instance();
-
-	Shape_single * shape_single = studio->get_shape_single();
-	if (shape_single) {
-		shape_single->Set_BBox(
-				studio->get_spin("shinfo_xtiles"),
-				studio->get_spin("shinfo_ytiles"),
-				studio->get_spin("shinfo_ztiles"));
-	}
-
-	return true;
 }

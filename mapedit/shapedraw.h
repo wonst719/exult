@@ -115,7 +115,12 @@ protected:
 	gulong draw_connect;     // The Draw  Widget g_signal_connect draw ID
 	gulong drop_connect;     // The Draw  Widget g_signal_connect drop ID
 	gulong hide_connect;     // The Hide  Widget g_signal_connect changed ID
-	int    bbox_x, bbox_y, bbox_z;
+
+	struct {
+		int        value=0;
+		GtkSpinButton* widget=nullptr;
+		gulong     connect=0;
+	} bbox[3];
 
 public:
 	Shape_single(
@@ -130,7 +135,10 @@ public:
 					   palbuf,    // The Palette for the Shape_draw constructor.
 			GtkWidget* drw,       // The GtkDrawingArea   for the Shape_draw
 								  // constructor.
-			bool hdd = false);    // Whether the Shape should be hidden.
+			
+			bool hdd = false,
+			GtkSpinButton** bbox_widgets= nullptr
+		);    // Whether the Shape should be hidden.
 	~Shape_single() override;
 	static void     on_shape_changed(GtkWidget* widget, gpointer user_data);
 	static void     on_frame_changed(GtkWidget* widget, gpointer user_data);
@@ -140,6 +148,7 @@ public:
 			int filenum, int shapenum, int framenum, gpointer user_data);
 	static void on_state_changed(
 			GtkWidget* widget, GtkStateFlags flags, gpointer user_data);
+	static void on_bbox_changed(GtkSpinButton* self, gpointer user_data);
 
 	void Set_BBox(int x, int y, int z);
 	void draw_shape(Shape_frame* shape, int x, int y) override;
