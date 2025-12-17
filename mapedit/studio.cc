@@ -1069,13 +1069,13 @@ ExultStudio::~ExultStudio() {
 		gtk_widget_destroy(gameinfowin);
 	}
 	gameinfowin = nullptr;
-	g_object_unref(G_OBJECT(app_xml));
 	if (server_input_tag >= 0) {
 		g_source_remove(server_input_tag);
 	}
 	if (server_socket >= 0) {
 		disconnect_from_server();
 	}
+	g_object_unref(G_OBJECT(app_xml));
 	g_free(static_path);
 	g_free(image_editor);
 	g_free(default_game);
