@@ -191,7 +191,7 @@ exit /b 0
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4244;4805</DisableSpecificWarnings>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-<MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -832,6 +832,12 @@ for /f "tokens=* delims=" %%u in ('git ls-remote --get-url') do echo #define GIT
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="..\..\win32\exult.exe.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\win32\exult.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\win32\exultico.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
