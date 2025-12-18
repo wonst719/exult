@@ -207,6 +207,8 @@ public:
 	uint16 get_egg_count() const {
 		return looping_egg_count;
 	}
+
+	void setMidiPausedAll(bool state);
 };
 
 std::unique_ptr<IDataSource> open_music_flex(const std::string& flex, int num);

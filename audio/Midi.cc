@@ -1095,6 +1095,19 @@ void MyMidiPlayer::ogg_set_repeat(bool newrepeat) {
 	}
 }
 
+void MyMidiPlayer::setMidiPausedAll(bool state) {
+	if (midi_driver) {
+		for (int seq = 0; seq < midi_driver->maxSequences(); seq++)
+		{
+			if(state) {
+				midi_driver->pauseSequence(seq);
+			} else {
+				midi_driver->unpauseSequence(seq);
+			}
+		}
+	}
+}
+
 void MyMidiPlayer::SetOggMusicVolume(int vol, bool savetoconfig) {
 	if (vol < 0) {
 		vol = 0;

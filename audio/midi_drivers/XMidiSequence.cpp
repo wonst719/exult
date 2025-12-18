@@ -586,7 +586,10 @@ void XMidiSequence::UpdateVolume() {
 }
 
 void XMidiSequence::loseChannel(int i) {
-	// If the channel matches, send a note off for any note
+	// If the channel matches, send a note off for any note and release sustain
+	handler->sequenceSendEvent(
+			sequence_id, int(MidiStatus::Controller) | i
+								 | int(MidiController::Sustain) << 8);
 	XMidiEvent* note = notes_on.GetNotes();
 	while (note) {
 		if (note->getChannel() == i) {

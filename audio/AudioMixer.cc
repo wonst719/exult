@@ -342,7 +342,10 @@ void AudioMixer::setPausedAll(bool paused) {
 	const std::lock_guard<SDLAudioDevice> lock(*device);
 	for (auto& channel : channels) {
 		channel.setPaused(paused);
+
 	}
+	// Forward it to midi too
+	midi->setMidiPausedAll(paused);
 }
 
 void AudioMixer::setVolume(sint32 instance_id, int lvol, int rvol) {
