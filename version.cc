@@ -37,6 +37,8 @@
 		"gitinfo.h") && !defined(GIT_REVISION) && !defined(GIT_TAG) \
 		&& !defined(GIT_REMOTE_BRANCH) && !defined(GIT_REMOTE_URL)
 #	include "gitinfo.h"
+#else
+constexpr static const char* GIT_TAG[] = {""};
 #endif
 
 #ifdef _WIN32
@@ -77,11 +79,7 @@ static constexpr const std::string_view git_rev{GIT_REVISION};
 #else
 constexpr static const std::string_view git_rev{};
 #endif
-#ifdef GIT_TAG
-static constexpr const std::string_view git_tag{GIT_TAG};
-#else
-static constexpr const std::string_view git_tag{};
-#endif
+static constexpr const std::string_view git_tag{GIT_TAG[0]};
 #ifdef GIT_REMOTE_BRANCH
 static constexpr const std::string_view git_branch{GIT_REMOTE_BRANCH};
 #else
