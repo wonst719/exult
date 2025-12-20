@@ -424,16 +424,15 @@ void ExultStudio::on_connect_button_toggled(
 void ExultStudio::on_play_button_toggled(
 		GtkToggleButton* button, gpointer user_data) {
 	auto* studio = static_cast<ExultStudio*>(user_data);
-	if (!studio || !studio->play_button_handler_id) {
-		return;
-	}
 	if (studio->get_server_socket() < 0) {
-		g_signal_handler_block(
-				G_OBJECT(button), studio->play_button_handler_id);
+		g_signal_handlers_block_matched(
+				G_OBJECT(button), G_SIGNAL_MATCH_ID,
+				studio->play_button_handler_id, 0, nullptr, nullptr, nullptr);
 		gtk_toggle_button_set_active(
 				button, !gtk_toggle_button_get_active(button));
-		g_signal_handler_unblock(
-				G_OBJECT(button), studio->play_button_handler_id);
+		g_signal_handlers_unblock_matched(
+				G_OBJECT(button), G_SIGNAL_MATCH_ID,
+				studio->play_button_handler_id, 0, nullptr, nullptr, nullptr);
 		return;
 	}
 	const bool playing = gtk_toggle_button_get_active(button);
@@ -928,12 +927,12 @@ ExultStudio::ExultStudio(int argc, char** argv)
 	play_button    = get_widget("play_button");
 	if (connect_button) {
 		connect_button_handler_id = g_signal_connect(
-				connect_button, "toggled",
+				G_OBJECT(connect_button), "toggled",
 				G_CALLBACK(ExultStudio::on_connect_button_toggled), this);
 	}
 	if (play_button) {
 		play_button_handler_id = g_signal_connect(
-				play_button, "toggled",
+				G_OBJECT(play_button), "toggled",
 				G_CALLBACK(ExultStudio::on_play_button_toggled), this);
 	}
 	// Set initial state for menus and toolbar - disconnected
@@ -3232,14 +3231,14 @@ void ExultStudio::update_menu_items(bool connected) {
 	}
 
 	// Set toolbar widgets sensitivity
-	GtkWidget* play_btn       = get_widget("play_button");
-	GtkWidget* tile_grid      = get_widget("tile_grid_button");
-	GtkWidget* bbox_color     = get_widget("bbox_color_combo");
-	GtkWidget* bbox_label     = get_widget("label_bbox");
-	GtkWidget* edit_lift      = get_widget("edit_lift_spin");
-	GtkWidget* hide_lift      = get_widget("hide_lift_spin");
-	GtkWidget* hide_lift_lbl  = get_widget("hide_lift_label");
-	GtkWidget* edit_terrain   = get_widget("checkbutton30");
+	GtkWidget* play_btn      = get_widget("play_button");
+	GtkWidget* tile_grid     = get_widget("tile_grid_button");
+	GtkWidget* bbox_color    = get_widget("bbox_color_combo");
+	GtkWidget* bbox_label    = get_widget("label_bbox");
+	GtkWidget* edit_lift     = get_widget("edit_lift_spin");
+	GtkWidget* hide_lift     = get_widget("hide_lift_spin");
+	GtkWidget* hide_lift_lbl = get_widget("hide_lift_label");
+	GtkWidget* edit_terrain  = get_widget("checkbutton30");
 
 	if (play_btn) {
 		gtk_widget_set_sensitive(play_btn, connected);
@@ -3278,13 +3277,13 @@ void ExultStudio::update_connect_button(bool connected) {
 			GTK_BUTTON(button), connected ? "Disconnect" : "Connect");
 
 	// Update button state without triggering the signal
-	if (connect_button_handler_id) {
-		g_signal_handler_block(G_OBJECT(button), connect_button_handler_id);
-	}
+	g_signal_handlers_block_matched(
+			G_OBJECT(button), G_SIGNAL_MATCH_ID, connect_button_handler_id, 0,
+			nullptr, nullptr, nullptr);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), connected);
-	if (connect_button_handler_id) {
-		g_signal_handler_unblock(G_OBJECT(button), connect_button_handler_id);
-	}
+	g_signal_handlers_unblock_matched(
+			G_OBJECT(button), G_SIGNAL_MATCH_ID, connect_button_handler_id, 0,
+			nullptr, nullptr, nullptr);
 }
 
 void ExultStudio::update_play_button(bool playing) {
@@ -3309,13 +3308,13 @@ void ExultStudio::update_play_button(bool playing) {
 	}
 
 	// Update button state without triggering the signal
-	if (play_button_handler_id) {
-		g_signal_handler_block(G_OBJECT(button), play_button_handler_id);
-	}
+	g_signal_handlers_block_matched(
+			G_OBJECT(button), G_SIGNAL_MATCH_ID, play_button_handler_id, 0,
+			nullptr, nullptr, nullptr);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), playing);
-	if (play_button_handler_id) {
-		g_signal_handler_unblock(G_OBJECT(button), play_button_handler_id);
-	}
+	g_signal_handlers_unblock_matched(
+			G_OBJECT(button), G_SIGNAL_MATCH_ID, play_button_handler_id, 0,
+			nullptr, nullptr, nullptr);
 }
 
 /*
