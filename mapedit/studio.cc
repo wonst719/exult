@@ -428,12 +428,12 @@ void ExultStudio::on_play_button_toggled(
 	if (studio->get_server_socket() < 0) {
 		g_signal_handlers_block_matched(
 				G_OBJECT(button), G_SIGNAL_MATCH_ID,
-				studio->play_button_handler_id, 0, nullptr, nullptr, nullptr);
+				studio->play_button_signal_id, 0, nullptr, nullptr, nullptr);
 		gtk_toggle_button_set_active(
 				button, !gtk_toggle_button_get_active(button));
 		g_signal_handlers_unblock_matched(
 				G_OBJECT(button), G_SIGNAL_MATCH_ID,
-				studio->play_button_handler_id, 0, nullptr, nullptr, nullptr);
+				studio->play_button_signal_id, 0, nullptr, nullptr, nullptr);
 		return;
 	}
 	const bool playing = gtk_toggle_button_get_active(button);
@@ -570,8 +570,9 @@ ExultStudio::ExultStudio(int argc, char** argv)
 		  game_type(BLACK_GATE), expansion(false), sibeta(false), curr_game(-1),
 		  curr_mod(-1), server_socket(-1), server_input_tag(-1),
 		  waiting_for_server(nullptr), connect_button(nullptr),
-		  connect_button_handler_id(0), play_button(nullptr),
-		  play_button_handler_id(0) {
+		  connect_button_handler_id(0), connect_button_signal_id(0),
+		  play_button(nullptr), play_button_handler_id(0),
+		  play_button_signal_id(0) {
 #ifdef _WIN32
 	// Enable the GTK+ 3 OLE Drag and Drop
 	g_setenv("GDK_WIN32_USE_EXPERIMENTAL_OLE2_DND", "1", 0);
@@ -930,11 +931,15 @@ ExultStudio::ExultStudio(int argc, char** argv)
 		connect_button_handler_id = g_signal_connect(
 				G_OBJECT(connect_button), "toggled",
 				G_CALLBACK(ExultStudio::on_connect_button_toggled), this);
+		connect_button_signal_id
+				= g_signal_lookup("toggled", GTK_TYPE_TOGGLE_BUTTON);
 	}
 	if (play_button) {
 		play_button_handler_id = g_signal_connect(
 				G_OBJECT(play_button), "toggled",
 				G_CALLBACK(ExultStudio::on_play_button_toggled), this);
+		play_button_signal_id
+				= g_signal_lookup("toggled", GTK_TYPE_TOGGLE_BUTTON);
 	}
 	// Set initial state for menus and toolbar - disconnected
 	update_menu_items(false);
@@ -3242,7 +3247,7 @@ void ExultStudio::update_menu_items(bool connected) {
 	GtkWidget* edit_lift     = get_widget("edit_lift_spin");
 	GtkWidget* hide_lift     = get_widget("hide_lift_spin");
 	GtkWidget* hide_lift_lbl = get_widget("hide_lift_label");
-	GtkWidget* edit_terrain  = get_widget("checkbutton30");
+	GtkWidget* edit_terrain  = get_widget("edit_terrain_button");
 
 	if (play_btn) {
 		gtk_widget_set_sensitive(play_btn, connected);
@@ -3282,17 +3287,17 @@ void ExultStudio::update_connect_button(bool connected) {
 
 	// Update button state without triggering the signal
 	g_signal_handlers_block_matched(
-			G_OBJECT(button), G_SIGNAL_MATCH_ID, connect_button_handler_id, 0,
+			G_OBJECT(button), G_SIGNAL_MATCH_ID, connect_button_signal_id, 0,
 			nullptr, nullptr, nullptr);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), connected);
 	g_signal_handlers_unblock_matched(
-			G_OBJECT(button), G_SIGNAL_MATCH_ID, connect_button_handler_id, 0,
+			G_OBJECT(button), G_SIGNAL_MATCH_ID, connect_button_signal_id, 0,
 			nullptr, nullptr, nullptr);
 }
 
 void ExultStudio::update_play_button(bool playing) {
 	GtkWidget* button = get_widget("play_button");
-	GtkWidget* image  = get_widget("play_img23");
+	GtkWidget* image  = get_widget("play_button_image");
 
 	if (!button || !image) {
 		return;
@@ -3313,11 +3318,11 @@ void ExultStudio::update_play_button(bool playing) {
 
 	// Update button state without triggering the signal
 	g_signal_handlers_block_matched(
-			G_OBJECT(button), G_SIGNAL_MATCH_ID, play_button_handler_id, 0,
+			G_OBJECT(button), G_SIGNAL_MATCH_ID, play_button_signal_id, 0,
 			nullptr, nullptr, nullptr);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), playing);
 	g_signal_handlers_unblock_matched(
-			G_OBJECT(button), G_SIGNAL_MATCH_ID, play_button_handler_id, 0,
+			G_OBJECT(button), G_SIGNAL_MATCH_ID, play_button_signal_id, 0,
 			nullptr, nullptr, nullptr);
 }
 

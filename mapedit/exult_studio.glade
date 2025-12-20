@@ -1852,7 +1852,7 @@
     <property name="icon-name">folder-publicshare-symbolic</property>
     <property name="use-fallback">True</property>
   </object>
-  <object class="GtkImage" id="play_img23">
+  <object class="GtkImage" id="play_button_image">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="icon-name">media-playback-start-symbolic</property>
@@ -2990,7 +2990,7 @@
                         <property name="margin-bottom">0</property>
                         <property name="hexpand">False</property>
                         <property name="vexpand">False</property>
-                        <property name="image">play_img23</property>
+                        <property name="image">play_button_image</property>
                         <property name="use-underline">True</property>
                         <property name="always-show-image">True</property>
                       </object>
@@ -3251,7 +3251,7 @@
                         <property name="vexpand">False</property>
                         <property name="label-xalign">0</property>
                         <child>
-                          <object class="GtkCheckButton" id="checkbutton30">
+                          <object class="GtkCheckButton" id="edit_terrain_button">
                             <property name="label" translatable="yes">Edit terrain</property>
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>

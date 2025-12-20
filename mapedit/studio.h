@@ -208,10 +208,12 @@ private:
 	// Widgets, Callbacks, HandlerIDs of the main_window
 	GtkWidget*  connect_button;
 	gulong      connect_button_handler_id;
+	gulong      connect_button_signal_id;
 	static void on_connect_button_toggled(
 			GtkToggleButton* button, gpointer user_data);
 	GtkWidget*  play_button;
 	gulong      play_button_handler_id;
+	gulong      play_button_signal_id;
 	static void on_play_button_toggled(
 			GtkToggleButton* button, gpointer user_data);
 
