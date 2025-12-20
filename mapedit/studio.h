@@ -541,6 +541,9 @@ inline std::string convertFromUTF8(const char* src_str) {
 			src_str, ExultStudio::get_instance()->get_encoding().c_str());
 }
 
+// Reset gump info loaded flag when switching games
+void reset_gump_info_loaded();
+
 struct ExultRgbCmap {
 	guint32 colors[256];
 };

@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "exceptions.h"
 #include "execbox.h"
 #include "fnames.h"
+#include "gumpinf.h"
 #include "items.h"
 #include "locator.h"
 #include "modmgr.h"
@@ -1645,6 +1646,9 @@ void ExultStudio::set_game_path(const string& gamename, const string& modname) {
 	palbuf.reset();    // Delete old.
 	delete files;      // Close old shape files.
 	Free_text();       // Delete old names.
+	// Clear gump info from previous game.
+	Gump_info::clear();
+	reset_gump_info_loaded();
 	// These were owned by 'files':
 	curfile             = nullptr;
 	browser             = nullptr;

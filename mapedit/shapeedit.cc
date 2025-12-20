@@ -69,6 +69,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using std::string;
 using namespace std::literals;
 
+// Flag to track if gump info has been loaded for current game
+static bool gump_info_loaded = false;
+
 // HP Info columns
 enum {
 	HP_FRAME_COLUMN = 0,
@@ -940,6 +943,13 @@ C_EXPORT void on_shinfo_frame_changed(
 	studio->set_shape_notebook_frame(gtk_spin_button_get_value_as_int(button));
 	// Force repaint of shape.
 	gtk_widget_queue_draw(studio->get_widget("shinfo_draw"));
+}
+
+/*
+ *  Reset gump info loaded flag (called when switching games).
+ */
+void reset_gump_info_loaded() {
+	gump_info_loaded = false;
 }
 
 /*
@@ -4923,7 +4933,6 @@ void ExultStudio::open_shape_window(
 		gtk_widget_set_visible(gump_notebook, true);
 
 		// Ensure gump info is loaded - load it independently for gumps.vga
-		static bool gump_info_loaded = false;
 		if (!gump_info_loaded) {
 			if (vgafile && vgafile->get_ifile()) {
 				Shapes_vga_file* svga
