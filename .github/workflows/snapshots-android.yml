@@ -89,10 +89,12 @@ jobs:
       - name: Pre release build clean
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
         run: |
+          df -h
           rm -r -f ./../build/android/app/build
+          rm -r -f ./../build/android/app/.cxx
           rm -r -f /tmp/* || true
           rm -r -f /var/cache/* || true
-
+          df -h
       - name: Configure release
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
         run: |
@@ -108,7 +110,22 @@ jobs:
           cd ./../data && make clean && make -j2
           cd ./../android && make clean && make -j2
           $ANDROID_SDK_ROOT/build-tools/34.0.0/zipalign -v -p 4 ./app/build/outputs/apk/release/app-release-unsigned.apk ./app/build/outputs/apk/release/app-release-unsigned-aligned.apk
-          rm ./app/build/outputs/apk/release/app-release-unsigned.apk
+      - name: Post Release Build Cleanup
+        if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
+        run: |
+          df -h
+          cd ../build/files && make clean
+          cd ../data && make clean
+          cd ../android && make clean
+          rm app/build/outputs/apk/release/app-release-unsigned.apk
+          rm -r -f app/.cxx
+          rm -r -f app/build/generated
+          rm -r -f app/build/intermediates
+          rm -r -f /tmp/* || true
+          rm -r -f /var/cache/* || true
+          rm -r -f sdl-src
+          df -h
+          
       - name: Sign APK
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
         uses: noriban/sign-android-release@v5.1
