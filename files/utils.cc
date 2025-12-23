@@ -536,8 +536,7 @@ int U7rmdir(const char* dirname, bool recursive) {
 		FileList files;
 		U7ListFiles(name + "/*", files, true);
 
-		for (auto filename : files)
-		{
+		for (const auto& filename : files) {
 			// Get filename
 			std::string_view fn    = get_filename_from_path(filename);
 
@@ -555,7 +554,10 @@ int U7rmdir(const char* dirname, bool recursive) {
 					return -1;
 				}
 			} else {
-				std::remove(filename.c_str());
+				if (!std::remove(filename.c_str()))
+				{
+					return -1;
+				}
 			}
 		}
 	}
