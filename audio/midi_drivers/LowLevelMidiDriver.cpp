@@ -1142,6 +1142,11 @@ void LowLevelMidiDriver::sequenceSendSysEx(
 	if (status == 0xFF) {
 		return;
 	}
+	// Ignore what would appear to be invalid SysEx data
+	if (!msg || !length) {
+		return;
+	}
+
 	// ignore anything not for mt32
 	if (length < 4 || msg[0] != 0x41 || msg[1] != 0x10 || msg[2] != 0x16
 		|| msg[3] != 0x12) {
@@ -1155,11 +1160,6 @@ void LowLevelMidiDriver::sequenceSendSysEx(
 		for (int i = 0; i < length; i++) {
 			CERR(" " << static_cast<char>(msg[i]));
 		}
-		return;
-	}
-
-	// Ignore what would appear to be invalid SysEx data
-	if (!msg || !length) {
 		return;
 	}
 
