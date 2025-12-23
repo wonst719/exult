@@ -133,8 +133,8 @@ void SoundTester::test_sound() {
 			snprintf(
 					buf, sizeof(buf), "%2s Music %c%c%3i%c%c %s",
 					active == 0 ? "->" : "", active == 0 ? '<' : ' ',
-					player->is_track_playing(song) ? '*' : ' ', song,
-					player->is_track_playing(song) ? '*' : ' ',
+					(player && player->is_track_playing(song)) ? '*' : ' ', song,
+					(player && player->is_track_playing(song)) ? '*' : ' ',
 					active == 0 ? '>' : ' ', repeat ? "- Repeat" : "");
 			line += height * 2;
 			font->paint_text_fixedwidth(ibuf, buf, left, line, width);
