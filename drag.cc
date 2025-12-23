@@ -203,7 +203,7 @@ bool Dragging_info::start(
 	// include bbox in rect if bbox renderimg is enabled
 	if (obj && gwin->get_render()->get_bbox_index() != -1)
 	{
-		auto info = obj->get_info();
+		const auto &info = obj->get_info();
 		int  bbx_w = (info.get_3d_xtiles(obj->get_framenum()) * c_tilesize)
 					+ (info.get_3d_height() * c_tilesize/2)+1;
 		int bbx_h = (info.get_3d_ytiles(obj->get_framenum()) * c_tilesize)
