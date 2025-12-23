@@ -1265,20 +1265,11 @@ void ExultStudio::create_new_game(const char* dir    // Directory for new game.
 			return;
 		}
 	}
-	if (U7mkdir(dir, 0755) != 0) {    // Create "game", "game/static",
-		//   "game/patch".
-		EStudio::Alert("Failed to create directory '%s'", dir);
-		return;
-	}
-	if (U7mkdir(static_path.c_str(), 0755) != 0) {
-		EStudio::Alert("Failed to create directory '%s'", static_path.c_str());
-		return;
-	}
+	U7mkdir(dir, 0755);    // Create "game", "game/static",
+	//   "game/patch".
+	U7mkdir(static_path.c_str(), 0755);
 	const string patch_path = dirstr + "/patch";
-	if (U7mkdir(patch_path.c_str(), 0755) != 0) {
-		EStudio::Alert("Failed to create directory '%s'", patch_path.c_str());
-		return;
-	}
+	U7mkdir(patch_path.c_str(), 0755);
 	// Set .exult.cfg.
 	string       d("config/disk/game/");
 	const string gameconfig = d + gamestr;
@@ -1374,28 +1365,15 @@ C_EXPORT void on_gameselect_ok_clicked(
 		string pathname("<" + game->get_path_prefix() + "_MODS>");
 		to_uppercase(pathname);
 		if (!U7exists(pathname)) {
-			if (U7mkdir(pathname.c_str(), 0755) != 0) {
-				EStudio::Alert(
-						"Failed to create directory '%s'", pathname.c_str());
-				return;
-			}
+			U7mkdir(pathname.c_str(), 0755);
 		}
 		// Create mod directories:
 		pathname += "/" + modtitle;
-		if (U7mkdir(pathname.c_str(), 0755) != 0) {
-			EStudio::Alert("Failed to create directory '%s'", pathname.c_str());
-			return;
-		}
+		U7mkdir(pathname.c_str(), 0755);
 		string d = pathname + "/patch";
-		if (U7mkdir(d.c_str(), 0755) != 0) {
-			EStudio::Alert("Failed to create directory '%s'", d.c_str());
-			return;
-		}
+		U7mkdir(d.c_str(), 0755);
 		d = pathname + "/gamedat";
-		if (U7mkdir(d.c_str(), 0755) != 0) {
-			EStudio::Alert("Failed to create directory '%s'", d.c_str());
-			return;
-		}
+		U7mkdir(d.c_str(), 0755);
 		// Create mod cfg file:
 		const string  cfgfile = pathname + ".cfg";
 		Configuration modcfg(cfgfile, "modinfo");
