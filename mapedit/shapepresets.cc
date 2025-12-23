@@ -477,8 +477,10 @@ void ExultStudio::apply_preset() {
 
 	// Re-initialize the shape notebook with the copied data
 	const int frnum = get_num_entry("shinfo_frame");
-	init_shape_notebook(
-			*info, get_widget("shinfo_notebook"), current_shape_num, frnum);
+	if (frnum >= 0) {
+		init_shape_notebook(
+				*info, get_widget("shinfo_notebook"), current_shape_num, frnum);
+	}
 }
 
 /*
@@ -755,8 +757,10 @@ void ExultStudio::apply_preset_from_shape() {
 
 	// Re-initialize the shape notebook with the copied data
 	const int frnum = get_num_entry("shinfo_frame");
-	init_shape_notebook(
-			*info, get_widget("shinfo_notebook"), current_shape, frnum);
+	if (frnum >= 0) {
+		init_shape_notebook(
+				*info, get_widget("shinfo_notebook"), current_shape, frnum);
+	}
 }
 
 /*
