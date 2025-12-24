@@ -887,7 +887,18 @@ void MyMidiPlayer::start_sound_effect(int num) {
 
 	int real_num = num;
 
+	// no negative track numbers
+	if (num < 0)
+	{
+		return;
+	}
+
 	if (Game::get_game_type() == BLACK_GATE) {
+		// Bounds check bg_conv array
+		if (size_t(num) >= bgconv_size)
+		{
+			return;
+		}
 		real_num = bgconv[num];
 	}
 

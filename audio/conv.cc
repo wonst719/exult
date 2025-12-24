@@ -18,6 +18,9 @@
 
 #include "conv.h"
 
+#include <array>
+
+
 // sfx with ??? are converted to sfx #135 so you can tell
 // it's wrong. Some I suspect to be something so it's not set 135
 const int bgconv[] = {
@@ -139,6 +142,8 @@ const int bgconv[] = {
 		255,    // Static - not used in SI	115
 		136     // Tick Tock		116
 };
+
+const extern size_t bgconv_size = std::size(bgconv);
 
 // A -1 means no equivalent.
 const int bgconvsong[] = {
