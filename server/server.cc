@@ -397,9 +397,13 @@ static void Handle_client_message(
 		gwin->set_all_dirty();
 		break;
 	}
-	case Exult_server::reload_shapes:
-		Shape_manager::get_instance()->reload_shapes(little_endian::Read2(ptr));
+	case Exult_server::reload_shapes: {
+		const int shape_kind = little_endian::Read2(ptr);
+		if (shape_kind >= 0 && shape_kind < U7_SHAPE_PAPERDOL + 1) {
+			Shape_manager::get_instance()->reload_shapes(shape_kind);
+		}
 		break;
+	}
 	case Exult_server::unused_shapes: {
 		// Send back shapes not used in game.
 		unsigned char data[Exult_server::maxlength];

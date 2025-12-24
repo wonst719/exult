@@ -5047,7 +5047,8 @@ void ExultStudio::save_shape_window() {
 		}
 	}
 	// Update origin.
-	Shape_frame* frame = ifile->get_shape(shnum, frnum);
+	Shape_frame* frame
+			= (shnum >= 0) ? ifile->get_shape(shnum, frnum) : nullptr;
 	if (frame != nullptr) {
 		const int xright = get_spin("shinfo_originx");
 		const int ybelow = get_spin("shinfo_originy");

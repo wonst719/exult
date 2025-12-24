@@ -818,21 +818,25 @@ gboolean Shape_gump_single::on_draw_expose_event(
 	}
 	int x, y;
 	single->draw_shape_centered(shnum, frnum, x, y);
-	if (gtk_toggle_button_get_active(
+	if (shnum >= 0
+		&& gtk_toggle_button_get_active(
 				GTK_TOGGLE_BUTTON(single->show_checkmark_widget))
 		&& gtk_widget_is_sensitive(GTK_WIDGET(single->show_checkmark_widget))) {
-		Shape_frame* shape = single->ifile->get_shape(shnum, frnum);
-		Shape_frame* check = single->ifile->get_shape(
-				extract_value(single->checkmark_shape_widget), 0);
-		TileRect overlay
-				= {extract_value(single->checkmark_x_widget)
-						   + shape->get_width() - 1 - shape->get_xright()
-						   - check->get_width() + 1 + check->get_xright(),
-				   extract_value(single->checkmark_y_widget)
-						   + shape->get_height() - 1 - shape->get_ybelow()
-						   - check->get_height() + 1 + check->get_ybelow(),
-				   check->get_width(), check->get_height()};
-		single->draw_shape(check, x + overlay.x, y + overlay.y);
+		const int checkmark_shnum
+				= extract_value(single->checkmark_shape_widget);
+		if (checkmark_shnum >= 0) {
+			Shape_frame* shape = single->ifile->get_shape(shnum, frnum);
+			Shape_frame* check = single->ifile->get_shape(checkmark_shnum, 0);
+			TileRect     overlay
+					= {extract_value(single->checkmark_x_widget)
+							   + shape->get_width() - 1 - shape->get_xright()
+							   - check->get_width() + 1 + check->get_xright(),
+					   extract_value(single->checkmark_y_widget)
+							   + shape->get_height() - 1 - shape->get_ybelow()
+							   - check->get_height() + 1 + check->get_ybelow(),
+					   check->get_width(), check->get_height()};
+			single->draw_shape(check, x + overlay.x, y + overlay.y);
+		}
 	}
 	single->show(
 			ZoomDown(area.x), ZoomDown(area.y), ZoomDown(area.width),
