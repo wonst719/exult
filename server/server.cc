@@ -399,7 +399,8 @@ static void Handle_client_message(
 	}
 	case Exult_server::reload_shapes: {
 		const int shape_kind = little_endian::Read2(ptr);
-		if (shape_kind >= 0 && shape_kind < U7_SHAPE_PAPERDOL + 1) {
+		// Valid shape kinds are 0-5 (U7_SHAPE_SHAPES to U7_SHAPE_PAPERDOL)
+		if (shape_kind >= 0 && shape_kind <= 5) {
 			Shape_manager::get_instance()->reload_shapes(shape_kind);
 		}
 		break;
