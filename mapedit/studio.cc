@@ -2278,6 +2278,9 @@ void ExultStudio::set_edit_terrain(gboolean terrain    // True/false
 		set_spin("hide_lift_spin", 255, true);
 	} else {    // Disable "Hide lift".
 		set_sensitive("hide_lift_spin", false);
+		// Alert user about chunk editing behavior
+		EStudio::Alert("Changing chunks in one place applies these changes to "
+					   "all other instances of this chunk as well.");
 	}
 	// Set edit-mode to paint.
 	GtkWidget* mitem = get_widget(terrain ? "paint1" : "move1");
