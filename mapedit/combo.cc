@@ -32,10 +32,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "exult_constants.h"
 #include "ibuf8.h"
 #include "objserial.h"
+#include "servemsg.h"
 #include "shapefile.h"
 #include "shapegroup.h"
 #include "shapevga.h"
 #include "u7drag.h"
+
+#include <cstring>
 
 using std::cout;
 using std::endl;
@@ -302,7 +305,15 @@ void Combo::add(
 			|| box.x + box.w - tilefoot.x > maxtiles
 			|| tilefoot.y + tilefoot.h - box.y > maxtiles
 			|| box.y + box.h - tilefoot.y > maxtiles) {
-			EStudio::Alert("New object is too far (> 96) from others");
+			// Send message to Exult game window
+			const char*  msg    = "Selected object is too far from others";
+			ExultStudio* studio = ExultStudio::get_instance();
+			studio->send_to_server(
+					Exult_server::say,
+					reinterpret_cast<unsigned char*>(const_cast<char*>(msg)),
+					strlen(msg) + 1);
+			// Deselect the object in Exult
+			studio->send_to_server(Exult_server::clear_selection, nullptr, 0);
 			return;
 		}
 		// Add to footprint.

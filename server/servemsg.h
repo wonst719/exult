@@ -98,6 +98,7 @@ namespace Exult_server {
 		show_bboxes        = 49,    // Set bounding boxes color.
 		play_audio         = 50,    // Play audio (music/sfx/voice).
 		stop_audio         = 51,    // Stop all audio playback.
+		clear_selection    = 52,    // Clear current selection.
 		usecode_debugging  = 128
 	};
 

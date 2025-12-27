@@ -667,6 +667,17 @@ static void Handle_client_message(
 		}
 		break;
 	}
+	case Exult_server::say: {
+		// Display message in center of game window
+		// Data is null-terminated text string
+		const char* msg = reinterpret_cast<const char*>(data);
+		gwin->get_effects()->center_text(msg);
+		break;
+	}
+	case Exult_server::clear_selection:
+		// Clear any selections/picking state
+		cheat.clear_selected();
+		break;
 	case Exult_server::usecode_debugging:
 #	ifdef USECODE_DEBUGGER
 		Handle_debug_message(&data[0], datalen);
