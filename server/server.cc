@@ -698,7 +698,7 @@ static void Handle_client_message(
 		// Wait for user to click on map and send back the coordinates.
 		int x;
 		int y;
-		if (!Get_click(x, y, Mouse::hand, nullptr)) {
+		if (!Get_click(x, y, Mouse::greenselect, nullptr)) {
 			// User cancelled (ESC or right-click).
 			Exult_server::Send_data(client_socket, Exult_server::cancel);
 			break;

@@ -314,7 +314,7 @@ void ExultStudio::open_npc_window(
 		set_sensitive("npc_show_gump", false);
 		set_sensitive("npc_locate_frame", false);
 		gtk_widget_set_visible(get_widget("npc_okay_btn"), false);
-		gtk_widget_set_visible(get_widget("npc_status"), true);
+		gtk_widget_set_visible(get_widget("npc_status"), false);
 	}
 	setup_npc_presets_list();
 	gtk_widget_set_visible(npcwin, true);
@@ -671,6 +671,7 @@ int ExultStudio::save_npc_window() {
 	if (!addr) {
 		npc_status_id = set_statusbar(
 				"npc_status", npc_ctx, "Click on map at place to insert npc");
+		gtk_widget_set_visible(get_widget("npc_status"), true);
 		// Make 'apply' insensitive.
 		set_sensitive("npc_apply_btn", false);
 		set_sensitive("npc_cancel_btn", false);

@@ -113,7 +113,7 @@ void ExultStudio::open_barge_window(
 		if (first_time) {    // Init. empty dialog first time.
 		}
 		gtk_widget_set_visible(get_widget("barge_okay_btn"), false);
-		gtk_widget_set_visible(get_widget("barge_status"), true);
+		gtk_widget_set_visible(get_widget("barge_status"), false);
 	}
 	gtk_widget_set_visible(bargewin, true);
 }
@@ -204,6 +204,7 @@ int ExultStudio::save_barge_window() {
 		barge_status_id = set_statusbar(
 				"barge_status", barge_ctx,
 				"Click on map to set lower-right corner of  barge");
+		gtk_widget_set_visible(get_widget("barge_status"), true);
 		// Make 'apply' and 'cancel' insensitive.
 		gtk_widget_set_sensitive(get_widget("barge_apply_btn"), false);
 		gtk_widget_set_sensitive(get_widget("barge_cancel_btn"), false);

@@ -823,7 +823,7 @@ void Barge_object::update_from_studio(unsigned char* data, int datalen) {
 	if (!barge) {    // Create a new one?
 		int x;
 		int y;
-		if (!Get_click(x, y, Mouse::hand, nullptr)) {
+		if (!Get_click(x, y, Mouse::greenselect, nullptr)) {
 			if (client_socket >= 0) {
 				Exult_server::Send_data(client_socket, Exult_server::cancel);
 			}

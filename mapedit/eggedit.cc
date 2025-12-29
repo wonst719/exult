@@ -222,7 +222,7 @@ void ExultStudio::open_egg_window(
 		set_toggle("sfx_cont", false);
 		set_spin("speech_number", 0);
 		gtk_widget_set_visible(get_widget("egg_okay_btn"), false);
-		gtk_widget_set_visible(get_widget("egg_status"), true);
+		gtk_widget_set_visible(get_widget("egg_status"), false);
 	}
 	gtk_widget_set_visible(eggwin, true);
 }
@@ -550,6 +550,7 @@ int ExultStudio::save_egg_window() {
 	if (!addr) {
 		egg_status_id = set_statusbar(
 				"egg_status", egg_ctx, "Click on map at place to insert egg");
+		gtk_widget_set_visible(get_widget("egg_status"), true);
 		// Make 'apply' and 'cancel' insensitive.
 		gtk_widget_set_sensitive(get_widget("egg_apply_btn"), false);
 		gtk_widget_set_sensitive(get_widget("egg_cancel_btn"), false);
