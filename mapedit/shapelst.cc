@@ -1303,8 +1303,16 @@ void Shape_chooser::clear_editing_files() {
 
 void Shape_chooser::export_frame(const char* fname, gpointer user_data) {
 	auto* chooser = static_cast<Shape_chooser*>(user_data);
-	if (U7exists(fname)) {
-		char* msg = g_strdup_printf("'%s' already exists.  Overwrite?", fname);
+	// Add .png extension if not present
+	string filename(fname);
+	if (filename.length() < 4
+		|| filename.substr(filename.length() - 4) != ".png") {
+		filename += ".png";
+	}
+	const char* final_fname = filename.c_str();
+	if (U7exists(final_fname)) {
+		char* msg = g_strdup_printf(
+				"'%s' already exists.  Overwrite?", final_fname);
 		const int answer = Prompt(msg, "Yes", "No");
 		g_free(msg);
 		if (answer != 0) {
@@ -1314,7 +1322,7 @@ void Shape_chooser::export_frame(const char* fname, gpointer user_data) {
 	if (chooser->selected < 0) {
 		return;    // Shouldn't happen.
 	}
-	chooser->export_png(fname);
+	chooser->export_png(final_fname);
 }
 
 /*
@@ -1370,10 +1378,16 @@ void Shape_chooser::export_all_frames(const char* fname, gpointer user_data) {
 }
 
 void Shape_chooser::export_shape(const char* fname, gpointer user_data) {
-	auto*     chooser = static_cast<Shape_chooser*>(user_data);
-	const int shnum   = chooser->info[chooser->selected].shapenum;
-	Shape*    shp     = chooser->ifile->extract_shape(shnum);
-	Image_file_info::write_file(fname, &shp, 1, true);
+	auto* chooser = static_cast<Shape_chooser*>(user_data);
+	// Add .shp extension if not present
+	string filename(fname);
+	if (filename.length() < 4
+		|| filename.substr(filename.length() - 4) != ".shp") {
+		filename += ".shp";
+	}
+	const int shnum = chooser->info[chooser->selected].shapenum;
+	Shape*    shp   = chooser->ifile->extract_shape(shnum);
+	Image_file_info::write_file(filename.c_str(), &shp, 1, true);
 }
 
 /*
