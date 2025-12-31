@@ -213,7 +213,7 @@ USECODE_INTRINSIC(input_numeric_value) {
 	// Ask for # (min, max, step, default).  Be sure to show conversation.
 	Usecode_value ret(gumpman->prompt_for_number(
 			parms[0].get_int_value(), parms[1].get_int_value(),
-			parms[2].get_int_value(), parms[3].get_int_value(), conv,nullptr));
+			parms[2].get_int_value(), parms[3].get_int_value(), conv, nullptr));
 	conv->clear_text_pending();    // Answered a question.
 	return ret;
 }
@@ -1808,11 +1808,18 @@ USECODE_INTRINSIC(sprite_effect) {
 	ignore_unused_variable_warning(num_parms);
 	// Display animation from sprites.vga.
 	// show_sprite(sprite#, tx, ty, dx, dy, frame, length??);
-	gwin->get_effects()->add_effect(std::make_unique<Sprites_effect>(
-			parms[0].get_int_value(),
-			Tile_coord(parms[1].get_int_value(), parms[2].get_int_value(), 0),
-			parms[3].get_int_value(), parms[4].get_int_value(), 0,
-			parms[5].get_int_value(), parms[6].get_int_value()));
+	const int sprite_num = parms[0].get_int_value();
+	// Validate sprite number is in valid range before creating effect
+	Shape_manager* sman = Shape_manager::get_instance();
+	if (sprite_num >= 0
+		&& sprite_num < sman->get_file(SF_SPRITES_VGA).get_num_shapes()) {
+		gwin->get_effects()->add_effect(std::make_unique<Sprites_effect>(
+				sprite_num,
+				Tile_coord(
+						parms[1].get_int_value(), parms[2].get_int_value(), 0),
+				parms[3].get_int_value(), parms[4].get_int_value(), 0,
+				parms[5].get_int_value(), parms[6].get_int_value()));
+	}
 	return no_ret;
 }
 
@@ -1822,11 +1829,17 @@ USECODE_INTRINSIC(obj_sprite_effect) {
 	//                      frame, length??)
 	Game_object* obj = get_item(parms[0]);
 	if (obj) {
-		gwin->get_effects()->add_effect(std::make_unique<Sprites_effect>(
-				parms[1].get_int_value(), obj, -parms[2].get_int_value(),
-				-parms[3].get_int_value(), parms[4].get_int_value(),
-				parms[5].get_int_value(), parms[6].get_int_value(),
-				parms[7].get_int_value()));
+		const int sprite_num = parms[1].get_int_value();
+		// Validate sprite number is in valid range before creating effect
+		Shape_manager* sman = Shape_manager::get_instance();
+		if (sprite_num >= 0
+			&& sprite_num < sman->get_file(SF_SPRITES_VGA).get_num_shapes()) {
+			gwin->get_effects()->add_effect(std::make_unique<Sprites_effect>(
+					sprite_num, obj, -parms[2].get_int_value(),
+					-parms[3].get_int_value(), parms[4].get_int_value(),
+					parms[5].get_int_value(), parms[6].get_int_value(),
+					parms[7].get_int_value()));
+		}
 	}
 	return no_ret;
 }
