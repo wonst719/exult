@@ -139,6 +139,8 @@ protected:
 
 private:
 	enum Messages {
+		LLMD_MSG_NONE              = 0,
+		LLMD_MSG_UNKNOWN           = 1<<30,
 		LLMD_MSG_PLAY              = 1,
 		LLMD_MSG_FINISH            = 2,
 		LLMD_MSG_PAUSE             = 3,
@@ -150,7 +152,7 @@ private:
 		// These are only used by thread
 		LLMD_MSG_THREAD_INIT        = -1,
 		LLMD_MSG_THREAD_INIT_FAILED = -2,
-		LLMD_MSG_THREAD_EXIT        = -3
+		LLMD_MSG_THREAD_EXIT        = -3,
 	};
 
 	struct ComMessage {
@@ -219,11 +221,18 @@ private:
 
 	// Communications
 	std::queue<ComMessage>                       messages;
-	std::unique_ptr<std::recursive_mutex>        mutex;
+	std::unique_ptr<std::recursive_timed_mutex>        mutex;
 	std::unique_ptr<std::condition_variable_any> cond;
-	sint32                                       peekComMessageType();
+	sint32 peekComMessageType(std::chrono::milliseconds timeout = {});
 	void sendComMessage(const ComMessage& message);
-	void waitTillNoComMessages();
+	
+	// Wait till playback thread has handled all pending commands. Default timeout is 1 minute.
+	// If the 10 secomd timeout expires there is something seriously wrong as typically commands
+	// should be handled in fractions of a second.
+	// Don't treat it as fatal but Midi playback is probably non functional if the default 
+	// timeout expires.
+	// Returns false if timeout expired
+	bool waitTillNoComMessages(std::chrono::milliseconds timeout = std::chrono::seconds(10));
 
 	// State Readable by main game thread
 	std::atomic_bool     playing[LLMD_NUM_SEQ];          // Only set by thread
@@ -233,7 +242,9 @@ private:
 
 	// anyone can use our lock if needed
 public:
-	std::unique_lock<std::recursive_mutex> LockMutex(bool trylock = false) {
+	std::unique_lock<std::recursive_timed_mutex> LockMutex(
+			std::chrono::milliseconds   timeout
+			= std::chrono::milliseconds::max()) {
 		// create mutex if it doesn't yet exist.
 		// Shouldn't happen
 		// No one should be calling this before initialization of a midi driver
@@ -243,10 +254,14 @@ public:
 		// already exist
 
 		if (!mutex) {
-			mutex = std::make_unique<std::recursive_mutex>();
+			mutex = std::make_unique<std::recursive_timed_mutex>();
 		}
-		if (trylock) {
-			return std::unique_lock(*mutex, std::try_to_lock);
+		if (timeout != std::chrono::milliseconds::max()) {
+			if (mutex->try_lock_for(timeout)) {
+				return std::unique_lock(*mutex, std::adopt_lock);
+			} else {
+				return std::unique_lock(*mutex, std::try_to_lock);;
+			}
 		}
 
 		return std::unique_lock(*mutex);

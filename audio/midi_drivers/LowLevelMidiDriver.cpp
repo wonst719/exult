@@ -181,7 +181,7 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo) {
 		destroyThreadedSynth();
 		thread.reset();
 	}
-	mutex             = std::make_unique<std::recursive_mutex>();
+	mutex             = std::make_unique<std::recursive_timed_mutex>();
 	cond              = std::make_unique<std::condition_variable_any>();
 	sample_rate       = samp_rate;
 	stereo            = is_stereo;
@@ -236,8 +236,6 @@ void LowLevelMidiDriver::destroyMidiDriver() {
 		return;
 	}
 
-	waitTillNoComMessages();
-
 	if (isSampleProducer()) {
 		destroySoftwareSynth();
 	} else {
@@ -272,7 +270,11 @@ void LowLevelMidiDriver::startSequence(
 	// Special handling for if we were uploading a timbre
 	// Wait till the timbres have finished being sent
 	while (uploading_timbres) {
-		waitTillNoComMessages();
+		// Use a 1 second timeout and if it fails just break out
+		// as something bad is happening. We'll just queue the play and hope for the best
+		if (!waitTillNoComMessages(std::chrono::seconds(1))) {
+			break;
+		}
 
 		/// load atomic using default memory order (no relaxation of any
 		/// requirements)
@@ -367,8 +369,10 @@ bool LowLevelMidiDriver::isSequencePlaying(int seq_num) {
 		return false;
 	}
 
-	waitTillNoComMessages();
+	// Only wait max 1 second
+	waitTillNoComMessages(std::chrono::seconds(1));
 
+	// If timeout fails the playing array may not be accurate but its stil safe to access it
 	// load atomic using default memory order (no relaxation of any
 	// requirements)
 	return playing[seq_num].load();
@@ -427,12 +431,17 @@ uint32 LowLevelMidiDriver::getSequenceCallbackData(int seq_num) {
 // Communications
 //
 
-sint32 LowLevelMidiDriver::peekComMessageType() {
-	auto lock = LockMutex();
+sint32 LowLevelMidiDriver::peekComMessageType(
+		std::chrono::milliseconds timeout) {
+	auto lock = LockMutex(timeout);
+	// Failed to get the lock so return Unknown
+	if (!lock.owns_lock()) {
+		return LLMD_MSG_UNKNOWN;	
+	}
 	if (!messages.empty()) {
 		return messages.front().type;
 	}
-	return 0;
+	return LLMD_MSG_NONE;
 }
 
 void LowLevelMidiDriver::sendComMessage(const ComMessage& message) {
@@ -441,10 +450,21 @@ void LowLevelMidiDriver::sendComMessage(const ComMessage& message) {
 	cond->notify_one();
 }
 
-void LowLevelMidiDriver::waitTillNoComMessages() {
-	while (peekComMessageType()) {
+bool LowLevelMidiDriver::waitTillNoComMessages(std::chrono::milliseconds timeout) {
+	auto end = std::chrono::steady_clock::now() + timeout;
+	while (peekComMessageType(timeout)) {
+		if (std::chrono::steady_clock::now() > end) {
+			std::cerr << __FUNCTION__ << " exceeded timeout of "
+					  << timeout.count() << " ms" << std::endl;
+			return false;
+		}
 		yield();
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	
+		
 	}
+
+	return true;
 }
 
 //
@@ -466,7 +486,7 @@ int LowLevelMidiDriver::initThreadedSynth() {
             threadMain_Static,
             std::static_pointer_cast<LowLevelMidiDriver>(shared_from_this()));
 
-	while (peekComMessageType() == LLMD_MSG_THREAD_INIT) {
+	while (peekComMessageType(std::chrono::milliseconds(1)) != LLMD_MSG_NONE) {
 		yield();
 	}
 
@@ -492,8 +512,7 @@ void LowLevelMidiDriver::destroyThreadedSynth() {
 
 	while (count < 400) {
 		giveinfo();
-		// Wait 1 MS before trying again
-		if (peekComMessageType() != 0) {
+			if (peekComMessageType(std::chrono::seconds(1)) != 0) {
 			yield();
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		} else {
@@ -505,7 +524,7 @@ void LowLevelMidiDriver::destroyThreadedSynth() {
 
 	quit_thread = true;    // The thread should stop based upon this flag
 	// We waited a while and it still didn't terminate
-	if (count == 400 && peekComMessageType() != 0) {
+	if (count == 400 && peekComMessageType(std::chrono::seconds(1)) != 0) {
 		perr << "MidiPlayer Thread failed to stop in time. Killing it."
 			 << std::endl;
 		thread->join();
@@ -589,7 +608,9 @@ int LowLevelMidiDriver::threadMain() {
 			bool wait = false;
 			{
 				// No Blocking allowed here!
-				auto lock = LockMutex(true);
+				
+				auto lock = LockMutex({});
+				
 				if (lock.owns_lock() && messages.empty()) {
 					wait = true;
 				}
@@ -603,7 +624,7 @@ int LowLevelMidiDriver::threadMain() {
 			}
 		} else {
 			// We do not want blocking here
-			auto lock = LockMutex(true);
+			auto lock = LockMutex({});
 			if (lock.owns_lock()) {
 				if (messages.empty()) {
 					// printf("Waiting %i ms\n", time_till_next - 2);
@@ -686,8 +707,16 @@ void LowLevelMidiDriver::destroySoftwareSynth() {
 	ComMessage message(LLMD_MSG_THREAD_EXIT, -1);
 	sendComMessage(message);
 
-	// Wait till all pending commands have been executed
-	waitTillNoComMessages();
+	// Wait till all pending commands have been executed.
+	if (!waitTillNoComMessages()) {
+		// Wait timeout expired. Not safe to call close()
+		// Just set not initialized and leave. 
+		// Might leak memory but that's better than a crash
+		// The biger concern would be why the thread is not
+		// responding
+		initialized = false;
+		return;
+	}
 
 	initialized = false;
 
@@ -1421,7 +1450,12 @@ void LowLevelMidiDriver::loadTimbreLibrary(
 	}
 
 	// Wait till all pending commands have been executed
-	waitTillNoComMessages();
+	if (!waitTillNoComMessages()) {
+		// Failed! Unsafe to continue so just bail.
+		// playback thread is not responding and might 
+		// be using the timbre arrays so we can't change them
+		return;
+	}
 	std::unique_ptr<XMidiFile> xmidi;
 
 	{
@@ -1542,9 +1576,6 @@ void LowLevelMidiDriver::loadTimbreLibrary(
 		return;
 	}
 
-	// Subtle bug warning: the LLMD_MSG_PLAY adds the eventlist to the
-	// play queue, resulting in ite eventual deletion!
-	// XMidiEventList *eventlist = xmidi->GetEventList(0);
 	XMidiEventList* eventlist = xmidi->StealEventList();
 	if (!eventlist) {
 		return;
@@ -1573,7 +1604,10 @@ void LowLevelMidiDriver::loadTimbreLibrary(
 
 	// If we want to precache
 	if (precacheTimbresOnStartup) {
-		waitTillNoComMessages();
+		if (!waitTillNoComMessages()) {
+			// Thread isn't responding so bail
+			return;
+		}
 
 		bool is_playing = true;
 
