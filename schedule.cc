@@ -1,7 +1,7 @@
 /*
  *  Schedule.cc - Schedules for characters.
  *
- *  Copyright (C) 2000-2025  The Exult Team
+ *  Copyright (C) 2000-2026  The Exult Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1120,9 +1120,9 @@ void Preach_schedule::now_what() {
 			return;
 		}
 
-		Tile_coord pos = podium->get_tile();
-		const int frnum    = podium->get_framenum() % 6;
-		const int shapenum = podium->get_shapenum();
+		Tile_coord pos      = podium->get_tile();
+		const int  frnum    = podium->get_framenum() % 6;
+		const int  shapenum = podium->get_shapenum();
 		if (GAME_SI && shapenum == 776) {
 			// Horizontal podium (776): NPC stands north or south
 			pos.tx += 0;
@@ -2536,36 +2536,30 @@ void Sleep_schedule::now_what() {
 			Tile_coord       npc_pos         = npc->get_tile();
 			int              sleep_dir_frame
 					= npc->get_dir_framenum(west, Actor::sleep_frame);
-			const int ztiles = npc->get_info().get_3d_height();
 
 			for (int direction : possible_dirs) {
-				int frame
+				const int frame
 						= npc->get_dir_framenum(direction, Actor::sleep_frame);
-				bool blocked = false;
-				// to check for enough visible room we have to use the height of
-				// the frame but it is offset by 1 to the NPC position
-				if (direction == west) {
-					Tile_coord testTile1(
-							npc_pos.tx + 1, npc_pos.ty, npc_pos.tz);
-					Tile_coord testTile2(
-							npc_pos.tx - (ztiles - 1), npc_pos.ty, npc_pos.tz);
-					if (npc->is_blocked(testTile1, nullptr)
-						|| npc->is_blocked(testTile2, nullptr)) {
-						blocked = true;
+				// Use find_spot to locate a valid position for the sleep frame.
+				const Tile_coord spot = Map_chunk::find_spot(
+						npc_pos, 3, npc->get_shapenum(), frame, 0, direction);
+				if (spot.tx != -1) {
+					// Found a valid spot.
+					if (npc->distance(spot) > 1) {
+						// Need to walk there first.
+						Actor_pathfinder_client cost(npc, 0);
+						Actor_action*           pact
+								= Path_walking_actor_action::create_path(
+										npc_pos, spot, cost);
+						if (pact) {
+							npc->set_action(pact);
+							npc->start(200);
+							return;
+						}
 					}
-				} else if (direction == north) {
-					Tile_coord testTile1(
-							npc_pos.tx, npc_pos.ty + 1, npc_pos.tz);
-					Tile_coord testTile2(
-							npc_pos.tx, npc_pos.ty - ztiles, npc_pos.tz);
-					if (npc->is_blocked(testTile1, nullptr)
-						|| npc->is_blocked(testTile2, nullptr)) {
-						blocked = true;
-					}
-				}
-				if (!blocked) {
-					sleep_dir_frame = frame;
-					break;
+					npc->change_frame(frame);
+					npc->force_sleep();
+					return;
 				}
 			}
 			npc->change_frame(sleep_dir_frame);
