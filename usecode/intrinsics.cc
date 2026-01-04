@@ -1814,10 +1814,12 @@ USECODE_INTRINSIC(sprite_effect) {
 	Shape_manager* sman = Shape_manager::get_instance();
 	if (sprite_num >= 0
 		&& sprite_num < sman->get_file(SF_SPRITES_VGA).get_num_shapes()) {
-		gwin->get_effects()->add_effect(std::make_unique<Sprites_effect>(
+		gwin->get_effects()->add_effect(
+				std::make_unique<Sprites_effect>(
 						sprite_num,
 						Tile_coord(
-						parms[1].get_int_value(), parms[2].get_int_value(), 0),
+								parms[1].get_int_value(),
+								parms[2].get_int_value(), 0),
 						parms[3].get_int_value(), parms[4].get_int_value(), 0,
 						parms[5].get_int_value(), parms[6].get_int_value()));
 	}
@@ -1835,7 +1837,8 @@ USECODE_INTRINSIC(obj_sprite_effect) {
 		Shape_manager* sman = Shape_manager::get_instance();
 		if (sprite_num >= 0
 			&& sprite_num < sman->get_file(SF_SPRITES_VGA).get_num_shapes()) {
-			gwin->get_effects()->add_effect(std::make_unique<Sprites_effect>(
+			gwin->get_effects()->add_effect(
+					std::make_unique<Sprites_effect>(
 							sprite_num, obj, -parms[2].get_int_value(),
 							-parms[3].get_int_value(), parms[4].get_int_value(),
 							parms[5].get_int_value(), parms[6].get_int_value(),
@@ -2657,7 +2660,8 @@ USECODE_INTRINSIC(fire_projectile) {
 	dest.ty += dist * dy;
 
 	// Fire missile.
-	gwin->get_effects()->add_effect(std::make_unique<Projectile_effect>(
+	gwin->get_effects()->add_effect(
+			std::make_unique<Projectile_effect>(
 					attacker, dest, wshape, ashape, missile, attval, 4));
 	return no_ret;
 }
@@ -3364,7 +3368,6 @@ USECODE_INTRINSIC(set_polymorph) {
 }
 
 USECODE_INTRINSIC(set_new_schedules) {
-	ignore_unused_variable_warning(num_parms);
 	// set_new_schedules ( npc, time, activity, [x, y] )
 	//
 	// or
@@ -3378,17 +3381,31 @@ USECODE_INTRINSIC(set_new_schedules) {
 	// Number of unrecoverable errors.
 	int num_errors = 0;
 
+	if (num_parms < 4) {
+		cerr << "set_new_schedules: insufficient parameters! Got " << num_parms
+			 << " parameters, need at least 4." << endl;
+		return no_ret;
+	}
+
 	const size_t count = parms[1].is_array() ? parms[1].get_array_size() : 1;
 	if (!parms[3].is_array()) {
 		cerr << "set_new_schedules: parameter 4 is not an array!" << endl;
 		num_errors++;
 	}
 
-	const size_t num_coords = parms[3].get_array_size();
-	if (num_coords < count * 2) {
-		cerr << "set_new_schedules: parameter 4 has insufficient elements! At "
-				"least 2 elements per schedule are required; needed "
-			 << count * 2 << ", got " << num_coords << "." << endl;
+	const bool have_3d_positions
+			= num_parms > 4 && parms[4].need_int_value() != 0;
+	const size_t num_coords          = parms[3].get_array_size();
+	const size_t coords_per_schedule = have_3d_positions ? 3 : 2;
+	if (num_coords < count * coords_per_schedule) {
+		cerr << "set_new_schedules: parameter 4 has insufficient elements! "
+				"A minimum of "
+			 << coords_per_schedule
+			 << " elements per schedule are required (since 3d positions flag "
+				"is "
+			 << (have_3d_positions ? "true" : "false")
+			 << "); needed a minimum of	" << count * coords_per_schedule
+			 << ", got " << num_coords << "." << endl;
 		num_errors++;
 	}
 
@@ -3454,7 +3471,8 @@ USECODE_INTRINSIC(set_new_schedules) {
 		const int        sched = parms[2].need_int_value();
 		const Tile_coord tile{
 				parms[3].get_elem(0).get_int_value(),
-				parms[3].get_elem(1).get_int_value(), 0};
+				parms[3].get_elem(1).get_int_value(),
+				have_3d_positions ? parms[3].get_elem(2).get_int_value() : 0};
 		list.emplace_back(sched, time, tile);
 	} else {
 		for (auto timeIt = parms[1].cbegin(), schedIt = parms[2].cbegin(),
@@ -3465,7 +3483,8 @@ USECODE_INTRINSIC(set_new_schedules) {
 			const int        time  = timeIt->get_int_value();
 			const int        sched = schedIt->get_int_value();
 			const Tile_coord tile{
-					locIt++->get_int_value(), locIt++->get_int_value(), 0};
+					locIt++->get_int_value(), locIt++->get_int_value(),
+					have_3d_positions ? locIt++->get_int_value() : 0};
 			list.emplace_back(sched, time, tile);
 		}
 	}
