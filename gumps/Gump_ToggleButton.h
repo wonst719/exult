@@ -64,7 +64,13 @@ public:
 			int px, int py, int width, int height = 0)
 			: Text_button(par, "", px, py, width, height), selections(s) {
 		set_frame(selectionnum);
-		text = selections[selectionnum];
+		// Set the text to the actual default selection
+		if (selectionnum >= 0 && size_t(selectionnum) < selections.size()) {
+			text = selections[selectionnum];
+		} else {
+			// If selection is out of range show no text
+			text.clear();
+		}
 		init();
 	}
 
@@ -74,7 +80,13 @@ public:
 			: Text_button(par, "", px, py, width, height),
 			  selections(std::move(s)) {
 		set_frame(selectionnum);
-		text = selections[selectionnum];
+		// Set the text to the actual default selection
+		if (selectionnum >= 0 && size_t(selectionnum) < selections.size()) {
+			text = selections[selectionnum];
+		} else {
+			// If selection is out of range show no text
+			text.clear();
+		}
 		init();
 	}
 
