@@ -457,14 +457,14 @@ void Game_map::write_chunk_terrains() {
 		return;
 	}
 	// Got to update.
+	// IMPORTANT:  Get all in memory BEFORE truncating the file.
+	get_all_terrain();
 	// Open file for chunks data.
 	// This truncates the file.
 	auto pOchunks = U7open_out(PATCH_U7CHUNKS);
 	if (!pOchunks) {
 		throw file_write_exception(U7CHUNKS);
 	}
-	// IMPORTANT:  Get all in memory.
-	get_all_terrain();
 	auto& ochunks = *pOchunks;
 	if (!v2_chunks) {
 		// See if any need v2.
