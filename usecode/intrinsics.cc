@@ -3472,7 +3472,9 @@ USECODE_INTRINSIC(set_new_schedules) {
 		const Tile_coord tile{
 				parms[3].get_elem(0).get_int_value(),
 				parms[3].get_elem(1).get_int_value(),
-				have_3d_positions ? parms[3].get_elem(2).get_int_value() : 0};
+				have_3d_positions
+						? static_cast<int>(parms[3].get_elem(2).get_int_value())
+						: 0};
 		list.emplace_back(sched, time, tile);
 	} else {
 		for (auto timeIt = parms[1].cbegin(), schedIt = parms[2].cbegin(),
@@ -3484,7 +3486,9 @@ USECODE_INTRINSIC(set_new_schedules) {
 			const int        sched = schedIt->get_int_value();
 			const Tile_coord tile{
 					locIt++->get_int_value(), locIt++->get_int_value(),
-					have_3d_positions ? locIt++->get_int_value() : 0};
+					have_3d_positions
+							? static_cast<int>(locIt++->get_int_value())
+							: 0};
 			list.emplace_back(sched, time, tile);
 		}
 	}
