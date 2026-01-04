@@ -20,18 +20,18 @@
  */
 
 #ifndef USEVAL_H
-#define USEVAL_H 1
+#	define USEVAL_H 1
 
-#include "databuf.h"
-#include "objs.h"
+#	include "databuf.h"
+#	include "objs.h"
 
-#include <cassert>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <new>
-#include <string>    // STL string
-#include <vector>    // STL container
+#	include <cassert>
+#	include <cstdlib>
+#	include <cstring>
+#	include <iostream>
+#	include <new>
+#	include <string>    // STL string
+#	include <vector>    // STL container
 
 class Usecode_class_symbol;
 
@@ -142,6 +142,9 @@ private:
 	}
 
 public:
+	using iterator       = Usecode_vector::iterator;
+	using const_iterator = Usecode_vector::const_iterator;
+
 	Usecode_value() : intval(0) {}
 
 	explicit Usecode_value(int ival) : intval(ival), undefined(false) {}
@@ -266,13 +269,13 @@ public:
 	}
 
 	long get_int_value() const {    // Get integer value.
-#ifdef DEBUG
+#	ifdef DEBUG
 		if (type == pointer_type
 			|| (type == int_type && (intval > 0x10000 || intval < -0x10000))) {
 			std::cerr << "Probable attempt at getting int value of pointer!!"
 					  << std::endl;
 		}
-#endif
+#	endif
 		return (type == int_type) ? intval : 0;
 	}
 
@@ -344,6 +347,54 @@ public:
 		static const Usecode_value zval(0);
 		return (type == array_type) ? (get_array_size() ? arrayval[0] : zval)
 									: *this;
+	}
+
+	iterator begin() {
+		if (type != array_type) {
+			// Maybe make this an error?
+			return {};
+		}
+		return arrayval.begin();
+	}
+
+	const_iterator begin() const {
+		if (type != array_type) {
+			// Maybe make this an error?
+			return {};
+		}
+		return arrayval.cbegin();
+	}
+
+	const_iterator cbegin() const {
+		if (type != array_type) {
+			// Maybe make this an error?
+			return {};
+		}
+		return arrayval.cbegin();
+	}
+
+	iterator end() {
+		if (type != array_type) {
+			// Maybe make this an error?
+			return {};
+		}
+		return arrayval.end();
+	}
+
+	const_iterator end() const {
+		if (type != array_type) {
+			// Maybe make this an error?
+			return {};
+		}
+		return arrayval.cend();
+	}
+
+	const_iterator cend() const {
+		if (type != array_type) {
+			// Maybe make this an error?
+			return {};
+		}
+		return arrayval.cend();
 	}
 
 	void steal_array(Usecode_value& v2);

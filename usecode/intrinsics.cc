@@ -58,6 +58,7 @@
 #include "schedule.h"
 #include "spellbook.h"
 #include "stackframe.h"
+#include "tiles.h"
 #include "touchui.h"
 #include "ucfunction.h"
 #include "ucinternal.h"
@@ -1814,11 +1815,11 @@ USECODE_INTRINSIC(sprite_effect) {
 	if (sprite_num >= 0
 		&& sprite_num < sman->get_file(SF_SPRITES_VGA).get_num_shapes()) {
 		gwin->get_effects()->add_effect(std::make_unique<Sprites_effect>(
-				sprite_num,
-				Tile_coord(
+						sprite_num,
+						Tile_coord(
 						parms[1].get_int_value(), parms[2].get_int_value(), 0),
-				parms[3].get_int_value(), parms[4].get_int_value(), 0,
-				parms[5].get_int_value(), parms[6].get_int_value()));
+						parms[3].get_int_value(), parms[4].get_int_value(), 0,
+						parms[5].get_int_value(), parms[6].get_int_value()));
 	}
 	return no_ret;
 }
@@ -1835,10 +1836,10 @@ USECODE_INTRINSIC(obj_sprite_effect) {
 		if (sprite_num >= 0
 			&& sprite_num < sman->get_file(SF_SPRITES_VGA).get_num_shapes()) {
 			gwin->get_effects()->add_effect(std::make_unique<Sprites_effect>(
-					sprite_num, obj, -parms[2].get_int_value(),
-					-parms[3].get_int_value(), parms[4].get_int_value(),
-					parms[5].get_int_value(), parms[6].get_int_value(),
-					parms[7].get_int_value()));
+							sprite_num, obj, -parms[2].get_int_value(),
+							-parms[3].get_int_value(), parms[4].get_int_value(),
+							parms[5].get_int_value(), parms[6].get_int_value(),
+							parms[7].get_int_value()));
 		}
 	}
 	return no_ret;
@@ -2657,7 +2658,7 @@ USECODE_INTRINSIC(fire_projectile) {
 
 	// Fire missile.
 	gwin->get_effects()->add_effect(std::make_unique<Projectile_effect>(
-			attacker, dest, wshape, ashape, missile, attval, 4));
+					attacker, dest, wshape, ashape, missile, attval, 4));
 	return no_ret;
 }
 
@@ -3373,6 +3374,69 @@ USECODE_INTRINSIC(set_new_schedules) {
 	//          [x1,y1, x2, y2, ...] )
 	//
 
+	// Sanity checks.
+	// Number of unrecoverable errors.
+	int num_errors = 0;
+
+	const size_t count = parms[1].is_array() ? parms[1].get_array_size() : 1;
+	if (!parms[3].is_array()) {
+		cerr << "set_new_schedules: parameter 4 is not an array!" << endl;
+		num_errors++;
+	}
+
+	const size_t num_coords = parms[3].get_array_size();
+	if (num_coords < count * 2) {
+		cerr << "set_new_schedules: parameter 4 has insufficient elements! At "
+				"least 2 elements per schedule are required; needed "
+			 << count * 2 << ", got " << num_coords << "." << endl;
+		num_errors++;
+	}
+
+	if (!parms[1].is_array()) {
+		if (parms[2].is_array() || parms[3].is_array()) {
+			cerr << "set_new_schedules: inconsistent parameters! Parameters 3 "
+					"and 4 should not be arrays if parameter 1 is not an array."
+				 << endl;
+			for (size_t ii = 2; ii < 4; ii++) {
+				if (parms[ii].is_array()) {
+					if (parms[ii].get_array_size() < 1) {
+						num_errors++;
+						cerr << "set_new_schedules: parameter " << (ii + 1)
+							 << " has insufficient elements! At least 1 "
+								"element is required."
+							 << endl;
+					} else if (!parms[ii].is_int()) {
+						num_errors++;
+						cerr << "set_new_schedules: parameter " << (ii + 1)
+							 << " element 0 is not an integer!" << endl;
+					}
+				}
+			}
+		}
+	} else {
+		for (size_t ii = 2; ii < 4; ii++) {
+			if (!parms[2].is_array()) {
+				cerr << "set_new_schedules: inconsistent parameters! Parameter "
+					 << (ii + 1)
+					 << " should be an array if parameter 1 is an array."
+					 << endl;
+				num_errors++;
+			}
+			if (parms[2].get_array_size() < count) {
+				cerr << "set_new_schedules: parameter 3 has insufficient "
+						"elements! "
+						"At least "
+					 << count << " elements are required." << endl;
+				num_errors++;
+			}
+		}
+	}
+
+	// Only fail if we cannot make it work.
+	if (num_errors > 0) {
+		return no_ret;
+	}
+
 	Actor* actor = as_actor(get_item(parms[0]));
 
 	// If no actor return
@@ -3380,27 +3444,33 @@ USECODE_INTRINSIC(set_new_schedules) {
 		return no_ret;
 	}
 
-	const int count = parms[1].is_array() ? parms[1].get_array_size() : 1;
-	auto*     list  = new Schedule_change[count];
+	// At this point, we know that all parameters are either not arrays, or are
+	// arrays with the minimum number of elements we need.
+	Actor::Schedule_list list;
+	list.reserve(count);
 
 	if (!parms[1].is_array()) {
-		const int time  = parms[1].get_int_value();
-		const int sched = parms[2].get_int_value();
-		const int tx    = parms[3].get_elem(0).get_int_value();
-		const int ty    = parms[3].get_elem(1).get_int_value();
-		list[0].set(tx, ty, 0, sched, time);
+		const int        time  = parms[1].need_int_value();
+		const int        sched = parms[2].need_int_value();
+		const Tile_coord tile{
+				parms[3].get_elem(0).get_int_value(),
+				parms[3].get_elem(1).get_int_value(), 0};
+		list.emplace_back(sched, time, tile);
 	} else {
-		for (int i = 0; i < count; i++) {
-			const int time  = parms[1].get_elem(i).get_int_value();
-			const int sched = parms[2].get_elem(i).get_int_value();
-			const int tx    = parms[3].get_elem(i * 2).get_int_value();
-			const int ty    = parms[3].get_elem(i * 2 + 1).get_int_value();
-			list[i].set(tx, ty, 0, sched, time);
+		for (auto timeIt = parms[1].cbegin(), schedIt = parms[2].cbegin(),
+				  locIt = parms[3].cbegin();
+			 timeIt != parms[1].cend() && schedIt != parms[2].cend()
+			 && locIt != parms[3].cend();
+			 ++timeIt, ++schedIt) {
+			const int        time  = timeIt->get_int_value();
+			const int        sched = schedIt->get_int_value();
+			const Tile_coord tile{
+					locIt++->get_int_value(), locIt++->get_int_value(), 0};
+			list.emplace_back(sched, time, tile);
 		}
 	}
 
-	actor->set_schedules(list, count);
-
+	actor->set_schedules(std::move(list));
 	return no_ret;
 }
 

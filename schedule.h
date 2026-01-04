@@ -19,7 +19,7 @@
  */
 
 #ifndef SCHEDULE_H
-#define SCHEDULE_H 1
+#define SCHEDULE_H
 
 #include "ignore_unused_variable_warning.h"
 #include "singles.h"
@@ -879,6 +879,12 @@ class Schedule_change {
 	//   yet use this.
 	Tile_coord pos;    // Location.
 public:
+	Schedule_change() = default;
+
+	Schedule_change(
+			unsigned char time_, unsigned char type_, const Tile_coord& pos_)
+			: time(time_), type(type_), pos(pos_) {}
+
 	static void clear();
 
 	static std::vector<std::string>& get_script_names() {

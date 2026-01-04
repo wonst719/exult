@@ -2345,17 +2345,22 @@ bool Actor::edit() {
 		cheat.in_map_editor()) {
 		editing.reset();
 		const Tile_coord t = get_tile();
-		int              num_schedules;    // Set up schedule-change list.
-		Schedule_change* changes;
-		get_schedules(changes, num_schedules);
-		Serial_schedule schedules[8];
-		for (int i = 0; i < num_schedules; i++) {
-			schedules[i].time  = changes[i].get_time();
-			schedules[i].type  = changes[i].get_type();
-			const Tile_coord p = changes[i].get_pos();
-			schedules[i].tx    = p.tx;
-			schedules[i].ty    = p.ty;
-			schedules[i].tz    = p.tz;
+		Serial_schedule  schedules[8]{};
+		const auto*      changes       = get_schedules();
+		int              num_schedules = 0;
+		if (changes != nullptr) {
+			std::transform(
+					changes->cbegin(), changes->cend(), std::begin(schedules),
+					[](const Schedule_change& sched) {
+						const Tile_coord p = sched.get_pos();
+
+						Serial_schedule ss{
+								static_cast<short>(sched.get_time()),
+								static_cast<short>(sched.get_type()), p.tx,
+								p.ty, p.tz};
+						return ss;
+					});
+			num_schedules = changes->size();
 		}
 		if (Npc_actor_out(
 					client_socket, this, t.tx, t.ty, t.tz, get_shapenum(),
@@ -2479,8 +2484,7 @@ void Actor::update_from_studio(unsigned char* data, int datalen) {
 	npc->add_dirty();
 	npc->face_num = face;
 	npc->set_ident(ident);
-	int i;
-	for (i = 0; i < 12; i++) {
+	for (size_t i = 0; i < 12; i++) {
 		npc->set_property(i, properties[i]);
 	}
 	npc->set_attack_mode(static_cast<Actor::Attack_mode>(attack_mode));
@@ -2492,14 +2496,13 @@ void Actor::update_from_studio(unsigned char* data, int datalen) {
 	npc->flags2     = xflags;
 	npc->type_flags = type_flags;
 	npc->set_actor_shape();
-	Schedule_change* scheds
-			= num_schedules ? new Schedule_change[num_schedules] : nullptr;
-	for (i = 0; i < num_schedules; i++) {
+	Schedule_list scheds(num_schedules);
+	for (size_t i = 0; i < scheds.size(); i++) {
 		scheds[i].set(
 				schedules[i].tx, schedules[i].ty, schedules[i].tz,
 				schedules[i].type, schedules[i].time);
 	}
-	npc->set_schedules(scheds, num_schedules);
+	npc->set_schedules(std::move(scheds));
 	// Force Avatar and party members to be good
 	if (npc_num == 0 || npc->get_flag(Obj_flags::in_party)) {
 		npc->set_alignment(good);
@@ -5161,25 +5164,20 @@ bool Actor::quake_on_walk() {
 Npc_actor::Npc_actor(
 		const std::string& nm,    // Name.  A copy is made.
 		int shapenum, int num, int uc)
-		: Actor(nm, shapenum, num, uc), nearby(false), num_schedules(0),
-		  schedules(nullptr) {}
+		: Actor(nm, shapenum, num, uc), nearby(false) {}
 
 /*
  *  Kill an actor.
  */
 
-Npc_actor::~Npc_actor() {
-	delete[] schedules;
-}
+Npc_actor::~Npc_actor() = default;
 
 /*
  *  Set schedule list.
  */
 
-void Npc_actor::set_schedules(Schedule_change* sc_list, int cnt) {
-	delete[] schedules;
-	schedules     = sc_list;
-	num_schedules = cnt;
+void Npc_actor::set_schedules(Schedule_list&& list) {
+	schedules.swap(list);
 }
 
 /*
@@ -5187,32 +5185,20 @@ void Npc_actor::set_schedules(Schedule_change* sc_list, int cnt) {
  */
 
 void Npc_actor::set_schedule_time_type(int time, int type) {
-	Tile_coord tile;
-	int        i;
+	auto iter = std::find_if(
+			schedules.begin(), schedules.end(), [time](auto& elem) {
+				return elem.get_time() == time;
+			});
 
-	for (i = 0; i < num_schedules; i++) {
-		if (schedules[i].get_time() == time) {
-			break;
-		}
-	}
-
-	if (i == num_schedules) {    // Didn't find it
-		auto* scheds = new Schedule_change[num_schedules + 1];
-
-		for (i = 0; i < num_schedules; i++) {
-			tile = schedules[i].get_pos();
-			scheds[i].set(
-					tile.tx, tile.ty, tile.tz, schedules[i].get_type(),
-					schedules[i].get_time());
-		}
-
-		scheds[num_schedules].set(
-				0, 0, 0, static_cast<unsigned char>(type),
-				static_cast<unsigned char>(time));
-		set_schedules(scheds, num_schedules + 1);
-	} else {    // Did find it
-		tile = schedules[i].get_pos();
-		schedules[i].set(
+	if (iter == schedules.end()) {
+		// Didn't find it
+		schedules.emplace_back(
+				static_cast<unsigned char>(time),
+				static_cast<unsigned char>(type), Tile_coord(0, 0, 0));
+	} else {
+		// Did find it
+		const Tile_coord& tile = iter->get_pos();
+		iter->set(
 				tile.tx, tile.ty, tile.tz, static_cast<unsigned char>(type),
 				static_cast<unsigned char>(time));
 	}
@@ -5223,31 +5209,19 @@ void Npc_actor::set_schedule_time_type(int time, int type) {
  */
 
 void Npc_actor::set_schedule_time_location(int time, int x, int y, int z) {
-	int i;
+	auto iter = std::find_if(
+			schedules.begin(), schedules.end(), [time](auto& elem) {
+				return elem.get_time() == time;
+			});
 
-	for (i = 0; i < num_schedules; i++) {
-		if (schedules[i].get_time() == time) {
-			break;
-		}
-	}
-
-	if (i == num_schedules) {    // Didn't find it
-		Tile_coord tile;
-		auto*      scheds = new Schedule_change[num_schedules + 1];
-
-		for (i = 0; i < num_schedules; i++) {
-			tile = schedules[i].get_pos();
-			scheds[i].set(
-					tile.tx, tile.ty, tile.tz, schedules[i].get_type(),
-					schedules[i].get_time());
-		}
-
-		scheds[num_schedules].set(x, y, z, 0, static_cast<unsigned char>(time));
-		set_schedules(scheds, num_schedules + 1);
-	} else {    // Did find it
-		schedules[i].set(
-				x, y, z, schedules[i].get_type(),
-				static_cast<unsigned char>(time));
+	if (iter == schedules.end()) {
+		// Didn't find it
+		schedules.emplace_back(
+				static_cast<unsigned char>(time), static_cast<unsigned char>(0),
+				Tile_coord(x, y, z));
+	} else {
+		// Did find it
+		iter->set(x, y, z, iter->get_type(), static_cast<unsigned char>(time));
 	}
 }
 
@@ -5256,43 +5230,15 @@ void Npc_actor::set_schedule_time_location(int time, int x, int y, int z) {
  */
 
 void Npc_actor::remove_schedule(int time) {
-	int i;
+	auto iter = std::find_if(
+			schedules.begin(), schedules.end(), [time](auto& elem) {
+				return elem.get_time() == time;
+			});
 
-	for (i = 0; i < num_schedules; i++) {
-		if (schedules[i].get_time() == time) {
-			break;
-		}
+	if (iter != schedules.end()) {
+		// Found it
+		schedules.erase(iter);
 	}
-	if (i != num_schedules) {    // Found it
-		const int  todel = i;
-		Tile_coord tile;
-		auto*      scheds = new Schedule_change[num_schedules - 1];
-
-		for (i = 0; i < todel; i++) {
-			tile = schedules[i].get_pos();
-			scheds[i].set(
-					tile.tx, tile.ty, tile.tz, schedules[i].get_type(),
-					schedules[i].get_time());
-		}
-
-		for (; i < num_schedules - 1; i++) {
-			tile = schedules[i + 1].get_pos();
-			scheds[i].set(
-					tile.tx, tile.ty, tile.tz, schedules[i + 1].get_type(),
-					schedules[i + 1].get_time());
-		}
-
-		set_schedules(scheds, num_schedules - 1);
-	}
-}
-
-/*
- *  Set schedule list.
- */
-
-void Npc_actor::get_schedules(Schedule_change*& sc_list, int& cnt) const {
-	sc_list = schedules;
-	cnt     = num_schedules;
 }
 
 /*
@@ -5311,39 +5257,44 @@ void Npc_actor::movef(
 /*
  *  Find day's schedule for a given time-of-day.
  *
- *  Output: index of schedule change.
- *      -1 if not found, or if a party member.
+ *  Output: pointer to new schedule, or nullptr if none.
  */
 
-int Npc_actor::find_schedule_change(int hour3    // 0=midnight, 1=3am, etc.
+Schedule_change* Npc_actor::find_schedule_change(
+		int hour3    // 0=midnight, 1=3am, etc.
 ) {
 	if (party_id >= 0 || is_dead()) {
-		return -1;    // Fail if a party member or dead.
+		// Fail if a party member or dead.
+		return nullptr;
 	}
-	for (int i = 0; i < num_schedules; i++) {
-		if (schedules[i].get_time() == hour3) {
-			return i;
-		}
+	auto iter = std::find_if(
+			schedules.begin(), schedules.end(), [hour3](auto& elem) {
+				return elem.get_time() == hour3;
+			});
+	if (iter != schedules.end()) {
+		return std::addressof(*iter);
 	}
-	return -1;
+	return nullptr;
 }
 
-int Npc_actor::find_schedule_at_time(int hour3    // 0=midnight, 1=3am, etc.
+Schedule_change* Npc_actor::find_schedule_at_time(
+		int hour3    // 0=midnight, 1=3am, etc.
 ) {
-	if (party_id >= 0 || is_dead() || num_schedules == 0) {
-		return -1;    // Fail if a party member or dead.
+	if (party_id >= 0 || is_dead() || schedules.empty()) {
+		// Fail if a party member or dead.
+		return nullptr;
 	}
-	int closest_dist  = 100;
-	int closest_index = 0;
-	for (int i = 0; i < num_schedules; i++) {
-		const int dist = (hour3 - schedules[i].get_time() + 8) % 8;
+	int              closest_dist = 100;
+	Schedule_change* closest      = nullptr;
+	for (auto& schedule : schedules) {
+		const int dist = (hour3 - schedule.get_time() + 8) % 8;
 		if (dist < closest_dist) {
-			closest_dist  = dist;
-			closest_index = i;
+			closest_dist = dist;
+			closest      = std::addressof(schedule);
 		}
 	}
 	assert(closest_dist != 100);
-	return closest_index;
+	return closest;
 }
 
 /*
@@ -5355,24 +5306,26 @@ void Npc_actor::update_schedule(
 		int         delay,    // Delay in msecs, or -1 for random.
 		Tile_coord* pos       // Were we want to return to.
 ) {
-	int i = find_schedule_change(hour3);
-	if (i < 0) {
+	Schedule_change* sched = find_schedule_change(hour3);
+	if (sched == nullptr) {
 		// Not found?  Look at prev.
-		i = find_schedule_at_time(hour3);
-		if (i < 0) {
+		sched = find_schedule_at_time(hour3);
+		if (sched == nullptr) {
+			// If still not found, return.
 			return;
 		}
-		if ((schedule_type == schedules[i].get_type()
-			 || restored_schedule == schedules[i].get_type())
-			&& old_schedule_loc == schedules[i].get_pos()) {
+		if ((schedule_type == sched->get_type()
+			 || restored_schedule == sched->get_type())
+			&& old_schedule_loc == sched->get_pos()) {
 			restored_schedule = -1;
-			return;    // Already in it.
+			// Already in it.
+			return;
 		}
 	}
 	restored_schedule       = -1;
-	old_schedule_loc        = schedules[i].get_pos();
-	const Tile_coord newloc = pos ? *pos : schedules[i].get_pos();
-	set_schedule_and_loc(schedules[i].get_type(), newloc, delay);
+	old_schedule_loc        = sched->get_pos();
+	const Tile_coord newloc = (pos != nullptr) ? *pos : sched->get_pos();
+	set_schedule_and_loc(sched->get_type(), newloc, delay);
 }
 
 /*

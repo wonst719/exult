@@ -221,23 +221,21 @@ void Read_a_schedule(
 		const short* offsets) {
 	const int cnt = offsets[index] - offsets[index - 1];
 	// Read schedules into this array.
-	Schedule_change* schedules = cnt ? new Schedule_change[cnt] : nullptr;
-	unsigned char    ent[10];
+	Actor::Schedule_list list(cnt);
+	unsigned char        ent[10];
 	if (entsize == 4) {    // U7 format?
-		for (int j = 0; j < cnt; j++) {
+		for (auto& sched : list) {
 			sfile.read(reinterpret_cast<char*>(ent), 4);
-			schedules[j].set4(ent);
+			sched.set4(ent);
 		}
 	} else {    // Exult formats.
-		for (int j = 0; j < cnt; j++) {
+		for (auto& sched : list) {
 			sfile.read(reinterpret_cast<char*>(ent), 8);
-			schedules[j].set8(ent);
+			sched.set8(ent);
 		}
 	}
-	if (npc) {    // Store in NPC.
-		npc->set_schedules(schedules, cnt);
-	} else {
-		delete[] schedules;
+	if (npc != nullptr) {    // Store in NPC.
+		npc->set_schedules(std::move(list));
 	}
 }
 
@@ -294,11 +292,9 @@ void Game_window::read_schedules() {
  */
 
 void Game_window::write_schedules() {
-	Schedule_change* schedules;
-	int              cnt;
-	short            offset = 0;
-	int              i;
-	int              num;
+	short offset = 0;
+	int   i;
+	int   num;
 
 	// So do I allow for all NPCs (type1 and type2) - Yes i will
 	num = npcs.size();
@@ -313,26 +309,29 @@ void Game_window::write_schedules() {
 	sfile.write2(0);    // First offset
 
 	for (i = 1; i < num; i++) {    // write offsets with list of scheds.
-		get_npc(i)->get_schedules(schedules, cnt);
-		offset += cnt;
+		const Actor::Schedule_list* scheds = get_npc(i)->get_schedules();
+		offset += (scheds != nullptr) ? scheds->size() : 0;
 		sfile.write2(offset);
 	}
 	if (!script_names.empty()) {
 		int total = 0;    // Figure total size.
-		for (auto& elem : script_names) {
+		for (const auto& elem : script_names) {
 			total += 2 + elem.size();
 		}
 		sfile.write2(total);
-		for (auto& elem : script_names) {
+		for (const auto& elem : script_names) {
 			sfile.write2(static_cast<uint16>(elem.size()));
 			sfile.write(elem);
 		}
 	}
 	for (i = 1; i < num; i++) {    // Do each NPC, except Avatar.
-		get_npc(i)->get_schedules(schedules, cnt);
-		for (int j = 0; j < cnt; j++) {
+		const Actor::Schedule_list* scheds = get_npc(i)->get_schedules();
+		if (scheds == nullptr) {
+			continue;
+		}
+		for (const auto& sched : *scheds) {
 			unsigned char ent[20];
-			schedules[j].write8(ent);
+			sched.write8(ent);
 			sfile.write(reinterpret_cast<char*>(ent), 8);
 		}
 	}

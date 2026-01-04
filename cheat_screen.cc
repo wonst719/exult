@@ -2630,7 +2630,7 @@ void CheatScreen::FlagActivate(Actor* actor) {
 	case SDLK_1:    // Skin color
 		actor->set_skin_color(Shapeinfo_lookup::GetNextSkin(
 				actor->get_skin_color(), actor->get_type_flag(Actor::tf_sex),
-				Shape_manager::get_instance()->have_si_shapes()));
+						Shape_manager::get_instance()->have_si_shapes()));
 		break;
 
 	case SDLK_G:    // Tournament
@@ -2941,11 +2941,9 @@ void CheatScreen::BusinessDisplay(Actor* actor) {
 	font->paint_text_fixedwidth(
 			ibuf, buf, offsetx2, offsety3, 8, fontcolor.colors);
 
-	Schedule_change* scheds;
-	int              num;
-	actor->get_schedules(scheds, num);
+	const Actor::Schedule_list* scheds = actor->get_schedules();
 
-	if (num) {
+	if (scheds != nullptr) {
 		font->paint_text_fixedwidth(
 				ibuf, "Schedules:", offsetx2, offsety2, 8, fontcolor.colors);
 
@@ -2953,10 +2951,10 @@ void CheatScreen::BusinessDisplay(Actor* actor) {
 		int x[8]     = {0};
 		int y[8]     = {0};
 
-		for (int i = 0; i < num; i++) {
-			const int time        = scheds[i].get_time();
-			types[time]           = scheds[i].get_type();
-			const Tile_coord tile = scheds[i].get_pos();
+		for (const auto& sched : *scheds) {
+			const int time        = sched.get_time();
+			types[time]           = sched.get_type();
+			const Tile_coord tile = sched.get_pos();
 			x[time]               = tile.tx;
 			y[time]               = tile.ty;
 		}

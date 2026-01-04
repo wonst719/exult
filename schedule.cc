@@ -111,7 +111,7 @@ void Schedule::set_action_sequence(
 	const bool persistant
 			= actor->get_npc_num() == 0 || actor->get_party_id() >= 0;
 	actor->set_action(Actor_action::create_action_sequence(
-			actor, dest, when_there, from_off_screen, persistant));
+					actor, dest, when_there, from_off_screen, persistant));
 	actor->start(250, delay);    // Get into time queue.
 }
 
@@ -487,7 +487,7 @@ int Schedule::try_street_maintenance() {
 			}
 			Approach_object_pathfinder_client cost(npc, obj, 1);
 			pact.reset(Path_walking_actor_action::create_path(
-					npcpos, obj->get_tile(), cost));
+							npcpos, obj->get_tile(), cost));
 			if (pact) {
 				found = obj;
 				break;
@@ -1288,13 +1288,9 @@ void Patrol_schedule::now_what() {
 			// SI seems to try switching to preprogrammed schedules
 			// first if no path.
 			if (GAME_SI) {
-				Schedule_change* list;
-				int              cnt;
-				npc->get_schedules(list, cnt);
-				if (cnt != 0
-					&& list[npc->find_schedule_at_time(gclock->get_hour() / 3)]
-									   .get_type()
-							   != Schedule::patrol) {
+				const Schedule_change* sched
+						= npc->find_schedule_at_time(gclock->get_hour() / 3);
+				if (sched != nullptr && sched->get_type() != Schedule::patrol) {
 					npc->update_schedule(gclock->get_hour() / 3);
 				} else {
 					// when the preset schedule is patrol or there is no preset

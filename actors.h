@@ -20,7 +20,7 @@
  */
 
 #ifndef INCL_ACTORS
-#define INCL_ACTORS 1
+#define INCL_ACTORS
 
 #include "contain.h"
 #include "flags.h"
@@ -29,6 +29,7 @@
 #include "utils.h"    // This is only included for Log2...
 
 #include <array>
+#include <vector>
 
 class Image_window;
 class Game_window;
@@ -160,6 +161,8 @@ protected:
 	bool empty_hand(Game_object* obj, Game_object_shared* keep);
 
 public:
+	using Schedule_list = std::vector<Schedule_change>;
+
 	friend class Clear_casting;
 	friend class Clear_hit;
 	static void init_default_frames();    // Set usual frame sequence.
@@ -809,8 +812,8 @@ public:
 	}
 
 	// Set schedule list.
-	virtual void set_schedules(Schedule_change* list, int cnt) {
-		ignore_unused_variable_warning(list, cnt);
+	virtual void set_schedules(Schedule_list&& list) {
+		ignore_unused_variable_warning(list);
 	}
 
 	virtual void set_schedule_time_type(int time, int type) {
@@ -825,14 +828,13 @@ public:
 		ignore_unused_variable_warning(time);
 	}
 
-	virtual void get_schedules(Schedule_change*& list, int& cnt) const {
-		list = nullptr;
-		cnt  = 0;
+	virtual const Schedule_list* get_schedules() const {
+		return nullptr;
 	}
 
-	virtual int find_schedule_at_time(int hour3) {
+	virtual Schedule_change* find_schedule_at_time(int hour3) {
 		ignore_unused_variable_warning(hour3);
-		return -1;
+		return nullptr;
 	}
 
 	void show_inventory();
@@ -896,12 +898,14 @@ using Main_actor_shared = std::shared_ptr<Main_actor>;
  *  A non-player-character that one can converse (or fight) with:
  */
 class Npc_actor : public Actor {
-	bool nearby;    // Queued as a 'nearby' NPC.  This is
-					//   to avoid being added twice.
+	// Queued as a 'nearby' NPC.  This is to avoid being added twice.
+	bool nearby;
+
 protected:
-	unsigned char    num_schedules;    // # entries below.
-	Schedule_change* schedules;        // List of schedule changes.
-	int              find_schedule_change(int hour3);
+	// List of schedule changes.
+	Schedule_list schedules;
+
+	Schedule_change* find_schedule_change(int hour3);
 
 public:
 	Npc_actor(const std::string& nm, int shapenum, int num = -1, int uc = -1);
@@ -920,11 +924,15 @@ public:
 	}
 
 	// Set schedule list.
-	void set_schedules(Schedule_change* list, int cnt) override;
+	void set_schedules(Schedule_list&& list) override;
 	void set_schedule_time_type(int time, int type) override;
 	void set_schedule_time_location(int time, int x, int y, int z = 0) override;
 	void remove_schedule(int time) override;
-	void get_schedules(Schedule_change*& list, int& cnt) const override;
+
+	const Schedule_list* get_schedules() const override {
+		return &schedules;
+	}
+
 	// Move and change frame.
 	void movef(
 			Map_chunk* old_chunk, Map_chunk* new_chunk, int new_sx, int new_sy,
@@ -932,7 +940,7 @@ public:
 	// Update schedule for new 3-hour time.
 	void update_schedule(
 			int hour3, int delay = -1, Tile_coord* pos = nullptr) override;
-	int find_schedule_at_time(int hour3) override;
+	Schedule_change* find_schedule_at_time(int hour3) override;
 	// Render.
 	void paint() override;
 	// Run usecode function.
