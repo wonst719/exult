@@ -3470,8 +3470,8 @@ USECODE_INTRINSIC(set_new_schedules) {
 		const int        time  = parms[1].need_int_value();
 		const int        sched = parms[2].need_int_value();
 		const Tile_coord tile{
-				parms[3].get_elem(0).get_int_value(),
-				parms[3].get_elem(1).get_int_value(),
+				static_cast<int>(parms[3].get_elem(0).get_int_value()),
+				static_cast<int>(parms[3].get_elem(1).get_int_value()),
 				have_3d_positions
 						? static_cast<int>(parms[3].get_elem(2).get_int_value())
 						: 0};
@@ -3485,7 +3485,8 @@ USECODE_INTRINSIC(set_new_schedules) {
 			const int        time  = timeIt->get_int_value();
 			const int        sched = schedIt->get_int_value();
 			const Tile_coord tile{
-					locIt++->get_int_value(), locIt++->get_int_value(),
+					static_cast<int>(locIt++->get_int_value()),
+					static_cast<int>(locIt++->get_int_value()),
 					have_3d_positions
 							? static_cast<int>(locIt++->get_int_value())
 							: 0};
