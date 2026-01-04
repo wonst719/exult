@@ -2127,7 +2127,7 @@ bool ExultStudio::need_to_save() {
 		return true;
 	}
 	// Ask Exult about the map.
-	if (server_socket >= 0
+	if (is_server_connected()
 		&& Send_data(server_socket, Exult_server::info) != -1) {
 		// Should get immediate answer.
 		unsigned char          data[Exult_server::maxlength];
@@ -3286,7 +3286,7 @@ bool ExultStudio::connect_to_server() {
 	g_io_channel_unref(gio);
 #else
 	// Close existing socket.
-	if (server_socket != -1) {
+	if (is_server_connected()) {
 		Exult_server::disconnect_from_server();
 		update_connect_button(false);
 	}

@@ -398,8 +398,10 @@ bool Get_flag_cbox(
 
 void ExultStudio::init_new_npc() {
 	int npc_num = -1;    // Got to get what new NPC # will be.
-	if (Send_data(server_socket, Exult_server::npc_unused) == -1) {
+	if (!is_server_connected()
+		|| Send_data(server_socket, Exult_server::npc_unused) == -1) {
 		cout << "Error sending data to server." << endl;
+		return;
 	}
 	// Should get immediate answer.
 	unsigned char          data[Exult_server::maxlength];

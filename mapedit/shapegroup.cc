@@ -1159,8 +1159,9 @@ void ExultStudio::open_group_window() {
 		return;
 	}
 	// Do not open NPC groups if not connected to Exult.
-	auto* npc_file = dynamic_cast<Npcs_file_info*>(curfile);
-	if (npc_file && server_socket == -1) {
+	auto*        npc_file = dynamic_cast<Npcs_file_info*>(curfile);
+	ExultStudio* studio   = ExultStudio::get_instance();
+	if (npc_file && !studio->is_server_connected()) {
 		EStudio::Alert("Cannot open NPC groups when not connected to Exult.");
 		return;
 	}
