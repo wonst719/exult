@@ -436,6 +436,10 @@ BaseGameInfo* ExultMenu::show_mods_menu(ModManager* selgame) {
 			wait_delay(c_fade_out_time / 2);
 			gwin->clear_screen(true);
 			return nullptr;
+		case -1:    // Exit (keyboard shortcut)
+			gpal->fade_out(c_fade_out_time);
+			Audio::get_ptr()->stop_music();
+			throw quit_exception();
 		default:
 			if (choice >= 0) {
 				// Load the game:
