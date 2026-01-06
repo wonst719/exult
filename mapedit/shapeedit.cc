@@ -4370,10 +4370,6 @@ static void connect_shape_dirty_signals(GtkWidget* shapewin) {
 					  } else if (GTK_IS_NOTEBOOK(widget)) {
 						  // Don't connect to notebook's switch-page signal
 						  // But still recurse into its pages
-					  } else if (GTK_IS_RADIO_BUTTON(widget)) {
-						  // Skip radio buttons - they're used for switching
-						  // views (gump/body/paperdoll) which shouldn't mark
-						  // the window dirty
 					  } else if (GTK_IS_SPIN_BUTTON(widget)) {
 						  g_signal_connect(
 								  widget, "value-changed", mark_dirty_cb,
