@@ -1,3 +1,14 @@
+01/09/26	v1.12.1
+
+		Fixed crash with higher compression savegames (save_compression_level 2).
+		Fixed crash with flex savegames.
+		Fixed crash with loading savegames that are missing identity.
+		Fixed crash starting some original localized games.
+		Fixed out of bonds crash caused by some settings.
+		Fixed sporadic crash in Exult Studio when changing the game.
+		Fixed mouse pointers when dragging.
+
+
 05/11/25	v1.12
 
 		Fixed crash in SI training.

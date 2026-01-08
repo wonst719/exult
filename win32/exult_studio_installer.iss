@@ -1,12 +1,12 @@
 [Setup]
 AppName=Exult Studio
-AppVerName=Exult Studio 1.12.0
+AppVerName=Exult Studio 1.12.1
 AppPublisher=The Exult Team
 AppPublisherURL=https://exult.info/
 AppSupportURL=https://exult.info/
 AppUpdatesURL=https://exult.info/
 ; Setup exe version number:
-VersionInfoVersion=1.12.0
+VersionInfoVersion=1.12.1
 DisableDirPage=no
 DefaultDirName={autopf}\Exult
 DisableProgramGroupPage=no
