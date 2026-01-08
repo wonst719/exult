@@ -1,7 +1,7 @@
 #pragma once
 #define NOMINMAX
 
-#define VERSION       "1.12.0"
+#define VERSION       "1.12.1"
 #define EXULT_DATADIR "data/"
 
 #ifdef _DEBUG
