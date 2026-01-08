@@ -225,7 +225,6 @@ char* Handle_string(
 		size_t      length) {
 	char* to  = new char[length];    // (Bigger than needed.)
 	char* str = to;
-	const char* const start = from;
 
 	// Note: strings from the official translations can contain almost all
 	// control characters. So we can only filter out nulls here.
@@ -309,14 +308,25 @@ char* Handle_string(
 		++from;
 	}
 	*to = 0;
-	// Detect null characters.
-	if (std::distance(start, from) != static_cast<std::ptrdiff_t>(length)) {
+	return str;
+}
+
+void assert_no_embedded_nulls(const char* strval, size_t length) {
+	if (length != strlen(strval) + 1) {
 		Uc_location::yyerror("Stray null character found in string literal. "
-							 "The file may have been corrupted. "
-							 "Compilation cannot continue.");
+							"The file may have been corrupted. "
+							"Compilation cannot continue.");
 		exit(1);
 	}
-	return str;
+}
+
+[[noreturn]]
+void assert_ascii_clean(const char* text) {
+	unsigned chr = static_cast<unsigned char>(*text);
+	Uc_location::yyerror("Invalid character found in source file: "
+							"'\\x%02X'. The file may have been corrupted. "
+							"Compilation cannot continue.", chr);
+	exit(1);
 }
 
 #ifdef __GNUC__
@@ -355,13 +365,7 @@ invalid_chars		{control_chars}|{non_ascii_chars}
 
 %%
 
-{invalid_chars}		{
-			unsigned chr = static_cast<unsigned char>(*yytext);
-			Uc_location::yyerror("Invalid character found in source file: "
-								 "'\\x%02X'. The file may have been corrupted. "
-								 "Compilation cannot continue.", chr);
-			exit(1);
-		}
+{invalid_chars}		{ assert_ascii_clean(yytext); }
 
 if		return IF;
 else		return ELSE;
@@ -520,15 +524,18 @@ sonic_damage	return SONIC_DAMAGE;
 			return IDENTIFIER;
 		}
 {string_literal}		{
-			// Remove ending quote.
+			// Remove starting quote.
 			const char* strval = yytext + 1;
-			yylval.strval      = Handle_string(strval, strlen(strval) + 1);
+			assert_no_embedded_nulls(strval, yyleng);
+			yylval.strval      = Handle_string(strval, yyleng);
 			return STRING_LITERAL;
 		}
 {string_literal}\*		{
-			// Remove ending quote and asterisk.
+			// Remove starting quote.
 			const char* strval = yytext + 1;
-			yylval.strval      = Handle_string(strval, strlen(strval) + 1);
+			// Detect null characters.
+			assert_no_embedded_nulls(strval, yyleng);
+			yylval.strval      = Handle_string(strval, yyleng);
 			return STRING_PREFIX;
 		}
 [0-9]+			{
@@ -594,13 +601,7 @@ sonic_damage	return SONIC_DAMAGE;
 "//"[^\n]*\n	Uc_location::increment_cur_line();
 "/*"			yy_push_state(comment);
 
-<comment>{control_chars}	{
-			unsigned chr = static_cast<unsigned char>(*yytext);
-			Uc_location::yyerror("Invalid character found in source file: "
-								 "'\\x%02X'. The file may have been corrupted. "
-								 "Compilation cannot continue.", chr);
-			exit(1);
-		}
+<comment>{control_chars}	{ assert_ascii_clean(yytext); }
 <comment>[^*\n\x00]*				/* All but '*'. */
 <comment>[^*\n\x00]*\n			Uc_location::increment_cur_line();
 <comment>"*"+[^*/\n\x00]*			/* *'s not followed by '/'. */
