@@ -595,6 +595,7 @@ sonic_damage	return SONIC_DAMAGE;
 "/*"			yy_push_state(comment);
 
 <comment>{control_chars}	{
+			unsigned chr = static_cast<unsigned char>(*yytext);
 			Uc_location::yyerror("Invalid character found in source file: "
 								 "'\\x%02X'. The file may have been corrupted. "
 								 "Compilation cannot continue.", chr);
