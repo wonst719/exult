@@ -211,9 +211,23 @@ if [ -f macosx/macosx.am ]; then
 		perl -pe 's/--volname "Exult Studio[^"]*"/--volname "Exult Studio '"$NEW_VERSION"'"/g' macosx/macosx.am > "$temp_file"
 	fi
 	mv "$temp_file" macosx/macosx.am
+
+	# Third update: DMG filenames for Exult and Exult Studio
+	temp_file=$(mktemp)
+	if [ "$git" = true ]; then
+		# For git versions, use snapshot filenames
+		perl -pe 's/"Exult-[^\"]*\.dmg"/"Exult-snapshot.dmg"/g' macosx/macosx.am > "$temp_file"
+		perl -pe 's/"ExultStudio-[^\"]*\.dmg"/"ExultStudio-snapshot.dmg"/g' macosx/macosx.am > "$temp_file"	
+		mv "$temp_file" macosx/macosx.am
+	else
+ 		# For release versions, use versioned filenames
+		temp_file=$(mktemp)
+		perl -pe "s/\"Exult-[^\"]*\\.dmg\"/\"Exult-$NEW_VERSION.dmg\"/g" macosx/macosx.am > "$temp_file"
+		perl -pe "s/\"ExultStudio-[^\"]*\\.dmg\"/\"ExultStudio-$NEW_VERSION.dmg\"/g" macosx/macosx.am > "$temp_file"
+		mv "$temp_file" macosx/macosx.am
+	fi
 fi
 
-# Remove backup files
 find . -name "*.bak" -type f -delete
 
 echo "Version updated to $NEW_VERSION successfully!"
