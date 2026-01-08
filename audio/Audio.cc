@@ -198,30 +198,26 @@ void SFX_cache_manager::garbage_collect() {
 
 //---- Audio ---------------------------------------------------------
 void Audio::Init() {
+	if (self && self->initialized) {
+		// Already initialized, do nothing
+		return;
+	}
 	// Crate the Audio singleton object
 	if (!self) {
-		int  sample_rate = 44100;
-		bool stereo      = true;
-
-		config->value("config/audio/sample_rate", sample_rate, sample_rate);
-		config->value("config/audio/stereo", stereo, stereo);
-
 		self = new Audio();
-		self->Init(sample_rate, stereo ? 2 : 1);
 	}
+
+	int  sample_rate = 44100;
+	bool stereo      = true;
+
+	config->value("config/audio/sample_rate", sample_rate, sample_rate);
+	config->value("config/audio/stereo", stereo, stereo);
+
+	self->Init(sample_rate, stereo ? 2 : 1);
 }
 
 void Audio::Destroy() {
-	delete self;
-	self = nullptr;
-}
-
-Audio* Audio::get_ptr() {
-	// The following assert here might be too harsh, maybe we should leave
-	// it to the caller to handle non-inited audio-system?
-	assert(self != nullptr);
-
-	return self;
+	self->Deinit();
 }
 
 Audio::Audio() {
@@ -283,6 +279,20 @@ void Audio::Init(int _samplerate, int _channels) {
 
 	mixer->openMidiOutput();
 	initialized = true;
+}
+
+void Audio::Deinit() {
+	if (!initialized) {
+		return;
+	}
+
+	CERR("Audio::Deinit:  about to stop_music()");
+	stop_music();
+
+	CERR("Audio::Deinit:  about to quit subsystem");
+	mixer.reset();
+
+	initialized = false;
 }
 
 bool Audio::can_sfx(const std::string& file, std::string* out) {
@@ -399,15 +409,7 @@ void Audio::Init_sfx() {
 }
 
 Audio::~Audio() {
-	if (!initialized) {
-		// SDL_open = false;
-		return;
-	}
-
-	CERR("~Audio:  about to stop_music()");
-	stop_music();
-
-	CERR("~Audio:  about to quit subsystem");
+	Deinit();
 }
 
 sint32 Audio::copy_and_play_speech(

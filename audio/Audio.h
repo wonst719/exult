@@ -107,12 +107,16 @@ private:
 	Audio();
 	~Audio();
 	void Init(int _samplerate, int _channels);
+	void Deinit();
 
 public:
 	friend class Tired_of_compiler_warnings;
 	static void   Init();
 	static void   Destroy();
-	static Audio* get_ptr();
+
+	static Audio* get_ptr() {
+		return self;
+	}
 
 	// Given BG sfx, get SI if playing SI.
 	static int game_sfx(int sfx) {
@@ -197,7 +201,7 @@ public:
 			= std::function<int(Uint32 ms)>());
 
 	bool is_speech_enabled() const {
-		return speech_enabled;
+		return initialized && audio_enabled && speech_enabled;
 	}
 
 	void set_speech_enabled(bool ena) {
@@ -213,7 +217,7 @@ public:
 	}
 
 	bool is_music_enabled() const {
-		return music_enabled;
+		return initialized && audio_enabled && music_enabled;
 	}
 
 	void set_music_enabled(bool ena) {
@@ -221,7 +225,7 @@ public:
 	}
 
 	bool are_effects_enabled() const {
-		return effects_enabled;
+		return initialized && audio_enabled && effects_enabled;
 	}
 
 	void set_effects_enabled(bool ena) {
@@ -231,7 +235,7 @@ public:
 	bool is_sfx_playing(int num);
 
 	bool is_audio_enabled() const {
-		return audio_enabled;
+		return initialized && audio_enabled;
 	}
 
 	void set_audio_enabled(bool ena);
