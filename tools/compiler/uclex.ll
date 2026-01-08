@@ -225,7 +225,13 @@ char* Handle_string(
 		size_t      length) {
 	char* to  = new char[length];    // (Bigger than needed.)
 	char* str = to;
+	const char* const start = from;
 
+	// Note: strings from the official translations can contain almost all
+	// control characters. So we can only filter out nulls here.
+	// TODO: Let UCC specify a codepage for source files, a codepage for output,
+	// and convert between them here. Once this is done, default to UTF-8 for
+	// source and the "code page" of the official U7/SI translations.
 	while (*from && *from != '\"') {
 		if (*from != '\\') {
 			*to++ = *from++;
@@ -303,6 +309,13 @@ char* Handle_string(
 		++from;
 	}
 	*to = 0;
+	// Detect null characters.
+	if (std::distance(start, from) != static_cast<std::ptrdiff_t>(length)) {
+		Uc_location::yyerror("Stray null character found in string literal. "
+							 "The file may have been corrupted. "
+							 "Compilation cannot continue.");
+		exit(1);
+	}
 	return str;
 }
 
@@ -336,12 +349,17 @@ char* Handle_string(
 %s in_breakable
 
 string_literal		\"([^"]|\\\{(dot|ea|ee|ng|st|th)\}|\\[^\{])*\"
+control_chars		[\x00-\x06\x0C\x0E-\x1F]
+non_ascii_chars		[\x80-\xFF]
+invalid_chars		{control_chars}|{non_ascii_chars}
 
 %%
 
-[\x00\x80-\xFF]		{
-			Uc_location::yyerror(
-					"Invalid character (non-ASCII) in source file: the file may have been corrupted. Compilation cannot continue.");
+{invalid_chars}		{
+			unsigned chr = static_cast<unsigned char>(*yytext);
+			Uc_location::yyerror("Invalid character found in source file: "
+								 "'\\x%02X'. The file may have been corrupted. "
+								 "Compilation cannot continue.", chr);
 			exit(1);
 		}
 
@@ -576,10 +594,16 @@ sonic_damage	return SONIC_DAMAGE;
 "//"[^\n]*\n	Uc_location::increment_cur_line();
 "/*"			yy_push_state(comment);
 
-<comment>[^*\n]*				/* All but '*'. */
-<comment>[^*\n]*\n			Uc_location::increment_cur_line();
-<comment>"*"+[^*/\n]*			/* *'s not followed by '/'. */
-<comment>"*"+[^*/\n]*\n		Uc_location::increment_cur_line();
+<comment>{control_chars}	{
+			Uc_location::yyerror("Invalid character found in source file: "
+								 "'\\x%02X'. The file may have been corrupted. "
+								 "Compilation cannot continue.", chr);
+			exit(1);
+		}
+<comment>[^*\n\x00]*				/* All but '*'. */
+<comment>[^*\n\x00]*\n			Uc_location::increment_cur_line();
+<comment>"*"+[^*/\n\x00]*			/* *'s not followed by '/'. */
+<comment>"*"+[^*/\n\x00]*\n		Uc_location::increment_cur_line();
 <comment>"*"+"/"			yy_pop_state();
 <comment><<EOF>>			{
 			Uc_location::yyerror("Comment not terminated");
