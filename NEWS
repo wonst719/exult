@@ -1,5 +1,6 @@
 01/08/26	v1.12.1
 
+		Fixed resurrections in SI.
 		Fixed crash with higher compression savegames (save_compression_level 2).
 		Fixed crash with flex savegames.
 		Fixed crash with loading savegames that are missing identity.
