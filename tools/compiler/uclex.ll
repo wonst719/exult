@@ -349,7 +349,7 @@ char* Handle_string(
 %s in_breakable
 
 string_literal		\"([^"]|\\\{(dot|ea|ee|ng|st|th)\}|\\[^\{])*\"
-control_chars		[\x00-\x06\x0C\x0E-\x1F]
+control_chars		[\x00-\x08\x0B\x0C\x0E-\x1F]
 non_ascii_chars		[\x80-\xFF]
 invalid_chars		{control_chars}|{non_ascii_chars}
 
