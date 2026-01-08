@@ -116,7 +116,7 @@ osxdmg: bundle
 	  --icon "ReadMe.macOS" 564 395 \
 	  --hdiutil-quiet \
 	  --no-internet-enable \
-	  "Exult-snapshot.dmg" \
+	  "Exult-1.12.1.dmg" \
 	  "./Exult-snapshot/"
 	rm -rf Exult-snapshot
 
@@ -156,7 +156,7 @@ studiodmg: studiobundle
 	  --icon "ReadMe.macOS" 452 395 \
 	  --hdiutil-quiet \
 	  --no-internet-enable \
-	  "ExultStudio-snapshot.dmg" \
+	  "ExultStudio-1.12.1.dmg" \
 	  "./Studio-snapshot/"
 	rm -rf Studio-snapshot
 
