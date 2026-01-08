@@ -339,6 +339,12 @@ string_literal		\"([^"]|\\\{(dot|ea|ee|ng|st|th)\}|\\[^\{])*\"
 
 %%
 
+[\x00\x80-\xFF]		{
+			Uc_location::yyerror(
+					"Invalid character (non-ASCII) in source file: the file may have been corrupted. Compilation cannot continue.");
+			exit(1);
+		}
+
 if		return IF;
 else		return ELSE;
 return		return RETURN;
