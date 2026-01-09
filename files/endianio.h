@@ -224,7 +224,7 @@ namespace endian_internal { namespace detail {
 	}
 
 	template <typename T>
-	using select_unsigned_for_t = decltype(select_unsigned_impl<sizeof(T)>());
+	using select_unsigned_for_t = decltype(select_unsigned_impl<T>());
 
 	template <class... Ts>
 	struct overloaded : public Ts... {
