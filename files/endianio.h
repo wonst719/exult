@@ -205,6 +205,27 @@ namespace endian_internal { namespace detail {
 	}
 #endif
 
+	template <typename T, is_an_integer_t<T> = true>
+	constexpr auto select_unsigned_impl() {
+		constexpr const size_t Size = sizeof(T);
+		if constexpr (Size == sizeof(uint8_t)) {
+			return uint8_t{};
+		} else if constexpr (Size == sizeof(uint16_t)) {
+			return uint16_t{};
+		} else if constexpr (Size == sizeof(uint32_t)) {
+			return uint32_t{};
+		} else if constexpr (Size == sizeof(uint64_t)) {
+			return uint64_t{};
+		} else {
+			static_assert(
+					Size == sizeof(uint8_t) || Size == sizeof(uint16_t)
+					|| Size == sizeof(uint32_t) || Size == sizeof(uint64_t));
+		}
+	}
+
+	template <typename T>
+	using select_unsigned_for_t = decltype(select_unsigned_impl<sizeof(T)>());
+
 	template <class... Ts>
 	struct overloaded : public Ts... {
 		using Ts::operator()...;
@@ -291,7 +312,7 @@ namespace endian_internal { namespace detail {
 			typename Int,
 			std::enable_if_t<std::is_integral_v<Int>, bool> = true>
 	ENDIANIO_CONST_CONSTEXPR Int byteswap(Int value) noexcept {
-		using UInt = std::make_unsigned_t<std::remove_cv_t<Int>>;
+		using UInt = select_unsigned_for_t<Int>;
 		if constexpr (std::is_same_v<UInt, std::remove_cv_t<Int>>) {
 			return byteswap_impl(value);
 		}
