@@ -1872,11 +1872,11 @@ bool ExultStudio::prompt_for_discard(
  *  - Skips notebooks themselves (tab switches don't dirty)
  *  - Recursively processes all container children
  *
- *  @param widget         The widget to process (recurses into containers)
- *  @param callback       The callback function to connect
- *  @param user_data      User data to pass to the callback
- *  @param excluded_names Optional array of widget names to skip
- *  @param num_excluded   Number of entries in excluded_names array
+ *  @param widget             The widget to process (recurses into containers)
+ *  @param callback           The callback function to connect
+ *  @param user_data          User data to pass to the callback
+ *  @param excluded_names     Optional array of exact widget names to skip
+ *  @param num_excluded       Number of entries in excluded_names array
  */
 void ExultStudio::connect_widget_signals(
 		GtkWidget* widget, GCallback callback, gpointer user_data,

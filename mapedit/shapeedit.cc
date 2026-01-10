@@ -449,21 +449,13 @@ void ExultStudio::new_equip_record() {
 
 /*
  *  Helper to mark shape window as dirty (having unsaved changes).
- *
- *  IMPORTANT: This should be called at the START of editing callbacks that
- *  modify data, but NOT for:
- *  - Frame navigation (shinfo_frame_inc/dec buttons)
- *  - Play/stop audio buttons (all on_shinfo_*_play/stop_clicked)
- *  - Tab switching in the notebook
- *  - View toggles like "3D bounding box" (if implemented)
- *
- *  When adding new editing callbacks, add mark_shape_window_dirty() at
- *  the beginning unless it's one of the excluded types above.
  */
 static void mark_shape_window_dirty() {
 	ExultStudio* studio = ExultStudio::get_instance();
 	// Don't mark dirty if we're still initializing the window
-	if (!studio->is_shape_window_initializing()) {
+	// or if frame field signals are being suppressed (during frame navigation)
+	if (!studio->is_shape_window_initializing()
+		&& !studio->is_frame_field_signal_suppressed()) {
 		studio->set_shape_window_dirty(true);
 	}
 }
@@ -4349,53 +4341,20 @@ static void connect_shape_dirty_signals(GtkWidget* shapewin) {
 		return false;    // Allow signal to propagate
 	});
 
-	// Get the main container and recursively connect to all editing widgets
+	// Exact widget names to exclude
+	static const char* excluded_names[] = {
+			"shinfo_frame",           // Frame navigation spin button
+			"shinfo_presets_box",     // Presets widget
+			"shinfo_tiles_preview"    // 3D Bounding Box
+	};
+	static const int num_excluded
+			= sizeof(excluded_names) / sizeof(excluded_names[0]);
+
+	// Get the main container and use studio's connect_widget_signals function
 	GtkWidget* main_box = gtk_bin_get_child(GTK_BIN(shapewin));
 	if (main_box) {
-		std::function<void(GtkWidget*)> connect_recursive
-				= [&](GtkWidget* widget) {
-					  const char* widget_name = gtk_widget_get_name(widget);
-
-					  // Skip excluded widgets (frame navigation, audio
-					  // controls, notebook/tabs, entire preset widget)
-					  if (widget_name
-						  && (strstr(widget_name, "_play") != nullptr
-							  || strstr(widget_name, "_stop") != nullptr
-							  || strstr(widget_name, "frame_inc") != nullptr
-							  || strstr(widget_name, "frame_dec") != nullptr
-							  || strcmp(widget_name, "shinfo_presets_box")
-										 == 0)) {
-						  // Skip these widgets completely (don't recurse)
-						  return;
-					  } else if (GTK_IS_NOTEBOOK(widget)) {
-						  // Don't connect to notebook's switch-page signal
-						  // But still recurse into its pages
-					  } else if (GTK_IS_SPIN_BUTTON(widget)) {
-						  g_signal_connect(
-								  widget, "value-changed", mark_dirty_cb,
-								  nullptr);
-					  } else if (GTK_IS_ENTRY(widget)) {
-						  g_signal_connect(
-								  widget, "changed", mark_dirty_cb, nullptr);
-					  } else if (GTK_IS_TOGGLE_BUTTON(widget)) {
-						  g_signal_connect(
-								  widget, "toggled", mark_dirty_cb, nullptr);
-					  } else if (GTK_IS_COMBO_BOX(widget)) {
-						  g_signal_connect(
-								  widget, "changed", mark_dirty_cb, nullptr);
-					  }
-
-					  // Recurse into containers
-					  if (GTK_IS_CONTAINER(widget)) {
-						  GList* children = gtk_container_get_children(
-								  GTK_CONTAINER(widget));
-						  for (GList* l = children; l != nullptr; l = l->next) {
-							  connect_recursive(GTK_WIDGET(l->data));
-						  }
-						  g_list_free(children);
-					  }
-				  };
-		connect_recursive(main_box);
+		ExultStudio::get_instance()->connect_widget_signals(
+				main_box, mark_dirty_cb, nullptr, excluded_names, num_excluded);
 	}
 }
 
