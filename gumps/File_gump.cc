@@ -39,6 +39,7 @@
 #include "game.h"
 #include "gamewin.h"
 #include "mouse.h"
+#include "items.h"
 
 #include <array>
 #include <cctype>
@@ -396,7 +397,7 @@ void File_gump::load() {
 	if (num == -1) {
 		return;    // Shouldn't ever happen.
 	}
-	if (!Yesno_gump::ask("Okay to load over your current game?")) {
+	if (!Yesno_gump::ask(get_text_msg(ask_to_load_current))) {
 		return;
 	}
 	gwin->restore_gamedat(num);    // Aborts if unsuccessful.
@@ -419,7 +420,7 @@ void File_gump::save() {
 		return;    // Shouldn't ever happen.
 	}
 	if (!gwin->get_save_name(num).empty()) {    // Already a game in this slot?
-		if (!Yesno_gump::ask("Okay to write over existing saved game?")) {
+		if (!Yesno_gump::ask(get_text_msg(ask_to_overwrite))) {
 			return;
 		}
 	}
@@ -435,7 +436,7 @@ void File_gump::save() {
  */
 
 void File_gump::quit() {
-	if (!Yesno_gump::ask("Do you really want to quit?")) {
+	if (!Yesno_gump::ask(get_text_msg(ask_to_quit))) {
 		return;
 	}
 	quitting_time = QUIT_TIME_YES;

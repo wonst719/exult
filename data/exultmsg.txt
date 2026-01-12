@@ -149,3 +149,7 @@
 #mixer gump popup error message
 0x588: Failed to play midi test track
 0x589: Failed to play ogg test track
+0x600:Okay to write over existing saved game?
+0x601:Okay to delete saved game?
+0x602:Do you really want to quit?
+0x603:Okay to load over your current game?

@@ -39,6 +39,7 @@
 #include "mouse.h"
 #include "party.h"
 #include "touchui.h"
+#include "items.h"
 
 #include <cctype>
 #include <cstring>
@@ -228,7 +229,7 @@ void Newfile_gump::save() {
 
 	// Already a game in this slot? If so ask to delete
 	if (selected != -2) {
-		if (!Yesno_gump::ask("Okay to write over existing saved game?")) {
+		if (!Yesno_gump::ask(get_text_msg(ask_to_overwrite))) {
 			return;
 		}
 	}
@@ -270,7 +271,7 @@ void Newfile_gump::delete_file() {
 	}
 
 	// Ask to delete
-	if (!Yesno_gump::ask("Okay to delete saved game?")) {
+	if (!Yesno_gump::ask(get_text_msg(ask_to_delete))) {
 		return;
 	}
 
