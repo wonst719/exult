@@ -1025,6 +1025,9 @@ void Actor::use_food() {
 	}
 	int food = get_property(static_cast<int>(food_level));
 	food -= (rand() % 4);    // Average 1.5 level/hour.
+	if (food < 16 && gwin->get_no_hungry()) {
+		food = 16;
+	}
 	set_property(static_cast<int>(food_level), food);
 	if (food > 9) {
 		return;

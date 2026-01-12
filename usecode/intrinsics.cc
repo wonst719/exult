@@ -441,6 +441,12 @@ USECODE_INTRINSIC(add_to_party) {
 	}
 	npc->set_schedule_type(Schedule::follow_avatar);
 	npc->set_alignment(Actor::good);
+	if (gwin->get_no_hungry()) {
+		int food = npc->get_property(static_cast<int>(Actor::food_level));
+		if (food < 16) {
+			npc->set_property(static_cast<int>(Actor::food_level), 16);
+		}
+	}
 	// cout << "NPC " << npc->get_npc_num() << " added to party." << endl;
 	return no_ret;
 }
@@ -511,6 +517,10 @@ USECODE_INTRINSIC(set_npc_prop) {
 			}
 			if (prop != static_cast<int>(Actor::sex_flag)) {
 				delta += npc->get_property(prop);    // NOT for gender.
+			}
+			if (prop == static_cast<int>(Actor::food_level) && delta < 16
+				&& gwin->get_no_hungry()) {
+				delta = 16;
 			}
 			npc->set_property(prop, delta);
 		}

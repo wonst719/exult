@@ -487,6 +487,10 @@ Game_window::Game_window(
 	config->set(
 			"config/gameplay/extended_intro", extended_intro ? "yes" : "no",
 			false);
+
+	config->value("config/gameplay/no_hungry", str, "no");
+	no_hungry = str == "yes";
+	config->set("config/gameplay/no_hungry", no_hungry ? "yes" : "no", false);
 }
 
 /*

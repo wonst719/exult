@@ -149,6 +149,7 @@ class Game_window {
 	Pixel_colors outline_color;
 	bool         sb_hide_missing;
 	bool         extended_intro;
+	bool         no_hungry;
 
 	// Touch Options
 	bool item_menu;
@@ -368,6 +369,14 @@ public:
 
 	void set_extended_intro(bool i) {
 		extended_intro = i;
+	}
+
+	bool get_no_hungry() const {
+		return no_hungry;
+	}
+
+	void set_no_hungry(bool s) {
+		no_hungry = s;
 	}
 
 	/*

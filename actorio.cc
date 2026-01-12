@@ -453,6 +453,9 @@ void Actor::read(
 	if (fix_first) {
 		food_read = 18;
 	}
+	if (is_in_party() && food_read < 16 && gwin->get_no_hungry()) {
+		food_read = 16;
+	}
 	set_property(static_cast<int>(Actor::food_level), food_read);
 
 	// Skip 7
