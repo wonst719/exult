@@ -327,7 +327,7 @@ void Setup_text(bool si, bool expansion, bool sibeta) {
 	// TODO: allow multilingual exultmsg.txt files.
 	auto exultmsg = [&]() {
 		if (is_patch && U7exists(PATCH_EXULTMSG)) {
-			return IExultDataSource(PATCH_EXULTMSG, -1);
+			return IExultDataSource(PATCH_EXULTMSG, 0);
 		}
 
 		return IExultDataSource(
