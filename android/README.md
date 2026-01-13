@@ -13,10 +13,15 @@ The launcher has been tested and can automatically install content from the foll
   - Select Mac as your platform
   - Look, under "DOWNLOAD OFFLINE BACKUP GAME INSTALLERS"
   - Download the `.pkg` file(s)
+- Zipped original games (with each game zipped)
 - [Zipped all-in-one audio pack for manual installation](http://prdownloads.sourceforge.net/exult/exult_audio.zip)
 - [Marzo's Black Gate Keyring (requires FoV)](https://exult.info/snapshots/Keyring.zip)
 - [Marzo's Serpent Isle Fixes (requires SS)](https://exult.info/snapshots/Sifixes.zip)
 - [SourceForge Island (requires FoV)](https://exult.info/snapshots/SFisland.zip)
+- [Ultima VI Remake (requires FoV)](https://exult.info/snapshots/Ultima6.zip)
+- [Glimmerscape (requires SS)](https://exult.info/snapshots/Glimmerscape_SI_mod_by_Donfrow.zip)
+
+Savegames can be exported/imported to and from a zip in your download folder.
 
 Now download Exult, and have fun!
 
@@ -69,7 +74,3 @@ $ /path/to/Android/Sdk/build-tools/version/apksigner sign --ks path/to/my/androi
 ```
 The final release APK will be located in `app-release-signed.apk`.
 
-## Issues
-
-There are currently several issues (mostly related to SDK and NDKs):
-- Currently mods installation is hardcoded to accept only the mods from the Exult team - see https://github.com/exult/exult/issues/371
