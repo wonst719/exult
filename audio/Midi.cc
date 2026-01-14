@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2000-2022  The Exult Team
+Copyright (C) 2000-2026  The Exult Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -888,15 +888,13 @@ void MyMidiPlayer::start_sound_effect(int num) {
 	int real_num = num;
 
 	// no negative track numbers
-	if (num < 0)
-	{
+	if (num < 0) {
 		return;
 	}
 
 	if (Game::get_game_type() == BLACK_GATE) {
 		// Bounds check bg_conv array
-		if (size_t(num) >= bgconv_size)
-		{
+		if (size_t(num) >= bgconv_size) {
 			return;
 		}
 		real_num = bgconv[num];
@@ -959,22 +957,37 @@ bool MyMidiPlayer::ogg_play_track(
 	string ogg_name;
 	string basepath = "<MUSIC>/";
 
+	// check if a generic numbered ogg file exists in patch folder
+	auto try_generic_ogg = [](int track_num) -> string {
+		char generic_name[16];
+		snprintf(generic_name, sizeof(generic_name), "%03d.ogg", track_num);
+		string name = generic_name;
+		if (U7exists("<PATCH>/music/" + name)) {
+			return name;
+		}
+		return "";
+	};
+
 	if (filename == EXULT_FLX && num == EXULT_FLX_MEDITOWN_MID) {
 		ogg_name = "exult.ogg";
 	} else if (Game::get_game_type() == BLACK_GATE) {
 		if (filename == INTROMUS || filename == INTROMUS_AD) {
-			if (num == 0) {
-				ogg_name = "00bg.ogg";
-			} else if (num == 1) {
-				ogg_name = "01bg.ogg";
-			} else if (num == 2) {
-				ogg_name = "02bg.ogg";
-			} else if (num == 3) {
-				ogg_name = "03bg.ogg";
-			} else if (num == 4) {
-				ogg_name = "endcr01.ogg";
-			} else if (num == 5) {
-				ogg_name = "endcr02.ogg";
+			// First try generic numbered file
+			ogg_name = try_generic_ogg(num);
+			if (ogg_name.empty()) {
+				if (num == 0) {
+					ogg_name = "00bg.ogg";
+				} else if (num == 1) {
+					ogg_name = "01bg.ogg";
+				} else if (num == 2) {
+					ogg_name = "02bg.ogg";
+				} else if (num == 3) {
+					ogg_name = "03bg.ogg";
+				} else if (num == 4) {
+					ogg_name = "endcr01.ogg";
+				} else if (num == 5) {
+					ogg_name = "endcr02.ogg";
+				}
 			}
 		} else if (filename == ENDSCORE_XMI) {
 			if (num == 1 || num == 3) {
@@ -983,9 +996,13 @@ bool MyMidiPlayer::ogg_play_track(
 				ogg_name = "end02bg.ogg";
 			}
 		} else if (filename == MAINMUS || filename == MAINMUS_AD) {
-			char outputstr[255];
-			snprintf(outputstr, sizeof(outputstr), "%02dbg.ogg", num);
-			ogg_name = outputstr;
+			// First try generic numbered file
+			ogg_name = try_generic_ogg(num);
+			if (ogg_name.empty()) {
+				char outputstr[255];
+				snprintf(outputstr, sizeof(outputstr), "%02dbg.ogg", num);
+				ogg_name = outputstr;
+			}
 		} else if (filename == EXULT_BG_FLX) {
 			ogg_name = filename;
 		}
@@ -1003,20 +1020,28 @@ bool MyMidiPlayer::ogg_play_track(
 		} else if (filename == R_SEND || filename == A_SEND) {
 			ogg_name = "si13.ogg";
 		} else if (filename == MAINMUS || filename == MAINMUS_AD) {
-			if (static_cast<unsigned>(num) < bgconvmusic.size()) {
-				ogg_name = bgconvmusic[num];
-			} else {
-				char outputstr[255];
-				snprintf(outputstr, sizeof(outputstr), "%02dsi.ogg", num);
-				ogg_name = outputstr;
+			// First try generic numbered file
+			ogg_name = try_generic_ogg(num);
+			if (ogg_name.empty()) {
+				if (static_cast<unsigned>(num) < bgconvmusic.size()) {
+					ogg_name = bgconvmusic[num];
+				} else {
+					char outputstr[255];
+					snprintf(outputstr, sizeof(outputstr), "%02dsi.ogg", num);
+					ogg_name = outputstr;
+				}
 			}
 		} else if (filename == EXULT_SI_FLX) {
 			ogg_name = filename;
 		}
 	} else {
-		char outputstr[255];
-		snprintf(outputstr, sizeof(outputstr), "%02dmus.ogg", num);
-		ogg_name = outputstr;
+		// First try generic numbered file for mods/other games
+		ogg_name = try_generic_ogg(num);
+		if (ogg_name.empty()) {
+			char outputstr[255];
+			snprintf(outputstr, sizeof(outputstr), "%02dmus.ogg", num);
+			ogg_name = outputstr;
+		}
 		basepath = "<STATIC>/music/";
 	}
 
@@ -1108,9 +1133,8 @@ void MyMidiPlayer::ogg_set_repeat(bool newrepeat) {
 
 void MyMidiPlayer::setMidiPausedAll(bool state) {
 	if (midi_driver) {
-		for (int seq = 0; seq < midi_driver->maxSequences(); seq++)
-		{
-			if(state) {
+		for (int seq = 0; seq < midi_driver->maxSequences(); seq++) {
+			if (state) {
 				midi_driver->pauseSequence(seq);
 			} else {
 				midi_driver->unpauseSequence(seq);
