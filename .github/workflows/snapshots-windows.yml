@@ -43,7 +43,7 @@ jobs:
             mingw-w64-clang-x86_64-gtk3 mingw-w64-clang-x86_64-adwaita-icon-theme mingw-w64-clang-x86_64-libxml2 mingw-w64-clang-x86_64-freetype
             mingw-w64-clang-x86_64-gimp mingw-w64-clang-x86_64-icu
             mingw-w64-i686-toolchain mingw-w64-i686-binutils mingw-w64-i686-ntldd
-            mingw-w64-i686-fluidsynth mingw-w64-i686-libtimidity mingw-w64-i686-libogg mingw-w64-i686-libvorbis
+            mingw-w64-i686-fluidsynth mingw-w64-i686-libogg mingw-w64-i686-libvorbis
             mingw-w64-i686-libpng mingw-w64-i686-zlib
             mingw-w64-i686-gtk3 mingw-w64-i686-adwaita-icon-theme mingw-w64-i686-libxml2 mingw-w64-i686-freetype
             mingw-w64-i686-gimp mingw-w64-i686-autotools mingw-w64-i686-cmake
@@ -111,6 +111,26 @@ jobs:
          make -j install
          cd ../..
          rm -r -f icu4c-77_1-src.tgz icu
+      - name: Download, build and install libtimidity 0.2.7 for mingw32 i686
+        if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
+        env:
+          MSYSTEM: MINGW32
+          ARCH: i686
+        run: |
+         curl -L https://sourceforge.net/projects/libtimidity/files/libtimidity/0.2.7/libtimidity-0.2.7.tar.gz/download -o libtimidity-0.2.7.tar.gz
+         echo Checking sha256 hash
+         echo 26447cbc049fb262e26b640e42c063e8694133aa92ff145e0d0b15a03a352e6a *libtimidity-0.2.7.tar.gz | sha256sum.exe -c
+         tar xfz libtimidity-0.2.7.tar.gz
+         cd libtimidity-0.2.7/
+         autoreconf -vfi
+         ./configure \
+         --enable-shared \
+         --enable-static \
+         --disable-ao 
+         make -j
+         make -j install
+         cd ..
+         rm -r -f libtimidity-0.2.7.tar.gz libtimidity-0.2.7
       - name: Checkout code for i686 build
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
         uses: actions/checkout@v4
