@@ -1055,7 +1055,7 @@ void Text_effect::init() {
 		msg[0] = '"';
 	}
 	const int len = msg.size();
-	if (msg[len - 1] == '@') {
+	if (len > 0 && msg[len - 1] == '@') {
 		msg[len - 1] = '"';
 	}
 }

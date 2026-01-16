@@ -251,7 +251,7 @@ int Font::paint_text_box(
 		cursor->nlines = cur_line + (cur_line < max_lines);
 	}
 	cury = y;    // Render text.
-	for (int i = 0; i <= cur_line; i++) {
+	for (int i = 0; i <= cur_line && i <= max_lines; i++) {
 		const char* str = lines[i].c_str();
 		int         len = static_cast<int>(lines[i].length());
 		if (i == last_punct_line) {
