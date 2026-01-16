@@ -152,4 +152,6 @@
 0x600:Okay to write over existing saved game?
 0x601:Okay to delete saved game?
 0x602:Do you really want to quit?
-0x603:Okay to load over your current game?
+0x603:Saving Game
+0x604:Game saved
+0x605:Game restored

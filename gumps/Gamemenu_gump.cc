@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gamewin.h"
 #include "ignore_unused_variable_warning.h"
 #include "mouse.h"
+#include "items.h"
 
 #include <string>
 
@@ -96,7 +97,7 @@ Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, -1) {
 //++++++ IMPLEMENT RETURN_TO_MENU!
 void Gamemenu_gump::quit(bool return_to_menu) {
 	ignore_unused_variable_warning(return_to_menu);
-	if (!Yesno_gump::ask("Do you really want to quit?")) {
+	if (!Yesno_gump::ask(get_text_msg(ask_to_quit))) {
 		return;
 	}
 	quitting_time = QUIT_TIME_YES;

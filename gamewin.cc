@@ -1380,14 +1380,15 @@ void Game_window::write(bool nopaint) {
 	const int centre_x    = width / 2;
 	const int height      = get_height();
 	const int centre_y    = height / 2;
-	const int text_height = shape_man->get_text_height(0);
-	const int text_width  = shape_man->get_text_width(0, "Saving Game");
+
+	const char* text        = get_text_msg(saving_game);
+	const int   text_height = shape_man->get_text_height(0);
+	const int   text_width  = shape_man->get_text_width(0, text);
 
 	if (!nopaint) {
 		win->fill_translucent8(0, width, height, 0, 0, shape_man->get_xform(8));
 		shape_man->paint_text(
-				0, "Saving Game", centre_x - text_width / 2,
-				centre_y - text_height);
+				0, text, centre_x - text_width / 2, centre_y - text_height);
 		show(true);
 	}
 	for (auto* map : maps) {
