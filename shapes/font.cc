@@ -114,7 +114,11 @@ int Font::paint_text_box(
 		Cursor_info* cursor                // We set x, y if not nullptr.
 ) {
 	const char* start = text;    // Remember the start.
-	win->set_clip(x, y, w, h);
+	int         clipy = y;
+	if (clipy >= 2) {
+		clipy--;
+	}
+	win->set_clip(x, clipy, w, h);
 	const int   endx           = x + w;    // Figure where to stop.
 	int         curx           = x;
 	int         cury           = y;
