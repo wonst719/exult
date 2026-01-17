@@ -1,3 +1,4 @@
+#if 0
 /*
  *  Copyright (C) 2000-2024  The Exult Team
  *
@@ -688,3 +689,4 @@ bool File_gump::character_input(int chr, int unicode, bool shift_pressed) {
 	}
 	return true;
 }
+#endif

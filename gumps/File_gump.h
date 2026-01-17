@@ -1,3 +1,4 @@
+#if 0
 /*
  *  Copyright (C) 2000-2024  The Exult Team
  *
@@ -71,4 +72,5 @@ public:
 			override;    // Character typed.
 };
 
+#endif
 #endif

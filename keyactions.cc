@@ -75,11 +75,14 @@ void ActionQuit(const int* params) {
 
 // { ActionOldFileGump, 0, "Save/restore", normal_keys, NONE },
 void ActionOldFileGump(const int* params) {
+	throw "Old File_gump is not supported";
+#if 0
 	ignore_unused_variable_warning(params);
 	auto* fileio = new File_gump();
 	Game_window::get_instance()->get_gump_man()->do_modal_gump(
 			fileio, Mouse::hand);
 	delete fileio;
+#endif
 }
 
 // { ActionMenuGump, 0, "GameMenu", normal_keys, NONE },
