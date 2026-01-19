@@ -1633,6 +1633,7 @@ bool Field_object::field_effect(Actor* actor) {
 	if (!actor) {
 		return false;
 	}
+	auto      keep_alive = shared_from_this();
 	bool      del   = false;    // Only delete poison, sleep fields.
 	const int frame = get_framenum();
 	switch (type) {
