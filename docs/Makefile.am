@@ -27,6 +27,7 @@ nobase_doc_DATA = \
 	images/studio08.png		\
 	images/studio09.png		\
 	images/studio10.png		\
+	images/studio11.png		\
 	images/studiobgiregs.png	\
 	images/studiosiiregs.png	\
 	images/exult_logo_nice.svg
