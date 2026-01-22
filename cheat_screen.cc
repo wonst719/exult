@@ -1802,7 +1802,9 @@ void CheatScreen::NPCDisplay(Actor* actor, int& num) {
 
 		// Now the info
 		const std::string namestr = actor->get_npc_name();
-		snprintf(buf, sizeof(buf), "NPC %i - %s", num, namestr.c_str());
+		snprintf(
+				buf, sizeof(buf), "NPC %i - %s%s", num, namestr.c_str(),
+				actor->is_unused() ? " (Unused)" : "");
 		font->paint_text_fixedwidth(ibuf, buf, offsetx, 0, 8, fontcolor.colors);
 
 		snprintf(buf, sizeof(buf), "Loc (%04i, %04i, %02i)", t.tx, t.ty, t.tz);
@@ -1941,6 +1943,11 @@ void CheatScreen::NPCMenu(Actor* actor, int& num) {
 		// Palette Effect
 		AddMenuItem(
 				offsetx + 160, maxy - offsety1 - 72, SDLK_P, "alette Effect");
+
+		// 
+		// Walk to Avatar
+		AddMenuItem(
+				offsetx + 160, maxy - offsety1 - 63, SDLK_W, "alk to Avatar");
 	}
 
 	// Change NPC
@@ -1998,8 +2005,14 @@ void CheatScreen::NPCActivate(Actor* actor, int& num) {
 			break;
 
 		case SDLK_T:    // Teleport
+			
 			Game_window::get_instance()->teleport_party(
 					actor->get_tile(), false, actor->get_map_num());
+			break;
+
+		case SDLK_W:    // Walk to Avatar		
+			actor->approach_another(
+					Game_window::get_instance()->get_main_actor());
 			break;
 
 		case SDLK_E:    // Experience
@@ -2072,6 +2085,7 @@ bool CheatScreen::NPCCheck(Actor* actor, int& num) {
 	case SDLK_S:    // stats
 	case SDLK_Z:    // Target
 	case SDLK_T:    // Teleport
+	case SDLK_W:    // Walk
 		if (!state.input[0]) {
 			state.input[0] = state.command;
 		}

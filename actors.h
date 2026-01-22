@@ -407,6 +407,18 @@ public:
 		dormant = true;
 	}
 
+	void move(int newtx, int newty, int newlift, int newmap = -1) override {
+		Ireg_game_object::move(newtx, newty, newlift, newmap);
+		if (!this->is_pos_invalid()) {
+			// Position is valid so mark us as not unused
+			unused = false;
+		}
+	}
+
+	void move(const Tile_coord& t, int newmap = -1) {
+		move(t.tx, t.ty, t.tz, newmap);
+	}
+
 	Actor_action* get_action() const {    // Return action.
 		return action;
 	}
