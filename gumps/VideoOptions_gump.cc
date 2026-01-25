@@ -520,7 +520,7 @@ void VideoOptions_gump::load_settings(bool Fullscreen) {
 VideoOptions_gump::VideoOptions_gump()
 		: Modal_gump(nullptr, -1),
 		  startup_fill_mode(static_cast<Image_window::FillMode>(0)) {
-	SetProceduralBackground(TileRect(0, 2, 100, yForRow(13)), -1);
+	SetProceduralBackground(TileRect(0, 0, 100, yForRow(13)), -1);
 	video_options_gump = this;
 
 	const std::vector<std::string> enabledtext

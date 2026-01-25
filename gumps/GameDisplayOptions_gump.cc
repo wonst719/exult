@@ -442,7 +442,7 @@ void GameDisplayOptions_gump::load_settings() {
 }
 
 GameDisplayOptions_gump::GameDisplayOptions_gump() : Modal_gump(nullptr, -1) {
-	SetProceduralBackground(TileRect(0, 2, 100, yForRow(14)), -1);
+	SetProceduralBackground(TileRect(0, 0, 100, yForRow(13)), -1);
 
 	for (auto& btn : buttons) {
 		btn.reset();
