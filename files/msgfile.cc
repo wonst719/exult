@@ -49,45 +49,85 @@ using std::stringstream;
 using std::vector;
 
 /*
- *  Translation table for UTF-8 encoded special characters to font hex
- * positions. The font shapes have these characters at positions
- * that don't match their UTF-8 encoding, so we need to translate them.
+ *  Translation tables for UTF-8 encoded special characters to font hex
+ *  positions. The font shapes have these characters at positions
+ *  that don't match their UTF-8 encoding, so we need to translate them.
+ *  Value is std::string to allow multi-character replacements (e.g., ü -> ue).
  */
-static const std::unordered_map<std::string_view, char> utf8_to_font_hex = {
-		{"\xC3\x87", 0x01}, // Ç (C cedilla uppercase)
-		{"\xC3\xBC", 0x02}, // ü (u umlaut)
-		{"\xC3\xA9", 0x03}, // é (e acute)
-		{"\xC3\xA2", 0x04}, // â (a circumflex)
-		{"\xC3\xA4", 0x05}, // ä (a umlaut)
-		{"\xC3\xA0", 0x06}, // à (a grave)
-		{"\xC3\xA7", 0x07}, // ç (c cedilla lowercase)
-		{"\xC3\xAA", 0x08}, // ê (e circumflex)
-		{"\xC3\xAB", 0x0b}, // ë (e umlaut)
-		{"\xC3\xA8", 0x0c}, // è (e grave)
-		{"\xC3\xAF", 0x0e}, // ï (i umlaut)
-		{"\xC3\xAE", 0x0f}, // î (i circumflex)
-		{"\xC3\xAC", 0x10}, // ì (i grave)
-		{"\xC3\x84", 0x11}, // Ä (A umlaut uppercase)
-		{"\xC3\x88", 0x12}, // È (E grave uppercase)
-		{"\xC3\xB4", 0x13}, // ô (o circumflex)
-		{"\xC3\xB6", 0x14}, // ö (o umlaut)
-		{"\xC3\xBB", 0x15}, // û (u circumflex)
-		{"\xC3\xB9", 0x16}, // ù (u grave)
-		{"\xC3\x96", 0x17}, // Ö (O umlaut uppercase)
-		{"\xC3\x9C", 0x18}, // Ü (U umlaut uppercase)
-		{"\xC3\xA1", 0x19}, // á (a acute)
-		{"\xC3\x9F", 0x1c}, // ß (German sharp S)
-		{"\xC3\xAD", 0x1d}, // í (i acute)
-		{"\xC3\xB3", 0x1e}, // ó (o acute)
-		{"\xC3\xBA", 0x1f}, // ú (u acute)
+
+// Map for original/serif fonts with special character positions
+static const std::unordered_map<std::string_view, std::string>
+		utf8_to_font_special = {
+				{"\xC3\x87", "\x01"}, // Ç (C cedilla uppercase)
+				{"\xC3\xBC", "\x02"}, // ü (u umlaut)
+				{"\xC3\xA9", "\x03"}, // é (e acute)
+				{"\xC3\xA2", "\x04"}, // â (a circumflex)
+				{"\xC3\xA4", "\x05"}, // ä (a umlaut)
+				{"\xC3\xA0", "\x06"}, // à (a grave)
+				{"\xC3\xA7", "\x07"}, // ç (c cedilla lowercase)
+				{"\xC3\xAA", "\x08"}, // ê (e circumflex)
+				{"\xC3\xAB", "\x0b"}, // ë (e umlaut)
+				{"\xC3\xA8", "\x0c"}, // è (e grave)
+				{"\xC3\xAF", "\x0e"}, // ï (i umlaut)
+				{"\xC3\xAE", "\x0f"}, // î (i circumflex)
+				{"\xC3\xAC", "\x10"}, // ì (i grave)
+				{"\xC3\x84", "\x11"}, // Ä (A umlaut uppercase)
+				{"\xC3\x88", "\x12"}, // È (E grave uppercase)
+				{"\xC3\xB4", "\x13"}, // ô (o circumflex)
+				{"\xC3\xB6", "\x14"}, // ö (o umlaut)
+				{"\xC3\xBB", "\x15"}, // û (u circumflex)
+				{"\xC3\xB9", "\x16"}, // ù (u grave)
+				{"\xC3\x96", "\x17"}, // Ö (O umlaut uppercase)
+				{"\xC3\x9C", "\x18"}, // Ü (U umlaut uppercase)
+				{"\xC3\xA1", "\x19"}, // á (a acute)
+				{"\xC3\x9F", "\x1c"}, // ß (German sharp S)
+				{"\xC3\xAD", "\x1d"}, // í (i acute)
+				{"\xC3\xB3", "\x1e"}, // ó (o acute)
+				{"\xC3\xBA", "\x1f"}, // ú (u acute)
+};
+
+// Map for fonts.vga without special characters, using ASCII equivalents
+// (multi-char allowed)
+static const std::unordered_map<std::string_view, std::string>
+		utf8_to_font_ascii = {
+				{"\xC3\x87",  "C"}, // Ç -> C
+				{"\xC3\xBC", "ue"}, // ü -> ue
+				{"\xC3\xA9",  "e"}, // é -> e
+				{"\xC3\xA2",  "a"}, // â -> a
+				{"\xC3\xA4", "ae"}, // ä -> ae
+				{"\xC3\xA0",  "a"}, // à -> a
+				{"\xC3\xA7",  "c"}, // ç -> c
+				{"\xC3\xAA",  "e"}, // ê -> e
+				{"\xC3\xAB",  "e"}, // ë -> e
+				{"\xC3\xA8",  "e"}, // è -> e
+				{"\xC3\xAF",  "i"}, // ï -> i
+				{"\xC3\xAE",  "i"}, // î -> i
+				{"\xC3\xAC",  "i"}, // ì -> i
+				{"\xC3\x84", "Ae"}, // Ä -> Ae
+				{"\xC3\x88",  "E"}, // È -> E
+				{"\xC3\xB4",  "o"}, // ô -> o
+				{"\xC3\xB6", "oe"}, // ö -> oe
+				{"\xC3\xBB",  "u"}, // û -> u
+				{"\xC3\xB9",  "u"}, // ù -> u
+				{"\xC3\x96", "Oe"}, // Ö -> Oe
+				{"\xC3\x9C", "Ue"}, // Ü -> Ue
+				{"\xC3\xA1",  "a"}, // á -> a
+				{"\xC3\x9F", "ss"}, // ß -> ss
+				{"\xC3\xAD",  "i"}, // í -> i
+				{"\xC3\xB3",  "o"}, // ó -> o
+				{"\xC3\xBA",  "u"}, // ú -> u
 };
 
 /*
  *  Translate UTF-8 encoded special characters to font hex positions.
  *  This modifies the string in place, converting multi-byte UTF-8 sequences
- *  to single bytes that match the font file positions.
+ *  to single bytes (or multi-byte ASCII equivalents) based on font config.
  */
-static void translate_utf8_to_font_hex(std::string& text) {
+static void translate_utf8_to_font_hex(
+		std::string& text, bool use_special_chars) {
+	const auto& utf8_map
+			= use_special_chars ? utf8_to_font_special : utf8_to_font_ascii;
+
 	std::string result;
 	result.reserve(text.size());
 
@@ -97,8 +137,8 @@ static void translate_utf8_to_font_hex(std::string& text) {
 		if (i + 1 < text.size()
 			&& (static_cast<unsigned char>(text[i]) & 0xE0) == 0xC0) {
 			std::string_view seq(text.data() + i, 2);
-			auto             it = utf8_to_font_hex.find(seq);
-			if (it != utf8_to_font_hex.end()) {
+			auto             it = utf8_map.find(seq);
+			if (it != utf8_map.end()) {
 				result += it->second;
 				i += 2;
 				continue;
@@ -114,10 +154,12 @@ static void translate_utf8_to_font_hex(std::string& text) {
 
 Text_msg_file_reader::Text_msg_file_reader() : global_first(0) {}
 
-Text_msg_file_reader::Text_msg_file_reader(IDataSource& in) : global_first(0) {
+Text_msg_file_reader::Text_msg_file_reader(
+		IDataSource& in, bool use_special_chars)
+		: global_first(0) {
 	in.read(contents, in.getAvail());
 	// Translate UTF-8 special characters to font hex positions
-	translate_utf8_to_font_hex(contents);
+	translate_utf8_to_font_hex(contents, use_special_chars);
 	if (!parse_contents()) {
 		cerr << "Error parsing text message file" << endl;
 		global_section.clear();

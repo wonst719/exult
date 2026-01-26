@@ -214,7 +214,7 @@ static void Merge_message_strings(
 
 static void Setup_item_names(
 		IDataSource& items, std::vector<File_spec>& exultmsgs, bool si,
-		bool expansion, bool sibeta) {
+		bool expansion, bool sibeta, bool use_special_chars) {
 	vector<std::optional<string>> msglist;
 	int                           num_item_names = 0;
 	int                           num_text_msgs  = 0;
@@ -248,7 +248,7 @@ static void Setup_item_names(
 		IExultDataSource msgs(exultmsgfs, 0);
 		if (msgs.good()) {
 			// Exult msgs. too?
-			Text_msg_file_reader reader(msgs);
+			Text_msg_file_reader reader(msgs, use_special_chars);
 			int first_msg = reader.get_global_section_strings(msglist);
 			if (first_msg >= msg_file_start) {
 				first_msg -= msg_file_start;
@@ -310,7 +310,7 @@ static void Setup_item_names(
 
 static void Setup_text(
 		IDataSource&            txtfile,    // All text.
-		std::vector<File_spec>& exultmsgs) {
+		std::vector<File_spec>& exultmsgs, bool use_special_chars) {
 	vector<std::optional<string>> msglist;
 	int                           first_msg = 0;
 	// Start by reading from exultmsg
@@ -318,7 +318,7 @@ static void Setup_text(
 		IExultDataSource exultmsg(exultmsgfs.name, exultmsgfs.index);
 		if (exultmsg.good()) {
 			{
-				Text_msg_file_reader reader(exultmsg);
+				Text_msg_file_reader reader(exultmsg, use_special_chars);
 				first_msg = reader.get_global_section_strings(msglist);
 				if (first_msg >= msg_file_start) {
 					first_msg -= msg_file_start;
@@ -337,7 +337,7 @@ static void Setup_text(
 
 	// Now read in textmsg.txt
 	if (txtfile.good()) {
-		Text_msg_file_reader reader(txtfile);
+		Text_msg_file_reader reader(txtfile, use_special_chars);
 		reader.get_section_strings(SHAPES_SECT, item_names);
 		reader.get_section_strings(MISC_SECT, misc_names);
 
@@ -350,7 +350,9 @@ static void Setup_text(
  *  Setup item names and text messages.
  */
 
-void Setup_text(bool si, bool expansion, bool sibeta, Game_Language language) {
+void Setup_text(
+		bool si, bool expansion, bool sibeta, Game_Language language,
+		bool use_special_chars) {
 	Free_text();
 	const bool             is_patch = is_system_path_defined("<PATCH>");
 	std::vector<File_spec> exultmsgs;
@@ -402,13 +404,13 @@ void Setup_text(bool si, bool expansion, bool sibeta, Game_Language language) {
 		if (!txtfile.good()) {
 			return;
 		}
-		Setup_text(txtfile, exultmsgs);
+		Setup_text(txtfile, exultmsgs, use_special_chars);
 	} else if (U7exists(TEXTMSGS)) {
 		IFileDataSource txtfile(TEXTMSGS, true);
 		if (!txtfile.good()) {
 			return;
 		}
-		Setup_text(txtfile, exultmsgs);
+		Setup_text(txtfile, exultmsgs, use_special_chars);
 	} else {
 		IFileDataSource textflx = [&]() {
 			if (is_patch && U7exists(PATCH_TEXT)) {
@@ -417,7 +419,8 @@ void Setup_text(bool si, bool expansion, bool sibeta, Game_Language language) {
 			return IFileDataSource(TEXT_FLX);
 		}();
 
-		Setup_item_names(textflx, exultmsgs, si, expansion, sibeta);
+		Setup_item_names(
+				textflx, exultmsgs, si, expansion, sibeta, use_special_chars);
 	}
 }
 

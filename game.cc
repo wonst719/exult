@@ -202,10 +202,17 @@ Game_Language Game::get_game_message_language() {
 }
 
 void Game::setup_text() {
+	// Check font config to determine if special character translation is needed
+	std::string font_config;
+	config->value("config/gameplay/fonts", font_config, "original");
+	Pentagram::tolower(font_config);
+	bool use_special_chars
+			= (font_config == "original" || font_config == "serif");
+
 	Setup_text(
 			get_game_type() == SERPENT_ISLE, has_expansion(),
 			get_game_type() == SERPENT_ISLE && is_si_beta(),
-			get_game_message_language());
+			get_game_message_language(), use_special_chars);
 }
 
 void Game::setup_fonts() {

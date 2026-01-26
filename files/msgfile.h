@@ -49,7 +49,7 @@ class Text_msg_file_reader {
 
 public:
 	Text_msg_file_reader();
-	Text_msg_file_reader(IDataSource& in);
+	Text_msg_file_reader(IDataSource& in, bool use_special_chars = false);
 
 	[[nodiscard]] const Section_data& get_global_section() const {
 		return global_section;
@@ -57,12 +57,14 @@ public:
 
 	uint32 get_global_section_strings(std::vector<std::string>& strings) const {
 		strings.clear();
-		for (const auto& s : global_section) {			
+		for (const auto& s : global_section) {
 			strings.emplace_back(s.value_or(std::string()));
 		}
 		return global_first;
 	}
-	uint32 get_global_section_strings(std::vector<std::optional<std::string>>& strings) const {
+
+	uint32 get_global_section_strings(
+			std::vector<std::optional<std::string>>& strings) const {
 		strings.clear();
 		for (const auto& s : global_section) {
 			strings.emplace_back(s);
@@ -94,9 +96,8 @@ public:
 		return 0;
 	}
 
-
 	uint32 get_section_strings(
-			std::string_view          sectionName,
+			std::string_view                         sectionName,
 			std::vector<std::optional<std::string>>& strings) const {
 		strings.clear();
 		if (has_section(sectionName)) {
