@@ -66,13 +66,16 @@ static const std::unordered_map<std::string_view, std::string>
 				{"\xC3\xA0", "\x06"}, // à (a grave)
 				{"\xC3\xA7", "\x07"}, // ç (c cedilla lowercase)
 				{"\xC3\xAA", "\x08"}, // ê (e circumflex)
+				{"\xC3\x8A", "\x09"}, // Ê (e circumflex uppercase)
+				{"\xC3\x82", "\x0a"}, // Â (A circumflex uppercase)
 				{"\xC3\xAB", "\x0b"}, // ë (e umlaut)
 				{"\xC3\xA8", "\x0c"}, // è (e grave)
+				{"\xC3\x88", "\x1d"}, // È (E grave uppercase)
 				{"\xC3\xAF", "\x0e"}, // ï (i umlaut)
 				{"\xC3\xAE", "\x0f"}, // î (i circumflex)
 				{"\xC3\xAC", "\x10"}, // ì (i grave)
 				{"\xC3\x84", "\x11"}, // Ä (A umlaut uppercase)
-				{"\xC3\x88", "\x12"}, // È (E grave uppercase)
+				{"\xC3\x89", "\x12"}, // É (E acute uppercase)
 				{"\xC3\xB4", "\x13"}, // ô (o circumflex)
 				{"\xC3\xB6", "\x14"}, // ö (o umlaut)
 				{"\xC3\xBB", "\x15"}, // û (u circumflex)
@@ -80,10 +83,18 @@ static const std::unordered_map<std::string_view, std::string>
 				{"\xC3\x96", "\x17"}, // Ö (O umlaut uppercase)
 				{"\xC3\x9C", "\x18"}, // Ü (U umlaut uppercase)
 				{"\xC3\xA1", "\x19"}, // á (a acute)
+				{"\xC3\x81", "\x1a"}, // Á (a acute uppercase)
+				{"\xC3\x80", "\x1b"}, // À (a grave uppercase)
 				{"\xC3\x9F", "\x1c"}, // ß (German sharp S)
 				{"\xC3\xAD", "\x1d"}, // í (i acute)
 				{"\xC3\xB3", "\x1e"}, // ó (o acute)
 				{"\xC3\xBA", "\x1f"}, // ú (u acute)
+				{"\xC3\x91", "\x81"}, // Ñ (N tilde uppercase)
+				{"\xC3\xB1", "\x82"}, // ñ (n tilde)
+				{"\xC3\x93", "\x83"}, // Ó (o acute uppercase)
+				{"\xC3\x9A", "\x84"}, // Ú (u acute uppercase)
+				{"\xC3\xBF", "\x85"}, // ¿ (inverted question mark)
+				{"\xC2\xA1", "\x86"}, // ¡ (inverted exclamation mark)
 };
 
 // Map for fonts.vga without special characters, using ASCII equivalents
@@ -98,13 +109,16 @@ static const std::unordered_map<std::string_view, std::string>
 				{"\xC3\xA0",  "a"}, // à -> a
 				{"\xC3\xA7",  "c"}, // ç -> c
 				{"\xC3\xAA",  "e"}, // ê -> e
+				{"\xC3\x8A",  "E"}, // Ê -> E
+				{"\xC3\x82",  "A"}, // Â -> A
 				{"\xC3\xAB",  "e"}, // ë -> e
 				{"\xC3\xA8",  "e"}, // è -> e
+				{"\xC3\x88",  "E"}, // È -> E
 				{"\xC3\xAF",  "i"}, // ï -> i
 				{"\xC3\xAE",  "i"}, // î -> i
 				{"\xC3\xAC",  "i"}, // ì -> i
 				{"\xC3\x84", "Ae"}, // Ä -> Ae
-				{"\xC3\x88",  "E"}, // È -> E
+				{"\xC3\x89",  "E"}, // É -> E
 				{"\xC3\xB4",  "o"}, // ô -> o
 				{"\xC3\xB6", "oe"}, // ö -> oe
 				{"\xC3\xBB",  "u"}, // û -> u
@@ -112,10 +126,18 @@ static const std::unordered_map<std::string_view, std::string>
 				{"\xC3\x96", "Oe"}, // Ö -> Oe
 				{"\xC3\x9C", "Ue"}, // Ü -> Ue
 				{"\xC3\xA1",  "a"}, // á -> a
+				{"\xC3\x81",  "A"}, // Á -> A
+				{"\xC3\x80",  "A"}, // À -> A
 				{"\xC3\x9F", "ss"}, // ß -> ss
 				{"\xC3\xAD",  "i"}, // í -> i
 				{"\xC3\xB3",  "o"}, // ó -> o
 				{"\xC3\xBA",  "u"}, // ú -> u
+				{"\xC3\x91",  "N"}, // Ñ -> N
+				{"\xC3\xB1",  "n"}, // ñ -> n
+				{"\xC3\x93",  "O"}, // Ó -> O
+				{"\xC3\x9A",  "U"}, // Ú -> U
+				// {"\xC3\xBF",  ""}, // ¿ -> in this case no conversion
+				// {"\xC2\xA1",  ""}, // ¡ -> in this case no conversion
 };
 
 /*
