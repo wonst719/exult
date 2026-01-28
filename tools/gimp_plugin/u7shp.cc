@@ -59,7 +59,9 @@
 #include "vgafile.h"
 
 #include <cerrno>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -355,9 +357,72 @@ static guchar gimp_cmap[768] = {
 		0xFC, 0xFC, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFC, 0x00, 0xFC, 0x00, 0x00,
 		0xFC, 0xFC, 0xFC, 0x61, 0x61, 0x61, 0xC0, 0xC0, 0xC0, 0xFC, 0x00, 0xF1};
 
+static gint load_gpl_palette(const gchar* path) {
+	std::ifstream infile(path);
+	if (!infile.is_open()) {
+		return 0;
+	}
+
+	std::string line;
+	// Check for GIMP Palette header
+	if (!std::getline(infile, line)
+		|| line.find("GIMP Palette") == std::string::npos) {
+		return 0;
+	}
+
+	unsigned color_index = 0;
+	while (std::getline(infile, line) && color_index < 256) {
+		// Skip empty lines and comments
+		if (line.empty() || line[0] == '#') {
+			continue;
+		}
+		// Skip header lines like "Name:" and "Columns:"
+		if (line.find("Name:") == 0 || line.find("Columns:") == 0) {
+			continue;
+		}
+
+		// Parse RGB values
+		std::istringstream iss(line);
+		int                r, g, b;
+		if (iss >> r >> g >> b) {
+			gimp_cmap[color_index * 3 + 0] = static_cast<guchar>(r);
+			gimp_cmap[color_index * 3 + 1] = static_cast<guchar>(g);
+			gimp_cmap[color_index * 3 + 2] = static_cast<guchar>(b);
+			color_index++;
+		}
+	}
+
+	return static_cast<gint>(color_index);
+}
+
 static gint load_palette(GFile* file, guchar palette[], GError** error) {
-	ignore_unused_variable_warning(file, palette, error);
-	const U7object pal(gimp_file_get_utf8_name(file), 0);
+	ignore_unused_variable_warning(palette, error);
+	const gchar* path = gimp_file_get_utf8_name(file);
+	if (!path) {
+		return 0;
+	}
+
+	// Check if this is a GIMP GPL palette file (text-based)
+	// by looking at the file extension or content
+	if (g_str_has_suffix(path, ".gpl")) {
+		return load_gpl_palette(path);
+	}
+
+	// Try to read as a text file first to detect GPL format
+	std::ifstream test_file(path);
+	if (test_file.is_open()) {
+		std::string first_line;
+		if (std::getline(test_file, first_line)) {
+			if (first_line.find("GIMP Palette") != std::string::npos) {
+				test_file.close();
+				return load_gpl_palette(path);
+			}
+		}
+		test_file.close();
+	}
+
+	// Load as U7 binary palette
+	const U7object pal(path, 0);
 	size_t         len;
 	auto           data = pal.retrieve(len);
 	if (!data || len == 0) {
@@ -380,6 +445,8 @@ static gint load_palette(GFile* file, guchar palette[], GError** error) {
 			gimp_cmap[i * 3 + 2] = Read1(ptr) << 2;
 			Read1(ptr);    // Skip entry from second palette
 		}
+	} else {
+		return 0;
 	}
 	return 256;
 }
