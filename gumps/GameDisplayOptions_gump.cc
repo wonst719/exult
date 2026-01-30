@@ -227,6 +227,10 @@ public:
 	static auto Serif() {
 		return get_text_msg(0x5DA - msg_file_start);
 	}
+
+	static auto FontsDisabled() {
+		return get_text_msg(0x5DB - msg_file_start);
+	}
 };
 
 using GameDisplayOptions_button = CallbackTextButton<GameDisplayOptions_gump>;
@@ -377,8 +381,8 @@ void GameDisplayOptions_gump::build_buttons() {
 			language, get_button_pos_for_label(Strings::Language_()),
 			yForRow(++y_index), large_size);
 
-	auto fonts_txt
-			= std::vector<std::string>{Strings::Original(), Strings::Serif()};
+	auto fonts_txt = std::vector<std::string>{
+			Strings::Original(), Strings::Serif(), Strings::FontsDisabled()};
 	buttons[id_fonts] = std::make_unique<GameDisplayTextToggle>(
 			this, &GameDisplayOptions_gump::toggle_fonts, fonts_txt, fonts,
 			get_button_pos_for_label(Strings::Fonts_()), yForRow(++y_index),
@@ -436,8 +440,10 @@ void GameDisplayOptions_gump::load_settings() {
 	Pentagram::tolower(value);
 	if (value == "serif") {
 		fonts = 1;
+	} else if (value == "disabled") {
+		fonts = 2;
 	} else {
-		fonts = 0;    // original or disabled
+		fonts = 0;    // original
 	}
 }
 
@@ -530,7 +536,7 @@ void GameDisplayOptions_gump::save_settings() {
 		Game::setup_text();
 	}
 
-	const char* fontcodes[] = {"original", "serif"};
+	const char* fontcodes[] = {"original", "serif", "disabled"};
 	if (fonts >= 0 && size_t(fonts) < std::size(fontcodes)) {
 		config->set("config/gameplay/fonts", fontcodes[fonts], false);
 		// Reload fonts if font selection changed

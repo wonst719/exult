@@ -33,15 +33,15 @@
 #	pragma GCC diagnostic pop
 #endif    // __GNUC__
 
-#include "browser.h"
 #include "Configuration.h"
+#include "browser.h"
 #include "exult.h"
 #include "files/U7file.h"
 #include "font.h"
 #include "game.h"
-#include "istring.h"
 #include "gamewin.h"
 #include "gump_utils.h"
+#include "istring.h"
 #include "items.h"
 #include "keys.h"
 #include "palette.h"
@@ -156,10 +156,10 @@ void ShapeBrowser::browse_shapes() {
 			Pentagram::tolower(font_config);
 			if (font_config == "serif") {
 				sources.emplace_back(PATCH_SERIF_FONTS, -1);
-			} else if (font_config == "original") {
-				sources.emplace_back(PATCH_ORIGINAL_FONTS, -1);
-			} else {    // "disabled" - use original FONTS_VGA
+			} else if (font_config == "disabled") {
 				sources.emplace_back(PATCH_FONTS, -1);
+			} else {    // "original"
+				sources.emplace_back(PATCH_ORIGINAL_FONTS, -1);
 			}
 		}
 

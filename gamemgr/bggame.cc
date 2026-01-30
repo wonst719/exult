@@ -240,13 +240,13 @@ BG_Game::BG_Game() : shapes(ENDSHAPE_FLX, -1, PATCH_ENDSHAPE) {
 	if (font_config == "serif") {
 		font_source = File_spec(EXULT_FLX, EXULT_FLX_FONTS_SERIF_VGA);
 		font_patch  = PATCH_SERIF_FONTS;
-	} else if (font_config == "original") {
-		font_source = File_spec(EXULT_FLX, EXULT_FLX_FONTS_ORIGINAL_VGA);
-		font_patch  = PATCH_ORIGINAL_FONTS;
-		vlead       = -5;
-	} else {
+	} else if (font_config == "disabled") {
 		font_source = FONTS_VGA;
 		font_patch  = PATCH_FONTS;
+		vlead       = -5;
+	} else {    // "original"
+		font_source = File_spec(EXULT_FLX, EXULT_FLX_FONTS_ORIGINAL_VGA);
+		font_patch  = PATCH_ORIGINAL_FONTS;
 		vlead       = -5;
 	}
 
@@ -269,7 +269,7 @@ BG_Game::BG_Game() : shapes(ENDSHAPE_FLX, -1, PATCH_ENDSHAPE) {
 		fontManager.add_font(
 				"EXULT_END_FONT",
 				File_spec(EXULT_FLX, EXULT_FLX_FONTS_ORIGINAL_VGA),
-				PATCH_ORIGINAL_FONTS, 14, -2 , vlead);
+				PATCH_ORIGINAL_FONTS, 14, -2, vlead);
 	}
 
 	auto& mp = gwin->get_map_patches();

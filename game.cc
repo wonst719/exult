@@ -227,13 +227,13 @@ void Game::setup_fonts() {
 	if (font_config == "serif") {
 		font_source = File_spec(EXULT_FLX, EXULT_FLX_FONTS_SERIF_VGA);
 		font_patch  = PATCH_SERIF_FONTS;
-	} else if (font_config == "original") {
-		font_source = File_spec(EXULT_FLX, EXULT_FLX_FONTS_ORIGINAL_VGA);
-		font_patch  = PATCH_ORIGINAL_FONTS;
-		vlead       = -5;
-	} else {    // "disabled"
+	} else if (font_config == "disabled") {
 		font_source = FONTS_VGA;
 		font_patch  = PATCH_FONTS;
+		vlead       = -5;
+	} else {    // "original"
+		font_source = File_spec(EXULT_FLX, EXULT_FLX_FONTS_ORIGINAL_VGA);
+		font_patch  = PATCH_ORIGINAL_FONTS;
 		vlead       = -5;
 	}
 
