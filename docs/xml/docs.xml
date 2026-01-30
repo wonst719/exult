@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE readme SYSTEM "docs.dtd">
-<readme title="Exult" changed="13 January 2026 (GMT)">
+<readme title="Exult" changed="30 January 2026 (GMT)">
 	<section title="Introduction">
 		<sub name="exult_version">
 			<header>Exult Version</header>
@@ -600,6 +600,13 @@
 					<li><strong>Language</strong><br/>
 						We added the possibility to translate <Exult/> to another language and this sets
 						it for all of <Exult/> and the game messages.</li>
+					<li><strong>Built-in fonts</strong><br/>
+						Built in fonts provide the original (fraktur like) fonts as well as a serif one that
+						some people prefer over the harder to read original.<br/>
+						Additionally both fonts provide special characters needed for French, Spanish and
+						German for the above localization option.<br/>
+						However the built in fonts clash with old unofficial translations of the games and
+						possibly other mods and patches. In this case disable the built-in fonts</li>
 				</ul>
 			</body>
 		</sub>
@@ -2248,6 +2255,10 @@
 							yes
 							<comment>**sets the language of Exult.</comment>
 							</configtag>
+							<configtag name="fonts">
+							original
+							<comment>**original/serif/disabled. Choose the built-in fonts or disable it for unofficial translations.</comment>
+							</configtag>
 						</configtag>
 						<configtag name="audio">
 							<configtag name="enabled">
@@ -3310,6 +3321,15 @@
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
+		<sub name="30012026">
+			<header>- 30 January 2026</header>
+			<body>
+				<ul>
+					<li><ref1 target="game_display_gump"/> built-in fonts added.</li>
+					<li><ref1 target="exult_config"/> built-in fonts added.</li>
+				</ul>
+			</body>
+		</sub>
 		<sub name="13012026">
 			<header>- 13 January 2026</header>
 			<body>
