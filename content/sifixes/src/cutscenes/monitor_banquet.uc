@@ -37,6 +37,41 @@ void MonitorBanquet object#(0x1C3) () {
 		health = LUTHER->get_npc_prop(HEALTH);
 		LUTHER->set_npc_prop(HEALTH, (LUTHER->get_npc_prop(STRENGTH) - health));
 
+		if (MARSTEN->get_item_flag(ASLEEP)) {
+			MARSTEN->clear_item_flag(ASLEEP);
+		}
+		if (SPEKTOR->get_item_flag(ASLEEP)) {
+			SPEKTOR->clear_item_flag(ASLEEP);
+		}
+		if (SHAZZANA->get_item_flag(ASLEEP)) {
+			SHAZZANA->clear_item_flag(ASLEEP);
+		}
+		if (FLICKEN->get_item_flag(ASLEEP)) {
+			FLICKEN->clear_item_flag(ASLEEP);
+		}
+		if (BRENDANN->get_item_flag(ASLEEP)) {
+			BRENDANN->clear_item_flag(ASLEEP);
+		}
+		if (CALADIN->get_item_flag(ASLEEP)) {
+			CALADIN->clear_item_flag(ASLEEP);
+		}
+		if (CELLIA->get_item_flag(ASLEEP)) {
+			CELLIA->clear_item_flag(ASLEEP);
+		}
+		if (TEMPLAR->get_item_flag(ASLEEP)) {
+			TEMPLAR->clear_item_flag(ASLEEP);
+		}
+		if (KRAYG->get_item_flag(ASLEEP)) {
+			KRAYG->clear_item_flag(ASLEEP);
+		}
+		if (LUTHER->get_item_flag(ASLEEP)) {
+			LUTHER->clear_item_flag(ASLEEP);
+		}
+		if (LUCILLA->get_item_flag(ASLEEP)) {
+			LUCILLA->clear_item_flag(ASLEEP);
+		}
+		
+
 		npc = partyUtters(1, 0, 0, true);
 
 		var partytoken = "We";
