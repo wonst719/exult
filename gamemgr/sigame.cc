@@ -240,14 +240,13 @@ SI_Game::SI_Game() {
 				PATCH_ORIGINAL_FONTS, 14, -2, vlead);
 	}
 
-	// TODO: Verify if these map patches make sense for SI Beta, and come up
-	// with patches specific to it.
-	if (GAME_SI && !is_si_beta()) {
+	// TODO: Come up with patches specific to SI Beta.
+	if (GAME_SI) {
 		Map_patch_collection& mp = gwin->get_map_patches();
-		// Egg by "PC pirate" in forest:
+		// Egg by "PC pirate" in forest
 		mp.add(std::make_unique<Map_patch_remove>(
 				Object_spec(Tile_coord(647, 1899, 0), 275, 7, 1)));
-		// Carpets above roof in Monitor:
+		// Carpets above roof in Monitor
 		mp.add(std::make_unique<Map_patch_remove>(
 				Object_spec(Tile_coord(1035, 2572, 8), 483, 1, 0), true));
 		mp.add(std::make_unique<Map_patch_remove>(
