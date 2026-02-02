@@ -705,6 +705,11 @@ int Usecode_script::exec(
 				// Get the actor's actual facing:
 				const int v = (optr->get_framenum() & 48) | (opcode - 0x61);
 				usecode->set_item_frame(optr.get(), v, 1, 1);
+				// Force dependency recalculation when actor enters sleep_frame
+				// so sleeping actors are rendered below awake actors.
+				if ((v & 0xf) == Actor::sleep_frame) {
+					optr->move(optr->get_tile());
+				}
 			} else if (opcode >= 0x30 && opcode < 0x38) {
 				// Step in dir. opcode&7.
 				step(usecode, opcode & 7, 0);

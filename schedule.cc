@@ -2555,11 +2555,15 @@ void Sleep_schedule::now_what() {
 					}
 					npc->change_frame(frame);
 					npc->force_sleep();
+					// Force dependency recalculation for render ordering.
+					npc->move(npc->get_tile());
 					return;
 				}
 			}
 			npc->change_frame(sleep_dir_frame);
 			npc->force_sleep();
+			// Force dependency recalculation for render ordering.
+			npc->move(npc->get_tile());
 			return;
 		}
 		state = 1;

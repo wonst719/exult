@@ -773,7 +773,7 @@ void Map_chunk::add_dependencies(
 		// Sleeping NPCs should render before bedspread covers but after bed
 		// frames.
 		const Actor* actor = newobj->as_actor();
-		if (actor && actor->get_flag(Obj_flags::asleep)) {
+		if (actor && (actor->get_framenum() & 0xf) == Actor::sleep_frame) {
 			const int bedshape = obj->get_shapenum();
 			if (bedshape == 696 || bedshape == 1011 || bedshape == 363
 				|| bedshape == 312) {
@@ -789,8 +789,10 @@ void Map_chunk::add_dependencies(
 		const Actor* newactor = newobj->as_actor();
 		const Actor* objactor = obj->as_actor();
 		if (newactor && objactor) {
-			const bool new_asleep = newactor->get_flag(Obj_flags::asleep);
-			const bool obj_asleep = objactor->get_flag(Obj_flags::asleep);
+			const bool new_asleep
+					= (newactor->get_framenum() & 0xf) == Actor::sleep_frame;
+			const bool obj_asleep
+					= (objactor->get_framenum() & 0xf) == Actor::sleep_frame;
 			if (new_asleep && !obj_asleep) {
 				cmp = -1;    // Asleep newobj renders before awake obj.
 			} else if (!new_asleep && obj_asleep) {
