@@ -133,5 +133,20 @@ void MonitorBanquet object#(0x1C3) () {
 			}
 		}
 		MonitorBanquet.original();
+		if (event == SCRIPTED && MARSTEN->get_npc_id() > 14) {
+			// The cutscene has finished. In the original, it is a state machine
+			// in Marsden's NPC ID field, and all other branches abort.
+			// So in theory we just have to check that event == SCRIPTED, but
+			// I'm also checking Marsden's NPC ID to be sure.
+			var npcids = [
+				MARSTEN, SPEKTOR, SHAZZANA, FLICKEN, BRENDANN,
+				CALADIN, CELLIA, TEMPLAR, KRAYG, LUTHER
+			];
+			for (npc in npcids) {
+				if (npc && (!npc->get_item_flag(DEAD)) && (npc->get_schedule_type() == WAIT)) {
+					npc->run_schedule();
+				}
+			}
+		}
 	}
 }
