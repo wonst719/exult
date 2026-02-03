@@ -455,10 +455,6 @@ VideoOptions_gump::VideoOptions_gump()
 			this, &VideoOptions_gump::toggle_fullscreen, enabledtext,
 			fullscreen, get_button_pos_for_label(Strings::FullScreen_()), yForRow(0), 74);
 #endif
-	config->value("config/video/highdpi", highdpi, false);
-	buttons[id_high_dpi] = std::make_unique<VideoTextToggle>(
-			this, &VideoOptions_gump::toggle_high_dpi, enabledtext, highdpi,
-			colx[2], rowy[2], 74);
 	config->value("config/video/share_video_settings", share_settings, false);
 
 	std::vector<std::string> yesNO = {Strings::No(), Strings::Yes()};
