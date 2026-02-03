@@ -51,7 +51,6 @@
 #include "party.h"
 #include "ucmachine.h"
 #include "version.h"
-#include "items.h"
 
 /*
  *  Get the i'th party member, with the 0'th being the Avatar.
@@ -122,7 +121,7 @@ void ActionQuicksave(const int* params) {
 		gwin->get_effects()->center_text("Saving game failed!");
 		return;
 	}
-	gwin->get_effects()->center_text(get_text_msg(game_saved));
+	gwin->get_effects()->center_text("Game saved");
 	gwin->got_bad_feeling(8);
 }
 
@@ -136,7 +135,7 @@ void ActionQuickrestore(const int* params) {
 		gwin->get_effects()->center_text("Restoring game failed!");
 		return;
 	}
-	gwin->get_effects()->center_text(get_text_msg(game_restored));
+	gwin->get_effects()->center_text("Game restored");
 	gwin->paint();
 }
 

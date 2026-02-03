@@ -174,14 +174,6 @@ const int congrats_si = 0x17F;    // to 0x187
 
 const int mixergump_midi_test_failed = 0x188;
 const int mixergump_ogg_test_failed  = 0x189;
-
-const int ask_to_overwrite    = 0x200;
-const int ask_to_delete       = 0x201;
-const int ask_to_quit         = 0x202;
-const int saving_game         = 0x203;
-const int game_saved          = 0x204;
-const int game_restored       = 0x205;
-
 //	Misc. text (frames, etc.) start at 0x500 in text.flx.
 const int misc_name0 = 0x500;
 
