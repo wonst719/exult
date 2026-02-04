@@ -894,6 +894,8 @@ static int mapKoreanFont(const std::string& name, int index) {
 		return 10 + index;
 	else if (name == "<STATIC>/endgame.dat" || name == "<STATIC>/intro.dat")
 		return 20 + index;
+	else if (name == "<DATA>/exult.flx")
+		return 90 + index;
 
 	return 0;
 }
@@ -904,14 +906,17 @@ static std::unique_ptr<KoreanFont> loadKoreanFont(const std::string& fontName, i
 	int fontIdx = mapKoreanFont(fontName, index);
 
 	char fileName[256];
-	sprintf(fileName, "<PATCH>/FONT%d.FNT", fontIdx);
+	sprintf(fileName, "<EXULT_PATCH>/FONT%d.FNT", fontIdx);
 	if (!U7exists(fileName)) {
-		// Fallback
-		fontIdx = 0;
 		sprintf(fileName, "<PATCH>/FONT%d.FNT", fontIdx);
 		if (!U7exists(fileName)) {
-			// Fail
-			return nullptr;
+			// Fallback
+			fontIdx = 0;
+			sprintf(fileName, "<PATCH>/FONT%d.FNT", fontIdx);
+			if (!U7exists(fileName)) {
+				// Fail
+				return nullptr;
+			}
 		}
 	}
 	std::unique_ptr<KoreanFont> koreanFont(new KoreanFont);
