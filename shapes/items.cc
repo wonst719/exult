@@ -389,6 +389,7 @@ void Setup_text(bool si, bool expansion, bool sibeta, Game_Language language) {
 
 	if (is_patch) {
 		// Then load the patch exultmsg then  finally load load the
+		exultmsgs.push_back(File_spec("<EXULT_PATCH>/exultmsg.txt", 0));
 		exultmsgs.push_back(File_spec(PATCH_EXULTMSG, 0));
 		// finally load load the language specific patch
 		if (patch_exultmsg_lang) {

@@ -553,6 +553,7 @@ int exult_main(const char* runpath) {
 	add_system_path("<STATIC>", "static");
 	add_system_path("<GAMEDAT>", "gamedat");
 	add_system_path("<PATCH>", "patch");
+	add_system_path("<EXULT_PATCH>", "patch");
 	//	add_system_path("<SAVEGAME>", "savegame");
 	add_system_path("<SAVEGAME>", ".");
 	add_system_path("<MODS>", "mods");
