@@ -510,28 +510,20 @@ void Newfile_gump::paint() {
 		snprintf(
 				info, std::size(info),
 				"%s: %s\n"
+				"%s: %i\n%s: %i\n"
 				"%s: %i  %s: %i\n"
-				"%s: %i  %s %i\n"
 				"%s: %i  %s: %i\n"
 				"\n"
 				"%s: %i\n"
 				"%s: %02i:%02i\n"
-				"\n"
-				"%s: %i\n"
-				"%s: %i%s %s %04i\n"
-				"%s: %02i:%02i",
+				"%s: %i\n",
 
 				Strings::Avatar(), party[0].name, Strings::Exp(), party[0].exp,
 				Strings::Hp(), party[0].health, Strings::Str(), party[0].str,
 				Strings::Dxt(), party[0].dext, Strings::Int(), party[0].intel,
 				Strings::Trn(), party[0].training, Strings::GameDay(),
 				details->game_day, Strings::GameTime(), details->game_hour,
-				details->game_minute, Strings::SaveCount(), details->save_count,
-				Strings::Date(), details->real_day,
-				Strings::ordinal_numeral_suffix(details->real_day),
-				Strings::month_Abbreviation(details->real_month - 1),
-				details->real_year, Strings::Time(), details->real_hour,
-				details->real_minute);
+				details->game_minute, Strings::SaveCount(), details->save_count);
 		info[std::size(info) - 1] = 0;
 
 		if (filename) {
