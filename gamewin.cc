@@ -107,6 +107,17 @@ using std::string;
 using std::unique_ptr;
 using std::vector;
 
+namespace {
+
+	class Strings {
+	public:
+		static auto SavingGame() {
+			return get_text_msg(0x754 - msg_file_start);
+		}
+	};
+
+}    // namespace
+
 // THE game window:
 Game_window* Game_window::game_window = nullptr;
 
@@ -1377,12 +1388,12 @@ void Game_window::write(bool nopaint) {
 	const int height      = get_height();
 	const int centre_y    = height / 2;
 	const int text_height = shape_man->get_text_height(0);
-	const int text_width  = shape_man->get_text_width(0, "Saving Game");
+	const int text_width  = shape_man->get_text_width(0, Strings::SavingGame());
 
 	if (!nopaint) {
 		win->fill_translucent8(0, width, height, 0, 0, shape_man->get_xform(8));
 		shape_man->paint_text(
-				0, "Saving Game", centre_x - text_width / 2,
+				0, Strings::SavingGame(), centre_x - text_width / 2,
 				centre_y - text_height);
 		show(true);
 	}

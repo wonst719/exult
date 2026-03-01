@@ -297,7 +297,7 @@ void Newfile_gump::save() {
 
 	// Already a game in this slot? If so ask to delete
 	if (selected != -2) {
-		if (!Yesno_gump::ask("Okay to write over existing saved game?")) {
+		if (!Yesno_gump::ask(get_text_msg(0x6F0 - msg_file_start))) {
 			return;
 		}
 	}
@@ -339,7 +339,7 @@ void Newfile_gump::delete_file() {
 	}
 
 	// Ask to delete
-	if (!Yesno_gump::ask("Okay to delete saved game?")) {
+	if (!Yesno_gump::ask(get_text_msg(0x6F1 - msg_file_start))) {
 		return;
 	}
 

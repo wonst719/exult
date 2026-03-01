@@ -45,12 +45,34 @@
 #include "gamewin.h"
 #include "gump_utils.h"
 #include "ignore_unused_variable_warning.h"
+#include "items.h"
 #include "keys.h"
 #include "mouse.h"
 #include "palette.h"
 #include "party.h"
 #include "ucmachine.h"
 #include "version.h"
+
+namespace {
+	class Strings {
+	public:
+		static auto SavingGameFailed() {
+			return get_text_msg(0x6FA - msg_file_start);
+		}
+
+		static auto GameSaved() {
+			return get_text_msg(0x6FB - msg_file_start);
+		}
+
+		static auto RestoringGameFailed() {
+			return get_text_msg(0x6FC - msg_file_start);
+		}
+
+		static auto GameRestored() {
+			return get_text_msg(0x6FD - msg_file_start);
+		}
+	};
+}    // namespace
 
 /*
  *  Get the i'th party member, with the 0'th being the Avatar.
@@ -118,10 +140,10 @@ void ActionQuicksave(const int* params) {
 	try {
 		gwin->write();
 	} catch (exult_exception& /*e*/) {
-		gwin->get_effects()->center_text("Saving game failed!");
+		gwin->get_effects()->center_text(Strings::SavingGameFailed());
 		return;
 	}
-	gwin->get_effects()->center_text("Game saved");
+	gwin->get_effects()->center_text(Strings::GameSaved());
 	gwin->got_bad_feeling(8);
 }
 
@@ -132,10 +154,10 @@ void ActionQuickrestore(const int* params) {
 	try {
 		gwin->read();
 	} catch (exult_exception& /*e*/) {
-		gwin->get_effects()->center_text("Restoring game failed!");
+		gwin->get_effects()->center_text(Strings::RestoringGameFailed());
 		return;
 	}
-	gwin->get_effects()->center_text("Game restored");
+	gwin->get_effects()->center_text(Strings::GameRestored());
 	gwin->paint();
 }
 

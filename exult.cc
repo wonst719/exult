@@ -2404,7 +2404,8 @@ void make_screenshot(bool silent) {
 
 	if (!namefound) {
 		if (!silent) {
-			eman->center_text("Too many screenshots");
+			eman->center_text(get_text_msg(
+					0x740 - msg_file_start));    // "Too many screenshots"
 		}
 	} else {
 		SDL_RWops* dst = SDL_RWFromFile(fn, "wb");
@@ -2412,11 +2413,13 @@ void make_screenshot(bool silent) {
 		if (gwin->get_win()->screenshot(dst)) {
 			cout << "Screenshot saved in " << fn << endl;
 			if (!silent) {
-				eman->center_text("Screenshot");
+				eman->center_text(get_text_msg(
+						0x741 - msg_file_start));    // "Screenshot"
 			}
 		} else {
 			if (!silent) {
-				eman->center_text("Screenshot failed");
+				eman->center_text(get_text_msg(
+						0x742 - msg_file_start));    // "Screenshot failed"
 			}
 		}
 	}

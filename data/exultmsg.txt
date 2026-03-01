@@ -428,4 +428,25 @@
 0X6C2:Please add the games in File Sharing
 0X6C3:Touch screen for help!
 
+#Newfile_gump.cc 2
+0x6F0:Okay to write over existing saved game?
+0x6F1:Okay to delete saved game?
+
+# keyactions.cc
+0x6FA: Saving game failed!
+0x6FB: Game saved
+0x6FC: Restoring game failed!
+0x6FD: Game restored
+
+# exult.cc
+0x740: Too many screenshots
+0x741: Screenshot
+0x742: Screenshot failed
+
+# game.cc
+0x74A: You must start a new game first.
+0x74B: Press ESC to return.
+
+# gamewin.cc
+0x754: Saving Game
 
