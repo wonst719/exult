@@ -154,7 +154,12 @@ public:
  */
 // Button Coords
 const short Newfile_gump::btn_rows[5] = {186, 2, 15, 156, 169};
-const short Newfile_gump::btn_cols[5] = {2, 46, 88, 150, 209};
+const short Newfile_gump::btn_cols[5] = {2, 55, 108, 160, 209};
+
+const int kSaveButtonWidth   = 50;
+const int kLoadButtonWidth   = 50;
+const int kDeleteButtonWidth = 49;
+const int kCloseButtonWidth  = 49;
 
 // Text field info
 const short Newfile_gump::fieldx     = 2;      // Start Y of each field
@@ -209,7 +214,7 @@ Newfile_gump::Newfile_gump()
 	// Cancel
 	buttons[id_close] = std::make_unique<Newfile_Textbutton>(
 			this, &Newfile_gump::close, Strings::CANCEL(), btn_cols[3],
-			btn_rows[0], 59);
+			btn_rows[0], kCloseButtonWidth);
 
 	// Scrollers.
 	buttons[id_page_up] = std::make_unique<Newfile_button>(
@@ -718,7 +723,7 @@ bool Newfile_gump::mouse_down(
 	if (!buttons[id_load] && want_load) {
 		buttons[id_load] = std::make_unique<Newfile_Textbutton>(
 				this, &Newfile_gump::load, Strings::LOAD(), btn_cols[1],
-				btn_rows[0], 39);
+				btn_rows[0], kLoadButtonWidth);
 	} else if (buttons[id_load] && !want_load) {
 		buttons[id_load].reset();
 	}
@@ -726,7 +731,7 @@ bool Newfile_gump::mouse_down(
 	if (!buttons[id_save] && want_save) {
 		buttons[id_save] = std::make_unique<Newfile_Textbutton>(
 				this, &Newfile_gump::save, Strings::SAVE(), btn_cols[0],
-				btn_rows[0], 40);
+				btn_rows[0], kSaveButtonWidth);
 	} else if (buttons[id_save] && !want_save) {
 		buttons[id_save].reset();
 	}
@@ -734,7 +739,7 @@ bool Newfile_gump::mouse_down(
 	if (!buttons[id_delete] && want_delete) {
 		buttons[id_delete] = std::make_unique<Newfile_Textbutton>(
 				this, &Newfile_gump::delete_file, Strings::DELETE(),
-				btn_cols[2], btn_rows[0], 59);
+				btn_cols[2], btn_rows[0], kCloseButtonWidth);
 	} else if (buttons[id_delete] && !want_delete) {
 		buttons[id_delete].reset();
 	}
@@ -864,7 +869,7 @@ bool Newfile_gump::text_input(const char* text) {
 	if (newname[id_load] && !buttons[id_save]) {
 		buttons[id_save] = std::make_unique<Newfile_Textbutton>(
 				this, &Newfile_gump::save, Strings::SAVE(), btn_cols[0],
-				btn_rows[0], 40);
+				btn_rows[0], kSaveButtonWidth);
 		buttons[id_save]->paint();
 	}
 
@@ -967,7 +972,7 @@ bool Newfile_gump::character_input(int chr, int unicode, bool shift_pressed) {
 				if (newname[0] && !buttons[id_save]) {
 					buttons[id_save] = std::make_unique<Newfile_Textbutton>(
 							this, &Newfile_gump::save, Strings::SAVE(),
-							btn_cols[0], btn_rows[0], 40);
+							btn_cols[0], btn_rows[0], kSaveButtonWidth);
 					buttons[id_save]->paint();
 				}
 
