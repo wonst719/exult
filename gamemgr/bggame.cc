@@ -2238,6 +2238,9 @@ bool BG_Game::new_game(Vga_file& shapes) {
 	}
 	gwin->clear_screen(true);
 	pal->apply(true);
+
+	SDL_StartTextInput();
+
 	do {
 		Delay();
 		if (redraw) {
@@ -2493,5 +2496,8 @@ bool BG_Game::new_game(Vga_file& shapes) {
 		sman->paint_shape(topx, topy, shapes.get_shape(0x2, 0));
 		pal->apply();
 	}
+
+	SDL_StopTextInput();
+
 	return ok;
 }

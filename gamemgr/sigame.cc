@@ -1453,6 +1453,8 @@ bool SI_Game::new_game(Vga_file& shapes) {
 	bool      redraw      = true;
 	bool      ok          = true;
 
+	SDL_StartTextInput();
+
 	// Skin info
 	Avatar_default_skin* defskin  = Shapeinfo_lookup::GetDefaultAvSkin();
 	Skin_data*           skindata = Shapeinfo_lookup::GetSkinInfoSafe(
@@ -1695,5 +1697,8 @@ bool SI_Game::new_game(Vga_file& shapes) {
 	} else {
 		sman->paint_shape(topx, topy, shapes.get_shape(0x2, 0));
 	}
+
+	SDL_StopTextInput();
+
 	return ok;
 }

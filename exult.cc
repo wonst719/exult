@@ -815,6 +815,9 @@ static void Init() {
 	}
 	std::atexit(SDL_Quit);
 
+	// Disable text input by default
+	SDL_StopTextInput();
+
 	SDL_SysWMinfo info;    // Get system info.
 
 	// KBD repeat should be nice.
