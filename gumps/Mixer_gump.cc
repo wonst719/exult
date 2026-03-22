@@ -255,7 +255,7 @@ Mixer_gump::Mixer_gump() : Modal_gump(nullptr, -1) {
 			yForRow(num_sliders), 50);
 
 	// resize gump and reposition widgets
-	ResizeWidthToFitWidgets(tcb::span(&midislider, 4), 28);
+	ResizeWidthToFitWidgets(tcb::span(&midislider, 4), 28 + 3);
 	HorizontalArrangeWidgets(tcb::span(buttons.data() + id_ok, 3));
 	RightAlignWidgets(tcb::span(&midislider, 4), 28);
 }
@@ -326,8 +326,7 @@ void Mixer_gump::paint() {
 
 	Image_window8* iwin = gwin->get_win();
 
-	int disabled_text_pos
-			= x + std::max(procedural_background.w - slider_width - 68, 84);
+	int disabled_text_pos = x + procedural_background.w - slider_width - 68 + 12;
 
 	// if have neither
 	if (!midislider && !oggslider) {
