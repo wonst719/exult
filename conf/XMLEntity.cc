@@ -313,11 +313,11 @@ static string close_tag(const string& s) {
 
 static void trim(string& s) {
 	// Clean off leading whitespace
-	while (s.length() && s[0] <= 32) {
+	while (s.length() && (uint8_t)s[0] <= 32) {
 		s = s.substr(1);
 	}
 	// Clean off trailing whitespace
-	while (s.length() && s[s.length() - 1] <= 32) {
+	while (s.length() && (uint8_t)s[s.length() - 1] <= 32) {
 		s.erase(s.length() - 1);
 	}
 }
