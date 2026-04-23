@@ -1514,6 +1514,13 @@
     </Xml>
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="..\..\win32\exult.exe.manifest" />
+    <ResourceCompile Include="..\..\win32\exultico.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="..\..\win32\exult.exe.manifest">
+      <Filter>Resource Files</Filter>
+    </Manifest>
   </ItemGroup>
 </Project>

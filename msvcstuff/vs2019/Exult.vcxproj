@@ -785,6 +785,9 @@ for /f "tokens=* delims=" %%u in ('git ls-remote --get-url') do echo #define GIT
   <ItemGroup>
     <Manifest Include="..\..\win32\exult.exe.manifest" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\win32\exultico.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

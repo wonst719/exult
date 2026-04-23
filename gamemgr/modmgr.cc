@@ -452,7 +452,7 @@ ModManager::ModManager(
 			language    = Game_Language::ENGLISH;
 			path_prefix = to_uppercase(CFG_BG_NAME);
 			if (needtitle) {
-				new_title = CFG_BG_TITLE;
+				new_title = "울티마 VII\n검은 관문";
 			}
 			break;
 		}
@@ -466,7 +466,7 @@ ModManager::ModManager(
 		}
 		path_prefix = to_uppercase(CFG_FOV_NAME);
 		if (needtitle) {
-			new_title = CFG_FOV_TITLE;
+			new_title = "울티마 VII\n미덕의 대장간";
 		}
 	} else if (static_identity == "SERPENT ISLE") {
 		type      = SERPENT_ISLE;
@@ -498,7 +498,7 @@ ModManager::ModManager(
 			language    = Game_Language::ENGLISH;
 			path_prefix = to_uppercase(CFG_SI_NAME);
 			if (needtitle) {
-				new_title = CFG_SI_TITLE;
+				new_title = "울티마 VII 2부\n큰뱀섬";
 			}
 			sibeta = false;
 			break;
@@ -513,7 +513,7 @@ ModManager::ModManager(
 		}
 		path_prefix = to_uppercase(CFG_SS_NAME);
 		if (needtitle) {
-			new_title = CFG_SS_TITLE;
+			new_title = "울티마 VII 2부\n은빛 씨앗";
 		}
 	} else if (static_identity == "DEVEL GAME") {
 		type      = EXULT_DEVEL_GAME;
