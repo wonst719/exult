@@ -28,6 +28,7 @@
 #include "ibuf8.h"
 #include "ignore_unused_variable_warning.h"
 #include "vgafile.h"
+#include "game.h"
 
 #include "korean/korean.h"
 
@@ -905,18 +906,26 @@ static std::unique_ptr<KoreanFont> loadKoreanFont(const std::string& fontName, i
 	printf("Font::loadKoreanFont(%s, %d)\n", fontName.c_str(), index);
 	int fontIdx = mapKoreanFont(fontName, index);
 
+	const char* postfix;
+	switch (Game::get_game_type())
+	{
+	default:
+		postfix = "EX";
+		break;
+	case BLACK_GATE:
+		postfix = "BG";
+		break;
+	case SERPENT_ISLE:
+		postfix = "SI";
+		break;
+	}
+
 	char fileName[256];
-	sprintf(fileName, "<EXULT_PATCH>/FONT%d.FNT", fontIdx);
+	sprintf(fileName, "<EXULT_PATCH>/FONT%d%s.FNT", fontIdx, postfix);
 	if (!U7exists(fileName)) {
-		sprintf(fileName, "<PATCH>/FONT%d.FNT", fontIdx);
+		sprintf(fileName, "<PATCH>/FONT%d%s.FNT", fontIdx, postfix);
 		if (!U7exists(fileName)) {
-			// Fallback
-			fontIdx = 0;
-			sprintf(fileName, "<PATCH>/FONT%d.FNT", fontIdx);
-			if (!U7exists(fileName)) {
-				// Fail
-				return nullptr;
-			}
+			return nullptr;
 		}
 	}
 	std::unique_ptr<KoreanFont> koreanFont(new KoreanFont);
