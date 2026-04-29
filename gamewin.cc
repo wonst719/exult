@@ -1323,13 +1323,8 @@ bool Game_window::init_gamedat(bool create) {
 	if (create) {
 		cout << "Creating 'gamedat' files." << endl;
 		if (is_system_path_defined("<PATCH>") && U7exists(PATCH_INITGAME)) {
-			if (Game::get_modtitle() == string()) {
-				Game::set_new_game();
-			}
 			restore_gamedat(PATCH_INITGAME);
 		} else {
-			// Flag that we're reading U7 file.
-			Game::set_new_game();
 			restore_gamedat(INITGAME);
 		}
 		// Editing, and no IDENTITY?
@@ -2863,12 +2858,12 @@ void Game_window::setup_game(bool map_editing) {
 	get_map(0)->init();
 	if (is_system_path_defined("<PATCH>")) {
 		// There is a patch dir; search for other maps.
-		//for (int i = 1; i <= 0xFF; i++) {
-		//	char fname[128];
-		//	if (U7exists(Get_mapped_name(PATCH_U7MAP, i, fname))) {
-		//		get_map(i)->init();
-		//	}
-		//}
+		for (int i = 1; i <= 0xFF; i++) {
+			char fname[128];
+			if (U7exists(Get_mapped_name(PATCH_U7MAP, i, fname))) {
+				get_map(i)->init();
+			}
+		}
 	}
 	// Init. current 'tick'.
 	Game::set_ticks(SDL_GetTicks());

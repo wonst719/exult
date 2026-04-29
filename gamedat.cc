@@ -195,6 +195,11 @@ void Game_window::restore_gamedat(const char* fname    // Name of savegame file.
 	}
 #endif
 
+	if (Game::get_modtitle() == string()) {
+		// Flag that we're reading U7 file.
+		Game::set_new_game();
+	}
+
 	// Display red plasma during load...
 	setup_load_palette();
 
