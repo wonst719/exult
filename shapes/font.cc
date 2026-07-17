@@ -895,7 +895,7 @@ static int mapKoreanFont(const std::string& name, int index) {
 		return 10 + index;
 	else if (name == "<STATIC>/endgame.dat" || name == "<STATIC>/intro.dat")
 		return 20 + index;
-	else if (name == "<DATA>/exult.flx")
+	else if (name == "<DATA>/exult.flx" || name == "<BUNDLE>/exult.flx")
 		return 90 + index;
 
 	return 0;
