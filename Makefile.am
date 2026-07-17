@@ -29,6 +29,10 @@ ANDROID_LIB = android/lib/src/libandroid.la
 endif
 
 EXULTSOURCES =	\
+	korean/korean.cc	\
+	korean/korean.h	\
+	korean/ucs2kstable.cc	\
+	korean/ucs2kstable.h	\
 	actions.cc	\
 	actions.h	\
 	actorio.cc	\
